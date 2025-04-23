@@ -29,7 +29,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&corvus2_move_c_pivotrightstop
 };
 
-static void corvus2_c_anims(edict_t* self, G_Message_t* msg)
+static void Corvus2CinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'corvus2_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -127,21 +127,21 @@ void Corvus2CinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_ACTION1] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_IDLE1] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_IDLE2] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_IDLE3] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_WALKSTART] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_WALK1] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_WALK2] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_WALKSTOP1] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_WALKSTOP2] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_PIVOTLEFTGO] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_PIVOTLEFT] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_PIVOTLEFTSTOP] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_PIVOTRIGHTGO] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_PIVOTRIGHT] = corvus2_c_anims;
-	classStatics[CID_CORVUS2].msgReceivers[MSG_C_PIVOTRIGHTSTOP] = corvus2_c_anims;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_ACTION1] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_IDLE1] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_IDLE2] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_IDLE3] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_WALKSTART] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_WALK1] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_WALK2] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_WALKSTOP1] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_WALKSTOP2] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_PIVOTLEFTGO] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_PIVOTLEFT] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_PIVOTLEFTSTOP] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_PIVOTRIGHTGO] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_PIVOTRIGHT] = Corvus2CinematicActionMsgHandler;
+	classStatics[CID_CORVUS2].msgReceivers[MSG_C_PIVOTRIGHTSTOP] = Corvus2CinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

@@ -35,7 +35,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&priestess_move_c_walk1,
 };
 
-static void priestess_c_anims(edict_t* self, G_Message_t* msg)
+static void PriestessCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -157,26 +157,26 @@ void PriestessCinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION1] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION2] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION3] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION4] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION5] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION6] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION7] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION8] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION9] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION10] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION11] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION12] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION13] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION14] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION15] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION16] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_BACKPEDAL1] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_IDLE1] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_IDLE2] = priestess_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_WALK1] = priestess_c_anims;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION1] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION2] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION3] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION4] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION5] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION6] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION7] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION8] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION9] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION10] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION11] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION12] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION13] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION14] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION15] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_ACTION16] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_BACKPEDAL1] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_IDLE1] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_IDLE2] = PriestessCinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS].msgReceivers[MSG_C_WALK1] = PriestessCinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

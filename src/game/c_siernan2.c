@@ -18,7 +18,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&siernan2_move_c_idle1,
 };
 
-static void siernan2_c_anims(edict_t* self, G_Message_t* msg)
+static void Siernan2CinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'siernan2_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -55,9 +55,9 @@ void Siernan2CinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_C_SIERNAN2].msgReceivers[MSG_C_ACTION1] = siernan2_c_anims;
-	classStatics[CID_C_SIERNAN2].msgReceivers[MSG_C_ACTION2] = siernan2_c_anims;
-	classStatics[CID_C_SIERNAN2].msgReceivers[MSG_C_IDLE1] = siernan2_c_anims;
+	classStatics[CID_C_SIERNAN2].msgReceivers[MSG_C_ACTION1] = Siernan2CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN2].msgReceivers[MSG_C_ACTION2] = Siernan2CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN2].msgReceivers[MSG_C_IDLE1] = Siernan2CinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

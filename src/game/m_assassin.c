@@ -2004,7 +2004,7 @@ static void AssassinCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 	assassin_pause(self);
 }
 
-static void AssassinCinematicAnimsMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_c_anims' in original logic.
+static void AssassinCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -2117,10 +2117,10 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH_PAIN] = AssassinDeathPainMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_CHECK_MOOD] = AssassinCheckMoodMsgHandler;
 
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_IDLE1] = AssassinCinematicAnimsMsgHandler;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_RUN1] = AssassinCinematicAnimsMsgHandler;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_ATTACK1] = AssassinCinematicAnimsMsgHandler;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_ATTACK2] = AssassinCinematicAnimsMsgHandler;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_IDLE1] = AssassinCinematicActionMsgHandler;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_RUN1] = AssassinCinematicActionMsgHandler;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_ATTACK1] = AssassinCinematicActionMsgHandler;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_ATTACK2] = AssassinCinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

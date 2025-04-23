@@ -38,7 +38,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&siernan1_move_c_walkstop1,
 };
 
-static void siernan1_c_anims(edict_t* self, G_Message_t* msg)
+static void Siernan1CinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'siernan1_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -165,27 +165,27 @@ void Siernan1CinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION1] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION2] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION3] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION4] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION5] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION6] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION7] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION8] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION9] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION10] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION11] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION12] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION13] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_IDLE1] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_IDLE2] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_IDLE3] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_IDLE4] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_IDLE5] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_WALKSTART] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_WALK1] = siernan1_c_anims;
-	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_WALKSTOP1] = siernan1_c_anims;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION1] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION2] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION3] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION4] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION5] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION6] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION7] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION8] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION9] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION10] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION11] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION12] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION13] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_IDLE1] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_IDLE2] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_IDLE3] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_IDLE4] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_IDLE5] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_WALKSTART] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_WALK1] = Siernan1CinematicActionMsgHandler;
+	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_WALKSTOP1] = Siernan1CinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

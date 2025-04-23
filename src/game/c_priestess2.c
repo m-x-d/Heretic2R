@@ -23,7 +23,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&priestess2_move_c_idle1,
 };
 
-static void priestess2_c_anims(edict_t* self, G_Message_t* msg)
+static void Priestess2CinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess2_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -91,14 +91,14 @@ void Priestess2CinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION1] = priestess2_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION2] = priestess2_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION3] = priestess2_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION4] = priestess2_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION5] = priestess2_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION6] = priestess2_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION7] = priestess2_c_anims;
-	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_IDLE1] = priestess2_c_anims;
+	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION1] = Priestess2CinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION2] = Priestess2CinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION3] = Priestess2CinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION4] = Priestess2CinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION5] = Priestess2CinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION6] = Priestess2CinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_ACTION7] = Priestess2CinematicActionMsgHandler;
+	classStatics[CID_C_HIGHPRIESTESS2].msgReceivers[MSG_C_IDLE1] = Priestess2CinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

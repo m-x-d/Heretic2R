@@ -27,7 +27,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&victimSsithra_move_c_action6
 };
 
-static void victimSsithra_c_anims(edict_t* self, G_Message_t* msg)
+static void VictimSsithraCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'victimSsithra_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -81,13 +81,13 @@ void VictimSsithraCinStaticsInit(void)
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 	static int sounds[NUM_SOUNDS]; //mxd. Made local static.
 
-	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_IDLE1] = victimSsithra_c_anims;
-	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_ACTION1] = victimSsithra_c_anims;
-	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_ACTION2] = victimSsithra_c_anims;
-	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_ACTION3] = victimSsithra_c_anims;
-	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_ACTION4] = victimSsithra_c_anims;
-	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_ACTION5] = victimSsithra_c_anims;
-	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_ACTION6] = victimSsithra_c_anims;
+	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_IDLE1] = VictimSsithraCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_ACTION1] = VictimSsithraCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_ACTION2] = VictimSsithraCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_ACTION3] = VictimSsithraCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_ACTION4] = VictimSsithraCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_ACTION5] = VictimSsithraCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_VICTIM].msgReceivers[MSG_C_ACTION6] = VictimSsithraCinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

@@ -22,7 +22,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&morcalavin_move_c_idle4,
 };
 
-static void morcalavin_c_anims(edict_t* self, G_Message_t* msg)
+static void MorcalavinCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -79,13 +79,13 @@ void MorcalavinCinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_ACTION1] = morcalavin_c_anims;
-	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_ACTION2] = morcalavin_c_anims;
-	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_ACTION3] = morcalavin_c_anims;
-	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_IDLE1] = morcalavin_c_anims;
-	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_IDLE2] = morcalavin_c_anims;
-	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_IDLE3] = morcalavin_c_anims;
-	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_IDLE4] = morcalavin_c_anims;
+	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_ACTION1] = MorcalavinCinematicActionMsgHandler;
+	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_ACTION2] = MorcalavinCinematicActionMsgHandler;
+	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_ACTION3] = MorcalavinCinematicActionMsgHandler;
+	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_IDLE1] = MorcalavinCinematicActionMsgHandler;
+	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_IDLE2] = MorcalavinCinematicActionMsgHandler;
+	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_IDLE3] = MorcalavinCinematicActionMsgHandler;
+	classStatics[CID_C_MORCALAVIN].msgReceivers[MSG_C_IDLE4] = MorcalavinCinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

@@ -30,7 +30,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&corvus9_move_c_walk2,
 };
 
-static void corvus9_c_anims(edict_t* self, G_Message_t* msg)
+static void Corvus9CinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'corvus9_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -132,22 +132,22 @@ void Corvus9CinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION1] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION2] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION3] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION4] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION5] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION6] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION7] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION8] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION9] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION10] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION11] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_IDLE1] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_IDLE2] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_IDLE3] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_WALK1] = corvus9_c_anims;
-	classStatics[CID_CORVUS9].msgReceivers[MSG_C_WALK2] = corvus9_c_anims;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION1] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION2] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION3] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION4] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION5] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION6] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION7] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION8] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION9] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION10] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_ACTION11] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_IDLE1] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_IDLE2] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_IDLE3] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_WALK1] = Corvus9CinematicActionMsgHandler;
+	classStatics[CID_CORVUS9].msgReceivers[MSG_C_WALK2] = Corvus9CinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

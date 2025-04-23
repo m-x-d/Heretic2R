@@ -17,7 +17,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&tome_move_c_idle2,
 };
 
-static void tome_c_anims(edict_t* self, G_Message_t* msg)
+static void TomeCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'tome_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -49,8 +49,8 @@ void TomeCinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_C_TOME].msgReceivers[MSG_C_IDLE1] = tome_c_anims;
-	classStatics[CID_C_TOME].msgReceivers[MSG_C_IDLE2] = tome_c_anims;
+	classStatics[CID_C_TOME].msgReceivers[MSG_C_IDLE1] = TomeCinematicActionMsgHandler;
+	classStatics[CID_C_TOME].msgReceivers[MSG_C_IDLE2] = TomeCinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

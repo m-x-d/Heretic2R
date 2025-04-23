@@ -36,7 +36,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&corvus5_move_c_pivotrightstop
 };
 
-static void corvus5_c_anims(edict_t* self, G_Message_t* msg)
+static void Corvus5CinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'corvus5_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -168,28 +168,28 @@ void Corvus5CinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION1] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION2] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION3] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION4] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION5] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION6] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION7] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION8] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_IDLE1] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_IDLE2] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_IDLE3] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_WALKSTART] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_WALK1] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_WALK2] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_WALKSTOP1] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_WALKSTOP2] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_PIVOTLEFTGO] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_PIVOTLEFT] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_PIVOTLEFTSTOP] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_PIVOTRIGHTGO] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_PIVOTRIGHT] = corvus5_c_anims;
-	classStatics[CID_CORVUS5].msgReceivers[MSG_C_PIVOTRIGHTSTOP] = corvus5_c_anims;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION1] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION2] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION3] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION4] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION5] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION6] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION7] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_ACTION8] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_IDLE1] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_IDLE2] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_IDLE3] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_WALKSTART] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_WALK1] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_WALK2] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_WALKSTOP1] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_WALKSTOP2] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_PIVOTLEFTGO] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_PIVOTLEFT] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_PIVOTLEFTSTOP] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_PIVOTRIGHTGO] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_PIVOTRIGHT] = Corvus5CinematicActionMsgHandler;
+	classStatics[CID_CORVUS5].msgReceivers[MSG_C_PIVOTRIGHTSTOP] = Corvus5CinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

@@ -49,7 +49,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&corvus8_move_c_pivotrightstop
 };
 
-static void corvus8_c_anims(edict_t* self, G_Message_t* msg)
+static void Corvus8CinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'corvus8_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -241,40 +241,40 @@ void Corvus8CinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION1] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION2] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION3] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION4] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION5] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION6] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION7] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION8] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION9] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION10] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION11] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION12] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION13] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION14] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION15] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION16] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION17] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION18] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION19] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION20] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_IDLE1] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_IDLE2] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_WALKSTART] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_WALK1] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_WALK2] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_WALK3] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_WALKSTOP1] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_WALKSTOP2] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_PIVOTLEFTGO] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_PIVOTLEFT] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_PIVOTLEFTSTOP] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_PIVOTRIGHTGO] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_PIVOTRIGHT] = corvus8_c_anims;
-	classStatics[CID_CORVUS8].msgReceivers[MSG_C_PIVOTRIGHTSTOP] = corvus8_c_anims;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION1] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION2] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION3] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION4] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION5] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION6] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION7] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION8] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION9] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION10] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION11] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION12] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION13] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION14] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION15] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION16] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION17] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION18] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION19] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_ACTION20] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_IDLE1] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_IDLE2] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_WALKSTART] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_WALK1] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_WALK2] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_WALK3] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_WALKSTOP1] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_WALKSTOP2] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_PIVOTLEFTGO] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_PIVOTLEFT] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_PIVOTLEFTSTOP] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_PIVOTRIGHTGO] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_PIVOTRIGHT] = Corvus8CinematicActionMsgHandler;
+	classStatics[CID_CORVUS8].msgReceivers[MSG_C_PIVOTRIGHTSTOP] = Corvus8CinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

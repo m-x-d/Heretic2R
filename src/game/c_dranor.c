@@ -37,7 +37,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&dranor_move_c_idle3,
 };
 
-static void Dranor_c_anims(edict_t* self, G_Message_t* msg)
+static void DranorCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'Dranor_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -144,22 +144,22 @@ void DranorCinStaticsInit(void)
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 	static int sounds[NUM_SOUNDS]; //mxd. Made local static.
 
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION1] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION2] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION3] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION4] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION5] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION6] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION7] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION8] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION9] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION10] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION11] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION12] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_DEATH1] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_IDLE1] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_IDLE2] = Dranor_c_anims;
-	classStatics[CID_DRANOR].msgReceivers[MSG_C_IDLE3] = Dranor_c_anims;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION1] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION2] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION3] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION4] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION5] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION6] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION7] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION8] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION9] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION10] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION11] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION12] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_DEATH1] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_IDLE1] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_IDLE2] = DranorCinematicActionMsgHandler;
+	classStatics[CID_DRANOR].msgReceivers[MSG_C_IDLE3] = DranorCinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

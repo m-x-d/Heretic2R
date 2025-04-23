@@ -28,7 +28,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 #define MIST_ADD	35.0f
 static float mist_yaw;
 
-static void elflord_c_gib(edict_t* self, G_Message_t* msg)
+static void ElfLordCinematicGibMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_c_gib' in original logic.
 {
 	gi.CreateEffect(&self->s, FX_WEAPON_SPHEREEXPLODE, CEF_OWNERS_ORIGIN, NULL, "db", self->movedir, (byte)(self->s.scale * 7.5f));
 	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/SphereImpact.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why volume is 2.0?
@@ -83,7 +83,7 @@ void elflord_c_mist(edict_t* self, float x, float y, float z) //mxd. Named 'elfl
 	gi.CreateEffect(NULL, FX_PLAGUEMIST, 0, yaw_offset, "vb", velocity, 2050 / 35);
 }
 
-static void elflord_c_anims(edict_t* self, G_Message_t* msg)
+static void ElfLordCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -138,13 +138,13 @@ void ElflordCinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_ACTION1] = elflord_c_anims;
-	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_ACTION2] = elflord_c_anims;
-	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_DEATH1] = elflord_c_anims;
-	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_DEATH2] = elflord_c_anims;
-	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_IDLE1] = elflord_c_anims;
-	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_IDLE2] = elflord_c_anims;
-	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_GIB1] = elflord_c_gib;
+	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_ACTION1] = ElfLordCinematicActionMsgHandler;
+	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_ACTION2] = ElfLordCinematicActionMsgHandler;
+	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_DEATH1] = ElfLordCinematicActionMsgHandler;
+	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_DEATH2] = ElfLordCinematicActionMsgHandler;
+	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_IDLE1] = ElfLordCinematicActionMsgHandler;
+	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_IDLE2] = ElfLordCinematicActionMsgHandler;
+	classStatics[CID_C_ELFLORD].msgReceivers[MSG_C_GIB1] = ElfLordCinematicGibMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;

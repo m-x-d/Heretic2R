@@ -35,7 +35,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&scout_move_c_idle3,
 };
 
-static void scout_c_anims(edict_t* self, G_Message_t* msg)
+static void SsithraScoutCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'scout_c_anims' in original logic.
 {
 	int curr_anim;
 
@@ -127,20 +127,20 @@ void SsithraScoutCinStaticsInit(void)
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 	static int sounds[NUM_SOUNDS]; //mxd. Made local static.
 
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION1] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION2] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION3] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION4] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION5] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION6] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION7] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION8] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION9] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION10] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_DEATH1] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_IDLE1] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_IDLE2] = scout_c_anims;
-	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_IDLE3] = scout_c_anims;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION1] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION2] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION3] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION4] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION5] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION6] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION7] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION8] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION9] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_ACTION10] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_DEATH1] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_IDLE1] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_IDLE2] = SsithraScoutCinematicActionMsgHandler;
+	classStatics[CID_SSITHRA_SCOUT].msgReceivers[MSG_C_IDLE3] = SsithraScoutCinematicActionMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;
