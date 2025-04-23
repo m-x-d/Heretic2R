@@ -209,17 +209,6 @@ static const animframe_t mssithra_frames_fjump[] =
 };
 const animmove_t mssithra_move_fjump = { 14, mssithra_frames_fjump, mssithraCheckMood };
 
-// Mutant Ssithra Pain.
-/*static const animframe_t mssithra_frames_pain1 [] =
-{
-	{ FRAME_pain1,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_pain2,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_pain3,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_pain4,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_pain5,	NULL, 0, 0, 0, NULL, 0, NULL },
-};
-const animmove_t mssithra_move_pain1 = { 5, mssithra_frames_pain1, mssithra_pain_react };*/
-
 // Mutant Ssithra Shoot A.
 static const animframe_t mssithra_frames_shoota1[] =
 {

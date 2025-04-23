@@ -6,6 +6,8 @@
 
 #pragma once
 
-void SP_monster_mssithra(edict_t* self);
-edict_t* MssithraAlphaArrowReflect(edict_t* self, edict_t* other, vec3_t vel);
-void MssithraStaticsInit(void);
+#include "g_Edict.h"
+
+extern void SP_monster_mssithra(edict_t* self);
+extern edict_t* MssithraAlphaArrowReflect(edict_t* self, edict_t* other, vec3_t vel);
+extern void MssithraStaticsInit(void);
