@@ -44,15 +44,7 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-/*
-
-//========================================
-//MOVEMENT
-//========================================
-
-*/
-
-void mssithra_stand(edict_t *self, G_Message_t *msg)
+static void MssithraStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'mssithra_stand' in original logic.
 {
 	SetAnim(self, ANIM_IDLE1);
 }
@@ -633,7 +625,7 @@ void MssithraStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_MSSITHRA].msgReceivers[MSG_STAND] = mssithra_stand;
+	classStatics[CID_MSSITHRA].msgReceivers[MSG_STAND] = MssithraStandMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MISSILE] = mssithra_missile;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MELEE] = mssithra_melee;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_DEATH] = mssithra_death;
