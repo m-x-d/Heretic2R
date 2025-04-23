@@ -9,7 +9,7 @@
 
 #include "g_local.h"
 #include "m_ogle.h"
-#include "m_ogle_local.h"
+#include "m_ogle_shared.h"
 #include "m_ogle_anim.h"
 #include "Utilities.h"
 #include "g_DefaultMessageHandler.h"

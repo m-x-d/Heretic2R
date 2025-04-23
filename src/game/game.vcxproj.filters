@@ -902,7 +902,7 @@
     <ClInclude Include="m_mssithra_anim.h">
       <Filter>src\Monsters\Mutant Ssithra</Filter>
     </ClInclude>
-    <ClInclude Include="m_ogle_local.h">
+    <ClInclude Include="m_ogle_shared.h">
       <Filter>src\Monsters\Ogle</Filter>
     </ClInclude>
     <ClInclude Include="m_ogle_anim.h">
