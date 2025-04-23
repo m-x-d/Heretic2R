@@ -138,42 +138,42 @@ static void MssithraMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 		SetAnim(self, ANIM_IDLE1);
 }
 
-void mssithraSwipe (edict_t *self)
+void mssithraSwipe(edict_t* self) //TODO: rename to mssithra_swipe.
 {
-	vec3_t	v, off, dir, org, ang;
-	float	len;
-	
-	if (self->enemy == NULL)	// If the player gets gibbed, enemy can be NULL.
+	if (self->enemy == NULL) // If the player gets gibbed, enemy can be NULL.
 		return;
 
-	VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-	len = VectorLength (v);
+	vec3_t diff;
+	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+	const float dist = VectorLength(diff);
 
-	if (len < (self->maxs[0] + self->enemy->maxs[0] + 45)  )	// A hit
-	{	
-		if (AI_IsInfrontOf(self, self->enemy))
-		{
-			gi.sound (self, CHAN_WEAPON, sounds[SND_SWIPEHIT], 1, ATTN_NORM, 0);
-			VectorSet(off, 35.0, 0.0, 32.0);
-			VectorGetOffsetOrigin(off, self->s.origin, self->s.angles[YAW], org);
-			VectorCopy(self->s.angles, ang);
-			ang[YAW] += DEGREE_90;
-			AngleVectors(ang, dir, NULL, NULL);
-			T_Damage (self->enemy, self, self, dir, org, vec3_origin, 
-					MSSITHRA_DMG_SWIPE, 0, DAMAGE_DISMEMBER,MOD_DIED);
+	const float min_seperation = self->maxs[0] + self->enemy->maxs[0] + 45.0f;
 
-			if(self->enemy->health>0)//else don't gib?
-			{	
-				if(!irand(0,5))
-				{
-					if(!stricmp(self->enemy->classname, "player"))
-						P_KnockDownPlayer(&self->enemy->client->playerinfo);
-				}	
-			}
-			return;
-		}
+	if (dist < min_seperation && AI_IsInfrontOf(self, self->enemy)) // A hit.
+	{
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SWIPEHIT], 1.0f, ATTN_NORM, 0.0f);
+
+		const vec3_t offset = { 35.0f, 0.0f, 32.0f };
+		vec3_t origin;
+		VectorGetOffsetOrigin(offset, self->s.origin, self->s.angles[YAW], origin);
+
+		vec3_t angles;
+		VectorCopy(self->s.angles, angles);
+		angles[YAW] += DEGREE_90;
+
+		vec3_t forward;
+		AngleVectors(angles, forward, NULL, NULL);
+
+		T_Damage(self->enemy, self, self, forward, origin, vec3_origin, MSSITHRA_DMG_SWIPE, 0, DAMAGE_DISMEMBER, MOD_DIED);
+
+		// Knockdown player?
+		if (self->enemy->health > 0 && irand(0, 5) == 0 && Q_stricmp(self->enemy->classname, "player") == 0) // Else don't gib? //TODO: check self->enemy->client instead?
+			P_KnockDownPlayer(&self->enemy->client->playerinfo);
 	}
-	gi.sound (self, CHAN_WEAPON, sounds[SND_SWIPE], 1, ATTN_NORM, 0);
+	else
+	{
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SWIPE], 1.0f, ATTN_NORM, 0.0f);
+	}
 }
 
 void mssithra_missile_explode(edict_t *self)
