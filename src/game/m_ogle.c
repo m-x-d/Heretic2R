@@ -32,7 +32,7 @@
 //#define OGLE_RADIUS 1000 //FIXME: Tweak this out, activation range
 
 
-static animmove_t *animations[NUM_ANIMS] =
+static const animmove_t *animations[NUM_ANIMS] =
 {
 	&ogle_move_walk1,
 	&ogle_move_push1,
