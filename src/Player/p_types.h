@@ -254,7 +254,7 @@ typedef struct client_persistant_s
 #define FL_NO_KNOCKBACK		0x00000800
 #define FL_INSLIME			0x00001000	// INWATER is set when in muck, but this is a modifier so we know when we leave.
 #define FL_LOCKMOVE			0x00002000	// Move updates should not process, actor can only move explicitly.
-#define FL_DONTANIMATE		0x00004000	// Stop animating.
+#define FL_DONTANIMATE		0x00004000	// Stop animating. //TODO: set, but never used?
 #define FL_AVERAGE_CHICKEN	0x00008000	// Currently a chicken.
 #define FL_AMPHIBIAN		0x00010000	// Does not drown on land or in water, but is damaged by muck and lava.
 #define FL_SUPER_CHICKEN	0x00020000	// Ah yeah...
