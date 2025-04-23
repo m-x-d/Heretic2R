@@ -139,7 +139,7 @@ static void MssithraMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 		SetAnim(self, ANIM_IDLE1);
 }
 
-void mssithraSwipe(edict_t* self) //TODO: rename to mssithra_swipe.
+void mssithra_swipe(edict_t* self) //mxd. Named 'mssithraSwipe' in original logic.
 {
 	if (self->enemy == NULL) // If the player gets gibbed, enemy can be NULL.
 		return;

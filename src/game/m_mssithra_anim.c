@@ -160,10 +160,10 @@ static const animframe_t mssithra_frames_claw1[] =
 	{ FRAME_claw2,	NULL, 0, 0, 0, ai_charge2, 10, mmssithraRandomGrowlSound },
 	{ FRAME_claw3,	NULL, 0, 0, 0, ai_charge2, 8,  NULL },
 	{ FRAME_claw4,	NULL, 0, 0, 0, ai_charge2, 6,  NULL },
-	{ FRAME_claw5,	NULL, 0, 0, 0, ai_charge2, 4,  mssithraSwipe },
+	{ FRAME_claw5,	NULL, 0, 0, 0, ai_charge2, 4,  mssithra_swipe },
 	{ FRAME_claw6,	NULL, 0, 0, 0, ai_charge2, 3,  NULL },
 	{ FRAME_claw7,	NULL, 0, 0, 0, ai_charge2, 3,  NULL },
-	{ FRAME_claw8,	NULL, 0, 0, 0, ai_charge2, 4,  mssithraSwipe },
+	{ FRAME_claw8,	NULL, 0, 0, 0, ai_charge2, 4,  mssithra_swipe },
 	{ FRAME_claw9,	NULL, 0, 0, 0, ai_charge2, 3,  NULL },
 	{ FRAME_claw10,	NULL, 0, 0, 0, ai_charge2, 3,  NULL },
 };
