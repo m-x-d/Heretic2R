@@ -122,29 +122,20 @@ static void MssithraMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		SetAnim(self, ANIM_CLAW1);
 }
 
-void mssithra_missile(edict_t *self, G_Message_t *msg)
-{//NEWSTUFF: jump closer to claw, loop shooting anims
-	vec3_t	v;
-	float	len, min_seperation, jump_range;
-	
-	if(M_ValidTarget(self, self->enemy))
+//mxd. Also used as MSG_RUN handler.
+static void MssithraMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'mssithra_missile' in original logic.
+{
+	//NEWSTUFF: jump closer to claw, loop shooting anims.
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-		len = VectorLength (v);
-		jump_range = 128;
-		min_seperation = self->maxs[0] + self->enemy->maxs[0];
-		
-		if (irand(0,(skill->value+1)*2))
-		{
-			SetAnim(self, ANIM_SHOOT_TRANS);
-		}
-		else
-		{
-			SetAnim(self, ANIM_IDLE1);
-		}
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
 	}
+
+	if (irand(0, (SKILL + 1) * 2) > 0)
+		SetAnim(self, ANIM_SHOOT_TRANS);
 	else
-		QPostMessage(self, MSG_STAND,PRI_DIRECTIVE, NULL);
+		SetAnim(self, ANIM_IDLE1);
 }
 
 void mssithraSwipe (edict_t *self)
@@ -542,11 +533,11 @@ void MssithraStaticsInit(void)
 	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_STAND] = MssithraStandMsgHandler;
-	classStatics[CID_MSSITHRA].msgReceivers[MSG_MISSILE] = mssithra_missile;
+	classStatics[CID_MSSITHRA].msgReceivers[MSG_MISSILE] = MssithraMissileMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MELEE] = MssithraMeleeMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_DEATH] = MssithraDeathMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_PAIN] = MssithraPainMsgHandler;
-	classStatics[CID_MSSITHRA].msgReceivers[MSG_RUN] = mssithra_missile;
+	classStatics[CID_MSSITHRA].msgReceivers[MSG_RUN] = MssithraMissileMsgHandler;
 
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
