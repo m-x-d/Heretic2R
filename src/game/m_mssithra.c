@@ -1,38 +1,23 @@
-//==============================================================================
 //
 // m_mssithra.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
-
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "buoy.h"
-#include "vector.h"
 
 #include "m_mssithra.h"
 #include "m_mssithra_shared.h"
 #include "m_mssithra_anim.h"
-#include "g_misc.h"
-#include "g_HitLocation.h"
-#include "p_anim_branch.h"
-#include "m_stats.h"
+#include "g_DefaultMessageHandler.h"
+#include "g_monster.h"
 #include "g_playstats.h"
+#include "m_stats.h"
 #include "mg_guide.h" //mxd
-#include "p_actions.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
 void create_ssithra_arrow(edict_t *Arrow);
-
-#define MSSITHRA_JUMP_VELOCITY	300.0
-#define MSSITHRA_HOP_VELOCITY	128.0
-#define MSSITHRA_SF_NAMOR		8
-#define MSSITHRA_SF_SPIN		16
 
 //========================================
 //INITIALIZE
@@ -59,7 +44,6 @@ static const animmove_t *animations[NUM_ANIMS] =
 
 static int Sounds[NUM_SOUNDS];
 
-static ClassResourceInfo_t resInfo;
 /*
 
 //========================================
@@ -647,6 +631,8 @@ void mssithraCheckShotLoop(edict_t *self)
 
 void MssithraStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_STAND] = mssithra_stand;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MISSILE] = mssithra_missile;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MELEE] = mssithra_melee;
