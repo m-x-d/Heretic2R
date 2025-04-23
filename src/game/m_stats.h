@@ -191,7 +191,7 @@ typedef struct EvadeChance_s //mxd
 #define HARPY_DMG_MAX			20
 
 // IMP
-#define IMP_HEALTH				200	
+#define IMP_HEALTH				200
 #define IMP_MASS				75
 #define IMP_DMG_MIN				10
 #define IMP_DMG_MAX				20
@@ -216,8 +216,8 @@ typedef struct EvadeChance_s //mxd
 #define MSSITHRA_DMG_MIN		8
 #define MSSITHRA_DMG_MAX		16
 #define MSSITHRA_DMG_SWIPE		40
-#define MSSITHRA_DMG_ARROW_RADIUS	50 //TODO: unused.
-#define MSSITHRA_ARROW_SPEED	600
+#define MSSITHRA_ARROW_DMG_RADIUS	128.0f //mxd. 'MSSITHRA_DMG_ARROW_RADIUS 50' (unused) in original logic.
+#define MSSITHRA_ARROW_SPEED	600.0f
 
 // OGLE
 #define OGLE_HEALTH				100
@@ -249,7 +249,7 @@ typedef struct EvadeChance_s //mxd
 #define SSITHRA_DMG_MAX				8
 #define SSITHRA_DMG_ARROW_RADIUS	50
 #define SSITHRA_JUMP_VELOCITY		300.0f //TODO: unused.
-#define SSITHRA_HOP_VELOCITY		128.0f 
+#define SSITHRA_HOP_VELOCITY		128.0f
 #define SSITHRA_SPOO_SPEED			450
 #define SSITHRA_BIGARROW_DMG_MIN	16
 #define SSITHRA_BIGARROW_DMG_MAX	24

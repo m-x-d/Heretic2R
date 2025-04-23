@@ -176,24 +176,16 @@ void mssithraSwipe(edict_t* self) //TODO: rename to mssithra_swipe.
 	}
 }
 
-void mssithra_missile_explode(edict_t *self)
+static void MssithraArrowExplodeThink(edict_t* self) //mxd. Named 'mssithra_missile_explode' in original logic.
 {
-	int damage = irand(8, 16);
+	// TODO: Spawn an explosion effect.
+	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MSSITHRA_EXPLODE, self->movedir);
 
-	//TODO: Spawn an explosion effect
-	gi.CreateEffect( NULL,
-					 FX_M_EFFECTS,
-					 0,
-					 self->s.origin,
-					 "bv",
-					 FX_MSSITHRA_EXPLODE,
-					 self->movedir);
-
-	T_DamageRadius(self, self->owner, self->owner, 128, damage, damage/2, DAMAGE_ATTACKER_IMMUNE, MOD_DIED);
+	const float damage = flrand(8.0f, 16.0f); //mxd. int / irand() in original logic.
+	T_DamageRadius(self, self->owner, self->owner, MSSITHRA_ARROW_DMG_RADIUS, damage, damage / 2.0f, DAMAGE_ATTACKER_IMMUNE, MOD_DIED);
 
 	G_FreeEdict(self);
 }
-
 
 edict_t *MssithraAlphaArrowReflect(edict_t *self, edict_t *other, vec3_t vel)
 {
@@ -255,7 +247,7 @@ void mssithraAlphaArrowTouch(edict_t *self, edict_t *other, cplane_t *plane, csu
 			VectorCopy(plane->normal, self->movedir);
 
 		self->dmg = irand(MSSITHRA_DMG_MIN*2, MSSITHRA_DMG_MAX*2);
-		mssithra_missile_explode(self);
+		MssithraArrowExplodeThink(self);
 	}
 	else
 	{
@@ -269,7 +261,7 @@ void mssithraAlphaArrowTouch(edict_t *self, edict_t *other, cplane_t *plane, csu
 			VectorCopy(plane->normal, self->movedir);
 
 		self->dmg = irand(MSSITHRA_DMG_MIN, MSSITHRA_DMG_MAX);
-		self->think = mssithra_missile_explode;
+		self->think = MssithraArrowExplodeThink;
 		self->nextthink = level.time + flrand(0.5, 1.5);
 	}
 }
