@@ -215,43 +215,36 @@ edict_t* MssithraAlphaArrowReflect(edict_t* self, edict_t* other, vec3_t vel) //
 	return arrow;
 }
 
-void mssithraAlphaArrowTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
+static void MssithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'mssithraAlphaArrowTouch' in original logic.
 {
-	// are we reflecting ?
-	if (self->reflect_debounce_time)
+	// Are we reflecting?
+	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
 	{
-		if(EntReflecting(other, true, true))
-		{
-			Create_rand_relect_vect(self->velocity, self->velocity);
-			Vec3ScaleAssign(MSSITHRA_ARROW_SPEED/2, self->velocity);
-			MssithraAlphaArrowReflect(self, other, self->velocity);
+		Create_rand_relect_vect(self->velocity, self->velocity);
+		Vec3ScaleAssign(MSSITHRA_ARROW_SPEED / 2.0f, self->velocity);
+		MssithraAlphaArrowReflect(self, other, self->velocity);
 
-			return;
-		}
+		return;
 	}
 
-	if(other->takedamage)
-	{
-		if (plane->normal)
-			VectorCopy(plane->normal, self->movedir);
+	if (plane != NULL) //mxd. Original logic null-checks plane->normal (always true).
+		VectorCopy(plane->normal, self->movedir);
 
-		self->dmg = irand(MSSITHRA_DMG_MIN*2, MSSITHRA_DMG_MAX*2);
+	if (other->takedamage != DAMAGE_NO)
+	{
+		self->dmg = irand(MSSITHRA_DMG_MIN * 2, MSSITHRA_DMG_MAX * 2);
 		MssithraArrowExplodeThink(self);
 	}
 	else
 	{
-		gi.sound(self, CHAN_WEAPON, sounds[SND_INWALL], 0.5, ATTN_NORM, 0);
-
-		self->s.effects |= EF_ALTCLIENTFX;
+		gi.sound(self, CHAN_WEAPON, sounds[SND_INWALL], 0.5f, ATTN_NORM, 0.0f);
 
 		VectorClear(self->velocity);
-		
-		if (plane->normal)
-			VectorCopy(plane->normal, self->movedir);
-
+		self->s.effects |= EF_ALTCLIENTFX;
 		self->dmg = irand(MSSITHRA_DMG_MIN, MSSITHRA_DMG_MAX);
+
 		self->think = MssithraArrowExplodeThink;
-		self->nextthink = level.time + flrand(0.5, 1.5);
+		self->nextthink = level.time + flrand(0.5f, 1.5f);
 	}
 }
 
@@ -263,7 +256,7 @@ void create_ssithra_arrow(edict_t *Arrow)
 	Arrow->solid = SOLID_BBOX;
 	Arrow->classname = "mssithra_Arrow";
 
-	Arrow->touch = mssithraAlphaArrowTouch;
+	Arrow->touch = MssithraArrowTouch;
 
 	Arrow->clipmask = MASK_SHOT;
 	
