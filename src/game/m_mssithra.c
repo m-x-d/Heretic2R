@@ -376,42 +376,31 @@ void mssithraArrow(edict_t* self) //TODO: rename to mssithra_arrow.
 	}
 }
 
-/*-------------------------------------------------------------------------
-	mssithra_pause
--------------------------------------------------------------------------*/
-qboolean mssithraCheckMood (edict_t *self)
+qboolean mssithraCheckMood(edict_t* self) //TODO: add action function, make this one static. //TODO: rename to MssithraCheckMood.
 {
-	if(self->monsterinfo.aiflags&AI_OVERRIDE_GUIDE)
+	if (self->monsterinfo.aiflags & AI_OVERRIDE_GUIDE)
 		return false;
 
 	self->mood_think(self);
 
-	if (self->ai_mood == AI_MOOD_NORMAL)
-		return false;
-		
 	switch (self->ai_mood)
 	{
-	case AI_MOOD_ATTACK:
-		if(self->ai_mood_flags & AI_MOOD_FLAG_MISSILE)
-			QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
-		else
-			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-		return true;
-		break;
-	case AI_MOOD_PURSUE:
-	case AI_MOOD_NAVIGATE:
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-		return true;
-		break;
-	case AI_MOOD_WALK:
-		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-		return true;
-		break;
+		case AI_MOOD_ATTACK:
+			QPostMessage(self, ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE), PRI_DIRECTIVE, NULL);
+			return true;
 
-	case AI_MOOD_STAND:
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		return true;
-		break;
+		case AI_MOOD_PURSUE:
+		case AI_MOOD_NAVIGATE:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			return true;
+
+		case AI_MOOD_WALK:
+			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			return true;
+
+		case AI_MOOD_STAND:
+			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			return true;
 	}
 
 	return false;
