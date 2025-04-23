@@ -406,15 +406,15 @@ qboolean mssithraCheckMood(edict_t* self) //TODO: add action function, make this
 	return false;
 }
 
-void mssithra_postthink(edict_t *self)
+static void MssithraPostThink(edict_t* self) //mxd. Named 'mssithra_postthink' in original logic.
 {
-	//Only display a lifemeter if we have an enemy
-	if (self->enemy)
+	// Only display a life-meter if we have an enemy.
+	if (self->enemy != NULL)
 	{
 		if (self->dmg < self->max_health)
 		{
 			M_ShowLifeMeter(self->dmg, self->dmg);
-			self->dmg+=50;
+			self->dmg += self->max_health / 10; //mxd. '+= 50' in original logic (way too slow).
 		}
 		else
 		{
@@ -422,7 +422,7 @@ void mssithra_postthink(edict_t *self)
 		}
 	}
 
-	self->next_post_think = level.time + 0.05;
+	self->next_post_think = level.time + 0.05f;
 }
 
 void mmssithraRandomGrowlSound (edict_t *self)
@@ -594,7 +594,7 @@ void SP_monster_mssithra (edict_t *self)
 
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
-	self->post_think = mssithra_postthink;
+	self->post_think = MssithraPostThink;
 	self->next_post_think = level.time + 0.1;
 
 	//Turn the goofy bolts off!
