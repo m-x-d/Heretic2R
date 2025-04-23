@@ -90,14 +90,15 @@ static void MssithraDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	self->next_post_think = -1.0f;
 }
 
-void mssithra_dead(edict_t *self)
-{//maybe allow dead bodies to be chopped?  Make BBOX small?
+void mssithra_dead(edict_t* self)
+{
+	//FIXME: maybe allow dead bodies to be chopped? Make BBOX small?
 	self->msgHandler = DeadMsgHandler;
 	self->deadState = DEAD_DEAD;
+	self->flags |= FL_DONTANIMATE;
 
 	self->think = NULL;
-	self->nextthink = 0;
-	self->flags |= FL_DONTANIMATE;
+	self->nextthink = -1.0f; //mxd. '0' in original logic. Changed for consistency sake.
 
 	gi.linkentity(self);
 }
