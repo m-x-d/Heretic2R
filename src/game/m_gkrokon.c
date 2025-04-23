@@ -825,7 +825,7 @@ void GkrokonStaticsInit(void)
 // EATING		- Chomp chomp... chewie chomp.
 // WANDER		- Monster will wander around aimlessly (but follows buoys).
 // MELEE_LEAD	- Monster will try to cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not.
-// STALK		- Monster will only approach and attack from behind- if you're facing the monster it will just stand there.
+// STALK		- Monster will only approach and attack from behind. If you're facing the monster it will just stand there.
 //				  Once the monster takes pain, however, it will stop this behaviour and attack normally.
 // COWARD		- Monster starts off in flee mode- runs away from you when woken up.
 
