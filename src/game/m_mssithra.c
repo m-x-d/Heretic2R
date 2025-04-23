@@ -476,118 +476,89 @@ void MssithraStaticsInit(void)
 	classStatics[CID_MSSITHRA].resInfo = &res_info;
 }
 
-/*QUAKED monster_mssithra (1 .5 0) (-36 -36 0) (36 36 96) AMBUSH ASLEEP 4 8 16 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
+// QUAKED monster_mssithra (1 .5 0) (-36 -36 0) (36 36 96) AMBUSH ASLEEP 4 8 16 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
+// Mutant Ssithra.
 
-The  mssithra 
+// Spawnflags:
+// AMBUSH		- Will not be woken up by other monsters or shots from player.
+// ASLEEP		- Will not appear until triggered.
+// WALKING		- Use WANDER instead.
+// WANDER		- Monster will wander around aimlessly (but follows buoys).
+// MELEE_LEAD	- Monster will try to cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not.
+// STALK		- Monster will only approach and attack from behind. If you're facing the monster it will just stand there.
+//				  Once the monster takes pain, however, it will stop this behaviour and attack normally.
+// COWARD		- Monster starts off in flee mode (runs away from you when woken up).
 
-AMBUSH - Will not be woken up by other monsters or shots from player
-
-ASLEEP - will not appear until triggered
-
-WALKING - Use WANDER instead
-
-WANDER - Monster will wander around aimlessly (but follows buoys)
-
-MELEE_LEAD - Monster will tryto cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not
-
-STALK - Monster will only approach and attack from behind- if you're facing the monster it will just stand there.  Once the monster takes pain, however, it will stop this behaviour and attack normally
-
-COWARD - Monster starts off in flee mode- runs away from you when woken up
-
-"homebuoy" - monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to)
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-mintel - monster intelligence- this basically tells a monster how many buoys away an enemy has to be for it to give up.
-
-melee_range - How close the player has to be, maximum, for the monster to go into melee.  If this is zero, the monster will never melee.  If it is negative, the monster will try to keep this distance from the player.  If the monster has a backup, he'll use it if too clode, otherwise, a negative value here means the monster will just stop running at the player at this distance.
-	Examples:
-		melee_range = 60 - monster will start swinging it player is closer than 60
-		melee_range = 0 - monster will never do a mele attack
-		melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close
-
-missile_range - Maximum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-min_missile_range - Minimum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-bypass_missile_chance - Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot.  This, in effect, will make the monster come in more often than hang back and fire.  A percentage (0 = always fire/never close in, 100 = never fire/always close in).- must be whole number
-
-jump_chance - every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time)- must be whole number
-
-wakeup_distance - How far (max) the player can be away from the monster before it wakes up.  This just means that if the monster can see the player, at what distance should the monster actually notice him and go for him.
-
-DEFAULTS:
-mintel					= 16
-melee_range				= 100
-missile_range			= 400
-min_missile_range		= 100
-bypass_missile_chance	= 25
-jump_chance				= 25
-wakeup_distance			= 1024
-
-NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1
-*/
-void SP_monster_mssithra (edict_t *self)
+// Variables:
+// homebuoy					- Monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to).
+// wakeup_target			- Monsters will fire this target the first time it wakes up (only once).
+// pain_target				- Monsters will fire this target the first time it gets hurt (only once).
+// mintel					- Monster intelligence - this basically tells a monster how many buoys away an enemy has to be for it to give up (default 16).
+// melee_range				- How close the player has to be for the monster to go into melee. If this is zero, the monster will never melee.
+//							  If it is negative, the monster will try to keep this distance from the player.
+//							  If the monster has a backup, he'll use it if too close, otherwise, a negative value here means the monster will just stop
+//							  running at the player at this distance (default 100).
+//							 Examples:
+//								melee_range = 60 - monster will start swinging it player is closer than 60.
+//								melee_range = 0 - monster will never do a melee attack.
+//								melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close.
+// missile_range			- Maximum distance the player can be from the monster to be allowed to use it's ranged attack (default 400).
+// min_missile_range		- Minimum distance the player can be from the monster to be allowed to use it's ranged attack (default 100).
+// bypass_missile_chance	- Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot. This, in effect, will make the monster
+//							  come in more often than hang back and fire. A percentage (0 = always fire/never close in, 100 = never fire/always close in) - must be whole number (default 25).
+// jump_chance				- Every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time) - must be whole number (default 25).
+// wakeup_distance			- How far (max) the player can be away from the monster before it wakes up. This means that if the monster can see the player,
+//							  at what distance should the monster actually notice him and go for him (default 1024).
+// NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1.
+void SP_monster_mssithra(edict_t* self)
 {
-	// Generic Monster Initialization
-	if (!M_WalkmonsterStart (self))		// failed initialization
+	// Generic Monster Initialization.
+	if (!M_WalkmonsterStart(self)) // Failed initialization.
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
 	self->materialtype = MAT_FLESH;
 	self->flags |= FL_IMMUNE_SLIME;
-	if(self->flags&FL_INWATER||
-		gi.pointcontents(self->s.origin)&CONTENTS_WATER||
-		self->waterlevel >= 3)
-		self->flags|=FL_SWIM;
 
-	if(self->health<=0)
+	if (self->health <= 0)
 		self->health = MSSITHRA_HEALTH;
 
-	//Apply to the end result (whether designer set or not)
-	self->max_health = self->health = MonsterHealth(self->health);
+	// Apply to the end result (whether designer set or not).
+	self->health = MonsterHealth(self->health);
+	self->max_health = self->health;
 
 	self->mass = MSSITHRA_MASS;
-	self->yaw_speed = 20;
+	self->yaw_speed = 20.0f;
 	self->viewheight = 88;
-	self->monsterinfo.aiflags |= AI_BRUTAL|AI_AGRESSIVE;
+	self->monsterinfo.aiflags |= (AI_BRUTAL | AI_AGRESSIVE);
+	self->movetype = PHYSICSTYPE_STEP;
+	self->solid = SOLID_BBOX;
 
-	self->movetype=PHYSICSTYPE_STEP;//MOVETYPE_STEP
 	VectorClear(self->knockbackvel);
 
-	self->solid=SOLID_BBOX;
-
 	VectorCopy(STDMinsForClass[self->classID], self->mins);
-	VectorCopy(STDMaxsForClass[self->classID], self->maxs);	
-
-	self->s.modelindex = classStatics[CID_MSSITHRA].resInfo->modelIndex;
-
-	self->s.skinnum = 0;
-	
-	if (!self->monsterinfo.scale)
-	{
-		self->s.scale = self->monsterinfo.scale = (MODEL_SCALE + 0.25);
-	}
+	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
 
 	self->monsterinfo.otherenemyname = "obj_barrel";
+	self->s.modelindex = (byte)classStatics[CID_MSSITHRA].resInfo->modelIndex;
+	self->s.skinnum = 0;
 
-	//set up my mood function
-	MG_InitMoods(self);
+	self->dmg = 0; //TODO: add mssithra_healthbar_buildup name.
+	self->svflags |= SVF_BOSS;
 
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	if (self->monsterinfo.scale == 0.0f)
+	{
+		self->monsterinfo.scale = MODEL_SCALE + 0.25f;
+		self->s.scale = self->monsterinfo.scale;
+	}
 
 	self->post_think = MssithraPostThink;
-	self->next_post_think = level.time + 0.1;
+	self->next_post_think = level.time + FRAMETIME; //mxd. Use define.
 
-	//Turn the goofy bolts off!
+	// Setup my mood function.
+	MG_InitMoods(self);
+	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+
+	// Turn the goofy bolts off!
 	self->s.fmnodeinfo[MESH__BOLTS].flags |= FMNI_NO_DRAW;
-	
-	self->dmg = 0;
-	self->svflags|=SVF_BOSS;
 }
