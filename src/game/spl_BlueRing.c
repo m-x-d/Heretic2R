@@ -182,7 +182,7 @@ static void RingThink(edict_t* self)
 		}
 		else if (strcmp(ent->classname, "mssithra_Arrow") == 0)
 		{
-			reflect = MssithraAlphaArrowReflect;
+			reflect = MssithraArrowReflect;
 		}
 		else if (strcmp(ent->classname, "Spell_SpearProj") == 0)
 		{

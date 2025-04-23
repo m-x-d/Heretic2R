@@ -179,7 +179,6 @@ void mssithra_swipe(edict_t* self) //mxd. Named 'mssithraSwipe' in original logi
 
 static void MssithraArrowExplodeThink(edict_t* self) //mxd. Named 'mssithra_missile_explode' in original logic.
 {
-	// TODO: Spawn an explosion effect.
 	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MSSITHRA_EXPLODE, self->movedir);
 
 	const float damage = flrand(8.0f, 16.0f); //mxd. int / irand() in original logic.
@@ -188,7 +187,7 @@ static void MssithraArrowExplodeThink(edict_t* self) //mxd. Named 'mssithra_miss
 	G_FreeEdict(self);
 }
 
-edict_t* MssithraAlphaArrowReflect(edict_t* self, edict_t* other, vec3_t vel) //TODO: rename to MssithraArrowReflect.
+edict_t* MssithraArrowReflect(edict_t* self, edict_t* other, vec3_t vel) //mxd. Named 'MssithraAlphaArrowReflect' in original logic.
 {
 	edict_t* arrow = G_Spawn();
 
@@ -223,7 +222,7 @@ static void MssithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, c
 	{
 		Create_rand_relect_vect(self->velocity, self->velocity);
 		Vec3ScaleAssign(MSSITHRA_ARROW_SPEED / 2.0f, self->velocity);
-		MssithraAlphaArrowReflect(self, other, self->velocity);
+		MssithraArrowReflect(self, other, self->velocity);
 
 		return;
 	}
