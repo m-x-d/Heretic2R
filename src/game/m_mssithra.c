@@ -444,7 +444,7 @@ void mssithraCheckShotLoop(edict_t* self) //TODO: rename to mssithra_check_shoot
 
 void MssithraStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info;
 
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_STAND] = MssithraStandMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MISSILE] = MssithraMissileMsgHandler;
@@ -453,27 +453,27 @@ void MssithraStaticsInit(void)
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_PAIN] = MssithraPainMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_RUN] = MssithraMissileMsgHandler;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/mutantsithra/tris.fm");
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/mutantsithra/tris.fm");
 
-	sounds[SND_PAIN1]=gi.soundindex("monsters/mssithra/pain1.wav");
-	sounds[SND_PAIN2]=gi.soundindex("monsters/mssithra/pain2.wav");
-	sounds[SND_DIE]=gi.soundindex("monsters/mssithra/death1.wav");
-	sounds[SND_SWIPE] = gi.soundindex ("monsters/mssithra/swipe.wav");
-	sounds[SND_SWIPEHIT]=gi.soundindex("monsters/mssithra/swipehit.wav");
-	sounds[SND_ARROW]=gi.soundindex("weapons/RedRainPowerFire.wav");
-	sounds[SND_AEXPLODE]=gi.soundindex("weapons/FlyingFistImpact.wav");
-	sounds[SND_GROWL1]=gi.soundindex("monsters/mssithra/growl1.wav");
-	sounds[SND_GROWL2] = gi.soundindex ("monsters/mssithra/growl2.wav");
-	sounds[SND_GROWL3] = gi.soundindex ("monsters/mssithra/growl3.wav");
-	sounds[SND_ROAR]=gi.soundindex("monsters/mssithra/roar.wav");
-	sounds[SND_INWALL]=gi.soundindex("weapons/staffhitwall.wav");
+	sounds[SND_PAIN1] = gi.soundindex("monsters/mssithra/pain1.wav");
+	sounds[SND_PAIN2] = gi.soundindex("monsters/mssithra/pain2.wav");
+	sounds[SND_DIE] = gi.soundindex("monsters/mssithra/death1.wav");
+	sounds[SND_SWIPE] = gi.soundindex("monsters/mssithra/swipe.wav");
+	sounds[SND_SWIPEHIT] = gi.soundindex("monsters/mssithra/swipehit.wav");
+	sounds[SND_ARROW] = gi.soundindex("weapons/RedRainPowerFire.wav");
+	sounds[SND_AEXPLODE] = gi.soundindex("weapons/FlyingFistImpact.wav");
+	sounds[SND_GROWL1] = gi.soundindex("monsters/mssithra/growl1.wav");
+	sounds[SND_GROWL2] = gi.soundindex("monsters/mssithra/growl2.wav");
+	sounds[SND_GROWL3] = gi.soundindex("monsters/mssithra/growl3.wav");
+	sounds[SND_ROAR] = gi.soundindex("monsters/mssithra/roar.wav");
+	sounds[SND_INWALL] = gi.soundindex("weapons/staffhitwall.wav");
 
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
 
-	classStatics[CID_MSSITHRA].resInfo = &resInfo;
+	classStatics[CID_MSSITHRA].resInfo = &res_info;
 }
 
 /*QUAKED monster_mssithra (1 .5 0) (-36 -36 0) (36 36 96) AMBUSH ASLEEP 4 8 16 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
