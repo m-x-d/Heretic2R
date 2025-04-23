@@ -103,30 +103,23 @@ void mssithra_dead(edict_t* self)
 	gi.linkentity(self);
 }
 
-//===========================================
-//ATTACKS
-//===========================================
-
-void mssithra_melee(edict_t *self, G_Message_t *msg)
+static void MssithraMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'mssithra_melee' in original logic.
 {
-	vec3_t	v;
-	float	len, melee_range, min_seperation, jump_range;
-	
-	if(M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-		len = VectorLength (v);
-		melee_range = 64;
-		jump_range = 128;
-		min_seperation = self->maxs[0] + self->enemy->maxs[0];
-
-		if (len < min_seperation + melee_range)	// A hit
-		{
-			SetAnim(self, ANIM_CLAW1);
-		}
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
 	}
-	else
-		QPostMessage(self, MSG_STAND,PRI_DIRECTIVE, NULL);
+
+	vec3_t diff;
+	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+	const float dist = VectorLength(diff);
+	const float melee_range = 64.0f;
+
+	const float min_seperation = self->maxs[0] + self->enemy->maxs[0];
+
+	if (dist < min_seperation + melee_range) // A hit.
+		SetAnim(self, ANIM_CLAW1);
 }
 
 void mssithra_missile(edict_t *self, G_Message_t *msg)
@@ -550,7 +543,7 @@ void MssithraStaticsInit(void)
 
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_STAND] = MssithraStandMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MISSILE] = mssithra_missile;
-	classStatics[CID_MSSITHRA].msgReceivers[MSG_MELEE] = mssithra_melee;
+	classStatics[CID_MSSITHRA].msgReceivers[MSG_MELEE] = MssithraMeleeMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_DEATH] = MssithraDeathMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_PAIN] = MssithraPainMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_RUN] = mssithra_missile;
