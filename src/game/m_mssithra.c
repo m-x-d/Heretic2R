@@ -267,112 +267,112 @@ static void MssithraArrowInit(edict_t* arrow) //mxd. Named 'create_ssithra_arrow
 	VectorSet(arrow->maxs,  1.0f,  1.0f,  1.0f);
 }
 
-void mssithraArrow(edict_t *self)
-{//fixme; adjust for up/down
-	vec3_t	Forward, targ_pos;
-	vec3_t	Right, fire_spot, fire_dir;// , up;
-	edict_t	*Arrow;
-	float	spread;
-	int	num_shots = 3;
-	
-	if (!self->enemy)
+void mssithraArrow(edict_t* self) //TODO: rename to mssithra_arrow.
+{
+	//FIXME: adjust for up/down.
+	if (self->enemy == NULL)
 		return;
 
-	if(self->enemy->health<=0)
+	if (self->enemy->health <= 0)
 	{
-		self->enemy=NULL;
+		self->enemy = NULL;
 
-		if (!mssithraCheckMood(self)) //mxd. Inlined MssithraDecideStand().
+		if (!mssithraCheckMood(self)) //mxd. Inlined mssithra_decide_stand().
 			SetAnim(self, ANIM_IDLE1);
 
 		return;
 	}
 
-	if(self->monsterinfo.attack_finished>level.time)
+	if (self->monsterinfo.attack_finished > level.time)
 		return;
 
-	gi.sound(self,CHAN_WEAPON,sounds[SND_ARROW],1,ATTN_NORM,0);
-	self->monsterinfo.attack_finished = level.time + 0.4;
+	gi.sound(self, CHAN_WEAPON, sounds[SND_ARROW], 1.0f, ATTN_NORM, 0.0f);
+	self->monsterinfo.attack_finished = level.time + 0.4f;
 
-	VectorCopy(self->s.origin,fire_spot);	
-	fire_spot[2]+=self->maxs[2]*0.5;
-	AngleVectors(self->s.angles,Forward,Right,NULL);
-	VectorMA(fire_spot,72,Forward,fire_spot);
-	VectorMA(fire_spot,16,Right,fire_spot);
-	fire_spot[2] += 24;
+	vec3_t firing_pos;
+	VectorCopy(self->s.origin, firing_pos);
+	firing_pos[2] += self->maxs[2] * 0.5f;
 
-	VectorRandomCopy(self->enemy->s.origin, targ_pos, 16);
-	VectorSubtract(targ_pos, fire_spot, Forward);
-	VectorNormalize2(Forward, fire_dir);
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	while(num_shots)
+	VectorMA(firing_pos, 72.0f, forward, firing_pos);
+	VectorMA(firing_pos, 16.0f, right, firing_pos);
+	firing_pos[2] += 24.0f;
+
+	vec3_t target_pos;
+	VectorRandomCopy(self->enemy->s.origin, target_pos, 16.0f);
+
+	vec3_t diff;
+	VectorSubtract(target_pos, firing_pos, diff);
+
+	vec3_t fire_dir;
+	VectorNormalize2(diff, fire_dir);
+
+	// Increase the spread for lower skill levels.
+	float spread;
+
+	switch (SKILL)
 	{
-		Arrow = G_Spawn();
-
-		MssithraArrowInit(Arrow);
-		Arrow->reflect_debounce_time = MAX_REFLECT;
-		
-		VectorCopy(fire_spot,Arrow->s.origin);	
-		VectorCopy(self->movedir,Arrow->movedir);
-
-		//Increase the spread for lower levels
-		switch((int)skill->value)
-		{
-		case 0:
-			spread = 0.35;
+		case (int)SKILL_EASY:
+			spread = 0.35f;
 			break;
 
-		case 1:
-			spread = 0.2;
+		case (int)SKILL_MEDIUM:
+			spread = 0.2f;
 			break;
 
-		case 2:
+		case (int)SKILL_HARD:
 		default:
-			spread = 0.1;
+			spread = 0.1f;
 			break;
-		}
+	}
 
-		AngleVectors(self->s.angles,NULL,Right,NULL);
-		switch (num_shots)
+	for (int i = 0; i < 3; i++) //TODO: spawn 5 arrows on Hard/Hard+?
+	{
+		edict_t* arrow = G_Spawn();
+
+		MssithraArrowInit(arrow);
+		arrow->reflect_debounce_time = MAX_REFLECT;
+
+		VectorCopy(firing_pos, arrow->s.origin);
+		VectorCopy(self->movedir, arrow->movedir);
+
+		AngleVectors(self->s.angles, NULL, right, NULL);
+
+		switch (i)
 		{
-			case 3:
-				VectorScale(Right, spread,Right);
-			break;
+			case 2:
+				VectorScale(right, spread, right);
+				break;
+
+			case 0:
+				VectorScale(right, -spread, right);
+				break;
 
 			case 1:
-				VectorScale(Right,-spread,Right);
-			break;
-
-			case 2:
 			default:
-				VectorClear(Right);
-			break;
+				VectorClear(right);
+				break;
 		}
 
-		VectorAdd(fire_dir, Right, Arrow->movedir);
-		VectorNormalize(Arrow->movedir);
-		VectorScale(Arrow->movedir,MSSITHRA_ARROW_SPEED,Arrow->velocity);
+		VectorAdd(fire_dir, right, arrow->movedir);
+		VectorNormalize(arrow->movedir);
+		VectorScale(arrow->movedir, MSSITHRA_ARROW_SPEED, arrow->velocity);
 
-		vectoangles(Arrow->velocity, Arrow->s.angles);
-		Arrow->s.angles[YAW] += 90;
+		vectoangles(arrow->velocity, arrow->s.angles);
+		arrow->s.angles[YAW] += 90.0f;
 
-		Arrow->owner=self;
-		Arrow->enemy=self->enemy;
+		arrow->owner = self;
+		arrow->enemy = self->enemy;
 
-		gi.CreateEffect(&Arrow->s, 
-						FX_M_EFFECTS, 
-						CEF_OWNERS_ORIGIN | CEF_FLAG6, 
-						NULL, 
-						"bv", 
-						FX_MSSITHRA_ARROW,
-						Arrow->velocity);
+		arrow->nextthink = level.time + 5.0f;
+		arrow->think = G_FreeEdict;
 
-		G_LinkMissile(Arrow); 
+		G_LinkMissile(arrow);
 
-		Arrow->nextthink=level.time+5;
-		Arrow->think=G_FreeEdict;//mssithraArrowThink;
-
-		num_shots--;
+		gi.CreateEffect(&arrow->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "bv", FX_MSSITHRA_ARROW, arrow->velocity);
 	}
 }
 
