@@ -187,44 +187,33 @@ static void MssithraArrowExplodeThink(edict_t* self) //mxd. Named 'mssithra_miss
 	G_FreeEdict(self);
 }
 
-edict_t *MssithraAlphaArrowReflect(edict_t *self, edict_t *other, vec3_t vel)
+edict_t* MssithraAlphaArrowReflect(edict_t* self, edict_t* other, vec3_t vel) //TODO: rename to MssithraArrowReflect.
 {
-	edict_t *arrow;
-
-	arrow = G_Spawn();
+	edict_t* arrow = G_Spawn();
 
 	create_ssithra_arrow(arrow);
 	VectorCopy(self->s.origin, arrow->s.origin);
 	arrow->owner = self->owner;
 
-	arrow->nextthink=self->nextthink;
-	arrow->think=G_FreeEdict;
+	arrow->think = G_FreeEdict;
+	arrow->nextthink = self->nextthink;
 
 	VectorCopy(vel, arrow->velocity);
 	VectorNormalize2(vel, arrow->movedir);
 	AnglesFromDir(arrow->movedir, arrow->s.angles);
-	arrow->s.angles[YAW]+=90;
+	arrow->s.angles[YAW] += 90.0f;
 
 	arrow->reflect_debounce_time = self->reflect_debounce_time - 1;
-	arrow->reflected_time=self->reflected_time;
+	arrow->reflected_time = self->reflected_time;
 
 	G_LinkMissile(arrow);
-
-	gi.CreateEffect(&arrow->s, 
-					FX_M_EFFECTS, 
-					CEF_OWNERS_ORIGIN | CEF_FLAG6, 
-					NULL, 
-					"bv", 
-					FX_MSSITHRA_ARROW,
-					arrow->velocity);
-
 	G_SetToFree(self);
 
+	gi.CreateEffect(&arrow->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "bv", FX_MSSITHRA_ARROW, arrow->velocity);
 	gi.CreateEffect(&arrow->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", vel);
 
-	return(arrow);;
+	return arrow;
 }
-
 
 void mssithraAlphaArrowTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
 {
