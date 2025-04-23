@@ -430,7 +430,7 @@ static void MssithraPostThink(edict_t* self) //mxd. Named 'mssithra_postthink' i
 	self->next_post_think = level.time + 0.05f;
 }
 
-void mmssithraRandomGrowlSound(edict_t* self) //TODO: rename to mmssithra_random_growl_sound.
+void mssithra_growl(edict_t* self) //mxd. Named 'mmssithraRandomGrowlSound' in original logic.
 {
 	gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWL1, SND_GROWL3)], 1.0f, ATTN_NORM, 0.0f);
 }

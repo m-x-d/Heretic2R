@@ -157,7 +157,7 @@ const animmove_t mssithra_move_death1 = { 45, mssithra_frames_death1, mssithra_d
 static const animframe_t mssithra_frames_claw1[] =
 {
 	{ FRAME_claw1,	NULL, 0, 0, 0, ai_charge2, 20, NULL },
-	{ FRAME_claw2,	NULL, 0, 0, 0, ai_charge2, 10, mmssithraRandomGrowlSound },
+	{ FRAME_claw2,	NULL, 0, 0, 0, ai_charge2, 10, mssithra_growl },
 	{ FRAME_claw3,	NULL, 0, 0, 0, ai_charge2, 8,  NULL },
 	{ FRAME_claw4,	NULL, 0, 0, 0, ai_charge2, 6,  NULL },
 	{ FRAME_claw5,	NULL, 0, 0, 0, ai_charge2, 4,  mssithra_swipe },
@@ -215,7 +215,7 @@ static const animframe_t mssithra_frames_shoota1[] =
 	{ FRAME_shoota1,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota2,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota3,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_shoota4,	NULL, 0, 0, 0, ai_charge2, 0, mmssithraRandomGrowlSound },
+	{ FRAME_shoota4,	NULL, 0, 0, 0, ai_charge2, 0, mssithra_growl },
 	{ FRAME_shoota5,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota6,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota7,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
@@ -233,7 +233,7 @@ static const animframe_t mssithra_frames_shoota1[] =
 	{ FRAME_shoota19,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota20,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota21,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_shoota22,	NULL, 0, 0, 0, ai_charge2, 0, mmssithraRandomGrowlSound },
+	{ FRAME_shoota22,	NULL, 0, 0, 0, ai_charge2, 0, mssithra_growl },
 	{ FRAME_shoota23,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
 const animmove_t mssithra_move_shoota1 = { 23, mssithra_frames_shoota1, mssithra_check_mood };
@@ -247,13 +247,13 @@ static const animframe_t mssithra_frames_shootb1[] =
 	{ FRAME_shootb4,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb5,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb6,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_shootb7,	NULL, 0, 0, 0, ai_charge2, 0, mmssithraRandomGrowlSound },
+	{ FRAME_shootb7,	NULL, 0, 0, 0, ai_charge2, 0, mssithra_growl },
 	{ FRAME_shootb8,	NULL, 0, 0, 0, ai_charge2, 0, mssithra_arrow }, // 7: shoot here
 	{ FRAME_shootb9,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb10,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb11,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb12,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_shootb13,	NULL, 0, 0, 0, ai_charge2, 0, mmssithraRandomGrowlSound },
+	{ FRAME_shootb13,	NULL, 0, 0, 0, ai_charge2, 0, mssithra_growl },
 	{ FRAME_shootb14,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb15,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb16,	NULL, 0, 0, 0, ai_charge2, 0, NULL }, // Check here to loop back to 7.
