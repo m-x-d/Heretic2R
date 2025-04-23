@@ -70,32 +70,24 @@ static void MssithraPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 		SetAnim(self, ANIM_ROAR1); // Make him tougher? More aggressive?
 }
 
-//===========================================
-//DEATHS
-//===========================================
-
-void mssithra_death(edict_t *self, G_Message_t *msg)
+static void MssithraDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'mssithra_death' in original logic.
 {
 	self->svflags |= SVF_DEADMONSTER;
-	self->msgHandler=DyingMsgHandler;
+	self->msgHandler = DyingMsgHandler;
 
-	if(self->deadflag == DEAD_DEAD)
+	if (self->deadflag == DEAD_DEAD)
 		return;
-	
+
 	self->deadflag = DEAD_DEAD;
 
-	gi.sound (self, CHAN_VOICE, sounds[SND_DIE], 1, ATTN_NORM, 0);
-	if (self->flags&FL_INWATER)
-		self->flags |= FL_SWIM;
-	else
-		self->flags &= ~FL_SWIM;
-	
+	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
+
 	SetAnim(self, ANIM_DEATH1);
 
-	//Remove the life bar once dead
+	// Remove the life bar once dead.
 	M_ShowLifeMeter(0, 0);
 	self->post_think = NULL;
-	self->next_post_think = -1;
+	self->next_post_think = -1.0f;
 }
 
 void mssithra_dead(edict_t *self)
@@ -590,7 +582,7 @@ void MssithraStaticsInit(void)
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_STAND] = MssithraStandMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MISSILE] = mssithra_missile;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MELEE] = mssithra_melee;
-	classStatics[CID_MSSITHRA].msgReceivers[MSG_DEATH] = mssithra_death;
+	classStatics[CID_MSSITHRA].msgReceivers[MSG_DEATH] = MssithraDeathMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_PAIN] = MssithraPainMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_RUN] = mssithra_missile;
 
