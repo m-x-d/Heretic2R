@@ -267,7 +267,7 @@ static void MssithraArrowInit(edict_t* arrow) //mxd. Named 'create_ssithra_arrow
 	VectorSet(arrow->maxs,  1.0f,  1.0f,  1.0f);
 }
 
-void mssithraArrow(edict_t* self) //TODO: rename to mssithra_arrow.
+void mssithra_arrow(edict_t* self) //mxd. Named 'mssithraArrow' in original logic.
 {
 	//FIXME: adjust for up/down.
 	if (self->enemy == NULL)

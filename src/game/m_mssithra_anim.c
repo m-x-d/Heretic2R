@@ -220,7 +220,7 @@ static const animframe_t mssithra_frames_shoota1[] =
 	{ FRAME_shoota6,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota7,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota8,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_shoota9,	NULL, 0, 0, 0, ai_charge2, 0, mssithraArrow }, // 8: arrow here.
+	{ FRAME_shoota9,	NULL, 0, 0, 0, ai_charge2, 0, mssithra_arrow }, // 8: arrow here.
 	{ FRAME_shoota10,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota11,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota12,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
@@ -229,7 +229,7 @@ static const animframe_t mssithra_frames_shoota1[] =
 	{ FRAME_shoota15,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota16,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota17,	NULL, 0, 0, 0, ai_charge2, 0, NULL }, // Check here to loop back to 8.
-	{ FRAME_shoota18,	NULL, 0, 0, 0, ai_charge2, 0, mssithraArrow },
+	{ FRAME_shoota18,	NULL, 0, 0, 0, ai_charge2, 0, mssithra_arrow },
 	{ FRAME_shoota19,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota20,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoota21,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
@@ -248,7 +248,7 @@ static const animframe_t mssithra_frames_shootb1[] =
 	{ FRAME_shootb5,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb6,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb7,	NULL, 0, 0, 0, ai_charge2, 0, mmssithraRandomGrowlSound },
-	{ FRAME_shootb8,	NULL, 0, 0, 0, ai_charge2, 0, mssithraArrow }, // 7: shoot here
+	{ FRAME_shootb8,	NULL, 0, 0, 0, ai_charge2, 0, mssithra_arrow }, // 7: shoot here
 	{ FRAME_shootb9,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb10,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb11,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
@@ -257,7 +257,7 @@ static const animframe_t mssithra_frames_shootb1[] =
 	{ FRAME_shootb14,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb15,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb16,	NULL, 0, 0, 0, ai_charge2, 0, NULL }, // Check here to loop back to 7.
-	{ FRAME_shootb17,	NULL, 0, 0, 0, ai_charge2, 0, mssithraArrow },
+	{ FRAME_shootb17,	NULL, 0, 0, 0, ai_charge2, 0, mssithra_arrow },
 	{ FRAME_shootb18,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb19,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb20,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
@@ -335,7 +335,7 @@ const animmove_t mssithra_move_shoot1_trans = { 3, mssithra_frames_shoot1_trans,
 // Mutant Ssithra Shoot Loop.
 static const animframe_t mssithra_frames_shoot1_loop[] =
 {
-	{ FRAME_newshot4,	NULL, 0, 0, 0, ai_charge2, 0, mssithraArrow },
+	{ FRAME_newshot4,	NULL, 0, 0, 0, ai_charge2, 0, mssithra_arrow },
 	{ FRAME_newshot5,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newshot6,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newshot7,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
