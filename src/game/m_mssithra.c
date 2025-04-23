@@ -411,10 +411,10 @@ static void MssithraPostThink(edict_t* self) //mxd. Named 'mssithra_postthink' i
 	// Only display a life-meter if we have an enemy.
 	if (self->enemy != NULL)
 	{
-		if (self->dmg < self->max_health)
+		if (self->mssithra_healthbar_buildup < self->max_health)
 		{
-			M_ShowLifeMeter(self->dmg, self->dmg);
-			self->dmg += self->max_health / 10; //mxd. '+= 50' in original logic (way too slow).
+			M_ShowLifeMeter(self->mssithra_healthbar_buildup, self->mssithra_healthbar_buildup);
+			self->mssithra_healthbar_buildup += self->max_health / 10; //mxd. '+= 50' in original logic (way too slow).
 		}
 		else
 		{
@@ -543,7 +543,7 @@ void SP_monster_mssithra(edict_t* self)
 	self->s.modelindex = (byte)classStatics[CID_MSSITHRA].resInfo->modelIndex;
 	self->s.skinnum = 0;
 
-	self->dmg = 0; //TODO: add mssithra_healthbar_buildup name.
+	self->mssithra_healthbar_buildup = 0;
 	self->svflags |= SVF_BOSS;
 
 	if (self->monsterinfo.scale == 0.0f)
@@ -560,5 +560,5 @@ void SP_monster_mssithra(edict_t* self)
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
 	// Turn the goofy bolts off!
-	self->s.fmnodeinfo[MESH__BOLTS].flags |= FMNI_NO_DRAW;
+	self->s.fmnodeinfo[MESH__BOLTS].flags |= FMNI_NO_DRAW; //TODO: enable during firing animation?
 }

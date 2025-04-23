@@ -212,6 +212,7 @@ struct edict_s
 		qboolean elflord_last_stage; //mxd
 		int gorgon_swerve_step; //mxd
 		int morcalavin_healthbar_buildup; //mxd
+		int mssithra_healthbar_buildup; //mxd
 	};
 
 	union
