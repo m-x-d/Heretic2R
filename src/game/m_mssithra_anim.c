@@ -330,7 +330,7 @@ static const animframe_t mssithra_frames_shoot1_trans[] =
 	{ FRAME_newshot2,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newshot3,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t mssithra_move_shoot1_trans = { 3, mssithra_frames_shoot1_trans, mssithra_ShotLoop };
+const animmove_t mssithra_move_shoot1_trans = { 3, mssithra_frames_shoot1_trans, mssithra_shoot_loop };
 
 // Mutant Ssithra Shoot Loop.
 static const animframe_t mssithra_frames_shoot1_loop[] =
@@ -342,7 +342,7 @@ static const animframe_t mssithra_frames_shoot1_loop[] =
 	{ FRAME_newshot8,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newshot9,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t mssithra_move_shoot1_loop = { 6, mssithra_frames_shoot1_loop, mssithraCheckShotLoop };
+const animmove_t mssithra_move_shoot1_loop = { 6, mssithra_frames_shoot1_loop, mssithra_check_shoot_loop };
 
 // Mutant Ssithra Shoot End.
 static const animframe_t mssithra_frames_shoot1_detrans[] =

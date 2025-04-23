@@ -71,5 +71,5 @@ extern void mssithra_check_mood(edict_t* self); //mxd
 extern void mssithra_growl(edict_t* self);
 extern void mssithra_dead(edict_t* self);
 
-extern void mssithraCheckShotLoop(edict_t* self);
-extern void mssithra_ShotLoop(edict_t* self);
+extern void mssithra_check_shoot_loop(edict_t* self);
+extern void mssithra_shoot_loop(edict_t* self);

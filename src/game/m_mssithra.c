@@ -435,16 +435,16 @@ void mssithra_growl(edict_t* self) //mxd. Named 'mmssithraRandomGrowlSound' in o
 	gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWL1, SND_GROWL3)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void mssithra_ShotLoop(edict_t* self) //TODO: rename to mssithra_shoot_loop.
+void mssithra_shoot_loop(edict_t* self) //mxd. Named 'mssithra_ShotLoop' in original logic.
 {
 	SetAnim(self, ANIM_SHOOT_LOOP);
 }
 
-void mssithraCheckShotLoop(edict_t* self) //TODO: rename to mssithra_check_shoot_loop.
+void mssithra_check_shoot_loop(edict_t* self) //mxd. Named 'mssithraCheckShotLoop' in original logic.
 {
 	//FIXME: Check to keep shooting or to stop shooting.
 	if (irand(0, (SKILL + 1) * 2) == 0) // Otherwise, just keep playing current animation.
-		SetAnim(self, ANIM_SHOOT_DETRANS);
+		SetAnim(self, ANIM_SHOOT_DETRANS); //TODO: never do this when health < 50% (or 33%)?
 }
 
 void MssithraStaticsInit(void)
