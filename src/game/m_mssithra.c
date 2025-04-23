@@ -17,7 +17,7 @@
 #include "Vector.h"
 #include "g_local.h"
 
-static void create_ssithra_arrow(edict_t *Arrow);
+static void MssithraArrowInit(edict_t *Arrow); //TODO: remove?
 
 #pragma region ========================== Mutant Ssithra base info ==========================
 
@@ -191,7 +191,7 @@ edict_t* MssithraAlphaArrowReflect(edict_t* self, edict_t* other, vec3_t vel) //
 {
 	edict_t* arrow = G_Spawn();
 
-	create_ssithra_arrow(arrow);
+	MssithraArrowInit(arrow);
 	VectorCopy(self->s.origin, arrow->s.origin);
 	arrow->owner = self->owner;
 
@@ -248,24 +248,23 @@ static void MssithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, c
 	}
 }
 
-// create the guts of the ssithra arrow
-void create_ssithra_arrow(edict_t *Arrow)
+// Create the guts of the ssithra arrow.
+static void MssithraArrowInit(edict_t* arrow) //mxd. Named 'create_ssithra_arrow' in original logic.
 {
-	Arrow->s.modelindex = gi.modelindex("models/objects/exarrow/tris.fm");
-	Arrow->movetype = MOVETYPE_FLYMISSILE;
-	Arrow->solid = SOLID_BBOX;
-	Arrow->classname = "mssithra_Arrow";
+	arrow->s.modelindex = (byte)gi.modelindex("models/objects/exarrow/tris.fm");
 
-	Arrow->touch = MssithraArrowTouch;
+	arrow->movetype = MOVETYPE_FLYMISSILE;
+	arrow->solid = SOLID_BBOX;
+	arrow->classname = "mssithra_Arrow";
+	arrow->clipmask = MASK_SHOT;
+	arrow->s.effects |= (EF_ALWAYS_ADD_EFFECTS | EF_CAMERA_NO_CLIP);
+	arrow->s.scale = 1.5f;
+	arrow->svflags |= SVF_ALWAYS_SEND;
 
-	Arrow->clipmask = MASK_SHOT;
-	
-	Arrow->s.effects |= EF_ALWAYS_ADD_EFFECTS | EF_CAMERA_NO_CLIP;
-	Arrow->svflags |= SVF_ALWAYS_SEND;
+	arrow->touch = MssithraArrowTouch;
 
-	VectorSet(Arrow->mins,-1.0,-1.0,-1.0);	
-	VectorSet(Arrow->maxs,1.0,1.0,1.0);
-	Arrow->s.scale = 1.5;
+	VectorSet(arrow->mins, -1.0f, -1.0f, -1.0f);
+	VectorSet(arrow->maxs,  1.0f,  1.0f,  1.0f);
 }
 
 void mssithraArrow(edict_t *self)
@@ -310,7 +309,7 @@ void mssithraArrow(edict_t *self)
 	{
 		Arrow = G_Spawn();
 
-		create_ssithra_arrow(Arrow);
+		MssithraArrowInit(Arrow);
 		Arrow->reflect_debounce_time = MAX_REFLECT;
 		
 		VectorCopy(fire_spot,Arrow->s.origin);	
