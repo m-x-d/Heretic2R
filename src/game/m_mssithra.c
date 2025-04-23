@@ -49,14 +49,6 @@ static void MssithraStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	SetAnim(self, ANIM_IDLE1);
 }
 
-void mssithra_decide_stand(edict_t *self)
-{
-	if(mssithraCheckMood(self))
-		return;
-
-	SetAnim(self, ANIM_IDLE1);
-}
-
 void mssithra_pain(edict_t *self, G_Message_t *msg)
 {//fixme - make part fly dir the vector from hit loc to sever loc
 	int				temp, damage;
@@ -93,22 +85,6 @@ void mssithra_pain(edict_t *self, G_Message_t *msg)
 
 	if(irand(0,10)<1)
 		SetAnim(self, ANIM_ROAR1);//make him tougher? more aggressive?
-}
-
-void mssithra_pain_react (edict_t *self)
-{
-	if(!self->enemy)
-	{
-		mssithra_decide_stand(self);
-		return;
-	}
-
-	if(self->enemy->health<=0||self->enemy == self||!self->enemy->takedamage)
-	{
-		self->enemy=NULL;
-		mssithra_decide_stand(self);
-		return;
-	}
 }
 
 //===========================================
@@ -404,7 +380,10 @@ void mssithraArrow(edict_t *self)
 	if(self->enemy->health<=0)
 	{
 		self->enemy=NULL;
-		mssithra_decide_stand(self);
+
+		if (!mssithraCheckMood(self)) //mxd. Inlined MssithraDecideStand().
+			SetAnim(self, ANIM_IDLE1);
+
 		return;
 	}
 
