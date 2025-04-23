@@ -67,7 +67,7 @@ extern const animmove_t mssithra_move_shoot1_detrans;
 
 extern void mssithraSwipe(edict_t* self);
 extern void mssithraArrow(edict_t* self);
-extern qboolean mssithraCheckMood(edict_t* self);
+extern void mssithra_check_mood(edict_t* self); //mxd
 extern void mmssithraRandomGrowlSound(edict_t* self);
 extern void mssithra_dead(edict_t* self);
 

@@ -17,7 +17,8 @@
 #include "Vector.h"
 #include "g_local.h"
 
-static void MssithraArrowInit(edict_t *Arrow); //TODO: remove?
+static void MssithraArrowInit(edict_t* arrow); //TODO: remove?
+static qboolean MssithraCheckMood(edict_t* self); //TODO: remove?
 
 #pragma region ========================== Mutant Ssithra base info ==========================
 
@@ -277,7 +278,7 @@ void mssithraArrow(edict_t* self) //TODO: rename to mssithra_arrow.
 	{
 		self->enemy = NULL;
 
-		if (!mssithraCheckMood(self)) //mxd. Inlined mssithra_decide_stand().
+		if (!MssithraCheckMood(self)) //mxd. Inlined mssithra_decide_stand().
 			SetAnim(self, ANIM_IDLE1);
 
 		return;
@@ -376,7 +377,7 @@ void mssithraArrow(edict_t* self) //TODO: rename to mssithra_arrow.
 	}
 }
 
-qboolean mssithraCheckMood(edict_t* self) //TODO: add action function, make this one static. //TODO: rename to MssithraCheckMood.
+static qboolean MssithraCheckMood(edict_t* self) //mxd. Named 'mssithraCheckMood' in original logic.
 {
 	if (self->monsterinfo.aiflags & AI_OVERRIDE_GUIDE)
 		return false;
@@ -404,6 +405,11 @@ qboolean mssithraCheckMood(edict_t* self) //TODO: add action function, make this
 	}
 
 	return false;
+}
+
+void mssithra_check_mood(edict_t* self) //mxd. Added action function version.
+{
+	MssithraCheckMood(self);
 }
 
 static void MssithraPostThink(edict_t* self) //mxd. Named 'mssithra_postthink' in original logic.
