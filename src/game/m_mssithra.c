@@ -49,42 +49,25 @@ static void MssithraStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	SetAnim(self, ANIM_IDLE1);
 }
 
-void mssithra_pain(edict_t *self, G_Message_t *msg)
-{//fixme - make part fly dir the vector from hit loc to sever loc
-	int				temp, damage;
-	qboolean		force_pain;
-
-	if(self->deadflag == DEAD_DEAD) //Dead but still being hit	
+static void MssithraPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'mssithra_pain' in original logic.
+{
+	//FIXME: make part fly dir the vector from hit loc to sever loc.
+	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
 		return;
 
+	int temp;
+	int damage;
+	qboolean force_pain;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
-	if(!force_pain)
-	{
-		if(irand(0,10)<5||!self->groundentity)
-			return;
-
-		if(self->pain_debounce_time > level.time)
-			return;
-	}
-
-	if(self->curAnimID == ANIM_CLAW1)
+	if (!force_pain || irand(0, 10) < 5 || self->groundentity == NULL || self->pain_debounce_time > level.time || self->curAnimID == ANIM_CLAW1)
 		return;
 
-	self->pain_debounce_time = level.time + 2;
+	self->pain_debounce_time = level.time + 2.0f;
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 
-	if(irand(0,10)<5)
-		gi.sound (self, CHAN_VOICE, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
-	else
-		gi.sound (self, CHAN_VOICE, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
-
-	if (self->flags&FL_INWATER)
-		self->flags |= FL_SWIM;
-	else 
-		self->flags &= ~FL_SWIM;
-
-	if(irand(0,10)<1)
-		SetAnim(self, ANIM_ROAR1);//make him tougher? more aggressive?
+	if (irand(0, 10) == 0)
+		SetAnim(self, ANIM_ROAR1); // Make him tougher? More aggressive?
 }
 
 //===========================================
@@ -608,7 +591,7 @@ void MssithraStaticsInit(void)
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MISSILE] = mssithra_missile;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MELEE] = mssithra_melee;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_DEATH] = mssithra_death;
-	classStatics[CID_MSSITHRA].msgReceivers[MSG_PAIN] = mssithra_pain;
+	classStatics[CID_MSSITHRA].msgReceivers[MSG_PAIN] = MssithraPainMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_RUN] = mssithra_missile;
 
 	resInfo.numAnims = NUM_ANIMS;
