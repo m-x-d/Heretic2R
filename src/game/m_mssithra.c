@@ -376,42 +376,6 @@ void mssithraArrow(edict_t* self) //TODO: rename to mssithra_arrow.
 	}
 }
 
-void mssithraCheckLoop (edict_t *self, float frame)
-{//see if should fire again
-	vec3_t	v;
-	float	len, melee_range, min_seperation, jump_range;
-
-	if(!self->enemy)
-		return;
-
-	ai_charge2(self, 0);
-
-	if(!AI_IsVisible(self, self->enemy))
-		return;
-
-	if(!AI_IsInfrontOf(self, self->enemy))
-		return;
-
-	if(irand(0,10)<5)
-		return;
-
-	VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-	len = VectorLength (v);
-	melee_range = 64;
-	jump_range = 128;
-	min_seperation = self->maxs[0] + self->enemy->maxs[0];
-
-	if (AI_IsInfrontOf(self, self->enemy))
-	{//don't loop if enemy close enough
-		if (len < min_seperation + melee_range)
-			return;
-		else if (len < min_seperation + jump_range && irand(0,10)<3)
-			return;
-	}
-
-	self->monsterinfo.currframeindex = (int)frame;
-}
-
 /*-------------------------------------------------------------------------
 	mssithra_pause
 -------------------------------------------------------------------------*/
