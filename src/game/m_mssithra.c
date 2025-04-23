@@ -103,38 +103,6 @@ void mssithra_dead(edict_t* self)
 	gi.linkentity(self);
 }
 
-void mssithraKillSelf (edict_t *self)
-{
-	vec3_t gore_spot;
-
-	self->svflags &= ~SVF_DEADMONSTER;	// now treat as a different content type
-	self->msgHandler = DefaultMsgHandler;
-	self->deadflag = false;
-	VectorCopy(self->s.origin,gore_spot);
-	gore_spot[2]+=12;
-	self->health = 1;
-	T_Damage (self, self, self, vec3_origin, gore_spot, vec3_origin, 10, 0,0,MOD_DIED);
-	self->health = -69;
-}
-
-//===========================================
-//SOUNDS
-//===========================================
-
-void mssithraSound(edict_t *self, float soundnum, float channel, float attenuation)
-{
-	return;
-	if(!channel)
-		channel = CHAN_AUTO;
-
-	if(!attenuation)
-		attenuation = ATTN_NORM;
-	else if(attenuation == -1)
-		attenuation = ATTN_NONE;
-
-	gi.sound(self, (int)channel, sounds[(int)(soundnum)], 1, (int)attenuation, 0);
-}
-
 //===========================================
 //ATTACKS
 //===========================================
