@@ -507,59 +507,56 @@ static void OgleInitOverlordThink(edict_t* self) //mxd. Named 'ogle_init_overlor
 	}
 }
 
-//Ogle Singing Technology (tm) All Right Reserved
-void ogle_sing (edict_t *self)
+// Ogle Singing Technology (tm) All Right Reserved.
+static void OgleSing(edict_t* self) //mxd. Named 'ogle_sing' in original logic.
 {
-	edict_t *ogle = NULL;
-
-	if(self->monsterinfo.awake)
+	if (self->monsterinfo.awake)
 		return;
 
-	switch( self->noise_index )
+	edict_t* ogle = NULL;
+
+	switch (self->noise_index)
 	{
-	case 0:
-		while((ogle = G_Find(ogle, FOFS(target), self->target)) != NULL)
-		{
-			if(!ogle->monsterinfo.awake)
-				gi.sound(ogle, CHAN_VOICE, sounds[SND_CHORUS1], 0.25, ATTN_NORM, 0);
-		}
-		
-		self->monsterinfo.jump_time = level.time + 16;
-		break;
+		case 0:
+			while ((ogle = G_Find(ogle, FOFS(target), self->target)) != NULL)
+			{
+				if (!ogle->monsterinfo.awake)
+					gi.sound(ogle, CHAN_VOICE, sounds[SND_CHORUS1], 0.25f, ATTN_NORM, 0.0f);
+			}
+			self->monsterinfo.jump_time = level.time + 16.0f; //TODO: add ogle_sign_time name?
+			break;
 
-	case 1:
-		gi.sound (self, CHAN_VOICE, sounds[SND_SOLO1], 1, ATTN_NORM, 0);
-		self->monsterinfo.jump_time = level.time + 4;
-		break;
-	
-	case 2:
-		while((ogle = G_Find(ogle, FOFS(target), self->target)) != NULL)
-		{
-			if(!ogle->monsterinfo.awake)
-				gi.sound (ogle, CHAN_VOICE, sounds[SND_CHORUS2], 0.25, ATTN_NORM, 0);
-		}
-		self->monsterinfo.jump_time = level.time + 3;
-		break;
+		case 1:
+			gi.sound(self, CHAN_VOICE, sounds[SND_SOLO1], 1.0f, ATTN_NORM, 0.0f);
+			self->monsterinfo.jump_time = level.time + 4.0f;
+			break;
 
-	case 3:
-		gi.sound (self, CHAN_VOICE, sounds[SND_SOLO2], 1, ATTN_NORM, 0);
-		self->monsterinfo.jump_time = level.time + 4;
-		break;
+		case 2:
+			while ((ogle = G_Find(ogle, FOFS(target), self->target)) != NULL)
+			{
+				if (!ogle->monsterinfo.awake)
+					gi.sound(ogle, CHAN_VOICE, sounds[SND_CHORUS2], 0.25f, ATTN_NORM, 0.0f);
+			}
+			self->monsterinfo.jump_time = level.time + 3.0f;
+			break;
 
-	case 4:
-		while((ogle = G_Find(ogle, FOFS(target), self->target)) != NULL)
-		{
-			if(!ogle->monsterinfo.awake)
-				gi.sound (ogle, CHAN_VOICE, sounds[SND_CHORUS3], 0.25, ATTN_NORM, 0);
-		}
-		self->monsterinfo.jump_time = level.time + 4;
-		break;
+		case 3:
+			gi.sound(self, CHAN_VOICE, sounds[SND_SOLO2], 1.0f, ATTN_NORM, 0.0f);
+			self->monsterinfo.jump_time = level.time + 4.0f;
+			break;
+
+		case 4:
+			while ((ogle = G_Find(ogle, FOFS(target), self->target)) != NULL)
+			{
+				if (!ogle->monsterinfo.awake)
+					gi.sound(ogle, CHAN_VOICE, sounds[SND_CHORUS3], 0.25f, ATTN_NORM, 0.0f);
+			}
+			self->monsterinfo.jump_time = level.time + 4.0f;
+			break;
 	}
 
 	self->noise_index++;
-	
-	if (self->noise_index > 4)
-		self->noise_index = 0;
+	self->noise_index %= 5;
 }
 
 //High level AI interface
@@ -569,7 +566,7 @@ void ogle_pause(edict_t *self)
 	int chance = irand(0,100);
 
 	if ( (self->monsterinfo.ogleflags & OF_SONG_LEADER) && (self->monsterinfo.jump_time < level.time) && (!self->enemy) )
-		ogle_sing(self);
+		OgleSing(self);
 
 	if (!self->enemy)
 	{
