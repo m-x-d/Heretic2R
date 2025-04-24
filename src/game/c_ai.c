@@ -19,7 +19,7 @@
 
 #define SF_C_INVISIBLE	1 //mxd. Named 'ENT_INVISIBLE' in original logic.
 
-void ai_c_readmessage(edict_t* self, G_Message_t* msg)
+void ReadCinematicMessage(edict_t* self, G_Message_t* msg) //mxd. Named 'ai_c_readmessage' in original logic.
 {
 	int turning;
 	int repeat;

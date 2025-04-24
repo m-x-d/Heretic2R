@@ -12,11 +12,11 @@
 extern void ai_c_cycleend(edict_t* self);
 extern void ai_c_gib(edict_t* self, G_Message_t* msg);
 extern void ai_c_move(edict_t* self, float forward, float right, float up);
-extern void ai_c_readmessage(edict_t* self, G_Message_t* msg);
 extern void ai_c_stand(edict_t* self, float forward, float right, float up);
 
 extern void c_corvus_init(edict_t* self, int class_id);
 extern void c_character_init(edict_t* self, int class_id);
+extern void ReadCinematicMessage(edict_t* self, G_Message_t* msg);
 
 #ifdef __cplusplus
 	extern "C" void c_swapplayer(const edict_t* self, edict_t* cinematic); //mxd. Used by dc.cpp only.

@@ -196,7 +196,7 @@ void plagueElf_c_anims(edict_t *self, G_Message_t *msg)
 	int int_msg;
 	int curr_anim;
 
-	ai_c_readmessage(self, msg);
+	ReadCinematicMessage(self, msg);
 	int_msg = (int) msg->ID;
 
 	self->monsterinfo.c_anim_flag = 0; 

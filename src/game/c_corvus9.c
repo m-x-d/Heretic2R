@@ -34,7 +34,7 @@ static void Corvus9CinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //
 {
 	int curr_anim;
 
-	ai_c_readmessage(self, msg);
+	ReadCinematicMessage(self, msg);
 	self->monsterinfo.c_anim_flag = 0;
 
 	switch (msg->ID)
