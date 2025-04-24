@@ -111,90 +111,90 @@ typedef enum SoundID_e
 	NUM_SOUNDS
 } SoundID_t; //mxd. Add missing typedef name.
 
-extern animmove_t plagueElf_move_death1;
-extern animmove_t plagueElf_move_death2;
-extern animmove_t plagueElf_move_death3;
-extern animmove_t plagueElf_move_death4;
-extern animmove_t plagueElf_move_pain1;
-extern animmove_t plagueElf_move_melee1;
-extern animmove_t plagueElf_move_melee2;
-extern animmove_t plagueElf_move_run1;
-extern animmove_t plagueElf_move_runatk1;
-extern animmove_t plagueElf_move_fjump;
-extern animmove_t plagueElf_move_inair;
-extern animmove_t plagueElf_move_land;
-extern animmove_t plagueElf_move_walk1;
-extern animmove_t plagueElf_move_walk2;
-extern animmove_t plagueElf_move_stand1;
-extern animmove_t plagueElf_fist1;
-extern animmove_t plagueElf_lean1;
-extern animmove_t plagueElf_shake1;
-extern animmove_t plagueElf_delay;
-extern animmove_t plagueElf_move_missile;
+extern const animmove_t plagueElf_move_death1;
+extern const animmove_t plagueElf_move_death2;
+extern const animmove_t plagueElf_move_death3;
+extern const animmove_t plagueElf_move_death4;
+extern const animmove_t plagueElf_move_pain1;
+extern const animmove_t plagueElf_move_melee1;
+extern const animmove_t plagueElf_move_melee2;
+extern const animmove_t plagueElf_move_run1;
+extern const animmove_t plagueElf_move_runatk1;
+extern const animmove_t plagueElf_move_fjump;
+extern const animmove_t plagueElf_move_inair;
+extern const animmove_t plagueElf_move_land;
+extern const animmove_t plagueElf_move_walk1;
+extern const animmove_t plagueElf_move_walk2;
+extern const animmove_t plagueElf_move_stand1;
+extern const animmove_t plagueElf_fist1;
+extern const animmove_t plagueElf_lean1;
+extern const animmove_t plagueElf_shake1;
+extern const animmove_t plagueElf_delay;
+extern const animmove_t plagueElf_move_missile;
 
-extern animmove_t plagueElf_move_kdeath_go;
-extern animmove_t plagueElf_move_kdeath_loop;
-extern animmove_t plagueElf_move_kdeath_end;
+extern const animmove_t plagueElf_move_kdeath_go;
+extern const animmove_t plagueElf_move_kdeath_loop;
+extern const animmove_t plagueElf_move_kdeath_end;
 
-extern animmove_t plagueElf_crazy_A;
-extern animmove_t plagueElf_crazy_B;
-extern animmove_t plagueElf_cursing;
-extern animmove_t plagueElf_point;
-extern animmove_t plagueElf_scared;
+extern const animmove_t plagueElf_crazy_A;
+extern const animmove_t plagueElf_crazy_B;
+extern const animmove_t plagueElf_cursing;
+extern const animmove_t plagueElf_point;
+extern const animmove_t plagueElf_scared;
 
-extern animmove_t plagueElf_move_c_idle1;
-extern animmove_t plagueElf_move_c_idle2;
-extern animmove_t plagueElf_move_c_idle3;
-extern animmove_t plagueElf_move_c_walk;
-extern animmove_t plagueElf_move_c_walk2;
-extern animmove_t plagueElf_move_c_run;
-extern animmove_t plagueElf_move_c_attack1;
-extern animmove_t plagueElf_move_c_attack2;
-extern animmove_t plagueElf_move_c_attack3;
-extern animmove_t plagueElf_move_c_attack4;
-extern animmove_t plagueElf_move_c_pain1;
-extern animmove_t plagueElf_move_c_death1;
-extern animmove_t plagueElf_move_c_death2;
-extern animmove_t plagueElf_move_c_death3;
-extern animmove_t plagueElf_move_c_death4;
+extern const animmove_t plagueElf_move_c_idle1;
+extern const animmove_t plagueElf_move_c_idle2;
+extern const animmove_t plagueElf_move_c_idle3;
+extern const animmove_t plagueElf_move_c_walk;
+extern const animmove_t plagueElf_move_c_walk2;
+extern const animmove_t plagueElf_move_c_run;
+extern const animmove_t plagueElf_move_c_attack1;
+extern const animmove_t plagueElf_move_c_attack2;
+extern const animmove_t plagueElf_move_c_attack3;
+extern const animmove_t plagueElf_move_c_attack4;
+extern const animmove_t plagueElf_move_c_pain1;
+extern const animmove_t plagueElf_move_c_death1;
+extern const animmove_t plagueElf_move_c_death2;
+extern const animmove_t plagueElf_move_c_death3;
+extern const animmove_t plagueElf_move_c_death4;
 
-void plagueElf_c_spell(edict_t* self);
+extern void plagueElf_c_spell(edict_t* self);
 
-void plagueElf_death(edict_t* self, G_Message_t* msg);
-void plagueElf_run(edict_t* self, G_Message_t* msg);
-void plagueElf_walk(edict_t* self, G_Message_t* msg);
-void plagueElf_melee(edict_t* self, G_Message_t* msg);
-void plagueElf_stand(edict_t* self, G_Message_t* msg);
-void plagueElf_pain(edict_t* self, G_Message_t* msg);
-void plagueElf_dismember(edict_t* self, int	damage, int HitLocation);
+extern void plagueElf_death(edict_t* self, G_Message_t* msg);
+extern void plagueElf_run(edict_t* self, G_Message_t* msg);
+extern void plagueElf_walk(edict_t* self, G_Message_t* msg);
+extern void plagueElf_melee(edict_t* self, G_Message_t* msg);
+extern void plagueElf_stand(edict_t* self, G_Message_t* msg);
+extern void plagueElf_pain(edict_t* self, G_Message_t* msg);
+extern void plagueElf_dismember(edict_t* self, int	damage, int HitLocation);
 
-void plagueElfdeathsqueal(edict_t* self);
-void plagueElfsqueal(edict_t* self);
-void plagueElfgrowl(edict_t* self);
-void plagueElf_strike(edict_t* self);
-void plagueElf_pause(edict_t* self);
-qboolean plagueElf_dropweapon(edict_t* self, int damage);
-void plagueElfattack(edict_t* self);
+extern void plagueElfdeathsqueal(edict_t* self);
+extern void plagueElfsqueal(edict_t* self);
+extern void plagueElfgrowl(edict_t* self);
+extern void plagueElf_strike(edict_t* self);
+extern void plagueElf_pause(edict_t* self);
+extern qboolean plagueElf_dropweapon(edict_t* self, int damage);
+extern void plagueElfattack(edict_t* self);
 
-void plagueelf_death_loop(edict_t* self);
-void plagueelf_check_land(edict_t* self);
-void plagueElf_spell(edict_t* self);
-void plagueElfApplyJump(edict_t* self);
+extern void plagueelf_death_loop(edict_t* self);
+extern void plagueelf_check_land(edict_t* self);
+extern void plagueElf_spell(edict_t* self);
+extern void plagueElfApplyJump(edict_t* self);
 
-void plagueElfSpellTouch(edict_t* self, edict_t* Other, cplane_t* Plane, csurface_t* Surface);
+extern void plagueElfSpellTouch(edict_t* self, edict_t* Other, cplane_t* Plane, csurface_t* Surface);
 
 // Voice support.
-void pelf_SightSound(edict_t* self, G_Message_t* msg);
-void pelf_PollResponse(edict_t* self, int sound_event, int sound_id, float time);
-void pelf_EchoResponse(edict_t* self, G_Message_t* msg);
-void pelf_EchoSound(edict_t* self, G_Message_t* msg);
+extern void pelf_SightSound(edict_t* self, G_Message_t* msg);
+extern void pelf_PollResponse(edict_t* self, int sound_event, int sound_id, float time);
+extern void pelf_EchoResponse(edict_t* self, G_Message_t* msg);
+extern void pelf_EchoSound(edict_t* self, G_Message_t* msg);
 
-void pelf_init_phase_out(edict_t* self);
-void pelf_init_phase_in(edict_t* self);
-void pelf_check_too_close(edict_t* self);
-void pelf_land(edict_t* self);
-void pelf_go_inair(edict_t* self);
-void plagueElf_go_run(edict_t* self);
+extern void pelf_init_phase_out(edict_t* self);
+extern void pelf_init_phase_in(edict_t* self);
+extern void pelf_check_too_close(edict_t* self);
+extern void pelf_land(edict_t* self);
+extern void pelf_go_inair(edict_t* self);
+extern void plagueElf_go_run(edict_t* self);
 
 #define BIT_BASE	0
 #define BIT_HANDLE	1
