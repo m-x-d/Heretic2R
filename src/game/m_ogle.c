@@ -1085,14 +1085,11 @@ static void OgleDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Na
 	}
 }
 
-void ogle_death_pain(edict_t *self, G_Message_t *msg)
+static void OgleDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ogle_death_pain' in original logic.
 {
-	if(self->health <= -80) //gib death
-	{
+	if (self->health <= -80) // Gib death.
 		BecomeDebris(self);
-		return;
-	}
-	else if(msg)
+	else if (msg != NULL)
 		DismemberMsgHandler(self, msg);
 }
 
@@ -1469,7 +1466,7 @@ void OgleStaticsInit(void)
 	classStatics[CID_OGLE].msgReceivers[MSG_DISMEMBER]  = DismemberMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_DEATH]		= ogle_death;
 	classStatics[CID_OGLE].msgReceivers[MSG_PAIN]		= OglePainMsgHandler;
-	classStatics[CID_OGLE].msgReceivers[MSG_DEATH_PAIN]		= ogle_death_pain;
+	classStatics[CID_OGLE].msgReceivers[MSG_DEATH_PAIN]		= OgleDeathPainMsgHandler;
 
 	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION1] = OgleCinematicActionMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION2] = OgleCinematicActionMsgHandler;
