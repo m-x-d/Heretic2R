@@ -17,6 +17,8 @@
 #include "Vector.h"
 #include "g_local.h"
 
+#define SF_C_INVISIBLE	1 //mxd. Named 'ENT_INVISIBLE' in original logic.
+
 void ai_c_readmessage(edict_t* self, G_Message_t* msg)
 {
 	int turning;
@@ -121,8 +123,6 @@ void c_swapplayer(const edict_t* self, edict_t* cinematic) //TODO: move declarat
 	cinematic->s.fmnodeinfo[MESH__STAFACTV].flags |= FMNI_NO_DRAW;
 }
 
-#define ENT_INVISIBLE	1
-
 void c_corvus_init(edict_t* self, const int class_id)
 {
 	static vec3_t c_mins = { -16.0f, -16.0f, -34.0f };
@@ -161,7 +161,7 @@ void c_corvus_init(edict_t* self, const int class_id)
 	self->count = self->s.modelindex;
 	self->takedamage = DAMAGE_NO;
 
-	if (self->spawnflags & ENT_INVISIBLE)
+	if (self->spawnflags & SF_C_INVISIBLE)
 	{
 		self->s.modelindex = 0;
 		self->solid = SOLID_NOT;
@@ -210,7 +210,7 @@ void c_character_init(edict_t* self, const int class_id)
 	self->materialtype = MAT_FLESH;
 	self->takedamage = DAMAGE_NO;
 
-	if (self->spawnflags & ENT_INVISIBLE)
+	if (self->spawnflags & SF_C_INVISIBLE)
 	{
 		self->s.modelindex = 0;
 		self->solid = SOLID_NOT;
