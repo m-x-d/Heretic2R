@@ -785,75 +785,64 @@ void ogle_celebrate(edict_t* self)
 	}
 }
 
-//Spawn the dust and debris, based on what anim the ogle is in
-void ogle_pick_dust(edict_t *self)
+// Spawn the dust and debris, based on what animation the ogle is in.
+void ogle_pick_dust(edict_t* self)
 {
-	vec3_t	dustPos, vf, vr, vu;
-	byte	type = 0;
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
-	AngleVectors(self->s.angles, vf, vr, vu);
-	VectorCopy(self->s.origin, dustPos);
-	
+	vec3_t dust_pos;
+	VectorCopy(self->s.origin, dust_pos);
+
+	byte fx_flags = 0;
+
 	switch (self->curAnimID)
 	{
-	case ANIM_WORK3:
-		VectorMA(dustPos, 38, vf, dustPos);
-		VectorMA(dustPos, 6,  vr, dustPos);
-		VectorMA(dustPos, -4,  vu, dustPos);
-		VectorScale(vf, -1, vf);
-		break;
-		
-	case ANIM_WORK5:
-		VectorMA(dustPos, 42, vf, dustPos);
-		VectorMA(dustPos, 2,  vr, dustPos);
-		VectorMA(dustPos, -24,  vu, dustPos);
-		VectorScale(vu, 1, vf);
-		type = CEF_FLAG6;
-		break;
-	
-	case ANIM_WORK4:
-		VectorMA(dustPos, 42, vf, dustPos);
-		VectorMA(dustPos, 4,  vr, dustPos);
-		VectorMA(dustPos, 8,  vu, dustPos);
-		VectorScale(vf, -1, vf);
-		break;
+		case ANIM_WORK3:
+			VectorMA(dust_pos, 38.0f, forward, dust_pos);
+			VectorMA(dust_pos, 6.0f, right, dust_pos);
+			VectorMA(dust_pos, -4.0f, up, dust_pos);
+			VectorScale(forward, -1.0f, forward);
+			break;
 
-	default:
-		VectorMA(dustPos, 32, vf, dustPos);
-		VectorMA(dustPos, 4,  vr, dustPos);
-		VectorMA(dustPos, 22,  vu, dustPos);
-		VectorScale(vf, -1, vf);
-		break;
+		case ANIM_WORK5:
+			VectorMA(dust_pos, 42.0f, forward, dust_pos);
+			VectorMA(dust_pos, 2.0f, right, dust_pos);
+			VectorMA(dust_pos, -24.0f, up, dust_pos);
+			VectorCopy(up, forward);
+			fx_flags = CEF_FLAG6;
+			break;
+
+		case ANIM_WORK4:
+			VectorMA(dust_pos, 42.0f, forward, dust_pos);
+			VectorMA(dust_pos, 4.0f, right, dust_pos);
+			VectorMA(dust_pos, 8.0f, up, dust_pos);
+			VectorScale(forward, -1.0f, forward);
+			break;
+
+		default:
+			VectorMA(dust_pos, 32.0f, forward, dust_pos);
+			VectorMA(dust_pos, 4.0f, right, dust_pos);
+			VectorMA(dust_pos, 22.0f, up, dust_pos);
+			VectorScale(forward, -1.0f, forward);
+			break;
 	}
 
-	//Random chance to create a spark
-	if (irand(0,20) < 1)
-		gi.CreateEffect(NULL, FX_SPARKS, CEF_FLAG6, dustPos, "d", vu);
+	// Random chance to create a spark.
+	if (irand(0, 20) == 0)
+		gi.CreateEffect(NULL, FX_SPARKS, CEF_FLAG6, dust_pos, "d", up);
 
-	gi.CreateEffect(NULL, FX_OGLE_HITPUFF, type, dustPos, "v", vf);
+	gi.CreateEffect(NULL, FX_OGLE_HITPUFF, fx_flags, dust_pos, "v", forward);
 
-	//Check for the chisel and hammer
+	// Check for the chisel and hammer.
 	if (!(self->s.fmnodeinfo[MESH__NAIL].flags & FMNI_NO_DRAW))
-	{
-		if (irand(0,1))
-			gi.sound (self, CHAN_WEAPON, sounds[SND_SPIKE1], 1, ATTN_IDLE, 0);
-		else
-			gi.sound (self, CHAN_WEAPON, sounds[SND_SPIKE2], 1, ATTN_IDLE, 0);
-	}
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_SPIKE1, SND_SPIKE2)], 1.0f, ATTN_IDLE, 0.0f);
 	else if (!(self->s.fmnodeinfo[MESH__PICK].flags & FMNI_NO_DRAW))
-	{
-		if (irand(0,1))
-			gi.sound (self, CHAN_WEAPON, sounds[SND_PICK1], 1, ATTN_IDLE, 0);
-		else
-			gi.sound (self, CHAN_WEAPON, sounds[SND_PICK2], 1, ATTN_IDLE, 0);
-	}
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_PICK1, SND_PICK2)], 1.0f, ATTN_IDLE, 0.0f);
 	else
-	{
-		if (irand(0,1))
-			gi.sound (self, CHAN_WEAPON, sounds[SND_HAMMER1], 1, ATTN_IDLE, 0);
-		else
-			gi.sound (self, CHAN_WEAPON, sounds[SND_HAMMER2], 1, ATTN_IDLE, 0);
-	}
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_HAMMER1, SND_HAMMER2)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
 /*
