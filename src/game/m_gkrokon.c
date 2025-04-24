@@ -422,7 +422,7 @@ static void GkrokonDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 
 #pragma region ========================== GkrokonDismember logic ==========================
 
-static qboolean CanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_gk' in original logic.
+static qboolean GkrokonCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_gk' in original logic.
 {
 	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
 	{
@@ -490,7 +490,7 @@ static qboolean GkrokonThrowTorsoFront(edict_t* self, const float damage) //mxd.
 				self->s.fmnodeinfo[mesh_id].skin = self->s.skinnum + 1;
 			}
 		}
-		else if (CanThrowNode(self, mesh_id, &throw_nodes))
+		else if (GkrokonCanThrowNode(self, mesh_id, &throw_nodes))
 		{
 			vec3_t right;
 			AngleVectors(self->s.angles, NULL, right, NULL);
@@ -525,7 +525,7 @@ static void GkrokonThrowArm(edict_t* self, float damage, const int mesh_part, co
 	{
 		int throw_nodes = 0;
 
-		if (CanThrowNode(self, mesh_part, &throw_nodes))
+		if (GkrokonCanThrowNode(self, mesh_part, &throw_nodes))
 		{
 			vec3_t right;
 			AngleVectors(self->s.angles, NULL, right, NULL);
@@ -561,7 +561,7 @@ static void GkrokonThrowLeg(edict_t* self, const float damage, const int mesh_pa
 
 		int throw_nodes = 0;
 
-		if (CanThrowNode(self, mesh_part, &throw_nodes))
+		if (GkrokonCanThrowNode(self, mesh_part, &throw_nodes))
 		{
 			vec3_t right;
 			AngleVectors(self->s.angles, NULL, right, NULL);
