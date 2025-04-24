@@ -1,38 +1,27 @@
-//==============================================================================
 //
 // m_ogle.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
 
-#include "g_local.h"
 #include "m_ogle.h"
 #include "m_ogle_shared.h"
 #include "m_ogle_anim.h"
-#include "Utilities.h"
+#include "c_ai.h"
+#include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
 #include "g_obj.h" //mxd
-#include "Random.h"
-#include "vector.h"
-#include "fx.h"
-#include "g_HitLocation.h"
-#include "g_debris.h" //mxd
-#include "c_ai.h"
 #include "mg_guide.h" //mxd
-#include "m_move.h" //mxd
 #include "m_stats.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define OGLE_WORKER_CHISEL 1 //TODO: unused.
-#define OGLE_WORKER_HAMMER 2 //TODO: unused.
-#define OGLE_WORKER_PICK   4 //TODO: unused.
+#pragma region ========================== Ogle base info ==========================
 
-//#define OGLE_RADIUS 1000 //FIXME: Tweak this out, activation range
-
-
-static const animmove_t *animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&ogle_move_walk1,
 	&ogle_move_push1,
@@ -94,7 +83,7 @@ static const animmove_t *animations[NUM_ANIMS] =
 	&ogle_c_move_attack3,
 	&ogle_c_move_death1,
 	&ogle_c_move_death2,
-	NULL,
+	NULL, // ANIM_C_GIB1
 	&ogle_c_move_idle1,
 	&ogle_c_move_idle2,
 	&ogle_c_move_idle3,
@@ -115,11 +104,11 @@ static const animmove_t *animations[NUM_ANIMS] =
 	&ogle_c_move_walk2,
 	&ogle_c_move_walk3,
 	&ogle_c_move_walk4,
-
 };
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
+
+#pragma endregion
 
 /*QUAKED obj_corpse_ogle (1 .5 0) (-30 -12 -2) (30 12 2) pushing pick_up pick_down chisel_up chisel_down hammer_up hammer_down 
 A dead ogle.
@@ -1554,6 +1543,8 @@ void ogle_push (edict_t *self, float dist)
 
 void OgleStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	classStatics[CID_OGLE].msgReceivers[MSG_STAND]		= ogle_stand1;
 	classStatics[CID_OGLE].msgReceivers[MSG_RUN]		= ogle_run1;
 	classStatics[CID_OGLE].msgReceivers[MSG_MELEE]		= ogle_melee;
