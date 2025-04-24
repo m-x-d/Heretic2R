@@ -379,84 +379,57 @@ static void OgleCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd
 	SetAnim(self, curr_anim);
 }
 
-void ogle_mood_think ( edict_t *self )
+static void OgleMoodThink(edict_t* self) //mxd. Named 'ogle_mood_think' in original logic.
 {
-	qboolean	coward = self->monsterinfo.aiflags & AI_COWARD;
-	vec3_t		v;
-	float		len;
-	qboolean	path = false;
-
-	if (self->enemy && self->ai_mood == AI_MOOD_WANDER)
-		self->ai_mood = AI_MOOD_PURSUE;
-
-	if (!self->enemy)
+	if (self->enemy == NULL)
 	{
-		if (self->targetEnt && self->targetEnt->health > 0)
+		if (self->targetEnt != NULL && self->targetEnt->health > 0 && (self->targetEnt->health < SERAPH_HEALTH / 2 || self->targetEnt->ai_mood == AI_MOOD_FLEE))
 		{
-			if (self->targetEnt->health < SERAPH_HEALTH/2 || self->targetEnt->ai_mood == AI_MOOD_FLEE)
-			{
-				if (irand(0,1))
-					gi.sound (self, CHAN_BODY, sounds[SND_ENRAGE1], 1, ATTN_NORM, 0);
-				else
-					gi.sound (self, CHAN_BODY, sounds[SND_ENRAGE2], 1, ATTN_NORM, 0);
-
-				self->enemy = self->targetEnt;
-				self->ai_mood = AI_MOOD_PURSUE;
-				return;
-			}
+			gi.sound(self, CHAN_BODY, sounds[irand(SND_ENRAGE1, SND_ENRAGE2)], 1.0f, ATTN_NORM, 0.0f);
+			self->enemy = self->targetEnt;
+			self->ai_mood = AI_MOOD_PURSUE;
+		}
+		else if (self->ai_mood == AI_MOOD_NORMAL && irand(0, 100) > 50 && self->monsterinfo.attack_finished < level.time)
+		{
+			self->monsterinfo.attack_finished = level.time + 45.0f;
+			self->ai_mood = AI_MOOD_REST;
 		}
 
-		switch (self->ai_mood)
-		{
-		case AI_MOOD_NORMAL:
-			if ( (irand(0,100) > 50) && (self->monsterinfo.attack_finished < level.time) )
-			{
-				self->ai_mood = AI_MOOD_REST;
-				self->monsterinfo.attack_finished = level.time + 45;
-			}
-			break;
-		}
-
-		self->enemy = NULL;
 		return;
 	}
 
-	if(self->monsterinfo.aiflags & AI_COWARD)
+	if (self->ai_mood == AI_MOOD_WANDER)
+		self->ai_mood = AI_MOOD_PURSUE;
+
+	if (self->monsterinfo.aiflags & AI_COWARD)
 		self->ai_mood = AI_MOOD_FLEE;
 
-	if(self->enemy)
-		path = MG_CheckClearPathToEnemy(self);
-	else
-		path = false;
-
-	if ((!path && self->enemy) || self->monsterinfo.aiflags & AI_NO_MELEE || self->ai_mood == AI_MOOD_FLEE)
+	if (!MG_CheckClearPathToEnemy(self) || (self->monsterinfo.aiflags & AI_NO_MELEE) || self->ai_mood == AI_MOOD_FLEE)
 	{
 		MG_Pathfind(self, false);
 		return;
 	}
-	else
+
+	self->monsterinfo.searchType = SEARCH_COMMON;
+
+	vec3_t diff;
+	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+
+	if (diff[2] <= 40.0f) //TODO: what if diff[2] is negative? Should fabsf()?
+		diff[2] = 0.0f;
+
+	const float dist = VectorLength(diff) - self->enemy->maxs[0];
+
+	// Far enough to run after.
+	if (dist > self->melee_range || (self->monsterinfo.aiflags & AI_FLEE))
 	{
-		self->monsterinfo.searchType = SEARCH_COMMON;
-
-		if(self->enemy)
-		{
-			VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-			
-			if (v[2] <= 40)
-				v[2] = 0;
-
-			len = VectorLength (v) - self->enemy->maxs[0];
-
-			// Far enough to run after
-			if ((len > self->melee_range) || (self->monsterinfo.aiflags & AI_FLEE))
-				self->ai_mood = AI_MOOD_PURSUE;
-			else	// Close enough to Attack 
-			{
-				self->ai_mood = AI_MOOD_ATTACK;
-				self->ai_mood_flags |= AI_MOOD_FLAG_MELEE;
-				self->ai_mood_flags &= ~AI_MOOD_FLAG_MISSILE;
-			}
-		}
+		self->ai_mood = AI_MOOD_PURSUE;
+	}
+	else // Close enough to attack.
+	{
+		self->ai_mood = AI_MOOD_ATTACK;
+		self->ai_mood_flags |= AI_MOOD_FLAG_MELEE;
+		self->ai_mood_flags &= ~AI_MOOD_FLAG_MISSILE;
 	}
 }
 
@@ -955,7 +928,7 @@ void ogle_pain (edict_t *self, G_Message_t *msg)
 
 //	if (attacker->client)
 //	{
-		self->mood_think = ogle_mood_think;
+		self->mood_think = OgleMoodThink;
 
 		/*
 		if (chance < 95)
@@ -1548,7 +1521,7 @@ void ogle_push (edict_t *self, float dist)
 		SetAnim(self, ANIM_REST1_WIPE);
 	}
 	self->ai_mood = AI_MOOD_REST;
-	self->mood_think = ogle_mood_think;
+	self->mood_think = OgleMoodThink;
 }
 
 /*
@@ -1738,7 +1711,7 @@ void SP_monster_ogle(edict_t *self)
 
 	self->monsterinfo.aiflags |= AI_NO_ALERT;
 
-	self->mood_think = ogle_mood_think;
+	self->mood_think = OgleMoodThink;
 
 	self->use = ogle_use;
 	
