@@ -1227,107 +1227,65 @@ static void OgleStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'o
 		OgleCelebrate(self); //mxd
 }
 
-//Classic run-attack function, who thought mortal combat could be so cute?
-void ogle_run1(edict_t *self, G_Message_t *msg)
+// Classic run-attack function, who thought mortal combat could be so cute?
+static void OgleRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ogle_run1' in original logic.
 {
-	trace_t		trace;
-	vec3_t		start, end, mins;
-	float		len;
-	int			change = irand(0,4);
-	qboolean	ret;
-
-	if(self->enemy && self->enemy->client)
+	if (self->enemy != NULL && self->enemy->client != NULL)
 		self->enemy = NULL;
 
-	if (self->enemy && self->enemy->health <= 0)
+	if (self->enemy != NULL && self->enemy->health <= 0)
 	{
-		ret = ogle_findtarget(self);
-
-		if (!ret)
+		if (!ogle_findtarget(self))
 		{
-			self->enemy = self->goalentity = NULL;
+			self->enemy = NULL;
+			self->goalentity = NULL;
 			self->ai_mood = AI_MOOD_PURSUE;
-			
-			OgleDropTools( self );
-	
-			switch( change )
-			{
-			case 0:	SetAnim(self, ANIM_CELEBRATE1);	break;
-			case 1:	SetAnim(self, ANIM_CELEBRATE2);	break;
-			case 2:	SetAnim(self, ANIM_CELEBRATE3);	break;
-			case 3:	SetAnim(self, ANIM_CELEBRATE4);	break;
-			case 4:	SetAnim(self, ANIM_CELEBRATE5);	break;
-			}
+
+			OgleDropTools(self);
+			OgleCelebrate(self); //mxd
 		}
-		
+
 		return;
 	}
-	else if (self->enemy)
+
+	if (self->enemy != NULL)
 	{
-		len = M_DistanceToTarget(self, self->enemy);
+		const float dist = M_DistanceToTarget(self, self->enemy);
 
-		if (len < 40)	// close enough to swing, not necessarily hit						
+		if (dist < 40.0f) // Close enough to swing, not necessarily hit.				
 		{
-			SetAnim(self, ANIM_ATTACK1);		
+			SetAnim(self, ANIM_ATTACK1);
 		}
-		else if (len < 100)	// close enough to swing, not necessarily hit						
+		else if (dist < 100.0f) // Close enough to swing, not necessarily hit.			
 		{
+			vec3_t start;
 			VectorCopy(self->s.origin, start);
+			start[2] += (float)self->viewheight;
+
+			vec3_t end;
 			VectorCopy(self->enemy->s.origin, end);
-			start[2]+=self->viewheight;
-			end[2]+=self->enemy->viewheight;
+			end[2] += (float)self->enemy->viewheight;
 
+			vec3_t mins;
 			VectorCopy(self->mins, mins);
-			mins[2]+=self->maxs[0]/2;//because this guys's mins are 0
+			mins[2] += self->maxs[0] / 2.0f; // Because this guy's mins are 0.
 
-			gi.trace(start, mins, self->maxs, end, self, MASK_MONSTERSOLID,&trace);
-			
-			if(trace.ent==self->enemy)
-			{
-				if (irand(0,1))
-					SetAnim(self, ANIM_ATTACK2);
-				else
-					SetAnim(self, ANIM_ATTACK3);
-			}
+			trace_t trace;
+			gi.trace(start, mins, self->maxs, end, self, MASK_MONSTERSOLID, &trace);
+
+			if (trace.ent == self->enemy)
+				SetAnim(self, irand(ANIM_ATTACK2, ANIM_ATTACK3));
 			else
-			{
-				switch (change)
-				{
-				case 0:	SetAnim(self, ANIM_CHARGE1);	break;
-				case 1:	SetAnim(self, ANIM_CHARGE2);	break;
-				case 2:	SetAnim(self, ANIM_CHARGE3);	break;
-				case 3:	SetAnim(self, ANIM_CHARGE4);	break;
-				case 4:	SetAnim(self, ANIM_CHARGE5);	break;
-				}
-			}
+				OgleCharge(self); //mxd //TODO: skip when already charging?
 		}
-		else		
+		else if (self->curAnimID < ANIM_CHARGE1 || self->curAnimID > ANIM_CHARGE5) // If not already charging, CHAAARGE!!!
 		{
-			switch (self->curAnimID)
-			{
-			case ANIM_CHARGE1:
-			case ANIM_CHARGE2:
-			case ANIM_CHARGE3:
-			case ANIM_CHARGE4:
-			case ANIM_CHARGE5:
-				break;
-			
-			default:
-				switch (change)
-				{
-				case 0:	SetAnim(self, ANIM_CHARGE1);	break;
-				case 1:	SetAnim(self, ANIM_CHARGE2);	break;
-				case 2:	SetAnim(self, ANIM_CHARGE3);	break;
-				case 3:	SetAnim(self, ANIM_CHARGE4);	break;
-				case 4:	SetAnim(self, ANIM_CHARGE5);	break;
-				}
-				break;
-			}
+			OgleCharge(self); //mxd
 		}
-	
+
 		return;
 	}
-	
+
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
@@ -1408,7 +1366,7 @@ void OgleStaticsInit(void)
 	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_OGLE].msgReceivers[MSG_STAND]		= OgleStandMsgHandler;
-	classStatics[CID_OGLE].msgReceivers[MSG_RUN]		= ogle_run1;
+	classStatics[CID_OGLE].msgReceivers[MSG_RUN]		= OgleRunMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_MELEE]		= OgleMeleeMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_DISMEMBER]  = DismemberMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_DEATH]		= OgleDeathMsgHandler;
