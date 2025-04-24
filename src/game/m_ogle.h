@@ -12,3 +12,6 @@ extern void SP_monster_ogle(edict_t* self);
 extern void SP_obj_corpse_ogle(edict_t* self);
 extern void OgleStaticsInit(void);
 extern qboolean OgleFindTarget(edict_t* self);
+
+// Local forward declarations for m_ogle.c.
+static void OgleMoodThink(edict_t* self);
