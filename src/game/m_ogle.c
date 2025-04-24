@@ -1166,43 +1166,58 @@ qboolean ogle_findtarget(edict_t* self) //TODO: rename to OgleFindTarget.
 	return false;
 }
 
-//Classic melee function (fear the ogles)
-void ogle_melee( edict_t *self, G_Message_t *msg )
+static void OgleCelebrate(edict_t* self) //mxd. Added to reduce code duplication.
 {
-	qboolean	ret;
-	int chance = irand(0,4);
+	switch (irand(0, 4))
+	{
+		default:
+		case 0:	SetAnim(self, ANIM_CELEBRATE1);	break;
+		case 1:	SetAnim(self, ANIM_CELEBRATE2);	break;
+		case 2:	SetAnim(self, ANIM_CELEBRATE3);	break;
+		case 3:	SetAnim(self, ANIM_CELEBRATE4);	break;
+		case 4:	SetAnim(self, ANIM_CELEBRATE5);	break;
+	}
+}
 
-	if (!self->enemy)
+static void OgleCharge(edict_t* self) //mxd. Added to reduce code duplication.
+{
+	switch (irand(0, 4))
+	{
+		default:
+		case 0:	SetAnim(self, ANIM_CHARGE1); break;
+		case 1:	SetAnim(self, ANIM_CHARGE2); break;
+		case 2:	SetAnim(self, ANIM_CHARGE3); break;
+		case 3:	SetAnim(self, ANIM_CHARGE4); break;
+		case 4:	SetAnim(self, ANIM_CHARGE5); break;
+	}
+}
+
+// Classic melee function (fear the ogles).
+static void OgleMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ogle_melee' in original logic.
+{
+	if (self->enemy == NULL)
 		return;
 
-	if(self->enemy->client)
-		self->enemy = NULL;
-
-	if (self->enemy->health <= 0)
+	// Don't attack players.
+	if (self->enemy->client != NULL)
 	{
-		ret = ogle_findtarget(self);
-
-		if (!ret)
-		{
-			self->enemy = self->goalentity = NULL;
-			self->ai_mood = AI_MOOD_PURSUE;
-
-			OgleDropTools( self );
-
-			switch( chance )
-			{
-			case 0:	SetAnim(self, ANIM_CELEBRATE1);	break;
-			case 1:	SetAnim(self, ANIM_CELEBRATE2);	break;
-			case 2:	SetAnim(self, ANIM_CELEBRATE3);	break;
-			case 3:	SetAnim(self, ANIM_CELEBRATE4);	break;
-			case 4:	SetAnim(self, ANIM_CELEBRATE5);	break;
-			}
-
-			return;
-		}
+		self->enemy = NULL;
+		return; //BUGFIX: mxd. Original logic doesn't return here.
 	}
 
-	SetAnim(self, ANIM_ATTACK1);
+	if (self->enemy->health <= 0 && !ogle_findtarget(self))
+	{
+		self->enemy = NULL;
+		self->goalentity = NULL;
+		self->ai_mood = AI_MOOD_PURSUE;
+
+		OgleDropTools(self);
+		OgleCelebrate(self); //mxd
+	}
+	else
+	{
+		SetAnim(self, ANIM_ATTACK1);
+	}
 }
 
 //do a little dance.. make a little.. oh, sorry
@@ -1405,7 +1420,7 @@ void OgleStaticsInit(void)
 
 	classStatics[CID_OGLE].msgReceivers[MSG_STAND]		= ogle_stand1;
 	classStatics[CID_OGLE].msgReceivers[MSG_RUN]		= ogle_run1;
-	classStatics[CID_OGLE].msgReceivers[MSG_MELEE]		= ogle_melee;
+	classStatics[CID_OGLE].msgReceivers[MSG_MELEE]		= OgleMeleeMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_DISMEMBER]  = DismemberMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_DEATH]		= OgleDeathMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_PAIN]		= OglePainMsgHandler;
