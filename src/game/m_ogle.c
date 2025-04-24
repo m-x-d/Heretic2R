@@ -467,22 +467,22 @@ static void OgleDropTools(edict_t* self) //mxd. Named 'ogle_cast_off_tools_of_op
 	self->monsterinfo.aiflags |= AI_NO_MELEE;
 }
 
-//The ogle's been yelled at or struck by the overlord, get back to work!
-void ogle_use(edict_t *self, edict_t *other, edict_t *activator)
+// The ogle's been yelled at or struck by the overlord, get back to work!
+static void OgleUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'ogle_use' in original logic.
 {
 	switch (self->curAnimID)
 	{
-	case ANIM_REST1:
-		SetAnim(self, ANIM_PAIN2);
-		break;
+		case ANIM_REST1:
+			SetAnim(self, ANIM_PAIN2);
+			break;
 
-	case ANIM_REST4:
-		SetAnim(self, ANIM_PAIN3);
-		break;
+		case ANIM_REST4:
+			SetAnim(self, ANIM_PAIN3);
+			break;
 
-	default:
-		SetAnim(self, ANIM_PAIN2);
-		break;
+		default:
+			SetAnim(self, ANIM_PAIN2);
+			break;
 	}
 
 	self->ai_mood = AI_MOOD_NORMAL;
@@ -502,11 +502,11 @@ void ogle_init_overlord(edict_t *self)
 		self->targetEnt = seraph;
 		self->nextthink = level.time + 0.1;
 		self->think = M_WalkmonsterStartGo;
-		self->use = ogle_use;
+		self->use = OgleUse;
 		return;
 	}		
 
-	self->use = ogle_use;
+	self->use = OgleUse;
 	self->think = M_WalkmonsterStartGo;
 	self->nextthink = level.time + 0.1;
 }
@@ -1700,7 +1700,7 @@ void SP_monster_ogle(edict_t *self)
 
 	self->mood_think = OgleMoodThink;
 
-	self->use = ogle_use;
+	self->use = OgleUse;
 	
 	chance = irand(0,4);
 
