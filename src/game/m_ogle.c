@@ -1093,47 +1093,39 @@ static void OgleDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		DismemberMsgHandler(self, msg);
 }
 
-void ogle_death(edict_t *self, G_Message_t *msg)
+static void OgleDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ogle_death' in original logic.
 {
-	edict_t	*targ, *inflictor, *attacker;
-	float	damage;
-	vec3_t	dVel, vf, yf;
-
-	ParseMsgParms(msg, "eeei", &targ, &inflictor, &attacker, &damage);
+	edict_t* target;
+	edict_t* inflictor;
+	edict_t* attacker;
+	float damage;
+	ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
 
 	M_StartDeath(self, ANIM_DEATH1);
-	
-	OgleDropTools ( self );
+	OgleDropTools(self);
 
-	if (self->health < -80)
-	{
+	if (self->health < -80) // Gib death.
 		return;
-	}
-	else if (self->health < -10)
+
+	if (self->health < -10)
 	{
 		SetAnim(self, ANIM_DEATH2);
-		
-		VectorCopy(targ->velocity, vf);
-		VectorNormalize(vf);
 
-		VectorScale(vf, -1, yf);
+		self->elasticity = 1.2f;
+		self->friction = 0.8f;
 
-		self->elasticity = 1.2;
-		self->friction = 0.8;
+		vec3_t dir;
+		VectorNormalize2(target->velocity, dir);
 
-		VectorScale(vf, 300, dVel);
-		dVel[2] = irand(200,250);
-
-		VectorCopy(dVel, self->velocity);
-//		self->groundentity = NULL;
+		VectorScale(dir, 300.0f, self->velocity);
+		self->velocity[2] = flrand(200.0f, 250.0f); //mxd. irand() in original logic.
 	}
 	else
 	{
 		SetAnim(self, ANIM_DEATH1);
 	}
 
-	gi.sound (self, CHAN_BODY, sounds[SND_DEATH], 1, ATTN_NORM, 0);
-
+	gi.sound(self, CHAN_BODY, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f);
 }
 
 //Get to work!
@@ -1464,7 +1456,7 @@ void OgleStaticsInit(void)
 	classStatics[CID_OGLE].msgReceivers[MSG_RUN]		= ogle_run1;
 	classStatics[CID_OGLE].msgReceivers[MSG_MELEE]		= ogle_melee;
 	classStatics[CID_OGLE].msgReceivers[MSG_DISMEMBER]  = DismemberMsgHandler;
-	classStatics[CID_OGLE].msgReceivers[MSG_DEATH]		= ogle_death;
+	classStatics[CID_OGLE].msgReceivers[MSG_DEATH]		= OgleDeathMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_PAIN]		= OglePainMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_DEATH_PAIN]		= OgleDeathPainMsgHandler;
 
