@@ -3727,7 +3727,7 @@ void CScript::HandleCopyPlayerAttributes(void)
 	PlayerEnt = Player->GetEdictValue();
 
 #ifdef _HERETIC2_
-	c_swapplayer (PlayerEnt,DestinationEnt);
+	CinematicSwapPlayer (PlayerEnt,DestinationEnt);
 #endif
 }
 

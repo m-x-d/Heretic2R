@@ -19,5 +19,5 @@ extern void c_character_init(edict_t* self, int class_id);
 extern void ReadCinematicMessage(edict_t* self, G_Message_t* msg);
 
 #ifdef __cplusplus
-	extern "C" void c_swapplayer(const edict_t* self, edict_t* cinematic); //mxd. Used by dc.cpp only.
+	extern "C" void CinematicSwapPlayer(const edict_t* self, edict_t* cinematic); //mxd. Used by dc.cpp only.
 #endif

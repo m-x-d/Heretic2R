@@ -85,7 +85,7 @@ void ai_c_move(edict_t* self, const float forward, float right, float up)
 		ai_c_cycleend(self);
 }
 
-void c_swapplayer(const edict_t* self, edict_t* cinematic) //TODO: move declaration to c_ai.h
+void CinematicSwapPlayer(const edict_t* self, edict_t* cinematic) //mxd. Named 'c_swapplayer' in original logic.
 {
 	if (self->client == NULL || cinematic == NULL) // What are you trying to do? Exchange a non-player for Corvus?
 		return;
