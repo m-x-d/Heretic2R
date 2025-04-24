@@ -1128,87 +1128,44 @@ static void OgleDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'o
 	gi.sound(self, CHAN_BODY, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f);
 }
 
-qboolean ogle_findtarget (edict_t *self)
+qboolean ogle_findtarget(edict_t* self) //TODO: rename to OgleFindTarget.
 {
-	edict_t		*found = NULL;
-
-	//take down weak overlords
-	while(found = FindInRadius(found, self->s.origin, 1024))
+	// Take down weak overlords.
+	edict_t* found = NULL;
+	while ((found = FindInRadius(found, self->s.origin, 1024.0f)) != NULL)
 	{
-		if(found->classID == CID_SERAPH_OVERLORD && found->health > 0 && (found->health<SERAPH_HEALTH/2 || found->ai_mood == AI_MOOD_FLEE))
+		if (found->classID == CID_SERAPH_OVERLORD && found->health > 0 && (found->health < SERAPH_HEALTH / 2 || found->ai_mood == AI_MOOD_FLEE))
 		{
 			self->enemy = found;
 			AI_FoundTarget(self, false);
+
 			return true;
 		}
 	}
 
-	/*//Used to go after other stuff and break it...
+	// Help out other ogles.
 	found = NULL;
-	//ok, search for utensils of their oppression
-	while(found = findradius(found, self->s.origin, 512))
+	while ((found = FindInRadius(found, self->s.origin, 1024.0f)) != NULL)
 	{
-		if(found->classID == CID_OBJECT)
+		if (found->classID == CID_OGLE && found->health > 0 && found != self && found->enemy != NULL && found->enemy->health > 0)
 		{
-			if(found->takedamage && found->health > 0)
+			if (found->enemy->client != NULL)
 			{
-				if(!strcmp(found->classname, "obj_minecart1")||
-					!strcmp(found->classname, "obj_minecart2")||
-					!strcmp(found->classname, "obj_minecart3")||
-					!strcmp(found->classname, "obj_pick")||
-					!strcmp(found->classname, "obj_gascan")||
-					!strcmp(found->classname, "obj_barrel_metal")||
-					!strcmp(found->classname, "obj_metalchunk1")||
-					!strcmp(found->classname, "obj_metalchunk2")||
-					!strcmp(found->classname, "obj_metalchunk3")||
-					!strcmp(found->classname, "obj_pipe1")||
-					!strcmp(found->classname, "obj_pipe2")||
-					!strcmp(found->classname, "obj_pushcart")||
-					!strcmp(found->classname, "obj_shovel")||
-					!strcmp(found->classname, "obj_wheelbarrow")||
-					!strcmp(found->classname, "obj_wheelbarrowdamaged"))
-				{
-					if(irand(0, 1))
-					{
-						if(visible(self, found))
-						{
-							self->enemy = found;
-							FoundTarget(self, false);
-							return true;
-						}
-					}
-				}
+				found->enemy = NULL;
 			}
-		}
-	}*/
-	
-	found = NULL;
-	//help out other ogles
-	while(found = FindInRadius(found, self->s.origin, 1024))
-	{
-		if(found->classID == CID_OGLE && found->health > 0 && found != self)
-		{
-			if(found->enemy)
+			else
 			{
-				if(found->enemy->health > 0)
-				{
-					{
-						if(found->enemy->client)
-							found->enemy = NULL;
-						else
-						{
-							self->enemy = found->enemy;
-							AI_FoundTarget(self, false);
-							return true;
-						}
-					}
-				}
+				self->enemy = found->enemy;
+				AI_FoundTarget(self, false);
+
+				return true;
 			}
 		}
 	}
 
 	return false;
 }
+
 //Classic melee function (fear the ogles)
 void ogle_melee( edict_t *self, G_Message_t *msg )
 {
