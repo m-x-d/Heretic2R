@@ -1299,14 +1299,9 @@ static void OgleTrySetAsSongLeader(edict_t* self) //mxd. Named 'ogle_check_leads
 	self->monsterinfo.ogleflags |= OF_SONG_LEADER;
 }
 
-void ogle_start_push (edict_t *self, edict_t *other, edict_t *activator)
+static void OgleStartPushUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'ogle_start_push' in original logic.
 {
-	if(!irand(0, 2))
-		SetAnim(self, ANIM_PUSH1);
-	else if(irand(0, 1))
-		SetAnim(self, ANIM_PUSH2);
-	else
-		SetAnim(self, ANIM_PUSH3);
+	SetAnim(self, irand(ANIM_PUSH1, ANIM_PUSH3));
 }
 
 void ogle_push (edict_t *self, float dist)
@@ -1574,7 +1569,7 @@ void SP_monster_ogle(edict_t *self)
 
 			self->mood_think = NULL;
 			SetAnim(self, ANIM_REST4);
-			self->use = ogle_start_push;
+			self->use = OgleStartPushUse;
 
 			self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
