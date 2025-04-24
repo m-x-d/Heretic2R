@@ -1171,11 +1171,11 @@ static void OgleCelebrate(edict_t* self) //mxd. Added to reduce code duplication
 	switch (irand(0, 4))
 	{
 		default:
-		case 0:	SetAnim(self, ANIM_CELEBRATE1);	break;
-		case 1:	SetAnim(self, ANIM_CELEBRATE2);	break;
-		case 2:	SetAnim(self, ANIM_CELEBRATE3);	break;
-		case 3:	SetAnim(self, ANIM_CELEBRATE4);	break;
-		case 4:	SetAnim(self, ANIM_CELEBRATE5);	break;
+		case 0: SetAnim(self, ANIM_CELEBRATE1); break;
+		case 1: SetAnim(self, ANIM_CELEBRATE2); break;
+		case 2: SetAnim(self, ANIM_CELEBRATE3); break;
+		case 3: SetAnim(self, ANIM_CELEBRATE4); break;
+		case 4: SetAnim(self, ANIM_CELEBRATE5); break;
 	}
 }
 
@@ -1184,11 +1184,11 @@ static void OgleCharge(edict_t* self) //mxd. Added to reduce code duplication.
 	switch (irand(0, 4))
 	{
 		default:
-		case 0:	SetAnim(self, ANIM_CHARGE1); break;
-		case 1:	SetAnim(self, ANIM_CHARGE2); break;
-		case 2:	SetAnim(self, ANIM_CHARGE3); break;
-		case 3:	SetAnim(self, ANIM_CHARGE4); break;
-		case 4:	SetAnim(self, ANIM_CHARGE5); break;
+		case 0: SetAnim(self, ANIM_CHARGE1); break;
+		case 1: SetAnim(self, ANIM_CHARGE2); break;
+		case 2: SetAnim(self, ANIM_CHARGE3); break;
+		case 3: SetAnim(self, ANIM_CHARGE4); break;
+		case 4: SetAnim(self, ANIM_CHARGE5); break;
 	}
 }
 
@@ -1220,22 +1220,11 @@ static void OgleMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'o
 	}
 }
 
-//do a little dance.. make a little.. oh, sorry
-void ogle_stand1(edict_t *self, G_Message_t *msg)
+// Do a little dance... make a little... oh, sorry.
+static void OgleStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ogle_stand1' in original logic.
 {
-	if(self->monsterinfo.awake)
-	{
-		int	change = irand(0,4);
-
-		switch( change )
-		{
-		case 0:	SetAnim(self, ANIM_CELEBRATE1);	break;
-		case 1:	SetAnim(self, ANIM_CELEBRATE2);	break;
-		case 2:	SetAnim(self, ANIM_CELEBRATE3);	break;
-		case 3:	SetAnim(self, ANIM_CELEBRATE4);	break;
-		case 4:	SetAnim(self, ANIM_CELEBRATE5);	break;
-		}
-	}
+	if (self->monsterinfo.awake)
+		OgleCelebrate(self); //mxd
 }
 
 //Classic run-attack function, who thought mortal combat could be so cute?
@@ -1418,7 +1407,7 @@ void OgleStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_OGLE].msgReceivers[MSG_STAND]		= ogle_stand1;
+	classStatics[CID_OGLE].msgReceivers[MSG_STAND]		= OgleStandMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_RUN]		= ogle_run1;
 	classStatics[CID_OGLE].msgReceivers[MSG_MELEE]		= OgleMeleeMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_DISMEMBER]  = DismemberMsgHandler;
