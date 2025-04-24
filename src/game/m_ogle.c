@@ -163,185 +163,218 @@ void SP_obj_corpse_ogle(edict_t* self)
 
 #pragma endregion
 
-/*-------------------------------------------------------------------------
-	ogle_c_anims
--------------------------------------------------------------------------*/
-void ogle_c_anims(edict_t *self, G_Message_t *msg)
+static void OgleCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ogle_c_anims' in original logic.
 {
-	int int_msg;
 	int curr_anim;
 
 	ai_c_readmessage(self, msg);
-	int_msg = (int) msg->ID;
+	self->monsterinfo.c_anim_flag = 0;
 
-	self->monsterinfo.c_anim_flag = 0; 
-
-	switch(int_msg)
+	switch (msg->ID)
 	{
 		case MSG_C_ACTION1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION1;
 			break;
+
 		case MSG_C_ACTION2:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION2;
 			break;
+
 		case MSG_C_ACTION3:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION3;
 			break;
+
 		case MSG_C_ACTION4:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION4;
 			break;
+
 		case MSG_C_ACTION5:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION5;
 			break;
+
 		case MSG_C_ACTION6:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION6;
 			break;
+
 		case MSG_C_ACTION7:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION7;
 			break;
+
 		case MSG_C_ACTION8:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION8;
 			break;
+
 		case MSG_C_ACTION9:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION9;
 			break;
+
 		case MSG_C_ACTION10:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION10;
 			break;
+
 		case MSG_C_ACTION11:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_ACTION11;
 			break;
+
 		case MSG_C_ACTION12:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_ACTION12;
 			break;
+
 		case MSG_C_ACTION13:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_ACTION13;
 			break;
+
 		case MSG_C_ACTION14:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_ACTION14;
 			break;
+
 		case MSG_C_ACTION15:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_ACTION15;
 			break;
+
 		case MSG_C_ATTACK1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_ATTACK1;
 			break;
+
 		case MSG_C_ATTACK2:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ATTACK2;
 			break;
+
 		case MSG_C_ATTACK3:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ATTACK3;
 			break;
+
 		case MSG_C_DEATH1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_DONE;
+			self->monsterinfo.c_anim_flag = C_ANIM_DONE;
 			curr_anim = ANIM_C_DEATH1;
 			break;
+
 		case MSG_C_DEATH2:
-			self->monsterinfo.c_anim_flag |= C_ANIM_DONE;
+			self->monsterinfo.c_anim_flag = C_ANIM_DONE;
 			curr_anim = ANIM_C_DEATH2;
 			break;
+
 		case MSG_C_IDLE1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT | C_ANIM_IDLE;
+			self->monsterinfo.c_anim_flag = (C_ANIM_REPEAT | C_ANIM_IDLE);
 			curr_anim = ANIM_C_IDLE1;
 			break;
+
 		case MSG_C_IDLE2:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE2;
 			break;
+
 		case MSG_C_IDLE3:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE3;
 			break;
+
 		case MSG_C_IDLE4:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE4;
 			break;
+
 		case MSG_C_IDLE5:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE5;
 			break;
+
 		case MSG_C_IDLE6:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE6;
 			break;
+
 		case MSG_C_PAIN1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_PAIN1;
 			break;
+
 		case MSG_C_PAIN2:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_PAIN2;
 			break;
+
 		case MSG_C_PAIN3:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_PAIN3;
 			break;
-		case MSG_C_THINKAGAIN:			// Think for yourself, little ogle man
-			self->monsterinfo.c_anim_flag = 0;
+
+		case MSG_C_THINKAGAIN: // Think for yourself, little ogle man.
 			curr_anim = ANIM_C_THINKAGAIN;
-			self->monsterinfo.c_mode = 0;
+			self->monsterinfo.c_mode = false;
 			break;
+
 		case MSG_C_TRANS1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_TRANS1;
 			break;
+
 		case MSG_C_TRANS2:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_TRANS2;
 			break;
+
 		case MSG_C_TRANS3:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_TRANS3;
 			break;
+
 		case MSG_C_TRANS4:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_TRANS4;
 			break;
+
 		case MSG_C_TRANS5:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_TRANS5;
 			break;
+
 		case MSG_C_TRANS6:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_TRANS6;
 			break;
+
 		case MSG_C_WALK1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_WALK1;
 			break;
+
 		case MSG_C_WALK2:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_WALK2;
 			break;
+
 		case MSG_C_WALK3:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_WALK3;
 			break;
+
 		case MSG_C_WALK4:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_WALK4;
 			break;
+
 		default:
-			break;
-	} 
+			return; //mxd. 'break' in original logic. Let's avoid using uninitialized curr_anim var.
+	}
 
 	SetAnim(self, curr_anim);
 }
@@ -1538,47 +1571,47 @@ void OgleStaticsInit(void)
 	classStatics[CID_OGLE].msgReceivers[MSG_PAIN]		= ogle_pain;
 	classStatics[CID_OGLE].msgReceivers[MSG_DEATH_PAIN]		= ogle_death_pain;
 
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION1] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION2] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION3] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION4] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION5] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION6] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION7] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION8] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION9] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION10] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION11] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION12] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION13] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION14] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION15] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ATTACK1] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ATTACK2] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_ATTACK3] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_DEATH1] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_DEATH2] = ogle_c_anims;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION1] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION2] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION3] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION4] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION5] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION6] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION7] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION8] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION9] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION10] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION11] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION12] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION13] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION14] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION15] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ATTACK1] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ATTACK2] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_ATTACK3] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_DEATH1] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_DEATH2] = OgleCinematicActionMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_C_GIB1] = ai_c_gib;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE1] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE2] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE3] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE4] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE5] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE6] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_PAIN1] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_PAIN2] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_PAIN3] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_THINKAGAIN] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_TRANS1] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_TRANS2] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_TRANS3] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_TRANS4] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_TRANS5] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_TRANS6] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_WALK1] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_WALK2] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_WALK3] = ogle_c_anims;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_WALK4] = ogle_c_anims;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE1] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE2] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE3] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE4] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE5] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE6] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_PAIN1] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_PAIN2] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_PAIN3] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_THINKAGAIN] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_TRANS1] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_TRANS2] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_TRANS3] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_TRANS4] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_TRANS5] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_TRANS6] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_WALK1] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_WALK2] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_WALK3] = OgleCinematicActionMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_WALK4] = OgleCinematicActionMsgHandler;
 
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
