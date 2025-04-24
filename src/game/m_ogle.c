@@ -1128,12 +1128,6 @@ static void OgleDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'o
 	gi.sound(self, CHAN_BODY, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f);
 }
 
-//Get to work!
-void ogle_work1(edict_t *self, G_Message_t *msg)
-{
-	SetAnim(self, ANIM_WORK1);
-}
-
 qboolean ogle_findtarget (edict_t *self)
 {
 	edict_t		*found = NULL;
