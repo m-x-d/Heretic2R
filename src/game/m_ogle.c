@@ -1289,16 +1289,13 @@ static void OgleRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ogl
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
-void ogle_check_leadsong (edict_t *self)
+static void OgleTrySetAsSongLeader(edict_t* self) //mxd. Named 'ogle_check_leadsong' in original logic.
 {
-	edict_t *ogle = NULL;
-
-	while((ogle = G_Find(ogle, FOFS(target), self->target)) != NULL)
-	{
-		if(ogle->monsterinfo.ogleflags & OF_SONG_LEADER)
+	edict_t* ogle = NULL;
+	while ((ogle = G_Find(ogle, FOFS(target), self->target)) != NULL)
+		if (ogle->monsterinfo.ogleflags & OF_SONG_LEADER)
 			return;
-	}
-	
+
 	self->monsterinfo.ogleflags |= OF_SONG_LEADER;
 }
 
@@ -1669,7 +1666,7 @@ void SP_monster_ogle(edict_t *self)
 		if(singing_ogles->value)
 		{
 			if(!(self->monsterinfo.ogleflags & OF_SONG_LEADER))
-				ogle_check_leadsong(self);
+				OgleTrySetAsSongLeader(self);
 		}
 
 		if (self->monsterinfo.ogleflags & OF_SONG_LEADER)
