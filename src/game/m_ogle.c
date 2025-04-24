@@ -488,27 +488,23 @@ static void OgleUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Na
 	self->ai_mood = AI_MOOD_NORMAL;
 }
 
-//When the ogle is spawned, he checks around to figure out who his tormentor is 
-void ogle_init_overlord(edict_t *self)
+// When the ogle is spawned, he checks around to figure out who his tormentor is.
+static void OgleInitOverlordThink(edict_t* self) //mxd. Named 'ogle_init_overlord' in original logic.
 {
-	edict_t	*seraph = NULL;
-	
-	while((seraph = G_Find(seraph, FOFS(targetname), self->target)) != NULL)
-	{
-		if (seraph->classID != CID_SERAPH_OVERLORD)
-			continue;
-		
-		//Restore what we lost from monsterstart()
-		self->targetEnt = seraph;
-		self->nextthink = level.time + 0.1;
-		self->think = M_WalkmonsterStartGo;
-		self->use = OgleUse;
-		return;
-	}		
-
+	// Restore what we lost from monsterstart().
 	self->use = OgleUse;
 	self->think = M_WalkmonsterStartGo;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+	edict_t* seraph = NULL;
+	while ((seraph = G_Find(seraph, FOFS(targetname), self->target)) != NULL)
+	{
+		if (seraph->classID == CID_SERAPH_OVERLORD)
+		{
+			self->targetEnt = seraph; //TODO: add ogle_overlord name?
+			break;
+		}
+	}
 }
 
 //Ogle Singing Technology (tm) All Right Reserved
@@ -1821,7 +1817,7 @@ void SP_monster_ogle(edict_t *self)
 	if(!skip_inits)
 	{
 		//Find out who our overlord is
-		self->think = ogle_init_overlord;
+		self->think = OgleInitOverlordThink;
 		self->nextthink = level.time + 0.1;
 
 		if(singing_ogles->value)
