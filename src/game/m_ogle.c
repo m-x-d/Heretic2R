@@ -845,49 +845,23 @@ void ogle_pick_dust(edict_t* self)
 		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_HAMMER1, SND_HAMMER2)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-/*
-==========================================================
-
-	Ogle Message functions
-
-==========================================================
-*/
-
-void ogle_pain (edict_t *self, G_Message_t *msg)
+static void OglePainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ogle_pain' in original logic.
 {
-	edict_t		*targ, *attacker;
-	int			chance, damage, temp;
-	qboolean	force_pain;
+	edict_t* target;
+	edict_t* attacker;
+	qboolean force_pain;
+	int damage;
+	int temp;
+	ParseMsgParms(msg, "eeiii", &target, &attacker, &force_pain, &damage, &temp);
 
-	chance = irand(0,100);
-	
-	ParseMsgParms(msg, "eeiii", &targ, &attacker, &force_pain, &damage, &temp);
+	self->mood_think = OgleMoodThink;
 
-//	if (attacker->client)
-//	{
-		self->mood_think = OgleMoodThink;
+	if (attacker != NULL && !AI_IsInfrontOf(self, attacker))
+		SetAnim(self, ANIM_PAIN3);
+	else
+		SetAnim(self, irand(ANIM_PAIN1, ANIM_PAIN3));
 
-		/*
-		if (chance < 95)
-		{
-			self->monsterinfo.aiflags |= AI_COWARD;
-			self->ai_mood = AI_MOOD_FLEE;
-			
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-			return;
-		}
-		*/
-		if(attacker && !AI_IsInfrontOf(self, attacker))
-			SetAnim(self, ANIM_PAIN3);
-		else if (chance < 33)
-			SetAnim(self, ANIM_PAIN1);
-		else if (chance < 66)
-			SetAnim(self, ANIM_PAIN2);
-		else
-			SetAnim(self, ANIM_PAIN3);
-//	}
-
-	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 void ogle_dismember(edict_t *self, int damage, int HitLocation)
@@ -1478,7 +1452,7 @@ void OgleStaticsInit(void)
 	classStatics[CID_OGLE].msgReceivers[MSG_MELEE]		= ogle_melee;
 	classStatics[CID_OGLE].msgReceivers[MSG_DISMEMBER]  = DismemberMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_DEATH]		= ogle_death;
-	classStatics[CID_OGLE].msgReceivers[MSG_PAIN]		= ogle_pain;
+	classStatics[CID_OGLE].msgReceivers[MSG_PAIN]		= OglePainMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_DEATH_PAIN]		= ogle_death_pain;
 
 	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION1] = OgleCinematicActionMsgHandler;
