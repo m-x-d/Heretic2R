@@ -110,34 +110,26 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-/*QUAKED obj_corpse_ogle (1 .5 0) (-30 -12 -2) (30 12 2) pushing pick_up pick_down chisel_up chisel_down hammer_up hammer_down 
-A dead ogle.
----------- KEYS -----------------  
-style - skin of ogle (default 0)
-0 - damage skin
-1 - normal skin
--------  FIELDS  ------------------
-same as monster ogle
------------------------------------
-*/
-void SP_obj_corpse_ogle(edict_t *self)
+#pragma region ========================== obj_corpse_ogle ==========================
+
+// QUAKED obj_corpse_ogle (1 .5 0) (-30 -12 -2) (30 12 2) OF_PUSHING OF_PICK_UP OF_PICK_DOWN x x OF_HAMMER_UP OF_HAMMER_DOWN
+// A dead ogle.
+// Variables:
+// style - Ogle skin (0 - damaged, 1 - normal. Default 0).
+// Spawnflags:
+// Same as monster_ogle.
+void SP_obj_corpse_ogle(edict_t* self)
 {
-	self->s.origin[2] += 22.0;
+	self->s.origin[2] += 22.0f;
 
-	VectorSet(self->mins,-30,-30,-2);
-	VectorSet(self->maxs,30,30,8);
+	VectorSet(self->mins, -30.0f, -30.0f, -2.0f);
+	VectorSet(self->maxs, 30.0f, 30.0f, 8.0f);
 
-	self->s.modelindex = gi.modelindex("models/monsters/ogle/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/monsters/ogle/tris.fm");
+	self->s.frame = FRAME_deatha14;	// Ths is the reason the function can't be put in g_obj.c.
 
-	self->s.frame = FRAME_deatha14;	//Ths is the reason the function can't be put in g_obj.c
-
-	// Setting the skinnum correctly
-	if (!self->style)
-		self->s.skinnum = 1;
-	else
-		self->s.skinnum = 0;
-
-	self->svflags |= SVF_DEADMONSTER;//doesn't block walking
+	self->style = ((self->style == 0) ? 1 : 0); // Set the skinnum correctly.
+	self->svflags |= SVF_DEADMONSTER; // Doesn't block walking.
 
 	if (self->monsterinfo.ogleflags & OF_PUSHING)
 	{
@@ -156,27 +148,20 @@ void SP_obj_corpse_ogle(edict_t *self)
 		self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 	}
-	else if (self->monsterinfo.ogleflags & OF_CHISEL_UP)
-	{
-		self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
-	}
-	else if (self->monsterinfo.ogleflags & OF_HAMMER_UP)
+	else if (self->monsterinfo.ogleflags & (OF_HAMMER_UP | OF_HAMMER_DOWN))
 	{
 		self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
 	}
-	else if (self->monsterinfo.ogleflags & OF_HAMMER_DOWN)
-	{
-		self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
-		self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
-	}
-	else
+	else // OF_CHISEL_UP, OF_CHISEL_DOWN, default.
 	{
 		self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
 	}
 
-	ObjectInit(self,40,80,MAT_FLESH,SOLID_BBOX);
+	ObjectInit(self, 40, 80, MAT_FLESH, SOLID_BBOX);
 }
+
+#pragma endregion
 
 /*-------------------------------------------------------------------------
 	ogle_c_anims
