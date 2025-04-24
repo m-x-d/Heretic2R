@@ -1441,133 +1441,108 @@ void OgleStaticsInit(void)
 	classStatics[CID_OGLE].resInfo = &res_info;
 }
 
-/*QUAKED monster_ogle(1 .5 0) (-16 -16 -24) (16 16 16) pushing pick_up pick_down chisel_up chisel_down hammer_up hammer_down singing CINEMATIC
+// QUAKED monster_ogle(1 .5 0) (-16 -16 -24) (16 16 16) OF_PUSHING OF_PICK_UP OF_PICK_DOWN OF_CHISEL_UP OF_CHISEL_DOWN OF_HAMMER_UP OF_HAMMER_DOWN OF_SONG_LEADER OF_CINEMATIC
+// The little, disgruntled Ogle.
 
-The little, disgruntled Ogle
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-mintel - monster intelligence- this basically tells a monster how many buoys away an enemy has to be for it to give up.
-
-melee_range - How close the player has to be, maximum, for the monster to go into melee.  If this is zero, the monster will never melee.  If it is negative, the monster will try to keep this distance from the player.  If the monster has a backup, he'll use it if too clode, otherwise, a negative value here means the monster will just stop running at the player at this distance.
-	Examples:
-		melee_range = 60 - monster will start swinging it player is closer than 60
-		melee_range = 0 - monster will never do a mele attack
-		melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close
-
-missile_range - Maximum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-min_missile_range - Minimum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-bypass_missile_chance - Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot.  This, in effect, will make the monster come in more often than hang back and fire.  A percentage (0 = always fire/never close in, 100 = never fire/always close in).- must be whole number
-
-jump_chance - every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time)- must be whole number
-
-wakeup_distance - How far (max) the player can be away from the monster before it wakes up.  This just means that if the monster can see the player, at what distance should the monster actually notice him and go for him.
-
-DEFAULTS:
-mintel					= 16
-melee_range				= 48
-missile_range			= 0
-min_missile_range		= 0
-bypass_missile_chance	= 0
-jump_chance				= 10
-wakeup_distance			= 1024
-
-NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1
-*/
-void SP_monster_ogle(edict_t *self)
+// Variables:
+// wakeup_target			- Monsters will fire this target the first time it wakes up (only once).
+// pain_target				- Monsters will fire this target the first time it gets hurt (only once).
+// mintel					- Monster intelligence - this basically tells a monster how many buoys away an enemy has to be for it to give up (default 16).
+// melee_range				- How close the player has to be for the monster to go into melee. If this is zero, the monster will never melee.
+//							  If it is negative, the monster will try to keep this distance from the player.
+//							  If the monster has a backup, he'll use it if too close, otherwise, a negative value here means the monster will just stop
+//							  running at the player at this distance (default 48).
+//							 Examples:
+//								melee_range = 60 - monster will start swinging it player is closer than 60.
+//								melee_range = 0 - monster will never do a melee attack.
+//								melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close.
+// missile_range			- Maximum distance the player can be from the monster to be allowed to use it's ranged attack (default 0).
+// min_missile_range		- Minimum distance the player can be from the monster to be allowed to use it's ranged attack (default 0).
+// bypass_missile_chance	- Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot. This, in effect, will make the monster
+//							  come in more often than hang back and fire. A percentage (0 = always fire/never close in, 100 = never fire/always close in) - must be whole number (default 0).
+// jump_chance				- Every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time) - must be whole number (default 10).
+// wakeup_distance			- How far (max) the player can be away from the monster before it wakes up. This means that if the monster can see the player,
+//							  at what distance should the monster actually notice him and go for him (default 1024).
+// NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1.
+void SP_monster_ogle(edict_t* self)
 {
-	qboolean	skip_inits = false;
-	edict_t		*found = NULL;
-	int chance;
-
-	if ((deathmatch->value == 1) && !((int)sv_cheats->value & self_spawn))
+	if (DEATHMATCH && !(SV_CHEATS & self_spawn))
 	{
-		G_FreeEdict (self);
+		G_FreeEdict(self);
 		return;
 	}
 
 	self->monsterinfo.ogleflags = self->spawnflags;
-	self->spawnflags = 0;//don't want incorrect handling due to weird ogle spawnflags!
+	self->spawnflags = 0; // Don't want incorrect handling due to weird ogle spawnflags!
 
 	if (!M_Start(self))
-		return;				// Failed initialization
+		return; // Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;
-	self->monsterinfo.alert = NULL;//can't be woken up
+	self->monsterinfo.alert = NULL; // Can't be woken up.
 	self->monsterinfo.dismember = OgleDismember;
-	
-	if (!self->health)
+	self->monsterinfo.otherenemyname = "monster_rat";
+
+	if (self->health == 0)
 		self->health = OGLE_HEALTH;
 
-	//Apply to the end result (whether designer set or not)
-	self->max_health = self->health = MonsterHealth(self->health);
+	// Apply to the end result (whether designer set or not).
+	self->health = MonsterHealth(self->health);
+	self->max_health = self->health;
 
 	self->mass = OGLE_MASS;
-	self->yaw_speed = 16;
+	self->yaw_speed = 16.0f;
 
 	self->movetype = PHYSICSTYPE_STEP;
-	self->solid=SOLID_BBOX;
+	self->solid = SOLID_BBOX;
 
 	VectorCopy(STDMinsForClass[self->classID], self->mins);
-	VectorCopy(STDMaxsForClass[self->classID], self->maxs);	
+	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
 
 	self->materialtype = MAT_FLESH;
+	self->s.modelindex = (byte)classStatics[CID_OGLE].resInfo->modelIndex;
+	self->s.skinnum = 0;
 
-	self->s.modelindex = classStatics[CID_OGLE].resInfo->modelIndex;
-	self->s.skinnum=0;
-
-	if (self->monsterinfo.scale)
+	if (self->monsterinfo.scale == 0.0f) //BUGFIX: mxd. 'if (self->monsterinfo.scale)' in original logic.
 	{
-		self->s.scale = self->monsterinfo.scale = MODEL_SCALE;
+		self->monsterinfo.scale = MODEL_SCALE;
+		self->s.scale = self->monsterinfo.scale;
 	}
-
-	self->monsterinfo.otherenemyname = "monster_rat";	
 
 	MG_InitMoods(self);
 
 	self->monsterinfo.aiflags |= AI_NO_ALERT;
-
+	self->monsterinfo.attack_finished = level.time + flrand(10.0f, 100.0f); //mxd. irand() in original logic.
 	self->mood_think = OgleMoodThink;
-
 	self->use = OgleUse;
-	
-	chance = irand(0,4);
 
-	if (!self->monsterinfo.ogleflags)
+	if (self->monsterinfo.ogleflags == 0)
 	{
-		switch (chance)
+		switch (irand(0, 4))
 		{
-		case 0:	self->monsterinfo.ogleflags |= OF_PICK_UP;
-				break;
-		case 1:	self->monsterinfo.ogleflags |= OF_PICK_DOWN;
-				break;
-		case 2:	self->monsterinfo.ogleflags |= OF_HAMMER_UP;
-				break;
-		case 3:	self->monsterinfo.ogleflags |= OF_HAMMER_DOWN;
-				break;
-		case 4:	self->monsterinfo.ogleflags |= OF_CHISEL_UP;
-				break;
+			default:
+			case 0:	self->monsterinfo.ogleflags |= OF_PICK_UP; break;
+			case 1:	self->monsterinfo.ogleflags |= OF_PICK_DOWN; break;
+			case 2:	self->monsterinfo.ogleflags |= OF_HAMMER_UP; break;
+			case 3:	self->monsterinfo.ogleflags |= OF_HAMMER_DOWN; break;
+			case 4:	self->monsterinfo.ogleflags |= OF_CHISEL_UP; break;
 		}
 	}
-	
-	self->monsterinfo.attack_finished = level.time + irand(10,100);	
+
+	qboolean skip_inits = false;
 
 	if (self->monsterinfo.ogleflags & OF_PUSHING)
 	{
-		//if (self->monsterinfo.ogleflags & OF_CINEMATIC)
-		if(self->targetname && self->target)
+		if (self->targetname != NULL && self->target != NULL)
 		{
-			if(found = G_Find(NULL, FOFS(targetname), self->target))
+			edict_t* found = G_Find(NULL, FOFS(targetname), self->target);
+			if (found != NULL)
 				M_GetSlopePitchRoll(found, NULL);
 
 			skip_inits = true;
 
-			self->mood_think = NULL;
 			SetAnim(self, ANIM_REST4);
+			self->mood_think = NULL;
 			self->use = OgleStartPushUse;
 
 			self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
@@ -1575,14 +1550,13 @@ void SP_monster_ogle(edict_t *self)
 			self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
 		}
 		else
-		{	// We gotta do SOMETHING if there is no target, otherwise the monster will puke.
-#ifdef _DEVEL
-			gi.dprintf("Ogle at (%s) set to push with no target.\n",
-					vtos(self->s.origin));
-#endif
+		{
+			// We gotta do SOMETHING if there is no target, otherwise the monster will puke.
+			gi.dprintf("Ogle at %s set to push with no target or targetname.\n", vtos(self->s.origin));
+
 			SetAnim(self, ANIM_WORK3);
 			self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
-		}	
+		}
 	}
 	else if (self->monsterinfo.ogleflags & OF_PICK_UP)
 	{
@@ -1590,6 +1564,7 @@ void SP_monster_ogle(edict_t *self)
 			SetAnim(self, ANIM_C_IDLE1);
 		else
 			SetAnim(self, ANIM_WORK4);
+
 		self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 	}
@@ -1598,7 +1573,8 @@ void SP_monster_ogle(edict_t *self)
 		if (self->monsterinfo.ogleflags & OF_CINEMATIC)
 			SetAnim(self, ANIM_C_IDLE1);
 		else
-		SetAnim(self, ANIM_WORK5);
+			SetAnim(self, ANIM_WORK5);
+
 		self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 	}
@@ -1607,12 +1583,7 @@ void SP_monster_ogle(edict_t *self)
 		if (self->monsterinfo.ogleflags & OF_CINEMATIC)
 			SetAnim(self, ANIM_C_IDLE1);
 		else
-		{
-			if (irand(0,1))
-				SetAnim(self, ANIM_WORK1);
-			else
-				SetAnim(self, ANIM_WORK2);
-		}
+			SetAnim(self, irand(ANIM_WORK1, ANIM_WORK2));
 
 		self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
 	}
@@ -1622,6 +1593,7 @@ void SP_monster_ogle(edict_t *self)
 			SetAnim(self, ANIM_C_IDLE1);
 		else
 			SetAnim(self, ANIM_WORK4);
+
 		self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
 	}
@@ -1631,6 +1603,7 @@ void SP_monster_ogle(edict_t *self)
 			SetAnim(self, ANIM_C_IDLE1);
 		else
 			SetAnim(self, ANIM_WORK5);
+
 		self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
 	}
@@ -1640,28 +1613,26 @@ void SP_monster_ogle(edict_t *self)
 			SetAnim(self, ANIM_C_IDLE1);
 		else
 			SetAnim(self, ANIM_WORK3);
+
 		self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
 	}
 
 	if (self->monsterinfo.ogleflags & OF_CINEMATIC)
 	{
-		self->svflags|=SVF_FLOAT;
-		self->monsterinfo.c_mode = 1;
+		self->svflags |= SVF_FLOAT;
+		self->monsterinfo.c_mode = true;
 	}
 
 	self->svflags |= SVF_NO_AUTOTARGET;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
-	if(!skip_inits)
+	if (!skip_inits)
 	{
-		//Find out who our overlord is
+		// Find out who our overlord is.
 		self->think = OgleInitOverlordThink;
-		self->nextthink = level.time + 0.1;
 
-		if(singing_ogles->value)
-		{
-			if(!(self->monsterinfo.ogleflags & OF_SONG_LEADER))
-				OgleTrySetAsSongLeader(self);
-		}
+		if ((int)singing_ogles->value && !(self->monsterinfo.ogleflags & OF_SONG_LEADER))
+			OgleTrySetAsSongLeader(self);
 
 		if (self->monsterinfo.ogleflags & OF_SONG_LEADER)
 			self->noise_index = 0;
@@ -1669,6 +1640,5 @@ void SP_monster_ogle(edict_t *self)
 	else
 	{
 		self->think = M_WalkmonsterStartGo;
-		self->nextthink = level.time + 0.1;
 	}
 }
