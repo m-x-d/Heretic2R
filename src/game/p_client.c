@@ -236,7 +236,7 @@ void ResetPlayerBaseNodes(edict_t* ent) //TODO: rename to PlayerResetBaseNodes()
 #define BIT_LLEG		8192	// MESH__LLEG		14 - Left leg.
 #define BIT_HEAD		16384	// MESH__HEAD		15 - Head.
 
-static qboolean CanThrowNode(edict_t* self, const int body_part, int* throw_nodes) //mxd. Named 'canthrownode_player' in original version.
+static qboolean PlayerCanThrowNode(edict_t* self, const int body_part, int* throw_nodes) //mxd. Named 'canthrownode_player' in original version.
 {
 	static int bit_to_meshnode[16] = //mxd. Made local static.
 	{
@@ -338,7 +338,7 @@ static void PlayerThrowHead(edict_t* self, edict_t* other, float damage, const q
 	if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.4f)
 	{
 		int thrown_nodes = 0;
-		CanThrowNode(self, MESH__HEAD, &thrown_nodes);
+		PlayerCanThrowNode(self, MESH__HEAD, &thrown_nodes);
 
 		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
 		ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 0);
@@ -373,13 +373,13 @@ static void PlayerThrowTorso(edict_t* self, edict_t* other, float damage, const 
 		self->client->playerinfo.flags |= (PLAYER_FLAG_NO_LARM | PLAYER_FLAG_NO_RARM);
 
 		int thrown_nodes = 0;
-		CanThrowNode(self, MESH_BASE2, &thrown_nodes);
-		CanThrowNode(self, MESH__BACK, &thrown_nodes);
-		CanThrowNode(self, MESH__LARM, &thrown_nodes);
-		CanThrowNode(self, MESH__RARM, &thrown_nodes);
-		CanThrowNode(self, MESH__HEAD, &thrown_nodes);
-		CanThrowNode(self, MESH__LHANDHI, &thrown_nodes);
-		CanThrowNode(self, MESH__RHANDHI, &thrown_nodes);
+		PlayerCanThrowNode(self, MESH_BASE2, &thrown_nodes);
+		PlayerCanThrowNode(self, MESH__BACK, &thrown_nodes);
+		PlayerCanThrowNode(self, MESH__LARM, &thrown_nodes);
+		PlayerCanThrowNode(self, MESH__RARM, &thrown_nodes);
+		PlayerCanThrowNode(self, MESH__HEAD, &thrown_nodes);
+		PlayerCanThrowNode(self, MESH__LHANDHI, &thrown_nodes);
+		PlayerCanThrowNode(self, MESH__RHANDHI, &thrown_nodes);
 
 		vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
 		ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 1);
@@ -413,12 +413,12 @@ static int PlayerThrowLeftArm(edict_t* self, edict_t* other, float damage, const
 
 	if (dismember_ok && flrand(0.0f, (float)self->health) < damage)
 	{
-		if (CanThrowNode(self, MESH__LARM, &thrown_nodes))
+		if (PlayerCanThrowNode(self, MESH__LARM, &thrown_nodes))
 		{
 			self->client->playerinfo.flags |= PLAYER_FLAG_NO_LARM;
 			DropWeapons(self, (int)damage, BIT_BOWACTV);
 
-			CanThrowNode(self, MESH__LHANDHI, &thrown_nodes);
+			PlayerCanThrowNode(self, MESH__LHANDHI, &thrown_nodes);
 
 			vec3_t right;
 			AngleVectors(self->s.angles, NULL, right, NULL);
@@ -455,12 +455,12 @@ static int PlayerThrowRightArm(edict_t* self, edict_t* other, float damage, cons
 
 	if (dismember_ok && flrand(0.0f, (float)self->health) < damage)
 	{
-		if (CanThrowNode(self, MESH__RARM, &thrown_nodes))
+		if (PlayerCanThrowNode(self, MESH__RARM, &thrown_nodes))
 		{
 			self->client->playerinfo.flags |= PLAYER_FLAG_NO_RARM;
 			DropWeapons(self, (int)damage, BIT_HELSTF | BIT_BLADSTF);
 
-			CanThrowNode(self, MESH__RHANDHI, &thrown_nodes);
+			PlayerCanThrowNode(self, MESH__RHANDHI, &thrown_nodes);
 
 			vec3_t right;
 			AngleVectors(self->s.angles, NULL, right, NULL);
@@ -506,7 +506,7 @@ static int PlayerThrowLeg(edict_t* self, const float damage, const int node_inde
 		if (self->s.fmnodeinfo[node_index].flags & FMNI_NO_DRAW)
 			return thrown_nodes;
 
-		if (CanThrowNode(self, node_index, &thrown_nodes))
+		if (PlayerCanThrowNode(self, node_index, &thrown_nodes))
 		{
 			vec3_t right;
 			AngleVectors(self->s.angles, NULL, right, NULL);
@@ -643,7 +643,7 @@ void PlayerDecapitate(edict_t* self, edict_t* other) //mxd. Named 'player_decap'
 	DropWeapons(self, 100, (BIT_BOWACTV | BIT_BLADSTF | BIT_HELSTF));
 
 	int throw_nodes = 0;
-	CanThrowNode(self, MESH__HEAD, &throw_nodes);
+	PlayerCanThrowNode(self, MESH__HEAD, &throw_nodes);
 
 	vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
 	ThrowBodyPart(self, &gore_spot, throw_nodes, 0, 0);
