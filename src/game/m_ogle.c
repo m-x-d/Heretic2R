@@ -709,83 +709,79 @@ void ogle_strike(edict_t* self)
 	}
 }
 
-//Pick and choose from a wide assortment of happy, joyous dances
-void ogle_celebrate(edict_t *self)
+// Pick and choose from a wide assortment of happy, joyous dances.
+void ogle_celebrate(edict_t* self)
 {
-	int chance = irand(0,100);
+	const int chance = irand(0, 100);
 
-	if (!irand(0, 10))
-	{
-		if (chance < 33)
-			gi.sound (self, CHAN_VOICE, sounds[SND_CHEER1], 1, ATTN_IDLE, 0);
-		else if (chance < 66)
-			gi.sound (self, CHAN_VOICE, sounds[SND_CHEER2], 1, ATTN_IDLE, 0);
-		else
-			gi.sound (self, CHAN_VOICE, sounds[SND_CHEER3], 1, ATTN_IDLE, 0);
-	}
+	if (irand(0, 10) == 0)
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_CHEER1, SND_CHEER3)], 1.0f, ATTN_IDLE, 0.0f);
 
 	switch (self->curAnimID)
 	{
-	case ANIM_CELEBRATE1:
-		if (chance < 70)
-			SetAnim(self, ANIM_CELEBRATE1);
-		else if (chance < 80)
-			SetAnim(self, ANIM_CELEBRATE5_TRANS);
-		else
-			SetAnim(self, ANIM_CELEBRATE2);
-		break;
+		case ANIM_CELEBRATE1:
+			if (chance < 70)
+				SetAnim(self, ANIM_CELEBRATE1);
+			else if (chance < 80)
+				SetAnim(self, ANIM_CELEBRATE5_TRANS);
+			else
+				SetAnim(self, ANIM_CELEBRATE2);
+			break;
 
-	case ANIM_CELEBRATE2:
-		if (chance < 5)
-			SetAnim(self, ANIM_CELEBRATE4_TRANS);
-		else if (chance < 10)
-			SetAnim(self, ANIM_CELEBRATE3_TRANS);
-		else if (chance < 50)
-			SetAnim(self, ANIM_CELEBRATE1);
-		else if (chance < 80)
-			SetAnim(self, ANIM_CELEBRATE5_TRANS);
-		else
-			SetAnim(self, ANIM_CELEBRATE2);
-		break;
+		case ANIM_CELEBRATE2:
+			if (chance < 5)
+				SetAnim(self, ANIM_CELEBRATE4_TRANS);
+			else if (chance < 10)
+				SetAnim(self, ANIM_CELEBRATE3_TRANS);
+			else if (chance < 50)
+				SetAnim(self, ANIM_CELEBRATE1);
+			else if (chance < 80)
+				SetAnim(self, ANIM_CELEBRATE5_TRANS);
+			else
+				SetAnim(self, ANIM_CELEBRATE2);
+			break;
 
-	case ANIM_CELEBRATE3_TRANS:
-		SetAnim(self, ANIM_CELEBRATE3);
-		break;
-
-	case ANIM_CELEBRATE4_TRANS:
-		SetAnim(self, ANIM_CELEBRATE4);
-		break;
-
-	case ANIM_CELEBRATE5_TRANS:
-		SetAnim(self, ANIM_CELEBRATE5);
-		break;
-
-	case ANIM_CELEBRATE3:
-		if (chance < 50)
-			SetAnim(self, ANIM_CELEBRATE4);
-		else if (chance < 60)
-			SetAnim(self, ANIM_CELEBRATE2);
-		else
+		case ANIM_CELEBRATE3_TRANS:
 			SetAnim(self, ANIM_CELEBRATE3);
-		break;
+			break;
 
-	case ANIM_CELEBRATE4:
-		if (chance < 50)
-			SetAnim(self, ANIM_CELEBRATE3);
-		else if (chance < 60)
-			SetAnim(self, ANIM_CELEBRATE2);
-		else
+		case ANIM_CELEBRATE4_TRANS:
 			SetAnim(self, ANIM_CELEBRATE4);
-		break;
+			break;
 
-	case ANIM_CELEBRATE5:
-		if (chance < 90)
+		case ANIM_CELEBRATE5_TRANS:
 			SetAnim(self, ANIM_CELEBRATE5);
-		else if (chance < 95)
-			SetAnim(self, ANIM_CELEBRATE1);
-		else
-			SetAnim(self, ANIM_CELEBRATE2);
-		break;
+			break;
+
+		case ANIM_CELEBRATE3:
+			if (chance < 50)
+				SetAnim(self, ANIM_CELEBRATE4);
+			else if (chance < 60)
+				SetAnim(self, ANIM_CELEBRATE2);
+			else
+				SetAnim(self, ANIM_CELEBRATE3);
+			break;
+
+		case ANIM_CELEBRATE4:
+			if (chance < 50)
+				SetAnim(self, ANIM_CELEBRATE3);
+			else if (chance < 60)
+				SetAnim(self, ANIM_CELEBRATE2);
+			else
+				SetAnim(self, ANIM_CELEBRATE4);
+			break;
+
+		case ANIM_CELEBRATE5:
+			if (chance < 90)
+				SetAnim(self, ANIM_CELEBRATE5);
+			else if (chance < 95)
+				SetAnim(self, ANIM_CELEBRATE1);
+			else
+				SetAnim(self, ANIM_CELEBRATE2);
+			break;
+
+		default:
+			break;
 	}
 }
 
