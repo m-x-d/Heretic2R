@@ -864,208 +864,224 @@ static void OglePainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'og
 	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void ogle_dismember(edict_t *self, int damage, int HitLocation)
+static void OgleThrowArmUpperLeft(edict_t* self, const float damage, const qboolean dismember_ok) //mxd. Split from OgleDismember() to simplify logic.
 {
-	int				throw_nodes = 0;
-	vec3_t			gore_spot, right;
-	qboolean dismember_ok = false;
-
-	if(HitLocation & hl_MeleeHit)
-	{
-		dismember_ok = true;
-		HitLocation &= ~hl_MeleeHit;
-	}
-
-	if(HitLocation<1)
+	if (self->s.fmnodeinfo[MESH__LUPARM].flags & FMNI_NO_DRAW)
 		return;
 
-	if(HitLocation>hl_Max)
-		return;
-
-	VectorCopy(vec3_origin,gore_spot);
-
-	switch(HitLocation)
+	if (dismember_ok)
 	{
-	case hl_Head:
-			self->s.fmnodeinfo[MESH__TORSO].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH__TORSO].skin = self->s.skinnum+1;
-		break;
+		vec3_t right;
+		AngleVectors(self->s.angles, NULL, right, NULL);
 
-	case hl_TorsoFront:
-	case hl_TorsoBack:
-			self->s.fmnodeinfo[MESH__TORSO].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH__TORSO].skin = self->s.skinnum+1;
-		break;
+		vec3_t gore_spot = { 0.0f, 0.0f,  self->maxs[2] * 0.3f };
+		VectorMA(gore_spot, -8.0f, right, gore_spot);
 
-	case hl_ArmUpperLeft:
-		if(self->s.fmnodeinfo[MESH__LUPARM].flags & FMNI_NO_DRAW)
-			break;
-		
-		if (dismember_ok)
+		int throw_nodes = BPN_LUPARM;
+		self->s.fmnodeinfo[MESH__LUPARM].flags |= FMNI_NO_DRAW;
+
+		if (!(self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_NO_DRAW))
 		{
-			AngleVectors(self->s.angles,NULL,right,NULL);
-			gore_spot[2]+=self->maxs[2]*0.3;
-			VectorMA(gore_spot,-8,right,gore_spot);
-			
-			throw_nodes |= BPN_LUPARM;
-			self->s.fmnodeinfo[MESH__LUPARM].flags |= FMNI_NO_DRAW;
-
-			if (!(self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_NO_DRAW))
-			{
-				throw_nodes |= BPN_L4ARM;
-				self->s.fmnodeinfo[MESH__L4ARM].flags |= FMNI_NO_DRAW;
-			}
-
-			if (!(self->s.fmnodeinfo[MESH__NAIL].flags & FMNI_NO_DRAW))
-			{
-				throw_nodes |= BPN_NAIL;
-				self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
-			}
-
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-		}
-		else
-		{
-			self->s.fmnodeinfo[MESH__LUPARM].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH__LUPARM].skin = self->s.skinnum+1;
-		}
-
-		break;
-
-	case hl_ArmLowerLeft:
-		if(self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_NO_DRAW)
-			break;
-		
-		if (dismember_ok)
-		{
-			AngleVectors(self->s.angles,NULL,right,NULL);
-			gore_spot[2]+=self->maxs[2]*0.3;
-			VectorMA(gore_spot,-8,right,gore_spot);
-			
 			throw_nodes |= BPN_L4ARM;
 			self->s.fmnodeinfo[MESH__L4ARM].flags |= FMNI_NO_DRAW;
-
-			if (!(self->s.fmnodeinfo[MESH__NAIL].flags & FMNI_NO_DRAW))
-			{
-				throw_nodes |= BPN_NAIL;
-				self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
-			}
-
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-		}
-		else
-		{
-			self->s.fmnodeinfo[MESH__L4ARM].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH__L4ARM].skin = self->s.skinnum+1;
 		}
 
-		break;
-
-	case hl_ArmUpperRight:
-		if(self->s.fmnodeinfo[MESH__RUPARM].flags & FMNI_NO_DRAW)
-			break;
-		
-		if (dismember_ok)
+		if (!(self->s.fmnodeinfo[MESH__NAIL].flags & FMNI_NO_DRAW))
 		{
-			AngleVectors(self->s.angles,NULL,right,NULL);
-			gore_spot[2]+=self->maxs[2]*0.3;
-			VectorMA(gore_spot,8,right,gore_spot);
-			
-			throw_nodes |= BPN_RUPARM;
-			self->s.fmnodeinfo[MESH__RUPARM].flags |= FMNI_NO_DRAW;
-
-			if (!(self->s.fmnodeinfo[MESH__R4ARM].flags & FMNI_NO_DRAW))
-			{
-				throw_nodes |= BPN_R4ARM;
-				self->s.fmnodeinfo[MESH__R4ARM].flags |= FMNI_NO_DRAW;
-			}
-
-			if (!(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW))
-			{
-				throw_nodes |= BPN_HAMMER;
-				self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
-			}
-
-			if (!(self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW))
-			{
-				throw_nodes |= BPN_HANDLE;
-				self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
-			}
-
-			if (!(self->s.fmnodeinfo[MESH__PICK].flags & FMNI_NO_DRAW))
-			{
-				throw_nodes |= BPN_PICK;
-				self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
-			}
-
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-
-			self->monsterinfo.aiflags |= AI_NO_MELEE;
-			self->monsterinfo.aiflags |= AI_COWARD;
-		}
-		else
-		{
-			self->s.fmnodeinfo[MESH__RUPARM].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH__RUPARM].skin = self->s.skinnum+1;
+			throw_nodes |= BPN_NAIL;
+			self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
 		}
 
-		break;
+		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+	}
+	else
+	{
+		self->s.fmnodeinfo[MESH__LUPARM].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__LUPARM].skin = self->s.skinnum + 1;
+	}
+}
 
-	case hl_ArmLowerRight:
-		if(self->s.fmnodeinfo[MESH__R4ARM].flags & FMNI_NO_DRAW)
-			break;
-		
-		if (dismember_ok)
+static void OgleThrowArmLowerLeft(edict_t* self, const float damage, const qboolean dismember_ok) //mxd. Split from OgleDismember() to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_NO_DRAW)
+		return;
+
+	if (dismember_ok)
+	{
+		vec3_t right;
+		AngleVectors(self->s.angles, NULL, right, NULL);
+
+		vec3_t gore_spot = { 0.0f, 0.0f,  self->maxs[2] * 0.3f };
+		VectorMA(gore_spot, -8.0f, right, gore_spot);
+
+		int throw_nodes = BPN_L4ARM;
+		self->s.fmnodeinfo[MESH__L4ARM].flags |= FMNI_NO_DRAW;
+
+		if (!(self->s.fmnodeinfo[MESH__NAIL].flags & FMNI_NO_DRAW))
 		{
-			AngleVectors(self->s.angles,NULL,right,NULL);
-			gore_spot[2]+=self->maxs[2]*0.3;
-			VectorMA(gore_spot,8,right,gore_spot);
-			
+			throw_nodes |= BPN_NAIL;
+			self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
+		}
+
+		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+	}
+	else
+	{
+		self->s.fmnodeinfo[MESH__L4ARM].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__L4ARM].skin = self->s.skinnum + 1;
+	}
+}
+
+static void OgleThrowArmUpperRight(edict_t* self, const float damage, const qboolean dismember_ok) //mxd. Split from OgleDismember() to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH__RUPARM].flags & FMNI_NO_DRAW)
+		return;
+
+	if (dismember_ok)
+	{
+		vec3_t right;
+		AngleVectors(self->s.angles, NULL, right, NULL);
+
+		vec3_t gore_spot = { 0.0f, 0.0f,  self->maxs[2] * 0.3f };
+		VectorMA(gore_spot, 8.0f, right, gore_spot);
+
+		int throw_nodes = BPN_RUPARM;
+		self->s.fmnodeinfo[MESH__RUPARM].flags |= FMNI_NO_DRAW;
+
+		if (!(self->s.fmnodeinfo[MESH__R4ARM].flags & FMNI_NO_DRAW))
+		{
 			throw_nodes |= BPN_R4ARM;
 			self->s.fmnodeinfo[MESH__R4ARM].flags |= FMNI_NO_DRAW;
-
-			if (!(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW))
-			{
-				throw_nodes |= BPN_HAMMER;
-				self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
-			}
-
-			if (!(self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW))
-			{
-				throw_nodes |= BPN_HANDLE;
-				self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
-			}
-
-			if (!(self->s.fmnodeinfo[MESH__PICK].flags & FMNI_NO_DRAW))
-			{
-				throw_nodes |= BPN_PICK;
-				self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
-			}
-
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-
-			self->monsterinfo.aiflags |= AI_NO_MELEE;
-			self->monsterinfo.aiflags |= AI_COWARD;
 		}
-		else
+
+		if (!(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW))
 		{
-			self->s.fmnodeinfo[MESH__R4ARM].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH__R4ARM].skin = self->s.skinnum+1;
+			throw_nodes |= BPN_HAMMER;
+			self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 		}
 
-		break;
+		if (!(self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW))
+		{
+			throw_nodes |= BPN_HANDLE;
+			self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
+		}
 
-	case hl_LegUpperLeft:
-	case hl_LegLowerLeft:
-			self->s.fmnodeinfo[MESH__LLEG].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH__LLEG].skin = self->s.skinnum+1;
-		break;
+		if (!(self->s.fmnodeinfo[MESH__PICK].flags & FMNI_NO_DRAW))
+		{
+			throw_nodes |= BPN_PICK;
+			self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
+		}
 
-	case hl_LegUpperRight:
-	case hl_LegLowerRight:
-			self->s.fmnodeinfo[MESH__RLEG].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH__RLEG].skin = self->s.skinnum+1;
-		break;
+		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+
+		self->monsterinfo.aiflags |= AI_NO_MELEE;
+		self->monsterinfo.aiflags |= AI_COWARD;
+	}
+	else
+	{
+		self->s.fmnodeinfo[MESH__RUPARM].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__RUPARM].skin = self->s.skinnum + 1;
+	}
+}
+
+static void OgleThrowArmLowerRight(edict_t* self, const float damage, const qboolean dismember_ok) //mxd. Split from OgleDismember() to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH__R4ARM].flags & FMNI_NO_DRAW)
+		return;
+
+	if (dismember_ok)
+	{
+		vec3_t right;
+		AngleVectors(self->s.angles, NULL, right, NULL);
+
+		vec3_t gore_spot = { 0.0f, 0.0f,  self->maxs[2] * 0.3f };
+		VectorMA(gore_spot, 8.0f, right, gore_spot);
+
+		int throw_nodes = BPN_R4ARM;
+		self->s.fmnodeinfo[MESH__R4ARM].flags |= FMNI_NO_DRAW;
+
+		if (!(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW))
+		{
+			throw_nodes |= BPN_HAMMER;
+			self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
+		}
+
+		if (!(self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW))
+		{
+			throw_nodes |= BPN_HANDLE;
+			self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
+		}
+
+		if (!(self->s.fmnodeinfo[MESH__PICK].flags & FMNI_NO_DRAW))
+		{
+			throw_nodes |= BPN_PICK;
+			self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
+		}
+
+		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+
+		self->monsterinfo.aiflags |= AI_NO_MELEE;
+		self->monsterinfo.aiflags |= AI_COWARD;
+	}
+	else
+	{
+		self->s.fmnodeinfo[MESH__R4ARM].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__R4ARM].skin = self->s.skinnum + 1;
+	}
+}
+
+static void OgleDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'ogle_dismember' in original logic.
+{
+	qboolean dismember_ok = false;
+
+	if (hl & hl_MeleeHit)
+	{
+		dismember_ok = true;
+		hl &= ~hl_MeleeHit;
+	}
+
+	if (hl <= hl_NoneSpecific || hl >= hl_Max) //mxd. 'hl > hl_Max' in original logic.
+		return;
+
+	switch (hl)
+	{
+		case hl_Head:
+		case hl_TorsoFront:
+		case hl_TorsoBack:
+			self->s.fmnodeinfo[MESH__TORSO].flags |= FMNI_USE_SKIN;
+			self->s.fmnodeinfo[MESH__TORSO].skin = self->s.skinnum + 1;
+			break;
+
+		case hl_ArmUpperLeft:
+			OgleThrowArmUpperLeft(self, (float)damage, dismember_ok); //mxd
+			break;
+
+		case hl_ArmLowerLeft:
+			OgleThrowArmLowerLeft(self, (float)damage, dismember_ok); //mxd
+			break;
+
+		case hl_ArmUpperRight:
+			OgleThrowArmUpperRight(self, (float)damage, dismember_ok); //mxd
+			break;
+
+		case hl_ArmLowerRight:
+			OgleThrowArmLowerRight(self, (float)damage, dismember_ok); //mxd
+			break;
+
+		case hl_LegUpperLeft:
+		case hl_LegLowerLeft:
+			self->s.fmnodeinfo[MESH__LLEG].flags |= FMNI_USE_SKIN;
+			self->s.fmnodeinfo[MESH__LLEG].skin = self->s.skinnum + 1;
+			break;
+
+		case hl_LegUpperRight:
+		case hl_LegLowerRight:
+			self->s.fmnodeinfo[MESH__RLEG].flags |= FMNI_USE_SKIN;
+			self->s.fmnodeinfo[MESH__RLEG].skin = self->s.skinnum + 1;
+			break;
+
+		default:
+			break;
 	}
 }
 
@@ -1589,7 +1605,7 @@ void SP_monster_ogle(edict_t *self)
 
 	self->msgHandler = DefaultMsgHandler;
 	self->monsterinfo.alert = NULL;//can't be woken up
-	self->monsterinfo.dismember = ogle_dismember;
+	self->monsterinfo.dismember = OgleDismember;
 	
 	if (!self->health)
 		self->health = OGLE_HEALTH;
