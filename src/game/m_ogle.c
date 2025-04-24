@@ -433,48 +433,35 @@ static void OgleMoodThink(edict_t* self) //mxd. Named 'ogle_mood_think' in origi
 	}
 }
 
-/*
-==========================================================
-
-	Ogle Helper functions
-
-==========================================================
-*/
-
-//Cast off the tools which have oppressed the ogle people for centuries... or something
-void ogle_cast_off_tools_of_oppression ( edict_t *self )
+// Cast off the tools which have oppressed the ogle people for centuries... or something.
+static void OgleDropTools(edict_t* self) //mxd. Named 'ogle_cast_off_tools_of_oppression' in original logic.
 {
-	int		throw_nodes = 0;
-
 	if (!(self->s.fmnodeinfo[MESH__NAIL].flags & FMNI_NO_DRAW))
-	{//Cast off the hammer and nail
-		throw_nodes |= BPN_NAIL;
+	{
+		// Cast off the hammer and nail.
 		self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
-		ThrowWeapon(self, &vec3_origin, throw_nodes, 0, 0);
-		
-		throw_nodes |= BPN_HAMMER | BPN_HANDLE;
+		ThrowWeapon(self, &vec3_origin, BPN_NAIL, 0, 0);
+
 		self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 
-		ThrowWeapon(self, &vec3_origin, throw_nodes, 0, 0);
+		ThrowWeapon(self, &vec3_origin, BPN_HAMMER | BPN_HANDLE, 0, 0);
 	}
 	else if (!(self->s.fmnodeinfo[MESH__PICK].flags & FMNI_NO_DRAW))
-	{//Cast off the pick
-		throw_nodes |= BPN_PICK | BPN_HANDLE;
-		
+	{
+		// Cast off the pick.
 		self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 
-		ThrowWeapon(self, &vec3_origin, throw_nodes, 0, 0);
+		ThrowWeapon(self, &vec3_origin, BPN_PICK | BPN_HANDLE, 0, 0);
 	}
 	else if (!(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW))
-	{//Cast off the hammer
-		throw_nodes |= BPN_HAMMER | BPN_HANDLE;
-		
+	{
+		// Cast off the hammer.
 		self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 
-		ThrowWeapon(self, &vec3_origin, throw_nodes, 0, 0);
+		ThrowWeapon(self, &vec3_origin, BPN_HAMMER | BPN_HANDLE, 0, 0);
 	}
 
 	self->monsterinfo.aiflags |= AI_NO_MELEE;
@@ -1179,7 +1166,7 @@ void ogle_death(edict_t *self, G_Message_t *msg)
 
 	M_StartDeath(self, ANIM_DEATH1);
 	
-	ogle_cast_off_tools_of_oppression ( self );
+	OgleDropTools ( self );
 
 	if (self->health < -80)
 	{
@@ -1320,7 +1307,7 @@ void ogle_melee( edict_t *self, G_Message_t *msg )
 			self->enemy = self->goalentity = NULL;
 			self->ai_mood = AI_MOOD_PURSUE;
 
-			ogle_cast_off_tools_of_oppression( self );
+			OgleDropTools( self );
 
 			switch( chance )
 			{
@@ -1377,7 +1364,7 @@ void ogle_run1(edict_t *self, G_Message_t *msg)
 			self->enemy = self->goalentity = NULL;
 			self->ai_mood = AI_MOOD_PURSUE;
 			
-			ogle_cast_off_tools_of_oppression( self );
+			OgleDropTools( self );
 	
 			switch( change )
 			{
