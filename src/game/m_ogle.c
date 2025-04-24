@@ -672,47 +672,40 @@ void ogle_rest(edict_t* self)
 	}
 }
 
-//Check to do damage with the ogle's weapon
-void ogle_strike(edict_t *self)
+// Check to do damage with the ogle's weapon.
+void ogle_strike(edict_t* self)
 {
+	const vec3_t start_offset = { 0.0f, 16.0f, 8.0f };
+	const vec3_t end_offset = { self->melee_range, 2.0f, 8.0f };
+
+	// Purposely backwards.
+	vec3_t blood_dir;
+	VectorSubtract(start_offset, end_offset, blood_dir);
+	VectorNormalize(blood_dir);
+
+	const vec3_t mins = { -4.0f, -4.0f, -4.0f };
+	const vec3_t maxs = {  4.0f,  4.0f,  4.0f };
+
 	trace_t	trace;
-	edict_t *victim;
-	vec3_t	soff, eoff, mins, maxs, bloodDir, direction;
-	float	damage = flrand(OGLE_DMG_MIN, OGLE_DMG_MAX);
+	vec3_t direction;
+	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
 
-	VectorSet(soff, 0,  16, 8);
-	VectorSet(eoff, self->melee_range, 2,  8);
-	
-	VectorSet(mins, -4, -4, -4);
-	VectorSet(maxs,  4,  4,  4);
+	if (victim == NULL)
+		return; //TODO: play swoosh sound?
 
-	//Purposely backwards
-	VectorSubtract(soff, eoff, bloodDir);
-	VectorNormalize(bloodDir);
-
-	victim = M_CheckMeleeLineHit(self, soff, eoff, mins, maxs, &trace, direction);	
-
-	if (victim)
+	if (victim == self)
 	{
-		if (victim == self)
-		{
-			//Create a puff effect
-			gi.CreateEffect(NULL, FX_SPARKS, CEF_FLAG6, trace.endpos, "d", bloodDir);
-		}
-		else
-		{
-			//Hurt whatever we were whacking away at
-			if (!(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW))
-				gi.sound (self, CHAN_WEAPON, sounds[SND_HAMMER_FLESH], 1, ATTN_NORM, 0);
-			else
-				gi.sound (self, CHAN_WEAPON, sounds[SND_PICK_FLESH], 1, ATTN_NORM, 0);
-				
-			T_Damage(victim, self, self, direction, trace.endpos, bloodDir, damage, damage*2, 0,MOD_DIED);
-		}
+		// Create a puff effect. //TODO: play swoosh sound? Also, when does this happen?
+		gi.CreateEffect(NULL, FX_SPARKS, CEF_FLAG6, trace.endpos, "d", blood_dir);
 	}
 	else
 	{
-		//Play swoosh sound?
+		// Hurt whatever we were whacking away at.
+		const int snd_id = (!(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW) ? SND_HAMMER_FLESH : SND_PICK_FLESH); //mxd
+		gi.sound(self, CHAN_WEAPON, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
+
+		const int damage = irand(OGLE_DMG_MIN, OGLE_DMG_MAX); //mxd. float/flrand() in original logic.
+		T_Damage(victim, self, self, direction, trace.endpos, blood_dir, damage, damage * 2, 0, MOD_DIED);
 	}
 }
 
