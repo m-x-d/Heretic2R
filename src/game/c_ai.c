@@ -231,9 +231,9 @@ void CinematicCharacterInit(edict_t* self, const int class_id) //mxd. Named 'c_c
 	QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 }
 
-void ai_c_gib(edict_t* self, G_Message_t* msg)
+void CinematicGibMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ai_c_gib' in original logic. //TODO: used only by m_ogle.c. Move there as OgleCinematicGibMsgHandler?
 {
 	gi.sound(self, CHAN_BODY, gi.soundindex("monsters/plagueElf/gib2.wav"), 1.0f, ATTN_NORM, 0.0f);
 	self->think = BecomeDebris;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }

@@ -1399,7 +1399,7 @@ void OgleStaticsInit(void)
 	classStatics[CID_OGLE].msgReceivers[MSG_C_ATTACK3] = OgleCinematicActionMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_C_DEATH1] = OgleCinematicActionMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_C_DEATH2] = OgleCinematicActionMsgHandler;
-	classStatics[CID_OGLE].msgReceivers[MSG_C_GIB1] = ai_c_gib;
+	classStatics[CID_OGLE].msgReceivers[MSG_C_GIB1] = CinematicGibMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE1] = OgleCinematicActionMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE2] = OgleCinematicActionMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_C_IDLE3] = OgleCinematicActionMsgHandler;
