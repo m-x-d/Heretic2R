@@ -383,10 +383,10 @@ static void OgleMoodThink(edict_t* self) //mxd. Named 'ogle_mood_think' in origi
 {
 	if (self->enemy == NULL)
 	{
-		if (self->targetEnt != NULL && self->targetEnt->health > 0 && (self->targetEnt->health < SERAPH_HEALTH / 2 || self->targetEnt->ai_mood == AI_MOOD_FLEE))
+		if (self->ogle_overlord != NULL && self->ogle_overlord->health > 0 && (self->ogle_overlord->health < SERAPH_HEALTH / 2 || self->ogle_overlord->ai_mood == AI_MOOD_FLEE))
 		{
 			gi.sound(self, CHAN_BODY, sounds[irand(SND_ENRAGE1, SND_ENRAGE2)], 1.0f, ATTN_NORM, 0.0f);
-			self->enemy = self->targetEnt;
+			self->enemy = self->ogle_overlord;
 			self->ai_mood = AI_MOOD_PURSUE;
 		}
 		else if (self->ai_mood == AI_MOOD_NORMAL && irand(0, 100) > 50 && self->monsterinfo.attack_finished < level.time)
@@ -501,7 +501,7 @@ static void OgleInitOverlordThink(edict_t* self) //mxd. Named 'ogle_init_overlor
 	{
 		if (seraph->classID == CID_SERAPH_OVERLORD)
 		{
-			self->targetEnt = seraph; //TODO: add ogle_overlord name?
+			self->ogle_overlord = seraph;
 			break;
 		}
 	}
