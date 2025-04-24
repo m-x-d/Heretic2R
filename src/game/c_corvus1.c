@@ -176,5 +176,5 @@ void Corvus1CinStaticsInit(void)
 // The cinematic corvus for the torture victim.
 void SP_character_corvus1(edict_t* self)
 {
-	c_corvus_init(self, CID_CORVUS);
+	CinematicCorvusInit(self, CID_CORVUS);
 }

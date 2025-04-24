@@ -154,5 +154,5 @@ void Corvus2CinStaticsInit(void)
 // The cinematic Corvus for the celestial watcher scene.
 void SP_character_corvus2(edict_t* self)
 {
-	c_corvus_init(self, CID_CORVUS2);
+	CinematicCorvusInit(self, CID_CORVUS2);
 }

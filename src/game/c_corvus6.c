@@ -158,5 +158,5 @@ void Corvus6CinStaticsInit(void)
 // The cinematic Corvus for the Dranor scene.
 void SP_character_corvus6(edict_t* self)
 {
-	c_corvus_init(self, CID_CORVUS6);
+	CinematicCorvusInit(self, CID_CORVUS6);
 }

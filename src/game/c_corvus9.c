@@ -160,6 +160,6 @@ void Corvus9CinStaticsInit(void)
 // The cinematic corvus for the T'chekrik scenes.
 void SP_character_corvus9(edict_t* self)
 {
-	c_corvus_init(self, CID_CORVUS9);
+	CinematicCorvusInit(self, CID_CORVUS9);
 	self->svflags |= SVF_FLOAT;
 }

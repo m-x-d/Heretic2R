@@ -167,5 +167,5 @@ void Corvus7CinStaticsInit(void)
 // The cinematic corvus for the Morcalavin scene.
 void SP_character_corvus7(edict_t* self)
 {
-	c_corvus_init(self, CID_CORVUS7);
+	CinematicCorvusInit(self, CID_CORVUS7);
 }

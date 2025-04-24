@@ -332,5 +332,5 @@ void Corvus3CinStaticsInit(void)
 // The cinematic Corvus for the high priestess scene.
 void SP_character_corvus3(edict_t* self)
 {
-	c_corvus_init(self, CID_CORVUS3);
+	CinematicCorvusInit(self, CID_CORVUS3);
 }

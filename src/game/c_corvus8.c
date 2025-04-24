@@ -287,5 +287,5 @@ void Corvus8CinStaticsInit(void)
 // The cinematic corvus for the Siernan scenes.
 void SP_character_corvus8(edict_t* self)
 {
-	c_corvus_init(self, CID_CORVUS8);
+	CinematicCorvusInit(self, CID_CORVUS8);
 }

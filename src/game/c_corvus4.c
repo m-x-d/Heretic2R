@@ -174,5 +174,5 @@ void Corvus4CinStaticsInit(void)
 // The cinematic Corvus for the Scout scene.
 void SP_character_corvus4(edict_t* self)
 {
-	c_corvus_init(self, CID_CORVUS4);
+	CinematicCorvusInit(self, CID_CORVUS4);
 }
