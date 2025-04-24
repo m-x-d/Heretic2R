@@ -46,6 +46,11 @@
 #include "mg_guide.h" //mxd
 #include "m_stats.h"
 
+#define FIRST_SIGHT_ALONE	(VOICE_FIRST_ALONE + 1)
+#define LAST_SIGHT_ALONE	(VOICE_LAST_GROUP - 1)
+
+#define FIRST_SIGHT_GROUP	(VOICE_FIRST_GROUP + 1)
+#define LAST_SIGHT_GROUP	(VOICE_LAST_GROUP - 1)
 
 /*----------------------------------------------------------------------
   plagueElf Base Info
