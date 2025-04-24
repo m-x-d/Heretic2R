@@ -1304,43 +1304,49 @@ static void OgleStartPushUse(edict_t* self, edict_t* other, edict_t* activator) 
 	SetAnim(self, irand(ANIM_PUSH1, ANIM_PUSH3));
 }
 
-void ogle_push (edict_t *self, float dist)
+void ogle_push(edict_t* self, float distance)
 {
-	edict_t	*found = NULL;
-	float	yaw;
-	vec3_t	move, forward, endpos;
-	trace_t	trace;
-	qboolean	done = false;
+	qboolean done = false;
 
-	if(found = G_Find(found, FOFS(targetname), self->target))
+	edict_t* found = NULL;
+	if ((found = G_Find(found, FOFS(targetname), self->target)) != NULL)
 	{
+		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
-		VectorMA(self->s.origin, 64, forward, endpos);
-		gi.trace(self->s.origin, vec3_origin, vec3_origin, endpos, self, MASK_MONSTERSOLID, &trace);
-		if(trace.ent && trace.ent == found)
+
+		vec3_t end_pos;
+		VectorMA(self->s.origin, 64.0f, forward, end_pos);
+
+		trace_t	trace;
+		gi.trace(self->s.origin, vec3_origin, vec3_origin, end_pos, self, MASK_MONSTERSOLID, &trace);
+
+		if (trace.ent != NULL && trace.ent == found)
 		{
-			yaw = self->s.angles[YAW]*M_PI*2 / 360;
-			
-			move[0] = cos(yaw)*dist;
-			move[1] = sin(yaw)*dist;
-			move[2] = 0;
-			if(SV_movestep(found, move, true))
+			const float yaw = DEG2RAD(self->s.angles[YAW]);
+			vec3_t move = { cosf(yaw) * distance, sinf(yaw) * distance, 0.0f };
+
+			if (SV_movestep(found, move, true))
 			{
 				M_GetSlopePitchRoll(found, NULL);
-				M_walkmove(self, self->s.angles[YAW], dist);
+				M_walkmove(self, self->s.angles[YAW], distance);
+
 				return;
 			}
+
 			done = true;
 		}
 	}
 
-	if(!done)
-		SetAnim(self, ANIM_REST4_TRANS);
-	else
+	if (done)
 	{
-		gi.sound (self, CHAN_VOICE, sounds[SND_WIPE_BROW], 1, ATTN_IDLE, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_WIPE_BROW], 1.0f, ATTN_IDLE, 0.0f);
 		SetAnim(self, ANIM_REST1_WIPE);
 	}
+	else
+	{
+		SetAnim(self, ANIM_REST4_TRANS);
+	}
+
 	self->ai_mood = AI_MOOD_REST;
 	self->mood_think = OgleMoodThink;
 }

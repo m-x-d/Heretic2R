@@ -119,6 +119,7 @@ typedef enum SoundID_e
 	SND_CHORUS3,
 	SND_SOLO1,
 	SND_SOLO2,
+
 	SND_PAIN1,
 	SND_PAIN2,
 
@@ -210,7 +211,7 @@ extern void ogle_celebrate(edict_t* self);
 extern void ogle_strike(edict_t* self);
 extern void ogle_pause(edict_t* self);
 extern void ogle_rest(edict_t* self);
-extern void ogle_push(edict_t* self, float dist);
+extern void ogle_push(edict_t* self, float distance);
 
 #define BPN_GRANDDADDY	0 //TODO: unused.
 #define BPN_DADDY		1 //TODO: unused.
