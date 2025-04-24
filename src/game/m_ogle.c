@@ -523,12 +523,12 @@ static void OgleSing(edict_t* self) //mxd. Named 'ogle_sing' in original logic.
 				if (!ogle->monsterinfo.awake)
 					gi.sound(ogle, CHAN_VOICE, sounds[SND_CHORUS1], 0.25f, ATTN_NORM, 0.0f);
 			}
-			self->monsterinfo.jump_time = level.time + 16.0f; //TODO: add ogle_sign_time name?
+			self->monsterinfo.ogle_sing_time = level.time + 16.0f;
 			break;
 
 		case 1:
 			gi.sound(self, CHAN_VOICE, sounds[SND_SOLO1], 1.0f, ATTN_NORM, 0.0f);
-			self->monsterinfo.jump_time = level.time + 4.0f;
+			self->monsterinfo.ogle_sing_time = level.time + 4.0f;
 			break;
 
 		case 2:
@@ -537,12 +537,12 @@ static void OgleSing(edict_t* self) //mxd. Named 'ogle_sing' in original logic.
 				if (!ogle->monsterinfo.awake)
 					gi.sound(ogle, CHAN_VOICE, sounds[SND_CHORUS2], 0.25f, ATTN_NORM, 0.0f);
 			}
-			self->monsterinfo.jump_time = level.time + 3.0f;
+			self->monsterinfo.ogle_sing_time = level.time + 3.0f;
 			break;
 
 		case 3:
 			gi.sound(self, CHAN_VOICE, sounds[SND_SOLO2], 1.0f, ATTN_NORM, 0.0f);
-			self->monsterinfo.jump_time = level.time + 4.0f;
+			self->monsterinfo.ogle_sing_time = level.time + 4.0f;
 			break;
 
 		case 4:
@@ -551,7 +551,7 @@ static void OgleSing(edict_t* self) //mxd. Named 'ogle_sing' in original logic.
 				if (!ogle->monsterinfo.awake)
 					gi.sound(ogle, CHAN_VOICE, sounds[SND_CHORUS3], 0.25f, ATTN_NORM, 0.0f);
 			}
-			self->monsterinfo.jump_time = level.time + 4.0f;
+			self->monsterinfo.ogle_sing_time = level.time + 4.0f;
 			break;
 	}
 
@@ -564,7 +564,7 @@ void ogle_pause(edict_t* self)
 {
 	if (self->enemy == NULL)
 	{
-		if ((self->monsterinfo.ogleflags & OF_SONG_LEADER) && self->monsterinfo.jump_time < level.time)
+		if ((self->monsterinfo.ogleflags & OF_SONG_LEADER) && self->monsterinfo.ogle_sing_time < level.time)
 			OgleSing(self);
 
 		// If we're in pain, get back to work!

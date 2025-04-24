@@ -477,6 +477,7 @@ typedef struct
 	{
 		float jump_time;
 		float morcalavin_teleport_attack_time; //mxd
+		float ogle_sing_time; //mxd
 	};
 
 	int morcalavin_battle_phase; //mxd. Named 'stepState' in original logic.
