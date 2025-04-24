@@ -635,39 +635,40 @@ void ogle_pause(edict_t* self)
 	}
 }
 
-//The ogle is resting, choose a few different possible things to do
-void ogle_rest(edict_t *self)
+// The ogle is resting, choose a few different possible things to do.
+void ogle_rest(edict_t* self)
 {
-	int chance = irand(0,100);
-
 	ogle_pause(self);
 
-	switch(self->curAnimID)
+	switch (self->curAnimID)
 	{
-	case ANIM_REST4_TRANS:
-		SetAnim(self, ANIM_REST4);
-		break;
+		case ANIM_REST4_TRANS:
+			SetAnim(self, ANIM_REST4);
+			break;
 
-	case ANIM_REST2_WIPE:
-		SetAnim(self, ANIM_WORK4);
-		break;
+		case ANIM_REST2_WIPE:
+			SetAnim(self, ANIM_WORK4);
+			break;
 
-	case ANIM_REST3_WIPE:
-		SetAnim(self, ANIM_WORK2);
-		break;
+		case ANIM_REST3_WIPE:
+			SetAnim(self, ANIM_WORK2);
+			break;
 
-	case ANIM_REST1_TRANS:
-		SetAnim(self, ANIM_REST1);
-		break;
-	
-	case ANIM_REST1:
-		if (chance < 20)
-			SetAnim(self, ANIM_REST1_WIPE);
-		break;
+		case ANIM_REST1_TRANS:
+			SetAnim(self, ANIM_REST1);
+			break;
 
-	case ANIM_REST1_WIPE:
-		SetAnim(self, ANIM_REST1);
-		break;
+		case ANIM_REST1:
+			if (irand(0, 100) < 20)
+				SetAnim(self, ANIM_REST1_WIPE);
+			break;
+
+		case ANIM_REST1_WIPE:
+			SetAnim(self, ANIM_REST1);
+			break;
+
+		default:
+			break;
 	}
 }
 
