@@ -1114,7 +1114,7 @@ void assassin_init_cloak(edict_t* self) //mxd. Named 'assassinInitCloak' in orig
 
 #pragma region ========================== AssassinDismember logic ==========================
 
-static qboolean CanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_as' in original logic.
+static qboolean AssassinCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_as' in original logic.
 {
 	static const int bit_for_mesh_node[] = //mxd. Made local static.
 	{
@@ -1228,7 +1228,7 @@ static qboolean AssassinThrowHead(edict_t* self, float damage, const qboolean di
 	if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.3f)
 	{
 		int throw_nodes = 0;
-		CanThrowNode(self, MESH__HEAD, &throw_nodes);
+		AssassinCanThrowNode(self, MESH__HEAD, &throw_nodes);
 
 		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
 		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
@@ -1264,14 +1264,14 @@ static qboolean AssassinThrowTorso(edict_t* self, float damage, const int mesh_p
 	if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.3f)
 	{
 		int throw_nodes = 0;
-		CanThrowNode(self, MESH__TORSOFT, &throw_nodes);
-		CanThrowNode(self, MESH__TORSOBK, &throw_nodes);
-		CanThrowNode(self, MESH__HEAD, &throw_nodes);
-		CanThrowNode(self, MESH__R4ARM, &throw_nodes);
-		CanThrowNode(self, MESH__L4ARM, &throw_nodes);
-		CanThrowNode(self, MESH__KNIFES, &throw_nodes);
-		CanThrowNode(self, MESH__LUPARM, &throw_nodes);
-		CanThrowNode(self, MESH__RUPARM, &throw_nodes);
+		AssassinCanThrowNode(self, MESH__TORSOFT, &throw_nodes);
+		AssassinCanThrowNode(self, MESH__TORSOBK, &throw_nodes);
+		AssassinCanThrowNode(self, MESH__HEAD, &throw_nodes);
+		AssassinCanThrowNode(self, MESH__R4ARM, &throw_nodes);
+		AssassinCanThrowNode(self, MESH__L4ARM, &throw_nodes);
+		AssassinCanThrowNode(self, MESH__KNIFES, &throw_nodes);
+		AssassinCanThrowNode(self, MESH__LUPARM, &throw_nodes);
+		AssassinCanThrowNode(self, MESH__RUPARM, &throw_nodes);
 
 		AssassinDropWeapon(self, BIT_LKNIFE | BIT_RKNIFE);
 
@@ -1311,9 +1311,9 @@ static void AssassinThrowUpperArm(edict_t* self, float damage, const int mesh_pa
 	{
 		int throw_nodes = 0;
 		const int forearm_part = (is_left_arm ? MESH__L4ARM : MESH__R4ARM); //mxd
-		CanThrowNode(self, forearm_part, &throw_nodes);
+		AssassinCanThrowNode(self, forearm_part, &throw_nodes);
 
-		if (CanThrowNode(self, mesh_part, &throw_nodes))
+		if (AssassinCanThrowNode(self, mesh_part, &throw_nodes))
 		{
 			vec3_t right;
 			AngleVectors(self->s.angles, NULL, right, NULL);
@@ -1349,7 +1349,7 @@ static void AssassinThrowLowerArm(edict_t* self, float damage, const int mesh_pa
 	{
 		int throw_nodes = 0;
 
-		if (CanThrowNode(self, mesh_part, &throw_nodes))
+		if (AssassinCanThrowNode(self, mesh_part, &throw_nodes))
 		{
 			vec3_t right;
 			AngleVectors(self->s.angles, NULL, right, NULL);
@@ -1390,9 +1390,9 @@ static void AssassinThrowUpperLeg(edict_t* self, const float damage, const int m
 
 		int throw_nodes = 0;
 		const int calf_part = (is_left_leg ? MESH__LCALF : MESH__RCALF); //mxd
-		CanThrowNode(self, calf_part, &throw_nodes);
+		AssassinCanThrowNode(self, calf_part, &throw_nodes);
 
-		if (CanThrowNode(self, mesh_part, &throw_nodes))
+		if (AssassinCanThrowNode(self, mesh_part, &throw_nodes))
 		{
 			vec3_t right;
 			AngleVectors(self->s.angles, NULL, right, NULL);
@@ -1423,7 +1423,7 @@ static void AssassinThrowLowerLeg(edict_t* self, const float damage, const int m
 
 		int throw_nodes = 0;
 
-		if (CanThrowNode(self, mesh_part, &throw_nodes))
+		if (AssassinCanThrowNode(self, mesh_part, &throw_nodes))
 		{
 			vec3_t right;
 			AngleVectors(self->s.angles, NULL, right, NULL);
