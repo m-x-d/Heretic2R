@@ -160,5 +160,5 @@ void SP_character_ssithra_scout(edict_t* self)
 	VectorSet(self->mins, -26.0f, -16.0f, -13.0f);
 	VectorSet(self->maxs,  26.0f,  16.0f,  13.0f);
 
-	c_character_init(self, CID_SSITHRA_SCOUT);
+	CinematicCharacterInit(self, CID_SSITHRA_SCOUT);
 }

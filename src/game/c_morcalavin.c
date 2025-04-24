@@ -102,5 +102,5 @@ void SP_character_morcalavin(edict_t* self)
 	VectorSet(self->mins, -24.0f, -24.0f, -46.0f);
 	VectorSet(self->maxs,  24.0f,  24.0f,  46.0f);
 
-	c_character_init(self, CID_C_MORCALAVIN);
+	CinematicCharacterInit(self, CID_C_MORCALAVIN);
 }

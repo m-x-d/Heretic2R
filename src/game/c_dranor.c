@@ -180,7 +180,7 @@ void SP_character_dranor(edict_t* self)
 	VectorSet(self->mins, -16.0f, -16.0f, -32.0f);
 	VectorSet(self->maxs,  16.0f,  16.0f,  32.0f);
 
-	c_character_init(self, CID_DRANOR);
+	CinematicCharacterInit(self, CID_DRANOR);
 
 	self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;

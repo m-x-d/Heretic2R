@@ -76,5 +76,5 @@ void SP_character_siernan2(edict_t* self)
 	self->s.scale = 1.0f;
 	self->monsterinfo.scale = 1.0f;
 
-	c_character_init(self, CID_C_SIERNAN2);
+	CinematicCharacterInit(self, CID_C_SIERNAN2);
 }

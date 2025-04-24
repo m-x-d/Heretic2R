@@ -15,7 +15,7 @@ extern void ai_c_move(edict_t* self, float forward, float right, float up);
 extern void ai_c_stand(edict_t* self, float forward, float right, float up);
 
 extern void CinematicCorvusInit(edict_t* self, int class_id);
-extern void c_character_init(edict_t* self, int class_id);
+extern void CinematicCharacterInit(edict_t* self, int class_id);
 extern void ReadCinematicMessage(edict_t* self, G_Message_t* msg);
 
 #ifdef __cplusplus

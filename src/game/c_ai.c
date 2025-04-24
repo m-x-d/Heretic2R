@@ -179,7 +179,7 @@ void CinematicCorvusInit(edict_t* self, const int class_id) //mxd. Named 'c_corv
 	self->monsterinfo.c_mode = true;
 }
 
-void c_character_init(edict_t* self, const int class_id)
+void CinematicCharacterInit(edict_t* self, const int class_id) //mxd. Named 'c_character_init' in original logic.
 {
 	self->classID = class_id;
 	self->s.modelindex = (byte)classStatics[class_id].resInfo->modelIndex;

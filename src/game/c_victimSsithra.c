@@ -107,5 +107,5 @@ void SP_character_ssithra_victim(edict_t* self)
 	VectorSet(self->mins, -40.0f, -16.0f, -2.0f);
 	VectorSet(self->maxs,  40.0f,  16.0f,  2.0f);
 
-	c_character_init(self, CID_SSITHRA_VICTIM);
+	CinematicCharacterInit(self, CID_SSITHRA_VICTIM);
 }

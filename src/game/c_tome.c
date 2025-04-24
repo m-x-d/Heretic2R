@@ -66,5 +66,5 @@ void SP_character_tome(edict_t* self)
 	VectorSet(self->mins, -4.0f, -8.0f, -12.0f);
 	VectorSet(self->maxs,  4.0f,  8.0f,  12.0f);
 
-	c_character_init(self, CID_C_TOME);
+	CinematicCharacterInit(self, CID_C_TOME);
 }

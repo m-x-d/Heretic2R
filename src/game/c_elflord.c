@@ -160,7 +160,7 @@ void SP_character_elflord(edict_t* self)
 	VectorSet(self->mins, -24.0f, -24.0f, -78.0f);
 	VectorSet(self->maxs,  24.0f,  24.0f,  16.0f);
 
-	c_character_init(self, CID_C_ELFLORD);
+	CinematicCharacterInit(self, CID_C_ELFLORD);
 
 	self->s.scale = 2.0f;
 	self->monsterinfo.scale = 2.0f;

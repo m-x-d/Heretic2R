@@ -114,5 +114,5 @@ void SP_character_highpriestess2(edict_t* self)
 	VectorSet(self->mins, -16.0f, -16.0f, -38.0f);
 	VectorSet(self->maxs,  16.0f,  16.0f,  38.0f);
 
-	c_character_init(self, CID_C_HIGHPRIESTESS2);
+	CinematicCharacterInit(self, CID_C_HIGHPRIESTESS2);
 }
