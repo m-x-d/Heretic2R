@@ -323,7 +323,7 @@
     <ClInclude Include="m_ogle_anim.h" />
     <ClInclude Include="m_plagueElf.h" />
     <ClInclude Include="m_plagueElf_anim.h" />
-    <ClInclude Include="m_plagueElf_local.h" />
+    <ClInclude Include="m_plagueElf_shared.h" />
     <ClInclude Include="m_plagueSsithra.h" />
     <ClInclude Include="m_plaguesSithra_local.h" />
     <ClInclude Include="m_plagueSsithra_anim.h" />
