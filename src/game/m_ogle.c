@@ -1128,7 +1128,7 @@ static void OgleDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'o
 	gi.sound(self, CHAN_BODY, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f);
 }
 
-qboolean ogle_findtarget(edict_t* self) //TODO: rename to OgleFindTarget.
+qboolean OgleFindTarget(edict_t* self) //mxd. Named 'ogle_findtarget' in original logic.
 {
 	// Take down weak overlords.
 	edict_t* found = NULL;
@@ -1205,7 +1205,7 @@ static void OgleMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'o
 		return; //BUGFIX: mxd. Original logic doesn't return here.
 	}
 
-	if (self->enemy->health <= 0 && !ogle_findtarget(self))
+	if (self->enemy->health <= 0 && !OgleFindTarget(self))
 	{
 		self->enemy = NULL;
 		self->goalentity = NULL;
@@ -1235,7 +1235,7 @@ static void OgleRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ogl
 
 	if (self->enemy != NULL && self->enemy->health <= 0)
 	{
-		if (!ogle_findtarget(self))
+		if (!OgleFindTarget(self))
 		{
 			self->enemy = NULL;
 			self->goalentity = NULL;

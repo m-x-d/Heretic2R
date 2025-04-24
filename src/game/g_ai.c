@@ -9,6 +9,7 @@
 #include "m_move.h" //mxd
 #include "mg_ai.h" //mxd
 #include "mg_guide.h"
+#include "m_ogle.h" //mxd
 #include "m_stats.h"
 #include "p_anims.h"
 #include "Random.h"
@@ -583,8 +584,6 @@ static qboolean PlayerIsCreeping(const playerinfo_t* info) //mxd. Named 'PlayerC
 	return false;
 }
 
-extern qboolean ogle_findtarget(edict_t* self); //TODO: add to m_ogle.h
-
 // Self is currently not attacking anything, so try to find a target.
 // Returns TRUE if an enemy was sighted.
 // When a player fires a missile or does other things to make noise, the point of impact becomes an alertent
@@ -597,7 +596,7 @@ qboolean FindTarget(edict_t* self)
 {
 	//FIXME: wakeup_distance -1 never look?
 	if (self->classID == CID_OGLE)
-		return ogle_findtarget(self);
+		return OgleFindTarget(self);
 
 	if (self->monsterinfo.aiflags & AI_GOOD_GUY)
 		return false; //FIXME: look for monsters? //mxd. Skip unnecessary self->goalentity->classname == "target_actor" check.
