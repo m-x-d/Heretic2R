@@ -1351,25 +1351,17 @@ void ogle_push(edict_t* self, float distance)
 	self->mood_think = OgleMoodThink;
 }
 
-/*
-==========================================================
-
-	Ogle Spawn functions
-
-==========================================================
-*/
-
 void OgleStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_OGLE].msgReceivers[MSG_STAND]		= OgleStandMsgHandler;
-	classStatics[CID_OGLE].msgReceivers[MSG_RUN]		= OgleRunMsgHandler;
-	classStatics[CID_OGLE].msgReceivers[MSG_MELEE]		= OgleMeleeMsgHandler;
-	classStatics[CID_OGLE].msgReceivers[MSG_DISMEMBER]  = DismemberMsgHandler;
-	classStatics[CID_OGLE].msgReceivers[MSG_DEATH]		= OgleDeathMsgHandler;
-	classStatics[CID_OGLE].msgReceivers[MSG_PAIN]		= OglePainMsgHandler;
-	classStatics[CID_OGLE].msgReceivers[MSG_DEATH_PAIN]		= OgleDeathPainMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_STAND] = OgleStandMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_RUN] = OgleRunMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_MELEE] = OgleMeleeMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_DEATH] = OgleDeathMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_PAIN] = OglePainMsgHandler;
+	classStatics[CID_OGLE].msgReceivers[MSG_DEATH_PAIN] = OgleDeathPainMsgHandler;
 
 	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION1] = OgleCinematicActionMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_C_ACTION2] = OgleCinematicActionMsgHandler;
@@ -1413,39 +1405,40 @@ void OgleStaticsInit(void)
 	classStatics[CID_OGLE].msgReceivers[MSG_C_WALK3] = OgleCinematicActionMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_C_WALK4] = OgleCinematicActionMsgHandler;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/ogle/tris.fm");
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/ogle/tris.fm");
 
-	sounds[SND_PICK1]		=	gi.soundindex("monsters/ogle/pick1.wav");	
-	sounds[SND_PICK2]		=	gi.soundindex("monsters/ogle/pick2.wav");	
-	sounds[SND_SPIKE1]		=	gi.soundindex("monsters/ogle/spike1.wav");	
-	sounds[SND_SPIKE2]		=	gi.soundindex("monsters/ogle/spike2.wav");	
-	sounds[SND_HAMMER1]		=	gi.soundindex("monsters/ogle/hammer1.wav");	
-	sounds[SND_HAMMER2]		=	gi.soundindex("monsters/ogle/hammer2.wav");	
-	sounds[SND_PICK_FLESH]	=	gi.soundindex("monsters/ogle/pickflesh.wav");	
-	sounds[SND_HAMMER_FLESH]=	gi.soundindex("monsters/ogle/hammerflesh.wav");	
-	sounds[SND_WIPE_BROW]	=	gi.soundindex("monsters/ogle/wipebrow.wav");	
-	sounds[SND_ENRAGE1]		=	gi.soundindex("monsters/ogle/enrage1.wav");	
-	sounds[SND_ENRAGE2]		=	gi.soundindex("monsters/ogle/enrage2.wav");	
-	sounds[SND_DEATH]		=	gi.soundindex("monsters/ogle/death.wav");	
-	sounds[SND_CHEER1]		=	gi.soundindex("monsters/ogle/cheer1.wav");	
-	sounds[SND_CHEER2]		=	gi.soundindex("monsters/ogle/cheer2.wav");	
-	sounds[SND_CHEER3]		=	gi.soundindex("monsters/ogle/cheer3.wav");	
+	sounds[SND_PICK1] = gi.soundindex("monsters/ogle/pick1.wav");
+	sounds[SND_PICK2] = gi.soundindex("monsters/ogle/pick2.wav");
+	sounds[SND_SPIKE1] = gi.soundindex("monsters/ogle/spike1.wav");
+	sounds[SND_SPIKE2] = gi.soundindex("monsters/ogle/spike2.wav");
+	sounds[SND_HAMMER1] = gi.soundindex("monsters/ogle/hammer1.wav");
+	sounds[SND_HAMMER2] = gi.soundindex("monsters/ogle/hammer2.wav");
+	sounds[SND_PICK_FLESH] = gi.soundindex("monsters/ogle/pickflesh.wav");
+	sounds[SND_HAMMER_FLESH] = gi.soundindex("monsters/ogle/hammerflesh.wav");
+	sounds[SND_WIPE_BROW] = gi.soundindex("monsters/ogle/wipebrow.wav");
+	sounds[SND_ENRAGE1] = gi.soundindex("monsters/ogle/enrage1.wav");
+	sounds[SND_ENRAGE2] = gi.soundindex("monsters/ogle/enrage2.wav");
+	sounds[SND_DEATH] = gi.soundindex("monsters/ogle/death.wav");
+	sounds[SND_CHEER1] = gi.soundindex("monsters/ogle/cheer1.wav");
+	sounds[SND_CHEER2] = gi.soundindex("monsters/ogle/cheer2.wav");
+	sounds[SND_CHEER3] = gi.soundindex("monsters/ogle/cheer3.wav");
 
-	sounds[SND_PAIN1]		=	gi.soundindex("monsters/ogle/oglemoan1.wav");
-	sounds[SND_PAIN2]		=	gi.soundindex("monsters/ogle/oglemoan2.wav");
-	
-	//Singing
-	sounds[SND_CHORUS1]		=	gi.soundindex("monsters/ogle/chorus1.wav");	
-	sounds[SND_CHORUS2]		=	gi.soundindex("monsters/ogle/chorus3.wav");	
-	sounds[SND_CHORUS3]		=	gi.soundindex("monsters/ogle/chorus5.wav");	
-	sounds[SND_SOLO1]		=	gi.soundindex("monsters/ogle/solo2.wav");	
-	sounds[SND_SOLO2]		=	gi.soundindex("monsters/ogle/solo4.wav");	
+	sounds[SND_PAIN1] = gi.soundindex("monsters/ogle/oglemoan1.wav");
+	sounds[SND_PAIN2] = gi.soundindex("monsters/ogle/oglemoan2.wav");
 
-	classStatics[CID_OGLE].resInfo = &resInfo;
+	// Singing.
+	sounds[SND_CHORUS1] = gi.soundindex("monsters/ogle/chorus1.wav");
+	sounds[SND_CHORUS2] = gi.soundindex("monsters/ogle/chorus3.wav");
+	sounds[SND_CHORUS3] = gi.soundindex("monsters/ogle/chorus5.wav");
+	sounds[SND_SOLO1] = gi.soundindex("monsters/ogle/solo2.wav");
+	sounds[SND_SOLO2] = gi.soundindex("monsters/ogle/solo4.wav");
+
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
+
+	classStatics[CID_OGLE].resInfo = &res_info;
 }
 
 /*QUAKED monster_ogle(1 .5 0) (-16 -16 -24) (16 16 16) pushing pick_up pick_down chisel_up chisel_down hammer_up hammer_down singing CINEMATIC
