@@ -462,7 +462,7 @@ void mssithra_check_shoot_loop(edict_t* self) //mxd. Named 'mssithraCheckShotLoo
 
 void MssithraStaticsInit(void)
 {
-	static ClassResourceInfo_t res_info;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_STAND] = MssithraStandMsgHandler;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MISSILE] = MssithraMissileMsgHandler;
