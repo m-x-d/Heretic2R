@@ -559,101 +559,79 @@ static void OgleSing(edict_t* self) //mxd. Named 'ogle_sing' in original logic.
 	self->noise_index %= 5;
 }
 
-//High level AI interface
-void ogle_pause(edict_t *self)
-{	
-	edict_t	*ogle = NULL;
-	int chance = irand(0,100);
-
-	if ( (self->monsterinfo.ogleflags & OF_SONG_LEADER) && (self->monsterinfo.jump_time < level.time) && (!self->enemy) )
-		OgleSing(self);
-
-	if (!self->enemy)
+// High level AI interface.
+void ogle_pause(edict_t* self)
+{
+	if (self->enemy == NULL)
 	{
-		//If we're in pain, get back to work!
-		if ( self->curAnimID == ANIM_PAIN2)
-		{
-			SetAnim(self, ANIM_WORK4);
-		}
-		else if ( self->curAnimID == ANIM_PAIN3)
-		{
-			SetAnim(self, ANIM_WORK4);
-		}
+		if ((self->monsterinfo.ogleflags & OF_SONG_LEADER) && self->monsterinfo.jump_time < level.time)
+			OgleSing(self);
 
-		//Switch up the animation speeds
-		if ( (self->curAnimID == ANIM_WORK1) || (self->curAnimID == ANIM_WORK2) ) 
-		{
-			if (irand(1,10) < 8)
-			{
-				SetAnim(self, ANIM_WORK1);
-			}
-			else
-			{
-				SetAnim(self, ANIM_WORK2);
-			}
-		}
+		// If we're in pain, get back to work!
+		if (self->curAnimID == ANIM_PAIN2 || self->curAnimID == ANIM_PAIN3)
+			SetAnim(self, ANIM_WORK4);
+		else if (self->curAnimID == ANIM_WORK1 || self->curAnimID == ANIM_WORK2) // Switch up the animation speeds.
+			SetAnim(self, ((irand(1, 10) < 8) ? ANIM_WORK1 : ANIM_WORK2));
 	}
 
-	if(self->mood_think)
+	if (self->mood_think != NULL)
 		self->mood_think(self);
 
 	switch (self->ai_mood)
 	{
-	case AI_MOOD_ATTACK:
-		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-		break;
-	
-	case AI_MOOD_FLEE:
-	case AI_MOOD_PURSUE:
-	case AI_MOOD_NAVIGATE:
-		if (self->enemy)
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+		case AI_MOOD_ATTACK:
+			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+			break;
 
-		break;
-	case AI_MOOD_WALK:
-		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-		break;
-	case AI_MOOD_STAND:
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_FLEE:
+		case AI_MOOD_PURSUE:
+		case AI_MOOD_NAVIGATE:
+			if (self->enemy != NULL)
+				QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_DELAY:
-		break;
+		case AI_MOOD_WALK:
+			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_NORMAL:
-		break;
-	case AI_MOOD_REST:
-		if ( (self->curAnimID != ANIM_REST1) && (self->curAnimID != ANIM_REST1_WIPE) && 
-			 (self->curAnimID != ANIM_REST1_TRANS) && (self->curAnimID != ANIM_REST2_WIPE) && (self->curAnimID != ANIM_REST3_WIPE) )
-		{
-			if ( (self->curAnimID == ANIM_WORK4) || (self->curAnimID == ANIM_WORK5) )
+		case AI_MOOD_STAND:
+			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_REST:
+			if (self->curAnimID != ANIM_REST1 && self->curAnimID != ANIM_REST1_WIPE &&
+				self->curAnimID != ANIM_REST1_TRANS && self->curAnimID != ANIM_REST2_WIPE && self->curAnimID != ANIM_REST3_WIPE)
 			{
-				if (chance < 30)
+				if (self->curAnimID == ANIM_WORK4 || self->curAnimID == ANIM_WORK5)
 				{
-					gi.sound (self, CHAN_BODY, sounds[SND_WIPE_BROW], 1, ATTN_IDLE, 0);
-					SetAnim(self, ANIM_REST2_WIPE);
+					const int chance = irand(0, 100);
+
+					if (chance < 30)
+					{
+						gi.sound(self, CHAN_BODY, sounds[SND_WIPE_BROW], 1.0f, ATTN_IDLE, 0.0f);
+						SetAnim(self, ANIM_REST2_WIPE);
+						self->ai_mood = AI_MOOD_NORMAL;
+					}
+					else if (chance < 60)
+					{
+						SetAnim(self, ANIM_REST1_TRANS);
+					}
+					else
+					{
+						SetAnim(self, ANIM_REST4_TRANS);
+					}
+				}
+				else if (self->curAnimID == ANIM_WORK1 || self->curAnimID == ANIM_WORK2)
+				{
+					gi.sound(self, CHAN_BODY, sounds[SND_WIPE_BROW], 1.0f, ATTN_IDLE, 0.0f);
+					SetAnim(self, ANIM_REST3_WIPE);
 					self->ai_mood = AI_MOOD_NORMAL;
 				}
-				else if (chance < 60)
-				{
-					SetAnim(self, ANIM_REST1_TRANS);
-				}
-				else
-				{
-					SetAnim(self, ANIM_REST4_TRANS);
-				}
 			}
-			else if (self->curAnimID == ANIM_WORK1 || self->curAnimID == ANIM_WORK2)
-			{
-				gi.sound (self, CHAN_BODY, sounds[SND_WIPE_BROW], 1, ATTN_IDLE, 0);
-				SetAnim(self, ANIM_REST3_WIPE);
-				self->ai_mood = AI_MOOD_NORMAL;
-			}
-		}
-		break;
+			break;
 
-	default :
-		break;
+		default:
+			break;
 	}
 }
 
