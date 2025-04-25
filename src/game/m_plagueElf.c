@@ -39,7 +39,7 @@ extern void dying_elf_sounds(edict_t* self, int type); //TODO: move to header.
 static void PlagueElfSpellTouch(edict_t* self, edict_t* Other, cplane_t* Plane, csurface_t* Surface); //TODO: remove.
 static qboolean PlagueElfDropWeapon(edict_t* self); //TODO: remove.
 static void PlagueElfPollResponse(const edict_t* self, int sound_event, int sound_id, float time); //TODO: remove.
-static void pelf_init_phase_in(edict_t* self); //TODO: remove.
+static void PlagueElfPhaseInInit(edict_t* self); //TODO: remove.
 static void PlagueElfPhaseOutInit(edict_t* self); //TODO: remove.
 static void PlagueElfPhaseOutPreThink(edict_t* self);
 static void PlagueElfPhaseInPreThink(edict_t* self);
@@ -351,7 +351,7 @@ void plagueElf_strike(edict_t* self) //TODO: rename to plagueelf_strike.
 
 static void PlagueElfDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_death' in original logic.
 {
-	pelf_init_phase_in(self);
+	PlagueElfPhaseInInit(self);
 
 	edict_t* target;
 	edict_t* inflictor;
@@ -668,7 +668,7 @@ void plagueElf_c_spell(edict_t* self) //TODO: rename to plagueelf_cinematic_spel
 
 static void PlagueElfMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_missile' in original logic.
 {
-	pelf_init_phase_in(self);
+	PlagueElfPhaseInInit(self);
 	SetAnim(self, ANIM_MISSILE);
 }
 
@@ -1124,7 +1124,7 @@ static void PlagueElfPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	qboolean force_pain;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
-	pelf_init_phase_in(self);
+	PlagueElfPhaseInInit(self);
 
 	if (!force_pain && !(self->monsterinfo.aiflags & AI_COWARD) && !(self->monsterinfo.aiflags & AI_FLEE) && irand(0, self->health) > damage) //mxd. flrand() in original logic.
 		return;
@@ -1153,7 +1153,7 @@ void plagueElf_pause(edict_t* self) //TODO: rename to plagueelf_pause.
 	if (self->ai_mood == AI_MOOD_FLEE)
 	{
 		if (self->s.color.a != 255 && self->pre_think != PlagueElfPhaseInPreThink)
-			pelf_init_phase_in(self);
+			PlagueElfPhaseInInit(self);
 	}
 	else if (self->pre_think != PlagueElfPhaseOutPreThink)
 	{
@@ -1526,15 +1526,15 @@ static void PlagueElfPhaseOutInit(edict_t* self) //mxd. Named 'pelf_init_phase_o
 	}
 }
 
-static void pelf_init_phase_in (edict_t *self)
+static void PlagueElfPhaseInInit(edict_t* self) //mxd. Named 'pelf_init_phase_in' in original logic.
 {
-	if(stricmp(self->classname, "monster_palace_plague_guard_invisible"))
-		return;
-
-//	gi.dprintf("Elf phasing in\n");
-	self->pre_think = PlagueElfPhaseInPreThink;
-	self->next_pre_think = level.time + FRAMETIME;
+	if (Q_stricmp(self->classname, "monster_palace_plague_guard_invisible") == 0) //mxd. stricmp -> Q_stricmp.
+	{
+		self->pre_think = PlagueElfPhaseInPreThink;
+		self->next_pre_think = level.time + FRAMETIME;
+	}
 }
+
 /*-------------------------------------------------------------------------
 	PlagueElfStaticsInit
 -------------------------------------------------------------------------*/
