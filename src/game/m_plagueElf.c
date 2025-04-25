@@ -1246,7 +1246,7 @@ void plagueelf_land(edict_t* self) //mxd. Named 'pelf_land' in original logic.
 	gi.CreateEffect(&self->s, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
 }
 
-void pelf_go_inair(edict_t* self) //TODO: rename to plagueelf_inair_go.
+void plagueelf_inair_go(edict_t* self) //mxd. Named 'pelf_go_inair' in original logic.
 {
 	SetAnim(self, ANIM_INAIR);
 }

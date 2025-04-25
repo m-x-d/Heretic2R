@@ -210,7 +210,7 @@ static const animframe_t plagueElf_frames_fjump[] =
 	{ FRAME_jump19,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump20,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t plagueElf_move_fjump = { 20, plagueElf_frames_fjump, pelf_go_inair };
+const animmove_t plagueElf_move_fjump = { 20, plagueElf_frames_fjump, plagueelf_inair_go };
 
 // Plague Elf Walking 1.
 static const animframe_t plagueElf_frames_walk1[] =
