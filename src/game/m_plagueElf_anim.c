@@ -171,7 +171,7 @@ const animmove_t plagueElf_move_runatk1 = { 8, plagueElf_frames_runatk1, plaguee
 // Plague Elf Landing.
 static const animframe_t plagueElf_frames_land[] =
 {
-	{ FRAME_recover1, NULL, 0, 0, 0, NULL, 0, pelf_land },
+	{ FRAME_recover1, NULL, 0, 0, 0, NULL, 0, plagueelf_land },
 	{ FRAME_recover2, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_recover3, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_recover4, NULL, 0, 0, 0, NULL, 0, NULL },

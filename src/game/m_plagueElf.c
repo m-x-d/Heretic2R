@@ -1240,7 +1240,7 @@ void plagueelf_pause(edict_t* self) //mxd. Named 'plagueElf_pause' in original l
 	}
 }
 
-void pelf_land(edict_t* self) //TODO: rename to plagueelf_land.
+void plagueelf_land(edict_t* self) //mxd. Named 'pelf_land' in original logic.
 {
 	gi.sound(self, CHAN_BODY, gi.soundindex("misc/land.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: precache sound?
 	gi.CreateEffect(&self->s, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
