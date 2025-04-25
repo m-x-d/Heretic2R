@@ -36,7 +36,7 @@
 
 extern void dying_elf_sounds(edict_t* self, int type); //TODO: move to header.
 
-static void plagueElfSpellTouch(edict_t* self, edict_t* Other, cplane_t* Plane, csurface_t* Surface); //TODO: remove.
+static void PlagueElfSpellTouch(edict_t* self, edict_t* Other, cplane_t* Plane, csurface_t* Surface); //TODO: remove.
 static qboolean plagueElf_dropweapon(edict_t* self, int damage); //TODO: remove.
 static void pelf_PollResponse(edict_t* self, int sound_event, int sound_id, float time); //TODO: remove.
 static void pelf_init_phase_in(edict_t* self); //TODO: remove.
@@ -450,7 +450,7 @@ static void PlagueElfSpellInit(edict_t* spell) //mxd. Named 'create_pe_spell' in
 	spell->s.scale = 0.5f;
 	spell->s.effects |= (EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
 	spell->svflags |= SVF_ALWAYS_SEND;
-	spell->touch = plagueElfSpellTouch;
+	spell->touch = PlagueElfSpellTouch;
 }
 
 // The spell needs to bounce.
@@ -478,90 +478,62 @@ static void PlagueElfReflectSpellInit(edict_t* self, edict_t* spell) //mxd. Name
 	G_LinkMissile(spell);
 }
 
-static void plagueElfSpellTouch (edict_t *self, edict_t *Other, cplane_t *Plane, csurface_t *Surface)
+static void PlagueElfSpellTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'plagueElfSpellTouch' in original logic.
 {
-	vec3_t	normal;
-	edict_t	*Spell;
-
-	if(Surface&&(Surface->flags&SURF_SKY))
+	if (surface != NULL && (surface->flags & SURF_SKY))
 	{
 		SkyFly(self);
 		return;
 	}
 
-	if(EntReflecting(Other, true, true))
+	if (EntReflecting(other, true, true))
 	{
-		Spell = G_Spawn();
+		edict_t* spell = G_Spawn();
 
-		PlagueElfReflectSpellInit(self,Spell);
-
-		gi.CreateEffect(&Spell->s,
-			FX_PE_SPELL,
-			CEF_OWNERS_ORIGIN,
-			NULL, 
-			"bv",
-			self->red_rain_count,
-			Spell->velocity);
-
+		PlagueElfReflectSpellInit(self, spell);
+		gi.CreateEffect(&spell->s, FX_PE_SPELL, CEF_OWNERS_ORIGIN, NULL, "bv", self->red_rain_count, spell->velocity);
 		G_SetToFree(self);
 
 		return;
 	}
 
 	VectorNormalize(self->velocity);
-	switch(self->red_rain_count)
+
+	switch (self->red_rain_count) //TODO: add plagueelf_spell_fx_type name.
 	{
-	case FX_PE_MAKE_SPELL:
-		gi.CreateEffect(NULL,
-			FX_PE_SPELL,
-			0,
-			self->s.origin, 
-			"bv",
-			FX_PE_EXPLODE_SPELL,
-			self->velocity);
-		self->dmg = irand(PLAGUEELF_DMG_SPELL_MIN, PLAGUEELF_DMG_SPELL_MAX) + skill->value;
-		break;
-	case FX_PE_MAKE_SPELL2:
-		gi.CreateEffect(NULL,
-			FX_PE_SPELL,
-			0,
-			self->s.origin, 
-			"bv",
-			FX_PE_EXPLODE_SPELL2,
-			self->velocity);
-		self->dmg = irand(PLAGUEELF_GUARD_DMG_SPELL_MIN, PLAGUEELF_GUARD_DMG_SPELL_MAX);
-		break;
-	case FX_PE_MAKE_SPELL3:
-		gi.CreateEffect(NULL,
-			FX_PE_SPELL,
-			0,
-			self->s.origin, 
-			"bv",
-			FX_PE_EXPLODE_SPELL3,
-			self->velocity);
-		self->dmg = irand(PLAGUEELF_GUARD_DMG_SPELL_MIN+2, PLAGUEELF_GUARD_DMG_SPELL_MAX+2);
-		self->dmg_radius = 40;
-		break;
+		case FX_PE_MAKE_SPELL:
+			gi.CreateEffect(NULL, FX_PE_SPELL, 0, self->s.origin, "bv", FX_PE_EXPLODE_SPELL, self->velocity);
+			self->dmg = irand(PLAGUEELF_DMG_SPELL_MIN, PLAGUEELF_DMG_SPELL_MAX) + SKILL;
+			break;
+
+		case FX_PE_MAKE_SPELL2:
+			gi.CreateEffect(NULL, FX_PE_SPELL, 0, self->s.origin, "bv", FX_PE_EXPLODE_SPELL2, self->velocity);
+			self->dmg = irand(PLAGUEELF_GUARD_DMG_SPELL_MIN, PLAGUEELF_GUARD_DMG_SPELL_MAX);
+			break;
+
+		case FX_PE_MAKE_SPELL3:
+			gi.CreateEffect(NULL, FX_PE_SPELL, 0, self->s.origin, "bv", FX_PE_EXPLODE_SPELL3, self->velocity);
+			self->dmg = irand(PLAGUEELF_GUARD_DMG_SPELL_MIN, PLAGUEELF_GUARD_DMG_SPELL_MAX) + 2;
+			self->dmg_radius = 40.0f;
+			break;
 	}
 
-	if(Other->takedamage)
+	if (other->takedamage != DAMAGE_NO)
 	{
-		VectorSet(normal, 0, 0, 1);
-		if(Plane)
-		{
-			if(Plane->normal)
-			{
-				VectorCopy(Plane->normal, normal);
-			}
-		}
-		T_Damage(Other,self,self->owner,self->movedir,self->s.origin,normal,self->dmg,0,DAMAGE_SPELL,MOD_DIED);
+		vec3_t normal;
+
+		if (plane != NULL)
+			VectorCopy(plane->normal, normal);
+		else
+			VectorCopy(vec3_up, normal);
+
+		T_Damage(other, self, self->owner, self->movedir, self->s.origin, normal, self->dmg, 0, DAMAGE_SPELL, MOD_DIED);
 	}
 
-	if(self->dmg_radius)
-		T_DamageRadius(self, self->owner, self->owner, self->dmg_radius, self->dmg, 0, DAMAGE_SPELL,MOD_DIED);
+	if (self->dmg_radius > 0.0f)
+		T_DamageRadius(self, self->owner, self->owner, self->dmg_radius, (float)self->dmg, 0, DAMAGE_SPELL, MOD_DIED);
 
 	VectorClear(self->velocity);
-
 	G_FreeEdict(self);
 }
 
@@ -581,7 +553,7 @@ void plagueElf_spell(edict_t *self)
 
 		PlagueElfSpellInit(Spell);
 
-		Spell->touch=plagueElfSpellTouch;
+		Spell->touch=PlagueElfSpellTouch;
 
 		Spell->owner=self;
 		Spell->enemy=self->enemy;
@@ -650,7 +622,7 @@ void plagueElf_c_spell(edict_t *self)
 
 	PlagueElfSpellInit(Spell);
 
-	Spell->touch=plagueElfSpellTouch;
+	Spell->touch=PlagueElfSpellTouch;
 
 	Spell->owner=self;
 //	Spell->enemy=self->enemy;
