@@ -1115,26 +1115,24 @@ static void PlagueElfDismember(edict_t* self, int damage, HitLocation_t hl) //mx
 		self->monsterinfo.aiflags |= AI_COWARD;
 }
 
-void plagueElf_pain(edict_t *self, G_Message_t *msg)
+static void PlagueElfPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_pain' in original logic.
 {
-	int				temp, damage;
-	qboolean		force_pain;
-	
+	int temp;
+	int damage;
+	qboolean force_pain;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	pelf_init_phase_in(self);
 
-	if(!(self->monsterinfo.aiflags & AI_COWARD) && !(self->monsterinfo.aiflags & AI_FLEE))
-		if(!force_pain)
-			if(flrand(0,self->health)>damage)
-				return;
+	if (!force_pain && !(self->monsterinfo.aiflags & AI_COWARD) && !(self->monsterinfo.aiflags & AI_FLEE) && irand(0, self->health) > damage) //mxd. flrand() in original logic.
+		return;
 
-	if(self->fire_damage_time > level.time)
+	if (self->fire_damage_time > level.time)
 		self->monsterinfo.aiflags |= AI_COWARD;
 
 	if (self->pain_debounce_time < level.time)
 	{
-		self->pain_debounce_time = level.time + 1;
+		self->pain_debounce_time = level.time + 1.0f;
 		SetAnim(self, ANIM_PAIN1);
 	}
 }
@@ -1698,7 +1696,7 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_RUN] = plagueElf_run;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MELEE] = PlagueElfMeleeMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MISSILE] = PlagueElfMissileMsgHandler;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_PAIN] = plagueElf_pain;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_PAIN] = PlagueElfPainMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH] = PlagueElfDeathMsgHandler;
 //	classStatics[CID_PLAGUEELF].msgReceivers[MSG_BLOCKED] = plagueElf_blocked;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
