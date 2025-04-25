@@ -733,22 +733,18 @@ static qboolean PlagueElfCanThrowNode(edict_t* self, const int node_id, int* thr
 	return false;
 }
 
-void plagueElf_chicken (edict_t *self, int coward, int flee, float fleetime)
+static void PlagueElfTryFlee(edict_t* self, const int coward_chance, const int flee_chance, const float flee_time) //mxd. Named 'plagueElf_chicken' in original logic.
 {
-	float chance;
+	const int chance = irand(0, 20 + SKILL * 10); //mxd. flrand() in original logic.
 
-	chance = flrand(0, 20 + skill->value * 10);
-	
-	if(chance<coward)
+	if (chance < coward_chance)
 	{
 		self->monsterinfo.aiflags |= AI_COWARD;
-		return;
 	}
-
-	if(chance<flee)
+	else if (chance < flee_chance)
 	{
 		self->monsterinfo.aiflags |= AI_FLEE;
-		self->monsterinfo.flee_finished = level.time + fleetime;
+		self->monsterinfo.flee_finished = level.time + flee_time;
 	}
 }
 
@@ -784,14 +780,14 @@ static qboolean plagueElf_dropweapon (edict_t *self, int damage)
 		{//just take off top
 			ThrowWeapon(self, &handspot, BIT_HOE, 0, FRAME_torsooff);
 			self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
-			plagueElf_chicken(self,2,5,flrand(2,7));
+			PlagueElfTryFlee(self,2,5,flrand(2,7));
 		}
 		else
 		{
 			ThrowWeapon(self, &handspot, BIT_HANDLE|BIT_HOE, 0, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
-			plagueElf_chicken(self,4,8,flrand(3,8));
+			PlagueElfTryFlee(self,4,8,flrand(3,8));
 		}
 		return true;
 	}
@@ -801,14 +797,14 @@ static qboolean plagueElf_dropweapon (edict_t *self, int damage)
 		{//just take off top
 			ThrowWeapon(self, &handspot, BIT_GAFF, 0, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
-			plagueElf_chicken(self,2,6,flrand(2,7));
+			PlagueElfTryFlee(self,2,6,flrand(2,7));
 		}
 		else
 		{
 			ThrowWeapon(self, &handspot, BIT_HANDLE|BIT_GAFF, 0, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
-			plagueElf_chicken(self,4,8,flrand(3,8));
+			PlagueElfTryFlee(self,4,8,flrand(3,8));
 		}
 		return true;
 	}
@@ -818,21 +814,21 @@ static qboolean plagueElf_dropweapon (edict_t *self, int damage)
 		{//just take off top
 			ThrowWeapon(self, &handspot, BIT_HAMMER, 0, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
-			plagueElf_chicken(self,2,6,flrand(2,7));
+			PlagueElfTryFlee(self,2,6,flrand(2,7));
 		}
 		else
 		{
 			ThrowWeapon(self, &handspot, BIT_HANDLE|BIT_HAMMER, 0, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
-			plagueElf_chicken(self,4,8,flrand(3,8));
+			PlagueElfTryFlee(self,4,8,flrand(3,8));
 		}
 		return true;
 	}
 	ThrowWeapon(self, &handspot, BIT_HANDLE, 0, FRAME_partfly);
 	self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 	if(self->deadflag != DEAD_DEAD)
-		plagueElf_chicken(self,6,8,flrand(5,10));
+		PlagueElfTryFlee(self,6,8,flrand(5,10));
 	return true;
 }
 
@@ -963,7 +959,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,-10,right,gore_spot);
-					plagueElf_chicken(self,6,8,flrand(7,15));
+					PlagueElfTryFlee(self,6,8,flrand(7,15));
 					PlagueElfDismemberSound(self);
 					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
 				}
