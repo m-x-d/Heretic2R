@@ -1780,73 +1780,21 @@ void SP_monster_plagueElf(edict_t* self)
 	self->svflags |= SVF_WAIT_NOTSOLID;
 }
 
-/*QUAKED monster_palace_plague_guard (1 .5 0) (-17 -25 -1) (22 12 63) AMBUSH ASLEEP WALKING CINEMATIC Missile 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
-
-Can fire 2 ranged attacks, has a new skin, toucgher, has armor?
-
-The plagueElf 
-
-AMBUSH - Will not be woken up by other monsters or shots from player
-
-ASLEEP - will not appear until triggered
-
-WALKING - use WANDER instead
-
-WANDER - Monster will wander around aimlessly (but follows buoys)
-
-MELEE_LEAD - Monster will tryto cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not
-
-STALK - Monster will only approach and attack from behind- if you're facing the monster it will just stand there.  Once the monster takes pain, however, it will stop this behaviour and attack normally
-
-COWARD - Monster starts off in flee mode- runs away from you when woken up
-
-"homebuoy" - monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to)
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-mintel - monster intelligence- this basically tells a monster how many buoys away an enemy has to be for it to give up.
-
-melee_range - How close the player has to be, maximum, for the monster to go into melee.  If this is zero, the monster will never melee.  If it is negative, the monster will try to keep this distance from the player.  If the monster has a backup, he'll use it if too clode, otherwise, a negative value here means the monster will just stop running at the player at this distance.
-	Examples:
-		melee_range = 60 - monster will start swinging it player is closer than 60
-		melee_range = 0 - monster will never do a mele attack
-		melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close
-
-missile_range - Maximum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-min_missile_range - Minimum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-bypass_missile_chance - Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot.  This, in effect, will make the monster come in more often than hang back and fire.  A percentage (0 = always fire/never close in, 100 = never fire/always close in).- must be whole number
-
-jump_chance - every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time)- must be whole number
-
-wakeup_distance - How far (max) the player can be away from the monster before it wakes up.  This just means that if the monster can see the player, at what distance should the monster actually notice him and go for him.
-
-DEFAULTS:
-mintel					= 16
-melee_range				= 0
-missile_range			= 512
-min_missile_range		= 0
-bypass_missile_chance	= 60
-jump_chance				= 50
-wakeup_distance			= 1024
-
-NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1
-*/
-/*-------------------------------------------------------------------------
-	SP_monster_palace_plague_guard
--------------------------------------------------------------------------*/
-void SP_monster_palace_plague_guard (edict_t *self)
+// QUAKED monster_palace_plague_guard (1 .5 0) (-17 -25 -1) (22 12 63) AMBUSH ASLEEP WALKING CINEMATIC MISSILE 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
+// Palace Guard Plague Elf. Can fire 2 ranged attacks, has a new skin, tougher, has armor?
+// Same spawnflags/variables as monster_plagueElf. 
+void SP_monster_palace_plague_guard(edict_t* self)
 {
-	if(!self->health)
+	if (self->health == 0)
 		self->health = PLAGUEELF_HEALTH * 2;
 
 	self->spawnflags |= MSF_PELF_MISSILE;
 
-	if (!self->s.scale)
-		self->monsterinfo.scale = self->s.scale = flrand(1.0, 1.3);
+	if (self->s.scale == 0.0f)
+	{
+		self->s.scale = flrand(1.0f, 1.3f);
+		self->monsterinfo.scale = self->s.scale;
+	}
 
 	SP_monster_plagueElf(self);
 
