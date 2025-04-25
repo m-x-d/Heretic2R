@@ -37,7 +37,7 @@
 extern void dying_elf_sounds(edict_t* self, int type); //TODO: move to header.
 
 static void PlagueElfSpellTouch(edict_t* self, edict_t* Other, cplane_t* Plane, csurface_t* Surface); //TODO: remove.
-static qboolean plagueElf_dropweapon(edict_t* self, int damage); //TODO: remove.
+static qboolean PlagueElfDropWeapon(edict_t* self); //TODO: remove.
 static void pelf_PollResponse(edict_t* self, int sound_event, int sound_id, float time); //TODO: remove.
 static void pelf_init_phase_in(edict_t* self); //TODO: remove.
 static void pelf_init_phase_out(edict_t* self); //TODO: remove.
@@ -371,7 +371,7 @@ static void PlagueElfDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 		return;
 
 	self->deadflag = DEAD_DEAD;
-	plagueElf_dropweapon(self, -self->health);
+	PlagueElfDropWeapon(self);
 
 	if (self->health <= -80) // Gib death.
 	{
@@ -754,80 +754,91 @@ static void PlagueElfDeadPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 		DismemberMsgHandler(self, msg);
 }
 
-//THROWS weapon, turns off those nodes, sets that weapon as gone
-static qboolean plagueElf_dropweapon (edict_t *self, int damage)
-{//NO PART FLY FRAME!
-	vec3_t handspot, forward, right, up;
-	float chance;
-
-	if(self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW)
+// Throws weapon, turns off those nodes, sets that weapon as gone.
+static qboolean PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropweapon' in original logic. Removed unused 'damage' arg.
+{
+	// NO PART FLY FRAME!
+	if (self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW)
 		return false;
 
-	VectorClear(handspot);
-	AngleVectors(self->s.angles,forward,right,up);
-	VectorMA(handspot,5,forward,handspot);
-	VectorMA(handspot,8,right,handspot);
-	VectorMA(handspot,-6,up,handspot);
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
-	if(self->deadflag == DEAD_DEAD||(self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW))
-		chance = 0;
-	else
-		chance = 3;
-	if(!(self->s.fmnodeinfo[MESH__HOE].flags & FMNI_NO_DRAW))
+	vec3_t hand_spot = { 0 };
+	VectorMA(hand_spot, 5.0f, forward, hand_spot);
+	VectorMA(hand_spot, 8.0f, right, hand_spot);
+	VectorMA(hand_spot, -6.0f, up, hand_spot);
+
+	const int chance = ((self->deadflag == DEAD_DEAD || (self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW)) ? 0 : 3);
+
+	if (!(self->s.fmnodeinfo[MESH__HOE].flags & FMNI_NO_DRAW))
 	{
-		if(irand(0,10)<chance)
-		{//just take off top
-			ThrowWeapon(self, &handspot, BIT_HOE, 0, FRAME_torsooff);
+		if (irand(0, 10) < chance)
+		{
+			// Just take off top.
+			ThrowWeapon(self, &hand_spot, BIT_HOE, 0.0f, FRAME_torsooff);
 			self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
-			PlagueElfTryFlee(self,2,5,flrand(2,7));
+			PlagueElfTryFlee(self, 2, 5, flrand(2.0f, 7.0f));
 		}
 		else
 		{
-			ThrowWeapon(self, &handspot, BIT_HANDLE|BIT_HOE, 0, FRAME_partfly);
+			ThrowWeapon(self, &hand_spot, BIT_HANDLE | BIT_HOE, 0.0f, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
-			PlagueElfTryFlee(self,4,8,flrand(3,8));
+			PlagueElfTryFlee(self, 4, 8, flrand(3.0f, 8.0f));
 		}
+
 		return true;
 	}
-	if(!(self->s.fmnodeinfo[MESH__GAFF].flags & FMNI_NO_DRAW))
+
+	if (!(self->s.fmnodeinfo[MESH__GAFF].flags & FMNI_NO_DRAW))
 	{
-		if(irand(0,10)<chance)
-		{//just take off top
-			ThrowWeapon(self, &handspot, BIT_GAFF, 0, FRAME_partfly);
+		if (irand(0, 10) < chance)
+		{
+			// Just take off top.
+			ThrowWeapon(self, &hand_spot, BIT_GAFF, 0.0f, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
-			PlagueElfTryFlee(self,2,6,flrand(2,7));
+			PlagueElfTryFlee(self, 2, 6, flrand(2.0f, 7.0f));
 		}
 		else
 		{
-			ThrowWeapon(self, &handspot, BIT_HANDLE|BIT_GAFF, 0, FRAME_partfly);
+			ThrowWeapon(self, &hand_spot, BIT_HANDLE | BIT_GAFF, 0.0f, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
-			PlagueElfTryFlee(self,4,8,flrand(3,8));
+			PlagueElfTryFlee(self, 4, 8, flrand(3.0f, 8.0f));
 		}
+
 		return true;
 	}
-	if(!(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW))
+
+	if (!(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW))
 	{
-		if(irand(0,10)<chance)
-		{//just take off top
-			ThrowWeapon(self, &handspot, BIT_HAMMER, 0, FRAME_partfly);
+		if (irand(0, 10) < chance)
+		{
+			// Just take off top.
+			ThrowWeapon(self, &hand_spot, BIT_HAMMER, 0.0f, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
-			PlagueElfTryFlee(self,2,6,flrand(2,7));
+			PlagueElfTryFlee(self, 2, 6, flrand(2.0f, 7.0f));
 		}
 		else
 		{
-			ThrowWeapon(self, &handspot, BIT_HANDLE|BIT_HAMMER, 0, FRAME_partfly);
+			ThrowWeapon(self, &hand_spot, BIT_HANDLE | BIT_HAMMER, 0.0f, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
-			PlagueElfTryFlee(self,4,8,flrand(3,8));
+			PlagueElfTryFlee(self, 4, 8, flrand(3.0f, 8.0f));
 		}
+
 		return true;
 	}
-	ThrowWeapon(self, &handspot, BIT_HANDLE, 0, FRAME_partfly);
+
+	ThrowWeapon(self, &hand_spot, BIT_HANDLE, 0.0f, FRAME_partfly);
 	self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
-	if(self->deadflag != DEAD_DEAD)
-		PlagueElfTryFlee(self,6,8,flrand(5,10));
+
+	if (self->deadflag != DEAD_DEAD)
+		PlagueElfTryFlee(self, 6, 8, flrand(5.0f, 10.0f));
+
 	return true;
 }
 
@@ -883,7 +894,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.25)
-				plagueElf_dropweapon (self, (int)damage);
+				PlagueElfDropWeapon (self);
 			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
 			{
 				PlagueElfCanThrowNode(self, MESH__HEAD,&throw_nodes);
@@ -922,7 +933,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 				PlagueElfCanThrowNode(self, MESH__R_ARM,&throw_nodes);
 				PlagueElfCanThrowNode(self, MESH__HEAD,&throw_nodes);
 
-				plagueElf_dropweapon (self, (int)damage);
+				PlagueElfDropWeapon (self);
 				PlagueElfDismemberSound(self);
 				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_torsooff);
 				VectorAdd(self->s.origin, gore_spot, gore_spot);
@@ -938,7 +949,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 			else
 			{
 				if(flrand(0,self->health)<damage*0.5)
-					plagueElf_dropweapon (self, (int)damage);
+					PlagueElfDropWeapon (self);
 				self->s.fmnodeinfo[MESH__BODY].flags |= FMNI_USE_SKIN;			
 				self->s.fmnodeinfo[MESH__BODY].skin = self->s.skinnum+1;
 			}
@@ -950,7 +961,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 			if(self->s.fmnodeinfo[MESH__L_ARM].flags & FMNI_USE_SKIN)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.4)
-				plagueElf_dropweapon (self, (int)damage);
+				PlagueElfDropWeapon (self);
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
 				if(PlagueElfCanThrowNode(self, MESH__L_ARM, &throw_nodes))
@@ -983,7 +994,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,10,right,gore_spot);
-					plagueElf_dropweapon (self, (int)damage);
+					PlagueElfDropWeapon (self);
 					PlagueElfDismemberSound(self);
 					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
 				}
@@ -991,7 +1002,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 			else
 			{
 				if(flrand(0,self->health)<damage*0.75)
-					plagueElf_dropweapon (self, (int)damage);
+					PlagueElfDropWeapon (self);
 				self->s.fmnodeinfo[MESH__R_ARM].flags |= FMNI_USE_SKIN;			
 				self->s.fmnodeinfo[MESH__R_ARM].skin = self->s.skinnum+1;
 			}
@@ -1046,7 +1057,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 
 		default:
 			if(flrand(0,self->health)<damage*0.25)
-				plagueElf_dropweapon (self, (int)damage);
+				PlagueElfDropWeapon (self);
 			break;
 	}
 	if(throw_nodes)
