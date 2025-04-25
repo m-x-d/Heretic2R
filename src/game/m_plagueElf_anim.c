@@ -365,7 +365,7 @@ static const animframe_t plagueElf_frames_kdeath_go[] =
 {
 	{ FRAME_death1, NULL, 0, 0, 0, NULL, 0, plagueElfdeathsqueal },
 	{ FRAME_death2, NULL, 0, 0, 0, NULL, 0, plagueelf_check_land },
-	{ FRAME_death3, NULL, 0, 0, 0, NULL, 0, plagueelf_death_loop },
+	{ FRAME_death3, NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_loop },
 };
 const animmove_t plagueElf_move_kdeath_go = { 3, plagueElf_frames_kdeath_go, NULL };
 

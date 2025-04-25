@@ -41,8 +41,8 @@ static qboolean PlagueElfDropWeapon(edict_t* self); //TODO: remove.
 static void PlagueElfPollResponse(const edict_t* self, int sound_event, int sound_id, float time); //TODO: remove.
 static void PlagueElfPhaseInInit(edict_t* self); //TODO: remove.
 static void PlagueElfPhaseOutInit(edict_t* self); //TODO: remove.
-static void PlagueElfPhaseOutPreThink(edict_t* self);
-static void PlagueElfPhaseInPreThink(edict_t* self);
+static void PlagueElfPhaseOutPreThink(edict_t* self); //TODO: remove.
+static void PlagueElfPhaseInPreThink(edict_t* self); //TODO: remove.
 
 #pragma region ========================== Plague Elf Base Info ==========================
 
@@ -251,7 +251,7 @@ static void PlagueElfCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) 
 	SetAnim(self, curr_anim);
 }
 
-void plagueelf_death_loop(edict_t* self) //TODO: rename to plagueelf_kdeath_loop?
+void plagueelf_knockback_death_loop(edict_t* self) //mxd. Named 'plagueelf_death_loop' in original logic.
 {
 	SetAnim(self, ANIM_KDEATH_LOOP);
 }
