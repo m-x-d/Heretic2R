@@ -670,42 +670,32 @@ static void PlagueElfMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 	SetAnim(self, ANIM_MISSILE);
 }
 
-/*-------------------------------------------------------------------------
-	plagueElf_melee
--------------------------------------------------------------------------*/
-void plagueElf_melee(edict_t *self, G_Message_t *msg)
+static void PlagueElfMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_melee' in original logic.
 {
-	vec3_t	attackVel, vf;
-	int		ret;
-
-	if (M_ValidTarget(self, self->enemy))
-	{//A monster in melee will continue too long if the player backs away, this prevents it
-		if(self->spawnflags&MSF_FIXED||self->monsterinfo.aiflags&AI_NO_MELEE)
-		{
-			SetAnim(self, ANIM_MISSILE);
-			return;
-		}
-		AngleVectors(self->s.angles, vf, NULL, NULL);
-		VectorMA(vf, 1, vf, attackVel);
-		ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, self->melee_range, 5 );
-
-		if (ret)
-		{
-			if(irand(0,10)<5)
-				SetAnim(self, ANIM_MELEE1);		
-			else
-				SetAnim(self, ANIM_MELEE2);		
-		}
-		else 
-		{	
-			if(self->spawnflags&MSF_FIXED)
-				SetAnim(self, ANIM_DELAY);
-			else
-				SetAnim(self, ANIM_RUNATK1);
-		}
-	}
-	else//If our enemy is dead, we need to stand
+	if (!M_ValidTarget(self, self->enemy))
+	{
+		// If our enemy is dead, we need to stand.
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
+	}
+
+	// A monster in melee will continue too long if the player backs away, this prevents it.
+	if ((self->spawnflags & MSF_FIXED) || (self->monsterinfo.aiflags & AI_NO_MELEE))
+	{
+		SetAnim(self, ANIM_MISSILE);
+		return;
+	}
+
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+	Vec3ScaleAssign(2.0f, forward);
+
+	if (M_PredictTargetEvasion(self, self->enemy, forward, self->enemy->velocity, self->melee_range, 5.0f))
+		SetAnim(self, irand(ANIM_MELEE1, ANIM_MELEE2));
+	else if (self->spawnflags & MSF_FIXED)
+		SetAnim(self, ANIM_DELAY);
+	else
+		SetAnim(self, ANIM_RUNATK1);
 }
 
 /*-------------------------------------------------------------------------
@@ -1682,7 +1672,7 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_STAND] = plagueElf_stand;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_WALK] = plagueElf_walk;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_RUN] = plagueElf_run;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MELEE] = plagueElf_melee;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MELEE] = PlagueElfMeleeMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MISSILE] = PlagueElfMissileMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_PAIN] = plagueElf_pain;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH] = PlagueElfDeathMsgHandler;
