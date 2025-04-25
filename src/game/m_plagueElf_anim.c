@@ -13,7 +13,7 @@
 // Plague Elf Death 1 - the big death, flying backwards and flipping over.
 static const animframe_t plagueElf_frames_death1[] =
 {
-	{ FRAME_death1,		NULL, 0, 0, 0, NULL, 0, plagueElfdeathsqueal },
+	{ FRAME_death1,		NULL, 0, 0, 0, NULL, 0, plagueelf_death_squeal },
 	{ FRAME_death2,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_death3,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_death4,		NULL, 0, 0, 0, NULL, 0, NULL },
@@ -32,7 +32,7 @@ const animmove_t plagueElf_move_death1 = { 13, plagueElf_frames_death1, M_EndDea
 // Plague Elf Death 2.
 static const animframe_t plagueElf_frames_death2[] =
 {
-	{ FRAME_deathb1,	NULL, 0, 0, 0, NULL, 0, plagueElfdeathsqueal },
+	{ FRAME_deathb1,	NULL, 0, 0, 0, NULL, 0, plagueelf_death_squeal },
 	{ FRAME_deathb2,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathb3,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathb4,	NULL, 0, 0, 0, NULL, 0, NULL },
@@ -51,7 +51,7 @@ const animmove_t plagueElf_move_death2 = { 14, plagueElf_frames_death2, M_EndDea
 // Plague Elf Death 3.
 static const animframe_t plagueElf_frames_death3[] =
 {
-	{ FRAME_deathc1,	NULL, 0, 0, 0, NULL, 0, plagueElfdeathsqueal },
+	{ FRAME_deathc1,	NULL, 0, 0, 0, NULL, 0, plagueelf_death_squeal },
 	{ FRAME_deathc2,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathc3,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathc4,	NULL, 0, 0, 0, NULL, 0, NULL },
@@ -70,7 +70,7 @@ const animmove_t plagueElf_move_death3 = { 14, plagueElf_frames_death3, M_EndDea
 // Plague Elf Death 4.
 static const animframe_t plagueElf_frames_death4[] =
 {
-	{ FRAME_deathd1,	NULL, 0, 0, 0, NULL, 0, plagueElfdeathsqueal },
+	{ FRAME_deathd1,	NULL, 0, 0, 0, NULL, 0, plagueelf_death_squeal },
 	{ FRAME_deathd2,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathd3,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathd4,	NULL, 0, 0, 0, NULL, 0, NULL },
@@ -363,7 +363,7 @@ const animmove_t plagueElf_delay = { 25, plagueElf_frames_delay, plagueElf_pause
 // Plague Elf Knockback Death Start.
 static const animframe_t plagueElf_frames_kdeath_go[] =
 {
-	{ FRAME_death1, NULL, 0, 0, 0, NULL, 0, plagueElfdeathsqueal },
+	{ FRAME_death1, NULL, 0, 0, 0, NULL, 0, plagueelf_death_squeal },
 	{ FRAME_death2, NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
 	{ FRAME_death3, NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_loop },
 };

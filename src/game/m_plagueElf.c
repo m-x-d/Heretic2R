@@ -416,7 +416,7 @@ static void PlagueElfDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 		SetAnim(self, ANIM_DIE4);
 }
 
-void plagueElfdeathsqueal(edict_t* self) //TODO: rename to plagueelf_death_squeal.
+void plagueelf_death_squeal(edict_t* self) //mxd. Named 'plagueElfdeathsqueal' in original logic.
 {
 	gi.sound(self, CHAN_VOICE, sounds[irand(SND_DIE1, SND_DIE3)], 1.0f, ATTN_NORM, 0.0f);
 }
