@@ -1460,14 +1460,13 @@ static void PlagueElfVoicePollMsgHandler(edict_t* self, G_Message_t* msg) //mxd.
 	}
 }
 
-//Play a sound from a trigger or a pending sound event
-void pelf_EchoSound ( edict_t *self, G_Message_t *msg )
+// Play a sound from a trigger or a pending sound event.
+static void PlagueElfVoicePuppetMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'pelf_EchoSound' in original logic.
 {
 	int sound;
-
 	ParseMsgParms(msg, "i", &sound);
 
-	gi.sound(self, CHAN_VOICE, sounds[sound], 1, ATTN_NORM, 0);	
+	gi.sound(self, CHAN_VOICE, sounds[sound], 1.0f, ATTN_NORM, 0.0f);
 }
 
 //
@@ -1575,7 +1574,7 @@ void PlagueElfStaticsInit(void)
 	//Sound support
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_SIGHT] = PlagueElfVoiceSightMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_POLL] = PlagueElfVoicePollMsgHandler;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_PUPPET] = pelf_EchoSound;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_PUPPET] = PlagueElfVoicePuppetMsgHandler;
 
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_IDLE1] = PlagueElfCinematicActionMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_IDLE2] = PlagueElfCinematicActionMsgHandler;
