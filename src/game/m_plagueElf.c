@@ -1332,63 +1332,44 @@ static int PlagueElfChooseResponseSound(const int event, int sound_id) //mxd. Na
 	}
 }
 
-//plague elf has seen first target (usually player)
-
-/*-----------------------------------------------
-	pelf_SightSound 	
------------------------------------------------*/
-void pelf_SightSound ( edict_t *self, G_Message_t *msg )
+// Plague elf has seen first target (usually player).
+static void PlagueElfVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'pelf_SightSound' in original logic.
 {
-	edict_t	*enemy = NULL;
-	byte	sight_type;
-	int		support, sound;
+	if (self->targetname != NULL || self->monsterinfo.c_mode)
+		return; // Cinematic waiting to be activated, don't do this.
 
-	if(self->targetname || self->monsterinfo.c_mode)
-		return;//cinematic waiting to be activated, don't do this
-
-	//Have we already said something?
+	// Have we already said something?
 	if (self->monsterinfo.supporters != -1)
 		return;
-	
+
+	edict_t* enemy = NULL;
+	byte sight_type;
 	ParseMsgParms(msg, "be", &sight_type, &enemy);
 
-	//Find out how many elves are around (save this if we want it later)
-	support = self->monsterinfo.supporters = M_FindSupport(self, PLAGUEELF_SUPPORT_RADIUS);
+	// Find out how many elves are around (save this if we want it later).
+	self->monsterinfo.supporters = M_FindSupport(self, PLAGUEELF_SUPPORT_RADIUS);
 
-	//See if we are the first to see the player
-	if(M_CheckAlert(self, PLAGUEELF_SUPPORT_RADIUS))
+	// See if we are the first to see the player.
+	if (M_CheckAlert(self, PLAGUEELF_SUPPORT_RADIUS))
 	{
-		//gi.dprintf("pelf_SightSound: elf has %d supporters\n", support);
-
-		if (support < 1)	//Loner
+		if (self->monsterinfo.supporters < 1) // Loner.
 		{
-			sound = PlagueElfChooseSightSound(SE_ALONE);
-			gi.sound(self, CHAN_VOICE, sounds[sound], 1, ATTN_NORM, 0);
+			const int sound_id = PlagueElfChooseSightSound(SE_ALONE);
+			gi.sound(self, CHAN_VOICE, sounds[sound_id], 1.0f, ATTN_NORM, 0.0f);
 		}
-		else if (support < 2)	//Paired
+		else // Paired or grouped.
 		{
-			sound = PlagueElfChooseSightSound(SE_PAIR);
-			self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[sound];
-			gi.sound(self, CHAN_VOICE, sounds[sound], 1, ATTN_NORM, 0);
+			const int event_type = (self->monsterinfo.supporters < 2 ? SE_PAIR : SE_GROUP); //mxd
+			const int sound_id = PlagueElfChooseSightSound(event_type);
 
-			pelf_PollResponse( self, SE_PAIR, sound, self->monsterinfo.sound_finished - flrand(0.5, 0.25) );
-		}
-		else //Grouped
-		{
-			sound = PlagueElfChooseSightSound(SE_GROUP);
-			self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[sound];
-			gi.sound(self, CHAN_VOICE, sounds[sound], 1, ATTN_NORM, 0);
-			
-			pelf_PollResponse( self, SE_GROUP, sound, self->monsterinfo.sound_finished - flrand(0.5, 0.25) );
+			self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[sound_id];
+			gi.sound(self, CHAN_VOICE, sounds[sound_id], 1, ATTN_NORM, 0);
+
+			pelf_PollResponse(self, event_type, sound_id, self->monsterinfo.sound_finished - flrand(0.5f, 0.25f));
 		}
 
-		if(support)
-		{//FIXME: make sure enemy is far enough away to anim!
-			if(irand(0, 1))
-				SetAnim(self, ANIM_CURSING);
-			else
-				SetAnim(self, ANIM_POINT);
-		}
+		if (self->monsterinfo.supporters > 0)
+			SetAnim(self, irand(ANIM_CURSING, ANIM_POINT)); //FIXME: make sure enemy is far enough away to anim!
 	}
 }
 
@@ -1622,7 +1603,7 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_CHECK_MOOD] = PlagueElfCheckMoodMsgHandler;
 
 	//Sound support
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_SIGHT] = pelf_SightSound;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_SIGHT] = PlagueElfVoiceSightMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_POLL] = pelf_EchoResponse;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_PUPPET] = pelf_EchoSound;
 
