@@ -1381,7 +1381,7 @@ void SP_monster_spreader (edict_t *self)
 
 	self->touch = M_Touch;
 
-	self->monsterinfo.otherenemyname = "monster_box";
+	self->monsterinfo.otherenemyname = "monster_box"; //TODO: 'monster_box' is not defined anywhere.
 	self->monsterinfo.aiflags = 0;
 	self->monsterinfo.flee_finished = 0;
 	
