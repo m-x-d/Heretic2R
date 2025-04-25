@@ -606,73 +606,62 @@ void plagueElf_spell(edict_t* self) //TODO: rename to plagueelf_spell.
 	spell->nextthink = level.time + 3.0f;
 }
 
-void plagueElf_c_spell(edict_t *self)
-{//fixme; adjust for up/down
-	vec3_t	Forward, right, firedir, holdpos;
-	edict_t	*Spell;
-	
-	if(self->s.fmnodeinfo[MESH__R_ARM].flags&FMNI_NO_DRAW)	// Was his arm lopped off?
+void plagueElf_c_spell(edict_t* self) //TODO: rename to plagueelf_cinematic_spell.
+{
+	//FIXME: adjust for up/down.
+	if (self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW) // Was his arm lopped off?
 		return;
 
-	self->monsterinfo.attack_finished = level.time + 0.4;
-	Spell = G_Spawn();
+	self->monsterinfo.attack_finished = level.time + 0.4f;
 
-	PlagueElfSpellInit(Spell);
+	edict_t* spell = G_Spawn();
 
-	Spell->touch=PlagueElfSpellTouch;
+	PlagueElfSpellInit(spell);
 
-	Spell->owner=self;
-//	Spell->enemy=self->enemy;
-	
-	Spell->health = 0; // tell the touch function what kind of Spell we are;
+	spell->touch = PlagueElfSpellTouch;
+	spell->owner = self;
 
-	AngleVectors(self->s.angles, Forward, right, NULL);
-	VectorCopy(self->s.origin,Spell->s.origin);	
-	VectorMA(Spell->s.origin, 4, Forward, Spell->s.origin);
-	VectorMA(Spell->s.origin, 8, right, Spell->s.origin);
-	Spell->s.origin[2] += 12;
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	VectorCopy(self->movedir,Spell->movedir);
-	vectoangles(Forward,Spell->s.angles);
+	VectorCopy(self->s.origin, spell->s.origin);
+	VectorMA(spell->s.origin, 4.0f, forward, spell->s.origin);
+	VectorMA(spell->s.origin, 8.0f, right, spell->s.origin);
+	spell->s.origin[2] += 12.0f;
 
+	VectorCopy(self->movedir, spell->movedir);
+	vectoangles(forward, spell->s.angles);
 
-	VectorCopy(self->s.origin,holdpos);
-	VectorMA(Spell->s.origin, 40, Forward, Spell->s.origin);
+	vec3_t hold_pos;
+	VectorCopy(self->s.origin, hold_pos);
+	VectorMA(spell->s.origin, 40.0f, forward, spell->s.origin);
 
-	VectorSubtract(holdpos, Spell->s.origin, firedir);
-	VectorNormalize(firedir);
-	Forward[2] = firedir[2];
-	VectorNormalize(Forward);
-	VectorScale(Forward, 500, Spell->velocity);
+	vec3_t fire_dir;
+	VectorSubtract(hold_pos, spell->s.origin, fire_dir);
+	VectorNormalize(fire_dir);
 
-	VectorCopy(Spell->velocity, Spell->movedir);
-	VectorNormalize(Spell->movedir);
-	vectoangles(Spell->movedir, Spell->s.angles);
-	Spell->s.angles[PITCH] = anglemod(Spell->s.angles[PITCH] * -1);
+	forward[2] = fire_dir[2];
+	VectorNormalize(forward);
+	VectorScale(forward, 500.0f, spell->velocity);
 
-	if(stricmp(self->classname, "monster_plagueElf"))//one of the special dudes
-	{
-		if(irand(0, 3))
-			Spell->red_rain_count = FX_PE_MAKE_SPELL2;
-		else
-			Spell->red_rain_count = FX_PE_MAKE_SPELL3;
-	}
+	VectorCopy(spell->velocity, spell->movedir);
+	VectorNormalize(spell->movedir);
+	vectoangles(spell->movedir, spell->s.angles);
+
+	spell->s.angles[PITCH] = anglemod(-spell->s.angles[PITCH]);
+
+	if (Q_stricmp(self->classname, "monster_plagueElf") != 0) // One of the special dudes.
+		spell->red_rain_count = ((irand(0, 3) > 0) ? FX_PE_MAKE_SPELL2 : FX_PE_MAKE_SPELL3);
 	else
-		Spell->red_rain_count = FX_PE_MAKE_SPELL;
+		spell->red_rain_count = FX_PE_MAKE_SPELL;
 
-	gi.CreateEffect(&Spell->s,
-		FX_PE_SPELL,
-		CEF_OWNERS_ORIGIN,
-		NULL, 
-		"bv",
-		Spell->red_rain_count,
-		Spell->velocity);
+	gi.CreateEffect(&spell->s, FX_PE_SPELL, CEF_OWNERS_ORIGIN, NULL, "bv", spell->red_rain_count, spell->velocity);
 
-	G_LinkMissile(Spell); 
+	G_LinkMissile(spell);
 
-	Spell->nextthink=level.time+3;
-	Spell->think=G_FreeEdict;//plagueElfSpellThink;
-
+	spell->think = G_FreeEdict;
+	spell->nextthink = level.time + 3.0f;
 }
 
 void plagueElf_runaway (edict_t *self, G_Message_t *msg)
