@@ -1621,165 +1621,122 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].resInfo = &res_info;
 }
 
-/*QUAKED monster_plagueElf (1 .5 0) (-17 -25 -1) (22 12 63) AMBUSH ASLEEP WALKING CINEMATIC Missile 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
+// QUAKED monster_plagueElf (1 .5 0) (-17 -25 -1) (22 12 63) AMBUSH ASLEEP WALKING CINEMATIC MISSILE 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
+// The Plague Elf.
 
-Missile - can fire a ranged attack
+// Spawnflags:
+// MISSILE		- Can fire a ranged attack.
+// AMBUSH		- Will not be woken up by other monsters or shots from player.
+// ASLEEP		- Will not appear until triggered.
+// WALKING		- Use WANDER instead.
+// WANDER		- Monster will wander around aimlessly (but follows buoys).
+// MELEE_LEAD	- Monster will try to cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not.
+// STALK		- Monster will only approach and attack from behind. If you're facing the monster it will just stand there.
+//				  Once the monster takes pain, however, it will stop this behaviour and attack normally.
+// COWARD		- Monster starts off in flee mode (runs away from you when woken up).
 
-The plagueElf 
+// Variables:
+// homebuoy					- Monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to).
+// wakeup_target			- Monsters will fire this target the first time it wakes up (only once).
+// pain_target				- Monsters will fire this target the first time it gets hurt (only once).
+// mintel					- Monster intelligence - this basically tells a monster how many buoys away an enemy has to be for it to give up (default 16).
+// melee_range				- How close the player has to be for the monster to go into melee. If this is zero, the monster will never melee.
+//							  If it is negative, the monster will try to keep this distance from the player.
+//							  If the monster has a backup, he'll use it if too close, otherwise, a negative value here means the monster will just stop
+//							  running at the player at this distance (default 0).
+//							 Examples:
+//								melee_range = 60 - monster will start swinging it player is closer than 60.
+//								melee_range = 0 - monster will never do a melee attack.
+//								melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close.
+// missile_range			- Maximum distance the player can be from the monster to be allowed to use it's ranged attack (default 512).
+// min_missile_range		- Minimum distance the player can be from the monster to be allowed to use it's ranged attack (default 0).
+// bypass_missile_chance	- Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot. This, in effect, will make the monster
+//							  come in more often than hang back and fire. A percentage (0 = always fire/never close in, 100 = never fire/always close in) - must be whole number (default 0 (melee P.E.) / 60 (missile P.E.)).
+// jump_chance				- Every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time) - must be whole number (default 50).
+// wakeup_distance			- How far (max) the player can be away from the monster before it wakes up. This means that if the monster can see the player,
+//							  at what distance should the monster actually notice him and go for him (default 1024).
+// NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1.
 
-AMBUSH - Will not be woken up by other monsters or shots from player
-
-ASLEEP - will not appear until triggered
-
-WALKING - use WANDER instead
-
-WANDER - Monster will wander around aimlessly (but follows buoys)
-
-MELEE_LEAD - Monster will tryto cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not
-
-STALK - Monster will only approach and attack from behind- if you're facing the monster it will just stand there.  Once the monster takes pain, however, it will stop this behaviour and attack normally
-
-COWARD - Monster starts off in flee mode- runs away from you when woken up
-
-"homebuoy" - monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to)
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-mintel - monster intelligence- this basically tells a monster how many buoys away an enemy has to be for it to give up.
-
-melee_range - How close the player has to be, maximum, for the monster to go into melee.  If this is zero, the monster will never melee.  If it is negative, the monster will try to keep this distance from the player.  If the monster has a backup, he'll use it if too clode, otherwise, a negative value here means the monster will just stop running at the player at this distance.
-	Examples:
-		melee_range = 60 - monster will start swinging it player is closer than 60
-		melee_range = 0 - monster will never do a mele attack
-		melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close
-
-missile_range - Maximum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-min_missile_range - Minimum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-bypass_missile_chance - Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot.  This, in effect, will make the monster come in more often than hang back and fire.  A percentage (0 = always fire/never close in, 100 = never fire/always close in).- must be whole number
-
-jump_chance - every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time)- must be whole number
-
-wakeup_distance - How far (max) the player can be away from the monster before it wakes up.  This just means that if the monster can see the player, at what distance should the monster actually notice him and go for him.
-
-DEFAULTS(melee P.E.):
-mintel					= 16
-melee_range				= 0
-missile_range			= 512
-min_missile_range		= 0
-bypass_missile_chance	= 0
-jump_chance				= 50
-wakeup_distance			= 1024
-
-DEFAULTS(missile P.E.):
-mintel					= 16
-melee_range				= 0
-missile_range			= 512
-min_missile_range		= 0
-bypass_missile_chance	= 60
-jump_chance				= 50
-wakeup_distance			= 1024
-
-NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1
-*/
-
-/*-------------------------------------------------------------------------
-	SP_monster_plagueElf
--------------------------------------------------------------------------*/
-void SP_monster_plagueElf (edict_t *self)
+void SP_monster_plagueElf(edict_t* self)
 {
-	int chance;//, scale;
-
-	if(self->spawnflags & MSF_WALKING)
+	if (self->spawnflags & MSF_WALKING)
 	{
 		self->spawnflags |= MSF_WANDER;
 		self->spawnflags &= ~MSF_WALKING;
 	}
 
-	if (!M_WalkmonsterStart(self))		// Failed initialization
+	if (!M_WalkmonsterStart(self)) // Failed initialization.
 		return;
-		
+
 	self->msgHandler = DefaultMsgHandler;
 	self->monsterinfo.dismember = PlagueElfDismember;
 
-	if (!self->health)
-	{
+	if (self->health == 0)
 		self->health = PLAGUEELF_HEALTH;
-	}
 
-	//Apply to the end result (whether designer set or not)
-	self->max_health = self->health = MonsterHealth(self->health);
+	// Apply to the end result (whether designer set or not).
+	self->health = MonsterHealth(self->health);
+	self->max_health = self->health;
 
 	self->mass = PLAGUEELF_MASS;
-	self->yaw_speed = 20;
+	self->yaw_speed = 20.0f;
 
 	self->movetype = PHYSICSTYPE_STEP;
-	VectorClear(self->knockbackvel);
-	
-	self->solid=SOLID_BBOX;
-
-	if(irand(0,1))
-		self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
-	//FIXME: Hack to account for new origin with old QuakEd header
-	self->s.origin[2] += 32;
-
-	VectorCopy(STDMinsForClass[self->classID], self->mins);
-	VectorCopy(STDMaxsForClass[self->classID], self->maxs);	
-	self->viewheight = self->maxs[2]*0.8;
-	
-	self->s.modelindex = classStatics[CID_PLAGUEELF].resInfo->modelIndex;
-
-	// All skins are even numbers, pain skins are skin+1.
-	if (!self->s.skinnum)
-	{	// If the skin hasn't been touched, set it.
-		if (irand(0,1))
-			self->s.skinnum = 0;	
-		else
-			self->s.skinnum = 2;
-	}
-
-	if (!self->s.scale)
-	{
-		self->s.scale = self->monsterinfo.scale = MODEL_SCALE;
-	}
-
+	self->solid = SOLID_BBOX;
 	self->materialtype = MAT_FLESH;
 
+	VectorClear(self->knockbackvel);
 
-	//FIXME (somewhere: otherenemy should be more than just *one* kind
-	self->monsterinfo.otherenemyname = "monster_box";
+	if (irand(0, 1) == 1)
+		self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
 
-	if(self->spawnflags & MSF_WANDER)
+	self->s.origin[2] += 32.0f; //FIXME: Hack to account for new origin with old QuakEd header.
+
+	VectorCopy(STDMinsForClass[self->classID], self->mins);
+	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
+	self->viewheight = (int)(self->maxs[2] * 0.8f);
+
+	self->s.modelindex = (byte)classStatics[CID_PLAGUEELF].resInfo->modelIndex;
+
+	// All skins are even numbers, pain skins are skin + 1.
+	if (self->s.skinnum == 0 && irand(0, 1) == 0)
+		self->s.skinnum = 2; // If the skin hasn't been touched, set it.
+
+	if (self->s.scale == 0.0f)
+	{
+		self->s.scale = MODEL_SCALE;
+		self->monsterinfo.scale = self->s.scale;
+	}
+
+	//FIXME: otherenemy should be more than just *one* kind.
+	self->monsterinfo.otherenemyname = "monster_box"; //TODO: 'monster_box' is not defined anywhere.
+
+	if (self->spawnflags & MSF_WANDER)
 	{
 		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 	}
-	else if(self->spawnflags & MSF_PELF_CINEMATIC)
+	else if (self->spawnflags & MSF_PELF_CINEMATIC)
 	{
-		self->svflags|=SVF_FLOAT;
-		self->monsterinfo.c_mode = 1;
-//		self->takedamage = DAMAGE_NO;
-		QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige",0,0,0,NULL,NULL);
+		self->svflags |= SVF_FLOAT;
+		self->monsterinfo.c_mode = true;
+		QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 	}
 	else
 	{
-		QPostMessage(self,MSG_STAND,PRI_DIRECTIVE, NULL);
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 
-	if(self->spawnflags&MSF_FIXED || self->spawnflags&MSF_PELF_MISSILE)
+	// Setup missile plague elf.
+	if (self->spawnflags & (MSF_FIXED | MSF_PELF_MISSILE))
 	{
-//		if(!self->melee_range)
-			self->melee_range = 0;
+		self->melee_range = 0.0f;
 
-		if(!self->missile_range)
-			self->missile_range = 512;
-		
-//		if(!self->min_missile_range)
-			self->min_missile_range = 0;
+		if (self->missile_range == 0.0f)
+			self->missile_range = 512.0f;
 
-		if(!self->bypass_missile_chance)
+		self->min_missile_range = 0.0f;
+
+		if (self->bypass_missile_chance == 0)
 			self->bypass_missile_chance = 60;
 
 		self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
@@ -1789,25 +1746,26 @@ void SP_monster_plagueElf (edict_t *self)
 
 		self->monsterinfo.aiflags |= AI_NO_MELEE;
 	}
-	else
+	else // Setup melee plague elf.
 	{
-		//turn on/off the weapons that aren't used
-		chance = irand(0, 3);
-		if(chance < 1)
+		const int chance = irand(0, 3);
+
+		// Turn on/off the weapons that aren't used.
+		if (chance < 1)
 		{
-			//show the hammer
+			// Show the hammer.
 			self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
 		}
-		else if(chance < 2)
+		else if (chance < 2)
 		{
-			//show the hoe
+			// Show the hoe.
 			self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
 		}
 		else
 		{
-			//show the gaff (that hook thingie)
+			// Show the gaff (that hook thingie).
 			self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
 		}
@@ -1817,19 +1775,10 @@ void SP_monster_plagueElf (edict_t *self)
 
 	self->monsterinfo.supporters = -1;
 
-	//set up my mood function
+	// Setup my mood function.
 	MG_InitMoods(self);
 	self->svflags |= SVF_WAIT_NOTSOLID;
-
-	if(!stricmp(self->classname, "monster_palace_plague_guard_invisible"))
-	{
-		self->melee_range = -64;
-		self->min_missile_range = 30;
-		self->bypass_missile_chance = 80;
-	}
 }
-
-//
 
 /*QUAKED monster_palace_plague_guard (1 .5 0) (-17 -25 -1) (22 12 63) AMBUSH ASLEEP WALKING CINEMATIC Missile 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
 
