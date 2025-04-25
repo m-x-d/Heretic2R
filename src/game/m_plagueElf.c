@@ -436,7 +436,7 @@ void plagueelf_growl(edict_t* self) //mxd. Named 'plagueElfgrowl' in original lo
 		gi.sound(self, CHAN_VOICE, sounds[SND_MOAN2], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void plagueElfattack(edict_t* self) //TODO: rename to plagueelf_attack.
+void plagueelf_attack(edict_t* self) //mxd. Named 'plagueElfattack' in original logic.
 {
 	if (irand(0, 10) < 5)
 		gi.sound(self, CHAN_VOICE, sounds[irand(SND_ATTACK1, SND_ATTACK2)], 1.0f, ATTN_IDLE, 0.0f);

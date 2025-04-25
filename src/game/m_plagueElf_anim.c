@@ -104,7 +104,7 @@ static const animframe_t plagueElf_frames_melee1[] =
 {
 	{ FRAME_attckA1, NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attckA2, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckA3, NULL, 0, 0, 0, ai_charge, 0, plagueElfattack },
+	{ FRAME_attckA3, NULL, 0, 0, 0, ai_charge, 0, plagueelf_attack },
 	{ FRAME_attckA4, NULL, 0, 0, 0, ai_charge, 0, plagueelf_strike },
 	{ FRAME_attckA5, NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attckA6, NULL, 0, 0, 0, ai_charge, 0, NULL },
@@ -118,7 +118,7 @@ static const animframe_t plagueElf_frames_melee2[] =
 	{ FRAME_attckB1, NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attckB2, NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attckB3, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckB4, NULL, 0, 0, 0, ai_charge, 0, plagueElfattack },
+	{ FRAME_attckB4, NULL, 0, 0, 0, ai_charge, 0, plagueelf_attack },
 	{ FRAME_attckB5, NULL, 0, 0, 0, ai_charge, 0, plagueelf_strike },
 	{ FRAME_attckB6, NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attckB7, NULL, 0, 0, 0, ai_charge, 0, NULL },
@@ -132,7 +132,7 @@ static const animframe_t plagueElf_frames_missile[] =
 {
 	{ FRAME_attckA1, NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attckA2, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckA3, NULL, 0, 0, 0, ai_charge, 0, plagueElfattack },
+	{ FRAME_attckA3, NULL, 0, 0, 0, ai_charge, 0, plagueelf_attack },
 	{ FRAME_attckA4, NULL, 0, 0, 0, ai_charge, 0, plagueElf_spell },
 	{ FRAME_attckA5, NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attckA6, NULL, 0, 0, 0, ai_charge, 0, NULL },
@@ -158,7 +158,7 @@ const animmove_t plagueElf_move_run1 = { 8, plagueElf_frames_run1, plagueElf_pau
 static const animframe_t plagueElf_frames_runatk1[] =
 {
 	{ FRAME_runatk1, NULL, 0, 0, 0, ai_charge, 10, NULL },
-	{ FRAME_runatk2, NULL, 0, 0, 0, ai_charge, 11, plagueElfattack },
+	{ FRAME_runatk2, NULL, 0, 0, 0, ai_charge, 11, plagueelf_attack },
 	{ FRAME_runatk3, NULL, 0, 0, 0, ai_charge, 12, plagueelf_strike },
 	{ FRAME_runatk4, NULL, 0, 0, 0, ai_charge, 12, NULL },
 	{ FRAME_runatk5, NULL, 0, 0, 0, ai_charge, 12, NULL },
