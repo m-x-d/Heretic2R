@@ -1,56 +1,38 @@
-//==============================================================================
 //
 // m_plagueElf.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//
-//	AI :
-//
-//	STAND1		: Looking straight ahead
-//	
-//	WALK1       : a normal straight line
-//  WALK2       : another normal straight line
-//
-//	MELEE1      : Attack 
-//	MELEE2      : Attack 
-//
-//  RUNATTACK   : Running and swinging
-//	RUN1        : chasing an enemy straight ahead
-//  SHAKE		: stand and spaz
-//	DIE1		: Fall back dead
-//  LEAN1       : lean agains the wall
-//  FIST1       : Beat against the wall in rage and desperation
-//
-//
-//==============================================================================
-
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "buoy.h"
-#include "vector.h"
 
 #include "m_plagueElf.h"
 #include "m_plagueElf_shared.h"
 #include "m_plagueElf_anim.h"
-#include "g_HitLocation.h"
-#include "g_debris.h" //mxd
-#include "angles.h"
 #include "c_ai.h"
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
+#include "g_debris.h" //mxd
+#include "g_DefaultMessageHandler.h"
+#include "g_monster.h"
 #include "m_stats.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
 #define FIRST_SIGHT_ALONE	(VOICE_FIRST_ALONE + 1)
 #define LAST_SIGHT_ALONE	(VOICE_LAST_GROUP - 1)
 
 #define FIRST_SIGHT_GROUP	(VOICE_FIRST_GROUP + 1)
 #define LAST_SIGHT_GROUP	(VOICE_LAST_GROUP - 1)
+
+#define SE_ALONE	0
+#define SE_PAIR		1
+#define SE_GROUP	2
+
+#define PLAGUEELF_SUPPORT_RADIUS	200
+#define PLAGUEELF_PHASE_INTERVAL	60 //mxd
+
+#define PALACE_ELF_SKIN	4
 
 extern void dying_elf_sounds(edict_t* self, int type); //TODO: move to header.
 
@@ -1503,11 +1485,6 @@ void plagueElf_go_run(edict_t *self)
 /*-----------------------------------------------
 	pelf_ChooseSightSound 	
 -----------------------------------------------*/
-
-#define SE_ALONE	0
-#define SE_PAIR		1
-#define SE_GROUP	2
-
 int pelf_ChooseSightSound ( edict_t *self, int event )
 {
 	int sound;
@@ -1550,8 +1527,6 @@ int pelf_ChooseResponseSound ( edict_t *self, int event, int sound_id )
 /*-----------------------------------------------
 	pelf_SightSound 	
 -----------------------------------------------*/
-#define PLAGUEELF_SUPPORT_RADIUS 200
-
 void pelf_SightSound ( edict_t *self, G_Message_t *msg )
 {
 	edict_t	*enemy = NULL;
@@ -1969,7 +1944,6 @@ wakeup_distance			= 1024
 NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1
 */
 
-#define PALACE_ELF_SKIN	4
 /*-------------------------------------------------------------------------
 	SP_monster_plagueElf
 -------------------------------------------------------------------------*/
