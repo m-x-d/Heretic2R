@@ -42,7 +42,7 @@ static void PlagueElfPollResponse(const edict_t* self, int sound_event, int soun
 static void pelf_init_phase_in(edict_t* self); //TODO: remove.
 static void pelf_init_phase_out(edict_t* self); //TODO: remove.
 static void PlagueElfPhaseOutPreThink(edict_t* self);
-static void pelf_phase_in(edict_t* self);
+static void PlagueElfPhaseInPreThink(edict_t* self);
 
 #pragma region ========================== Plague Elf Base Info ==========================
 
@@ -1152,7 +1152,7 @@ void plagueElf_pause(edict_t* self) //TODO: rename to plagueelf_pause.
 
 	if (self->ai_mood == AI_MOOD_FLEE)
 	{
-		if (self->s.color.a != 255 && self->pre_think != pelf_phase_in)
+		if (self->s.color.a != 255 && self->pre_think != PlagueElfPhaseInPreThink)
 			pelf_init_phase_in(self);
 	}
 	else if (self->pre_think != PlagueElfPhaseOutPreThink)
@@ -1491,27 +1491,28 @@ static void PlagueElfPhaseOutPreThink(edict_t* self) //mxd. Named 'pelf_phase_ou
 	}
 }
 
-static void pelf_phase_in (edict_t *self)
+static void PlagueElfPhaseInPreThink(edict_t* self) //mxd. Named 'pelf_phase_in' in original logic.
 {
-	int	interval = 60;
-	
-	if(self->s.color.a < 255 - interval)
+	if (self->s.color.a < 255 - PLAGUEELF_PHASE_INTERVAL)
 	{
-		self->s.color.a += irand(interval/2, interval);
-		self->pre_think = pelf_phase_in;
-		self->next_pre_think = level.time + 0.05;
+		self->s.color.a += irand(PLAGUEELF_PHASE_INTERVAL / 2, PLAGUEELF_PHASE_INTERVAL);
+		self->pre_think = PlagueElfPhaseInPreThink;
+		self->next_pre_think = level.time + 0.05f;
 	}
-	else 
+	else
 	{
 		self->svflags &= ~SVF_NO_AUTOTARGET;
 		self->s.color.c = 0xffffffff;
-		if(self->health <= 0)
+
+		if (self->health <= 0)
 		{
 			self->pre_think = NULL;
-			self->next_pre_think = -1;
+			self->next_pre_think = -1.0f;
 		}
 		else
+		{
 			pelf_init_phase_out(self);
+		}
 	}
 }
 
@@ -1532,7 +1533,7 @@ static void pelf_init_phase_in (edict_t *self)
 		return;
 
 //	gi.dprintf("Elf phasing in\n");
-	self->pre_think = pelf_phase_in;
+	self->pre_think = PlagueElfPhaseInPreThink;
 	self->next_pre_think = level.time + FRAMETIME;
 }
 /*-------------------------------------------------------------------------
