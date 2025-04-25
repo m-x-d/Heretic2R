@@ -237,11 +237,11 @@ static void PlagueElfTryFlee(edict_t* self, const int coward_chance, const int f
 }
 
 // Throws weapon, turns off those nodes, sets that weapon as gone.
-static qboolean PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropweapon' in original logic. Removed unused 'damage' arg.
+static void PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropweapon' in original logic. Removed unused 'damage' arg.
 {
 	// NO PART FLY FRAME!
 	if (self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW)
-		return false;
+		return;
 
 	vec3_t forward;
 	vec3_t right;
@@ -272,7 +272,7 @@ static qboolean PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropw
 			PlagueElfTryFlee(self, 4, 8, flrand(3.0f, 8.0f));
 		}
 
-		return true;
+		return;
 	}
 
 	if (!(self->s.fmnodeinfo[MESH__GAFF].flags & FMNI_NO_DRAW))
@@ -292,7 +292,7 @@ static qboolean PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropw
 			PlagueElfTryFlee(self, 4, 8, flrand(3.0f, 8.0f));
 		}
 
-		return true;
+		return;
 	}
 
 	if (!(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW))
@@ -312,7 +312,7 @@ static qboolean PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropw
 			PlagueElfTryFlee(self, 4, 8, flrand(3.0f, 8.0f));
 		}
 
-		return true;
+		return;
 	}
 
 	ThrowWeapon(self, &hand_spot, BIT_HANDLE, 0.0f, FRAME_partfly);
@@ -320,8 +320,6 @@ static qboolean PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropw
 
 	if (self->deadflag != DEAD_DEAD)
 		PlagueElfTryFlee(self, 6, 8, flrand(5.0f, 10.0f));
-
-	return true;
 }
 
 static int PlagueElfChooseSightSound(const int event) //mxd. Named 'pelf_ChooseSightSound' in original logic. Removed unused 'self' arg.
