@@ -1251,12 +1251,9 @@ void pelf_go_inair(edict_t* self) //TODO: rename to plagueelf_inair_go.
 	SetAnim(self, ANIM_INAIR);
 }
 
-void pelf_jump (edict_t *self, G_Message_t *msg)
+static void PlagueElfJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'pelf_jump' in original logic.
 {
-	if(self->spawnflags&MSF_FIXED)
-		SetAnim(self, ANIM_DELAY);
-	else
-		SetAnim(self, ANIM_FJUMP);
+	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_FJUMP));
 }
 
 void pelf_check_mood (edict_t *self, G_Message_t *msg)
@@ -1677,7 +1674,7 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH] = PlagueElfDeathMsgHandler;
 //	classStatics[CID_PLAGUEELF].msgReceivers[MSG_BLOCKED] = plagueElf_blocked;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_JUMP] = pelf_jump;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_JUMP] = PlagueElfJumpMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH_PAIN] = PlagueElfDeadPainMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_FALLBACK] = plagueElf_run;//away
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_CHECK_MOOD] = pelf_check_mood;
