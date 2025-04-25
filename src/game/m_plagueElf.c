@@ -664,10 +664,9 @@ void plagueElf_c_spell(edict_t* self) //TODO: rename to plagueelf_cinematic_spel
 	spell->nextthink = level.time + 3.0f;
 }
 
-void plagueElf_missile(edict_t *self, G_Message_t *msg)
+static void PlagueElfMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_missile' in original logic.
 {
 	pelf_init_phase_in(self);
-
 	SetAnim(self, ANIM_MISSILE);
 }
 
@@ -1684,7 +1683,7 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_WALK] = plagueElf_walk;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_RUN] = plagueElf_run;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MELEE] = plagueElf_melee;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MISSILE] = plagueElf_missile;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MISSILE] = PlagueElfMissileMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_PAIN] = plagueElf_pain;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH] = PlagueElfDeathMsgHandler;
 //	classStatics[CID_PLAGUEELF].msgReceivers[MSG_BLOCKED] = plagueElf_blocked;
