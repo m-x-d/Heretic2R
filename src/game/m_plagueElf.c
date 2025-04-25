@@ -152,17 +152,6 @@ static const float plague_pelf_voice_times[] = //mxd. Named 'pelf_VoiceTimes' in
 
 #pragma endregion
 
-/*----------------------------------------------------------------------
-  Cinematic Functions for the monster
------------------------------------------------------------------------*/
-
-void plagueElf_c_gib(edict_t *self, G_Message_t *msg)
-{
-	gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
-	self->think = BecomeDebris;
-	self->nextthink = level.time + 0.1;
-}
-
 /*-------------------------------------------------------------------------
 	plagueElf_c_anims
 -------------------------------------------------------------------------*/
@@ -1830,7 +1819,7 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_DEATH4] = plagueElf_c_anims;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_THINKAGAIN] = plagueElf_c_anims;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_PAIN1] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_GIB1] = plagueElf_c_gib;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_GIB1] = CinematicGibMsgHandler;
 
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
