@@ -1262,22 +1262,14 @@ static void PlagueElfCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd.
 	plagueElf_pause(self);
 }
 
-/*-------------------------------------------------------------------------
-	plagueElf_run
--------------------------------------------------------------------------*/
-void plagueElf_run(edict_t *self, G_Message_t *msg)
+static void PlagueElfRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_run' in original logic.
 {
-	if(self->curAnimID == ANIM_CURSING || self->curAnimID == ANIM_POINT)
+	if (self->curAnimID == ANIM_CURSING || self->curAnimID == ANIM_POINT)
 		return;
 
 	if (M_ValidTarget(self, self->enemy))
-	{
-		if(self->spawnflags&MSF_FIXED)
-			SetAnim(self, ANIM_DELAY);
-		else 
-			SetAnim(self, ANIM_RUN1);
-	}
-	else//If our enemy is dead, we need to stand
+		SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN1));
+	else // If our enemy is dead, we need to stand.
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
@@ -1666,7 +1658,7 @@ void PlagueElfStaticsInit(void)
 
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_STAND] = plagueElf_stand;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_WALK] = plagueElf_walk;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_RUN] = plagueElf_run;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_RUN] = PlagueElfRunMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MELEE] = PlagueElfMeleeMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MISSILE] = PlagueElfMissileMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_PAIN] = PlagueElfPainMsgHandler;
@@ -1675,7 +1667,7 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_JUMP] = PlagueElfJumpMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH_PAIN] = PlagueElfDeadPainMsgHandler;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_FALLBACK] = plagueElf_run;//away
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_FALLBACK] = PlagueElfRunMsgHandler;//away
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_CHECK_MOOD] = PlagueElfCheckMoodMsgHandler;
 
 	//Sound support
