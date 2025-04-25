@@ -1469,19 +1469,10 @@ static void PlagueElfVoicePuppetMsgHandler(edict_t* self, G_Message_t* msg) //mx
 	gi.sound(self, CHAN_VOICE, sounds[sound], 1.0f, ATTN_NORM, 0.0f);
 }
 
-//
-void pelf_check_too_close(edict_t *self)
+void pelf_check_too_close(edict_t* self) //TODO: rename to plagueelf_check_too_close.
 {
-	if(!self->enemy)
-		return;
-
-	if(M_DistanceToTarget(self, self->enemy) < flrand(0, 100))
-	{
-		if(irand(0,1))
-			SetAnim(self, ANIM_CRAZY_A);
-		else
-			SetAnim(self, ANIM_CRAZY_B);
-	}
+	if (self->enemy != NULL && M_DistanceToTarget(self, self->enemy) < flrand(0.0f, 100.0f))
+		SetAnim(self, irand(ANIM_CRAZY_A, ANIM_CRAZY_B));
 }
 
 
