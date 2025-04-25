@@ -440,23 +440,23 @@ void plagueElfattack(edict_t* self) //TODO: rename to plagueelf_attack.
 		gi.sound(self, CHAN_VOICE, sounds[irand(SND_ATTACK1, SND_ATTACK2)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void create_pe_spell(edict_t *Spell)
+static void PlagueElfSpellInit(edict_t* spell) //mxd. Named 'create_pe_spell' in original logic.
 {
-	Spell->movetype=MOVETYPE_FLYMISSILE;
-	Spell->solid=SOLID_BBOX;
-	Spell->classname="plagueElf_Spell";
-	Spell->touch=plagueElfSpellTouch;
-	Spell->enemy=NULL;
-	Spell->clipmask=MASK_MONSTERSOLID|MASK_PLAYERSOLID|MASK_SHOT;
-	Spell->s.scale = 0.5;
-	Spell->s.effects |= EF_MARCUS_FLAG1|EF_CAMERA_NO_CLIP;
-	Spell->svflags |= SVF_ALWAYS_SEND;
+	spell->movetype = MOVETYPE_FLYMISSILE;
+	spell->solid = SOLID_BBOX;
+	spell->classname = "plagueElf_Spell";
+	spell->enemy = NULL;
+	spell->clipmask = (MASK_MONSTERSOLID | MASK_PLAYERSOLID | MASK_SHOT);
+	spell->s.scale = 0.5f;
+	spell->s.effects |= (EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
+	spell->svflags |= SVF_ALWAYS_SEND;
+	spell->touch = plagueElfSpellTouch;
 }
 
 // the spell needs to bounce
 void make_pe_spell_reflect(edict_t *self, edict_t *spell)
 {
-	create_pe_spell(spell);
+	PlagueElfSpellInit(spell);
 	spell->s.modelindex = self->s.modelindex;
 	VectorCopy(self->s.origin, spell->s.origin);
 	spell->owner = self->owner;
@@ -578,7 +578,7 @@ void plagueElf_spell(edict_t *self)
 		self->monsterinfo.attack_finished = level.time + 0.4;
 		Spell = G_Spawn();
 
-		create_pe_spell(Spell);
+		PlagueElfSpellInit(Spell);
 
 		Spell->touch=plagueElfSpellTouch;
 
@@ -647,7 +647,7 @@ void plagueElf_c_spell(edict_t *self)
 	self->monsterinfo.attack_finished = level.time + 0.4;
 	Spell = G_Spawn();
 
-	create_pe_spell(Spell);
+	PlagueElfSpellInit(Spell);
 
 	Spell->touch=plagueElfSpellTouch;
 
