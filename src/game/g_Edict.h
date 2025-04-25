@@ -448,7 +448,13 @@ struct edict_s
 
 	edict_t* placeholder; // Used by assassin to hold his teleport destination.
 	float jump_time; // Time that a monster's protection from falling damage runs out after a jump.
-	int red_rain_count; // Number of red rains you can have at once.
+
+	union
+	{
+		int red_rain_count; // Number of red rains you can have at once.
+		int plagueelf_spell_fx_type; //mxd
+	};
+	
 	int deathtype; // How you died. //TODO: unused!
 	edict_t* fire_damage_enemy; // Who burnt you to death - for proper burning death credit.
 

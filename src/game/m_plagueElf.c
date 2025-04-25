@@ -464,7 +464,7 @@ static void PlagueElfReflectSpellInit(edict_t* self, edict_t* spell) //mxd. Name
 	spell->owner = self->owner;
 	spell->enemy = self->enemy;
 	spell->touch = self->touch;
-	spell->red_rain_count = self->red_rain_count;
+	spell->plagueelf_spell_fx_type = self->plagueelf_spell_fx_type;
 
 	Create_rand_relect_vect(self->velocity, spell->velocity);
 	VectorCopy(self->s.origin, spell->s.origin);
@@ -493,7 +493,7 @@ static void PlagueElfSpellTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 		edict_t* spell = G_Spawn();
 
 		PlagueElfReflectSpellInit(self, spell);
-		gi.CreateEffect(&spell->s, FX_PE_SPELL, CEF_OWNERS_ORIGIN, NULL, "bv", self->red_rain_count, spell->velocity);
+		gi.CreateEffect(&spell->s, FX_PE_SPELL, CEF_OWNERS_ORIGIN, NULL, "bv", self->plagueelf_spell_fx_type, spell->velocity);
 		G_SetToFree(self);
 
 		return;
@@ -501,7 +501,7 @@ static void PlagueElfSpellTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 
 	VectorNormalize(self->velocity);
 
-	switch (self->red_rain_count) //TODO: add plagueelf_spell_fx_type name.
+	switch (self->plagueelf_spell_fx_type)
 	{
 		case FX_PE_MAKE_SPELL:
 			gi.CreateEffect(NULL, FX_PE_SPELL, 0, self->s.origin, "bv", FX_PE_EXPLODE_SPELL, self->velocity);
@@ -591,16 +591,16 @@ void plagueElf_spell(edict_t* self) //TODO: rename to plagueelf_spell.
 	if (Q_stricmp(self->classname, "monster_plagueElf") != 0) // One of the special dudes. //mxd. stricmp -> Q_stricmp
 	{
 		if (irand(0, 3) > 0 || SKILL < SKILL_HARD || Q_stricmp(self->classname, "monster_palace_plague_guard_invisible") == 0) //mxd. stricmp -> Q_stricmp
-			spell->red_rain_count = FX_PE_MAKE_SPELL2;
+			spell->plagueelf_spell_fx_type = FX_PE_MAKE_SPELL2;
 		else
-			spell->red_rain_count = FX_PE_MAKE_SPELL3;
+			spell->plagueelf_spell_fx_type = FX_PE_MAKE_SPELL3;
 	}
 	else
 	{
-		spell->red_rain_count = FX_PE_MAKE_SPELL;
+		spell->plagueelf_spell_fx_type = FX_PE_MAKE_SPELL;
 	}
 
-	gi.CreateEffect(&spell->s, FX_PE_SPELL, CEF_OWNERS_ORIGIN, NULL, "bv", spell->red_rain_count, spell->velocity);
+	gi.CreateEffect(&spell->s, FX_PE_SPELL, CEF_OWNERS_ORIGIN, NULL, "bv", spell->plagueelf_spell_fx_type, spell->velocity);
 
 	G_LinkMissile(spell);
 
@@ -654,11 +654,11 @@ void plagueElf_c_spell(edict_t* self) //TODO: rename to plagueelf_cinematic_spel
 	spell->s.angles[PITCH] = anglemod(-spell->s.angles[PITCH]);
 
 	if (Q_stricmp(self->classname, "monster_plagueElf") != 0) // One of the special dudes.
-		spell->red_rain_count = ((irand(0, 3) > 0) ? FX_PE_MAKE_SPELL2 : FX_PE_MAKE_SPELL3);
+		spell->plagueelf_spell_fx_type = ((irand(0, 3) > 0) ? FX_PE_MAKE_SPELL2 : FX_PE_MAKE_SPELL3);
 	else
-		spell->red_rain_count = FX_PE_MAKE_SPELL;
+		spell->plagueelf_spell_fx_type = FX_PE_MAKE_SPELL;
 
-	gi.CreateEffect(&spell->s, FX_PE_SPELL, CEF_OWNERS_ORIGIN, NULL, "bv", spell->red_rain_count, spell->velocity);
+	gi.CreateEffect(&spell->s, FX_PE_SPELL, CEF_OWNERS_ORIGIN, NULL, "bv", spell->plagueelf_spell_fx_type, spell->velocity);
 
 	G_LinkMissile(spell);
 
