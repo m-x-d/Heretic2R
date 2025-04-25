@@ -347,93 +347,72 @@ void plagueElf_strike(edict_t* self) //TODO: rename to plagueelf_strike.
 	T_Damage(victim, self, self, direction, trace.endpos, blood_dir, damage, damage * 2, DAMAGE_DISMEMBER, MOD_DIED);
 }
 
-/*-------------------------------------------------------------------------
-	plagueElf_death
--------------------------------------------------------------------------*/
-void plagueElf_death(edict_t *self, G_Message_t *msg)
+void plagueElf_death(edict_t* self, G_Message_t* msg) //TODO: rename to plagueelf_death.
 {
-	edict_t	*targ, *inflictor, *attacker;
-	float	damage;
-	vec3_t	dVel, vf, yf;
-	int chance;
-
 	pelf_init_phase_in(self);
 
-	ParseMsgParms(msg, "eeei", &targ, &inflictor, &attacker, &damage);
-	
-	// Big enough death to be thrown back
-	if(self->monsterinfo.aiflags&AI_DONT_THINK)
+	edict_t* target;
+	edict_t* inflictor;
+	edict_t* attacker;
+	float damage;
+	ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
+
+	// Big enough death to be thrown back.
+	if (self->monsterinfo.aiflags & AI_DONT_THINK)
 	{
-		if (irand(0,10) < 5)
-			SetAnim(self, ANIM_DIE2);
-		else 
-			SetAnim(self, ANIM_DIE1);
+		SetAnim(self, irand(ANIM_DIE1, ANIM_DIE2));
 		return;
 	}
 
 	self->msgHandler = DeadMsgHandler;
 
-	//Dead but still being hit	
-	if(self->deadflag == DEAD_DEAD) 
+	// Dead but still being hit.
+	if (self->deadflag == DEAD_DEAD)
 		return;
 
 	self->deadflag = DEAD_DEAD;
+	plagueElf_dropweapon(self, -self->health);
 
-	plagueElf_dropweapon (self, (int)self->health*-1);
-
-	if (self->health <= -80)//gib death
+	if (self->health <= -80) // Gib death.
 	{
-		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
 		BecomeDebris(self);
+
 		return;
 	}
-	else if (self->health < -10)
+
+	if (self->health < -10)
 	{
 		self->svflags |= SVF_DEADMONSTER;
 		SetAnim(self, ANIM_KDEATH_GO);
 
-		VectorCopy(targ->velocity, vf);
-		VectorNormalize(vf);
+		vec3_t dir;
+		VectorNormalize2(target->velocity, dir);
 
-		VectorScale(vf, -1, yf);
+		vec3_t yaw_dir;
+		VectorScale(dir, -1.0f, yaw_dir);
 
-		self->ideal_yaw = VectorYaw( yf );
-		self->yaw_speed = 48;
+		self->ideal_yaw = VectorYaw(yaw_dir);
+		self->yaw_speed = 48.0f;
 
-		VectorScale(vf, 250, dVel);
-		dVel[2] = irand(150,200);
+		VectorScale(dir, 250.0f, self->velocity);
+		self->velocity[2] = flrand(150.0f, 200.0f); //mxd. irand() in original logic.
 
-		VectorCopy(dVel, self->velocity);
-//		self->groundentity = NULL;
 		return;
 	}
-	
-	//regular death
-	if(self->count == 0)
-	{
-		chance = irand(0,3);
-		if(chance == 0)
-			SetAnim(self, ANIM_DIE1);
-		else if(chance == 1)
-			SetAnim(self, ANIM_DIE2);
-		else if(chance == 2)
-			SetAnim(self, ANIM_DIE3);
-		else 
-			SetAnim(self, ANIM_DIE4);
-	}
-	else
-	{
-		if(self->count == 1)
-			SetAnim(self, ANIM_DIE1);
-		else if(self->count == 2)
-			SetAnim(self, ANIM_DIE2);
-		else if(self->count == 3)
-			SetAnim(self, ANIM_DIE3);
-		else 
-			SetAnim(self, ANIM_DIE4);
-	}
-}
 
+	// Regular death.
+	if (self->count == 0) //TODO: self->count doesn't seem to be set anywhere.
+		SetAnim(self, irand(ANIM_DIE1, ANIM_DIE4));
+	else if (self->count == 1)
+		SetAnim(self, ANIM_DIE1);
+	else if (self->count == 2)
+		SetAnim(self, ANIM_DIE2);
+	else if (self->count == 3)
+		SetAnim(self, ANIM_DIE3);
+	else
+		SetAnim(self, ANIM_DIE4);
+}
 
 /*-------------------------------------------------------------------------
 	plagueElfdeathsqueal
