@@ -14,6 +14,7 @@
 #include "g_monster.h" //mxd
 #include "g_playstats.h"
 #include "m_move.h" //mxd
+#include "m_plagueElf.h" //mxd. For PlagueElfDyingSound().
 #include "m_plagueElf_anim.h"
 #include "m_stats.h"
 #include "FX.h"
@@ -541,68 +542,13 @@ void SP_obj_corpse2(edict_t* self)
 
 #pragma region ========================== obj_dying_elf ==========================
 
-#define PELF_NUM_PAIN_VOICES	4
-#define PELF_NUM_IDLE_VOICES	4
-#define PELF_NUM_TOUCH_VOICES	7
-
-static const char* dying_pelf_touch_voices[PELF_NUM_TOUCH_VOICES] =
-{
-	"voices/helpe.wav",
-	"voices/helpk.wav",
-	"voices/helpm.wav",
-	"voices/getawayb.wav",
-	"voices/leavemeb.wav",
-	"voices/mercyp.wav",
-	"voices/nomrj.wav",
-};
-
-static const char* dying_pelf_pain_voices[PELF_NUM_PAIN_VOICES] =
-{
-	"voices/getawayb.wav",
-	"voices/leavemeb.wav",
-	"voices/mercyp.wav",
-	"voices/nomrj.wav",
-};
-
-static const char* dying_pelf_idle_voices[PELF_NUM_IDLE_VOICES] =
-{
-	"pelfgasp.wav",
-	"pelfpant.wav",
-	"pelfshiv.wav",
-	"pelfsigh.wav",
-};
-
-void dying_elf_sounds(edict_t* self, const int type) //TODO: rename to PlagueElfDyingSound, move to m_plagueElf.c?
-{
-	char sound_string[1024];
-	strcpy_s(sound_string, sizeof(sound_string), "monsters/plagueElf/"); //mxd. strcpy -> strcpy_s
-
-	switch (type)
-	{
-		case DYING_ELF_PAIN_VOICE:
-			strcat_s(sound_string, sizeof(sound_string), dying_pelf_pain_voices[irand(0, PELF_NUM_PAIN_VOICES - 1)]); //mxd. strcat -> strcat_s
-			gi.sound(self, CHAN_VOICE, gi.soundindex(sound_string), 1.0f, ATTN_NORM, 0.0f);
-			break;
-
-		case DYING_ELF_IDLE_VOICE:
-			strcat_s(sound_string, sizeof(sound_string), dying_pelf_idle_voices[irand(0, PELF_NUM_IDLE_VOICES - 1)]); //mxd. strcat -> strcat_s
-			gi.sound(self, CHAN_VOICE, gi.soundindex(sound_string), 1.0f, ATTN_IDLE, 0.0f);
-			break;
-
-		case DYING_ELF_TOUCH_VOICE:
-			strcat_s(sound_string, sizeof(sound_string), dying_pelf_touch_voices[irand(0, PELF_NUM_TOUCH_VOICES - 1)]); //mxd. strcat -> strcat_s
-			gi.sound(self, CHAN_VOICE, gi.soundindex(sound_string), 1.0f, ATTN_NORM, 0.0f);
-			break;
-	}
-}
-
 static void ObjDyingElfIdle(edict_t* self) //mxd. Named 'dying_elf_idle' in original logic.
 {
 	if (++self->s.frame > FRAME_fetal26)
 		self->s.frame = FRAME_fetal1;
 
 	if (irand(0, 50) == 0)
-		dying_elf_sounds(self, DYING_ELF_IDLE_VOICE);
+		PlagueElfDyingSound(self, DYING_ELF_IDLE_VOICE);
 
 	self->nextthink = level.time + FRAMETIME;
 }
@@ -640,7 +586,7 @@ static void ObjDyingElfTouch(edict_t* self, edict_t* other, cplane_t* plane, csu
 			self->nextthink = level.time + FRAMETIME;
 
 			if (self->enemy->client != NULL || (self->enemy->svflags & SVF_MONSTER))
-				dying_elf_sounds(self, DYING_ELF_TOUCH_VOICE);
+				PlagueElfDyingSound(self, DYING_ELF_TOUCH_VOICE);
 		}
 		else
 		{
@@ -656,7 +602,7 @@ static void ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damag
 	self->nextthink = level.time + FRAMETIME;
 
 	if (self->enemy->client != NULL || (self->enemy->svflags & SVF_MONSTER))
-		dying_elf_sounds(self, DYING_ELF_PAIN_VOICE);
+		PlagueElfDyingSound(self, DYING_ELF_PAIN_VOICE);
 }
 
 static void ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'dying_elf_die' in original logic.
