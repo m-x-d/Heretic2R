@@ -842,252 +842,278 @@ static qboolean PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropw
 	return true;
 }
 
-void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
-{//fixme: throw current weapon
-//fixme - make part fly dir the vector from hit loc to sever loc
-//remember- turn on caps!
-	int				throw_nodes = 0;
-	vec3_t			gore_spot, right;
-	qboolean dismember_ok = false;
+static qboolean PlagueElfThrowHead(edict_t* self, float damage, const qboolean dismember_ok, int* throw_nodes) //mxd. Added to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
+		return false;
 
-	if(HitLocation & hl_MeleeHit)
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (flrand(0, (float)self->health) < damage * 0.25f)
+		PlagueElfDropWeapon(self);
+
+	if (dismember_ok && flrand(0, (float)self->health) < damage * 0.3f)
 	{
-		dismember_ok = true;
-		HitLocation &= ~hl_MeleeHit;
+		PlagueElfCanThrowNode(self, MESH__HEAD, throw_nodes);
+
+		PlagueElfDismemberSound(self);
+
+		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
+		ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+
+		Vec3AddAssign(self->s.origin, gore_spot);
+		SprayDebris(self, gore_spot, 8, damage);
+
+		if (self->health > 0)
+		{
+			self->health = 1;
+			T_Damage(self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20, 0, MOD_DIED);
+		}
+
+		return true;
 	}
 
-	if(HitLocation<1)
-		return;
+	self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_USE_SKIN;
+	self->s.fmnodeinfo[MESH__HEAD].skin = self->s.skinnum + 1;
 
-	if(HitLocation>hl_Max)
-		return;
-//	gi.dprintf("HL: %d",HitLocation);
+	return false;
+}
 
-	if(self->curAnimID==ANIM_MELEE1||self->curAnimID==ANIM_MELEE1)
-	{//Hit chest during melee, may have hit arms
-		if(HitLocation == hl_TorsoFront&&irand(0,10)<4)
+static qboolean PlagueElfThrowTorso(edict_t* self, float damage, const qboolean dismember_ok, int* throw_nodes) //mxd. Added to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH__BODY].flags & FMNI_NO_DRAW)
+		return false;
+
+	if (self->s.fmnodeinfo[MESH__BODY].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && self->health > 0 && flrand(0, (float)self->health) < damage * 0.3f)
+	{
+		PlagueElfCanThrowNode(self, MESH__BODY, throw_nodes);
+		PlagueElfCanThrowNode(self, MESH__L_ARM, throw_nodes);
+		PlagueElfCanThrowNode(self, MESH__R_ARM, throw_nodes);
+		PlagueElfCanThrowNode(self, MESH__HEAD, throw_nodes);
+
+		PlagueElfDropWeapon(self);
+		PlagueElfDismemberSound(self);
+
+		vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
+		ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_torsooff);
+
+		Vec3AddAssign(self->s.origin, gore_spot);
+		SprayDebris(self, gore_spot, 12, damage);
+
+		if (self->health > 0)
 		{
-			if(irand(0,10)<7)
-				HitLocation = hl_ArmLowerRight;
-			else
-				HitLocation = hl_ArmLowerLeft;
+			self->health = 1;
+			T_Damage(self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20, 0, MOD_DIED);
+		}
+
+		return true;
+	}
+
+	if (flrand(0, (float)self->health) < damage * 0.5f)
+		PlagueElfDropWeapon(self);
+
+	self->s.fmnodeinfo[MESH__BODY].flags |= FMNI_USE_SKIN;
+	self->s.fmnodeinfo[MESH__BODY].skin = self->s.skinnum + 1;
+
+	return false;
+}
+
+static void PlagueElfThrowLeftArm(edict_t* self, float damage, const qboolean dismember_ok, int* throw_nodes) //mxd. Added to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH__L_ARM].flags & FMNI_NO_DRAW)
+		return;
+
+	if (self->s.fmnodeinfo[MESH__L_ARM].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (flrand(0, (float)self->health) < damage * 0.4f)
+		PlagueElfDropWeapon(self);
+
+	if (dismember_ok && flrand(0, (float)self->health) < damage * 0.75f)
+	{
+		if (PlagueElfCanThrowNode(self, MESH__L_ARM, throw_nodes))
+		{
+			PlagueElfTryFlee(self, 6, 8, flrand(7.0f, 15.0f));
+			PlagueElfDismemberSound(self);
+
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			VectorMA(gore_spot, -10.0f, right, gore_spot);
+
+			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
 		}
 	}
+	else
+	{
+		self->s.fmnodeinfo[MESH__L_ARM].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__L_ARM].skin = self->s.skinnum + 1;
+	}
+}
 
-	if(
-		(HitLocation == hl_ArmUpperLeft&& self->s.fmnodeinfo[MESH__L_ARM].flags & FMNI_NO_DRAW) ||
-		(HitLocation == hl_ArmUpperRight&& self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW)||
-		(
-			(HitLocation == hl_TorsoFront|| HitLocation == hl_TorsoBack) &&
-			self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW &&
-			self->s.fmnodeinfo[MESH__L_ARM].flags & FMNI_NO_DRAW &&
-			irand(0,10)<4)
-		)
-		HitLocation = hl_Head;//Decap
+static void PlagueElfThrowRightArm(edict_t* self, float damage, const qboolean dismember_ok, int* throw_nodes) //mxd. Added to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW)
+		return;
 
-	VectorCopy(vec3_origin,gore_spot);
-	switch(HitLocation)
+	if (self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0, (float)self->health) < damage * 0.75f)
+	{
+		if (PlagueElfCanThrowNode(self, MESH__R_ARM, throw_nodes))
+		{
+			PlagueElfDropWeapon(self);
+			PlagueElfDismemberSound(self);
+
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			VectorMA(gore_spot, 10.0f, right, gore_spot);
+
+			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+		}
+	}
+	else
+	{
+		if (flrand(0, (float)self->health) < damage * 0.75f)
+			PlagueElfDropWeapon(self);
+
+		self->s.fmnodeinfo[MESH__R_ARM].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__R_ARM].skin = self->s.skinnum + 1;
+	}
+}
+
+static void PlagueElfThrowLeg(edict_t* self, const float damage, const int mesh_part, int* throw_nodes) //mxd. Added to simplify logic.
+{
+	// Still alive?
+	if (self->health > 0)
+	{
+		if (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN)
+			return;
+
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+	else
+	{
+		if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
+			return;
+
+		if (PlagueElfCanThrowNode(self, mesh_part, throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			const float side = (mesh_part == MESH__L_LEG ? -1.0f : 1.0f); //BUGFIX: original logic scales both legs by -10.
+			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
+
+			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+		}
+	}
+}
+
+static void PlagueElfDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'plagueElf_dismember' in original logic.
+{
+	//FIXME: throw current weapon.
+	//FIXME: make part fly dir the vector from hit loc to sever loc.
+	qboolean dismember_ok = false;
+
+	if (hl & hl_MeleeHit)
+	{
+		dismember_ok = true;
+		hl &= ~hl_MeleeHit;
+	}
+
+	if (hl <= hl_NoneSpecific || hl >= hl_Max) //mxd. '> hl_Max' in original logic.
+		return;
+
+	// Hit chest during melee, may have hit arms.
+	if ((self->curAnimID == ANIM_MELEE1 || self->curAnimID == ANIM_MELEE2) && hl == hl_TorsoFront && irand(0, 10) < 4) //BUGFIX: mxd. Original logic checks ANIM_MELEE1 two times.
+		hl = ((irand(0, 10) < 7) ? hl_ArmLowerRight : hl_ArmLowerLeft);
+
+	if ((hl == hl_ArmUpperLeft && self->s.fmnodeinfo[MESH__L_ARM].flags & FMNI_NO_DRAW) ||
+		(hl == hl_ArmUpperRight && self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW) ||
+		((hl == hl_TorsoFront || hl == hl_TorsoBack) && self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW && self->s.fmnodeinfo[MESH__L_ARM].flags & FMNI_NO_DRAW && irand(0, 10) < 4))
+		hl = hl_Head; // Decapitate.
+
+	int throw_nodes = 0;
+
+	switch (hl)
 	{
 		case hl_Head:
-			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.25)
-				PlagueElfDropWeapon (self);
-			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
-			{
-				PlagueElfCanThrowNode(self, MESH__HEAD,&throw_nodes);
-
-				gore_spot[2]+=18;
-				PlagueElfDismemberSound(self);
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-
-				VectorAdd(self->s.origin, gore_spot, gore_spot);
-				SprayDebris(self,gore_spot,8,damage);
-
-				if(self->health>0)
-				{
-					self->health = 1;
-					T_Damage (self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20,0,MOD_DIED);
-				}
+			if (PlagueElfThrowHead(self, (float)damage, dismember_ok, &throw_nodes))
 				return;
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__HEAD].skin = self->s.skinnum+1;
-			}
 			break;
-		case hl_TorsoFront://split in half?
-		case hl_TorsoBack://split in half?
-			if(self->s.fmnodeinfo[MESH__BODY].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__BODY].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(self->health > 0 && flrand(0,self->health)<damage*0.3 && dismember_ok)
-			{
-				gore_spot[2]+=12;
-				PlagueElfCanThrowNode(self, MESH__BODY,&throw_nodes);
-				PlagueElfCanThrowNode(self, MESH__L_ARM,&throw_nodes);
-				PlagueElfCanThrowNode(self, MESH__R_ARM,&throw_nodes);
-				PlagueElfCanThrowNode(self, MESH__HEAD,&throw_nodes);
 
-				PlagueElfDropWeapon (self);
-				PlagueElfDismemberSound(self);
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_torsooff);
-				VectorAdd(self->s.origin, gore_spot, gore_spot);
-				SprayDebris(self,gore_spot,12,damage);
-
-				if(self->health>0)
-				{
-					self->health = 1;
-					T_Damage (self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20,0,MOD_DIED);
-				}
+		case hl_TorsoFront: // Split in half?
+		case hl_TorsoBack:
+			if (PlagueElfThrowTorso(self, (float)damage, dismember_ok, &throw_nodes))
 				return;
-			}
-			else
-			{
-				if(flrand(0,self->health)<damage*0.5)
-					PlagueElfDropWeapon (self);
-				self->s.fmnodeinfo[MESH__BODY].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__BODY].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_ArmUpperLeft:
-		case hl_ArmLowerLeft://left arm
-			if(self->s.fmnodeinfo[MESH__L_ARM].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__L_ARM].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.4)
-				PlagueElfDropWeapon (self);
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				if(PlagueElfCanThrowNode(self, MESH__L_ARM, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					PlagueElfTryFlee(self,6,8,flrand(7,15));
-					PlagueElfDismemberSound(self);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__L_ARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__L_ARM].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_ArmUpperRight:
-		case hl_ArmLowerRight://right arm
-			//Knock weapon out of hand?
-			if(self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				if(PlagueElfCanThrowNode(self, MESH__R_ARM, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,10,right,gore_spot);
-					PlagueElfDropWeapon (self);
-					PlagueElfDismemberSound(self);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-			}
-			else
-			{
-				if(flrand(0,self->health)<damage*0.75)
-					PlagueElfDropWeapon (self);
-				self->s.fmnodeinfo[MESH__R_ARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__R_ARM].skin = self->s.skinnum+1;
-			}
 			break;
 
-		case hl_LegUpperLeft:
-		case hl_LegLowerLeft://left leg
-			if(self->health>0)
-			{//still alive
-				if(self->s.fmnodeinfo[MESH__L_LEG].flags & FMNI_USE_SKIN)
-					break;
-				self->s.fmnodeinfo[MESH__L_LEG].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__L_LEG].skin = self->s.skinnum+1;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__L_LEG].flags & FMNI_NO_DRAW)
-					break;
-				if(PlagueElfCanThrowNode(self, MESH__L_LEG, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-				break;
-			}
+		case hl_ArmUpperLeft: // Left arm.
+		case hl_ArmLowerLeft:
+			PlagueElfThrowLeftArm(self, (float)damage, dismember_ok, &throw_nodes);
 			break;
-		case hl_LegUpperRight:
-		case hl_LegLowerRight://right leg
-			if(self->health>0)
-			{//still alive
-				if(self->s.fmnodeinfo[MESH__R_LEG].flags & FMNI_USE_SKIN)
-					break;
-				self->s.fmnodeinfo[MESH__R_LEG].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__R_LEG].skin = self->s.skinnum+1;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__R_LEG].flags & FMNI_NO_DRAW)
-					break;
-				if(PlagueElfCanThrowNode(self, MESH__R_LEG, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-				break;
-			}
+
+		case hl_ArmUpperRight: // Right arm.
+		case hl_ArmLowerRight:
+			PlagueElfThrowRightArm(self, (float)damage, dismember_ok, &throw_nodes);
+			break;
+
+		case hl_LegUpperLeft: // Left leg.
+		case hl_LegLowerLeft:
+			PlagueElfThrowLeg(self, (float)damage, MESH__L_LEG, &throw_nodes);
+			break;
+
+		case hl_LegUpperRight: // Right leg.
+		case hl_LegLowerRight:
+			PlagueElfThrowLeg(self, (float)damage, MESH__R_LEG, &throw_nodes);
 			break;
 
 		default:
-			if(flrand(0,self->health)<damage*0.25)
-				PlagueElfDropWeapon (self);
+			if (flrand(0, (float)self->health) < (float)damage * 0.25f)
+				PlagueElfDropWeapon(self);
 			break;
 	}
-	if(throw_nodes)
-		self->pain_debounce_time = 0;
 
-	if(self->s.fmnodeinfo[MESH__R_ARM].flags&FMNI_NO_DRAW)
+	if (throw_nodes > 0)
+		self->pain_debounce_time = 0.0f;
+
+	if (self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW)
 	{
 		self->monsterinfo.aiflags |= AI_NO_MELEE;
 		self->monsterinfo.aiflags |= AI_NO_MISSILE;
 	}
-	else if(self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW)
+	else if (self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW)
 	{
 		self->monsterinfo.aiflags |= AI_NO_MELEE;
-		if(self->missile_range)
+
+		if (self->missile_range > 0.0f)
 		{
-			if(!(self->s.fmnodeinfo[MESH__R_ARM].flags&FMNI_NO_DRAW))
+			if (!(self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW))
 			{
 				self->monsterinfo.aiflags &= ~AI_NO_MISSILE;
-				self->melee_range = 0;
+				self->melee_range = 0.0f;
 			}
 			else
+			{
 				self->monsterinfo.aiflags |= AI_NO_MISSILE;
+			}
 		}
 	}
 
-	if(self->monsterinfo.aiflags&AI_NO_MISSILE &&
-		self->monsterinfo.aiflags&AI_NO_MELEE)
+	if ((self->monsterinfo.aiflags & AI_NO_MISSILE) && (self->monsterinfo.aiflags & AI_NO_MELEE))
 		self->monsterinfo.aiflags |= AI_COWARD;
 }
-
 
 void plagueElf_pain(edict_t *self, G_Message_t *msg)
 {
@@ -1833,7 +1859,7 @@ void SP_monster_plagueElf (edict_t *self)
 		return;
 		
 	self->msgHandler = DefaultMsgHandler;
-	self->monsterinfo.dismember = plagueElf_dismember;
+	self->monsterinfo.dismember = PlagueElfDismember;
 
 	if (!self->health)
 	{
