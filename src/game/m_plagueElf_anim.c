@@ -683,7 +683,7 @@ static const animframe_t plagueElf_c_frames_attack4[] =
 	{ FRAME_attckA1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attckA2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attckA3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckA4, ai_c_move, 0, 0, 0, NULL, 0, plagueElf_c_spell },
+	{ FRAME_attckA4, ai_c_move, 0, 0, 0, NULL, 0, plagueelf_cinematic_spell },
 	{ FRAME_attckA5, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attckA6, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attckA7, ai_c_move, 0, 0, 0, NULL, 0, NULL },

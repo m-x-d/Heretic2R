@@ -608,7 +608,7 @@ void plagueelf_spell(edict_t* self) //mxd. Named 'plagueElf_spell' in original l
 	spell->nextthink = level.time + 3.0f;
 }
 
-void plagueElf_c_spell(edict_t* self) //TODO: rename to plagueelf_cinematic_spell.
+void plagueelf_cinematic_spell(edict_t* self) //mxd. Named 'plagueElf_c_spell' in original logic.
 {
 	//FIXME: adjust for up/down.
 	if (self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW) // Was his arm lopped off?
