@@ -664,15 +664,6 @@ void plagueElf_c_spell(edict_t* self) //TODO: rename to plagueelf_cinematic_spel
 	spell->nextthink = level.time + 3.0f;
 }
 
-void plagueElf_runaway (edict_t *self, G_Message_t *msg)
-{
-	if(self->spawnflags&MSF_FIXED)
-		return;
-
-	self->monsterinfo.aiflags |= AI_FLEE;
-	self->monsterinfo.flee_finished = level.time + flrand(2, 4);
-}
-
 void plagueElf_missile(edict_t *self, G_Message_t *msg)
 {
 	pelf_init_phase_in(self);
