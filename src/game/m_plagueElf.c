@@ -1256,10 +1256,9 @@ static void PlagueElfJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_FJUMP));
 }
 
-void pelf_check_mood (edict_t *self, G_Message_t *msg)
+static void PlagueElfCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'pelf_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-
 	plagueElf_pause(self);
 }
 
@@ -1677,7 +1676,7 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_JUMP] = PlagueElfJumpMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH_PAIN] = PlagueElfDeadPainMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_FALLBACK] = plagueElf_run;//away
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_CHECK_MOOD] = pelf_check_mood;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_CHECK_MOOD] = PlagueElfCheckMoodMsgHandler;
 
 	//Sound support
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_SIGHT] = pelf_SightSound;
