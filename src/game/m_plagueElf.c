@@ -1286,21 +1286,15 @@ static void PlagueElfStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	SetAnim(self, ((self->ai_mood == AI_MOOD_DELAY) ? ANIM_DELAY : ANIM_SHAKE1));
 }
 
-/*-------------------------------------------------------------------------
-	plagueElf_walk
--------------------------------------------------------------------------*/
-void plagueElf_walk(edict_t *self, G_Message_t *msg)
+static void PlagueElfWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_walk' in original logic.
 {
-	if(self->curAnimID == ANIM_CURSING || self->curAnimID == ANIM_POINT)
+	if (self->curAnimID == ANIM_CURSING || self->curAnimID == ANIM_POINT)
 		return;
 
-	if(self->spawnflags&MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
 		SetAnim(self, ANIM_DELAY);
-	else if(irand(0, 1))	
-		SetAnim(self, ANIM_WALK1);	
-	else	
-		SetAnim(self, ANIM_WALK2);	
-	return;	
+	else
+		SetAnim(self, irand(ANIM_WALK1, ANIM_WALK2));
 }
 
 void plagueElf_go_run(edict_t *self)
@@ -1633,7 +1627,7 @@ void PlagueElfStaticsInit(void)
 	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_STAND] = PlagueElfStandMsgHandler;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_WALK] = plagueElf_walk;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_WALK] = PlagueElfWalkMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_RUN] = PlagueElfRunMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MELEE] = PlagueElfMeleeMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MISSILE] = PlagueElfMissileMsgHandler;
