@@ -1535,12 +1535,9 @@ static void PlagueElfPhaseInInit(edict_t* self) //mxd. Named 'pelf_init_phase_in
 	}
 }
 
-/*-------------------------------------------------------------------------
-	PlagueElfStaticsInit
--------------------------------------------------------------------------*/
 void PlagueElfStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_STAND] = PlagueElfStandMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_WALK] = PlagueElfWalkMsgHandler;
@@ -1549,18 +1546,18 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MISSILE] = PlagueElfMissileMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_PAIN] = PlagueElfPainMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH] = PlagueElfDeathMsgHandler;
-//	classStatics[CID_PLAGUEELF].msgReceivers[MSG_BLOCKED] = plagueElf_blocked;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_JUMP] = PlagueElfJumpMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH_PAIN] = PlagueElfDeadPainMsgHandler;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_FALLBACK] = PlagueElfRunMsgHandler;//away
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_FALLBACK] = PlagueElfRunMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_CHECK_MOOD] = PlagueElfCheckMoodMsgHandler;
 
-	//Sound support
+	// Sound support.
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_SIGHT] = PlagueElfVoiceSightMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_POLL] = PlagueElfVoicePollMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_PUPPET] = PlagueElfVoicePuppetMsgHandler;
 
+	// Cinematics.
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_IDLE1] = PlagueElfCinematicActionMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_IDLE2] = PlagueElfCinematicActionMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_IDLE3] = PlagueElfCinematicActionMsgHandler;
@@ -1579,11 +1576,9 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_PAIN1] = PlagueElfCinematicActionMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_GIB1] = CinematicGibMsgHandler;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	
-	//note that the name is different in the path
-	resInfo.modelIndex = gi.modelindex("models/monsters/plaguelf/tris.fm");
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/plaguelf/tris.fm"); // Note that the name is different in the path.
 
 	sounds[SND_PAIN1] = gi.soundindex("monsters/plagueElf/pain1.wav");
 	sounds[SND_PAIN2] = gi.soundindex("monsters/plagueElf/pain2.wav");
@@ -1597,33 +1592,33 @@ void PlagueElfStaticsInit(void)
 	sounds[SND_ATTACKMISS1] = gi.soundindex("weapons/staffswing.wav");
 	sounds[SND_MOAN1] = gi.soundindex("monsters/plagueElf/pelfgrn1.wav");
 	sounds[SND_MOAN2] = gi.soundindex("monsters/plagueElf/pelfgron.wav");
-	sounds[SND_SHIVER] = gi.soundindex("monsters/plagueElf/pelfshiv.wav");
+	//sounds[SND_SHIVER] = gi.soundindex("monsters/plagueElf/pelfshiv.wav");
 	sounds[SND_PANT] = gi.soundindex("monsters/plagueElf/pelfpant.wav");
-	sounds[SND_GASP] = gi.soundindex("monsters/plagueElf/pelfgasp.wav");
-	sounds[SND_SIGH] = gi.soundindex("monsters/plagueElf/pelfsigh.wav");
+	//sounds[SND_GASP] = gi.soundindex("monsters/plagueElf/pelfgasp.wav");
+	//sounds[SND_SIGH] = gi.soundindex("monsters/plagueElf/pelfsigh.wav");
 	sounds[SND_ATTACK1] = gi.soundindex("monsters/plagueElf/attack1.wav");
 	sounds[SND_ATTACK2] = gi.soundindex("monsters/plagueElf/attack2.wav");
 	sounds[SND_DISMEMBER1] = gi.soundindex("monsters/plagueElf/loselimb1.wav");
 	sounds[SND_DISMEMBER2] = gi.soundindex("monsters/plagueElf/loselimb2.wav");
-	
-	//Plague elf voices
-	sounds[VOICE_SIGHT_EAT_FLESH1]	= gi.soundindex("monsters/plagueElf/voices/eatfleshb.wav");
-	sounds[VOICE_SIGHT_GET_HIM1]	= gi.soundindex("monsters/plagueElf/voices/gethimb.wav");
-	sounds[VOICE_SIGHT_GET_HIM2]	= gi.soundindex("monsters/plagueElf/voices/gethimk.wav");
-	sounds[VOICE_SIGHT_GET_HIM3]	= gi.soundindex("monsters/plagueElf/voices/gethimm.wav");
-	sounds[VOICE_SIGHT_THERES_ONE]	= gi.soundindex("monsters/plagueElf/voices/theresonep.wav");
+
+	// Plague elf voices. //TODO: there are A LOT of unused sounds in monsters/plagueElf/voices.
+	sounds[VOICE_SIGHT_EAT_FLESH1] = gi.soundindex("monsters/plagueElf/voices/eatfleshb.wav");
+	sounds[VOICE_SIGHT_GET_HIM1] = gi.soundindex("monsters/plagueElf/voices/gethimb.wav");
+	sounds[VOICE_SIGHT_GET_HIM2] = gi.soundindex("monsters/plagueElf/voices/gethimk.wav");
+	sounds[VOICE_SIGHT_GET_HIM3] = gi.soundindex("monsters/plagueElf/voices/gethimm.wav");
+	sounds[VOICE_SIGHT_THERES_ONE] = gi.soundindex("monsters/plagueElf/voices/theresonep.wav");
 
 	sounds[VOICE_SUPPORT_GONNA_DIE1] = gi.soundindex("monsters/plagueElf/voices/gonnadieb.wav");
-	sounds[VOICE_SUPPORT_LIVER]		= gi.soundindex("monsters/plagueElf/voices/liverm.wav");
-	sounds[VOICE_SUPPORT_YES]		= gi.soundindex("monsters/plagueElf/voices/yesb.wav");
+	sounds[VOICE_SUPPORT_LIVER] = gi.soundindex("monsters/plagueElf/voices/liverm.wav");
+	sounds[VOICE_SUPPORT_YES] = gi.soundindex("monsters/plagueElf/voices/yesb.wav");
 
-	sounds[VOICE_MISC_LEAVE_ME1]	= gi.soundindex("monsters/plagueElf/voices/leavemeb.wav");
-	sounds[VOICE_MISC_NO]			= gi.soundindex("monsters/plagueElf/voices/nomrj.wav");
-	
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	//sounds[VOICE_MISC_LEAVE_ME1] = gi.soundindex("monsters/plagueElf/voices/leavemeb.wav");
+	//sounds[VOICE_MISC_NO] = gi.soundindex("monsters/plagueElf/voices/nomrj.wav");
 
-	classStatics[CID_PLAGUEELF].resInfo = &resInfo;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
+
+	classStatics[CID_PLAGUEELF].resInfo = &res_info;
 }
 
 /*QUAKED monster_plagueElf (1 .5 0) (-17 -25 -1) (22 12 63) AMBUSH ASLEEP WALKING CINEMATIC Missile 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
