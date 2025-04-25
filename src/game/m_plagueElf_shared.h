@@ -170,7 +170,7 @@ extern void plagueelf_attack(edict_t* self);
 extern void plagueelf_knockback_death_loop(edict_t* self);
 extern void plagueelf_knockback_death_check_land(edict_t* self);
 extern void plagueelf_spell(edict_t* self);
-extern void plagueElfApplyJump(edict_t* self);
+extern void plagueelf_apply_jump(edict_t* self);
 
 extern void pelf_check_too_close(edict_t* self);
 extern void pelf_land(edict_t* self);

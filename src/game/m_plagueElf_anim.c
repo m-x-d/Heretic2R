@@ -193,7 +193,7 @@ static const animframe_t plagueElf_frames_fjump[] =
 	{ FRAME_jump2,	NULL, 0, 0, 0, NULL, 0, plagueelf_growl },
 	{ FRAME_jump3,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump4,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_jump5,	NULL, 0, 0, 0, NULL, 0, plagueElfApplyJump },
+	{ FRAME_jump5,	NULL, 0, 0, 0, NULL, 0, plagueelf_apply_jump },
 	{ FRAME_jump6,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump7,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump8,	NULL, 0, 0, 0, NULL, 0, NULL },

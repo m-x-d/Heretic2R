@@ -1139,7 +1139,7 @@ static void PlagueElfPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	}
 }
 
-void plagueElfApplyJump(edict_t* self) //TODO: rename to plagueelf_apply_jump.
+void plagueelf_apply_jump(edict_t* self) //mxd. Named 'plagueElfApplyJump' in original logic.
 {
 	self->jump_time = level.time + 0.5f;
 	VectorCopy(self->movedir, self->velocity);
