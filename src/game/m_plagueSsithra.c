@@ -53,7 +53,7 @@ int Bit_for_MeshNode [16] =
 //========================================
 //INITIALIZE
 //========================================
-static animmove_t *animations[NUM_ANIMS] =
+static const animmove_t *animations[NUM_ANIMS] =
 {
 	&ssithra_move_idle1,
 	&ssithra_move_walk1,
@@ -76,7 +76,7 @@ static animmove_t *animations[NUM_ANIMS] =
 	&ssithra_move_startle1,
 	&ssithra_move_swimforward1,
 	&ssithra_move_swimwander,
-	&ssithra_move_water_death1,//19
+	&ssithra_move_water_death1,
 	&ssithra_move_water_idle1,
 	&ssithra_move_water_pain_a1,
 	&ssithra_move_water_pain_b1,
