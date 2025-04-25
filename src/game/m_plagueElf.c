@@ -41,7 +41,7 @@ static qboolean PlagueElfDropWeapon(edict_t* self); //TODO: remove.
 static void PlagueElfPollResponse(const edict_t* self, int sound_event, int sound_id, float time); //TODO: remove.
 static void pelf_init_phase_in(edict_t* self); //TODO: remove.
 static void pelf_init_phase_out(edict_t* self); //TODO: remove.
-static void pelf_phase_out(edict_t* self);
+static void PlagueElfPhaseOutPreThink(edict_t* self);
 static void pelf_phase_in(edict_t* self);
 
 #pragma region ========================== Plague Elf Base Info ==========================
@@ -1155,7 +1155,7 @@ void plagueElf_pause(edict_t* self) //TODO: rename to plagueelf_pause.
 		if (self->s.color.a != 255 && self->pre_think != pelf_phase_in)
 			pelf_init_phase_in(self);
 	}
-	else if (self->pre_think != pelf_phase_out)
+	else if (self->pre_think != PlagueElfPhaseOutPreThink)
 	{
 		const byte min_alpha = (SKILL == SKILL_EASY ? 50 : 0); //mxd
 		if (self->s.color.a > min_alpha)
@@ -1475,25 +1475,19 @@ void pelf_check_too_close(edict_t* self) //TODO: rename to plagueelf_check_too_c
 		SetAnim(self, irand(ANIM_CRAZY_A, ANIM_CRAZY_B));
 }
 
-
-static void pelf_phase_out (edict_t *self)
+static void PlagueElfPhaseOutPreThink(edict_t* self) //mxd. Named 'pelf_phase_out' in original logic.
 {
-	int	interval = 60;
-
-	if(self->s.color.a > interval)
+	if (self->s.color.a > PLAGUEELF_PHASE_INTERVAL)
 	{
-		self->s.color.a -= irand(interval/2, interval);
-		self->pre_think = pelf_phase_out;
-		self->next_pre_think = level.time + 0.05;
+		self->s.color.a -= irand(PLAGUEELF_PHASE_INTERVAL / 2, PLAGUEELF_PHASE_INTERVAL);
+		self->pre_think = PlagueElfPhaseOutPreThink;
+		self->next_pre_think = level.time + 0.05f;
 	}
-	else 
+	else
 	{
-		if(!skill->value)
-			self->s.color.a = 50;
-		else
-			self->s.color.a = 0;
+		self->s.color.a = (SKILL == SKILL_EASY ? 50 : 0);
 		self->pre_think = NULL;
-		self->next_pre_think = -1;
+		self->next_pre_think = -1.0f;
 	}
 }
 
@@ -1527,7 +1521,7 @@ static void pelf_init_phase_out (edict_t *self)
 		return;
 
 //	gi.dprintf("Elf phasing out\n");
-	self->pre_think = pelf_phase_out;
+	self->pre_think = PlagueElfPhaseOutPreThink;
 	self->next_pre_think = level.time + FRAMETIME;
 	self->svflags |= SVF_NO_AUTOTARGET;
 }
