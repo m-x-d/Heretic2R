@@ -453,26 +453,27 @@ static void PlagueElfSpellInit(edict_t* spell) //mxd. Named 'create_pe_spell' in
 	spell->touch = plagueElfSpellTouch;
 }
 
-// the spell needs to bounce
-void make_pe_spell_reflect(edict_t *self, edict_t *spell)
+// The spell needs to bounce.
+static void PlagueElfReflectSpellInit(edict_t* self, edict_t* spell) //mxd. Named 'make_pe_spell_reflect' in original logic.
 {
 	PlagueElfSpellInit(spell);
+
 	spell->s.modelindex = self->s.modelindex;
-	VectorCopy(self->s.origin, spell->s.origin);
 	spell->owner = self->owner;
 	spell->enemy = self->enemy;
-	spell->touch=self->touch;
-	spell->nextthink=self->nextthink;
-	spell->think=G_FreeEdict;
-	spell->health = self->health;
+	spell->touch = self->touch;
 	spell->red_rain_count = self->red_rain_count;
 
 	Create_rand_relect_vect(self->velocity, spell->velocity);
+	VectorCopy(self->s.origin, spell->s.origin);
 
 	vectoangles(spell->velocity, spell->s.angles);
-	spell->s.angles[YAW]+=90;
+	spell->s.angles[YAW] += 90.0f;
 
-	Vec3ScaleAssign(500, spell->velocity);
+	Vec3ScaleAssign(500.0f, spell->velocity);
+
+	spell->think = G_FreeEdict;
+	spell->nextthink = self->nextthink;
 
 	G_LinkMissile(spell);
 }
@@ -492,7 +493,7 @@ static void plagueElfSpellTouch (edict_t *self, edict_t *Other, cplane_t *Plane,
 	{
 		Spell = G_Spawn();
 
-		make_pe_spell_reflect(self,Spell);
+		PlagueElfReflectSpellInit(self,Spell);
 
 		gi.CreateEffect(&Spell->s,
 			FX_PE_SPELL,
