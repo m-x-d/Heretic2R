@@ -38,7 +38,7 @@ extern void dying_elf_sounds(edict_t* self, int type); //TODO: move to header.
 
 static void PlagueElfSpellTouch(edict_t* self, edict_t* Other, cplane_t* Plane, csurface_t* Surface); //TODO: remove.
 static qboolean PlagueElfDropWeapon(edict_t* self); //TODO: remove.
-static void pelf_PollResponse(edict_t* self, int sound_event, int sound_id, float time); //TODO: remove.
+static void PlagueElfPollResponse(const edict_t* self, int sound_event, int sound_id, float time); //TODO: remove.
 static void pelf_init_phase_in(edict_t* self); //TODO: remove.
 static void pelf_init_phase_out(edict_t* self); //TODO: remove.
 static void pelf_phase_out(edict_t* self);
@@ -1365,7 +1365,7 @@ static void PlagueElfVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd
 			self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[sound_id];
 			gi.sound(self, CHAN_VOICE, sounds[sound_id], 1, ATTN_NORM, 0);
 
-			pelf_PollResponse(self, event_type, sound_id, self->monsterinfo.sound_finished - flrand(0.5f, 0.25f));
+			PlagueElfPollResponse(self, event_type, sound_id, self->monsterinfo.sound_finished - flrand(0.5f, 0.25f));
 		}
 
 		if (self->monsterinfo.supporters > 0)
@@ -1373,61 +1373,48 @@ static void PlagueElfVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd
 	}
 }
 
-//The plague elf has said something and is looking for a response
-static void pelf_PollResponse ( edict_t *self, int sound_event, int sound_id, float time )
+// Plague elf has said something and is looking for a response.
+static void PlagueElfPollResponse(const edict_t* self, const int sound_event, const int sound_id, const float time) //mxd. Named 'pelf_PollResponse' in original logic.
 {
-	edict_t *ent = NULL, *last_valid = NULL;
-	int		numSupport = 0;
+	edict_t* ent = NULL;
+	edict_t* last_valid = NULL;
 
-	while((ent = FindInRadius(ent, self->s.origin, PLAGUEELF_SUPPORT_RADIUS)) != NULL)
+	while ((ent = FindInRadius(ent, self->s.origin, PLAGUEELF_SUPPORT_RADIUS)) != NULL)
 	{
-		//Not us
-		if (ent==self)
+		// Not us.
+		if (ent == self || ent->classID != self->classID || ent->health <= 0)
 			continue;
 
-		//Same class
-		if (ent->classID != self->classID)
+		// Not already talking.
+		if (ent->monsterinfo.sound_pending > 0 || ent->monsterinfo.sound_finished > level.time)
 			continue;
 
-		//Not already talking
-		if (ent->monsterinfo.sound_pending || ent->monsterinfo.sound_finished > level.time)
+		// Not going after different goals.
+		if (ent->enemy != NULL && ent->enemy != self->enemy)
 			continue;
 
-		//Not going after different goals
-		if ((ent->enemy) && ent->enemy != self->enemy)
+		if (!AI_OkToWake(ent, false, false))
 			continue;
 
-		//Alive
-		if (ent->health <= 0)
-			continue;
-
-		if(!AI_OkToWake(ent, false, false))
-			continue;
-
-		//Save this as valid!
+		// Save this as valid!
 		last_valid = ent;
 
-		//Random chance to continue on
-		if (irand(0,1))
-			continue;
-
-		if(!ent->enemy)
-		{
-			ent->enemy = self->enemy;
-			AI_FoundTarget(ent, false);
-		}
-
-		//This is the elf to respond, so post the message
-		QPostMessage(ent, MSG_VOICE_POLL, PRI_DIRECTIVE, "bbf", sound_event, sound_id, time);
-		last_valid = NULL;
-		break;
+		// Random chance to continue on.
+		if (irand(0, 1) == 1)
+			break;
 	}
 
-	//We skipped the last valid elf, so just make the last valid one talk
-	if (last_valid)
+	// Make the last valid one talk.
+	if (last_valid != NULL)
 	{
+		if (last_valid->enemy == NULL)
+		{
+			last_valid->enemy = self->enemy;
+			AI_FoundTarget(last_valid, false);
+		}
+
+		// This is the elf to respond, so post the message.
 		QPostMessage(last_valid, MSG_VOICE_POLL, PRI_DIRECTIVE, "bbf", sound_event, sound_id, time);
-		last_valid = NULL;
 	}
 }
 
@@ -1466,7 +1453,7 @@ void pelf_EchoResponse  ( edict_t *self, G_Message_t *msg )
 		self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
 
 		if (irand(0,2))
-			pelf_PollResponse( self, SE_GROUP, self->monsterinfo.sound_pending, self->monsterinfo.sound_finished );
+			PlagueElfPollResponse( self, SE_GROUP, self->monsterinfo.sound_pending, self->monsterinfo.sound_finished );
 
 		if(irand(0, 2))
 		{//FIXME: make sure enemy is far enough away to anim!
@@ -1484,7 +1471,7 @@ void pelf_EchoResponse  ( edict_t *self, G_Message_t *msg )
 		self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
 
 		if (irand(0,2))
-			pelf_PollResponse( self, SE_GROUP, self->monsterinfo.sound_pending, self->monsterinfo.sound_finished );
+			PlagueElfPollResponse( self, SE_GROUP, self->monsterinfo.sound_pending, self->monsterinfo.sound_finished );
 
 		break;
 	}	
