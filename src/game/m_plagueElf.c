@@ -1302,32 +1302,20 @@ void plagueElf_go_run(edict_t* self) //TODO: rename to plagueelf_run_go.
 	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN1));
 }
 
-/*
-
-	Plagued Elf voice support functions
-
-*/
-
-/*-----------------------------------------------
-	pelf_ChooseSightSound 	
------------------------------------------------*/
-int pelf_ChooseSightSound ( edict_t *self, int event )
+static int PlagueElfChooseSightSound(const int event) //mxd. Named 'pelf_ChooseSightSound' in original logic. Removed unused 'self' arg.
 {
-	int sound;
-
 	switch (event)
 	{
-	case SE_ALONE:
-		sound = irand( FIRST_SIGHT_ALONE, LAST_SIGHT_ALONE);
-		break;
+		case SE_ALONE:
+			return irand(FIRST_SIGHT_ALONE, LAST_SIGHT_ALONE);
 
-	case SE_PAIR:
-	case SE_GROUP:
-		sound = irand( FIRST_SIGHT_GROUP, LAST_SIGHT_GROUP );
-		break;
+		case SE_PAIR:
+		case SE_GROUP:
+			return irand(FIRST_SIGHT_GROUP, LAST_SIGHT_GROUP);
+
+		default:
+			return FIRST_SIGHT_ALONE; //mxd. Should never happen.
 	}
-
-	return sound;
 }
 
 /*-----------------------------------------------
@@ -1378,12 +1366,12 @@ void pelf_SightSound ( edict_t *self, G_Message_t *msg )
 
 		if (support < 1)	//Loner
 		{
-			sound = pelf_ChooseSightSound(self, SE_ALONE);
+			sound = PlagueElfChooseSightSound(SE_ALONE);
 			gi.sound(self, CHAN_VOICE, sounds[sound], 1, ATTN_NORM, 0);
 		}
 		else if (support < 2)	//Paired
 		{
-			sound = pelf_ChooseSightSound(self, SE_PAIR);
+			sound = PlagueElfChooseSightSound(SE_PAIR);
 			self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[sound];
 			gi.sound(self, CHAN_VOICE, sounds[sound], 1, ATTN_NORM, 0);
 
@@ -1391,7 +1379,7 @@ void pelf_SightSound ( edict_t *self, G_Message_t *msg )
 		}
 		else //Grouped
 		{
-			sound = pelf_ChooseSightSound(self, SE_GROUP);
+			sound = PlagueElfChooseSightSound(SE_GROUP);
 			self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[sound];
 			gi.sound(self, CHAN_VOICE, sounds[sound], 1, ATTN_NORM, 0);
 			
