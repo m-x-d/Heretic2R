@@ -163,7 +163,7 @@ extern void plagueElf_c_spell(edict_t* self);
 extern void plagueElfdeathsqueal(edict_t* self);
 extern void plagueElfsqueal(edict_t* self);
 extern void plagueElfgrowl(edict_t* self);
-extern void plagueElf_strike(edict_t* self);
+extern void plagueelf_strike(edict_t* self);
 extern void plagueElf_pause(edict_t* self);
 extern void plagueElfattack(edict_t* self);
 

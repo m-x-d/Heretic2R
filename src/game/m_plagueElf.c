@@ -279,7 +279,7 @@ void plagueelf_knockback_death_check_land(edict_t* self) //mxd. Named 'plagueelf
 	}
 }
 
-void plagueElf_strike(edict_t* self) //TODO: rename to plagueelf_strike.
+void plagueelf_strike(edict_t* self) //mxd. Named 'plagueElf_strike' in original logic.
 {
 	//FIXME: Account for weapon being knocked out of hand?
 	if (self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW)
