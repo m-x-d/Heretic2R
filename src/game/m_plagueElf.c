@@ -537,77 +537,74 @@ static void PlagueElfSpellTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	G_FreeEdict(self);
 }
 
-void plagueElf_spell(edict_t *self)
-{//fixme; adjust for up/down
-	vec3_t	Forward, right, firedir;
-	edict_t	*Spell;
-	
-	if (M_ValidTarget(self, self->enemy))
+void plagueElf_spell(edict_t* self) //TODO: rename to plagueelf_spell.
+{
+	//FIXME: adjust for up/down.
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		if(self->s.fmnodeinfo[MESH__R_ARM].flags&FMNI_NO_DRAW)
-			return;
-
-//		gi.sound(self, CHAN_WEAPON, Sounds[SND_SPELL], 1, ATTN_NORM, 0);
-		self->monsterinfo.attack_finished = level.time + 0.4;
-		Spell = G_Spawn();
-
-		PlagueElfSpellInit(Spell);
-
-		Spell->touch=PlagueElfSpellTouch;
-
-		Spell->owner=self;
-		Spell->enemy=self->enemy;
-		
-		Spell->health = 0; // tell the touch function what kind of Spell we are;
-
-		AngleVectors(self->s.angles, Forward, right, NULL);
-		VectorCopy(self->s.origin,Spell->s.origin);	
-		VectorMA(Spell->s.origin, 4, Forward, Spell->s.origin);
-		VectorMA(Spell->s.origin, 8, right, Spell->s.origin);
-		Spell->s.origin[2] += 12;
-
-		VectorCopy(self->movedir,Spell->movedir);
-		vectoangles(Forward,Spell->s.angles);
-
-		VectorSubtract(self->enemy->s.origin, Spell->s.origin, firedir);
-		VectorNormalize(firedir);
-		Forward[2] = firedir[2];
-		VectorNormalize(Forward);
-		VectorScale(Forward, 400, Spell->velocity);
-
-		VectorCopy(Spell->velocity, Spell->movedir);
-		VectorNormalize(Spell->movedir);
-		vectoangles(Spell->movedir, Spell->s.angles);
-		Spell->s.angles[PITCH] = anglemod(Spell->s.angles[PITCH] * -1);
-
-		if(stricmp(self->classname, "monster_plagueElf"))//one of the special dudes
-		{
-			if(irand(0, 3) || skill->value < 2 || !stricmp(self->classname, "monster_palace_plague_guard_invisible"))
-				Spell->red_rain_count = FX_PE_MAKE_SPELL2;
-			else
-				Spell->red_rain_count = FX_PE_MAKE_SPELL3;
-		}
-		else
-			Spell->red_rain_count = FX_PE_MAKE_SPELL;
-
-		gi.CreateEffect(&Spell->s,
-			FX_PE_SPELL,
-			CEF_OWNERS_ORIGIN,
-			NULL, 
-			"bv",
-			Spell->red_rain_count,
-			Spell->velocity);
-
-		G_LinkMissile(Spell); 
-
-		Spell->nextthink=level.time+3;
-		Spell->think=G_FreeEdict;//plagueElfSpellThink;
-	}
-	else//If our enemy is dead, we need to stand
+		// If our enemy is dead, we need to stand.
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
+	}
 
+	if (self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW)
+		return;
+
+	self->monsterinfo.attack_finished = level.time + 0.4f;
+
+	edict_t* spell = G_Spawn();
+
+	PlagueElfSpellInit(spell);
+
+	spell->touch = PlagueElfSpellTouch;
+	spell->owner = self;
+	spell->enemy = self->enemy;
+
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+
+	VectorCopy(self->s.origin, spell->s.origin);
+	VectorMA(spell->s.origin, 4.0f, forward, spell->s.origin);
+	VectorMA(spell->s.origin, 8.0f, right, spell->s.origin);
+	spell->s.origin[2] += 12.0f;
+
+	VectorCopy(self->movedir, spell->movedir);
+	vectoangles(forward, spell->s.angles);
+
+	vec3_t fire_dir;
+	VectorSubtract(self->enemy->s.origin, spell->s.origin, fire_dir);
+	VectorNormalize(fire_dir);
+
+	forward[2] = fire_dir[2];
+	VectorNormalize(forward);
+	VectorScale(forward, 400.0f, spell->velocity);
+
+	VectorCopy(spell->velocity, spell->movedir);
+	VectorNormalize(spell->movedir);
+	vectoangles(spell->movedir, spell->s.angles);
+
+	spell->s.angles[PITCH] = anglemod(-spell->s.angles[PITCH]);
+
+	if (Q_stricmp(self->classname, "monster_plagueElf") != 0) // One of the special dudes. //mxd. stricmp -> Q_stricmp
+	{
+		if (irand(0, 3) > 0 || SKILL < SKILL_HARD || Q_stricmp(self->classname, "monster_palace_plague_guard_invisible") == 0) //mxd. stricmp -> Q_stricmp
+			spell->red_rain_count = FX_PE_MAKE_SPELL2;
+		else
+			spell->red_rain_count = FX_PE_MAKE_SPELL3;
+	}
+	else
+	{
+		spell->red_rain_count = FX_PE_MAKE_SPELL;
+	}
+
+	gi.CreateEffect(&spell->s, FX_PE_SPELL, CEF_OWNERS_ORIGIN, NULL, "bv", spell->red_rain_count, spell->velocity);
+
+	G_LinkMissile(spell);
+
+	spell->think = G_FreeEdict;
+	spell->nextthink = level.time + 3.0f;
 }
-
 
 void plagueElf_c_spell(edict_t *self)
 {//fixme; adjust for up/down
