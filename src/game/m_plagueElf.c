@@ -1273,15 +1273,6 @@ static void PlagueElfRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
-/*----------------------------------------------------------------------
-  plagueElf runorder - order the plagueElf to choose an run animation
------------------------------------------------------------------------*/
-void plagueElf_runorder(edict_t *self)
-{
-	QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-}
-
-
 /*-------------------------------------------------------------------------
 	plagueElfsqueal
 -------------------------------------------------------------------------*/
