@@ -1418,63 +1418,46 @@ static void PlagueElfPollResponse(const edict_t* self, const int sound_event, co
 	}
 }
 
-//A plague elf has been polled for a response, now choose a reply and echo it back
-void pelf_EchoResponse  ( edict_t *self, G_Message_t *msg )
+// A plague elf has been polled for a response, now choose a reply and echo it back.
+static void PlagueElfVoicePollMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'pelf_EchoResponse' in original logic.
 {
-	float	time;
-	int		sound_event, sound_id;
+	if (self->targetname != NULL || self->monsterinfo.c_mode)
+		return; // Cinematic waiting to be activated, don't do this.
 
-	if(self->targetname || self->monsterinfo.c_mode)
-		return;//cinematic waiting to be activated, don't do this
-
-	//gi.dprintf("pelf_EchoResponse: Echoing alert response\n");
-
+	int sound_event;
+	int sound_id;
+	float time;
 	ParseMsgParms(msg, "bbf", &sound_event, &sound_id, &time);
 
-	switch ( sound_event )
+	self->monsterinfo.sound_start = time;
+	self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
+
+	switch (sound_event)
 	{
-	case SE_PAIR:
-		self->monsterinfo.sound_pending = PlagueElfChooseResponseSound( SE_PAIR, sound_id );
-		self->monsterinfo.sound_start = time;
-		self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
+		case SE_PAIR:
+			self->monsterinfo.sound_pending = PlagueElfChooseResponseSound(SE_PAIR, sound_id);
 
-		if(irand(0, 4))
-		{//FIXME: make sure enemy is far enough away to anim!
-			if(irand(0, 1))
-				SetAnim(self, ANIM_CURSING);
-			else
-				SetAnim(self, ANIM_POINT);
-		}
-		break;
-	
-	case SE_GROUP:
-		self->monsterinfo.sound_pending = PlagueElfChooseResponseSound( SE_GROUP, sound_id );
-		self->monsterinfo.sound_start = time;
-		self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
+			if (irand(0, 4) > 0)
+				SetAnim(self, irand(ANIM_CURSING, ANIM_POINT)); //FIXME: make sure enemy is far enough away to anim!
+			break;
 
-		if (irand(0,2))
-			PlagueElfPollResponse( self, SE_GROUP, self->monsterinfo.sound_pending, self->monsterinfo.sound_finished );
+		case SE_GROUP:
+			self->monsterinfo.sound_pending = PlagueElfChooseResponseSound(SE_GROUP, sound_id);
 
-		if(irand(0, 2))
-		{//FIXME: make sure enemy is far enough away to anim!
-			if(irand(0, 1))
-				SetAnim(self, ANIM_CURSING);
-			else
-				SetAnim(self, ANIM_POINT);
+			if (irand(0, 2) > 0)
+				PlagueElfPollResponse(self, SE_GROUP, self->monsterinfo.sound_pending, self->monsterinfo.sound_finished);
 
-		}
-		break;
+			if (irand(0, 2) > 0)
+				SetAnim(self, irand(ANIM_CURSING, ANIM_POINT)); //FIXME: make sure enemy is far enough away to anim!
+			break;
 
-	default:
-		self->monsterinfo.sound_pending = PlagueElfChooseResponseSound( SE_GROUP, sound_id );
-		self->monsterinfo.sound_start = time;
-		self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
+		default:
+			self->monsterinfo.sound_pending = PlagueElfChooseResponseSound(SE_GROUP, sound_id);
 
-		if (irand(0,2))
-			PlagueElfPollResponse( self, SE_GROUP, self->monsterinfo.sound_pending, self->monsterinfo.sound_finished );
-
-		break;
-	}	
+			if (irand(0, 2))
+				PlagueElfPollResponse(self, SE_GROUP, self->monsterinfo.sound_pending, self->monsterinfo.sound_finished);
+			break;
+	}
 }
 
 //Play a sound from a trigger or a pending sound event
@@ -1591,7 +1574,7 @@ void PlagueElfStaticsInit(void)
 
 	//Sound support
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_SIGHT] = PlagueElfVoiceSightMsgHandler;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_POLL] = pelf_EchoResponse;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_POLL] = PlagueElfVoicePollMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_PUPPET] = pelf_EchoSound;
 
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_IDLE1] = PlagueElfCinematicActionMsgHandler;
