@@ -143,7 +143,7 @@ const animmove_t plagueElf_move_missile = { 7, plagueElf_frames_missile, plagueE
 // Plague Elf Running.
 static const animframe_t plagueElf_frames_run1[] =
 {
-	{ FRAME_runA1, NULL, 0, 0, 0, MG_AI_Run, 12, plagueElfgrowl },
+	{ FRAME_runA1, NULL, 0, 0, 0, MG_AI_Run, 12, plagueelf_growl },
 	{ FRAME_runA2, NULL, 0, 0, 0, MG_AI_Run, 13, plagueElf_pause },
 	{ FRAME_runA3, NULL, 0, 0, 0, MG_AI_Run, 14, plagueElf_pause },
 	{ FRAME_runA4, NULL, 0, 0, 0, MG_AI_Run, 14, plagueElf_pause },
@@ -190,7 +190,7 @@ const animmove_t plagueElf_move_inair = { 1, plagueElf_frames_inair, NULL };
 static const animframe_t plagueElf_frames_fjump[] =
 {
 	{ FRAME_jump1,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_jump2,	NULL, 0, 0, 0, NULL, 0, plagueElfgrowl },
+	{ FRAME_jump2,	NULL, 0, 0, 0, NULL, 0, plagueelf_growl },
 	{ FRAME_jump3,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump4,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump5,	NULL, 0, 0, 0, NULL, 0, plagueElfApplyJump },
@@ -215,7 +215,7 @@ const animmove_t plagueElf_move_fjump = { 20, plagueElf_frames_fjump, pelf_go_in
 // Plague Elf Walking 1.
 static const animframe_t plagueElf_frames_walk1[] =
 {
-	{ FRAME_walkA1,		NULL, 0, 0, 0, ai_walk, 6, plagueElfgrowl },
+	{ FRAME_walkA1,		NULL, 0, 0, 0, ai_walk, 6, plagueelf_growl },
 	{ FRAME_walkA2,		NULL, 0, 0, 0, ai_walk, 6, NULL },
 	{ FRAME_walkA3,		NULL, 0, 0, 0, ai_walk, 6, NULL },
 	{ FRAME_walkA4,		NULL, 0, 0, 0, ai_walk, 6, NULL },
@@ -233,7 +233,7 @@ const animmove_t plagueElf_move_walk1 = { 12, plagueElf_frames_walk1, plagueElf_
 // Plague Elf Walking 2.
 static const animframe_t plagueElf_frames_walk2[] =
 {
-	{ FRAME_walkA1,		NULL, 0, 0, 0, ai_walk, 4, plagueElfgrowl },
+	{ FRAME_walkA1,		NULL, 0, 0, 0, ai_walk, 4, plagueelf_growl },
 	{ FRAME_walkA2,		NULL, 0, 0, 0, ai_walk, 4, NULL },
 	{ FRAME_walkA3,		NULL, 0, 0, 0, ai_walk, 4, NULL },
 	{ FRAME_walkA4,		NULL, 0, 0, 0, ai_walk, 4, NULL },
@@ -258,7 +258,7 @@ const animmove_t plagueElf_move_stand1 = { 1, plagueElf_frames_stand1, plagueElf
 // Plague Elf Shake - standing and having spasms.
 static const animframe_t plagueElf_frames_shakeA1[] =
 {
-	{ FRAME_shake1,		NULL, 0, 0, 0, ai_stand, 0, plagueElfgrowl },
+	{ FRAME_shake1,		NULL, 0, 0, 0, ai_stand, 0, plagueelf_growl },
 	{ FRAME_shake2,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_shake3,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_shake4,		NULL, 0, 0, 0, ai_stand, 0, NULL },
