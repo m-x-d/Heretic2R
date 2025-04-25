@@ -1801,69 +1801,13 @@ void SP_monster_palace_plague_guard(edict_t* self)
 	self->s.skinnum = PALACE_ELF_SKIN;
 }
 
-/*QUAKED monster_palace_plague_guard_invisible (1 .5 0) (-17 -25 -1) (22 12 63) AMBUSH ASLEEP WALKING CINEMATIC Missile 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 StartVisible
-
-Can fire 2 ranged attacks, has a new skin, toucgher, has armor?
-
-Is invisible unless firing or hit
-
-The plagueElf 
-
-AMBUSH - Will not be woken up by other monsters or shots from player
-
-ASLEEP - will not appear until triggered
-
-WALKING - use WANDER instead
-
-WANDER - Monster will wander around aimlessly (but follows buoys)
-
-MELEE_LEAD - Monster will tryto cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not
-
-STALK - Monster will only approach and attack from behind- if you're facing the monster it will just stand there.  Once the monster takes pain, however, it will stop this behaviour and attack normally
-
-COWARD - Monster starts off in flee mode- runs away from you when woken up
-
-"homebuoy" - monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to)
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-mintel - monster intelligence- this basically tells a monster how many buoys away an enemy has to be for it to give up.
-
-melee_range - How close the player has to be, maximum, for the monster to go into melee.  If this is zero, the monster will never melee.  If it is negative, the monster will try to keep this distance from the player.  If the monster has a backup, he'll use it if too clode, otherwise, a negative value here means the monster will just stop running at the player at this distance.
-	Examples:
-		melee_range = 60 - monster will start swinging it player is closer than 60
-		melee_range = 0 - monster will never do a mele attack
-		melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close
-
-missile_range - Maximum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-min_missile_range - Minimum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-bypass_missile_chance - Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot.  This, in effect, will make the monster come in more often than hang back and fire.  A percentage (0 = always fire/never close in, 100 = never fire/always close in).- must be whole number
-
-jump_chance - every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time)- must be whole number
-
-wakeup_distance - How far (max) the player can be away from the monster before it wakes up.  This just means that if the monster can see the player, at what distance should the monster actually notice him and go for him.
-
-DEFAULTS:
-mintel					= 16
-melee_range				= -64
-missile_range			= 512
-min_missile_range		= 30
-bypass_missile_chance	= 80
-jump_chance				= 50
-wakeup_distance			= 1024
-
-NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1
-*/
-/*-------------------------------------------------------------------------
-	SP_monster_palace_plague_guard_invisible
--------------------------------------------------------------------------*/
-void SP_monster_palace_plague_guard_invisible (edict_t *self)
+// QUAKED monster_palace_plague_guard_invisible (1 .5 0) (-17 -25 -1) (22 12 63) AMBUSH ASLEEP WALKING CINEMATIC MISSILE 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 START_VISIBLE
+// Invisible Palace Guard Plague Elf. Can fire 2 ranged attacks, has a new skin, tougher, has armor? Is invisible unless firing or hit.
+// Same spawnflags/variables as monster_plagueElf, except:
+// START_VISIBLE - When not set, start invisible.
+void SP_monster_palace_plague_guard_invisible(edict_t* self)
 {
-	if(!self->health)
+	if (self->health == 0)
 		self->health = PLAGUEELF_HEALTH * 2;
 
 	self->spawnflags |= MSF_PELF_MISSILE;
@@ -1871,10 +1815,12 @@ void SP_monster_palace_plague_guard_invisible (edict_t *self)
 	SP_monster_plagueElf(self);
 
 	self->s.skinnum = PALACE_ELF_SKIN;
+	self->s.color.c = 0xffffffff;
 
-	self->s.color.c = 0xFFFFFFFF;
+	self->melee_range = -64.0f;
+	self->min_missile_range = 30.0f;
+	self->bypass_missile_chance = 80;
 
-	if(!(self->spawnflags&MSF_EXTRA4))//these guys start visible
+	if (!(self->spawnflags & MSF_EXTRA4)) // These guys start visible.
 		PlagueElfPhaseOutInit(self);
-
 }
