@@ -704,9 +704,9 @@ static void PlagueElfDismemberSound(edict_t* self) //mxd. Named 'pelf_dismember_
 		gi.sound(self, CHAN_BODY, sounds[irand(SND_DISMEMBER1, SND_DISMEMBER2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-qboolean canthrownode_pe (edict_t *self, int BP, int *throw_nodes)
+static qboolean PlagueElfCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_pe' in original logic.
 {
-	static const int Bit_for_MeshNode_pe[12] =
+	static const int bit_for_mesh_node[12] = //mxd. Made local static.
 	{
 		BIT_BASE,
 		BIT_HANDLE,
@@ -721,14 +721,15 @@ qboolean canthrownode_pe (edict_t *self, int BP, int *throw_nodes)
 		BIT_HEAD
 	};
 
-	//see if it's on, if so, add it to throw_nodes
-	//turn it off on thrower
-	if(!(self->s.fmnodeinfo[BP].flags & FMNI_NO_DRAW))
+	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
+	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
 	{
-		*throw_nodes |= Bit_for_MeshNode_pe[BP];
-		self->s.fmnodeinfo[BP].flags |= FMNI_NO_DRAW;
+		*throw_nodes |= bit_for_mesh_node[node_id];
+		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
+
 		return true;
 	}
+
 	return false;
 }
 
@@ -890,7 +891,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 				plagueElf_dropweapon (self, (int)damage);
 			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
 			{
-				canthrownode_pe(self, MESH__HEAD,&throw_nodes);
+				PlagueElfCanThrowNode(self, MESH__HEAD,&throw_nodes);
 
 				gore_spot[2]+=18;
 				PlagueElfDismemberSound(self);
@@ -921,10 +922,10 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 			if(self->health > 0 && flrand(0,self->health)<damage*0.3 && dismember_ok)
 			{
 				gore_spot[2]+=12;
-				canthrownode_pe(self, MESH__BODY,&throw_nodes);
-				canthrownode_pe(self, MESH__L_ARM,&throw_nodes);
-				canthrownode_pe(self, MESH__R_ARM,&throw_nodes);
-				canthrownode_pe(self, MESH__HEAD,&throw_nodes);
+				PlagueElfCanThrowNode(self, MESH__BODY,&throw_nodes);
+				PlagueElfCanThrowNode(self, MESH__L_ARM,&throw_nodes);
+				PlagueElfCanThrowNode(self, MESH__R_ARM,&throw_nodes);
+				PlagueElfCanThrowNode(self, MESH__HEAD,&throw_nodes);
 
 				plagueElf_dropweapon (self, (int)damage);
 				PlagueElfDismemberSound(self);
@@ -957,7 +958,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 				plagueElf_dropweapon (self, (int)damage);
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				if(canthrownode_pe(self, MESH__L_ARM, &throw_nodes))
+				if(PlagueElfCanThrowNode(self, MESH__L_ARM, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -982,7 +983,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				if(canthrownode_pe(self, MESH__R_ARM, &throw_nodes))
+				if(PlagueElfCanThrowNode(self, MESH__R_ARM, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -1014,7 +1015,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 			{
 				if(self->s.fmnodeinfo[MESH__L_LEG].flags & FMNI_NO_DRAW)
 					break;
-				if(canthrownode_pe(self, MESH__L_LEG, &throw_nodes))
+				if(PlagueElfCanThrowNode(self, MESH__L_LEG, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -1037,7 +1038,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 			{
 				if(self->s.fmnodeinfo[MESH__R_LEG].flags & FMNI_NO_DRAW)
 					break;
-				if(canthrownode_pe(self, MESH__R_LEG, &throw_nodes))
+				if(PlagueElfCanThrowNode(self, MESH__R_LEG, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
