@@ -539,7 +539,7 @@ static void PlagueElfSpellTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	G_FreeEdict(self);
 }
 
-void plagueElf_spell(edict_t* self) //TODO: rename to plagueelf_spell.
+void plagueelf_spell(edict_t* self) //mxd. Named 'plagueElf_spell' in original logic.
 {
 	//FIXME: adjust for up/down.
 	if (!M_ValidTarget(self, self->enemy))

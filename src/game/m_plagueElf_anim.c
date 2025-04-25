@@ -133,7 +133,7 @@ static const animframe_t plagueElf_frames_missile[] =
 	{ FRAME_attckA1, NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attckA2, NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attckA3, NULL, 0, 0, 0, ai_charge, 0, plagueelf_attack },
-	{ FRAME_attckA4, NULL, 0, 0, 0, ai_charge, 0, plagueElf_spell },
+	{ FRAME_attckA4, NULL, 0, 0, 0, ai_charge, 0, plagueelf_spell },
 	{ FRAME_attckA5, NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attckA6, NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attckA7, NULL, 0, 0, 0, ai_charge, 0, NULL },
