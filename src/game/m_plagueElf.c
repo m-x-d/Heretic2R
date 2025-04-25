@@ -277,80 +277,74 @@ void plagueelf_check_land(edict_t* self) //TODO: rename to plagueelf_kdeath_chec
 	}
 }
 
-/*-------------------------------------------------------------------------
-	plagueElf_strike
--------------------------------------------------------------------------*/
-void plagueElf_strike (edict_t *self)
+void plagueElf_strike(edict_t* self) //TODO: rename to plagueelf_strike.
 {
-	trace_t		trace;
-	edict_t		*victim;
-	vec3_t		soff, eoff, mins, maxs, bloodDir, direction;
-	int			damage;
-
 	//FIXME: Account for weapon being knocked out of hand?
-	if(self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW)
+	if (self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW)
 		return;
 
-	switch ( self->curAnimID )
+	vec3_t start_offset;
+	vec3_t end_offset;
+
+	switch (self->curAnimID)
 	{
-	case ANIM_MELEE1:
-		VectorSet(soff, -8, 0, 32);
-		VectorSet(eoff, 36, 8, 16);
-		break;
+		case ANIM_MELEE1:
+			VectorSet(start_offset, -8.0f, 0.0f, 32.0f);
+			VectorSet(end_offset, 36.0f, 8.0f, 16.0f);
+			break;
 
-	case ANIM_MELEE2:
-		VectorSet(soff, -8, -16, 32);
-		VectorSet(eoff, 36, 0, 0);
-		break;
+		case ANIM_MELEE2:
+			VectorSet(start_offset, -8.0f, -16.0f, 32.0f);
+			VectorSet(end_offset, 36.0f, 0.0f, 0.0f);
+			break;
 
-	case ANIM_RUNATK1:
-		VectorSet(soff, 2, -4, 24);
-		VectorSet(eoff, 50, 4, 4);
-		break;
+		case ANIM_RUNATK1:
+			VectorSet(start_offset, 2.0f, -4.0f, 24.0f);
+			VectorSet(end_offset, 50.0f, 4.0f, 4.0f);
+			break;
 	}
-	
-	VectorSet(mins, -4, -4, -4);
-	VectorSet(maxs,  4,  4,  4);
 
-	VectorSubtract(soff, eoff, bloodDir);
-	VectorNormalize(bloodDir);
+	const vec3_t mins = { -4.0f, -4.0f, -4.0f };
+	const vec3_t maxs = {  4.0f,  4.0f,  4.0f };
 
-	victim = M_CheckMeleeLineHit(self, soff, eoff, mins, maxs, &trace, direction);	
+	trace_t trace;
+	vec3_t direction;
+	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
 
-	if (victim)
+	if (victim == NULL)
 	{
-		if (victim == self)
-		{
-			//Create a spark effect
-			gi.CreateEffect(NULL, FX_SPARKS, 0, trace.endpos, "d", bloodDir);
-		}
-		else
-		{
-			if (!(self->s.fmnodeinfo[MESH__GAFF].flags & FMNI_NO_DRAW) || !(self->s.fmnodeinfo[MESH__HOE].flags & FMNI_NO_DRAW))
-			{//it's the hoe or the hook
-				gi.sound (self, CHAN_WEAPON, sounds[SND_ATTACKHIT1], 1, ATTN_NORM, 0);
-			}
-			else //it's the hammer or handle
-				gi.sound (self, CHAN_WEAPON, sounds[SND_ATTACKHIT2], 1, ATTN_NORM, 0);	
-
-			damage = irand(PLAGUEELF_DMG_MIN, PLAGUEELF_DMG_MAX);
-
-			if(!(self->s.fmnodeinfo[MESH__HOE].flags & FMNI_NO_DRAW))
-				damage+=PLAGUEELF_DMG_HOE;
-			else if(!(self->s.fmnodeinfo[MESH__GAFF].flags & FMNI_NO_DRAW))
-				damage+=PLAGUEELF_DMG_GAFF;
-			else if(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW)
-				damage+=PLAGUEELF_DMG_HAMMER;
-
-			//Hurt whatever we were whacking away at
-			T_Damage(victim, self, self, direction, trace.endpos, bloodDir, damage, damage*2, DAMAGE_DISMEMBER,MOD_DIED);
-		}
+		// Play a swish sound.
+		gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACKMISS1], 1.0f, ATTN_NORM, 0.0f);
+		return;
 	}
+
+	vec3_t blood_dir;
+	VectorSubtract(start_offset, end_offset, blood_dir);
+	VectorNormalize(blood_dir);
+
+	if (victim == self)
+	{
+		// Create a spark effect.
+		gi.CreateEffect(NULL, FX_SPARKS, 0, trace.endpos, "d", blood_dir);
+		return;
+	}
+
+	if (!(self->s.fmnodeinfo[MESH__GAFF].flags & FMNI_NO_DRAW) || !(self->s.fmnodeinfo[MESH__HOE].flags & FMNI_NO_DRAW))
+		gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACKHIT1], 1.0f, ATTN_NORM, 0.0f); // It's the hoe or the hook.
 	else
-	{
-		//Play a swish sound
-		gi.sound (self, CHAN_WEAPON, sounds[SND_ATTACKMISS1], 1, ATTN_NORM, 0);
-	}
+		gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACKHIT2], 1.0f, ATTN_NORM, 0.0f); // It's the hammer or handle.
+
+	int damage = irand(PLAGUEELF_DMG_MIN, PLAGUEELF_DMG_MAX);
+
+	if (!(self->s.fmnodeinfo[MESH__HOE].flags & FMNI_NO_DRAW))
+		damage += PLAGUEELF_DMG_HOE;
+	else if (!(self->s.fmnodeinfo[MESH__GAFF].flags & FMNI_NO_DRAW))
+		damage += PLAGUEELF_DMG_GAFF;
+	else if (self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW)
+		damage += PLAGUEELF_DMG_HAMMER;
+
+	// Hurt whatever we were whacking away at.
+	T_Damage(victim, self, self, direction, trace.endpos, blood_dir, damage, damage * 2, DAMAGE_DISMEMBER, MOD_DIED);
 }
 
 /*-------------------------------------------------------------------------
