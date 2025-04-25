@@ -419,28 +419,19 @@ void plagueElfdeathsqueal(edict_t* self) //TODO: rename to plagueelf_death_squea
 	gi.sound(self, CHAN_VOICE, sounds[irand(SND_DIE1, SND_DIE3)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*-------------------------------------------------------------------------
-	plagueElfgrowl
--------------------------------------------------------------------------*/
-void plagueElfgrowl (edict_t *self)
+void plagueElfgrowl(edict_t* self) //TODO: rename to plagueelf_growl.
 {
-	int chance;	
+	if (irand(0, 10) > 2)
+		return;
 
-	chance = irand(0, 10);
+	const int chance = irand(0, 12);
 
-	if (chance <= 2 )
-	{
-		chance = irand(0, 12);
-		if (chance < 3)
-			return;
-			//gi.sound (self, CHAN_WEAPON, sounds[SND_GASP], 1, ATTN_IDLE, 0);
-		else if ( chance < 6)
-			gi.sound (self, CHAN_VOICE, sounds[SND_PANT], 1, ATTN_IDLE, 0);
-		else if (chance < 9)
-			gi.sound(self, CHAN_VOICE, sounds[SND_MOAN1], 1, ATTN_IDLE, 0);
-		else 
-			gi.sound(self, CHAN_VOICE, sounds[SND_MOAN2], 1, ATTN_IDLE, 0);
-	}
+	if (chance < 3)
+		gi.sound(self, CHAN_VOICE, sounds[SND_PANT], 1.0f, ATTN_IDLE, 0.0f);
+	else if (chance < 6)
+		gi.sound(self, CHAN_VOICE, sounds[SND_MOAN1], 1.0f, ATTN_IDLE, 0.0f);
+	else if (chance < 9)
+		gi.sound(self, CHAN_VOICE, sounds[SND_MOAN2], 1.0f, ATTN_IDLE, 0.0f);
 }
 
 void plagueElfattack(edict_t *self)
