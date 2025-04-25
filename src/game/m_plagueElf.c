@@ -256,7 +256,7 @@ void plagueelf_knockback_death_loop(edict_t* self) //mxd. Named 'plagueelf_death
 	SetAnim(self, ANIM_KDEATH_LOOP);
 }
 
-void plagueelf_check_land(edict_t* self) //TODO: rename to plagueelf_kdeath_check_land?
+void plagueelf_knockback_death_check_land(edict_t* self) //mxd. Named 'plagueelf_check_land' in original logic.
 {
 	if (self->s.frame == FRAME_death7)
 		MG_SetNoBlocking(self);

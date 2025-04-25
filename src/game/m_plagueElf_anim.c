@@ -364,7 +364,7 @@ const animmove_t plagueElf_delay = { 25, plagueElf_frames_delay, plagueElf_pause
 static const animframe_t plagueElf_frames_kdeath_go[] =
 {
 	{ FRAME_death1, NULL, 0, 0, 0, NULL, 0, plagueElfdeathsqueal },
-	{ FRAME_death2, NULL, 0, 0, 0, NULL, 0, plagueelf_check_land },
+	{ FRAME_death2, NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
 	{ FRAME_death3, NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_loop },
 };
 const animmove_t plagueElf_move_kdeath_go = { 3, plagueElf_frames_kdeath_go, NULL };
@@ -372,22 +372,22 @@ const animmove_t plagueElf_move_kdeath_go = { 3, plagueElf_frames_kdeath_go, NUL
 // Plague Elf Knockback Death Loop.
 static const animframe_t plagueElf_frames_kdeath_loop[] =
 {
-	{ FRAME_death4, NULL, 0, 0, 0, NULL, 0, plagueelf_check_land },
+	{ FRAME_death4, NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
 };
 const animmove_t plagueElf_move_kdeath_loop = { 1, plagueElf_frames_kdeath_loop, NULL };
 
 // Plague Elf Knockback Death End.
 static const animframe_t plagueElf_frames_kdeath_end[] =
 {
-	{ FRAME_death5,		NULL, 0, 0, 0, NULL, 0, plagueelf_check_land },
-	{ FRAME_death6,		NULL, 0, 0, 0, NULL, 0, plagueelf_check_land },
-	{ FRAME_death7,		NULL, 0, 0, 0, NULL, 0, plagueelf_check_land },
-	{ FRAME_death8,		NULL, 0, 0, 0, NULL, 0, plagueelf_check_land },
-	{ FRAME_death9,		NULL, 0, 0, 0, NULL, 0, plagueelf_check_land },
-	{ FRAME_death10,	NULL, 0, 0, 0, NULL, 0, plagueelf_check_land },
-	{ FRAME_death11,	NULL, 0, 0, 0, NULL, 0, plagueelf_check_land },
-	{ FRAME_death12,	NULL, 0, 0, 0, NULL, 0, plagueelf_check_land },
-	{ FRAME_death13,	NULL, 0, 0, 0, NULL, 0, plagueelf_check_land },
+	{ FRAME_death5,		NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
+	{ FRAME_death6,		NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
+	{ FRAME_death7,		NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
+	{ FRAME_death8,		NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
+	{ FRAME_death9,		NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
+	{ FRAME_death10,	NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
+	{ FRAME_death11,	NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
+	{ FRAME_death12,	NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
+	{ FRAME_death13,	NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
 };
 const animmove_t plagueElf_move_kdeath_end = { 9, plagueElf_frames_kdeath_end, M_EndDeath };
 
