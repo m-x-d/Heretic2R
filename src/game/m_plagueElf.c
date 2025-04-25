@@ -1240,17 +1240,13 @@ void plagueElf_pause(edict_t* self) //TODO: rename to plagueelf_pause.
 	}
 }
 
-void pelf_land(edict_t *self)
+void pelf_land(edict_t* self) //TODO: rename to plagueelf_land.
 {
-	gi.sound(self, CHAN_BODY, gi.soundindex("misc/land.wav"), 1, ATTN_NORM, 0);
-	gi.CreateEffect(&self->s,
-					   FX_DUST_PUFF,
-					   CEF_OWNERS_ORIGIN,
-					   self->s.origin,
-					   NULL);
+	gi.sound(self, CHAN_BODY, gi.soundindex("misc/land.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: precache sound?
+	gi.CreateEffect(&self->s, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
 }
 
-void pelf_go_inair(edict_t *self)
+void pelf_go_inair(edict_t* self) //TODO: rename to plagueelf_inair_go.
 {
 	SetAnim(self, ANIM_INAIR);
 }
