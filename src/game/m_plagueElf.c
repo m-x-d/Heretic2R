@@ -347,7 +347,7 @@ void plagueElf_strike(edict_t* self) //TODO: rename to plagueelf_strike.
 	T_Damage(victim, self, self, direction, trace.endpos, blood_dir, damage, damage * 2, DAMAGE_DISMEMBER, MOD_DIED);
 }
 
-void plagueElf_death(edict_t* self, G_Message_t* msg) //TODO: rename to plagueelf_death.
+static void PlagueElfDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_death' in original logic.
 {
 	pelf_init_phase_in(self);
 
@@ -1760,7 +1760,7 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MELEE] = plagueElf_melee;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MISSILE] = plagueElf_missile;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_PAIN] = plagueElf_pain;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH] = plagueElf_death;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH] = PlagueElfDeathMsgHandler;
 //	classStatics[CID_PLAGUEELF].msgReceivers[MSG_BLOCKED] = plagueElf_blocked;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_JUMP] = pelf_jump;
