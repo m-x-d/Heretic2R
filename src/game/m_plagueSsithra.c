@@ -17,7 +17,7 @@
 #include "vector.h"
 
 #include "m_plaguesSithra.h"
-#include "m_plaguesSithra_local.h"
+#include "m_plaguesSithra_shared.h"
 #include "m_plaguesSithra_anim.h"
 #include "g_debris.h" //mxd
 #include "g_HitLocation.h"

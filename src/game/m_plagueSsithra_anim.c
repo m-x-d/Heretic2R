@@ -15,7 +15,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_plaguessithra_anim.h"
-#include "m_plaguesSithra_local.h"
+#include "m_plaguesSithra_shared.h"
 #include "g_monster.h"
 #include "c_ai.h"
 #include "mg_ai.h" //mxd

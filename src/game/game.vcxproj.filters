@@ -91,9 +91,6 @@
     <Filter Include="src\Monsters\Ogle">
       <UniqueIdentifier>{e8ecfc1a-a693-4f03-94c4-ead8d2f2cc6d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Monsters\PlagueSsithra">
-      <UniqueIdentifier>{0de459c9-2734-4b88-ac21-9d6a1ae4a423}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Monsters\Priestess">
       <UniqueIdentifier>{d9054329-ad7e-423e-a7a3-532f4df155e3}</UniqueIdentifier>
     </Filter>
@@ -126,6 +123,9 @@
     </Filter>
     <Filter Include="src\Monsters\Plague Elf">
       <UniqueIdentifier>{b9ae21fd-058a-436a-90bf-332348473121}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Plague Ssithra">
+      <UniqueIdentifier>{0de459c9-2734-4b88-ac21-9d6a1ae4a423}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -529,10 +529,10 @@
       <Filter>src\Monsters\Plague Elf</Filter>
     </ClCompile>
     <ClCompile Include="m_plagueSsithra.c">
-      <Filter>src\Monsters\PlagueSsithra</Filter>
+      <Filter>src\Monsters\Plague Ssithra</Filter>
     </ClCompile>
     <ClCompile Include="m_plagueSsithra_anim.c">
-      <Filter>src\Monsters\PlagueSsithra</Filter>
+      <Filter>src\Monsters\Plague Ssithra</Filter>
     </ClCompile>
     <ClCompile Include="m_priestess.c">
       <Filter>src\Monsters\Priestess</Filter>
@@ -911,11 +911,11 @@
     <ClInclude Include="m_plagueElf_anim.h">
       <Filter>src\Monsters\Plague Elf</Filter>
     </ClInclude>
-    <ClInclude Include="m_plaguesSithra_local.h">
-      <Filter>src\Monsters\PlagueSsithra</Filter>
+    <ClInclude Include="m_plagueSsithra_shared.h">
+      <Filter>src\Monsters\Plague Ssithra</Filter>
     </ClInclude>
     <ClInclude Include="m_plagueSsithra_anim.h">
-      <Filter>src\Monsters\PlagueSsithra</Filter>
+      <Filter>src\Monsters\Plague Ssithra</Filter>
     </ClInclude>
     <ClInclude Include="m_priestess_local.h">
       <Filter>src\Monsters\Priestess</Filter>
@@ -1035,7 +1035,7 @@
       <Filter>src\Monsters\Plague Elf</Filter>
     </ClInclude>
     <ClInclude Include="m_plagueSsithra.h">
-      <Filter>src\Monsters\PlagueSsithra</Filter>
+      <Filter>src\Monsters\Plague Ssithra</Filter>
     </ClInclude>
     <ClInclude Include="m_priestess.h">
       <Filter>src\Monsters\Priestess</Filter>
