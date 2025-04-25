@@ -41,6 +41,8 @@ static qboolean PlagueElfDropWeapon(edict_t* self); //TODO: remove.
 static void pelf_PollResponse(edict_t* self, int sound_event, int sound_id, float time); //TODO: remove.
 static void pelf_init_phase_in(edict_t* self); //TODO: remove.
 static void pelf_init_phase_out(edict_t* self); //TODO: remove.
+static void pelf_phase_out(edict_t* self);
+static void pelf_phase_in(edict_t* self);
 
 #pragma region ========================== Plague Elf Base Info ==========================
 
@@ -1144,32 +1146,23 @@ void plagueElfApplyJump(edict_t* self) //TODO: rename to plagueelf_apply_jump.
 	VectorNormalize(self->movedir);
 }
 
-/*-------------------------------------------------------------------------
-	plagueElf_pause
--------------------------------------------------------------------------*/
-void pelf_phase_out (edict_t *self);
-void pelf_phase_in (edict_t *self);
-void plagueElf_pause (edict_t *self)
+void plagueElf_pause(edict_t* self) //TODO: rename to plagueelf_pause.
 {
-	self->monsterinfo.misc_debounce_time = 0;
+	self->monsterinfo.misc_debounce_time = 0.0f;
 
-	if(self->ai_mood == AI_MOOD_FLEE)
+	if (self->ai_mood == AI_MOOD_FLEE)
 	{
-		if(self->s.color.a != 255 && self->pre_think!=pelf_phase_in)
+		if (self->s.color.a != 255 && self->pre_think != pelf_phase_in)
 			pelf_init_phase_in(self);
 	}
-	else
+	else if (self->pre_think != pelf_phase_out)
 	{
-		if(!skill->value)
-		{
-			if(self->s.color.a > 50 && self->pre_think!=pelf_phase_out)
-				pelf_init_phase_out(self);
-		}
-		else if(self->s.color.a && self->pre_think!=pelf_phase_out)
+		const byte min_alpha = (SKILL == SKILL_EASY ? 50 : 0); //mxd
+		if (self->s.color.a > min_alpha)
 			pelf_init_phase_out(self);
 	}
 
-	if(self->spawnflags & MSF_FIXED && self->curAnimID == ANIM_DELAY && self->enemy)
+	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
 	{
 		self->monsterinfo.searchType = SEARCH_COMMON;
 		MG_FaceGoal(self, true);
@@ -1179,83 +1172,71 @@ void plagueElf_pause (edict_t *self)
 
 	switch (self->ai_mood)
 	{
-	case AI_MOOD_ATTACK:
-		if(self->ai_mood_flags & AI_MOOD_FLAG_MISSILE)
-			QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
-		else
-			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_ATTACK:
+			if (self->ai_mood_flags & AI_MOOD_FLAG_MISSILE)
+				QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
+			else
+				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_PURSUE:
-		if(self->ai_mood_flags&AI_MOOD_FLAG_DUMB_FLEE)
-			SetAnim(self, ANIM_SCARED);
-		else
+		case AI_MOOD_PURSUE:
+			if (self->ai_mood_flags & AI_MOOD_FLAG_DUMB_FLEE)
+				SetAnim(self, ANIM_SCARED);
+			else
+				QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_NAVIGATE:
 			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-		break;
+			break;
 
-	case AI_MOOD_NAVIGATE:
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_WALK:
+			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_WALK:
-		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-		break;
-
-	case AI_MOOD_FLEE:
-		if(self->ai_mood_flags&AI_MOOD_FLAG_DUMB_FLEE || (!(self->ai_mood_flags&AI_MOOD_FLAG_FORCED_BUOY) && !irand(0, 20)))
-		{
-			if(self->enemy)
+		case AI_MOOD_FLEE:
+			if ((self->ai_mood_flags & AI_MOOD_FLAG_DUMB_FLEE) || (!(self->ai_mood_flags & AI_MOOD_FLAG_FORCED_BUOY) && irand(0, 20) == 0))
 			{
-				if(M_DistanceToTarget(self, self->enemy) < 100)
+				if (self->enemy != NULL && M_DistanceToTarget(self, self->enemy) < 100.0f)
 				{
-					if(self->curAnimID == ANIM_SCARED)
-						dying_elf_sounds (self, DYING_ELF_PAIN_VOICE);
-					if(irand(0,1))
-						SetAnim(self, ANIM_CRAZY_A);
-					else
-						SetAnim(self, ANIM_CRAZY_B);
-					break;
+					if (self->curAnimID == ANIM_SCARED)
+						dying_elf_sounds(self, DYING_ELF_PAIN_VOICE);
+
+					SetAnim(self, irand(ANIM_CRAZY_A, ANIM_CRAZY_B));
+				}
+				else
+				{
+					SetAnim(self, ANIM_SCARED);
 				}
 			}
-			SetAnim(self, ANIM_SCARED);
-		}
-		else if(irand(0,1))
-			SetAnim(self, ANIM_CRAZY_A);
-		else
-			SetAnim(self, ANIM_CRAZY_B);
-		break;
+			else
+			{
+				SetAnim(self, irand(ANIM_CRAZY_A, ANIM_CRAZY_B));
+			}
+			break;
 
-	case AI_MOOD_STAND:
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_STAND:
+			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_DELAY:
-		SetAnim(self, ANIM_DELAY);
-		break;
-
-	case AI_MOOD_WANDER:
-		if(self->spawnflags&MSF_FIXED)
+		case AI_MOOD_DELAY:
 			SetAnim(self, ANIM_DELAY);
-		else
-			SetAnim(self, ANIM_WALK1);
-		break;
+			break;
 
-	case AI_MOOD_BACKUP:
-		QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_WANDER:
+			SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_WALK1));
+			break;
 
-	case AI_MOOD_JUMP:
-		if(self->spawnflags&MSF_FIXED)
-			SetAnim(self, ANIM_DELAY);
-		else
-			SetAnim(self, ANIM_FJUMP);
-		break;
+		case AI_MOOD_BACKUP:
+			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
+			break;
 
-	default :
-#ifdef _DEVEL
-	//	gi.dprintf("plague elf: Unusable mood %d!\n", self->ai_mood);
-#endif
-		break;
+		case AI_MOOD_JUMP:
+			SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_FJUMP));
+			break;
+
+		default:
+			break;
 	}
 }
 
@@ -1619,7 +1600,7 @@ void pelf_check_too_close(edict_t *self)
 }
 
 
-void pelf_phase_out (edict_t *self)
+static void pelf_phase_out (edict_t *self)
 {
 	int	interval = 60;
 
@@ -1640,7 +1621,7 @@ void pelf_phase_out (edict_t *self)
 	}
 }
 
-void pelf_phase_in (edict_t *self)
+static void pelf_phase_in (edict_t *self)
 {
 	int	interval = 60;
 	
