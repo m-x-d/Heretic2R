@@ -1273,19 +1273,12 @@ static void PlagueElfRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
-/*-------------------------------------------------------------------------
-	plagueElfsqueal
--------------------------------------------------------------------------*/
-void plagueElfsqueal (edict_t *self)
+void plagueElfsqueal(edict_t* self) //TODO: rename to plagueelf_squeal.
 {
-	if(self->monsterinfo.aiflags & AI_COWARD || self->monsterinfo.aiflags & AI_FLEE)
-		dying_elf_sounds (self, DYING_ELF_PAIN_VOICE);
+	if (self->monsterinfo.aiflags & (AI_COWARD | AI_FLEE))
+		dying_elf_sounds(self, DYING_ELF_PAIN_VOICE);
 	else
-	{
-		int sound = irand(SND_PAIN1, SND_PAIN3);
-
-		gi.sound(self, CHAN_VOICE, sounds[sound], 1, ATTN_NORM, 0);
-	}
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN3)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 /*-------------------------------------------------------------------------
