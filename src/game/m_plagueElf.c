@@ -40,7 +40,7 @@ static void PlagueElfSpellTouch(edict_t* self, edict_t* Other, cplane_t* Plane, 
 static qboolean PlagueElfDropWeapon(edict_t* self); //TODO: remove.
 static void PlagueElfPollResponse(const edict_t* self, int sound_event, int sound_id, float time); //TODO: remove.
 static void pelf_init_phase_in(edict_t* self); //TODO: remove.
-static void pelf_init_phase_out(edict_t* self); //TODO: remove.
+static void PlagueElfPhaseOutInit(edict_t* self); //TODO: remove.
 static void PlagueElfPhaseOutPreThink(edict_t* self);
 static void PlagueElfPhaseInPreThink(edict_t* self);
 
@@ -1159,7 +1159,7 @@ void plagueElf_pause(edict_t* self) //TODO: rename to plagueelf_pause.
 	{
 		const byte min_alpha = (SKILL == SKILL_EASY ? 50 : 0); //mxd
 		if (self->s.color.a > min_alpha)
-			pelf_init_phase_out(self);
+			PlagueElfPhaseOutInit(self);
 	}
 
 	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
@@ -1511,20 +1511,19 @@ static void PlagueElfPhaseInPreThink(edict_t* self) //mxd. Named 'pelf_phase_in'
 		}
 		else
 		{
-			pelf_init_phase_out(self);
+			PlagueElfPhaseOutInit(self);
 		}
 	}
 }
 
-static void pelf_init_phase_out (edict_t *self)
+static void PlagueElfPhaseOutInit(edict_t* self) //mxd. Named 'pelf_init_phase_out' in original logic.
 {
-	if(stricmp(self->classname, "monster_palace_plague_guard_invisible"))
-		return;
-
-//	gi.dprintf("Elf phasing out\n");
-	self->pre_think = PlagueElfPhaseOutPreThink;
-	self->next_pre_think = level.time + FRAMETIME;
-	self->svflags |= SVF_NO_AUTOTARGET;
+	if (Q_stricmp(self->classname, "monster_palace_plague_guard_invisible") == 0) //mxd. stricmp -> Q_stricmp.
+	{
+		self->pre_think = PlagueElfPhaseOutPreThink;
+		self->next_pre_think = level.time + FRAMETIME;
+		self->svflags |= SVF_NO_AUTOTARGET;
+	}
 }
 
 static void pelf_init_phase_in (edict_t *self)
@@ -1984,6 +1983,6 @@ void SP_monster_palace_plague_guard_invisible (edict_t *self)
 	self->s.color.c = 0xFFFFFFFF;
 
 	if(!(self->spawnflags&MSF_EXTRA4))//these guys start visible
-		pelf_init_phase_out(self);
+		PlagueElfPhaseOutInit(self);
 
 }
