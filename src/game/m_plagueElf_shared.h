@@ -76,10 +76,10 @@ typedef enum SoundID_e
 	SND_ATTACKMISS1,
 	SND_MOAN1,
 	SND_MOAN2,
-	SND_SHIVER,
+	SND_SHIVER, //TODO: unused.
 	SND_PANT,
-	SND_GASP,
-	SND_SIGH,
+	SND_GASP, //TODO: unused.
+	SND_SIGH, //TODO: unused.
 	SND_ATTACK1,
 	SND_ATTACK2,
 	SND_ATTACK3,
@@ -105,8 +105,8 @@ typedef enum SoundID_e
 	VOICE_SUPPORT_YES,
 	VOICE_LAST_GROUP,
 
-	VOICE_MISC_LEAVE_ME1,
-	VOICE_MISC_NO,
+	VOICE_MISC_LEAVE_ME1, //TODO: unused.
+	VOICE_MISC_NO, //TODO: unused.
 
 	NUM_SOUNDS
 } SoundID_t; //mxd. Add missing typedef name.
@@ -160,20 +160,11 @@ extern const animmove_t plagueElf_move_c_death4;
 
 extern void plagueElf_c_spell(edict_t* self);
 
-extern void plagueElf_death(edict_t* self, G_Message_t* msg);
-extern void plagueElf_run(edict_t* self, G_Message_t* msg);
-extern void plagueElf_walk(edict_t* self, G_Message_t* msg);
-extern void plagueElf_melee(edict_t* self, G_Message_t* msg);
-extern void plagueElf_stand(edict_t* self, G_Message_t* msg);
-extern void plagueElf_pain(edict_t* self, G_Message_t* msg);
-extern void plagueElf_dismember(edict_t* self, int	damage, int HitLocation);
-
 extern void plagueElfdeathsqueal(edict_t* self);
 extern void plagueElfsqueal(edict_t* self);
 extern void plagueElfgrowl(edict_t* self);
 extern void plagueElf_strike(edict_t* self);
 extern void plagueElf_pause(edict_t* self);
-extern qboolean plagueElf_dropweapon(edict_t* self, int damage);
 extern void plagueElfattack(edict_t* self);
 
 extern void plagueelf_death_loop(edict_t* self);
@@ -181,16 +172,6 @@ extern void plagueelf_check_land(edict_t* self);
 extern void plagueElf_spell(edict_t* self);
 extern void plagueElfApplyJump(edict_t* self);
 
-extern void plagueElfSpellTouch(edict_t* self, edict_t* Other, cplane_t* Plane, csurface_t* Surface);
-
-// Voice support.
-extern void pelf_SightSound(edict_t* self, G_Message_t* msg);
-extern void pelf_PollResponse(edict_t* self, int sound_event, int sound_id, float time);
-extern void pelf_EchoResponse(edict_t* self, G_Message_t* msg);
-extern void pelf_EchoSound(edict_t* self, G_Message_t* msg);
-
-extern void pelf_init_phase_out(edict_t* self);
-extern void pelf_init_phase_in(edict_t* self);
 extern void pelf_check_too_close(edict_t* self);
 extern void pelf_land(edict_t* self);
 extern void pelf_go_inair(edict_t* self);

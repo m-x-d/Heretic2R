@@ -52,6 +52,14 @@
 #define FIRST_SIGHT_GROUP	(VOICE_FIRST_GROUP + 1)
 #define LAST_SIGHT_GROUP	(VOICE_LAST_GROUP - 1)
 
+extern void dying_elf_sounds(edict_t* self, int type); //TODO: move to header.
+
+static void plagueElfSpellTouch(edict_t* self, edict_t* Other, cplane_t* Plane, csurface_t* Surface); //TODO: remove.
+static qboolean plagueElf_dropweapon(edict_t* self, int damage); //TODO: remove.
+static void pelf_PollResponse(edict_t* self, int sound_event, int sound_id, float time); //TODO: remove.
+static void pelf_init_phase_in(edict_t* self); //TODO: remove.
+static void pelf_init_phase_out(edict_t* self); //TODO: remove.
+
 /*----------------------------------------------------------------------
   plagueElf Base Info
 -----------------------------------------------------------------------*/
@@ -180,8 +188,6 @@ float	pelf_VoiceTimes[] =
 	0.9,	//VOICE_MISC_DONT_HURT
 };
 
-
-void dying_elf_sounds (edict_t *self, int type);
 /*----------------------------------------------------------------------
   Cinematic Functions for the monster
 -----------------------------------------------------------------------*/
@@ -572,7 +578,7 @@ void make_pe_spell_reflect(edict_t *self, edict_t *spell)
 	G_LinkMissile(spell);
 }
 
-void plagueElfSpellTouch (edict_t *self, edict_t *Other, cplane_t *Plane, csurface_t *Surface)
+static void plagueElfSpellTouch (edict_t *self, edict_t *Other, cplane_t *Plane, csurface_t *Surface)
 {
 	vec3_t	normal;
 	edict_t	*Spell;
@@ -908,7 +914,7 @@ void plagueElf_dead_pain (edict_t *self, G_Message_t *msg)
 }
 
 //THROWS weapon, turns off those nodes, sets that weapon as gone
-qboolean plagueElf_dropweapon (edict_t *self, int damage)
+static qboolean plagueElf_dropweapon (edict_t *self, int damage)
 {//NO PART FLY FRAME!
 	vec3_t handspot, forward, right, up;
 	float chance;
@@ -1602,7 +1608,7 @@ void pelf_SightSound ( edict_t *self, G_Message_t *msg )
 }
 
 //The plague elf has said something and is looking for a response
-void pelf_PollResponse ( edict_t *self, int sound_event, int sound_id, float time )
+static void pelf_PollResponse ( edict_t *self, int sound_event, int sound_id, float time )
 {
 	edict_t *ent = NULL, *last_valid = NULL;
 	int		numSupport = 0;
@@ -1765,7 +1771,6 @@ void pelf_phase_out (edict_t *self)
 	}
 }
 
-void pelf_init_phase_out (edict_t *self);
 void pelf_phase_in (edict_t *self)
 {
 	int	interval = 60;
@@ -1790,7 +1795,7 @@ void pelf_phase_in (edict_t *self)
 	}
 }
 
-void pelf_init_phase_out (edict_t *self)
+static void pelf_init_phase_out (edict_t *self)
 {
 	if(stricmp(self->classname, "monster_palace_plague_guard_invisible"))
 		return;
@@ -1801,7 +1806,7 @@ void pelf_init_phase_out (edict_t *self)
 	self->svflags |= SVF_NO_AUTOTARGET;
 }
 
-void pelf_init_phase_in (edict_t *self)
+static void pelf_init_phase_in (edict_t *self)
 {
 	if(stricmp(self->classname, "monster_palace_plague_guard_invisible"))
 		return;
