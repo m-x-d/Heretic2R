@@ -101,22 +101,6 @@ static const animmove_t *animations[ NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
-
-int Bit_for_MeshNode_pe [12] =
-{
-	BIT_BASE,
-	BIT_HANDLE,
-	BIT_HOE,
-	BIT_GAFF,
-	BIT_HAMMER,
-	BIT_BODY,
-	BIT_L_LEG,
-	BIT_R_LEG,	
-	BIT_R_ARM,
-	BIT_L_ARM,
-	BIT_HEAD
-};
 
 float	pelf_VoiceTimes[] =
 {
@@ -858,7 +842,23 @@ void pelf_dismember_sound(edict_t *self)
 }
 
 qboolean canthrownode_pe (edict_t *self, int BP, int *throw_nodes)
-{//see if it's on, if so, add it to throw_nodes
+{
+	static const int Bit_for_MeshNode_pe[12] =
+	{
+		BIT_BASE,
+		BIT_HANDLE,
+		BIT_HOE,
+		BIT_GAFF,
+		BIT_HAMMER,
+		BIT_BODY,
+		BIT_L_LEG,
+		BIT_R_LEG,
+		BIT_R_ARM,
+		BIT_L_ARM,
+		BIT_HEAD
+	};
+
+	//see if it's on, if so, add it to throw_nodes
 	//turn it off on thrower
 	if(!(self->s.fmnodeinfo[BP].flags & FMNI_NO_DRAW))
 	{
@@ -1795,6 +1795,8 @@ static void pelf_init_phase_in (edict_t *self)
 -------------------------------------------------------------------------*/
 void PlagueElfStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_STAND] = plagueElf_stand;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_WALK] = plagueElf_walk;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_RUN] = plagueElf_run;
