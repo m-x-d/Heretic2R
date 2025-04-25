@@ -698,19 +698,10 @@ static void PlagueElfMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 		SetAnim(self, ANIM_RUNATK1);
 }
 
-/*-------------------------------------------------------------------------
-	plagueElf_pain
--------------------------------------------------------------------------*/
-
-void pelf_dismember_sound(edict_t *self)
+static void PlagueElfDismemberSound(edict_t* self) //mxd. Named 'pelf_dismember_sound' in original logic.
 {
-	if(self->health <= 0)
-		return;
-
-	if(irand(0, 1))
-		gi.sound(self, CHAN_BODY, sounds[SND_DISMEMBER1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_BODY, sounds[SND_DISMEMBER2], 1, ATTN_NORM, 0);
+	if (self->health > 0)
+		gi.sound(self, CHAN_BODY, sounds[irand(SND_DISMEMBER1, SND_DISMEMBER2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 qboolean canthrownode_pe (edict_t *self, int BP, int *throw_nodes)
@@ -902,7 +893,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 				canthrownode_pe(self, MESH__HEAD,&throw_nodes);
 
 				gore_spot[2]+=18;
-				pelf_dismember_sound(self);
+				PlagueElfDismemberSound(self);
 				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
 
 				VectorAdd(self->s.origin, gore_spot, gore_spot);
@@ -936,7 +927,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 				canthrownode_pe(self, MESH__HEAD,&throw_nodes);
 
 				plagueElf_dropweapon (self, (int)damage);
-				pelf_dismember_sound(self);
+				PlagueElfDismemberSound(self);
 				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_torsooff);
 				VectorAdd(self->s.origin, gore_spot, gore_spot);
 				SprayDebris(self,gore_spot,12,damage);
@@ -972,7 +963,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,-10,right,gore_spot);
 					plagueElf_chicken(self,6,8,flrand(7,15));
-					pelf_dismember_sound(self);
+					PlagueElfDismemberSound(self);
 					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
 				}
 			}
@@ -997,7 +988,7 @@ void plagueElf_dismember(edict_t *self, int	damage,	int HitLocation)
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,10,right,gore_spot);
 					plagueElf_dropweapon (self, (int)damage);
-					pelf_dismember_sound(self);
+					PlagueElfDismemberSound(self);
 					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
 				}
 			}
