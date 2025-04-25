@@ -42,15 +42,14 @@ static void pelf_PollResponse(edict_t* self, int sound_event, int sound_id, floa
 static void pelf_init_phase_in(edict_t* self); //TODO: remove.
 static void pelf_init_phase_out(edict_t* self); //TODO: remove.
 
-/*----------------------------------------------------------------------
-  plagueElf Base Info
------------------------------------------------------------------------*/
-static const animmove_t *animations[ NUM_ANIMS] =
+#pragma region ========================== Plague Elf Base Info ==========================
+
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&plagueElf_move_stand1,
 	&plagueElf_move_walk1,
 	&plagueElf_move_walk2,
-	&plagueElf_move_run1,	
+	&plagueElf_move_run1,
 	&plagueElf_move_runatk1,
 	&plagueElf_move_fjump,
 	&plagueElf_move_inair,
@@ -62,12 +61,12 @@ static const animmove_t *animations[ NUM_ANIMS] =
 	&plagueElf_move_death3,
 	&plagueElf_move_death4,
 	&plagueElf_fist1,
-	&plagueElf_lean1, 
+	&plagueElf_lean1,
 	&plagueElf_shake1,
 	&plagueElf_move_pain1,
 	&plagueElf_delay,
 	&plagueElf_move_missile,
-//
+
 	&plagueElf_move_kdeath_go,
 	&plagueElf_move_kdeath_loop,
 	&plagueElf_move_kdeath_end,
@@ -77,8 +76,8 @@ static const animmove_t *animations[ NUM_ANIMS] =
 	&plagueElf_cursing,
 	&plagueElf_point,
 	&plagueElf_scared,
-	
-	// Cinematics
+
+	// Cinematics.
 	&plagueElf_move_c_idle1,
 	&plagueElf_move_c_idle2,
 	&plagueElf_move_c_idle3,
@@ -95,64 +94,63 @@ static const animmove_t *animations[ NUM_ANIMS] =
 	&plagueElf_move_c_death3,
 	&plagueElf_move_c_death4,
 	&plagueElf_move_run1,
-
-//	&plagueElf_move_stand1,
-
 };
 
 static int sounds[NUM_SOUNDS];
 
-float	pelf_VoiceTimes[] =
+static const float plague_pelf_voice_times[] = //mxd. Named 'pelf_VoiceTimes' in original logic.
 {
-	0.0,	//FIRST_SIGHT_GROUP
-	1.0,	//VOICE_SIGHT_AFTER_HIM1
-	0.6,	//VOICE_SIGHT_AFTER_HIM2
-	1.3,	//VOICE_SIGHT_CUT_HIM2
-	1.0,	//VOICE_SIGHT_CUT_HIM1
-	1.2,	//VOICE_SIGHT_EAT_FLESH1
-	1.2,	//VOICE_SIGHT_EAT_FLESH2
-	0.9,	//VOICE_SIGHT_GET_HIM1
-	0.9,	//VOICE_SIGHT_GET_HIM2
-	0.9,	//VOICE_SIGHT_GET_HIM3
-	1.0,	//VOICE_SIGHT_KILL_HIM1
-	0.9,	//VOICE_SIGHT_KILL_HIM2
-	1.3,	//VOICE_SIGHT_KILL_HIM3
-	1.2,	//VOICE_SIGHT_OVER_THERE
-	1.2,	//VOICE_SIGHT_THERES_ONE
-	0.7,	//VOICE_SUPPORT_FOLLOW_ME
-	1.5,	//VOICE_SUPPORT_CURE
-	1.6,	//VOICE_SUPPORT_LIVER
-	2.0,	//VOICE_SUPPORT_SLASH
-	1.1,	//VOICE_SUPPORT_SURROUND_HIM
-	1.8,	//VOICE_SUPPORT_UNAFFECTED1
-	2.0,	//VOICE_SUPPORT_UNAFFECTED2
-	1.3,	//VOICE_SUPPORT_YEAH_GET_HIM1
-	1.0,	//VOICE_SUPPORT_YEAH_GET_HIM2
-	0.0,	//VOICE_FIRST_ALONE
-	1.1,	//VOICE_MISC_DIE
-	1.3,	//VOICE_MISC_FLESH
-	1.1,	//VOICE_SUPPORT_GONNA_DIE1
-	1.5,	//VOICE_SUPPORT_GONNA_DIE2
-	1.5,	//VOICE_SUPPORT_GONNA_DIE3
-	1.2,	//VOICE_SUPPORT_GONNA_DIE4
-	2.0,	//VOICE_MISC_MUST_KILL
-	1.1,	//VOICE_SUPPORT_MUST_DIE
-	1.1,	//VOICE_SUPPORT_YES
-	0.0,	//VOICE_LAST_GROUP
-	1.6,	//VOICE_MISC_GET_AWAY1
-	0.9,	//VOICE_MISC_GET_AWAY2
-	1.2,	//VOICE_MISC_GO_AWAY
-	0.6,	//VOICE_MISC_HELP_ME1
-	2.3,	//VOICE_MISC_HELP_ME2
-	2.2,	//VOICE_MISC_HELP_ME3
-	1.5,	//VOICE_MISC_LEAVE_ME1
-	1.0,	//VOICE_MISC_LEAVE_ME2
-	0.6,	//VOICE_MISC_NO
-	0.9,	//VOICE_MISC_TRAPPED
-	0.8,	//VOICE_MISC_COME_BACK1
-	1.0,	//VOICE_MISC_COME_BACK2
-	0.9,	//VOICE_MISC_DONT_HURT
+	0.0f, // FIRST_SIGHT_GROUP
+	1.0f, // VOICE_SIGHT_AFTER_HIM1
+	0.6f, // VOICE_SIGHT_AFTER_HIM2
+	1.3f, // VOICE_SIGHT_CUT_HIM2
+	1.0f, // VOICE_SIGHT_CUT_HIM1
+	1.2f, // VOICE_SIGHT_EAT_FLESH1
+	1.2f, // VOICE_SIGHT_EAT_FLESH2
+	0.9f, // VOICE_SIGHT_GET_HIM1
+	0.9f, // VOICE_SIGHT_GET_HIM2
+	0.9f, // VOICE_SIGHT_GET_HIM3
+	1.0f, // VOICE_SIGHT_KILL_HIM1
+	0.9f, // VOICE_SIGHT_KILL_HIM2
+	1.3f, // VOICE_SIGHT_KILL_HIM3
+	1.2f, // VOICE_SIGHT_OVER_THERE
+	1.2f, // VOICE_SIGHT_THERES_ONE
+	0.7f, // VOICE_SUPPORT_FOLLOW_ME
+	1.5f, // VOICE_SUPPORT_CURE
+	1.6f, // VOICE_SUPPORT_LIVER
+	2.0f, // VOICE_SUPPORT_SLASH
+	1.1f, // VOICE_SUPPORT_SURROUND_HIM
+	1.8f, // VOICE_SUPPORT_UNAFFECTED1
+	2.0f, // VOICE_SUPPORT_UNAFFECTED2
+	1.3f, // VOICE_SUPPORT_YEAH_GET_HIM1
+	1.0f, // VOICE_SUPPORT_YEAH_GET_HIM2
+	0.0f, // VOICE_FIRST_ALONE
+	1.1f, // VOICE_MISC_DIE
+	1.3f, // VOICE_MISC_FLESH
+	1.1f, // VOICE_SUPPORT_GONNA_DIE1
+	1.5f, // VOICE_SUPPORT_GONNA_DIE2
+	1.5f, // VOICE_SUPPORT_GONNA_DIE3
+	1.2f, // VOICE_SUPPORT_GONNA_DIE4
+	2.0f, // VOICE_MISC_MUST_KILL
+	1.1f, // VOICE_SUPPORT_MUST_DIE
+	1.1f, // VOICE_SUPPORT_YES
+	0.0f, // VOICE_LAST_GROUP
+	1.6f, // VOICE_MISC_GET_AWAY1
+	0.9f, // VOICE_MISC_GET_AWAY2
+	1.2f, // VOICE_MISC_GO_AWAY
+	0.6f, // VOICE_MISC_HELP_ME1
+	2.3f, // VOICE_MISC_HELP_ME2
+	2.2f, // VOICE_MISC_HELP_ME3
+	1.5f, // VOICE_MISC_LEAVE_ME1
+	1.0f, // VOICE_MISC_LEAVE_ME2
+	0.6f, // VOICE_MISC_NO
+	0.9f, // VOICE_MISC_TRAPPED
+	0.8f, // VOICE_MISC_COME_BACK1
+	1.0f, // VOICE_MISC_COME_BACK2
+	0.9f, // VOICE_MISC_DONT_HURT
 };
+
+#pragma endregion
 
 /*----------------------------------------------------------------------
   Cinematic Functions for the monster
@@ -1558,7 +1556,7 @@ void pelf_SightSound ( edict_t *self, G_Message_t *msg )
 		else if (support < 2)	//Paired
 		{
 			sound = pelf_ChooseSightSound(self, SE_PAIR);
-			self->monsterinfo.sound_finished = level.time + pelf_VoiceTimes[sound];
+			self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[sound];
 			gi.sound(self, CHAN_VOICE, sounds[sound], 1, ATTN_NORM, 0);
 
 			pelf_PollResponse( self, SE_PAIR, sound, self->monsterinfo.sound_finished - flrand(0.5, 0.25) );
@@ -1566,7 +1564,7 @@ void pelf_SightSound ( edict_t *self, G_Message_t *msg )
 		else //Grouped
 		{
 			sound = pelf_ChooseSightSound(self, SE_GROUP);
-			self->monsterinfo.sound_finished = level.time + pelf_VoiceTimes[sound];
+			self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[sound];
 			gi.sound(self, CHAN_VOICE, sounds[sound], 1, ATTN_NORM, 0);
 			
 			pelf_PollResponse( self, SE_GROUP, sound, self->monsterinfo.sound_finished - flrand(0.5, 0.25) );
@@ -1658,7 +1656,7 @@ void pelf_EchoResponse  ( edict_t *self, G_Message_t *msg )
 	case SE_PAIR:
 		self->monsterinfo.sound_pending = pelf_ChooseResponseSound( self, SE_PAIR, sound_id );
 		self->monsterinfo.sound_start = time;
-		self->monsterinfo.sound_finished = level.time + pelf_VoiceTimes[self->monsterinfo.sound_pending];
+		self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
 
 		if(irand(0, 4))
 		{//FIXME: make sure enemy is far enough away to anim!
@@ -1672,7 +1670,7 @@ void pelf_EchoResponse  ( edict_t *self, G_Message_t *msg )
 	case SE_GROUP:
 		self->monsterinfo.sound_pending = pelf_ChooseResponseSound( self, SE_GROUP, sound_id );
 		self->monsterinfo.sound_start = time;
-		self->monsterinfo.sound_finished = level.time + pelf_VoiceTimes[self->monsterinfo.sound_pending];
+		self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
 
 		if (irand(0,2))
 			pelf_PollResponse( self, SE_GROUP, self->monsterinfo.sound_pending, self->monsterinfo.sound_finished );
@@ -1690,7 +1688,7 @@ void pelf_EchoResponse  ( edict_t *self, G_Message_t *msg )
 	default:
 		self->monsterinfo.sound_pending = pelf_ChooseResponseSound( self, SE_GROUP, sound_id );
 		self->monsterinfo.sound_start = time;
-		self->monsterinfo.sound_finished = level.time + pelf_VoiceTimes[self->monsterinfo.sound_pending];
+		self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
 
 		if (irand(0,2))
 			pelf_PollResponse( self, SE_GROUP, self->monsterinfo.sound_pending, self->monsterinfo.sound_finished );
