@@ -152,97 +152,102 @@ static const float plague_pelf_voice_times[] = //mxd. Named 'pelf_VoiceTimes' in
 
 #pragma endregion
 
-/*-------------------------------------------------------------------------
-	plagueElf_c_anims
--------------------------------------------------------------------------*/
-void plagueElf_c_anims(edict_t *self, G_Message_t *msg)
+static void PlagueElfCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_c_anims' in original logic.
 {
-	int int_msg;
 	int curr_anim;
 
 	ReadCinematicMessage(self, msg);
-	int_msg = (int) msg->ID;
+	self->monsterinfo.c_anim_flag = 0;
 
-	self->monsterinfo.c_anim_flag = 0; 
-
-	switch(int_msg)
+	switch (msg->ID)
 	{
 		case MSG_C_ATTACK1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_ATTACK1;
 			break;
+
 		case MSG_C_ATTACK2:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ATTACK2;
 			break;
+
 		case MSG_C_ATTACK3:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ATTACK3;
 			break;
+
 		case MSG_C_ATTACK4:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ATTACK4;
 			break;
+
 		case MSG_C_DEATH1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_DONE;
+			self->monsterinfo.c_anim_flag = C_ANIM_DONE;
 			curr_anim = ANIM_C_DEATH1;
 			break;
+
 		case MSG_C_DEATH2:
-			self->monsterinfo.c_anim_flag |= C_ANIM_DONE;
+			self->monsterinfo.c_anim_flag = C_ANIM_DONE;
 			curr_anim = ANIM_C_DEATH2;
 			break;
+
 		case MSG_C_DEATH3:
-			self->monsterinfo.c_anim_flag |= C_ANIM_DONE;
+			self->monsterinfo.c_anim_flag = C_ANIM_DONE;
 			curr_anim = ANIM_C_DEATH3;
 			break;
+
 		case MSG_C_DEATH4:
-			self->monsterinfo.c_anim_flag |= C_ANIM_DONE;
+			self->monsterinfo.c_anim_flag = C_ANIM_DONE;
 			curr_anim = ANIM_C_DEATH4;
 			break;
+
 		case MSG_C_IDLE1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT | C_ANIM_IDLE;
+			self->monsterinfo.c_anim_flag = (C_ANIM_REPEAT | C_ANIM_IDLE);
 			curr_anim = ANIM_C_IDLE1;
 			break;
+
 		case MSG_C_IDLE2:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE2;
 			break;
+
 		case MSG_C_IDLE3:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE3;
 			break;
+
 		case MSG_C_PAIN1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			self->monsterinfo.c_anim_flag = C_ANIM_REPEAT;
 			curr_anim = ANIM_C_PAIN1;
 			break;
+
 		case MSG_C_RUN1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_RUN1;
 			break;
-		case MSG_C_THINKAGAIN:			// Think for yourself, elf.
-			self->monsterinfo.c_mode = 0;
+
+		case MSG_C_THINKAGAIN: // Think for yourself, elf.
 			self->enemy = self->monsterinfo.c_ent;
 			AI_FoundTarget(self, true);
-//			self->takedamage = DAMAGE_YES;
 			curr_anim = ANIM_C_THINKAGAIN;
 			break;
+
 		case MSG_C_WALK1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_WALK1;
 			break;
+
 		case MSG_C_WALK2:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			self->monsterinfo.c_anim_flag = C_ANIM_MOVE;
 			curr_anim = ANIM_C_WALK2;
 			break;
+
 		default:
-			break;
-	} 
+			return; //mxd. 'break' in original logic. Let's avoid using uninitialized curr_anim var.
+	}
 
 	SetAnim(self, curr_anim);
 }
-
-
-
 
 /*-------------------------------------------------------------------------
 	plagueelf_death_loop 
@@ -1803,22 +1808,22 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_POLL] = pelf_EchoResponse;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_VOICE_PUPPET] = pelf_EchoSound;
 
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_IDLE1] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_IDLE2] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_IDLE3] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_WALK1] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_WALK2] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_RUN1] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_ATTACK1] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_ATTACK2] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_ATTACK3] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_ATTACK4] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_DEATH1] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_DEATH2] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_DEATH3] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_DEATH4] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_THINKAGAIN] = plagueElf_c_anims;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_PAIN1] = plagueElf_c_anims;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_IDLE1] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_IDLE2] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_IDLE3] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_WALK1] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_WALK2] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_RUN1] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_ATTACK1] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_ATTACK2] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_ATTACK3] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_ATTACK4] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_DEATH1] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_DEATH2] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_DEATH3] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_DEATH4] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_THINKAGAIN] = PlagueElfCinematicActionMsgHandler;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_PAIN1] = PlagueElfCinematicActionMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_C_GIB1] = CinematicGibMsgHandler;
 
 	resInfo.numAnims = NUM_ANIMS;
