@@ -1146,7 +1146,7 @@ void plagueelf_apply_jump(edict_t* self) //mxd. Named 'plagueElfApplyJump' in or
 	VectorNormalize(self->movedir);
 }
 
-void plagueElf_pause(edict_t* self) //TODO: rename to plagueelf_pause.
+void plagueelf_pause(edict_t* self) //mxd. Named 'plagueElf_pause' in original logic.
 {
 	self->monsterinfo.misc_debounce_time = 0.0f;
 
@@ -1259,7 +1259,7 @@ static void PlagueElfJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 static void PlagueElfCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'pelf_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-	plagueElf_pause(self);
+	plagueelf_pause(self);
 }
 
 static void PlagueElfRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_run' in original logic.

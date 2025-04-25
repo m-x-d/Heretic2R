@@ -164,7 +164,7 @@ extern void plagueelf_death_squeal(edict_t* self);
 extern void plagueElfsqueal(edict_t* self);
 extern void plagueelf_growl(edict_t* self);
 extern void plagueelf_strike(edict_t* self);
-extern void plagueElf_pause(edict_t* self);
+extern void plagueelf_pause(edict_t* self);
 extern void plagueelf_attack(edict_t* self);
 
 extern void plagueelf_knockback_death_loop(edict_t* self);
