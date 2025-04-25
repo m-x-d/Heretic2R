@@ -1281,17 +1281,9 @@ void plagueElfsqueal(edict_t* self) //TODO: rename to plagueelf_squeal.
 		gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN3)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*-------------------------------------------------------------------------
-	plagueElf_stand
--------------------------------------------------------------------------*/
-void plagueElf_stand(edict_t *self, G_Message_t *msg)
-{	
-	if (self->ai_mood == AI_MOOD_DELAY)
-		SetAnim(self, ANIM_DELAY);
-	else
-		SetAnim(self, ANIM_SHAKE1);	
-
-	return;
+static void PlagueElfStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_stand' in original logic.
+{
+	SetAnim(self, ((self->ai_mood == AI_MOOD_DELAY) ? ANIM_DELAY : ANIM_SHAKE1));
 }
 
 /*-------------------------------------------------------------------------
@@ -1640,7 +1632,7 @@ void PlagueElfStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_STAND] = plagueElf_stand;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_STAND] = PlagueElfStandMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_WALK] = plagueElf_walk;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_RUN] = PlagueElfRunMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_MELEE] = PlagueElfMeleeMsgHandler;
