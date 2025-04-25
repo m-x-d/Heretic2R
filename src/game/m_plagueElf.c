@@ -414,17 +414,9 @@ static void PlagueElfDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 		SetAnim(self, ANIM_DIE4);
 }
 
-/*-------------------------------------------------------------------------
-	plagueElfdeathsqueal
--------------------------------------------------------------------------*/
-void plagueElfdeathsqueal (edict_t *self)
+void plagueElfdeathsqueal(edict_t* self) //TODO: rename to plagueelf_death_squeal.
 {
-	int sound;
-
-	sound = irand(SND_DIE1, SND_DIE3);
-
-	gi.sound(self, CHAN_VOICE, sounds[sound], 1, ATTN_NORM, 0);
-	return;
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_DIE1, SND_DIE3)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 /*-------------------------------------------------------------------------
