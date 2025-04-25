@@ -1318,24 +1318,20 @@ static int PlagueElfChooseSightSound(const int event) //mxd. Named 'pelf_ChooseS
 	}
 }
 
-/*-----------------------------------------------
-	pelf_ChooseReponseSound 
------------------------------------------------*/
-
-int pelf_ChooseResponseSound ( edict_t *self, int event, int sound_id )
+//TODO: more varied responses based on sound_id.
+static int PlagueElfChooseResponseSound(const int event, int sound_id) //mxd. Named 'pelf_ChooseResponseSound' in original logic. Removed unused 'self' arg.
 {
-	int sound;
-
 	switch (event)
 	{
-	case SE_PAIR:
-	case SE_GROUP:
-		sound = irand( FIRST_SIGHT_GROUP, LAST_SIGHT_GROUP);
-		break;
-	}
+		case SE_PAIR:
+		case SE_GROUP:
+			return irand(FIRST_SIGHT_GROUP, LAST_SIGHT_GROUP);
 
-	return sound;
+		default:
+			return FIRST_SIGHT_GROUP; //mxd. Should never happen.
+	}
 }
+
 //plague elf has seen first target (usually player)
 
 /*-----------------------------------------------
@@ -1470,7 +1466,7 @@ void pelf_EchoResponse  ( edict_t *self, G_Message_t *msg )
 	switch ( sound_event )
 	{
 	case SE_PAIR:
-		self->monsterinfo.sound_pending = pelf_ChooseResponseSound( self, SE_PAIR, sound_id );
+		self->monsterinfo.sound_pending = PlagueElfChooseResponseSound( SE_PAIR, sound_id );
 		self->monsterinfo.sound_start = time;
 		self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
 
@@ -1484,7 +1480,7 @@ void pelf_EchoResponse  ( edict_t *self, G_Message_t *msg )
 		break;
 	
 	case SE_GROUP:
-		self->monsterinfo.sound_pending = pelf_ChooseResponseSound( self, SE_GROUP, sound_id );
+		self->monsterinfo.sound_pending = PlagueElfChooseResponseSound( SE_GROUP, sound_id );
 		self->monsterinfo.sound_start = time;
 		self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
 
@@ -1502,7 +1498,7 @@ void pelf_EchoResponse  ( edict_t *self, G_Message_t *msg )
 		break;
 
 	default:
-		self->monsterinfo.sound_pending = pelf_ChooseResponseSound( self, SE_GROUP, sound_id );
+		self->monsterinfo.sound_pending = PlagueElfChooseResponseSound( SE_GROUP, sound_id );
 		self->monsterinfo.sound_start = time;
 		self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
 
