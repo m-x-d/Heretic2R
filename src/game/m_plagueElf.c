@@ -434,17 +434,10 @@ void plagueElfgrowl(edict_t* self) //TODO: rename to plagueelf_growl.
 		gi.sound(self, CHAN_VOICE, sounds[SND_MOAN2], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void plagueElfattack(edict_t *self)
+void plagueElfattack(edict_t* self) //TODO: rename to plagueelf_attack.
 {
-	int chance, sound;	
-
-	chance = irand(0, 10);
-
-	if (chance < 5)
-	{
-		sound =  irand(SND_ATTACK1, SND_ATTACK2);
-		gi.sound (self, CHAN_VOICE, sounds[sound], 1, ATTN_IDLE, 0);
-	}
+	if (irand(0, 10) < 5)
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_ATTACK1, SND_ATTACK2)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
 void create_pe_spell(edict_t *Spell)
