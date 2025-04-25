@@ -748,11 +748,10 @@ static void PlagueElfTryFlee(edict_t* self, const int coward_chance, const int f
 	}
 }
 
-void plagueElf_dead_pain (edict_t *self, G_Message_t *msg)
+static void PlagueElfDeadPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_dead_pain' in original logic.
 {
-	if(msg)
-		if(!(self->svflags & SVF_PARTS_GIBBED))
-			DismemberMsgHandler(self, msg);
+	if (msg != NULL && !(self->svflags & SVF_PARTS_GIBBED))
+		DismemberMsgHandler(self, msg);
 }
 
 //THROWS weapon, turns off those nodes, sets that weapon as gone
@@ -1667,7 +1666,7 @@ void PlagueElfStaticsInit(void)
 //	classStatics[CID_PLAGUEELF].msgReceivers[MSG_BLOCKED] = plagueElf_blocked;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_JUMP] = pelf_jump;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH_PAIN] = plagueElf_dead_pain;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH_PAIN] = PlagueElfDeadPainMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_FALLBACK] = plagueElf_run;//away
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_CHECK_MOOD] = pelf_check_mood;
 
