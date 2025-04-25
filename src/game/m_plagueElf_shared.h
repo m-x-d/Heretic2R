@@ -161,7 +161,7 @@ extern const animmove_t plagueElf_move_c_death4;
 extern void plagueelf_cinematic_spell(edict_t* self);
 
 extern void plagueelf_death_squeal(edict_t* self);
-extern void plagueElfsqueal(edict_t* self);
+extern void plagueelf_squeal(edict_t* self);
 extern void plagueelf_growl(edict_t* self);
 extern void plagueelf_strike(edict_t* self);
 extern void plagueelf_pause(edict_t* self);

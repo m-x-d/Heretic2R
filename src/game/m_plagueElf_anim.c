@@ -89,7 +89,7 @@ const animmove_t plagueElf_move_death4 = { 14, plagueElf_frames_death4, M_EndDea
 // Plague Elf Pain - plagueElf gets hit <<-- FIXME: this is not a real animation, this is recycling other anims.
 static const animframe_t plagueElf_frames_pain1[] =
 {
-	{ FRAME_painA1, NULL, 0, 0, 0, NULL, 0, plagueElfsqueal },
+	{ FRAME_painA1, NULL, 0, 0, 0, NULL, 0, plagueelf_squeal },
 	{ FRAME_painA2, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_painA3, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_painA4, NULL, 0, 0, 0, NULL, 0, NULL },

@@ -1273,7 +1273,7 @@ static void PlagueElfRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
-void plagueElfsqueal(edict_t* self) //TODO: rename to plagueelf_squeal.
+void plagueelf_squeal(edict_t* self) //mxd. Named 'plagueElfsqueal' in original logic.
 {
 	if (self->monsterinfo.aiflags & (AI_COWARD | AI_FLEE))
 		dying_elf_sounds(self, DYING_ELF_PAIN_VOICE);
