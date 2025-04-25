@@ -6,6 +6,8 @@
 
 #pragma once
 
-void SP_monster_plague_ssithra(edict_t* self);
-void SP_obj_corpse_ssithra(edict_t* self);
-void SsithraStaticsInit(void);
+#include "g_Edict.h"
+
+extern void SP_monster_plague_ssithra(edict_t* self);
+extern void SP_obj_corpse_ssithra(edict_t* self);
+extern void SsithraStaticsInit(void);
