@@ -175,7 +175,7 @@ extern void plagueelf_apply_jump(edict_t* self);
 extern void pelf_check_too_close(edict_t* self);
 extern void plagueelf_land(edict_t* self);
 extern void plagueelf_inair_go(edict_t* self);
-extern void plagueElf_go_run(edict_t* self);
+extern void plagueelf_run_go(edict_t* self);
 
 #define BIT_BASE	0
 #define BIT_HANDLE	1

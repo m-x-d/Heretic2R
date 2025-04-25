@@ -1297,7 +1297,7 @@ static void PlagueElfWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		SetAnim(self, irand(ANIM_WALK1, ANIM_WALK2));
 }
 
-void plagueElf_go_run(edict_t* self) //TODO: rename to plagueelf_run_go.
+void plagueelf_run_go(edict_t* self) //mxd. Named 'plagueElf_go_run' in original logic.
 {
 	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN1));
 }

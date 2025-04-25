@@ -435,7 +435,7 @@ static const animframe_t plagueElf_frames_cursing[] =
 	{ FRAME_cursing57,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_cursing61,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t plagueElf_cursing = { 16, plagueElf_frames_cursing, plagueElf_go_run };
+const animmove_t plagueElf_cursing = { 16, plagueElf_frames_cursing, plagueelf_run_go };
 
 // Plague Elf Pointing.
 static const animframe_t plagueElf_frames_point[] =
@@ -464,7 +464,7 @@ static const animframe_t plagueElf_frames_point[] =
 	{ FRAME_point29,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_point30,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t plagueElf_point = { 23, plagueElf_frames_point, plagueElf_go_run };
+const animmove_t plagueElf_point = { 23, plagueElf_frames_point, plagueelf_run_go };
 
 // Plague Elf Scared.
 static const animframe_t plagueElf_frames_scared[] =
