@@ -2055,51 +2055,43 @@ void ssithraPanicArrow(edict_t* self) //TODO: rename to ssithra_panic_arrow.
 	arrow->nextthink = level.time + 3.0f;
 }
 
-void ssithra_water_shoot (edict_t *self)
+void ssithra_water_shoot(edict_t* self)
 {
-	SetAnim(self,ANIM_WATER_SHOOT);
+	SetAnim(self, ANIM_WATER_SHOOT);
 }
 
-void ssithraCheckLoop (edict_t *self)
-{//see if should fire again
-	vec3_t	v;
-	float	len, melee_range, min_seperation, jump_range;
+void ssithraCheckLoop(edict_t* self) //TODO: rename to ssithra_check_loop.
+{
+#define SSITHRA_MELEE_RANGE	64.0f
+#define SSITHRA_JUMP_RANGE	128.0f
 
-	if(!self->enemy)
+	// See if should fire again.
+	if (self->enemy == NULL || !AI_IsVisible(self, self->enemy) || !AI_IsInfrontOf(self, self->enemy) || irand(0, 100) < self->bypass_missile_chance)
 		return;
 
-	if(!AI_IsVisible(self, self->enemy))
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+	const float dist = VectorLength(diff);
+
+	const float min_seperation = self->maxs[0] + self->enemy->maxs[0];
+
+	// Don't loop if enemy is close enough.
+	if (dist < min_seperation + SSITHRA_MELEE_RANGE)
+	{
+		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 		return;
-
-	if(!AI_IsInfrontOf(self, self->enemy))
-		return;
-
-	if(irand(0, 100) < self->bypass_missile_chance)
-		return;
-
-	VectorSubtract (self->enemy->s.origin, self->s.origin, v);
-	len = VectorLength (v);
-	melee_range = 64;
-	jump_range = 128;
-	min_seperation = self->maxs[0] + self->enemy->maxs[0];
-
-	if (AI_IsInfrontOf(self, self->enemy))
-	{//don't loop if enemy close enough
-		if (len < min_seperation + melee_range)
-		{
-			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-			return;
-		}
-		else if (len < min_seperation + jump_range && irand(0,10)<3)
-		{
-			VectorScale(v, 3, self->movedir);
-			self->movedir[2] += 150;
-			SetAnim(self, ANIM_LUNGE);
-			return;
-		}
 	}
 
-	self->monsterinfo.currframeindex = self->monsterinfo.currframeindex - 2;
+	if (dist < min_seperation + SSITHRA_JUMP_RANGE && irand(0, 10) < 3)
+	{
+		VectorScale(diff, 3.0f, self->movedir);
+		self->movedir[2] += 150.0f;
+		SetAnim(self, ANIM_LUNGE);
+
+		return;
+	}
+
+	self->monsterinfo.currframeindex -= 2;
 }
 
 //========================================
