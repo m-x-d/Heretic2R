@@ -100,7 +100,7 @@ static void SsithraBlocked(edict_t* self, trace_t* trace) //mxd. Named 'ssithra_
 	VectorAdd(trace->ent->velocity, hit_dir, trace->ent->knockbackvel);
 
 	if (!(self->spawnflags & MSF_FIXED))
-		ssithraJump(self, 150.0f, 200.0f, 0.0f);
+		ssithra_jump(self, 150.0f, 200.0f, 0.0f);
 }
 
 static void SsithraStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_stand' in original logic.
@@ -527,7 +527,7 @@ void ssithra_apply_jump(edict_t* self) //mxd. Named 'ssithraApplyJump' in origin
 	VectorNormalize(self->movedir);
 }
 
-void ssithraJump(edict_t* self, float up_speed, float forward_speed, float right_speed) //TODO: rename to ssithra_jump.
+void ssithra_jump(edict_t* self, float up_speed, float forward_speed, float right_speed) //mxd. Named 'ssithraJump' in original logic.
 {
 	//FIXME: do checks and traces first.
 	if (self->spawnflags & MSF_FIXED)
@@ -578,7 +578,7 @@ void ssithraNamorJump(edict_t* self) //TODO: rename to ssithra_out_of_water_jump
 	const float enemy_zdiff = target_origin[2] - trace.endpos[2];
 
 	//FIXME: aim a little to side if enemy close so don't land on top of him? Or hit him if land on top?
-	ssithraJump(self, (watersurf_zdist + enemy_zdiff) * 2.0f + 200.0f, 100.0f, 0.0f);
+	ssithra_jump(self, (watersurf_zdist + enemy_zdiff) * 2.0f + 200.0f, 100.0f, 0.0f);
 }
 
 void ssithraCheckJump(edict_t* self) //TODO: rename to SsithraCheckJump.
@@ -827,7 +827,7 @@ void ssithraCheckJump(edict_t* self) //TODO: rename to SsithraCheckJump.
 			return;
 
 		// Go for it!
-		ssithraJump(self, 128.0f, trace.fraction * 200.0f, 0.0f);
+		ssithra_jump(self, 128.0f, trace.fraction * 200.0f, 0.0f);
 		SetAnim(self, ANIM_BOUND);
 	}
 }

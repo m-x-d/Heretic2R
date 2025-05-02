@@ -172,7 +172,7 @@ static const animframe_t ssithra_frames_dive1[] =
 	{ FRAME_dive1,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive2,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive3,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_dive4,	ssithraJump, 400, 100, 0, NULL, 0, NULL },
+	{ FRAME_dive4,	ssithra_jump, 400, 100, 0, NULL, 0, NULL },
 	{ FRAME_dive5,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive6,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive7,	NULL, 0, 0, 0, NULL, 0, NULL },
@@ -247,7 +247,7 @@ const animmove_t ssithra_move_duck1 = { 6, ssithra_frames_duck1, ssithra_decide_
 // Plague Ssithra Gallop.
 static const animframe_t ssithra_frames_gallop1[] =
 {
-	{ FRAME_gallop1, ssithraJump, 100, 50, 0, ssithra_ai_run, 20, NULL },
+	{ FRAME_gallop1, ssithra_jump, 100, 50, 0, ssithra_ai_run, 20, NULL },
 	{ FRAME_gallop2, NULL, 0, 0, 0, ssithra_ai_run, 24, NULL },
 	{ FRAME_gallop3, NULL, 0, 0, 0, ssithra_ai_run, 32, NULL },
 	{ FRAME_gallop4, NULL, 0, 0, 0, ssithra_ai_run, 30, NULL },

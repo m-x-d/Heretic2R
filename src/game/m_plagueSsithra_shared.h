@@ -149,7 +149,7 @@ extern void ssithra_ai_run(edict_t* self, float distance); //mxd
 extern void ssithra_dead(edict_t* self);
 extern void ssithraSwipe(edict_t* self);
 extern void ssithraArrow(edict_t* self);
-extern void ssithraJump(edict_t* self, float up_speed, float forward_speed, float right_speed);
+extern void ssithra_jump(edict_t* self, float up_speed, float forward_speed, float right_speed);
 extern void ssithra_check_bound(edict_t* self);
 extern void ssithra_check_dive(edict_t* self);
 extern void ssithraWaterDead(edict_t* self);
