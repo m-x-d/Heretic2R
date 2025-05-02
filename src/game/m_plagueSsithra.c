@@ -944,13 +944,10 @@ void ssithraCheckHitWaterSplash(edict_t* self) //TODO: rename to ssithra_spawn_w
 	}
 }
 
-void ssithraCheckFacedNamor (edict_t *self)
+void ssithraCheckFacedNamor(edict_t* self) //TODO: rename to ssithra_check_faced_out_of_water_jump.
 {
-	if(self->spawnflags & MSF_FIXED)
-		return;
-
-	if(Q_fabs(self->ideal_yaw - self->s.angles[YAW])<self->yaw_speed)
-		SetAnim(self,ANIM_NAMOR);
+	if (!(self->spawnflags & MSF_FIXED) && Q_fabs(self->ideal_yaw - self->s.angles[YAW]) < self->yaw_speed)
+		SetAnim(self, ANIM_NAMOR);
 }
 
 //========================================
