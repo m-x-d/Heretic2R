@@ -1552,12 +1552,12 @@ static void SsithraDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	}
 }
 
-void ssithra_dead(edict_t *self)
-{//maybe allow dead bodies to be chopped?  Make BBOX small?
-	self->msgHandler = DeadMsgHandler;
-	self->svflags |= SVF_DEADMONSTER;	// now treat as a different content type
+void ssithra_dead(edict_t* self)
+{
+	//FIXME: maybe allow dead bodies to be chopped? Make BBOX small?
 	self->deadState = DEAD_DEAD;
-
+	self->msgHandler = DeadMsgHandler;
+	self->svflags |= SVF_DEADMONSTER; // Now treat as a different content type.
 	self->flags |= FL_DONTANIMATE;
 
 	M_EndDeath(self);
