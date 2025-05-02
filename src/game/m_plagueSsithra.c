@@ -326,31 +326,24 @@ void ssithraVOfs(edict_t* self, float pitch_offset, float yaw_offset, float roll
 	self->v_angle_ofs[ROLL] = roll_offset;
 }
 
-//========================================
-//JUMPS
-//make a find_water_top function... pass a vector
-//========================================
-
-qboolean ssithraWaterLedgeNearEnemy (edict_t *self)
+static qboolean SsithraHaveWaterLedgeNearEnemy(edict_t* self) //mxd. Named 'ssithraWaterLedgeNearEnemy' in original logic.
 {
-	vec3_t enemy_dir, endpos, targ_org;
-	trace_t trace;
+	vec3_t target_origin;
 
-	if(self->spawnflags & MSF_FIXED)
+	if ((self->spawnflags & MSF_FIXED) || !MG_TryGetTargetOrigin(self, target_origin))
 		return false;
 
-	if(!MG_TryGetTargetOrigin(self, targ_org))
-		return false;
-
-	VectorSubtract(targ_org,self->s.origin,enemy_dir);
-
+	vec3_t enemy_dir;
+	VectorSubtract(target_origin, self->s.origin, enemy_dir);
 	VectorNormalize(enemy_dir);
-	VectorMA(self->s.origin,128,enemy_dir,endpos);
-	gi.trace(self->s.origin,self->mins,self->maxs,endpos,self,MASK_SOLID,&trace);
-	if(trace.fraction<1.0)
-		return true;
-	//no ledge to jump up on
-	return false;
+
+	vec3_t end_pos;
+	VectorMA(self->s.origin, 128.0f, enemy_dir, end_pos);
+
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_SOLID, &trace);
+
+	return (trace.fraction < 1.0f); // When trace.fraction == 1, no ledge to jump up on.
 }
 
 void ssithra_check_namor(edict_t *self)
@@ -370,7 +363,7 @@ void ssithra_check_namor(edict_t *self)
 	{
 		if(MG_IsVisiblePos(self, targ_org))
 		{
-			if(ssithraWaterLedgeNearEnemy(self))
+			if(SsithraHaveWaterLedgeNearEnemy(self))
 			{
 #ifdef _DEVEL
 				if(MGAI_DEBUG)
