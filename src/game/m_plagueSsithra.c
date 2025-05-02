@@ -2546,40 +2546,27 @@ void SP_monster_plague_ssithra(edict_t* self)
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
-/*QUAKED obj_corpse_ssithra (1 .5 0) (-30 -12 -2) (30 12 2) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A dead plague ssithra
----------- KEYS -----------------  
-style - skin of ssithra (default 0)
-0 - damage skin
-1 - some bad bad skin. (not used)
-2 - normal skin
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (corpse can't be pushed)
------------------------------------
-*/
-void SP_obj_corpse_ssithra(edict_t *self)
+// QUAKED obj_corpse_ssithra (1 .5 0) (-30 -12 -2) (30 12 2) INVULNERABLE
+// A dead plague ssithra.
+
+// Spawnflags:
+// INVULNERABLE - It can't be hurt.
+
+// Variables:
+// style - skin of ssithra (0: damaged skin, 1: normal skin).
+void SP_obj_corpse_ssithra(edict_t* self)
 {
-	self->s.origin[2] += 26.0;
+	self->s.origin[2] += 26.0f;
 
-	VectorSet(self->mins,-30,-12,-2);
-	VectorSet(self->maxs,30,12,2);
+	VectorSet(self->mins, -30.0f, -12.0f, -2.0f);
+	VectorSet(self->maxs, 30.0f, 12.0f, 2.0f);
 
-	self->s.modelindex = gi.modelindex("models/monsters/ssithra/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/monsters/ssithra/tris.fm");
+	self->s.frame = FRAME_death_a12; // Ths is the reason the function can't be put in g_obj.c.
 
-	self->s.frame = FRAME_death_a12;	//Ths is the reason the function can't be put in g_obj.c
+	self->s.skinnum = ((self->style == 0) ? 1 : 0); // Setting the skinnum correctly. //TODO: also handle alpha damaged (style 2) and alpha normal (style 3) skins? 
+	self->spawnflags |= SF_OBJ_NOPUSH;	// Can't be pushed.
+	self->svflags |= SVF_DEADMONSTER; // Doesn't block walking.
 
-	// Setting the skinnum correctly
-	if (!self->style)
-		self->s.skinnum = 1;
-	else
-		self->s.skinnum = 0;
-
-	self->spawnflags |= SF_OBJ_NOPUSH;	// Can't be pushed
-	self->svflags |= SVF_DEADMONSTER;//doesn't block walking
-
-	ObjectInit(self,120,80,MAT_FLESH,SOLID_BBOX);
+	ObjectInit(self, 120, 80, MAT_FLESH, SOLID_BBOX);
 }
-
