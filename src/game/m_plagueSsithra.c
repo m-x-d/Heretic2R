@@ -1755,82 +1755,40 @@ static void ReflectedSsithraArrowInit(edict_t* self, edict_t* arrow) //mxd. Name
 	G_LinkMissile(arrow);
 }
 
-void ssithraArrowTouch (edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *Surface)
+static void SsithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'ssithraArrowTouch' in original logic.
 {
-	float damage;
-	vec3_t	normal;
-	edict_t	*Arrow;
-
-	if(Surface&&(Surface->flags&SURF_SKY))
+	if (surface != NULL && (surface->flags & SURF_SKY))
 	{
 		SkyFly(self);
 		return;
 	}
 
-	if(EntReflecting(Other, true, true))
+	if (EntReflecting(other, true, true))
 	{
-		Arrow = G_Spawn();
+		edict_t* arrow = G_Spawn();
 
-		ReflectedSsithraArrowInit(self,Arrow);
-
-		gi.CreateEffect( NULL,
-					 FX_M_EFFECTS,
-					 CEF_FLAG6,
-					 self->s.origin,
-					 "bv",
-					 FX_MSSITHRA_EXPLODE,
-					 self->movedir);
-		/*
-		gi.CreateEffect(&Arrow->s,
-			FX_SSITHRA_ARROW,
-			CEF_OWNERS_ORIGIN,
-			NULL,
-			"bv",
-			FX_SS_MAKE_ARROW,
-			Arrow->velocity);
-		*/
-
+		ReflectedSsithraArrowInit(self, arrow);
+		gi.CreateEffect(NULL, FX_M_EFFECTS, CEF_FLAG6, self->s.origin, "bv", FX_MSSITHRA_EXPLODE, self->movedir);
 		G_SetToFree(self);
 
 		return;
 	}
 
-	if(Other->takedamage)
+	if (other->takedamage != DAMAGE_NO)
 	{
-		VectorSet(normal, 0, 0, 1);
-		if(Plane)
-		{
-			if(Plane->normal)
-			{
-				VectorCopy(Plane->normal, normal);
-			}
-		}
-		damage = flrand(SSITHRA_DMG_MIN,SSITHRA_DMG_MAX);
-		T_Damage(Other,self,self->owner,self->movedir,self->s.origin,normal,damage,0,0,MOD_DIED);
+		vec3_t normal;
+
+		if (plane != NULL)
+			VectorCopy(plane->normal, normal);
+		else
+			VectorCopy(vec3_up, normal);
+
+		const int damage = irand(SSITHRA_DMG_MIN, SSITHRA_DMG_MAX); //mxd. flrand() in original logic.
+		T_Damage(other, self, self->owner, self->movedir, self->s.origin, normal, damage, 0, 0, MOD_DIED);
 	}
 
-	VectorNormalize(self->velocity);
-
-	gi.CreateEffect( NULL,
-				 FX_M_EFFECTS,
-				 CEF_FLAG6,
-				 self->s.origin,
-				 "bv",
-				 FX_MSSITHRA_EXPLODE,
-				 self->movedir);
-
-	/*
-	gi.CreateEffect(NULL,
-		FX_SSITHRA_ARROW,
-		0,
-		self->s.origin, 
-		"bv",
-		FX_SS_EXPLODE_ARROW,
-		self->velocity);
-	*/
-
+	gi.CreateEffect(NULL, FX_M_EFFECTS, CEF_FLAG6, self->s.origin, "bv", FX_MSSITHRA_EXPLODE, self->movedir);
 	VectorClear(self->velocity);
-
 	G_FreeEdict(self);
 }
 
@@ -1891,7 +1849,7 @@ void create_ssith_arrow(edict_t *Arrow)
 	Arrow->movetype = MOVETYPE_FLYMISSILE;
 	Arrow->solid = SOLID_BBOX;
 	Arrow->classname = "Ssithra_Arrow";
-	Arrow->touch = ssithraArrowTouch;
+	Arrow->touch = SsithraArrowTouch;
 	Arrow->enemy = NULL;
 	Arrow->clipmask = MASK_SHOT;
 	Arrow->s.scale = 0.75;
@@ -1915,9 +1873,9 @@ void ssithraDoArrow(edict_t *self, float z_offs)
 	create_ssith_arrow(Arrow);
 
 	if(self->spawnflags & MSF_SSITHRA_ALPHA)
-		Arrow->touch=ssithraArrowTouch;
+		Arrow->touch=SsithraArrowTouch;
 	else
-		Arrow->touch=ssithraArrowTouch;
+		Arrow->touch=SsithraArrowTouch;
 
 	Arrow->owner=self;
 	Arrow->enemy=self->enemy;
