@@ -332,7 +332,7 @@ static qboolean SsithraHaveWaterLedgeNearEnemy(edict_t* self) //mxd. Named 'ssit
 	return (trace.fraction < 1.0f); // When trace.fraction == 1, no ledge to jump up on.
 }
 
-void ssithra_check_namor(edict_t* self) //TODO: rename to ssithra_try_out_of_water_jump.
+void ssithra_try_out_of_water_jump(edict_t* self) //mxd. Named 'ssithra_check_namor' in original logic.
 {
 	//FIXME: climb out of water check!
 	vec3_t target_origin;
