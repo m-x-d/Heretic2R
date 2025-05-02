@@ -304,39 +304,19 @@ void ssithraCheckRipple(edict_t* self) //TODO: rename to ssithra_check_ripple.
 	}
 }
 
-//========================================
-//SUPPORT CODE
-//========================================
-
-qboolean ssithraCheckInWater (edict_t *self)
+qboolean ssithraCheckInWater(edict_t* self) //TODO: rename to SsithraCheckInWater, make static.
 {
-	qboolean inwater = false;
-	
-	if(self->flags & FL_INWATER)
-	{
-		if(!(self->flags & FL_INLAVA))
-		{
-			if(!(self->flags & FL_INSLIME))
-			{
-				if(self->waterlevel > 2 || !self->groundentity)//???
-				{
-					inwater = true;
-				}
-			}
-		}
-	}
-
-	if(inwater)
+	// In water?
+	if ((self->flags & FL_INWATER) && !(self->flags & FL_INLAVA) && !(self->flags & FL_INSLIME) && (self->waterlevel > 2 || self->groundentity == NULL))
 	{
 		self->monsterinfo.aiflags |= AI_NO_MELEE;
 		return true;
 	}
-	else
-	{
-		if(!(self->s.fmnodeinfo[MESH__LEFTARM].flags&FMNI_NO_DRAW))
-			self->monsterinfo.aiflags &= ~AI_NO_MELEE;
-		return false;
-	}
+
+	if (!(self->s.fmnodeinfo[MESH__LEFTARM].flags & FMNI_NO_DRAW))
+		self->monsterinfo.aiflags &= ~AI_NO_MELEE;
+
+	return false;
 }
 
 void ssithraNamorTriggered (edict_t *self, edict_t *other, edict_t *activator)
