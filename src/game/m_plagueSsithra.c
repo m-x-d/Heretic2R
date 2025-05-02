@@ -382,11 +382,11 @@ static void SsithraTryJump(edict_t* self) //mxd. Named 'ssithraWhichJump' in ori
 	self->velocity[2] = SSITHRA_HOP_VELOCITY + 32.0f;
 }
 
-void ssithraMsgJump(edict_t *self, G_Message_t *msg)
+static void SsithraJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithraMsgJump' in original logic.
 {
-	if(self->spawnflags&MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
 		SetAnim(self, ANIM_DELAY);
-	else 
+	else
 		SsithraTryJump(self);
 }
 
@@ -2779,7 +2779,7 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].msgReceivers[MSG_PAIN] = ssithra_pain;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH] = ssithra_death;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_JUMP] = ssithraMsgJump;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_JUMP] = SsithraJumpMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_FALLBACK] = ssithra_backup;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH_PAIN] = ssithra_dead_pain;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_EVADE] = ssithra_evade;
