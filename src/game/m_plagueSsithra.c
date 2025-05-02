@@ -984,100 +984,103 @@ static void SsithraSlideOffThink(edict_t* self) //mxd. Named 'ssithraSlideOff' i
 	self->nextthink = level.time + FRAMETIME;
 }
 
-void ssithraSplit (edict_t *self, int BodyPart)
-{//blood stripe
-	vec3_t	p1, p2, dir, up, right;
-	edict_t	*tophalf;
-	int	whichnode, node_num;
-
+static void SsithraSplit(edict_t* self, const int body_part) //mxd. Named 'ssithraSplit' in original logic.
+{
+	// Blood stripe.
+	vec3_t right;
+	vec3_t up;
 	AngleVectors(self->s.angles, NULL, right, up);
-	VectorClear(p1);
-	VectorMA(p1,6,up,p1);
-	VectorMA(p1,10,right,p1);
-	VectorClear(p2);
-	VectorMA(p2,-6,up,p2);
-	VectorMA(p2,-10,right,p2);
-	VectorSubtract(p2,p1,dir);
+
+	vec3_t p1 = { 0 };
+	VectorMA(p1, 6.0f, up, p1);
+	VectorMA(p1, 10.0f, right, p1);
+
+	vec3_t p2 = { 0 };
+	VectorMA(p2, -6.0f, up, p2);
+	VectorMA(p2, -10.0f, right, p2);
+
+	vec3_t dir;
+	VectorSubtract(p2, p1, dir);
 	VectorNormalize(dir);
-	VectorScale(dir, 40.0, dir);
+	Vec3ScaleAssign(40.0f, dir);
 
-	//Why doesn't this work?
+	// Why doesn't this work?
 	gi.CreateEffect(&self->s, FX_BLOOD, 0, p1, "ub", dir, 20);
-	VectorAdd(self->s.origin,p2,p2);
-	SprayDebris(self,p2, 6,200);
 
-//	gi.dprintf("sliding in half- making top\n");
-	
-	tophalf = G_Spawn();
+	Vec3AddAssign(self->s.origin, p2);
+	SprayDebris(self, p2, 6, 200);
 
-	tophalf->nextthink = level.time + FRAMETIME*10;
-	tophalf->think = SsithraSlideOffThink;
-	tophalf->svflags |= SVF_MONSTER;
-	tophalf->s.renderfx |= RF_FRAMELERP;
-	tophalf->takedamage = DAMAGE_AIM;
-	tophalf->max_health = tophalf->health = 25;
-	tophalf->clipmask = MASK_MONSTERSOLID;
-	tophalf->s.effects |= EF_CAMERA_NO_CLIP;
+	// Spawn top part.
+	edict_t* top_half = G_Spawn();
 
-	tophalf->s.skinnum = self->s.skinnum;
-	tophalf->deadflag = DEAD_DEAD;
-	tophalf->deadState = DEAD_DEAD;
-	tophalf->svflags |= SVF_DEADMONSTER;
-	tophalf->monsterinfo.thinkinc = MONSTER_THINK_INC;//FRAMETIME;
-	tophalf->monsterinfo.nextframeindex = -1;
-	tophalf->friction = 0.1;
+	top_half->svflags |= (SVF_MONSTER | SVF_DEADMONSTER);
+	top_half->s.renderfx |= RF_FRAMELERP;
+	top_half->s.effects |= EF_CAMERA_NO_CLIP;
+	top_half->takedamage = DAMAGE_AIM;
+	top_half->health = 25;
+	top_half->max_health = top_half->health;
+	top_half->clipmask = MASK_MONSTERSOLID;
 
-	VectorCopy (self->s.origin, tophalf->s.origin);
-	VectorCopy (tophalf->s.origin, tophalf->s.old_origin);
-	VectorCopy (self->s.angles, tophalf->s.angles);
+	top_half->deadflag = DEAD_DEAD;
+	top_half->deadState = DEAD_DEAD;
+	top_half->monsterinfo.thinkinc = MONSTER_THINK_INC;
+	top_half->monsterinfo.nextframeindex = -1;
+	top_half->friction = 0.1f;
 
-	if(!self->s.frame)//?!?!
-		tophalf->s.frame = FRAME_startle32;
-	else
-		tophalf->s.frame = self->s.frame;
+	VectorCopy(self->s.origin, top_half->s.origin);
+	VectorCopy(top_half->s.origin, top_half->s.old_origin);
+	top_half->s.origin[2] += 10.0f;
 
-	tophalf->materialtype = MAT_FLESH;
-	tophalf->mass = self->mass = 300;
+	VectorCopy(self->s.angles, top_half->s.angles);
 
-	tophalf->movetype = PHYSICSTYPE_STEP;
+	top_half->think = SsithraSlideOffThink;
+	top_half->nextthink = level.time + FRAMETIME * 10.0f;
 
-	tophalf->solid=SOLID_BBOX;
-	tophalf->owner = self;
+	top_half->materialtype = MAT_FLESH;
+	top_half->mass = 300;
+	self->mass = top_half->mass;
 
-	VectorSet(tophalf->mins,-16,-16,self->mins[2]);
-   	VectorSet(tophalf->maxs,16,16,16);
-	VectorSet(self->maxs,16,16,0);
-	tophalf->s.origin[2] += 10;
+	top_half->movetype = PHYSICSTYPE_STEP;
+	top_half->solid = SOLID_BBOX;
+	top_half->owner = self;
 
-//Fixm: sometimes top half appears too low and forward?
+	VectorSet(top_half->mins, -16.0f, -16.0f, self->mins[2]);
+	VectorSet(top_half->maxs, 16.0f, 16.0f, 16.0f);
+
+	VectorSet(self->maxs, 16.0f, 16.0f, 0.0f);
+
+	//FIXME: sometimes top half appears too low and forward?
 	VectorClear(self->knockbackvel);
 	VectorClear(self->velocity);
 
-	tophalf->s.modelindex = self->s.modelindex;
+	top_half->s.modelindex = self->s.modelindex;
+	top_half->s.frame = (short)((self->s.frame == 0) ? FRAME_startle32 : self->s.frame);
+	top_half->s.skinnum = self->s.skinnum;
+	top_half->s.scale = self->s.scale; //BUGFIX: mxd. 'top_half->s.scale = top_half->s.scale' in original logic.
+	top_half->monsterinfo.otherenemyname = "obj_barrel"; //TODO: why?..
 
-	tophalf->s.scale = tophalf->s.scale;
-
-	tophalf->monsterinfo.otherenemyname = "obj_barrel";
-
-	for(whichnode = 1, node_num = 0; whichnode<=16384; whichnode*=2)//bitwise
+	int node_num = 1;
+	for (int which_node = 1; which_node <= 16384; which_node *= 2, node_num++) // Bitwise.
 	{
-		node_num++;
-		if(!((int)(BodyPart)&(int)(whichnode)))
-		{//turn off this node on top
-			tophalf->s.fmnodeinfo[node_num].flags |= FMNI_NO_DRAW;
-		}
-		else
-		{//turn on this node on top and keep them
-			tophalf->s.fmnodeinfo[node_num] = self->s.fmnodeinfo[node_num];//copy skins and flags and colors
-			tophalf->s.fmnodeinfo[node_num].flags &= ~FMNI_NO_DRAW;
+		if (body_part & which_node)
+		{
+			// Turn on this node on top and keep them.
+			top_half->s.fmnodeinfo[node_num] = self->s.fmnodeinfo[node_num]; // Copy skins and flags and colors.
+			top_half->s.fmnodeinfo[node_num].flags &= ~FMNI_NO_DRAW;
 			self->s.fmnodeinfo[node_num].flags |= FMNI_NO_DRAW;
 		}
+		else
+		{
+			// Turn off this node on top.
+			top_half->s.fmnodeinfo[node_num].flags |= FMNI_NO_DRAW;
+		}
 	}
-	tophalf->s.fmnodeinfo[MESH__CAPBOTTOMUPPERTORSO].flags &= ~FMNI_NO_DRAW;
+
+	top_half->s.fmnodeinfo[MESH__CAPBOTTOMUPPERTORSO].flags &= ~FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__CAPLOWERTORSO].flags &= ~FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__RIGHT2SPIKE].flags |= FMNI_NO_DRAW;
 
-	self->nextthink = 9999999999999999;
+	self->nextthink = FLT_MAX; //mxd. 9999999999999999 in original logic.
 }
 
 /*
@@ -1334,7 +1337,7 @@ void ssithra_dismember(edict_t *self, int damage, int HitLocation)
 				canthrownode(self, MESH__RIGHT2SPIKE,&throw_nodes);
 
 				if(self->health > 0 && irand(0,10)<3)//Slide off
-					ssithraSplit(self, throw_nodes);
+					SsithraSplit(self, throw_nodes);
 				else
 				{
 					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partrest1);
