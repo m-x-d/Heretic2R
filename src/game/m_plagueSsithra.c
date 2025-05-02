@@ -581,7 +581,7 @@ void ssithra_out_of_water_jump(edict_t* self) //mxd. Named 'ssithraNamorJump' in
 	ssithra_jump(self, (watersurf_zdist + enemy_zdiff) * 2.0f + 200.0f, 100.0f, 0.0f);
 }
 
-void ssithraCheckJump(edict_t* self) //TODO: rename to SsithraCheckJump.
+void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original logic.
 {
 	if (self->spawnflags & MSF_FIXED)
 		return;

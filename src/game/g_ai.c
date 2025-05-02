@@ -15,8 +15,6 @@
 #include "Random.h"
 #include "Vector.h"
 
-void ssithraCheckJump(edict_t* self); //TODO: add to m_plagueSsithra.h
-
 // AI targeting globals.
 static int enemy_range; // Range from enemy RANGE_MELEE, RANGE_NEAR, RANGE_MID, RANGE_FAR.
 static float enemy_yaw; // Ideal yaw to face enemy.

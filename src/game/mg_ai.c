@@ -9,6 +9,7 @@
 #include "g_monster.h"
 #include "g_HitLocation.h"
 #include "m_beast.h" //mxd
+#include "m_plaguesSithra.h" //mxd
 #include "m_stats.h"
 #include "Random.h"
 #include "Utilities.h"
@@ -17,8 +18,6 @@
 
 #define YAW_IDEAL		true
 #define YAW_BEST_MOVE	false
-
-void ssithraCheckJump(edict_t* self); //TODO: move to m_plagueSsithra.h.
 
 // Returns true if the entity is in front (dot > 0.8) of self.
 qboolean MG_IsAheadOf(const edict_t* self, const edict_t* other) //mxd. Named 'ahead' in original logic.
@@ -1148,7 +1147,7 @@ void MG_AI_Run(edict_t* self, const float dist) //mxd. Named 'ai_run' in origina
 	assert(dist >= 0.0f); //mxd. Original logic used 'if(dist)' check below, so...
 
 	if (dist > 0.0f && !MG_MoveToGoal(self, dist) && self->classID == CID_SSITHRA)
-		ssithraCheckJump(self);
+		SsithraCheckJump(self);
 
 	if (self->classID != CID_ASSASSIN && classStatics[self->classID].msgReceivers[MSG_EVADE] != NULL) // Assassin does his own checks.
 		MG_CheckEvade(self); // Check if going to be hit and evade.
