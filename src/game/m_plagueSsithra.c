@@ -1486,76 +1486,69 @@ void ssithra_pain_react(edict_t* self)
 	}
 }
 
-//===========================================
-//DEATHS
-//===========================================
-
-void ssithra_death(edict_t *self, G_Message_t *msg)
-{//FIXME: still cut off limbs as dying?
-	int inwater;
-
-	if(self->monsterinfo.aiflags&AI_DONT_THINK)
+static void SsithraDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_death' in original logic.
+{
+	//FIXME: still cut off limbs as dying?
+	if (self->monsterinfo.aiflags & AI_DONT_THINK)
 	{
-		gi.sound(self,CHAN_BODY,sounds[SND_DIE],1,ATTN_NORM,0);
-		if (irand(0,10) < 5)
-			SetAnim(self, ANIM_DEATH_B);
-		else
-			SetAnim(self, ANIM_DEATH_A);
+		gi.sound(self, CHAN_BODY, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
+		SetAnim(self, irand(ANIM_DEATH_A, ANIM_DEATH_B));
+
 		return;
 	}
-	self->msgHandler=DyingMsgHandler;
 
-	if(self->deadflag == DEAD_DEAD) //Dead but still being hit	
-	{
-//		gi.dprintf("already dead!\n");
+	self->msgHandler = DyingMsgHandler;
+
+	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
 		return;
-	}
-	
+
 	self->deadflag = DEAD_DEAD;
 
-	if(self->health <= -80) //gib death
+	if (self->health <= -80) // Gib death.
 	{
-		int	i, num_limbs;
+		// Throw variable number of body parts. //TODO: there's a slight chance of throwing the same body part twice!
+		for (int i = 0; i < irand(1, 3); i++)
+			SsithraDismember(self, irand(80, 160), irand(hl_Head, hl_LegLowerRight) | hl_MeleeHit);
 
-		num_limbs = irand(1, 3);
-		for(i = 0; i < num_limbs; i++)
-			SsithraDismember(self, flrand(80, 160), irand(hl_Head, hl_LegLowerRight) | hl_MeleeHit);
-
-		gi.sound(self,CHAN_BODY,sounds[SND_GIB],1,ATTN_NORM,0);
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
 		self->think = BecomeDebris;
-		self->nextthink = level.time + 0.1;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
 		return;
 	}
 
 	ssithraUnCrouch(self);
-	inwater = ssithraCheckInWater(self);
 
-	if(inwater)
+	if (ssithraCheckInWater(self))
 	{
 		SetAnim(self, ANIM_WATER_DEATH);
+		return;
+	}
+
+	if (self->health == -69)
+	{
+		//FIXME: maybe allow dead bodies to be chopped? Make BBOX small?
+		self->deadState = DEAD_DEAD;
+
+		gi.linkentity(self);
+
+		self->msgHandler = DeadMsgHandler;
+		self->flags |= FL_DONTANIMATE;
+		self->svflags |= SVF_DEADMONSTER; // Now treat as a different content type.
+
+		SetAnim(self, ANIM_DEAD_B);
+	}
+	else if (self->health == -33)
+	{
+		SetAnim(self, ANIM_DEATH_C);
+	}
+	else if (irand(0, 10) < 4 || self->health > -10) // Barely dead.
+	{
+		SetAnim(self, ANIM_DEATH_B);
 	}
 	else
 	{
-		if (self->health == -69)
-		{//maybe allow dead bodies to be chopped?  Make BBOX small?
-			self->deadState = DEAD_DEAD;
-
-			gi.linkentity(self);
-
-			self->flags |= FL_DONTANIMATE;
-
-			self->msgHandler = DeadMsgHandler;
-
-			self->svflags |= SVF_DEADMONSTER;	// now treat as a different content type
-
-			SetAnim(self, ANIM_DEAD_B);
-		}
-		else if (self->health == -33)
-			SetAnim(self, ANIM_DEATH_C);
-		else if (irand(0,10) < 4 || self->health > -10)//barely dead
-			SetAnim(self, ANIM_DEATH_B);
-		else
-			SetAnim(self, ANIM_DEATH_A);
+		SetAnim(self, ANIM_DEATH_A);
 	}
 }
 
@@ -2656,7 +2649,7 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].msgReceivers[MSG_MISSILE] = ssithra_missile;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_WATCH] = SsithraWatchMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_PAIN] = SsithraPainMsgHandler;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH] = ssithra_death;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH] = SsithraDeathMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_JUMP] = SsithraJumpMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_FALLBACK] = ssithra_backup;
