@@ -2131,87 +2131,69 @@ void ssithraUnCrouch(edict_t* self) //TODO: rename to ssithra_uncrouch.
 	gi.linkentity(self);
 }
 
-void ssithra_evade (edict_t *self, G_Message_t *msg)
+static void SsithraEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_evade' in original logic.
 {
-	edict_t			*projectile;		
-	HitLocation_t	HitLocation;
-	int duck_chance, jump_chance;
-	int chance;
+	edict_t* projectile;
+	HitLocation_t hl;
 	float eta;
+	ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
 
-	ParseMsgParms(msg, "eif", &projectile, &HitLocation, &eta);
-	
-	switch(HitLocation)
+	int duck_chance;
+	int jump_chance;
+
+	switch (hl)
 	{
 		case hl_Head:
 			duck_chance = 90;
 			jump_chance = 0;
-		break;
-		case hl_TorsoFront://split in half?
+			break;
+
+		case hl_TorsoFront:
+		case hl_TorsoBack:
 			duck_chance = 70;
 			jump_chance = 0;
-		break;
-		case hl_TorsoBack://split in half?
-			duck_chance = 70;
-			jump_chance = 0;
-		break;
-		case hl_ArmUpperLeft:
+			break;
+
+		case hl_ArmUpperLeft: // Left arm.
+		case hl_ArmUpperRight: // Right arm.
 			duck_chance = 60;
 			jump_chance = 0;
-		break;
-		case hl_ArmLowerLeft://left arm
+			break;
+
+		case hl_ArmLowerLeft: // Left arm.
+		case hl_ArmLowerRight: // Right arm.
 			duck_chance = 20;
 			jump_chance = 30;
-		break;
-		case hl_ArmUpperRight:
-			duck_chance = 60;
-			jump_chance = 0;
-		break;
-		case hl_ArmLowerRight://right arm
-			duck_chance = 20;
-			jump_chance = 30;
-		break;
+			break;
+
 		case hl_LegUpperLeft:
-			duck_chance = 0;
-			jump_chance = 50;
-		break;
-		case hl_LegLowerLeft://left leg
-			duck_chance = 0;
-			jump_chance = 90;
-		break;
 		case hl_LegUpperRight:
 			duck_chance = 0;
 			jump_chance = 50;
-		break;
-		case hl_LegLowerRight://right leg
+			break;
+
+		case hl_LegLowerLeft: // Left leg.
+		case hl_LegLowerRight: // Right leg.
 			duck_chance = 0;
 			jump_chance = 90;
-		break;
+			break;
+
 		default:
 			duck_chance = 20;
 			jump_chance = 10;
-		break;
+			break;
 	}
 
-	if(!(self->spawnflags&MSF_FIXED))
+	if (irand(0, 100) < jump_chance && !(self->spawnflags & MSF_FIXED))
 	{
-		chance = irand(0, 100);
-		if(chance < jump_chance)
-		{
-			SsithraForwardJump(self);
-			return;
-		}
+		SsithraForwardJump(self);
 	}
-
-	chance = irand(0, 100);
-	if(chance < duck_chance)
+	else if (irand(0, 100) < duck_chance)
 	{
 		self->evade_debounce_time = level.time + eta;
 		ssithraCrouch(self);
-		return;
 	}
 }
-
 
 //========================================
 //MOODS
@@ -2431,7 +2413,7 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].msgReceivers[MSG_JUMP] = SsithraJumpMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_FALLBACK] = SsithraFallbackMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH_PAIN] = SsithraDeathPainMsgHandler;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_EVADE] = ssithra_evade;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_EVADE] = SsithraEvadeMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_CHECK_MOOD] = ssithra_check_mood;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_VOICE_SIGHT] = ssithra_sight;
 	
