@@ -2248,10 +2248,9 @@ qboolean SsithraCheckMood(edict_t* self) //TODO: remove return value, rename to 
 	}
 }
 
-void ssithra_check_mood (edict_t *self, G_Message_t *msg)
+static void SsithraCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-
 	SsithraCheckMood(self);
 }
 
@@ -2387,7 +2386,7 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].msgReceivers[MSG_FALLBACK] = SsithraFallbackMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH_PAIN] = SsithraDeathPainMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_EVADE] = SsithraEvadeMsgHandler;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_CHECK_MOOD] = ssithra_check_mood;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_CHECK_MOOD] = SsithraCheckMoodMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_VOICE_SIGHT] = ssithra_sight;
 	
 
