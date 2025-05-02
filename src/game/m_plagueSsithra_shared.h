@@ -150,7 +150,7 @@ extern void ssithra_dead(edict_t* self);
 extern void ssithraSwipe(edict_t* self);
 extern void ssithraArrow(edict_t* self);
 extern void ssithraJump(edict_t* self, float up_speed, float forward_speed, float right_speed);
-extern void ssithraBoundCheck(edict_t* self);
+extern void ssithra_check_bound(edict_t* self);
 extern void ssithraDiveCheck(edict_t* self);
 extern void ssithraWaterDead(edict_t* self);
 extern void ssithraForward(edict_t* self, float forward_dist);

@@ -376,7 +376,7 @@ static void SsithraJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 		SsithraTryJump(self);
 }
 
-void ssithraBoundCheck(edict_t* self) //TODO: rename to ssithra_check_bound.
+void ssithra_check_bound(edict_t* self) //mxd. Named 'ssithraBoundCheck' in original logic.
 {
 	//FIXME: do checks and traces first.
 	if (self->spawnflags & MSF_FIXED)
