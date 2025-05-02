@@ -2195,12 +2195,9 @@ static void SsithraEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	}
 }
 
-//========================================
-//MOODS
-//========================================
-qboolean SsithraCheckMood (edict_t *self)
+qboolean SsithraCheckMood(edict_t* self) //TODO: remove return value, rename to ssithra_check_mood.
 {
-	if(self->spawnflags & MSF_FIXED && self->curAnimID == ANIM_DELAY && self->enemy)
+	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
 	{
 		self->monsterinfo.searchType = SEARCH_COMMON;
 		MG_FaceGoal(self, true);
@@ -2208,71 +2205,47 @@ qboolean SsithraCheckMood (edict_t *self)
 
 	self->mood_think(self);
 
-	if(self->ai_mood == AI_MOOD_NORMAL)
-		return false;
-
 	switch (self->ai_mood)
 	{
 		case AI_MOOD_ATTACK:
-			if(self->ai_mood_flags & AI_MOOD_FLAG_MISSILE)
+			if (self->ai_mood_flags & AI_MOOD_FLAG_MISSILE)
 				QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
 			else
 				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 			return true;
-			break;
+
 		case AI_MOOD_PURSUE:
 		case AI_MOOD_NAVIGATE:
-			//gi.dprintf("Pursue- Nav\n");
 			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			return true;
-			break;
+
 		case AI_MOOD_WALK:
 			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			return true;
-			break;
+
 		case AI_MOOD_STAND:
 			SsithraDecideStand(self);
 			return true;
-			break;
-			
+
 		case AI_MOOD_DELAY:
-#ifdef _DEVEL
-			if(MGAI_DEBUG)
-				gi.dprintf("Delay on frame %d\n", self->monsterinfo.currframeindex);
-#endif
 			SetAnim(self, ANIM_DELAY);
 			return true;
-			break;
-			
+
 		case AI_MOOD_WANDER:
-			if(ssithraCheckInWater(self))
-				SetAnim(self, ANIM_SWIMWANDER);
-			else
-				SetAnim(self, ANIM_WALK1);
+			SetAnim(self, (ssithraCheckInWater(self) ? ANIM_SWIMWANDER : ANIM_WALK1));
 			return true;
-			break;
 
 		case AI_MOOD_BACKUP:
 			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
 			return true;
-			break;
 
 		case AI_MOOD_JUMP:
-			if(self->spawnflags&MSF_FIXED)
-				SetAnim(self, ANIM_DELAY);
-			else
-				SetAnim(self, ANIM_FJUMP);
+			SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_FJUMP));
 			return true;
-			break;
 
-		default :
-#ifdef _DEVEL
-//			if(MGAI_DEBUG)
-				gi.dprintf("ssithra: Unusable mood %d!\n", self->ai_mood);
-#endif
-			break;
+		default:
+			return false;
 	}
-	return false;
 }
 
 void ssithra_check_mood (edict_t *self, G_Message_t *msg)
