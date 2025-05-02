@@ -1802,37 +1802,32 @@ static void SsithraArrowExplodeThink(edict_t* self) //mxd. Named 'ssithraArrowEx
 	G_FreeEdict(self);
 }
 
-void ssithraDuckArrowTouch (edict_t *self,edict_t *other,cplane_t *plane,csurface_t *surface)
+static void SsithraDuckArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'ssithraDuckArrowTouch' in original logic.
 {
-	if(surface&&(surface->flags&SURF_SKY))
+	if (surface != NULL && (surface->flags & SURF_SKY))
 	{
 		SkyFly(self);
 		return;
 	}
 
-	//NOTENOTE: NO REFLECTION FOR THIS MISSILE!
-	
-	if(other->takedamage)
-	{
-		if (plane->normal)
-			VectorCopy(plane->normal, self->movedir);
+	if (plane != NULL) //mxd. Original logic does plane->normal NULL check here (always true).
+		VectorCopy(plane->normal, self->movedir);
 
-		self->dmg = irand(SSITHRA_DMG_MIN*2, SSITHRA_DMG_MAX*2);
+	//NOTENOTE: NO REFLECTION FOR THIS MISSILE!
+	if (other->takedamage != DAMAGE_NO)
+	{
+		self->dmg = irand(SSITHRA_DMG_MIN * 2, SSITHRA_DMG_MAX * 2);
 		SsithraArrowExplodeThink(self);
 	}
 	else
 	{
 		VectorClear(self->velocity);
-		
+
 		self->s.effects |= EF_MARCUS_FLAG1;
-
-		if (plane->normal)
-			VectorCopy(plane->normal, self->movedir);
-
 		self->dmg = irand(SSITHRA_DMG_MIN, SSITHRA_DMG_MAX);
 
 		self->think = SsithraArrowExplodeThink;
-		self->nextthink = level.time + flrand(0.5, 1.5);
+		self->nextthink = level.time + flrand(0.5f, 1.5f);
 	}
 }
 
@@ -1944,7 +1939,7 @@ void ssithraDoDuckArrow(edict_t *self, float z_offs)
 
 	create_ssith_arrow(Arrow);
 
-	Arrow->touch=ssithraDuckArrowTouch;
+	Arrow->touch=SsithraDuckArrowTouch;
 
 	Arrow->owner=self;
 	Arrow->enemy=self->enemy;
