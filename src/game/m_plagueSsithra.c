@@ -1656,40 +1656,29 @@ static void SsithraMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 		SetAnim(self, ANIM_MELEE_STAND);
 }
 
-void ssithra_missile(edict_t *self, G_Message_t *msg)
+static void SsithraMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_missile' in original logic.
 {
-	int	chance;
-
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		if (ssithraCheckInWater(self))
-		{
-			if(M_DistanceToTarget(self, self->enemy) < self->melee_range)
-			{
-				if(self->curAnimID == ANIM_SWIMFORWARD)
-					SetAnim(self, ANIM_TRANSUP);
-				else
-					SetAnim(self, ANIM_WATER_SHOOT);
-			}
-			else
-				ssithraArrow(self);
-		}
-		else
-		{
-			if(self->spawnflags & MSF_SSITHRA_CLOTHED)
-				chance = 20;
-			else
-				chance = 80;
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
+	}
 
-			if (irand(0, skill->value * 100) > chance)
-				SetAnim(self, ANIM_DUCKSHOOT);
-			else
-				SetAnim(self, ANIM_SHOOT);
-		}
+	if (ssithraCheckInWater(self))
+	{
+		if (M_DistanceToTarget(self, self->enemy) < self->melee_range)
+			SetAnim(self, (self->curAnimID == ANIM_SWIMFORWARD ? ANIM_TRANSUP : ANIM_WATER_SHOOT));
+		else
+			ssithraArrow(self);
 	}
 	else
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		const int chance = ((self->spawnflags & MSF_SSITHRA_CLOTHED) ? 20 : 80);
+
+		if (irand(0, SKILL * 100) > chance)
+			SetAnim(self, ANIM_DUCKSHOOT);
+		else
+			SetAnim(self, ANIM_SHOOT);
 	}
 }
 
@@ -2633,7 +2622,7 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].msgReceivers[MSG_WALK] = SsithraWalkMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_RUN] = SsithraRunMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_MELEE] = SsithraMeleeMsgHandler;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_MISSILE] = ssithra_missile;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_MISSILE] = SsithraMissileMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_WATCH] = SsithraWatchMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_PAIN] = SsithraPainMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH] = SsithraDeathMsgHandler;
