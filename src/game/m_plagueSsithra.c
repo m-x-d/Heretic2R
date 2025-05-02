@@ -450,79 +450,83 @@ void ssithraBoundCheck(edict_t* self) //TODO: rename to ssithra_check_bound.
 	}
 }
 
-void ssithraDiveCheck (edict_t *self)
-{//fixme: do checks and traces first
-	vec3_t forward, up, startpos, endpos, mins, maxs;
-	trace_t trace;
-	int inwater;
-	vec3_t	targ_org, targ_mins;
-
-	if(self->spawnflags & MSF_FIXED)
+void ssithraDiveCheck(edict_t* self) //TODO: rename to ssithra_check_dive.
+{
+	//FIXME: do checks and traces first.
+	if (self->spawnflags & MSF_FIXED)
 		return;
+
+	vec3_t target_origin;
+	vec3_t targ_mins;
 
 	if (self->monsterinfo.searchType == SEARCH_BUOY)
 	{
-		if(self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
 			return;
 
-		VectorCopy(level.buoy_list[self->buoy_index].origin, targ_org);
-
+		VectorCopy(level.buoy_list[self->buoy_index].origin, target_origin);
 		VectorClear(targ_mins);
 	}
 	else
 	{
-		if(!self->goalentity)
+		if (self->goalentity == NULL)
 			return;
-		
-		VectorCopy(self->goalentity->s.origin, targ_org);
+
+		VectorCopy(self->goalentity->s.origin, target_origin);
 		VectorCopy(self->goalentity->mins, targ_mins);
 	}
 
-	inwater = ssithraCheckInWater(self);
-
-	if(inwater)
+	if (ssithraCheckInWater(self))
 	{
-		SetAnim(self,ANIM_SWIMFORWARD);
+		SetAnim(self, ANIM_SWIMFORWARD);
 		return;
 	}
 
-	if(!MG_IsInforntPos(self, targ_org))
+	if (!MG_IsInforntPos(self, target_origin))
 		return;
 
-	//make sure the enemy isn't right here and accessible before diving in
-	if(vhlen(targ_org,self->s.origin)<96)//close
-		if(Q_fabs((targ_org[2]+targ_mins[2]) - (self->s.origin[2] + self->mins[2]))<18)//relatively same stephieght
-			if(!(gi.pointcontents(targ_org)&CONTENTS_WATER))
-				if(!(self->monsterinfo.aiflags & AI_FLEE))
-					return;
-
-	AngleVectors(self->s.angles,forward,NULL,up);
-	VectorCopy(self->s.origin,startpos);
-	
-	VectorMA(startpos,48,forward,endpos);//forward
-	gi.trace(startpos,self->mins,self->maxs,endpos,self,MASK_SOLID,&trace);
-
-	VectorCopy(trace.endpos,startpos);
-	VectorMA(startpos,-128,up,endpos);//down
-	gi.trace(startpos,self->mins,self->maxs,endpos,self,MASK_SOLID|MASK_WATER,&trace);
-	
-	if(trace.fraction == 1||trace.allsolid||trace.startsolid)
-		return;//too far to jump down, or in solid
-
-	if(trace.contents&CONTENTS_WATER||trace.contents&CONTENTS_SLIME)
+	// Make sure the enemy isn't right here and accessible before diving in.
+	if (vhlen(target_origin, self->s.origin) < 96.0f && // Close enough?
+		Q_fabs((target_origin[2] + targ_mins[2]) - (self->s.origin[2] + self->mins[2])) < 18.0f && // Relatively same stepheight.
+		!(gi.pointcontents(target_origin) & CONTENTS_WATER) && !(self->monsterinfo.aiflags & AI_FLEE))
 	{
-		VectorCopy(trace.endpos, startpos);
-		VectorMA(startpos, -64, up, endpos);//down from water surf
-		VectorCopy(self->mins, mins);
-		VectorCopy(self->maxs, maxs);
-		mins[2] = 0;
-		maxs[2] = 1;
-		
-		gi.trace(startpos, mins, maxs, endpos, self, MASK_SOLID,&trace);
+		return;
+	}
 
-		if(trace.fraction<1.0 || trace.allsolid || trace.startsolid)
+	vec3_t forward;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, NULL, up);
+
+	vec3_t start_pos;
+	VectorCopy(self->s.origin, start_pos);
+
+	vec3_t end_pos;
+	VectorMA(start_pos, 48.0f, forward, end_pos); // Forward.
+
+	trace_t trace;
+	gi.trace(start_pos, self->mins, self->maxs, end_pos, self, MASK_SOLID, &trace);
+
+	VectorCopy(trace.endpos, start_pos);
+	VectorMA(start_pos, -128.0f, up, end_pos); // Down.
+
+	gi.trace(start_pos, self->mins, self->maxs, end_pos, self, MASK_SOLID | MASK_WATER, &trace);
+
+	if (trace.fraction == 1.0f || trace.allsolid || trace.startsolid)
+		return; // Too far to jump down, or in solid.
+
+	if (trace.contents & (CONTENTS_WATER | CONTENTS_SLIME))
+	{
+		VectorCopy(trace.endpos, start_pos);
+		VectorMA(start_pos, -64.0f, up, end_pos); // Down from water surface.
+
+		const vec3_t mins = { self->mins[0], self->mins[1], 0.0f };
+		const vec3_t maxs = { self->maxs[0], self->maxs[1], 1.0f };
+
+		gi.trace(start_pos, mins, maxs, end_pos, self, MASK_SOLID, &trace);
+
+		if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
 			SsithraTryJump(self);
-		else	
+		else
 			SetAnim(self, ANIM_DIVE);
 	}
 }
