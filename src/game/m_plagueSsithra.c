@@ -358,42 +358,28 @@ void ssithra_check_namor(edict_t* self) //TODO: rename to ssithra_try_out_of_wat
 		SetAnim(self, ANIM_FACEANDNAMOR);
 }
 
-void ssithraWhichJump(edict_t *self)
+static void SsithraTryJump(edict_t* self) //mxd. Named 'ssithraWhichJump' in original logic.
 {
-	vec3_t	Forward, movedir;
-	vec3_t	targ_org;
+	vec3_t target_origin;
 
-	if(self->spawnflags & MSF_FIXED)
+	if ((self->spawnflags & MSF_FIXED) || !MG_TryGetTargetOrigin(self, target_origin))
 		return;
 
-	if(!MG_TryGetTargetOrigin(self, targ_org))
+	if (ssithraCheckInWater(self))
+	{
+		if (!(gi.pointcontents(target_origin) & CONTENTS_WATER))
+			SetAnim(self, ANIM_NAMOR);
+
 		return;
-
-	if(ssithraCheckInWater(self)&&!(gi.pointcontents(targ_org)&CONTENTS_WATER))
-	{
-		if(MGAI_DEBUG)
-			gi.dprintf("Ssithra_whichjump->namor\n");
-		SetAnim(self,ANIM_NAMOR);
 	}
-	else
-	{
-		int inwater;
 
-		inwater = ssithraCheckInWater(self);
+	SetAnim(self, ANIM_BOUND);
 
-		if(inwater)
-			return;
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-//		gi.dprintf("Bound\n");
-		SetAnim(self,ANIM_BOUND);
-		VectorCopy(self->s.angles, movedir);
-		//VectorSet(movedir, 0, yaw, 0);
-		//movedir[YAW] = yaw;
-		AngleVectors(movedir,Forward,NULL,NULL);
-		VectorScale(Forward,SSITHRA_HOP_VELOCITY,self->velocity);
-		self->velocity[2]=SSITHRA_HOP_VELOCITY + 32;
-//		self->movetype=MOVETYPE_TOSS;
-	}
+	VectorScale(forward, SSITHRA_HOP_VELOCITY, self->velocity);
+	self->velocity[2] = SSITHRA_HOP_VELOCITY + 32.0f;
 }
 
 void ssithraMsgJump(edict_t *self, G_Message_t *msg)
@@ -401,7 +387,7 @@ void ssithraMsgJump(edict_t *self, G_Message_t *msg)
 	if(self->spawnflags&MSF_FIXED)
 		SetAnim(self, ANIM_DELAY);
 	else 
-		ssithraWhichJump(self);
+		SsithraTryJump(self);
 }
 
 void ssithraBoundCheck (edict_t *self)
@@ -450,7 +436,7 @@ void ssithraBoundCheck (edict_t *self)
 		
 		gi.trace(startpos, mins, maxs, endpos, self, MASK_SOLID,&trace);
 		if(trace.fraction<1.0 || trace.allsolid || trace.startsolid)
-			ssithraWhichJump(self);
+			SsithraTryJump(self);
 		else	
 			SetAnim(self,ANIM_DIVE);
 	}
@@ -530,7 +516,7 @@ void ssithraDiveCheck (edict_t *self)
 		gi.trace(startpos, mins, maxs, endpos, self, MASK_SOLID,&trace);
 
 		if(trace.fraction<1.0 || trace.allsolid || trace.startsolid)
-			ssithraWhichJump(self);
+			SsithraTryJump(self);
 		else	
 			SetAnim(self, ANIM_DIVE);
 	}
@@ -736,7 +722,7 @@ void ssithraCheckJump (edict_t *self)
 
 							gi.trace (source, mins, maxs, source2, self, MASK_SOLID,&trace);
 							if(trace.fraction < 1.0 || trace.startsolid || trace.allsolid)
-								ssithraWhichJump(self);
+								SsithraTryJump(self);
 							else
 								SetAnim(self,ANIM_DIVE);
 							self->monsterinfo.jump_time = level.time + 1;
@@ -755,7 +741,7 @@ void ssithraCheckJump (edict_t *self)
 					
 					if (self->monsterinfo.jump_time < level.time)
 					{
-						ssithraWhichJump(self);
+						SsithraTryJump(self);
 						self->monsterinfo.jump_time = level.time + 1;
 					}
 				}
@@ -803,7 +789,7 @@ void ssithraCheckJump (edict_t *self)
 					
 					gi.trace(source, mins, maxs, source2, self, MASK_SOLID,&trace);
 					if(trace.fraction<1.0 || trace.allsolid || trace.startsolid)
-						ssithraWhichJump(self);
+						SsithraTryJump(self);
 					else	
 						SetAnim(self,ANIM_DIVE);
 
@@ -865,7 +851,7 @@ void ssithraCheckJump (edict_t *self)
 							if (self->monsterinfo.jump_time < level.time)
 							{
 //								gi.dprintf("checkjump up ->whichjump\n");
-								ssithraWhichJump(self);
+								SsithraTryJump(self);
 								self->monsterinfo.jump_time = level.time + 1;
 							}
 						}
