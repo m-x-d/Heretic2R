@@ -54,7 +54,7 @@ static const animframe_t ssithra_frames_idle1[] =
 	{ FRAME_idle39,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle40,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t ssithra_move_idle1 = { 40, ssithra_frames_idle1, SsithraCheckMood };
+const animmove_t ssithra_move_idle1 = { 40, ssithra_frames_idle1, ssithra_check_mood };
 
 // Plague Ssithra Walk - walking along.
 static const animframe_t ssithra_frames_walk1[] =
@@ -74,7 +74,7 @@ static const animframe_t ssithra_frames_walk1[] =
 	{ FRAME_walk13,	NULL, 0, 0, 0, ai_walk, 2, NULL },
 	{ FRAME_walk14,	NULL, 0, 0, 0, ai_walk, 5, NULL },
 };
-const animmove_t ssithra_move_walk1 = { 14, ssithra_frames_walk1, SsithraCheckMood };
+const animmove_t ssithra_move_walk1 = { 14, ssithra_frames_walk1, ssithra_check_mood };
 
 // Plague Ssithra Backpedal.
 static const animframe_t ssithra_frames_backpedal1[] =
@@ -104,7 +104,7 @@ static const animframe_t ssithra_frames_bound1[] =
 	{ FRAME_bound15,	NULL, 0, 0, 0, ssithra_ai_run, 16, NULL },
 	{ FRAME_bound16,	NULL, 0, 0, 0, ssithra_ai_run, 12, NULL },
 };
-const animmove_t ssithra_move_bound1 = { 8, ssithra_frames_bound1, SsithraCheckMood };
+const animmove_t ssithra_move_bound1 = { 8, ssithra_frames_bound1, ssithra_check_mood };
 
 // Plague Ssithra Death A.
 static const animframe_t ssithra_frames_death_a1[] =
@@ -316,7 +316,7 @@ static const animframe_t ssithra_frames_idlebasic1[] =
 	{ FRAME_idlebasic39, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic40, NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t ssithra_move_idlebasic1 = { 40, ssithra_frames_idlebasic1, SsithraCheckMood };
+const animmove_t ssithra_move_idlebasic1 = { 40, ssithra_frames_idlebasic1, ssithra_check_mood };
 
 // Plague Ssithra Idle Right.
 static const animframe_t ssithra_frames_idleright1[] =
@@ -347,7 +347,7 @@ static const animframe_t ssithra_frames_idleright1[] =
 	{ FRAME_idleright19, NULL,			0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idleright20, NULL,			0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t ssithra_move_idleright1 = { 25, ssithra_frames_idleright1, SsithraCheckMood }; //BUGFIX: mxd. .numframes = 24 in original logic.
+const animmove_t ssithra_move_idleright1 = { 25, ssithra_frames_idleright1, ssithra_check_mood }; //BUGFIX: mxd. .numframes = 24 in original logic.
 
 // Plague Ssithra Melee.
 static const animframe_t ssithra_frames_melee1[] =
@@ -486,7 +486,7 @@ static const animframe_t ssithra_frames_startle1[] =
 	{ FRAME_startle38,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_startle39,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t ssithra_move_startle1 = { 38, ssithra_frames_startle1, SsithraCheckMood };
+const animmove_t ssithra_move_startle1 = { 38, ssithra_frames_startle1, ssithra_check_mood };
 
 // Plague Ssithra Spin Left Start.
 static const animframe_t ssithra_frames_spinleft_go[] =
@@ -676,7 +676,7 @@ static const animframe_t ssithra_frames_water_idle1[] =
 	{ FRAME_water_idle19,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_water_idle20,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t ssithra_move_water_idle1 = { 20, ssithra_frames_water_idle1, SsithraCheckMood };
+const animmove_t ssithra_move_water_idle1 = { 20, ssithra_frames_water_idle1, ssithra_check_mood };
 
 // Plague Ssithra Water Pain A.
 static const animframe_t ssithra_frames_water_pain_a1[] =
@@ -755,7 +755,7 @@ static const animframe_t ssithra_frames_faceandnamor[] =
 	{ FRAME_water_idle19,	NULL, 0, 0, 0, ai_charge2, 0, ssithraCheckFacedNamor },
 	{ FRAME_water_idle20,	NULL, 0, 0, 0, ai_charge2, 0, ssithraCheckFacedNamor },
 };
-const animmove_t ssithra_move_faceandnamor = { 20, ssithra_frames_faceandnamor, SsithraCheckMood };
+const animmove_t ssithra_move_faceandnamor = { 20, ssithra_frames_faceandnamor, ssithra_check_mood };
 
 // Plague Ssithra Look Left.
 static const animframe_t ssithra_frames_lookleft[] =
@@ -781,7 +781,7 @@ static const animframe_t ssithra_frames_lookleft[] =
 	{ FRAME_idlebasic59, NULL,			0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic60, NULL,			0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t ssithra_move_lookleft = { 20, ssithra_frames_lookleft, SsithraCheckMood };
+const animmove_t ssithra_move_lookleft = { 20, ssithra_frames_lookleft, ssithra_check_mood };
 
 // Plague Ssithra Look Right.
 static const animframe_t ssithra_frames_lookright[] =
@@ -807,7 +807,7 @@ static const animframe_t ssithra_frames_lookright[] =
 	{ FRAME_idlebasic79, NULL,			0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic80, NULL,			0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t ssithra_move_lookright = { 20, ssithra_frames_lookright, SsithraCheckMood };
+const animmove_t ssithra_move_lookright = { 20, ssithra_frames_lookright, ssithra_check_mood };
 
 // Plague Ssithra Yrans Up.
 static const animframe_t ssithra_frames_transup[] =
@@ -973,43 +973,43 @@ const animmove_t ssithra_move_sliced = { 36, ssithra_frames_sliced, ssithraKillS
 // Plague Ssithra Delay - stop and look around.
 static const animframe_t ssithra_frames_delay[] =
 {
-	{ FRAME_startle2,	ssithraSound, SND_GROWL3, CHAN_VOICE, ATTN_IDLE, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle3,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle4,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle5,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle6,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle7,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle8,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle9,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle10,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle11,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle12,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle13,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle14,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle15,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle16,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle17,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle18,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle19,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle20,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle21,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle22,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle23,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle24,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle25,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle26,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle27,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle28,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle29,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle30,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle31,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle32,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle33,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle34,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle35,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle36,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle37,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle38,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
-	{ FRAME_startle39,	NULL, 0, 0, 0, NULL, 0, SsithraCheckMood },
+	{ FRAME_startle2,	ssithraSound, SND_GROWL3, CHAN_VOICE, ATTN_IDLE, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle3,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle4,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle5,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle6,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle7,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle8,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle9,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle10,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle11,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle12,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle13,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle14,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle15,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle16,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle17,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle18,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle19,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle20,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle21,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle22,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle23,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle24,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle25,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle26,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle27,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle28,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle29,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle30,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle31,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle32,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle33,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle34,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle35,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle36,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle37,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle38,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
+	{ FRAME_startle39,	NULL, 0, 0, 0, NULL, 0, ssithra_check_mood },
 };
-const animmove_t ssithra_move_delay = { 38, ssithra_frames_delay, SsithraCheckMood };
+const animmove_t ssithra_move_delay = { 38, ssithra_frames_delay, ssithra_check_mood };

@@ -168,7 +168,7 @@ extern void ssithra_water_shoot(edict_t* self);
 extern void ssithraCollapse(edict_t* self);
 extern void ssithraKillSelf(edict_t* self);
 extern void ssithraSound(edict_t* self, float sound_num, float channel, float attenuation);
-extern qboolean SsithraCheckMood(edict_t* self);
+extern void ssithra_check_mood(edict_t* self);
 extern void ssithraApplyJump(edict_t* self);
 extern void ssithraCheckDuckArrow(edict_t* self);
 extern void ssithraCheckUnDuck(edict_t* self);

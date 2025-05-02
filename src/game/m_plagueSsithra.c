@@ -234,7 +234,7 @@ void ssithra_decide_run(edict_t* self) //mxd. Named 'ssithra_decide_gallop' in o
 	self->count = false; //TODO: add ssithra_watersplash_spawned name.
 
 	SetAnim(self, (ssithraCheckInWater(self) ? ANIM_SWIMFORWARD : ANIM_RUN1));
-	SsithraCheckMood(self);
+	ssithra_check_mood(self);
 }
 
 void ssithra_decide_swimforward(edict_t* self)
@@ -248,12 +248,12 @@ void ssithra_decide_swimforward(edict_t* self)
 	else if (self->curAnimID == ANIM_WATER_SHOOT)
 		SetAnim(self, ANIM_TRANSDOWN);
 
-	SsithraCheckMood(self);
+	ssithra_check_mood(self);
 }
 
 void ssithra_decide_backpedal(edict_t* self) //TODO: replace with SsithraCheckMood()?
 {
-	SsithraCheckMood(self);
+	ssithra_check_mood(self);
 }
 
 void ssithraCheckRipple(edict_t* self) //TODO: rename to ssithra_check_ripple.
@@ -2208,7 +2208,7 @@ static void SsithraEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	}
 }
 
-qboolean SsithraCheckMood(edict_t* self) //TODO: remove return value, rename to ssithra_check_mood.
+void ssithra_check_mood(edict_t* self) //mxd. Named 'SsithraCheckMood', returned qboolean in original logic.
 {
 	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
 	{
@@ -2225,46 +2225,46 @@ qboolean SsithraCheckMood(edict_t* self) //TODO: remove return value, rename to 
 				QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
 			else
 				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-			return true;
+			break;
 
 		case AI_MOOD_PURSUE:
 		case AI_MOOD_NAVIGATE:
 			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-			return true;
+			break;
 
 		case AI_MOOD_WALK:
 			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-			return true;
+			break;
 
 		case AI_MOOD_STAND:
 			SsithraDecideStand(self);
-			return true;
+			break;
 
 		case AI_MOOD_DELAY:
 			SetAnim(self, ANIM_DELAY);
-			return true;
+			break;
 
 		case AI_MOOD_WANDER:
 			SetAnim(self, (ssithraCheckInWater(self) ? ANIM_SWIMWANDER : ANIM_WALK1));
-			return true;
+			break;
 
 		case AI_MOOD_BACKUP:
 			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
-			return true;
+			break;
 
 		case AI_MOOD_JUMP:
 			SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_FJUMP));
-			return true;
+			break;
 
 		default:
-			return false;
+			break;
 	}
 }
 
 static void SsithraCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-	SsithraCheckMood(self);
+	ssithra_check_mood(self);
 }
 
 static void SsithraVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_sight' in original logic.
