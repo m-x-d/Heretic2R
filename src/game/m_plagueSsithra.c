@@ -2100,12 +2100,9 @@ void ssithraCheckDuckArrow(edict_t* self) //TODO: rename to ssithra_check_duck_a
 		SsithraDoDuckArrow(self, -18.0f);
 }
 
-void ssithraCheckUnDuck (edict_t *self)
+void ssithraCheckUnDuck(edict_t* self) //TODO: rename to ssithra_check_unduck.
 {
-	if(self->evade_debounce_time < level.time)
-		SetAnim(self, ANIM_UNDUCK);
-	else
-		SetAnim(self, ANIM_DUCKLOOP);
+	SetAnim(self, ((self->evade_debounce_time < level.time) ? ANIM_UNDUCK : ANIM_DUCKLOOP));
 }
 
 void ssithraJumpEvade (edict_t *self)
