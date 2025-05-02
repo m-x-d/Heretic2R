@@ -101,36 +101,26 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-void ssithra_blocked (edict_t *self, trace_t *trace)
+static void SsithraBlocked(edict_t* self, trace_t* trace) //mxd. Named 'ssithra_blocked' in original logic.
 {
-	vec3_t hitdir;
-	float strength;
-
-	if(trace->ent == NULL)
+	if (trace->ent == NULL || trace->ent->movetype == PHYSICSTYPE_NONE || trace->ent->movetype == PHYSICSTYPE_PUSH)
 		return;
 
-	if(trace->ent->movetype==PHYSICSTYPE_NONE||
-		trace->ent->movetype==PHYSICSTYPE_PUSH)
+	const float strength = VectorLength(self->velocity);
+
+	if (strength < 50.0f)
 		return;
 
-	strength = VectorLength(self->velocity);
+	vec3_t hit_dir;
+	VectorCopy(self->velocity, hit_dir);
+	hit_dir[2] = max(0.0f, hit_dir[2]);
 
-	if(strength<50)
-		return;
+	VectorNormalize(hit_dir);
+	VectorScale(hit_dir, strength, hit_dir);
+	VectorAdd(trace->ent->velocity, hit_dir, trace->ent->knockbackvel);
 
-//	gi.dprintf("ssithra shove!\n");
-	VectorCopy(self->velocity, hitdir);
-
-//	if(!stricmp(trace->ent->classname, "player"))
-//		KnockDownPlayer(&trace->ent->client->playerinfo);
-	if(hitdir[2] < 0)
-		hitdir[2] = 0;
-	VectorNormalize(hitdir);
-	VectorScale(hitdir, strength, hitdir);
-	VectorAdd(trace->ent->velocity, hitdir, trace->ent->knockbackvel);
-
-	if(!(self->spawnflags & MSF_FIXED))
-		ssithraJump(self, 150, 200, 0);
+	if (!(self->spawnflags & MSF_FIXED))
+		ssithraJump(self, 150.0f, 200.0f, 0.0f);
 }
 
 //========================================
@@ -3055,7 +3045,7 @@ void SP_monster_plague_ssithra (edict_t *self)
 	
 	ssithraCheckInWater(self);
 
-	self->isBlocked = ssithra_blocked;
+	self->isBlocked = SsithraBlocked;
 
 	if(self->health<=0)
 		self->health = SSITHRA_HEALTH;
