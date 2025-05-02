@@ -557,42 +557,42 @@ const animmove_t ssithra_move_spinright = { 20, ssithra_frames_spinright, ssithr
 // Plague Ssithra Swim Forward.
 static const animframe_t ssithra_frames_swimforward1[] =
 {
-	{ FRAME_swimforward01, NULL, 0, 0, 0, ssithra_ai_run, 10, ssithraCheckRipple },
+	{ FRAME_swimforward01, NULL, 0, 0, 0, ssithra_ai_run, 10, ssithra_check_ripple },
 	{ FRAME_swimforward02, NULL, 0, 0, 0, ssithra_ai_run, 10, NULL },
-	{ FRAME_swimforward03, NULL, 0, 0, 0, ssithra_ai_run, 10, ssithraCheckRipple },
+	{ FRAME_swimforward03, NULL, 0, 0, 0, ssithra_ai_run, 10, ssithra_check_ripple },
 	{ FRAME_swimforward04, ssithraSound, SND_SWIM, CHAN_BODY, 0, ssithra_ai_run, 12, ssithra_check_namor },
-	{ FRAME_swimforward05, NULL, 0, 0, 0, ssithra_ai_run, 12, ssithraCheckRipple },
-	{ FRAME_swimforward06, NULL, 0, 0, 0, ssithra_ai_run, 12, ssithraCheckRipple },
-	{ FRAME_swimforward07, NULL, 0, 0, 0, ssithra_ai_run, 12, ssithraCheckRipple },
+	{ FRAME_swimforward05, NULL, 0, 0, 0, ssithra_ai_run, 12, ssithra_check_ripple },
+	{ FRAME_swimforward06, NULL, 0, 0, 0, ssithra_ai_run, 12, ssithra_check_ripple },
+	{ FRAME_swimforward07, NULL, 0, 0, 0, ssithra_ai_run, 12, ssithra_check_ripple },
 	{ FRAME_swimforward08, NULL, 0, 0, 0, ssithra_ai_run, 12, ssithra_check_namor },
-	{ FRAME_swimforward09, NULL, 0, 0, 0, ssithra_ai_run, 16, ssithraCheckRipple },
+	{ FRAME_swimforward09, NULL, 0, 0, 0, ssithra_ai_run, 16, ssithra_check_ripple },
 	{ FRAME_swimforward10, ssithraSound, SND_SWIM, CHAN_BODY, 0, ssithra_ai_run, 16, NULL },
-	{ FRAME_swimforward11, NULL, 0, 0, 0, ssithra_ai_run, 12, ssithraCheckRipple },
+	{ FRAME_swimforward11, NULL, 0, 0, 0, ssithra_ai_run, 12, ssithra_check_ripple },
 	{ FRAME_swimforward12, NULL, 0, 0, 0, ssithra_ai_run, 12, ssithra_check_namor },
-	{ FRAME_swimforward13, NULL, 0, 0, 0, ssithra_ai_run, 12, ssithraCheckRipple },
-	{ FRAME_swimforward14, NULL, 0, 0, 0, ssithra_ai_run, 10, ssithraCheckRipple },
-	{ FRAME_swimforward15, NULL, 0, 0, 0, ssithra_ai_run, 10, ssithraCheckRipple },
+	{ FRAME_swimforward13, NULL, 0, 0, 0, ssithra_ai_run, 12, ssithra_check_ripple },
+	{ FRAME_swimforward14, NULL, 0, 0, 0, ssithra_ai_run, 10, ssithra_check_ripple },
+	{ FRAME_swimforward15, NULL, 0, 0, 0, ssithra_ai_run, 10, ssithra_check_ripple },
 };
 const animmove_t ssithra_move_swimforward1 = { 15, ssithra_frames_swimforward1, ssithra_decide_swimforward };
 
 // Plague Ssithra Swim Wander.
 static const animframe_t ssithra_frames_swimwander[] =
 {
-	{ FRAME_swimforward01, NULL, 0, 0, 0, ai_walk, 10, ssithraCheckRipple },
-	{ FRAME_swimforward02, NULL, 0, 0, 0, ai_walk, 10, ssithraCheckRipple },
-	{ FRAME_swimforward03, NULL, 0, 0, 0, ai_walk, 10, ssithraCheckRipple },
+	{ FRAME_swimforward01, NULL, 0, 0, 0, ai_walk, 10, ssithra_check_ripple },
+	{ FRAME_swimforward02, NULL, 0, 0, 0, ai_walk, 10, ssithra_check_ripple },
+	{ FRAME_swimforward03, NULL, 0, 0, 0, ai_walk, 10, ssithra_check_ripple },
 	{ FRAME_swimforward04, ssithraSound, SND_SWIM, CHAN_BODY, 0, ai_walk, 12, ssithra_check_namor },
-	{ FRAME_swimforward05, NULL, 0, 0, 0, ai_walk, 12, ssithraCheckRipple },
-	{ FRAME_swimforward06, NULL, 0, 0, 0, ai_walk, 12, ssithraCheckRipple },
-	{ FRAME_swimforward07, NULL, 0, 0, 0, ai_walk, 12, ssithraCheckRipple },
+	{ FRAME_swimforward05, NULL, 0, 0, 0, ai_walk, 12, ssithra_check_ripple },
+	{ FRAME_swimforward06, NULL, 0, 0, 0, ai_walk, 12, ssithra_check_ripple },
+	{ FRAME_swimforward07, NULL, 0, 0, 0, ai_walk, 12, ssithra_check_ripple },
 	{ FRAME_swimforward08, NULL, 0, 0, 0, ai_walk, 12, ssithra_check_namor },
-	{ FRAME_swimforward09, NULL, 0, 0, 0, ai_walk, 16, ssithraCheckRipple },
+	{ FRAME_swimforward09, NULL, 0, 0, 0, ai_walk, 16, ssithra_check_ripple },
 	{ FRAME_swimforward10, ssithraSound, SND_SWIM, CHAN_BODY, 0, ai_walk, 16, NULL },
-	{ FRAME_swimforward11, NULL, 0, 0, 0, ai_walk, 12, ssithraCheckRipple },
+	{ FRAME_swimforward11, NULL, 0, 0, 0, ai_walk, 12, ssithra_check_ripple },
 	{ FRAME_swimforward12, NULL, 0, 0, 0, ai_walk, 12, ssithra_check_namor },
-	{ FRAME_swimforward13, NULL, 0, 0, 0, ai_walk, 12, ssithraCheckRipple },
-	{ FRAME_swimforward14, NULL, 0, 0, 0, ai_walk, 10, ssithraCheckRipple },
-	{ FRAME_swimforward15, NULL, 0, 0, 0, ai_walk, 10, ssithraCheckRipple },
+	{ FRAME_swimforward13, NULL, 0, 0, 0, ai_walk, 12, ssithra_check_ripple },
+	{ FRAME_swimforward14, NULL, 0, 0, 0, ai_walk, 10, ssithra_check_ripple },
+	{ FRAME_swimforward15, NULL, 0, 0, 0, ai_walk, 10, ssithra_check_ripple },
 };
 const animmove_t ssithra_move_swimwander = { 15, ssithra_frames_swimwander, ssithra_decide_swimforward };
 

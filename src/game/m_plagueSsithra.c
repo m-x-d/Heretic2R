@@ -251,7 +251,7 @@ void ssithra_decide_swimforward(edict_t* self)
 	ssithra_check_mood(self);
 }
 
-void ssithraCheckRipple(edict_t* self) //TODO: rename to ssithra_check_ripple.
+void ssithra_check_ripple(edict_t* self) //mxd. Named 'ssithraCheckRipple' in original logic.
 {
 	// No ripples while in cinematics.
 	if (SV_CINEMATICFREEZE)
