@@ -2392,216 +2392,159 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].resInfo = &res_info;
 }
 
-/*QUAKED monster_ssithra (1 .5 0) (-16 -16 -32) (16 16 26) AMBUSH ASLEEP 4 Namor Spin ToughGuy Clothed FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
+// QUAKED monster_ssithra (1 .5 0) (-16 -16 -32) (16 16 26) AMBUSH ASLEEP 4 NAMOR Spin ToughGuy Clothed FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
+// The plague ssithra.
 
-The plague ssithra 
+// Spawnflags:
+// AMBUSH		- Will not be woken up by other monsters or shots from player.
+// ASLEEP		- Will not appear until triggered.
+// WALKING		- Use WANDER instead.
+// WANDER		- Monster will wander around aimlessly (but follows buoys).
+// MELEE_LEAD	- Monster will try to cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not.
+// STALK		- Monster will only approach and attack from behind. If you're facing the monster it will just stand there.
+//				  Once the monster takes pain, however, it will stop this behaviour and attack normally.
+// COWARD		- Monster starts off in flee mode (runs away from you when woken up).
 
-AMBUSH - Will not be woken up by other monsters or shots from player
-
-ASLEEP - will not appear until triggered
-
-WALKING- Use WANDER instead
-
-WANDER - Monster will wander around aimlessly (but follows buoys)
-
-MELEE_LEAD - Monster will tryto cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not
-
-STALK - Monster will only approach and attack from behind- if you're facing the monster it will just stand there.  Once the monster takes pain, however, it will stop this behaviour and attack normally
-
-COWARD - Monster starts off in flee mode- runs away from you when woken up
-
-"homebuoy" - monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to)
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-mintel - monster intelligence- this basically tells a monster how many buoys away an enemy has to be for it to give up.
-
-melee_range - How close the player has to be, maximum, for the monster to go into melee.  If this is zero, the monster will never melee.  If it is negative, the monster will try to keep this distance from the player.  If the monster has a backup, he'll use it if too clode, otherwise, a negative value here means the monster will just stop running at the player at this distance.
-	Examples:
-		melee_range = 60 - monster will start swinging it player is closer than 60
-		melee_range = 0 - monster will never do a mele attack
-		melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close
-
-missile_range - Maximum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-min_missile_range - Minimum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-bypass_missile_chance - Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot.  This, in effect, will make the monster come in more often than hang back and fire.  A percentage (0 = always fire/never close in, 100 = never fire/always close in).- must be whole number
-
-jump_chance - every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time)- must be whole number
-
-wakeup_distance - How far (max) the player can be away from the monster before it wakes up.  This just means that if the monster can see the player, at what distance should the monster actually notice him and go for him.
-
-DEFAULTS:
-mintel					= 28
-melee_range				= 48
-missile_range			= 512
-min_missile_range		= 48
-bypass_missile_chance	= 25
-jump_chance				= 100
-wakeup_distance			= 1024
-
-NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1
-*/
-void SP_monster_plague_ssithra (edict_t *self)
+// Variables:
+// homebuoy					- Monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to).
+// wakeup_target			- Monsters will fire this target the first time it wakes up (only once).
+// pain_target				- Monsters will fire this target the first time it gets hurt (only once).
+// mintel					- Monster intelligence - this basically tells a monster how many buoys away an enemy has to be for it to give up (default 28).
+// melee_range				- How close the player has to be for the monster to go into melee. If this is zero, the monster will never melee.
+//							  If it is negative, the monster will try to keep this distance from the player.
+//							  If the monster has a backup, he'll use it if too close, otherwise, a negative value here means the monster will just stop
+//							  running at the player at this distance (default 48).
+//							 Examples:
+//								melee_range = 60 - monster will start swinging it player is closer than 60.
+//								melee_range = 0 - monster will never do a melee attack.
+//								melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close.
+// missile_range			- Maximum distance the player can be from the monster to be allowed to use it's ranged attack (default 512).
+// min_missile_range		- Minimum distance the player can be from the monster to be allowed to use it's ranged attack (default 48).
+// bypass_missile_chance	- Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot. This, in effect, will make the monster
+//							  come in more often than hang back and fire. A percentage (0 = always fire/never close in, 100 = never fire/always close in) - must be whole number (default 25).
+// jump_chance				- Every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time) - must be whole number (default 100).
+// wakeup_distance			- How far (max) the player can be away from the monster before it wakes up. This means that if the monster can see the player,
+//							  at what distance should the monster actually notice him and go for him (default 1024).
+// NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1.
+void SP_monster_plague_ssithra(edict_t* self)
 {
-	qboolean alpha = true;
+	static const int mesh_part_ids[] = { MESH__CENTERSPIKE, MESH__LEFT1SPIKE, MESH__RIGHT1SPIKE, MESH__RIGHT2SPIKE }; //mxd.
 
-	if(!skill->value)
+	if (SKILL == SKILL_EASY)
 	{
-		if(!irand(0, 2))//30% - but won't fire explosives
+		if (irand(0, 2) == 0) // 30% - but won't fire explosives.
 			self->spawnflags |= MSF_SSITHRA_CLOTHED;
 	}
-	else if (skill->value == 1)
+	else if (SKILL == SKILL_MEDIUM)
 	{
-		if(!irand(0, 3))//25%
+		if (irand(0, 3) == 0) // 25%
 			self->spawnflags |= MSF_SSITHRA_CLOTHED;
 	}
 	else
 	{
-		if(irand(0, 1))//50%
+		if (irand(0, 1) == 0) // 50%
 			self->spawnflags |= MSF_SSITHRA_CLOTHED;
 	}
 
-	if(self->spawnflags&MSF_SSITHRA_NAMOR)
+	if (self->spawnflags & MSF_SSITHRA_NAMOR)
 		self->spawnflags |= MSF_AMBUSH;
 
-	// Generic Monster Initialization
+	// Generic Monster Initialization.
 	if (!M_Start(self))
-		return;					// Failed initialization
+		return; // Failed initialization.
 
 	self->msgHandler = DefaultMsgHandler;
 	self->monsterinfo.alert = SsithraAlert;
-	self->think = M_WalkmonsterStartGo;
 	self->monsterinfo.dismember = SsithraDismember;
+	self->think = M_WalkmonsterStartGo;
+	self->isBlocked = SsithraBlocked;
+	self->touch = M_Touch;
 
 	self->materialtype = MAT_FLESH;
-//	self->monsterinfo.aiflags |= AI_SWIM_OK;
-	self->flags |= FL_IMMUNE_SLIME;
-	
+	self->flags |= (FL_IMMUNE_SLIME | FL_AMPHIBIAN);
+	self->svflags |= SVF_WAIT_NOTSOLID;
+
 	ssithraCheckInWater(self);
 
-	self->isBlocked = SsithraBlocked;
-
-	if(self->health<=0)
+	if (self->health <= 0)
 		self->health = SSITHRA_HEALTH;
 
-	//Apply to the end result (whether designer set or not)
-	self->max_health = self->health = MonsterHealth(self->health);
+	// Apply to the end result (whether designer set or not).
+	self->health = MonsterHealth(self->health);
+	self->max_health = self->health;
 
 	self->mass = SSITHRA_MASS;
-	self->yaw_speed = 20;
+	self->yaw_speed = 20.0f;
 
+	self->solid = SOLID_BBOX;
 	self->movetype = PHYSICSTYPE_STEP;
 	VectorClear(self->knockbackvel);
 
-	self->solid=SOLID_BBOX;
-
 	self->monsterinfo.supporters = -1;
 	VectorCopy(STDMinsForClass[self->classID], self->mins);
-	VectorCopy(STDMaxsForClass[self->classID], self->maxs);	
-	self->viewheight = self->maxs[2]*0.8;
+	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
+	self->viewheight = (int)(self->maxs[2] * 0.8f);
 
-	self->s.modelindex = classStatics[CID_SSITHRA].resInfo->modelIndex;
+	self->s.modelindex = (byte)classStatics[CID_SSITHRA].resInfo->modelIndex;
+	self->s.skinnum = ((self->spawnflags & MSF_SSITHRA_CLOTHED) ? 2 : 0);
 
-	self->touch = M_Touch;
-	
-	if(self->spawnflags & MSF_SSITHRA_CLOTHED)
-		self->s.skinnum = 2;
-	else
-		self->s.skinnum = 0;
-
-	//scaling them up in code like this is bad for designers
-	self->s.scale = self->monsterinfo.scale = (MODEL_SCALE)+0.1;// + flrand(0.1, 0.3));
-	// Note that at less than 110% of the size 
-
-	//Turn off dismemberment caps, can't see them, so save some polys
+	// Turn off dismemberment caps, can't see them, so save some polys.
 	self->s.fmnodeinfo[MESH__CAPLOWERTORSO].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__CAPTOPUPPERTORSO].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__CAPBOTTOMUPPERTORSO].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__CAPHEAD].flags |= FMNI_NO_DRAW;
-	if(!(self->spawnflags&MSF_SSITHRA_ALPHA))
+
+	qboolean alpha = true;
+
+	if (!(self->spawnflags & MSF_SSITHRA_ALPHA))
 	{
-		if(irand(0,10)<6)
+		for (uint i = 0; i < ARRAYSIZE(mesh_part_ids); i++)
 		{
-			if(irand(0,10)<5)
+			if (irand(0, 10) < 6)
 			{
-				self->s.fmnodeinfo[MESH__CENTERSPIKE].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__CENTERSPIKE].skin = self->s.skinnum+1;
+				const int mesh_id = mesh_part_ids[i];
+
+				if (irand(0, 10) < 5)
+				{
+					self->s.fmnodeinfo[mesh_id].flags |= FMNI_USE_SKIN;
+					self->s.fmnodeinfo[mesh_id].skin = self->s.skinnum + 1;
+				}
+				else
+				{
+					self->s.fmnodeinfo[mesh_id].flags |= FMNI_NO_DRAW;
+				}
+
+				alpha = false;
 			}
-			else
-				self->s.fmnodeinfo[MESH__CENTERSPIKE].flags |= FMNI_NO_DRAW;
-			alpha = false;
-		}
-		if(irand(0,10)<6)
-		{
-			if(irand(0,10)<5)
-			{
-				self->s.fmnodeinfo[MESH__LEFT1SPIKE].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__LEFT1SPIKE].skin = self->s.skinnum+1;
-			}
-			else
-				self->s.fmnodeinfo[MESH__LEFT1SPIKE].flags |= FMNI_NO_DRAW;
-			alpha = false;
-		}
-		if(irand(0,10)<6)
-		{
-			if(irand(0,10)<5)
-			{
-				self->s.fmnodeinfo[MESH__RIGHT1SPIKE].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__RIGHT1SPIKE].skin = self->s.skinnum+1;
-			}
-			else
-				self->s.fmnodeinfo[MESH__RIGHT1SPIKE].flags |= FMNI_NO_DRAW;
-			alpha = false;
-		}
-		if(irand(0,10)<6)
-		{
-			if(irand(0,10)<5)
-			{
-				self->s.fmnodeinfo[MESH__RIGHT2SPIKE].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__RIGHT2SPIKE].skin = self->s.skinnum+1;
-			}
-			else
-				self->s.fmnodeinfo[MESH__RIGHT2SPIKE].flags |= FMNI_NO_DRAW;
-			alpha = false;
 		}
 	}
 
-	self->s.color.a = 255;
-	if(alpha)//tough guy!
-	{//TODO: other ssithras won't attack this guy and will follow him
+	if (alpha) // Tough guy!
+	{
+		//FIXME: other ssithras won't attack this guy and will follow him.
 		self->health += 75;
-		self->s.scale = self->monsterinfo.scale = MODEL_SCALE + 0.5;
-		self->spawnflags|=MSF_SSITHRA_ALPHA;
-		self->s.color.r = 255;
-		self->s.color.g = 255;
-		self->s.color.b = 128;
+		self->spawnflags |= MSF_SSITHRA_ALPHA;
+
+		self->s.scale = MODEL_SCALE + 0.5f;
+		COLOUR_SET(self->s.color, 255, 255, 128); //mxd. Use define.
 	}
 	else
 	{
-		self->s.color.r = 200 + irand(-50, 50);
-		self->s.color.g = 200 + irand(-50, 50);
-		self->s.color.b = 200 + irand(-50, 50);
+		self->s.scale = MODEL_SCALE + 0.1f; //TODO: do this only when self->s.scale == 0.0f?
+		COLOUR_SET(self->s.color, 200 + irand(-50, 50), 200 + irand(-50, 50), 200 + irand(-50, 50)); //mxd. Use define.
 	}
 
+	self->monsterinfo.scale = self->s.scale;
 	self->monsterinfo.otherenemyname = "obj_barrel";
 
-	//set up my mood function
+	// Setup my mood function.
 	MG_InitMoods(self);
-	if(!irand(0,2))
+
+	if (irand(0, 2) == 0)
 		self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
 
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-	self->svflags |= SVF_WAIT_NOTSOLID;
-	self->flags |= FL_AMPHIBIAN;
-
-//	if(self->spawnflags & MSF_SSITHRA_NAMOR)
-//		self->use = ssithraNamorTriggered;
 }
-
 
 /*QUAKED obj_corpse_ssithra (1 .5 0) (-30 -12 -2) (30 12 2) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A dead plague ssithra
