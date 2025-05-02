@@ -595,302 +595,254 @@ void ssithraNamorJump(edict_t* self) //TODO: rename to ssithra_out_of_water_jump
 	ssithraJump(self, (watersurf_zdist + enemy_zdiff) * 2.0f + 200.0f, 100.0f, 0.0f);
 }
 
-void ssithraCheckJump (edict_t *self)
+void ssithraCheckJump(edict_t* self) //TODO: rename to SsithraCheckJump.
 {
-	vec3_t		vf, source, source2;
-	vec3_t		maxs, mins, save_org;
-	trace_t		trace;
-	float		hgt_diff, jump_fdist;
-	qboolean	jump_up_check = false;
-	qboolean	check_down = false;
-	qboolean	can_move = false;
-	vec3_t	targ_org, targ_mins;
-
-	if(self->spawnflags & MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
 		return;
+
+	vec3_t target_origin;
+	vec3_t target_mins;
 
 	if (self->monsterinfo.searchType == SEARCH_BUOY)
 	{
-		if(self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
 			return;
 
-		VectorCopy(level.buoy_list[self->buoy_index].origin, targ_org);
-
-		VectorClear(targ_mins);
+		VectorCopy(level.buoy_list[self->buoy_index].origin, target_origin);
+		VectorClear(target_mins);
 	}
 	else
 	{
-		if(!self->goalentity)
+		if (self->goalentity == NULL)
 			return;
-		
-		VectorCopy(self->goalentity->s.origin, targ_org);
-		VectorCopy(self->goalentity->mins, targ_mins);
+
+		VectorCopy(self->goalentity->s.origin, target_origin);
+		VectorCopy(self->goalentity->mins, target_mins);
 	}
 
-	if (!(MG_IsInforntPos(self, targ_org)))
+	if (!MG_IsInforntPos(self, target_origin))
 		return;
 
-	if (targ_org[2] < self->s.origin[2] - 28)
+	// Jumping down?
+	if (target_origin[2] < self->s.origin[2] - 28.0f)
 	{
-		check_down = true;
-	}
-	else
-	{
-		check_down = false;
-	}
-
-	if (check_down)
-	{//jumping down
-		//Setup the trace
-		int inwater;
-
-		inwater = ssithraCheckInWater(self);
-
-		if(MGAI_DEBUG)
-			gi.dprintf("checking jump down: ");
-
-		if(inwater)
-		{
-			if(MGAI_DEBUG)
-				gi.dprintf("checkdown allsolid\n");
+		// Setup the trace
+		if (ssithraCheckInWater(self))
 			return;
-		}
 
-		VectorCopy(self->maxs, maxs);
+		vec3_t s_maxs;
+		VectorCopy(self->maxs, s_maxs);
+		s_maxs[2] += 32.0f;
+
+		vec3_t source;
 		VectorCopy(self->s.origin, source);
-		AngleVectors(self->s.angles, vf, NULL, NULL);
 
-		if(self->monsterinfo.aiflags&AI_FLEE||self->monsterinfo.aiflags&AI_COWARD)
-			jump_fdist = 128;
-		else
-			jump_fdist = vhlen(targ_org, self->s.origin);
-		
-		if(jump_fdist > 128)
-			jump_fdist = 128;
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
 
-		VectorMA(source, 128, vf, source);
+		VectorMA(source, 128.0f, forward, source);
 
-		maxs[2] += 32;
-		gi.trace (self->s.origin, self->mins, maxs, source, self, MASK_MONSTERSOLID,&trace);
+		trace_t trace;
+		gi.trace(self->s.origin, self->mins, s_maxs, source, self, MASK_MONSTERSOLID, &trace);
 
-		if (trace.fraction == 1)
-		{//clear ahead and above
+		if (trace.fraction == 1.0f)
+		{
+			// Clear ahead and above.
+			vec3_t source2;
 			VectorCopy(source, source2);
+			source2[2] -= 1024.0f;
 
-			source2[2] -= 1024;
-			//trace down
-			gi.trace (source, self->mins, self->maxs, source2, self, MASK_ALL,&trace);
-			
-			if (trace.allsolid || trace.startsolid)
-			{
-#ifdef _DEVEL
-				if(MGAI_DEBUG)
-					gi.dprintf("checkdown allsolid\n");
-#endif
+			// Trace down.
+			gi.trace(source, self->mins, self->maxs, source2, self, MASK_ALL, &trace);
+
+			if (trace.fraction == 1.0f || trace.startsolid || trace.allsolid) // Check down - too far or allsolid.
 				return;
-			}
 
-			if (trace.fraction == 1)
+			if (trace.contents != CONTENTS_SOLID)
 			{
-#ifdef _DEVEL
-				if(MGAI_DEBUG)
-					gi.dprintf("checkdown- too far\n");
-#endif
-				return;
-			}
-			else
-			{
-//				if (trace.ent == (struct edict_s *)-1)
-//					return;
-
-				if (trace.contents != CONTENTS_SOLID)
+				// Jumping into water?
+				if ((trace.contents & (CONTENTS_WATER | CONTENTS_SLIME)) || trace.ent == self->enemy)
 				{
-#ifdef _DEVEL
-					if(MGAI_DEBUG)
-						gi.dprintf("checkjump trying to jump into water\n");
-#endif
-					if ((trace.contents&CONTENTS_WATER||trace.contents&CONTENTS_SLIME)||trace.ent == self->enemy)
-					{//jumping into water
-						VectorSubtract(trace.endpos, self->s.origin, source2);
-						VectorNormalize(source2);
-						self->ideal_yaw = VectorYaw(source2);
+					vec3_t dir;
+					VectorSubtract(trace.endpos, self->s.origin, dir);
+					VectorNormalize(dir);
+					self->ideal_yaw = VectorYaw(dir);
 
-						if (self->monsterinfo.jump_time < level.time)
-						{//check depth
-							VectorCopy(trace.endpos, source);
-							VectorCopy(source, source2);
-							source2[2] -= 64;
-							VectorCopy(self->mins, mins);
-							VectorCopy(self->maxs, maxs);
-							mins[2] = 0;
-							maxs[2] = 1;
-
-							gi.trace (source, mins, maxs, source2, self, MASK_SOLID,&trace);
-							if(trace.fraction < 1.0 || trace.startsolid || trace.allsolid)
-								SsithraTryJump(self);
-							else
-								SetAnim(self,ANIM_DIVE);
-							self->monsterinfo.jump_time = level.time + 1;
-						}
-					}
-				}
-				else
-				{
-#ifdef _DEVEL
-					if(MGAI_DEBUG)
-						gi.dprintf("checkjump down->whichjump\n");
-#endif
-					VectorSubtract(trace.endpos, self->s.origin, source2);
-					VectorNormalize(source2);
-					self->ideal_yaw = VectorYaw(source2);
-					
 					if (self->monsterinfo.jump_time < level.time)
 					{
-						SsithraTryJump(self);
-						self->monsterinfo.jump_time = level.time + 1;
-					}
-				}
-			}
-		}
-#ifdef _DEVEL
-		else if(MGAI_DEBUG)
-			gi.dprintf("checkdown: not clear infront\n");
-#endif
-	}
-	else
-	{
-		if(vhlen(self->s.origin, targ_org)<200)
-			jump_up_check = true;
-		else
-		{
-			VectorCopy(self->s.origin,source);
-			source[2]-=10;
-			if(gi.pointcontents(source)&CONTENTS_WATER)
-			{//FIXME: swimming can bring origin out of water!  in water
-				AngleVectors(self->s.angles, vf, NULL, NULL);
-				VectorMA(self->s.origin, 72, vf, source);
-				gi.trace (self->s.origin, self->mins, self->maxs, source, self, MASK_SOLID,&trace);
-				if(trace.fraction<1.0)
-					jump_up_check = true;
-				//shore is within 72 units of me
-			}
-			else//enemy far away, in front, and water in front of me
-			{//check if water in front
-				AngleVectors(self->s.angles, vf, NULL, NULL);
-				VectorMA(self->s.origin, 48, vf, source);
-				gi.trace (self->s.origin, self->mins, self->maxs, source, self, MASK_SOLID,&trace);
-				VectorCopy(trace.endpos,source);
-				source[2]-=128;
-				gi.trace (trace.endpos, self->mins, self->maxs, source, self, MASK_SOLID|MASK_WATER,&trace);
-				if(trace.fraction<1.0&&trace.contents&CONTENTS_WATER)
-				{
-					VectorCopy(trace.endpos, source);
-					VectorCopy(source, source2);
-					source[2] -= 64;
-					VectorCopy(self->mins, mins);
-					VectorCopy(self->maxs, maxs);
-					mins[2] = 0;
-					maxs[2] = 1;
-					
-					gi.trace(source, mins, maxs, source2, self, MASK_SOLID,&trace);
-					if(trace.fraction<1.0 || trace.allsolid || trace.startsolid)
-						SsithraTryJump(self);
-					else	
-						SetAnim(self,ANIM_DIVE);
+						// Check depth.
+						VectorCopy(trace.endpos, source);
+						VectorCopy(source, source2);
+						source2[2] -= 64.0f;
 
-					return;
-				}
-			}
-		}
+						const vec3_t mins = { self->mins[0], self->mins[1], 0.0f };
+						const vec3_t maxs = { self->maxs[0], self->maxs[1], 1.0f };
 
-		if(jump_up_check)
-		{
-			if(targ_org[2] > self->s.origin[2]+28||
-				!(self->monsterinfo.aiflags & AI_FLEE))//||override_dist)
-			{//jumping up
-				//Setup the trace
-//				gi.dprintf("checking for jump up or into water\n");
-				VectorCopy(self->maxs, maxs);
-				VectorCopy(self->s.origin, source);
+						gi.trace(source, mins, maxs, source2, self, MASK_SOLID, &trace);
 
-				//um,. what about if runing away?
-				hgt_diff = (targ_org[2] + targ_mins[2]) - (self->s.origin[2] + self->mins[2]) + 32;
-				source[2] += hgt_diff;
-				gi.trace (self->s.origin, self->mins, self->maxs, source, self, MASK_ALL,&trace);
+						if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
+							SsithraTryJump(self);
+						else
+							SetAnim(self, ANIM_DIVE);
 
-				if (trace.fraction == 1)
-				{//clear above
-					VectorCopy(source, source2);
-
-					AngleVectors(self->s.angles, vf, NULL, NULL);
-					VectorMA(source, 64, vf, source2);
-					source2[2] -= 24;
-					//trace forward and down a little
-					gi.trace (source, self->mins, self->maxs, source2, self, MASK_ALL,&trace);
-					
-					if (trace.allsolid || trace.startsolid)
-						return;
-
-					if (trace.fraction < 0.1)
-					{
-//						gi.dprintf("Can't jump up, no ledge\n");
-						return;
-					}
-		//			{
-		//				if (stricmp(trace.ent->classname, "worldspawn"))
-		//					return;
-		//			}
-					else
-					{
-						if (trace.ent == (struct edict_s *)-1)
-							return;
-
-		//				if (trace.contents != CONTENTS_SOLID)
-		//					return;
-		//				else
-						{
-							VectorSubtract(trace.endpos, self->s.origin, source2);
-							VectorNormalize(source2);
-							self->ideal_yaw = VectorYaw(source2);
-							
-							if (self->monsterinfo.jump_time < level.time)
-							{
-//								gi.dprintf("checkjump up ->whichjump\n");
-								SsithraTryJump(self);
-								self->monsterinfo.jump_time = level.time + 1;
-							}
-						}
+						self->monsterinfo.jump_time = level.time + 1.0f;
 					}
 				}
 			}
 			else
-			{//check to jump over something
-				VectorCopy(self->s.origin, save_org);
-				can_move = M_walkmove (self, self->s.angles[YAW], 64);
-				VectorCopy(save_org, self->s.origin);
-				
-				if(can_move)
-					return;
+			{
+				vec3_t dir;
+				VectorSubtract(trace.endpos, self->s.origin, dir);
+				VectorNormalize(dir);
+				self->ideal_yaw = VectorYaw(dir);
 
-				AngleVectors(self->s.angles, vf, NULL, NULL);
-				VectorCopy(self->s.origin, source);
-				VectorMA(source, 128, vf, source2);
-				VectorCopy(self->mins, mins);
-				mins[2]+=24;//can clear it
-				gi.trace(source, mins, self->maxs, source2, self, MASK_SOLID,&trace);
-				
-				if(trace.allsolid||trace.startsolid)
-					return;
-				
-				if(trace.fraction<1 && trace.ent != self->enemy)
-					return;
-
-				//Go for it!
-				ssithraJump(self, 128, 200*trace.fraction, 0);
-				SetAnim(self, ANIM_BOUND);
+				if (self->monsterinfo.jump_time < level.time)
+				{
+					SsithraTryJump(self);
+					self->monsterinfo.jump_time = level.time + 1.0f;
+				}
 			}
+		} // Else not clear infront.
 
+		return;
+	}
+
+	// Check if we should jump up.
+	qboolean jump_up_check = (vhlen(self->s.origin, target_origin) < 200.0f);
+
+	if (!jump_up_check)
+	{
+		vec3_t source;
+		VectorCopy(self->s.origin, source);
+		source[2] -= 10.0f;
+
+		if (gi.pointcontents(source) & CONTENTS_WATER)
+		{
+			//FIXME: swimming can bring origin out of water!
+			vec3_t forward;
+			AngleVectors(self->s.angles, forward, NULL, NULL);
+			VectorMA(self->s.origin, 72.0f, forward, source);
+
+			trace_t trace;
+			gi.trace(self->s.origin, self->mins, self->maxs, source, self, MASK_SOLID, &trace);
+
+			if (trace.fraction < 1.0f)
+				jump_up_check = true;
+
+			// Shore is within 72 units of me.
 		}
+		else // Enemy far away, in front, and water in front of me.
+		{
+			// Check if water in front.
+			vec3_t forward;
+			AngleVectors(self->s.angles, forward, NULL, NULL);
+			VectorMA(self->s.origin, 48.0f, forward, source);
+
+			trace_t trace;
+			gi.trace(self->s.origin, self->mins, self->maxs, source, self, MASK_SOLID, &trace);
+
+			VectorCopy(trace.endpos, source);
+			source[2] -= 128.0f;
+
+			gi.trace(trace.endpos, self->mins, self->maxs, source, self, MASK_SOLID | MASK_WATER, &trace);
+
+			if (trace.fraction < 1.0f && (trace.contents & CONTENTS_WATER))
+			{
+				VectorCopy(trace.endpos, source);
+
+				vec3_t source2;
+				VectorCopy(source, source2);
+				source[2] -= 64.0f;
+
+				const vec3_t mins = { self->mins[0], self->mins[1], 0.0f };
+				const vec3_t maxs = { self->maxs[0], self->maxs[1], 1.0f };
+
+				gi.trace(source, mins, maxs, source2, self, MASK_SOLID, &trace);
+
+				if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
+					SsithraTryJump(self);
+				else
+					SetAnim(self, ANIM_DIVE);
+
+				return;
+			}
+		}
+	}
+
+	if (!jump_up_check)
+		return;
+
+	// Jumping up?
+	if (target_origin[2] > self->s.origin[2] + 28.0f || !(self->monsterinfo.aiflags & AI_FLEE))
+	{
+		vec3_t source;
+		VectorCopy(self->s.origin, source);
+
+		//FIXME: what about if running away?
+		const float height_diff = (target_origin[2] + target_mins[2]) - (self->s.origin[2] + self->mins[2]) + 32.0f;
+		source[2] += height_diff;
+
+		trace_t trace;
+		gi.trace(self->s.origin, self->mins, self->maxs, source, self, MASK_ALL, &trace);
+
+		if (trace.fraction == 1.0f)
+		{
+			// Clear above.
+			vec3_t forward;
+			AngleVectors(self->s.angles, forward, NULL, NULL);
+
+			vec3_t source2;
+			VectorMA(source, 64.0f, forward, source2);
+			source2[2] -= 24.0f;
+
+			// Trace forward and down a little.
+			gi.trace(source, self->mins, self->maxs, source2, self, MASK_ALL, &trace);
+
+			if (trace.fraction < 0.1f || trace.allsolid || trace.startsolid || trace.ent == (struct edict_s*)-1) // Can't jump up, no ledge.
+				return;
+
+			vec3_t dir;
+			VectorSubtract(trace.endpos, self->s.origin, dir);
+			VectorNormalize(dir);
+			self->ideal_yaw = VectorYaw(dir);
+
+			if (self->monsterinfo.jump_time < level.time)
+			{
+				SsithraTryJump(self);
+				self->monsterinfo.jump_time = level.time + 1.0f;
+			}
+		}
+
+		return;
+	}
+
+	// Check to jump over something.
+	vec3_t save_org;
+	VectorCopy(self->s.origin, save_org);
+	const qboolean can_move = M_walkmove(self, self->s.angles[YAW], 64.0f);
+	VectorCopy(save_org, self->s.origin);
+
+	if (!can_move)
+	{
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+
+		vec3_t end_pos;
+		VectorMA(self->s.origin, 128.0f, forward, end_pos);
+
+		vec3_t mins;
+		VectorCopy(self->mins, mins);
+		mins[2] += 24.0f; // Can clear it.
+
+		trace_t trace;
+		gi.trace(self->s.origin, mins, self->maxs, end_pos, self, MASK_SOLID, &trace);
+
+		if (trace.allsolid || trace.startsolid || (trace.fraction < 1.0f && trace.ent != self->enemy))
+			return;
+
+		// Go for it!
+		ssithraJump(self, 128.0f, trace.fraction * 200.0f, 0.0f);
+		SetAnim(self, ANIM_BOUND);
 	}
 }
 
