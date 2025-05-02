@@ -1984,26 +1984,28 @@ void ssithraStartDuckArrow(edict_t* self) //TODO: rename to ssithra_start_duck_a
 	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MSSITHRA_ARROW_CHARGE, start_pos);
 }
 
-void ssithraArrow(edict_t *self)
-{//fixme; adjust for up/down
-	if(!self->enemy)
+void ssithraArrow(edict_t* self) //TODO: rename to ssithra_arrow.
+{
+	//FIXME: adjust for up/down.
+	if (self->enemy == NULL)
 	{
 		SsithraDecideStand(self);
 		return;
 	}
 
-	if(self->enemy->health<=0)
+	if (self->enemy->health <= 0)
 	{
-		self->enemy=NULL;
+		self->enemy = NULL;
 		SsithraDecideStand(self);
+
 		return;
 	}
 
-	if(self->monsterinfo.attack_finished>level.time)
+	if (self->monsterinfo.attack_finished > level.time)
 		return;
 
-	if(self->spawnflags & MSF_SSITHRA_ALPHA)
-		SsithraDoDuckArrow(self, self->maxs[2] * 0.8);
+	if (self->spawnflags & MSF_SSITHRA_ALPHA)
+		SsithraDoDuckArrow(self, self->maxs[2] * 0.8f);
 	else
 		SsithraDoArrow(self);
 }
