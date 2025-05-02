@@ -24,26 +24,6 @@ static void create_ssith_arrow(edict_t* Arrow); //TODO: remove.
 qboolean ssithraCheckInWater(edict_t* self); //TODO: remove.
 extern void FishDeadFloatThink(edict_t* self); //TODO: move to g_monster.c as M_DeadFloatThink?..
 
-static int Bit_for_MeshNode [16] = //TODO: remove.
-{
-	BIT_POLY,
-	BIT_LOWERTORSO,
-	BIT_CAPLOWERTORSO,
-	BIT_LEFTLEG,
-	BIT_RIGHTLEG,
-	BIT_UPPERTORSO,
-	BIT_CAPTOPUPPERTORSO,
-	BIT_CAPBOTTOMUPPERTORSO,
-	BIT_LEFTARM,
-	BIT_RIGHTARM,
-	BIT_HEAD,
-	BIT_CENTERSPIKE,
-	BIT_LEFT1SPIKE,
-	BIT_RIGHT1SPIKE,
-	BIT_RIGHT2SPIKE,
-	BIT_CAPHEAD
-};
-
 #pragma region ========================== Plague Ssithra Base Info ==========================
 
 static const animmove_t* animations[NUM_ANIMS] =
@@ -1083,31 +1063,37 @@ static void SsithraSplit(edict_t* self, const int body_part) //mxd. Named 'ssith
 	self->nextthink = FLT_MAX; //mxd. 9999999999999999 in original logic.
 }
 
-/*
--1	hl_Null				= -1,
-0	hl_NoneSpecific		= 0,
-1	hl_Head,
-2	hl_TorsoFront,
-3	hl_TorsoBack,
-4	hl_ArmUpperLeft,
-5	hl_ArmLowerLeft,
-6	hl_ArmUpperRight,
-7	hl_ArmLowerRight,
-8	hl_LegUpperLeft,
-9	hl_LegLowerLeft,
-10	hl_LegUpperRight,
-11	hl_LegLowerRight,
-12	hl_Max,
-*/
-qboolean canthrownode (edict_t *self, int BP, int *throw_nodes)
-{//see if it's on, if so, add it to throw_nodes
-	//turn it off on thrower
-	if(!(self->s.fmnodeinfo[BP].flags & FMNI_NO_DRAW))
+static qboolean SsithraCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode' in original logic.
+{
+	static const int bit_for_mesh_node[16] = //mxd. Made local static.
 	{
-		*throw_nodes |= Bit_for_MeshNode[BP];
-		self->s.fmnodeinfo[BP].flags |= FMNI_NO_DRAW;
+		BIT_POLY,
+		BIT_LOWERTORSO,
+		BIT_CAPLOWERTORSO,
+		BIT_LEFTLEG,
+		BIT_RIGHTLEG,
+		BIT_UPPERTORSO,
+		BIT_CAPTOPUPPERTORSO,
+		BIT_CAPBOTTOMUPPERTORSO,
+		BIT_LEFTARM,
+		BIT_RIGHTARM,
+		BIT_HEAD,
+		BIT_CENTERSPIKE,
+		BIT_LEFT1SPIKE,
+		BIT_RIGHT1SPIKE,
+		BIT_RIGHT2SPIKE,
+		BIT_CAPHEAD
+	};
+
+	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
+	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
+	{
+		*throw_nodes |= bit_for_mesh_node[node_id];
+		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
+
 		return true;
 	}
+
 	return false;
 }
 
@@ -1254,11 +1240,11 @@ void ssithra_dismember(edict_t *self, int damage, int HitLocation)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
 			{
-				canthrownode(self, MESH__HEAD,&throw_nodes);
-				canthrownode(self, MESH__CENTERSPIKE,&throw_nodes);
-				canthrownode(self, MESH__LEFT1SPIKE,&throw_nodes);
-				canthrownode(self, MESH__RIGHT1SPIKE,&throw_nodes);
-				canthrownode(self, MESH__RIGHT2SPIKE,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__HEAD,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__CENTERSPIKE,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__LEFT1SPIKE,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__RIGHT1SPIKE,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__RIGHT2SPIKE,&throw_nodes);
 
 				self->s.fmnodeinfo[MESH__CAPTOPUPPERTORSO].flags &= ~FMNI_NO_DRAW;
 
@@ -1291,22 +1277,22 @@ void ssithra_dismember(edict_t *self, int damage, int HitLocation)
 					gore_spot[2]+=18;
 					if(irand(0,10)<3)
 					{
-						if(canthrownode(self, MESH__CENTERSPIKE, &throw_nodes))
+						if(SsithraCanThrowNode(self, MESH__CENTERSPIKE, &throw_nodes))
 							ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
 					}
 					if(irand(0,10)<3)
 					{
-						if(canthrownode(self, MESH__RIGHT1SPIKE, &throw_nodes))
+						if(SsithraCanThrowNode(self, MESH__RIGHT1SPIKE, &throw_nodes))
 							ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
 					}
 					if(irand(0,10)<3)
 					{
-						if(canthrownode(self, MESH__RIGHT2SPIKE, &throw_nodes))
+						if(SsithraCanThrowNode(self, MESH__RIGHT2SPIKE, &throw_nodes))
 							ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
 					}
 					if(irand(0,10)<3)
 					{
-						if(canthrownode(self, MESH__LEFT1SPIKE, &throw_nodes))
+						if(SsithraCanThrowNode(self, MESH__LEFT1SPIKE, &throw_nodes))
 							ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
 					}
 				}
@@ -1325,16 +1311,16 @@ void ssithra_dismember(edict_t *self, int damage, int HitLocation)
 				self->s.fmnodeinfo[MESH__CAPBOTTOMUPPERTORSO].flags &= ~FMNI_NO_DRAW;
 				self->s.fmnodeinfo[MESH__CAPLOWERTORSO].flags &= ~FMNI_NO_DRAW;
 
-				canthrownode(self, MESH__UPPERTORSO,&throw_nodes);
-				canthrownode(self, MESH__CAPBOTTOMUPPERTORSO,&throw_nodes);
-				canthrownode(self, MESH__CAPTOPUPPERTORSO,&throw_nodes);
-				canthrownode(self, MESH__LEFTARM,&throw_nodes);
-				canthrownode(self, MESH__RIGHTARM,&throw_nodes);
-				canthrownode(self, MESH__HEAD,&throw_nodes);
-				canthrownode(self, MESH__CENTERSPIKE,&throw_nodes);
-				canthrownode(self, MESH__LEFT1SPIKE,&throw_nodes);
-				canthrownode(self, MESH__RIGHT1SPIKE,&throw_nodes);
-				canthrownode(self, MESH__RIGHT2SPIKE,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__UPPERTORSO,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__CAPBOTTOMUPPERTORSO,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__CAPTOPUPPERTORSO,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__LEFTARM,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__RIGHTARM,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__HEAD,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__CENTERSPIKE,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__LEFT1SPIKE,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__RIGHT1SPIKE,&throw_nodes);
+				SsithraCanThrowNode(self, MESH__RIGHT2SPIKE,&throw_nodes);
 
 				if(self->health > 0 && irand(0,10)<3)//Slide off
 					SsithraSplit(self, throw_nodes);
@@ -1363,7 +1349,7 @@ void ssithra_dismember(edict_t *self, int damage, int HitLocation)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				if(canthrownode(self, MESH__LEFTARM, &throw_nodes))
+				if(SsithraCanThrowNode(self, MESH__LEFTARM, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -1386,7 +1372,7 @@ void ssithra_dismember(edict_t *self, int damage, int HitLocation)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				if(canthrownode(self, MESH__RIGHTARM, &throw_nodes))
+				if(SsithraCanThrowNode(self, MESH__RIGHTARM, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -1416,7 +1402,7 @@ void ssithra_dismember(edict_t *self, int damage, int HitLocation)
 			{
 				if(self->s.fmnodeinfo[MESH__LEFTLEG].flags & FMNI_NO_DRAW)
 					break;
-				if(canthrownode(self, MESH__LEFTLEG, &throw_nodes))
+				if(SsithraCanThrowNode(self, MESH__LEFTLEG, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -1439,7 +1425,7 @@ void ssithra_dismember(edict_t *self, int damage, int HitLocation)
 			{
 				if(self->s.fmnodeinfo[MESH__RIGHTLEG].flags & FMNI_NO_DRAW)
 					break;
-				if(canthrownode(self, MESH__RIGHTLEG, &throw_nodes))
+				if(SsithraCanThrowNode(self, MESH__RIGHTLEG, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
