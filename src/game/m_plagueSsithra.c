@@ -894,50 +894,53 @@ void ssithraCheckLeaveWaterSplash(edict_t* self) //TODO: rename to ssithra_spawn
 	}
 }
 
-void ssithraCheckHitWaterSplash (edict_t *self)
+void ssithraCheckHitWaterSplash(edict_t* self) //TODO: rename to ssithra_spawn_water_entry_splash.
 {
-	vec3_t dir, endpos;
-	trace_t trace;
-
-	if(self->count)
+	if (self->count)
 		return;
 
-	if(Q_fabs(self->velocity[0])+Q_fabs(self->velocity[1])<200)
+	if (Q_fabs(self->velocity[0]) + Q_fabs(self->velocity[1]) < 200.0f)
 	{
-		VectorCopy(self->s.origin, endpos);
-		endpos[2] -= 128;
-		gi.trace(self->s.origin,self->mins,self->maxs,endpos,self,MASK_ALL,&trace);
-		if(trace.fraction<1&&
-			!trace.allsolid&&
-			!trace.startsolid&&
-			!(trace.contents & CONTENTS_WATER)&&
-			!(trace.contents & CONTENTS_SLIME))
+		vec3_t end_pos;
+		VectorCopy(self->s.origin, end_pos);
+		end_pos[2] -= 128.0f;
+
+		trace_t trace;
+		gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_ALL, &trace);
+
+		if (trace.fraction < 1.0f && !trace.allsolid && !trace.startsolid && !(trace.contents & CONTENTS_WATER) && !(trace.contents & CONTENTS_SLIME))
 		{
-			//not going to hit water!
+			// Not going to hit water!
 			SetAnim(self, ANIM_BOUND);
 			return;
 		}
 	}
 
-	if(self->flags&FL_INWATER)
+	if (self->flags & FL_INWATER)
 	{
-		VectorCopy(self->velocity,dir);
-		VectorNormalize(dir);
-		VectorMA(self->s.origin,-256,dir,endpos);
-		gi.trace(self->s.origin,vec3_origin,vec3_origin,endpos,self,MASK_WATER,&trace);
-		gi.trace(trace.endpos,vec3_origin,vec3_origin,self->s.origin,self,MASK_WATER,&trace);
-		if(trace.fraction>=1.0)
-			return;//?!
-//		gi.dprintf("In water splash\n");
-		gi.sound(self,CHAN_BODY,sounds[SND_INWATER],1,ATTN_NORM,0);
-		gi.sound (self, CHAN_BODY, gi.soundindex("player/Water Enter.wav"), 1, ATTN_NORM, 0);
-		VectorCopy(self->velocity,dir);
-		dir[0]=dir[1]=0;
-		VectorNormalize(dir);
-		// FIXME: Size propn. to entry velocity.
-		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7,
-			trace.endpos,	"bd", 128|96, dir);
-		self->count= true;
+		vec3_t dir;
+		VectorNormalize2(self->velocity, dir);
+
+		vec3_t end_pos;
+		VectorMA(self->s.origin, -256.0f, dir, end_pos);
+
+		trace_t trace;
+		gi.trace(self->s.origin, vec3_origin, vec3_origin, end_pos, self, MASK_WATER, &trace);
+		gi.trace(trace.endpos, vec3_origin, vec3_origin, self->s.origin, self, MASK_WATER, &trace);
+
+		if (trace.fraction < 1.0f)
+		{
+			gi.sound(self, CHAN_BODY, sounds[SND_INWATER], 1.0f, ATTN_NORM, 0.0f);
+			gi.sound(self, CHAN_BODY, gi.soundindex("player/Water Enter.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: why 2 similar sounds? Use SND_INWATER only?
+
+			vec3_t fx_dir = { 0.0f, 0.0f, self->velocity[2] };
+			VectorNormalize(fx_dir);
+
+			// FIXME: Size proportional to entry velocity.
+			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7, trace.endpos, "bd", 128 | 96, fx_dir);
+
+			self->count = true;
+		}
 	}
 }
 
