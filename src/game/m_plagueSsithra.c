@@ -846,22 +846,25 @@ void ssithraCheckJump(edict_t* self) //TODO: rename to SsithraCheckJump.
 	}
 }
 
-void ssithraForward (edict_t *self, float forwarddist)
-{//simple addition of velocity, if on ground or not
-vec3_t forward;
-
+// Simple addition of velocity, if on ground or not.
+void ssithraForward(edict_t* self, float forward_dist) //TODO: rename to ssithra_set_forward_velocity.
+{
 	ssithraCheckInWater(self);
 
-	if(self->groundentity)//on ground
+	if (self->groundentity != NULL) // On ground.
 	{
 		VectorClear(self->velocity);
-		return;
 	}
+	else // In air (or water?).
+	{
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	AngleVectors(self->s.angles,forward,NULL,NULL);
-	VectorScale(forward,forwarddist,forward);
-	forward[2] = self->velocity[2];
-	VectorCopy(forward,self->velocity);
+		Vec3ScaleAssign(forward_dist, forward);
+		forward[2] = self->velocity[2];
+
+		VectorCopy(forward, self->velocity);
+	}
 }
 
 void ssithraCheckLeaveWaterSplash (edict_t *self)
