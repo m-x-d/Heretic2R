@@ -1755,68 +1755,6 @@ static void ReflectedSsithraArrowInit(edict_t* self, edict_t* arrow) //mxd. Name
 	G_LinkMissile(arrow);
 }
 
-void ssithraAlphaArrowTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
-{
-	float damage;
-	vec3_t	normal;
-	edict_t	*Arrow;
-	
-	// are we reflecting ?
-	if(EntReflecting(other, true, true))
-	{
-		Arrow = G_Spawn();
-
-		ReflectedSsithraArrowInit(self,Arrow);
-
-		gi.CreateEffect(&Arrow->s,
-			FX_SSITHRA_ARROW,
-			CEF_OWNERS_ORIGIN,
-			NULL,
-			"bv",
-			FX_SS_MAKE_ARROW2,
-			Arrow->velocity);
-
-		G_SetToFree(self);
-
-		return;
-	}
-
-
-	VectorSet(normal, 0, 0, 1);
-	if(plane)
-	{
-		if(plane->normal)
-		{
-			VectorCopy(plane->normal, normal);
-		}
-	}
-
-	if(other->takedamage)
-	{
-		damage = flrand(SSITHRA_DMG_MIN,SSITHRA_DMG_MAX);
-		T_Damage(other,self,self->owner,self->movedir,self->s.origin,normal,damage,0,0,MOD_DIED);
-	}
-	else
-		damage = 0;
-
-	T_DamageRadius(self, self->owner, self->owner, SSITHRA_DMG_ARROW_RADIUS, 
-			(20 - damage*2), (30 - damage), DAMAGE_ATTACKER_IMMUNE,MOD_DIED);
-
-	VectorNormalize(self->velocity);
-
-	gi.CreateEffect(NULL,
-		FX_SSITHRA_ARROW,
-		0,
-		self->s.origin, 
-		"bv",
-		FX_SS_EXPLODE_ARROW2,
-		self->velocity);
-
-	VectorClear(self->velocity);
-
-	G_FreeEdict(self);
-}
-
 void ssithraArrowTouch (edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *Surface)
 {
 	float damage;
