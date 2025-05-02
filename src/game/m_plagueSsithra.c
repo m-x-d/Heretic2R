@@ -1596,17 +1596,18 @@ void ssithraCollapse(edict_t* self) //TODO: rename to ssithra_collapse.
 	}
 }
 
-void ssithraKillSelf (edict_t *self)
+void ssithraKillSelf(edict_t* self) //TODO: rename to ssithra_kill_self.
 {
-	vec3_t gore_spot;
-
-	self->svflags &= ~SVF_DEADMONSTER;	// now treat as a different content type
+	self->svflags &= ~SVF_DEADMONSTER; // Now treat as a different content type.
 	self->msgHandler = DefaultMsgHandler;
-	self->deadflag = false;
-	VectorCopy(self->s.origin,gore_spot);
-	gore_spot[2]+=12;
+	self->deadflag = DEAD_NO;
+
+	vec3_t gore_spot;
+	VectorCopy(self->s.origin, gore_spot);
+	gore_spot[2] += 12.0f;
+
 	self->health = 1;
-	T_Damage (self, self, self, vec3_origin, gore_spot, vec3_origin, 10, 20,0,MOD_DIED);
+	T_Damage(self, self, self, vec3_origin, gore_spot, vec3_origin, 10, 20, 0, MOD_DIED);
 	self->health = -69;
 }
 
