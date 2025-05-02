@@ -531,34 +531,36 @@ void ssithraDiveCheck(edict_t* self) //TODO: rename to ssithra_check_dive.
 	}
 }
 
-void ssithraApplyJump (edict_t *self)
+void ssithraApplyJump(edict_t* self) //TODO: rename to ssithra_apply_jump.
 {
-	if(self->spawnflags & MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
 		return;
 
-	self->jump_time = level.time + 1;
+	self->jump_time = level.time + 1.0f;
 	VectorCopy(self->movedir, self->velocity);
 	VectorNormalize(self->movedir);
 }
 
-void ssithraJump (edict_t *self, float upspd,float fwdspd,float rtspd)
-{//fixme: do checks and traces first
-	vec3_t up, forward, right;
-
-	if(self->spawnflags & MSF_FIXED)
+void ssithraJump(edict_t* self, float up_speed, float forward_speed, float right_speed) //TODO: rename to ssithra_jump.
+{
+	//FIXME: do checks and traces first.
+	if (self->spawnflags & MSF_FIXED)
 		return;
 
-	if((self->s.fmnodeinfo[MESH__LEFTLEG].flags & FMNI_NO_DRAW)||
-		(self->s.fmnodeinfo[MESH__RIGHTLEG].flags & FMNI_NO_DRAW))
+	if ((self->s.fmnodeinfo[MESH__LEFTLEG].flags & FMNI_NO_DRAW) || (self->s.fmnodeinfo[MESH__RIGHTLEG].flags & FMNI_NO_DRAW))
 	{
-		upspd*=2;
-		fwdspd/=2;
+		up_speed *= 2.0f;
+		forward_speed /= 2.0f;
 	}
 
-	AngleVectors(self->s.angles,forward,right,up);
-	VectorMA(self->velocity,upspd,up,self->velocity);
-	VectorMA(self->velocity,fwdspd,forward,self->velocity);
-	VectorMA(self->velocity,rtspd,right,self->velocity);
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
+
+	VectorMA(self->velocity, up_speed, up, self->velocity);
+	VectorMA(self->velocity, forward_speed, forward, self->velocity);
+	VectorMA(self->velocity, right_speed, right, self->velocity);
 }
 
 void ssithraNamorJump (edict_t *self)
