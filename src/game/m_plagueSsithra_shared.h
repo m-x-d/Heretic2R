@@ -142,7 +142,7 @@ extern const animmove_t ssithra_move_duckloop;
 extern const animmove_t ssithra_move_unduck;
 extern const animmove_t ssithra_move_lunge;
 
-extern void ssithra_decide_gallop(edict_t* self);
+extern void ssithra_decide_run(edict_t* self);
 extern void ssithra_decide_swimforward(edict_t* self);
 extern void ssithra_decide_backpedal(edict_t* self);
 

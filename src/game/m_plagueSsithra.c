@@ -222,7 +222,7 @@ static void SsithraDecideStand(edict_t* self) //mxd. Named 'ssithra_decide_stand
 	}
 }
 
-void ssithra_decide_gallop(edict_t* self) //TODO: rename to ssithra_decide_run.
+void ssithra_decide_run(edict_t* self) //mxd. Named 'ssithra_decide_gallop' in original logic.
 {
 	if (self->spawnflags & MSF_FIXED)
 	{
@@ -1495,7 +1495,7 @@ void ssithra_pain_react(edict_t* self)
 	else
 	{
 		// Go get him!
-		ssithra_decide_gallop(self);
+		ssithra_decide_run(self);
 	}
 }
 

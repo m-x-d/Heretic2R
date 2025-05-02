@@ -205,7 +205,7 @@ static const animframe_t ssithra_frames_unduck[] =
 	{ FRAME_duckshoot2,	NULL, 0, 0, 0, ai_charge2, 0, ssithraUnCrouch },
 	{ FRAME_duckshoot1,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t ssithra_move_unduck = { 3, ssithra_frames_unduck, ssithra_decide_gallop };
+const animmove_t ssithra_move_unduck = { 3, ssithra_frames_unduck, ssithra_decide_run };
 
 // Plague Ssithra Duck Loop.
 static const animframe_t ssithra_frames_duckloop[] =
@@ -242,7 +242,7 @@ static const animframe_t ssithra_frames_duck1[] =
 	{ FRAME_duckshoot5, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_duckshoot6, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ssithra_move_duck1 = { 6, ssithra_frames_duck1, ssithra_decide_gallop };
+const animmove_t ssithra_move_duck1 = { 6, ssithra_frames_duck1, ssithra_decide_run };
 
 // Plague Ssithra Gallop.
 static const animframe_t ssithra_frames_gallop1[] =
@@ -256,7 +256,7 @@ static const animframe_t ssithra_frames_gallop1[] =
 	{ FRAME_gallop7, NULL, 0, 0, 0, ssithra_ai_run, 24, NULL },
 	{ FRAME_gallop8, NULL, 0, 0, 0, ssithra_ai_run, 22, NULL },
 };
-const animmove_t ssithra_move_gallop1 = { 8, ssithra_frames_gallop1, ssithra_decide_gallop };
+const animmove_t ssithra_move_gallop1 = { 8, ssithra_frames_gallop1, ssithra_decide_run };
 
 // Plague Ssithra Jump From Buoy.
 static const animframe_t ssithra_frames_fjump[] =
@@ -270,7 +270,7 @@ static const animframe_t ssithra_frames_fjump[] =
 	{ FRAME_bound15, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_bound16, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ssithra_move_fjump = { 8, ssithra_frames_fjump, ssithra_decide_gallop };
+const animmove_t ssithra_move_fjump = { 8, ssithra_frames_fjump, ssithra_decide_run };
 
 // Plague Ssithra Idle Basic.
 static const animframe_t ssithra_frames_idlebasic1[] =
@@ -360,7 +360,7 @@ static const animframe_t ssithra_frames_melee1[] =
 	{ FRAME_melee6, NULL, 0, 0, 0, ai_charge2,  3, NULL },
 	{ FRAME_melee7, NULL, 0, 0, 0, ai_charge2,  3, NULL },
 };
-const animmove_t ssithra_move_melee1 = { 7, ssithra_frames_melee1, ssithra_decide_gallop };
+const animmove_t ssithra_move_melee1 = { 7, ssithra_frames_melee1, ssithra_decide_run };
 
 // Plague Ssithra Melee Stand.
 static const animframe_t ssithra_frames_meleest[] =
@@ -373,7 +373,7 @@ static const animframe_t ssithra_frames_meleest[] =
 	{ FRAME_Melee_stand6, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_Melee_stand7, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t ssithra_move_meleest = { 7, ssithra_frames_meleest, ssithra_decide_gallop };
+const animmove_t ssithra_move_meleest = { 7, ssithra_frames_meleest, ssithra_decide_run };
 
 // Plague Ssithra Namor.
 static const animframe_t ssithra_frames_namor1[] =
@@ -404,7 +404,7 @@ static const animframe_t ssithra_frames_namor1[] =
 	{ FRAME_namor24,	NULL, 0, 0, 0, ssithraForward, 120, ssithraCheckLeaveWaterSplash },
 	{ FRAME_namor25,	NULL, 0, 0, 0, ssithraForward,  60, ssithraCheckLeaveWaterSplash },
 };
-const animmove_t ssithra_move_namor1 = { 25, ssithra_frames_namor1, ssithra_decide_gallop };
+const animmove_t ssithra_move_namor1 = { 25, ssithra_frames_namor1, ssithra_decide_run };
 
 // Plague Ssithra Pain A.
 static const animframe_t ssithra_frames_pain_a1[] =
@@ -426,7 +426,7 @@ static const animframe_t ssithra_frames_shoot1[] =
 	{ FRAME_shoot6, NULL, 0, 0, 0, ai_charge2, 0, ssithraCheckLoop },
 	{ FRAME_shoot5, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 }; // Frames 7 - 11 not used - weird anim for turning while shooting only!
-const animmove_t ssithra_move_shoot1 = { 8, ssithra_frames_shoot1, ssithra_decide_gallop };
+const animmove_t ssithra_move_shoot1 = { 8, ssithra_frames_shoot1, ssithra_decide_run };
 
 // Plague Ssithra Lunge (from shooting).
 static const animframe_t ssithra_frames_lunge[] =
@@ -442,7 +442,7 @@ static const animframe_t ssithra_frames_lunge[] =
 	{ FRAME_shoot20, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoot21, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t ssithra_move_lunge = { 10, ssithra_frames_lunge, ssithra_decide_gallop };
+const animmove_t ssithra_move_lunge = { 10, ssithra_frames_lunge, ssithra_decide_run };
 
 // Plague Ssithra Startle.
 static const animframe_t ssithra_frames_startle1[] =
@@ -493,7 +493,7 @@ static const animframe_t ssithra_frames_spinleft_go[] =
 {
 	{ FRAME_idlebasic41, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ssithra_move_spinleft_go = { 1, ssithra_frames_spinleft_go, ssithra_decide_gallop };
+const animmove_t ssithra_move_spinleft_go = { 1, ssithra_frames_spinleft_go, ssithra_decide_run };
 
 // Plague Ssithra Spin Left.
 static const animframe_t ssithra_frames_spinleft[] =
@@ -519,14 +519,14 @@ static const animframe_t ssithra_frames_spinleft[] =
 	{ FRAME_idlebasic59, NULL, 0, 0, 0, ai_spin, 30, NULL },
 	{ FRAME_idlebasic60, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ssithra_move_spinleft = { 20, ssithra_frames_spinleft, ssithra_decide_gallop };
+const animmove_t ssithra_move_spinleft = { 20, ssithra_frames_spinleft, ssithra_decide_run };
 
 // Plague Ssithra Spin Right Start.
 static const animframe_t ssithra_frames_spinright_go[] =
 {
 	{ FRAME_idlebasic41, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ssithra_move_spinright_go = { 1, ssithra_frames_spinright_go, ssithra_decide_gallop };
+const animmove_t ssithra_move_spinright_go = { 1, ssithra_frames_spinright_go, ssithra_decide_run };
 
 // Plague Ssithra Spin Right.
 static const animframe_t ssithra_frames_spinright[] =
@@ -552,7 +552,7 @@ static const animframe_t ssithra_frames_spinright[] =
 	{ FRAME_idlebasic79, NULL, 0, 0, 0, ai_spin, -30, NULL },
 	{ FRAME_idlebasic80, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ssithra_move_spinright = { 20, ssithra_frames_spinright, ssithra_decide_gallop };
+const animmove_t ssithra_move_spinright = { 20, ssithra_frames_spinright, ssithra_decide_run };
 
 // Plague Ssithra Swim Forward.
 static const animframe_t ssithra_frames_swimforward1[] =
@@ -729,7 +729,7 @@ static const animframe_t ssithra_frames_run1[] =
 	{ FRAME_run7, NULL, 0, 0, 0, ssithra_ai_run, 20, NULL },
 	{ FRAME_run8, NULL, 0, 0, 0, ssithra_ai_run, 18, NULL },
 };
-const animmove_t ssithra_move_run1 = { 8, ssithra_frames_run1, ssithra_decide_gallop };
+const animmove_t ssithra_move_run1 = { 8, ssithra_frames_run1, ssithra_decide_run };
 
 // Plague Ssithra Face And Namor.
 static const animframe_t ssithra_frames_faceandnamor[] =
