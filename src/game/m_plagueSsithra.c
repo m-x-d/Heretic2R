@@ -1431,11 +1431,10 @@ static void SsithraDismember(edict_t* self, int damage, HitLocation_t hl) //mxd.
 	}
 }
 
-void ssithra_dead_pain (edict_t *self, G_Message_t *msg)
+static void SsithraDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_dead_pain' in original logic.
 {
-	if(msg)
-		if(!(self->svflags & SVF_PARTS_GIBBED))
-			DismemberMsgHandler(self, msg);
+	if (msg != NULL && !(self->svflags & SVF_PARTS_GIBBED))
+		DismemberMsgHandler(self, msg);
 }
 
 void ssithra_pain(edict_t *self, G_Message_t *msg)
@@ -2689,7 +2688,7 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_JUMP] = SsithraJumpMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_FALLBACK] = ssithra_backup;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH_PAIN] = ssithra_dead_pain;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH_PAIN] = SsithraDeathPainMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_EVADE] = ssithra_evade;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_CHECK_MOOD] = ssithra_check_mood;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_VOICE_SIGHT] = ssithra_sight;
