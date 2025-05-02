@@ -1563,15 +1563,15 @@ void ssithra_dead(edict_t* self)
 	M_EndDeath(self);
 }
 
-void ssithraWaterDead(edict_t *self)
+void ssithraWaterDead(edict_t* self) //TODO: rename to ssithra_water_dead.
 {
 	self->deadflag = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
-			
-	self->think = FishDeadFloatThink; //TODO: add our own version of fish_deadfloat?
-	self->nextthink = level.time + 0.1;
 
-	gi.linkentity (self);
+	self->think = FishDeadFloatThink; //TODO: add our own version of fish_deadfloat?
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+	gi.linkentity(self);
 }
 
 void ssithraCollapse (edict_t *self)
