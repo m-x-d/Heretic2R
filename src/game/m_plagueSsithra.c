@@ -158,18 +158,6 @@ static void SsithraWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_WALK1));
 }
 
-void ssithra_spinright_go(edict_t *self)
-{//ANIM_STARTLE?
-//	gi.dprintf("GO: Spinning right\n");
-	SetAnim(self,ANIM_SPINRIGHT_GO);
-}
-
-void ssithra_spinleft_go(edict_t *self)
-{//ANIM_STARTLE?
-//	gi.dprintf("GO: Spinning right\n");
-	SetAnim(self,ANIM_SPINLEFT_GO);
-}
-
 void ssithraStartle (edict_t *self)
 {
 //	gi.dprintf("Startled!\n");
