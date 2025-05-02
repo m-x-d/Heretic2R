@@ -1682,29 +1682,18 @@ static void SsithraMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	}
 }
 
-void ssithra_backup(edict_t *self, G_Message_t *msg)
+static void SsithraFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_backup' in original logic.
 {
-	if (M_ValidTarget(self, self->enemy))
-	{
-		if(self->spawnflags&MSF_FIXED)
-		{
-			SetAnim(self, ANIM_DELAY);
-			return;
-		}
-		
-		if (ssithraCheckInWater(self))
-		{
-			SetAnim(self, ANIM_WATER_SHOOT);
-		}
-		else
-		{
-			SetAnim(self, ANIM_BACKPEDAL);
-		}
-	}
-	else
+	if (!M_ValidTarget(self, self->enemy))
 	{
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
 	}
+
+	if (self->spawnflags & MSF_FIXED)
+		SetAnim(self, ANIM_DELAY);
+	else
+		SetAnim(self, (ssithraCheckInWater(self) ? ANIM_WATER_SHOOT : ANIM_BACKPEDAL));
 }
 
 void ssithraSwipe (edict_t *self)
@@ -2628,7 +2617,7 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH] = SsithraDeathMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_JUMP] = SsithraJumpMsgHandler;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_FALLBACK] = ssithra_backup;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_FALLBACK] = SsithraFallbackMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH_PAIN] = SsithraDeathPainMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_EVADE] = ssithra_evade;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_CHECK_MOOD] = ssithra_check_mood;
