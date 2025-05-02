@@ -1729,28 +1729,30 @@ void ssithraSwipe(edict_t* self) //TODO: rename to ssithra_swipe.
 	}
 }
 
-// the arrow needs to bounce
-void make_arrow_reflect(edict_t *self, edict_t *Arrow)
+// The arrow needs to bounce.
+static void ReflectedSsithraArrowInit(edict_t* self, edict_t* arrow) //mxd. Named 'make_arrow_reflect' in original logic.
 {
-	create_ssith_arrow(Arrow);
-	Arrow->s.modelindex = self->s.modelindex;
-	VectorCopy(self->s.origin, Arrow->s.origin);
-	Arrow->owner = self->owner;
-	Arrow->enemy = self->enemy;
+	create_ssith_arrow(arrow);
 
-	Arrow->touch=self->touch;
-	Arrow->nextthink=self->nextthink;
-	Arrow->think=G_FreeEdict;
-	Arrow->health = self->health;
+	arrow->s.modelindex = self->s.modelindex;
+	VectorCopy(self->s.origin, arrow->s.origin);
+	arrow->owner = self->owner;
+	arrow->enemy = self->enemy;
 
-	Create_rand_relect_vect(self->velocity, Arrow->velocity);
+	arrow->touch = self->touch;
+	arrow->health = self->health;
 
-	vectoangles(Arrow->velocity, Arrow->s.angles);
-	Arrow->s.angles[YAW]+=90;
+	arrow->think = G_FreeEdict;
+	arrow->nextthink = self->nextthink;
 
-	Vec3ScaleAssign(SSITHRA_SPOO_SPEED/2,Arrow->velocity);
+	Create_rand_relect_vect(self->velocity, arrow->velocity);
 
-	G_LinkMissile(Arrow);
+	vectoangles(arrow->velocity, arrow->s.angles);
+	arrow->s.angles[YAW] += 90.0f;
+
+	Vec3ScaleAssign(SSITHRA_SPOO_SPEED / 2.0f, arrow->velocity);
+
+	G_LinkMissile(arrow);
 }
 
 void ssithraAlphaArrowTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
@@ -1764,7 +1766,7 @@ void ssithraAlphaArrowTouch(edict_t *self, edict_t *other, cplane_t *plane, csur
 	{
 		Arrow = G_Spawn();
 
-		make_arrow_reflect(self,Arrow);
+		ReflectedSsithraArrowInit(self,Arrow);
 
 		gi.CreateEffect(&Arrow->s,
 			FX_SSITHRA_ARROW,
@@ -1831,7 +1833,7 @@ void ssithraArrowTouch (edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t 
 	{
 		Arrow = G_Spawn();
 
-		make_arrow_reflect(self,Arrow);
+		ReflectedSsithraArrowInit(self,Arrow);
 
 		gi.CreateEffect( NULL,
 					 FX_M_EFFECTS,
