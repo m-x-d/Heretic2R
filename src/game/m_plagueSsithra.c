@@ -158,59 +158,49 @@ static void SsithraWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_WALK1));
 }
 
-void ssithra_gallop(edict_t *self, G_Message_t *msg)
+static void SsithraRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_gallop' in original logic.
 {
-	if(self->curAnimID == ANIM_SPINRIGHT)
+	if (self->curAnimID == ANIM_SPINRIGHT)
 	{
 		SetAnim(self, ANIM_SPINRIGHT_GO);
 		return;
 	}
 
-	if(self->curAnimID == ANIM_SPINLEFT)
+	if (self->curAnimID == ANIM_SPINLEFT)
 	{
 		SetAnim(self, ANIM_SPINLEFT_GO);
 		return;
 	}
 
-	if(!self->enemy)
+	if (self->enemy == NULL || self->enemy->health <= 0)
 	{
-		SetAnim(self,ANIM_STAND1);
+		SetAnim(self, ANIM_STAND1);
 		return;
 	}
 
-	if(self->enemy->health<=0)
-	{
-		SetAnim(self,ANIM_STAND1);
-		return;
-	}
-
-	if(self->spawnflags&MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
 	{
 		SetAnim(self, ANIM_DELAY);
 		return;
 	}
 
-	if(self->spawnflags&MSF_SSITHRA_NAMOR)//Namor
+	if (self->spawnflags & MSF_SSITHRA_NAMOR) // Out of water jump.
 	{
 		self->spawnflags &= ~MSF_SSITHRA_NAMOR;
-		SetAnim(self,ANIM_NAMOR);
+		SetAnim(self, ANIM_NAMOR);
+
+		return;
 	}
-	else if(self->spawnflags&MSF_SSITHRA_SPIN)//Spin
+
+	if (self->spawnflags & MSF_SSITHRA_SPIN) // Spin.
 	{
 		self->spawnflags &= ~MSF_SSITHRA_SPIN;
-		if(irand(0,1))
-		{
-//			gi.dprintf("Spinning right\n");
-			SetAnim(self,ANIM_SPINRIGHT);
-		}
-		else
-		{
-//			gi.dprintf("Spinning leftt\n");
-			SetAnim(self,ANIM_SPINLEFT);
-		}
+		SetAnim(self, (irand(0, 1) == 1 ? ANIM_SPINRIGHT : ANIM_SPINLEFT));
+
+		return;
 	}
-	else
-		SetAnim(self, ANIM_RUN1);
+
+	SetAnim(self, ANIM_RUN1);
 }
 
 void ssithra_idlebasic(edict_t *self, G_Message_t *msg)
@@ -2860,7 +2850,7 @@ void SsithraStaticsInit(void)
 
 	classStatics[CID_SSITHRA].msgReceivers[MSG_STAND] = SsithraStandMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_WALK] = SsithraWalkMsgHandler;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_RUN] = ssithra_gallop;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_RUN] = SsithraRunMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_MELEE] = ssithra_melee;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_MISSILE] = ssithra_missile;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_WATCH] = ssithra_idlebasic;
