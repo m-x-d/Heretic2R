@@ -1,36 +1,30 @@
-//==============================================================================
 //
 // m_plagueSsitra.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
 
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "buoy.h"
-#include "vector.h"
-
+#include <float.h> //mxd
 #include "m_plaguesSithra.h"
 #include "m_plaguesSithra_shared.h"
 #include "m_plaguesSithra_anim.h"
 #include "g_debris.h" //mxd
-#include "g_HitLocation.h"
+#include "g_DefaultMessageHandler.h"
 #include "g_obj.h" //mxd
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 #include "m_stats.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_monster.h"
+#include "g_local.h"
 
-void ssithra_blocked (edict_t *self, trace_t *trace);
-void create_ssith_arrow(edict_t *Arrow);
-qboolean ssithraCheckInWater (edict_t *self);
+static void create_ssith_arrow(edict_t* Arrow); //TODO: remove.
+qboolean ssithraCheckInWater(edict_t* self); //TODO: remove.
+extern void FishDeadFloatThink(edict_t* self); //TODO: move to g_monster.c as M_DeadFloatThink?..
 
-int Bit_for_MeshNode [16] =
+static int Bit_for_MeshNode [16] = //TODO: remove.
 {
 	BIT_POLY,
 	BIT_LOWERTORSO,
@@ -1839,8 +1833,6 @@ void ssithra_dead(edict_t *self)
 	M_EndDeath(self);
 }
 
-float hold_z;
-void FishDeadFloatThink(edict_t *self);
 void ssithraWaterDead(edict_t *self)
 {
 	self->deadflag = DEAD_DEAD;
