@@ -517,7 +517,7 @@ void ssithra_check_dive(edict_t* self) //mxd. Named 'ssithraDiveCheck' in origin
 	}
 }
 
-void ssithraApplyJump(edict_t* self) //TODO: rename to ssithra_apply_jump.
+void ssithra_apply_jump(edict_t* self) //mxd. Named 'ssithraApplyJump' in original logic.
 {
 	if (self->spawnflags & MSF_FIXED)
 		return;

@@ -261,7 +261,7 @@ const animmove_t ssithra_move_gallop1 = { 8, ssithra_frames_gallop1, ssithra_dec
 // Plague Ssithra Jump From Buoy.
 static const animframe_t ssithra_frames_fjump[] =
 {
-	{ FRAME_bound09, NULL, 0, 0, 0, NULL, 0, ssithraApplyJump },
+	{ FRAME_bound09, NULL, 0, 0, 0, NULL, 0, ssithra_apply_jump },
 	{ FRAME_bound10, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_bound11, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_bound12, NULL, 0, 0, 0, NULL, 0, NULL },
@@ -431,7 +431,7 @@ const animmove_t ssithra_move_shoot1 = { 8, ssithra_frames_shoot1, ssithra_decid
 // Plague Ssithra Lunge (from shooting).
 static const animframe_t ssithra_frames_lunge[] =
 {
-	{ FRAME_shoot12, NULL, 0, 0, 0, ai_charge2, 0, ssithraApplyJump },
+	{ FRAME_shoot12, NULL, 0, 0, 0, ai_charge2, 0, ssithra_apply_jump },
 	{ FRAME_shoot13, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoot14, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoot15, NULL, 0, 0, 0, ai_charge2, 0, NULL },
