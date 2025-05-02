@@ -867,32 +867,30 @@ void ssithraForward(edict_t* self, float forward_dist) //TODO: rename to ssithra
 	}
 }
 
-void ssithraCheckLeaveWaterSplash (edict_t *self)
+void ssithraCheckLeaveWaterSplash(edict_t* self) //TODO: rename to ssithra_spawn_water_exit_splash.
 {
-	vec3_t dir, endpos;
-	trace_t trace;
-
-	if(self->count)
+	if (self->count || ssithraCheckInWater(self))
 		return;
 
-	VectorCopy(self->s.origin,endpos);
-	endpos[2]+=12;
-	if(!ssithraCheckInWater(self))
+	vec3_t dir;
+	VectorCopy(self->velocity, dir);
+	VectorNormalize(dir);
+
+	vec3_t end_pos;
+	VectorMA(self->s.origin, -256.0f, dir, end_pos);
+
+	trace_t trace;
+	gi.trace(self->s.origin, vec3_origin, vec3_origin, end_pos, self, MASK_WATER, &trace);
+
+	if (trace.fraction < 1.0f)
 	{
-		VectorCopy(self->velocity,dir);
-		VectorNormalize(dir);
-		VectorMA(self->s.origin,-256,dir,endpos);
-		gi.trace(self->s.origin,vec3_origin,vec3_origin,endpos,self,MASK_WATER,&trace);
-		if(trace.fraction>=1.0)
-			return;//?!
-//		gi.dprintf("Out water splash\n");
-		gi.sound(self,CHAN_BODY,sounds[SND_NAMOR],1,ATTN_NORM,0);
-		dir[0]=dir[1]=0;
-		dir[2]=300;
-		// FIXME: Size propn. to exit velocity.
-		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0,
-			trace.endpos,	"bd", 128|96, dir);
-		self->count= true;
+		gi.sound(self, CHAN_BODY, sounds[SND_NAMOR], 1.0f, ATTN_NORM, 0.0f);
+
+		// FIXME: Size proportional to exit velocity.
+		const vec3_t fx_dir = { 0.0f, 0.0f, 300.0f }; //TODO: normalized in ssithraCheckHitWaterSplash(). Which is correct?
+		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, trace.endpos, "bd", 128 | 96, fx_dir);
+
+		self->count = true;
 	}
 }
 
