@@ -20,7 +20,7 @@
 #include "g_monster.h"
 #include "g_local.h"
 
-static void create_ssith_arrow(edict_t* Arrow); //TODO: remove.
+static void SsithraArrowInit(edict_t* arrow); //TODO: remove.
 qboolean ssithraCheckInWater(edict_t* self); //TODO: remove.
 extern void FishDeadFloatThink(edict_t* self); //TODO: move to g_monster.c as M_DeadFloatThink?..
 
@@ -1732,7 +1732,7 @@ void ssithraSwipe(edict_t* self) //TODO: rename to ssithra_swipe.
 // The arrow needs to bounce.
 static void ReflectedSsithraArrowInit(edict_t* self, edict_t* arrow) //mxd. Named 'make_arrow_reflect' in original logic.
 {
-	create_ssith_arrow(arrow);
+	SsithraArrowInit(arrow);
 
 	arrow->s.modelindex = self->s.modelindex;
 	VectorCopy(self->s.origin, arrow->s.origin);
@@ -1831,18 +1831,18 @@ static void SsithraDuckArrowTouch(edict_t* self, edict_t* other, cplane_t* plane
 	}
 }
 
-void create_ssith_arrow(edict_t *Arrow)
+static void SsithraArrowInit(edict_t* arrow) //mxd. Named 'create_ssith_arrow' in original logic.
 {
-	Arrow->movetype = MOVETYPE_FLYMISSILE;
-	Arrow->solid = SOLID_BBOX;
-	Arrow->classname = "Ssithra_Arrow";
-	Arrow->touch = SsithraArrowTouch;
-	Arrow->enemy = NULL;
-	Arrow->clipmask = MASK_SHOT;
-	Arrow->s.scale = 0.75;
-	Arrow->s.effects |= EF_CAMERA_NO_CLIP;
-	Arrow->svflags |= SVF_ALWAYS_SEND;
-	Arrow->s.modelindex = gi.modelindex("models/objects/exarrow/tris.fm");
+	arrow->movetype = MOVETYPE_FLYMISSILE;
+	arrow->solid = SOLID_BBOX;
+	arrow->classname = "Ssithra_Arrow";
+	arrow->touch = SsithraArrowTouch;
+	arrow->enemy = NULL;
+	arrow->clipmask = MASK_SHOT;
+	arrow->s.scale = 0.75f;
+	arrow->s.effects |= EF_CAMERA_NO_CLIP;
+	arrow->svflags |= SVF_ALWAYS_SEND;
+	arrow->s.modelindex = (byte)gi.modelindex("models/objects/exarrow/tris.fm");
 }
 
 void ssithraDoArrow(edict_t *self, float z_offs)
@@ -1857,7 +1857,7 @@ void ssithraDoArrow(edict_t *self, float z_offs)
 	self->monsterinfo.attack_finished = level.time + 0.4;
 	Arrow = G_Spawn();
 
-	create_ssith_arrow(Arrow);
+	SsithraArrowInit(Arrow);
 
 	if(self->spawnflags & MSF_SSITHRA_ALPHA)
 		Arrow->touch=SsithraArrowTouch;
@@ -1937,7 +1937,7 @@ void ssithraDoDuckArrow(edict_t *self, float z_offs)
 	self->monsterinfo.attack_finished = level.time + 0.4;
 	Arrow = G_Spawn();
 
-	create_ssith_arrow(Arrow);
+	SsithraArrowInit(Arrow);
 
 	Arrow->touch=SsithraDuckArrowTouch;
 
@@ -2065,7 +2065,7 @@ void ssithraPanicArrow(edict_t *self)
 
 //	Arrow->s.modelindex=gi.modelindex("models/objects/projectiles/sitharrow/tris.fm");
 
-	create_ssith_arrow(Arrow);
+	SsithraArrowInit(Arrow);
 	
 	Arrow->owner=self;
 
