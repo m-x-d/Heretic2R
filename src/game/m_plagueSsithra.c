@@ -319,13 +319,12 @@ qboolean ssithraCheckInWater(edict_t* self) //TODO: rename to SsithraCheckInWate
 	return false;
 }
 
-void ssithraVOfs(edict_t *self, float pofs, float yofs, float rofs)
+void ssithraVOfs(edict_t* self, float pitch_offset, float yaw_offset, float roll_offset) //TODO: rename to ssithra_set_view_angle_offsets.
 {
-	self->v_angle_ofs[PITCH] = pofs;
-	self->v_angle_ofs[YAW] = yofs;
-	self->v_angle_ofs[ROLL] = rofs;
+	self->v_angle_ofs[PITCH] = pitch_offset;
+	self->v_angle_ofs[YAW] = yaw_offset;
+	self->v_angle_ofs[ROLL] = roll_offset;
 }
-
 
 //========================================
 //JUMPS
