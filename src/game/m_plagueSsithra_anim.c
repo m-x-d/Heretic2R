@@ -90,7 +90,7 @@ static const animframe_t ssithra_frames_backpedal1[] =
 	{ FRAME_backpedal9,		NULL, 0, 0, 0, ai_charge2, -5, NULL },
 	{ FRAME_backpedal10,	NULL, 0, 0, 0, ai_charge2, -5, NULL },
 };
-const animmove_t ssithra_move_backpedal1 = { 10, ssithra_frames_backpedal1, ssithra_decide_backpedal };
+const animmove_t ssithra_move_backpedal1 = { 10, ssithra_frames_backpedal1, ssithra_check_mood };
 
 // Plague Ssithra Bound.
 static const animframe_t ssithra_frames_bound1[] =

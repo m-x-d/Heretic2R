@@ -251,11 +251,6 @@ void ssithra_decide_swimforward(edict_t* self)
 	ssithra_check_mood(self);
 }
 
-void ssithra_decide_backpedal(edict_t* self) //TODO: replace with SsithraCheckMood()?
-{
-	ssithra_check_mood(self);
-}
-
 void ssithraCheckRipple(edict_t* self) //TODO: rename to ssithra_check_ripple.
 {
 	// No ripples while in cinematics.

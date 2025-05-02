@@ -144,7 +144,6 @@ extern const animmove_t ssithra_move_lunge;
 
 extern void ssithra_decide_run(edict_t* self);
 extern void ssithra_decide_swimforward(edict_t* self);
-extern void ssithra_decide_backpedal(edict_t* self);
 
 extern void ssithra_ai_run(edict_t* self, float distance); //mxd
 extern void ssithra_dead(edict_t* self);
