@@ -1906,83 +1906,68 @@ static void SsithraDoArrow(edict_t* self) //mxd. Named 'ssithraDoArrow' in origi
 	arrow->nextthink = level.time + 3.0f;
 }
 
-void ssithraDoDuckArrow(edict_t *self, float z_offs)
+static void SsithraDoDuckArrow(edict_t* self, const float z_offs) //mxd. Named 'ssithraDoDuckArrow' in original logic.
 {
-	vec3_t	Forward,check_lead, right, enemy_dir;
-	edict_t	*Arrow;
-
-	if(self->s.fmnodeinfo[MESH__RIGHTARM].flags&FMNI_NO_DRAW)
+	if (self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW)
 		return;
 
-	gi.sound(self, CHAN_WEAPON, sounds[SND_ARROW_FIRE] , 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_ARROW_FIRE], 1.0f, ATTN_NORM, 0.0f);
+	self->monsterinfo.attack_finished = level.time + 0.4f;
 
-	self->monsterinfo.attack_finished = level.time + 0.4;
-	Arrow = G_Spawn();
+	edict_t* arrow = G_Spawn();
 
-	SsithraArrowInit(Arrow);
+	SsithraArrowInit(arrow);
 
-	Arrow->touch=SsithraDuckArrowTouch;
+	arrow->touch = SsithraDuckArrowTouch;
+	arrow->owner = self;
+	arrow->enemy = self->enemy;
+	arrow->health = 0; // Tell the touch function what kind of arrow we are;
 
-	Arrow->owner=self;
-	Arrow->enemy=self->enemy;
-	
-	Arrow->health = 0; // tell the touch function what kind of arrow we are;
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	AngleVectors(self->s.angles, Forward, right, NULL);
+	VectorCopy(self->s.origin, arrow->s.origin);
+	VectorMA(arrow->s.origin, self->s.scale * 12.0f, forward, arrow->s.origin);
+	VectorMA(arrow->s.origin, self->s.scale * 4.0f, right, arrow->s.origin);
+	arrow->s.origin[2] += z_offs;
 
-	VectorCopy(self->s.origin,Arrow->s.origin);	
-	VectorMA(Arrow->s.origin, 12*self->s.scale, Forward, Arrow->s.origin);
-	VectorMA(Arrow->s.origin, 4*self->s.scale, right, Arrow->s.origin);
-	Arrow->s.origin[2] += z_offs;
+	arrow->s.scale = 1.5f;
 
-	Arrow->s.scale = 1.5;
+	vec3_t check_lead = { 0 };
 
-	VectorCopy(self->movedir,Arrow->movedir);
-	vectoangles(Forward,Arrow->s.angles);
-
-	VectorClear(check_lead);
-	if(skill->value > 1)
+	if (SKILL > SKILL_MEDIUM)
 	{
-		ExtrapolateFireDirection(self, Arrow->s.origin,
-			SSITHRA_SPOO_SPEED, self->enemy, 0.3, check_lead);
+		ExtrapolateFireDirection(self, arrow->s.origin, SSITHRA_SPOO_SPEED, self->enemy, 0.3f, check_lead);
 	}
 	else
 	{
-		VectorSubtract(self->enemy->s.origin, Arrow->s.origin, enemy_dir);
+		vec3_t enemy_dir;
+		VectorSubtract(self->enemy->s.origin, arrow->s.origin, enemy_dir);
 		VectorNormalize(enemy_dir);
-		if(DotProduct(enemy_dir, Forward) >= 0.3)
-		{
-			Forward[2] = enemy_dir[2];
-		}
+
+		if (DotProduct(enemy_dir, forward) >= 0.3f)
+			forward[2] = enemy_dir[2];
 	}
 
-	if(Vec3IsZero(check_lead))
-	{
-		VectorScale(Forward,SSITHRA_SPOO_SPEED*1.5,Arrow->velocity);
-	}
+	if (Vec3IsZero(check_lead))
+		VectorScale(forward, SSITHRA_SPOO_SPEED * 1.5f, arrow->velocity);
 	else
-	{
-		VectorScale(check_lead,SSITHRA_SPOO_SPEED*1.5,Arrow->velocity);
-	}
+		VectorScale(check_lead, SSITHRA_SPOO_SPEED * 1.5f, arrow->velocity);
 
-	VectorCopy(Arrow->velocity, Arrow->movedir);
-	VectorNormalize(Arrow->movedir);
-	vectoangles(Arrow->movedir, Arrow->s.angles);
-	Arrow->s.angles[PITCH] = anglemod(Arrow->s.angles[PITCH] * -1);
-	Arrow->s.angles[YAW] += 90;
+	VectorCopy(arrow->velocity, arrow->movedir);
+	VectorNormalize(arrow->movedir);
 
-	gi.CreateEffect(&Arrow->s,
-					FX_M_EFFECTS,
-					CEF_OWNERS_ORIGIN | CEF_FLAG6,
-					Arrow->s.origin,
-					"bv",
-					FX_MSSITHRA_ARROW,
-					Arrow->velocity);
-	
-	G_LinkMissile(Arrow); 
+	vectoangles(arrow->movedir, arrow->s.angles);
+	arrow->s.angles[PITCH] = anglemod(-arrow->s.angles[PITCH]);
+	arrow->s.angles[YAW] += 90.0f;
 
-	Arrow->nextthink=level.time+5;
-	Arrow->think=SsithraArrowExplodeThink;
+	gi.CreateEffect(&arrow->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_FLAG6, arrow->s.origin, "bv", FX_MSSITHRA_ARROW, arrow->velocity);
+
+	G_LinkMissile(arrow);
+
+	arrow->think = SsithraArrowExplodeThink;
+	arrow->nextthink = level.time + 5.0f;
 }
 
 void ssithraStartDuckArrow(edict_t *self)
@@ -2023,7 +2008,7 @@ void ssithraArrow(edict_t *self)
 		return;
 
 	if(self->spawnflags & MSF_SSITHRA_ALPHA)
-		ssithraDoDuckArrow(self, self->maxs[2] * 0.8);
+		SsithraDoDuckArrow(self, self->maxs[2] * 0.8);
 	else
 		SsithraDoArrow(self);
 }
@@ -2139,7 +2124,7 @@ void ssithraCheckDuckArrow (edict_t *self)
 //			{
 //				if(clear_visible(self, self->enemy))
 //				{
-					ssithraDoDuckArrow(self, -18);
+					SsithraDoDuckArrow(self, -18);
 //				}
 //			}
 		}
