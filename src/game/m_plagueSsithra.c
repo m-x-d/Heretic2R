@@ -833,7 +833,7 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 }
 
 // Simple addition of velocity, if on ground or not.
-void ssithraForward(edict_t* self, float forward_dist) //TODO: rename to ssithra_set_forward_velocity.
+void ssithra_set_forward_velocity(edict_t* self, float forward_dist) //mxd. Named 'ssithraForward' in original logic.
 {
 	SsithraCheckInWater(self);
 
