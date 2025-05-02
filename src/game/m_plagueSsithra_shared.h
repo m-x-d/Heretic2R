@@ -160,7 +160,7 @@ extern void ssithraNamorJump(edict_t* self);
 extern void ssithra_check_ripple(edict_t* self);
 extern void ssithraCheckFacedNamor(edict_t* self);
 extern void ssithra_check_namor(edict_t* self);
-extern void ssithraVOfs(edict_t* self, float pitch_offset, float yaw_offset, float roll_offset);
+extern void ssithra_set_view_angle_offsets(edict_t* self, float pitch_offset, float yaw_offset, float roll_offset);
 extern void ssithraPanicArrow(edict_t* self);
 extern void ssithra_pain_react(edict_t* self);
 extern void ssithra_water_shoot(edict_t* self);

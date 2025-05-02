@@ -307,11 +307,9 @@ void ssithra_ai_run(edict_t* self, float distance) //mxd. Originally defined in 
 	}
 }
 
-void ssithraVOfs(edict_t* self, float pitch_offset, float yaw_offset, float roll_offset) //TODO: rename to ssithra_set_view_angle_offsets.
+void ssithra_set_view_angle_offsets(edict_t* self, float pitch_offset, float yaw_offset, float roll_offset) //mxd. Named 'ssithraVOfs' in original logic.
 {
-	self->v_angle_ofs[PITCH] = pitch_offset;
-	self->v_angle_ofs[YAW] = yaw_offset;
-	self->v_angle_ofs[ROLL] = roll_offset;
+	VectorSet(self->v_angle_ofs, pitch_offset, yaw_offset, roll_offset);
 }
 
 static qboolean SsithraHaveWaterLedgeNearEnemy(edict_t* self) //mxd. Named 'ssithraWaterLedgeNearEnemy' in original logic.
