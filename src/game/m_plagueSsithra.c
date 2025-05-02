@@ -1611,25 +1611,17 @@ void ssithraKillSelf(edict_t* self) //TODO: rename to ssithra_kill_self.
 	self->health = -69;
 }
 
-//===========================================
-//SOUNDS
-//===========================================
-
-void ssithraSound(edict_t *self, float soundnum, float channel, float attenuation)
+void ssithraSound(edict_t* self, float sound_num, float channel, float attenuation) //TODO: rename to ssithra_sound.
 {
-	if(!channel)
-		channel = CHAN_AUTO;
-
-	if(!attenuation)
+	if ((int)attenuation == 0) //TODO: use ATTN_NORM in animframe_t instead.
 		attenuation = ATTN_NORM;
-	else if(attenuation == -1)
+	else if ((int)attenuation == -1) //TODO: use ATTN_NONE in animframe_t instead.
 		attenuation = ATTN_NONE;
 
-	if(soundnum == SND_SWIM)
-		if(irand(0,10)<5)
-			soundnum = SND_SWIM2;
+	if ((int)sound_num == SND_SWIM && irand(0, 10) < 5)
+		sound_num = SND_SWIM2;
 
-	gi.sound(self,channel,sounds[(int)(soundnum)],1,attenuation,0);
+	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
 }
 
 void ssithraGrowlSound(edict_t *self)
