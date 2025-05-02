@@ -721,7 +721,7 @@ const animmove_t ssithra_move_water_shoot1 = { 17, ssithra_frames_water_shoot1, 
 static const animframe_t ssithra_frames_run1[] =
 {
 	{ FRAME_run1, NULL, 0, 0, 0, ssithra_ai_run, 16, ssithra_check_bound },
-	{ FRAME_run2, NULL, 0, 0, 0, ssithra_ai_run, 18, ssithraDiveCheck },
+	{ FRAME_run2, NULL, 0, 0, 0, ssithra_ai_run, 18, ssithra_check_dive },
 	{ FRAME_run3, NULL, 0, 0, 0, ssithra_ai_run, 20, NULL },
 	{ FRAME_run4, NULL, 0, 0, 0, ssithra_ai_run, 18, NULL },
 	{ FRAME_run5, NULL, 0, 0, 0, ssithra_ai_run, 16, NULL },

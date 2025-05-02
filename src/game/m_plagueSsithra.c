@@ -436,7 +436,7 @@ void ssithra_check_bound(edict_t* self) //mxd. Named 'ssithraBoundCheck' in orig
 	}
 }
 
-void ssithraDiveCheck(edict_t* self) //TODO: rename to ssithra_check_dive.
+void ssithra_check_dive(edict_t* self) //mxd. Named 'ssithraDiveCheck' in original logic.
 {
 	//FIXME: do checks and traces first.
 	if (self->spawnflags & MSF_FIXED)
