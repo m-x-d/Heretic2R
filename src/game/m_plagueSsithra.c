@@ -1624,11 +1624,12 @@ void ssithraSound(edict_t* self, float sound_num, float channel, float attenuati
 	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
 }
 
-void ssithraGrowlSound(edict_t *self)
+void ssithraGrowlSound(edict_t* self) //TODO: rename to ssithra_growl_sound.
 {
-	if(!irand(0, 3))
-		gi.sound(self,CHAN_VOICE,sounds[irand(SND_GROWL1, SND_GROWL3)],1,ATTN_IDLE,0);
+	if (irand(0, 3) == 0)
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWL1, SND_GROWL3)], 1.0f, ATTN_IDLE, 0.0f);
 }
+
 //===========================================
 //ATTACKS
  //===========================================
