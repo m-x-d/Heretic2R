@@ -6,24 +6,9 @@
 
 #include "m_plaguessithra_anim.h"
 #include "m_plaguesSithra_shared.h"
-#include "c_ai.h"
 #include "mg_ai.h" //mxd
-#include "mg_guide.h" //mxd
 #include "g_monster.h"
 #include "g_local.h"
-
-qboolean ssithraCheckInWater(edict_t* self);
-
-void ssithra_ai_run(edict_t* self, float dist) //TODO: move to m_plagueSsithra.c.
-{
-	if (ssithraCheckInWater(self))
-	{
-		MG_SwimFlyToGoal(self, dist);//really need to get rid of this!
-		MG_Pathfind(self, false);
-	}
-	else
-		MG_AI_Run(self, dist);
-}
 
 // Plague Ssithra Idle - standing and looking around.
 static const animframe_t ssithra_frames_idle1[] =

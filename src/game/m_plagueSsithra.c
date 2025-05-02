@@ -21,7 +21,7 @@
 #include "g_local.h"
 
 static void SsithraArrowInit(edict_t* arrow); //TODO: remove.
-qboolean ssithraCheckInWater(edict_t* self); //TODO: remove.
+static qboolean ssithraCheckInWater(edict_t* self); //TODO: remove.
 extern void FishDeadFloatThink(edict_t* self); //TODO: move to g_monster.c as M_DeadFloatThink?..
 
 #pragma region ========================== Plague Ssithra Base Info ==========================
@@ -284,7 +284,7 @@ void ssithraCheckRipple(edict_t* self) //TODO: rename to ssithra_check_ripple.
 	}
 }
 
-qboolean ssithraCheckInWater(edict_t* self) //TODO: rename to SsithraCheckInWater, make static.
+static qboolean ssithraCheckInWater(edict_t* self) //TODO: rename to SsithraCheckInWater.
 {
 	// In water?
 	if ((self->flags & FL_INWATER) && !(self->flags & FL_INLAVA) && !(self->flags & FL_INSLIME) && (self->waterlevel > 2 || self->groundentity == NULL))
@@ -297,6 +297,19 @@ qboolean ssithraCheckInWater(edict_t* self) //TODO: rename to SsithraCheckInWate
 		self->monsterinfo.aiflags &= ~AI_NO_MELEE;
 
 	return false;
+}
+
+void ssithra_ai_run(edict_t* self, float distance) //mxd. Originally defined in m_plagueSsithra_anim.c.
+{
+	if (ssithraCheckInWater(self))
+	{
+		MG_SwimFlyToGoal(self, distance); // Really need to get rid of this!
+		MG_Pathfind(self, false);
+	}
+	else
+	{
+		MG_AI_Run(self, distance);
+	}
 }
 
 void ssithraVOfs(edict_t* self, float pitch_offset, float yaw_offset, float roll_offset) //TODO: rename to ssithra_set_view_angle_offsets.
@@ -2565,7 +2578,7 @@ void SP_obj_corpse_ssithra(edict_t* self)
 	self->s.frame = FRAME_death_a12; // Ths is the reason the function can't be put in g_obj.c.
 
 	self->s.skinnum = ((self->style == 0) ? 1 : 0); // Setting the skinnum correctly. //TODO: also handle alpha damaged (style 2) and alpha normal (style 3) skins? 
-	self->spawnflags |= SF_OBJ_NOPUSH;	// Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->svflags |= SVF_DEADMONSTER; // Doesn't block walking.
 
 	ObjectInit(self, 120, 80, MAT_FLESH, SOLID_BBOX);

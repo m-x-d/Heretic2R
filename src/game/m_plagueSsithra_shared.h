@@ -146,6 +146,7 @@ extern void ssithra_decide_gallop(edict_t* self);
 extern void ssithra_decide_swimforward(edict_t* self);
 extern void ssithra_decide_backpedal(edict_t* self);
 
+extern void ssithra_ai_run(edict_t* self, float distance); //mxd
 extern void ssithra_dead(edict_t* self);
 extern void ssithraSwipe(edict_t* self);
 extern void ssithraArrow(edict_t* self);
