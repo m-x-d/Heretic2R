@@ -1574,25 +1574,24 @@ void ssithraWaterDead(edict_t* self) //TODO: rename to ssithra_water_dead.
 	gi.linkentity(self);
 }
 
-void ssithraCollapse (edict_t *self)
+void ssithraCollapse(edict_t* self) //TODO: rename to ssithra_collapse.
 {
-	vec3_t gore_spot;
-
-	if(irand(0,10)<5)
+	if (irand(0, 10) < 5)
 	{
-		self->msgHandler = DefaultMsgHandler;
-		SetAnim(self,ANIM_HEADLESSLOOP);
+		SetAnim(self, ANIM_HEADLESSLOOP);
 		self->msgHandler = DyingMsgHandler;
-		return;
 	}
 	else
 	{
-		self->svflags &= ~SVF_DEADMONSTER;	// now treat as a different content type
+		self->svflags &= ~SVF_DEADMONSTER; // Now treat as a different content type.
 		self->msgHandler = DefaultMsgHandler;
-		VectorCopy(self->s.origin,gore_spot);
-		gore_spot[2]+=self->maxs[2]*0.75;
+
+		vec3_t gore_spot;
+		VectorCopy(self->s.origin, gore_spot);
+		gore_spot[2] += self->maxs[2] * 0.75f;
+
 		self->health = 1;
-		T_Damage (self, self, self, vec3_origin, gore_spot, vec3_origin, 10, 20,0,MOD_DIED);
+		T_Damage(self, self, self, vec3_origin, gore_spot, vec3_origin, 10, 20, 0, MOD_DIED);
 		self->health = -33;
 	}
 }
