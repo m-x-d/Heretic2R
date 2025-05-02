@@ -257,16 +257,15 @@ void ssithra_decide_gallop(edict_t* self) //TODO: rename to ssithra_decide_run.
 	SsithraCheckMood(self);
 }
 
-void ssithra_decide_swimforward(edict_t *self)
-{//fixme: climb out of water check!
+void ssithra_decide_swimforward(edict_t* self)
+{
+	//FIXME: climb out of water check!
 	self->count = false;
 	VectorClear(self->velocity);
 
-	if(!ssithraCheckInWater(self))
-	{//Not actually in water!
-		SetAnim(self, ANIM_RUN1);
-	}
-	else if(self->curAnimID == ANIM_WATER_SHOOT)
+	if (!ssithraCheckInWater(self))
+		SetAnim(self, ANIM_RUN1); // Not actually in water!
+	else if (self->curAnimID == ANIM_WATER_SHOOT)
 		SetAnim(self, ANIM_TRANSDOWN);
 
 	SsithraCheckMood(self);
