@@ -21,7 +21,7 @@
 #include "g_local.h"
 
 static void SsithraArrowInit(edict_t* arrow); //TODO: remove.
-static qboolean ssithraCheckInWater(edict_t* self); //TODO: remove.
+static qboolean SsithraCheckInWater(edict_t* self); //TODO: remove.
 extern void FishDeadFloatThink(edict_t* self); //TODO: move to g_monster.c as M_DeadFloatThink?..
 
 #pragma region ========================== Plague Ssithra Base Info ==========================
@@ -111,7 +111,7 @@ static void SsithraStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 		return;
 	}
 
-	if (ssithraCheckInWater(self))
+	if (SsithraCheckInWater(self))
 	{
 		SetAnim(self, ANIM_WATER_IDLE);
 		return;
@@ -190,7 +190,7 @@ static void SsithraWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 
 static void SsithraDecideStand(edict_t* self) //mxd. Named 'ssithra_decide_stand' in original logic.
 {
-	if (ssithraCheckInWater(self))
+	if (SsithraCheckInWater(self))
 	{
 		SetAnim(self, ANIM_WATER_IDLE);
 		return;
@@ -233,7 +233,7 @@ void ssithra_decide_run(edict_t* self) //mxd. Named 'ssithra_decide_gallop' in o
 	VectorClear(self->velocity);
 	self->count = false; //TODO: add ssithra_watersplash_spawned name.
 
-	SetAnim(self, (ssithraCheckInWater(self) ? ANIM_SWIMFORWARD : ANIM_RUN1));
+	SetAnim(self, (SsithraCheckInWater(self) ? ANIM_SWIMFORWARD : ANIM_RUN1));
 	ssithra_check_mood(self);
 }
 
@@ -243,7 +243,7 @@ void ssithra_decide_swimforward(edict_t* self)
 	self->count = false;
 	VectorClear(self->velocity);
 
-	if (!ssithraCheckInWater(self))
+	if (!SsithraCheckInWater(self))
 		SetAnim(self, ANIM_RUN1); // Not actually in water!
 	else if (self->curAnimID == ANIM_WATER_SHOOT)
 		SetAnim(self, ANIM_TRANSDOWN);
@@ -279,7 +279,7 @@ void ssithra_check_ripple(edict_t* self) //mxd. Named 'ssithraCheckRipple' in or
 	}
 }
 
-static qboolean ssithraCheckInWater(edict_t* self) //TODO: rename to SsithraCheckInWater.
+static qboolean SsithraCheckInWater(edict_t* self) //mxd. Named 'ssithraCheckInWater' in original logic.
 {
 	// In water?
 	if ((self->flags & FL_INWATER) && !(self->flags & FL_INLAVA) && !(self->flags & FL_INSLIME) && (self->waterlevel > 2 || self->groundentity == NULL))
@@ -296,7 +296,7 @@ static qboolean ssithraCheckInWater(edict_t* self) //TODO: rename to SsithraChec
 
 void ssithra_ai_run(edict_t* self, float distance) //mxd. Originally defined in m_plagueSsithra_anim.c.
 {
-	if (ssithraCheckInWater(self))
+	if (SsithraCheckInWater(self))
 	{
 		MG_SwimFlyToGoal(self, distance); // Really need to get rid of this!
 		MG_Pathfind(self, false);
@@ -353,7 +353,7 @@ static void SsithraTryJump(edict_t* self) //mxd. Named 'ssithraWhichJump' in ori
 	if ((self->spawnflags & MSF_FIXED) || !MG_TryGetTargetOrigin(self, target_origin))
 		return;
 
-	if (ssithraCheckInWater(self))
+	if (SsithraCheckInWater(self))
 	{
 		if (!(gi.pointcontents(target_origin) & CONTENTS_WATER))
 			SetAnim(self, ANIM_NAMOR);
@@ -384,7 +384,7 @@ void ssithraBoundCheck(edict_t* self) //TODO: rename to ssithra_check_bound.
 	if (self->spawnflags & MSF_FIXED)
 		return;
 
-	if (ssithraCheckInWater(self))
+	if (SsithraCheckInWater(self))
 	{
 		if (self->curAnimID != ANIM_SWIMFORWARD)
 			SetAnim(self, ANIM_SWIMFORWARD);
@@ -464,7 +464,7 @@ void ssithraDiveCheck(edict_t* self) //TODO: rename to ssithra_check_dive.
 		VectorCopy(self->goalentity->mins, targ_mins);
 	}
 
-	if (ssithraCheckInWater(self))
+	if (SsithraCheckInWater(self))
 	{
 		SetAnim(self, ANIM_SWIMFORWARD);
 		return;
@@ -615,7 +615,7 @@ void ssithraCheckJump(edict_t* self) //TODO: rename to SsithraCheckJump.
 	if (target_origin[2] < self->s.origin[2] - 28.0f)
 	{
 		// Setup the trace
-		if (ssithraCheckInWater(self))
+		if (SsithraCheckInWater(self))
 			return;
 
 		vec3_t s_maxs;
@@ -837,7 +837,7 @@ void ssithraCheckJump(edict_t* self) //TODO: rename to SsithraCheckJump.
 // Simple addition of velocity, if on ground or not.
 void ssithraForward(edict_t* self, float forward_dist) //TODO: rename to ssithra_set_forward_velocity.
 {
-	ssithraCheckInWater(self);
+	SsithraCheckInWater(self);
 
 	if (self->groundentity != NULL) // On ground.
 	{
@@ -857,7 +857,7 @@ void ssithraForward(edict_t* self, float forward_dist) //TODO: rename to ssithra
 
 void ssithraCheckLeaveWaterSplash(edict_t* self) //TODO: rename to ssithra_spawn_water_exit_splash.
 {
-	if (self->count || ssithraCheckInWater(self))
+	if (self->count || SsithraCheckInWater(self))
 		return;
 
 	vec3_t dir;
@@ -1470,7 +1470,7 @@ static void SsithraPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	self->pain_debounce_time = level.time + 2.0f;
 	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 
-	if (ssithraCheckInWater(self))
+	if (SsithraCheckInWater(self))
 		SetAnim(self, ((self->curAnimID == ANIM_SWIMFORWARD) ? ANIM_WATER_PAIN_B : ANIM_WATER_PAIN_A)); //FIXME: underwater pain sound?
 	else
 		SetAnim(self, ANIM_PAIN_A);
@@ -1527,7 +1527,7 @@ static void SsithraDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 
 	ssithraUnCrouch(self);
 
-	if (ssithraCheckInWater(self))
+	if (SsithraCheckInWater(self))
 	{
 		SetAnim(self, ANIM_WATER_DEATH);
 		return;
@@ -1646,7 +1646,7 @@ static void SsithraMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 		return;
 	}
 
-	if (ssithraCheckInWater(self))
+	if (SsithraCheckInWater(self))
 	{
 		QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
 		return;
@@ -1672,7 +1672,7 @@ static void SsithraMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 		return;
 	}
 
-	if (ssithraCheckInWater(self))
+	if (SsithraCheckInWater(self))
 	{
 		if (M_DistanceToTarget(self, self->enemy) < self->melee_range)
 			SetAnim(self, (self->curAnimID == ANIM_SWIMFORWARD ? ANIM_TRANSUP : ANIM_WATER_SHOOT));
@@ -1701,7 +1701,7 @@ static void SsithraFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	if (self->spawnflags & MSF_FIXED)
 		SetAnim(self, ANIM_DELAY);
 	else
-		SetAnim(self, (ssithraCheckInWater(self) ? ANIM_WATER_SHOOT : ANIM_BACKPEDAL));
+		SetAnim(self, (SsithraCheckInWater(self) ? ANIM_WATER_SHOOT : ANIM_BACKPEDAL));
 }
 
 void ssithraSwipe(edict_t* self) //TODO: rename to ssithra_swipe.
@@ -2240,7 +2240,7 @@ void ssithra_check_mood(edict_t* self) //mxd. Named 'SsithraCheckMood', returned
 			break;
 
 		case AI_MOOD_WANDER:
-			SetAnim(self, (ssithraCheckInWater(self) ? ANIM_SWIMWANDER : ANIM_WALK1));
+			SetAnim(self, (SsithraCheckInWater(self) ? ANIM_SWIMWANDER : ANIM_WALK1));
 			break;
 
 		case AI_MOOD_BACKUP:
@@ -2472,7 +2472,7 @@ void SP_monster_plague_ssithra(edict_t* self)
 	self->flags |= (FL_IMMUNE_SLIME | FL_AMPHIBIAN);
 	self->svflags |= SVF_WAIT_NOTSOLID;
 
-	ssithraCheckInWater(self);
+	SsithraCheckInWater(self);
 
 	if (self->health <= 0)
 		self->health = SSITHRA_HEALTH;
