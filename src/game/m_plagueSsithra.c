@@ -123,48 +123,33 @@ static void SsithraBlocked(edict_t* self, trace_t* trace) //mxd. Named 'ssithra_
 		ssithraJump(self, 150.0f, 200.0f, 0.0f);
 }
 
-//========================================
-//MOVEMENT
-//========================================
-
-void ssithra_stand(edict_t *self, G_Message_t *msg)
+static void SsithraStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_stand' in original logic.
 {
-	int inwater;
-
 	if (self->ai_mood == AI_MOOD_DELAY)
 	{
 		SetAnim(self, ANIM_DELAY);
 		return;
 	}
 
-	inwater = ssithraCheckInWater(self);
-
-	if(inwater)
+	if (ssithraCheckInWater(self))
 	{
 		SetAnim(self, ANIM_WATER_IDLE);
+		return;
 	}
-	else
+
+	switch (self->curAnimID)
 	{
-		if(self->curAnimID == ANIM_STAND1)
-		{
-			if(flrand(0,10)<8)//9
-				SetAnim(self, ANIM_STAND1);
-			else
-				SetAnim(self, ANIM_IDLEBASIC);
-		}
-		else if(self->curAnimID == ANIM_IDLEBASIC)
-		{
+		case ANIM_STAND1:
+			SetAnim(self, irand(0, 10) < 8 ? ANIM_STAND1 : ANIM_IDLEBASIC); //mxd. flrand() in original logic.
+			break;
+
+		case ANIM_IDLERIGHT:
+			SetAnim(self, irand(0, 10) < 6 ? ANIM_STAND1 : ANIM_IDLEBASIC); //mxd. flrand() in original logic.
+			break;
+
+		default:
 			SetAnim(self, ANIM_STAND1);
-		}
-		else if(self->curAnimID == ANIM_IDLERIGHT)
-		{
-			if(flrand(0,10)<6)//7
-				SetAnim(self, ANIM_STAND1);
-			else
-				SetAnim(self, ANIM_IDLEBASIC);
-		}
-		else
-			SetAnim(self, ANIM_STAND1);
+			break;
 	}
 }
 
@@ -2900,7 +2885,7 @@ void SsithraStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_SSITHRA].msgReceivers[MSG_STAND] = ssithra_stand;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_STAND] = SsithraStandMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_WALK] = ssithra_walk;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_RUN] = ssithra_gallop;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_MELEE] = ssithra_melee;
