@@ -1145,273 +1145,270 @@ static HitLocation_t SsithraConvertDeadHitLocation(const edict_t* self, const Hi
 	}
 }
 
-void ssithra_dismember(edict_t *self, int damage, int HitLocation)
-{//fixme - make part fly dir the vector from hit loc to sever loc
-//remember- turn on caps!
-	int				throw_nodes = 0;
-	vec3_t			gore_spot, right;
-	qboolean dismember_ok = false;
+static qboolean SsithraThrowHead(edict_t* self, float damage, const qboolean dismember_ok, int* throw_nodes) //mxd. Added to simplify logic.
+{
+	vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
 
-	if(HitLocation & hl_MeleeHit)
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
+		return false;
+
+	// Is the pain skin engaged?
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.3f)
 	{
-		dismember_ok = true;
-		HitLocation &= ~hl_MeleeHit;
+		SsithraCanThrowNode(self, MESH__HEAD, throw_nodes);
+		SsithraCanThrowNode(self, MESH__CENTERSPIKE, throw_nodes);
+		SsithraCanThrowNode(self, MESH__LEFT1SPIKE, throw_nodes);
+		SsithraCanThrowNode(self, MESH__RIGHT1SPIKE, throw_nodes);
+		SsithraCanThrowNode(self, MESH__RIGHT2SPIKE, throw_nodes);
+
+		self->s.fmnodeinfo[MESH__CAPTOPUPPERTORSO].flags &= ~FMNI_NO_DRAW;
+
+		ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+
+		Vec3AddAssign(self->s.origin, gore_spot);
+		SprayDebris(self, gore_spot, 8, damage);
+
+		if (self->health > 0 && irand(0, 10) < 3 && !(self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW))
+		{
+			// Shooting blind, headless, FIX: make it so can still chop off arms or legs here.
+			SetAnim(self, ANIM_HEADLESS);
+			self->msgHandler = DyingMsgHandler;
+		}
+		else
+		{
+			self->health = 1;
+			T_Damage(self, self, self, vec3_origin, gore_spot, vec3_origin, 10, 20, 0, MOD_DIED);
+		}
+
+		return true;
 	}
 
-	if(HitLocation<1)
+	// Set the pain skin.
+	self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_USE_SKIN;
+	self->s.fmnodeinfo[MESH__HEAD].skin = self->s.skinnum + 1;
+
+	if (flrand(0.0f, (float)self->health / 4.0f) < damage)
+	{
+		// No red spray with these, particles?
+		if (irand(0, 10) < 3 && SsithraCanThrowNode(self, MESH__CENTERSPIKE, throw_nodes))
+			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+
+		if (irand(0, 10) < 3 && SsithraCanThrowNode(self, MESH__RIGHT1SPIKE, throw_nodes))
+			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+
+		if (irand(0, 10) < 3 && SsithraCanThrowNode(self, MESH__RIGHT2SPIKE, throw_nodes))
+			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+
+		if (irand(0, 10) < 3 && SsithraCanThrowNode(self, MESH__LEFT1SPIKE, throw_nodes))
+			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+	}
+
+	return false;
+}
+
+static void SsithraThrowTorso(edict_t* self, float damage, const qboolean dismember_ok, int* throw_nodes) //mxd. Added to simplify logic.
+{
+	vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
+
+	if (self->s.fmnodeinfo[MESH__UPPERTORSO].flags & FMNI_NO_DRAW)
 		return;
 
-	if(HitLocation>hl_Max)
+	if (self->s.fmnodeinfo[MESH__UPPERTORSO].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.3f)
+	{
+		// Seal up the caps left by this split.
+		self->s.fmnodeinfo[MESH__CAPBOTTOMUPPERTORSO].flags &= ~FMNI_NO_DRAW;
+		self->s.fmnodeinfo[MESH__CAPLOWERTORSO].flags &= ~FMNI_NO_DRAW;
+
+		SsithraCanThrowNode(self, MESH__UPPERTORSO, throw_nodes);
+		SsithraCanThrowNode(self, MESH__CAPBOTTOMUPPERTORSO, throw_nodes);
+		SsithraCanThrowNode(self, MESH__CAPTOPUPPERTORSO, throw_nodes);
+		SsithraCanThrowNode(self, MESH__LEFTARM, throw_nodes);
+		SsithraCanThrowNode(self, MESH__RIGHTARM, throw_nodes);
+		SsithraCanThrowNode(self, MESH__HEAD, throw_nodes);
+		SsithraCanThrowNode(self, MESH__CENTERSPIKE, throw_nodes);
+		SsithraCanThrowNode(self, MESH__LEFT1SPIKE, throw_nodes);
+		SsithraCanThrowNode(self, MESH__RIGHT1SPIKE, throw_nodes);
+		SsithraCanThrowNode(self, MESH__RIGHT2SPIKE, throw_nodes);
+
+		if (self->health > 0 && irand(0, 10) < 3) // Slide off.
+		{
+			SsithraSplit(self, *throw_nodes);
+		}
+		else
+		{
+			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_partrest1);
+
+			Vec3AddAssign(self->s.origin, gore_spot);
+			SprayDebris(self, gore_spot, 12, damage);
+			SetAnim(self, ANIM_SLICED);
+		}
+
+		self->msgHandler = DyingMsgHandler;
+	}
+	else
+	{
+		// Set the pain skin.
+		self->s.fmnodeinfo[MESH__UPPERTORSO].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__UPPERTORSO].skin = self->s.skinnum + 1;
+	}
+}
+
+static void SsithraThrowArm(edict_t* self, float damage, const qboolean dismember_ok, int* throw_nodes, const int mesh_part) //mxd. Added to simplify logic.
+{
+	if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
 		return;
 
-	if(self->health>0)
+	if (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.75f)
+	{
+		if (SsithraCanThrowNode(self, mesh_part, throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			const float side = ((mesh_part == MESH__LEFTARM) ? -1.0f : 1.0f);
+			VectorMA(gore_spot, 10 * side, right, gore_spot);
+			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+		}
+	}
+	else
+	{
+		// Set the pain skin.
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+}
+
+static void SsithraThrowLeg(edict_t* self, const float damage, int* throw_nodes, const int mesh_part) //mxd. Added to simplify logic.
+{
+	if (self->health > 0)
+	{
+		// Still alive.
+		if (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN)
+			return;
+
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+	else
+	{
+		if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
+			return;
+
+		if (SsithraCanThrowNode(self, mesh_part, throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			const float side = ((mesh_part == MESH__LEFTLEG) ? -1.0f : 1.0f); //BUGFIX: original logic uses -10 for both legs.
+			VectorMA(gore_spot, 10 * side, right, gore_spot);
+			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+		}
+	}
+}
+
+static void SsithraDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'ssithra_dismember' in original logic.
+{
+	//FIXME: make part fly dir the vector from hit loc to sever loc.
+	qboolean dismember_ok = false;
+
+	if (hl & hl_MeleeHit)
+	{
+		dismember_ok = true;
+		hl &= ~hl_MeleeHit;
+	}
+
+	if (hl <= hl_NoneSpecific || hl >= hl_Max) //mxd. '> hl_Max' in original logic.
+		return;
+
+	if (self->health > 0)
 	{
 		switch (self->curAnimID)
-		{//Hit front chest during shoot or melee, may have hit arms
+		{
+			// Hit front chest during shoot or melee, may have hit arms.
 			case ANIM_DUCKSHOOT:
 			case ANIM_SHOOT:
 			case ANIM_WATER_SHOOT:
 			case ANIM_HEADLESS:
 			case ANIM_HEADLESSLOOP:
-				if(HitLocation == hl_TorsoFront&&irand(0,10)<4)
-					HitLocation = hl_ArmLowerRight;
+				if (hl == hl_TorsoFront && irand(0, 10) < 4)
+					hl = hl_ArmLowerRight;
 				break;
 
 			case ANIM_MELEE:
 			case ANIM_MELEE_STAND:
-				if(HitLocation == hl_TorsoFront&&irand(0,10)<4)
-					HitLocation = hl_ArmLowerLeft;
+				if (hl == hl_TorsoFront && irand(0, 10) < 4)
+					hl = hl_ArmLowerLeft;
 				break;
 
 			default:
 				break;
 		}
 
-		if((HitLocation == hl_ArmUpperLeft&& self->s.fmnodeinfo[MESH__LEFTARM].flags & FMNI_NO_DRAW) ||
-			(HitLocation == hl_ArmUpperRight&& self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW)||
-			((HitLocation == hl_TorsoFront|| HitLocation == hl_TorsoBack) &&
-			self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW &&
-			self->s.fmnodeinfo[MESH__LEFTARM].flags & FMNI_NO_DRAW)&&
-			irand(0,10)<4)
-			HitLocation = hl_Head;//Decap
+		if (irand(0, 10) < 4 &&
+			((hl == hl_ArmUpperLeft && self->s.fmnodeinfo[MESH__LEFTARM].flags & FMNI_NO_DRAW) || (hl == hl_ArmUpperRight && self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW) ||
+			((hl == hl_TorsoFront || hl == hl_TorsoBack) && (self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW) && (self->s.fmnodeinfo[MESH__LEFTARM].flags & FMNI_NO_DRAW))))
+		{
+			hl = hl_Head; // Decapitation.
+		}
 	}
 	else
-		HitLocation = SsithraConvertDeadHitLocation(self, HitLocation);
+	{
+		hl = SsithraConvertDeadHitLocation(self, hl);
+	}
 
-	VectorClear(gore_spot);
-	switch(HitLocation)
+	int throw_nodes = 0;
+
+	switch (hl)
 	{
 		case hl_Head:
-			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
-				break;
-			// Is the pain skin engaged?
-			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
-			{
-				SsithraCanThrowNode(self, MESH__HEAD,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__CENTERSPIKE,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__LEFT1SPIKE,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__RIGHT1SPIKE,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__RIGHT2SPIKE,&throw_nodes);
-
-				self->s.fmnodeinfo[MESH__CAPTOPUPPERTORSO].flags &= ~FMNI_NO_DRAW;
-
-				gore_spot[2]+=18;
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-
-				VectorAdd(self->s.origin, gore_spot, gore_spot);
-				SprayDebris(self,gore_spot,8,damage);
-
-				if(self->health > 0 && irand(0,10)<3&&!(self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW))
-				{//shooting blind, headless, FIX: make it so can still chop off arms or legs here
-					SetAnim(self,ANIM_HEADLESS);
-					self->msgHandler=DyingMsgHandler;
-				}
-				else
-				{
-					self->health = 1;
-					T_Damage (self, self, self, vec3_origin, gore_spot, vec3_origin, 10, 20,0,MOD_DIED);
-				}
+			if (SsithraThrowHead(self, (float)damage, dismember_ok, &throw_nodes))
 				return;
-			}
-			else
-			{
-				// Set the pain skin
-				self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__HEAD].skin = self->s.skinnum+1;
-
-				if(flrand(0,self->health/4)<damage)
-				{//no red spray with these, particles?
-					gore_spot[2]+=18;
-					if(irand(0,10)<3)
-					{
-						if(SsithraCanThrowNode(self, MESH__CENTERSPIKE, &throw_nodes))
-							ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-					}
-					if(irand(0,10)<3)
-					{
-						if(SsithraCanThrowNode(self, MESH__RIGHT1SPIKE, &throw_nodes))
-							ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-					}
-					if(irand(0,10)<3)
-					{
-						if(SsithraCanThrowNode(self, MESH__RIGHT2SPIKE, &throw_nodes))
-							ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-					}
-					if(irand(0,10)<3)
-					{
-						if(SsithraCanThrowNode(self, MESH__LEFT1SPIKE, &throw_nodes))
-							ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-					}
-				}
-			}
 			break;
-		case hl_TorsoFront://split in half?
-		case hl_TorsoBack://split in half?
-			if(self->s.fmnodeinfo[MESH__UPPERTORSO].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__UPPERTORSO].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
-			{
-				gore_spot[2]+=12;
-				//seal up the caps left by this split
-				self->s.fmnodeinfo[MESH__CAPBOTTOMUPPERTORSO].flags &= ~FMNI_NO_DRAW;
-				self->s.fmnodeinfo[MESH__CAPLOWERTORSO].flags &= ~FMNI_NO_DRAW;
 
-				SsithraCanThrowNode(self, MESH__UPPERTORSO,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__CAPBOTTOMUPPERTORSO,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__CAPTOPUPPERTORSO,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__LEFTARM,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__RIGHTARM,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__HEAD,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__CENTERSPIKE,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__LEFT1SPIKE,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__RIGHT1SPIKE,&throw_nodes);
-				SsithraCanThrowNode(self, MESH__RIGHT2SPIKE,&throw_nodes);
+		case hl_TorsoFront: // Split in half?
+		case hl_TorsoBack:
+			SsithraThrowTorso(self, (float)damage, dismember_ok, &throw_nodes);
+			break;
 
-				if(self->health > 0 && irand(0,10)<3)//Slide off
-					SsithraSplit(self, throw_nodes);
-				else
-				{
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partrest1);
+		case hl_ArmUpperLeft: // Left arm.
+		case hl_ArmLowerLeft:
+			SsithraThrowArm(self, (float)damage, dismember_ok, &throw_nodes, MESH__LEFTARM);
+			break;
 
-					VectorAdd(self->s.origin, gore_spot, gore_spot);
-					SprayDebris(self,gore_spot,12,damage);
-					SetAnim(self,ANIM_SLICED);
-				}
-				self->msgHandler=DyingMsgHandler;
-			}
-			else
-			{
-				// Set the pain skin
-				self->s.fmnodeinfo[MESH__UPPERTORSO].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__UPPERTORSO].skin = self->s.skinnum+1;
-			}
+		case hl_ArmUpperRight: // Right arm.
+		case hl_ArmLowerRight:
+			SsithraThrowArm(self, (float)damage, dismember_ok, &throw_nodes, MESH__RIGHTARM);
 			break;
-		case hl_ArmUpperLeft:
-		case hl_ArmLowerLeft://left arm
-			if(self->s.fmnodeinfo[MESH__LEFTARM].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__LEFTARM].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				if(SsithraCanThrowNode(self, MESH__LEFTARM, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-			}
-			else
-			{
-				// Set the pain skin
-				self->s.fmnodeinfo[MESH__LEFTARM].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__LEFTARM].skin = self->s.skinnum+1;
-			}
+
+		case hl_LegUpperLeft: // Left leg.
+		case hl_LegLowerLeft:
+			SsithraThrowLeg(self, (float)damage, &throw_nodes, MESH__LEFTLEG);
 			break;
-		case hl_ArmUpperRight:
-		case hl_ArmLowerRight://right arm
-			if(self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				if(SsithraCanThrowNode(self, MESH__RIGHTARM, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-			}
-			else
-			{
-				// Set the pain skin
-				self->s.fmnodeinfo[MESH__RIGHTARM].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__RIGHTARM].skin = self->s.skinnum+1;
-			}
+
+		case hl_LegUpperRight: // Right leg.
+		case hl_LegLowerRight:
+			SsithraThrowLeg(self, (float)damage, &throw_nodes, MESH__RIGHTLEG);
 			break;
-		
-		case hl_LegUpperLeft:
-		case hl_LegLowerLeft://left leg
-			if(self->health>0)
-			{//still alive
-				if(self->s.fmnodeinfo[MESH__LEFTLEG].flags & FMNI_USE_SKIN)
-					break;
-				self->s.fmnodeinfo[MESH__LEFTLEG].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__LEFTLEG].skin = self->s.skinnum+1;
-				break;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__LEFTLEG].flags & FMNI_NO_DRAW)
-					break;
-				if(SsithraCanThrowNode(self, MESH__LEFTLEG, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-				break;
-			}
-		case hl_LegUpperRight:
-		case hl_LegLowerRight://right leg
-			if(self->health>0)
-			{//still alive
-				if(self->s.fmnodeinfo[MESH__RIGHTLEG].flags & FMNI_USE_SKIN)
-					break;
-				self->s.fmnodeinfo[MESH__RIGHTLEG].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__RIGHTLEG].skin = self->s.skinnum+1;
-				break;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__RIGHTLEG].flags & FMNI_NO_DRAW)
-					break;
-				if(SsithraCanThrowNode(self, MESH__RIGHTLEG, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-				break;
-			}
+
 		default:
 			break;
 	}
 
-	if(throw_nodes)
-		self->pain_debounce_time = 0;
+	if (throw_nodes > 0)
+		self->pain_debounce_time = 0.0f;
 
-	if(self->s.fmnodeinfo[MESH__LEFTARM].flags&FMNI_NO_DRAW&&
-		self->s.fmnodeinfo[MESH__RIGHTARM].flags&FMNI_NO_DRAW)			
+	if ((self->s.fmnodeinfo[MESH__LEFTARM].flags & FMNI_NO_DRAW) && (self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW))
 	{
 		self->monsterinfo.aiflags |= AI_COWARD;
 		self->ai_mood_flags &= ~AI_MOOD_FLAG_BACKSTAB;
@@ -1419,12 +1416,13 @@ void ssithra_dismember(edict_t *self, int damage, int HitLocation)
 	}
 	else
 	{
-		if(self->s.fmnodeinfo[MESH__LEFTARM].flags&FMNI_NO_DRAW)
+		if (self->s.fmnodeinfo[MESH__LEFTARM].flags & FMNI_NO_DRAW)
 		{
 			self->monsterinfo.aiflags |= AI_NO_MELEE;
 			self->ai_mood_flags &= ~AI_MOOD_FLAG_BACKSTAB;
 		}
-		if(self->s.fmnodeinfo[MESH__RIGHTARM].flags&FMNI_NO_DRAW)
+
+		if (self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW)
 		{
 			self->monsterinfo.aiflags |= AI_NO_MISSILE;
 			self->ai_mood_flags &= ~AI_MOOD_FLAG_BACKSTAB;
@@ -1550,7 +1548,7 @@ void ssithra_death(edict_t *self, G_Message_t *msg)
 
 		num_limbs = irand(1, 3);
 		for(i = 0; i < num_limbs; i++)
-			ssithra_dismember(self, flrand(80, 160), irand(hl_Head, hl_LegLowerRight) | hl_MeleeHit);
+			SsithraDismember(self, flrand(80, 160), irand(hl_Head, hl_LegLowerRight) | hl_MeleeHit);
 
 		gi.sound(self,CHAN_BODY,sounds[SND_GIB],1,ATTN_NORM,0);
 		self->think = BecomeDebris;
@@ -2817,7 +2815,7 @@ void SP_monster_plague_ssithra (edict_t *self)
 	self->msgHandler = DefaultMsgHandler;
 	self->monsterinfo.alert = ssithraAlerted;
 	self->think = M_WalkmonsterStartGo;
-	self->monsterinfo.dismember = ssithra_dismember;
+	self->monsterinfo.dismember = SsithraDismember;
 
 	self->materialtype = MAT_FLESH;
 //	self->monsterinfo.aiflags |= AI_SWIM_OK;
