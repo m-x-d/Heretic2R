@@ -563,43 +563,37 @@ void ssithraJump(edict_t* self, float up_speed, float forward_speed, float right
 	VectorMA(self->velocity, right_speed, right, self->velocity);
 }
 
-void ssithraNamorJump (edict_t *self)
+void ssithraNamorJump(edict_t* self) //TODO: rename to ssithra_out_of_water_jump.
 {
-	trace_t trace;
-	vec3_t top;
-	float watersurfdist, enemyzdiff;
-	vec3_t targ_org;
+	vec3_t target_origin;
 
-	if(self->spawnflags & MSF_FIXED)
+	if ((self->spawnflags & MSF_FIXED) || !MG_TryGetTargetOrigin(self, target_origin))
 		return;
-
-	if(!MG_TryGetTargetOrigin(self, targ_org))
-		return;
-
-	if(MGAI_DEBUG)
-		gi.dprintf("Namor Jump\n");
 
 	//FIXME: jumps too high sometimes?
 	self->count = false;
-	VectorCopy(self->s.origin,top);
-	top[2]+=512;
+
+	vec3_t top;
+	VectorCopy(self->s.origin, top);
+	top[2] += 512.0f;
+
+	trace_t trace;
 	gi.trace(self->s.origin, vec3_origin, vec3_origin, top, self, MASK_SOLID, &trace);
-	VectorCopy(trace.endpos,top);
-	gi.trace(top, vec3_origin, vec3_origin, self->s.origin, self, MASK_SOLID|MASK_WATER, &trace);
 
-	//How far above my feet is waterlevel?
-	VectorSubtract(trace.endpos, self->s.origin, top);
-	watersurfdist = VectorLength(top) - self->mins[2];//adjust for my feet
+	VectorCopy(trace.endpos, top);
+	gi.trace(top, vec3_origin, vec3_origin, self->s.origin, self, MASK_SOLID | MASK_WATER, &trace);
 
-	//how high above water level is player?
-	enemyzdiff = targ_org[2] - trace.endpos[2];
+	// How far above my feet is waterlevel?
+	vec3_t diff;
+	VectorSubtract(trace.endpos, self->s.origin, diff);
+	const float watersurf_zdist = VectorLength(diff) - self->mins[2]; // Adjust for my feet.
 
-	//FIXME: aim a little to side if enemy close so don't 
-	//land on top of him?  Or hit him if land on top?
-	ssithraJump(self,watersurfdist*2 + enemyzdiff*2 + 200, 100, 0);
+	// How high above water level is player?
+	const float enemy_zdiff = target_origin[2] - trace.endpos[2];
+
+	//FIXME: aim a little to side if enemy close so don't land on top of him? Or hit him if land on top?
+	ssithraJump(self, (watersurf_zdist + enemy_zdiff) * 2.0f + 200.0f, 100.0f, 0.0f);
 }
-
-
 
 void ssithraCheckJump (edict_t *self)
 {
