@@ -44,10 +44,9 @@ static int Bit_for_MeshNode [16] = //TODO: remove.
 	BIT_CAPHEAD
 };
 
-//========================================
-//INITIALIZE
-//========================================
-static const animmove_t *animations[NUM_ANIMS] =
+#pragma region ========================== Plague Ssithra Base Info ==========================
+
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&ssithra_move_idle1,
 	&ssithra_move_walk1,
@@ -98,10 +97,9 @@ static const animmove_t *animations[NUM_ANIMS] =
 	&ssithra_move_lunge
 };
 
-static int Sounds[NUM_SOUNDS];
+static int sounds[NUM_SOUNDS];
 
-static ClassResourceInfo_t resInfo;
-
+#pragma endregion
 
 void ssithra_blocked (edict_t *self, trace_t *trace)
 {
@@ -1068,7 +1066,7 @@ void ssithraCheckLeaveWaterSplash (edict_t *self)
 		if(trace.fraction>=1.0)
 			return;//?!
 //		gi.dprintf("Out water splash\n");
-		gi.sound(self,CHAN_BODY,Sounds[SND_NAMOR],1,ATTN_NORM,0);
+		gi.sound(self,CHAN_BODY,sounds[SND_NAMOR],1,ATTN_NORM,0);
 		dir[0]=dir[1]=0;
 		dir[2]=300;
 		// FIXME: Size propn. to exit velocity.
@@ -1113,7 +1111,7 @@ void ssithraCheckHitWaterSplash (edict_t *self)
 		if(trace.fraction>=1.0)
 			return;//?!
 //		gi.dprintf("In water splash\n");
-		gi.sound(self,CHAN_BODY,Sounds[SND_INWATER],1,ATTN_NORM,0);
+		gi.sound(self,CHAN_BODY,sounds[SND_INWATER],1,ATTN_NORM,0);
 		gi.sound (self, CHAN_BODY, gi.soundindex("player/Water Enter.wav"), 1, ATTN_NORM, 0);
 		VectorCopy(self->velocity,dir);
 		dir[0]=dir[1]=0;
@@ -1699,9 +1697,9 @@ void ssithra_pain(edict_t *self, G_Message_t *msg)
 	self->pain_debounce_time = level.time + 2;
 
 	if(irand(0,10)<5)
-		gi.sound (self, CHAN_VOICE, Sounds[SND_PAIN1], 1, ATTN_NORM, 0);
+		gi.sound (self, CHAN_VOICE, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
 	else
-		gi.sound (self, CHAN_VOICE, Sounds[SND_PAIN2], 1, ATTN_NORM, 0);
+		gi.sound (self, CHAN_VOICE, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
 
 
 	inwater = ssithraCheckInWater(self);
@@ -1759,7 +1757,7 @@ void ssithra_death(edict_t *self, G_Message_t *msg)
 
 	if(self->monsterinfo.aiflags&AI_DONT_THINK)
 	{
-		gi.sound(self,CHAN_BODY,Sounds[SND_DIE],1,ATTN_NORM,0);
+		gi.sound(self,CHAN_BODY,sounds[SND_DIE],1,ATTN_NORM,0);
 		if (irand(0,10) < 5)
 			SetAnim(self, ANIM_DEATH_B);
 		else
@@ -1784,7 +1782,7 @@ void ssithra_death(edict_t *self, G_Message_t *msg)
 		for(i = 0; i < num_limbs; i++)
 			ssithra_dismember(self, flrand(80, 160), irand(hl_Head, hl_LegLowerRight) | hl_MeleeHit);
 
-		gi.sound(self,CHAN_BODY,Sounds[SND_GIB],1,ATTN_NORM,0);
+		gi.sound(self,CHAN_BODY,sounds[SND_GIB],1,ATTN_NORM,0);
 		self->think = BecomeDebris;
 		self->nextthink = level.time + 0.1;
 		return;
@@ -1899,13 +1897,13 @@ void ssithraSound(edict_t *self, float soundnum, float channel, float attenuatio
 		if(irand(0,10)<5)
 			soundnum = SND_SWIM2;
 
-	gi.sound(self,channel,Sounds[(int)(soundnum)],1,attenuation,0);
+	gi.sound(self,channel,sounds[(int)(soundnum)],1,attenuation,0);
 }
 
 void ssithraGrowlSound(edict_t *self)
 {
 	if(!irand(0, 3))
-		gi.sound(self,CHAN_VOICE,Sounds[irand(SND_GROWL1, SND_GROWL3)],1,ATTN_IDLE,0);
+		gi.sound(self,CHAN_VOICE,sounds[irand(SND_GROWL1, SND_GROWL3)],1,ATTN_IDLE,0);
 }
 //===========================================
 //ATTACKS
@@ -2028,7 +2026,7 @@ void ssithraSwipe (edict_t *self)
 		else
 		{
 			//Hurt whatever we were whacking away at
-			gi.sound (self, CHAN_WEAPON, Sounds[SND_SWIPEHIT], 1, ATTN_NORM, 0);
+			gi.sound (self, CHAN_WEAPON, sounds[SND_SWIPEHIT], 1, ATTN_NORM, 0);
 			if(self->spawnflags&MSF_SSITHRA_ALPHA)
 				T_Damage(victim, self, self, direction, trace.endpos, bloodDir, irand(SSITHRA_DMG_MIN*1.2, SSITHRA_DMG_MAX*1.2), 10, 0,MOD_DIED);
 			else
@@ -2280,7 +2278,7 @@ void ssithraDoArrow(edict_t *self, float z_offs)
 	if(self->s.fmnodeinfo[MESH__RIGHTARM].flags&FMNI_NO_DRAW)
 		return;
 
-	gi.sound(self,CHAN_WEAPON,Sounds[SND_ARROW1],1,ATTN_NORM,0);
+	gi.sound(self,CHAN_WEAPON,sounds[SND_ARROW1],1,ATTN_NORM,0);
 	self->monsterinfo.attack_finished = level.time + 0.4;
 	Arrow = G_Spawn();
 
@@ -2359,7 +2357,7 @@ void ssithraDoDuckArrow(edict_t *self, float z_offs)
 	if(self->s.fmnodeinfo[MESH__RIGHTARM].flags&FMNI_NO_DRAW)
 		return;
 
-	gi.sound(self, CHAN_WEAPON, Sounds[SND_ARROW_FIRE] , 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_ARROW_FIRE] , 1, ATTN_NORM, 0);
 
 	self->monsterinfo.attack_finished = level.time + 0.4;
 	Arrow = G_Spawn();
@@ -2438,7 +2436,7 @@ void ssithraStartDuckArrow(edict_t *self)
 	VectorMA(self->s.origin, 18*self->s.scale, vf, startpos);
 	VectorMA(startpos, 4*self->s.scale, vr, startpos);
 
-	gi.sound(self, CHAN_WEAPON, Sounds[SND_ARROW_CHARGE] , 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_ARROW_CHARGE] , 1, ATTN_NORM, 0);
 	
 	gi.CreateEffect(NULL,
 					FX_M_EFFECTS,
@@ -2486,7 +2484,7 @@ void ssithraPanicArrow(edict_t *self)
 	}
 
 //	gi.dprintf("Ssithra fire panic arrow\n");
-	gi.sound(self,CHAN_WEAPON,Sounds[SND_ARROW2],1,ATTN_NORM,0);
+	gi.sound(self,CHAN_WEAPON,sounds[SND_ARROW2],1,ATTN_NORM,0);
 	self->monsterinfo.attack_finished = level.time + 0.4;
 	Arrow = G_Spawn();
 
@@ -2817,7 +2815,7 @@ void ssithra_sight (edict_t *self, G_Message_t *msg)
 	if(M_CheckAlert(self, SSITHRA_SUPPORT_RADIUS))
 	{
 		sound = irand(SND_SIGHT1, SND_SIGHT6);
-		gi.sound(self, CHAN_BODY, Sounds[sound], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_BODY, sounds[sound], 1, ATTN_NORM, 0);
 	}
 }
 
@@ -2910,6 +2908,8 @@ qboolean ssithraAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
 
 void SsithraStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	classStatics[CID_SSITHRA].msgReceivers[MSG_STAND] = ssithra_stand;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_WALK] = ssithra_walk;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_RUN] = ssithra_gallop;
@@ -2931,35 +2931,35 @@ void SsithraStaticsInit(void)
 	resInfo.animations = animations;
 	resInfo.modelIndex = gi.modelindex("models/monsters/ssithra/tris.fm");
 
-	Sounds[SND_PAIN1]=gi.soundindex("monsters/pssithra/pain1.wav");
-	Sounds[SND_PAIN2]=gi.soundindex("monsters/pssithra/pain2.wav");	
-	Sounds[SND_DIE]=gi.soundindex("monsters/pssithra/die.wav");	
-	Sounds[SND_GIB]=gi.soundindex("monsters/pssithra/gib.wav");
-	Sounds[SND_SWIPEHIT]=gi.soundindex("monsters/pssithra/swipehit.wav");	
-	Sounds[SND_ARROW1]=gi.soundindex("monsters/pssithra/arrow1.wav");	
-	Sounds[SND_ARROW2]=gi.soundindex("monsters/pssithra/arrow2.wav");	
-	Sounds[SND_GROWL1]=gi.soundindex("monsters/pssithra/growl1.wav");	
-	Sounds[SND_GROWL2] = gi.soundindex ("monsters/pssithra/growl2.wav");	
-	Sounds[SND_GROWL3] = gi.soundindex ("monsters/pssithra/growl3.wav");	
-	Sounds[SND_INWATER] = gi.soundindex ("monsters/pssithra/inwater.wav");	
-	Sounds[SND_NAMOR] = gi.soundindex ("monsters/pssithra/namor.wav");	
-	Sounds[SND_LAND] = gi.soundindex ("monsters/pssithra/land.wav");	
-	Sounds[SND_SWIPE] = gi.soundindex ("monsters/pssithra/swipe.wav");
-	Sounds[SND_SWIM] = gi.soundindex ("monsters/pssithra/swim.wav");
-	Sounds[SND_SWIM2] = gi.soundindex ("monsters/pssithra/swim2.wav");
+	sounds[SND_PAIN1]=gi.soundindex("monsters/pssithra/pain1.wav");
+	sounds[SND_PAIN2]=gi.soundindex("monsters/pssithra/pain2.wav");
+	sounds[SND_DIE]=gi.soundindex("monsters/pssithra/die.wav");
+	sounds[SND_GIB]=gi.soundindex("monsters/pssithra/gib.wav");
+	sounds[SND_SWIPEHIT]=gi.soundindex("monsters/pssithra/swipehit.wav");
+	sounds[SND_ARROW1]=gi.soundindex("monsters/pssithra/arrow1.wav");
+	sounds[SND_ARROW2]=gi.soundindex("monsters/pssithra/arrow2.wav");
+	sounds[SND_GROWL1]=gi.soundindex("monsters/pssithra/growl1.wav");
+	sounds[SND_GROWL2] = gi.soundindex ("monsters/pssithra/growl2.wav");
+	sounds[SND_GROWL3] = gi.soundindex ("monsters/pssithra/growl3.wav");
+	sounds[SND_INWATER] = gi.soundindex ("monsters/pssithra/inwater.wav");
+	sounds[SND_NAMOR] = gi.soundindex ("monsters/pssithra/namor.wav");
+	sounds[SND_LAND] = gi.soundindex ("monsters/pssithra/land.wav");
+	sounds[SND_SWIPE] = gi.soundindex ("monsters/pssithra/swipe.wav");
+	sounds[SND_SWIM] = gi.soundindex ("monsters/pssithra/swim.wav");
+	sounds[SND_SWIM2] = gi.soundindex ("monsters/pssithra/swim2.wav");
 
-	Sounds[SND_SIGHT1] = gi.soundindex ("monsters/pssithra/ssithvoice1.wav");
-	Sounds[SND_SIGHT2] = gi.soundindex ("monsters/pssithra/ssithvoice2.wav");
-	Sounds[SND_SIGHT3] = gi.soundindex ("monsters/pssithra/ssithvoice3.wav");
-	Sounds[SND_SIGHT4] = gi.soundindex ("monsters/pssithra/ssithvoice4.wav");
-	Sounds[SND_SIGHT5] = gi.soundindex ("monsters/pssithra/ssithvoice5.wav");
-	Sounds[SND_SIGHT6] = gi.soundindex ("monsters/pssithra/ssithvoice6.wav");
+	sounds[SND_SIGHT1] = gi.soundindex ("monsters/pssithra/ssithvoice1.wav");
+	sounds[SND_SIGHT2] = gi.soundindex ("monsters/pssithra/ssithvoice2.wav");
+	sounds[SND_SIGHT3] = gi.soundindex ("monsters/pssithra/ssithvoice3.wav");
+	sounds[SND_SIGHT4] = gi.soundindex ("monsters/pssithra/ssithvoice4.wav");
+	sounds[SND_SIGHT5] = gi.soundindex ("monsters/pssithra/ssithvoice5.wav");
+	sounds[SND_SIGHT6] = gi.soundindex ("monsters/pssithra/ssithvoice6.wav");
 
-	Sounds[SND_ARROW_CHARGE] = gi.soundindex ("monsters/pssithra/guncharge.wav");
-	Sounds[SND_ARROW_FIRE] = gi.soundindex ("monsters/pssithra/gunfire.wav");
+	sounds[SND_ARROW_CHARGE] = gi.soundindex ("monsters/pssithra/guncharge.wav");
+	sounds[SND_ARROW_FIRE] = gi.soundindex ("monsters/pssithra/gunfire.wav");
 
 	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = Sounds;
+	resInfo.sounds = sounds;
 
 	classStatics[CID_SSITHRA].resInfo = &resInfo;
 }
