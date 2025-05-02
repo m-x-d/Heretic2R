@@ -2094,24 +2094,10 @@ void ssithraCheckLoop(edict_t* self) //TODO: rename to ssithra_check_loop.
 	self->monsterinfo.currframeindex -= 2;
 }
 
-//========================================
-//EVASION
-//========================================
-void ssithraCheckDuckArrow (edict_t *self)
+void ssithraCheckDuckArrow(edict_t* self) //TODO: rename to ssithra_check_duck_arrow.
 {
-	if(M_ValidTarget(self, self->enemy))
-	{
-		if(MG_IsAheadOf(self, self->enemy))
-		{
-//			if(M_DistanceToTarget(self, self->enemy)<self->missile_range)
-//			{
-//				if(clear_visible(self, self->enemy))
-//				{
-					SsithraDoDuckArrow(self, -18);
-//				}
-//			}
-		}
-	}
+	if (M_ValidTarget(self, self->enemy) && MG_IsAheadOf(self, self->enemy))
+		SsithraDoDuckArrow(self, -18.0f);
 }
 
 void ssithraCheckUnDuck (edict_t *self)
