@@ -1696,43 +1696,36 @@ static void SsithraFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 		SetAnim(self, (ssithraCheckInWater(self) ? ANIM_WATER_SHOOT : ANIM_BACKPEDAL));
 }
 
-void ssithraSwipe (edict_t *self)
-{//use melee swipe functoin in g_monster
-	trace_t	trace;
-	edict_t *victim;
-	vec3_t	soff, eoff, mins, maxs, bloodDir, direction;
+void ssithraSwipe(edict_t* self) //TODO: rename to ssithra_swipe.
+{
+	// Use melee swipe function in g_monster.
+	const vec3_t start_offset = { 16.0f, -16.0f, 24.0f };
+	const vec3_t end_offset = { 50.0f, 0.0f, -8.0f };
 
-	VectorSet(soff, 16, -16, 24);
-	VectorSet(eoff, 50, 0, -8);
-	
-	VectorSet(mins, -2, -2, -2);
-	VectorSet(maxs,  2,  2,  2);
+	const vec3_t mins = { -2.0f, -2.0f, -2.0f };
+	const vec3_t maxs = {  2.0f,  2.0f,  2.0f };
 
-	VectorSubtract(soff, eoff, bloodDir);
-	VectorNormalize(bloodDir);
+	trace_t trace;
+	vec3_t direction;
+	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
 
-	victim = M_CheckMeleeLineHit(self, soff, eoff, mins, maxs, &trace, direction);	
+	if (victim == NULL)
+		return; //TODO: play swoosh sound?
 
-	if (victim)
+	if (victim != self)
 	{
-		if (victim == self)
-		{
-			//Create a puff effect
-			//gi.CreateEffect(NULL, FX_SPARKS, 0, hitPos, "db", vec3_origin, irand(1,3));
-		}
-		else
-		{
-			//Hurt whatever we were whacking away at
-			gi.sound (self, CHAN_WEAPON, sounds[SND_SWIPEHIT], 1, ATTN_NORM, 0);
-			if(self->spawnflags&MSF_SSITHRA_ALPHA)
-				T_Damage(victim, self, self, direction, trace.endpos, bloodDir, irand(SSITHRA_DMG_MIN*1.2, SSITHRA_DMG_MAX*1.2), 10, 0,MOD_DIED);
-			else
-				T_Damage(victim, self, self, direction, trace.endpos, bloodDir, irand(SSITHRA_DMG_MIN, SSITHRA_DMG_MAX), 0, 0,MOD_DIED);
-		}
-	}
-	else
-	{
-		//Play swoosh sound?
+		// Hurt whatever we were whacking away at.
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SWIPEHIT], 1.0f, ATTN_NORM, 0.0f);
+
+		vec3_t blood_dir;
+		VectorSubtract(start_offset, end_offset, blood_dir);
+		VectorNormalize(blood_dir);
+
+		const qboolean ssithra_alpha = (self->spawnflags & MSF_SSITHRA_ALPHA);
+		const int damage = (int)(flrand(SSITHRA_DMG_MIN, SSITHRA_DMG_MAX) * (ssithra_alpha ? 1.2f : 1.0f));
+		const int knockback = (ssithra_alpha ? 10 : 0);
+
+		T_Damage(victim, self, self, direction, trace.endpos, blood_dir, damage, knockback, 0, MOD_DIED);
 	}
 }
 
