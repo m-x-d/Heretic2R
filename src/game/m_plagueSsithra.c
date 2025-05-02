@@ -974,12 +974,12 @@ static void SsithraSlideFallThink(edict_t* self) //mxd. Named 'ssithraSlideFall'
 	}
 }
 
-void ssithraSlideOff (edict_t *self)
+static void SsithraSlideOffThink(edict_t* self) //mxd. Named 'ssithraSlideOff' in original logic.
 {
 	vec3_t right;
+	AngleVectors(self->s.angles, NULL, right, NULL);
+	VectorScale(right, 100.0f, self->velocity);
 
-	AngleVectors(self->s.angles,NULL,right,NULL);
-	VectorScale(right,100,self->velocity);
 	self->think = SsithraSlideFallThink;
 	self->nextthink = level.time + FRAMETIME;
 }
@@ -1011,7 +1011,7 @@ void ssithraSplit (edict_t *self, int BodyPart)
 	tophalf = G_Spawn();
 
 	tophalf->nextthink = level.time + FRAMETIME*10;
-	tophalf->think = ssithraSlideOff;
+	tophalf->think = SsithraSlideOffThink;
 	tophalf->svflags |= SVF_MONSTER;
 	tophalf->s.renderfx |= RF_FRAMELERP;
 	tophalf->takedamage = DAMAGE_AIM;
