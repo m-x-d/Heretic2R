@@ -319,12 +319,6 @@ qboolean ssithraCheckInWater(edict_t* self) //TODO: rename to SsithraCheckInWate
 	return false;
 }
 
-void ssithraNamorTriggered (edict_t *self, edict_t *other, edict_t *activator)
-{//FIXME: might work anyway?
-	SetAnim(self, ANIM_NAMOR);
-	M_Use(self, other, activator);
-}
-
 void ssithraVOfs(edict_t *self, float pofs, float yofs, float rofs)
 {
 	self->v_angle_ofs[PITCH] = pofs;
