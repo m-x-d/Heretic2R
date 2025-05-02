@@ -1437,51 +1437,35 @@ static void SsithraDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 		DismemberMsgHandler(self, msg);
 }
 
-void ssithra_pain(edict_t *self, G_Message_t *msg)
-{//fixme - make part fly dir the vector from hit loc to sever loc
-	int inwater;
-	int				temp, damage;
-	qboolean		force_pain;
-	
-
-	if(self->deadflag == DEAD_DEAD) //Dead but still being hit	
+static void SsithraPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_pain' in original logic.
+{
+	//FIXME: make part fly dir the vector from hit loc to sever loc.
+	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
 		return;
 
+	int temp;
+	int damage;
+	qboolean force_pain;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
-	if(!force_pain)
+	if (!force_pain)
 	{
-		if(self->pain_debounce_time)
-			if(irand(0,10)<5||!self->groundentity)
-				return;
+		if (self->pain_debounce_time > 0.0f && (irand(0, 10) < 5 || self->groundentity == NULL))
+			return;
 
-		if(self->pain_debounce_time > level.time)
+		if (self->pain_debounce_time > level.time)
 			return;
 	}
 
 	ssithraUnCrouch(self);
 
-	self->pain_debounce_time = level.time + 2;
+	self->pain_debounce_time = level.time + 2.0f;
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 
-	if(irand(0,10)<5)
-		gi.sound (self, CHAN_VOICE, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
+	if (ssithraCheckInWater(self))
+		SetAnim(self, ((self->curAnimID == ANIM_SWIMFORWARD) ? ANIM_WATER_PAIN_B : ANIM_WATER_PAIN_A)); //FIXME: underwater pain sound?
 	else
-		gi.sound (self, CHAN_VOICE, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
-
-
-	inwater = ssithraCheckInWater(self);
-
-	if(inwater)
-	{//underwater pain sound?
-		if(self->curAnimID!=ANIM_SWIMFORWARD)
-			SetAnim(self, ANIM_WATER_PAIN_A);
-		else//swimming
-			SetAnim(self, ANIM_WATER_PAIN_B);
-	}
-	else 
-	{
 		SetAnim(self, ANIM_PAIN_A);
-	}
 }
 
 void ssithra_pain_react (edict_t *self)
@@ -2683,7 +2667,7 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].msgReceivers[MSG_MELEE] = ssithra_melee;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_MISSILE] = ssithra_missile;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_WATCH] = SsithraWatchMsgHandler;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_PAIN] = ssithra_pain;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_PAIN] = SsithraPainMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH] = ssithra_death;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_JUMP] = SsithraJumpMsgHandler;
