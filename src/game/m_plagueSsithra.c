@@ -271,38 +271,37 @@ void ssithra_decide_swimforward(edict_t* self)
 	SsithraCheckMood(self);
 }
 
-void ssithra_decide_backpedal(edict_t *self)
+void ssithra_decide_backpedal(edict_t* self) //TODO: replace with SsithraCheckMood()?
 {
 	SsithraCheckMood(self);
 }
 
-void ssithraCheckRipple (edict_t *self)
+void ssithraCheckRipple(edict_t* self) //TODO: rename to ssithra_check_ripple.
 {
-	vec3_t	top, bottom;
-	vec3_t	dir;
-	trace_t trace;
-	byte		angle_byte;
-
-	// no ripples while in cinematics
-	if (sv_cinematicfreeze->value)
+	// No ripples while in cinematics.
+	if (SV_CINEMATICFREEZE)
 		return;
 
+	vec3_t top;
 	VectorCopy(self->s.origin, top);
-	VectorCopy(top, bottom);
-	top[2] += self->maxs[2] * 0.75;
+	top[2] += self->maxs[2] * 0.75f;
+
+	vec3_t bottom;
+	VectorCopy(self->s.origin, bottom);
 	bottom[2] += self->mins[2];
 
-	gi.trace(top, vec3_origin, vec3_origin, bottom, self, MASK_WATER,&trace);
+	trace_t trace;
+	gi.trace(top, vec3_origin, vec3_origin, bottom, self, MASK_WATER, &trace);
 
-	if(trace.fraction >= 1.0)
-		return;
+	if (trace.fraction < 1.0f)
+	{
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+		Vec3ScaleAssign(200.0f, forward);
 
-	AngleVectors(self->s.angles,dir,NULL,NULL);
-	VectorScale(dir,200,dir);
-	angle_byte = Q_ftol(((self->s.angles[YAW] + DEGREE_180)/360.0) * 255.0);
-
-	gi.CreateEffect(NULL, FX_WATER_WAKE, 0,	trace.endpos, "sbv", self->s.number,
-		angle_byte, dir);
+		const byte b_angle = (byte)Q_ftol((self->s.angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
+		gi.CreateEffect(NULL, FX_WATER_WAKE, 0, trace.endpos, "sbv", self->s.number, b_angle, forward);
+	}
 }
 
 //========================================
