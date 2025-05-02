@@ -2254,32 +2254,24 @@ static void SsithraCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 	SsithraCheckMood(self);
 }
 
-/*-----------------------------------------------
-	ssithra_sight
------------------------------------------------*/
+static void SsithraVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_sight' in original logic.
+{
 #define SSITHRA_SUPPORT_RADIUS 200
 
-void ssithra_sight (edict_t *self, G_Message_t *msg)
-{
-	edict_t	*enemy = NULL;
-	byte	sight_type;
-	int		sound;
+	if (self->targetname != NULL || self->monsterinfo.c_mode)
+		return; // Cinematic waiting to be activated, don't do this.
 
-	if(self->targetname || self->monsterinfo.c_mode)
-		return;//cinematic waiting to be activated, don't do this
-
-	//Have we already said something?
-	if (self->monsterinfo.supporters != -1)
+	// Have we already said something?
+	if (self->monsterinfo.supporters != -1) //TODO: always -1! Remove or call M_FindSupport() somewhere?..
 		return;
-	
+
+	byte sight_type;
+	edict_t* enemy = NULL;
 	ParseMsgParms(msg, "be", &sight_type, &enemy);
 
-	//See if we are the first to see the player
-	if(M_CheckAlert(self, SSITHRA_SUPPORT_RADIUS))
-	{
-		sound = irand(SND_SIGHT1, SND_SIGHT6);
-		gi.sound(self, CHAN_BODY, sounds[sound], 1, ATTN_NORM, 0);
-	}
+	// See if we are the first to see the player.
+	if (M_CheckAlert(self, SSITHRA_SUPPORT_RADIUS))
+		gi.sound(self, CHAN_BODY, sounds[irand(SND_SIGHT1, SND_SIGHT6)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 qboolean ssithraAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
@@ -2387,7 +2379,7 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH_PAIN] = SsithraDeathPainMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_EVADE] = SsithraEvadeMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_CHECK_MOOD] = SsithraCheckMoodMsgHandler;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_VOICE_SIGHT] = ssithra_sight;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_VOICE_SIGHT] = SsithraVoiceSightMsgHandler;
 	
 
 	resInfo.numAnims = NUM_ANIMS;
