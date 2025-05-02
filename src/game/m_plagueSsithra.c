@@ -203,7 +203,7 @@ static void SsithraRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	SetAnim(self, ANIM_RUN1);
 }
 
-void ssithra_idlebasic(edict_t *self, G_Message_t *msg)
+static void SsithraWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_idlebasic' in original logic.
 {
 	SetAnim(self, ANIM_IDLEBASIC);
 }
@@ -2853,7 +2853,7 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].msgReceivers[MSG_RUN] = SsithraRunMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_MELEE] = ssithra_melee;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_MISSILE] = ssithra_missile;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_WATCH] = ssithra_idlebasic;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_WATCH] = SsithraWatchMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_PAIN] = ssithra_pain;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DEATH] = ssithra_death;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
