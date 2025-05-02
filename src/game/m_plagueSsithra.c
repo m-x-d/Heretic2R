@@ -549,7 +549,7 @@ void ssithra_jump(edict_t* self, float up_speed, float forward_speed, float righ
 	VectorMA(self->velocity, right_speed, right, self->velocity);
 }
 
-void ssithraNamorJump(edict_t* self) //TODO: rename to ssithra_out_of_water_jump.
+void ssithra_out_of_water_jump(edict_t* self) //mxd. Named 'ssithraNamorJump' in original logic.
 {
 	vec3_t target_origin;
 

@@ -380,7 +380,7 @@ static const animframe_t ssithra_frames_namor1[] =
 {
 	{ FRAME_namor1,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_namor2,		NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_namor3,		NULL, 0, 0, 0, NULL, 0, ssithraNamorJump },
+	{ FRAME_namor3,		NULL, 0, 0, 0, NULL, 0, ssithra_out_of_water_jump },
 	{ FRAME_namor4,		NULL, 0, 0, 0, NULL, 0, ssithraCheckLeaveWaterSplash },
 	{ FRAME_namor5,		NULL, 0, 0, 0, NULL, 0, ssithraCheckLeaveWaterSplash },
 	{ FRAME_namor6,		NULL, 0, 0, 0, NULL, 0, ssithraCheckLeaveWaterSplash },
