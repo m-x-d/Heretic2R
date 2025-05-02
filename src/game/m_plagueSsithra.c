@@ -950,33 +950,27 @@ void ssithraCheckFacedNamor(edict_t* self) //TODO: rename to ssithra_check_faced
 		SetAnim(self, ANIM_NAMOR);
 }
 
-//========================================
-//PAINS
-//========================================
-
-void ssithraSlideFall (edict_t *self)
+static void SsithraSlideFallThink(edict_t* self) //mxd. Named 'ssithraSlideFall' in original logic.
 {
-	if(self->mins[2]<0)
+	if (self->mins[2] < 0.0f)
 	{
-//		if(Vec3IsZero(self->velocity))
-//			self->groundentity = NULL;
-		if(self->mins[2]<=-6)
-			self->mins[2]+=6;
+		if (self->mins[2] <= -6.0f)
+			self->mins[2] += 6.0f;
 		else
-			self->mins[2]=0;
-//		gi.dprintf("ssithra top's mins: %f\n",self->mins[2]);
-		self->think = ssithraSlideFall;
+			self->mins[2] = 0.0f;
+
 		self->nextthink = level.time + FRAMETIME;
 	}
 	else
 	{
-		self->friction = 1;
-		self->owner->msgHandler=DefaultMsgHandler;
+		self->friction = 1.0f;
+		SetAnim(self->owner, ANIM_SLICED);
+
+		self->owner->msgHandler = DyingMsgHandler;
 		self->owner->nextthink = level.time;
-		SetAnim(self->owner,ANIM_SLICED);
-		self->owner->msgHandler=DyingMsgHandler;
+
 		self->think = NULL;
-		self->nextthink = -1;
+		self->nextthink = -1.0f;
 	}
 }
 
@@ -986,7 +980,7 @@ void ssithraSlideOff (edict_t *self)
 
 	AngleVectors(self->s.angles,NULL,right,NULL);
 	VectorScale(right,100,self->velocity);
-	self->think = ssithraSlideFall;
+	self->think = SsithraSlideFallThink;
 	self->nextthink = level.time + FRAMETIME;
 }
 
