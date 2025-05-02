@@ -2105,13 +2105,13 @@ void ssithraCheckUnDuck(edict_t* self) //TODO: rename to ssithra_check_unduck.
 	SetAnim(self, ((self->evade_debounce_time < level.time) ? ANIM_UNDUCK : ANIM_DUCKLOOP));
 }
 
-void ssithraJumpEvade (edict_t *self)
+static void SsithraForwardJump(edict_t* self) //mxd. Named 'ssithraJumpEvade' in original logic.
 {
-	vec3_t	forward;
-
+	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorSet(self->movedir, 0, 0, 300);
-	VectorMA(self->movedir, 200, forward, self->movedir);
+
+	VectorSet(self->movedir, 0.0f, 0.0f, 300.0f);
+	VectorMA(self->movedir, 200.0f, forward, self->movedir);
 	SetAnim(self, ANIM_FJUMP);
 }
 
@@ -2197,7 +2197,7 @@ void ssithra_evade (edict_t *self, G_Message_t *msg)
 		chance = irand(0, 100);
 		if(chance < jump_chance)
 		{
-			ssithraJumpEvade(self);
+			SsithraForwardJump(self);
 			return;
 		}
 	}
