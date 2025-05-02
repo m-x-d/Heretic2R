@@ -158,18 +158,6 @@ static void SsithraWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_WALK1));
 }
 
-void ssithraStartle (edict_t *self)
-{
-//	gi.dprintf("Startled!\n");
-	SetAnim(self,ANIM_STARTLE);
-}
-
-void ssithraLookRight (edict_t *self)
-{
-//	gi.dprintf("Startled to right!\n");
-	SetAnim(self,ANIM_IDLERIGHT);
-}
-
 void ssithra_gallop(edict_t *self, G_Message_t *msg)
 {
 	if(self->curAnimID == ANIM_SPINRIGHT)
@@ -2812,12 +2800,12 @@ qboolean ssithraAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
 			if(MG_IsInforntPos(self, alerter->origin))//fancy way of seeing if explosion was to right
 			{
 				VectorCopy(saveangles,self->v_angle_ofs);
-				ssithraLookRight(self);//fixme: if already looking right, see you
+				SetAnim(self, ANIM_IDLERIGHT); //mxd. Inlined ssithraLookRight() //FIXME: if already looking right, see you.
 			}
 			else
 			{
 				VectorCopy(saveangles,self->v_angle_ofs);
-				ssithraStartle(self);
+				SetAnim(self, ANIM_STARTLE); //mxd. Inlined ssithraStartle().
 			}
 			return false;
 		}
@@ -2837,12 +2825,12 @@ qboolean ssithraAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
 			if(AI_IsInfrontOf(self, enemy))//fancy way of seeing if explosion was to right
 			{
 				VectorCopy(saveangles,self->v_angle_ofs);
-				ssithraLookRight(self);//fixme: if already looking right, see you
+				SetAnim(self, ANIM_IDLERIGHT); //mxd. Inlined ssithraLookRight() //FIXME: if already looking right, see you.
 			}
 			else
 			{
 				VectorCopy(saveangles,self->v_angle_ofs);
-				ssithraStartle(self);
+				SetAnim(self, ANIM_STARTLE); //mxd. Inline ssithraStartle().
 			}
 			return false;
 		}
