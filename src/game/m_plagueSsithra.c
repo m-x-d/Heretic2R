@@ -853,7 +853,7 @@ void ssithra_set_forward_velocity(edict_t* self, float forward_dist) //mxd. Name
 	}
 }
 
-void ssithraCheckLeaveWaterSplash(edict_t* self) //TODO: rename to ssithra_spawn_water_exit_splash.
+void ssithra_try_spawn_water_exit_splash(edict_t* self) //mxd. Named 'ssithraCheckLeaveWaterSplash' in original logic.
 {
 	if (self->count || SsithraCheckInWater(self))
 		return;
