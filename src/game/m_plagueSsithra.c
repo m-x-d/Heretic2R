@@ -346,33 +346,16 @@ static qboolean SsithraHaveWaterLedgeNearEnemy(edict_t* self) //mxd. Named 'ssit
 	return (trace.fraction < 1.0f); // When trace.fraction == 1, no ledge to jump up on.
 }
 
-void ssithra_check_namor(edict_t *self)
-{//fixme: climb out of water check!
-	qboolean enemy_inwater = false;
-	vec3_t	targ_org;
+void ssithra_check_namor(edict_t* self) //TODO: rename to ssithra_try_out_of_water_jump.
+{
+	//FIXME: climb out of water check!
+	vec3_t target_origin;
 
-	if(self->spawnflags & MSF_FIXED)
+	if ((self->spawnflags & MSF_FIXED) || !MG_TryGetTargetOrigin(self, target_origin))
 		return;
 
-	if(!MG_TryGetTargetOrigin(self, targ_org))
-		return;
-	
-	enemy_inwater = (gi.pointcontents(targ_org)&CONTENTS_WATER);
-
-	if(!enemy_inwater)
-	{
-		if(MG_IsVisiblePos(self, targ_org))
-		{
-			if(SsithraHaveWaterLedgeNearEnemy(self))
-			{
-#ifdef _DEVEL
-				if(MGAI_DEBUG)
-					gi.dprintf("Ssithra facing and namor\n");
-#endif
-				SetAnim(self,ANIM_FACEANDNAMOR);
-			}
-		}
-	}
+	if (!(gi.pointcontents(target_origin) & CONTENTS_WATER) && MG_IsVisiblePos(self, target_origin) && SsithraHaveWaterLedgeNearEnemy(self))
+		SetAnim(self, ANIM_FACEANDNAMOR);
 }
 
 void ssithraWhichJump(edict_t *self)
