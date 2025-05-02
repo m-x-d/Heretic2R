@@ -2337,7 +2337,7 @@ static qboolean SsithraAlert(edict_t* self, alertent_t* alerter, edict_t* enemy)
 
 void SsithraStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_SSITHRA].msgReceivers[MSG_STAND] = SsithraStandMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_WALK] = SsithraWalkMsgHandler;
@@ -2354,43 +2354,42 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].msgReceivers[MSG_EVADE] = SsithraEvadeMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_CHECK_MOOD] = SsithraCheckMoodMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_VOICE_SIGHT] = SsithraVoiceSightMsgHandler;
-	
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/ssithra/tris.fm");
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/ssithra/tris.fm");
 
-	sounds[SND_PAIN1]=gi.soundindex("monsters/pssithra/pain1.wav");
-	sounds[SND_PAIN2]=gi.soundindex("monsters/pssithra/pain2.wav");
-	sounds[SND_DIE]=gi.soundindex("monsters/pssithra/die.wav");
-	sounds[SND_GIB]=gi.soundindex("monsters/pssithra/gib.wav");
-	sounds[SND_SWIPEHIT]=gi.soundindex("monsters/pssithra/swipehit.wav");
-	sounds[SND_ARROW1]=gi.soundindex("monsters/pssithra/arrow1.wav");
-	sounds[SND_ARROW2]=gi.soundindex("monsters/pssithra/arrow2.wav");
-	sounds[SND_GROWL1]=gi.soundindex("monsters/pssithra/growl1.wav");
-	sounds[SND_GROWL2] = gi.soundindex ("monsters/pssithra/growl2.wav");
-	sounds[SND_GROWL3] = gi.soundindex ("monsters/pssithra/growl3.wav");
-	sounds[SND_INWATER] = gi.soundindex ("monsters/pssithra/inwater.wav");
-	sounds[SND_NAMOR] = gi.soundindex ("monsters/pssithra/namor.wav");
-	sounds[SND_LAND] = gi.soundindex ("monsters/pssithra/land.wav");
-	sounds[SND_SWIPE] = gi.soundindex ("monsters/pssithra/swipe.wav");
-	sounds[SND_SWIM] = gi.soundindex ("monsters/pssithra/swim.wav");
-	sounds[SND_SWIM2] = gi.soundindex ("monsters/pssithra/swim2.wav");
+	sounds[SND_PAIN1] = gi.soundindex("monsters/pssithra/pain1.wav");
+	sounds[SND_PAIN2] = gi.soundindex("monsters/pssithra/pain2.wav");
+	sounds[SND_DIE] = gi.soundindex("monsters/pssithra/die.wav");
+	sounds[SND_GIB] = gi.soundindex("monsters/pssithra/gib.wav");
+	sounds[SND_SWIPEHIT] = gi.soundindex("monsters/pssithra/swipehit.wav");
+	sounds[SND_ARROW1] = gi.soundindex("monsters/pssithra/arrow1.wav");
+	sounds[SND_ARROW2] = gi.soundindex("monsters/pssithra/arrow2.wav");
+	sounds[SND_GROWL1] = gi.soundindex("monsters/pssithra/growl1.wav");
+	sounds[SND_GROWL2] = gi.soundindex("monsters/pssithra/growl2.wav");
+	sounds[SND_GROWL3] = gi.soundindex("monsters/pssithra/growl3.wav");
+	sounds[SND_INWATER] = gi.soundindex("monsters/pssithra/inwater.wav");
+	sounds[SND_NAMOR] = gi.soundindex("monsters/pssithra/namor.wav");
+	sounds[SND_LAND] = gi.soundindex("monsters/pssithra/land.wav");
+	sounds[SND_SWIPE] = gi.soundindex("monsters/pssithra/swipe.wav");
+	sounds[SND_SWIM] = gi.soundindex("monsters/pssithra/swim.wav");
+	sounds[SND_SWIM2] = gi.soundindex("monsters/pssithra/swim2.wav");
 
-	sounds[SND_SIGHT1] = gi.soundindex ("monsters/pssithra/ssithvoice1.wav");
-	sounds[SND_SIGHT2] = gi.soundindex ("monsters/pssithra/ssithvoice2.wav");
-	sounds[SND_SIGHT3] = gi.soundindex ("monsters/pssithra/ssithvoice3.wav");
-	sounds[SND_SIGHT4] = gi.soundindex ("monsters/pssithra/ssithvoice4.wav");
-	sounds[SND_SIGHT5] = gi.soundindex ("monsters/pssithra/ssithvoice5.wav");
-	sounds[SND_SIGHT6] = gi.soundindex ("monsters/pssithra/ssithvoice6.wav");
+	sounds[SND_SIGHT1] = gi.soundindex("monsters/pssithra/ssithvoice1.wav");
+	sounds[SND_SIGHT2] = gi.soundindex("monsters/pssithra/ssithvoice2.wav");
+	sounds[SND_SIGHT3] = gi.soundindex("monsters/pssithra/ssithvoice3.wav");
+	sounds[SND_SIGHT4] = gi.soundindex("monsters/pssithra/ssithvoice4.wav");
+	sounds[SND_SIGHT5] = gi.soundindex("monsters/pssithra/ssithvoice5.wav");
+	sounds[SND_SIGHT6] = gi.soundindex("monsters/pssithra/ssithvoice6.wav");
 
-	sounds[SND_ARROW_CHARGE] = gi.soundindex ("monsters/pssithra/guncharge.wav");
-	sounds[SND_ARROW_FIRE] = gi.soundindex ("monsters/pssithra/gunfire.wav");
+	sounds[SND_ARROW_CHARGE] = gi.soundindex("monsters/pssithra/guncharge.wav");
+	sounds[SND_ARROW_FIRE] = gi.soundindex("monsters/pssithra/gunfire.wav");
 
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
 
-	classStatics[CID_SSITHRA].resInfo = &resInfo;
+	classStatics[CID_SSITHRA].resInfo = &res_info;
 }
 
 /*QUAKED monster_ssithra (1 .5 0) (-16 -16 -32) (16 16 26) AMBUSH ASLEEP 4 Namor Spin ToughGuy Clothed FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
