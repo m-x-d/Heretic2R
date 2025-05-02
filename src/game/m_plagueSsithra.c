@@ -2010,55 +2010,49 @@ void ssithraArrow(edict_t* self) //TODO: rename to ssithra_arrow.
 		SsithraDoArrow(self);
 }
 
-void ssithraPanicArrow(edict_t *self)
-{//fixme; adjust for up/down
-	vec3_t	Forward,firedir;//, up;
-	edict_t	*Arrow;
-
-	if(self->s.fmnodeinfo[MESH__RIGHTARM].flags&FMNI_NO_DRAW)
+void ssithraPanicArrow(edict_t* self) //TODO: rename to ssithra_panic_arrow.
+{
+	//FIXME: adjust for up/down.
+	if (self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW)
 	{
-		if(self->curAnimID == ANIM_HEADLESS || self->curAnimID == ANIM_HEADLESSLOOP)
+		if (self->curAnimID == ANIM_HEADLESS || self->curAnimID == ANIM_HEADLESSLOOP)
 			ssithraKillSelf(self);
+
 		return;
 	}
 
-//	gi.dprintf("Ssithra fire panic arrow\n");
-	gi.sound(self,CHAN_WEAPON,sounds[SND_ARROW2],1,ATTN_NORM,0);
-	self->monsterinfo.attack_finished = level.time + 0.4;
-	Arrow = G_Spawn();
+	gi.sound(self, CHAN_WEAPON, sounds[SND_ARROW2], 1.0f, ATTN_NORM, 0.0f);
+	self->monsterinfo.attack_finished = level.time + 0.4f;
 
-//	Arrow->s.modelindex=gi.modelindex("models/objects/projectiles/sitharrow/tris.fm");
+	edict_t* arrow = G_Spawn();
 
-	SsithraArrowInit(Arrow);
-	
-	Arrow->owner=self;
+	SsithraArrowInit(arrow);
 
-	Arrow->health = 1; // tell the touch function what kind of arrow we are;
+	arrow->owner = self;
+	arrow->health = 1; // Tell the touch function what kind of arrow we are;
 
-	VectorAdd(self->s.angles,self->v_angle_ofs,firedir);
-	AngleVectors(firedir,Forward,NULL,NULL);
-	VectorCopy(self->s.origin,Arrow->s.origin);	
-	VectorMA(Arrow->s.origin,12,Forward,Arrow->s.origin);
-	VectorCopy(self->movedir,Arrow->movedir);
-	vectoangles(Forward,Arrow->s.angles);
-	
-	VectorScale(Forward,SSITHRA_SPOO_SPEED,Arrow->velocity);
+	vec3_t fire_dir;
+	VectorAdd(self->s.angles, self->v_angle_ofs, fire_dir);
 
-	vectoangles(Arrow->velocity, Arrow->s.angles);
-	Arrow->s.angles[YAW]+=90;
-//fixme: redo these- make them look like squid ink?
-	gi.CreateEffect(&Arrow->s,
-		FX_SSITHRA_ARROW,
-		CEF_OWNERS_ORIGIN,
-		NULL,
-		"bv",
-		FX_SS_MAKE_ARROW,
-		Arrow->velocity);
+	vec3_t forward;
+	AngleVectors(fire_dir, forward, NULL, NULL);
+	VectorCopy(self->s.origin, arrow->s.origin);
 
-	G_LinkMissile(Arrow); 
+	VectorMA(arrow->s.origin, 12.0f, forward, arrow->s.origin);
+	VectorCopy(self->movedir, arrow->movedir);
 
-	Arrow->nextthink=level.time+3;
-	Arrow->think=G_FreeEdict;//ssithraArrowThink;
+	VectorScale(forward, SSITHRA_SPOO_SPEED, arrow->velocity);
+
+	vectoangles(arrow->velocity, arrow->s.angles);
+	arrow->s.angles[YAW] += 90.0f;
+
+	//FIXME: redo these - make them look like squid ink?
+	gi.CreateEffect(&arrow->s, FX_SSITHRA_ARROW, CEF_OWNERS_ORIGIN, NULL, "bv", FX_SS_MAKE_ARROW, arrow->velocity);
+
+	G_LinkMissile(arrow);
+
+	arrow->think = G_FreeEdict;
+	arrow->nextthink = level.time + 3.0f;
 }
 
 void ssithra_water_shoot (edict_t *self)
