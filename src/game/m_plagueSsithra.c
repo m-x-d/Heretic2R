@@ -1630,36 +1630,30 @@ void ssithraGrowlSound(edict_t* self) //TODO: rename to ssithra_growl_sound.
 		gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWL1, SND_GROWL3)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-//===========================================
-//ATTACKS
- //===========================================
-
-void ssithra_melee(edict_t *self, G_Message_t *msg)
+static void SsithraMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_melee' in original logic.
 {
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		if(ssithraCheckInWater(self))
-		{
-			QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
-			return;
-		}
-
-		if(!(self->monsterinfo.aiflags & AI_NO_MISSILE) && !(self->spawnflags&MSF_FIXED))
-		{
-			if(vhlen(self->enemy->s.origin, self->s.origin) - 16 < flrand(0, self->melee_range))
-			{
-				SetAnim(self, ANIM_BACKPEDAL);
-				return;
-			}
-		}
-
-		if(M_DistanceToTarget(self, self->enemy) > self->melee_range*2 &&!(self->spawnflags&MSF_FIXED))
-			SetAnim(self, ANIM_MELEE);
-		else
-			SetAnim(self, ANIM_MELEE_STAND);
-	}
-	else
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
+	}
+
+	if (ssithraCheckInWater(self))
+	{
+		QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
+		return;
+	}
+
+	if (!(self->spawnflags & MSF_FIXED) && !(self->monsterinfo.aiflags & AI_NO_MISSILE) && vhlen(self->enemy->s.origin, self->s.origin) - 16.0f < flrand(0.0f, self->melee_range))
+	{
+		SetAnim(self, ANIM_BACKPEDAL);
+		return;
+	}
+
+	if (!(self->spawnflags & MSF_FIXED) && M_DistanceToTarget(self, self->enemy) > self->melee_range * 2.0f)
+		SetAnim(self, ANIM_MELEE);
+	else
+		SetAnim(self, ANIM_MELEE_STAND);
 }
 
 void ssithra_missile(edict_t *self, G_Message_t *msg)
@@ -2638,7 +2632,7 @@ void SsithraStaticsInit(void)
 	classStatics[CID_SSITHRA].msgReceivers[MSG_STAND] = SsithraStandMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_WALK] = SsithraWalkMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_RUN] = SsithraRunMsgHandler;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_MELEE] = ssithra_melee;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_MELEE] = SsithraMeleeMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_MISSILE] = ssithra_missile;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_WATCH] = SsithraWatchMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_PAIN] = SsithraPainMsgHandler;
