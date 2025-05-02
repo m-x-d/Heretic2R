@@ -242,26 +242,18 @@ static void SsithraDecideStand(edict_t* self) //mxd. Named 'ssithra_decide_stand
 	}
 }
 
-void ssithra_decide_gallop(edict_t *self)
+void ssithra_decide_gallop(edict_t* self) //TODO: rename to ssithra_decide_run.
 {
-	if(self->spawnflags & MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
 	{
 		SetAnim(self, ANIM_DELAY);
 		return;
 	}
 
 	VectorClear(self->velocity);
-	self->count = false;
+	self->count = false; //TODO: add ssithra_watersplash_spawned name.
 
-	if(ssithraCheckInWater(self))
-	{
-		SetAnim(self, ANIM_SWIMFORWARD);
-	}
-	else
-	{
-		SetAnim(self, ANIM_RUN1);
-	}
-
+	SetAnim(self, (ssithraCheckInWater(self) ? ANIM_SWIMFORWARD : ANIM_RUN1));
 	SsithraCheckMood(self);
 }
 
