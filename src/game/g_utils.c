@@ -31,8 +31,8 @@ void G_SetToFree(edict_t* self)
 	self->nextthink = level.time + FRAMETIME;
 	self->svflags &= ~SVF_NOCLIENT;
 
-	self->next_pre_think = -1;
-	self->next_post_think = -1;
+	self->next_pre_think = -1.0f;
+	self->next_post_think = -1.0f;
 
 	self->takedamage = DAMAGE_NO;
 	self->movetype = PHYSICSTYPE_NONE;
@@ -431,7 +431,6 @@ void G_FreeEdict(edict_t* self)
 	const short ent_num = self->s.number;
 
 	memset(self, 0, sizeof(*self));
-
 
 	self->msgQ.msgs = msgs;
 	self->s.clientEffects.buf = fx_buf;
