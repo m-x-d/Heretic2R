@@ -1468,34 +1468,22 @@ static void SsithraPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 		SetAnim(self, ANIM_PAIN_A);
 }
 
-void ssithra_pain_react (edict_t *self)
+void ssithra_pain_react(edict_t* self)
 {
-	if(!self->enemy)
+	if (self->enemy == NULL)
 	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("No react to pain\n");
-#endif
 		SsithraDecideStand(self);
-		return;
 	}
-
-	if(self->enemy->health<=0||self->enemy == self||!self->enemy->takedamage)
+	else if (self->enemy->health <= 0 || self->enemy == self || self->enemy->takedamage == DAMAGE_NO)
 	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("No react to pain\n");
-#endif
-		self->enemy=NULL;
+		self->enemy = NULL;
 		SsithraDecideStand(self);
-		return;
 	}
-	//go get him!
-#ifdef _DEVEL
-	if(MGAI_DEBUG)
-		gi.dprintf("pain_react -> run\n");
-#endif
-	ssithra_decide_gallop(self);
+	else
+	{
+		// Go get him!
+		ssithra_decide_gallop(self);
+	}
 }
 
 //===========================================
