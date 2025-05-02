@@ -1970,23 +1970,18 @@ static void SsithraDoDuckArrow(edict_t* self, const float z_offs) //mxd. Named '
 	arrow->nextthink = level.time + 5.0f;
 }
 
-void ssithraStartDuckArrow(edict_t *self)
+void ssithraStartDuckArrow(edict_t* self) //TODO: rename to ssithra_start_duck_arrow.
 {
-	vec3_t	startpos, vf, vr;
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	AngleVectors(self->s.angles, vf, vr, NULL);
-	VectorMA(self->s.origin, 18*self->s.scale, vf, startpos);
-	VectorMA(startpos, 4*self->s.scale, vr, startpos);
+	vec3_t start_pos;
+	VectorMA(self->s.origin, self->s.scale * 18.0f, forward, start_pos);
+	VectorMA(start_pos, self->s.scale * 4.0f, right, start_pos);
 
-	gi.sound(self, CHAN_WEAPON, sounds[SND_ARROW_CHARGE] , 1, ATTN_NORM, 0);
-	
-	gi.CreateEffect(NULL,
-					FX_M_EFFECTS,
-					0,
-					self->s.origin,
-					"bv",
-					FX_MSSITHRA_ARROW_CHARGE,
-					startpos);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_ARROW_CHARGE], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MSSITHRA_ARROW_CHARGE, start_pos);
 }
 
 void ssithraArrow(edict_t *self)
