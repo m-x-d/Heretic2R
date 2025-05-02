@@ -390,59 +390,64 @@ static void SsithraJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 		SsithraTryJump(self);
 }
 
-void ssithraBoundCheck (edict_t *self)
-{//fixme: do checks and traces first
-	vec3_t forward, up, startpos, endpos, mins, maxs;
-	trace_t trace;
-	int inwater;
-
-	if(self->spawnflags & MSF_FIXED)
+void ssithraBoundCheck(edict_t* self) //TODO: rename to ssithra_check_bound.
+{
+	//FIXME: do checks and traces first.
+	if (self->spawnflags & MSF_FIXED)
 		return;
 
-	inwater = ssithraCheckInWater(self);
-
-	if(inwater)
+	if (ssithraCheckInWater(self))
 	{
-		if(self->curAnimID!=ANIM_SWIMFORWARD)
-			SetAnim(self,ANIM_SWIMFORWARD);
+		if (self->curAnimID != ANIM_SWIMFORWARD)
+			SetAnim(self, ANIM_SWIMFORWARD);
+
 		return;
 	}
 
-	AngleVectors(self->s.angles,forward,NULL,up);
-	VectorCopy(self->s.origin,startpos);
-	
-	VectorMA(startpos,48,forward,endpos);//forward
-	gi.trace(startpos,self->mins,self->maxs,endpos,self,MASK_SOLID,&trace);
+	vec3_t forward;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, NULL, up);
 
-	VectorCopy(trace.endpos,startpos);
-	VectorMA(startpos,-128,up,endpos);//down
-	gi.trace(startpos,self->mins,self->maxs,endpos,self,MASK_SOLID|MASK_WATER,&trace);
-	
-	//If it's a step down or less, no jumpie
-	if(Q_fabs(trace.endpos[2] - self->s.origin[2]) <= 18)
+	vec3_t start_pos;
+	VectorCopy(self->s.origin, start_pos);
+
+	vec3_t end_pos;
+	VectorMA(start_pos, 48.0f, forward, end_pos); // Forward.
+
+	trace_t trace;
+	gi.trace(start_pos, self->mins, self->maxs, end_pos, self, MASK_SOLID, &trace);
+
+	VectorCopy(trace.endpos, start_pos);
+	VectorMA(start_pos, -128.0f, up, end_pos); // Down.
+
+	gi.trace(start_pos, self->mins, self->maxs, end_pos, self, MASK_SOLID | MASK_WATER, &trace);
+
+	// If it's a step down or less, no jump.
+	if (Q_fabs(trace.endpos[2] - self->s.origin[2]) <= 18.0f)
 		return;
 
-	if(trace.fraction == 1.0 || trace.allsolid || trace.startsolid)
-		return;//too far to jump down, or in solid
+	if (trace.fraction == 1.0f || trace.allsolid || trace.startsolid)
+		return; // Too far to jump down, or in solid.
 
-	if(trace.contents&CONTENTS_WATER||trace.contents&CONTENTS_SLIME)
+	if (trace.contents & (CONTENTS_WATER | CONTENTS_SLIME))
 	{
-		VectorCopy(trace.endpos,startpos);
-		VectorMA(startpos,-64,up,endpos);//down from water surf
-		VectorCopy(self->mins, mins);
-		VectorCopy(self->maxs, maxs);
-		mins[2] = 0;
-		maxs[2] = 1;
-		
-		gi.trace(startpos, mins, maxs, endpos, self, MASK_SOLID,&trace);
-		if(trace.fraction<1.0 || trace.allsolid || trace.startsolid)
+		VectorCopy(trace.endpos, start_pos);
+		VectorMA(start_pos, -64.0f, up, end_pos); // Down from water surface.
+
+		const vec3_t mins = { self->mins[0], self->mins[1], 0.0f };
+		const vec3_t maxs = { self->maxs[0], self->maxs[1], 1.0f };
+
+		gi.trace(start_pos, mins, maxs, end_pos, self, MASK_SOLID, &trace);
+
+		if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
 			SsithraTryJump(self);
-		else	
-			SetAnim(self,ANIM_DIVE);
+		else
+			SetAnim(self, ANIM_DIVE);
 	}
 	else
-		SetAnim(self,ANIM_GALLOP);
-		//ssithraJump(self,100,50,0);
+	{
+		SetAnim(self, ANIM_GALLOP);
+	}
 }
 
 void ssithraDiveCheck (edict_t *self)
