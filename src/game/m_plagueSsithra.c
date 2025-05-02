@@ -153,12 +153,9 @@ static void SsithraStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	}
 }
 
-void ssithra_walk(edict_t *self, G_Message_t *msg)
+static void SsithraWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_walk' in original logic.
 {
-	if(self->spawnflags&MSF_FIXED)
-		SetAnim(self, ANIM_DELAY);
-	else 
-		SetAnim(self, ANIM_WALK1);
+	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_WALK1));
 }
 
 void ssithra_spinright_go(edict_t *self)
@@ -2886,7 +2883,7 @@ void SsithraStaticsInit(void)
 	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_SSITHRA].msgReceivers[MSG_STAND] = SsithraStandMsgHandler;
-	classStatics[CID_SSITHRA].msgReceivers[MSG_WALK] = ssithra_walk;
+	classStatics[CID_SSITHRA].msgReceivers[MSG_WALK] = SsithraWalkMsgHandler;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_RUN] = ssithra_gallop;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_MELEE] = ssithra_melee;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_MISSILE] = ssithra_missile;
