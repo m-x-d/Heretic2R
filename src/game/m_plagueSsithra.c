@@ -2274,92 +2274,66 @@ static void SsithraVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 		gi.sound(self, CHAN_BODY, sounds[irand(SND_SIGHT1, SND_SIGHT6)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-qboolean ssithraAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
+static qboolean SsithraAlert(edict_t* self, alertent_t* alerter, edict_t* enemy) //mxd. Named 'ssithraAlerted' in original logic.
 {
-	alertent_t	*checkent = NULL;
-	vec3_t	saveangles;
+	// Not looking around, not a sound-alert.
+	if (self->alert_time < level.time && !(alerter->alert_svflags & SVF_ALERT_NO_SHADE) && SKILL < SKILL_VERYHARD && !(self->monsterinfo.aiflags & AI_NIGHTVISION) && enemy->light_level < irand(6, 77))
+		return false;
 
-	if(self->alert_time < level.time)
-	{//not looking around
-		if(!(alerter->alert_svflags&SVF_ALERT_NO_SHADE) && skill->value < 3.0 && !(self->monsterinfo.aiflags & AI_NIGHTVISION))
-		{//not a sound-alert, 
-			if(enemy->light_level < flrand(6, 77))
-			{
-				return false;
-			}
-		}
-	}
-
-	//the alert action happened in front of me, but the enemy is behind or the alert is behind me
-	if(!MG_IsInforntPos(self, alerter->origin))
+	// The alert action happened in front of me, but the enemy is behind or the alert is behind me.
+	if (!MG_IsInforntPos(self, alerter->origin))
 	{
-		if(irand(0, 1)&&self->curAnimID!=ANIM_IDLEBASIC)
-		{//50% chance of startling them up if not already in startle anim
-			//startle me, but don't wake up just yet
-			if(alerter->lifetime < level.time + 4)
-				self->alert_time = level.time + 4;//be ready for 4 seconds to wake up if alerted again
+		// 50% chance of startling them up if not already in startle anim.
+		if (irand(0, 1) == 1 && self->curAnimID != ANIM_IDLEBASIC)
+		{
+			// Startle me, but don't wake up just yet.
+			if (alerter->lifetime < level.time + 4.0f)
+				self->alert_time = level.time + 4.0f; // Be ready for 4 seconds to wake up if alerted again.
 			else
-				self->alert_time = alerter->lifetime;//be alert as long as the alert sticks around
-			VectorCopy(self->v_angle_ofs, saveangles);
-			VectorClear(self->v_angle_ofs);
-			self->v_angle_ofs[YAW]=-90;
+				self->alert_time = alerter->lifetime; // Be alert as long as the alert sticks around.
 
-			if(MG_IsInforntPos(self, alerter->origin))//fancy way of seeing if explosion was to right
-			{
-				VectorCopy(saveangles,self->v_angle_ofs);
-				SetAnim(self, ANIM_IDLERIGHT); //mxd. Inlined ssithraLookRight() //FIXME: if already looking right, see you.
-			}
-			else
-			{
-				VectorCopy(saveangles,self->v_angle_ofs);
-				SetAnim(self, ANIM_STARTLE); //mxd. Inlined ssithraStartle().
-			}
+			vec3_t save_angles;
+			VectorCopy(self->v_angle_ofs, save_angles);
+			VectorSet(self->v_angle_ofs, 0.0f, -90.0f, 0.0f);
+
+			// Fancy way of seeing if explosion was to right.
+			SetAnim(self, (MG_IsInforntPos(self, alerter->origin) ? ANIM_IDLERIGHT : ANIM_STARTLE)); //mxd. Inline ssithraLookRight() / ssithraStartle(). //FIXME: if already looking right, see you.
+			VectorCopy(save_angles, self->v_angle_ofs);
+
 			return false;
 		}
-		else//spin around and wake up!
-			self->spawnflags |= MSF_SSITHRA_SPIN;
-	}
-	else if(!AI_IsInfrontOf(self,enemy))
-	{
-		if(irand(0, 1)&&self->curAnimID!=ANIM_IDLEBASIC)
-		{//50% chance of startling them up if not already in startle anim
-			//startle me, but don't wake up just yet
-			self->alert_time = level.time + 4;//be ready to wake up for next 4 seconds
-			VectorCopy(self->v_angle_ofs, saveangles);
-			VectorClear(self->v_angle_ofs);
-			self->v_angle_ofs[YAW]=-90;
 
-			if(AI_IsInfrontOf(self, enemy))//fancy way of seeing if explosion was to right
-			{
-				VectorCopy(saveangles,self->v_angle_ofs);
-				SetAnim(self, ANIM_IDLERIGHT); //mxd. Inlined ssithraLookRight() //FIXME: if already looking right, see you.
-			}
-			else
-			{
-				VectorCopy(saveangles,self->v_angle_ofs);
-				SetAnim(self, ANIM_STARTLE); //mxd. Inline ssithraStartle().
-			}
+		// Spin around and wake up!
+		self->spawnflags |= MSF_SSITHRA_SPIN;
+	}
+	else if (!AI_IsInfrontOf(self, enemy))
+	{
+		// 50% chance of startling them up if not already in startle anim.
+		if (irand(0, 1) == 1 && self->curAnimID != ANIM_IDLEBASIC)
+		{
+			// Startle me, but don't wake up just yet.
+			self->alert_time = level.time + 4.0f; // Be ready to wake up for next 4 seconds.
+
+			vec3_t save_angles;
+			VectorCopy(self->v_angle_ofs, save_angles);
+			VectorSet(self->v_angle_ofs, 0.0f, -90.0f, 0.0f);
+
+			// Fancy way of seeing if explosion was to right.
+			SetAnim(self, (AI_IsInfrontOf(self, enemy) ? ANIM_IDLERIGHT : ANIM_STARTLE)); //mxd. Inline ssithraLookRight() / ssithraStartle(). //FIXME: if already looking right, see you.
+			VectorCopy(save_angles, self->v_angle_ofs);
+
 			return false;
 		}
-		else//spin around and wake up!
-			self->spawnflags |= MSF_SSITHRA_SPIN;
-	}
-	
-	if(checkent)
-	{//enemy of alert is behind me
+
+		// Spin around and wake up!
+		self->spawnflags |= MSF_SSITHRA_SPIN;
 	}
 
-	if(enemy->svflags&SVF_MONSTER)
-		self->enemy = alerter->enemy;
-	else
-		self->enemy = enemy;
-
+	self->enemy = ((enemy->svflags & SVF_MONSTER) ? alerter->enemy : enemy);
 	AI_FoundTarget(self, true);
 
 	return true;
 }
-//================================================================================
-
 
 void SsithraStaticsInit(void)
 {
@@ -2500,7 +2474,7 @@ void SP_monster_plague_ssithra (edict_t *self)
 		return;					// Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;
-	self->monsterinfo.alert = ssithraAlerted;
+	self->monsterinfo.alert = SsithraAlert;
 	self->think = M_WalkmonsterStartGo;
 	self->monsterinfo.dismember = SsithraDismember;
 
