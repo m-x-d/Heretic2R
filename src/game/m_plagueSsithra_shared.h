@@ -18,7 +18,7 @@ typedef enum AnimID_e
 	ANIM_DEATH_B,
 	ANIM_DIVE,
 	ANIM_DUCKSHOOT,
-	ANIM_DUCK,
+	ANIM_DUCK, //TODO: unused.
 	ANIM_GALLOP,
 	ANIM_FJUMP,
 	ANIM_IDLEBASIC,
@@ -42,7 +42,7 @@ typedef enum AnimID_e
 	ANIM_SPINLEFT,
 	ANIM_SPINLEFT_GO,
 	ANIM_FACEANDNAMOR,
-	ANIM_DEAD_A,
+	ANIM_DEAD_A, //TODO: unused.
 	ANIM_LOOKRIGHT,
 	ANIM_LOOKLEFT,
 	ANIM_TRANSUP,
@@ -51,7 +51,7 @@ typedef enum AnimID_e
 	ANIM_HEADLESSLOOP,
 	ANIM_DEATH_C,
 	ANIM_DEAD_B,
-	ANIM_DEAD_WATER,
+	ANIM_DEAD_WATER, //TODO: unused.
 	ANIM_SLICED,
 	ANIM_DELAY,
 	ANIM_DUCKLOOP,
@@ -142,51 +142,35 @@ extern const animmove_t ssithra_move_duckloop;
 extern const animmove_t ssithra_move_unduck;
 extern const animmove_t ssithra_move_lunge;
 
-extern void ssithra_stand(edict_t* self, G_Message_t* msg);
-extern void ssithra_walk(edict_t* self, G_Message_t* msg);
-extern void ssithra_gallop(edict_t* self, G_Message_t* msg);
-extern void ssithra_melee(edict_t* self, G_Message_t* msg);
-extern void ssithra_idlebasic(edict_t* self, G_Message_t* msg);
-extern void ssithra_dismember(edict_t* self, int damage, int HitLocation);
-extern void ssithra_pain(edict_t* self, G_Message_t* msg);
-extern void ssithra_death(edict_t* self, G_Message_t* msg);
-
-extern void ssithra_dead(edict_t* self);
-
-extern void ssithra_decide_stand(edict_t* self);
 extern void ssithra_decide_gallop(edict_t* self);
 extern void ssithra_decide_swimforward(edict_t* self);
 extern void ssithra_decide_backpedal(edict_t* self);
 
-// Actions.
+extern void ssithra_dead(edict_t* self);
 extern void ssithraSwipe(edict_t* self);
 extern void ssithraArrow(edict_t* self);
-extern void ssithraJump(edict_t* self, float upspd, float fwdspd, float rtspd);
+extern void ssithraJump(edict_t* self, float up_speed, float forward_speed, float right_speed);
 extern void ssithraBoundCheck(edict_t* self);
 extern void ssithraDiveCheck(edict_t* self);
 extern void ssithraWaterDead(edict_t* self);
-extern void ssithraForward(edict_t* self, float forwarddist);
+extern void ssithraForward(edict_t* self, float forward_dist);
 extern void ssithraCheckLeaveWaterSplash(edict_t* self);
 extern void ssithraCheckHitWaterSplash(edict_t* self);
 extern void ssithraNamorJump(edict_t* self);
 extern void ssithraCheckRipple(edict_t* self);
-extern void ssithra_spinright_go(edict_t* self);
-extern void ssithra_spinleft_go(edict_t* self);
 extern void ssithraCheckFacedNamor(edict_t* self);
 extern void ssithra_check_namor(edict_t* self);
-extern void ssithraVOfs(edict_t* self, float pofs, float yofs, float rofs);
+extern void ssithraVOfs(edict_t* self, float pitch_offset, float yaw_offset, float roll_offset);
 extern void ssithraPanicArrow(edict_t* self);
 extern void ssithra_pain_react(edict_t* self);
 extern void ssithra_water_shoot(edict_t* self);
 extern void ssithraCollapse(edict_t* self);
 extern void ssithraKillSelf(edict_t* self);
-extern void ssithraSound(edict_t* self, float soundnum, float channel, float attenuation);
+extern void ssithraSound(edict_t* self, float sound_num, float channel, float attenuation);
 extern qboolean SsithraCheckMood(edict_t* self);
-extern void ssithraMsgJump(edict_t* self, G_Message_t* msg);
 extern void ssithraApplyJump(edict_t* self);
 extern void ssithraCheckDuckArrow(edict_t* self);
 extern void ssithraCheckUnDuck(edict_t* self);
-extern void ssithraJumpEvade(edict_t* self);
 extern void ssithraCrouch(edict_t* self);
 extern void ssithraUnCrouch(edict_t* self);
 extern void ssithraCheckLoop(edict_t* self);
