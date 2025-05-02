@@ -2115,19 +2115,20 @@ static void SsithraForwardJump(edict_t* self) //mxd. Named 'ssithraJumpEvade' in
 	SetAnim(self, ANIM_FJUMP);
 }
 
-void ssithraCrouch (edict_t *self)
+void ssithraCrouch(edict_t* self) //TODO: rename to ssithra_crouch.
 {
-	self->maxs[2] = 0;
+	self->maxs[2] = 0.0f;
 	self->viewheight = -6;
 	gi.linkentity(self);
+
 	SetAnim(self, ANIM_DUCKSHOOT);
 }
 
-void ssithraUnCrouch(edict_t *self)
+void ssithraUnCrouch(edict_t* self) //TODO: rename to ssithra_uncrouch.
 {
 	self->maxs[2] = STDMaxsForClass[self->classID][2] * self->s.scale;
+	self->viewheight = (int)(self->maxs[2] * 0.8f);
 	gi.linkentity(self);
-	self->viewheight = self->maxs[2]*0.8;
 }
 
 void ssithra_evade (edict_t *self, G_Message_t *msg)
