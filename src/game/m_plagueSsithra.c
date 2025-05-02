@@ -1792,20 +1792,12 @@ static void SsithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 	G_FreeEdict(self);
 }
 
-void ssithraArrowExplode(edict_t *self)
+static void SsithraArrowExplodeThink(edict_t* self) //mxd. Named 'ssithraArrowExplode' in original logic.
 {
-	int damage = irand(SSITHRA_BIGARROW_DMG_MIN, SSITHRA_BIGARROW_DMG_MAX);
+	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MSSITHRA_EXPLODE, self->movedir);
 
-	//TODO: Spawn an explosion effect
-	gi.CreateEffect( NULL,
-					 FX_M_EFFECTS,
-					 0,
-					 self->s.origin,
-					 "bv",
-					 FX_MSSITHRA_EXPLODE,
-					 self->movedir);
-
-	T_DamageRadius(self, self->owner, self->owner, 64, damage, damage/2, DAMAGE_ATTACKER_IMMUNE, MOD_DIED);
+	const int damage = irand(SSITHRA_BIGARROW_DMG_MIN, SSITHRA_BIGARROW_DMG_MAX);
+	T_DamageRadius(self, self->owner, self->owner, 64.0f, (float)damage, (float)damage / 2.0f, DAMAGE_ATTACKER_IMMUNE, MOD_DIED);
 
 	G_FreeEdict(self);
 }
@@ -1826,7 +1818,7 @@ void ssithraDuckArrowTouch (edict_t *self,edict_t *other,cplane_t *plane,csurfac
 			VectorCopy(plane->normal, self->movedir);
 
 		self->dmg = irand(SSITHRA_DMG_MIN*2, SSITHRA_DMG_MAX*2);
-		ssithraArrowExplode(self);
+		SsithraArrowExplodeThink(self);
 	}
 	else
 	{
@@ -1839,7 +1831,7 @@ void ssithraDuckArrowTouch (edict_t *self,edict_t *other,cplane_t *plane,csurfac
 
 		self->dmg = irand(SSITHRA_DMG_MIN, SSITHRA_DMG_MAX);
 
-		self->think = ssithraArrowExplode;
+		self->think = SsithraArrowExplodeThink;
 		self->nextthink = level.time + flrand(0.5, 1.5);
 	}
 }
@@ -2013,7 +2005,7 @@ void ssithraDoDuckArrow(edict_t *self, float z_offs)
 	G_LinkMissile(Arrow); 
 
 	Arrow->nextthink=level.time+5;
-	Arrow->think=ssithraArrowExplode;
+	Arrow->think=SsithraArrowExplodeThink;
 }
 
 void ssithraStartDuckArrow(edict_t *self)
