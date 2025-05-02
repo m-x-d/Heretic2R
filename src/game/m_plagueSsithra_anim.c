@@ -177,24 +177,24 @@ static const animframe_t ssithra_frames_dive1[] =
 	{ FRAME_dive6,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive7,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive8,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_dive9,	NULL, 0, 0, 0, NULL, 0, ssithraCheckHitWaterSplash },
-	{ FRAME_dive10,	NULL, 0, 0, 0, NULL, 0, ssithraCheckHitWaterSplash },
-	{ FRAME_dive11,	NULL, 0, 0, 0, NULL, 0, ssithraCheckHitWaterSplash },
-	{ FRAME_dive12,	NULL, 0, 0, 0, NULL, 0, ssithraCheckHitWaterSplash },
-	{ FRAME_dive13,	NULL, 0, 0, 0, NULL, 0, ssithraCheckHitWaterSplash },
-	{ FRAME_dive14,	NULL, 0, 0, 0, NULL, 0, ssithraCheckHitWaterSplash },
-	{ FRAME_dive15,	NULL, 0, 0, 0, NULL, 0, ssithraCheckHitWaterSplash },
-	{ FRAME_dive16,	NULL, 0, 0, 0, NULL, 0, ssithraCheckHitWaterSplash },
-	{ FRAME_dive17,	NULL, 0, 0, 0, NULL, 0, ssithraCheckHitWaterSplash },
-	{ FRAME_dive18,	NULL, 0, 0, 0, NULL, 0, ssithraCheckHitWaterSplash }, //FIXME: check to make sure hit water.
-	{ FRAME_dive19,	NULL, 0, 0, 0, ai_move , 22, ssithraCheckHitWaterSplash }, // In water, go forward.
-	{ FRAME_dive20,	NULL, 0, 0, 0, ai_move , 20, ssithraCheckHitWaterSplash },
-	{ FRAME_dive21,	NULL, 0, 0, 0, ai_move , 17, ssithraCheckHitWaterSplash },
-	{ FRAME_dive22,	NULL, 0, 0, 0, ai_move , 15, ssithraCheckHitWaterSplash },
-	{ FRAME_dive23,	NULL, 0, 0, 0, ai_move , 12, ssithraCheckHitWaterSplash },
-	{ FRAME_dive24,	NULL, 0, 0, 0, ai_move ,  9, ssithraCheckHitWaterSplash },
-	{ FRAME_dive25,	NULL, 0, 0, 0, ai_move ,  6, ssithraCheckHitWaterSplash },
-	{ FRAME_dive26,	NULL, 0, 0, 0, ai_move ,  3, ssithraCheckHitWaterSplash },
+	{ FRAME_dive9,	NULL, 0, 0, 0, NULL, 0, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive10,	NULL, 0, 0, 0, NULL, 0, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive11,	NULL, 0, 0, 0, NULL, 0, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive12,	NULL, 0, 0, 0, NULL, 0, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive13,	NULL, 0, 0, 0, NULL, 0, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive14,	NULL, 0, 0, 0, NULL, 0, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive15,	NULL, 0, 0, 0, NULL, 0, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive16,	NULL, 0, 0, 0, NULL, 0, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive17,	NULL, 0, 0, 0, NULL, 0, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive18,	NULL, 0, 0, 0, NULL, 0, ssithra_try_spawn_water_entry_splash }, //FIXME: check to make sure hit water.
+	{ FRAME_dive19,	NULL, 0, 0, 0, ai_move, 22, ssithra_try_spawn_water_entry_splash }, // In water, go forward.
+	{ FRAME_dive20,	NULL, 0, 0, 0, ai_move, 20, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive21,	NULL, 0, 0, 0, ai_move, 17, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive22,	NULL, 0, 0, 0, ai_move, 15, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive23,	NULL, 0, 0, 0, ai_move, 12, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive24,	NULL, 0, 0, 0, ai_move,  9, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive25,	NULL, 0, 0, 0, ai_move,  6, ssithra_try_spawn_water_entry_splash },
+	{ FRAME_dive26,	NULL, 0, 0, 0, ai_move,  3, ssithra_try_spawn_water_entry_splash },
 };
 const animmove_t ssithra_move_dive1 = { 26, ssithra_frames_dive1, ssithra_decide_swimforward };
 

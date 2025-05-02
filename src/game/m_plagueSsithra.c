@@ -873,14 +873,14 @@ void ssithra_try_spawn_water_exit_splash(edict_t* self) //mxd. Named 'ssithraChe
 		gi.sound(self, CHAN_BODY, sounds[SND_NAMOR], 1.0f, ATTN_NORM, 0.0f);
 
 		// FIXME: Size proportional to exit velocity.
-		const vec3_t fx_dir = { 0.0f, 0.0f, 300.0f }; //TODO: normalized in ssithraCheckHitWaterSplash(). Which is correct?
+		const vec3_t fx_dir = { 0.0f, 0.0f, 300.0f }; //TODO: normalized in ssithra_try_spawn_water_entry_splash(). Which is correct?
 		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, trace.endpos, "bd", 128 | 96, fx_dir);
 
 		self->count = true;
 	}
 }
 
-void ssithraCheckHitWaterSplash(edict_t* self) //TODO: rename to ssithra_spawn_water_entry_splash.
+void ssithra_try_spawn_water_entry_splash(edict_t* self) //mxd. Named 'ssithraCheckHitWaterSplash' in original logic.
 {
 	if (self->count)
 		return;
