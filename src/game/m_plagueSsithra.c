@@ -208,40 +208,37 @@ static void SsithraWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	SetAnim(self, ANIM_IDLEBASIC);
 }
 
-void ssithra_decide_stand(edict_t *self)
+static void SsithraDecideStand(edict_t* self) //mxd. Named 'ssithra_decide_stand' in original logic.
 {
-	int inwater;
-
-	inwater = ssithraCheckInWater(self);
-
-	if(inwater)
+	if (ssithraCheckInWater(self))
 	{
 		SetAnim(self, ANIM_WATER_IDLE);
+		return;
 	}
-	else
+
+	switch (self->curAnimID)
 	{
-		if((self->curAnimID == ANIM_STAND1)||(self->curAnimID == ANIM_IDLEBASIC))
-		{
-			if(flrand(0,10)<7)//9
+		case ANIM_STAND1:
+		case ANIM_IDLEBASIC:
+			if (irand(0, 10) < 7) //mxd. flrand() in original logic.
 				SetAnim(self, ANIM_STAND1);
-			else if(flrand(0,10)<7)//9
+			else if (irand(0, 10) < 7) //mxd. flrand() in original logic.
 				SetAnim(self, ANIM_IDLERIGHT);
-			else if(flrand(0,10)<5)//9
+			else if (irand(0, 10) < 5) //mxd. flrand() in original logic.
 				SetAnim(self, ANIM_LOOKRIGHT);
 			else
 				SetAnim(self, ANIM_LOOKLEFT);
-		}
-		else if(self->curAnimID == ANIM_IDLERIGHT||
-			self->curAnimID == ANIM_LOOKLEFT||
-			self->curAnimID == ANIM_LOOKRIGHT)
-		{
-			if(flrand(0,10)<6)//7
-				SetAnim(self, ANIM_STAND1);
-			else
-				SetAnim(self, ANIM_IDLEBASIC);
-		}
-		else
+			break;
+
+		case ANIM_IDLERIGHT:
+		case ANIM_LOOKLEFT:
+		case ANIM_LOOKRIGHT:
+			SetAnim(self, ((irand(0, 10) < 6) ? ANIM_STAND1 : ANIM_IDLEBASIC)); //mxd. flrand() in original logic.
+			break;
+
+		default:
 			SetAnim(self, ANIM_STAND1);
+			break;
 	}
 }
 
@@ -1663,7 +1660,7 @@ void ssithra_pain_react (edict_t *self)
 		if(MGAI_DEBUG)
 			gi.dprintf("No react to pain\n");
 #endif
-		ssithra_decide_stand(self);
+		SsithraDecideStand(self);
 		return;
 	}
 
@@ -1674,7 +1671,7 @@ void ssithra_pain_react (edict_t *self)
 			gi.dprintf("No react to pain\n");
 #endif
 		self->enemy=NULL;
-		ssithra_decide_stand(self);
+		SsithraDecideStand(self);
 		return;
 	}
 	//go get him!
@@ -2389,14 +2386,14 @@ void ssithraArrow(edict_t *self)
 {//fixme; adjust for up/down
 	if(!self->enemy)
 	{
-		ssithra_decide_stand(self);
+		SsithraDecideStand(self);
 		return;
 	}
 
 	if(self->enemy->health<=0)
 	{
 		self->enemy=NULL;
-		ssithra_decide_stand(self);
+		SsithraDecideStand(self);
 		return;
 	}
 
@@ -2678,7 +2675,7 @@ qboolean SsithraCheckMood (edict_t *self)
 			return true;
 			break;
 		case AI_MOOD_STAND:
-			ssithra_decide_stand(self);
+			SsithraDecideStand(self);
 			return true;
 			break;
 			
