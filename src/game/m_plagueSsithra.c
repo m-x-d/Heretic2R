@@ -1097,83 +1097,52 @@ static qboolean SsithraCanThrowNode(edict_t* self, const int node_id, int* throw
 	return false;
 }
 
-int ssithra_convert_hitloc_dead(edict_t *self, int hl)
+static HitLocation_t SsithraConvertDeadHitLocation(const edict_t* self, const HitLocation_t hl) //mxd. Named 'ssithra_convert_hitloc_dead' in original logic.
 {
-	qboolean	fellback = false;
+	const qboolean fellback = (self->curAnimID == ANIM_DEATH_A);
 
-	if(self->curAnimID == ANIM_DEATH_A)
-		fellback = true;
-
-	switch(hl)
+	switch (hl)
 	{
 		case hl_Head:
-			if(fellback)
-				return hl_TorsoFront;
-			else
-				return hl_TorsoBack;
-			break;
-		
-		case hl_TorsoFront://split in half?
-			if(fellback)
-			{
-				if(!irand(0,1))
-					return hl_LegUpperRight;
-				else
-					return hl_LegUpperLeft;
-			}
-			else
+			return (fellback ? hl_TorsoFront : hl_TorsoBack);
+
+		case hl_TorsoFront: // Split in half?
+			if (fellback)
+				return (irand(0, 1) == 0 ? hl_LegUpperRight : hl_LegUpperLeft);
+			return hl_Head;
+
+		case hl_TorsoBack: // Split in half?
+			if (fellback)
 				return hl_Head;
-			break;
-		
-		case hl_TorsoBack://split in half?
-			if(fellback)
-				return hl_Head;
-			else
-			{
-				if(!irand(0,1))
-					return hl_LegUpperRight;
-				else
-					return hl_LegUpperLeft;
-			}
-			break;
-		
+			return (irand(0, 1) == 0 ? hl_LegUpperRight : hl_LegUpperLeft);
+
 		case hl_ArmUpperLeft:
-				return hl_ArmLowerLeft;
-			break;
-		
-		case hl_ArmLowerLeft://left arm
+			return hl_ArmLowerLeft;
+
+		case hl_ArmLowerLeft: // Left arm.
 			return hl_ArmUpperLeft;
-			break;
-		
+
 		case hl_ArmUpperRight:
 			return hl_ArmLowerRight;
-			break;
-		
-		case hl_ArmLowerRight://right arm
+
+		case hl_ArmLowerRight: // Right arm.
 			return hl_ArmUpperRight;
-			break;
 
 		case hl_LegUpperLeft:
 			return hl_LegLowerLeft;
-			break;
-		
-		case hl_LegLowerLeft://left leg
+
+		case hl_LegLowerLeft: // Left leg.
 			return hl_LegUpperLeft;
-			break;
-		
+
 		case hl_LegUpperRight:
 			return hl_LegLowerRight;
-			break;
-		
-		case hl_LegLowerRight://right leg
+
+		case hl_LegLowerRight: // Right leg.
 			return hl_LegUpperRight;
-			break;
 
 		default:
 			return irand(hl_Head, hl_LegLowerRight);
-			break;
 	}
-
 }
 
 void ssithra_dismember(edict_t *self, int damage, int HitLocation)
@@ -1227,7 +1196,7 @@ void ssithra_dismember(edict_t *self, int damage, int HitLocation)
 			HitLocation = hl_Head;//Decap
 	}
 	else
-		HitLocation = ssithra_convert_hitloc_dead(self, HitLocation);
+		HitLocation = SsithraConvertDeadHitLocation(self, HitLocation);
 
 	VectorClear(gore_spot);
 	switch(HitLocation)
