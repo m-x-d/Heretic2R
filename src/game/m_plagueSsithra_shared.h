@@ -158,7 +158,7 @@ extern void ssithra_try_spawn_water_exit_splash(edict_t* self);
 extern void ssithra_try_spawn_water_entry_splash(edict_t* self);
 extern void ssithra_out_of_water_jump(edict_t* self);
 extern void ssithra_check_ripple(edict_t* self);
-extern void ssithraCheckFacedNamor(edict_t* self);
+extern void ssithra_check_faced_out_of_water_jump(edict_t* self);
 extern void ssithra_try_out_of_water_jump(edict_t* self);
 extern void ssithra_set_view_angle_offsets(edict_t* self, float pitch_offset, float yaw_offset, float roll_offset);
 extern void ssithraPanicArrow(edict_t* self);
