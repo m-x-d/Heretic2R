@@ -1702,7 +1702,7 @@ static void SsithraFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 		SetAnim(self, (SsithraCheckInWater(self) ? ANIM_WATER_SHOOT : ANIM_BACKPEDAL));
 }
 
-void ssithraSwipe(edict_t* self) //TODO: rename to ssithra_swipe.
+void ssithra_swipe(edict_t* self) //mxd. Named 'ssithraSwipe' in original logic.
 {
 	// Use melee swipe function in g_monster.
 	const vec3_t start_offset = { 16.0f, -16.0f, 24.0f };

@@ -356,7 +356,7 @@ static const animframe_t ssithra_frames_melee1[] =
 	{ FRAME_melee2, NULL, 0, 0, 0, ai_charge2, 10, NULL },
 	{ FRAME_melee3, NULL, 0, 0, 0, ai_charge2,  8, NULL },
 	{ FRAME_melee4, NULL, 0, 0, 0, ai_charge2,  6, NULL },
-	{ FRAME_melee5, NULL, 0, 0, 0, ai_charge2,  4, ssithraSwipe },
+	{ FRAME_melee5, NULL, 0, 0, 0, ai_charge2,  4, ssithra_swipe },
 	{ FRAME_melee6, NULL, 0, 0, 0, ai_charge2,  3, NULL },
 	{ FRAME_melee7, NULL, 0, 0, 0, ai_charge2,  3, NULL },
 };
@@ -369,7 +369,7 @@ static const animframe_t ssithra_frames_meleest[] =
 	{ FRAME_Melee_stand2, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_Melee_stand3, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_Melee_stand4, NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_Melee_stand5, NULL, 0, 0, 0, ai_charge2, 0, ssithraSwipe },
+	{ FRAME_Melee_stand5, NULL, 0, 0, 0, ai_charge2, 0, ssithra_swipe },
 	{ FRAME_Melee_stand6, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_Melee_stand7, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
