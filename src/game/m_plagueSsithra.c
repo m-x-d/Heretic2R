@@ -1746,8 +1746,6 @@ static void ReflectedSsithraArrowInit(edict_t* self, edict_t* arrow) //mxd. Name
 	arrow->enemy = self->enemy;
 
 	arrow->touch = self->touch;
-	arrow->health = self->health;
-
 	arrow->think = G_FreeEdict;
 	arrow->nextthink = self->nextthink;
 
@@ -1865,7 +1863,6 @@ static void SsithraDoArrow(edict_t* self) //mxd. Named 'ssithraDoArrow' in origi
 
 	arrow->owner = self;
 	arrow->enemy = self->enemy;
-	arrow->health = 0; // Tell the touch function what kind of arrow we are; //TODO: add ssithra_arrow_type name?
 
 	vec3_t forward;
 	vec3_t right;
@@ -1927,7 +1924,6 @@ static void SsithraDoDuckArrow(edict_t* self, const float z_offs) //mxd. Named '
 	arrow->touch = SsithraDuckArrowTouch;
 	arrow->owner = self;
 	arrow->enemy = self->enemy;
-	arrow->health = 0; // Tell the touch function what kind of arrow we are;
 
 	vec3_t forward;
 	vec3_t right;
@@ -2035,7 +2031,6 @@ void ssithra_panic_arrow(edict_t* self) //mxd. Named 'ssithraPanicArrow' in orig
 	SsithraArrowInit(arrow);
 
 	arrow->owner = self;
-	arrow->health = 1; // Tell the touch function what kind of arrow we are;
 
 	vec3_t fire_dir;
 	VectorAdd(self->s.angles, self->v_angle_ofs, fire_dir);
