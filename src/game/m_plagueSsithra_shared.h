@@ -169,7 +169,7 @@ extern void ssithra_kill_self(edict_t* self);
 extern void ssithra_sound(edict_t* self, float sound_num, float channel, float attenuation);
 extern void ssithra_check_mood(edict_t* self);
 extern void ssithra_apply_jump(edict_t* self);
-extern void ssithraCheckDuckArrow(edict_t* self);
+extern void ssithra_check_duck_arrow(edict_t* self);
 extern void ssithraCheckUnDuck(edict_t* self);
 extern void ssithraCrouch(edict_t* self);
 extern void ssithraUnCrouch(edict_t* self);

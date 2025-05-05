@@ -2100,7 +2100,7 @@ void ssithra_check_loop(edict_t* self) //mxd. Named 'ssithraCheckLoop' in origin
 	self->monsterinfo.currframeindex -= 2;
 }
 
-void ssithraCheckDuckArrow(edict_t* self) //TODO: rename to ssithra_check_duck_arrow.
+void ssithra_check_duck_arrow(edict_t* self) //mxd. Named 'ssithraCheckDuckArrow' in original logic.
 {
 	if (M_ValidTarget(self, self->enemy) && MG_IsAheadOf(self, self->enemy))
 		SsithraDoDuckArrow(self, -18.0f);
