@@ -432,50 +432,6 @@ static void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fi
 	}
 }
 
-static void FishDeadBobThink(edict_t* self) //mxd. Named 'fish_deadbob' in original logic.
-{
-	if (self->velocity[2] > 0.0f)
-	{
-		if (self->s.origin[2] > self->fish_water_surface_z + flrand(3.0f, 6.0f)) // So it doesn't always go to the same height.
-			self->velocity[2] = flrand(-7.0f, -2.0f);
-	}
-	else
-	{
-		if (self->s.origin[2] < self->fish_water_surface_z)
-			self->velocity[2] = flrand(2.0f, 7.0f);
-	}
-
-	self->nextthink = level.time + 0.2f;
-}
-
-// Make the fish float to the surface.
-void FishDeadFloatThink(edict_t* self) //mxd. Named 'fish_deadfloat' in original logic.
-{
-	M_CatagorizePosition(self);
-
-	if (self->waterlevel == 3) // Below water surface.
-	{
-		if (self->velocity[2] < 10.0f)
-			self->velocity[2] += 10.0f;
-		else
-			self->velocity[2] = 20.0f; // Just in case something blocked it going up.
-	}
-	else if (self->waterlevel < 2) // Above water surface.
-	{
-		if (self->velocity[2] > -150.0f)
-			self->velocity[2] -= 50.0f; // Fall back in now!
-		else
-			self->velocity[2] = -200.0f;
-	}
-	else // On water surface (waterlevel == 2).
-	{
-		self->fish_water_surface_z = self->s.origin[2];
-		self->think = FishDeadBobThink;
-	}
-
-	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
-}
-
 #pragma endregion
 
 #pragma region ========================== Action functions ==========================
@@ -638,7 +594,7 @@ void fish_dead(edict_t* self)
 
 	VectorClear(self->velocity);
 
-	self->think = FishDeadFloatThink;
+	self->think = M_DeadFloatThink; //mxd. fish_deadfloat() in original logic.
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	// Stop the fish making bubbles.

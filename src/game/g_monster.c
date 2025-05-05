@@ -1426,4 +1426,49 @@ void M_ShowLifeMeter(const int value, const int max_value) //mxd. Removed unused
 	}
 }
 
+static void M_DeadBobThink(edict_t* self) //mxd. Named 'fish_deadbob' (in m_fish.c) in original logic.
+{
+	if (self->velocity[2] > 0.0f)
+	{
+		if (self->s.origin[2] > self->fish_water_surface_z + flrand(3.0f, 6.0f)) // So it doesn't always go to the same height.
+			self->velocity[2] = flrand(-7.0f, -2.0f);
+	}
+	else
+	{
+		if (self->s.origin[2] < self->fish_water_surface_z)
+			self->velocity[2] = flrand(2.0f, 7.0f);
+	}
+
+	self->nextthink = level.time + 0.2f;
+}
+
+// Make the monster corpse float to the surface. //TODO: used only by Fish and Plague Ssithra. Use by other monsters, which can potentially be killed in water?
+void M_DeadFloatThink(edict_t* self) //mxd. Named 'fish_deadfloat' (in m_fish.c) in original logic.
+{
+	M_CatagorizePosition(self);
+
+	//TODO: scale velocities by monster mass?
+	if (self->waterlevel == 3) // Below water surface.
+	{
+		if (self->velocity[2] < 10.0f)
+			self->velocity[2] += 10.0f;
+		else
+			self->velocity[2] = 20.0f; // Just in case something blocked it going up.
+	}
+	else if (self->waterlevel < 2) // Above water surface.
+	{
+		if (self->velocity[2] > -150.0f)
+			self->velocity[2] -= 50.0f; // Fall back in now!
+		else
+			self->velocity[2] = -200.0f;
+	}
+	else // On water surface (waterlevel == 2).
+	{
+		self->fish_water_surface_z = self->s.origin[2];
+		self->think = M_DeadBobThink;
+	}
+
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+}
+
 #pragma endregion

@@ -20,8 +20,6 @@
 #include "g_monster.h"
 #include "g_local.h"
 
-extern void FishDeadFloatThink(edict_t* self); //TODO: move to g_monster.c as M_DeadFloatThink?..
-
 #pragma region ========================== Plague Ssithra Base Info ==========================
 
 static const animmove_t* animations[NUM_ANIMS] =
@@ -2047,7 +2045,7 @@ void ssithra_water_dead(edict_t* self) //mxd. Named 'ssithraWaterDead' in origin
 	self->dead_state = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
 
-	self->think = FishDeadFloatThink; //TODO: add our own version of fish_deadfloat?
+	self->think = M_DeadFloatThink; //mxd. fish_deadfloat() in original logic.
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	gi.linkentity(self);

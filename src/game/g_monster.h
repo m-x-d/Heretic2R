@@ -51,6 +51,7 @@ extern int M_PredictTargetEvasion(const edict_t* attacker, const edict_t* target
 extern void M_jump(edict_t* self, G_Message_t* msg);
 extern void M_ShowLifeMeter(int value, int max_value);
 extern int M_FindSupport(const edict_t* self, int range);
+extern void M_DeadFloatThink(edict_t* self); //mxd
 
 //mxd. Local forward declarations for g_monster.c:
 static qboolean GenericMonsterAlerted(edict_t* self, alertent_t* alerter, edict_t* enemy);
