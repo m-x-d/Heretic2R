@@ -152,7 +152,7 @@ extern void ssithraArrow(edict_t* self);
 extern void ssithra_jump(edict_t* self, float up_speed, float forward_speed, float right_speed);
 extern void ssithra_check_bound(edict_t* self);
 extern void ssithra_check_dive(edict_t* self);
-extern void ssithraWaterDead(edict_t* self);
+extern void ssithra_water_dead(edict_t* self);
 extern void ssithra_set_forward_velocity(edict_t* self, float forward_dist);
 extern void ssithra_try_spawn_water_exit_splash(edict_t* self);
 extern void ssithra_try_spawn_water_entry_splash(edict_t* self);

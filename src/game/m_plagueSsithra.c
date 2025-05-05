@@ -1569,7 +1569,7 @@ void ssithra_dead(edict_t* self)
 	M_EndDeath(self);
 }
 
-void ssithraWaterDead(edict_t* self) //TODO: rename to ssithra_water_dead.
+void ssithra_water_dead(edict_t* self) //mxd. Named 'ssithraWaterDead' in original logic.
 {
 	self->deadflag = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;

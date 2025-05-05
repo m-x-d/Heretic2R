@@ -649,7 +649,7 @@ static const animframe_t ssithra_frames_water_death1[] =
 	{ FRAME_water_death48,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_water_death49,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ssithra_move_water_death1 = { 49, ssithra_frames_water_death1, ssithraWaterDead };
+const animmove_t ssithra_move_water_death1 = { 49, ssithra_frames_water_death1, ssithra_water_dead };
 
 // Plague Ssithra Water Idle.
 static const animframe_t ssithra_frames_water_idle1[] =
