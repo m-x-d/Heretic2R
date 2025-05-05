@@ -212,7 +212,7 @@ static const animframe_t ssithra_frames_duckloop[] =
 {
 	{ FRAME_duckshoot6,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ssithra_move_duckloop = { 1, ssithra_frames_duckloop, ssithraCheckUnDuck };
+const animmove_t ssithra_move_duckloop = { 1, ssithra_frames_duckloop, ssithra_check_unduck };
 
 // Plague Ssithra Duck Shoot.
 static const animframe_t ssithra_frames_duckshoot1[] =
@@ -229,7 +229,7 @@ static const animframe_t ssithra_frames_duckshoot1[] =
 	{ FRAME_duckshoot5,	NULL, 0, 0, 0, ai_charge2, 0, ssithra_check_duck_arrow },
 	{ FRAME_duckshoot6,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t ssithra_move_duckshoot1 = { 11, ssithra_frames_duckshoot1, ssithraCheckUnDuck };
+const animmove_t ssithra_move_duckshoot1 = { 11, ssithra_frames_duckshoot1, ssithra_check_unduck };
 
 // Plague Ssithra Duck.
 static const animframe_t ssithra_frames_duck1[] =

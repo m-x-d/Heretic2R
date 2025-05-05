@@ -2106,7 +2106,7 @@ void ssithra_check_duck_arrow(edict_t* self) //mxd. Named 'ssithraCheckDuckArrow
 		SsithraDoDuckArrow(self, -18.0f);
 }
 
-void ssithraCheckUnDuck(edict_t* self) //TODO: rename to ssithra_check_unduck.
+void ssithra_check_unduck(edict_t* self) //mxd. Named 'ssithraCheckUnDuck' in original logic.
 {
 	SetAnim(self, ((self->evade_debounce_time < level.time) ? ANIM_UNDUCK : ANIM_DUCKLOOP));
 }
