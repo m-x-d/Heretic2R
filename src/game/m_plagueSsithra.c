@@ -2066,7 +2066,7 @@ void ssithra_water_shoot(edict_t* self)
 	SetAnim(self, ANIM_WATER_SHOOT);
 }
 
-void ssithraCheckLoop(edict_t* self) //TODO: rename to ssithra_check_loop.
+void ssithra_check_loop(edict_t* self) //mxd. Named 'ssithraCheckLoop' in original logic.
 {
 #define SSITHRA_MELEE_RANGE	64.0f
 #define SSITHRA_JUMP_RANGE	128.0f

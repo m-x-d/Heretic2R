@@ -423,7 +423,7 @@ static const animframe_t ssithra_frames_shoot1[] =
 	{ FRAME_shoot4, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoot5, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shoot6, NULL, 0, 0, 0, ai_charge2, 0, ssithra_arrow },
-	{ FRAME_shoot6, NULL, 0, 0, 0, ai_charge2, 0, ssithraCheckLoop },
+	{ FRAME_shoot6, NULL, 0, 0, 0, ai_charge2, 0, ssithra_check_loop },
 	{ FRAME_shoot5, NULL, 0, 0, 0, ai_charge2, 0, NULL },
 }; // Frames 7 - 11 not used - weird anim for turning while shooting only!
 const animmove_t ssithra_move_shoot1 = { 8, ssithra_frames_shoot1, ssithra_decide_run };
