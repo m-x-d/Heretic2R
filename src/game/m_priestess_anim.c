@@ -1,7 +1,7 @@
 #include "g_local.h"
 #include "g_ai.h" //mxd
 #include "mg_ai.h" //mxd
-#include "m_priestess_local.h"
+#include "m_priestess_shared.h"
 #include "m_priestess_anim.h"
 
 animframe_t priestess_frames_stand1[] =

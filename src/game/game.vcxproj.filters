@@ -917,7 +917,7 @@
     <ClInclude Include="m_plagueSsithra_anim.h">
       <Filter>src\Monsters\Plague Ssithra</Filter>
     </ClInclude>
-    <ClInclude Include="m_priestess_local.h">
+    <ClInclude Include="m_priestess_shared.h">
       <Filter>src\Monsters\Priestess</Filter>
     </ClInclude>
     <ClInclude Include="m_priestess_anim.h">
