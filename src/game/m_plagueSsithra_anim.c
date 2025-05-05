@@ -221,7 +221,7 @@ static const animframe_t ssithra_frames_duckshoot1[] =
 	{ FRAME_duckshoot2,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_duckshoot3,	NULL, 0, 0, 0, ai_charge2, 0, ssithraCrouch },
 	{ FRAME_duckshoot4,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_duckshoot5,	NULL, 0, 0, 0, ai_charge2, 0, ssithraStartDuckArrow },
+	{ FRAME_duckshoot5,	NULL, 0, 0, 0, ai_charge2, 0, ssithra_start_duck_arrow },
 	{ FRAME_duckshoot5,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_duckshoot5,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_duckshoot5,	NULL, 0, 0, 0, ai_charge2, 0, NULL },

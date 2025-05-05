@@ -1976,7 +1976,7 @@ static void SsithraDoDuckArrow(edict_t* self, const float z_offs) //mxd. Named '
 	arrow->nextthink = level.time + 5.0f;
 }
 
-void ssithraStartDuckArrow(edict_t* self) //TODO: rename to ssithra_start_duck_arrow.
+void ssithra_start_duck_arrow(edict_t* self) //mxd. Named 'ssithraStartDuckArrow' in original logic.
 {
 	vec3_t forward;
 	vec3_t right;
