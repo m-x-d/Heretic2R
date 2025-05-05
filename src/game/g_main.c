@@ -61,7 +61,6 @@ cvar_t* sv_freezemonsters;
 cvar_t* checkanim; //TODO: unused. Remove.
 cvar_t* allowillegalskins;
 
-cvar_t* mgai_debug; //TODO: ancient debug stuff. Remove?
 cvar_t* deactivate_buoys;
 cvar_t* anarchy;
 cvar_t* impact_damage;

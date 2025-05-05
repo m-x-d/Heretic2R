@@ -308,7 +308,6 @@ void InitGame(void)
 	checkanim = gi.cvar("checkanim", "0", 0);
 	allowillegalskins = gi.cvar("allowillegalskins", "0", CVAR_ARCHIVE);
 
-	mgai_debug = gi.cvar("mgai_debug", "0", 0);
 	deactivate_buoys = gi.cvar("deactivate_buoys", "0", 0);
 	anarchy = gi.cvar("anarchy", "0", 0);
 	impact_damage = gi.cvar("impact_damage", "1", 0);

@@ -554,7 +554,6 @@ extern cvar_t* sv_maxvelocity;
 extern cvar_t* sv_cheats;
 extern cvar_t* sv_nomonsters;
 extern cvar_t* blood_level;
-extern cvar_t* mgai_debug;
 extern cvar_t* deactivate_buoys;
 extern cvar_t* anarchy;
 extern cvar_t* impact_damage;
@@ -761,7 +760,6 @@ typedef struct gclient_s
 extern qboolean FindTarget(edict_t* self);
 
 // For simplicity of use... take it out later. //TODO: mxd. Take it out... later?
-#define MGAI_DEBUG			mgai_debug->value
 #define DEACTIVATE_BUOYS	deactivate_buoys->value
 #define ANARCHY				anarchy->value
 #define IMPACT_DAMAGE		impact_damage->value
