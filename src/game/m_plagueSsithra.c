@@ -1602,7 +1602,7 @@ void ssithra_collapse(edict_t* self) //mxd. Named 'ssithraCollapse' in original 
 	}
 }
 
-void ssithraKillSelf(edict_t* self) //TODO: rename to ssithra_kill_self.
+void ssithra_kill_self(edict_t* self) //mxd. Named 'ssithraKillSelf' in original logic.
 {
 	self->svflags &= ~SVF_DEADMONSTER; // Now treat as a different content type.
 	self->msgHandler = DefaultMsgHandler;
@@ -2022,7 +2022,7 @@ void ssithraPanicArrow(edict_t* self) //TODO: rename to ssithra_panic_arrow.
 	if (self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW)
 	{
 		if (self->curAnimID == ANIM_HEADLESS || self->curAnimID == ANIM_HEADLESSLOOP)
-			ssithraKillSelf(self);
+			ssithra_kill_self(self);
 
 		return;
 	}
