@@ -1617,7 +1617,7 @@ void ssithra_kill_self(edict_t* self) //mxd. Named 'ssithraKillSelf' in original
 	self->health = -69;
 }
 
-void ssithraSound(edict_t* self, float sound_num, float channel, float attenuation) //TODO: rename to ssithra_sound.
+void ssithra_sound(edict_t* self, float sound_num, float channel, float attenuation) //mxd. Named 'ssithraSound' in original logic.
 {
 	if ((int)attenuation == 0) //TODO: use ATTN_NORM in animframe_t instead.
 		attenuation = ATTN_NORM;

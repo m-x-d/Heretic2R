@@ -166,7 +166,7 @@ extern void ssithra_pain_react(edict_t* self);
 extern void ssithra_water_shoot(edict_t* self);
 extern void ssithra_collapse(edict_t* self);
 extern void ssithra_kill_self(edict_t* self);
-extern void ssithraSound(edict_t* self, float sound_num, float channel, float attenuation);
+extern void ssithra_sound(edict_t* self, float sound_num, float channel, float attenuation);
 extern void ssithra_check_mood(edict_t* self);
 extern void ssithra_apply_jump(edict_t* self);
 extern void ssithraCheckDuckArrow(edict_t* self);
