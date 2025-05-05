@@ -231,7 +231,7 @@ void ssithra_decide_run(edict_t* self) //mxd. Named 'ssithra_decide_gallop' in o
 	}
 
 	VectorClear(self->velocity);
-	self->count = false; //TODO: add ssithra_watersplash_spawned name.
+	self->ssithra_watersplash_spawned = false;
 
 	SetAnim(self, (SsithraCheckInWater(self) ? ANIM_SWIMFORWARD : ANIM_RUN1));
 	ssithra_check_mood(self);
@@ -240,7 +240,7 @@ void ssithra_decide_run(edict_t* self) //mxd. Named 'ssithra_decide_gallop' in o
 void ssithra_decide_swimforward(edict_t* self)
 {
 	//FIXME: climb out of water check!
-	self->count = false;
+	self->ssithra_watersplash_spawned = false;
 	VectorClear(self->velocity);
 
 	if (!SsithraCheckInWater(self))
@@ -557,7 +557,7 @@ void ssithra_out_of_water_jump(edict_t* self) //mxd. Named 'ssithraNamorJump' in
 		return;
 
 	//FIXME: jumps too high sometimes?
-	self->count = false;
+	self->ssithra_watersplash_spawned = false;
 
 	vec3_t top;
 	VectorCopy(self->s.origin, top);
@@ -855,7 +855,7 @@ void ssithra_set_forward_velocity(edict_t* self, float forward_dist) //mxd. Name
 
 void ssithra_try_spawn_water_exit_splash(edict_t* self) //mxd. Named 'ssithraCheckLeaveWaterSplash' in original logic.
 {
-	if (self->count || SsithraCheckInWater(self))
+	if (self->ssithra_watersplash_spawned || SsithraCheckInWater(self))
 		return;
 
 	vec3_t dir;
@@ -876,13 +876,13 @@ void ssithra_try_spawn_water_exit_splash(edict_t* self) //mxd. Named 'ssithraChe
 		const vec3_t fx_dir = { 0.0f, 0.0f, 300.0f }; //TODO: normalized in ssithra_try_spawn_water_entry_splash(). Which is correct?
 		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, trace.endpos, "bd", 128 | 96, fx_dir);
 
-		self->count = true;
+		self->ssithra_watersplash_spawned = true;
 	}
 }
 
 void ssithra_try_spawn_water_entry_splash(edict_t* self) //mxd. Named 'ssithraCheckHitWaterSplash' in original logic.
 {
-	if (self->count)
+	if (self->ssithra_watersplash_spawned)
 		return;
 
 	if (Q_fabs(self->velocity[0]) + Q_fabs(self->velocity[1]) < 200.0f)
@@ -925,7 +925,7 @@ void ssithra_try_spawn_water_entry_splash(edict_t* self) //mxd. Named 'ssithraCh
 			// FIXME: Size proportional to entry velocity.
 			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7, trace.endpos, "bd", 128 | 96, fx_dir);
 
-			self->count = true;
+			self->ssithra_watersplash_spawned = true;
 		}
 	}
 }

@@ -236,6 +236,7 @@ struct edict_s
 		int gorgon_grabbed_toy_shake_mode; //mxd
 		float harpy_head_offset; //mxd
 		qboolean morcalavin_barrier_enabled; //mxd
+		qboolean ssithra_watersplash_spawned; //mxd
 	};
 
 	int targeted; // Used by Ogle to denote a targeted action queued up.
