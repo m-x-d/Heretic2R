@@ -558,7 +558,7 @@ void Cmd_Use_f(edict_t* ent, char* name)
 		return;
 	}
 
-	if (cast_me && (item->flags & IT_DEFENSE) && item->weaponthink != NULL && ent->deadflag != DEAD_DEAD && p_info->deadflag != DEAD_DYING)
+	if (cast_me && (item->flags & IT_DEFENSE) && item->weaponthink != NULL && ent->dead_state != DEAD_DEAD && p_info->deadflag != DEAD_DYING)
 	{
 		if (p_info->leveltime > p_info->defensive_debounce)
 		{
@@ -768,7 +768,7 @@ static void Cmd_Kill_f(edict_t* ent)
 	PlayerDie(ent, ent, ent, 100000, vec3_origin);
 
 	// Don't even bother waiting for death frames.
-	ent->deadflag = DEAD_DEAD;
+	ent->dead_state = DEAD_DEAD;
 
 	// Put us back in the game.
 	ClientRespawn(ent);

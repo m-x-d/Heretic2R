@@ -53,7 +53,7 @@ static void MaceballThink(edict_t* self)
 	self->nextthink = level.time + 0.1f;
 
 	// Now check if we should die soon.
-	if (self->deadflag == DEAD_DYING || self->touch_debounce_time + MACEBALL_EXTRALIFE <= level.time)
+	if (self->dead_state == DEAD_DYING || self->touch_debounce_time + MACEBALL_EXTRALIFE <= level.time)
 	{
 		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/MaceBallDeath.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
 		gi.CreateEffect(NULL, FX_WEAPON_MACEBALLEXPLODE, 0, self->s.origin, "d", self->velocity);
@@ -106,7 +106,7 @@ static void MaceballBounce(edict_t* self, trace_t* trace)
 			T_Damage(trace->ent, self, self->owner, move_vec, trace->endpos, move_vec,
 				MACEBALL_BOSS_DAMAGE, MACEBALL_BOSS_DAMAGE, 0, MOD_P_IRONDOOM);
 
-			self->deadflag = DEAD_DYING;
+			self->dead_state = DEAD_DYING;
 		}
 		else
 		{
@@ -148,7 +148,7 @@ static void MaceballBounce(edict_t* self, trace_t* trace)
 
 				// If we hit a player or a monster, kill this maceball.
 				if (trace->ent->client != NULL || (trace->ent->svflags & SVF_MONSTER))
-					self->deadflag = DEAD_DYING;
+					self->dead_state = DEAD_DYING;
 			}
 		}
 	}
@@ -156,7 +156,7 @@ static void MaceballBounce(edict_t* self, trace_t* trace)
 	// If it's time is up, then kill it.
 	if (self->touch_debounce_time <= level.time)
 	{
-		self->deadflag = DEAD_DYING;
+		self->dead_state = DEAD_DYING;
 		return;
 	}
 

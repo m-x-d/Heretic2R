@@ -1125,7 +1125,7 @@ static void TBeastDieUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NONE, 0.0f);
 
 	self->msgHandler = DeadMsgHandler;
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->takedamage = DAMAGE_NO;
 	self->solid = SOLID_NOT;
 	self->movetype = PHYSICSTYPE_NONE;
@@ -1447,14 +1447,14 @@ static void TBeastDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 {
 	self->msgHandler = DeadMsgHandler;
 
-	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
+	if (self->dead_state == DEAD_DEAD) // Dead but still being hit.
 		return;
 
 	M_ShowLifeMeter(0, 0);
 
 	// Regular death.
 	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NONE, 0.0f);
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
 
 	SetAnim(self, ANIM_DIE_NORM);
@@ -1695,7 +1695,7 @@ void tbeast_bite(edict_t* self, float forward_offset, float right_offset, float 
 void tbeast_dead(edict_t* self)
 {
 	self->movetype = PHYSICSTYPE_NONE;
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->think = NULL;
 	self->nextthink = 0.0f;
 

@@ -16,7 +16,7 @@
 void SpellCastTeleport(edict_t* caster)
 {
 	// If we are already teleporting, forget it.
-	if ((caster->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING)) || (caster->deadflag & (DEAD_DYING | DEAD_DEAD)))
+	if ((caster->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING)) || (caster->dead_state & (DEAD_DYING | DEAD_DEAD)))
 		return;
 
 	// Setup other teleporter information that the character will require when the teleport is actually performed in AnimUpdateFrame.

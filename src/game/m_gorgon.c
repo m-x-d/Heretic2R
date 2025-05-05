@@ -645,7 +645,7 @@ static void GorgonDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	if (self->health <= -80)
 	{
 		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
-		self->deadflag = DEAD_DEAD;
+		self->dead_state = DEAD_DEAD;
 		BecomeDebris(self);
 	}
 }
@@ -670,7 +670,7 @@ static void GorgonDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 		return;
 	}
 
-	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
+	if (self->dead_state == DEAD_DEAD) // Dead but still being hit.
 		return;
 
 	// Regular death.
@@ -682,7 +682,7 @@ static void GorgonDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 
 	self->s.skinnum = GORGON_PAIN_SKIN;
 	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
 
 	SetAnim(self, (self->health <= -10 ? ANIM_DIE2 : ANIM_DIE1)); // Big enough death to be thrown back?
@@ -873,7 +873,7 @@ void gorgon_dead(edict_t* self)
 {
 	self->pre_think = NULL;
 	self->next_pre_think = -1.0f;
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->svflags |= SVF_DEADMONSTER;
 
 	M_EndDeath(self);

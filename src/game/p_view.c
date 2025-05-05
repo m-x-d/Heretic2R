@@ -172,7 +172,7 @@ void SetupPlayerinfo(edict_t* ent)
 	ent->client->playerinfo.viewheight = (float)ent->viewheight;
 	ent->client->playerinfo.watertype = ent->watertype;
 	ent->client->playerinfo.waterlevel = ent->waterlevel;
-	ent->client->playerinfo.deadflag = ent->deadflag;
+	ent->client->playerinfo.deadflag = ent->dead_state;
 	ent->client->playerinfo.movetype = ent->movetype;
 	ent->client->playerinfo.edictflags = ent->flags;
 
@@ -212,7 +212,7 @@ void WritePlayerinfo(edict_t* ent)
 	ent->viewheight = (int)ent->client->playerinfo.viewheight;
 	ent->watertype = ent->client->playerinfo.watertype;
 	ent->waterlevel = ent->client->playerinfo.waterlevel;
-	ent->deadflag = ent->client->playerinfo.deadflag;
+	ent->dead_state = ent->client->playerinfo.deadflag;
 	ent->movetype = ent->client->playerinfo.movetype;
 	ent->flags = ent->client->playerinfo.edictflags;
 
@@ -556,7 +556,7 @@ void ClientEndServerFrame(edict_t* ent)
 	P_WorldEffects();
 
 	// Set the player entity's model angles.
-	if (ent->deadflag == DEAD_NO)
+	if (ent->dead_state == DEAD_NO)
 	{
 		// PITCH.
 		if (ent->client->ps.pmove.w_flags & (WF_DIVING | WF_SWIMFREE))

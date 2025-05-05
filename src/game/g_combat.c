@@ -207,7 +207,7 @@ void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int da
 	if (target->classID != CID_BBRUSH)
 		target->enemy = attacker;
 
-	if ((target->svflags & SVF_MONSTER) && target->deadflag != DEAD_DEAD)
+	if ((target->svflags & SVF_MONSTER) && target->dead_state != DEAD_DEAD)
 	{
 		MG_RemoveBuoyEffects(target);
 
@@ -247,7 +247,7 @@ void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int da
 	if (target->size[2] > 24.0f)
 		target->s.effects |= EF_DISABLE_EXTRA_FX;
 
-	if (target->deadflag != DEAD_DEAD)
+	if (target->dead_state != DEAD_DEAD)
 	{
 		target->touch = NULL;
 		M_DeathUse(target);

@@ -999,7 +999,7 @@ void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage,
 		// Won't get sent to client if modelindex is 0 unless SVF_ALWAYS_SEND flag is set.
 		self->svflags |= SVF_ALWAYS_SEND;
 		self->s.effects |= (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
-		self->deadflag = DEAD_DEAD;
+		self->dead_state = DEAD_DEAD;
 
 		self->client->playerinfo.deadflag = DEAD_DEAD;
 	}
@@ -1008,7 +1008,7 @@ void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage,
 		// Make player die a normal death.
 		self->health = -1;
 
-		if (self->deadflag == DEAD_NO)
+		if (self->dead_state == DEAD_NO)
 		{
 			self->client->respawn_time = level.time + 1.0f;
 			self->client->ps.pmove.pm_type = PM_DEAD;
@@ -1070,7 +1070,7 @@ void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage,
 			// If we're not a chicken, don't set the dying flag.
 			if (!(self->client->playerinfo.edictflags & FL_CHICKEN))
 			{
-				self->deadflag = DEAD_DYING;
+				self->dead_state = DEAD_DYING;
 				self->client->playerinfo.deadflag = DEAD_DYING;
 			}
 			else
@@ -1248,7 +1248,7 @@ static void PlayerBodyDie(edict_t* self, edict_t* inflictor, edict_t* attacker, 
 	self->materialtype = MAT_NONE;
 	self->health = 0;
 	self->die = NULL;
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->s.modelindex = 0;
 
 	gi.linkentity(self);
@@ -1314,7 +1314,7 @@ static void CopyToBodyQue(edict_t* ent)
 	body->takedamage = DAMAGE_YES;
 	body->materialtype = MAT_FLESH;
 	body->health = 25;
-	body->deadflag = DEAD_NO;
+	body->dead_state = DEAD_NO;
 	body->die = PlayerBodyDie;
 
 	gi.linkentity(body);
@@ -1611,7 +1611,7 @@ static void PutClientInServer(edict_t* ent)
 	ent->classname = "player";
 	ent->mass = 200;
 	ent->solid = SOLID_BBOX;
-	ent->deadflag = DEAD_NO;
+	ent->dead_state = DEAD_NO;
 	ent->air_finished = level.time + HOLD_BREATH_TIME;
 	ent->clipmask = MASK_PLAYERSOLID;
 	ent->PersistantCFX = 0; //mxd
@@ -2259,7 +2259,7 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 		client->ps.pmove.pm_type = PM_SPECTATOR;
 	else if ((ent->s.modelindex != 255) && !(ent->flags & FL_CHICKEN)) // We're not set as a chicken.
 		client->ps.pmove.pm_type = PM_GIB;
-	else if (ent->deadflag != DEAD_NO)
+	else if (ent->dead_state != DEAD_NO)
 		client->ps.pmove.pm_type = PM_DEAD;
 	else
 		client->ps.pmove.pm_type = PM_NORMAL;
@@ -2340,7 +2340,7 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 	}
 
 	// Check to add into movement velocity through crouch and duck if underwater.
-	if (ent->deadflag == DEAD_NO)
+	if (ent->dead_state == DEAD_NO)
 	{
 		if (ent->waterlevel > 2)
 		{
@@ -2488,7 +2488,7 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 	if (pm.groundentity != NULL)
 		ent->groundentity_linkcount = pm.groundentity->linkcount;
 
-	if (ent->deadflag == DEAD_NO)
+	if (ent->dead_state == DEAD_NO)
 	{
 		VectorCopy(pm.viewangles, client->v_angle);
 
@@ -2568,7 +2568,7 @@ void ClientBeginServerFrame(edict_t* ent)
 
 	gclient_t* client = ent->client;
 
-	if (ent->deadflag != DEAD_DEAD) //mxd. inverted check. 'ent->deadflag & DEAD_DEAD' in original version. Deadflags are never OR'ed anywhere.
+	if (ent->dead_state != DEAD_DEAD) //mxd. inverted check. 'ent->deadflag & DEAD_DEAD' in original version. Deadflags are never OR'ed anywhere.
 	{
 		client->playerinfo.latched_buttons = 0;
 		return;

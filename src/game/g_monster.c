@@ -561,7 +561,7 @@ qboolean M_Start(edict_t* self) //mxd. Named 'monster_start' in original logic.
 		gi.CreateEffect(&self->s, FX_SHADOW, CEF_OWNERS_ORIGIN, self->s.origin, "f", G_MonsterShadow[self->classID].scale);
 
 	self->s.skinnum = 0;
-	self->deadflag = DEAD_NO;
+	self->dead_state = DEAD_NO;
 	self->svflags &= ~SVF_DEADMONSTER;
 	self->monsterinfo.thinkinc = MONSTER_THINK_INC;
 	self->monsterinfo.nextframeindex = -1;
@@ -1215,10 +1215,10 @@ void M_StartDeath(edict_t* self, int animID) //TODO: remove unused arg.
 	self->msgHandler = DeadMsgHandler;
 
 	// Dead but still being hit.
-	if (self->deadflag == DEAD_DEAD)
+	if (self->dead_state == DEAD_DEAD)
 		return;
 
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 
 	// Gib death?
 	if (self->health <= -80)

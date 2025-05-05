@@ -156,7 +156,7 @@ void BecomeDebris(edict_t* self)
 
 	self->s.modelindex = 0;
 	self->solid = SOLID_NOT;
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 
 	G_SetToFree(self);
 	self->nextthink = level.time + 2.0f;

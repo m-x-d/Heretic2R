@@ -51,7 +51,7 @@ void MorphChickenToPlayerEnd(edict_t* self) //mxd. Named 'reset_morph_to_elf' in
 	// Move the camera back to where it should be, and reset our lungs and stuff.
 	self->viewheight = 0;
 	self->mass = 200;
-	self->deadflag = DEAD_NO;
+	self->dead_state = DEAD_NO;
 	self->air_finished = level.time + HOLD_BREATH_TIME;
 
 	self->s.scale = 1.0f;

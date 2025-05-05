@@ -72,7 +72,7 @@ void CleanUpPlayerTeleport(edict_t* self) //mxd. Named 'CleanUpTeleport' in orig
 void teleporter_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //TODO: rename to TeleporterTouch?
 {
 	// If we aren't a player, dead or already teleporting, forget it.
-	if (other->client == NULL || (other->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING)) || (other->deadflag & (DEAD_DYING | DEAD_DEAD)))
+	if (other->client == NULL || (other->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING)) || (other->dead_state & (DEAD_DYING | DEAD_DEAD)))
 		return;
 
 	// If we are in deathmatch, and this teleporter is so flagged, give us a random destination.

@@ -324,7 +324,7 @@ static void PlayerShrineHealthEffect(edict_t* self) //mxd. Named 'player_shrine_
 
 static void ShrineHealCore(edict_t* other) //mxd. Named 'shrine_heal_core' in original version.
 {
-	if (other->deadflag != DEAD_NO)
+	if (other->dead_state != DEAD_NO)
 		return;
 
 	// If we are a chicken, lets make us a player again. Don't give him anything else.
@@ -397,7 +397,7 @@ static void PlayerShrineArmorSilverEffect(edict_t* self) //mxd. Named 'player_sh
 
 static void ShrineArmorSilverCore(edict_t* other) //mxd. Named 'shrine_armor_silver_core' in original version.
 {
-	if (other->deadflag != DEAD_NO)
+	if (other->dead_state != DEAD_NO)
 		return;
 
 	// If we are a chicken, lets make us a player again. Don't give him anything else.
@@ -487,7 +487,7 @@ static void PlayerShrineArmorGoldEffect(edict_t* self) //mxd. Named 'player_shri
 
 static void ShrineArmorGoldCore(edict_t* other) //mxd. Named 'shrine_armor_gold_core' in original version.
 {
-	if (other->deadflag != DEAD_NO)
+	if (other->dead_state != DEAD_NO)
 		return;
 
 	// If we are a chicken, lets make us a player again. Don't give him anything else.
@@ -579,7 +579,7 @@ static void PlayerShrineStaffEffect(edict_t* self) //mxd. Named 'player_shrine_s
 
 static void ShrineStaffCore(edict_t* other) //mxd. Named 'shrine_staff_core' in original version.
 {
-	if (other->deadflag != DEAD_NO)
+	if (other->dead_state != DEAD_NO)
 		return;
 
 	// If we are a chicken, lets make us a player again. Don't give him anything else.
@@ -655,7 +655,7 @@ static void PlayerShrineLungsEffect(edict_t* self) //mxd. Named 'player_shrine_l
 
 static void ShrineLungsCore(edict_t* other) //mxd. Named 'shrine_lung_core' in original version.
 {
-	if (other->deadflag != DEAD_NO)
+	if (other->dead_state != DEAD_NO)
 		return;
 
 	// If we are a chicken, lets make us a player again. Don't give him anything else.
@@ -736,7 +736,7 @@ static void PlayerShrineLightEffect(edict_t* self) //mxd. Named 'player_shrine_l
 
 static void ShrineLightCore(edict_t* other) //mxd. Named 'shrine_light_core' in original version.
 {
-	if (other->deadflag != DEAD_NO)
+	if (other->dead_state != DEAD_NO)
 		return;
 
 	// If we are a chicken, lets make us a player again. Don't give him anything else.
@@ -811,7 +811,7 @@ static void PlayerShrineManaEffect(edict_t* self) //mxd. Named 'player_shrine_ma
 
 static void ShrineManaCore(edict_t* other) //mxd. Named 'shrine_mana_core' in original version.
 {
-	if (other->deadflag != DEAD_NO)
+	if (other->dead_state != DEAD_NO)
 		return;
 
 	// If we are a chicken, lets make us a player again. Don't give him anything else.
@@ -886,7 +886,7 @@ static void PlayerShrineGhostEffect(edict_t* self) //mxd. Named 'player_shrine_g
 
 static void ShrineGhostCore(edict_t* other) //mxd. Named 'shrine_ghost_core' in original version.
 {
-	if (other->deadflag != DEAD_NO)
+	if (other->dead_state != DEAD_NO)
 		return;
 
 	// If we are a chicken, lets make us a player again. Don't give him anything else.
@@ -963,7 +963,7 @@ static void PlayerShrineReflectEffect(edict_t* self) //mxd. Named 'player_shrine
 
 static void ShrineReflectCore(edict_t* other) //mxd. Named 'shrine_reflect_core' in original version.
 {
-	if (other->deadflag != DEAD_NO)
+	if (other->dead_state != DEAD_NO)
 		return;
 
 	// If we are a chicken, lets make us a player again. Don't give him anything else.
@@ -1048,7 +1048,7 @@ static void PlayerShrinePowerupEffect(edict_t* self) //mxd. Named 'player_shrine
 // Fire off an effect and give us a powerup for a while.
 static void ShrinePowerupCore(edict_t* other) //mxd. Named 'shrine_powerup_core' in original version.
 {
-	if (other->deadflag != DEAD_NO)
+	if (other->dead_state != DEAD_NO)
 		return;
 
 	// If we are a chicken, lets make us a player again. Don't give him anything else.
@@ -1125,7 +1125,7 @@ static void PlayerShrineSpeedEffect(edict_t* self) //mxd. Named 'player_shrine_s
 // Fire off an effect and give us double speed for a while.
 static void ShrineSpeedCore(edict_t* other) //mxd. Named 'shrine_speed_core' in original version.
 {
-	if (other->deadflag != DEAD_NO)
+	if (other->dead_state != DEAD_NO)
 		return;
 
 	// If we are a chicken, lets make us a player again. Don't give him anything else.

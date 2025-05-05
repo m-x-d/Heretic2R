@@ -1105,7 +1105,7 @@ void spreaderSplat (edict_t *self, trace_t *trace)//, edict_s *other, cplane_s *
 		}
 	}
 
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->health = -1000;
 	self->mass = 0.01;
 	self->think = BecomeDebris;

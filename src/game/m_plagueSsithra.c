@@ -462,7 +462,7 @@ static void SsithraSplit(edict_t* self, const int body_part) //mxd. Named 'ssith
 	top_half->max_health = top_half->health;
 	top_half->clipmask = MASK_MONSTERSOLID;
 
-	top_half->deadflag = DEAD_DEAD;
+	top_half->dead_state = DEAD_DEAD;
 	top_half->monsterinfo.thinkinc = MONSTER_THINK_INC;
 	top_half->monsterinfo.nextframeindex = -1;
 	top_half->friction = 0.1f;
@@ -943,7 +943,7 @@ static void SsithraDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 static void SsithraPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ssithra_pain' in original logic.
 {
 	//FIXME: make part fly dir the vector from hit loc to sever loc.
-	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
+	if (self->dead_state == DEAD_DEAD) // Dead but still being hit.
 		return;
 
 	int temp;
@@ -984,10 +984,10 @@ static void SsithraDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 
 	self->msgHandler = DyingMsgHandler;
 
-	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
+	if (self->dead_state == DEAD_DEAD) // Dead but still being hit.
 		return;
 
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 
 	if (self->health <= -80) // Gib death.
 	{
@@ -2034,7 +2034,7 @@ void ssithra_pain_react(edict_t* self)
 void ssithra_dead(edict_t* self)
 {
 	//FIXME: maybe allow dead bodies to be chopped? Make BBOX small?
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->msgHandler = DeadMsgHandler;
 	self->svflags |= SVF_DEADMONSTER; // Now treat as a different content type.
 	self->flags |= FL_DONTANIMATE;
@@ -2044,7 +2044,7 @@ void ssithra_dead(edict_t* self)
 
 void ssithra_water_dead(edict_t* self) //mxd. Named 'ssithraWaterDead' in original logic.
 {
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
 
 	self->think = FishDeadFloatThink; //TODO: add our own version of fish_deadfloat?
@@ -2079,7 +2079,7 @@ void ssithra_kill_self(edict_t* self) //mxd. Named 'ssithraKillSelf' in original
 {
 	self->svflags &= ~SVF_DEADMONSTER; // Now treat as a different content type.
 	self->msgHandler = DefaultMsgHandler;
-	self->deadflag = DEAD_NO;
+	self->dead_state = DEAD_NO;
 
 	vec3_t gore_spot;
 	VectorCopy(self->s.origin, gore_spot);

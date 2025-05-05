@@ -306,7 +306,7 @@ static void PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropweapo
 	VectorMA(hand_spot, 8.0f, right, hand_spot);
 	VectorMA(hand_spot, -6.0f, up, hand_spot);
 
-	const int chance = ((self->deadflag == DEAD_DEAD || (self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW)) ? 0 : 3);
+	const int chance = ((self->dead_state == DEAD_DEAD || (self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW)) ? 0 : 3);
 
 	if (!(self->s.fmnodeinfo[MESH__HOE].flags & FMNI_NO_DRAW))
 	{
@@ -371,7 +371,7 @@ static void PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropweapo
 	ThrowWeapon(self, &hand_spot, BIT_HANDLE, 0.0f, FRAME_partfly);
 	self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 
-	if (self->deadflag != DEAD_DEAD)
+	if (self->dead_state != DEAD_DEAD)
 		PlagueElfTryFlee(self, 6, 8, flrand(5.0f, 10.0f));
 }
 
@@ -590,10 +590,10 @@ static void PlagueElfDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	self->msgHandler = DeadMsgHandler;
 
 	// Dead but still being hit.
-	if (self->deadflag == DEAD_DEAD)
+	if (self->dead_state == DEAD_DEAD)
 		return;
 
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	PlagueElfDropWeapon(self);
 
 	if (self->health <= -80) // Gib death.

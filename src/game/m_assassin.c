@@ -741,7 +741,7 @@ void assassin_attack(edict_t* self, const float flags) //mxd. Named 'assassindag
 void assassin_dead(edict_t* self)
 {
 	self->msgHandler = DeadMsgHandler;
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	M_EndDeath(self);
 }
 
@@ -1810,10 +1810,10 @@ static void AssassinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 
 	self->msgHandler = DeadMsgHandler;
 
-	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
+	if (self->dead_state == DEAD_DEAD) // Dead but still being hit.
 		return;
 
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 
 	self->isBlocked = NULL;
 	self->bounced = NULL;

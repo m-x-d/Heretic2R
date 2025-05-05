@@ -126,7 +126,7 @@ static void ChickenDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	self->msgHandler = DeadMsgHandler;
 
 	gi.sound(self, CHAN_BODY, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 
 	BecomeDebris(self);
 	gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN, NULL, "");

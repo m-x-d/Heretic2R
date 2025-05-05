@@ -650,7 +650,7 @@ qboolean G_HandleTeleport(const playerinfo_t* info)
 void PlayerChickenDeath(edict_t* self)
 {
 	//gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0); //TODO: play "Monsters/chicken/die.wav"?
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->client->playerinfo.deadflag = DEAD_DEAD;
 	gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN, NULL, "");
 

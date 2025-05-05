@@ -1454,10 +1454,10 @@ void priestess_death( edict_t *self, G_Message_t *msg )
 {
 	self->msgHandler = DeadMsgHandler;
 
-	if(self->deadflag == DEAD_DEAD)
+	if(self->dead_state == DEAD_DEAD)
 		return;
 
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->takedamage = DAMAGE_NO;
 
 	self->dmg = 0;

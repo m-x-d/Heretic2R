@@ -215,7 +215,7 @@ static void FishDeadPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 static void FishDeadMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fish_death' in original logic.
 {
 	VectorClear(self->velocity);
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 
 	if (self->health < -60)
 	{
@@ -246,7 +246,7 @@ static void FishPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fi
 
 	SetAnim(self, ANIM_PAIN1);
 	VectorClear(self->velocity);
-	self->deadflag = DEAD_DYING;
+	self->dead_state = DEAD_DYING;
 
 	// Switch to damaged skin?
 	if (irand(0, 2) == 0 && (self->s.skinnum == FISH_SKIN1 || self->s.skinnum == FISH_SKIN2))
@@ -282,7 +282,7 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 	M_MoveFrame(self);
 
 	// We are already dead or getting hit, we don't need to do anything.
-	if ((self->deadflag & DEAD_DEAD) || (self->deadflag & DEAD_DYING))
+	if ((self->dead_state & DEAD_DEAD) || (self->dead_state & DEAD_DYING))
 		return;
 
 	M_CatagorizePosition(self);
@@ -375,7 +375,7 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 static void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fish_blocked' in original logic.
 {
 	// Dead fish don't rebound off stuff.
-	if (self->deadflag == DEAD_DEAD)
+	if (self->dead_state == DEAD_DEAD)
 		return;
 
 	// Did we hit a monster or player?
@@ -389,7 +389,7 @@ static void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fi
 		}
 
 		// Check if this guy is dead.
-		if (trace->ent->deadflag == DEAD_DEAD)
+		if (trace->ent->dead_state == DEAD_DEAD)
 		{
 			FishPickBounceDirection(self);
 			self->enemy = NULL;
@@ -613,7 +613,7 @@ void fish_pain_finished(edict_t* self) //mxd. Named 'finished_fish_pain' in orig
 {
 	// Run the hell away.
 	self->ai_mood = AI_MOOD_WANDER;
-	self->deadflag = DEAD_NO;
+	self->dead_state = DEAD_NO;
 
 	if (self->waterlevel == 3)
 		FishMoveToTarget(self);
@@ -633,7 +633,7 @@ void fish_idle(edict_t* self)
 // Fish's dead, figure how far it is to the top of the water so he can float.
 void fish_dead(edict_t* self)
 {
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
 
 	VectorClear(self->velocity);
@@ -701,7 +701,7 @@ void fish_update_target_movedir(edict_t* self) //mxd. Named 'fish_target' in ori
 void fish_pause(edict_t* self)
 {
 	// Is the target either not there or already dead?
-	if (!FindTarget(self) || self->enemy->deadflag == DEAD_DEAD)
+	if (!FindTarget(self) || self->enemy->dead_state == DEAD_DEAD)
 	{
 		self->enemy = NULL;
 		self->ai_mood = AI_MOOD_WANDER;
@@ -832,7 +832,7 @@ void SP_monster_fish(edict_t* self)
 	self->materialtype = MAT_FLESH;
 	self->flags |= (FL_SWIM | FL_NO_KNOCKBACK);
 	self->s.skinnum = (irand(0, 1) == 1 ? FISH_SKIN1 : FISH_SKIN2);
-	self->deadflag = DEAD_NO;
+	self->dead_state = DEAD_NO;
 
 	self->ai_mood = AI_MOOD_STAND;
 	self->fish_is_turning = false;

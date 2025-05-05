@@ -129,7 +129,7 @@ static void SphereOfAnnihilationGrowThink(edict_t* self)
 		AngleVectors(self->owner->s.angles, forward, NULL, up);
 
 	// If we have released, or we are dead, or a chicken, release the sphere.
-	if (*self->sphere_charging_ptr && !(self->owner->deadflag & (DEAD_DYING | DEAD_DEAD))
+	if (*self->sphere_charging_ptr && !(self->owner->dead_state & (DEAD_DYING | DEAD_DEAD))
 		&& (cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN)) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
 		if (self->count < SPHERE_MAX_CHARGES)
@@ -320,7 +320,7 @@ static void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 		AngleVectors(self->owner->s.angles, forward, right, NULL);
 
 	// If we have released, or we are dead, or a chicken, release the sphere.
-	if (*self->sphere_charging_ptr && !(self->owner->deadflag & (DEAD_DYING | DEAD_DEAD))
+	if (*self->sphere_charging_ptr && !(self->owner->dead_state & (DEAD_DYING | DEAD_DEAD))
 		&& (cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN)) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
 		if (self->count < SPHERE_MAX_CHARGES)
@@ -451,7 +451,7 @@ static void SphereWatcherGrowThink(edict_t* self)
 		AngleVectors(self->owner->s.angles, forward, NULL, up);
 
 	// If we have released or we are dead, release the sphere.
-	if (*self->sphere_charging_ptr && !(self->owner->deadflag & (DEAD_DYING | DEAD_DEAD)))
+	if (*self->sphere_charging_ptr && !(self->owner->dead_state & (DEAD_DYING | DEAD_DEAD)))
 	{
 		self->count += irand(1, 2);
 

@@ -133,7 +133,7 @@ static void MssithraStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 static void MssithraPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'mssithra_pain' in original logic.
 {
 	//FIXME: make part fly dir the vector from hit loc to sever loc.
-	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
+	if (self->dead_state == DEAD_DEAD) // Dead but still being hit.
 		return;
 
 	int temp;
@@ -156,10 +156,10 @@ static void MssithraDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	self->svflags |= SVF_DEADMONSTER;
 	self->msgHandler = DyingMsgHandler;
 
-	if (self->deadflag == DEAD_DEAD)
+	if (self->dead_state == DEAD_DEAD)
 		return;
 
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 
 	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
 
@@ -280,7 +280,7 @@ void mssithra_dead(edict_t* self)
 {
 	//FIXME: maybe allow dead bodies to be chopped? Make BBOX small?
 	self->msgHandler = DeadMsgHandler;
-	self->deadflag = DEAD_DEAD;
+	self->dead_state = DEAD_DEAD;
 	self->flags |= FL_DONTANIMATE;
 
 	self->think = NULL;
