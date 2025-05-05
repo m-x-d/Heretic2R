@@ -219,7 +219,7 @@ static const animframe_t ssithra_frames_duckshoot1[] =
 {
 	{ FRAME_duckshoot1,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_duckshoot2,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_duckshoot3,	NULL, 0, 0, 0, ai_charge2, 0, ssithraCrouch },
+	{ FRAME_duckshoot3,	NULL, 0, 0, 0, ai_charge2, 0, ssithra_crouch },
 	{ FRAME_duckshoot4,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_duckshoot5,	NULL, 0, 0, 0, ai_charge2, 0, ssithra_start_duck_arrow },
 	{ FRAME_duckshoot5,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
@@ -237,7 +237,7 @@ static const animframe_t ssithra_frames_duck1[] =
 	// Oops, duckframes same as duckshoot?
 	{ FRAME_duckshoot1, ssithra_sound, SND_GROWL3, CHAN_VOICE, ATTN_IDLE, NULL, 0, ssithra_growl_sound },
 	{ FRAME_duckshoot2, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_duckshoot3, NULL, 0, 0, 0, NULL, 0, ssithraCrouch },
+	{ FRAME_duckshoot3, NULL, 0, 0, 0, NULL, 0, ssithra_crouch },
 	{ FRAME_duckshoot4, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_duckshoot5, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_duckshoot6, NULL, 0, 0, 0, NULL, 0, NULL },

@@ -2121,7 +2121,7 @@ static void SsithraForwardJump(edict_t* self) //mxd. Named 'ssithraJumpEvade' in
 	SetAnim(self, ANIM_FJUMP);
 }
 
-void ssithraCrouch(edict_t* self) //TODO: rename to ssithra_crouch.
+void ssithra_crouch(edict_t* self) //mxd. Named 'ssithraCrouch' in original logic.
 {
 	self->maxs[2] = 0.0f;
 	self->viewheight = -6;
@@ -2197,7 +2197,7 @@ static void SsithraEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	else if (irand(0, 100) < duck_chance)
 	{
 		self->evade_debounce_time = level.time + eta;
-		ssithraCrouch(self);
+		ssithra_crouch(self);
 	}
 }
 
