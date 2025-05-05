@@ -1463,7 +1463,7 @@ static void SsithraPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 			return;
 	}
 
-	ssithraUnCrouch(self);
+	ssithra_uncrouch(self);
 
 	self->pain_debounce_time = level.time + 2.0f;
 	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
@@ -1523,7 +1523,7 @@ static void SsithraDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 		return;
 	}
 
-	ssithraUnCrouch(self);
+	ssithra_uncrouch(self);
 
 	if (SsithraCheckInWater(self))
 	{
@@ -2130,7 +2130,7 @@ void ssithra_crouch(edict_t* self) //mxd. Named 'ssithraCrouch' in original logi
 	SetAnim(self, ANIM_DUCKSHOOT);
 }
 
-void ssithraUnCrouch(edict_t* self) //TODO: rename to ssithra_uncrouch.
+void ssithra_uncrouch(edict_t* self) //mxd. Named 'ssithraUnCrouch' in original logic.
 {
 	self->maxs[2] = STDMaxsForClass[self->classID][2] * self->s.scale;
 	self->viewheight = (int)(self->maxs[2] * 0.8f);

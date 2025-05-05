@@ -202,7 +202,7 @@ const animmove_t ssithra_move_dive1 = { 26, ssithra_frames_dive1, ssithra_decide
 static const animframe_t ssithra_frames_unduck[] =
 {
 	{ FRAME_duckshoot3,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_duckshoot2,	NULL, 0, 0, 0, ai_charge2, 0, ssithraUnCrouch },
+	{ FRAME_duckshoot2,	NULL, 0, 0, 0, ai_charge2, 0, ssithra_uncrouch },
 	{ FRAME_duckshoot1,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
 const animmove_t ssithra_move_unduck = { 3, ssithra_frames_unduck, ssithra_decide_run };

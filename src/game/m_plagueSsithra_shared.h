@@ -172,7 +172,7 @@ extern void ssithra_apply_jump(edict_t* self);
 extern void ssithra_check_duck_arrow(edict_t* self);
 extern void ssithra_check_unduck(edict_t* self);
 extern void ssithra_crouch(edict_t* self);
-extern void ssithraUnCrouch(edict_t* self);
+extern void ssithra_uncrouch(edict_t* self);
 extern void ssithra_check_loop(edict_t* self);
 extern void ssithra_growl_sound(edict_t* self);
 extern void ssithra_start_duck_arrow(edict_t* self);
