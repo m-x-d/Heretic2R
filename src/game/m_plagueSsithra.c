@@ -1630,7 +1630,7 @@ void ssithra_sound(edict_t* self, float sound_num, float channel, float attenuat
 	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
 }
 
-void ssithraGrowlSound(edict_t* self) //TODO: rename to ssithra_growl_sound.
+void ssithra_growl_sound(edict_t* self) //mxd. Named 'ssithraGrowlSound' in original logic.
 {
 	if (irand(0, 3) == 0)
 		gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWL1, SND_GROWL3)], 1.0f, ATTN_IDLE, 0.0f);

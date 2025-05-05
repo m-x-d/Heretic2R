@@ -17,7 +17,7 @@ static const animframe_t ssithra_frames_idle1[] =
 	{ FRAME_idle02,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle03,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle04,	NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_idle05,	NULL, 0, 0, 0, ai_stand, 0, ssithraGrowlSound },
+	{ FRAME_idle05,	NULL, 0, 0, 0, ai_stand, 0, ssithra_growl_sound },
 	{ FRAME_idle06,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle07,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle08,	NULL, 0, 0, 0, ai_stand, 0, NULL },
@@ -28,7 +28,7 @@ static const animframe_t ssithra_frames_idle1[] =
 	{ FRAME_idle13,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle14,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle15,	NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_idle16,	NULL, 0, 0, 0, ai_stand, 0, ssithraGrowlSound },
+	{ FRAME_idle16,	NULL, 0, 0, 0, ai_stand, 0, ssithra_growl_sound },
 	{ FRAME_idle17,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle18,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle19,	NULL, 0, 0, 0, ai_stand, 0, NULL },
@@ -40,7 +40,7 @@ static const animframe_t ssithra_frames_idle1[] =
 	{ FRAME_idle25,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle26,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle27,	NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_idle28,	NULL, 0, 0, 0, ai_stand, 0, ssithraGrowlSound },
+	{ FRAME_idle28,	NULL, 0, 0, 0, ai_stand, 0, ssithra_growl_sound },
 	{ FRAME_idle29,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle30,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle31,	NULL, 0, 0, 0, ai_stand, 0, NULL },
@@ -65,7 +65,7 @@ static const animframe_t ssithra_frames_walk1[] =
 	{ FRAME_walk4,	NULL, 0, 0, 0, ai_walk, 5, NULL },
 	{ FRAME_walk5,	NULL, 0, 0, 0, ai_walk, 3, NULL },
 	{ FRAME_walk6,	NULL, 0, 0, 0, ai_walk, 5, NULL },
-	{ FRAME_walk7,	NULL, 0, 0, 0, ai_walk, 5, ssithraGrowlSound },
+	{ FRAME_walk7,	NULL, 0, 0, 0, ai_walk, 5, ssithra_growl_sound },
 	{ FRAME_walk8,	NULL, 0, 0, 0, ai_walk, 5, NULL },
 	{ FRAME_walk9,	NULL, 0, 0, 0, ai_walk, 5, NULL },
 	{ FRAME_walk10,	NULL, 0, 0, 0, ai_walk, 7, NULL },
@@ -235,7 +235,7 @@ const animmove_t ssithra_move_duckshoot1 = { 11, ssithra_frames_duckshoot1, ssit
 static const animframe_t ssithra_frames_duck1[] =
 {
 	// Oops, duckframes same as duckshoot?
-	{ FRAME_duckshoot1, ssithra_sound, SND_GROWL3, CHAN_VOICE, ATTN_IDLE, NULL, 0, ssithraGrowlSound },
+	{ FRAME_duckshoot1, ssithra_sound, SND_GROWL3, CHAN_VOICE, ATTN_IDLE, NULL, 0, ssithra_growl_sound },
 	{ FRAME_duckshoot2, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_duckshoot3, NULL, 0, 0, 0, NULL, 0, ssithraCrouch },
 	{ FRAME_duckshoot4, NULL, 0, 0, 0, NULL, 0, NULL },
@@ -281,7 +281,7 @@ static const animframe_t ssithra_frames_idlebasic1[] =
 	{ FRAME_idlebasic04, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic05, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic06, NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_idlebasic07, NULL, 0, 0, 0, ai_stand, 0, ssithraGrowlSound },
+	{ FRAME_idlebasic07, NULL, 0, 0, 0, ai_stand, 0, ssithra_growl_sound },
 	{ FRAME_idlebasic08, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic09, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic10, NULL, 0, 0, 0, ai_stand, 0, NULL },
@@ -293,7 +293,7 @@ static const animframe_t ssithra_frames_idlebasic1[] =
 	{ FRAME_idlebasic16, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic17, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic18, NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_idlebasic19, NULL, 0, 0, 0, ai_stand, 0, ssithraGrowlSound },
+	{ FRAME_idlebasic19, NULL, 0, 0, 0, ai_stand, 0, ssithra_growl_sound },
 	{ FRAME_idlebasic20, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic21, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic22, NULL, 0, 0, 0, ai_stand, 0, NULL },
@@ -304,7 +304,7 @@ static const animframe_t ssithra_frames_idlebasic1[] =
 	{ FRAME_idlebasic27, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic28, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic29, NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_idlebasic30, NULL, 0, 0, 0, ai_stand, 0, ssithraGrowlSound },
+	{ FRAME_idlebasic30, NULL, 0, 0, 0, ai_stand, 0, ssithra_growl_sound },
 	{ FRAME_idlebasic31, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic32, NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idlebasic33, NULL, 0, 0, 0, ai_stand, 0, NULL },
@@ -321,7 +321,7 @@ const animmove_t ssithra_move_idlebasic1 = { 40, ssithra_frames_idlebasic1, ssit
 // Plague Ssithra Idle Right.
 static const animframe_t ssithra_frames_idleright1[] =
 {
-	{ FRAME_idleright01, ssithra_sound, SND_GROWL2, CHAN_VOICE, ATTN_IDLE, ai_stand, 0, ssithraGrowlSound },
+	{ FRAME_idleright01, ssithra_sound, SND_GROWL2, CHAN_VOICE, ATTN_IDLE, ai_stand, 0, ssithra_growl_sound },
 	{ FRAME_idleright02, NULL,								0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idleright03, NULL,								0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idleright04, NULL,								0, 0, 0, ai_stand, 0, NULL },
@@ -447,7 +447,7 @@ const animmove_t ssithra_move_lunge = { 10, ssithra_frames_lunge, ssithra_decide
 // Plague Ssithra Startle.
 static const animframe_t ssithra_frames_startle1[] =
 {
-	{ FRAME_startle2,	ssithra_sound, SND_GROWL3, CHAN_VOICE, ATTN_IDLE, ai_stand, 0, ssithraGrowlSound },
+	{ FRAME_startle2,	ssithra_sound, SND_GROWL3, CHAN_VOICE, ATTN_IDLE, ai_stand, 0, ssithra_growl_sound },
 	{ FRAME_startle3,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_startle4,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_startle5,	NULL, 0, 0, 0, ai_stand, 0, NULL },

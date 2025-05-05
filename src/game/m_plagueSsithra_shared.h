@@ -174,7 +174,7 @@ extern void ssithraCheckUnDuck(edict_t* self);
 extern void ssithraCrouch(edict_t* self);
 extern void ssithraUnCrouch(edict_t* self);
 extern void ssithraCheckLoop(edict_t* self);
-extern void ssithraGrowlSound(edict_t* self);
+extern void ssithra_growl_sound(edict_t* self);
 extern void ssithraStartDuckArrow(edict_t* self);
 
 #define BIT_POLY				0
