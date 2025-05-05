@@ -6,5 +6,7 @@
 
 #pragma once
 
-void SP_monster_high_priestess(edict_t* self);
-void HighPriestessStaticsInit(void);
+#include "g_Edict.h"
+
+extern void SP_monster_high_priestess(edict_t* self);
+extern void HighPriestessStaticsInit(void);
