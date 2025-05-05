@@ -880,7 +880,7 @@ const animmove_t ssithra_move_death_c = { 41, ssithra_frames_death_c, ssithra_de
 static const animframe_t ssithra_frames_headlessloop[] =
 {
 	{ FRAME_shoot8,		NULL, 0, 0, 0, ai_spin, -5, NULL },
-	{ FRAME_shoot9,		NULL, 0, 0, 0, ai_spin, -4, ssithraPanicArrow },
+	{ FRAME_shoot9,		NULL, 0, 0, 0, ai_spin, -4, ssithra_panic_arrow },
 	{ FRAME_shoot10,	NULL, 0, 0, 0, ai_spin, -2, NULL },
 	{ FRAME_shoot11,	NULL, 0, 0, 0, ai_spin, -2, NULL },
 	{ FRAME_shoot12,	NULL, 0, 0, 0, ai_spin, -3, NULL },
@@ -896,9 +896,9 @@ static const animframe_t ssithra_frames_headless[] =
 	{ FRAME_shoot3,		NULL, 0, 0, 0, ai_spin, -10, NULL },
 	{ FRAME_shoot4,		NULL, 0, 0, 0, ai_spin,  -9, NULL },
 	{ FRAME_shoot5,		NULL, 0, 0, 0, ai_spin,  -8, NULL },
-	{ FRAME_shoot6,		NULL, 0, 0, 0, ai_spin,  -7, ssithraPanicArrow },
+	{ FRAME_shoot6,		NULL, 0, 0, 0, ai_spin,  -7, ssithra_panic_arrow },
 	{ FRAME_shoot7,		NULL, 0, 0, 0, ai_spin,  -7, NULL },
-	{ FRAME_shoot8,		NULL, 0, 0, 0, ai_spin,  -7, ssithraPanicArrow },
+	{ FRAME_shoot8,		NULL, 0, 0, 0, ai_spin,  -7, ssithra_panic_arrow },
 	{ FRAME_shoot9,		NULL, 0, 0, 0, ai_spin,  -6, NULL },
 	{ FRAME_shoot10,	NULL, 0, 0, 0, ai_spin,  -6, NULL },
 	{ FRAME_shoot11,	NULL, 0, 0, 0, ai_spin,  -6, NULL },

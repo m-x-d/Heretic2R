@@ -2016,7 +2016,7 @@ void ssithra_arrow(edict_t* self) //mxd. Named 'ssithraArrow' in original logic.
 		SsithraDoArrow(self);
 }
 
-void ssithraPanicArrow(edict_t* self) //TODO: rename to ssithra_panic_arrow.
+void ssithra_panic_arrow(edict_t* self) //mxd. Named 'ssithraPanicArrow' in original logic.
 {
 	//FIXME: adjust for up/down.
 	if (self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW)
