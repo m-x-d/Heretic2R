@@ -279,14 +279,12 @@ typedef enum physicsType_e
 } physicsType_t;
 
 // DEAD_XXX
-// Held in 'edict_t'->deadflag.
+// Held in 'edict_t'->dead_state.
 typedef enum deadState_e
 {
 	DEAD_NO,
 	DEAD_DYING,
-	DEAD_DEAD,
-
-	NUM_DEADSTATE
+	DEAD_DEAD
 } deadState_t;
 
 // HANDFX_XXX
@@ -586,7 +584,7 @@ typedef struct playerinfo_s
 	float knockbacktime; // FIXME Used on client, but not transmitted yet?  --Pat
 	int watertype;
 	int waterlevel;	
-	int deadflag;
+	int deadflag; //TODO: rename to dead_state, change type to deadState_t.
 	int movetype;
 	int edictflags;
 
