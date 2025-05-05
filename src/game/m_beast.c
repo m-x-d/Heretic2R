@@ -1695,7 +1695,7 @@ void tbeast_bite(edict_t* self, float forward_offset, float right_offset, float 
 void tbeast_dead(edict_t* self)
 {
 	self->movetype = PHYSICSTYPE_NONE;
-	self->deadState = DEAD_DEAD;
+	self->deadflag = DEAD_DEAD;
 	self->think = NULL;
 	self->nextthink = 0.0f;
 

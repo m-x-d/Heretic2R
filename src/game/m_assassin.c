@@ -741,7 +741,7 @@ void assassin_attack(edict_t* self, const float flags) //mxd. Named 'assassindag
 void assassin_dead(edict_t* self)
 {
 	self->msgHandler = DeadMsgHandler;
-	self->deadState = DEAD_DEAD;
+	self->deadflag = DEAD_DEAD;
 	M_EndDeath(self);
 }
 

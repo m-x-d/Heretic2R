@@ -819,7 +819,7 @@ static void MoveEntity_Slide(edict_t* self)
 static void ActivateTriggers(edict_t* self)
 {
 	// Dead things don't activate triggers.
-	if (self->deadState != DEAD_NO)
+	if (self->deadflag != DEAD_NO)
 		return;
 
 	SinglyLinkedList_t list;

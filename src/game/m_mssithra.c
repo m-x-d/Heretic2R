@@ -280,7 +280,7 @@ void mssithra_dead(edict_t* self)
 {
 	//FIXME: maybe allow dead bodies to be chopped? Make BBOX small?
 	self->msgHandler = DeadMsgHandler;
-	self->deadState = DEAD_DEAD;
+	self->deadflag = DEAD_DEAD;
 	self->flags |= FL_DONTANIMATE;
 
 	self->think = NULL;
