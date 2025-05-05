@@ -1580,7 +1580,7 @@ void ssithra_water_dead(edict_t* self) //mxd. Named 'ssithraWaterDead' in origin
 	gi.linkentity(self);
 }
 
-void ssithraCollapse(edict_t* self) //TODO: rename to ssithra_collapse.
+void ssithra_collapse(edict_t* self) //mxd. Named 'ssithraCollapse' in original logic.
 {
 	if (irand(0, 10) < 5)
 	{

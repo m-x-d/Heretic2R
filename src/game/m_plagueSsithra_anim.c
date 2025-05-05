@@ -883,10 +883,10 @@ static const animframe_t ssithra_frames_headlessloop[] =
 	{ FRAME_shoot9,		NULL, 0, 0, 0, ai_spin, -4, ssithraPanicArrow },
 	{ FRAME_shoot10,	NULL, 0, 0, 0, ai_spin, -2, NULL },
 	{ FRAME_shoot11,	NULL, 0, 0, 0, ai_spin, -2, NULL },
-	{ FRAME_shoot12, 	NULL, 0, 0, 0, ai_spin, -3, NULL },
+	{ FRAME_shoot12,	NULL, 0, 0, 0, ai_spin, -3, NULL },
 	{ FRAME_shoot13,	NULL, 0, 0, 0, ai_spin, -4, NULL },
 };
-const animmove_t ssithra_move_headlessloop = { 6, ssithra_frames_headlessloop, ssithraCollapse };
+const animmove_t ssithra_move_headlessloop = { 6, ssithra_frames_headlessloop, ssithra_collapse };
 
 // Plague Ssithra Headless.
 static const animframe_t ssithra_frames_headless[] =
@@ -905,7 +905,7 @@ static const animframe_t ssithra_frames_headless[] =
 	{ FRAME_shoot12,	NULL, 0, 0, 0, ai_spin,  -5, NULL },
 	{ FRAME_shoot13,	NULL, 0, 0, 0, ai_spin,  -5, NULL },
 };
-const animmove_t ssithra_move_headless = { 13, ssithra_frames_headless, ssithraCollapse };
+const animmove_t ssithra_move_headless = { 13, ssithra_frames_headless, ssithra_collapse };
 
 // Plague Ssithra Dead A.
 static const animframe_t ssithra_frames_dead_a[] =
