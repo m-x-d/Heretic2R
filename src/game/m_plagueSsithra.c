@@ -1675,7 +1675,7 @@ static void SsithraMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 		if (M_DistanceToTarget(self, self->enemy) < self->melee_range)
 			SetAnim(self, (self->curAnimID == ANIM_SWIMFORWARD ? ANIM_TRANSUP : ANIM_WATER_SHOOT));
 		else
-			ssithraArrow(self);
+			ssithra_arrow(self);
 	}
 	else
 	{
@@ -1990,7 +1990,7 @@ void ssithra_start_duck_arrow(edict_t* self) //mxd. Named 'ssithraStartDuckArrow
 	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MSSITHRA_ARROW_CHARGE, start_pos);
 }
 
-void ssithraArrow(edict_t* self) //TODO: rename to ssithra_arrow.
+void ssithra_arrow(edict_t* self) //mxd. Named 'ssithraArrow' in original logic.
 {
 	//FIXME: adjust for up/down.
 	if (self->enemy == NULL)
