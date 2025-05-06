@@ -394,19 +394,15 @@ void rat_ai_stand(edict_t* self, float distance)
 	}
 }
 
-void rat_ai_eat(edict_t *self, float dist)
+void rat_ai_eat(edict_t* self, float distance)
 {
-	if (M_ValidTarget(self, self->enemy))
-	{
-		if (M_DistanceToTarget(self, self->enemy) < RAT_IGNORE_DISTANCE)
-		{
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-		}
-		else
-		{
-			QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
-		}
-	}
+	if (!M_ValidTarget(self, self->enemy))
+		return;
+
+	if (M_DistanceToTarget(self, self->enemy) < RAT_IGNORE_DISTANCE)
+		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+	else
+		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
 
 void rat_ai_run (edict_t *self, float dist)
