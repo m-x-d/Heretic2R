@@ -312,14 +312,13 @@ void rat_pause(edict_t* self)
 		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 }
 
-void ratjump(edict_t *self)
+void ratjump(edict_t* self) //TODO: rename to rat_jump.
 {
-	vec3_t vf;
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	AngleVectors(self->s.angles, vf, NULL, NULL);
-
-	VectorMA(self->velocity, 125, vf, self->velocity);
-	self->velocity[2] += 225;
+	VectorMA(self->velocity, 125.0f, forward, self->velocity);
+	self->velocity[2] += 225.0f;
 }
 
 /*----------------------------------------------------------------------
