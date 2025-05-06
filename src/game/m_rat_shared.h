@@ -1,5 +1,5 @@
 //
-// m_rat.h
+// m_rat_shared.h
 //
 // Copyright 1998 Raven Software
 //
