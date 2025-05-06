@@ -209,38 +209,30 @@ void ratchatter(edict_t* self) //TODO: rename to rat_chatter.
 		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_CHATTER1, SND_CHATTER3)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void ratswallow (edict_t *self)
+void ratswallow(edict_t* self) //TODO: rename to rat_swallow.
 {
-	gi.sound (self, CHAN_WEAPON, sounds[SND_SWALLOW], 1, ATTN_IDLE, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_SWALLOW], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void rathiss (edict_t *self)
+void rathiss(edict_t* self) //TODO: rename to rat_hiss.
 {
-	gi.sound (self, CHAN_WEAPON, sounds[SND_HISS], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_HISS], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void ratscratch (edict_t *self)
+void ratscratch(edict_t* self) //TODO: rename to rat_scratch.
 {
-	gi.sound (self, CHAN_WEAPON, sounds[SND_SCRATCH], 1, ATTN_IDLE, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_SCRATCH], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void ratdeathsqueal (edict_t *self)
+void ratdeathsqueal(edict_t* self) //TODO: rename to rat_death_squeal.
 {
-	gi.sound (self, CHAN_WEAPON, sounds[SND_DIE], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void ratsqueal (edict_t *self)
+void ratsqueal(edict_t* self) //TODO: rename to rat_squeal.
 {
-	if (irand(0, 1))
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
-	}
-	else
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
-	}
+	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 }
-
 
 void ratbite (edict_t *self)
 {
