@@ -739,64 +739,61 @@ void priestess_pounce(edict_t* self)
 		priestess_jump_attack(self); //mxd. Reuse existing logic.
 }
 
-/*-----------------------------------------------
-	priestess_strike
------------------------------------------------*/
-
-void priestess_strike ( edict_t *self, float damage )
+void priestess_strike(edict_t* self, float damage)
 {
+	vec3_t start_offset;
+	vec3_t end_offset;
+
+	//FIXME: Take out the mults here, done this way to speed up tweaking (sue me).
+	switch (self->s.frame)
+	{
+		case FRAME_attackB8:
+			VectorSet(start_offset, 16.0f * 4.0f, -16.0f * 5.0f, 16.0f * 3.0f);
+			VectorSet(end_offset, 16.0f * 3.0f, 16.0f * 5.0f, -8.0f);
+			break;
+
+		case FRAME_attackB14:
+			VectorSet(start_offset, 16.0f * 2.0f, 16.0f * 5.0f, 16.0f * 4.0f);
+			VectorSet(end_offset, 16.0f * 5.0f, -16.0f * 5.0f, -16.0f * 2.0f);
+			break;
+
+		case FRAME_jumpatt12:
+			VectorSet(start_offset, 16.0f * 2.0f, 0.0f, 16.0f * 5.0f);
+			VectorSet(end_offset, 16.0f * 5.0f, 4.0f, 4.0f);
+			break;
+	}
+
+	const vec3_t mins = { -4.0f, -4.0f, -4.0f };
+	const vec3_t maxs = {  4.0f,  4.0f,  4.0f };
+
 	trace_t	trace;
-	edict_t *victim;
-	vec3_t	soff, eoff, mins, maxs, bloodDir, direction;
+	vec3_t direction;
+	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
 
-	//FIXME: Take out the mults here, done this way to speed up tweaking (sue me)
-	switch ( self->s.frame )
+	// Did something get hit?
+	if (victim == NULL)
 	{
-	case FRAME_attackB8:
-		VectorSet(soff, 16*4, -16*5, 16*3);
-		VectorSet(eoff, 16*3,  16*5, -8);
-		break;
-
-	case FRAME_attackB14:
-		VectorSet(soff, 16*2,  16*5, 16*4);
-		VectorSet(eoff, 16*5, -16*5,-16*2);
-		break;
-
-	case FRAME_jumpatt12:
-		VectorSet(soff, 16*2, 0, 16*5);
-		VectorSet(eoff, 16*5, 4,	4);
-		break;
+		// Play swoosh sound.
+		gi.sound(self, CHAN_AUTO, sounds[SND_SWIPEMISS], 1.0f, ATTN_NORM, 0.0f);
+		return;
 	}
-	
-	VectorSet(mins, -4, -4, -4);
-	VectorSet(maxs,  4,  4,  4);
 
-	VectorSubtract(soff, eoff, bloodDir);
-	VectorNormalize(bloodDir);
-
-	victim = M_CheckMeleeLineHit(self, soff, eoff, mins, maxs, &trace, direction);	
-
-	//Did something get hit?
-	if (victim)
+	if (victim == self)
 	{
-		if (victim == self)
-		{
-			//Create a spark effect
-			gi.CreateEffect(NULL, FX_SPARKS, CEF_FLAG6, trace.endpos, "d", direction);
-			gi.sound (self, CHAN_WEAPON, sounds[SND_SWIPEWALL], 1, ATTN_NORM, 0);
-		}
-		else
-		{
-			//Hurt whatever we were whacking away at
-			T_Damage(victim, self, self, direction, trace.endpos, bloodDir, damage, damage*2, DAMAGE_DISMEMBER,MOD_DIED);
-			gi.sound (self, CHAN_WEAPON, sounds[SND_SWIPE], 1, ATTN_NORM, 0);
-		}
+		// Create a spark effect.
+		gi.CreateEffect(NULL, FX_SPARKS, CEF_FLAG6, trace.endpos, "d", direction);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SWIPEWALL], 1.0f, ATTN_NORM, 0.0f);
+
+		return;
 	}
-	else
-	{
-		//Play swoosh sound
-		gi.sound (self, CHAN_AUTO, sounds[SND_SWIPEMISS], 1, ATTN_NORM, 0);
-	}	
+
+	// Hurt whatever we were whacking away at.
+	vec3_t blood_dir;
+	VectorSubtract(start_offset, end_offset, blood_dir);
+	VectorNormalize(blood_dir);
+
+	T_Damage(victim, self, self, direction, trace.endpos, blood_dir, (int)damage, (int)damage * 2, DAMAGE_DISMEMBER, MOD_DIED);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_SWIPE], 1.0f, ATTN_NORM, 0.0f);
 }
 
 /*-----------------------------------------------
