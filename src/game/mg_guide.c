@@ -1861,7 +1861,7 @@ void MG_InitMoods(edict_t* self)
 	if (self->mintel > 0)
 		self->monsterinfo.aiflags |= AI_USING_BUOYS;
 
-	if (SKILL == SKILL_EASY) // Easy skill = 1/2 health monsters.
+	if (SKILL == SKILL_EASY) // Easy skill = 1/2 health monsters. //TODO: do this in MonsterHealth()?..
 	{
 		self->health /= 2;
 		self->max_health = self->health;
