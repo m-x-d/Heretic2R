@@ -132,26 +132,15 @@ static void RatWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat
 	SetAnim(self, ANIM_WALK1);
 }
 
-//----------------------------------------------------------------------
-//  Rat Melee - choose a melee to use
-//----------------------------------------------------------------------
-void rat_melee(edict_t *self, G_Message_t *msg)
+static void RatMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_melee' in original logic.
 {
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		if (irand(0,1) < 1)
-		{
-			SetAnim(self, ANIM_MELEE1);
-		}
-		else
-		{
-			SetAnim(self, ANIM_MELEE3);
-		}
-
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	SetAnim(self, (irand(0, 1) == 0 ? ANIM_MELEE1 : ANIM_MELEE3));
 }
 
 //----------------------------------------------------------------------
@@ -567,7 +556,7 @@ void RatStaticsInit(void)
 	classStatics[CID_RAT].msgReceivers[MSG_WALK] = RatWalkMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_RUN] = RatRunMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_EAT] = rat_eat;
-	classStatics[CID_RAT].msgReceivers[MSG_MELEE] = rat_melee;
+	classStatics[CID_RAT].msgReceivers[MSG_MELEE] = RatMeleeMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_WATCH] = rat_watch;
 	classStatics[CID_RAT].msgReceivers[MSG_PAIN] = RatPainMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_DEATH] = RatDeathMsgHandler;
