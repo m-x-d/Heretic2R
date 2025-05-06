@@ -250,7 +250,7 @@ static void PriestessDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	self->dead_state = DEAD_DEAD;
 	self->takedamage = DAMAGE_NO;
 
-	self->dmg = 0;
+	self->priestess_healthbar_buildup = 0;
 	self->health = 0;
 	self->max_health = 0;
 
@@ -485,10 +485,10 @@ static void PriestessPostThink(edict_t* self) //mxd. Named 'priestess_postthink'
 	// Only display a lifemeter if we have an enemy.
 	if (self->enemy != NULL)
 	{
-		if (self->dmg < self->max_health)
+		if (self->priestess_healthbar_buildup < self->max_health)
 		{
-			M_ShowLifeMeter(self->dmg, self->dmg);
-			self->dmg += 50; //TODO: add int priestess_healthbar_buildup name.
+			M_ShowLifeMeter(self->priestess_healthbar_buildup, self->priestess_healthbar_buildup);
+			self->priestess_healthbar_buildup += 50;
 		}
 		else
 		{
