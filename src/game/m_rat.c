@@ -432,7 +432,7 @@ void rat_ai_run(edict_t* self, float distance)
 
 void RatStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_RAT].msgReceivers[MSG_STAND] = RatStandMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_WALK] = RatWalkMsgHandler;
@@ -445,35 +445,35 @@ void RatStaticsInit(void)
 	classStatics[CID_RAT].msgReceivers[MSG_JUMP] = M_jump;
 	classStatics[CID_RAT].msgReceivers[MSG_DEATH_PAIN] = RatDeathPainMsgHandler;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/rat/tris.fm");
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/rat/tris.fm");
 
-	sounds[SND_BITEHIT1] = gi.soundindex ("monsters/rat/meleehit1.wav");	
-	sounds[SND_BITEMISS1] = gi.soundindex ("monsters/rat/meleemiss1.wav");	
-	sounds[SND_BITEMISS2] = gi.soundindex ("monsters/rat/meleemiss2.wav");	
-	sounds[SND_HISS] = gi.soundindex ("monsters/rat/hiss.wav");	
-	sounds[SND_SCRATCH] = gi.soundindex ("monsters/rat/scratch.wav");	
-	sounds[SND_PAIN1] = gi.soundindex ("monsters/rat/pain1.wav");	
-	sounds[SND_PAIN2] = gi.soundindex ("monsters/rat/pain2.wav");	
+	sounds[SND_BITEHIT1] = gi.soundindex("monsters/rat/meleehit1.wav");
+	sounds[SND_BITEMISS1] = gi.soundindex("monsters/rat/meleemiss1.wav");
+	sounds[SND_BITEMISS2] = gi.soundindex("monsters/rat/meleemiss2.wav");
+	sounds[SND_HISS] = gi.soundindex("monsters/rat/hiss.wav");
+	sounds[SND_SCRATCH] = gi.soundindex("monsters/rat/scratch.wav");
+	sounds[SND_PAIN1] = gi.soundindex("monsters/rat/pain1.wav");
+	sounds[SND_PAIN2] = gi.soundindex("monsters/rat/pain2.wav");
 
-	sounds[SND_CHATTER1] = gi.soundindex ("monsters/rat/chatter1.wav");	
-	sounds[SND_CHATTER2] = gi.soundindex ("monsters/rat/chatter2.wav");	
-	sounds[SND_CHATTER3] = gi.soundindex ("monsters/rat/chatter3.wav");	
+	sounds[SND_CHATTER1] = gi.soundindex("monsters/rat/chatter1.wav");
+	sounds[SND_CHATTER2] = gi.soundindex("monsters/rat/chatter2.wav");
+	sounds[SND_CHATTER3] = gi.soundindex("monsters/rat/chatter3.wav");
 
-	sounds[SND_CHEW1] = gi.soundindex ("monsters/rat/chew1.wav");	
-	sounds[SND_CHEW2] = gi.soundindex ("monsters/rat/chew2.wav");	
-	sounds[SND_CHEW3] = gi.soundindex ("monsters/rat/chew3.wav");	
+	sounds[SND_CHEW1] = gi.soundindex("monsters/rat/chew1.wav");
+	sounds[SND_CHEW2] = gi.soundindex("monsters/rat/chew2.wav");
+	sounds[SND_CHEW3] = gi.soundindex("monsters/rat/chew3.wav");
 
-	sounds[SND_SWALLOW] = gi.soundindex ("monsters/rat/swallow.wav");	
+	sounds[SND_SWALLOW] = gi.soundindex("monsters/rat/swallow.wav");
 
-	sounds[SND_DIE] = gi.soundindex ("monsters/rat/death1.wav");	
-	sounds[SND_GIB] = gi.soundindex ("monsters/rat/gib.wav");
+	sounds[SND_DIE] = gi.soundindex("monsters/rat/death1.wav");
+	sounds[SND_GIB] = gi.soundindex("monsters/rat/gib.wav");
 
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
 
-	classStatics[CID_RAT].resInfo = &resInfo;
+	classStatics[CID_RAT].resInfo = &res_info;
 }
 
 /*QUAKED monster_rat (1 .5 0) (-16 -16 -0) (16 16 32) AMBUSH ASLEEP EATING 8 16 32 64 FIXED(na) WANDER(na) MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
