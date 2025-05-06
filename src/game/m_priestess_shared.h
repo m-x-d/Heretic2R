@@ -118,7 +118,6 @@ extern void priestess_jump_left(edict_t* self);
 extern void priestess_strike(edict_t* self, float damage);
 
 extern void priestess_pounce_attack(edict_t* self);
-extern void priestess_idle(edict_t* self);
 extern void priestess_pounce(edict_t* self);
 extern void priestess_move(edict_t* self, float vf, float vr, float vu);
 extern void priestess_pause(edict_t* self);

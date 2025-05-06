@@ -988,10 +988,6 @@ void priestess_pause(edict_t* self)
 	}
 }
 
-void priestess_idle(edict_t* self) //TODO: remove?
-{
-}
-
 void priestess_dead(edict_t* self)
 {
 	self->mood_nextthink = -1.0f; // Never mood_think again.

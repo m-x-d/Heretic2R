@@ -31,7 +31,7 @@ static const animframe_t priestess_frames_stand1[] =
 	{ FRAME_idle17,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle18,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t priestess_move_stand1 = { 18, priestess_frames_stand1, priestess_idle };
+const animmove_t priestess_move_stand1 = { 18, priestess_frames_stand1, NULL };
 
 // Priestess Attack 1 Start.
 static const animframe_t priestess_frames_attack1_go[] =
@@ -59,7 +59,7 @@ static const animframe_t priestess_frames_attack1_loop[] =
 	{ FRAME_attackA11,	priestess_fire1,	0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attackA12,	NULL,				0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_attack1_loop = { 6, priestess_frames_attack1_loop, priestess_idle };
+const animmove_t priestess_move_attack1_loop = { 6, priestess_frames_attack1_loop, NULL };
 
 // Priestess Attack 1 End.
 static const animframe_t priestess_frames_attack1_end[] =
@@ -227,7 +227,7 @@ static const animframe_t priestess_frames_idle[] =
 	{ FRAME_idle17,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_idle18,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_idle = { 18, priestess_frames_idle, priestess_idle };
+const animmove_t priestess_move_idle = { 18, priestess_frames_idle, NULL };
 
 // Priestess Jump.
 static const animframe_t priestess_frames_jump[] =
@@ -374,7 +374,7 @@ static const animframe_t priestess_frames_idle_pose[] =
 	{ FRAME_poseidle8,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_poseidle9,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_idle_pose = { 9, priestess_frames_idle_pose, priestess_idle };
+const animmove_t priestess_move_idle_pose = { 9, priestess_frames_idle_pose, NULL };
 
 // Priestess Idle Pose to Ready Transition.
 static const animframe_t priestess_frames_pose_trans[] =
@@ -386,7 +386,7 @@ static const animframe_t priestess_frames_pose_trans[] =
 	{ FRAME_pose2ready5,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pose2ready6,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_pose_trans = { 6, priestess_frames_pose_trans, priestess_idle };
+const animmove_t priestess_move_pose_trans = { 6, priestess_frames_pose_trans, NULL };
 
 // Priestess Shield Start.
 static const animframe_t priestess_frames_shield_go[] =
