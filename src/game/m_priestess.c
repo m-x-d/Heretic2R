@@ -498,77 +498,56 @@ static void PriestessFire2(edict_t* self) //mxd. Named 'priestess_fire2' in orig
 	gi.linkentity(proj);
 }
 
-/*-----------------------------------------------
-	priestess_fire3
------------------------------------------------*/
-
-//The light bugs
-void priestess_fire3( edict_t *self, float pitch_ofs, float yaw_ofs, float roll_ofs )
+// The light bugs.
+static void PriestessFire3(edict_t* self) //mxd. Named 'priestess_fire3' in original logic.
 {
-	edict_t	*proj;
-	vec3_t	vf, vr, ang, startPos;
-	float	len;
+	// Spawn the projectile.
+	edict_t* proj = G_Spawn();
 
-	// Spawn the projectile
-
-	proj = G_Spawn();
-
-	PriestessProjectileInit(self,proj);
+	PriestessProjectileInit(self, proj);
 
 	proj->takedamage = DAMAGE_YES;
-	proj->die = PriestessProjectile2Die;
-
 	proj->monsterinfo.attack_state = AS_BROODS_SACRIFICE;
+	proj->monsterinfo.attack_finished = level.time + 5.0f;
 	proj->owner = self;
-	
-	AngleVectors(self->s.angles, vf, vr, NULL);
-	VectorNormalize(vf);
+
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+	VectorNormalize(forward);
 
 	VectorCopy(self->s.origin, proj->s.origin);
-	
-	VectorMA(self->s.origin, 30, vf, proj->s.origin);
-	VectorMA(proj->s.origin, 8,	 vr, proj->s.origin);
-	proj->s.origin[2] += 56;
-	VectorCopy(proj->s.origin, startPos);
 
-	len = M_DistanceToTarget(self, self->enemy);
+	VectorMA(self->s.origin, 30.0f, forward, proj->s.origin);
+	VectorMA(proj->s.origin, 8.0f, right, proj->s.origin);
+	proj->s.origin[2] += 56.0f;
 
-	len /= 200;
+	const float dist = M_DistanceToTarget(self, self->enemy) / 200.0f;
 
-	proj->ideal_yaw = irand(500*len,750*len);
-	proj->missile_range = flrand(0.65, 0.75);
+	proj->ideal_yaw = flrand(dist * 500.0f, dist * 750.0f); //mxd. irand() in original logic.
+	proj->missile_range = flrand(0.65f, 0.75f);
 
-	VectorSubtract(self->enemy->s.origin, proj->s.origin, vf);
-	VectorNormalize(vf);
+	vec3_t dir;
+	VectorSubtract(self->enemy->s.origin, proj->s.origin, dir);
+	VectorNormalize(dir);
 
-	vectoangles( vf, ang );
+	vec3_t angles;
+	vectoangles(dir, angles);
 
-	ang[PITCH] *= -1;
+	angles[PITCH] *= -1.0f;
+	angles[PITCH] += flrand(-10.0f, 5.0f); //mxd. irand() in original logic.
+	angles[YAW] += flrand(-35.0f, 35.0f); //mxd. irand() in original logic.
 
-	ang[PITCH] += irand( -10, 5 );
-	ang[YAW]   += irand( -35, 35 );
-
-	AngleVectors( ang, vf, NULL, NULL );
-
-	VectorScale( vf, proj->ideal_yaw, proj->velocity );
-
-	proj->monsterinfo.attack_finished= level.time + 5;
-
+	AngleVectors(angles, forward, NULL, NULL);
+	VectorScale(forward, proj->ideal_yaw, proj->velocity);
 	vectoangles(proj->velocity, proj->s.angles);
 
-	proj->think=PriestessProjectile2Think;
+	proj->die = PriestessProjectile2Die;
+	proj->think = PriestessProjectile2Think;
 
-	gi.sound (self, CHAN_AUTO, sounds[SND_BUGS], 1, ATTN_NORM, 0);
-
-	gi.CreateEffect(&proj->s,
-				FX_HP_MISSILE,
-				CEF_OWNERS_ORIGIN,
-				startPos,
-				"vb",
-				proj->velocity,
-				HPMISSILE3);
-
-	gi.linkentity(proj); 
+	gi.sound(self, CHAN_AUTO, sounds[SND_BUGS], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&proj->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, proj->s.origin, "vb", proj->velocity, HPMISSILE3);
+	gi.linkentity(proj);
 }
 
 /*-----------------------------------------------
@@ -829,7 +808,7 @@ void priestess_attack3_loop_fire ( edict_t *self )
 	
 		if (self->monsterinfo.search_time < level.time)
 		{
-			priestess_fire3( self, 0, 0, 0 );
+			PriestessFire3(self);
 			self->monsterinfo.search_time = level.time + 0.15;
 		}
 		break;
