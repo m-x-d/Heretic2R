@@ -281,117 +281,99 @@ static void PriestessProjectile2Think(edict_t* self) //mxd. Named 'priestess_pro
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*-----------------------------------------------
-	priestess_proj1_blocked
------------------------------------------------*/
-
-void priestess_proj1_blocked( edict_t *self, trace_t *trace )
-{	
-	edict_t	*proj;
-	vec3_t	hitDir;
-	int		damage;
-	byte	exp;
-
-	if (trace->ent == self->owner)
+static void PriestessProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Named 'priestess_proj1_blocked' in original logic. //TODO: move closer to other PriestessProjectile1 callbacks.
+{
+	if (trace->ent == self->owner || Q_stricmp(trace->ent->classname, "HPriestess_Missile") == 0) //mxd. stricmp -> Q_stricmp.
 		return;
 
-	if (!stricmp(trace->ent->classname, "HPriestess_Missile"))
-		return;
+	byte fx_type;
 
-	//Reflection stuff
-	if(EntReflecting(trace->ent, true, true))
+	// Reflection stuff.
+	if (EntReflecting(trace->ent, true, true))
 	{
-		proj = G_Spawn();
+		edict_t* proj = G_Spawn();
 
-		create_priestess_proj(self,proj);
+		create_priestess_proj(self, proj);
 		proj->owner = self->owner;
 		proj->ideal_yaw = self->ideal_yaw;
 
 		Create_rand_relect_vect(self->velocity, proj->velocity);
-		Vec3ScaleAssign(proj->ideal_yaw,proj->velocity);
+		Vec3ScaleAssign(proj->ideal_yaw, proj->velocity);
 		vectoangles(proj->velocity, proj->s.angles);
 
-		switch ( self->monsterinfo.attack_state )
+		switch (self->monsterinfo.attack_state)
 		{
-		case AS_QUEENS_FURY:
-		case AS_LIGHT_MISSILE:
-			exp = HPMISSILE1_EXPLODE;
-			break;
-		
-		case AS_BROODS_SACRIFICE:
-			exp = HPMISSILE3_EXPLODE;
-			break;
+			case AS_QUEENS_FURY:
+			case AS_LIGHT_MISSILE:
+				fx_type = HPMISSILE1_EXPLODE;
+				break;
 
-		case AS_HEAVENS_RAIN:
-			exp = HPMISSILE1_EXPLODE;
-			break;
+			case AS_BROODS_SACRIFICE:
+				fx_type = HPMISSILE3_EXPLODE;
+				break;
+
+			case AS_HEAVENS_RAIN:
+				fx_type = HPMISSILE1_EXPLODE;
+				break;
+
+			default: //mxd
+				assert(0);
+				return;
 		}
 
-		gi.CreateEffect(&self->s,
-					FX_HP_MISSILE,
-					CEF_OWNERS_ORIGIN,
-					self->s.origin,
-					"vb",
-					vec3_origin,
-					(unsigned char) exp);
-
-		gi.linkentity(proj); 
-
+		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, fx_type);
+		gi.linkentity(proj);
 		G_SetToFree(self);
 
 		return;
 	}
 
-	//Do the rest of the stuff
-	switch ( self->monsterinfo.attack_state )
+	int damage;
+
+	// Do the rest of the stuff.
+	switch (self->monsterinfo.attack_state)
 	{
-	case AS_QUEENS_FURY:
-		exp = HPMISSILE1_EXPLODE;
-		damage = irand(HP_DMG_FURY_MIN, HP_DMG_FURY_MAX);
-		gi.sound (self, CHAN_AUTO, sounds[SND_HOMINGHIT], 1, ATTN_NORM, 0);
-		break;
-	
-	case AS_BROODS_SACRIFICE:
-		exp = HPMISSILE3_EXPLODE;
-		damage = irand(HP_DMG_BROOD_MIN, HP_DMG_BROOD_MAX);
-		gi.sound (self, CHAN_AUTO, sounds[SND_BUGHIT], 1, ATTN_NORM, 0);
-		break;
+		case AS_QUEENS_FURY:
+			fx_type = HPMISSILE1_EXPLODE;
+			damage = irand(HP_DMG_FURY_MIN, HP_DMG_FURY_MAX);
+			gi.sound(self, CHAN_AUTO, sounds[SND_HOMINGHIT], 1.0f, ATTN_NORM, 0.0f);
+			break;
 
-	case AS_HEAVENS_RAIN:
-		exp = HPMISSILE2_EXPLODE;
-		damage = HP_DMG_RAIN;
-		gi.sound (self, CHAN_AUTO, sounds[SND_ZAPHIT], 1, ATTN_NORM, 0);
-		break;
+		case AS_BROODS_SACRIFICE:
+			fx_type = HPMISSILE3_EXPLODE;
+			damage = irand(HP_DMG_BROOD_MIN, HP_DMG_BROOD_MAX);
+			gi.sound(self, CHAN_AUTO, sounds[SND_BUGHIT], 1.0f, ATTN_NORM, 0.0f);
+			break;
 
-	case AS_LIGHT_MISSILE:
-		exp = HPMISSILE1_EXPLODE;
-		damage = irand(HP_DMG_MISSILE_MIN, HP_DMG_MISSILE_MAX);
-		gi.sound (self, CHAN_AUTO, sounds[SND_BALLHIT], 1, ATTN_NORM, 0);		
-		break;
+		case AS_HEAVENS_RAIN:
+			fx_type = HPMISSILE2_EXPLODE;
+			damage = HP_DMG_RAIN;
+			gi.sound(self, CHAN_AUTO, sounds[SND_ZAPHIT], 1.0f, ATTN_NORM, 0.0f);
+			break;
 
-	default:
-		assert(0);
-		break;
+		case AS_LIGHT_MISSILE:
+			fx_type = HPMISSILE1_EXPLODE;
+			damage = irand(HP_DMG_MISSILE_MIN, HP_DMG_MISSILE_MAX);
+			gi.sound(self, CHAN_AUTO, sounds[SND_BALLHIT], 1.0f, ATTN_NORM, 0.0f);
+			break;
+
+		default:
+			assert(0);
+			return; //mxd. break -> return.
 	}
 
-	if ( trace->ent->takedamage )
+	if (trace->ent->takedamage != DAMAGE_NO)
 	{
-		VectorCopy( self->velocity, hitDir );
-		VectorNormalize( hitDir );
+		vec3_t hit_dir;
+		VectorNormalize2(self->velocity, hit_dir);
 
-		T_Damage( trace->ent, self, self->owner, hitDir, self->s.origin, trace->plane.normal, damage, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK,MOD_DIED );
+		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, damage, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
 	}
 
-	gi.CreateEffect(&self->s,
-				FX_HP_MISSILE,
-				CEF_OWNERS_ORIGIN,
-				self->s.origin,
-				"vb",
-				vec3_origin,
-				(unsigned char) exp);
+	gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, fx_type);
 
 	self->think = G_FreeEdict;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
@@ -477,9 +459,9 @@ static void create_priestess_proj(const edict_t *self,edict_t *proj)
 	proj->clipmask = MASK_SHOT;
 	proj->nextthink = level.time + 0.1;
 	
-	proj->bounced = priestess_proj1_blocked;
-	proj->isBlocking = priestess_proj1_blocked;
-	proj->isBlocked = priestess_proj1_blocked;
+	proj->bounced = PriestessProjectile1Blocked;
+	proj->isBlocking = PriestessProjectile1Blocked;
+	proj->isBlocked = PriestessProjectile1Blocked;
 	//proj->touch = priestess_proj1_touch;
 
 	proj->s.effects=EF_MARCUS_FLAG1|EF_CAMERA_NO_CLIP;
