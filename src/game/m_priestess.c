@@ -401,73 +401,63 @@ static void PriestessProjectileInit(const edict_t* self, edict_t* proj) //mxd. N
 	VectorCopy(self->s.origin, proj->s.origin);
 }
 
-/*-----------------------------------------------
-	priestess_fire1
------------------------------------------------*/
-
-//Hand thrown light missiles
-void priestess_fire1( edict_t *self, float pitch_ofs, float yaw_ofs, float roll_ofs )
+// Hand thrown light missiles.
+void priestess_fire1(edict_t* self, float pitch_offset, float yaw_offset, float roll_offset)
 {
-	edict_t	*proj;
-	vec3_t	vf, vr, predPos;
-	vec3_t	ang, vel, startOfs, angles;
-	int		i;
-
-	if (!self->enemy)
+	if (self->enemy == NULL)
 		return;
 
-	//Only predict once for all the missiles
-	M_PredictTargetPosition ( self->enemy, self->enemy->velocity, 1, predPos );
+	// Only predict once for all the missiles.
+	vec3_t predicted_pos;
+	M_PredictTargetPosition(self->enemy, self->enemy->velocity, 1.0f, predicted_pos);
 
-	AngleVectors(self->s.angles, vf, vr, NULL);
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	VectorMA(self->s.origin, -8,  vf, startOfs);
-	VectorMA(startOfs, -16, vr, startOfs);
-	startOfs[2] += 32;
+	vec3_t proj_pos;
+	VectorMA(self->s.origin, -8.0f, forward, proj_pos);
+	VectorMA(proj_pos, -16.0f, right, proj_pos);
+	proj_pos[2] += 32.0f;
 
-	VectorSubtract(predPos, startOfs, vf);
-	VectorNormalize(vf);
-	
-	vectoangles( vf, angles );
+	vec3_t diff;
+	VectorSubtract(predicted_pos, proj_pos, diff);
+	VectorNormalize(diff);
 
-	i = irand(2,3);
+	vec3_t start_angles;
+	vectoangles(diff, start_angles);
 
-	while (i--)
+	for (int i = 0; i < irand(2, 3); i++)
 	{
-		// Spawn the projectile
-		proj = G_Spawn();
+		// Spawn the projectile.
+		edict_t* proj = G_Spawn();
+
+		PriestessProjectileInit(self, proj);
 
 		proj->monsterinfo.attack_state = AS_LIGHT_MISSILE;
-		PriestessProjectileInit(self,proj);
 		proj->owner = self;
-		
-		VectorCopy(startOfs, proj->s.origin);
-		VectorCopy(angles, ang);
 
-		ang[PITCH]  = flrand( -4, 4 ) + -ang[PITCH];
-		ang[YAW] 	+= flrand( -4, 4 );
+		VectorCopy(proj_pos, proj->s.origin);
 
-		AngleVectors( ang, vel, NULL, NULL );
+		vec3_t angles;
+		VectorCopy(start_angles, angles);
 
-		VectorScale(vel, irand(500,600), proj->velocity);
+		angles[PITCH] += flrand(-4.0f, 4.0f);
+		angles[YAW] += flrand(-4.0f, 4.0f);
+
+		vec3_t vel;
+		AngleVectors(angles, vel, NULL, NULL);
+		VectorScale(vel, flrand(500.0f, 600.0f), proj->velocity); //mxd. irand() in original logic.
 
 		vectoangles(proj->velocity, proj->s.angles);
 
-		gi.sound (self, CHAN_AUTO, sounds[SND_3BALLATK], 1, ATTN_NORM, 0);
-
-		//One in ten wander off drunkenly
-		if (!irand(0,10))
+		// One in ten wander off drunkenly.
+		if (irand(0, 9) == 0) //mxd. irand(0, 10) in original logic (which is one in eleven).
 			proj->think = PriestessProjectile1DrunkenThink;
 
-		gi.CreateEffect(&proj->s,
-					FX_HP_MISSILE,
-					CEF_OWNERS_ORIGIN,
-					NULL,
-					"vb",
-					proj->velocity,
-					HPMISSILE2);
-
-		gi.linkentity(proj); 
+		gi.sound(self, CHAN_AUTO, sounds[SND_3BALLATK], 1.0f, ATTN_NORM, 0.0f);
+		gi.CreateEffect(&proj->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, NULL, "vb", proj->velocity, HPMISSILE2);
+		gi.linkentity(proj);
 	}
 }
 
