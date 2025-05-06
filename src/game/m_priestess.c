@@ -657,11 +657,7 @@ void priestess_attack3_loop(edict_t* self)
 	}
 }
 
-/*-----------------------------------------------
-	priestess_attackc_loop_fire
------------------------------------------------*/
-
-void priestess_attack3_loop_fire ( edict_t *self )
+void priestess_attack3_loop_fire(edict_t* self)
 {
 	if (self->monsterinfo.attack_finished < level.time)
 	{
@@ -669,31 +665,31 @@ void priestess_attack3_loop_fire ( edict_t *self )
 		return;
 	}
 
-	//NOTE: These effects are not necessarily called each frame (hence the irands)
-	switch ( self->monsterinfo.attack_state )
+	//NOTE: These effects are not necessarily called each frame (hence the irands).
+	switch (self->monsterinfo.attack_state)
 	{
-	case AS_QUEENS_FURY:
+		case AS_QUEENS_FURY:
+			if (self->monsterinfo.search_time < level.time)
+			{
+				PriestessFire2(self);
+				self->monsterinfo.search_time = level.time + 0.25f;
+			}
+			break;
 
-		if (self->monsterinfo.search_time < level.time)
-		{
-			PriestessFire2(self);
-			self->monsterinfo.search_time = level.time + 0.25;
-		}
-		break;
+		case AS_BROODS_SACRIFICE:
+			if (self->monsterinfo.search_time < level.time)
+			{
+				PriestessFire3(self);
+				self->monsterinfo.search_time = level.time + 0.15f;
+			}
+			break;
 
-	case AS_BROODS_SACRIFICE:
-	
-		if (self->monsterinfo.search_time < level.time)
-		{
-			PriestessFire3(self);
-			self->monsterinfo.search_time = level.time + 0.15;
-		}
-		break;
+		case AS_HEAVENS_RAIN:
+			PriestessFire4(self);
+			break;
 
-	case AS_HEAVENS_RAIN:
-		
-		PriestessFire4(self);
-		break;
+		default:
+			break;
 	}
 }
 
