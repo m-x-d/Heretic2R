@@ -160,19 +160,11 @@ void priestess_delta_alpha(edict_t* self, float amount)
 	self->s.color.a = (byte)ClampI(alpha, 0, 255);
 }
 
-/*-----------------------------------------------
-	priestess_stop_alpha
------------------------------------------------*/
-
-void priestess_stop_alpha ( edict_t *self )
+void priestess_stop_alpha(edict_t* self)
 {
 	self->takedamage = DAMAGE_YES;
-
 	self->s.renderfx &= ~RF_ALPHA_TEXTURE;
-	self->s.color.r = 255;
-	self->s.color.g = 255;
-	self->s.color.b = 255;
-	self->s.color.a = 255;
+	self->s.color.c = 0xffffffff;
 }
 
 /*-----------------------------------------------

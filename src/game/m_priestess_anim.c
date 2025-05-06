@@ -420,7 +420,7 @@ static const animframe_t priestess_frames_shield_end[] =
 	{ FRAME_shield3,	NULL, 0, 0, 0, priestess_delta_alpha, 32, NULL },
 	{ FRAME_shield2,	NULL, 0, 0, 0, priestess_delta_alpha, 32, NULL },
 	{ FRAME_shield1,	NULL, 0, 0, 0, priestess_delta_alpha, 32, priestess_stop_alpha },
-	{ FRAME_shield1,	NULL, 0, 0, 0, NULL,				   0, priestess_stop_alpha },
+	{ FRAME_shield1,	NULL, 0, 0, 0, NULL,				   0, priestess_stop_alpha }, //TODO: why priestess_stop_alpha() is called twice?
 };
 const animmove_t priestess_move_shield_end = { 9, priestess_frames_shield_end, priestess_pause };
 
