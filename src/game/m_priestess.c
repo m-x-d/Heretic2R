@@ -1,29 +1,23 @@
-//==============================================================================
 //
 // m_priestess.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
 
-#include "g_local.h"
+#include <float.h> //mxd
 #include "m_priestess.h"
 #include "m_priestess_shared.h"
 #include "m_priestess_anim.h"
-#include "Utilities.h"
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
-#include "Random.h"
-#include "vector.h"
-#include "fx.h"
-#include "g_HitLocation.h"
 #include "mg_guide.h" //mxd
-
 #include "m_stats.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
 
 void create_priestess_proj(edict_t *self,edict_t *proj);
 
@@ -1564,6 +1558,8 @@ void priestess_postthink(edict_t *self)
 
 void HighPriestessStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_STAND]	= priestess_stand;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_MISSILE] = priestess_missile;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_RUN] = priestess_run;
