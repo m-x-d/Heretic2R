@@ -179,26 +179,16 @@ static void RatStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ra
 	}
 }
 
-//----------------------------------------------------------------------
-//  Rat Eat - decide which eating animations to use
-//----------------------------------------------------------------------
-void rat_eat(edict_t *self, G_Message_t *msg)
+static void RatEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_eat' in original logic.
 {
-	int chance;
+	const int chance = irand(0, 10);
 
-	chance = irand(0, 10);
 	if (chance < 4)
-	{
 		SetAnim(self, ANIM_EATING1);
-	}
 	else if (chance < 8)
-	{
 		SetAnim(self, ANIM_EATING3);
-	}
-	else 
-	{
+	else
 		SetAnim(self, ANIM_EATING2);
-	}
 }
 
 /*----------------------------------------------------------------------
@@ -533,7 +523,7 @@ void RatStaticsInit(void)
 	classStatics[CID_RAT].msgReceivers[MSG_STAND] = RatStandMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_WALK] = RatWalkMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_RUN] = RatRunMsgHandler;
-	classStatics[CID_RAT].msgReceivers[MSG_EAT] = rat_eat;
+	classStatics[CID_RAT].msgReceivers[MSG_EAT] = RatEatMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_MELEE] = RatMeleeMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_WATCH] = RatWatchMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_PAIN] = RatPainMsgHandler;
