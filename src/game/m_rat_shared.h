@@ -90,9 +90,6 @@ extern const animmove_t rat_move_pain1;
 extern const animmove_t rat_move_death1;
 extern const animmove_t rat_move_death2;
 
-extern void rat_use(edict_t* self, edict_t* other, edict_t* activator);
-extern void rat_touch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf);
-
 extern void ratdeathsqueal(edict_t* self);
 extern void ratsqueal(edict_t* self);
 extern void ratbite(edict_t* self);
@@ -109,14 +106,6 @@ extern void ratchew(edict_t* self);
 extern void ratswallow(edict_t* self);
 extern void ratjump(edict_t* self);
 
-extern void rat_pain(edict_t* self, G_Message_t* msg);
-extern void rat_death(edict_t* self, G_Message_t* msg);
-extern void rat_run(edict_t* self, G_Message_t* msg);
-extern void rat_walk(edict_t* self, G_Message_t* msg);
-extern void rat_melee(edict_t* self, G_Message_t* msg);
-extern void rat_watch(edict_t* self, G_Message_t* msg);
-extern void rat_stand(edict_t* self, G_Message_t* msg);
-extern void rat_eat(edict_t* self, G_Message_t* msg);
-
-extern void rat_ai_eat(edict_t* self, float dist);
-extern void rat_ai_stand(edict_t* self, float dist);
+extern void rat_ai_run(edict_t* self, float distance);
+extern void rat_ai_eat(edict_t* self, float distance);
+extern void rat_ai_stand(edict_t* self, float distance);

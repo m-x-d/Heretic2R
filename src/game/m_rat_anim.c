@@ -8,8 +8,6 @@
 #include "m_rat_shared.h"
 #include "g_monster.h"
 
-void rat_ai_run(edict_t* self, float dist); //TODO: move to m_rat_shared.h
-
 // Rat Death 1 - the big death, flying backwards and flipping over.
 static const animframe_t rat_frames_death1[] =
 {
