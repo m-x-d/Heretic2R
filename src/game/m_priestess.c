@@ -901,36 +901,26 @@ void priestess_pause(edict_t* self)
 	}
 }
 
-/*-----------------------------------------------
-	priestess_idle
------------------------------------------------*/
-
-void priestess_idle(edict_t *self)
+void priestess_idle(edict_t* self) //TODO: remove?
 {
 }
 
-/*-----------------------------------------------
-	priestess_dead
------------------------------------------------*/
-
-void priestess_dead( edict_t *self )
+void priestess_dead(edict_t* self)
 {
-	/* CINEMATICS HERE */
+	self->mood_nextthink = -1.0f; // Never mood_think again.
+	self->maxs[2] = self->mins[2] + 16.0f;
 
-	self->mood_nextthink = -1;//never mood_think again
-	self->maxs[2] = self->mins[2] + 16;
-	
-	if (self->PersistantCFX)
+	if (self->PersistantCFX > 0)
 	{
 		gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_PRIESTESS);
 		self->PersistantCFX = 0;
 	}
+
 	gi.RemoveEffects(&self->s, 0);
-	
-	gi.linkentity (self);
+	gi.linkentity(self);
 
 	self->think = G_FreeEdict;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*
