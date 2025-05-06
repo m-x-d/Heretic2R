@@ -53,6 +53,8 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
+#pragma region ========================== Message handlers ==========================
+
 static void RatDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_dead_pain' in original logic.
 {
 	if (self->health <= -80) // Gib death.
@@ -191,6 +193,43 @@ static void RatEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_
 		SetAnim(self, ANIM_EATING2);
 }
 
+#pragma endregion
+
+#pragma region ========================== Edict callbacks ===========================
+
+static void RatUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'rat_use' in original logic.
+{
+	self->enemy = activator;
+	AI_FoundTarget(self, true);
+}
+
+static void RatTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'rat_touch' in original logic.
+{
+	// M_Touch is overridden because the player can just step over rats.
+	if (!(other->svflags & SVF_MONSTER) && other->client == NULL)
+		return;
+
+	vec3_t other_pos;
+	VectorCopy(other->s.origin, other_pos);
+	other_pos[2] += other->mins[2];
+
+	vec3_t self_pos;
+	VectorCopy(ent->s.origin, self_pos);
+	self_pos[2] += ent->maxs[2];
+
+	// On top?
+	if (other_pos[2] - self_pos[2] >= 0.0f)
+	{
+		// Squish the rat a bit. //TODO: always kill rat (at least on easy and medium skill)? Gib when player jumped on rat? Do this only for regular rats (not giant)?
+		const vec3_t dir = { 0.0f, 0.0f, -1.0f }; //mxd. Uninitialized in original logic.
+		T_Damage(ent, other, other, dir, self_pos, vec3_origin, irand(4, 6), 0, DAMAGE_AVOID_ARMOR, MOD_DIED); //mxd. flrand() in original logic.
+	}
+}
+
+#pragma endregion
+
+#pragma region ========================== Action functions ==========================
+
 void ratchew(edict_t* self) //TODO: rename to rat_chew.
 {
 	const int chance = irand(0, 100);
@@ -326,35 +365,6 @@ void rat_eatorder(edict_t* self) //TODO: rename to rat_eat_order.
 	QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
 
-static void RatUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'rat_use' in original logic.
-{
-	self->enemy = activator;
-	AI_FoundTarget(self, true);
-}
-
-static void RatTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'rat_touch' in original logic.
-{
-	// M_Touch is overridden because the player can just step over rats.
-	if (!(other->svflags & SVF_MONSTER) && other->client == NULL)
-		return;
-
-	vec3_t other_pos;
-	VectorCopy(other->s.origin, other_pos);
-	other_pos[2] += other->mins[2];
-
-	vec3_t self_pos;
-	VectorCopy(ent->s.origin, self_pos);
-	self_pos[2] += ent->maxs[2];
-
-	// On top?
-	if (other_pos[2] - self_pos[2] >= 0.0f)
-	{
-		// Squish the rat a bit. //TODO: always kill rat (at least on easy and medium skill)? Gib when player jumped on rat? Do this only for regular rats (not giant)?
-		const vec3_t dir = { 0.0f, 0.0f, -1.0f }; //mxd. Uninitialized in original logic.
-		T_Damage(ent, other, other, dir, self_pos, vec3_origin, irand(4, 6), 0, DAMAGE_AVOID_ARMOR, MOD_DIED); //mxd. flrand() in original logic.
-	}
-}
-
 void rat_ai_stand(edict_t* self, float distance)
 {
 	if (!M_ValidTarget(self, self->enemy))
@@ -429,6 +439,8 @@ void rat_ai_run(edict_t* self, float distance)
 		MG_AI_Run(self, distance);
 	}
 }
+
+#pragma endregion
 
 void RatStaticsInit(void)
 {
