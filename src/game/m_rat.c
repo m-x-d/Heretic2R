@@ -242,38 +242,38 @@ void rat_chew(edict_t* self) //mxd. Named 'ratchew' in original logic.
 		gi.sound(self, CHAN_WEAPON, sounds[SND_CHEW3], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void ratchatter(edict_t* self) //TODO: rename to rat_chatter.
+void rat_chatter(edict_t* self) //mxd. Named 'ratchatter' in original logic.
 {
 	if (irand(0, 20) < 3)
 		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_CHATTER1, SND_CHATTER3)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void ratswallow(edict_t* self) //TODO: rename to rat_swallow.
+void rat_swallow(edict_t* self) //mxd. Named 'ratswallow' in original logic.
 {
 	gi.sound(self, CHAN_WEAPON, sounds[SND_SWALLOW], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void rathiss(edict_t* self) //TODO: rename to rat_hiss.
+void rat_hiss(edict_t* self) //mxd. Named 'rathiss' in original logic.
 {
 	gi.sound(self, CHAN_WEAPON, sounds[SND_HISS], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void ratscratch(edict_t* self) //TODO: rename to rat_scratch.
+void rat_scratch(edict_t* self) //mxd. Named 'ratscratch' in original logic.
 {
 	gi.sound(self, CHAN_WEAPON, sounds[SND_SCRATCH], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void ratdeathsqueal(edict_t* self) //TODO: rename to rat_death_squeal.
+void rat_death_squeal(edict_t* self) //mxd. Named 'ratdeathsqueal' in original logic.
 {
 	gi.sound(self, CHAN_WEAPON, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void ratsqueal(edict_t* self) //TODO: rename to rat_squeal.
+void rat_squeal(edict_t* self) //mxd. Named 'ratsqueal' in original logic.
 {
 	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void ratbite(edict_t* self) //TODO: rename to rat_bite.
+void rat_bite(edict_t* self) //mxd. Named 'ratsqueal' in original logic.
 {
 	if (self->enemy == NULL)
 		return;
@@ -331,14 +331,19 @@ void rat_pain_init(edict_t* self)
 	}
 }
 
-void rat_runorder(edict_t* self) //TODO: rename to rat_run_order.
+void rat_run_order(edict_t* self) //mxd. Named 'rat_runorder' in original logic.
 {
 	QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 }
 
-void rat_standorder(edict_t* self) //TODO: rename to rat_stand_order.
+void rat_stand_order(edict_t* self) //mxd. Named 'rat_standorder' in original logic.
 {
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+}
+
+void rat_eat_order(edict_t* self) //mxd. Named 'rat_eatorder' in original logic.
+{
+	QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
 
 void rat_pause(edict_t* self)
@@ -351,18 +356,13 @@ void rat_pause(edict_t* self)
 		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 }
 
-void ratjump(edict_t* self) //TODO: rename to rat_jump.
+void rat_jump(edict_t* self) //mxd. Named 'ratjump' in original logic.
 {
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
 
 	VectorMA(self->velocity, 125.0f, forward, self->velocity);
 	self->velocity[2] += 225.0f;
-}
-
-void rat_eatorder(edict_t* self) //TODO: rename to rat_eat_order.
-{
-	QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
 
 void rat_ai_stand(edict_t* self, float distance)

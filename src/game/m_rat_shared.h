@@ -90,21 +90,23 @@ extern const animmove_t rat_move_pain1;
 extern const animmove_t rat_move_death1;
 extern const animmove_t rat_move_death2;
 
-extern void ratdeathsqueal(edict_t* self);
-extern void ratsqueal(edict_t* self);
-extern void ratbite(edict_t* self);
+extern void rat_bite(edict_t* self);
 extern void rat_pain_init(edict_t* self);
-extern void rat_runorder(edict_t* self);
-extern void rat_standorder(edict_t* self);
 extern void rat_pause(edict_t* self);
+extern void rat_jump(edict_t* self);
 
-extern void rat_eatorder(edict_t* self);
-extern void rathiss(edict_t* self);
-extern void ratscratch(edict_t* self);
-extern void ratchatter(edict_t* self);
+extern void rat_run_order(edict_t* self);
+extern void rat_stand_order(edict_t* self);
+extern void rat_eat_order(edict_t* self);
+
+// Sounds.
+extern void rat_death_squeal(edict_t* self);
+extern void rat_squeal(edict_t* self);
+extern void rat_hiss(edict_t* self);
+extern void rat_scratch(edict_t* self);
+extern void rat_chatter(edict_t* self);
 extern void rat_chew(edict_t* self);
-extern void ratswallow(edict_t* self);
-extern void ratjump(edict_t* self);
+extern void rat_swallow(edict_t* self);
 
 extern void rat_ai_run(edict_t* self, float distance);
 extern void rat_ai_eat(edict_t* self, float distance);
