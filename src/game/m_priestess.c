@@ -17,21 +17,15 @@
 #include "Vector.h"
 #include "g_local.h"
 
-static int sounds[NUM_SOUNDS];
+static void create_priestess_proj(const edict_t* self, edict_t* proj); //TODO: remove.
 
-void create_priestess_proj(edict_t *self,edict_t *proj);
+// Number of frames the priestess is in the air.
+#define PRIESTESS_JUMP_FRAMES	10.0f //mxd. Named 'PRIESTESS_JUMPFRAMES' in original logic.
+#define PRIESTESS_HOP_DISTANCE	0.0f //mxd. Named 'PRIESTESS_HOPDIST' in original logic.
 
-enum {
-	AS_QUEENS_FURY,
-	AS_BROODS_SACRIFICE,
-	AS_HEAVENS_RAIN,
-	AS_LIGHT_MISSILE,
-	AS_POUNCE,
-	AS_JUMP_RIGHT,
-	AS_JUMP_LEFT,
-} HighPriestessAttackStates_e;
+#pragma region ========================== High Priestess Base Info ==========================
 
-static const animmove_t *animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&priestess_move_stand1,
 	&priestess_move_attack1_go,
@@ -61,6 +55,21 @@ static const animmove_t *animations[NUM_ANIMS] =
 	&priestess_move_attack3_end,
 	&priestess_move_jump_attack
 };
+
+static int sounds[NUM_SOUNDS];
+
+enum HighPriestessAttackStates_e
+{
+	AS_QUEENS_FURY,
+	AS_BROODS_SACRIFICE,
+	AS_HEAVENS_RAIN,
+	AS_LIGHT_MISSILE,
+	AS_POUNCE,
+	AS_JUMP_RIGHT,
+	AS_JUMP_LEFT,
+};
+
+#pragma endregion
 
 /*
 
@@ -592,7 +601,7 @@ void priestess_proj1_touch( edict_t *self, edict_t *other, cplane_t *plane, csur
 -----------------------------------------------*/
 
 // create the guts of the high priestess projectile
-void create_priestess_proj(edict_t *self,edict_t *proj)
+static void create_priestess_proj(const edict_t *self,edict_t *proj)
 {
 	proj->svflags |= SVF_ALWAYS_SEND;
 	proj->movetype = PHYSICSTYPE_FLY;
@@ -1120,28 +1129,23 @@ void priestess_pounce_attack ( edict_t *self )
 /*-----------------------------------------------
 	priestess_pounce
 -----------------------------------------------*/
-
-//Number of frames the priestess is in the air
-#define PRIESTESS_JUMPFRAMES	10
-#define PRIESTESS_HOPDIST		0
-
 void priestess_jump_attack ( edict_t *self )
 {
 	vec3_t	predPos, jumpVel;
 	float	jumpDist, moveDist, hopDist;
 
 	//Find out where the player will be when we would probably land
-	M_PredictTargetPosition( self->enemy, self->enemy->velocity, PRIESTESS_JUMPFRAMES+2, predPos);
+	M_PredictTargetPosition( self->enemy, self->enemy->velocity, PRIESTESS_JUMP_FRAMES+2, predPos);
 
 	//Find the vector to that spot and the length
 	VectorSubtract(predPos, self->s.origin, jumpVel);
 	moveDist = VectorNormalize(jumpVel);
 	
 	//Velocity is applied per tenth of a frame, so take the distance, divide by the number of frames in the air, and FRAMETIME
-	jumpDist = ( moveDist * PRIESTESS_JUMPFRAMES ) * FRAMETIME;
+	jumpDist = ( moveDist * PRIESTESS_JUMP_FRAMES ) * FRAMETIME;
 
 	//Now get the height to keep her in the air long enough to complete this jump
-	hopDist = ( PRIESTESS_HOPDIST + ( ( sv_gravity->value * PRIESTESS_JUMPFRAMES ) / 4 ) ) * FRAMETIME;
+	hopDist = ( PRIESTESS_HOP_DISTANCE + ( ( sv_gravity->value * PRIESTESS_JUMP_FRAMES ) / 4 ) ) * FRAMETIME;
 	
 	//Setup the vector for the jump
 	VectorScale( jumpVel, jumpDist, jumpVel );
@@ -1161,17 +1165,17 @@ void priestess_pounce ( edict_t *self )
 		return;
 
 	//Find out where the player will be when we would probably land
-	M_PredictTargetPosition( self->enemy, self->enemy->velocity, PRIESTESS_JUMPFRAMES+2, predPos);
+	M_PredictTargetPosition( self->enemy, self->enemy->velocity, PRIESTESS_JUMP_FRAMES+2, predPos);
 
 	//Find the vector to that spot and the length
 	VectorSubtract(predPos, self->s.origin, jumpVel);
 	moveDist = VectorNormalize(jumpVel);
 	
 	//Velocity is applied per tenth of a frame, so take the distance, divide by the number of frames in the air, and FRAMETIME
-	jumpDist = ( moveDist * PRIESTESS_JUMPFRAMES ) * FRAMETIME;
+	jumpDist = ( moveDist * PRIESTESS_JUMP_FRAMES ) * FRAMETIME;
 
 	//Now get the height to keep her in the air long enough to complete this jump
-	hopDist = ( PRIESTESS_HOPDIST + ( ( sv_gravity->value * PRIESTESS_JUMPFRAMES ) / 4 ) ) * FRAMETIME;
+	hopDist = ( PRIESTESS_HOP_DISTANCE + ( ( sv_gravity->value * PRIESTESS_JUMP_FRAMES ) / 4 ) ) * FRAMETIME;
 	
 	//Setup the vector for the jump
 	VectorScale( jumpVel, jumpDist, jumpVel );
