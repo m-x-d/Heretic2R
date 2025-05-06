@@ -234,57 +234,53 @@ void ratsqueal(edict_t* self) //TODO: rename to rat_squeal.
 	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void ratbite (edict_t *self)
+void ratbite(edict_t* self) //TODO: rename to rat_bite.
 {
-	float	len;
-	vec3_t	dir, endpos, normal, forward, startpos;
-	trace_t	trace;
-
-	if(!self->enemy)
+	if (self->enemy == NULL)
 		return;
 
-	self->monsterinfo.attack_finished = level.time + 3 - skill->value + flrand(0.5, 1);
+	self->monsterinfo.attack_finished = level.time + 3.0f - skill->value + flrand(0.5f, 1.0f);
 
+	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorCopy(self->s.origin, startpos);
-	VectorMA(startpos, self->maxs[0] * 0.5, forward, startpos);
-	startpos[2] += self->viewheight;
 
-	VectorCopy(self->enemy->s.origin, endpos);
-	
-	endpos[0]+=flrand(-4, 4);
-	endpos[1]+=flrand(-4, 4);
-	endpos[2]+=flrand(-4, 4);
+	vec3_t start_pos;
+	VectorCopy(self->s.origin, start_pos);
+	VectorMA(start_pos, self->maxs[0] * 0.5f, forward, start_pos);
+	start_pos[2] += (float)self->viewheight;
 
-	VectorSubtract(endpos, startpos, dir);
-	len = VectorNormalize(dir);
-		
-	if (len < (self->maxs[0] + self->enemy->maxs[0] + 45))	// A hit
+	vec3_t end_pos;
+	VectorCopy(self->enemy->s.origin, end_pos);
+	VectorRandomCopy(end_pos, end_pos, 4.0f);
+
+	vec3_t dir;
+	VectorSubtract(end_pos, start_pos, dir);
+	const float dist = VectorNormalize(dir);
+
+	if (dist < self->maxs[0] + self->enemy->maxs[0] + 45.0f) // A hit.
 	{
-		gi.trace(startpos, vec3_origin, vec3_origin, endpos, self, MASK_MONSTERSOLID,&trace);
+		trace_t	trace;
+		gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, self, MASK_MONSTERSOLID, &trace);
 
-		if (trace.ent->takedamage)	// A hit
+		if (trace.ent->takedamage != DAMAGE_NO)
 		{
-			gi.sound (self, CHAN_WEAPON, sounds[SND_BITEHIT1], 1, ATTN_NORM, 0);
-			VectorMA(trace.endpos, flrand(0, 8), dir, endpos);
-			VectorScale(dir, -1, normal);
-			// do 1 point.
-			if(self->s.scale > 1.5)
-				T_Damage (trace.ent, self, self, dir, endpos, normal, RAT_DMG_BITE * irand(2, 4), 0, DAMAGE_AVOID_ARMOR,MOD_DIED);
-			else
-				T_Damage (trace.ent, self, self, dir, endpos, normal, RAT_DMG_BITE, 0, DAMAGE_AVOID_ARMOR,MOD_DIED);
+			gi.sound(self, CHAN_WEAPON, sounds[SND_BITEHIT1], 1.0f, ATTN_NORM, 0.0f);
+
+			VectorMA(trace.endpos, flrand(0.0f, 8.0f), dir, end_pos);
+
+			vec3_t normal;
+			VectorScale(dir, -1.0f, normal);
+
+			// Do 1 point.
+			const int damage = RAT_DMG_BITE * (self->s.scale > 1.5f ? irand(2, 4) : 1);
+			T_Damage(trace.ent, self, self, dir, end_pos, normal, damage, 0, DAMAGE_AVOID_ARMOR, MOD_DIED);
+
 			return;
 		}
 	}
-// A misssss
-	if (irand(0, 1))
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_BITEMISS1], 1, ATTN_NORM, 0);
-	}
-	else
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_BITEMISS2], 1, ATTN_NORM, 0);
-	}
+
+	// A miss.
+	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_BITEMISS1, SND_BITEMISS2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 void rat_pain_init(edict_t *self)
