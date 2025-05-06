@@ -262,38 +262,23 @@ static void PriestessProjectile2Die(edict_t* self, edict_t* inflictor, edict_t* 
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*-----------------------------------------------
-	priestess_proj2_think
------------------------------------------------*/
-
-void priestess_proj2_think( edict_t *self )
+static void PriestessProjectile2Think(edict_t* self) //mxd. Named 'priestess_proj2_think' in original logic.
 {
-	//Timeout?
+	// Timeout?
 	if (self->monsterinfo.attack_finished < level.time)
 	{
-		gi.sound (self, CHAN_AUTO, sounds[SND_BUGHIT], 1, ATTN_NORM, 0);
-	
-		gi.CreateEffect(&self->s,
-					FX_HP_MISSILE,
-					CEF_OWNERS_ORIGIN,
-					self->s.origin,
-					"vb",
-					vec3_origin,
-					HPMISSILE3_EXPLODE);
+		gi.sound(self, CHAN_AUTO, sounds[SND_BUGHIT], 1.0f, ATTN_NORM, 0.0f);
+		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE3_EXPLODE);
 
 		self->think = G_FreeEdict;
-		self->nextthink = level.time + 0.1;
-		
-		return;
+	}
+	else
+	{
+		Vec3ScaleAssign(self->missile_range, self->velocity);
+		VectorRandomCopy(self->velocity, self->velocity, 8.0f);
 	}
 
-	VectorScale(self->velocity, self->missile_range, self->velocity);
-
-	self->velocity[0] += irand(-8, 8);
-	self->velocity[1] += irand(-8, 8);
-	self->velocity[2] += irand(-8, 8);
-
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
@@ -693,7 +678,7 @@ void priestess_fire3( edict_t *self, float pitch_ofs, float yaw_ofs, float roll_
 
 	vectoangles(proj->velocity, proj->s.angles);
 
-	proj->think=priestess_proj2_think;
+	proj->think=PriestessProjectile2Think;
 
 	gi.sound (self, CHAN_AUTO, sounds[SND_BUGS], 1, ATTN_NORM, 0);
 
