@@ -961,29 +961,20 @@ static void PriestessRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	SetAnim(self, ANIM_WALK);
 }
 
-/*-----------------------------------------------
-	priestess_pain
------------------------------------------------*/
-
-void priestess_pain(edict_t *self, G_Message_t *msg)
+static void PriestessPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_pain' in original logic.
 {
-	int	temp, damage;
+	int	temp;
+	int damage;
 	int	force_pain;
-
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
-	if (self->curAnimID == ANIM_ATTACK3_GO || self->curAnimID == ANIM_ATTACK3_LOOP || 
-		self->curAnimID == ANIM_SHIELD_GO)
+	if (self->curAnimID == ANIM_ATTACK3_GO || self->curAnimID == ANIM_ATTACK3_LOOP || self->curAnimID == ANIM_SHIELD_GO)
 		return;
 
-	//Weighted random based on health compared to the maximum it was at
-	if (force_pain || ((irand(0, self->max_health+50) > self->health) && !irand(0,2)))
+	// Weighted random based on health compared to the maximum it was at.
+	if (force_pain || ((irand(0, self->max_health + 50) > self->health) && irand(0, 2) == 0))
 	{
-		if (irand(0,1))
-			gi.sound (self, CHAN_AUTO, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
-		else
-			gi.sound (self, CHAN_AUTO, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
-
+		gi.sound(self, CHAN_AUTO, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 		SetAnim(self, ANIM_PAIN);
 	}
 }
@@ -1023,7 +1014,7 @@ void HighPriestessStaticsInit(void)
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_RUN] = PriestessRunMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_EVADE] = PriestessEvadeMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_DEATH] = PriestessDeathMsgHandler;
-	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_PAIN] = priestess_pain;
+	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_PAIN] = PriestessPainMsgHandler;
 	
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
