@@ -148,17 +148,10 @@ void priestess_teleport_move(edict_t* self)
 	}
 }
 
-/*-----------------------------------------------
-	priestess_teleport_self_effects
------------------------------------------------*/
-
-void priestess_teleport_self_effects( edict_t *self )
+void priestess_teleport_self_effects(edict_t* self)
 {
 	self->s.renderfx |= RF_ALPHA_TEXTURE;
-	self->s.color.r = 255;
-	self->s.color.g = 255;
-	self->s.color.b = 255;
-	self->s.color.a = 255;
+	self->s.color.c = 0xffffffff;
 }
 
 /*-----------------------------------------------
