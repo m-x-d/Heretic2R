@@ -203,24 +203,10 @@ void ratchew(edict_t* self) //TODO: rename to rat_chew.
 		gi.sound(self, CHAN_WEAPON, sounds[SND_CHEW3], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void ratchatter (edict_t *self)
+void ratchatter(edict_t* self) //TODO: rename to rat_chatter.
 {
-	int chance;
-
-	chance = irand(0, 20);
-
-	if (chance < 1)
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_CHATTER1], 1, ATTN_IDLE, 0);
-	}
-	else if (chance < 2)
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_CHATTER2], 1, ATTN_IDLE, 0);
-	}
-	else if (chance < 3)
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_CHATTER3], 1, ATTN_IDLE, 0);
-	}
+	if (irand(0, 20) < 3)
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_CHATTER1, SND_CHATTER3)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
 void ratswallow (edict_t *self)
