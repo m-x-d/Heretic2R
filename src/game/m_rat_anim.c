@@ -15,7 +15,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_rat_anim.h"
-#include "m_rat_local.h"
+#include "m_rat_shared.h"
 
 #include "g_monster.h"
 

@@ -986,7 +986,7 @@
     <ClInclude Include="m_plagueElf_shared.h">
       <Filter>src\Monsters\Plague Elf</Filter>
     </ClInclude>
-    <ClInclude Include="m_rat_local.h">
+    <ClInclude Include="m_rat_shared.h">
       <Filter>src\Monsters\Rat</Filter>
     </ClInclude>
     <ClInclude Include="m_assassin.h">

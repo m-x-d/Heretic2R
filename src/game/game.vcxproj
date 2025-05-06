@@ -333,7 +333,7 @@
     <ClInclude Include="m_priestess_anim.h" />
     <ClInclude Include="m_rat.h" />
     <ClInclude Include="m_rat_anim.h" />
-    <ClInclude Include="m_rat_local.h" />
+    <ClInclude Include="m_rat_shared.h" />
     <ClInclude Include="m_seraph.h" />
     <ClInclude Include="m_seraph_guard.h" />
     <ClInclude Include="m_seraph_local.h" />
