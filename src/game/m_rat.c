@@ -127,10 +127,7 @@ static void RatRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_
 		SetAnim(self, ANIM_RUN1);
 }
 
-//----------------------------------------------------------------------
-//  Rat Walk - choose a walk to use
-//----------------------------------------------------------------------
-void rat_walk(edict_t *self, G_Message_t *msg)
+static void RatWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_walk' in original logic.
 {
 	SetAnim(self, ANIM_WALK1);
 }
@@ -567,7 +564,7 @@ void RatStaticsInit(void)
 	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_RAT].msgReceivers[MSG_STAND] = rat_stand;
-	classStatics[CID_RAT].msgReceivers[MSG_WALK] = rat_walk;
+	classStatics[CID_RAT].msgReceivers[MSG_WALK] = RatWalkMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_RUN] = RatRunMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_EAT] = rat_eat;
 	classStatics[CID_RAT].msgReceivers[MSG_MELEE] = rat_melee;
