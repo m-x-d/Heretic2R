@@ -148,46 +148,34 @@ static void RatWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ra
 	SetAnim(self, irand(ANIM_WATCH1, ANIM_WATCH2));
 }
 
-//----------------------------------------------------------------------
-//  Rat Stand -decide which standing animations to use
-//----------------------------------------------------------------------
-void rat_stand(edict_t *self, G_Message_t *msg)
+static void RatStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_stand' in original logic.
 {
-	int chance;
+	const int chance = irand(0, 100);
 
-	chance = irand(0, 100);
-
-	// On the ground
-	switch(self->curAnimID)
+	// On the ground.
+	switch (self->curAnimID)
 	{
-	case ANIM_STAND1:
-		if (chance < 95)
-			SetAnim(self, ANIM_STAND1);
-		else
-			SetAnim(self, ANIM_STAND2);
+		case ANIM_STAND1:
+			SetAnim(self, (chance < 95 ? ANIM_STAND1 : ANIM_STAND2));
+			break;
 
-		break;
-	case ANIM_STAND2:
-		if(chance < 75)
-			SetAnim(self, ANIM_STAND3);
-		else
-			SetAnim(self, ANIM_STAND4 + irand(0, 4));
-		break;
-	case ANIM_STAND4:
-	case ANIM_STAND5:
-	case ANIM_STAND6:
-	case ANIM_STAND7:
+		case ANIM_STAND4:
+		case ANIM_STAND5:
+		case ANIM_STAND6:
+		case ANIM_STAND7:
 			SetAnim(self, ANIM_STAND8);
 			break;
-	case ANIM_STAND8:
-		SetAnim(self, ANIM_STAND1);
-		break;
-	default:
-		if(chance < 75)
-			SetAnim(self, ANIM_STAND3);
-		else
-			SetAnim(self, ANIM_STAND4 + irand(0, 4));
-		break;
+
+		case ANIM_STAND8:
+			SetAnim(self, ANIM_STAND1);
+			break;
+
+		default:
+			if (chance < 75)
+				SetAnim(self, ANIM_STAND3);
+			else
+				SetAnim(self, irand(ANIM_STAND4, ANIM_STAND8));
+			break;
 	}
 }
 
@@ -542,7 +530,7 @@ void RatStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_RAT].msgReceivers[MSG_STAND] = rat_stand;
+	classStatics[CID_RAT].msgReceivers[MSG_STAND] = RatStandMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_WALK] = RatWalkMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_RUN] = RatRunMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_EAT] = rat_eat;
