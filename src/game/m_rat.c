@@ -1,68 +1,28 @@
-//==============================================================================
 //
 // m_rat.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//
-//	AI :
-//
-//	STAND1		: Looking straight ahead
-//	STAND2		: Rising up to sit on his haunches
-//	STAND3		: Sitting on his haunches looking straight ahead
-//	STAND4		: On haunches, looking left
-//	STAND5		: On haunches, looking right
-//	STAND6		: On haunches, scratching left
-//	STAND7		: On haunches, scratching right
-//	STAND8		: On haunches, dropping to a stand
-//
-//	WATCH1		: Hiss while on all fours
-//	WATCH2		: Stand up and hiss then go back to all fours
-//
-//	WALK1       : a normal straight line
-//
-//	MELEE1      : Attack at feet 
-//	MELEE2      : Attack in air
-//
-//	RUN1        : chasing an enemy straight ahead
-//	RUN2        : chasing an enemy and turning left
-//	RUN3        : chasing an enemy and turning right
-//
-//	EATING1		: Bite low
-//	EATING2		: Bite low and tear up
-//	EATING3		: Bite low and pull back a little
-//
-//	PAIN1		: backup and runaway
-//
-//	DIE1		: Big death, dbig flip over
-//	DIE2		: Little death flipping over
-//
-//
-//==============================================================================
-
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "vector.h"
 
 #include "m_rat.h"
 #include "m_rat_shared.h"
 #include "m_rat_anim.h"
 #include "g_debris.h" //mxd
+#include "g_DefaultMessageHandler.h"
 #include "m_stats.h"
-
-#include "g_monster.h"
 #include "mg_ai.h" //mxd
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_monster.h"
+#include "g_local.h"
 
-/*----------------------------------------------------------------------
-  Rat Base Info
------------------------------------------------------------------------*/
+#define RAT_MIN_ATTACK_SUPPORTERS	2 //mxd. Named 'MAX_RAT_ATTACK' in original logic.
+#define RAT_IGNORE_DISTANCE			150.0f //mxd. Named 'MAX_RAT_IGNORE_DIST' in original logic.
 
-static const animmove_t *animations[NUM_ANIMS] =
+#pragma region ========================== Rat Base Info ==========================
+
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&rat_move_eat1,
 	&rat_move_eat2,
@@ -91,7 +51,7 @@ static const animmove_t *animations[NUM_ANIMS] =
 
 static int sounds[NUM_SOUNDS];
 
-static ClassResourceInfo_t resInfo;
+#pragma endregion
 
 void rat_dead_pain (edict_t *self, G_Message_t *msg)
 {
@@ -562,9 +522,6 @@ void rat_touch(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
 	}
 }
 
-#define MAX_RAT_ATTACK	2
-#define MAX_RAT_IGNORE_DIST 150
-
 void rat_ai_stand(edict_t *self, float dist)
 {
 	if (M_ValidTarget(self, self->enemy))
@@ -574,14 +531,14 @@ void rat_ai_stand(edict_t *self, float dist)
 			self->monsterinfo.supporters = M_FindSupport( self, RAT_GROUP_RANGE );
 
 		//We've got an enemy, now see if we have enough support to attack it
-		if (self->monsterinfo.supporters >= MAX_RAT_ATTACK)
+		if (self->monsterinfo.supporters >= RAT_MIN_ATTACK_SUPPORTERS)
 		{
 			AI_FoundTarget(self, true);
 		}
 		else
 		{
 			//Is he close enough to scare us away?
-			if (M_DistanceToTarget(self, self->enemy) < MAX_RAT_IGNORE_DIST)
+			if (M_DistanceToTarget(self, self->enemy) < RAT_IGNORE_DISTANCE)
 			{
 				if (self->s.scale < 2.0 || irand(0,1))
 				{
@@ -609,7 +566,7 @@ void rat_ai_eat(edict_t *self, float dist)
 {
 	if (M_ValidTarget(self, self->enemy))
 	{
-		if (M_DistanceToTarget(self, self->enemy) < MAX_RAT_IGNORE_DIST)
+		if (M_DistanceToTarget(self, self->enemy) < RAT_IGNORE_DISTANCE)
 		{
 			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 		}
@@ -646,6 +603,8 @@ void rat_ai_run (edict_t *self, float dist)
 
 void RatStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	classStatics[CID_RAT].msgReceivers[MSG_STAND] = rat_stand;
 	classStatics[CID_RAT].msgReceivers[MSG_WALK] = rat_walk;
 	classStatics[CID_RAT].msgReceivers[MSG_RUN] = rat_run;
