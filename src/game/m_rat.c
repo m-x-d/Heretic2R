@@ -332,42 +332,26 @@ static void RatUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Nam
 	AI_FoundTarget(self, true);
 }
 
-void rat_touch(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void RatTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'rat_touch' in original logic.
 {
-	//M_Touch is overridden because the player can just step over rats
+	// M_Touch is overridden because the player can just step over rats.
+	if (!(other->svflags & SVF_MONSTER) && other->client == NULL)
+		return;
 
-	vec3_t	pos1, pos2, dir;
-	float	zdiff;
+	vec3_t other_pos;
+	VectorCopy(other->s.origin, other_pos);
+	other_pos[2] += other->mins[2];
 
-	if ((other->svflags & SVF_MONSTER) || other->client)
+	vec3_t self_pos;
+	VectorCopy(ent->s.origin, self_pos);
+	self_pos[2] += ent->maxs[2];
+
+	// On top?
+	if (other_pos[2] - self_pos[2] >= 0.0f)
 	{
-		VectorCopy(other->s.origin, pos1);
-		pos1[2] += other->mins[2];
-
-		VectorCopy(ent->s.origin, pos2);
-		pos2[2] += ent->maxs[2];
-
-		zdiff = pos1[2] - pos2[2];
-
-		// On top
-		if (zdiff >= 0 )
-		{
-			//Squish the rat a bit
-			T_Damage (ent, other, other, dir, pos2, vec3_origin, flrand(4,6), 0, DAMAGE_AVOID_ARMOR,MOD_DIED);
-		}
-	/*	else	//Kick um
-		{
-			//Squish the rat a bit
-			T_Damage (ent, other, other, dir, pos2, vec3_origin, flrand(0,1), 0, DAMAGE_AVOID_ARMOR);
-
-			VectorSubtract(ent->s.origin, ent->enemy->s.origin, dir);
-			dir[2] = 0;
-			VectorNormalize(dir);
-			VectorScale(dir, 64, dir);
-			
-			dir[2] = 150;
-			VectorCopy(dir, ent->velocity);
-		}*/
+		// Squish the rat a bit. //TODO: always kill rat (at least on easy and medium skill)? Gib when player jumped on rat? Do this only for regular rats (not giant)?
+		const vec3_t dir = { 0.0f, 0.0f, -1.0f }; //mxd. Uninitialized in original logic.
+		T_Damage(ent, other, other, dir, self_pos, vec3_origin, irand(4, 6), 0, DAMAGE_AVOID_ARMOR, MOD_DIED); //mxd. flrand() in original logic.
 	}
 }
 
@@ -556,7 +540,7 @@ void SP_monster_rat (edict_t *self)
 	self->viewheight = self->maxs[2] * 0.5 * self->s.scale;
 
 	self->use = RatUse;
-	self->touch = rat_touch;
+	self->touch = RatTouch;
 
 	if (self->spawnflags & MSF_EATING)
 	{
@@ -633,7 +617,7 @@ void SP_monster_rat_giant (edict_t *self)
 	self->viewheight = self->maxs[2] * 0.5 * self->s.scale;
 
 	self->use = RatUse;
-	self->touch = rat_touch;
+	self->touch = RatTouch;
 
 	if (self->spawnflags & MSF_EATING)
 	{
