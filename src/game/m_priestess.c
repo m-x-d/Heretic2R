@@ -71,29 +71,11 @@ enum HighPriestessAttackStates_e
 
 #pragma endregion
 
-/*
-
-	Priestess Teleport Functions
-
-*/
-
-/*-----------------------------------------------
-	priestess_teleport_go
------------------------------------------------*/
-
-void priestess_teleport_go ( edict_t *self )
+void priestess_teleport_go(edict_t* self)
 {
-	gi.sound (self, CHAN_AUTO, sounds[SND_TPORT_OUT], 1, ATTN_NORM, 0);
-
 	self->takedamage = DAMAGE_NO;
-
-	gi.CreateEffect(NULL,
-				FX_HP_MISSILE,
-				0,
-				self->s.origin,
-				"vb",
-				self->s.origin,
-				HPTELEPORT_START);
+	gi.sound(self, CHAN_AUTO, sounds[SND_TPORT_OUT], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(NULL, FX_HP_MISSILE, 0, self->s.origin, "vb", self->s.origin, HPTELEPORT_START);
 }
 
 /*-----------------------------------------------
