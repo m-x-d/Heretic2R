@@ -946,29 +946,17 @@ static void PriestessEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	SetAnim(self, irand(ANIM_DODGE_LEFT, ANIM_DODGE_RIGHT));
 }
 
-/*-----------------------------------------------
-	priestess_stand
------------------------------------------------*/
-
-void priestess_stand(edict_t *self, G_Message_t *msg)
+static void PriestessStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_stand' in original logic.
 {
 	SetAnim(self, ANIM_STAND1);
 }
 
-/*-----------------------------------------------
-	priestess_missile
------------------------------------------------*/
-
-void priestess_missile(edict_t *self, G_Message_t *msg)
+static void PriestessMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_missile' in original logic.
 {
 	SetAnim(self, ANIM_ATTACK2);
 }
 
-/*-----------------------------------------------
-	priestess_run
------------------------------------------------*/
-
-void priestess_run(edict_t *self, G_Message_t *msg)
+static void PriestessRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_run' in original logic.
 {
 	SetAnim(self, ANIM_WALK);
 }
@@ -1030,9 +1018,9 @@ void HighPriestessStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_STAND]	= priestess_stand;
-	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_MISSILE] = priestess_missile;
-	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_RUN] = priestess_run;
+	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_STAND]	= PriestessStandMsgHandler;
+	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_MISSILE] = PriestessMissileMsgHandler;
+	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_RUN] = PriestessRunMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_EVADE] = PriestessEvadeMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_DEATH] = PriestessDeathMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_PAIN] = priestess_pain;
