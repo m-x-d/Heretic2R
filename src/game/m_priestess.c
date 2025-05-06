@@ -796,76 +796,48 @@ void priestess_strike(edict_t* self, float damage)
 	gi.sound(self, CHAN_WEAPON, sounds[SND_SWIPE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*-----------------------------------------------
-	priestess_move
------------------------------------------------*/
-
-void priestess_move( edict_t *self, float vf, float vr, float vu )
+void priestess_move(edict_t* self, float vf, float vr, float vu) //TODO: implement (and add to priestess_frames_dodge_right)?..
 {
 }
 
-/*-----------------------------------------------
-	priestess_jump_right
------------------------------------------------*/
-
-void priestess_jump_right( edict_t *self )
+void priestess_jump_right(edict_t* self)
 {
-	vec3_t	vr;
+	vec3_t right;
+	AngleVectors(self->s.angles, NULL, right, NULL);
+	Vec3ScaleAssign(300.0f, right);
+	right[2] = 150.0f;
 
-	AngleVectors(self->s.angles, NULL, vr, NULL);
-	VectorScale( vr, 300, vr );
-	vr[2] = 150;
-
-	VectorCopy(vr, self->velocity);
-//	self->groundentity = NULL;
+	VectorCopy(right, self->velocity);
 }
 
-/*-----------------------------------------------
-	priestess_jump_left
------------------------------------------------*/
-
-void priestess_jump_left( edict_t *self )
+void priestess_jump_left(edict_t* self)
 {
-	vec3_t	vr;
+	vec3_t right;
+	AngleVectors(self->s.angles, NULL, right, NULL);
+	Vec3ScaleAssign(-300.0f, right);
+	right[2] = 150.0f;
 
-	AngleVectors(self->s.angles, NULL, vr, NULL);
-	VectorScale( vr, -300, vr );
-	vr[2] = 150;
-
-	VectorCopy(vr, self->velocity);
-//	self->groundentity = NULL;
+	VectorCopy(right, self->velocity);
 }
 
-/*-----------------------------------------------
-	priestess_jump_forward
------------------------------------------------*/
-
-void priestess_jump_forward( edict_t *self )
+void priestess_jump_forward(edict_t* self)
 {
-	vec3_t	vf;
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+	Vec3ScaleAssign(300.0f, forward);
+	forward[2] = 150.0f;
 
-	AngleVectors(self->s.angles, vf, NULL, NULL);
-	VectorScale( vf, 300, vf );
-	vf[2] = 150;
-
-	VectorCopy(vf, self->velocity);
-//	self->groundentity = NULL;
+	VectorCopy(forward, self->velocity);
 }
 
-/*-----------------------------------------------
-	priestess_jump_back
------------------------------------------------*/
-
-void priestess_jump_back( edict_t *self )
+void priestess_jump_back(edict_t* self)
 {
-	vec3_t	vf;
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+	Vec3ScaleAssign(-300.0f, forward);
+	forward[2] = 150.0f;
 
-	AngleVectors(self->s.angles, vf, NULL, NULL);
-	VectorScale( vf, -300, vf );
-	vf[2] = 150;
-
-	VectorCopy(vf, self->velocity);
-//	self->groundentity = NULL;
+	VectorCopy(forward, self->velocity);
 }
 
 /*-----------------------------------------------
