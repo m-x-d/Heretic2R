@@ -998,51 +998,45 @@ static void PriestessPostThink(edict_t* self) //mxd. Named 'priestess_postthink'
 	self->next_post_think = level.time + 0.05f;
 }
 
-
-/*
-
-	Priestess Spawn Functions
-
-*/
-
 void HighPriestessStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_STAND]	= PriestessStandMsgHandler;
+	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_STAND] = PriestessStandMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_MISSILE] = PriestessMissileMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_RUN] = PriestessRunMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_EVADE] = PriestessEvadeMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_DEATH] = PriestessDeathMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_PAIN] = PriestessPainMsgHandler;
-	
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/highpriestess/tris.fm");
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
 
-	sounds[SND_PAIN1]=gi.soundindex("monsters/highpriestess/pain1.wav");	
-	sounds[SND_PAIN2]=gi.soundindex("monsters/highpriestess/pain2.wav");	
-	sounds[SND_FALL]=gi.soundindex("monsters/highpriestess/fall.wav");	
-	sounds[SND_3BALLATK]=gi.soundindex("monsters/highpriestess/3ballatk.wav");	
-	sounds[SND_BALLHIT]=gi.soundindex("monsters/highpriestess/ballhit.wav");	
-	sounds[SND_WHIRL]=gi.soundindex("weapons/stafftwirl_2.wav");	
-	sounds[SND_BUGS]=gi.soundindex("monsters/highpriestess/bugs.wav");	
-	sounds[SND_BUGBUZZ]=gi.soundindex("monsters/highpriestess/bugbuzz.wav");	
-	sounds[SND_BUGHIT]=gi.soundindex("monsters/highpriestess/bughit.wav");	
-	sounds[SND_ZAP]=gi.soundindex("monsters/highpriestess/zap.wav");	
-	sounds[SND_ZAPHIT]=gi.soundindex("monsters/highpriestess/zaphit.wav");	
-	sounds[SND_HOMINGATK]=gi.soundindex("monsters/highpriestess/homatk.wav");	
-	sounds[SND_HOMINGHIT]=gi.soundindex("monsters/highpriestess/homhit.wav");	
-	sounds[SND_TPORT_IN]=gi.soundindex("monsters/highpriestess/tportin.wav");	
-	sounds[SND_TPORT_OUT]=gi.soundindex("monsters/highpriestess/tpotout.wav");	
-	sounds[SND_SWIPE]=gi.soundindex("weapons/staffswing_2.wav");	
-	sounds[SND_SWIPEHIT]=gi.soundindex("weapons/staffhit_2.wav");	
-	sounds[SND_SWIPEMISS]=gi.soundindex("monsters/seraph/guard/attack_miss.wav");	
-	sounds[SND_SWIPEWALL]=gi.soundindex("weapons/staffhitwall.wav");	
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/highpriestess/tris.fm");
 
-	classStatics[CID_HIGHPRIESTESS].resInfo = &resInfo;
+	sounds[SND_PAIN1] = gi.soundindex("monsters/highpriestess/pain1.wav");
+	sounds[SND_PAIN2] = gi.soundindex("monsters/highpriestess/pain2.wav");
+	//sounds[SND_FALL] = gi.soundindex("monsters/highpriestess/fall.wav");
+	sounds[SND_3BALLATK] = gi.soundindex("monsters/highpriestess/3ballatk.wav");
+	sounds[SND_BALLHIT] = gi.soundindex("monsters/highpriestess/ballhit.wav");
+	//sounds[SND_WHIRL] = gi.soundindex("weapons/stafftwirl_2.wav");
+	sounds[SND_BUGS] = gi.soundindex("monsters/highpriestess/bugs.wav");
+	//sounds[SND_BUGBUZZ] = gi.soundindex("monsters/highpriestess/bugbuzz.wav");
+	sounds[SND_BUGHIT] = gi.soundindex("monsters/highpriestess/bughit.wav");
+	sounds[SND_ZAP] = gi.soundindex("monsters/highpriestess/zap.wav");
+	sounds[SND_ZAPHIT] = gi.soundindex("monsters/highpriestess/zaphit.wav");
+	sounds[SND_HOMINGATK] = gi.soundindex("monsters/highpriestess/homatk.wav");
+	sounds[SND_HOMINGHIT] = gi.soundindex("monsters/highpriestess/homhit.wav");
+	sounds[SND_TPORT_IN] = gi.soundindex("monsters/highpriestess/tportin.wav");
+	sounds[SND_TPORT_OUT] = gi.soundindex("monsters/highpriestess/tpotout.wav");
+	sounds[SND_SWIPE] = gi.soundindex("weapons/staffswing_2.wav");
+	//sounds[SND_SWIPEHIT] = gi.soundindex("weapons/staffhit_2.wav");
+	sounds[SND_SWIPEMISS] = gi.soundindex("monsters/seraph/guard/attack_miss.wav");
+	sounds[SND_SWIPEWALL] = gi.soundindex("weapons/staffhitwall.wav");
+
+	res_info.sounds = sounds;
+	res_info.numSounds = NUM_SOUNDS;
+
+	classStatics[CID_HIGHPRIESTESS].resInfo = &res_info;
 }
 
 /*QUAKED monster_high_priestess (1 .5 0) (-24 -24 0) (24 24 72)

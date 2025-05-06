@@ -47,22 +47,22 @@ typedef enum SoundID_e
 	SND_PAIN2,
 
 	// You win.
-	SND_FALL,
+	SND_FALL, //TODO: unused.
 
 	// Attack 1 - 3 balls spell.
 	SND_3BALLATK,
 	SND_BALLHIT,
 
 	// Attack 2 - whirling staff.
-	SND_WHIRL,
+	SND_WHIRL, //TODO: unused.
 	SND_SWIPE,
-	SND_SWIPEHIT,
+	SND_SWIPEHIT, //TODO: unused.
 	SND_SWIPEMISS,
 	SND_SWIPEWALL,
 
 	// Bug minefield.
 	SND_BUGS,		// Fire a bug out.
-	SND_BUGBUZZ,	// Bug buzzes in place.
+	SND_BUGBUZZ,	// Bug buzzes in place. //TODO: unused.
 	SND_BUGHIT,		// Bug explodes.
 
 	// Ray of light.
