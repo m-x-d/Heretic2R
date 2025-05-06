@@ -965,7 +965,7 @@ static void PriestessPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 {
 	int	temp;
 	int damage;
-	int	force_pain;
+	int force_pain;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	if (self->curAnimID == ANIM_ATTACK3_GO || self->curAnimID == ANIM_ATTACK3_LOOP || self->curAnimID == ANIM_SHIELD_GO)
@@ -979,15 +979,15 @@ static void PriestessPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	}
 }
 
-void priestess_postthink(edict_t *self)
+static void PriestessPostThink(edict_t* self) //mxd. Named 'priestess_postthink' in original logic.
 {
-	//Only display a lifemeter if we have an enemy
-	if (self->enemy)
+	// Only display a lifemeter if we have an enemy.
+	if (self->enemy != NULL)
 	{
 		if (self->dmg < self->max_health)
 		{
 			M_ShowLifeMeter(self->dmg, self->dmg);
-			self->dmg+=50;
+			self->dmg += 50; //TODO: add int priestess_healthbar_buildup name.
 		}
 		else
 		{
@@ -995,7 +995,7 @@ void priestess_postthink(edict_t *self)
 		}
 	}
 
-	self->next_post_think = level.time + 0.05;
+	self->next_post_think = level.time + 0.05f;
 }
 
 
@@ -1111,7 +1111,7 @@ void SP_monster_high_priestess (edict_t *self)
 
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
-	self->post_think = priestess_postthink;
+	self->post_think = PriestessPostThink;
 	self->next_post_think = level.time + 0.1;
 
 	self->svflags|=SVF_BOSS;
