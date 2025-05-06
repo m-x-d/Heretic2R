@@ -253,24 +253,13 @@ static void PriestessProjectile1Think(edict_t* self) //mxd. Named 'priestess_pro
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*-----------------------------------------------
-	priestess_proj2_die
------------------------------------------------*/
-
-static void priestess_proj2_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
+static void PriestessProjectile2Die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'priestess_proj2_die' in original logic.
 {
-	gi.sound (self, CHAN_AUTO, sounds[SND_BUGHIT], 1, ATTN_NORM, 0);
-
-	gi.CreateEffect(&self->s,
-				FX_HP_MISSILE,
-				CEF_OWNERS_ORIGIN,
-				self->s.origin,
-				"vb",
-				vec3_origin,
-				HPMISSILE3_EXPLODE);
+	gi.sound(self, CHAN_AUTO, sounds[SND_BUGHIT], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE3_EXPLODE);
 
 	self->think = G_FreeEdict;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
@@ -664,7 +653,7 @@ void priestess_fire3( edict_t *self, float pitch_ofs, float yaw_ofs, float roll_
 	create_priestess_proj(self,proj);
 
 	proj->takedamage = DAMAGE_YES;
-	proj->die = priestess_proj2_die;
+	proj->die = PriestessProjectile2Die;
 
 	proj->monsterinfo.attack_state = AS_BROODS_SACRIFICE;
 	proj->owner = self;
