@@ -143,19 +143,9 @@ static void RatMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ra
 	SetAnim(self, (irand(0, 1) == 0 ? ANIM_MELEE1 : ANIM_MELEE3));
 }
 
-//----------------------------------------------------------------------
-//  Rat Watch - which watch animation to use? 
-//----------------------------------------------------------------------
-void rat_watch(edict_t *self, G_Message_t *msg)
+static void RatWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_watch' in original logic.
 {
-	if (irand(0, 1))
-	{
-		SetAnim(self, ANIM_WATCH1);
-	}
-	else 
-	{
-		SetAnim(self, ANIM_WATCH2);
-	}
+	SetAnim(self, irand(ANIM_WATCH1, ANIM_WATCH2));
 }
 
 //----------------------------------------------------------------------
@@ -557,7 +547,7 @@ void RatStaticsInit(void)
 	classStatics[CID_RAT].msgReceivers[MSG_RUN] = RatRunMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_EAT] = rat_eat;
 	classStatics[CID_RAT].msgReceivers[MSG_MELEE] = RatMeleeMsgHandler;
-	classStatics[CID_RAT].msgReceivers[MSG_WATCH] = rat_watch;
+	classStatics[CID_RAT].msgReceivers[MSG_WATCH] = RatWatchMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_PAIN] = RatPainMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_DEATH] = RatDeathMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_JUMP] = M_jump;
