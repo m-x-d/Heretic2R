@@ -70,7 +70,7 @@ enum
 	NUM_OGLE_ANIMS
 };
 
-static animmove_t *animations[NUM_ANIMS] =
+static const animmove_t *animations[NUM_ANIMS] =
 {
 	&seraph_move_walk1,
 	&seraph_move_walk2,

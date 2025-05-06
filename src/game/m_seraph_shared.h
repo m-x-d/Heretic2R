@@ -1,3 +1,11 @@
+//
+// m_seraph_shared.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
 #include "g_local.h"
 
 typedef enum AnimID_e
@@ -54,64 +62,63 @@ typedef enum SoundID_e
 	SND_SIGHT1,
 	SND_SIGHT2,
 	SND_SIGHT3,
+
 	NUM_SOUNDS
 } SoundID_t;
 
-extern animmove_t	seraph_move_walk1,
-					seraph_move_walk2,
-					seraph_move_whip1,
-					seraph_move_whip1_loop,
-					seraph_move_whip1_end,
-					seraph_move_stand1,
-					seraph_move_stand1_tr,
-					seraph_move_stand1_r,
-					seraph_move_stand1_trc,
-					seraph_move_stand1_tl,
-					seraph_move_stand1_l,
-					seraph_move_stand1_tlc,
-					seraph_move_point1,
-					seraph_move_run1,
-					seraph_move_fjump,
-					seraph_move_run1_whip,
-					seraph_move_pain,
-					seraph_move_swipe,
-					seraph_move_get2work,
-					seraph_move_get2work2,
-					seraph_move_startle,
-					seraph_move_ready2idle,
-					seraph_move_backup,
-					seraph_move_death1,
-					seraph_move_death2_go,
-					seraph_move_death2_loop,
-					seraph_move_death2_end,
-					seraph_move_backup2;
+extern const animmove_t seraph_move_walk1;
+extern const animmove_t seraph_move_walk2;
+extern const animmove_t seraph_move_whip1;
+extern const animmove_t seraph_move_whip1_loop;
+extern const animmove_t seraph_move_whip1_end;
+extern const animmove_t seraph_move_stand1;
+extern const animmove_t seraph_move_stand1_tr;
+extern const animmove_t seraph_move_stand1_r;
+extern const animmove_t seraph_move_stand1_trc;
+extern const animmove_t seraph_move_stand1_tl;
+extern const animmove_t seraph_move_stand1_l;
+extern const animmove_t seraph_move_stand1_tlc;
+extern const animmove_t seraph_move_point1;
+extern const animmove_t seraph_move_run1;
+extern const animmove_t seraph_move_fjump;
+extern const animmove_t seraph_move_run1_whip;
+extern const animmove_t seraph_move_pain;
+extern const animmove_t seraph_move_swipe;
+extern const animmove_t seraph_move_get2work;
+extern const animmove_t seraph_move_get2work2;
+extern const animmove_t seraph_move_startle;
+extern const animmove_t seraph_move_ready2idle;
+extern const animmove_t seraph_move_backup;
+extern const animmove_t seraph_move_death1;
+extern const animmove_t seraph_move_death2_go;
+extern const animmove_t seraph_move_death2_loop;
+extern const animmove_t seraph_move_death2_end;
+extern const animmove_t seraph_move_backup2;
 
-void SP_monster_seraph_overlord(edict_t* self);
+extern void seraph_done_startle(edict_t* self);
+extern void seraph_done_get2work(edict_t* self);
+extern void seraph_enforce_ogle(edict_t* self);
+extern void seraph_ai_walk(edict_t* self, float dist);
+extern void seraph_idle(edict_t* self);
+extern void seraph_pause(edict_t* self);
+extern void seraph_enforce(edict_t* self);
+extern void seraph_strike(edict_t* self, float damage, float a, float b);
 
-void seraph_done_startle(edict_t *self);
-void seraph_done_get2work(edict_t *self);
-void seraph_enforce_ogle(edict_t *self);
-void seraph_ai_walk(edict_t *self, float dist);
-void seraph_idle(edict_t *self);
-void seraph_pause(edict_t *self);
-void seraph_enforce(edict_t *self);
-void seraph_strike(edict_t *self, float damage, float a, float b);
+extern void seraph_dead(edict_t* self);
 
-void seraph_dead ( edict_t *self );
+extern void seraph_death_loop(edict_t* self);
+extern void seraph_check_land(edict_t* self);
 
-void seraph_death_loop ( edict_t *self );
-void seraph_check_land ( edict_t *self );
+extern void seraph_sound_startle(edict_t* self);
+extern void seraph_sound_slap(edict_t* self);
+extern void seraph_sound_scold(edict_t* self);
+extern void seraph_sound_yell(edict_t* self);
+extern void seraph_sound_whip(edict_t* self);
+extern void seraphApplyJump(edict_t* self);
 
-void seraph_sound_startle(edict_t *self);
-void seraph_sound_slap(edict_t *self);
-void seraph_sound_scold(edict_t *self);
-void seraph_sound_yell(edict_t *self);
-void seraph_sound_whip(edict_t *self);
-void seraphApplyJump (edict_t *self);
-
-void seraph_back (edict_t *self, float dist);
-void seraph_sound_scold2(edict_t *self);
-void seraph2idle (edict_t *self);
+extern void seraph_back(edict_t* self, float dist);
+extern void seraph_sound_scold2(edict_t* self);
+extern void seraph2idle(edict_t* self);
 
 #define BIT_BASEBIN		0
 #define BIT_PITHEAD		1

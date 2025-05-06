@@ -6,5 +6,7 @@
 
 #pragma once
 
+#include "g_Edict.h"
+
 void SP_monster_seraph_overlord(edict_t* self);
 void SeraphOverlordStaticsInit(void);
