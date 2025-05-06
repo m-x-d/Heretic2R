@@ -609,100 +609,51 @@ void priestess_attack1_pause(edict_t* self)
 		priestess_pause(self);
 }
 
-/*-----------------------------------------------
-	priestess_attack3_loop 
------------------------------------------------*/
-
-void priestess_attack3_loop ( edict_t *self )
+void priestess_attack3_loop(edict_t* self)
 {
-	vec3_t	spawnSpot, vf, vr;
-
 	SetAnim(self, ANIM_ATTACK3_LOOP);
-	self->monsterinfo.attack_finished = level.time + 4;
+	self->monsterinfo.attack_finished = level.time + 4.0f;
 
-	AngleVectors(self->s.angles, vf, vr, NULL);
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	VectorCopy(self->s.origin, spawnSpot);
+	vec3_t spawn_pos;
+	VectorCopy(self->s.origin, spawn_pos);
+
+	VectorMA(self->s.origin, 30.0f, forward, spawn_pos);
+	VectorMA(spawn_pos, 8.0f, right, spawn_pos);
+	spawn_pos[2] += 56.0f;
+
+	// RIGHT HERE!
+	self->monsterinfo.jump_time = level.time + 10.0f;
+
+	// Don't repeat an attack (people want to see them all!).
+	const int prev_attack_state = self->monsterinfo.attack_state;
 	
-	VectorMA(self->s.origin, 30, vf, spawnSpot);
-	VectorMA(spawnSpot, 8,	 vr, spawnSpot);
-	spawnSpot[2] += 56;
-
-	//RIGHT HERE!
-	self->monsterinfo.jump_time = level.time + 10;
-	self->monsterinfo.attack_state = irand(0,2);
-
-	//Don't repeat an attack (people want to see them all!)
-	if (self->monsterinfo.lefty == self->monsterinfo.attack_state)
+	do
 	{
-		switch ( self->monsterinfo.attack_state )
-		{
+		self->monsterinfo.attack_state = irand(AS_QUEENS_FURY, AS_HEAVENS_RAIN);
+	} while (prev_attack_state == self->monsterinfo.attack_state);
+
+	switch (self->monsterinfo.attack_state)
+	{
 		case AS_QUEENS_FURY:
-			
-			self->monsterinfo.attack_state += irand(1,2);
+			gi.CreateEffect(NULL, FX_HP_MISSILE, 0, spawn_pos, "vb", vec3_origin, HPMISSILE1_LIGHT);
 			break;
 
 		case AS_BROODS_SACRIFICE:
-			
-			if (irand(0,1))
-				self->monsterinfo.attack_state = AS_QUEENS_FURY;
-			else
-				self->monsterinfo.attack_state = AS_HEAVENS_RAIN;
+			self->monsterinfo.attack_finished = level.time + 2.0f;
+			gi.CreateEffect(NULL, FX_HP_MISSILE, 0, spawn_pos, "vb", vec3_origin, HPMISSILE3_LIGHT);
 			break;
 
 		case AS_HEAVENS_RAIN:
-
-			self->monsterinfo.attack_state -= irand(1,2);
+			gi.CreateEffect(NULL, FX_HP_MISSILE, 0, spawn_pos, "vb", vec3_origin, HPMISSILE4_LIGHT);
+			gi.CreateEffect(NULL, FX_LENSFLARE, CEF_FLAG8, spawn_pos, "bbbf", 128, 128, 128, 0.9f);
 			break;
-		}
-	}
 
-	self->monsterinfo.lefty = self->monsterinfo.attack_state;
-
-	switch ( self->monsterinfo.attack_state )
-	{
-	case AS_QUEENS_FURY:
-		gi.CreateEffect(NULL,
-					FX_HP_MISSILE,
-					0,
-					spawnSpot,
-					"vb",
-					vec3_origin,
-					HPMISSILE1_LIGHT);
-		
-		break;
-	
-	case AS_BROODS_SACRIFICE:
-		self->monsterinfo.attack_finished = level.time + 2;
-		gi.CreateEffect(NULL,
-					FX_HP_MISSILE,
-					0,
-					spawnSpot,
-					"vb",
-					vec3_origin,
-					HPMISSILE3_LIGHT);
-		break;
-
-	case AS_HEAVENS_RAIN:
-		gi.CreateEffect(NULL,
-					FX_HP_MISSILE,
-					0,
-					spawnSpot,
-					"vb",
-					vec3_origin,
-					HPMISSILE4_LIGHT);
-
-		gi.CreateEffect(NULL,
-					FX_LENSFLARE,
-					CEF_FLAG8,
-					spawnSpot,
-					"bbbf",
-					(byte) 128,
-					(byte) 128,
-					(byte) 128,
-					0.9);
-
-		break;
+		default:
+			break;
 	}
 }
 
