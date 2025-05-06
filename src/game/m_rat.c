@@ -191,30 +191,16 @@ static void RatEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_
 		SetAnim(self, ANIM_EATING2);
 }
 
-/*----------------------------------------------------------------------
-
-  ACTION FUNCTIONS FOR THE MONSTER
-
------------------------------------------------------------------------*/
-
-void ratchew (edict_t *self)
+void ratchew(edict_t* self) //TODO: rename to rat_chew.
 {
-	int chance;
-
-	chance = irand(0, 100);
+	const int chance = irand(0, 100);
 
 	if (chance > 50 && chance < 65)
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_CHEW1], 1, ATTN_IDLE, 0);
-	}
+		gi.sound(self, CHAN_WEAPON, sounds[SND_CHEW1], 1.0f, ATTN_IDLE, 0.0f);
 	else if (chance < 85)
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_CHEW2], 1, ATTN_IDLE, 0);
-	}
+		gi.sound(self, CHAN_WEAPON, sounds[SND_CHEW2], 1.0f, ATTN_IDLE, 0.0f);
 	else
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_CHEW3], 1, ATTN_IDLE, 0);
-	}
+		gi.sound(self, CHAN_WEAPON, sounds[SND_CHEW3], 1.0f, ATTN_IDLE, 0.0f);
 }
 
 void ratchatter (edict_t *self)
