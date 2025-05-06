@@ -94,57 +94,38 @@ static void RatDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ra
 	SetAnim(self, ((self->health <= -20) ? ANIM_DIE1 : ANIM_DIE2));
 }
 
-//----------------------------------------------------------------------
-//  Rat Run - choose a run to use
-//----------------------------------------------------------------------
-void rat_run(edict_t *self, G_Message_t *msg)
+static void RatRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_run' in original logic.
 {
-	float	delta, len;
-	vec3_t	vec;
-
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-		self->ideal_yaw = VectorYaw(vec);
-		delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
-
-		if(self->monsterinfo.attack_finished < level.time)
-		{
-			len = VectorLength(vec);
-			
-			if (len < 150 && len > 50)
-			{
-				if (delta < 10)
-				{
-					SetAnim(self, ANIM_MELEE2);
-					return;
-				}
-			}
-		}
-
-		// Look right
-		if (delta > 25 && delta <= 180)
-		{
-			SetAnim(self, ANIM_RUN3);
-			return;
-		}
-		else if (delta > 180 && delta < 335)	// Look left
-		{
-			SetAnim(self, ANIM_RUN2);
-			return;
-		}
-		else
-		{
-			SetAnim(self, ANIM_RUN1);
-			return;
-		}
-
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-}
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+	self->ideal_yaw = VectorYaw(diff);
 
+	const float delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
+
+	if (self->monsterinfo.attack_finished < level.time)
+	{
+		const float dist = VectorLength(diff);
+
+		if (dist > 50.0f && dist < 150.0f && delta < 10.0f)
+		{
+			SetAnim(self, ANIM_MELEE2);
+			return;
+		}
+	}
+
+	if (delta > 25.0f && delta <= 180.0f) // Run to the right.
+		SetAnim(self, ANIM_RUN3);
+	else if (delta > 180.0f && delta < 335.0f)	// Run to the left.
+		SetAnim(self, ANIM_RUN2);
+	else // Run forwards.
+		SetAnim(self, ANIM_RUN1);
+}
 
 //----------------------------------------------------------------------
 //  Rat Walk - choose a walk to use
@@ -587,7 +568,7 @@ void RatStaticsInit(void)
 
 	classStatics[CID_RAT].msgReceivers[MSG_STAND] = rat_stand;
 	classStatics[CID_RAT].msgReceivers[MSG_WALK] = rat_walk;
-	classStatics[CID_RAT].msgReceivers[MSG_RUN] = rat_run;
+	classStatics[CID_RAT].msgReceivers[MSG_RUN] = RatRunMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_EAT] = rat_eat;
 	classStatics[CID_RAT].msgReceivers[MSG_MELEE] = rat_melee;
 	classStatics[CID_RAT].msgReceivers[MSG_WATCH] = rat_watch;
