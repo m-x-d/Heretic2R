@@ -941,16 +941,9 @@ static void PriestessDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	SetAnim(self, ANIM_DEATH);
 }
 
-/*-----------------------------------------------
-	priestess_evade
------------------------------------------------*/
-
-void priestess_evade( edict_t *self, G_Message_t *msg )
+static void PriestessEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_evade' in original logic.
 {
-	if (irand(0,1))
-		SetAnim(self, ANIM_DODGE_LEFT);
-	else
-		SetAnim(self, ANIM_DODGE_RIGHT);
+	SetAnim(self, irand(ANIM_DODGE_LEFT, ANIM_DODGE_RIGHT));
 }
 
 /*-----------------------------------------------
@@ -1040,7 +1033,7 @@ void HighPriestessStaticsInit(void)
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_STAND]	= priestess_stand;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_MISSILE] = priestess_missile;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_RUN] = priestess_run;
-	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_EVADE] = priestess_evade;
+	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_EVADE] = PriestessEvadeMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_DEATH] = PriestessDeathMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_PAIN] = priestess_pain;
 	
