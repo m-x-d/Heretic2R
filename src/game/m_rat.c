@@ -326,10 +326,10 @@ void rat_eatorder(edict_t* self) //TODO: rename to rat_eat_order.
 	QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
 
-void rat_use(edict_t *self, edict_t *other, edict_t *activator)
+static void RatUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'rat_use' in original logic.
 {
 	self->enemy = activator;
-	AI_FoundTarget(self, 1);
+	AI_FoundTarget(self, true);
 }
 
 void rat_touch(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
@@ -555,7 +555,7 @@ void SP_monster_rat (edict_t *self)
 
 	self->viewheight = self->maxs[2] * 0.5 * self->s.scale;
 
-	self->use = rat_use;
+	self->use = RatUse;
 	self->touch = rat_touch;
 
 	if (self->spawnflags & MSF_EATING)
@@ -632,7 +632,7 @@ void SP_monster_rat_giant (edict_t *self)
 
 	self->viewheight = self->maxs[2] * 0.5 * self->s.scale;
 
-	self->use = rat_use;
+	self->use = RatUse;
 	self->touch = rat_touch;
 
 	if (self->spawnflags & MSF_EATING)
