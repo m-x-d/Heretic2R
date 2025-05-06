@@ -708,34 +708,29 @@ void priestess_pounce_attack(edict_t* self)
 		priestess_pause(self);
 }
 
-/*-----------------------------------------------
-	priestess_pounce
------------------------------------------------*/
-void priestess_jump_attack ( edict_t *self )
+void priestess_jump_attack(edict_t* self)
 {
-	vec3_t	predPos, jumpVel;
-	float	jumpDist, moveDist, hopDist;
+	// Find out where the player will be when we would probably land.
+	vec3_t predicted_pos;
+	M_PredictTargetPosition(self->enemy, self->enemy->velocity, PRIESTESS_JUMP_FRAMES + 2.0f, predicted_pos);
 
-	//Find out where the player will be when we would probably land
-	M_PredictTargetPosition( self->enemy, self->enemy->velocity, PRIESTESS_JUMP_FRAMES+2, predPos);
+	// Find the vector to that spot and the length.
+	vec3_t jump_vel;
+	VectorSubtract(predicted_pos, self->s.origin, jump_vel);
+	const float move_dist = VectorNormalize(jump_vel);
 
-	//Find the vector to that spot and the length
-	VectorSubtract(predPos, self->s.origin, jumpVel);
-	moveDist = VectorNormalize(jumpVel);
-	
-	//Velocity is applied per tenth of a frame, so take the distance, divide by the number of frames in the air, and FRAMETIME
-	jumpDist = ( moveDist * PRIESTESS_JUMP_FRAMES ) * FRAMETIME;
+	// Velocity is applied per tenth of a frame, so take the distance, divide by the number of frames in the air, and FRAMETIME.
+	const float jump_dist = move_dist * PRIESTESS_JUMP_FRAMES * FRAMETIME;
 
-	//Now get the height to keep her in the air long enough to complete this jump
-	hopDist = ( PRIESTESS_HOP_DISTANCE + ( ( sv_gravity->value * PRIESTESS_JUMP_FRAMES ) / 4 ) ) * FRAMETIME;
-	
-	//Setup the vector for the jump
-	VectorScale( jumpVel, jumpDist, jumpVel );
-	jumpVel[2] = hopDist;
+	// Now get the height to keep her in the air long enough to complete this jump.
+	const float hop_dist = (PRIESTESS_HOP_DISTANCE + (sv_gravity->value * PRIESTESS_JUMP_FRAMES / 4.0f)) * FRAMETIME;
 
-	//Set the priestess in motion
-	VectorCopy( jumpVel, self->velocity );
-//	self->groundentity = NULL;
+	// Setup the vector for the jump.
+	Vec3ScaleAssign(jump_dist, jump_vel);
+	jump_vel[2] = hop_dist;
+
+	// Set the priestess in motion.
+	VectorCopy(jump_vel, self->velocity);
 }
 
 void priestess_pounce ( edict_t *self )
