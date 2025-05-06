@@ -355,43 +355,42 @@ static void RatTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* 
 	}
 }
 
-void rat_ai_stand(edict_t *self, float dist)
+void rat_ai_stand(edict_t* self, float distance)
 {
-	if (M_ValidTarget(self, self->enemy))
-	{
-		//Find the number of rats around us (-1 denotes it hasn't check previously)
-		if (self->monsterinfo.supporters == -1)
-			self->monsterinfo.supporters = M_FindSupport( self, RAT_GROUP_RANGE );
+	if (!M_ValidTarget(self, self->enemy))
+		return;
 
-		//We've got an enemy, now see if we have enough support to attack it
-		if (self->monsterinfo.supporters >= RAT_MIN_ATTACK_SUPPORTERS)
+	// Find the number of rats around us (-1 denotes it hasn't check previously).
+	if (self->monsterinfo.supporters == -1)
+		self->monsterinfo.supporters = M_FindSupport(self, RAT_GROUP_RANGE);
+
+	// We've got an enemy, now see if we have enough support to attack it.
+	if (self->monsterinfo.supporters >= RAT_MIN_ATTACK_SUPPORTERS)
+	{
+		AI_FoundTarget(self, true);
+		return;
+	}
+
+	// Is he close enough to scare us away?
+	if (M_DistanceToTarget(self, self->enemy) < RAT_IGNORE_DISTANCE)
+	{
+		if (self->s.scale < 2.0f || irand(0, 1) == 1)
 		{
+			// Just attack him.
 			AI_FoundTarget(self, true);
 		}
 		else
 		{
-			//Is he close enough to scare us away?
-			if (M_DistanceToTarget(self, self->enemy) < RAT_IGNORE_DISTANCE)
-			{
-				if (self->s.scale < 2.0 || irand(0,1))
-				{
-					//Just attack him
-					AI_FoundTarget(self, true);
-				}
-				else
-				{
-					//Run away
-					self->monsterinfo.aiflags |= AI_FLEE;
-					self->monsterinfo.flee_finished = level.time + 10;
-				}
-			}
-			else
-			{
-				//Not close enough to bother us right now, but watch this enemy
-				MG_FaceGoal(self, true);
-				self->enemy = NULL;
-			}
+			// Run away.
+			self->monsterinfo.aiflags |= AI_FLEE;
+			self->monsterinfo.flee_finished = level.time + 10.0f;
 		}
+	}
+	else
+	{
+		// Not close enough to bother us right now, but watch this enemy.
+		MG_FaceGoal(self, true);
+		self->enemy = NULL;
 	}
 }
 
