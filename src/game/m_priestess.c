@@ -550,117 +550,56 @@ static void PriestessFire3(edict_t* self) //mxd. Named 'priestess_fire3' in orig
 	gi.linkentity(proj);
 }
 
-/*-----------------------------------------------
-	priestess_fire4
------------------------------------------------*/
-
-//Big special light show of doom and chaos and destruction... or something...
-void priestess_fire4( edict_t *self, float pitch_ofs, float yaw_ofs, float roll_ofs )
+// Big special light show of doom and chaos and destruction... or something...
+static void PriestessFire4(edict_t* self) //mxd. Named 'priestess_fire4' in original logic.
 {
-	trace_t trace;
-	vec3_t	vf, vr, /*ang,*/ startPos, endPos;
-	vec3_t  mins = { -1, -1, -1 };
-	vec3_t  maxs = {  1,  1,  1 };
-	float	len;
-
 	if (self->monsterinfo.sound_finished < level.time)
 	{
-		gi.sound (self, CHAN_AUTO, sounds[SND_ZAP], 1, ATTN_NORM, 0);
-		self->monsterinfo.sound_finished = level.time + 5;
+		gi.sound(self, CHAN_AUTO, sounds[SND_ZAP], 1.0f, ATTN_NORM, 0.0f);
+		self->monsterinfo.sound_finished = level.time + 5.0f;
 	}
 
-	AngleVectors(self->s.angles, vf, vr, NULL);
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	VectorCopy(self->s.origin, startPos);
-	
-	VectorMA(self->s.origin, 30, vf, startPos);
-	VectorMA(startPos, 8, vr, startPos);
-	startPos[2] += 56;
+	vec3_t start_pos;
+	VectorCopy(self->s.origin, start_pos);
 
-	//The 5 to 8 effects are spawn on the other side, no reason to send each one
-	gi.CreateEffect(NULL,
-				FX_HP_MISSILE,
-				0,
-				startPos,
-				"vb",
-				startPos,
-				HPMISSILE4);
-	
-	AngleVectors(self->s.angles, vf, vr, NULL);
+	VectorMA(self->s.origin, 30.0f, forward, start_pos);
+	VectorMA(start_pos, 8.0f, right, start_pos);
+	start_pos[2] += 56.0f;
 
-	VectorCopy(self->s.origin, startPos);
-	
-	VectorMA(self->s.origin, 30, vf, startPos);
-	VectorMA(startPos, 8, vr, startPos);
-	startPos[2] += 56;
+	// The 5 to 8 effects are spawn on the other side, no reason to send each one.
+	gi.CreateEffect(NULL, FX_HP_MISSILE, 0, start_pos, "vb", start_pos, HPMISSILE4);
 
-	if ( self->monsterinfo.misc_debounce_time < level.time )
+	if (self->monsterinfo.misc_debounce_time < level.time)
 	{
-		VectorSubtract(self->enemy->s.origin, startPos, vf);
-		len = VectorNormalize(vf);
+		vec3_t dir;
+		VectorSubtract(self->enemy->s.origin, start_pos, dir);
+		const float dist = VectorNormalize(dir);
 
-		VectorMA( startPos, len, vf, endPos );
+		vec3_t end_pos;
+		VectorMA(start_pos, dist, dir, end_pos);
 
-		gi.trace( startPos, mins, maxs, endPos, self, MASK_SHOT ,&trace);
+		const vec3_t mins = { -1.0f, -1.0f, -1.0f };
+		const vec3_t maxs = {  1.0f,  1.0f,  1.0f };
+
+		trace_t trace;
+		gi.trace(start_pos, mins, maxs, end_pos, self, MASK_SHOT, &trace);
 
 		if (trace.ent == self->enemy)
 		{
-			T_Damage(trace.ent, self, self, vf, trace.endpos, trace.plane.normal, 
-					irand(HP_DMG_FIRE_MIN, HP_DMG_FIRE_MAX), 0, DAMAGE_DISMEMBER,MOD_DIED);
+			const int damage = irand(HP_DMG_FIRE_MIN, HP_DMG_FIRE_MAX);
+			T_Damage(trace.ent, self, self, dir, trace.endpos, trace.plane.normal, damage, 0, DAMAGE_DISMEMBER, MOD_DIED);
 
-			gi.sound (self, CHAN_AUTO, sounds[SND_ZAPHIT], 1, ATTN_NORM, 0);
+			gi.sound(self, CHAN_AUTO, sounds[SND_ZAPHIT], 1.0f, ATTN_NORM, 0.0f);
 		}
 
-		gi.CreateEffect(NULL,
-					FX_HP_MISSILE,
-					0,
-					startPos,
-					"vb",
-					trace.endpos,
-					HPMISSILE5);
-
-		self->monsterinfo.misc_debounce_time = level.time + flrand(0.2, 0.4);
+		gi.CreateEffect(NULL, FX_HP_MISSILE, 0, start_pos, "vb", trace.endpos, HPMISSILE5);
+		self->monsterinfo.misc_debounce_time = level.time + flrand(0.2f, 0.4f);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
 
@@ -815,7 +754,7 @@ void priestess_attack3_loop_fire ( edict_t *self )
 
 	case AS_HEAVENS_RAIN:
 		
-		priestess_fire4( self, 0, 0, 0 );
+		PriestessFire4(self);
 		break;
 	}
 }
