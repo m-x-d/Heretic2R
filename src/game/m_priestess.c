@@ -1039,74 +1039,59 @@ void HighPriestessStaticsInit(void)
 	classStatics[CID_HIGHPRIESTESS].resInfo = &res_info;
 }
 
-/*QUAKED monster_high_priestess (1 .5 0) (-24 -24 0) (24 24 72)
-
-The High Priestess (what more do you need to know?!?!)
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-*/
-void SP_monster_high_priestess (edict_t *self)
+// QUAKED monster_high_priestess (1 .5 0) (-24 -24 0) (24 24 72)
+// The High Priestess.
+// wakeup_target	- Monsters will fire this target the first time it wakes up (only once).
+// pain_target		- Monsters will fire this target the first time it gets hurt (only once).
+void SP_monster_high_priestess(edict_t* self)
 {
-	if ((deathmatch->value == 1) && !((int)sv_cheats->value & self_spawn))
-	{
+	if (DEATHMATCH && !(SV_CHEATS & self_spawn))
 		return;
-	}
 
-	if (!M_WalkmonsterStart(self))			// Failed initialization
+	if (!M_WalkmonsterStart(self)) // Failed initialization.
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
 
-	if (!self->health)
-	{
+	if (self->health == 0)
 		self->health = HP_HEALTH;
-	}
 
-	//Apply to the end result (whether designer set or not)
-	self->max_health = self->health = MonsterHealth(self->health);
+	// Apply to the end result (whether designer set or not).
+	self->health = MonsterHealth(self->health);
+	self->max_health = self->health;
 
 	self->mass = HP_MASS;
-	self->yaw_speed = 24;
+	self->yaw_speed = 24.0f;
 
 	self->movetype = PHYSICSTYPE_STEP;
-	self->solid=SOLID_BBOX;
+	self->solid = SOLID_BBOX;
 	self->clipmask = MASK_MONSTERSOLID;
+	self->svflags |= SVF_BOSS;
 
-	self->s.origin[2] += 36;
-	VectorSet(self->mins, -24, -24, -36);
-	VectorSet(self->maxs, 24, 24, 36);
+	self->s.origin[2] += 36.0f;
+	VectorSet(self->mins, -24.0f, -24.0f, -36.0f); //TODO: init via STDMinsForClass?
+	VectorSet(self->maxs,  24.0f,  24.0f,  36.0f); //TODO: init via STDMaxsForClass?
 
+	self->s.modelindex = (byte)classStatics[CID_HIGHPRIESTESS].resInfo->modelIndex;
+	self->s.skinnum = 0;
 	self->materialtype = MAT_INSECT;
 
-	self->s.modelindex = classStatics[CID_HIGHPRIESTESS].resInfo->modelIndex;
-	self->s.skinnum = 0;
+	self->monsterinfo.jump_time = level.time + 15.0f;
+	self->monsterinfo.otherenemyname = "monster_rat";
 
-	self->monsterinfo.jump_time = level.time + 15;
-	self->monsterinfo.otherenemyname = "monster_rat";	
-
-	if (self->monsterinfo.scale)
+	if (self->s.scale == 0.0f) //BUGFIX: mxd. 'if (self->monsterinfo.scale)' in original logic.
 	{
-		self->s.scale = self->monsterinfo.scale = MODEL_SCALE;
+		self->s.scale = MODEL_SCALE;
+		self->monsterinfo.scale = self->s.scale;
 	}
 
-	MG_InitMoods( self );
+	MG_InitMoods(self);
 
-	//Setup her reference points
-	self->PersistantCFX = gi.CreatePersistantEffect(&self->s,
-							FX_HP_STAFF,
-							CEF_OWNERS_ORIGIN | CEF_BROADCAST,
-							vec3_origin,
-							"bs",
-							HP_STAFF_INIT,
-							self->s.number);
+	// Setup her reference points.
+	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_HP_STAFF, CEF_OWNERS_ORIGIN | CEF_BROADCAST, vec3_origin, "bs", HP_STAFF_INIT, self->s.number);
 
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
 	self->post_think = PriestessPostThink;
-	self->next_post_think = level.time + 0.1;
-
-	self->svflags|=SVF_BOSS;
+	self->next_post_think = level.time + FRAMETIME; //mxd. Use define.
 }
