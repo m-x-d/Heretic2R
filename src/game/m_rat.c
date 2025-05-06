@@ -321,18 +321,7 @@ void ratjump(edict_t* self) //TODO: rename to rat_jump.
 	self->velocity[2] += 225.0f;
 }
 
-/*----------------------------------------------------------------------
-  Rat WatchOrder - order the rat to watch
------------------------------------------------------------------------*/
-void rat_watchorder(edict_t *self)
-{
-	QPostMessage(self, MSG_WATCH, PRI_DIRECTIVE, NULL);
-}
-
-/*----------------------------------------------------------------------
-  Rat EatOrder - order the rat to choose an eat animation
------------------------------------------------------------------------*/
-void rat_eatorder(edict_t *self)
+void rat_eatorder(edict_t* self) //TODO: rename to rat_eat_order.
 {
 	QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
