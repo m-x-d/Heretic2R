@@ -476,81 +476,72 @@ void RatStaticsInit(void)
 	classStatics[CID_RAT].resInfo = &res_info;
 }
 
-/*QUAKED monster_rat (1 .5 0) (-16 -16 -0) (16 16 32) AMBUSH ASLEEP EATING 8 16 32 64 FIXED(na) WANDER(na) MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
+// QUAKED monster_rat (1 .5 0) (-16 -16 -0) (16 16 32) AMBUSH ASLEEP EATING 8 16 32 64 128 256 MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
+// The rat.
 
-The rat 
+// Spawnflags:
+// AMBUSH - Will not be woken up by other monsters or shots from player.
+// ASLEEP - will not appear until triggered.
+// EATING - Chomp chomp... chewie chomp.
+// COWARD - Runs away.
 
-AMBUSH - Will not be woken up by other monsters or shots from player
-
-ASLEEP - will not appear until triggered
-
-EATING - Chomp chomp... chewie chomp
-
-COWARD - Runs away
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-*/
-
-void SP_monster_rat (edict_t *self)
+// Variables:
+// wakeup_target	- Monsters will fire this target the first time it wakes up (only once).
+// pain_target		- Monsters will fire this target the first time it gets hurt (only once).
+void SP_monster_rat(edict_t* self)
 {
-	// Generic Monster Initialization
-	if (!M_Start(self))		// Failed initialization
-		return;	
+	// Generic Monster Initialization.
+	if (!M_WalkmonsterStart(self)) // Failed initialization.
+		return;
 
-	self->msgHandler = DefaultMsgHandler;
-	self->think = M_WalkmonsterStartGo;
-	self->materialtype = MAT_FLESH;
-
-	if (!self->health)
+	if (self->health == 0)
 		self->health = RAT_HEALTH;
 
-	self->max_health = self->health = MonsterHealth(self->health);
+	self->health = MonsterHealth(self->health);
+	self->max_health = self->health;
 
+	self->solid = SOLID_BBOX;
 	self->mass = RAT_MASS;
-	self->yaw_speed = 20;
+	self->movetype = PHYSICSTYPE_STEP;
+	self->materialtype = MAT_FLESH;
+	self->yaw_speed = 20.0f;
 
-	self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
-	self->movetype=PHYSICSTYPE_STEP;
-	VectorClear(self->knockbackvel);
-
-	self->solid=SOLID_BBOX;
-
-	VectorCopy(STDMinsForClass[self->classID], self->mins);
-	VectorCopy(STDMaxsForClass[self->classID], self->maxs);	
-	
-	//Init this to -1 because we can't check for supporters in this function
-	self->monsterinfo.supporters = -1;
-
-	self->s.modelindex = classStatics[CID_RAT].resInfo->modelIndex;
-
+	self->s.modelindex = (byte)classStatics[CID_RAT].resInfo->modelIndex;
 	self->s.skinnum = 0;
 
-	if (self->monsterinfo.scale)
+	self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
+	VectorClear(self->knockbackvel);
+
+	VectorCopy(STDMinsForClass[self->classID], self->mins);
+	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
+
+	if (self->s.scale == 0.0f) //mxd. 'if (self->monsterinfo.scale)' in original logic.
 	{
-		self->s.scale = self->monsterinfo.scale = MODEL_SCALE;
+		self->s.scale = MODEL_SCALE;
+		self->monsterinfo.scale = self->s.scale;
 	}
 
-	self->viewheight = self->maxs[2] * 0.5 * self->s.scale;
+	self->viewheight = (int)(self->maxs[2] * 0.5f * self->s.scale);
 
+	// Init this to -1 because we can't check for supporters in this function.
+	self->monsterinfo.supporters = -1;
+
+	self->msgHandler = DefaultMsgHandler;
 	self->use = RatUse;
 	self->touch = RatTouch;
 
 	if (self->spawnflags & MSF_EATING)
 	{
-		//self->monsterinfo.aiflags |= AI_EATING;
 		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
-		if(!self->wakeup_distance)
-			self->wakeup_distance = 300;
+
+		if (self->wakeup_distance == 0.0f)
+			self->wakeup_distance = 300.0f;
 	}
 	else
 	{
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 }
-
 
 /*QUAKED monster_rat_giant (1 .5 0) (-16 -16 0) (16 16 32) AMBUSH ASLEEP EATING 8 16 32 64 FIXED(na) WANDER(na) MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
 
