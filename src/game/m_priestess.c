@@ -202,74 +202,55 @@ static void PriestessProjectile1DrunkenThink(edict_t* self) //mxd. Named 'priest
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*-----------------------------------------------
-	priestess_proj1_think
------------------------------------------------*/
-
-void priestess_proj1_think( edict_t *self )
+static void PriestessProjectile1Think(edict_t* self) //mxd. Named 'priestess_proj1_think' in original logic.
 {
-	vec3_t olddir, newdir, huntdir;
-	float oldvelmult , newveldiv, speed_mod;
+#define PROJ1_VELOCITY_MULTIPLIER	1.2f //mxd
 
-	//No enemy, stop tracking
-	if (!self->enemy)
+	// No enemy / enemy is dead, stop tracking.
+	if (self->enemy == NULL || self->enemy->health <= 0)
 	{
 		self->think = NULL;
 		return;
 	}
 
-	//Enemy is dead, stop tracking
-	if (self->enemy->health <= 0)
-	{
-		self->think = NULL;
-		return;
-	}
-
-	//Timeout?
+	// Timeout?
 	if (self->monsterinfo.attack_finished < level.time)
 	{
-		gi.sound (self, CHAN_BODY, sounds[SND_BALLHIT], 1, ATTN_NORM, 0);
-
-		gi.CreateEffect(&self->s,
-					FX_HP_MISSILE,
-					CEF_OWNERS_ORIGIN,
-					self->s.origin,
-					"vb",
-					vec3_origin,
-					HPMISSILE1_EXPLODE);
+		gi.sound(self, CHAN_BODY, sounds[SND_BALLHIT], 1.0f, ATTN_NORM, 0.0f);
+		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE);
 
 		self->think = G_FreeEdict;
-		self->nextthink = level.time + 0.1;
-		
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
 		return;
 	}
 
-	VectorCopy(self->velocity, olddir);
-	VectorNormalize(olddir);
+	vec3_t old_dir;
+	VectorNormalize2(self->velocity, old_dir);
+	Vec3ScaleAssign(PROJ1_VELOCITY_MULTIPLIER, old_dir);
 
-	VectorSubtract(self->enemy->s.origin, self->s.origin, huntdir);
-	VectorNormalize(huntdir);
+	vec3_t hunt_dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, hunt_dir);
+	VectorNormalize(hunt_dir);
 
-	oldvelmult = 1.2;
-	newveldiv = 1/(oldvelmult + 1);
-	
-	VectorScale(olddir, oldvelmult, olddir);
-	VectorAdd(olddir, huntdir, newdir);
-	VectorScale(newdir, newveldiv, newdir);
+	vec3_t new_dir;
+	VectorAdd(old_dir, hunt_dir, new_dir);
 
-	speed_mod = DotProduct( olddir , newdir );
+	float new_vel_div = 1.0f / (PROJ1_VELOCITY_MULTIPLIER + 1.0f);
+	Vec3ScaleAssign(new_vel_div, new_dir);
 
-	if (speed_mod < 0.05)
-		speed_mod = 0.05;
+	float speed_mod = DotProduct(old_dir, new_dir);
+	speed_mod = max(0.05f, speed_mod);
 
-	newveldiv *= self->ideal_yaw * speed_mod;
+	new_vel_div *= self->ideal_yaw * speed_mod;
 
-	VectorScale(olddir, oldvelmult, olddir);
-	VectorAdd(olddir, huntdir, newdir);
-	VectorScale(newdir, newveldiv, newdir);
+	Vec3ScaleAssign(PROJ1_VELOCITY_MULTIPLIER, old_dir);
 
-	VectorCopy(newdir, self->velocity);
-	self->nextthink = level.time + 0.1;
+	VectorAdd(old_dir, hunt_dir, new_dir);
+	Vec3ScaleAssign(new_vel_div, new_dir);
+
+	VectorCopy(new_dir, self->velocity);
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
@@ -650,7 +631,7 @@ void priestess_fire2( edict_t *self, float pitch_ofs, float yaw_ofs, float roll_
 	if (!irand(0,15))
 		proj->think = PriestessProjectile1DrunkenThink;
 	else
-		proj->think=priestess_proj1_think;
+		proj->think=PriestessProjectile1Think;
 
 	gi.sound (self, CHAN_AUTO, sounds[SND_HOMINGATK], 1, ATTN_NORM, 0);
 
