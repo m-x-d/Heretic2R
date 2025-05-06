@@ -601,25 +601,12 @@ static void PriestessFire4(edict_t* self) //mxd. Named 'priestess_fire4' in orig
 	}
 }
 
-/*
-
-	Priestess Helper Functions
-
-*/
-
-/*-----------------------------------------------
-	priestess_attack1_pause
------------------------------------------------*/
-
-void priestess_attack1_pause( edict_t *self )
+void priestess_attack1_pause(edict_t* self)
 {
-	if (self->monsterinfo.search_time--)
-	{
-	}
-	else
-	{
+	self->monsterinfo.search_time -= 1.0f; //TODO: add priestess_attack_delay name?
+
+	if (self->monsterinfo.search_time <= 0.0f)
 		priestess_pause(self);
-	}
 }
 
 /*-----------------------------------------------
