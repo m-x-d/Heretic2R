@@ -17,7 +17,7 @@
 #include "Vector.h"
 #include "g_local.h"
 
-static void create_priestess_proj(const edict_t* self, edict_t* proj); //TODO: remove.
+static void PriestessProjectileInit(const edict_t* self, edict_t* proj); //TODO: remove.
 
 // Number of frames the priestess is in the air.
 #define PRIESTESS_JUMP_FRAMES	10.0f //mxd. Named 'PRIESTESS_JUMPFRAMES' in original logic.
@@ -293,7 +293,7 @@ static void PriestessProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Na
 	{
 		edict_t* proj = G_Spawn();
 
-		create_priestess_proj(self, proj);
+		PriestessProjectileInit(self, proj);
 		proj->owner = self->owner;
 		proj->ideal_yaw = self->ideal_yaw;
 
@@ -376,33 +376,28 @@ static void PriestessProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Na
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*-----------------------------------------------
-	create_priestess_proj
------------------------------------------------*/
-
-// create the guts of the high priestess projectile
-static void create_priestess_proj(const edict_t *self,edict_t *proj)
+// Create the guts of the high priestess projectile.
+static void PriestessProjectileInit(const edict_t* self, edict_t* proj) //mxd. Named 'create_priestess_proj' in original logic.
 {
 	proj->svflags |= SVF_ALWAYS_SEND;
 	proj->movetype = PHYSICSTYPE_FLY;
-	proj->gravity = 0;
+	proj->gravity = 0.0f;
 	proj->solid = SOLID_BBOX;
 	proj->classname = "HPriestess_Missile";
-	proj->dmg = 1.0;
-	proj->s.scale = 1.0;
+	proj->dmg = 1; //TODO: not needed?
+	proj->s.scale = 1.0f;
 	proj->clipmask = MASK_SHOT;
-	proj->nextthink = level.time + 0.1;
-	
+	proj->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
 	proj->bounced = PriestessProjectile1Blocked;
 	proj->isBlocking = PriestessProjectile1Blocked;
 	proj->isBlocked = PriestessProjectile1Blocked;
-	//proj->touch = priestess_proj1_touch;
 
-	proj->s.effects=EF_MARCUS_FLAG1|EF_CAMERA_NO_CLIP;
+	proj->s.effects = (EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
 	proj->enemy = self->enemy;
 
-	VectorSet(proj->mins, -2.0, -2.0, -2.0);	
-	VectorSet(proj->maxs,  2.0,  2.0,  2.0);
+	VectorSet(proj->mins, -2.0f, -2.0f, -2.0f);
+	VectorSet(proj->maxs,  2.0f,  2.0f,  2.0f);
 	VectorCopy(self->s.origin, proj->s.origin);
 }
 
@@ -443,7 +438,7 @@ void priestess_fire1( edict_t *self, float pitch_ofs, float yaw_ofs, float roll_
 		proj = G_Spawn();
 
 		proj->monsterinfo.attack_state = AS_LIGHT_MISSILE;
-		create_priestess_proj(self,proj);
+		PriestessProjectileInit(self,proj);
 		proj->owner = self;
 		
 		VectorCopy(startOfs, proj->s.origin);
@@ -490,7 +485,7 @@ void priestess_fire2( edict_t *self, float pitch_ofs, float yaw_ofs, float roll_
 
 	proj = G_Spawn();
 
-	create_priestess_proj(self,proj);
+	PriestessProjectileInit(self,proj);
 
 	proj->monsterinfo.attack_state = AS_QUEENS_FURY;
 	proj->owner = self;
@@ -551,7 +546,7 @@ void priestess_fire3( edict_t *self, float pitch_ofs, float yaw_ofs, float roll_
 
 	proj = G_Spawn();
 
-	create_priestess_proj(self,proj);
+	PriestessProjectileInit(self,proj);
 
 	proj->takedamage = DAMAGE_YES;
 	proj->die = PriestessProjectile2Die;
