@@ -926,7 +926,7 @@
     <ClInclude Include="m_rat_anim.h">
       <Filter>src\Monsters\Rat</Filter>
     </ClInclude>
-    <ClInclude Include="m_seraph_local.h">
+    <ClInclude Include="m_seraph_shared.h">
       <Filter>src\Monsters\Seraph</Filter>
     </ClInclude>
     <ClInclude Include="m_seraph_anim.h">

@@ -10,7 +10,7 @@
 
 #include "g_local.h"
 #include "m_seraph.h"
-#include "m_seraph_local.h"
+#include "m_seraph_shared.h"
 #include "m_seraph_anim.h"
 #include "Utilities.h"
 #include "g_DefaultMessageHandler.h"
