@@ -412,17 +412,17 @@ void rat_ai_run(edict_t* self, float distance)
 
 	if (self->monsterinfo.aiflags & (AI_FLEE | AI_COWARD))
 	{
-		if (self->count == 0)
-			self->count = 180; //TODO: add rat_random_move_angle name;
+		if (self->rat_flee_angle == 0.0f)
+			self->rat_flee_angle = 180.0f; //TODO: randomize this a bit?
 
 		vec3_t diff;
 		VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
 
-		self->ideal_yaw = anglemod(VectorYaw(diff) + self->count);
+		self->ideal_yaw = anglemod(VectorYaw(diff) + self->rat_flee_angle);
 		M_ChangeYaw(self);
 
 		if (!M_walkmove(self, self->s.angles[YAW], distance) && AnglesEqual(self->s.angles[YAW], self->ideal_yaw, 5.0f))
-			self->count = flrand(60.0f, 300.0f);
+			self->rat_flee_angle = flrand(60.0f, 300.0f);
 	}
 	else
 	{
