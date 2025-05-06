@@ -357,35 +357,7 @@ static void PriestessProjectile1Think(edict_t* self) //mxd. Named 'priestess_pro
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void PriestessProjectile2Die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'priestess_proj2_die' in original logic.
-{
-	gi.sound(self, CHAN_AUTO, sounds[SND_BUGHIT], 1.0f, ATTN_NORM, 0.0f);
-	gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE3_EXPLODE);
-
-	self->think = G_FreeEdict;
-	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
-}
-
-static void PriestessProjectile2Think(edict_t* self) //mxd. Named 'priestess_proj2_think' in original logic.
-{
-	// Timeout?
-	if (self->monsterinfo.attack_finished < level.time)
-	{
-		gi.sound(self, CHAN_AUTO, sounds[SND_BUGHIT], 1.0f, ATTN_NORM, 0.0f);
-		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE3_EXPLODE);
-
-		self->think = G_FreeEdict;
-	}
-	else
-	{
-		Vec3ScaleAssign(self->missile_range, self->velocity);
-		VectorRandomCopy(self->velocity, self->velocity, 8.0f);
-	}
-
-	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
-}
-
-static void PriestessProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Named 'priestess_proj1_blocked' in original logic. //TODO: move closer to other PriestessProjectile1 callbacks.
+static void PriestessProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Named 'priestess_proj1_blocked' in original logic.
 {
 	if (trace->ent == self->owner || Q_stricmp(trace->ent->classname, "HPriestess_Missile") == 0) //mxd. stricmp -> Q_stricmp.
 		return;
@@ -477,6 +449,34 @@ static void PriestessProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Na
 	gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, fx_type);
 
 	self->think = G_FreeEdict;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+}
+
+static void PriestessProjectile2Die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'priestess_proj2_die' in original logic.
+{
+	gi.sound(self, CHAN_AUTO, sounds[SND_BUGHIT], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE3_EXPLODE);
+
+	self->think = G_FreeEdict;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+}
+
+static void PriestessProjectile2Think(edict_t* self) //mxd. Named 'priestess_proj2_think' in original logic.
+{
+	// Timeout?
+	if (self->monsterinfo.attack_finished < level.time)
+	{
+		gi.sound(self, CHAN_AUTO, sounds[SND_BUGHIT], 1.0f, ATTN_NORM, 0.0f);
+		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE3_EXPLODE);
+
+		self->think = G_FreeEdict;
+	}
+	else
+	{
+		Vec3ScaleAssign(self->missile_range, self->velocity);
+		VectorRandomCopy(self->velocity, self->velocity, 8.0f);
+	}
+
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
