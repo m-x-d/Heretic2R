@@ -283,21 +283,21 @@ void ratbite(edict_t* self) //TODO: rename to rat_bite.
 	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_BITEMISS1, SND_BITEMISS2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void rat_pain_init(edict_t *self)
+void rat_pain_init(edict_t* self)
 {
-	if (self->s.scale < 2.0 && irand(0,100) < 50)
+	if (self->s.scale < 2.0f && irand(0, 100) < 50)
 	{
-		self->monsterinfo.aiflags |= AI_FLEE;				// Run away
-		self->monsterinfo.flee_finished = level.time + flrand(3.0, 7.0);
+		self->monsterinfo.aiflags |= AI_FLEE; // Run away.
+		self->monsterinfo.flee_finished = level.time + flrand(3.0f, 7.0f);
 	}
 }
 
-void rat_runorder(edict_t *self)
+void rat_runorder(edict_t* self) //TODO: rename to rat_run_order.
 {
 	QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 }
 
-void rat_standorder(edict_t *self)
+void rat_standorder(edict_t* self) //TODO: rename to rat_stand_order.
 {
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
