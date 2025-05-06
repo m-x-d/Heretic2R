@@ -84,90 +84,66 @@ void priestess_teleport_end(edict_t* self)
 	gi.CreateEffect(NULL, FX_HP_MISSILE, 0, self->s.origin, "vb", self->s.origin, HPTELEPORT_END);
 }
 
-/*-----------------------------------------------
-	priestess_teleport_move
------------------------------------------------*/
-
-void blocker_throw ( edict_t *self, trace_t *trace )
+void priestess_teleport_move(edict_t* self)
 {
-#ifdef _DEVEL
-	gi.dprintf("ERROR blocker_throw : Entity touched teleport destination!\n");
-#endif
-}
+	const vec3_t mins = { -24.0f, -24.0f, -36.0f };
+	const vec3_t maxs = { 24.0f, 24.0f, 36.0f }; //BUGFIX: mxd. Same as mins in original logic.
 
-void priestess_teleport_move ( edict_t *self )
-{
-	edict_t *moveLocation = NULL, *bestLocation = NULL, *blocker = NULL;
-	trace_t	trace;
-	vec3_t	testPos;
-	vec3_t	mins = { -24, -24, -36 };
-	vec3_t	maxs = { -24, -24, -36 };
-	float	bestDist = 9999999;
-	float	dist, startDist;
+	float best_dist = FLT_MAX; //mxd. 9999999 in original logic.
 
-	while ( (moveLocation = G_Find( moveLocation, FOFS( classname ), "path_corner")) != NULL)
+	edict_t* path_corner = NULL;
+	const edict_t* best_corner = NULL;
+	while ((path_corner = G_Find(path_corner, FOFS(classname), "path_corner")) != NULL)
 	{
-		if (stricmp(moveLocation->targetname, "priestess"))
+		if (Q_stricmp(path_corner->targetname, "priestess") != 0) //mxd. stricmp -> Q_stricmp.
 			continue;
 
-		dist = vhlen(self->enemy->s.origin, moveLocation->s.origin);
+		const float enemy_dist = vhlen(self->enemy->s.origin, path_corner->s.origin);
+		const float start_dist = vhlen(self->s.origin, path_corner->s.origin);
 
-		if (dist < 64)
+		if (enemy_dist < 64.0f || start_dist < 64.0f || enemy_dist >= best_dist || !AI_IsVisible(path_corner, self->enemy))
 			continue;
 
-		startDist = vhlen(self->s.origin, moveLocation->s.origin);
+		vec3_t test_pos;
+		VectorCopy(path_corner->s.origin, test_pos);
+		test_pos[2] += maxs[2];
 
-		if (startDist < 64)
+		trace_t	trace;
+		gi.trace(test_pos, mins, maxs, test_pos, self, MASK_MONSTERSOLID, &trace);
+
+		if (trace.startsolid || trace.allsolid)
 			continue;
 
-		if ( (dist < bestDist) && (AI_IsVisible(moveLocation, self->enemy)) )
-		{
-			VectorCopy(moveLocation->s.origin, testPos);
-			testPos[2] += 36;
+		if (trace.ent != NULL && Q_stricmp(trace.ent->classname, "player") == 0) //mxd. stricmp -> Q_stricmp.
+			continue;
 
-			gi.trace(testPos, mins, maxs, testPos, self, MASK_MONSTERSOLID,&trace);
-
-			if (trace.startsolid || trace.allsolid)
-				continue;
-
-			if (trace.ent && !stricmp(trace.ent->classname, "player"))
-				continue;
-
-			bestDist = dist;
-			bestLocation = moveLocation;
-		}
+		best_dist = enemy_dist;
+		best_corner = path_corner;
 	}
 
-	if (bestLocation)
+	if (best_corner != NULL)
 	{
-		//ULTRA HACK!
-		VectorCopy(bestLocation->s.origin, self->monsterinfo.nav_goal);
-		self->s.origin[0] += 2000;
+		// ULTRA HACK!
+		VectorCopy(best_corner->s.origin, self->monsterinfo.nav_goal);
+		self->s.origin[0] += 2000.0f; //TODO: is there better way to hide her?..
 		gi.linkentity(self);
 
-		//Spawn a fake entity to sit where the priestess will teleport to assure there's no telefragging
-		blocker = G_Spawn();
+		// Spawn a fake entity to sit where the priestess will teleport to assure there's no telefragging.
+		edict_t* blocker = G_Spawn();
 
-		VectorSet(blocker->mins, -24, -24, -36);
-		VectorSet(blocker->maxs,  24,  24,  36);
+		VectorCopy(mins, blocker->mins);
+		VectorCopy(maxs, blocker->maxs);
 
 		blocker->solid = SOLID_BBOX;
 		blocker->movetype = PHYSICSTYPE_NONE;
 
-		//If the player touches this entity somehow, he's thrown back
-		blocker->isBlocked = blocker_throw;
-		blocker->isBlocking = blocker_throw;
-		blocker->bounced = 	blocker_throw;
-
+		//TODO: if the player touches this entity somehow, he's thrown back.
 		self->movetarget = blocker;
 
 		gi.linkentity(blocker);
 	}
 	else
 	{
-#ifdef _DEVEL
-		gi.dprintf("ERROR priestess_teleport_move :Priestess unable to move to new teleport destination!\n");
-#endif
 		SetAnim(self, ANIM_SHIELD_END);
 	}
 }
