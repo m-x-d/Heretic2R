@@ -154,18 +154,10 @@ void priestess_teleport_self_effects(edict_t* self)
 	self->s.color.c = 0xffffffff;
 }
 
-/*-----------------------------------------------
-	priestess_delta_alpha
------------------------------------------------*/
-
-void priestess_delta_alpha( edict_t *self, float amount )
+void priestess_delta_alpha(edict_t* self, float amount)
 {
-	if (self->s.color.a + amount > 255)
-		self->s.color.a = 255;
-	else if (self->s.color.a + amount < 0)
-		self->s.color.a = 0;
-	else
-		self->s.color.a += amount;
+	const int alpha = self->s.color.a + (int)amount;
+	self->s.color.a = (byte)ClampI(alpha, 0, 255);
 }
 
 /*-----------------------------------------------
