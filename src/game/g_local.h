@@ -456,7 +456,13 @@ typedef struct
 	float chase_finished;	// When the monster can look for secondary monsters.
 
 	vec3_t saved_goal;
-	float search_time;
+
+	union
+	{
+		float search_time;
+		float priestess_attack_delay; //mxd
+	};
+	
 	float misc_debounce_time;
 	vec3_t last_sighting;
 	int attack_state;

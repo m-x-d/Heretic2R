@@ -690,9 +690,9 @@ void priestess_fire1(edict_t* self, float pitch_offset, float yaw_offset, float 
 
 void priestess_attack1_pause(edict_t* self)
 {
-	self->monsterinfo.search_time -= 1.0f; //TODO: add priestess_attack_delay name?
+	self->monsterinfo.priestess_attack_delay -= 1.0f;
 
-	if (self->monsterinfo.search_time <= 0.0f)
+	if (self->monsterinfo.priestess_attack_delay <= 0.0f)
 		priestess_pause(self);
 }
 
@@ -756,18 +756,18 @@ void priestess_attack3_loop_fire(edict_t* self)
 	switch (self->monsterinfo.attack_state)
 	{
 		case AS_QUEENS_FURY:
-			if (self->monsterinfo.search_time < level.time)
+			if (self->monsterinfo.priestess_attack_delay < level.time)
 			{
 				PriestessFire2(self);
-				self->monsterinfo.search_time = level.time + 0.25f;
+				self->monsterinfo.priestess_attack_delay = level.time + 0.25f;
 			}
 			break;
 
 		case AS_BROODS_SACRIFICE:
-			if (self->monsterinfo.search_time < level.time)
+			if (self->monsterinfo.priestess_attack_delay < level.time)
 			{
 				PriestessFire3(self);
-				self->monsterinfo.search_time = level.time + 0.15f;
+				self->monsterinfo.priestess_attack_delay = level.time + 0.15f;
 			}
 			break;
 
@@ -962,7 +962,7 @@ void priestess_pause(edict_t* self)
 	}
 	else if (chance < 40 && self->monsterinfo.attack_state != AS_LIGHT_MISSILE)
 	{
-		self->monsterinfo.search_time = 2.0f;
+		self->monsterinfo.priestess_attack_delay = 2.0f; //TODO: same var is used for different purpose in priestess_attack3_loop_fire(). Use different var?
 		self->monsterinfo.attack_state = AS_LIGHT_MISSILE;
 		SetAnim(self, ANIM_ATTACK1_GO);
 	}
