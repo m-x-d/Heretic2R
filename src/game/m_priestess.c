@@ -840,92 +840,65 @@ void priestess_jump_back(edict_t* self)
 	VectorCopy(forward, self->velocity);
 }
 
-/*-----------------------------------------------
-	priestess_pause
------------------------------------------------*/
-
-void priestess_pause( edict_t *self )
+void priestess_pause(edict_t* self)
 {
-	qboolean	clear_LOS;
-	float		len;
-	int			chance;
-
-	chance = irand(0,100);
-
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		len = M_DistanceToTarget(self, self->enemy);
-
-		clear_LOS = AI_IsVisible(self, self->enemy);
-
-		if (!clear_LOS && chance < 75)
-		{
-			SetAnim(self, ANIM_SHIELD_GO);
-			return;
-		}
-
-		chance = irand(0,100);
-
-		if (len < 64)
-		{
-			if (chance < 20)
-				SetAnim(self, ANIM_ATTACK2);
-			else if (chance < 40)
-				SetAnim(self, ANIM_BACKUP);
-			else
-				SetAnim(self, ANIM_JUMP_BACK);
-		}
-		else
-		{
-			if (chance < 40 && self->monsterinfo.jump_time < level.time)
-			{
-				SetAnim(self, ANIM_ATTACK3_GO);
-			}
-			else if (chance < 40 && self->monsterinfo.attack_state != AS_LIGHT_MISSILE)
-			{
-				self->monsterinfo.search_time = 2;
-				self->monsterinfo.attack_state = AS_LIGHT_MISSILE;
-				SetAnim(self, ANIM_ATTACK1_GO);
-			}
-			else if (chance < 80 && self->monsterinfo.attack_state != AS_POUNCE)
-			{
-				self->monsterinfo.attack_state = AS_POUNCE;
-				
-				if (len > 256)
-					SetAnim(self, ANIM_JUMP_POUNCE);
-				else
-					SetAnim(self, ANIM_JUMP_ATTACK);
-			}
-			else if (chance < 90 && self->monsterinfo.attack_finished < level.time)
-			{
-				SetAnim(self, ANIM_SHIELD_GO);
-				self->monsterinfo.attack_finished = level.time + 5;
-			}
-			else if (self->monsterinfo.attack_state != AS_JUMP_RIGHT)
-			{
-				self->monsterinfo.attack_state = AS_JUMP_RIGHT;
-				SetAnim(self, ANIM_JUMP_RIGHT);
-			}
-			else 
-			{
-				self->monsterinfo.attack_state = AS_JUMP_LEFT;
-				SetAnim(self, ANIM_JUMP_LEFT);
-			}
-		}
-
-		//SetAnim(self, ANIM_SHIELD_GO);
-		//self->monsterinfo.attack_state = AS_LIGHT_MISSILE;
-		//self->monsterinfo.search_time = 2;
-		//SetAnim(self, ANIM_STAND1);
-		//SetAnim(self, ANIM_ATTACK3_GO);
-		//SetAnim(self, ANIM_ATTACK1_GO);
-		//SetAnim(self, ANIM_JUMP_ATTACK);
-		//SetAnim(self, ANIM_JUMP_POUNCE);
-		 
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	if (!AI_IsVisible(self, self->enemy) && irand(0, 100) < 75)
+	{
+		SetAnim(self, ANIM_SHIELD_GO);
+		return;
+	}
+
+	const float dist = M_DistanceToTarget(self, self->enemy);
+	const int chance = irand(0, 100);
+
+	if (dist < 64.0f)
+	{
+		if (chance < 20)
+			SetAnim(self, ANIM_ATTACK2);
+		else if (chance < 40)
+			SetAnim(self, ANIM_BACKUP);
+		else
+			SetAnim(self, ANIM_JUMP_BACK);
+
+		return;
+	}
+
+	if (chance < 40 && self->monsterinfo.jump_time < level.time)
+	{
+		SetAnim(self, ANIM_ATTACK3_GO);
+	}
+	else if (chance < 40 && self->monsterinfo.attack_state != AS_LIGHT_MISSILE)
+	{
+		self->monsterinfo.search_time = 2.0f;
+		self->monsterinfo.attack_state = AS_LIGHT_MISSILE;
+		SetAnim(self, ANIM_ATTACK1_GO);
+	}
+	else if (chance < 80 && self->monsterinfo.attack_state != AS_POUNCE)
+	{
+		self->monsterinfo.attack_state = AS_POUNCE;
+		SetAnim(self, ((dist > 256.0f) ? ANIM_JUMP_POUNCE : ANIM_JUMP_ATTACK));
+	}
+	else if (chance < 90 && self->monsterinfo.attack_finished < level.time)
+	{
+		SetAnim(self, ANIM_SHIELD_GO);
+		self->monsterinfo.attack_finished = level.time + 5.0f;
+	}
+	else if (self->monsterinfo.attack_state != AS_JUMP_RIGHT)
+	{
+		self->monsterinfo.attack_state = AS_JUMP_RIGHT;
+		SetAnim(self, ANIM_JUMP_RIGHT);
+	}
+	else
+	{
+		self->monsterinfo.attack_state = AS_JUMP_LEFT;
+		SetAnim(self, ANIM_JUMP_LEFT);
+	}
 }
 
 /*-----------------------------------------------
