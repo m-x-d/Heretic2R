@@ -733,34 +733,10 @@ void priestess_jump_attack(edict_t* self)
 	VectorCopy(jump_vel, self->velocity);
 }
 
-void priestess_pounce ( edict_t *self )
+void priestess_pounce(edict_t* self)
 {
-	vec3_t	predPos, jumpVel;
-	float	jumpDist, moveDist, hopDist;
-
-	if (!self->enemy)
-		return;
-
-	//Find out where the player will be when we would probably land
-	M_PredictTargetPosition( self->enemy, self->enemy->velocity, PRIESTESS_JUMP_FRAMES+2, predPos);
-
-	//Find the vector to that spot and the length
-	VectorSubtract(predPos, self->s.origin, jumpVel);
-	moveDist = VectorNormalize(jumpVel);
-	
-	//Velocity is applied per tenth of a frame, so take the distance, divide by the number of frames in the air, and FRAMETIME
-	jumpDist = ( moveDist * PRIESTESS_JUMP_FRAMES ) * FRAMETIME;
-
-	//Now get the height to keep her in the air long enough to complete this jump
-	hopDist = ( PRIESTESS_HOP_DISTANCE + ( ( sv_gravity->value * PRIESTESS_JUMP_FRAMES ) / 4 ) ) * FRAMETIME;
-	
-	//Setup the vector for the jump
-	VectorScale( jumpVel, jumpDist, jumpVel );
-	jumpVel[2] = hopDist;
-
-	//Set her in motion
-	VectorCopy( jumpVel, self->velocity );
-//	self->groundentity = NULL;
+	if (self->enemy != NULL)
+		priestess_jump_attack(self); //mxd. Reuse existing logic.
 }
 
 /*-----------------------------------------------
