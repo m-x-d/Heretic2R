@@ -302,28 +302,14 @@ void rat_standorder(edict_t* self) //TODO: rename to rat_stand_order.
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
-void rat_pause (edict_t *self)
+void rat_pause(edict_t* self)
 {
-	float	len;
-
-	if (M_ValidTarget(self, self->enemy))
-	{
-		len = M_DistanceToTarget(self, self->enemy);
-
-		// Far enough to run after
-		if ((len > 60) || (self->monsterinfo.aiflags & AI_FLEE))
-		{
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-		}
-		else	// Close enough to Attack 
-		{
-			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-		}
-		
-		return;
-	}
-
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	if (!M_ValidTarget(self, self->enemy))
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	else if (M_DistanceToTarget(self, self->enemy) > 60.0f || (self->monsterinfo.aiflags & AI_FLEE)) // Far enough to run after.
+		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+	else // Close enough to attack.
+		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 }
 
 void ratjump(edict_t *self)
