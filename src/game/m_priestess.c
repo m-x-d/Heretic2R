@@ -693,31 +693,19 @@ void priestess_attack3_loop_fire(edict_t* self)
 	}
 }
 
-/*-----------------------------------------------
-	priestess_pounce_attack
------------------------------------------------*/
-
-void priestess_pounce_attack ( edict_t *self )
+void priestess_pounce_attack(edict_t* self)
 {
-	float len;
+	if (!M_ValidTarget(self, self->enemy))
+		return;
 
-	if (M_ValidTarget(self, self->enemy))
-	{
-		len = M_DistanceToTarget(self, self->enemy);
+	const float dist = M_DistanceToTarget(self, self->enemy);
 
-		if (len < 64)
-		{
-			SetAnim(self, ANIM_POUNCE_ATTACK);
-		}
-		else if (len < 128)
-		{
-			SetAnim(self, ANIM_ATTACK2);
-		}
-		else
-		{
-			priestess_pause(self);
-		}
-	}
+	if (dist < 64.0f)
+		SetAnim(self, ANIM_POUNCE_ATTACK);
+	else if (dist < 128.0f)
+		SetAnim(self, ANIM_ATTACK2);
+	else
+		priestess_pause(self);
 }
 
 /*-----------------------------------------------
