@@ -78,21 +78,10 @@ void priestess_teleport_go(edict_t* self)
 	gi.CreateEffect(NULL, FX_HP_MISSILE, 0, self->s.origin, "vb", self->s.origin, HPTELEPORT_START);
 }
 
-/*-----------------------------------------------
-	priestess_teleport_end
------------------------------------------------*/
-
-void priestess_teleport_end ( edict_t *self )
+void priestess_teleport_end(edict_t* self)
 {
-	gi.sound (self, CHAN_AUTO, sounds[SND_TPORT_IN], 1, ATTN_NORM, 0);
-
-	gi.CreateEffect(NULL,
-				FX_HP_MISSILE,
-				0,
-				self->s.origin,
-				"vb",
-				self->s.origin,
-				HPTELEPORT_END);
+	gi.sound(self, CHAN_AUTO, sounds[SND_TPORT_IN], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(NULL, FX_HP_MISSILE, 0, self->s.origin, "vb", self->s.origin, HPTELEPORT_END);
 }
 
 /*-----------------------------------------------
