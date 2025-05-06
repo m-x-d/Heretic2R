@@ -17,8 +17,6 @@
 #include "Vector.h"
 #include "g_local.h"
 
-static void PriestessProjectileInit(const edict_t* self, edict_t* proj); //TODO: remove.
-
 // Number of frames the priestess is in the air.
 #define PRIESTESS_JUMP_FRAMES	10.0f //mxd. Named 'PRIESTESS_JUMPFRAMES' in original logic.
 #define PRIESTESS_HOP_DISTANCE	0.0f //mxd. Named 'PRIESTESS_HOPDIST' in original logic.
@@ -71,130 +69,236 @@ enum HighPriestessAttackStates_e
 
 #pragma endregion
 
-void priestess_teleport_go(edict_t* self)
+#pragma region ========================== Utility functions =========================
+
+// Create the guts of the high priestess projectile.
+static void PriestessProjectileInit(const edict_t* self, edict_t* proj) //mxd. Named 'create_priestess_proj' in original logic.
 {
-	self->takedamage = DAMAGE_NO;
-	gi.sound(self, CHAN_AUTO, sounds[SND_TPORT_OUT], 1.0f, ATTN_NORM, 0.0f);
-	gi.CreateEffect(NULL, FX_HP_MISSILE, 0, self->s.origin, "vb", self->s.origin, HPTELEPORT_START);
+	proj->svflags |= SVF_ALWAYS_SEND;
+	proj->movetype = PHYSICSTYPE_FLY;
+	proj->gravity = 0.0f;
+	proj->solid = SOLID_BBOX;
+	proj->classname = "HPriestess_Missile";
+	proj->dmg = 1; //TODO: not needed?
+	proj->s.scale = 1.0f;
+	proj->clipmask = MASK_SHOT;
+	proj->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+	proj->bounced = PriestessProjectile1Blocked;
+	proj->isBlocking = PriestessProjectile1Blocked;
+	proj->isBlocked = PriestessProjectile1Blocked;
+
+	proj->s.effects = (EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
+	proj->enemy = self->enemy;
+
+	VectorSet(proj->mins, -2.0f, -2.0f, -2.0f);
+	VectorSet(proj->maxs, 2.0f, 2.0f, 2.0f);
+	VectorCopy(self->s.origin, proj->s.origin);
 }
 
-void priestess_teleport_end(edict_t* self)
+// Tracking, anime style missiles.
+static void PriestessFire2(edict_t* self) //mxd. Named 'priestess_fire2' in original logic.
 {
-	gi.sound(self, CHAN_AUTO, sounds[SND_TPORT_IN], 1.0f, ATTN_NORM, 0.0f);
-	gi.CreateEffect(NULL, FX_HP_MISSILE, 0, self->s.origin, "vb", self->s.origin, HPTELEPORT_END);
-}
+	// Spawn the projectile.
+	edict_t* proj = G_Spawn();
 
-void priestess_teleport_move(edict_t* self)
-{
-	const vec3_t mins = { -24.0f, -24.0f, -36.0f };
-	const vec3_t maxs = { 24.0f, 24.0f, 36.0f }; //BUGFIX: mxd. Same as mins in original logic.
+	PriestessProjectileInit(self, proj);
 
-	float best_dist = FLT_MAX; //mxd. 9999999 in original logic.
+	proj->monsterinfo.attack_state = AS_QUEENS_FURY;
+	proj->monsterinfo.attack_finished = level.time + 2.0f;
+	proj->owner = self;
 
-	edict_t* path_corner = NULL;
-	const edict_t* best_corner = NULL;
-	while ((path_corner = G_Find(path_corner, FOFS(classname), "path_corner")) != NULL)
-	{
-		if (Q_stricmp(path_corner->targetname, "priestess") != 0) //mxd. stricmp -> Q_stricmp.
-			continue;
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-		const float enemy_dist = vhlen(self->enemy->s.origin, path_corner->s.origin);
-		const float start_dist = vhlen(self->s.origin, path_corner->s.origin);
+	VectorCopy(self->s.origin, proj->s.origin);
 
-		if (enemy_dist < 64.0f || start_dist < 64.0f || enemy_dist >= best_dist || !AI_IsVisible(path_corner, self->enemy))
-			continue;
+	VectorMA(self->s.origin, 30.0f, forward, proj->s.origin);
+	VectorMA(proj->s.origin, 8.0f, right, proj->s.origin);
+	proj->s.origin[2] += 56.0f;
 
-		vec3_t test_pos;
-		VectorCopy(path_corner->s.origin, test_pos);
-		test_pos[2] += maxs[2];
+	proj->ideal_yaw = 400.0f;
 
-		trace_t	trace;
-		gi.trace(test_pos, mins, maxs, test_pos, self, MASK_MONSTERSOLID, &trace);
+	VectorScale(forward, proj->ideal_yaw, proj->velocity);
+	vectoangles(proj->velocity, proj->s.angles);
 
-		if (trace.startsolid || trace.allsolid)
-			continue;
-
-		if (trace.ent != NULL && Q_stricmp(trace.ent->classname, "player") == 0) //mxd. stricmp -> Q_stricmp.
-			continue;
-
-		best_dist = enemy_dist;
-		best_corner = path_corner;
-	}
-
-	if (best_corner != NULL)
-	{
-		// ULTRA HACK!
-		VectorCopy(best_corner->s.origin, self->monsterinfo.nav_goal);
-		self->s.origin[0] += 2000.0f; //TODO: is there better way to hide her?..
-		gi.linkentity(self);
-
-		// Spawn a fake entity to sit where the priestess will teleport to assure there's no telefragging.
-		edict_t* blocker = G_Spawn();
-
-		VectorCopy(mins, blocker->mins);
-		VectorCopy(maxs, blocker->maxs);
-
-		blocker->solid = SOLID_BBOX;
-		blocker->movetype = PHYSICSTYPE_NONE;
-
-		//TODO: if the player touches this entity somehow, he's thrown back.
-		self->movetarget = blocker; //TODO: add priestess_teleport_blocker name.
-
-		gi.linkentity(blocker);
-	}
+	if (irand(0, 15) == 0) // 6.25% chance to fire drunken missile.
+		proj->think = PriestessProjectile1DrunkenThink;
 	else
+		proj->think = PriestessProjectile1Think;
+
+	gi.sound(self, CHAN_AUTO, sounds[SND_HOMINGATK], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&proj->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, proj->s.origin, "vb", proj->s.origin, HPMISSILE1);
+	gi.linkentity(proj);
+}
+
+// The light bugs.
+static void PriestessFire3(edict_t* self) //mxd. Named 'priestess_fire3' in original logic.
+{
+	// Spawn the projectile.
+	edict_t* proj = G_Spawn();
+
+	PriestessProjectileInit(self, proj);
+
+	proj->takedamage = DAMAGE_YES;
+	proj->monsterinfo.attack_state = AS_BROODS_SACRIFICE;
+	proj->monsterinfo.attack_finished = level.time + 5.0f;
+	proj->owner = self;
+
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+	VectorNormalize(forward);
+
+	VectorCopy(self->s.origin, proj->s.origin);
+
+	VectorMA(self->s.origin, 30.0f, forward, proj->s.origin);
+	VectorMA(proj->s.origin, 8.0f, right, proj->s.origin);
+	proj->s.origin[2] += 56.0f;
+
+	const float dist = M_DistanceToTarget(self, self->enemy) / 200.0f;
+
+	proj->ideal_yaw = flrand(dist * 500.0f, dist * 750.0f); //mxd. irand() in original logic.
+	proj->missile_range = flrand(0.65f, 0.75f);
+
+	vec3_t dir;
+	VectorSubtract(self->enemy->s.origin, proj->s.origin, dir);
+	VectorNormalize(dir);
+
+	vec3_t angles;
+	vectoangles(dir, angles);
+
+	angles[PITCH] *= -1.0f;
+	angles[PITCH] += flrand(-10.0f, 5.0f); //mxd. irand() in original logic.
+	angles[YAW] += flrand(-35.0f, 35.0f); //mxd. irand() in original logic.
+
+	AngleVectors(angles, forward, NULL, NULL);
+	VectorScale(forward, proj->ideal_yaw, proj->velocity);
+	vectoangles(proj->velocity, proj->s.angles);
+
+	proj->die = PriestessProjectile2Die;
+	proj->think = PriestessProjectile2Think;
+
+	gi.sound(self, CHAN_AUTO, sounds[SND_BUGS], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&proj->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, proj->s.origin, "vb", proj->velocity, HPMISSILE3);
+	gi.linkentity(proj);
+}
+
+// Big special light show of doom and chaos and destruction... or something...
+static void PriestessFire4(edict_t* self) //mxd. Named 'priestess_fire4' in original logic.
+{
+	if (self->monsterinfo.sound_finished < level.time)
 	{
-		SetAnim(self, ANIM_SHIELD_END);
+		gi.sound(self, CHAN_AUTO, sounds[SND_ZAP], 1.0f, ATTN_NORM, 0.0f);
+		self->monsterinfo.sound_finished = level.time + 5.0f;
+	}
+
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+
+	vec3_t start_pos;
+	VectorCopy(self->s.origin, start_pos);
+
+	VectorMA(self->s.origin, 30.0f, forward, start_pos);
+	VectorMA(start_pos, 8.0f, right, start_pos);
+	start_pos[2] += 56.0f;
+
+	// The 5 to 8 effects are spawn on the other side, no reason to send each one.
+	gi.CreateEffect(NULL, FX_HP_MISSILE, 0, start_pos, "vb", start_pos, HPMISSILE4);
+
+	if (self->monsterinfo.misc_debounce_time < level.time)
+	{
+		vec3_t dir;
+		VectorSubtract(self->enemy->s.origin, start_pos, dir);
+		const float dist = VectorNormalize(dir);
+
+		vec3_t end_pos;
+		VectorMA(start_pos, dist, dir, end_pos);
+
+		const vec3_t mins = { -1.0f, -1.0f, -1.0f };
+		const vec3_t maxs = { 1.0f,  1.0f,  1.0f };
+
+		trace_t trace;
+		gi.trace(start_pos, mins, maxs, end_pos, self, MASK_SHOT, &trace);
+
+		if (trace.ent == self->enemy)
+		{
+			const int damage = irand(HP_DMG_FIRE_MIN, HP_DMG_FIRE_MAX);
+			T_Damage(trace.ent, self, self, dir, trace.endpos, trace.plane.normal, damage, 0, DAMAGE_DISMEMBER, MOD_DIED);
+
+			gi.sound(self, CHAN_AUTO, sounds[SND_ZAPHIT], 1.0f, ATTN_NORM, 0.0f);
+		}
+
+		gi.CreateEffect(NULL, FX_HP_MISSILE, 0, start_pos, "vb", trace.endpos, HPMISSILE5);
+		self->monsterinfo.misc_debounce_time = level.time + flrand(0.2f, 0.4f);
 	}
 }
 
-void priestess_teleport_self_effects(edict_t* self)
+#pragma endregion
+
+#pragma region ========================== Message handlers ==========================
+
+static void PriestessDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_death' in original logic.
 {
-	self->s.renderfx |= RF_ALPHA_TEXTURE;
-	self->s.color.c = 0xffffffff;
-}
+	self->msgHandler = DeadMsgHandler;
 
-void priestess_delta_alpha(edict_t* self, float amount)
-{
-	const int alpha = self->s.color.a + (int)amount;
-	self->s.color.a = (byte)ClampI(alpha, 0, 255);
-}
-
-void priestess_stop_alpha(edict_t* self)
-{
-	self->takedamage = DAMAGE_YES;
-	self->s.renderfx &= ~RF_ALPHA_TEXTURE;
-	self->s.color.c = 0xffffffff;
-}
-
-void priestess_teleport_return(edict_t* self)
-{
-	if (self->movetarget != NULL && self->movetarget != self->enemy) // Free the teleport blocker entity.
-		G_FreeEdict(self->movetarget);
-
-	vec3_t start;
-	VectorCopy(self->monsterinfo.nav_goal, start);
-	start[2] += 36.0f;
-
-	vec3_t end;
-	VectorCopy(self->monsterinfo.nav_goal, end);
-	end[2] -= 128.0f;
-
-	trace_t trace;
-	gi.trace(start, self->mins, self->maxs, end, self, MASK_MONSTERSOLID, &trace);
-
-	if (trace.allsolid || trace.startsolid)
-	{
-		// The priestess has become lodged in something!
-		assert(0); //TODO: handle this... somehow. Try picking different path corner?
+	if (self->dead_state == DEAD_DEAD)
 		return;
-	}
 
-	VectorCopy(trace.endpos, self->s.origin);
-	gi.linkentity(self);
+	self->dead_state = DEAD_DEAD;
+	self->takedamage = DAMAGE_NO;
 
-	SetAnim(self, ANIM_SHIELD_END);
+	self->dmg = 0;
+	self->health = 0;
+	self->max_health = 0;
+
+	M_ShowLifeMeter(0, 0);
+	SetAnim(self, ANIM_DEATH);
 }
+
+static void PriestessEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_evade' in original logic.
+{
+	SetAnim(self, irand(ANIM_DODGE_LEFT, ANIM_DODGE_RIGHT));
+}
+
+static void PriestessStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_stand' in original logic.
+{
+	SetAnim(self, ANIM_STAND1);
+}
+
+static void PriestessMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_missile' in original logic.
+{
+	SetAnim(self, ANIM_ATTACK2);
+}
+
+static void PriestessRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_run' in original logic.
+{
+	SetAnim(self, ANIM_WALK);
+}
+
+static void PriestessPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_pain' in original logic.
+{
+	int	temp;
+	int damage;
+	int force_pain;
+	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
+
+	if (self->curAnimID == ANIM_ATTACK3_GO || self->curAnimID == ANIM_ATTACK3_LOOP || self->curAnimID == ANIM_SHIELD_GO)
+		return;
+
+	// Weighted random based on health compared to the maximum it was at.
+	if (force_pain || ((irand(0, self->max_health + 50) > self->health) && irand(0, 2) == 0))
+	{
+		gi.sound(self, CHAN_AUTO, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
+		SetAnim(self, ANIM_PAIN);
+	}
+}
+
+#pragma endregion
+
+#pragma region ========================== Edict callbacks ===========================
 
 static void PriestessProjectile1DrunkenThink(edict_t* self) //mxd. Named 'priestess_proj1_drunken' in original logic.
 {
@@ -376,29 +480,152 @@ static void PriestessProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Na
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-// Create the guts of the high priestess projectile.
-static void PriestessProjectileInit(const edict_t* self, edict_t* proj) //mxd. Named 'create_priestess_proj' in original logic.
+static void PriestessPostThink(edict_t* self) //mxd. Named 'priestess_postthink' in original logic.
 {
-	proj->svflags |= SVF_ALWAYS_SEND;
-	proj->movetype = PHYSICSTYPE_FLY;
-	proj->gravity = 0.0f;
-	proj->solid = SOLID_BBOX;
-	proj->classname = "HPriestess_Missile";
-	proj->dmg = 1; //TODO: not needed?
-	proj->s.scale = 1.0f;
-	proj->clipmask = MASK_SHOT;
-	proj->nextthink = level.time + FRAMETIME; //mxd. Use define.
+	// Only display a lifemeter if we have an enemy.
+	if (self->enemy != NULL)
+	{
+		if (self->dmg < self->max_health)
+		{
+			M_ShowLifeMeter(self->dmg, self->dmg);
+			self->dmg += 50; //TODO: add int priestess_healthbar_buildup name.
+		}
+		else
+		{
+			M_ShowLifeMeter(self->health, self->max_health);
+		}
+	}
 
-	proj->bounced = PriestessProjectile1Blocked;
-	proj->isBlocking = PriestessProjectile1Blocked;
-	proj->isBlocked = PriestessProjectile1Blocked;
+	self->next_post_think = level.time + 0.05f;
+}
 
-	proj->s.effects = (EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
-	proj->enemy = self->enemy;
+#pragma endregion
 
-	VectorSet(proj->mins, -2.0f, -2.0f, -2.0f);
-	VectorSet(proj->maxs,  2.0f,  2.0f,  2.0f);
-	VectorCopy(self->s.origin, proj->s.origin);
+#pragma region ========================== Action functions ==========================
+
+void priestess_teleport_go(edict_t* self)
+{
+	self->takedamage = DAMAGE_NO;
+	gi.sound(self, CHAN_AUTO, sounds[SND_TPORT_OUT], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(NULL, FX_HP_MISSILE, 0, self->s.origin, "vb", self->s.origin, HPTELEPORT_START);
+}
+
+void priestess_teleport_end(edict_t* self)
+{
+	gi.sound(self, CHAN_AUTO, sounds[SND_TPORT_IN], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(NULL, FX_HP_MISSILE, 0, self->s.origin, "vb", self->s.origin, HPTELEPORT_END);
+}
+
+void priestess_teleport_move(edict_t* self)
+{
+	const vec3_t mins = { -24.0f, -24.0f, -36.0f };
+	const vec3_t maxs = { 24.0f, 24.0f, 36.0f }; //BUGFIX: mxd. Same as mins in original logic.
+
+	float best_dist = FLT_MAX; //mxd. 9999999 in original logic.
+
+	edict_t* path_corner = NULL;
+	const edict_t* best_corner = NULL;
+	while ((path_corner = G_Find(path_corner, FOFS(classname), "path_corner")) != NULL)
+	{
+		if (Q_stricmp(path_corner->targetname, "priestess") != 0) //mxd. stricmp -> Q_stricmp.
+			continue;
+
+		const float enemy_dist = vhlen(self->enemy->s.origin, path_corner->s.origin);
+		const float start_dist = vhlen(self->s.origin, path_corner->s.origin);
+
+		if (enemy_dist < 64.0f || start_dist < 64.0f || enemy_dist >= best_dist || !AI_IsVisible(path_corner, self->enemy))
+			continue;
+
+		vec3_t test_pos;
+		VectorCopy(path_corner->s.origin, test_pos);
+		test_pos[2] += maxs[2];
+
+		trace_t	trace;
+		gi.trace(test_pos, mins, maxs, test_pos, self, MASK_MONSTERSOLID, &trace);
+
+		if (trace.startsolid || trace.allsolid)
+			continue;
+
+		if (trace.ent != NULL && Q_stricmp(trace.ent->classname, "player") == 0) //mxd. stricmp -> Q_stricmp.
+			continue;
+
+		best_dist = enemy_dist;
+		best_corner = path_corner;
+	}
+
+	if (best_corner != NULL)
+	{
+		// ULTRA HACK!
+		VectorCopy(best_corner->s.origin, self->monsterinfo.nav_goal);
+		self->s.origin[0] += 2000.0f; //TODO: is there better way to hide her?..
+		gi.linkentity(self);
+
+		// Spawn a fake entity to sit where the priestess will teleport to assure there's no telefragging.
+		edict_t* blocker = G_Spawn();
+
+		VectorCopy(mins, blocker->mins);
+		VectorCopy(maxs, blocker->maxs);
+
+		blocker->solid = SOLID_BBOX;
+		blocker->movetype = PHYSICSTYPE_NONE;
+
+		//TODO: if the player touches this entity somehow, he's thrown back.
+		self->movetarget = blocker; //TODO: add priestess_teleport_blocker name.
+
+		gi.linkentity(blocker);
+	}
+	else
+	{
+		SetAnim(self, ANIM_SHIELD_END);
+	}
+}
+
+void priestess_teleport_self_effects(edict_t* self)
+{
+	self->s.renderfx |= RF_ALPHA_TEXTURE;
+	self->s.color.c = 0xffffffff;
+}
+
+void priestess_delta_alpha(edict_t* self, float amount)
+{
+	const int alpha = self->s.color.a + (int)amount;
+	self->s.color.a = (byte)ClampI(alpha, 0, 255);
+}
+
+void priestess_stop_alpha(edict_t* self)
+{
+	self->takedamage = DAMAGE_YES;
+	self->s.renderfx &= ~RF_ALPHA_TEXTURE;
+	self->s.color.c = 0xffffffff;
+}
+
+void priestess_teleport_return(edict_t* self)
+{
+	if (self->movetarget != NULL && self->movetarget != self->enemy) // Free the teleport blocker entity.
+		G_FreeEdict(self->movetarget);
+
+	vec3_t start;
+	VectorCopy(self->monsterinfo.nav_goal, start);
+	start[2] += 36.0f;
+
+	vec3_t end;
+	VectorCopy(self->monsterinfo.nav_goal, end);
+	end[2] -= 128.0f;
+
+	trace_t trace;
+	gi.trace(start, self->mins, self->maxs, end, self, MASK_MONSTERSOLID, &trace);
+
+	if (trace.allsolid || trace.startsolid)
+	{
+		// The priestess has become lodged in something!
+		assert(0); //TODO: handle this... somehow. Try picking different path corner?
+		return;
+	}
+
+	VectorCopy(trace.endpos, self->s.origin);
+	gi.linkentity(self);
+
+	SetAnim(self, ANIM_SHIELD_END);
 }
 
 // Hand thrown light missiles.
@@ -458,146 +685,6 @@ void priestess_fire1(edict_t* self, float pitch_offset, float yaw_offset, float 
 		gi.sound(self, CHAN_AUTO, sounds[SND_3BALLATK], 1.0f, ATTN_NORM, 0.0f);
 		gi.CreateEffect(&proj->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, NULL, "vb", proj->velocity, HPMISSILE2);
 		gi.linkentity(proj);
-	}
-}
-
-// Tracking, anime style missiles.
-static void PriestessFire2(edict_t* self) //mxd. Named 'priestess_fire2' in original logic.
-{
-	// Spawn the projectile.
-	edict_t* proj = G_Spawn();
-
-	PriestessProjectileInit(self, proj);
-
-	proj->monsterinfo.attack_state = AS_QUEENS_FURY;
-	proj->monsterinfo.attack_finished = level.time + 2.0f;
-	proj->owner = self;
-
-	vec3_t forward;
-	vec3_t right;
-	AngleVectors(self->s.angles, forward, right, NULL);
-
-	VectorCopy(self->s.origin, proj->s.origin);
-
-	VectorMA(self->s.origin, 30.0f, forward, proj->s.origin);
-	VectorMA(proj->s.origin, 8.0f, right, proj->s.origin);
-	proj->s.origin[2] += 56.0f;
-
-	proj->ideal_yaw = 400.0f;
-
-	VectorScale(forward, proj->ideal_yaw, proj->velocity);
-	vectoangles(proj->velocity, proj->s.angles);
-
-	if (irand(0, 15) == 0) // 6.25% chance to fire drunken missile.
-		proj->think = PriestessProjectile1DrunkenThink;
-	else
-		proj->think = PriestessProjectile1Think;
-
-	gi.sound(self, CHAN_AUTO, sounds[SND_HOMINGATK], 1.0f, ATTN_NORM, 0.0f);
-	gi.CreateEffect(&proj->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, proj->s.origin, "vb", proj->s.origin, HPMISSILE1);
-	gi.linkentity(proj);
-}
-
-// The light bugs.
-static void PriestessFire3(edict_t* self) //mxd. Named 'priestess_fire3' in original logic.
-{
-	// Spawn the projectile.
-	edict_t* proj = G_Spawn();
-
-	PriestessProjectileInit(self, proj);
-
-	proj->takedamage = DAMAGE_YES;
-	proj->monsterinfo.attack_state = AS_BROODS_SACRIFICE;
-	proj->monsterinfo.attack_finished = level.time + 5.0f;
-	proj->owner = self;
-
-	vec3_t forward;
-	vec3_t right;
-	AngleVectors(self->s.angles, forward, right, NULL);
-	VectorNormalize(forward);
-
-	VectorCopy(self->s.origin, proj->s.origin);
-
-	VectorMA(self->s.origin, 30.0f, forward, proj->s.origin);
-	VectorMA(proj->s.origin, 8.0f, right, proj->s.origin);
-	proj->s.origin[2] += 56.0f;
-
-	const float dist = M_DistanceToTarget(self, self->enemy) / 200.0f;
-
-	proj->ideal_yaw = flrand(dist * 500.0f, dist * 750.0f); //mxd. irand() in original logic.
-	proj->missile_range = flrand(0.65f, 0.75f);
-
-	vec3_t dir;
-	VectorSubtract(self->enemy->s.origin, proj->s.origin, dir);
-	VectorNormalize(dir);
-
-	vec3_t angles;
-	vectoangles(dir, angles);
-
-	angles[PITCH] *= -1.0f;
-	angles[PITCH] += flrand(-10.0f, 5.0f); //mxd. irand() in original logic.
-	angles[YAW] += flrand(-35.0f, 35.0f); //mxd. irand() in original logic.
-
-	AngleVectors(angles, forward, NULL, NULL);
-	VectorScale(forward, proj->ideal_yaw, proj->velocity);
-	vectoangles(proj->velocity, proj->s.angles);
-
-	proj->die = PriestessProjectile2Die;
-	proj->think = PriestessProjectile2Think;
-
-	gi.sound(self, CHAN_AUTO, sounds[SND_BUGS], 1.0f, ATTN_NORM, 0.0f);
-	gi.CreateEffect(&proj->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, proj->s.origin, "vb", proj->velocity, HPMISSILE3);
-	gi.linkentity(proj);
-}
-
-// Big special light show of doom and chaos and destruction... or something...
-static void PriestessFire4(edict_t* self) //mxd. Named 'priestess_fire4' in original logic.
-{
-	if (self->monsterinfo.sound_finished < level.time)
-	{
-		gi.sound(self, CHAN_AUTO, sounds[SND_ZAP], 1.0f, ATTN_NORM, 0.0f);
-		self->monsterinfo.sound_finished = level.time + 5.0f;
-	}
-
-	vec3_t forward;
-	vec3_t right;
-	AngleVectors(self->s.angles, forward, right, NULL);
-
-	vec3_t start_pos;
-	VectorCopy(self->s.origin, start_pos);
-
-	VectorMA(self->s.origin, 30.0f, forward, start_pos);
-	VectorMA(start_pos, 8.0f, right, start_pos);
-	start_pos[2] += 56.0f;
-
-	// The 5 to 8 effects are spawn on the other side, no reason to send each one.
-	gi.CreateEffect(NULL, FX_HP_MISSILE, 0, start_pos, "vb", start_pos, HPMISSILE4);
-
-	if (self->monsterinfo.misc_debounce_time < level.time)
-	{
-		vec3_t dir;
-		VectorSubtract(self->enemy->s.origin, start_pos, dir);
-		const float dist = VectorNormalize(dir);
-
-		vec3_t end_pos;
-		VectorMA(start_pos, dist, dir, end_pos);
-
-		const vec3_t mins = { -1.0f, -1.0f, -1.0f };
-		const vec3_t maxs = {  1.0f,  1.0f,  1.0f };
-
-		trace_t trace;
-		gi.trace(start_pos, mins, maxs, end_pos, self, MASK_SHOT, &trace);
-
-		if (trace.ent == self->enemy)
-		{
-			const int damage = irand(HP_DMG_FIRE_MIN, HP_DMG_FIRE_MAX);
-			T_Damage(trace.ent, self, self, dir, trace.endpos, trace.plane.normal, damage, 0, DAMAGE_DISMEMBER, MOD_DIED);
-
-			gi.sound(self, CHAN_AUTO, sounds[SND_ZAPHIT], 1.0f, ATTN_NORM, 0.0f);
-		}
-
-		gi.CreateEffect(NULL, FX_HP_MISSILE, 0, start_pos, "vb", trace.endpos, HPMISSILE5);
-		self->monsterinfo.misc_debounce_time = level.time + flrand(0.2f, 0.4f);
 	}
 }
 
@@ -923,80 +1010,7 @@ void priestess_dead(edict_t* self)
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void PriestessDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_death' in original logic.
-{
-	self->msgHandler = DeadMsgHandler;
-
-	if (self->dead_state == DEAD_DEAD)
-		return;
-
-	self->dead_state = DEAD_DEAD;
-	self->takedamage = DAMAGE_NO;
-
-	self->dmg = 0;
-	self->health = 0;
-	self->max_health = 0;
-
-	M_ShowLifeMeter(0, 0);
-	SetAnim(self, ANIM_DEATH);
-}
-
-static void PriestessEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_evade' in original logic.
-{
-	SetAnim(self, irand(ANIM_DODGE_LEFT, ANIM_DODGE_RIGHT));
-}
-
-static void PriestessStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_stand' in original logic.
-{
-	SetAnim(self, ANIM_STAND1);
-}
-
-static void PriestessMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_missile' in original logic.
-{
-	SetAnim(self, ANIM_ATTACK2);
-}
-
-static void PriestessRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_run' in original logic.
-{
-	SetAnim(self, ANIM_WALK);
-}
-
-static void PriestessPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_pain' in original logic.
-{
-	int	temp;
-	int damage;
-	int force_pain;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
-
-	if (self->curAnimID == ANIM_ATTACK3_GO || self->curAnimID == ANIM_ATTACK3_LOOP || self->curAnimID == ANIM_SHIELD_GO)
-		return;
-
-	// Weighted random based on health compared to the maximum it was at.
-	if (force_pain || ((irand(0, self->max_health + 50) > self->health) && irand(0, 2) == 0))
-	{
-		gi.sound(self, CHAN_AUTO, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
-		SetAnim(self, ANIM_PAIN);
-	}
-}
-
-static void PriestessPostThink(edict_t* self) //mxd. Named 'priestess_postthink' in original logic.
-{
-	// Only display a lifemeter if we have an enemy.
-	if (self->enemy != NULL)
-	{
-		if (self->dmg < self->max_health)
-		{
-			M_ShowLifeMeter(self->dmg, self->dmg);
-			self->dmg += 50; //TODO: add int priestess_healthbar_buildup name.
-		}
-		else
-		{
-			M_ShowLifeMeter(self->health, self->max_health);
-		}
-	}
-
-	self->next_post_think = level.time + 0.05f;
-}
+#pragma endregion
 
 void HighPriestessStaticsInit(void)
 {
