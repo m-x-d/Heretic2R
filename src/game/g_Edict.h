@@ -160,7 +160,12 @@ struct edict_s
 	float air_finished; // Used by things that can breath (monsters and player).
 
 	edict_t* goalentity; // Used primarily by monsters.
-	edict_t* movetarget; // Used by monsters and poly/triggers.
+
+	union
+	{
+		edict_t* movetarget; // Used by monsters and poly/triggers.
+		edict_t* priestess_teleport_blocker; //mxd
+	};
 
 	float yaw_speed;	// Used by monsters and player.
 	float ideal_yaw;	// Used by monsters and player.

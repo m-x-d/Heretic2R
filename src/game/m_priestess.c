@@ -570,7 +570,7 @@ void priestess_teleport_move(edict_t* self)
 		blocker->movetype = PHYSICSTYPE_NONE;
 
 		//TODO: if the player touches this entity somehow, he's thrown back.
-		self->movetarget = blocker; //TODO: add priestess_teleport_blocker name.
+		self->priestess_teleport_blocker = blocker;
 
 		gi.linkentity(blocker);
 	}
@@ -601,8 +601,8 @@ void priestess_stop_alpha(edict_t* self)
 
 void priestess_teleport_return(edict_t* self)
 {
-	if (self->movetarget != NULL && self->movetarget != self->enemy) // Free the teleport blocker entity.
-		G_FreeEdict(self->movetarget);
+	if (self->priestess_teleport_blocker != NULL && self->movetarget != self->enemy) // Free the teleport blocker entity.
+		G_FreeEdict(self->priestess_teleport_blocker);
 
 	vec3_t start;
 	VectorCopy(self->monsterinfo.nav_goal, start);
