@@ -108,7 +108,7 @@ extern const animmove_t priestess_move_attack3_loop;
 extern const animmove_t priestess_move_attack3_end;
 extern const animmove_t priestess_move_jump_attack;
 
-extern void priestess_fire1(edict_t* self, float pitch_ofs, float yaw_ofs, float roll_ofs);
+extern void priestess_fire1(edict_t* self, float pitch_offset, float yaw_offset, float roll_offset);
 
 extern void priestess_jump_forward(edict_t* self);
 extern void priestess_jump_back(edict_t* self);

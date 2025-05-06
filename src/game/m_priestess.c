@@ -461,64 +461,41 @@ void priestess_fire1(edict_t* self, float pitch_offset, float yaw_offset, float 
 	}
 }
 
-/*-----------------------------------------------
-	priestess_fire2
------------------------------------------------*/
-
-//Tracking, anime style missiles
-void priestess_fire2( edict_t *self, float pitch_ofs, float yaw_ofs, float roll_ofs )
+// Tracking, anime style missiles.
+static void PriestessFire2(edict_t* self) //mxd. Named 'priestess_fire2' in original logic.
 {
-	edict_t	*proj;
-	vec3_t	vf, vr, ang;
+	// Spawn the projectile.
+	edict_t* proj = G_Spawn();
 
-	// Spawn the projectile
-
-	proj = G_Spawn();
-
-	PriestessProjectileInit(self,proj);
+	PriestessProjectileInit(self, proj);
 
 	proj->monsterinfo.attack_state = AS_QUEENS_FURY;
+	proj->monsterinfo.attack_finished = level.time + 2.0f;
 	proj->owner = self;
-	
-	AngleVectors(self->s.angles, vf, vr, NULL);
+
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
 	VectorCopy(self->s.origin, proj->s.origin);
-	
-	VectorMA(self->s.origin, 30, vf, proj->s.origin);
-	VectorMA(proj->s.origin, 8,	 vr, proj->s.origin);
-	proj->s.origin[2] += 56;
 
-	proj->ideal_yaw = 400;
+	VectorMA(self->s.origin, 30.0f, forward, proj->s.origin);
+	VectorMA(proj->s.origin, 8.0f, right, proj->s.origin);
+	proj->s.origin[2] += 56.0f;
 
-	vectoangles( vf, ang );
+	proj->ideal_yaw = 400.0f;
 
-	ang[PITCH] -= irand(   5, 75 );
-	ang[YAW]   += irand( -60, 60 );
-
-	AngleVectors( ang, vf, NULL, NULL );
-
-	VectorScale( vf, proj->ideal_yaw, proj->velocity );
-
-	proj->monsterinfo.attack_finished= level.time + 2;
-
+	VectorScale(forward, proj->ideal_yaw, proj->velocity);
 	vectoangles(proj->velocity, proj->s.angles);
 
-	if (!irand(0,15))
+	if (irand(0, 15) == 0) // 6.25% chance to fire drunken missile.
 		proj->think = PriestessProjectile1DrunkenThink;
 	else
-		proj->think=PriestessProjectile1Think;
+		proj->think = PriestessProjectile1Think;
 
-	gi.sound (self, CHAN_AUTO, sounds[SND_HOMINGATK], 1, ATTN_NORM, 0);
-
-	gi.CreateEffect(&proj->s,
-				FX_HP_MISSILE,
-				CEF_OWNERS_ORIGIN,
-				proj->s.origin,
-				"vb",
-				proj->s.origin,
-				HPMISSILE1);
-
-	gi.linkentity(proj); 
+	gi.sound(self, CHAN_AUTO, sounds[SND_HOMINGATK], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&proj->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, proj->s.origin, "vb", proj->s.origin, HPMISSILE1);
+	gi.linkentity(proj);
 }
 
 /*-----------------------------------------------
@@ -843,7 +820,7 @@ void priestess_attack3_loop_fire ( edict_t *self )
 
 		if (self->monsterinfo.search_time < level.time)
 		{
-			priestess_fire2( self, 0, 0, 0 );
+			PriestessFire2(self);
 			self->monsterinfo.search_time = level.time + 0.25;
 		}
 		break;
