@@ -196,20 +196,10 @@ void priestess_teleport_return(edict_t* self)
 	SetAnim(self, ANIM_SHIELD_END);
 }
 
-/*
-
-	Priestess Projectile Functions
-
-*/
-
-/*-----------------------------------------------
-	priestess_proj1_drunken
------------------------------------------------*/
-void priestess_proj1_drunken( edict_t *self )
+static void PriestessProjectile1DrunkenThink(edict_t* self) //mxd. Named 'priestess_proj1_drunken' in original logic.
 {
-	VectorRandomCopy(self->velocity, self->velocity, 64);
-	
-	self->nextthink = level.time + 0.1;
+	VectorRandomCopy(self->velocity, self->velocity, 64.0f);
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
@@ -601,7 +591,7 @@ void priestess_fire1( edict_t *self, float pitch_ofs, float yaw_ofs, float roll_
 
 		//One in ten wander off drunkenly
 		if (!irand(0,10))
-			proj->think = priestess_proj1_drunken;
+			proj->think = PriestessProjectile1DrunkenThink;
 
 		gi.CreateEffect(&proj->s,
 					FX_HP_MISSILE,
@@ -658,7 +648,7 @@ void priestess_fire2( edict_t *self, float pitch_ofs, float yaw_ofs, float roll_
 	vectoangles(proj->velocity, proj->s.angles);
 
 	if (!irand(0,15))
-		proj->think = priestess_proj1_drunken;
+		proj->think = PriestessProjectile1DrunkenThink;
 	else
 		proj->think=priestess_proj1_think;
 
