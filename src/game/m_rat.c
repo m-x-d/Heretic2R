@@ -230,7 +230,7 @@ static void RatTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* 
 
 #pragma region ========================== Action functions ==========================
 
-void ratchew(edict_t* self) //TODO: rename to rat_chew.
+void rat_chew(edict_t* self) //mxd. Named 'ratchew' in original logic.
 {
 	const int chance = irand(0, 100);
 

@@ -292,10 +292,10 @@ static const animframe_t rat_frames_eat1[] =
 	{ FRAME_eat2,	NULL, 0, 0, 0, NULL,		0, NULL },
 	{ FRAME_eat3,	NULL, 0, 0, 0, NULL,		0, NULL },
 	{ FRAME_eat4,	NULL, 0, 0, 0, NULL,		0, NULL },
-	{ FRAME_eat5,	NULL, 0, 0, 0, NULL,		0, ratchew },
+	{ FRAME_eat5,	NULL, 0, 0, 0, NULL,		0, rat_chew },
 	{ FRAME_eat6,	NULL, 0, 0, 0, rat_ai_eat,	0, NULL },
 	{ FRAME_eat7,	NULL, 0, 0, 0, NULL,		0, NULL },
-	{ FRAME_eat8,	NULL, 0, 0, 0, NULL,		0, ratchew },
+	{ FRAME_eat8,	NULL, 0, 0, 0, NULL,		0, rat_chew },
 	{ FRAME_eat9,	NULL, 0, 0, 0, NULL,		0, NULL },
 };
 const animmove_t rat_move_eat1 = { 9, rat_frames_eat1, rat_eatorder };
@@ -308,7 +308,7 @@ static const animframe_t rat_frames_eat2[] =
 	{ FRAME_eat14,	NULL, 0, 0, 0, NULL,		0, NULL },
 	{ FRAME_eat15,	NULL, 0, 0, 0, NULL,		0, NULL },
 	{ FRAME_eat16,	NULL, 0, 0, 0, NULL,		0, NULL },
-	{ FRAME_eat17,	NULL, 0, 0, 0, NULL,		0, ratchew },
+	{ FRAME_eat17,	NULL, 0, 0, 0, NULL,		0, rat_chew },
 	{ FRAME_eat18,	NULL, 0, 0, 0, rat_ai_eat,	0, NULL },
 	{ FRAME_eat19,	NULL, 0, 0, 0, NULL,		0, NULL },
 	{ FRAME_eat20,	NULL, 0, 0, 0, NULL,		0, ratswallow },
@@ -324,7 +324,7 @@ static const animframe_t rat_frames_eat3[] =
 {
 	{ FRAME_eat9,	NULL, 0, 0, 0, rat_ai_eat,	0, NULL },
 	{ FRAME_eat10,	NULL, 0, 0, 0, NULL,		0, NULL },
-	{ FRAME_eat11,	NULL, 0, 0, 0, NULL,		0, ratchew },
+	{ FRAME_eat11,	NULL, 0, 0, 0, NULL,		0, rat_chew },
 	{ FRAME_eat12,	NULL, 0, 0, 0, NULL,		0, NULL },
 };
 const animmove_t rat_move_eat3 = { 4, rat_frames_eat3, rat_eatorder };

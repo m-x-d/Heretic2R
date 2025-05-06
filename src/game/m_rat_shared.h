@@ -102,7 +102,7 @@ extern void rat_eatorder(edict_t* self);
 extern void rathiss(edict_t* self);
 extern void ratscratch(edict_t* self);
 extern void ratchatter(edict_t* self);
-extern void ratchew(edict_t* self);
+extern void rat_chew(edict_t* self);
 extern void ratswallow(edict_t* self);
 extern void ratjump(edict_t* self);
 
