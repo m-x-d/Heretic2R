@@ -923,21 +923,11 @@ void priestess_dead(edict_t* self)
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*
-
-	Priestess Message Functions
-
-*/
-
-/*-----------------------------------------------
-	priestess_death
------------------------------------------------*/
-
-void priestess_death( edict_t *self, G_Message_t *msg )
+static void PriestessDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'priestess_death' in original logic.
 {
 	self->msgHandler = DeadMsgHandler;
 
-	if(self->dead_state == DEAD_DEAD)
+	if (self->dead_state == DEAD_DEAD)
 		return;
 
 	self->dead_state = DEAD_DEAD;
@@ -948,10 +938,8 @@ void priestess_death( edict_t *self, G_Message_t *msg )
 	self->max_health = 0;
 
 	M_ShowLifeMeter(0, 0);
-	
 	SetAnim(self, ANIM_DEATH);
 }
-
 
 /*-----------------------------------------------
 	priestess_evade
@@ -1053,7 +1041,7 @@ void HighPriestessStaticsInit(void)
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_MISSILE] = priestess_missile;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_RUN] = priestess_run;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_EVADE] = priestess_evade;
-	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_DEATH] = priestess_death;
+	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_DEATH] = PriestessDeathMsgHandler;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_PAIN] = priestess_pain;
 	
 	resInfo.numAnims = NUM_ANIMS;
