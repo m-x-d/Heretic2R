@@ -138,7 +138,7 @@ void priestess_teleport_move(edict_t* self)
 		blocker->movetype = PHYSICSTYPE_NONE;
 
 		//TODO: if the player touches this entity somehow, he's thrown back.
-		self->movetarget = blocker;
+		self->movetarget = blocker; //TODO: add priestess_teleport_blocker name.
 
 		gi.linkentity(blocker);
 	}
@@ -167,35 +167,30 @@ void priestess_stop_alpha(edict_t* self)
 	self->s.color.c = 0xffffffff;
 }
 
-/*-----------------------------------------------
-	priestess_teleport_return
------------------------------------------------*/
-
-void priestess_teleport_return ( edict_t *self )
+void priestess_teleport_return(edict_t* self)
 {
-	trace_t	trace;
-	vec3_t	start, end;
-
-	if ( (self->movetarget) && (self->movetarget != self->enemy) )
+	if (self->movetarget != NULL && self->movetarget != self->enemy) // Free the teleport blocker entity.
 		G_FreeEdict(self->movetarget);
-	
-	VectorCopy(self->monsterinfo.nav_goal, start);
-	VectorCopy(self->monsterinfo.nav_goal, end);
-	start[2] += 36;
-	end[2] -= 128;
 
-	gi.trace(start, self->mins, self->maxs, end, self, MASK_MONSTERSOLID,&trace);
+	vec3_t start;
+	VectorCopy(self->monsterinfo.nav_goal, start);
+	start[2] += 36.0f;
+
+	vec3_t end;
+	VectorCopy(self->monsterinfo.nav_goal, end);
+	end[2] -= 128.0f;
+
+	trace_t trace;
+	gi.trace(start, self->mins, self->maxs, end, self, MASK_MONSTERSOLID, &trace);
 
 	if (trace.allsolid || trace.startsolid)
 	{
-		//The priestess has become lodged in something!
-		assert(0);
+		// The priestess has become lodged in something!
+		assert(0); //TODO: handle this... somehow. Try picking different path corner?
 		return;
 	}
 
-	VectorCopy(trace.endpos, end);
-
-	VectorCopy(end, self->s.origin);
+	VectorCopy(trace.endpos, self->s.origin);
 	gi.linkentity(self);
 
 	SetAnim(self, ANIM_SHIELD_END);
