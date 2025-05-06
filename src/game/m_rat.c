@@ -405,27 +405,28 @@ void rat_ai_eat(edict_t* self, float distance)
 		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
 
-void rat_ai_run (edict_t *self, float dist)
+void rat_ai_run(edict_t* self, float distance)
 {
-	vec3_t		vec;
-
-	if (!self->enemy)
+	if (self->enemy == NULL)
 		return;
-	
-	if (self->monsterinfo.aiflags & AI_FLEE||self->monsterinfo.aiflags & AI_COWARD)
+
+	if (self->monsterinfo.aiflags & (AI_FLEE | AI_COWARD))
 	{
-		if(!self->count)
-			self->count = 180;
-		VectorSubtract (self->enemy->s.origin, self->s.origin, vec);
-		self->ideal_yaw = VectorYaw(vec);
-		self->ideal_yaw = anglemod(self->ideal_yaw + self->count);
+		if (self->count == 0)
+			self->count = 180; //TODO: add rat_random_move_angle name;
+
+		vec3_t diff;
+		VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+
+		self->ideal_yaw = anglemod(VectorYaw(diff) + self->count);
 		M_ChangeYaw(self);
-		if(!M_walkmove(self, self->s.angles[YAW], dist) && AnglesEqual(self->s.angles[YAW], self->ideal_yaw, 5))
-			self->count = flrand(60, 300);
+
+		if (!M_walkmove(self, self->s.angles[YAW], distance) && AnglesEqual(self->s.angles[YAW], self->ideal_yaw, 5.0f))
+			self->count = flrand(60.0f, 300.0f);
 	}
 	else
 	{
-		MG_AI_Run(self, dist);
+		MG_AI_Run(self, distance);
 	}
 }
 
