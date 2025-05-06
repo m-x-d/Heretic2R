@@ -53,14 +53,13 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-void rat_dead_pain (edict_t *self, G_Message_t *msg)
+static void RatDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_dead_pain' in original logic.
 {
-	if (self->health <= -80)
+	if (self->health <= -80) // Gib death.
 	{
-		gi.sound (self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
 		BecomeDebris(self);
 	}
-	return;
 }
 
 //----------------------------------------------------------------------
@@ -614,7 +613,7 @@ void RatStaticsInit(void)
 	classStatics[CID_RAT].msgReceivers[MSG_PAIN] = rat_pain;
 	classStatics[CID_RAT].msgReceivers[MSG_DEATH] = rat_death;
 	classStatics[CID_RAT].msgReceivers[MSG_JUMP] = M_jump;
-	classStatics[CID_RAT].msgReceivers[MSG_DEATH_PAIN] = rat_dead_pain;
+	classStatics[CID_RAT].msgReceivers[MSG_DEATH_PAIN] = RatDeathPainMsgHandler;
 
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
