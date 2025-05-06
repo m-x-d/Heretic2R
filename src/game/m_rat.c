@@ -68,18 +68,12 @@ static void RatPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat
 	SetAnim(self, ANIM_PAIN1);
 }
 
-//----------------------------------------------------------------------
-//  Rat Death - choose deatha or deathb or gib.
-//----------------------------------------------------------------------
-void rat_death(edict_t *self, G_Message_t *msg)
+static void RatDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_death' in original logic.
 {
-	if(self->monsterinfo.aiflags&AI_DONT_THINK)
+	if (self->monsterinfo.aiflags & AI_DONT_THINK)
 	{
-		// Big enough death to be thrown back
-		if (irand(0,10) < 5)
-			SetAnim(self, ANIM_DIE2);
-		else 
-			SetAnim(self, ANIM_DIE1);
+		// Big enough death to be thrown back.
+		SetAnim(self, irand(ANIM_DIE1, ANIM_DIE2));
 		return;
 	}
 
@@ -87,24 +81,17 @@ void rat_death(edict_t *self, G_Message_t *msg)
 
 	if (self->health <= -40 + irand(0, 20))
 	{
-		gi.sound (self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
 		BecomeDebris(self);
-	}
-	else
-	{
-		if(!strcmp(self->classname, "monster_rat_giant"))
-			self->s.skinnum = 1;
 
-		// Big enough death to be thrown back
-		if (self->health <= -20)
-		{
-			SetAnim(self, ANIM_DIE1);
-		}
-		else 
-		{
-			SetAnim(self, ANIM_DIE2);
-		}
+		return;
 	}
+
+	if (strcmp(self->classname, "monster_rat_giant") == 0)
+		self->s.skinnum = 1;
+
+	// Big enough death to be thrown back?
+	SetAnim(self, ((self->health <= -20) ? ANIM_DIE1 : ANIM_DIE2));
 }
 
 //----------------------------------------------------------------------
@@ -605,7 +592,7 @@ void RatStaticsInit(void)
 	classStatics[CID_RAT].msgReceivers[MSG_MELEE] = rat_melee;
 	classStatics[CID_RAT].msgReceivers[MSG_WATCH] = rat_watch;
 	classStatics[CID_RAT].msgReceivers[MSG_PAIN] = RatPainMsgHandler;
-	classStatics[CID_RAT].msgReceivers[MSG_DEATH] = rat_death;
+	classStatics[CID_RAT].msgReceivers[MSG_DEATH] = RatDeathMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_JUMP] = M_jump;
 	classStatics[CID_RAT].msgReceivers[MSG_DEATH_PAIN] = RatDeathPainMsgHandler;
 
