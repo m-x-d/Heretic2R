@@ -62,16 +62,10 @@ static void RatDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	}
 }
 
-//----------------------------------------------------------------------
-//  Rat Pain - choose a pain to use
-//----------------------------------------------------------------------
-void rat_pain(edict_t *self, G_Message_t *msg)
+static void RatPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_pain' in original logic.
 {
 	rat_pain_init(self);
-
 	SetAnim(self, ANIM_PAIN1);
-
-	return;
 }
 
 //----------------------------------------------------------------------
@@ -610,7 +604,7 @@ void RatStaticsInit(void)
 	classStatics[CID_RAT].msgReceivers[MSG_EAT] = rat_eat;
 	classStatics[CID_RAT].msgReceivers[MSG_MELEE] = rat_melee;
 	classStatics[CID_RAT].msgReceivers[MSG_WATCH] = rat_watch;
-	classStatics[CID_RAT].msgReceivers[MSG_PAIN] = rat_pain;
+	classStatics[CID_RAT].msgReceivers[MSG_PAIN] = RatPainMsgHandler;
 	classStatics[CID_RAT].msgReceivers[MSG_DEATH] = rat_death;
 	classStatics[CID_RAT].msgReceivers[MSG_JUMP] = M_jump;
 	classStatics[CID_RAT].msgReceivers[MSG_DEATH_PAIN] = RatDeathPainMsgHandler;
