@@ -463,51 +463,41 @@ static void SeraphRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 's
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
-//Classic melee attack function
-void seraph_melee(edict_t *self, G_Message_t *msg)
+// Classic melee attack function.
+static void SeraphMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_melee' in original logic.
 {
-	vec3_t	attackVel, vf;
-	float	dist;
-	int		ret;
-
-	//Don't interrupt a current animation with another melee call inside of it
+	// Don't interrupt a current animation with another melee call inside of it.
 	if (self->curAnimID == ANIM_ATTACK1_LOOP)
 		return;
 
-	if(self->enemy)
-		if ( (self->ai_mood_flags & AI_MOOD_FLAG_IGNORE) && (!stricmp(self->enemy->classname, "monster_ogle")) )
-			return;
+	if (self->enemy != NULL && self->enemy->classID == CID_OGLE && (self->ai_mood_flags & AI_MOOD_FLAG_IGNORE)) //mxd. classname -> classID check.
+		return;
 
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		if(self->ai_mood == AI_MOOD_FLEE)
-		{
-			SetAnim(self, ANIM_BACKUP2);
-			return;
-		}
-		//Set this for any uses below
-		AngleVectors(self->s.angles, vf, NULL, NULL);
-
-		dist = M_DistanceToTarget(self, self->enemy);	
-
-		if (dist < 100)
-		{
-			VectorMA(vf, 0, vf, attackVel);
-			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, self->melee_range, 5 );
-
-			if (ret)
-				SetAnim(self, ANIM_ATTACK1_LOOP);		
-			else
-				SetAnim(self, ANIM_RUN1_WHIP);
-		}
-		else
-			SetAnim(self, ANIM_RUN1);
-
+		// If our enemy is dead, we need to stand.
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	//If our enemy is dead, we need to stand
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	if (self->ai_mood == AI_MOOD_FLEE)
+	{
+		SetAnim(self, ANIM_BACKUP2);
+		return;
+	}
+
+	if (M_DistanceToTarget(self, self->enemy) < 100.0f)
+	{
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+
+		const qboolean in_range = M_PredictTargetEvasion(self, self->enemy, forward, self->enemy->velocity, self->melee_range, 5.0f);
+		SetAnim(self, (in_range ? ANIM_ATTACK1_LOOP : ANIM_RUN1_WHIP));
+	}
+	else
+	{
+		SetAnim(self, ANIM_RUN1);
+	}
 }
 
 //Take pain
@@ -820,7 +810,7 @@ void SeraphOverlordStaticsInit(void)
 
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_STAND]	= SeraphStandMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_RUN]		= SeraphRunMsgHandler;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_MELEE]	= seraph_melee;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_MELEE]	= SeraphMeleeMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_PAIN]	= seraph_pain;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH]	= SeraphDeathMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DISMEMBER]	= DismemberMsgHandler;
