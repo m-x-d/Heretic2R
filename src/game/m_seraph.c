@@ -808,60 +808,53 @@ static void SeraphVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 	gi.sound(self, CHAN_VOICE, sounds[irand(SND_SIGHT1, SND_SIGHT3)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*
-==========================================================
-
-	Seraph Spawn functions
-
-==========================================================
-*/
-
 void SeraphOverlordStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_STAND]	= SeraphStandMsgHandler;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_RUN]		= SeraphRunMsgHandler;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_MELEE]	= SeraphMeleeMsgHandler;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_PAIN]	= SeraphPainMsgHandler;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH]	= SeraphDeathMsgHandler;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DISMEMBER]	= DismemberMsgHandler;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH_PAIN]	= SeraphDeathPainMsgHandler;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_STAND] = SeraphStandMsgHandler;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_RUN] = SeraphRunMsgHandler;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_MELEE] = SeraphMeleeMsgHandler;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_PAIN] = SeraphPainMsgHandler;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH] = SeraphDeathMsgHandler;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH_PAIN] = SeraphDeathPainMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_CHECK_MOOD] = SeraphCheckMoodMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_VOICE_SIGHT] = SeraphVoiceSightMsgHandler;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/overlord/tris.fm");
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/overlord/tris.fm");
 
-	sounds[SND_ATTACK]	=	gi.soundindex("monsters/seraph/overlord/attack.wav");	
-	
-	sounds[SND_SCOLD1]	=	gi.soundindex("monsters/seraph/overlord/scold1.wav");//	Back to work
-	sounds[SND_SCOLD2]	=	gi.soundindex("monsters/seraph/overlord/scold2.wav");	// Get to work
-	sounds[SND_SCOLD3]	=	gi.soundindex("monsters/seraph/overlord/scold3.wav");	// No talking
-	
-	sounds[SND_SCARE]	=	gi.soundindex("monsters/seraph/overlord/scare.wav");//	Hey!
+	sounds[SND_ATTACK] = gi.soundindex("monsters/seraph/overlord/attack.wav");
 
-	sounds[SND_STARTLE]	=	gi.soundindex("monsters/seraph/overlord/startle.wav");	
-	sounds[SND_SLAP]	=	gi.soundindex("monsters/seraph/overlord/slap.wav");	
+	sounds[SND_SCOLD1] = gi.soundindex("monsters/seraph/overlord/scold1.wav"); // Back to work.
+	sounds[SND_SCOLD2] = gi.soundindex("monsters/seraph/overlord/scold2.wav"); // Get to work.
+	sounds[SND_SCOLD3] = gi.soundindex("monsters/seraph/overlord/scold3.wav"); // No talking.
 
-	sounds[SND_DEATH1]	=	gi.soundindex("monsters/seraph/death1.wav");	
-	sounds[SND_DEATH2]	=	gi.soundindex("monsters/seraph/death2.wav");	
-	sounds[SND_DEATH3]	=	gi.soundindex("monsters/seraph/wimpdeath1.wav");	
-	sounds[SND_DEATH4]	=	gi.soundindex("monsters/seraph/wimpdeath2.wav");	
-	
-	sounds[SND_PAIN1]	=	gi.soundindex("monsters/seraph/pain1.wav");	
-	sounds[SND_PAIN2]	=	gi.soundindex("monsters/seraph/pain2.wav");	
-	sounds[SND_PAIN3]	=	gi.soundindex("monsters/seraph/pain3.wav");	
-	sounds[SND_PAIN4]	=	gi.soundindex("monsters/seraph/pain4.wav");	
+	sounds[SND_SCARE] = gi.soundindex("monsters/seraph/overlord/scare.wav"); // Hey!
 
-	sounds[SND_SIGHT1]	=	gi.soundindex("monsters/seraph/overlord/sight1.wav");
-	sounds[SND_SIGHT2]	=	gi.soundindex("monsters/seraph/overlord/sight2.wav");
-	sounds[SND_SIGHT3]	=	gi.soundindex("monsters/seraph/overlord/scare.wav");
+	sounds[SND_STARTLE] = gi.soundindex("monsters/seraph/overlord/startle.wav");
+	sounds[SND_SLAP] = gi.soundindex("monsters/seraph/overlord/slap.wav");
 
-	classStatics[CID_SERAPH_OVERLORD].resInfo = &resInfo;
+	sounds[SND_DEATH1] = gi.soundindex("monsters/seraph/death1.wav");
+	sounds[SND_DEATH2] = gi.soundindex("monsters/seraph/death2.wav");
+	sounds[SND_DEATH3] = gi.soundindex("monsters/seraph/wimpdeath1.wav");
+	sounds[SND_DEATH4] = gi.soundindex("monsters/seraph/wimpdeath2.wav");
+
+	sounds[SND_PAIN1] = gi.soundindex("monsters/seraph/pain1.wav");
+	sounds[SND_PAIN2] = gi.soundindex("monsters/seraph/pain2.wav");
+	sounds[SND_PAIN3] = gi.soundindex("monsters/seraph/pain3.wav");
+	sounds[SND_PAIN4] = gi.soundindex("monsters/seraph/pain4.wav");
+
+	sounds[SND_SIGHT1] = gi.soundindex("monsters/seraph/overlord/sight1.wav");
+	sounds[SND_SIGHT2] = gi.soundindex("monsters/seraph/overlord/sight2.wav");
+	sounds[SND_SIGHT3] = gi.soundindex("monsters/seraph/overlord/scare.wav");
+
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
+
+	classStatics[CID_SERAPH_OVERLORD].resInfo = &res_info;
 }
 
 /*QUAKED monster_seraph_overlord(1 .5 0) (-24 -24 -34) (24 24 34) AMBUSH ASLEEP 4 8 16 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
