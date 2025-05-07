@@ -536,40 +536,33 @@ static void SeraphPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	}
 }
 
-qboolean seraphAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
+static qboolean SeraphAlert(edict_t* self, alertent_t* alerter, edict_t* enemy) //mxd. Named 'seraphAlerted' in original logic.
 {
-	if(self->alert_time < level.time)
-	{//not startled already
-		if(!(alerter->alert_svflags&SVF_ALERT_NO_SHADE) && skill->value < 3.0 && !(self->monsterinfo.aiflags & AI_NIGHTVISION))
-		{
-			if(enemy->light_level < flrand(6, 77))
-			{//too dark, can't see enemy
-				return false;
-			}
-		}
+	if (self->alert_time < level.time)
+	{
+		// Not startled already.
+		if (!(alerter->alert_svflags & SVF_ALERT_NO_SHADE) && SKILL < SKILL_VERYHARD && !(self->monsterinfo.aiflags & AI_NIGHTVISION))
+			if (enemy->light_level < irand(6, 77)) //mxd. flrand() in original logic.
+				return false; // Too dark, can't see enemy.
 
-		if(!AI_IsInfrontOf(self,enemy))
+		if (!AI_IsInfrontOf(self, enemy))
 		{
-			if(alerter->lifetime < level.time + 2)
-				self->alert_time = level.time + 2;//be ready for 2 seconds to wake up if alerted again
+			if (alerter->lifetime < level.time + 2.0f)
+				self->alert_time = level.time + 2.0f; // Be ready for 2 seconds to wake up if alerted again.
 			else
-				self->alert_time = alerter->lifetime;//be alert as long as the alert sticks around
+				self->alert_time = alerter->lifetime; // Be alert as long as the alert sticks around.
+
 			SetAnim(self, ANIM_STARTLE); //mxd. Inline seraph_startle().
+
 			return false;
 		}
 	}
 
-	if(enemy->svflags&SVF_MONSTER)
-		self->enemy = alerter->enemy;
-	else
-		self->enemy = enemy;
-
+	self->enemy = ((enemy->svflags & SVF_MONSTER) ? alerter->enemy : enemy);
 	AI_FoundTarget(self, true);
 
 	return true;
 }
-
-
 
 int Bit_for_MeshNode_so [NUM_MESH_NODES] =
 {
@@ -907,7 +900,7 @@ void SP_monster_seraph_overlord(edict_t *self)
 		return;
 	
 	self->msgHandler = DefaultMsgHandler;
-	self->monsterinfo.alert = seraphAlerted;
+	self->monsterinfo.alert = SeraphAlert;
 	self->think = M_WalkmonsterStartGo;
 	self->monsterinfo.dismember = seraph_dismember;
 
