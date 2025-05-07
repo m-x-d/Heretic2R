@@ -317,7 +317,7 @@ const animmove_t seraph_move_run1 = { 8, seraph_frames_run1, seraph_pause };
 // Seraph Forward Jump.
 static const animframe_t seraph_frames_fjump[] =
 {
-	{ FRAME_run1,	NULL, 0, 0, 0, NULL, 0, seraphApplyJump },
+	{ FRAME_run1,	NULL, 0, 0, 0, NULL, 0, seraph_jump },
 	{ FRAME_run2,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_run3,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_run4,	NULL, 0, 0, 0, NULL, 0, NULL },

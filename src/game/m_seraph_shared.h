@@ -103,22 +103,20 @@ extern void seraph_idle(edict_t* self);
 extern void seraph_pause(edict_t* self);
 extern void seraph_enforce(edict_t* self);
 extern void seraph_strike(edict_t* self, float damage, float a, float b);
+extern void seraph_jump(edict_t* self);
+extern void seraph_back(edict_t* self, float distance);
+extern void seraph2idle(edict_t* self);
 
 extern void seraph_dead(edict_t* self);
-
 extern void seraph_death_loop(edict_t* self);
 extern void seraph_check_land(edict_t* self);
 
 extern void seraph_sound_startle(edict_t* self);
 extern void seraph_sound_slap(edict_t* self);
 extern void seraph_sound_scold(edict_t* self);
+extern void seraph_sound_scold2(edict_t* self);
 extern void seraph_sound_yell(edict_t* self);
 extern void seraph_sound_whip(edict_t* self);
-extern void seraphApplyJump(edict_t* self);
-
-extern void seraph_back(edict_t* self, float distance);
-extern void seraph_sound_scold2(edict_t* self);
-extern void seraph2idle(edict_t* self);
 
 #define BIT_BASEBIN		0
 #define BIT_PITHEAD		1

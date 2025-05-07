@@ -60,7 +60,7 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-void seraphApplyJump(edict_t* self) //TODO: rename to seraph_jump.
+void seraph_jump(edict_t* self) //mxd. Named 'seraphApplyJump' in original logic.
 {
 	self->jump_time = level.time + 0.75f;
 	VectorCopy(self->movedir, self->velocity);
