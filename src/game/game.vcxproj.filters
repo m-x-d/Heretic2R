@@ -932,7 +932,7 @@
     <ClInclude Include="m_seraph_anim.h">
       <Filter>src\Monsters\Seraph</Filter>
     </ClInclude>
-    <ClInclude Include="m_seraph_guard_local.h">
+    <ClInclude Include="m_seraph_guard_shared.h">
       <Filter>src\Monsters\SeraphGuard</Filter>
     </ClInclude>
     <ClInclude Include="m_seraph_guard_anim.h">
