@@ -242,7 +242,7 @@ struct edict_s
 		float rat_flee_angle; //mxd
 	};
 
-	int targeted; // Used by Ogle to denote a targeted action queued up.
+	qboolean targeted; // Used by Ogle to denote a targeted action queued up. //mxd. int in original logic.
 	int lastbuoy; // Used to save a buoy in checking.
 
 	edict_t* chain;		// Used by items and player in the body queue.

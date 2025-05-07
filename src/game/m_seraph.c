@@ -129,21 +129,23 @@ void seraph_sound_whip(edict_t* self)
 	gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK], 1.0f, ATTN_NORM, 0.0f);
 }
 
-//Seraph has finished his startle, either track down the enemy, or go back to normal
-void seraph_done_startle(edict_t *self)
+// Seraph has finished his startle, either track down the enemy, or go back to normal.
+void seraph_done_startle(edict_t* self)
 {
 	if (!FindTarget(self))
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
-//Seraph has finished ANIM_GET2WORK, and must reset its enemy
-void seraph_done_get2work(edict_t *self)
+// Seraph has finished ANIM_GET2WORK, and must reset its enemy.
+void seraph_done_get2work(edict_t* self)
 {
-	if(self->enemy)
-		self->enemy->targeted = 0;
+	if (self->enemy != NULL) //TODO: also check if self->enemy is CID_OGLE?
+		self->enemy->targeted = false;
+
 	self->enemy = NULL;
 	self->ai_mood = AI_MOOD_STAND;
 	self->ai_mood_flags &= ~AI_MOOD_FLAG_IGNORE;
+
 	seraph_pause(self);
 }
 
