@@ -275,34 +275,20 @@ static qboolean SeraphCheckScare(edict_t* self, edict_t* ogle) //mxd. Named 'ser
 	return true;
 }
 
-//Check the ogles and make sure their noses are to the grind stone
-void seraph_oversee(edict_t *self)
+// Check the ogles and make sure their noses are to the grind stone.
+static void SeraphOversee(edict_t* self) //mxd. Named 'seraph_oversee' in original logic.
 {
-	edict_t	*ogle;
-	ogle=NULL;
-
-	while((ogle = FindInRadius(ogle, self->s.origin, OVERLORD_ENFORCE_RADIUS)) != NULL)
+	edict_t* ogle = NULL;
+	while ((ogle = FindInRadius(ogle, self->s.origin, OVERLORD_ENFORCE_RADIUS)) != NULL)
 	{
-		if (ogle->ai_mood != AI_MOOD_REST)
+		if (ogle->ai_mood != AI_MOOD_REST || ogle->classID != CID_OGLE)
 			continue;
 
-		if (ogle->classID != CID_OGLE)
-			continue;
-					
-		if (ogle->targeted)
+		if (ogle->targeted || ogle->targetEnt != self || SeraphCheckScare(self, ogle)) // See if we can scare this one.
 			return;
 
-		if (ogle->targetEnt != self)
-			return;
-
-		//See if we can scare this one
-		if (!SeraphCheckScare(self, ogle))
-		{
-			self->ai_mood = AI_MOOD_ATTACK;
-			self->ai_mood_flags |= AI_MOOD_FLAG_WHIP;
-		}
-		else //If we can scare it, stop and do it
-			return;
+		self->ai_mood = AI_MOOD_ATTACK;
+		self->ai_mood_flags |= AI_MOOD_FLAG_WHIP;
 	}
 }
 
@@ -311,7 +297,7 @@ void seraph_idle(edict_t *self)
 {
 	int chance = irand(0,100);
 
-	seraph_oversee(self);
+	SeraphOversee(self);
 
 	//Check to see if we were supposed to point at an ogle
 	if ( (self->ai_mood == AI_MOOD_ATTACK) && (self->ai_mood_flags & AI_MOOD_FLAG_WHIP) && (self->curAnimID != ANIM_POINT1) )
