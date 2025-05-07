@@ -1,76 +1,30 @@
-//==============================================================================
 //
 // m_seraph.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-// jweier
-//==============================================================================
 
-#include "g_local.h"
 #include "m_seraph.h"
 #include "m_seraph_shared.h"
 #include "m_seraph_anim.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "Random.h"
-#include "vector.h"
-#include "fx.h"
-#include "g_HitLocation.h"
 #include "g_debris.h" //mxd
+#include "g_DefaultMessageHandler.h"
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 #include "m_stats.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_monster.h"
+#include "g_local.h"
 
-//Seraphs need knowledge of the ogle's animations
-//Any changes in m_ogle.h must be mirrored here
-enum
-{
-	OGLE_ANIM_WALK1,
-	OGLE_ANIM_PUSH1,
-	OGLE_ANIM_PUSH2,
-	OGLE_ANIM_PUSH3,
-	OGLE_ANIM_STAND1,
-	OGLE_ANIM_WORK1,
-	OGLE_ANIM_WORK2,
-	OGLE_ANIM_WORK3,
-	OGLE_ANIM_WORK4,
-	OGLE_ANIM_WORK5,
-	OGLE_ANIM_PAIN1,
-	OGLE_ANIM_PAIN2,
-	OGLE_ANIM_PAIN3,
-	OGLE_ANIM_REST1_TRANS,
-	OGLE_ANIM_REST1_WIPE,
-	OGLE_ANIM_REST1,
-	OGLE_ANIM_REST2_WIPE,
-	OGLE_ANIM_REST3_WIPE,
-	OGLE_ANIM_REST4_TRANS,
-	OGLE_ANIM_REST4_TRANS2,
-	OGLE_ANIM_REST4,
-	OGLE_ANIM_CELEBRATE1,
-	OGLE_ANIM_CELEBRATE2,
-	OGLE_ANIM_CELEBRATE3_TRANS,
-	OGLE_ANIM_CELEBRATE3,
-	OGLE_ANIM_CELEBRATE4_TRANS,
-	OGLE_ANIM_CELEBRATE4,
-	OGLE_ANIM_CELEBRATE5_TRANS,
-	OGLE_ANIM_CELEBRATE5,
-	OGLE_ANIM_CHARGE1,
-	OGLE_ANIM_CHARGE2,
-	OGLE_ANIM_CHARGE3,
-	OGLE_ANIM_CHARGE4,
-	OGLE_ANIM_CHARGE5,
-	OGLE_ANIM_ATTACK1,
-	OGLE_ANIM_ATTACK2,
-	OGLE_ANIM_ATTACK3,
-	OGLE_ANIM_DEATH1,
-	OGLE_ANIM_DEATH2,
-	NUM_OGLE_ANIMS
-};
+static void seraph_dropweapon(edict_t* self); //TODO: remove.
 
-static const animmove_t *animations[NUM_ANIMS] =
+#define OVERLORD_RADIUS	1000.0f //FIXME: Tweak out.
+
+#pragma region ========================== Seraph Base Info ==========================
+
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&seraph_move_walk1,
 	&seraph_move_walk2,
@@ -103,9 +57,8 @@ static const animmove_t *animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
 
-#define OVERLORD_RADIUS	1000	//FIXME: Tweak out
+#pragma endregion
 
 /*
 ==========================================================
@@ -515,7 +468,6 @@ void seraph_death_pain(edict_t *self, G_Message_t *msg)
 
 }
 
-void seraph_dropweapon (edict_t *self);
 void seraph_death(edict_t *self, G_Message_t *msg)
 {
 	edict_t	*targ, *inflictor, *attacker;
@@ -764,7 +716,7 @@ qboolean canthrownode_so (edict_t *self, int BP, int *throw_nodes)
 }
 
 //THROWS weapon, turns off those nodes, sets that weapon as gone
-void seraph_dropweapon (edict_t *self)
+static void seraph_dropweapon (edict_t *self)
 {
 	vec3_t handspot, forward, right, up;
 
@@ -951,6 +903,8 @@ void ser_ovl_SightSound(edict_t *self, G_Message_t *Msg)
 
 void SeraphOverlordStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_STAND]	= seraph_stand;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_RUN]		= seraph_run;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_MELEE]	= seraph_melee;
