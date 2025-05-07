@@ -517,7 +517,7 @@ static const animframe_t seraph_frames_ready2idle[] =
 	{ FRAME_rdy_idle10,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_rdy_idle11,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_ready2idle = { 11, seraph_frames_ready2idle, seraph2idle };
+const animmove_t seraph_move_ready2idle = { 11, seraph_frames_ready2idle, seraph_stand };
 
 // Seraph Backup 1.
 static const animframe_t seraph_frames_backup[] =

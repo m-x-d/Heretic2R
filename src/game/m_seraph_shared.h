@@ -105,7 +105,7 @@ extern void seraph_enforce(edict_t* self);
 extern void seraph_strike(edict_t* self, float damage, float a, float b);
 extern void seraph_jump(edict_t* self);
 extern void seraph_back(edict_t* self, float distance);
-extern void seraph2idle(edict_t* self);
+extern void seraph_stand(edict_t* self);
 
 extern void seraph_dead(edict_t* self);
 extern void seraph_death_loop(edict_t* self);

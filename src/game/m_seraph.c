@@ -163,7 +163,7 @@ void seraph_ai_walk(edict_t* self, float distance)
 	}
 }
 
-void seraph2idle(edict_t* self) //TODO: rename to seraph_stand.
+void seraph_stand(edict_t* self) //mxd. Named 'seraph2idle' in original logic.
 {
 	SetAnim(self, ANIM_STAND1);
 }
