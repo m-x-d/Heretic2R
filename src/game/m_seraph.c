@@ -450,8 +450,8 @@ static void SeraphStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	SetAnim(self, ((self->curAnimID == ANIM_READY2IDLE) ? ANIM_STAND1 : ANIM_READY2IDLE));
 }
 
-//Classic run-attack function
-void seraph_run(edict_t *self, G_Message_t *msg)
+// Classic run-attack function.
+static void SeraphRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_run' in original logic.
 {
 	if (M_ValidTarget(self, self->enemy))
 	{
@@ -459,7 +459,7 @@ void seraph_run(edict_t *self, G_Message_t *msg)
 		return;
 	}
 
-	//If our enemy is dead, we need to stand
+	// If our enemy is dead, we need to stand.
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
@@ -819,7 +819,7 @@ void SeraphOverlordStaticsInit(void)
 	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_STAND]	= SeraphStandMsgHandler;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_RUN]		= seraph_run;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_RUN]		= SeraphRunMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_MELEE]	= seraph_melee;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_PAIN]	= seraph_pain;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH]	= SeraphDeathMsgHandler;
