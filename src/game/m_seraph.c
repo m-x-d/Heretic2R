@@ -99,37 +99,34 @@ void seraph_check_land(edict_t* self)
 	}
 }
 
-void seraph_sound_startle(edict_t *self)
+void seraph_sound_startle(edict_t* self)
 {
-	gi.sound (self, CHAN_VOICE, sounds[SND_STARTLE], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[SND_STARTLE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void seraph_sound_slap(edict_t *self)
+void seraph_sound_slap(edict_t* self)
 {
-	gi.sound (self, CHAN_WEAPON, sounds[SND_SLAP], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_SLAP], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void seraph_sound_scold(edict_t *self)
-{//no talking!
-	gi.sound (self, CHAN_VOICE, sounds[SND_SCOLD3], 1, ATTN_NORM, 0);
+void seraph_sound_scold(edict_t* self)
+{
+	gi.sound(self, CHAN_VOICE, sounds[SND_SCOLD3], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void seraph_sound_scold2(edict_t *self)
+void seraph_sound_scold2(edict_t* self)
 {
-	if(irand(0, 1))//back to work!
-		gi.sound(self, CHAN_VOICE, sounds[SND_SCOLD1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_VOICE, sounds[SND_SCOLD2], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_SCOLD1, SND_SCOLD2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void seraph_sound_yell(edict_t *self)
+void seraph_sound_yell(edict_t* self)
 {
-	gi.sound (self, CHAN_VOICE, sounds[SND_SCARE], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[SND_SCARE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void seraph_sound_whip(edict_t *self)
+void seraph_sound_whip(edict_t* self)
 {
-	gi.sound (self, CHAN_WEAPON, sounds[SND_ATTACK], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK], 1.0f, ATTN_NORM, 0.0f);
 }
 
 //Become startled and look around
