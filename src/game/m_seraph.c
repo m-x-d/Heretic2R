@@ -292,30 +292,31 @@ static void SeraphOversee(edict_t* self) //mxd. Named 'seraph_oversee' in origin
 	}
 }
 
-//Cycles through the various idle animations
-void seraph_idle(edict_t *self)
+// Cycles through the various idle animations.
+void seraph_idle(edict_t* self)
 {
-	int chance = irand(0,100);
-
 	SeraphOversee(self);
 
-	//Check to see if we were supposed to point at an ogle
-	if ( (self->ai_mood == AI_MOOD_ATTACK) && (self->ai_mood_flags & AI_MOOD_FLAG_WHIP) && (self->curAnimID != ANIM_POINT1) )
+	// Check to see if we were supposed to point at an ogle.
+	if (self->ai_mood == AI_MOOD_ATTACK && (self->ai_mood_flags & AI_MOOD_FLAG_WHIP) && self->curAnimID != ANIM_POINT1)
 	{
 		SetAnim(self, ANIM_POINT1);
 		self->ai_mood = AI_MOOD_STAND;
 		self->ai_mood_flags &= ~AI_MOOD_FLAG_WHIP;
+
 		return;
 	}
 
-	//See if we're going to go scare an ogle
-	if ( (self->ai_mood == AI_MOOD_POINT_NAVIGATE) )
+	// See if we're going to go scare an ogle.
+	if (self->ai_mood == AI_MOOD_POINT_NAVIGATE)
 	{
 		SetAnim(self, ANIM_WALK2);
 		return;
 	}
 
-	switch( self->curAnimID )
+	const int chance = irand(0, 100);
+
+	switch (self->curAnimID)
 	{
 		case ANIM_STAND1:
 			if (chance < 20)
@@ -324,7 +325,7 @@ void seraph_idle(edict_t *self)
 				SetAnim(self, ANIM_STAND1_TL);
 			break;
 
-		//Right
+			// Right.
 		case ANIM_POINT1:
 		case ANIM_STAND1_TR:
 			SetAnim(self, ANIM_STAND1_R);
@@ -340,7 +341,7 @@ void seraph_idle(edict_t *self)
 			SetAnim(self, ANIM_STAND1);
 			break;
 
-		//Left
+			// Left.
 		case ANIM_STAND1_TL:
 			SetAnim(self, ANIM_STAND1_L);
 			break;
@@ -348,6 +349,9 @@ void seraph_idle(edict_t *self)
 		case ANIM_STAND1_L:
 			if (chance < 50)
 				SetAnim(self, ANIM_STAND1_TLC);
+			break;
+
+		default:
 			break;
 	}
 }
