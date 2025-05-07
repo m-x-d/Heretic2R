@@ -210,10 +210,9 @@ void seraph_pause(edict_t* self)
 	}
 }
 
-void seraph_check_mood (edict_t *self, G_Message_t *msg)
+static void SeraphCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-
 	seraph_pause(self);
 }
 
@@ -888,7 +887,7 @@ void SeraphOverlordStaticsInit(void)
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH]	= seraph_death;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DISMEMBER]	= DismemberMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH_PAIN]	= seraph_death_pain;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_CHECK_MOOD] = seraph_check_mood;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_CHECK_MOOD] = SeraphCheckMoodMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_VOICE_SIGHT] = ser_ovl_SightSound;
 
 	resInfo.numAnims = NUM_ANIMS;
