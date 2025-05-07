@@ -391,64 +391,57 @@ static void SeraphDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 		BecomeDebris(self);
 }
 
-void seraph_death(edict_t *self, G_Message_t *msg)
+static void SeraphDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_death' in original logic.
 {
-	edict_t	*targ, *inflictor, *attacker;
-	vec3_t	dVel, vf, yf;
-	float	damage;
-	int		soundID;
-
-	ParseMsgParms(msg, "eeei", &targ, &inflictor, &attacker, &damage);
+	edict_t* target;
+	edict_t* inflictor;
+	edict_t* attacker;
+	float damage;
+	ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
 
 	M_StartDeath(self, ANIM_DEATH1);
 
-	if (!stricmp(attacker->classname, "monster_ogle"))
+	if (attacker->classID == CID_OGLE) //mxd. classname -> classID check.
 	{
 		self->health = 1;
 		self->takedamage = DAMAGE_NO;
 		self->solid = SOLID_BBOX;
-		
+
 		SetAnim(self, ANIM_DEATH1);
-		
-		soundID = irand(SND_DEATH1, SND_DEATH4);
-		gi.sound (self, CHAN_BODY, sounds[soundID], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_BODY, sounds[irand(SND_DEATH1, SND_DEATH4)], 1.0f, ATTN_NORM, 0.0f);
 
 		return;
 	}
 
-	if (self->health < -80)
-	{
+	if (self->health < -80) // To be gibbed.
 		return;
-	}
-	else if (self->health < -10)
-	{
-		seraph_dropweapon (self);
 
+	if (self->health < -10)
+	{
+		seraph_dropweapon(self);
 		SetAnim(self, ANIM_DEATH2_GO);
 
-		VectorCopy(targ->velocity, vf);
-		VectorNormalize(vf);
+		vec3_t dir;
+		VectorNormalize2(target->velocity, dir);
 
-		VectorScale(vf, -1, yf);
+		vec3_t yaw_dir;
+		VectorScale(dir, -1.0f, yaw_dir);
 
-		self->ideal_yaw = VectorYaw( yf );
-		self->yaw_speed = 24;
+		self->ideal_yaw = VectorYaw(yaw_dir);
+		self->yaw_speed = 24.0f;
 
-		self->elasticity = 1.2;
-		self->friction = 0.8;
+		self->elasticity = 1.2f;
+		self->friction = 0.8f;
 
-		VectorScale(vf, 300, dVel);
-		dVel[2] = irand(150,200);
-
-		VectorCopy(dVel, self->velocity);
+		VectorScale(dir, 300.0f, self->velocity);
+		self->velocity[2] = flrand(150.0f, 200.0f); //mxd. irand() in original logic.
 	}
 	else
 	{
 		SetAnim(self, ANIM_DEATH1);
 	}
 
-	soundID = irand(SND_DEATH1, SND_DEATH4);
-	gi.sound (self, CHAN_BODY, sounds[soundID], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_BODY, sounds[irand(SND_DEATH1, SND_DEATH4)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 //Check to see if the Seraph is already standing, if not, transition into it
@@ -832,7 +825,7 @@ void SeraphOverlordStaticsInit(void)
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_RUN]		= seraph_run;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_MELEE]	= seraph_melee;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_PAIN]	= seraph_pain;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH]	= seraph_death;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH]	= SeraphDeathMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DISMEMBER]	= DismemberMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH_PAIN]	= SeraphDeathPainMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_CHECK_MOOD] = SeraphCheckMoodMsgHandler;
