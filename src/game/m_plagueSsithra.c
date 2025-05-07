@@ -523,7 +523,7 @@ static void SsithraSplit(edict_t* self, const int body_part) //mxd. Named 'ssith
 
 static qboolean SsithraCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode' in original logic.
 {
-	static const int bit_for_mesh_node[16] = //mxd. Made local static.
+	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
 	{
 		BIT_POLY,
 		BIT_LOWERTORSO,

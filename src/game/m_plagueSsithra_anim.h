@@ -488,7 +488,7 @@
 
 #define MODEL_SCALE					1.0f
 
-#define NUM_MESH_NODES				16 //TODO: unused.
+#define NUM_MESH_NODES				16
 
 #define MESH_POLY					0 //TODO: unused.
 #define MESH__LOWERTORSO			1 //TODO: unused.
