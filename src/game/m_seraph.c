@@ -216,18 +216,14 @@ static void SeraphCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	seraph_pause(self);
 }
 
-//Targets a specific ogle and puts it back to work
-void seraph_enforce_ogle(edict_t *self)
+// Targets a specific ogle and puts it back to work.
+void seraph_enforce_ogle(edict_t* self)
 {
-	if(!self->enemy)
-		return;
-
-	self->enemy->use(self->enemy, self, self);
-
-	if(irand(0, 1))//back to work!
-		gi.sound(self, CHAN_VOICE, sounds[SND_SCOLD1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_VOICE, sounds[SND_SCOLD2], 1, ATTN_NORM, 0);
+	if (self->enemy != NULL) //TODO: also check if self->enemy is CID_OGLE?
+	{
+		self->enemy->use(self->enemy, self, self);
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_SCOLD1, SND_SCOLD2)], 1.0f, ATTN_NORM, 0.0f);
+	}
 }
 
 //Targets all idle ogles and puts them back to work
