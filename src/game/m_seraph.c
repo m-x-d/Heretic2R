@@ -444,13 +444,10 @@ static void SeraphDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	gi.sound(self, CHAN_BODY, sounds[irand(SND_DEATH1, SND_DEATH4)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-//Check to see if the Seraph is already standing, if not, transition into it
-void seraph_stand(edict_t *self, G_Message_t *msg)
+// Check to see if the Seraph is already standing, if not, transition into it.
+static void SeraphStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_stand' in original logic.
 {
-	if (self->curAnimID == ANIM_READY2IDLE)
-		SetAnim(self, ANIM_STAND1);
-	else
-		SetAnim(self, ANIM_READY2IDLE);
+	SetAnim(self, ((self->curAnimID == ANIM_READY2IDLE) ? ANIM_STAND1 : ANIM_READY2IDLE));
 }
 
 //Classic run-attack function
@@ -821,7 +818,7 @@ void SeraphOverlordStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_STAND]	= seraph_stand;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_STAND]	= SeraphStandMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_RUN]		= seraph_run;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_MELEE]	= seraph_melee;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_PAIN]	= seraph_pain;
