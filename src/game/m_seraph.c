@@ -235,42 +235,44 @@ void seraph_enforce(edict_t* self)
 			ogle->use(ogle, self, self); // Setup within the ogle code.
 }
 
-//Check to see if you can make it to an idle ogle and scare them
-qboolean seraph_checkscare(edict_t *self, edict_t *ogle)
-{//FIX?  refers to goalentity
-	trace_t	trace;
-	vec3_t	sf, of, mins;
-	float	dot;
+// Check to see if you can make it to an idle ogle and scare them.
+static qboolean SeraphCheckScare(edict_t* self, edict_t* ogle) //mxd. Named 'seraph_checkscare' in original logic.
+{
+	//FIXME: refers to goalentity.
+	vec3_t self_fwd;
+	AngleVectors(self->s.angles, self_fwd, NULL, NULL);
 
-	AngleVectors(self->s.angles, sf, NULL, NULL);
-	AngleVectors(ogle->s.angles, of, NULL, NULL);
+	vec3_t ogle_fwd;
+	AngleVectors(ogle->s.angles, ogle_fwd, NULL, NULL);
 
-	dot = DotProduct(sf, of);
+	// Only do it if you're in back of them, and they're facing away.
+	if (DotProduct(self_fwd, ogle_fwd) <= 0.0f)
+		return false;
 
-	//Only do it if you're in back of them, and they're facing away
-	if (dot)
-	{
-		VectorCopy(self->mins, mins);
-		mins[2] += 18;	//Account for step ability
-		gi.trace(self->s.origin, mins, self->maxs, ogle->s.origin, self, MASK_MONSTERSOLID,&trace);
+	vec3_t mins;
+	VectorCopy(self->mins, mins);
+	mins[2] += 18.0f; // Account for step ability.
 
-		if (trace.ent == ogle)
-		{
-			//Necessary info for the AI_MOOD_POINT_NAVIGATE stuff
-			VectorCopy(self->s.origin, self->monsterinfo.nav_goal);
-			self->old_yaw = self->s.angles[YAW]; //TODO: set, but never used.
-			self->ai_mood = AI_MOOD_POINT_NAVIGATE;
-			self->movetarget = self->goalentity = self->enemy = ogle;
-			
-			//Tells the other Seraphs not to try and get this one too
-			ogle->targeted = 1;
-			
-			self->ai_mood_flags |= AI_MOOD_FLAG_IGNORE;
-		
-			return true;
-		}
-	}
-	return false;
+	trace_t trace;
+	gi.trace(self->s.origin, mins, self->maxs, ogle->s.origin, self, MASK_MONSTERSOLID, &trace);
+
+	if (trace.ent != ogle)
+		return false;
+
+	// Necessary info for the AI_MOOD_POINT_NAVIGATE stuff.
+	VectorCopy(self->s.origin, self->monsterinfo.nav_goal);
+	self->old_yaw = self->s.angles[YAW]; //TODO: set, but never used.
+	self->ai_mood = AI_MOOD_POINT_NAVIGATE;
+	self->ai_mood_flags |= AI_MOOD_FLAG_IGNORE;
+
+	self->movetarget = ogle;
+	self->goalentity = ogle;
+	self->enemy = ogle;
+
+	// Tells the other Seraphs not to try and get this one too.
+	ogle->targeted = true;
+
+	return true;
 }
 
 //Check the ogles and make sure their noses are to the grind stone
@@ -294,7 +296,7 @@ void seraph_oversee(edict_t *self)
 			return;
 
 		//See if we can scare this one
-		if (!seraph_checkscare(self, ogle))
+		if (!SeraphCheckScare(self, ogle))
 		{
 			self->ai_mood = AI_MOOD_ATTACK;
 			self->ai_mood_flags |= AI_MOOD_FLAG_WHIP;
