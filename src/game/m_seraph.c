@@ -149,20 +149,17 @@ void seraph_done_get2work(edict_t* self)
 	seraph_pause(self);
 }
 
-//Special walk code for going to yell at an ogle
-void seraph_ai_walk(edict_t *self, float dist)
+// Special walk code for going to yell at an ogle.
+void seraph_ai_walk(edict_t* self, float distance)
 {
-	if (self->enemy && M_DistanceToTarget(self, self->enemy) < 72)
+	if (self->enemy != NULL && M_DistanceToTarget(self, self->enemy) < 72.0f) //TODO: also check if self->enemy is CID_OGLE?
 	{
 		self->ai_mood = AI_MOOD_STAND;
-		if (irand(0,1))
-			SetAnim(self, ANIM_GET2WORK);
-		else
-			SetAnim(self, ANIM_GET2WORK2);
+		SetAnim(self, irand(ANIM_GET2WORK, ANIM_GET2WORK2));
 	}
 	else
 	{
-		MG_MoveToGoal(self, dist);
+		MG_MoveToGoal(self, distance);
 	}
 }
 

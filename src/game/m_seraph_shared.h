@@ -98,7 +98,7 @@ extern const animmove_t seraph_move_backup2;
 extern void seraph_done_startle(edict_t* self);
 extern void seraph_done_get2work(edict_t* self);
 extern void seraph_enforce_ogle(edict_t* self);
-extern void seraph_ai_walk(edict_t* self, float dist);
+extern void seraph_ai_walk(edict_t* self, float distance);
 extern void seraph_idle(edict_t* self);
 extern void seraph_pause(edict_t* self);
 extern void seraph_enforce(edict_t* self);
@@ -116,7 +116,7 @@ extern void seraph_sound_yell(edict_t* self);
 extern void seraph_sound_whip(edict_t* self);
 extern void seraphApplyJump(edict_t* self);
 
-extern void seraph_back(edict_t* self, float dist);
+extern void seraph_back(edict_t* self, float distance);
 extern void seraph_sound_scold2(edict_t* self);
 extern void seraph2idle(edict_t* self);
 
