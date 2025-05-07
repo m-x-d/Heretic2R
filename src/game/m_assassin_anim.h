@@ -355,7 +355,7 @@
 
 #define MODEL_SCALE		1.0f //TODO: unused.
 
-#define NUM_MESH_NODES	16 //TODO: unused.
+#define NUM_MESH_NODES	16
 
 #define MESH_DADDYNULL	0 //TODO: unused.
 #define MESH__TORSOFT	1

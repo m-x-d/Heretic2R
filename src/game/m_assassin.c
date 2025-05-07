@@ -1116,7 +1116,7 @@ void assassin_init_cloak(edict_t* self) //mxd. Named 'assassinInitCloak' in orig
 
 static qboolean AssassinCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_as' in original logic.
 {
-	static const int bit_for_mesh_node[] = //mxd. Made local static.
+	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
 	{
 		BIT_DADDYNULL,
 		BIT_TORSOFT,

@@ -247,7 +247,7 @@ static void PlagueElfDismemberSound(edict_t* self) //mxd. Named 'pelf_dismember_
 
 static qboolean PlagueElfCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_pe' in original logic.
 {
-	static const int bit_for_mesh_node[12] = //mxd. Made local static.
+	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
 	{
 		BIT_BASE,
 		BIT_HANDLE,

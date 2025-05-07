@@ -440,7 +440,7 @@
 
 #define MODEL_SCALE			1.0f
 
-#define NUM_MESH_NODES		11 //TODO: unused.
+#define NUM_MESH_NODES		11
 
 #define MESH_BASEPOLY		0 //TODO: unused.
 #define MESH__HANDLE		1
