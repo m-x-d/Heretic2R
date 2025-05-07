@@ -356,45 +356,33 @@ void seraph_idle(edict_t* self)
 	}
 }
 
-//Check to do damage with a whip
-void seraph_strike(edict_t *self, float damage, float a, float b)
+// Check to do damage with a whip.
+void seraph_strike(edict_t* self, float damage, float a, float b)
 {
+	const vec3_t start_offset = { 16.0f, 16.0f, 32.0f };
+	const vec3_t end_offset = { 80.0f, 16.0f, 8.0f };
+
+	const vec3_t mins = { -2.0f, -2.0f, -2.0f };
+	const vec3_t maxs = {  2.0f,  2.0f,  2.0f };
+
 	trace_t	trace;
-	edict_t *victim;
-	vec3_t	soff, eoff, mins, maxs, bloodDir, direction;
+	vec3_t direction;
+	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
 
-	VectorSet(soff, 16, 16, 32);
-	VectorSet(eoff, 80, 16, 8);
-	
-	VectorSet(mins, -2, -2, -2);
-	VectorSet(maxs,  2,  2,  2);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK], 1.0f, ATTN_NORM, 0.0f);
 
-	VectorSubtract(soff, eoff, bloodDir);
-	VectorNormalize(bloodDir);
+	if (victim == NULL) // Missed.
+		return; //TODO: play swoosh sound instead?
 
-	victim = M_CheckMeleeLineHit(self, soff, eoff, mins, maxs, &trace, direction);	
+	if (victim == self) // Hit wall.
+		return; //TODO: Create a puff effect.
 
-	if (victim)
-	{
-		if (victim == self)
-		{
-			//Create a puff effect
-			//gi.CreateEffect(NULL, FX_SPARKS, 0, hitPos, "db", vec3_origin, irand(1,3));
-			gi.sound (self, CHAN_WEAPON, sounds[SND_ATTACK], 1, ATTN_NORM, 0);
-		}
-		else
-		{
-			//Hurt whatever we were whacking away at
-			T_Damage(victim, self, self, direction, trace.endpos, bloodDir, 
-					damage, damage, DAMAGE_EXTRA_BLOOD|DAMAGE_EXTRA_KNOCKBACK,MOD_DIED);
-			gi.sound (self, CHAN_WEAPON, sounds[SND_ATTACK], 1, ATTN_NORM, 0);
-		}
-	}
-	else
-	{
-		//Play swoosh sound?
-		gi.sound (self, CHAN_WEAPON, sounds[SND_ATTACK], 1, ATTN_NORM, 0);
-	}
+	// Hurt whatever we were whacking away at.
+	vec3_t blood_dir;
+	VectorSubtract(start_offset, end_offset, blood_dir);
+	VectorNormalize(blood_dir);
+
+	T_Damage(victim, self, self, direction, trace.endpos, blood_dir, (int)damage, (int)damage, DAMAGE_EXTRA_BLOOD | DAMAGE_EXTRA_KNOCKBACK, MOD_DIED);
 }
 
 /*
