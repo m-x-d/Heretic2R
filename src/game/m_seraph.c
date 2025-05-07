@@ -60,30 +60,22 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-/*
-==========================================================
-
-	Seraph Helper functions
-
-==========================================================
-*/
-
-void seraphApplyJump (edict_t *self)
+void seraphApplyJump(edict_t* self) //TODO: rename to seraph_jump.
 {
-	self->jump_time = level.time + 0.75;
+	self->jump_time = level.time + 0.75f;
 	VectorCopy(self->movedir, self->velocity);
 	VectorNormalize(self->movedir);
 }
 
-void seraph_dead ( edict_t *self )
+void seraph_dead(edict_t* self)
 {
 	self->health = 0;
 	self->solid = SOLID_NOT;
 
-	M_EndDeath ( self );
+	M_EndDeath(self);
 }
 
-void seraph_death_loop ( edict_t *self )
+void seraph_death_loop(edict_t* self)
 {
 	SetAnim(self, ANIM_DEATH2_LOOP);
 }
