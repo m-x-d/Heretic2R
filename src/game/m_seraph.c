@@ -500,44 +500,41 @@ static void SeraphMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	}
 }
 
-//Take pain
-void seraph_pain(edict_t *self, G_Message_t *msg)
+static void SeraphPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_pain' in original logic.
 {
-	edict_t	*attacker;
-	int	temp, damage, soundID;
-	int	force_pain;
-
+	int	temp;
+	edict_t* attacker;
+	int force_pain;
+	int damage;
 	ParseMsgParms(msg, "eeiii", &temp, &attacker, &force_pain, &damage, &temp);
 
-	if(self->monsterinfo.awake)
+	if (self->monsterinfo.awake)
 		self->ai_mood_flags &= ~AI_MOOD_FLAG_IGNORE;
 
-	//Weighted random based on health compared to the maximum it was at
-	if (force_pain || ((irand(0, self->max_health+50) > self->health) && !irand(0,2)))
+	// Weighted random based on health compared to the maximum it was at.
+	if (force_pain || (irand(0, self->max_health + 50) > self->health && irand(0, 2) == 0))
 	{
-		soundID = irand(SND_PAIN1, SND_PAIN4);
-
-		gi.sound (self, CHAN_BODY, sounds[soundID], 1, ATTN_NORM, 0);
-		
+		gi.sound(self, CHAN_BODY, sounds[irand(SND_PAIN1, SND_PAIN4)], 1.0f, ATTN_NORM, 0.0f);
 		SetAnim(self, ANIM_PAIN);
 	}
 
-	if(attacker)
+	if (attacker == NULL || attacker == self->enemy)
+		return;
+
+	if (self->enemy == NULL)
 	{
-		if(attacker!=self->enemy)
-		{
-			if(!self->enemy)
-				self->enemy = attacker;
-			else if(M_DistanceToTarget(self, self->enemy) > self->melee_range)
-			{
-				if(self->enemy->client)
-					self->oldenemy = self->enemy;
-				self->enemy = attacker;
-			}
-		}
+		self->enemy = attacker;
+		return;
+	}
+
+	if (M_DistanceToTarget(self, self->enemy) > self->melee_range)
+	{
+		if (self->enemy->client != NULL)
+			self->oldenemy = self->enemy;
+
+		self->enemy = attacker;
 	}
 }
-
 
 qboolean seraphAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
 {
@@ -811,7 +808,7 @@ void SeraphOverlordStaticsInit(void)
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_STAND]	= SeraphStandMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_RUN]		= SeraphRunMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_MELEE]	= SeraphMeleeMsgHandler;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_PAIN]	= seraph_pain;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_PAIN]	= SeraphPainMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH]	= SeraphDeathMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DISMEMBER]	= DismemberMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH_PAIN]	= SeraphDeathPainMsgHandler;
