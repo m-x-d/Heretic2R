@@ -385,23 +385,10 @@ void seraph_strike(edict_t* self, float damage, float a, float b)
 	T_Damage(victim, self, self, direction, trace.endpos, blood_dir, (int)damage, (int)damage, DAMAGE_EXTRA_BLOOD | DAMAGE_EXTRA_KNOCKBACK, MOD_DIED);
 }
 
-/*
-==========================================================
-
-	Seraph Message functions
-
-==========================================================
-*/
-
-//Seraph has died
-void seraph_death_pain(edict_t *self, G_Message_t *msg)
+static void SeraphDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_death_pain' in original logic.
 {
-	if (self->health < -80)
-	{
+	if (self->health < -80) // Become gibbed.
 		BecomeDebris(self);
-		return;
-	}
-
 }
 
 void seraph_death(edict_t *self, G_Message_t *msg)
@@ -847,7 +834,7 @@ void SeraphOverlordStaticsInit(void)
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_PAIN]	= seraph_pain;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH]	= seraph_death;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DISMEMBER]	= DismemberMsgHandler;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH_PAIN]	= seraph_death_pain;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH_PAIN]	= SeraphDeathPainMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_CHECK_MOOD] = SeraphCheckMoodMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_VOICE_SIGHT] = ser_ovl_SightSound;
 
