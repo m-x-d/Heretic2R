@@ -168,50 +168,45 @@ void seraph2idle(edict_t* self) //TODO: rename to seraph_stand.
 	SetAnim(self, ANIM_STAND1);
 }
 
-//Upper level AI interfacing
-void seraph_pause(edict_t *self)
+// Upper level AI interfacing.
+void seraph_pause(edict_t* self)
 {
 	self->mood_think(self);
 
-	if(self->enemy)
-		if ((self->ai_mood_flags & AI_MOOD_FLAG_IGNORE)&& self->enemy->classID == CID_OGLE)
-			return;
+	if (self->enemy != NULL && self->enemy->classID == CID_OGLE && (self->ai_mood_flags & AI_MOOD_FLAG_IGNORE))
+		return;
 
 	switch (self->ai_mood)
 	{
-	case AI_MOOD_ATTACK:
-		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-		break;
-	case AI_MOOD_PURSUE:
-	case AI_MOOD_NAVIGATE:
-	case AI_MOOD_WALK:
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-		break;
-	case AI_MOOD_STAND:
-		if (!self->enemy)
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		break;//else what?
+		case AI_MOOD_ATTACK:
+			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_DELAY:
-		break;
+		case AI_MOOD_PURSUE:
+		case AI_MOOD_NAVIGATE:
+		case AI_MOOD_WALK:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_WANDER:
-		SetAnim(self, ANIM_WALK1);
-		break;
+		case AI_MOOD_STAND:
+			if (self->enemy == NULL) //TODO: else what?
+				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_POINT_NAVIGATE:
-		SetAnim(self, ANIM_WALK2);
-		break;
+		case AI_MOOD_WANDER:
+			SetAnim(self, ANIM_WALK1);
+			break;
 
-	case AI_MOOD_JUMP:
-		SetAnim(self, ANIM_FJUMP);
-		break;
+		case AI_MOOD_POINT_NAVIGATE:
+			SetAnim(self, ANIM_WALK2);
+			break;
 
-	default :
-#ifdef _DEVEL
-		gi.dprintf("seraph guard: Unusable mood %d!\n", self->ai_mood);
-#endif
-		break;
+		case AI_MOOD_JUMP:
+			SetAnim(self, ANIM_FJUMP);
+			break;
+
+		default:
+			break;
 	}
 }
 
