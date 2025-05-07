@@ -29,7 +29,7 @@
 #include "p_anims.h"
 #include "p_actions.h"
 
-static animmove_t *animations[NUM_ANIMS] =
+static const animmove_t *animations[NUM_ANIMS] =
 {
 	&seraph_guard_move_stand,
 	&seraph_guard_move_run,
