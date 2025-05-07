@@ -627,158 +627,180 @@ static void SeraphDropWeapon(edict_t* self) //mxd. Named 'seraph_dropweapon' in 
 	self->s.fmnodeinfo[MESH__WHIP].flags |= FMNI_NO_DRAW;
 }
 
-void seraph_dismember(edict_t *self, int damage, int HitLocation)
+static qboolean SeraphThrowHead(edict_t* self, float damage, const qboolean dismember_ok) //mxd. Added to simplify logic.
 {
-	int			throw_nodes = 0;
-	vec3_t		gore_spot, right;
-	qboolean	dismember_ok = false;
+	if (self->s.fmnodeinfo[MESH__PITHEAD].flags & FMNI_NO_DRAW)
+		return false;
 
-	if(HitLocation & hl_MeleeHit)
+	if (self->s.fmnodeinfo[MESH__PITHEAD].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0, (float)self->health) < damage * 0.3f)
+	{
+		SeraphDropWeapon(self);
+
+		int throw_nodes = 0;
+		SeraphCanThrowNode(self, MESH__PITHEAD, &throw_nodes);
+
+		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
+		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
+
+		Vec3AddAssign(self->s.origin, gore_spot);
+		SprayDebris(self, gore_spot, 8, damage);
+
+		if (self->health > 0)
+		{
+			self->health = 1;
+			T_Damage(self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20, 0, MOD_DIED);
+		}
+
+		return true;
+	}
+
+	self->s.fmnodeinfo[MESH__PITHEAD].flags |= FMNI_USE_SKIN;
+	self->s.fmnodeinfo[MESH__PITHEAD].skin = self->s.skinnum + 1;
+
+	return false;
+}
+
+static void SeraphThrowBodyPart(edict_t* self, const float damage, const int mesh_part) //mxd. Added to simplify logic.
+{
+	if (flrand(0, (float)self->health) < damage)
+	{
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+}
+
+static void SeraphThrowArmLowerLeft(edict_t* self, float damage, const qboolean dismember_ok) //mxd. Added to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH__LHANDBOSS].flags & FMNI_NO_DRAW)
+		return;
+
+	if (self->s.fmnodeinfo[MESH__LHANDBOSS].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0, (float)self->health) < damage * 0.75f)
+	{
+		int throw_nodes = 0;
+
+		if (SeraphCanThrowNode(self, MESH__LHANDBOSS, &throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			VectorMA(gore_spot, -10.0f, right, gore_spot);
+			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
+		}
+	}
+	else
+	{
+		self->s.fmnodeinfo[MESH__LHANDBOSS].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__LHANDBOSS].skin = self->s.skinnum + 1;
+	}
+}
+
+static void SeraphThrowArmLowerRight(edict_t* self, float damage, const qboolean dismember_ok) //mxd. Added to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH__RHAND].flags & FMNI_NO_DRAW)
+		return;
+
+	if (dismember_ok && flrand(0, (float)self->health) < damage * 0.75f)
+	{
+		int throw_nodes = 0;
+
+		if (SeraphCanThrowNode(self, MESH__RHAND, &throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			VectorMA(gore_spot, 10.0f, right, gore_spot);
+
+			SeraphDropWeapon(self);
+			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
+		}
+	}
+	else
+	{
+		self->s.fmnodeinfo[MESH__RHAND].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__RHAND].skin = self->s.skinnum + 1;
+	}
+}
+
+static void SeraphThrowLeg(edict_t* self, const int mesh_part) //mxd. Added to simplify logic.
+{
+	if (!(self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN))
+	{
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+}
+
+static void SeraphDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'seraph_dismember' in original logic.
+{
+	qboolean dismember_ok = false;
+
+	if (hl & hl_MeleeHit)
 	{
 		dismember_ok = true;
-		HitLocation &= ~hl_MeleeHit;
+		hl &= ~hl_MeleeHit;
 	}
 
-	if(HitLocation<1)
+	if (hl <= hl_NoneSpecific || hl >= hl_Max) //mxd. '> hl_Max' in original logic.
 		return;
 
-	if(HitLocation>hl_Max)
-		return;
-
-
-	VectorClear(gore_spot);
-	switch(HitLocation)
+	switch (hl)
 	{
 		case hl_Head:
-			if(self->s.fmnodeinfo[MESH__PITHEAD].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__PITHEAD].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
-			{
-				SeraphDropWeapon(self);
-				SeraphCanThrowNode(self, MESH__PITHEAD,&throw_nodes);
-
-				gore_spot[2]+=18;
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
-
-				VectorAdd(self->s.origin, gore_spot, gore_spot);
-				SprayDebris(self,gore_spot,8,damage);
-
-				if(self->health>0)
-				{
-					self->health = 1;
-					T_Damage (self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20,0,MOD_DIED);
-				}
+			if (SeraphThrowHead(self, (float)damage, dismember_ok))
 				return;
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__PITHEAD].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__PITHEAD].skin = self->s.skinnum+1;
-			}
 			break;
 
-		case hl_TorsoFront://split in half?
-			if(self->s.fmnodeinfo[MESH__FRTORSO].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage)
-			{
-				self->s.fmnodeinfo[MESH__FRTORSO].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__FRTORSO].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_TorsoBack://split in half?
-			if(self->s.fmnodeinfo[MESH__BKTORSO].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health) < damage)
-			{
-				self->s.fmnodeinfo[MESH__BKTORSO].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__BKTORSO].skin = self->s.skinnum+1;
-			}
+		case hl_TorsoFront: // Split in half?
+			SeraphThrowBodyPart(self, (float)damage, MESH__FRTORSO);
 			break;
 
-		case hl_ArmUpperLeft:
-			if(flrand(0,self->health)<damage)
-			{
-				self->s.fmnodeinfo[MESH__LFTUPARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__LFTUPARM].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_ArmLowerLeft://left arm
-			if(self->s.fmnodeinfo[MESH__LHANDBOSS].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__LHANDBOSS].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				if(SeraphCanThrowNode(self, MESH__LHANDBOSS, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
-				}
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__LHANDBOSS].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__LHANDBOSS].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_ArmUpperRight:
-			if(flrand(0,self->health)<damage)
-			{
-				self->s.fmnodeinfo[MESH__RTARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__RTARM].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_ArmLowerRight://right arm
-			if(self->s.fmnodeinfo[MESH__RHAND].flags & FMNI_NO_DRAW)
-				break;
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				if(SeraphCanThrowNode(self, MESH__RHAND, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,10,right,gore_spot);
-					SeraphDropWeapon (self);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
-				}
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__RHAND].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__RHAND].skin = self->s.skinnum+1;
-			}
+		case hl_TorsoBack: // Split in half?
+			SeraphThrowBodyPart(self, (float)damage, MESH__BKTORSO);
 			break;
 
-		case hl_LegUpperLeft:
-		case hl_LegLowerLeft://left leg
-			if(self->s.fmnodeinfo[MESH__LFTLEG].flags & FMNI_USE_SKIN)
-				break;
-			self->s.fmnodeinfo[MESH__LFTLEG].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH__LFTLEG].skin = self->s.skinnum+1;
+		case hl_ArmUpperLeft: // Left arm.
+			SeraphThrowBodyPart(self, (float)damage, MESH__LFTUPARM);
 			break;
-		case hl_LegUpperRight:
-		case hl_LegLowerRight://right leg
-			if(self->s.fmnodeinfo[MESH__RTLEG].flags & FMNI_USE_SKIN)
-				break;
-			self->s.fmnodeinfo[MESH__RTLEG].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH__RTLEG].skin = self->s.skinnum+1;
+
+		case hl_ArmLowerLeft:
+			SeraphThrowArmLowerLeft(self, (float)damage, dismember_ok);
+			break;
+
+		case hl_ArmUpperRight: // Right arm.
+			SeraphThrowBodyPart(self, (float)damage, MESH__RTARM);
+			break;
+
+		case hl_ArmLowerRight:
+			SeraphThrowArmLowerRight(self, (float)damage, dismember_ok);
+			break;
+
+		case hl_LegUpperLeft: // Left leg.
+		case hl_LegLowerLeft:
+			SeraphThrowLeg(self, MESH__LFTLEG);
+			break;
+
+		case hl_LegUpperRight: // Right leg.
+		case hl_LegLowerRight:
+			SeraphThrowLeg(self, MESH__RTLEG);
+			break;
+
+		default:
 			break;
 	}
 
-	if(self->s.fmnodeinfo[MESH__RHAND].flags & FMNI_NO_DRAW)
+	if (self->s.fmnodeinfo[MESH__RHAND].flags & FMNI_NO_DRAW)
+	{
 		self->monsterinfo.aiflags |= AI_NO_MELEE;
-
-//FIXME: when get missile anim
-//	if(self->s.fmnodeinfo[MESH__LHANDGRD].flags & FMNI_NO_DRAW)
-//		self->monsterinfo.aiflags |= AI_NO_MISSILE;
-
-	if(self->monsterinfo.aiflags & AI_NO_MELEE)//&&self->monsterinfo.aiflags & AI_NO_MISSILE)
 		SetAnim(self, ANIM_BACKUP);
+	}
 }
 
 void ser_ovl_SightSound(edict_t *self, G_Message_t *Msg)
@@ -902,7 +924,7 @@ void SP_monster_seraph_overlord(edict_t *self)
 	self->msgHandler = DefaultMsgHandler;
 	self->monsterinfo.alert = SeraphAlert;
 	self->think = M_WalkmonsterStartGo;
-	self->monsterinfo.dismember = seraph_dismember;
+	self->monsterinfo.dismember = SeraphDismember;
 
 	if (!self->health)
 	{
