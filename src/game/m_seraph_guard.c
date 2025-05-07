@@ -1141,10 +1141,9 @@ void SeraphGuardStaticsInit(void)
 
 void golem_awaken (edict_t *self, edict_t *other, edict_t *activator)
 {
-	if (!M_Start(self))		// Initialization failed
-		return;
+	if (!M_WalkmonsterStart(self)) //mxd. M_Start -> M_WalkmonsterStart.
+		return; // Initialization failed.
 
-	self->think = M_WalkmonsterStartGo;
 	self->msgHandler = DefaultMsgHandler;
 	self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
 	self->monsterinfo.dismember = seraph_guard_dismember;
@@ -1251,10 +1250,9 @@ void SP_monster_seraph_guard(edict_t *self)
 	}
 	else
 	{
-		if (!M_Start(self))		
-			return;					// Failed initialization
+		if (!M_WalkmonsterStart(self)) //mxd. M_Start -> M_WalkmonsterStart.
+			return; // Failed initialization
 
-		self->think = M_WalkmonsterStartGo;
 		self->msgHandler = DefaultMsgHandler;
 
 		if (!self->health)

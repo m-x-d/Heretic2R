@@ -1491,7 +1491,7 @@ void SP_monster_ogle(edict_t* self)
 	self->monsterinfo.ogleflags = self->spawnflags;
 	self->spawnflags = 0; // Don't want incorrect handling due to weird ogle spawnflags!
 
-	if (!M_Start(self))
+	if (!M_WalkmonsterStart(self)) //mxd. M_Start -> M_WalkmonsterStart.
 		return; // Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;
@@ -1652,9 +1652,5 @@ void SP_monster_ogle(edict_t* self)
 
 		if (self->monsterinfo.ogleflags & OF_SONG_LEADER)
 			self->noise_index = 0;
-	}
-	else
-	{
-		self->think = M_WalkmonsterStartGo;
 	}
 }

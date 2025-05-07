@@ -341,11 +341,10 @@ void ChickenStaticsInit(void)
 void SP_monster_chicken(edict_t* self)
 {
 	// Generic monster initialization.
-	if (!M_Start(self)) // Failed initialization.
-		return;
+	if (!M_WalkmonsterStart(self)) //mxd. M_Start -> M_WalkmonsterStart.
+		return; // Failed initialization.
 
 	self->msgHandler = DefaultMsgHandler;
-	self->think = M_WalkmonsterStartGo;
 	self->materialtype = MAT_FLESH;
 
 	self->health = CHICKEN_HEALTH;

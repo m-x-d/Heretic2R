@@ -2460,13 +2460,12 @@ void SP_monster_plague_ssithra(edict_t* self)
 		self->spawnflags |= MSF_AMBUSH;
 
 	// Generic Monster Initialization.
-	if (!M_Start(self))
+	if (!M_WalkmonsterStart(self)) //mxd. M_Start -> M_WalkmonsterStart.
 		return; // Failed initialization.
 
 	self->msgHandler = DefaultMsgHandler;
 	self->monsterinfo.alert = SsithraAlert;
 	self->monsterinfo.dismember = SsithraDismember;
-	self->think = M_WalkmonsterStartGo;
 	self->isBlocked = SsithraBlocked;
 	self->touch = M_Touch;
 
