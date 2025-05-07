@@ -129,12 +129,6 @@ void seraph_sound_whip(edict_t* self)
 	gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK], 1.0f, ATTN_NORM, 0.0f);
 }
 
-//Become startled and look around
-void seraph_startle(edict_t *self)
-{
-	SetAnim(self, ANIM_STARTLE);
-}
-
 //Seraph has finished his startle, either track down the enemy, or go back to normal
 void seraph_done_startle(edict_t *self)
 {
@@ -642,7 +636,7 @@ qboolean seraphAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
 				self->alert_time = level.time + 2;//be ready for 2 seconds to wake up if alerted again
 			else
 				self->alert_time = alerter->lifetime;//be alert as long as the alert sticks around
-			seraph_startle(self);
+			SetAnim(self, ANIM_STARTLE); //mxd. Inline seraph_startle().
 			return false;
 		}
 	}
