@@ -18,7 +18,7 @@
 #include "g_monster.h"
 #include "g_local.h"
 
-static void seraph_dropweapon(edict_t* self); //TODO: remove.
+static void SeraphDropWeapon(edict_t* self); //TODO: remove.
 
 #define OVERLORD_ENFORCE_RADIUS	1000.0f //FIXME: Tweak out. //mxd. Named 'OVERLORD_RADIUS' in original logic.
 
@@ -418,7 +418,7 @@ static void SeraphDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 
 	if (self->health < -10)
 	{
-		seraph_dropweapon(self);
+		SeraphDropWeapon(self);
 		SetAnim(self, ANIM_DEATH2_GO);
 
 		vec3_t dir;
@@ -607,23 +607,24 @@ static qboolean SeraphCanThrowNode(edict_t* self, int node_id, int* throw_nodes)
 	return false;
 }
 
-//THROWS weapon, turns off those nodes, sets that weapon as gone
-static void seraph_dropweapon (edict_t *self)
+// Throws weapon, turns off those nodes, sets that weapon as gone.
+static void SeraphDropWeapon(edict_t* self) //mxd. Named 'seraph_dropweapon' in original logic.
 {
-	vec3_t handspot, forward, right, up;
+	if (self->s.fmnodeinfo[MESH__WHIP].flags & FMNI_NO_DRAW)
+		return; // Already dropped.
 
-	if(!(self->s.fmnodeinfo[MESH__WHIP].flags & FMNI_NO_DRAW))
-	{
-		VectorClear(handspot);
-		AngleVectors(self->s.angles,forward,right,up);
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
-		VectorMA(handspot,8,forward,handspot);
-		VectorMA(handspot,5,right,handspot);
-		VectorMA(handspot,12,up,handspot);
-		ThrowWeapon(self, &handspot, BIT_WHIP, 0, FRAME_partfly);
-		self->s.fmnodeinfo[MESH__WHIP].flags |= FMNI_NO_DRAW;
-		return;
-	}
+	vec3_t hand_pos = { 0 };
+	VectorMA(hand_pos, 8.0f, forward, hand_pos);
+	VectorMA(hand_pos, 5.0f, right, hand_pos);
+	VectorMA(hand_pos, 12.0f, up, hand_pos);
+
+	ThrowWeapon(self, &hand_pos, BIT_WHIP, 0, FRAME_partfly);
+	self->s.fmnodeinfo[MESH__WHIP].flags |= FMNI_NO_DRAW;
 }
 
 void seraph_dismember(edict_t *self, int damage, int HitLocation)
@@ -655,7 +656,7 @@ void seraph_dismember(edict_t *self, int damage, int HitLocation)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
 			{
-				seraph_dropweapon(self);
+				SeraphDropWeapon(self);
 				SeraphCanThrowNode(self, MESH__PITHEAD,&throw_nodes);
 
 				gore_spot[2]+=18;
@@ -742,7 +743,7 @@ void seraph_dismember(edict_t *self, int damage, int HitLocation)
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,10,right,gore_spot);
-					seraph_dropweapon (self);
+					SeraphDropWeapon (self);
 					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
 				}
 			}
