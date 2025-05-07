@@ -803,9 +803,9 @@ static void SeraphDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. 
 	}
 }
 
-void ser_ovl_SightSound(edict_t *self, G_Message_t *Msg)
+static void SeraphVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ser_ovl_SightSound' in original logic.
 {
-	gi.sound(self, CHAN_VOICE, sounds[irand(SND_SIGHT1, SND_SIGHT3)], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_SIGHT1, SND_SIGHT3)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 /*
@@ -828,7 +828,7 @@ void SeraphOverlordStaticsInit(void)
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DISMEMBER]	= DismemberMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH_PAIN]	= SeraphDeathPainMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_CHECK_MOOD] = SeraphCheckMoodMsgHandler;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_VOICE_SIGHT] = ser_ovl_SightSound;
+	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_VOICE_SIGHT] = SeraphVoiceSightMsgHandler;
 
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
