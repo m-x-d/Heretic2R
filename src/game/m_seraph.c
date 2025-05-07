@@ -20,7 +20,7 @@
 
 static void seraph_dropweapon(edict_t* self); //TODO: remove.
 
-#define OVERLORD_RADIUS	1000.0f //FIXME: Tweak out.
+#define OVERLORD_ENFORCE_RADIUS	1000.0f //FIXME: Tweak out. //mxd. Named 'OVERLORD_RADIUS' in original logic.
 
 #pragma region ========================== Seraph Base Info ==========================
 
@@ -226,28 +226,13 @@ void seraph_enforce_ogle(edict_t* self)
 	}
 }
 
-//Targets all idle ogles and puts them back to work
-void seraph_enforce(edict_t *self)
+// Targets all idle ogles and puts them back to work.
+void seraph_enforce(edict_t* self)
 {
-	edict_t *ogle;
-
-	ogle = NULL;
-	
-	while((ogle = FindInRadius(ogle, self->s.origin, OVERLORD_RADIUS)) != NULL)
-	{
-		if (ogle->classID != CID_OGLE)
-			continue;
-
-		if (ogle->ai_mood != AI_MOOD_REST)
-			continue;
-
-		if (ogle->targetEnt != self)
-			continue;
-					
-		//Setup within the ogle code
-		ogle->use(ogle, self, self);
-	}
-
+	edict_t* ogle = NULL;
+	while ((ogle = FindInRadius(ogle, self->s.origin, OVERLORD_ENFORCE_RADIUS)) != NULL)
+		if (ogle->classID == CID_OGLE && ogle->ai_mood == AI_MOOD_REST && ogle->targetEnt == self)
+			ogle->use(ogle, self, self); // Setup within the ogle code.
 }
 
 //Check to see if you can make it to an idle ogle and scare them
@@ -294,7 +279,7 @@ void seraph_oversee(edict_t *self)
 	edict_t	*ogle;
 	ogle=NULL;
 
-	while((ogle = FindInRadius(ogle, self->s.origin, OVERLORD_RADIUS)) != NULL)
+	while((ogle = FindInRadius(ogle, self->s.origin, OVERLORD_ENFORCE_RADIUS)) != NULL)
 	{
 		if (ogle->ai_mood != AI_MOOD_REST)
 			continue;
