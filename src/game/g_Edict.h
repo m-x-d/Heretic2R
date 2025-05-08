@@ -248,7 +248,12 @@ struct edict_s
 	edict_t* chain;		// Used by items and player in the body queue.
 	edict_t* enemy;		// Used by monsters, player, and a poly or two.
 	edict_t* oldenemy;	// Used by monsters.
-	edict_t* activator;	// Entity that used something, used by monsters, items, and polys.
+
+	union
+	{
+		edict_t* activator; // Entity that used something, used by monsters, items, and polys.
+		edict_t* spreadermist_attach_ent; //mxd
+	};
 
 	// Used by player only.
 

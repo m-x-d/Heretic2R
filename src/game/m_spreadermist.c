@@ -14,6 +14,18 @@
 
 #pragma region ========================== Utility functions =========================
 
+static void RadiusDamageEntUpdateAttachPosition(edict_t* self) //mxd. Added to reduce code duplication
+{
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->spreadermist_attach_ent->s.angles, forward, right, up);
+
+	VectorMA(self->spreadermist_attach_ent->s.origin, self->v_angle_ofs[0], forward, self->s.origin);
+	VectorMA(self->s.origin, self->v_angle_ofs[1], right, self->s.origin);
+	VectorMA(self->s.origin, self->v_angle_ofs[2], up, self->s.origin);
+}
+
 edict_t * RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const int damage, const float delta_damage, const float radius, const float delta_radius, const int dflags, const float lifetime, const float think_increment, const vec3_t origin, const vec3_t offset, const qboolean attach) //TODO: rename to CreateRadiusDamageEnt.
 {
 	assert(damage_owner != NULL);
@@ -22,7 +34,7 @@ edict_t * RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const 
 
 	self->classname = "plague_mist";
 	self->owner = damage_owner; // For damage.
-	self->activator = position_owner;// For offsetting. //TODO: add spreadermist_attach_ent name.
+	self->spreadermist_attach_ent = position_owner;// For offsetting.
 	self->dmg = damage; // Starting damage.
 	self->damage_debounce_time = delta_damage; // Damage amount to decrease by each think. //TODO: add int spreadermist_damage_delta name.
 	self->dmg_radius = radius; // Radius of damage.
@@ -37,16 +49,8 @@ edict_t * RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const 
 
 	if (attach)
 	{
-		vec3_t forward;
-		vec3_t right;
-		vec3_t up;
-		AngleVectors(self->activator->s.angles, forward, right, up);
-
 		VectorCopy(offset, self->v_angle_ofs); // Where to keep me - offset in {f, r, u}
-
-		VectorMA(self->activator->s.origin, self->v_angle_ofs[0], forward, self->s.origin);
-		VectorMA(self->s.origin, self->v_angle_ofs[1], right, self->s.origin);
-		VectorMA(self->s.origin, self->v_angle_ofs[2], up, self->s.origin);
+		RadiusDamageEntUpdateAttachPosition(self); //mxd
 	}
 	else
 	{
@@ -120,17 +124,8 @@ static void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamag
 	}
 
 	// Apply my offset?
-	if (self->yaw_speed && self->activator != NULL && Vec3NotZero(self->activator->s.origin))
-	{
-		vec3_t forward;
-		vec3_t right;
-		vec3_t up;
-		AngleVectors(self->activator->s.angles, forward, right, up);
-
-		VectorMA(self->activator->s.origin, self->v_angle_ofs[0], forward, self->s.origin);
-		VectorMA(self->s.origin, self->v_angle_ofs[1], right, self->s.origin);
-		VectorMA(self->s.origin, self->v_angle_ofs[2], up, self->s.origin);
-	}
+	if (self->yaw_speed && self->spreadermist_attach_ent != NULL && Vec3NotZero(self->spreadermist_attach_ent->s.origin))
+		RadiusDamageEntUpdateAttachPosition(self); //mxd
 
 	T_DamageRadius(self, self->owner, self->owner, self->dmg_radius, (float)self->dmg, 1.0f, self->bloodType, MOD_DIED);
 
