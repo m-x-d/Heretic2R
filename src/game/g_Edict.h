@@ -171,7 +171,12 @@ struct edict_s
 		edict_t* priestess_teleport_blocker; //mxd
 	};
 
-	float yaw_speed;	// Used by monsters and player.
+	union
+	{
+		float yaw_speed; // Used by monsters and player.
+		qboolean spreadermist_attach; //mxd
+	};
+	
 	float ideal_yaw;	// Used by monsters and player.
 	float ideal_pitch;	// Used by monsters and player. //TODO: used, but never set?
 	float yawOffset;	// Used in CreateMove_Step //TODO: used, but never set?

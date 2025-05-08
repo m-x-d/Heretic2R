@@ -41,7 +41,7 @@ edict_t * RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const 
 	self->spreadermist_dmg_radius_delta = delta_radius; // Amount to change radius each think.
 	self->spreadermist_dflags = dflags; // Damage flags.
 	self->spreadermist_expire_time = level.time + lifetime; // When to die out.
-	self->yaw_speed = attach; // Whether to keep that offset from the owner or just sit here. //TODO: add qboolean spreadermist_attach name.
+	self->spreadermist_attach = attach; // Whether to keep that offset from the owner or just sit here.
 	self->wait = max(FRAMETIME, think_increment); // How often to think (default to 10 fps).
 
 	self->think = RadiusDamageEntThink;
@@ -124,7 +124,7 @@ static void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamag
 	}
 
 	// Apply my offset?
-	if (self->yaw_speed && self->spreadermist_attach_ent != NULL && Vec3NotZero(self->spreadermist_attach_ent->s.origin))
+	if (self->spreadermist_attach && self->spreadermist_attach_ent != NULL && Vec3NotZero(self->spreadermist_attach_ent->s.origin))
 		RadiusDamageEntUpdateAttachPosition(self); //mxd
 
 	T_DamageRadius(self, self->owner, self->owner, self->dmg_radius, (float)self->dmg, 1.0f, self->spreadermist_dflags, MOD_DIED);
