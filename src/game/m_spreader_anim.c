@@ -18,7 +18,7 @@
 
 #include "m_spreader_anim.h"
 #include "m_spreadermist.h"
-#include "m_spreader_local.h"
+#include "m_spreader_shared.h"
 
 /*------------------------------------------------------------------
 	spreader attack 1 -- the throw

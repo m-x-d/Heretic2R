@@ -5,7 +5,7 @@
 //
 
 #include "m_spreadermist.h"
-#include "m_spreader_local.h" //mxd. For SND_BOMB.
+#include "m_spreader_shared.h" //mxd. For SND_BOMB.
 #include "m_stats.h" //mxd. For SPREADER_GRENADE_DAMAGE, SPREADER_GRENADE_RADIUS, SPREADER_GRENADE_TIME.
 #include "Matrix.h"
 #include "Random.h"

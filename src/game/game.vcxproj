@@ -341,7 +341,7 @@
     <ClInclude Include="m_seraph_guard_shared.h" />
     <ClInclude Include="m_seraph_guard_anim.h" />
     <ClInclude Include="m_spreader.h" />
-    <ClInclude Include="m_spreader_local.h" />
+    <ClInclude Include="m_spreader_shared.h" />
     <ClInclude Include="m_spreadermist.h" />
     <ClInclude Include="m_spreader_anim.h" />
     <ClInclude Include="m_stats.h" />

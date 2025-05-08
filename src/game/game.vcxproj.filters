@@ -938,7 +938,7 @@
     <ClInclude Include="m_seraph_guard_anim.h">
       <Filter>src\Monsters\SeraphGuard</Filter>
     </ClInclude>
-    <ClInclude Include="m_spreader_local.h">
+    <ClInclude Include="m_spreader_shared.h">
       <Filter>src\Monsters\Spreader</Filter>
     </ClInclude>
     <ClInclude Include="m_spreader_anim.h">
