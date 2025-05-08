@@ -945,10 +945,10 @@ void SP_monster_seraph_overlord(edict_t* self)
 
 	// Turn off the Guard pieces!
 	self->s.fmnodeinfo[MESH__AXE].flags |= FMNI_NO_DRAW;
-	self->s.fmnodeinfo[MESH__GUARDHEAD].flags |= FMNI_NO_DRAW;
-	self->s.fmnodeinfo[MESH__LHANDGRD].flags |= FMNI_NO_DRAW;
-	self->s.fmnodeinfo[MESH__ARMSPIKES].flags |= FMNI_NO_DRAW;
-	self->s.fmnodeinfo[MESH__SHOULDPAD].flags |= FMNI_NO_DRAW;
+	self->s.fmnodeinfo[MESH__GUARDHEAD].flags |= FMNI_NO_DRAW; //TODO: randomly enable?
+	self->s.fmnodeinfo[MESH__LHANDGRD].flags |= FMNI_NO_DRAW; //mxd. Unfinished texture.
+	self->s.fmnodeinfo[MESH__ARMSPIKES].flags |= FMNI_NO_DRAW; //mxd. Unfinished texture.
+	self->s.fmnodeinfo[MESH__SHOULDPAD].flags |= FMNI_NO_DRAW; //TODO: randomly enable?
 
 	MG_InitMoods(self);
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
