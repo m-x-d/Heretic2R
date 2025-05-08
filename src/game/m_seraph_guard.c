@@ -100,56 +100,45 @@ static void SeraphGuardProjectileThink(edict_t* self) //mxd. Named 'guard_beam_t
 	self->nextthink = -1.0f;
 }
 
-void guard_beam( edict_t *self)
+static void SeraphGuardProjectile(edict_t* self) //mxd. Named 'guard_beam' in original logic.
 {
-	edict_t	*proj;
-	vec3_t	Forward, vf, vr;
+	// Spawn the projectile.
+	edict_t* proj = G_Spawn();
 
-	// Spawn the projectile
-
-	proj = G_Spawn();
-
-	SeraphGuardProjectileInit(self,proj);
+	SeraphGuardProjectileInit(self, proj);
 
 	proj->reflect_debounce_time = MAX_REFLECT;
-	proj->classname = "M_Beam";
-
-	proj->isBlocked = SeraphGuardProjectileBlocked;
-
 	proj->owner = self;
-	
-	AngleVectors(self->s.angles, vf, vr, NULL);
-	VectorMA(proj->s.origin, 24,  vf, proj->s.origin);
-	VectorMA(proj->s.origin, 16, vr, proj->s.origin);
-	proj->s.origin[2] += 10;
 
-	if(!MG_IsAheadOf(self, self->enemy))
-		VectorCopy(vf, Forward);
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+
+	VectorMA(proj->s.origin, 24.0f, forward, proj->s.origin);
+	VectorMA(proj->s.origin, 16.0f, right, proj->s.origin);
+	proj->s.origin[2] += 10.0f;
+
+	vec3_t dir;
+
+	if (MG_IsAheadOf(self, self->enemy))
+	{
+		VectorSubtract(self->enemy->s.origin, self->s.origin, dir);
+		VectorNormalize(dir);
+	}
 	else
 	{
-		VectorSubtract(self->enemy->s.origin, self->s.origin, Forward);
-		VectorNormalize(Forward);
+		VectorCopy(forward, dir);
 	}
-	
-	VectorScale(Forward, 500, proj->velocity);
 
+	VectorScale(dir, 500.0f, proj->velocity);
 	vectoangles(proj->velocity, proj->s.angles);
 
 	proj->think = SeraphGuardProjectileThink;
-	proj->nextthink = level.time + 1;
+	proj->nextthink = level.time + 1.0f;
 
-	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spell.wav"), 1, ATTN_NORM, 0);
-
-	gi.CreateEffect(&proj->s,
-				FX_M_EFFECTS,
-				CEF_OWNERS_ORIGIN,
-				vec3_origin,
-				"bv",
-				FX_M_BEAM,
-				proj->s.angles);
-
-
-	gi.linkentity(proj); 
+	gi.sound(self, CHAN_WEAPON, sounds[SND_MISSILE], 1.0f, ATTN_NORM, 0.0f); //mxd. Use precached sound index.
+	gi.CreateEffect(&proj->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_M_BEAM, proj->s.angles);
+	gi.linkentity(proj);
 }
 
 /*--------------------------------------
@@ -589,7 +578,7 @@ void seraph_guard_fire (edict_t *self)
 		}
 	}
 	else
-		guard_beam (self);
+		SeraphGuardProjectile (self);
 }
 
 void seraph_guard_missile(edict_t *self, G_Message_t *msg)
