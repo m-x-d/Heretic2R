@@ -54,61 +54,44 @@ static void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamag
 	self->nextthink = level.time + self->wait;
 }
 
-edict_t *RadiusDamageEnt(	edict_t *posowner,//for position
-							edict_t *dmgowner,//for damage credit
-							int damage,//damage
-							float d_damage,//d_damage
-							float radius,//radius
-							float d_radius,//d_radius
-							int dflags,//dflags
-							float lifetime,//lifetime
-							float thinkIncrement,//thinktime
-							vec3_t origin,//start origin
-							vec3_t offset,//velocity it not attached
-							float attach)//attach to posowner as offset?
+edict_t* RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const int damage, const float delta_damage, const float radius, const float delta_radius, const int dflags, const float lifetime, const float think_increment, const vec3_t origin, const vec3_t offset, const qboolean attach) //TODO: rename to CreateRadiusDamageEnt.
 {
-	edict_t		*self;
+	assert(damage_owner != NULL);
 
-	assert(dmgowner);
+	edict_t* self = G_Spawn();
 
-	self = G_Spawn();
-
-	self->owner = dmgowner;//for damage
-	self->dmg = damage;//starting damage - (int)
-	self->damage_debounce_time = d_damage;//damage amount to decrease by each think
-	self->dmg_radius = radius;//radius of damage
-	self->speed = d_radius;//amount to change radius each think
-	self->bloodType	= dflags;//damage flags
 	self->classname = "plague_mist";
+	self->owner = damage_owner; // For damage.
+	self->activator = position_owner;// For offsetting. //TODO: add spreadermist_attach_ent name.
+	self->dmg = damage; // Starting damage.
+	self->damage_debounce_time = delta_damage; // Damage amount to decrease by each think. //TODO: add int spreadermist_damage_delta name.
+	self->dmg_radius = radius; // Radius of damage.
+	self->speed = delta_radius; // Amount to change radius each think. //TODO: speed -> add spreadermist_dmg_radius_delta name.
+	self->bloodType = dflags; // Damage flags. //TODO: add spreadermist_dflags name.
+	self->air_finished = level.time + lifetime; // When to die out. //TODO: add float spreadermist_expire_time name.
+	self->yaw_speed = attach; // Whether to keep that offset from the owner or just sit here. //TODO: add qboolean spreadermist_attach name.
+	self->wait = max(FRAMETIME, think_increment); // How often to think (default to 10 fps).
 
-	self->air_finished = level.time + lifetime;//when to die out
-	
-	if(thinkIncrement<=0)
-		self->wait = 0.1;//default to 10 fps
-	else
-		self->wait = thinkIncrement;//how oftern to think
-	
-	self->think = RadiusDamageEntThink;//what to do
-	self->nextthink = level.time + self->wait;//next think
-	
-	self->activator = posowner;//for offsetting
-	if(attach)
+	self->think = RadiusDamageEntThink;
+	self->nextthink = level.time + self->wait;
+
+	if (attach)
 	{
-		vec3_t	forward, right, up;
-
+		vec3_t forward;
+		vec3_t right;
+		vec3_t up;
 		AngleVectors(self->activator->s.angles, forward, right, up);
-		
-		VectorCopy(offset, self->v_angle_ofs);// where to keep me- offset in {f, r, u}
-		
+
+		VectorCopy(offset, self->v_angle_ofs); // Where to keep me - offset in {f, r, u}
+
 		VectorMA(self->activator->s.origin, self->v_angle_ofs[0], forward, self->s.origin);
 		VectorMA(self->s.origin, self->v_angle_ofs[1], right, self->s.origin);
 		VectorMA(self->s.origin, self->v_angle_ofs[2], up, self->s.origin);
-		self->yaw_speed = attach;//whether to keep that offset from the owner or just sit here
 	}
 	else
 	{
 		self->movetype = PHYSICSTYPE_FLY;
-		self->gravity = 0;
+		self->gravity = 0.0f;
 
 		VectorCopy(offset, self->velocity);
 		VectorCopy(origin, self->s.origin);
