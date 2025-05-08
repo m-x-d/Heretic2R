@@ -914,23 +914,6 @@ void SeraphGuardStaticsInit(void)
 	classStatics[CID_SERAPH_GUARD].resInfo = &res_info;
 }
 
-void golem_awaken (edict_t *self, edict_t *other, edict_t *activator)
-{
-	if (!M_WalkmonsterStart(self)) //mxd. M_Start -> M_WalkmonsterStart.
-		return; // Initialization failed.
-
-	self->msgHandler = DefaultMsgHandler;
-	self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
-	self->monsterinfo.dismember = SeraphGuardDismember;
-	MG_InitMoods(self);
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-	self->melee_range *= self->s.scale;
-
-	self->enemy = activator;
-	AI_FoundTarget(self, false);
-}
-
-
 /*QUAKED monster_seraph_guard(1 .5 0) (-24 -24 -34) (24 24 34) AMBUSH ASLEEP GOLEM 8 16 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
 The big, ugly, brutal Guard..
 
