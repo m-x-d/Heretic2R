@@ -289,13 +289,9 @@ void seraph_guard_strike(edict_t* self, float damage, float var2, float var3)
 			P_KnockDownPlayer(&victim->client->playerinfo);
 }
 
-/*--------------------------------------
-		seraph_guard_pause
-----------------------------------------*/
-
-void seraphGuardApplyJump (edict_t *self)
+void seraphGuardApplyJump(edict_t* self) //TODO: rename to seraph_guard_jump.
 {
-	self->jump_time = level.time + 0.75;
+	self->jump_time = level.time + 0.75f;
 	VectorCopy(self->movedir, self->velocity);
 	VectorNormalize(self->movedir);
 }
