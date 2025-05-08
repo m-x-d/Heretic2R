@@ -503,48 +503,42 @@ static void SeraphGuardDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mx
 		BecomeDebris(self);
 }
 
-void seraph_guard_death(edict_t *self, G_Message_t *msg)
+static void SeraphGuardDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_guard_death' in original logic.
 {
-	edict_t	*targ, *inflictor, *attacker;
-	vec3_t	dVel, vf, yf;
-	float	damage;
-	int		soundID;
-
-	ParseMsgParms(msg, "eeei", &targ, &inflictor, &attacker, &damage);
+	edict_t* target;
+	edict_t* inflictor;
+	edict_t* attacker;
+	float damage;
+	ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
 
 	M_StartDeath(self, ANIM_DEATH1);
 
-	if (self->health < -80)
-	{
+	if (self->health < -80) // To be gibbed.
 		return;
-	}
-	else if (self->health < -10)
+
+	if (self->health < -10)
 	{
 		seraph_guard_dropweapon(self);
-
 		SetAnim(self, ANIM_DEATH2_GO);
 
-		VectorCopy(targ->velocity, vf);
-		VectorNormalize(vf);
+		vec3_t dir;
+		VectorNormalize2(target->velocity, dir);
 
-		VectorScale(vf, -1, yf);
+		vec3_t yaw_dir;
+		VectorScale(dir, -1.0f, yaw_dir);
 
-		self->ideal_yaw = VectorYaw( yf );
-		self->yaw_speed = 24;
+		self->ideal_yaw = VectorYaw(yaw_dir);
+		self->yaw_speed = 24.0f;
 
-		VectorScale(vf, 300, dVel);
-		dVel[2] = irand(150,200);
-
-		VectorCopy(dVel, self->velocity);
-//		self->groundentity = NULL;
+		VectorScale(dir, 300.0f, self->velocity);
+		self->velocity[2] = flrand(150.0f, 200.0f); //mxd. irand() in original logic.
 	}
 	else
 	{
 		SetAnim(self, ANIM_DEATH1);
 	}
 
-	soundID = irand(SND_DEATH1, SND_DEATH4);
-	gi.sound (self, CHAN_BODY, sounds[soundID], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_BODY, sounds[irand(SND_DEATH1, SND_DEATH4)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 /*--------------------------------------
@@ -895,7 +889,7 @@ void SeraphGuardStaticsInit(void)
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MELEE]	= SeraphGuardMeleeMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MISSILE] = SeraphGuardMissileMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_PAIN]	= SeraphGuardPainMsgHandler;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH]	= seraph_guard_death;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH]	= SeraphGuardDeathMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH_PAIN]	= SeraphGuardDeathPainMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_CHECK_MOOD] = SeraphGuardCheckMoodMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
