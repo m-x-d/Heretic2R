@@ -51,38 +51,28 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-/*
-==========================================================
-
-	Seraph Guard Helper functions
-
-==========================================================
-*/
-
-/*-----------------------------------------------
-	create_guard_proj
------------------------------------------------*/
-
-// create the guts of morcalavin's projectile
-void create_guard_proj(edict_t *self,edict_t *proj)
+// Create the guts of seraph guard's projectile.
+static void SeraphGuardProjectileInit(const edict_t* self, edict_t* proj) //mxd. Named 'create_guard_proj' in original logic.
 {
 	proj->svflags |= SVF_ALWAYS_SEND;
 	proj->movetype = PHYSICSTYPE_FLY;
-	proj->gravity = 0;
+	proj->gravity = 0.0f;
 	proj->solid = SOLID_BBOX;
 	proj->classname = "Guard_Missile";
-	proj->dmg = flrand(SGUARD_DMG_SPELL_MIN, SGUARD_DMG_SPELL_MAX);
-	proj->s.scale = 1.0;
+	proj->dmg = irand(SGUARD_DMG_SPELL_MIN, SGUARD_DMG_SPELL_MAX); //mxd. flrand() in original logic.
+	proj->s.scale = 1.0f;
 	proj->clipmask = MASK_SHOT;
-	proj->nextthink = level.time + 0.1;
-	
-	proj->isBlocked = proj->isBlocking = proj->bounced = guard_beam_blocked;
+	proj->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
-	proj->s.effects=EF_MARCUS_FLAG1|EF_CAMERA_NO_CLIP;
+	proj->isBlocked = guard_beam_blocked;
+	proj->isBlocking = guard_beam_blocked;
+	proj->bounced = guard_beam_blocked;
+
+	proj->s.effects = (EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
 	proj->enemy = self->enemy;
 
-	VectorSet(proj->mins, -4.0, -4.0, -4.0);	
-	VectorSet(proj->maxs,  4.0,  4.0,  4.0);
+	VectorSet(proj->mins, -4.0f, -4.0f, -4.0f);
+	VectorSet(proj->maxs,  4.0f,  4.0f,  4.0f);
 	VectorCopy(self->s.origin, proj->s.origin);
 }
 
@@ -165,7 +155,7 @@ void guard_beam( edict_t *self)
 
 	proj = G_Spawn();
 
-	create_guard_proj(self,proj);
+	SeraphGuardProjectileInit(self,proj);
 
 	proj->reflect_debounce_time = MAX_REFLECT;
 	proj->classname = "M_Beam";
