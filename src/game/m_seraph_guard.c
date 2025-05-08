@@ -497,17 +497,10 @@ static void SeraphGuardMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd.
 	}
 }
 
-/*--------------------------------------
-		void seraph_guard_death
-----------------------------------------*/
-
-void seraph_guard_death_pain(edict_t *self, G_Message_t *msg)
+static void SeraphGuardDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_guard_death_pain' in original logic.
 {
-	if (self->health < -80)
-	{
+	if (self->health < -80) // Become gibbed?
 		BecomeDebris(self);
-		return;
-	}
 }
 
 void seraph_guard_death(edict_t *self, G_Message_t *msg)
@@ -903,7 +896,7 @@ void SeraphGuardStaticsInit(void)
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MISSILE] = SeraphGuardMissileMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_PAIN]	= SeraphGuardPainMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH]	= seraph_guard_death;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH_PAIN]	= seraph_guard_death_pain;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH_PAIN]	= SeraphGuardDeathPainMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_CHECK_MOOD] = SeraphGuardCheckMoodMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_VOICE_SIGHT] = ser_grd_SightSound;
