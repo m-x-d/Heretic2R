@@ -94,10 +94,10 @@ static void SeraphGuardProjectileBlocked(edict_t* self, trace_t* trace) //mxd. N
 	G_SetToFree(self);
 }
 
-void guard_beam_think (edict_t *self)
+static void SeraphGuardProjectileThink(edict_t* self) //mxd. Named 'guard_beam_think' in original logic. //TODO: is this needed?..
 {
 	self->think = NULL;
-	self->nextthink = -1;
+	self->nextthink = -1.0f;
 }
 
 void guard_beam( edict_t *self)
@@ -135,7 +135,7 @@ void guard_beam( edict_t *self)
 
 	vectoangles(proj->velocity, proj->s.angles);
 
-	proj->think = guard_beam_think;
+	proj->think = SeraphGuardProjectileThink;
 	proj->nextthink = level.time + 1;
 
 	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spell.wav"), 1, ATTN_NORM, 0);
