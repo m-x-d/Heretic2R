@@ -141,51 +141,38 @@ static void SeraphGuardProjectile(edict_t* self) //mxd. Named 'guard_beam' in or
 	gi.linkentity(proj);
 }
 
-/*--------------------------------------
-		seraph_guard_checkpoke
-----------------------------------------*/
-
-void seraph_guard_checkpoke ( edict_t *self )
+void seraph_guard_checkpoke(edict_t* self) //TODO: rename to seraph_guard_check_poke.
 {
-	vec3_t	attackVel, vf;
-	float	dist;
-	int		ret, chance;
-
-	//Really, this is a given, but it could fail...
-	if (M_ValidTarget(self, self->enemy))
+	// Really, this is a given, but it could fail...
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		//Set this for any uses below
-		AngleVectors(self->s.angles, vf, NULL, NULL);
-
-		dist = M_DistanceToTarget(self, self->enemy);	
-
-		if (dist < 120)
-		{
-			VectorMA(vf, 1, vf, attackVel);
-			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, 150, SGUARD_NUM_PREDICTED_FRAMES );
-
-			if (ret)
-			{
-				chance = irand(0,100);
-				
-				if (chance < 40)
-					SetAnim(self, ANIM_MELEE3);
-				else if (chance < 60)
-					SetAnim(self, ANIM_MELEE2);
-			}
-			else
-			{
-				if (irand(0,1))
-					SetAnim(self, ANIM_RUN_MELEE);
-				else
-					SetAnim(self, ANIM_MELEE2);
-			}
-		}
-
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	if (M_DistanceToTarget(self, self->enemy) >= 120.0f)
+		return;
+
+	// Set this for any uses below.
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+
+	vec3_t attack_vel;
+	VectorScale(forward, 2.0f, attack_vel);
+
+	if (M_PredictTargetEvasion(self, self->enemy, attack_vel, self->enemy->velocity, 150.0f, SGUARD_NUM_PREDICTED_FRAMES))
+	{
+		const int chance = irand(0, 100);
+
+		if (chance < 40)
+			SetAnim(self, ANIM_MELEE3);
+		else if (chance < 60)
+			SetAnim(self, ANIM_MELEE2);
+	}
+	else
+	{
+		SetAnim(self, ((irand(0, 1) == 1) ? ANIM_RUN_MELEE : ANIM_MELEE2));
+	}
 }
 
 /*--------------------------------------
