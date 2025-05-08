@@ -367,69 +367,54 @@ static void SeraphGuardStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 	SetAnim(self, ANIM_STAND);
 }
 
-/*--------------------------------------
-		void seraph_guard_melee
-----------------------------------------*/
-
-void seraph_guard_melee(edict_t *self, G_Message_t *msg)
+static void SeraphGuardMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_guard_melee' in original logic.
 {
-	vec3_t	attackVel, vf;
-	float	dist;
-	int		ret;
-
-	//Don't interrupt a current animation with another melee call inside of it
+	// Don't interrupt a current animation with another melee call inside of it.
 	if (self->curAnimID == ANIM_MELEE1 || self->curAnimID == ANIM_MELEE2)
 		return;
 
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		if(self->ai_mood == AI_MOOD_FLEE)
-		{
-			SetAnim(self, ANIM_BACKUP);
-			return;
-		}
-		//Set this for any uses below
-		AngleVectors(self->s.angles, vf, NULL, NULL);
-
-		dist = M_DistanceToTarget(self, self->enemy);	
-
-		if (dist < 120)
-		{
-			if(self->s.fmnodeinfo[MESH__AXE].flags & FMNI_NO_DRAW)
-			{
-				SetAnim(self, ANIM_MISSILE);
-				return;
-			}
-
-			VectorMA(vf, 0, vf, attackVel);
-			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, self->melee_range, SGUARD_NUM_PREDICTED_FRAMES );
-
-						
-			if (ret)
-			{
-				if(dist < 88 && !irand(0, 3))
-					SetAnim(self, ANIM_MISSILE);//punch
-				else if(irand(0, 4))
-				{
-					if(irand(0, 10))
-						SetAnim(self, ANIM_MELEE1);	
-					else
-						SetAnim(self, ANIM_MISSILE);
-				}
-				else
-					SetAnim(self, ANIM_MELEE2);	
-			}
-			else
-				SetAnim(self, ANIM_RUN_MELEE);
-		}
-		else
-			SetAnim(self, ANIM_RUN);
-
+		// If our enemy is dead, we need to stand.
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	//If our enemy is dead, we need to stand
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	if (self->ai_mood == AI_MOOD_FLEE)
+	{
+		SetAnim(self, ANIM_BACKUP);
+		return;
+	}
+
+	const float dist = M_DistanceToTarget(self, self->enemy);
+
+	if (dist >= 120.0f)
+	{
+		SetAnim(self, ANIM_RUN);
+		return;
+	}
+
+	if (self->s.fmnodeinfo[MESH__AXE].flags & FMNI_NO_DRAW)
+	{
+		SetAnim(self, ANIM_MISSILE);
+		return;
+	}
+
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+
+	if (!M_PredictTargetEvasion(self, self->enemy, forward, self->enemy->velocity, self->melee_range, SGUARD_NUM_PREDICTED_FRAMES))
+	{
+		SetAnim(self, ANIM_RUN_MELEE);
+		return;
+	}
+
+	if (dist < 88.0f && irand(0, 3) == 0)
+		SetAnim(self, ANIM_MISSILE);
+	else if (irand(0, 4) != 0)
+		SetAnim(self, irand(0, 10) != 0 ? ANIM_MELEE1 : ANIM_MISSILE);
+	else
+		SetAnim(self, ANIM_MELEE2);
 }
 
 void morcalavin_beam( edict_t *self);
@@ -942,7 +927,7 @@ void SeraphGuardStaticsInit(void)
 
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_STAND]	= SeraphGuardStandMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_RUN]	= seraph_guard_run;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MELEE]	= seraph_guard_melee;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MELEE]	= SeraphGuardMeleeMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MISSILE] = seraph_guard_missile;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_PAIN]	= SeraphGuardPainMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH]	= seraph_guard_death;
