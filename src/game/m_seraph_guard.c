@@ -296,9 +296,9 @@ void seraphGuardApplyJump(edict_t* self) //TODO: rename to seraph_guard_jump.
 	VectorNormalize(self->movedir);
 }
 
-void seraph_guard_pause( edict_t *self )
+void seraph_guard_pause(edict_t* self)
 {
-	if(self->spawnflags & MSF_FIXED && self->curAnimID == ANIM_DELAY && self->enemy)
+	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
 	{
 		self->monsterinfo.searchType = SEARCH_COMMON;
 		MG_FaceGoal(self, true);
@@ -309,39 +309,35 @@ void seraph_guard_pause( edict_t *self )
 	switch (self->ai_mood)
 	{
 	case AI_MOOD_ATTACK:
-		if(self->ai_mood_flags & AI_MOOD_FLAG_MISSILE)
-			QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
-		else
-			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-		break;
-	case AI_MOOD_PURSUE:
-	case AI_MOOD_NAVIGATE:
-	case AI_MOOD_WALK:
-	case AI_MOOD_FLEE:
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-		break;
-	case AI_MOOD_STAND:
-		if (!self->enemy)
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		break;
+			QPostMessage(self, ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE), PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_DELAY:
-		SetAnim(self, ANIM_DELAY);
-		break;
+		case AI_MOOD_PURSUE:
+		case AI_MOOD_NAVIGATE:
+		case AI_MOOD_WALK:
+		case AI_MOOD_FLEE:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_WANDER:
-		SetAnim(self, ANIM_WALK);
-		break;
+		case AI_MOOD_STAND:
+			if (self->enemy == NULL) //TODO: else what?
+				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_JUMP:
-		SetAnim(self, ANIM_FJUMP);
-		break;
+		case AI_MOOD_DELAY:
+			SetAnim(self, ANIM_DELAY);
+			break;
 
-	default :
-#ifdef _DEVEL
-		gi.dprintf("seraph guard: Unusable mood %d!\n", self->ai_mood);
-#endif
-		break;
+		case AI_MOOD_WANDER:
+			SetAnim(self, ANIM_WALK);
+			break;
+
+		case AI_MOOD_JUMP:
+			SetAnim(self, ANIM_FJUMP);
+			break;
+
+		default:
+			break;
 	}
 }
 
