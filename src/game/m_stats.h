@@ -296,9 +296,9 @@ typedef struct EvadeChance_s //mxd
 #define SPREADER_DMG_RAM_KB			20	//TODO: unused.
 #define SPREADER_DMG_TAKEOFF		1	//TODO: unused.
 #define SPREADER_DMG_TAKEOFF_RAD	100	//TODO: unused.
-#define SPREADER_GRENADE_DAMAGE		20	//TODO: unused.
-#define SPREADER_GRENADE_RADIUS		100.0f	//TODO: unused.
-#define SPREADER_GRENADE_TIME		2.9f	//TODO: unused.
+#define SPREADER_GRENADE_DAMAGE		40		//mxd. 20 and unused in original logic.
+#define SPREADER_GRENADE_RADIUS		100.0f	//mxd. Unused in original logic.
+#define SPREADER_GRENADE_TIME		2.9f	//mxd. Unused in original logic. //TODO: rename to SPREADER_GRENADE_PAUSE_TIME.
 #define SPREADER_MIST_DAMAGE		1	//TODO: unused.
 #define SPREADER_MIST_RADIUS		40	//TODO: unused.
 #define SPREADER_MIST_GRADIUS		30	//TODO: unused.
