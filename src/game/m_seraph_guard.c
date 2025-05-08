@@ -469,47 +469,32 @@ void seraph_guard_fire(edict_t* self)
 		P_KnockDownPlayer(&victim->client->playerinfo);
 }
 
-void seraph_guard_missile(edict_t *self, G_Message_t *msg)
+static void SeraphGuardMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_guard_missile' in original logic.
 {
-	vec3_t	attackVel, vf;
-	float	dist;
-	int		ret;
-
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		if(self->ai_mood == AI_MOOD_FLEE)
-		{
-			SetAnim(self, ANIM_BACKUP);
-			return;
-		}
-		//Set this for any uses below
-		AngleVectors(self->s.angles, vf, NULL, NULL);
-
-		dist = M_DistanceToTarget(self, self->enemy);	
-
-		if (dist < self->min_missile_range)
-		{
-			VectorMA(vf, 0, vf, attackVel);
-			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, self->melee_range, SGUARD_NUM_PREDICTED_FRAMES );
-
-			if(irand(0, 4))
-			{
-				if(irand(0, 10))
-					SetAnim(self, ANIM_MELEE1);	
-				else
-					SetAnim(self, ANIM_MISSILE);
-			}
-			else
-				SetAnim(self, ANIM_MELEE2);	
-		}
-		else if(MG_IsAheadOf(self, self->enemy))
-			SetAnim(self, ANIM_MISSILE);
-
+		// If our enemy is dead, we need to stand.
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	//If our enemy is dead, we need to stand
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	if (self->ai_mood == AI_MOOD_FLEE)
+	{
+		SetAnim(self, ANIM_BACKUP);
+		return;
+	}
+
+	if (M_DistanceToTarget(self, self->enemy) < self->min_missile_range)
+	{
+		if (irand(0, 4) != 0)
+			SetAnim(self, ((irand(0, 10) != 0) ? ANIM_MELEE1 : ANIM_MISSILE));
+		else
+			SetAnim(self, ANIM_MELEE2);
+	}
+	else if (MG_IsAheadOf(self, self->enemy))
+	{
+		SetAnim(self, ANIM_MISSILE);
+	}
 }
 
 /*--------------------------------------
@@ -915,7 +900,7 @@ void SeraphGuardStaticsInit(void)
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_STAND]	= SeraphGuardStandMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_RUN]	= seraph_guard_run;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MELEE]	= SeraphGuardMeleeMsgHandler;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MISSILE] = seraph_guard_missile;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MISSILE] = SeraphGuardMissileMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_PAIN]	= SeraphGuardPainMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH]	= seraph_guard_death;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH_PAIN]	= seraph_guard_death_pain;
