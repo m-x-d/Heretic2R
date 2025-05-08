@@ -173,7 +173,7 @@ const animmove_t seraph_guard_move_run = { 8,seraph_guard_frames_run, seraph_gua
 // Seraph Guard Forward Jump.
 static const animframe_t seraph_guard_frames_fjump[] =
 {
-	{ FRAME_run1,	NULL, 0, 0, 0, NULL, 0, seraphGuardApplyJump },
+	{ FRAME_run1,	NULL, 0, 0, 0, NULL, 0, seraph_guard_jump },
 	{ FRAME_run2,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_run3,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_run4,	NULL, 0, 0, 0, NULL, 0, NULL },

@@ -289,7 +289,7 @@ void seraph_guard_strike(edict_t* self, float damage, float var2, float var3)
 			P_KnockDownPlayer(&victim->client->playerinfo);
 }
 
-void seraphGuardApplyJump(edict_t* self) //TODO: rename to seraph_guard_jump.
+void seraph_guard_jump(edict_t* self) //mxd. Named 'seraphGuardApplyJump' in original logic.
 {
 	self->jump_time = level.time + 0.75f;
 	VectorCopy(self->movedir, self->velocity);
