@@ -173,58 +173,6 @@ static void SpreaderGrenadeBounced(edict_t* self, trace_t* trace) //mxd. Named '
 }
 
 /*-------------------------------------------------------------------------
-	spreader_grenade_touch
--------------------------------------------------------------------------*/
-static void spreader_grenade_touch (edict_t *self, edict_t *other, cplane_t *plane, 
-							csurface_t *surf)
-{
-	vec3_t	vel;
-
-	if (other == self->owner)
-		return;
-
-	if (surf && (surf->flags & SURF_SKY))
-	{
-		G_FreeEdict (self);
-		return;
-	}		
-
-	VectorCopy(self->velocity, vel);
-	VectorNormalize(vel);
-	VectorScale(vel, 100, vel);
-
-	vel[0] += flrand(-100, 100); 
-	vel[1] += flrand(-100, 100);
-	vel[2] = flrand(10, 100);
-
-	// create the volume effect for the damage
-/*	gas = RadiusDamageEnt(self,//position
-					self->owner,//damage credit
-					5,//damage
-					0,//d_damage
-					60,//radius
-					1.0,//d_radius
-					DAMAGE_NO_BLOOD|DAMAGE_NO_KNOCKBACK|DAMAGE_ALIVE_ONLY|DAMAGE_AVOID_ARMOR,//dflags
-					self->delay,//lifetime
-					0.2,//thinktime
-					self->s.origin,//startpoint
-					vel,//velocity
-					false);//attach to owner until gone
-
-	gas->svflags |= SVF_ALWAYS_SEND;
-	gas->s.effects=EF_MARCUS_FLAG1;
-*/
-	gi.CreateEffect(&self->s, FX_PLAGUEMIST, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vel, 50);
-
-	SpreaderGrenadeExplode (self);
-	
-	self->touch = NULL;
-	self->bounced = NULL;
-	self->isBlocked = NULL;
-}
-
-
-/*-------------------------------------------------------------------------
 	spreader_mist
 -------------------------------------------------------------------------*/
 void spreader_mist(edict_t *self, float x, float y, float z)
