@@ -541,70 +541,60 @@ static void SeraphGuardDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 	gi.sound(self, CHAN_BODY, sounds[irand(SND_DEATH1, SND_DEATH4)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*--------------------------------------
-		void seraph_guard_run
-----------------------------------------*/
-
-void seraph_guard_run(edict_t *self, G_Message_t *msg)
+static void SeraphGuardRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_guard_run' in original logic.
 {
-	trace_t	trace;
-	vec3_t	attackVel, vf;
-	float	dist;
-	int		ret;
-
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		if(self->ai_mood == AI_MOOD_FLEE)
-		{
-			SetAnim(self, ANIM_RUN);
-			return;
-		}
-
-		if(self->monsterinfo.attack_finished > level.time || self->monsterinfo.aiflags & AI_NO_MELEE)
-		{
-			SetAnim(self, ANIM_RUN);
-			return;
-		}
-
-		//Set this for any uses below
-		AngleVectors(self->s.angles, vf, NULL, NULL);
-		
-		dist = M_DistanceToTarget(self, self->enemy);	
-
-		if (dist < 100)
-		{
-			VectorMA(vf, 0, vf, attackVel);
-			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, self->melee_range, SGUARD_NUM_PREDICTED_FRAMES );
-
-			//See what the predicted outcome is
-			if (ret && (M_CheckMeleeHit( self, self->melee_range, &trace) == self->enemy))
-				SetAnim(self, ANIM_MELEE1);		
-			else
-				SetAnim(self, ANIM_RUN_MELEE);
-		}
-		else if (dist < 200)
-		{
-			VectorMA(vf, 150, vf, attackVel);
-			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, 150, SGUARD_NUM_PREDICTED_FRAMES );
-
-			//See what the predicted outcome is
-			if (ret && (M_CheckMeleeHit( self, 150, &trace) == self->enemy))
-				SetAnim(self, ANIM_RUN_MELEE);
-			else
-				SetAnim(self, ANIM_RUN);
-		}
-		else
-		{
-			SetAnim(self, ANIM_RUN);
-		}
-
+		// If our enemy is dead, we need to stand.
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	//If our enemy is dead, we need to stand
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-}
+	if (self->ai_mood == AI_MOOD_FLEE)
+	{
+		SetAnim(self, ANIM_RUN);
+		return;
+	}
 
+	if (self->monsterinfo.attack_finished > level.time || (self->monsterinfo.aiflags & AI_NO_MELEE))
+	{
+		SetAnim(self, ANIM_RUN);
+		return;
+	}
+
+	// Set this for any uses below.
+	vec3_t pursue_vel;
+	AngleVectors(self->s.angles, pursue_vel, NULL, NULL);
+
+	trace_t trace;
+	const float dist = M_DistanceToTarget(self, self->enemy);
+
+	if (dist < 100.0f)
+	{
+		const qboolean in_range = M_PredictTargetEvasion(self, self->enemy, pursue_vel, self->enemy->velocity, self->melee_range, SGUARD_NUM_PREDICTED_FRAMES);
+
+		// See what the predicted outcome is.
+		if (in_range && M_CheckMeleeHit(self, self->melee_range, &trace) == self->enemy)
+			SetAnim(self, ANIM_MELEE1);
+		else
+			SetAnim(self, ANIM_RUN_MELEE);
+	}
+	else if (dist < 200.0f)
+	{
+		Vec3ScaleAssign(150.0f, pursue_vel);
+		const qboolean in_range = M_PredictTargetEvasion(self, self->enemy, pursue_vel, self->enemy->velocity, 150.0f, SGUARD_NUM_PREDICTED_FRAMES);
+
+		// See what the predicted outcome is.
+		if (in_range && M_CheckMeleeHit(self, 150.0f, &trace) == self->enemy)
+			SetAnim(self, ANIM_RUN_MELEE);
+		else
+			SetAnim(self, ANIM_RUN);
+	}
+	else
+	{
+		SetAnim(self, ANIM_RUN);
+	}
+}
 
 int Bit_for_MeshNode_sg [NUM_MESH_NODES] =
 {
@@ -885,7 +875,7 @@ void SeraphGuardStaticsInit(void)
 	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_STAND]	= SeraphGuardStandMsgHandler;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_RUN]	= seraph_guard_run;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_RUN]	= SeraphGuardRunMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MELEE]	= SeraphGuardMeleeMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MISSILE] = SeraphGuardMissileMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_PAIN]	= SeraphGuardPainMsgHandler;
