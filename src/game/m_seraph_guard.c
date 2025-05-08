@@ -199,128 +199,94 @@ void seraph_guard_check_land(edict_t* self)
 	}
 }
 
-/*--------------------------------------
-		seraph_guard_dead
-----------------------------------------*/
-
-void seraph_guard_dead ( edict_t *self )
+void seraph_guard_dead(edict_t* self)
 {
 	M_EndDeath(self);
 }
 
-/*--------------------------------------
-		seraph_guard_strike
-----------------------------------------*/
-
-void seraph_guard_strike( edict_t *self, float damage, float var2, float var3 )
+void seraph_guard_strike(edict_t* self, float damage, float var2, float var3)
 {
-	trace_t		trace;
-	edict_t		*victim;
-	vec3_t		soff, eoff, mins, maxs, bloodDir, direction;
-	qboolean	knockback = true;
-//	vec3_t		dir, fwd, right, up;
-
-	if(self->monsterinfo.aiflags & AI_NO_MELEE)
+	if (self->monsterinfo.aiflags & AI_NO_MELEE)
 		return;
 
 	damage *= self->s.scale;
+	self->monsterinfo.attack_finished = level.time + (3.0f - skill->value) * 2.0f + flrand(0.0f, 1.0f);
 
-	self->monsterinfo.attack_finished = level.time + (3 - skill->value) * 2 + flrand(0, 1);
+	qboolean knockback = true;
+	vec3_t start_offset;
+	vec3_t end_offset;
 
 	switch (self->curAnimID)
 	{
-	case ANIM_MELEE2:
-		VectorSet(soff, 16, -16, 24);
-		VectorSet(eoff, 124,-16, 16);
-		break;
+		case ANIM_MELEE2:
+			VectorSet(start_offset, 16.0f, -16.0f, 24.0f);
+			VectorSet(end_offset, 124.0f, -16.0f, 16.0f);
+			break;
 
-	case ANIM_MELEE3:
-		VectorSet(soff, 32, -48, 34);
-		VectorSet(eoff, 64, 64, -8);
-		break;
+		case ANIM_MELEE3:
+			VectorSet(start_offset, 32.0f, -48.0f, 34.0f);
+			VectorSet(end_offset, 64.0f, 64.0f, -8.0f);
+			break;
 
-	default:
-		knockback = false;
-		VectorSet(soff, 32, -16, 64);
-		VectorSet(eoff, 72, 16, -8);
-		break;
+		default:
+			knockback = false;
+			VectorSet(start_offset, 32.0f, -16.0f, 64.0f);
+			VectorSet(end_offset, 72.0f, 16.0f, -8.0f);
+			break;
 	}
 
-	Vec3ScaleAssign(self->s.scale, soff);
-	Vec3ScaleAssign(self->s.scale, eoff);
-	
-	VectorSet(mins, -4, -4, -4);
-	VectorSet(maxs,  4,  4,  4);
+	Vec3ScaleAssign(self->s.scale, start_offset);
+	Vec3ScaleAssign(self->s.scale, end_offset);
 
-	VectorSubtract(eoff, soff, bloodDir);
-	VectorNormalize(bloodDir);
+	const vec3_t mins = { -4.0f, -4.0f, -4.0f };
+	const vec3_t maxs = {  4.0f,  4.0f,  4.0f };
 
-	victim = M_CheckMeleeLineHit(self, soff, eoff, mins, maxs, &trace, direction);
+	trace_t trace;
+	vec3_t direction;
+	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
 
-	//Did something get hit?
-	if (victim)
+	if (victim == NULL) // Missed.
 	{
-		if (victim == self)
-		{
-			//Create a spark effect
-			gi.CreateEffect(NULL, FX_SPARKS, CEF_FLAG6, trace.endpos, "d", direction);
-			gi.sound (self, CHAN_WEAPON, sounds[SND_HIT_WALL], 1, ATTN_NORM, 0);
-		}
-		else
-		{
-			// Get a proper angle for this attack from the absolute vector provided.
-/*			AngleVectors(self->s.angles, fwd, right, up);
-			VectorScale(fwd, hitDir[0], dir);
-			VectorMA(dir, -hitDir[1], right, dir);
-			VectorMA(dir, hitDir[2], up, dir);*/
+		// Play swoosh sound.
+		gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK_MISS], 1.0f, ATTN_NORM, 0.0f);
+		return;
+	}
 
-			if(self->curAnimID == ANIM_MELEE3)
-			{
-				gi.CreateEffect(NULL,
-					FX_WEAPON_STAFF_STRIKE,
-					0,
-					trace.endpos,
-					"db",
-					trace.plane.normal,
-					2);
+	if (victim == self) // Hit wall.
+	{
+		// Create a spark effect.
+		gi.CreateEffect(NULL, FX_SPARKS, CEF_FLAG6, trace.endpos, "d", direction);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_HIT_WALL], 1, ATTN_NORM, 0);
 
-				gi.sound(self,CHAN_WEAPON,gi.soundindex("weapons/staffhit_2.wav"),1,ATTN_NORM,0);
-			}
-			else
-				gi.sound (self, CHAN_WEAPON, sounds[SND_ATTACK], 1, ATTN_NORM, 0);
-			//Hurt whatever we were whacking away at
-			damage *= ((skill->value + 1)/3)		//skill 0 = 1/3, skill 3 = 1 1/3
-						* flrand(0.85, 1.15);		// Add some variance to the hit, since it passes a constant.
-			if(knockback)
-			{
-				T_Damage(victim, self, self, direction, trace.endpos, bloodDir, 
-					damage, damage*20, DAMAGE_DISMEMBER|DAMAGE_DOUBLE_DISMEMBER|DAMAGE_EXTRA_BLOOD|DAMAGE_EXTRA_KNOCKBACK,MOD_DIED);
-			}
-			else
-			{
-				T_Damage(victim, self, self, direction, trace.endpos, bloodDir, 
-					damage, 0, DAMAGE_NO_KNOCKBACK|DAMAGE_DISMEMBER|DAMAGE_DOUBLE_DISMEMBER|DAMAGE_EXTRA_BLOOD,MOD_DIED);
-			}
-			if(self->curAnimID == ANIM_MELEE3)
-			{
-				if(victim->client)
-				{
-					if(victim->health > 0)
-					{
-						if(victim->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && AI_IsInfrontOf(self, victim))
-						{
-							P_KnockDownPlayer(&victim->client->playerinfo);
-						}
-					}
-				}
-			}
-		}
+		return;
+	}
+
+	// Hurt whatever we were whacking away at.
+	if (self->curAnimID == ANIM_MELEE3)
+	{
+		gi.CreateEffect(NULL, FX_WEAPON_STAFF_STRIKE, 0, trace.endpos, "db", trace.plane.normal, 2);
+		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/staffhit_2.wav"), 1.0f, ATTN_NORM, 0.0f);
 	}
 	else
 	{
-		//Play swoosh sound
-		gi.sound (self, CHAN_WEAPON, sounds[SND_ATTACK_MISS], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK], 1.0f, ATTN_NORM, 0.0f);
 	}
+
+	damage *= (skill->value + 1.0f) / 3.0f * flrand(0.85f, 1.15f); // Add some variance to the hit, since it passes a constant (skill 0 = 1/3, skill 3 = 1 1/3).
+
+	vec3_t blood_dir;
+	VectorSubtract(end_offset, start_offset, blood_dir);
+	VectorNormalize(blood_dir);
+
+	if (knockback)
+		T_Damage(victim, self, self, direction, trace.endpos, blood_dir, (int)damage, (int)damage * 20, DAMAGE_EXTRA_KNOCKBACK | DAMAGE_DISMEMBER | DAMAGE_DOUBLE_DISMEMBER | DAMAGE_EXTRA_BLOOD, MOD_DIED);
+	else
+		T_Damage(victim, self, self, direction, trace.endpos, blood_dir, (int)damage, 0, DAMAGE_NO_KNOCKBACK | DAMAGE_DISMEMBER | DAMAGE_DOUBLE_DISMEMBER | DAMAGE_EXTRA_BLOOD, MOD_DIED);
+
+	// Knockdown player?
+	if (self->curAnimID == ANIM_MELEE3 && victim->client != NULL && victim->health > 0)
+		if (victim->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && AI_IsInfrontOf(self, victim))
+			P_KnockDownPlayer(&victim->client->playerinfo);
 }
 
 /*--------------------------------------
