@@ -362,11 +362,7 @@ static void SeraphGuardPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	}
 }
 
-/*--------------------------------------
-		void seraph_guard_stand
-----------------------------------------*/
-
-void seraph_guard_stand(edict_t *self, G_Message_t *msg)
+static void SeraphGuardStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_guard_stand' in original logic.
 {
 	SetAnim(self, ANIM_STAND);
 }
@@ -944,7 +940,7 @@ void SeraphGuardStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_STAND]	= seraph_guard_stand;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_STAND]	= SeraphGuardStandMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_RUN]	= seraph_guard_run;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MELEE]	= seraph_guard_melee;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MISSILE] = seraph_guard_missile;
