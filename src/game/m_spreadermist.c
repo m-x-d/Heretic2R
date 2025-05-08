@@ -121,10 +121,7 @@ static void SpreaderGrenadeExplode(edict_t* self) //mxd. Named 'spreader_grenade
 	self->nextthink = level.time + 0.2f;
 }
 
-/*-------------------------------------------------------------------------
-	spreader_grenade_die
--------------------------------------------------------------------------*/
-void spreader_grenade_die(edict_t *self)
+static void SpreaderGrenadeDieThink(edict_t* self) //mxd. Named 'spreader_grenade_die' in original logic.
 {
 	G_FreeEdict(self);
 }
@@ -142,7 +139,7 @@ static void spreader_grenade_think(edict_t *self)
 
 	if(self->monsterinfo.pausetime < level.time)
 	{
-		self->think = spreader_grenade_die;
+		self->think = SpreaderGrenadeDieThink;
 	}
 	else
 	{
