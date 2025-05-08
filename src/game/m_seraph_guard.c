@@ -19,9 +19,6 @@
 #include "Vector.h"
 #include "g_monster.h"
 
-static void SeraphGuardProjectileBlocked(edict_t* self, trace_t* trace); //TODO: remove.
-static void SeraphGuardDropWeapon(edict_t* self); //TODO: remove.
-
 #define SGUARD_NUM_PREDICTED_FRAMES	5.0f //mxd. Named 'NUM_PREDFRAMES' in original logic.
 #define SF_SGUARD_GOLEM				4 //mxd. Named 'SERAPH_FLAG_GOLEM' in original logic.
 
@@ -51,6 +48,8 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
+#pragma region ========================== Utility functions =========================
+
 // Create the guts of seraph guard's projectile.
 static void SeraphGuardProjectileInit(const edict_t* self, edict_t* proj) //mxd. Named 'create_guard_proj' in original logic.
 {
@@ -74,30 +73,6 @@ static void SeraphGuardProjectileInit(const edict_t* self, edict_t* proj) //mxd.
 	VectorSet(proj->mins, -4.0f, -4.0f, -4.0f);
 	VectorSet(proj->maxs,  4.0f,  4.0f,  4.0f);
 	VectorCopy(self->s.origin, proj->s.origin);
-}
-
-static void SeraphGuardProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named 'guard_beam_blocked' in original logic.
-{
-	//TODO: re-implement projectile reflecting logic?
-
-	if (trace->ent->takedamage != DAMAGE_NO)
-	{
-		vec3_t hit_dir;
-		VectorNormalize2(self->velocity, hit_dir);
-
-		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, self->dmg, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
-	}
-
-	gi.sound(self, CHAN_WEAPON, sounds[SND_MISSHIT], 1.0f, ATTN_NORM, 0.0f); //mxd. Use precached sound index.
-	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_M_MISC_EXPLODE, vec3_origin);
-
-	G_SetToFree(self);
-}
-
-static void SeraphGuardProjectileThink(edict_t* self) //mxd. Named 'guard_beam_think' in original logic. //TODO: is this needed?..
-{
-	self->think = NULL;
-	self->nextthink = -1.0f;
 }
 
 static void SeraphGuardProjectile(edict_t* self) //mxd. Named 'guard_beam' in original logic.
@@ -141,205 +116,63 @@ static void SeraphGuardProjectile(edict_t* self) //mxd. Named 'guard_beam' in or
 	gi.linkentity(proj);
 }
 
-void seraph_guard_check_poke(edict_t* self) //mxd. Named 'seraph_guard_checkpoke' in original logic.
+static qboolean SeraphGuardCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_sg' in original logic.
 {
-	// Really, this is a given, but it could fail...
-	if (!M_ValidTarget(self, self->enemy))
+	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		return;
+		BIT_BASEBIN,
+		BIT_PITHEAD, // Overlord head.
+		BIT_SHOULDPAD,
+		BIT_GUARDHEAD, // Guard head.
+		BIT_LHANDGRD, // Left hand guard.
+		BIT_LHANDBOSS, // Left hand overlord.
+		BIT_RHAND, // Right hand.
+		BIT_FRTORSO,
+		BIT_ARMSPIKES,
+		BIT_LFTUPARM,
+		BIT_RTLEG,
+		BIT_RTARM,
+		BIT_LFTLEG,
+		BIT_BKTORSO,
+		BIT_AXE,
+		BIT_WHIP
+	};
+
+	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
+	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
+	{
+		*throw_nodes |= bit_for_mesh_node[node_id];
+		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
+
+		return true;
 	}
 
-	if (M_DistanceToTarget(self, self->enemy) >= 120.0f)
-		return;
+	return false;
+}
 
-	// Set this for any uses below.
+// Throws weapon, turns off those nodes, sets that weapon as gone.
+static void SeraphGuardDropWeapon(edict_t* self) //mxd. Named 'seraph_guard_dropweapon' in original logic.
+{
+	if (self->s.fmnodeinfo[MESH__AXE].flags & FMNI_NO_DRAW)
+		return; // Already dropped.
+
 	vec3_t forward;
-	AngleVectors(self->s.angles, forward, NULL, NULL);
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
-	vec3_t attack_vel;
-	VectorScale(forward, 2.0f, attack_vel);
+	vec3_t hand_pos = { 0 };
+	VectorMA(hand_pos, 8.0f, forward, hand_pos);
+	VectorMA(hand_pos, 5.0f, right, hand_pos);
+	VectorMA(hand_pos, 12.0f, up, hand_pos);
 
-	if (M_PredictTargetEvasion(self, self->enemy, attack_vel, self->enemy->velocity, 150.0f, SGUARD_NUM_PREDICTED_FRAMES))
-	{
-		const int chance = irand(0, 100);
-
-		if (chance < 40)
-			SetAnim(self, ANIM_MELEE3);
-		else if (chance < 60)
-			SetAnim(self, ANIM_MELEE2);
-	}
-	else
-	{
-		SetAnim(self, ((irand(0, 1) == 1) ? ANIM_RUN_MELEE : ANIM_MELEE2));
-	}
+	ThrowWeapon(self, &hand_pos, BIT_AXE, 0, FRAME_partfly);
+	self->s.fmnodeinfo[MESH__AXE].flags |= FMNI_NO_DRAW;
 }
 
-void seraph_guard_death_loop(edict_t* self)
-{
-	SetAnim(self, ANIM_DEATH2_LOOP);
-}
+#pragma endregion
 
-void seraph_guard_check_land(edict_t* self)
-{
-	M_ChangeYaw(self);
-
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-	end_pos[2] -= 48.0f;
-
-	trace_t trace;
-	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
-
-	if ((trace.fraction < 1.0f || trace.startsolid || trace.allsolid) && self->curAnimID != ANIM_DEATH2_END && self->curAnimID != ANIM_DEATH2_GO)
-	{
-		self->elasticity = 1.25f;
-		self->friction = 0.5f;
-		SetAnim(self, ANIM_DEATH2_END);
-	}
-}
-
-void seraph_guard_dead(edict_t* self)
-{
-	M_EndDeath(self);
-}
-
-void seraph_guard_strike(edict_t* self, float damage, float var2, float var3)
-{
-	if (self->monsterinfo.aiflags & AI_NO_MELEE)
-		return;
-
-	damage *= self->s.scale;
-	self->monsterinfo.attack_finished = level.time + (3.0f - skill->value) * 2.0f + flrand(0.0f, 1.0f);
-
-	qboolean knockback = true;
-	vec3_t start_offset;
-	vec3_t end_offset;
-
-	switch (self->curAnimID)
-	{
-		case ANIM_MELEE2:
-			VectorSet(start_offset, 16.0f, -16.0f, 24.0f);
-			VectorSet(end_offset, 124.0f, -16.0f, 16.0f);
-			break;
-
-		case ANIM_MELEE3:
-			VectorSet(start_offset, 32.0f, -48.0f, 34.0f);
-			VectorSet(end_offset, 64.0f, 64.0f, -8.0f);
-			break;
-
-		default:
-			knockback = false;
-			VectorSet(start_offset, 32.0f, -16.0f, 64.0f);
-			VectorSet(end_offset, 72.0f, 16.0f, -8.0f);
-			break;
-	}
-
-	Vec3ScaleAssign(self->s.scale, start_offset);
-	Vec3ScaleAssign(self->s.scale, end_offset);
-
-	const vec3_t mins = { -4.0f, -4.0f, -4.0f };
-	const vec3_t maxs = {  4.0f,  4.0f,  4.0f };
-
-	trace_t trace;
-	vec3_t direction;
-	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
-
-	if (victim == NULL) // Missed.
-	{
-		// Play swoosh sound.
-		gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK_MISS], 1.0f, ATTN_NORM, 0.0f);
-		return;
-	}
-
-	if (victim == self) // Hit wall.
-	{
-		// Create a spark effect.
-		gi.CreateEffect(NULL, FX_SPARKS, CEF_FLAG6, trace.endpos, "d", direction);
-		gi.sound(self, CHAN_WEAPON, sounds[SND_HIT_WALL], 1, ATTN_NORM, 0);
-
-		return;
-	}
-
-	// Hurt whatever we were whacking away at.
-	if (self->curAnimID == ANIM_MELEE3)
-	{
-		gi.CreateEffect(NULL, FX_WEAPON_STAFF_STRIKE, 0, trace.endpos, "db", trace.plane.normal, 2);
-		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/staffhit_2.wav"), 1.0f, ATTN_NORM, 0.0f);
-	}
-	else
-	{
-		gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK], 1.0f, ATTN_NORM, 0.0f);
-	}
-
-	damage *= (skill->value + 1.0f) / 3.0f * flrand(0.85f, 1.15f); // Add some variance to the hit, since it passes a constant (skill 0 = 1/3, skill 3 = 1 1/3).
-
-	vec3_t blood_dir;
-	VectorSubtract(end_offset, start_offset, blood_dir);
-	VectorNormalize(blood_dir);
-
-	if (knockback)
-		T_Damage(victim, self, self, direction, trace.endpos, blood_dir, (int)damage, (int)damage * 20, DAMAGE_EXTRA_KNOCKBACK | DAMAGE_DISMEMBER | DAMAGE_DOUBLE_DISMEMBER | DAMAGE_EXTRA_BLOOD, MOD_DIED);
-	else
-		T_Damage(victim, self, self, direction, trace.endpos, blood_dir, (int)damage, 0, DAMAGE_NO_KNOCKBACK | DAMAGE_DISMEMBER | DAMAGE_DOUBLE_DISMEMBER | DAMAGE_EXTRA_BLOOD, MOD_DIED);
-
-	// Knockdown player?
-	if (self->curAnimID == ANIM_MELEE3 && victim->client != NULL && victim->health > 0)
-		if (victim->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && AI_IsInfrontOf(self, victim))
-			P_KnockDownPlayer(&victim->client->playerinfo);
-}
-
-void seraph_guard_jump(edict_t* self) //mxd. Named 'seraphGuardApplyJump' in original logic.
-{
-	self->jump_time = level.time + 0.75f;
-	VectorCopy(self->movedir, self->velocity);
-	VectorNormalize(self->movedir);
-}
-
-void seraph_guard_pause(edict_t* self)
-{
-	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
-	{
-		self->monsterinfo.searchType = SEARCH_COMMON;
-		MG_FaceGoal(self, true);
-	}
-
-	self->mood_think(self);
-
-	switch (self->ai_mood)
-	{
-	case AI_MOOD_ATTACK:
-			QPostMessage(self, ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE), PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_PURSUE:
-		case AI_MOOD_NAVIGATE:
-		case AI_MOOD_WALK:
-		case AI_MOOD_FLEE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_STAND:
-			if (self->enemy == NULL) //TODO: else what?
-				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_DELAY:
-			SetAnim(self, ANIM_DELAY);
-			break;
-
-		case AI_MOOD_WANDER:
-			SetAnim(self, ANIM_WALK);
-			break;
-
-		case AI_MOOD_JUMP:
-			SetAnim(self, ANIM_FJUMP);
-			break;
-
-		default:
-			break;
-	}
-}
+#pragma region ========================== Message handlers ==========================
 
 static void SeraphGuardCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_guard_check_mood' in original logic.
 {
@@ -415,58 +248,6 @@ static void SeraphGuardMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 		SetAnim(self, irand(0, 10) != 0 ? ANIM_MELEE1 : ANIM_MISSILE);
 	else
 		SetAnim(self, ANIM_MELEE2);
-}
-
-void seraph_guard_fire(edict_t* self)
-{
-	if (self->enemy == NULL)
-		return;
-
-	if (M_DistanceToTarget(self, self->enemy) >= self->min_missile_range)
-	{
-		SeraphGuardProjectile(self);
-		return;
-	}
-
-	vec3_t start_offset = { 12.0f, -18.0f, 24.0f };
-	vec3_t end_offset = { 88.0f, -4.0f, -16.0f };
-
-	Vec3ScaleAssign(self->s.scale, start_offset);
-	Vec3ScaleAssign(self->s.scale, end_offset);
-
-	const vec3_t mins = { -4.0f, -4.0f, -4.0f };
-	const vec3_t maxs = {  4.0f,  4.0f,  4.0f };
-
-	trace_t trace;
-	vec3_t direction;
-	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
-
-	if (victim == NULL) // Missed.
-	{
-		// Play swoosh sound.
-		gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK_MISS], 1.0f, ATTN_NORM, 0.0f);
-		return;
-	}
-
-	if (victim == self) // Hit wall.
-	{
-		gi.sound(self, CHAN_WEAPON, sounds[SND_FIST_HIT_WALL], 1.0f, ATTN_NORM, 0.0f);
-		return;
-	}
-
-	// Hurt whatever we were whacking away at.
-	vec3_t blood_dir;
-	VectorSubtract(end_offset, start_offset, blood_dir);
-	VectorNormalize(blood_dir);
-
-	const float damage = self->s.scale * 15.0f * ((skill->value + 1.0f) / 3.0f); // skill 0 = 1/3, skill 3 = 1 1/3.
-	T_Damage(victim, self, self, direction, trace.endpos, blood_dir, (int)damage, (int)damage * 20, DAMAGE_EXTRA_KNOCKBACK, MOD_DIED);
-
-	gi.sound(self, CHAN_WEAPON, sounds[SND_HIT_WALL], 1.0f, ATTN_NORM, 0.0f);
-
-	// Knockdown player?
-	if (victim->client != NULL && victim->health > 0 && victim->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && AI_IsInfrontOf(self, victim))
-		P_KnockDownPlayer(&victim->client->playerinfo);
 }
 
 static void SeraphGuardMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_guard_missile' in original logic.
@@ -596,67 +377,37 @@ static void SeraphGuardRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	}
 }
 
-void seraph_guard_back(edict_t* self, float distance)
+static void SeraphGuardVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ser_grd_SightSound' in original logic.
 {
-	if (!MG_TryWalkMove(self, self->s.angles[YAW] + 180.0f, distance, true) && irand(0, 1000) == 0) // 0.0009% chance to run away when MG_TryWalkMove() fails. //TODO: chance seems way too low. Scale with difficulty?
-	{
-		self->monsterinfo.aiflags |= AI_COWARD;
-		SetAnim(self, ANIM_RUN);
-	}
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_SIGHT1, SND_SIGHT4)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-static qboolean SeraphGuardCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_sg' in original logic.
+#pragma endregion
+
+#pragma region ========================== Edict callbacks ===========================
+
+static void SeraphGuardProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named 'guard_beam_blocked' in original logic.
 {
-	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
-	{
-		BIT_BASEBIN,
-		BIT_PITHEAD, // Overlord head.
-		BIT_SHOULDPAD,
-		BIT_GUARDHEAD, // Guard head.
-		BIT_LHANDGRD, // Left hand guard.
-		BIT_LHANDBOSS, // Left hand overlord.
-		BIT_RHAND, // Right hand.
-		BIT_FRTORSO,
-		BIT_ARMSPIKES,
-		BIT_LFTUPARM,
-		BIT_RTLEG,
-		BIT_RTARM,
-		BIT_LFTLEG,
-		BIT_BKTORSO,
-		BIT_AXE,
-		BIT_WHIP
-	};
+	//TODO: re-implement projectile reflecting logic?
 
-	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
-	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
+	if (trace->ent->takedamage != DAMAGE_NO)
 	{
-		*throw_nodes |= bit_for_mesh_node[node_id];
-		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
+		vec3_t hit_dir;
+		VectorNormalize2(self->velocity, hit_dir);
 
-		return true;
+		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, self->dmg, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
 	}
 
-	return false;
+	gi.sound(self, CHAN_WEAPON, sounds[SND_MISSHIT], 1.0f, ATTN_NORM, 0.0f); //mxd. Use precached sound index.
+	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_M_MISC_EXPLODE, vec3_origin);
+
+	G_SetToFree(self);
 }
 
-// Throws weapon, turns off those nodes, sets that weapon as gone.
-static void SeraphGuardDropWeapon(edict_t* self) //mxd. Named 'seraph_guard_dropweapon' in original logic.
+static void SeraphGuardProjectileThink(edict_t* self) //mxd. Named 'guard_beam_think' in original logic. //TODO: is this needed?..
 {
-	if (self->s.fmnodeinfo[MESH__AXE].flags & FMNI_NO_DRAW)
-		return; // Already dropped.
-
-	vec3_t forward;
-	vec3_t right;
-	vec3_t up;
-	AngleVectors(self->s.angles, forward, right, up);
-
-	vec3_t hand_pos = { 0 };
-	VectorMA(hand_pos, 8.0f, forward, hand_pos);
-	VectorMA(hand_pos, 5.0f, right, hand_pos);
-	VectorMA(hand_pos, 12.0f, up, hand_pos);
-
-	ThrowWeapon(self, &hand_pos, BIT_AXE, 0, FRAME_partfly);
-	self->s.fmnodeinfo[MESH__AXE].flags |= FMNI_NO_DRAW;
+	self->think = NULL;
+	self->nextthink = -1.0f;
 }
 
 static qboolean SeraphGuardThrowHead(edict_t* self, float damage, const qboolean dismember_ok) //mxd. Added to simplify logic.
@@ -862,10 +613,272 @@ static void SeraphGuardDismember(edict_t* self, int damage, HitLocation_t hl) //
 	}
 }
 
-static void SeraphGuardVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ser_grd_SightSound' in original logic.
+#pragma endregion
+
+#pragma region ========================== Action functions ==========================
+
+void seraph_guard_check_poke(edict_t* self) //mxd. Named 'seraph_guard_checkpoke' in original logic.
 {
-	gi.sound(self, CHAN_VOICE, sounds[irand(SND_SIGHT1, SND_SIGHT4)], 1.0f, ATTN_NORM, 0.0f);
+	// Really, this is a given, but it could fail...
+	if (!M_ValidTarget(self, self->enemy))
+	{
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
+	}
+
+	if (M_DistanceToTarget(self, self->enemy) >= 120.0f)
+		return;
+
+	// Set this for any uses below.
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+
+	vec3_t attack_vel;
+	VectorScale(forward, 2.0f, attack_vel);
+
+	if (M_PredictTargetEvasion(self, self->enemy, attack_vel, self->enemy->velocity, 150.0f, SGUARD_NUM_PREDICTED_FRAMES))
+	{
+		const int chance = irand(0, 100);
+
+		if (chance < 40)
+			SetAnim(self, ANIM_MELEE3);
+		else if (chance < 60)
+			SetAnim(self, ANIM_MELEE2);
+	}
+	else
+	{
+		SetAnim(self, ((irand(0, 1) == 1) ? ANIM_RUN_MELEE : ANIM_MELEE2));
+	}
 }
+
+void seraph_guard_death_loop(edict_t* self)
+{
+	SetAnim(self, ANIM_DEATH2_LOOP);
+}
+
+void seraph_guard_check_land(edict_t* self)
+{
+	M_ChangeYaw(self);
+
+	vec3_t end_pos;
+	VectorCopy(self->s.origin, end_pos);
+	end_pos[2] -= 48.0f;
+
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
+
+	if ((trace.fraction < 1.0f || trace.startsolid || trace.allsolid) && self->curAnimID != ANIM_DEATH2_END && self->curAnimID != ANIM_DEATH2_GO)
+	{
+		self->elasticity = 1.25f;
+		self->friction = 0.5f;
+		SetAnim(self, ANIM_DEATH2_END);
+	}
+}
+
+void seraph_guard_dead(edict_t* self)
+{
+	M_EndDeath(self);
+}
+
+void seraph_guard_strike(edict_t* self, float damage, float var2, float var3)
+{
+	if (self->monsterinfo.aiflags & AI_NO_MELEE)
+		return;
+
+	damage *= self->s.scale;
+	self->monsterinfo.attack_finished = level.time + (3.0f - skill->value) * 2.0f + flrand(0.0f, 1.0f);
+
+	qboolean knockback = true;
+	vec3_t start_offset;
+	vec3_t end_offset;
+
+	switch (self->curAnimID)
+	{
+		case ANIM_MELEE2:
+			VectorSet(start_offset, 16.0f, -16.0f, 24.0f);
+			VectorSet(end_offset, 124.0f, -16.0f, 16.0f);
+			break;
+
+		case ANIM_MELEE3:
+			VectorSet(start_offset, 32.0f, -48.0f, 34.0f);
+			VectorSet(end_offset, 64.0f, 64.0f, -8.0f);
+			break;
+
+		default:
+			knockback = false;
+			VectorSet(start_offset, 32.0f, -16.0f, 64.0f);
+			VectorSet(end_offset, 72.0f, 16.0f, -8.0f);
+			break;
+	}
+
+	Vec3ScaleAssign(self->s.scale, start_offset);
+	Vec3ScaleAssign(self->s.scale, end_offset);
+
+	const vec3_t mins = { -4.0f, -4.0f, -4.0f };
+	const vec3_t maxs = {  4.0f,  4.0f,  4.0f };
+
+	trace_t trace;
+	vec3_t direction;
+	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
+
+	if (victim == NULL) // Missed.
+	{
+		// Play swoosh sound.
+		gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK_MISS], 1.0f, ATTN_NORM, 0.0f);
+		return;
+	}
+
+	if (victim == self) // Hit wall.
+	{
+		// Create a spark effect.
+		gi.CreateEffect(NULL, FX_SPARKS, CEF_FLAG6, trace.endpos, "d", direction);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_HIT_WALL], 1, ATTN_NORM, 0);
+
+		return;
+	}
+
+	// Hurt whatever we were whacking away at.
+	if (self->curAnimID == ANIM_MELEE3)
+	{
+		gi.CreateEffect(NULL, FX_WEAPON_STAFF_STRIKE, 0, trace.endpos, "db", trace.plane.normal, 2);
+		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/staffhit_2.wav"), 1.0f, ATTN_NORM, 0.0f);
+	}
+	else
+	{
+		gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK], 1.0f, ATTN_NORM, 0.0f);
+	}
+
+	damage *= (skill->value + 1.0f) / 3.0f * flrand(0.85f, 1.15f); // Add some variance to the hit, since it passes a constant (skill 0 = 1/3, skill 3 = 1 1/3).
+
+	vec3_t blood_dir;
+	VectorSubtract(end_offset, start_offset, blood_dir);
+	VectorNormalize(blood_dir);
+
+	if (knockback)
+		T_Damage(victim, self, self, direction, trace.endpos, blood_dir, (int)damage, (int)damage * 20, DAMAGE_EXTRA_KNOCKBACK | DAMAGE_DISMEMBER | DAMAGE_DOUBLE_DISMEMBER | DAMAGE_EXTRA_BLOOD, MOD_DIED);
+	else
+		T_Damage(victim, self, self, direction, trace.endpos, blood_dir, (int)damage, 0, DAMAGE_NO_KNOCKBACK | DAMAGE_DISMEMBER | DAMAGE_DOUBLE_DISMEMBER | DAMAGE_EXTRA_BLOOD, MOD_DIED);
+
+	// Knockdown player?
+	if (self->curAnimID == ANIM_MELEE3 && victim->client != NULL && victim->health > 0)
+		if (victim->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && AI_IsInfrontOf(self, victim))
+			P_KnockDownPlayer(&victim->client->playerinfo);
+}
+
+void seraph_guard_jump(edict_t* self) //mxd. Named 'seraphGuardApplyJump' in original logic.
+{
+	self->jump_time = level.time + 0.75f;
+	VectorCopy(self->movedir, self->velocity);
+	VectorNormalize(self->movedir);
+}
+
+void seraph_guard_pause(edict_t* self)
+{
+	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
+	{
+		self->monsterinfo.searchType = SEARCH_COMMON;
+		MG_FaceGoal(self, true);
+	}
+
+	self->mood_think(self);
+
+	switch (self->ai_mood)
+	{
+	case AI_MOOD_ATTACK:
+			QPostMessage(self, ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE), PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_PURSUE:
+		case AI_MOOD_NAVIGATE:
+		case AI_MOOD_WALK:
+		case AI_MOOD_FLEE:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_STAND:
+			if (self->enemy == NULL) //TODO: else what?
+				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_DELAY:
+			SetAnim(self, ANIM_DELAY);
+			break;
+
+		case AI_MOOD_WANDER:
+			SetAnim(self, ANIM_WALK);
+			break;
+
+		case AI_MOOD_JUMP:
+			SetAnim(self, ANIM_FJUMP);
+			break;
+
+		default:
+			break;
+	}
+}
+
+void seraph_guard_fire(edict_t* self)
+{
+	if (self->enemy == NULL)
+		return;
+
+	if (M_DistanceToTarget(self, self->enemy) >= self->min_missile_range)
+	{
+		SeraphGuardProjectile(self);
+		return;
+	}
+
+	vec3_t start_offset = { 12.0f, -18.0f, 24.0f };
+	vec3_t end_offset = { 88.0f, -4.0f, -16.0f };
+
+	Vec3ScaleAssign(self->s.scale, start_offset);
+	Vec3ScaleAssign(self->s.scale, end_offset);
+
+	const vec3_t mins = { -4.0f, -4.0f, -4.0f };
+	const vec3_t maxs = {  4.0f,  4.0f,  4.0f };
+
+	trace_t trace;
+	vec3_t direction;
+	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
+
+	if (victim == NULL) // Missed.
+	{
+		// Play swoosh sound.
+		gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK_MISS], 1.0f, ATTN_NORM, 0.0f);
+		return;
+	}
+
+	if (victim == self) // Hit wall.
+	{
+		gi.sound(self, CHAN_WEAPON, sounds[SND_FIST_HIT_WALL], 1.0f, ATTN_NORM, 0.0f);
+		return;
+	}
+
+	// Hurt whatever we were whacking away at.
+	vec3_t blood_dir;
+	VectorSubtract(end_offset, start_offset, blood_dir);
+	VectorNormalize(blood_dir);
+
+	const float damage = self->s.scale * 15.0f * ((skill->value + 1.0f) / 3.0f); // skill 0 = 1/3, skill 3 = 1 1/3.
+	T_Damage(victim, self, self, direction, trace.endpos, blood_dir, (int)damage, (int)damage * 20, DAMAGE_EXTRA_KNOCKBACK, MOD_DIED);
+
+	gi.sound(self, CHAN_WEAPON, sounds[SND_HIT_WALL], 1.0f, ATTN_NORM, 0.0f);
+
+	// Knockdown player?
+	if (victim->client != NULL && victim->health > 0 && victim->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && AI_IsInfrontOf(self, victim))
+		P_KnockDownPlayer(&victim->client->playerinfo);
+}
+
+void seraph_guard_back(edict_t* self, float distance)
+{
+	if (!MG_TryWalkMove(self, self->s.angles[YAW] + 180.0f, distance, true) && irand(0, 1000) == 0) // 0.0009% chance to run away when MG_TryWalkMove() fails. //TODO: chance seems way too low. Scale with difficulty?
+	{
+		self->monsterinfo.aiflags |= AI_COWARD;
+		SetAnim(self, ANIM_RUN);
+	}
+}
+
+#pragma endregion
 
 void SeraphGuardStaticsInit(void)
 {
