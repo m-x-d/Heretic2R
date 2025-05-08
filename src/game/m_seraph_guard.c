@@ -1,35 +1,33 @@
-//==============================================================================
 //
 // m_seraph_guard.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-// jweier
-//==============================================================================
 
-#include "g_local.h"
 #include "m_seraph_guard.h"
 #include "m_seraph_guard_shared.h"
 #include "m_seraph_guard_anim.h"
-#include "g_DefaultMessageHandler.h"
-#include "Utilities.h"
-#include "g_monster.h"
-#include "Random.h"
-#include "vector.h"
 #include "g_debris.h" //mxd
-#include "fx.h"
-
-#include "g_HitLocation.h"
-#include "m_stats.h"
+#include "g_DefaultMessageHandler.h"
 #include "g_playstats.h"
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
-#include "p_anim_branch.h"
+#include "m_stats.h"
 #include "p_anims.h"
-#include "p_actions.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_monster.h"
 
-static const animmove_t *animations[NUM_ANIMS] =
+static void guard_beam_blocked(edict_t* self, trace_t* trace); //TODO: remove.
+static void seraph_guard_dropweapon(edict_t* self); //TODO: remove.
+
+#define SGUARD_NUM_PREDICTED_FRAMES	5.0f //mxd. Named 'NUM_PREDFRAMES' in original logic.
+#define SF_SGUARD_GOLEM				4 //mxd. Named 'SERAPH_FLAG_GOLEM' in original logic.
+
+#pragma region ========================== Seraph Guard Base Info ==========================
+
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&seraph_guard_move_stand,
 	&seraph_guard_move_run,
@@ -50,11 +48,8 @@ static const animmove_t *animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
 
-#define NUM_PREDFRAMES	5
-
-#define SERAPH_FLAG_GOLEM	4
+#pragma endregion
 
 /*
 ==========================================================
@@ -71,8 +66,6 @@ static ClassResourceInfo_t resInfo;
 // create the guts of morcalavin's projectile
 void create_guard_proj(edict_t *self,edict_t *proj)
 {
-	void guard_beam_blocked( edict_t *self, trace_t *trace );
-
 	proj->svflags |= SVF_ALWAYS_SEND;
 	proj->movetype = PHYSICSTYPE_FLY;
 	proj->gravity = 0;
@@ -97,7 +90,7 @@ void create_guard_proj(edict_t *self,edict_t *proj)
 			guard_beam_blocked
 -----------------------------------------------*/
 
-void guard_beam_blocked( edict_t *self, trace_t *trace )
+static void guard_beam_blocked( edict_t *self, trace_t *trace )
 {	
 	//edict_t	*proj;
 
@@ -236,7 +229,7 @@ void seraph_guard_checkpoke ( edict_t *self )
 		if (dist < 120)
 		{
 			VectorMA(vf, 1, vf, attackVel);
-			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, 150, NUM_PREDFRAMES );
+			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, 150, SGUARD_NUM_PREDICTED_FRAMES );
 
 			if (ret)
 			{
@@ -560,7 +553,7 @@ void seraph_guard_melee(edict_t *self, G_Message_t *msg)
 			}
 
 			VectorMA(vf, 0, vf, attackVel);
-			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, self->melee_range, NUM_PREDFRAMES );
+			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, self->melee_range, SGUARD_NUM_PREDICTED_FRAMES );
 
 						
 			if (ret)
@@ -676,7 +669,7 @@ void seraph_guard_missile(edict_t *self, G_Message_t *msg)
 		if (dist < self->min_missile_range)
 		{
 			VectorMA(vf, 0, vf, attackVel);
-			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, self->melee_range, NUM_PREDFRAMES );
+			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, self->melee_range, SGUARD_NUM_PREDICTED_FRAMES );
 
 			if(irand(0, 4))
 			{
@@ -711,7 +704,6 @@ void seraph_guard_death_pain(edict_t *self, G_Message_t *msg)
 	}
 }
 
-void seraph_guard_dropweapon (edict_t *self);
 void seraph_guard_death(edict_t *self, G_Message_t *msg)
 {
 	edict_t	*targ, *inflictor, *attacker;
@@ -789,7 +781,7 @@ void seraph_guard_run(edict_t *self, G_Message_t *msg)
 		if (dist < 100)
 		{
 			VectorMA(vf, 0, vf, attackVel);
-			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, self->melee_range, NUM_PREDFRAMES );
+			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, self->melee_range, SGUARD_NUM_PREDICTED_FRAMES );
 
 			//See what the predicted outcome is
 			if (ret && (M_CheckMeleeHit( self, self->melee_range, &trace) == self->enemy))
@@ -800,7 +792,7 @@ void seraph_guard_run(edict_t *self, G_Message_t *msg)
 		else if (dist < 200)
 		{
 			VectorMA(vf, 150, vf, attackVel);
-			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, 150, NUM_PREDFRAMES );
+			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, 150, SGUARD_NUM_PREDICTED_FRAMES );
 
 			//See what the predicted outcome is
 			if (ret && (M_CheckMeleeHit( self, 150, &trace) == self->enemy))
@@ -866,7 +858,7 @@ qboolean canthrownode_sg (edict_t *self, int BP, int *throw_nodes)
 }
 
 //THROWS weapon, turns off those nodes, sets that weapon as gone
-void seraph_guard_dropweapon (edict_t *self)
+static void seraph_guard_dropweapon (edict_t *self)
 {//NO PART FLY FRAME!
 	vec3_t handspot, forward, right, up;
 
@@ -1097,6 +1089,8 @@ void ser_grd_SightSound(edict_t *self, G_Message_t *Msg)
 
 void SeraphGuardStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_STAND]	= seraph_guard_stand;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_RUN]	= seraph_guard_run;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MELEE]	= seraph_guard_melee;
@@ -1206,7 +1200,7 @@ NOTE: A value of zero will result in defaults, if you actually want zero as the 
 */
 void SP_monster_seraph_guard(edict_t *self)
 {
-	if (self->spawnflags & SERAPH_FLAG_GOLEM)
+	if (self->spawnflags & SF_SGUARD_GOLEM)
 	{
 		self->clipmask = MASK_MONSTERSOLID;
 
