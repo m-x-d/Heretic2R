@@ -175,37 +175,26 @@ void seraph_guard_checkpoke(edict_t* self) //TODO: rename to seraph_guard_check_
 	}
 }
 
-/*--------------------------------------
-		seraph_guard_death_loop
-----------------------------------------*/
-
-void seraph_guard_death_loop ( edict_t *self )
+void seraph_guard_death_loop(edict_t* self)
 {
 	SetAnim(self, ANIM_DEATH2_LOOP);
 }
 
-/*--------------------------------------
-		seraph_guard_check_land
-----------------------------------------*/
-
-void seraph_guard_check_land ( edict_t *self )
+void seraph_guard_check_land(edict_t* self)
 {
-	vec3_t	endpos;
-	trace_t	trace;
-
 	M_ChangeYaw(self);
 
-	VectorCopy(self->s.origin, endpos);
-	endpos[2] -= 48;
+	vec3_t end_pos;
+	VectorCopy(self->s.origin, end_pos);
+	end_pos[2] -= 48.0f;
 
-	gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&trace);
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
-	if ( (	trace.fraction < 1 || trace.startsolid || trace.allsolid) && 
-			self->curAnimID != ANIM_DEATH2_END && 
-			self->curAnimID != ANIM_DEATH2_GO)
+	if ((trace.fraction < 1.0f || trace.startsolid || trace.allsolid) && self->curAnimID != ANIM_DEATH2_END && self->curAnimID != ANIM_DEATH2_GO)
 	{
-		self->elasticity = 1.25;
-		self->friction = 0.5;
+		self->elasticity = 1.25f;
+		self->friction = 0.5f;
 		SetAnim(self, ANIM_DEATH2_END);
 	}
 }
