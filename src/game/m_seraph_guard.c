@@ -914,144 +914,130 @@ void SeraphGuardStaticsInit(void)
 	classStatics[CID_SERAPH_GUARD].resInfo = &res_info;
 }
 
-/*QUAKED monster_seraph_guard(1 .5 0) (-24 -24 -34) (24 24 34) AMBUSH ASLEEP GOLEM 8 16 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
-The big, ugly, brutal Guard..
+// QUAKED monster_seraph_guard(1 .5 0) (-24 -24 -34) (24 24 34) AMBUSH ASLEEP GOLEM 8 16 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
+// The big, ugly, brutal seraph guard.
 
-AMBUSH - Will not be woken up by other monsters or shots from player
+// Spawnflags:
+// AMBUSH		- Will not be woken up by other monsters or shots from player.
+// ASLEEP		- Will not appear until triggered.
+// GOLEM		- 
+// WALKING		- Use WANDER instead.
+// WANDER		- Monster will wander around aimlessly (but follows buoys).
+// MELEE_LEAD	- Monster will try to cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not.
+// STALK		- Monster will only approach and attack from behind. If you're facing the monster it will just stand there.
+//				  Once the monster takes pain, however, it will stop this behaviour and attack normally.
+// COWARD		- Monster starts off in flee mode (runs away from you when woken up).
 
-ASLEEP - will not appear until triggered
-
-WALKING- Use WANDER instead
-
-WANDER - Monster will wander around aimlessly (but follows buoys)
-
-MELEE_LEAD - Monster will tryto cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not
-
-STALK - Monster will only approach and attack from behind- if you're facing the monster it will just stand there.  Once the monster takes pain, however, it will stop this behaviour and attack normally
-
-COWARD - Monster starts off in flee mode- runs away from you when woken up
-
-"homebuoy" - monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to)
-
-mintel - monster intelligence- this basically tells a monster how many buoys away an enemy has to be for it to give up.
-
-melee_range - How close the player has to be, maximum, for the monster to go into melee.  If this is zero, the monster will never melee.  If it is negative, the monster will try to keep this distance from the player.  If the monster has a backup, he'll use it if too clode, otherwise, a negative value here means the monster will just stop running at the player at this distance.
-	Examples:
-		melee_range = 60 - monster will start swinging it player is closer than 60
-		melee_range = 0 - monster will never do a mele attack
-		melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close
-
-missile_range - Maximum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-min_missile_range - Minimum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-bypass_missile_chance - Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot.  This, in effect, will make the monster come in more often than hang back and fire.  A percentage (0 = always fire/never close in, 100 = never fire/always close in).- must be whole number
-
-jump_chance - every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time)- must be whole number
-
-wakeup_distance - How far (max) the player can be away from the monster before it wakes up.  This just means that if the monster can see the player, at what distance should the monster actually notice him and go for him.
-
-DEFAULTS:
-mintel					= 20
-melee_range				= 100
-missile_range			= 1024
-min_missile_range		= 64
-bypass_missile_chance	= 30
-jump_chance				= 20
-wakeup_distance			= 1024
-
-NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1
-*/
-void SP_monster_seraph_guard(edict_t *self)
+// Variables:
+// homebuoy					- Monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to).
+// wakeup_target			- Monsters will fire this target the first time it wakes up (only once).
+// pain_target				- Monsters will fire this target the first time it gets hurt (only once).
+// mintel					- Monster intelligence - this basically tells a monster how many buoys away an enemy has to be for it to give up (default 20).
+// melee_range				- How close the player has to be for the monster to go into melee. If this is zero, the monster will never melee.
+//							  If it is negative, the monster will try to keep this distance from the player.
+//							  If the monster has a backup, he'll use it if too close, otherwise, a negative value here means the monster will just stop
+//							  running at the player at this distance (default 100).
+//							 Examples:
+//								melee_range = 60 - monster will start swinging it player is closer than 60.
+//								melee_range = 0 - monster will never do a melee attack.
+//								melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close.
+// missile_range			- Maximum distance the player can be from the monster to be allowed to use it's ranged attack (default 1024).
+// min_missile_range		- Minimum distance the player can be from the monster to be allowed to use it's ranged attack (default 64).
+// bypass_missile_chance	- Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot. This, in effect, will make the monster
+//							  come in more often than hang back and fire. A percentage (0 = always fire/never close in, 100 = never fire/always close in) - must be whole number (default 0).
+// jump_chance				- Every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time) - must be whole number (default 20).
+// wakeup_distance			- How far (max) the player can be away from the monster before it wakes up. This means that if the monster can see the player,
+//							  at what distance should the monster actually notice him and go for him (default 1024).
+// NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1.
+void SP_monster_seraph_guard(edict_t* self)
 {
 	if (self->spawnflags & SF_SGUARD_GOLEM)
 	{
 		self->clipmask = MASK_MONSTERSOLID;
 
-		if (!self->health)
+		if (self->health == 0)
 			self->health = SGUARD_HEALTH * 2;
 
-		self->max_health = self->health = MonsterHealth(self->health);
+		self->health = MonsterHealth(self->health);
+		self->max_health = self->health;
 
-		self->mass = SGUARD_MASS  * 10;
-		self->yaw_speed = 12;
+		self->mass = SGUARD_MASS * 10;
+		self->yaw_speed = 12.0f;
 
 		self->movetype = PHYSICSTYPE_STEP;
-		self->solid=SOLID_BBOX;
+		self->solid = SOLID_BBOX;
 
-		if (!self->s.scale)
+		if (self->s.scale == 0.0f)
 		{
-			self->s.scale = self->monsterinfo.scale = 2.5;
+			self->s.scale = 2.5f;
+			self->monsterinfo.scale = self->s.scale;
 		}
 
-		self->s.skinnum = 3;
-
 		VectorCopy(STDMinsForClass[self->classID], self->mins);
-		VectorCopy(STDMaxsForClass[self->classID], self->maxs);	
+		VectorCopy(STDMaxsForClass[self->classID], self->maxs);
 
 		self->materialtype = MAT_STONE;
 
-		self->s.modelindex = classStatics[CID_SERAPH_GUARD].resInfo->modelIndex;
-		self->s.skinnum = 0;
+		self->s.modelindex = (byte)classStatics[CID_SERAPH_GUARD].resInfo->modelIndex;
+		self->s.skinnum = 2; //BUGFIX: mxd. Actually use stone skin. Original logic sets this to 3, then re-assigns to 0.
 
-		self->monsterinfo.otherenemyname = "monster_rat";	
+		self->monsterinfo.otherenemyname = "monster_rat";
 
-		//Turn off the Overlord pieces
+		// Turn off the Overlord pieces.
 		self->s.fmnodeinfo[MESH__WHIP].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__LHANDBOSS].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__PITHEAD].flags |= FMNI_NO_DRAW;
 
-		self->s.frame = FRAME_idle;
+		self->s.frame = FRAME_idle; //TODO: randomly pick between FRAME_idle and FRAME_idle29?
 
-		//enable this and use guards to make them wake up on command
-		//self->use = golem_awaken;
+		//TODO: enable golem_awaken() logic? Would require either stone golem pain skin or disabling skin switching in SeraphGuardDismember()...
 	}
 	else
 	{
 		if (!M_WalkmonsterStart(self)) //mxd. M_Start -> M_WalkmonsterStart.
-			return; // Failed initialization
+			return; // Failed initialization.
 
 		self->msgHandler = DefaultMsgHandler;
 
-		if (!self->health)
-		{
+		if (self->health == 0)
 			self->health = SGUARD_HEALTH;
-		}
 
-		//Apply to the end result (whether designer set or not)
-		self->max_health = self->health = MonsterHealth(self->health);
+		// Apply to the end result (whether designer set or not).
+		self->health = MonsterHealth(self->health);
+		self->max_health = self->health;
 
 		self->mass = SGUARD_MASS;
-		self->yaw_speed = 24;
+		self->yaw_speed = 24.0f;
 
-		if(irand(0, 2))
+		if (irand(0, 2) != 0)
 			self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
+
 		self->movetype = PHYSICSTYPE_STEP;
-		self->solid=SOLID_BBOX;
+		self->solid = SOLID_BBOX;
 		self->monsterinfo.dismember = SeraphGuardDismember;
 
-		if (!self->s.scale)
+		if (self->s.scale == 0.0f)
 		{
-			self->s.scale = self->monsterinfo.scale = MODEL_SCALE;
+			self->s.scale = MODEL_SCALE;
+			self->monsterinfo.scale = self->s.scale;
 		}
 
 		VectorCopy(STDMinsForClass[self->classID], self->mins);
-		VectorCopy(STDMaxsForClass[self->classID], self->maxs);	
+		VectorCopy(STDMaxsForClass[self->classID], self->maxs);
 
 		self->materialtype = MAT_FLESH;
 
-		self->s.modelindex = classStatics[CID_SERAPH_GUARD].resInfo->modelIndex;
+		self->s.modelindex = (byte)classStatics[CID_SERAPH_GUARD].resInfo->modelIndex;
 		self->s.skinnum = 0;
 
-		self->monsterinfo.otherenemyname = "monster_rat";	
+		self->monsterinfo.otherenemyname = "monster_rat";
 
-		//Turn off the Overlord pieces
+		// Turn off the Overlord pieces.
 		self->s.fmnodeinfo[MESH__WHIP].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__LHANDBOSS].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__PITHEAD].flags |= FMNI_NO_DRAW;
 
 		MG_InitMoods(self);
-
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
 		self->melee_range *= self->s.scale;
