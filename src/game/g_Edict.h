@@ -350,7 +350,13 @@ struct edict_s
 
 	float touch_debounce_time;	// Used by polys and triggers.
 	float pain_debounce_time;	// Used by monsters and player.
-	float damage_debounce_time;	// Used by monsters and player.
+
+	union
+	{
+		float damage_debounce_time; // Used by monsters and player.
+		int spreadermist_damage_delta; //mxd
+	};
+	
 	float attack_debounce_time;	// Used by monsters.
 	int reflect_debounce_time;	// Used by reflecting projectiles.
 	float impact_debounce_time;	// Impact damage debounce time.

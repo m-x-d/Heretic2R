@@ -26,7 +26,7 @@ static void RadiusDamageEntUpdateAttachPosition(edict_t* self) //mxd. Added to r
 	VectorMA(self->s.origin, self->v_angle_ofs[2], up, self->s.origin);
 }
 
-edict_t * RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const int damage, const float delta_damage, const float radius, const float delta_radius, const int dflags, const float lifetime, const float think_increment, const vec3_t origin, const vec3_t offset, const qboolean attach) //TODO: rename to CreateRadiusDamageEnt.
+edict_t * RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const int damage, const int delta_damage, const float radius, const float delta_radius, const int dflags, const float lifetime, const float think_increment, const vec3_t origin, const vec3_t offset, const qboolean attach) //TODO: rename to CreateRadiusDamageEnt.
 {
 	assert(damage_owner != NULL);
 
@@ -36,7 +36,7 @@ edict_t * RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const 
 	self->owner = damage_owner; // For damage.
 	self->spreadermist_attach_ent = position_owner;// For offsetting.
 	self->dmg = damage; // Starting damage.
-	self->damage_debounce_time = delta_damage; // Damage amount to decrease by each think. //TODO: add int spreadermist_damage_delta name.
+	self->spreadermist_damage_delta = delta_damage; // Damage amount to decrease by each think.
 	self->dmg_radius = radius; // Radius of damage.
 	self->speed = delta_radius; // Amount to change radius each think. //TODO: speed -> add spreadermist_dmg_radius_delta name.
 	self->bloodType = dflags; // Damage flags. //TODO: add spreadermist_dflags name.
@@ -108,7 +108,7 @@ static void SpreaderMistInit(edict_t* self, float x, float y, float z, float vel
 
 	// Create the volume effect for the damage.
 	const int dflags = (DAMAGE_NO_BLOOD | DAMAGE_NO_KNOCKBACK | DAMAGE_ALIVE_ONLY | DAMAGE_AVOID_ARMOR); //mxd
-	RadiusDamageEnt(self, self, 1, 0.0f, 60.0f, 1.0f, dflags, 2.0f, 0.25f, rotated_offset, velocity, false); //TODO: modify damage by skill?
+	RadiusDamageEnt(self, self, 1, 0, 60.0f, 1.0f, dflags, 2.0f, 0.25f, rotated_offset, velocity, false); //TODO: modify damage by skill?
 }
 
 #pragma endregion
@@ -137,7 +137,7 @@ static void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamag
 		return;
 	}
 
-	self->dmg -= (int)self->damage_debounce_time;
+	self->dmg -= self->spreadermist_damage_delta;
 
 	if (self->dmg <= 0)
 	{
