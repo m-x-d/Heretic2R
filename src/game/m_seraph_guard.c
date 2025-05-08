@@ -19,7 +19,7 @@
 #include "Vector.h"
 #include "g_monster.h"
 
-static void guard_beam_blocked(edict_t* self, trace_t* trace); //TODO: remove.
+static void SeraphGuardProjectileBlocked(edict_t* self, trace_t* trace); //TODO: remove.
 static void seraph_guard_dropweapon(edict_t* self); //TODO: remove.
 
 #define SGUARD_NUM_PREDICTED_FRAMES	5.0f //mxd. Named 'NUM_PREDFRAMES' in original logic.
@@ -64,9 +64,9 @@ static void SeraphGuardProjectileInit(const edict_t* self, edict_t* proj) //mxd.
 	proj->clipmask = MASK_SHOT;
 	proj->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
-	proj->isBlocked = guard_beam_blocked;
-	proj->isBlocking = guard_beam_blocked;
-	proj->bounced = guard_beam_blocked;
+	proj->isBlocked = SeraphGuardProjectileBlocked;
+	proj->isBlocking = SeraphGuardProjectileBlocked;
+	proj->bounced = SeraphGuardProjectileBlocked;
 
 	proj->s.effects = (EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
 	proj->enemy = self->enemy;
@@ -76,66 +76,20 @@ static void SeraphGuardProjectileInit(const edict_t* self, edict_t* proj) //mxd.
 	VectorCopy(self->s.origin, proj->s.origin);
 }
 
-/*-----------------------------------------------
-			guard_beam_blocked
------------------------------------------------*/
+static void SeraphGuardProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named 'guard_beam_blocked' in original logic.
+{
+	//TODO: re-implement projectile reflecting logic?
 
-static void guard_beam_blocked( edict_t *self, trace_t *trace )
-{	
-	//edict_t	*proj;
-
-	/*
-	if(EntReflecting(trace->ent, true, true) && self->reflect_debounce_time)
+	if (trace->ent->takedamage != DAMAGE_NO)
 	{
-		proj = G_Spawn();
+		vec3_t hit_dir;
+		VectorNormalize2(self->velocity, hit_dir);
 
-		create_guard_proj(self,proj);
-		proj->isBlocked = guard_beam_blocked;
-		proj->classname = "M_ref_HMissile";
-		proj->owner = self->owner;
-		proj->ideal_yaw = self->ideal_yaw;
-		proj->classID = self->classID;
-
-		Create_rand_relect_vect(self->velocity, proj->velocity);
-		Vec3ScaleAssign(proj->ideal_yaw,proj->velocity);
-		vectoangles(proj->velocity, proj->s.angles);
-
-		gi.CreateEffect(&proj->s,
-					FX_M_EFFECTS,
-					CEF_OWNERS_ORIGIN,
-					NULL,
-					"bv",
-					proj->classID,
-					proj->velocity);
-
-		proj->reflect_debounce_time = self->reflect_debounce_time -1;
-		gi.linkentity(proj); 
-
-		G_SetToFree(self);
-
-		return;
-	}
-	*/
-
-	if (trace->ent->takedamage )
-	{
-		vec3_t	hitDir;
-
-		VectorCopy( self->velocity, hitDir );
-		VectorNormalize( hitDir );
-
-		T_Damage(trace->ent, self, self->owner, hitDir, self->s.origin, trace->plane.normal, self->dmg, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK,MOD_DIED);
+		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, self->dmg, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
 	}
 
-	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spellhit.wav"), 1, ATTN_NORM, 0);
-
-	gi.CreateEffect(&self->s,
-				FX_M_EFFECTS,
-				CEF_OWNERS_ORIGIN,
-				self->s.origin,
-				"bv",
-				FX_M_MISC_EXPLODE,
-				vec3_origin);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_MISSHIT], 1.0f, ATTN_NORM, 0.0f); //mxd. Use precached sound index.
+	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_M_MISC_EXPLODE, vec3_origin);
 
 	G_SetToFree(self);
 }
@@ -160,7 +114,7 @@ void guard_beam( edict_t *self)
 	proj->reflect_debounce_time = MAX_REFLECT;
 	proj->classname = "M_Beam";
 
-	proj->isBlocked = guard_beam_blocked;
+	proj->isBlocked = SeraphGuardProjectileBlocked;
 
 	proj->owner = self;
 	
