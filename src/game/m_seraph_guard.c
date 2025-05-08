@@ -867,58 +867,51 @@ static void SeraphGuardVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //m
 	gi.sound(self, CHAN_VOICE, sounds[irand(SND_SIGHT1, SND_SIGHT4)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*
-==========================================================
-	
-	Seraph Guard Spawn functions
-
-==========================================================
-*/
-
 void SeraphGuardStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_STAND]	= SeraphGuardStandMsgHandler;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_RUN]	= SeraphGuardRunMsgHandler;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MELEE]	= SeraphGuardMeleeMsgHandler;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_STAND] = SeraphGuardStandMsgHandler;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_RUN] = SeraphGuardRunMsgHandler;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MELEE] = SeraphGuardMeleeMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MISSILE] = SeraphGuardMissileMsgHandler;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_PAIN]	= SeraphGuardPainMsgHandler;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH]	= SeraphGuardDeathMsgHandler;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH_PAIN]	= SeraphGuardDeathPainMsgHandler;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_PAIN] = SeraphGuardPainMsgHandler;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH] = SeraphGuardDeathMsgHandler;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH_PAIN] = SeraphGuardDeathPainMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_CHECK_MOOD] = SeraphGuardCheckMoodMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_VOICE_SIGHT] = SeraphGuardVoiceSightMsgHandler;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/guard/tris.fm");
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/guard/tris.fm");
 
-	sounds[SND_ATTACK]		=	gi.soundindex("monsters/seraph/guard/attack.wav");	
-	sounds[SND_ATTACK_MISS]	=	gi.soundindex("monsters/seraph/guard/attack_miss.wav");	
-	sounds[SND_HIT_WALL]	=	gi.soundindex("weapons/staffhitwall.wav");	
-	sounds[SND_MISSILE]		=	gi.soundindex("monsters/seraph/guard/spell.wav");	
-	sounds[SND_MISSHIT]		=	gi.soundindex("monsters/seraph/guard/spellhit.wav");
-	sounds[SND_FIST_HIT_WALL]	=	gi.soundindex("objects/bam1.wav");	
+	sounds[SND_ATTACK] = gi.soundindex("monsters/seraph/guard/attack.wav");
+	sounds[SND_ATTACK_MISS] = gi.soundindex("monsters/seraph/guard/attack_miss.wav");
+	sounds[SND_HIT_WALL] = gi.soundindex("weapons/staffhitwall.wav");
+	sounds[SND_MISSILE] = gi.soundindex("monsters/seraph/guard/spell.wav");
+	sounds[SND_MISSHIT] = gi.soundindex("monsters/seraph/guard/spellhit.wav");
+	sounds[SND_FIST_HIT_WALL] = gi.soundindex("objects/bam1.wav");
 
-	sounds[SND_DEATH1]	=	gi.soundindex("monsters/seraph/death1.wav");	
-	sounds[SND_DEATH2]	=	gi.soundindex("monsters/seraph/death2.wav");	
-	sounds[SND_DEATH3]	=	gi.soundindex("monsters/seraph/wimpdeath1.wav");	
-	sounds[SND_DEATH4]	=	gi.soundindex("monsters/seraph/wimpdeath2.wav");	
-	
-	sounds[SND_PAIN1]	=	gi.soundindex("monsters/seraph/pain1.wav");	
-	sounds[SND_PAIN2]	=	gi.soundindex("monsters/seraph/pain2.wav");	
-	sounds[SND_PAIN3]	=	gi.soundindex("monsters/seraph/pain3.wav");	
-	sounds[SND_PAIN4]	=	gi.soundindex("monsters/seraph/pain4.wav");	
+	sounds[SND_DEATH1] = gi.soundindex("monsters/seraph/death1.wav");
+	sounds[SND_DEATH2] = gi.soundindex("monsters/seraph/death2.wav");
+	sounds[SND_DEATH3] = gi.soundindex("monsters/seraph/wimpdeath1.wav");
+	sounds[SND_DEATH4] = gi.soundindex("monsters/seraph/wimpdeath2.wav");
 
-	sounds[SND_SIGHT1]	=	gi.soundindex("monsters/seraph/guard/sight1.wav");	
-	sounds[SND_SIGHT2]	=	gi.soundindex("monsters/seraph/guard/sight2.wav");	
-	sounds[SND_SIGHT3]	=	gi.soundindex("monsters/seraph/guard/sight3.wav");	
-	sounds[SND_SIGHT4]	=	gi.soundindex("monsters/seraph/guard/sight4.wav");	
+	sounds[SND_PAIN1] = gi.soundindex("monsters/seraph/pain1.wav");
+	sounds[SND_PAIN2] = gi.soundindex("monsters/seraph/pain2.wav");
+	sounds[SND_PAIN3] = gi.soundindex("monsters/seraph/pain3.wav");
+	sounds[SND_PAIN4] = gi.soundindex("monsters/seraph/pain4.wav");
 
-	classStatics[CID_SERAPH_GUARD].resInfo = &resInfo;
+	sounds[SND_SIGHT1] = gi.soundindex("monsters/seraph/guard/sight1.wav");
+	sounds[SND_SIGHT2] = gi.soundindex("monsters/seraph/guard/sight2.wav");
+	sounds[SND_SIGHT3] = gi.soundindex("monsters/seraph/guard/sight3.wav");
+	sounds[SND_SIGHT4] = gi.soundindex("monsters/seraph/guard/sight4.wav");
+
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
+
+	classStatics[CID_SERAPH_GUARD].resInfo = &res_info;
 }
 
 void golem_awaken (edict_t *self, edict_t *other, edict_t *activator)
