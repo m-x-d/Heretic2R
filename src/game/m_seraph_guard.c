@@ -347,30 +347,17 @@ static void SeraphGuardCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mx
 	seraph_guard_pause(self);
 }
 
-/*
-==========================================================
-
-	Seraph Guard Message functions
-
-==========================================================
-*/
-
-/*--------------------------------------
-		void seraph_guard_pain
-----------------------------------------*/
-
-void seraph_guard_pain(edict_t *self, G_Message_t *msg)
+static void SeraphGuardPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_guard_pain' in original logic.
 {
-	int				temp, damage;
-	int				force_damage, soundID;
-	
+	int temp;
+	int force_damage;
+	int damage;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_damage, &damage, &temp);
-	//Weighted random based on health compared to the maximum it was at
-	if (force_damage || ((irand(0, self->max_health+50) > self->health) && irand(0,2)))
-	{
-		soundID = irand(SND_PAIN1, SND_PAIN4);
-		gi.sound (self, CHAN_WEAPON, sounds[soundID], 1, ATTN_NORM, 0);
 
+	// Weighted random based on health compared to the maximum it was at.
+	if (force_damage || (irand(0, self->max_health + 50) > self->health && irand(0, 2) != 0))
+	{
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_PAIN1, SND_PAIN4)], 1.0f, ATTN_NORM, 0.0f);
 		SetAnim(self, ANIM_PAIN);
 	}
 }
@@ -961,7 +948,7 @@ void SeraphGuardStaticsInit(void)
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_RUN]	= seraph_guard_run;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MELEE]	= seraph_guard_melee;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_MISSILE] = seraph_guard_missile;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_PAIN]	= seraph_guard_pain;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_PAIN]	= SeraphGuardPainMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH]	= seraph_guard_death;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH_PAIN]	= seraph_guard_death_pain;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_CHECK_MOOD] = SeraphGuardCheckMoodMsgHandler;
