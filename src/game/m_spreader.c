@@ -211,7 +211,7 @@ void spreader_dead(edict_t *self)
 		VectorAdd(self->s.origin, offset, sprayorg);
 
 		// create the volume effect for the damage
-		gas = RadiusDamageEnt(self,//owner
+		gas = CreateRadiusDamageEnt(self,//owner
 						self,//damage-owner
 						1,//damage
 						0,//d_damage
@@ -1037,7 +1037,7 @@ void spreaderTakeOff (edict_t *self)
 	self->pos1[2] += self->maxs[2] * 0.8;
 
 	// create the volume effect for the damage
-	gas = RadiusDamageEnt(self,//owner
+	gas = CreateRadiusDamageEnt(self,//owner
 					self,//damage-owner
 					1,//damage
 					0,//d_damage

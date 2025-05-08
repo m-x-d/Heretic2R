@@ -26,7 +26,7 @@ static void RadiusDamageEntUpdateAttachPosition(edict_t* self) //mxd. Added to r
 	VectorMA(self->s.origin, self->v_angle_ofs[2], up, self->s.origin);
 }
 
-edict_t * RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const int damage, const int delta_damage, const float radius, const float delta_radius, const int dflags, const float lifetime, const float think_increment, const vec3_t origin, const vec3_t offset, const qboolean attach) //TODO: rename to CreateRadiusDamageEnt.
+edict_t* CreateRadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const int damage, const int delta_damage, const float radius, const float delta_radius, const int dflags, const float lifetime, const float think_increment, const vec3_t origin, const vec3_t offset, const qboolean attach) //mxd. Named 'RadiusDamageEnt' in original logic.
 {
 	assert(damage_owner != NULL);
 
@@ -108,7 +108,7 @@ static void SpreaderMistInit(edict_t* self, float x, float y, float z, float vel
 
 	// Create the volume effect for the damage.
 	const int dflags = (DAMAGE_NO_BLOOD | DAMAGE_NO_KNOCKBACK | DAMAGE_ALIVE_ONLY | DAMAGE_AVOID_ARMOR); //mxd
-	RadiusDamageEnt(self, self, 1, 0, 60.0f, 1.0f, dflags, 2.0f, 0.25f, rotated_offset, velocity, false); //TODO: modify damage by skill?
+	CreateRadiusDamageEnt(self, self, 1, 0, 60.0f, 1.0f, dflags, 2.0f, 0.25f, rotated_offset, velocity, false); //TODO: modify damage by skill?
 }
 
 #pragma endregion
