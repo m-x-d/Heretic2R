@@ -8,6 +8,8 @@ All rights reserved
 #ifndef M_SPREADER_H
 #define M_SPREADER_H
 
+#include "g_local.h"
+
 typedef enum AnimID_e
 {
 	ANIM_ATTACK1,
@@ -148,7 +150,5 @@ void spreaderApplyJump (edict_t *self);
 void spreader_land(edict_t *self);
 void spreader_jump (edict_t *self, G_Message_t *msg);
 void spreader_go_inair (edict_t *self);
-
-edict_t *RadiusDamageEnt(edict_t *posowner, edict_t *dmgowner, int damage, float d_damage, float radius, float d_radius, int dflags, float lifetime, float thinkIncrement, vec3_t origin, vec3_t offset, float attach);
 
 #endif //M_SPREADER_H
