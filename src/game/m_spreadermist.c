@@ -1,7 +1,6 @@
 #include "fx.h"
 #include "q_typedef.h"
 #include "m_spreadermist.h"
-#include "m_spreaderbomb_anim.h"
 #include "g_local.h"
 #include "vector.h"
 #include "angles.h"

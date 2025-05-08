@@ -944,9 +944,6 @@
     <ClInclude Include="m_spreader_anim.h">
       <Filter>src\Monsters\Spreader</Filter>
     </ClInclude>
-    <ClInclude Include="m_spreaderbomb_anim.h">
-      <Filter>src\Monsters\Spreader</Filter>
-    </ClInclude>
     <ClInclude Include="m_spreadermist.h">
       <Filter>src\Monsters\Spreader</Filter>
     </ClInclude>
