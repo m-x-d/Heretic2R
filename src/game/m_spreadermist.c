@@ -1,22 +1,16 @@
-#include "fx.h"
-#include "q_typedef.h"
+//
+// m_spreadermist.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "m_spreadermist.h"
-#include "g_local.h"
-#include "vector.h"
-#include "angles.h"
-#include "random.h"
-#include "matrix.h"
-#include "g_ClassStatics.h"
+#include "m_spreader_local.h" //mxd. For SND_BOMB.
+#include "m_stats.h" //mxd. For SPREADER_GRENADE_DAMAGE, SPREADER_GRENADE_RADIUS, SPREADER_GRENADE_TIME.
+#include "Matrix.h"
+#include "Random.h"
+#include "Vector.h"
 #include "g_monster.h"
-
-#define SPREADER_GRENADE_DAMAGE	(40.0)
-#define SPREADER_GRENADE_RADIUS	(100.0)
-#define SPREADER_GRENADE_TIME	(2.9F)
-
-
-//NOTE:.this would be wrong if the sounds array in
-//spreader.h changes
-#define SND_BOMB 7
 
 /*-------------------------------------------------------------------------
 	VolumeEffectThink
