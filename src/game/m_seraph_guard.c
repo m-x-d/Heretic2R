@@ -417,69 +417,56 @@ static void SeraphGuardMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 		SetAnim(self, ANIM_MELEE2);
 }
 
-void morcalavin_beam( edict_t *self);
-void seraph_guard_fire (edict_t *self)
+void seraph_guard_fire(edict_t* self)
 {
-	if(!self->enemy)
+	if (self->enemy == NULL)
 		return;
 
-	if(M_DistanceToTarget(self, self->enemy) < self->min_missile_range)
-	{//punch
-		trace_t	trace;
-		edict_t *victim;
-		vec3_t	soff, eoff, mins, maxs, bloodDir, direction;
-		float	damage;
-
-		damage = 15 * self->s.scale;
-
-		VectorSet(soff, 12, -18, 24);
-		VectorSet(eoff, 88, -4, -16);
-
-		Vec3ScaleAssign(self->s.scale, soff);
-		Vec3ScaleAssign(self->s.scale, eoff);
-		
-		VectorSet(mins, -4, -4, -4);
-		VectorSet(maxs,  4,  4,  4);
-
-		VectorSubtract(eoff, soff, bloodDir);
-		VectorNormalize(bloodDir);
-
-		victim = M_CheckMeleeLineHit(self, soff, eoff, mins, maxs, &trace, direction);	
-
-		//Did something get hit?
-		if (victim)
-		{
-			if (victim == self)
-			{
-				gi.sound (self, CHAN_WEAPON, sounds[SND_FIST_HIT_WALL], 1, ATTN_NORM, 0);
-			}
-			else
-			{
-				//Hurt whatever we were whacking away at
-				damage *= (skill->value + 1)/3;//skill 0 = 1/3, skill 3 = 1 1/3
-				T_Damage(victim, self, self, direction, trace.endpos, bloodDir, 
-						damage, damage*20, DAMAGE_EXTRA_KNOCKBACK, MOD_DIED);
-				gi.sound (self, CHAN_WEAPON, sounds[SND_HIT_WALL], 1, ATTN_NORM, 0);
-				if(victim->client)
-				{
-					if(victim->health > 0)
-					{
-						if(victim->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && AI_IsInfrontOf(self, victim))
-						{
-							P_KnockDownPlayer(&victim->client->playerinfo);
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			//Play swoosh sound
-			gi.sound (self, CHAN_WEAPON, sounds[SND_ATTACK_MISS], 1, ATTN_NORM, 0);
-		}
+	if (M_DistanceToTarget(self, self->enemy) >= self->min_missile_range)
+	{
+		SeraphGuardProjectile(self);
+		return;
 	}
-	else
-		SeraphGuardProjectile (self);
+
+	vec3_t start_offset = { 12.0f, -18.0f, 24.0f };
+	vec3_t end_offset = { 88.0f, -4.0f, -16.0f };
+
+	Vec3ScaleAssign(self->s.scale, start_offset);
+	Vec3ScaleAssign(self->s.scale, end_offset);
+
+	const vec3_t mins = { -4.0f, -4.0f, -4.0f };
+	const vec3_t maxs = {  4.0f,  4.0f,  4.0f };
+
+	trace_t trace;
+	vec3_t direction;
+	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
+
+	if (victim == NULL) // Missed.
+	{
+		// Play swoosh sound.
+		gi.sound(self, CHAN_WEAPON, sounds[SND_ATTACK_MISS], 1.0f, ATTN_NORM, 0.0f);
+		return;
+	}
+
+	if (victim == self) // Hit wall.
+	{
+		gi.sound(self, CHAN_WEAPON, sounds[SND_FIST_HIT_WALL], 1.0f, ATTN_NORM, 0.0f);
+		return;
+	}
+
+	// Hurt whatever we were whacking away at.
+	vec3_t blood_dir;
+	VectorSubtract(end_offset, start_offset, blood_dir);
+	VectorNormalize(blood_dir);
+
+	const float damage = self->s.scale * 15.0f * ((skill->value + 1.0f) / 3.0f); // skill 0 = 1/3, skill 3 = 1 1/3.
+	T_Damage(victim, self, self, direction, trace.endpos, blood_dir, (int)damage, (int)damage * 20, DAMAGE_EXTRA_KNOCKBACK, MOD_DIED);
+
+	gi.sound(self, CHAN_WEAPON, sounds[SND_HIT_WALL], 1.0f, ATTN_NORM, 0.0f);
+
+	// Knockdown player?
+	if (victim->client != NULL && victim->health > 0 && victim->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && AI_IsInfrontOf(self, victim))
+		P_KnockDownPlayer(&victim->client->playerinfo);
 }
 
 void seraph_guard_missile(edict_t *self, G_Message_t *msg)
