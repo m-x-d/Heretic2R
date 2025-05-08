@@ -20,7 +20,7 @@
 #include "g_monster.h"
 
 static void SeraphGuardProjectileBlocked(edict_t* self, trace_t* trace); //TODO: remove.
-static void seraph_guard_dropweapon(edict_t* self); //TODO: remove.
+static void SeraphGuardDropWeapon(edict_t* self); //TODO: remove.
 
 #define SGUARD_NUM_PREDICTED_FRAMES	5.0f //mxd. Named 'NUM_PREDFRAMES' in original logic.
 #define SF_SGUARD_GOLEM				4 //mxd. Named 'SERAPH_FLAG_GOLEM' in original logic.
@@ -518,7 +518,7 @@ static void SeraphGuardDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 
 	if (self->health < -10)
 	{
-		seraph_guard_dropweapon(self);
+		SeraphGuardDropWeapon(self);
 		SetAnim(self, ANIM_DEATH2_GO);
 
 		vec3_t dir;
@@ -639,23 +639,24 @@ static qboolean SeraphGuardCanThrowNode(edict_t* self, const int node_id, int* t
 	return false;
 }
 
-//THROWS weapon, turns off those nodes, sets that weapon as gone
-static void seraph_guard_dropweapon (edict_t *self)
-{//NO PART FLY FRAME!
-	vec3_t handspot, forward, right, up;
+// Throws weapon, turns off those nodes, sets that weapon as gone.
+static void SeraphGuardDropWeapon(edict_t* self) //mxd. Named 'seraph_guard_dropweapon' in original logic.
+{
+	if (self->s.fmnodeinfo[MESH__AXE].flags & FMNI_NO_DRAW)
+		return; // Already dropped.
 
-	if(!(self->s.fmnodeinfo[MESH__AXE].flags & FMNI_NO_DRAW))
-	{
-		VectorClear(handspot);
-		AngleVectors(self->s.angles,forward,right,up);
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
-		VectorMA(handspot,8,forward,handspot);
-		VectorMA(handspot,5,right,handspot);
-		VectorMA(handspot,12,up,handspot);
-		ThrowWeapon(self, &handspot, BIT_AXE, 0, FRAME_partfly);
-		self->s.fmnodeinfo[MESH__AXE].flags |= FMNI_NO_DRAW;
-		return;
-	}
+	vec3_t hand_pos = { 0 };
+	VectorMA(hand_pos, 8.0f, forward, hand_pos);
+	VectorMA(hand_pos, 5.0f, right, hand_pos);
+	VectorMA(hand_pos, 12.0f, up, hand_pos);
+
+	ThrowWeapon(self, &hand_pos, BIT_AXE, 0, FRAME_partfly);
+	self->s.fmnodeinfo[MESH__AXE].flags |= FMNI_NO_DRAW;
 }
 
 void seraph_guard_dismember(edict_t *self, int damage, int HitLocation)
@@ -701,7 +702,7 @@ void seraph_guard_dismember(edict_t *self, int damage, int HitLocation)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
 			{
-				seraph_guard_dropweapon(self);
+				SeraphGuardDropWeapon(self);
 				SeraphGuardCanThrowNode(self, MESH__GUARDHEAD,&throw_nodes);
 
 				gore_spot[2]+=18;
@@ -757,7 +758,7 @@ void seraph_guard_dismember(edict_t *self, int damage, int HitLocation)
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,-10,right,gore_spot);
-					seraph_guard_dropweapon (self);
+					SeraphGuardDropWeapon (self);
 					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
 				}
 			}
@@ -775,7 +776,7 @@ void seraph_guard_dismember(edict_t *self, int damage, int HitLocation)
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,-10,right,gore_spot);
-					seraph_guard_dropweapon (self);
+					SeraphGuardDropWeapon (self);
 					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
 				}
 			}
@@ -798,7 +799,7 @@ void seraph_guard_dismember(edict_t *self, int damage, int HitLocation)
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,10,right,gore_spot);
-					seraph_guard_dropweapon (self);
+					SeraphGuardDropWeapon (self);
 					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
 				}
 			}
@@ -813,7 +814,7 @@ void seraph_guard_dismember(edict_t *self, int damage, int HitLocation)
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,10,right,gore_spot);
-					seraph_guard_dropweapon (self);
+					SeraphGuardDropWeapon (self);
 					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
 				}
 			}
