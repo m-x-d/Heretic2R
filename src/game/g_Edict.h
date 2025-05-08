@@ -322,7 +322,12 @@ struct edict_s
 
 	// Used for determining effects of liquids in the environment.
 
-	float speed;
+	union
+	{
+		float speed;
+		float spreadermist_dmg_radius_delta; //mxd
+	};
+	
 	int watertype;	// Used to indicate current liquid actor is in.
 	int waterlevel;	// Used by monsters and players.
 

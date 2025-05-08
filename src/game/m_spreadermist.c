@@ -38,7 +38,7 @@ edict_t * RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const 
 	self->dmg = damage; // Starting damage.
 	self->spreadermist_damage_delta = delta_damage; // Damage amount to decrease by each think.
 	self->dmg_radius = radius; // Radius of damage.
-	self->speed = delta_radius; // Amount to change radius each think. //TODO: speed -> add spreadermist_dmg_radius_delta name.
+	self->spreadermist_dmg_radius_delta = delta_radius; // Amount to change radius each think.
 	self->bloodType = dflags; // Damage flags. //TODO: add spreadermist_dflags name.
 	self->air_finished = level.time + lifetime; // When to die out. //TODO: add float spreadermist_expire_time name.
 	self->yaw_speed = attach; // Whether to keep that offset from the owner or just sit here. //TODO: add qboolean spreadermist_attach name.
@@ -129,7 +129,7 @@ static void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamag
 
 	T_DamageRadius(self, self->owner, self->owner, self->dmg_radius, (float)self->dmg, 1.0f, self->bloodType, MOD_DIED);
 
-	self->dmg_radius -= self->speed;
+	self->dmg_radius -= self->spreadermist_dmg_radius_delta;
 
 	if (self->dmg_radius <= 0.0f)
 	{
