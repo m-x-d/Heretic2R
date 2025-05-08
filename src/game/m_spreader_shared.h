@@ -1,19 +1,17 @@
-/*-------------------------------------------------------------------------
-m_spreader.h  
+//
+// m_spreader_shared.h
+//
+// Copyright 1998 Raven Software
+//
 
-Copyright 1998 Raven Software 
-All rights reserved    
--------------------------------------------------------------------------*/
-
-#ifndef M_SPREADER_H
-#define M_SPREADER_H
+#pragma once
 
 #include "g_local.h"
 
 typedef enum AnimID_e
 {
 	ANIM_ATTACK1,
-	ANIM_ATTACK2, 
+	ANIM_ATTACK2,
 	ANIM_BACKUP,
 	ANIM_BACKATTACK,
 	ANIM_DEATH1_GO,
@@ -29,10 +27,10 @@ typedef enum AnimID_e
 	ANIM_PIVOT_LEFT,
 	ANIM_PIVOT_RIGHT,
 	ANIM_RUNATTACK,
-	ANIM_RUN1, 
-	ANIM_LAND, 
-	ANIM_INAIR, 
-	ANIM_FJUMP, 
+	ANIM_RUN1,
+	ANIM_LAND,
+	ANIM_INAIR,
+	ANIM_FJUMP,
 	ANIM_WALK1,
 	ANIM_WALK2,
 	ANIM_DEATH2,
@@ -41,6 +39,7 @@ typedef enum AnimID_e
 	ANIM_FDIE,
 	ANIM_DEAD,
 	ANIM_DELAY,
+
 	NUM_ANIMS
 } AnimID_t;
 
@@ -49,11 +48,12 @@ typedef enum SoundID_e
 	SND_SPRAYSTART,
 	SND_SPRAYLOOP,
 	SND_PAIN,
-	SND_VOICE1, 
-	SND_VOICE2, 
-	SND_THROW, 
+	SND_VOICE1,
+	SND_VOICE2,
+	SND_THROW,
 	SND_DEATH,
 	SND_BOMB,
+
 	NUM_SOUNDS
 } SoundID_t;
 
@@ -71,84 +71,74 @@ typedef enum SoundID_e
 #define BIT_TANK1		1024
 #define BIT_HOSE		2048
 
-static int Bit_for_MeshNode_ps [13] =
+static int Bit_for_MeshNode_ps[13] =
 {
 	BIT_PARENT,
-	BIT_CHILD,	
-	BIT_BODY,		
-	BIT_BOMB,	
+	BIT_CHILD,
+	BIT_BODY,
+	BIT_BOMB,
 	BIT_RITLEG,
-	BIT_LFTARM,	
-	BIT_LFTLEG,	
-	BIT_HEAD,		
-	BIT_RITARM,	
-	BIT_TANK3,		
-	BIT_TANK2,		
-	BIT_TANK1,		
+	BIT_LFTARM,
+	BIT_LFTLEG,
+	BIT_HEAD,
+	BIT_RITARM,
+	BIT_TANK3,
+	BIT_TANK2,
+	BIT_TANK1,
 	BIT_HOSE
 };
 
-extern animmove_t spreader_move_attack1;
-extern animmove_t spreader_move_attack2;
-extern animmove_t spreader_move_backup1;
-extern animmove_t spreader_move_backattack1;
-extern animmove_t spreader_move_death1_go;
-extern animmove_t spreader_move_death1_loop;
-extern animmove_t spreader_move_death1_end;
-extern animmove_t spreader_move_duck1;	
-extern animmove_t spreader_move_dkatck1;
-extern animmove_t spreader_move_duckdown;
-extern animmove_t spreader_move_duckstill;
-extern animmove_t spreader_move_duckup;
-extern animmove_t spreader_move_idle1;
-extern animmove_t spreader_move_pain1;
-extern animmove_t spreader_move_pvtlt1;
-extern animmove_t spreader_move_pvtrt1;
-extern animmove_t spreader_move_rnatck1;
-extern animmove_t spreader_move_run1; 
-extern animmove_t spreader_move_land; 
-extern animmove_t spreader_move_inair; 
-extern animmove_t spreader_move_fjump; 
-extern animmove_t spreader_move_walk1;
-extern animmove_t spreader_move_walk2;
-extern animmove_t spreader_move_death2;
-extern animmove_t spreader_move_flyloop;
-extern animmove_t spreader_move_fly;
-extern animmove_t spreader_move_fdie;
-extern animmove_t spreader_move_dead;
-extern animmove_t spreader_move_delay;
+extern const animmove_t spreader_move_attack1;
+extern const animmove_t spreader_move_attack2;
+extern const animmove_t spreader_move_backup1;
+extern const animmove_t spreader_move_backattack1;
+extern const animmove_t spreader_move_death1_go;
+extern const animmove_t spreader_move_death1_loop;
+extern const animmove_t spreader_move_death1_end;
+extern const animmove_t spreader_move_duck1;
+extern const animmove_t spreader_move_dkatck1;
+extern const animmove_t spreader_move_duckdown;
+extern const animmove_t spreader_move_duckstill;
+extern const animmove_t spreader_move_duckup;
+extern const animmove_t spreader_move_idle1;
+extern const animmove_t spreader_move_pain1;
+extern const animmove_t spreader_move_pvtlt1;
+extern const animmove_t spreader_move_pvtrt1;
+extern const animmove_t spreader_move_rnatck1;
+extern const animmove_t spreader_move_run1;
+extern const animmove_t spreader_move_land;
+extern const animmove_t spreader_move_inair;
+extern const animmove_t spreader_move_fjump;
+extern const animmove_t spreader_move_walk1;
+extern const animmove_t spreader_move_walk2;
+extern const animmove_t spreader_move_death2;
+extern const animmove_t spreader_move_flyloop;
+extern const animmove_t spreader_move_fly;
+extern const animmove_t spreader_move_fdie;
+extern const animmove_t spreader_move_dead;
+extern const animmove_t spreader_move_delay;
 
-void spreader_mist(edict_t *self, float x, float y, float z);
+extern void spreaderFly(edict_t* self);
+extern void spreaderTakeOff(edict_t* self);
+extern void spreaderFlyLoop(edict_t* self);
+extern void spreader_dropweapon(edict_t* self);
+extern void spreader_go_deadloop(edict_t* self);
+extern void spreaderSolidAgain(edict_t* self);
 
-void spreaderFly (edict_t *self);
-void spreaderTakeOff (edict_t *self);
-void spreaderFlyLoop (edict_t *self);
-void spreader_dropweapon (edict_t *self);
-void spreader_go_deadloop (edict_t *self);
-void spreaderSolidAgain (edict_t *self);
-void M_MoveFrame (edict_t *self);
+extern void spreader_pause(edict_t* self);
+extern void spreader_crouch(edict_t* self);
+extern void spreader_duckpause(edict_t* self);
+extern void spreader_dead(edict_t* self);
 
-void spreader_dismember(edict_t *self, int damage, int HitLocation);
+extern void spreader_flyback_move(edict_t* self);
+extern void spreader_flyback_loop(edict_t* self);
 
-void spreader_pause(edict_t *self);
-void spreader_crouch(edict_t *self);
-void spreader_uncrouch(edict_t *self);
-void spreader_duckpause(edict_t *self);
-void spreader_death(edict_t *self, G_Message_t *msg);
-void spreader_dead(edict_t *self);
-
-void spreader_flyback_move(edict_t *self);
-void spreader_flyback_loop(edict_t *self);
-
-void spreader_showgrenade(edict_t *self);
-void spreader_pain_sound(edict_t *self);
-void spreader_miststartsound(edict_t *self);
-void spreader_miststopsound(edict_t *self);
-void spreader_idlenoise(edict_t *self);
-void spreader_hidegrenade(edict_t *self);
-void spreaderApplyJump (edict_t *self);
-void spreader_land(edict_t *self);
-void spreader_jump (edict_t *self, G_Message_t *msg);
-void spreader_go_inair (edict_t *self);
-
-#endif //M_SPREADER_H
+extern void spreader_showgrenade(edict_t* self);
+extern void spreader_pain_sound(edict_t* self);
+extern void spreader_miststartsound(edict_t* self);
+extern void spreader_miststopsound(edict_t* self);
+extern void spreader_idlenoise(edict_t* self);
+extern void spreader_hidegrenade(edict_t* self);
+extern void spreaderApplyJump(edict_t* self);
+extern void spreader_land(edict_t* self);
+extern void spreader_go_inair(edict_t* self);
