@@ -79,7 +79,7 @@ void seraph_guard_checkpoke(edict_t* self);
 void seraph_guard_pause(edict_t* self);
 void seraph_guard_strike(edict_t* self, float damage, float forward, float up);
 void seraphGuardApplyJump(edict_t* self);
-void seraph_guard_back(edict_t* self, float dist);
+void seraph_guard_back(edict_t* self, float distance);
 void seraph_guard_fire(edict_t* self);
 
 #define BIT_BASEBIN		0

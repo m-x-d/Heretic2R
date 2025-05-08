@@ -616,15 +616,12 @@ int Bit_for_MeshNode_sg [NUM_MESH_NODES] =
 	BIT_WHIP//whip
 };
 
-void seraph_guard_back (edict_t *self, float dist)
+void seraph_guard_back(edict_t* self, float distance)
 {
-	if(!MG_TryWalkMove(self, self->s.angles[YAW] + 180, dist, true))
+	if (!MG_TryWalkMove(self, self->s.angles[YAW] + 180.0f, distance, true) && irand(0, 1000) == 0) // 0.0009% chance to run away when MG_TryWalkMove() fails. //TODO: chance seems way too low. Scale with difficulty?
 	{
-		if(!irand(0, 1000))
-		{
-			self->monsterinfo.aiflags |= AI_COWARD;
-			SetAnim(self, ANIM_RUN);
-		}
+		self->monsterinfo.aiflags |= AI_COWARD;
+		SetAnim(self, ANIM_RUN);
 	}
 }
 
