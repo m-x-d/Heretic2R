@@ -40,7 +40,7 @@ edict_t * RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const 
 	self->dmg_radius = radius; // Radius of damage.
 	self->spreadermist_dmg_radius_delta = delta_radius; // Amount to change radius each think.
 	self->spreadermist_dflags = dflags; // Damage flags.
-	self->air_finished = level.time + lifetime; // When to die out. //TODO: add float spreadermist_expire_time name.
+	self->spreadermist_expire_time = level.time + lifetime; // When to die out.
 	self->yaw_speed = attach; // Whether to keep that offset from the owner or just sit here. //TODO: add qboolean spreadermist_attach name.
 	self->wait = max(FRAMETIME, think_increment); // How often to think (default to 10 fps).
 
@@ -117,7 +117,7 @@ static void SpreaderMistInit(edict_t* self, float x, float y, float z, float vel
 
 static void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamageEntThink' in original logic.
 {
-	if (self->air_finished < level.time)
+	if (self->spreadermist_expire_time < level.time)
 	{
 		G_SetToFree(self);
 		return;

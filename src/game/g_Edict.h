@@ -157,7 +157,11 @@ struct edict_s
 
 	vec3_t movedir; // Used by just about everything that moves, but not used in physics.
 
-	float air_finished; // Used by things that can breath (monsters and player).
+	union
+	{
+		float air_finished; // Used by things that can breath (monsters and player).
+		float spreadermist_expire_time; //mxd
+	};
 
 	edict_t* goalentity; // Used primarily by monsters.
 
