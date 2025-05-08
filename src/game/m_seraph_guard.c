@@ -596,26 +596,6 @@ static void SeraphGuardRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	}
 }
 
-int Bit_for_MeshNode_sg [NUM_MESH_NODES] =
-{
-	BIT_BASEBIN,	
-	BIT_PITHEAD,//overlord head	
-	BIT_SHOULDPAD,
-	BIT_GUARDHEAD,//guard head
-	BIT_LHANDGRD,//left hand guard
-	BIT_LHANDBOSS,//left hand overlord
-	BIT_RHAND,//right hand
-	BIT_FRTORSO,
-	BIT_ARMSPIKES,
-	BIT_LFTUPARM,
-	BIT_RTLEG,
-	BIT_RTARM,
-	BIT_LFTLEG,
-	BIT_BKTORSO,
-	BIT_AXE,//axe
-	BIT_WHIP//whip
-};
-
 void seraph_guard_back(edict_t* self, float distance)
 {
 	if (!MG_TryWalkMove(self, self->s.angles[YAW] + 180.0f, distance, true) && irand(0, 1000) == 0) // 0.0009% chance to run away when MG_TryWalkMove() fails. //TODO: chance seems way too low. Scale with difficulty?
@@ -625,15 +605,37 @@ void seraph_guard_back(edict_t* self, float distance)
 	}
 }
 
-qboolean canthrownode_sg (edict_t *self, int BP, int *throw_nodes)
-{//see if it's on, if so, add it to throw_nodes
-	//turn it off on thrower
-	if(!(self->s.fmnodeinfo[BP].flags & FMNI_NO_DRAW))
+static qboolean SeraphGuardCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_sg' in original logic.
+{
+	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
 	{
-		*throw_nodes |= Bit_for_MeshNode_sg[BP];
-		self->s.fmnodeinfo[BP].flags |= FMNI_NO_DRAW;
+		BIT_BASEBIN,
+		BIT_PITHEAD, // Overlord head.
+		BIT_SHOULDPAD,
+		BIT_GUARDHEAD, // Guard head.
+		BIT_LHANDGRD, // Left hand guard.
+		BIT_LHANDBOSS, // Left hand overlord.
+		BIT_RHAND, // Right hand.
+		BIT_FRTORSO,
+		BIT_ARMSPIKES,
+		BIT_LFTUPARM,
+		BIT_RTLEG,
+		BIT_RTARM,
+		BIT_LFTLEG,
+		BIT_BKTORSO,
+		BIT_AXE,
+		BIT_WHIP
+	};
+
+	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
+	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
+	{
+		*throw_nodes |= bit_for_mesh_node[node_id];
+		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
+
 		return true;
 	}
+
 	return false;
 }
 
@@ -700,7 +702,7 @@ void seraph_guard_dismember(edict_t *self, int damage, int HitLocation)
 			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
 			{
 				seraph_guard_dropweapon(self);
-				canthrownode_sg(self, MESH__GUARDHEAD,&throw_nodes);
+				SeraphGuardCanThrowNode(self, MESH__GUARDHEAD,&throw_nodes);
 
 				gore_spot[2]+=18;
 				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
@@ -749,9 +751,9 @@ void seraph_guard_dismember(edict_t *self, int damage, int HitLocation)
 			}
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				if(canthrownode_sg(self, MESH__LHANDGRD, &throw_nodes))
+				if(SeraphGuardCanThrowNode(self, MESH__LHANDGRD, &throw_nodes))
 				{
-					canthrownode_sg(self, MESH__ARMSPIKES, &throw_nodes);
+					SeraphGuardCanThrowNode(self, MESH__ARMSPIKES, &throw_nodes);
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,-10,right,gore_spot);
@@ -767,9 +769,9 @@ void seraph_guard_dismember(edict_t *self, int damage, int HitLocation)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage&&dismember_ok)
 			{
-				if(canthrownode_sg(self, MESH__LHANDGRD, &throw_nodes))
+				if(SeraphGuardCanThrowNode(self, MESH__LHANDGRD, &throw_nodes))
 				{
-					canthrownode_sg(self, MESH__ARMSPIKES, &throw_nodes);
+					SeraphGuardCanThrowNode(self, MESH__ARMSPIKES, &throw_nodes);
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,-10,right,gore_spot);
@@ -791,7 +793,7 @@ void seraph_guard_dismember(edict_t *self, int damage, int HitLocation)
 			}
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				if(canthrownode_sg(self, MESH__RHAND, &throw_nodes))
+				if(SeraphGuardCanThrowNode(self, MESH__RHAND, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -806,7 +808,7 @@ void seraph_guard_dismember(edict_t *self, int damage, int HitLocation)
 				break;
 			if(flrand(0,self->health)<damage&&dismember_ok)
 			{
-				if(canthrownode_sg(self, MESH__RHAND, &throw_nodes))
+				if(SeraphGuardCanThrowNode(self, MESH__RHAND, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
