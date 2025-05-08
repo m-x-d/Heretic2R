@@ -172,113 +172,44 @@ static void SpreaderGrenadeBounced(edict_t* self, trace_t* trace) //mxd. Named '
 	SpreaderGrenadeExplode(self);
 }
 
-/*-------------------------------------------------------------------------
-	spreader_mist
--------------------------------------------------------------------------*/
-void spreader_mist(edict_t *self, float x, float y, float z)
+static void SpreaderMistInit(edict_t* self, float x, float y, float z, float velocity_scaler) //mxd. Added to reduce code duplication.
 {
-	vec3_t		offset;
-	vec3_t		rotoffset;
-	vec3_t		normalized;
-	vec3_t		velocity;
-	float		yaw;
-	matrix3_t	mat;
+	// Converts degrees to radians for use with trig and matrix functions.
+	const float yaw_rad = self->s.angles[YAW] * ANGLE_TO_RAD;
 
-	if(self->monsterinfo.aiflags & AI_NO_MELEE)
-		return;//fixme: actually prevent these anims
+	// Creates a rotation matrix to rotate the point about the z axis.
+	matrix3_t mat;
+	CreateYawMatrix(mat, yaw_rad);
 
-	// Converts degrees to radians for use with trig and matrix functions
-	yaw = self->s.angles[YAW] * ANGLE_TO_RAD;	
+	// Rotates point about local z axis.
+	const vec3_t offset = { x, y, z }; // Set offset presuming yaw of zero.
+	vec3_t rotated_offset;
+	Matrix3MultByVec3(mat, offset, rotated_offset);
 
-	// Sets offset presuming yaw of zero
-	VectorSet(offset, x, y, z);		
+	// Add offset to owners origin.
+	Vec3AddAssign(self->s.origin, rotated_offset);
 
-	// Creates a rotation matrix to rotate the point about the z axis
-	CreateYawMatrix(mat, yaw);		
+	// Get direction vector scaled by speed.
+	vec3_t velocity = { cosf(yaw_rad) * velocity_scaler, sinf(yaw_rad) * velocity_scaler, 0.0f };
+	gi.CreateEffect(NULL, FX_PLAGUEMIST, 0, rotated_offset, "vb", velocity, 41);
 
-	// Rotates point about local z axis
-	Matrix3MultByVec3(mat, offset, rotoffset);	
-
-	// Get normalized offset
-	VectorCopy(rotoffset, normalized);	
-	normalized[2] = 0.0F;
-	VectorNormalize(normalized);
-
-	// Add offset to owners origin
-	Vec3AddAssign(self->s.origin, rotoffset);	
-
-	// Get direction vector scaled by speed
-	VectorSet(velocity, cos(yaw) * 200.0F, sin(yaw) * 200.0F, 0);	
-		
-	gi.CreateEffect(NULL, FX_PLAGUEMIST, 0, rotoffset, "vb", velocity, 2050 / 50);
-
-	// create the volume effect for the damage
-	RadiusDamageEnt(self,//owner
-					self,//damage-owner
-					1,//damage
-					0,//d_damage
-					60,//radius
-					1.0,//d_radius
-					DAMAGE_NO_BLOOD|DAMAGE_NO_KNOCKBACK|DAMAGE_ALIVE_ONLY|DAMAGE_AVOID_ARMOR,//dflags
-					2.0,//lifetime
-					0.25,//thinkincr
-					rotoffset,//origin
-					velocity,//velocity or offset
-					false);//offset from owner?
-
-	self->monsterinfo.attack_finished = level.time + (3 - skill->value) + flrand(0.5, 1);
+	// Create the volume effect for the damage.
+	const int dflags = (DAMAGE_NO_BLOOD | DAMAGE_NO_KNOCKBACK | DAMAGE_ALIVE_ONLY | DAMAGE_AVOID_ARMOR); //mxd
+	RadiusDamageEnt(self, self, 1, 0.0f, 60.0f, 1.0f, dflags, 2.0f, 0.25f, rotated_offset, velocity, false); //TODO: modify damage by skill?
 }
 
-
-void spreader_mist_fast(edict_t *self, float x, float y, float z)
+void spreader_mist(edict_t* self, float x, float y, float z)
 {
-	vec3_t		offset;
-	vec3_t		rotoffset;
-	vec3_t		normalized;
-	vec3_t		velocity;
-	float		yaw;
-	matrix3_t	mat;
+	if (!(self->monsterinfo.aiflags & AI_NO_MELEE)) //FIXME: actually prevent these anims.
+	{
+		SpreaderMistInit(self, x, y, z, 200.0f); //mxd
+		self->monsterinfo.attack_finished = level.time + (3.0f - skill->value) + flrand(0.5f, 1.0f);
+	}
+}
 
-	// Converts degrees to radians for use with trig and matrix functions
-	yaw = self->s.angles[YAW] * ANGLE_TO_RAD;	
-
-	// Sets offset presuming yaw of zero
-	VectorSet(offset, x, y, z);		
-
-	// Creates a rotation matrix to rotate the point about the z axis
-	CreateYawMatrix(mat, yaw);		
-
-	// Rotates point about local z axis
-	Matrix3MultByVec3(mat, offset, rotoffset);	
-
-	// Get normalized offset
-	VectorCopy(rotoffset, normalized);	
-	normalized[2] = 0.0F;
-	VectorNormalize(normalized);
-
-	// Add offset to owners origin
-	Vec3AddAssign(self->s.origin, rotoffset);	
-
-	// Get direction vector scaled by speed
-	VectorSet(velocity, cos(yaw) * 300.0F, sin(yaw) * 300.0F, 0);	
-		
-	gi.CreateEffect(NULL, FX_PLAGUEMIST, 0, rotoffset, "vb", velocity, 2050 / 50);
-
-	// create the volume effect for the damage
-	
-	//FIXME: Skill modifier here
-	RadiusDamageEnt(self,//owner
-					self,//damage-owner
-					1,//damage
-					0,//d_damage
-					60,//radius
-					1.0,//d_radius
-					DAMAGE_NO_BLOOD|DAMAGE_NO_KNOCKBACK|DAMAGE_ALIVE_ONLY|DAMAGE_AVOID_ARMOR,//dflags
-					2.0,//lifetime
-					0.25,//thinkincr
-					rotoffset,//origin
-					velocity,//velocity or offset
-					false);//offset from owner?
+void spreader_mist_fast(edict_t* self, float x, float y, float z)
+{
+	SpreaderMistInit(self, x, y, z, 300.0f); //mxd
 }
 
 /*-------------------------------------------------------------------------
