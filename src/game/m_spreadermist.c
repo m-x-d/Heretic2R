@@ -100,30 +100,25 @@ edict_t* RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const i
 	return self;
 }
 
-/*-------------------------------------------------------------------------
-	spreader_grenade_explode
--------------------------------------------------------------------------*/	
-
-static void spreader_grenade_explode (edict_t *self)
+static void SpreaderGrenadeExplode(edict_t* self) //mxd. Named 'spreader_grenade_explode' in original logic.
 {
-	vec3_t		origin;
-//	self->s.fmnodeinfo[MESH_BOMBASE].flags |= FMNI_NO_DRAW;
 	self->s.modelindex = 0;
-
 	self->dmg = 1;
-	VectorMA (self->s.origin, -0.02, self->velocity, origin);
-	gi.CreateEffect(NULL, FX_PLAGUEMISTEXPLODE, 0, origin, "b", 3500 / 50);	
-	self->nextthink = level.time + 0.2;
-	self->monsterinfo.thinkinc = 0.2;
-	self->think = spreader_grenade_think;
-	gi.sound(self, CHAN_AUTO, classStatics[CID_SPREADER].resInfo->sounds[SND_BOMB],
-		1, ATTN_IDLE, 0);
+
+	vec3_t origin;
+	VectorMA(self->s.origin, -0.02f, self->velocity, origin);
+
+	gi.CreateEffect(NULL, FX_PLAGUEMISTEXPLODE, 0, origin, "b", 70);
+	gi.sound(self, CHAN_AUTO, classStatics[CID_SPREADER].resInfo->sounds[SND_BOMB], 1.0f, ATTN_IDLE, 0.0f);
+
 	self->monsterinfo.pausetime = level.time + SPREADER_GRENADE_TIME; //mxd. Inlined PauseTime() logic.
-	
+	self->monsterinfo.thinkinc = 0.2f;
+
 	self->bounced = NULL;
 	self->isBlocked = NULL;
-//	self->think = G_FreeEdict;
-//	self->nextthink = level.time + self->delay;
+
+	self->think = spreader_grenade_think;
+	self->nextthink = level.time + 0.2f;
 }
 
 /*-------------------------------------------------------------------------
@@ -204,7 +199,7 @@ static void spreader_grenade_bounce ( edict_t *self, struct trace_s *trace )
 */
 		gi.CreateEffect(&self->s, FX_PLAGUEMIST, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vel, 50);
 
-		spreader_grenade_explode (self);
+		SpreaderGrenadeExplode (self);
 	}
 }
 
@@ -252,7 +247,7 @@ static void spreader_grenade_touch (edict_t *self, edict_t *other, cplane_t *pla
 */
 	gi.CreateEffect(&self->s, FX_PLAGUEMIST, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vel, 50);
 
-	spreader_grenade_explode (self);
+	SpreaderGrenadeExplode (self);
 	
 	self->touch = NULL;
 	self->bounced = NULL;
