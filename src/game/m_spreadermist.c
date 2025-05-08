@@ -117,7 +117,7 @@ static void SpreaderGrenadeExplode(edict_t* self) //mxd. Named 'spreader_grenade
 	self->bounced = NULL;
 	self->isBlocked = NULL;
 
-	self->think = spreader_grenade_think;
+	self->think = SpreaderGrenadeThink;
 	self->nextthink = level.time + 0.2f;
 }
 
@@ -126,37 +126,29 @@ static void SpreaderGrenadeDieThink(edict_t* self) //mxd. Named 'spreader_grenad
 	G_FreeEdict(self);
 }
 
-/*-------------------------------------------------------------------------
-	spreader_grenade_think
--------------------------------------------------------------------------*/
-static void spreader_grenade_think(edict_t *self)
+static void SpreaderGrenadeThink(edict_t* self) //mxd. Named 'spreader_grenade_think' in original logic.
 {
-	edict_t *ent;
-	vec3_t temp;
-	
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_NOT;
 
-	if(self->monsterinfo.pausetime < level.time)
+	if (self->monsterinfo.pausetime < level.time)
 	{
 		self->think = SpreaderGrenadeDieThink;
 	}
 	else
 	{
-		ent = NULL;
+		edict_t* ent = NULL;
 		while ((ent = FindInRadius(ent, self->s.origin, self->dmg_radius)) != NULL)
-		{			
-			VectorCopy(ent->s.origin, temp);
-			temp[2] += 5;
-			if(!Q_stricmp(ent->classname, "monster_spreader"))
-				continue;
-			
-			if(!gi.inPVS(self->s.origin, ent->s.origin))
-				continue;
+		{
+			if (ent->classID != CID_SPREADER && gi.inPVS(self->s.origin, ent->s.origin)) //mxd. classname -> classID check.
+			{
+				vec3_t attack_dir;
+				VectorCopy(ent->s.origin, attack_dir);
+				attack_dir[2] += 5.0f;
 
-			T_Damage(ent,self, self->owner, temp, self->s.origin, vec3_origin,self->dmg,
-					(int)0, DAMAGE_NO_BLOOD|DAMAGE_NO_KNOCKBACK|DAMAGE_ALIVE_ONLY|DAMAGE_AVOID_ARMOR,MOD_DIED);
-		}	
+				T_Damage(ent, self, self->owner, attack_dir, self->s.origin, vec3_origin, self->dmg, 0, DAMAGE_NO_BLOOD | DAMAGE_NO_KNOCKBACK | DAMAGE_ALIVE_ONLY | DAMAGE_AVOID_ARMOR, MOD_DIED);
+			}
+		}
 	}
 
 	self->nextthink = level.time + FRAMETIME;
