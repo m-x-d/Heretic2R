@@ -74,7 +74,7 @@ extern const animmove_t seraph_guard_move_delay;
 void seraph_guard_death_loop(edict_t* self);
 void seraph_guard_check_land(edict_t* self);
 void seraph_guard_dead(edict_t* self);
-void seraph_guard_checkpoke(edict_t* self);
+void seraph_guard_check_poke(edict_t* self);
 
 void seraph_guard_pause(edict_t* self);
 void seraph_guard_strike(edict_t* self, float damage, float forward, float up);

@@ -141,7 +141,7 @@ static void SeraphGuardProjectile(edict_t* self) //mxd. Named 'guard_beam' in or
 	gi.linkentity(proj);
 }
 
-void seraph_guard_checkpoke(edict_t* self) //TODO: rename to seraph_guard_check_poke.
+void seraph_guard_check_poke(edict_t* self) //mxd. Named 'seraph_guard_checkpoke' in original logic.
 {
 	// Really, this is a given, but it could fail...
 	if (!M_ValidTarget(self, self->enemy))

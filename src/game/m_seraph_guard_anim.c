@@ -58,7 +58,7 @@ static const animframe_t seraph_guard_frames_melee[] =
 	{ FRAME_axea5,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_axea5,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_axea5,	NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_axea6,	NULL, 0, 0, 0, ai_charge, 0, seraph_guard_checkpoke },
+	{ FRAME_axea6,	NULL, 0, 0, 0, ai_charge, 0, seraph_guard_check_poke },
 	{ FRAME_axea7,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_axea8,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_axea9,	NULL, 0, 0, 0, ai_charge, 0, NULL },
