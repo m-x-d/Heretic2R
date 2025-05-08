@@ -182,7 +182,12 @@ struct edict_s
 
 	int health;		// Used by anything that can be destroyed.
 	int max_health;	// Used by anything that can be destroyed.
-	int bloodType;	// Type of stuff to spawn off when hit. //TODO: never used for intended purpose!
+
+	union
+	{
+		int bloodType; // Type of stuff to spawn off when hit. //TODO: never used for intended purpose!
+		int spreadermist_dflags; //mxd
+	};
 
 	deadState_t dead_state; // Used by things that can die. Would probably be better off with a more general state. //mxd. 'int deadflag' in original logic.
 
