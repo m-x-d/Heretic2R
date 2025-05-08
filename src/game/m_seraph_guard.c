@@ -842,6 +842,9 @@ static void SeraphGuardDismember(edict_t* self, int damage, HitLocation_t hl) //
 		case hl_LegLowerRight:
 			SeraphGuardThrowLeg(self, MESH__RTLEG);
 			break;
+
+		default:
+			break;
 	}
 
 	if (self->s.fmnodeinfo[MESH__RHAND].flags & FMNI_NO_DRAW)
@@ -859,9 +862,9 @@ static void SeraphGuardDismember(edict_t* self, int damage, HitLocation_t hl) //
 	}
 }
 
-void ser_grd_SightSound(edict_t *self, G_Message_t *Msg)
+static void SeraphGuardVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ser_grd_SightSound' in original logic.
 {
-	gi.sound(self, CHAN_VOICE, sounds[irand(SND_SIGHT1, SND_SIGHT4)], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_SIGHT1, SND_SIGHT4)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 /*
@@ -885,7 +888,7 @@ void SeraphGuardStaticsInit(void)
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH_PAIN]	= SeraphGuardDeathPainMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_CHECK_MOOD] = SeraphGuardCheckMoodMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_VOICE_SIGHT] = ser_grd_SightSound;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_VOICE_SIGHT] = SeraphGuardVoiceSightMsgHandler;
 
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
