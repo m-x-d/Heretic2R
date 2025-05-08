@@ -16,3 +16,4 @@ extern edict_t* RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, 
 
 // Local forward declarations for m_spreadermist.c.
 static void SpreaderGrenadeThink(edict_t* self);
+static void RadiusDamageEntThink(edict_t* self);

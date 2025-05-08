@@ -12,49 +12,9 @@
 #include "Vector.h"
 #include "g_monster.h"
 
-static void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamageEntThink' in original logic.
-{
-	if (self->air_finished < level.time)
-	{
-		G_SetToFree(self);
-		return;
-	}
+#pragma region ========================== Utility functions =========================
 
-	// Apply my offset?
-	if (self->yaw_speed && self->activator != NULL && Vec3NotZero(self->activator->s.origin))
-	{
-		vec3_t forward;
-		vec3_t right;
-		vec3_t up;
-		AngleVectors(self->activator->s.angles, forward, right, up);
-
-		VectorMA(self->activator->s.origin, self->v_angle_ofs[0], forward, self->s.origin);
-		VectorMA(self->s.origin, self->v_angle_ofs[1], right, self->s.origin);
-		VectorMA(self->s.origin, self->v_angle_ofs[2], up, self->s.origin);
-	}
-
-	T_DamageRadius(self, self->owner, self->owner, self->dmg_radius, (float)self->dmg, 1.0f, self->bloodType, MOD_DIED);
-
-	self->dmg_radius -= self->speed;
-
-	if (self->dmg_radius <= 0.0f)
-	{
-		G_SetToFree(self);
-		return;
-	}
-
-	self->dmg -= (int)self->damage_debounce_time;
-
-	if (self->dmg <= 0)
-	{
-		G_SetToFree(self);
-		return;
-	}
-
-	self->nextthink = level.time + self->wait;
-}
-
-edict_t* RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const int damage, const float delta_damage, const float radius, const float delta_radius, const int dflags, const float lifetime, const float think_increment, const vec3_t origin, const vec3_t offset, const qboolean attach) //TODO: rename to CreateRadiusDamageEnt.
+edict_t * RadiusDamageEnt(edict_t* position_owner, edict_t* damage_owner, const int damage, const float delta_damage, const float radius, const float delta_radius, const int dflags, const float lifetime, const float think_increment, const vec3_t origin, const vec3_t offset, const qboolean attach) //TODO: rename to CreateRadiusDamageEnt.
 {
 	assert(damage_owner != NULL);
 
@@ -121,6 +81,78 @@ static void SpreaderGrenadeExplode(edict_t* self) //mxd. Named 'spreader_grenade
 	self->nextthink = level.time + 0.2f;
 }
 
+static void SpreaderMistInit(edict_t* self, float x, float y, float z, float velocity_scaler) //mxd. Added to reduce code duplication.
+{
+	// Converts degrees to radians for use with trig and matrix functions.
+	const float yaw_rad = self->s.angles[YAW] * ANGLE_TO_RAD;
+
+	// Creates a rotation matrix to rotate the point about the z axis.
+	matrix3_t mat;
+	CreateYawMatrix(mat, yaw_rad);
+
+	// Rotates point about local z axis.
+	const vec3_t offset = { x, y, z }; // Set offset presuming yaw of zero.
+	vec3_t rotated_offset;
+	Matrix3MultByVec3(mat, offset, rotated_offset);
+
+	// Add offset to owners origin.
+	Vec3AddAssign(self->s.origin, rotated_offset);
+
+	// Get direction vector scaled by speed.
+	vec3_t velocity = { cosf(yaw_rad) * velocity_scaler, sinf(yaw_rad) * velocity_scaler, 0.0f };
+	gi.CreateEffect(NULL, FX_PLAGUEMIST, 0, rotated_offset, "vb", velocity, 41);
+
+	// Create the volume effect for the damage.
+	const int dflags = (DAMAGE_NO_BLOOD | DAMAGE_NO_KNOCKBACK | DAMAGE_ALIVE_ONLY | DAMAGE_AVOID_ARMOR); //mxd
+	RadiusDamageEnt(self, self, 1, 0.0f, 60.0f, 1.0f, dflags, 2.0f, 0.25f, rotated_offset, velocity, false); //TODO: modify damage by skill?
+}
+
+#pragma endregion
+
+#pragma region ========================== Edict callbacks ===========================
+
+static void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamageEntThink' in original logic.
+{
+	if (self->air_finished < level.time)
+	{
+		G_SetToFree(self);
+		return;
+	}
+
+	// Apply my offset?
+	if (self->yaw_speed && self->activator != NULL && Vec3NotZero(self->activator->s.origin))
+	{
+		vec3_t forward;
+		vec3_t right;
+		vec3_t up;
+		AngleVectors(self->activator->s.angles, forward, right, up);
+
+		VectorMA(self->activator->s.origin, self->v_angle_ofs[0], forward, self->s.origin);
+		VectorMA(self->s.origin, self->v_angle_ofs[1], right, self->s.origin);
+		VectorMA(self->s.origin, self->v_angle_ofs[2], up, self->s.origin);
+	}
+
+	T_DamageRadius(self, self->owner, self->owner, self->dmg_radius, (float)self->dmg, 1.0f, self->bloodType, MOD_DIED);
+
+	self->dmg_radius -= self->speed;
+
+	if (self->dmg_radius <= 0.0f)
+	{
+		G_SetToFree(self);
+		return;
+	}
+
+	self->dmg -= (int)self->damage_debounce_time;
+
+	if (self->dmg <= 0)
+	{
+		G_SetToFree(self);
+		return;
+	}
+
+	self->nextthink = level.time + self->wait;
+}
+
 static void SpreaderGrenadeDieThink(edict_t* self) //mxd. Named 'spreader_grenade_die' in original logic.
 {
 	G_FreeEdict(self);
@@ -172,31 +204,9 @@ static void SpreaderGrenadeBounced(edict_t* self, trace_t* trace) //mxd. Named '
 	SpreaderGrenadeExplode(self);
 }
 
-static void SpreaderMistInit(edict_t* self, float x, float y, float z, float velocity_scaler) //mxd. Added to reduce code duplication.
-{
-	// Converts degrees to radians for use with trig and matrix functions.
-	const float yaw_rad = self->s.angles[YAW] * ANGLE_TO_RAD;
+#pragma endregion
 
-	// Creates a rotation matrix to rotate the point about the z axis.
-	matrix3_t mat;
-	CreateYawMatrix(mat, yaw_rad);
-
-	// Rotates point about local z axis.
-	const vec3_t offset = { x, y, z }; // Set offset presuming yaw of zero.
-	vec3_t rotated_offset;
-	Matrix3MultByVec3(mat, offset, rotated_offset);
-
-	// Add offset to owners origin.
-	Vec3AddAssign(self->s.origin, rotated_offset);
-
-	// Get direction vector scaled by speed.
-	vec3_t velocity = { cosf(yaw_rad) * velocity_scaler, sinf(yaw_rad) * velocity_scaler, 0.0f };
-	gi.CreateEffect(NULL, FX_PLAGUEMIST, 0, rotated_offset, "vb", velocity, 41);
-
-	// Create the volume effect for the damage.
-	const int dflags = (DAMAGE_NO_BLOOD | DAMAGE_NO_KNOCKBACK | DAMAGE_ALIVE_ONLY | DAMAGE_AVOID_ARMOR); //mxd
-	RadiusDamageEnt(self, self, 1, 0.0f, 60.0f, 1.0f, dflags, 2.0f, 0.25f, rotated_offset, velocity, false); //TODO: modify damage by skill?
-}
+#pragma region ========================== Action functions ==========================
 
 void spreader_mist(edict_t* self, float x, float y, float z)
 {
@@ -276,3 +286,5 @@ void spreader_toss_grenade(edict_t* self) // Self is the tosser.
 
 	self->delay = 5.0f;
 }
+
+#pragma endregion
