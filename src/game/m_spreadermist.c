@@ -12,45 +12,40 @@
 #include "Vector.h"
 #include "g_monster.h"
 
-/*-------------------------------------------------------------------------
-	VolumeEffectThink
--------------------------------------------------------------------------*/
-void GenericRadiusDamageEntThink(edict_t *self)
+static void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamageEntThink' in original logic.
 {
-	if(self->air_finished<level.time)
+	if (self->air_finished < level.time)
 	{
 		G_SetToFree(self);
 		return;
 	}
 
-	if(self->yaw_speed)
-	{//apply my offset
-		if(self->activator)
-		{
-			if(Vec3NotZero(self->activator->s.origin))
-			{
-				vec3_t	forward, right, up;
+	// Apply my offset?
+	if (self->yaw_speed && self->activator != NULL && Vec3NotZero(self->activator->s.origin))
+	{
+		vec3_t forward;
+		vec3_t right;
+		vec3_t up;
+		AngleVectors(self->activator->s.angles, forward, right, up);
 
-				AngleVectors(self->activator->s.angles, forward, right, up);
-
-				VectorMA(self->activator->s.origin, self->v_angle_ofs[0], forward, self->s.origin);
-				VectorMA(self->s.origin, self->v_angle_ofs[1], right, self->s.origin);
-				VectorMA(self->s.origin, self->v_angle_ofs[2], up, self->s.origin);
-			}
-		}
+		VectorMA(self->activator->s.origin, self->v_angle_ofs[0], forward, self->s.origin);
+		VectorMA(self->s.origin, self->v_angle_ofs[1], right, self->s.origin);
+		VectorMA(self->s.origin, self->v_angle_ofs[2], up, self->s.origin);
 	}
-	
-	T_DamageRadius(self, self->owner, self->owner, self->dmg_radius, self->dmg, 1, self->bloodType,MOD_DIED);
+
+	T_DamageRadius(self, self->owner, self->owner, self->dmg_radius, (float)self->dmg, 1.0f, self->bloodType, MOD_DIED);
 
 	self->dmg_radius -= self->speed;
-	if(self->dmg_radius<=0)
+
+	if (self->dmg_radius <= 0.0f)
 	{
 		G_SetToFree(self);
 		return;
 	}
 
-	self->dmg -= self->damage_debounce_time;
-	if(self->dmg<=0)
+	self->dmg -= (int)self->damage_debounce_time;
+
+	if (self->dmg <= 0)
 	{
 		G_SetToFree(self);
 		return;
@@ -93,7 +88,7 @@ edict_t *RadiusDamageEnt(	edict_t *posowner,//for position
 	else
 		self->wait = thinkIncrement;//how oftern to think
 	
-	self->think = GenericRadiusDamageEntThink;//what to do
+	self->think = RadiusDamageEntThink;//what to do
 	self->nextthink = level.time + self->wait;//next think
 	
 	self->activator = posowner;//for offsetting
