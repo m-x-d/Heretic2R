@@ -212,74 +212,67 @@ void spreader_mist_fast(edict_t* self, float x, float y, float z)
 	SpreaderMistInit(self, x, y, z, 300.0f); //mxd
 }
 
-/*-------------------------------------------------------------------------
-	spreader_toss_grenade -- this is where the grenade actually gets to 
-	come to life and become; sorry about the confusion between this and 
-	spreader_throw().  This is a "think func" for the 
-	spreader_move_attack1 animmove_t 
--------------------------------------------------------------------------*/
-void spreader_toss_grenade(edict_t *self) //self is the tosser
+// This is where the grenade actually gets to come to life and become.
+// Sorry about the confusion between this and spreader_throw().
+// This is a "think func" for the spreader_move_attack1 animmove_t.
+void spreader_toss_grenade(edict_t* self) // Self is the tosser.
 {
-	edict_t	*grenade;
-	vec3_t	start;
-	vec3_t	forward, right, up;
-	vec3_t	aim;
-	vec3_t	offset = {12, 10, 68};
-	vec3_t	dir;
-	vec3_t	v;
-	vec3_t	predPos;
-	float	distance;
-	
-	if(self->monsterinfo.aiflags & AI_NO_MISSILE)
-		return;//fixme: actually prevent these anims
+	if (self->monsterinfo.aiflags & AI_NO_MISSILE)
+		return; //FIXME: actually prevent these anims.
 
-	AngleVectors (self->s.angles, forward, right, NULL);
-	G_ProjectSource (self->s.origin, offset, forward, right, start);
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	grenade = G_Spawn();
-	VectorCopy (start, grenade->s.origin);
+	vec3_t start;
+	const vec3_t offset = { 12.0f, 10.0f, 68.0f };
+	G_ProjectSource(self->s.origin, offset, forward, right, start);
 
-	M_PredictTargetPosition( self->enemy, self->enemy->velocity, 15, predPos);
+	edict_t* grenade = G_Spawn();
+	VectorCopy(start, grenade->s.origin);
 
-	VectorSubtract(self->s.origin, predPos, v);
-	distance = VectorLength (v);
-	distance *= 1.25;
+	vec3_t pred_pos;
+	M_PredictTargetPosition(self->enemy, self->enemy->velocity, 15.0f, pred_pos);
 
-	VectorCopy (forward, aim);
-	vectoangles (aim, dir);
-	AngleVectors (dir, forward, right, up);
+	vec3_t diff;
+	VectorSubtract(self->s.origin, pred_pos, diff);
+	const float distance = VectorLength(diff) * 1.25f;
 
-	VectorScale (aim, distance, grenade->velocity);
-	VectorMA (grenade->velocity, flrand(100.0F, 125.0F), up, grenade->velocity);
-	
-	//FIXME: Difficulty modifier here
-	VectorMA (grenade->velocity, flrand(-10.0F, 10.0F), right, grenade->velocity);
-	
-	VectorSet (grenade->avelocity, flrand(300,600), flrand(300,600), flrand(300,600));
+	vec3_t aim;
+	VectorCopy(forward, aim);
 
+	vec3_t dir;
+	vectoangles(aim, dir);
+
+	vec3_t up;
+	AngleVectors(dir, NULL, right, up);
+
+	VectorScale(aim, distance, grenade->velocity);
+
+	VectorMA(grenade->velocity, flrand(100.0f, 125.0f), up, grenade->velocity);
+	VectorMA(grenade->velocity, flrand(-10.0f, 10.0f), right, grenade->velocity); //TODO: scale velocity by difficulty?
+
+	VectorSet(grenade->avelocity, flrand(300.0f, 600.0f), flrand(300.0f, 600.0f), flrand(300.0f, 600.0f)); //TODO: randomly pick negative value?
+
+	grenade->owner = self;
+	grenade->classname = "spreader_grenade";
+	grenade->s.modelindex = (byte)gi.modelindex("models/monsters/spreader/bomb/tris.fm");
+	grenade->s.effects |= EF_CAMERA_NO_CLIP;
 	grenade->movetype = PHYSICSTYPE_STEP;
-	grenade->elasticity = 1;
-	grenade->friction = 1;
+	grenade->elasticity = 1.0f;
+	grenade->friction = 1.0f;
 	grenade->clipmask = MASK_SHOT;
 	grenade->solid = SOLID_BBOX;
-	VectorSet (grenade->mins, -1, -1, -1);
-	VectorSet (grenade->maxs, 1, 1, 1);
+	grenade->dmg = SPREADER_GRENADE_DAMAGE; //TODO: difficulty modifier here.
+	grenade->dmg_radius = SPREADER_GRENADE_RADIUS; //TODO: difficulty modifier here.
 
-	grenade->s.modelindex = gi.modelindex ("models/monsters/spreader/bomb/tris.fm");
-	grenade->owner = self;
-	//grenade->touch = spreader_grenade_touch;
+	VectorSet(grenade->mins, -1.0f, -1.0f, -1.0f);
+	VectorSet(grenade->maxs, 1.0f, 1.0f, 1.0f);
+
 	grenade->bounced = SpreaderGrenadeBounced;
 	grenade->isBlocked = SpreaderGrenadeBounced;
-	self->delay = 5.0;
-	//grenade->isBlocked = spreader_grenade_blocked;
-	//grenade->think = spreader_grenade_explode;
-	grenade->dmg = SPREADER_GRENADE_DAMAGE;
-	
-	//FIXME: difficulty modifier here
-	grenade->dmg_radius = SPREADER_GRENADE_RADIUS;
-	grenade->classname = "spreader_grenade";
 
-	grenade->s.effects |= EF_CAMERA_NO_CLIP;
-	gi.linkentity (grenade);	
+	gi.linkentity(grenade);
+
+	self->delay = 5.0f;
 }
-
