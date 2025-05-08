@@ -341,10 +341,9 @@ void seraph_guard_pause(edict_t* self)
 	}
 }
 
-void seraph_guard_check_mood (edict_t *self, G_Message_t *msg)
+static void SeraphGuardCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_guard_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-
 	seraph_guard_pause(self);
 }
 
@@ -965,7 +964,7 @@ void SeraphGuardStaticsInit(void)
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_PAIN]	= seraph_guard_pain;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH]	= seraph_guard_death;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH_PAIN]	= seraph_guard_death_pain;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_CHECK_MOOD] = seraph_guard_check_mood;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_CHECK_MOOD] = SeraphGuardCheckMoodMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_VOICE_SIGHT] = ser_grd_SightSound;
 
