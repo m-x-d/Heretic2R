@@ -160,7 +160,7 @@ static void SpreaderTakeOff(edict_t* self) //mxd. Named 'spreaderTakeOff' in ori
 	gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1.0f, ATTN_NORM, 0.0f);
 	gi.sound(self, CHAN_AUTO, sounds[SND_BOMB], 1.0f, ATTN_NORM, 0.0f);
 
-	self->pain_debounce_time = level.time + flrand(0.4f, 0.8f); // For sound loop. //TODO: pain_debounce_time -> add spreader_spray_time name.
+	self->spreader_spray_sound_time = level.time + flrand(0.4f, 0.8f); // For sound loop.
 
 	self->velocity[0] = 0.0f; // Not realistic, but funnier.
 	self->velocity[1] = 0.0f;
@@ -944,10 +944,10 @@ void spreader_become_solid(edict_t* self) //mxd. Named 'spreaderSolidAgain' in o
 
 void spreader_fly(edict_t* self) //mxd. Named 'spreaderFly' in original logic.
 {
-	if (self->pain_debounce_time <= level.time)
+	if (self->spreader_spray_sound_time <= level.time)
 	{
 		gi.sound(self, CHAN_BODY, sounds[SND_SPRAYLOOP], 1.0f, ATTN_NORM, 0.0f);
-		self->pain_debounce_time = level.time + flrand(0.4f, 0.8f);
+		self->spreader_spray_sound_time = level.time + flrand(0.4f, 0.8f);
 	}
 
 	if (self->velocity[2] < 800.0f)

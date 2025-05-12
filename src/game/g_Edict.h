@@ -368,7 +368,12 @@ struct edict_s
 	void (*oldthink)(edict_t* self);
 
 	float touch_debounce_time;	// Used by polys and triggers.
-	float pain_debounce_time;	// Used by monsters and player.
+
+	union
+	{
+		float pain_debounce_time;	// Used by monsters and player.
+		float spreader_spray_sound_time; //mxd
+	};
 
 	union
 	{
