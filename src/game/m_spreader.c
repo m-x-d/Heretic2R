@@ -283,25 +283,16 @@ static void SpreaderStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	SetAnim(self, ANIM_IDLE1);
 }
 
-void spreader_run(edict_t *self, G_Message_t *msg)
+static void SpreaderRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_run' in original logic.
 {
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		if(self->spawnflags&MSF_FIXED)
-		{
-			SetAnim(self, ANIM_DELAY);
-			return;
-		}
-		else
-		{
-			SetAnim(self, ANIM_RUN1);
-		}
-
+		// If our enemy is dead, we need to stand.
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	//If our enemy is dead, we need to stand
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN1));
 }
 
 void spreader_walk(edict_t *self, G_Message_t *msg)
@@ -1141,7 +1132,7 @@ void SpreaderStaticsInit(void)
 	resInfo.modelIndex = gi.modelindex("models/monsters/spreader/tris.fm");
 	
 	classStatics[CID_SPREADER].msgReceivers[MSG_STAND] = SpreaderStandMsgHandler;
-	classStatics[CID_SPREADER].msgReceivers[MSG_RUN] = spreader_run;
+	classStatics[CID_SPREADER].msgReceivers[MSG_RUN] = SpreaderRunMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_WALK] = spreader_walk;
 	classStatics[CID_SPREADER].msgReceivers[MSG_MELEE] = spreader_melee;
 	classStatics[CID_SPREADER].msgReceivers[MSG_MISSILE] = spreader_missile;
