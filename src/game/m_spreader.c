@@ -278,7 +278,7 @@ static void SpreaderPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	}
 }
 
-void spreader_stand(edict_t *self, G_Message_t *msg)
+static void SpreaderStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_stand' in original logic.
 {
 	SetAnim(self, ANIM_IDLE1);
 }
@@ -1140,7 +1140,7 @@ void SpreaderStaticsInit(void)
 	resInfo.animations = animations;
 	resInfo.modelIndex = gi.modelindex("models/monsters/spreader/tris.fm");
 	
-	classStatics[CID_SPREADER].msgReceivers[MSG_STAND] = spreader_stand;
+	classStatics[CID_SPREADER].msgReceivers[MSG_STAND] = SpreaderStandMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_RUN] = spreader_run;
 	classStatics[CID_SPREADER].msgReceivers[MSG_WALK] = spreader_walk;
 	classStatics[CID_SPREADER].msgReceivers[MSG_MELEE] = spreader_melee;
