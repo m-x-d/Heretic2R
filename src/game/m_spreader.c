@@ -186,34 +186,24 @@ static qboolean SpreaderCheckUncrouch(edict_t* self) //mxd. Named 'spreader_chec
 	return true;
 }
 
-void spreader_duckpause(edict_t *self)
+void spreader_duckpause(edict_t* self) //TODO: rename to spreader_duck_pause.
 {
-	float dist;
-	qboolean	stay_duck = false;
-
-	if(self->evade_debounce_time > level.time)
-		stay_duck = true;
-
 	if (M_ValidTarget(self, self->enemy))
 	{
-		dist = M_DistanceToTarget(self, self->enemy);
-
-		if ( dist < 128 )
+		if (M_DistanceToTarget(self, self->enemy) < 128.0f)
+		{
 			SetAnim(self, ANIM_DUCKATTACK);
-		else if ( !irand(0,10) || stay_duck)
-			SetAnim(self, ANIM_DUCKSTILL);
-		else if(SpreaderCheckUncrouch(self))
-			SetAnim(self, ANIM_DUCKUP);
-		else
-			SetAnim(self, ANIM_DUCKSTILL);
+			return;
+		}
 
-		return;
+		if (self->evade_debounce_time > level.time || irand(0, 10) == 0)
+		{
+			SetAnim(self, ANIM_DUCKSTILL);
+			return;
+		}
 	}
 
-	if(SpreaderCheckUncrouch(self))
-		SetAnim(self, ANIM_DUCKUP);
-	else
-		SetAnim(self, ANIM_DUCKSTILL);
+	SetAnim(self, (SpreaderCheckUncrouch(self) ? ANIM_DUCKUP : ANIM_DUCKSTILL));
 }
 
 void spreader_pause(edict_t *self)
