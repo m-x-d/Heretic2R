@@ -871,43 +871,44 @@ static void SpreaderSplatWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named
 	self->nextthink = level.time + 0.01f;
 }
 
-void spreader_go_deadloop (edict_t *self)
+void spreader_go_deadloop(edict_t* self) //TODO: rename to spreader_deadloop_go.
 {
 	SetAnim(self, ANIM_DEAD);
 }
 
-void spreaderSolidAgain (edict_t *self)
+void spreaderSolidAgain(edict_t* self) //TODO: rename to spreader_become_solid.
 {
 	vec3_t org;
-
 	VectorCopy(self->s.origin, org);
-	org[2]+=self->maxs[2];
+	org[2] += self->maxs[2];
 
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
-	if(!gi.pointcontents(org))
+	if (gi.pointcontents(org) == CONTENTS_EMPTY)
 	{
-		if(self->movetype == PHYSICSTYPE_STEP)
+		if (self->movetype == PHYSICSTYPE_STEP)
 			return;
 
-		self->svflags &= ~SVF_ALWAYS_SEND;
+		self->svflags &= ~(SVF_ALWAYS_SEND | SVF_TAKE_NO_IMPACT_DMG);
 		self->movetype = PHYSICSTYPE_STEP;
 		self->solid = SOLID_BBOX;
+
 		self->isBlocked = SpreaderSplatWhenBlocked;
 		self->bounced = SpreaderSplatWhenBlocked;
-		self->svflags &= ~SVF_TAKE_NO_IMPACT_DMG;
 	}
 	else
 	{
-		if(self->velocity[2]>-600)
+		if (self->velocity[2] > -600.0f)
 		{
-			if(VectorLength(self->movedir)>500)
+			if (VectorLength(self->movedir) > 500.0f)
 				VectorCopy(self->movedir, self->velocity);
 			else
-				self->velocity[2] -= 50;
+				self->velocity[2] -= 50.0f;
 		}
 		else
+		{
 			VectorCopy(self->velocity, self->movedir);
+		}
 	}
 }
 
