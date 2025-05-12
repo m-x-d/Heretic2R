@@ -134,39 +134,23 @@ void spreader_flyback_move(edict_t* self)
 	}
 }
 
-void spreader_dead(edict_t *self)
+void spreader_dead(edict_t* self)
 {
-	vec3_t	spraydir, sprayorg, offset;
-
-	if (irand(0,1) && self->curAnimID == ANIM_DEATH1_END)
+	if (irand(0, 1) == 1 && self->curAnimID == ANIM_DEATH1_END)
 	{
-		edict_t	*gas;
+		const vec3_t spray_dir = { flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), flrand(10.0f, 100.0f) };
+		const vec3_t offset = { 0.0f, 0.0f, -24.0f };
 
-		spraydir[0] = flrand(-10, 10);
-		spraydir[1] = flrand(-10, 10);
-		spraydir[2] = flrand( 10, 100);
+		//vec3_t spray_origin;
+		//VectorAdd(self->s.origin, offset, spray_origin);
 
-		VectorSet(offset, 0, 0, -24);
-		VectorAdd(self->s.origin, offset, sprayorg);
-
-		// create the volume effect for the damage
-		gas = CreateRadiusDamageEnt(self,//owner
-						self,//damage-owner
-						1,//damage
-						0,//d_damage
-						30,//radius
-						1.0,//d_radius
-						DAMAGE_NO_BLOOD|DAMAGE_ALIVE_ONLY,//dflags
-						4.5,//lifetime
-						0.2,//thinkincr
-						NULL,//origin
-						offset,//velocity or offset
-						true);//offset from owner?
+		// Create the volume effect for the damage.
+		edict_t* gas = CreateRadiusDamageEnt(self, self, 1, 0, 30, 1.0f, DAMAGE_NO_BLOOD | DAMAGE_ALIVE_ONLY, 4.5f, 0.2f, NULL, offset, true);
 
 		gas->svflags |= SVF_ALWAYS_SEND;
-		gas->s.effects=EF_MARCUS_FLAG1;
+		gas->s.effects = EF_MARCUS_FLAG1;
 
-		gi.CreateEffect(&gas->s, FX_PLAGUEMIST, CEF_OWNERS_ORIGIN, offset, "vb", spraydir, 100);//sprayorg, not offset?
+		gi.CreateEffect(&gas->s, FX_PLAGUEMIST, CEF_OWNERS_ORIGIN, offset, "vb", spray_dir, 100); //FIXME: pass spray_origin, not offset? //TODO: test this.
 	}
 
 	M_EndDeath(self);
