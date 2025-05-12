@@ -19,7 +19,7 @@
 #include "Vector.h"
 #include "g_monster.h"
 
-static void spreaderTakeOff(edict_t* self); //TODO: remove.
+static void SpreaderTakeOff(edict_t* self); //TODO: remove.
 
 #pragma region ========================== Spreader Base Info ==========================
 
@@ -613,7 +613,7 @@ static qboolean SpreaderThrowTorso(edict_t* self, float damage, const float dama
 		ThrowWeapon(self, &gore_spot, throw_nodes, 0, FRAME_death17);
 
 		if (self->health > 0)
-			spreaderTakeOff(self);
+			SpreaderTakeOff(self);
 
 		return true;
 	}
@@ -799,57 +799,41 @@ static void SpreaderIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'sprea
 	self->friction = 0.8f;
 }
 
-void spreaderTakeOff (edict_t *self)
+static void SpreaderTakeOff(edict_t* self) //mxd. Named 'spreaderTakeOff' in original logic.
 {
-	vec3_t	forward;
-	edict_t	*gas;
-
-	self->msgHandler=DeadMsgHandler;
+	self->msgHandler = DeadMsgHandler;
 	self->isBlocked = SpreaderIsBlocked;
 	self->bounced = SpreaderIsBlocked;
-	
-	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorMA(self->s.origin, -12, forward, self->pos1);
-	self->pos1[2] += self->maxs[2] * 0.8;
 
-	// create the volume effect for the damage
-	gas = CreateRadiusDamageEnt(self,//owner
-					self,//damage-owner
-					1,//damage
-					0,//d_damage
-					150,//radius
-					0.0,//d_radius
-					DAMAGE_NO_BLOOD|DAMAGE_ALIVE_ONLY,//dflags
-					4.5,//lifetime
-					0.1,//thinkincr
-					NULL,//origin
-					self->pos1,//velocity or offset
-					true);//offset from owner?
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+	VectorMA(self->s.origin, -12.0f, forward, self->pos1);
+
+	self->pos1[2] += self->maxs[2] * 0.8f; //TODO: pos1 -> add spreader_mist_origin name.
+
+	// Create the volume effect for the damage.
+	edict_t* gas = CreateRadiusDamageEnt(self, self, 1, 0, 150.0f, 0.0f, DAMAGE_NO_BLOOD | DAMAGE_ALIVE_ONLY, 4.5f, 0.1f, NULL, self->pos1, true);
 
 	gas->svflags |= SVF_ALWAYS_SEND;
-	gas->s.effects=EF_MARCUS_FLAG1;
+	gas->s.effects = EF_MARCUS_FLAG1;
 
-	gi.CreateEffect(&gas->s, FX_PLAGUEMISTEXPLODE, CEF_OWNERS_ORIGIN, self->pos1, "b", 70);	
+	gi.CreateEffect(&gas->s, FX_PLAGUEMISTEXPLODE, CEF_OWNERS_ORIGIN, self->pos1, "b", 70);
 
-	gi.sound(self, CHAN_VOICE, sounds[SND_PAIN], 1, ATTN_NORM, 0);
-	gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1, ATTN_NORM, 0);
-	gi.sound(self, CHAN_AUTO, sounds[SND_BOMB],	1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[SND_PAIN], 1.0f, ATTN_NORM, 0.0f);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1.0f, ATTN_NORM, 0.0f);
+	gi.sound(self, CHAN_AUTO, sounds[SND_BOMB], 1.0f, ATTN_NORM, 0.0f);
 
-	self->pain_debounce_time = level.time + flrand(0.4, 0.8);//for sound loop
+	self->pain_debounce_time = level.time + flrand(0.4f, 0.8f); // For sound loop. //TODO: pain_debounce_time -> add spreader_spray_time name.
 
-	self->velocity[0] = self->velocity[1] = 0;//not realistic, but funnier
-	self->velocity[2]+=150;
-	self->avelocity[YAW] = flrand(-200, -600);
-	if(irand(0,10)<5)
-		self->avelocity[YAW]*=-1;
+	self->velocity[0] = 0.0f; // Not realistic, but funnier.
+	self->velocity[1] = 0.0f;
+	self->velocity[2] += 150.0f;
 
+	self->avelocity[YAW] = flrand(200.0f, 600.0f) * (float)(Q_sign(irand(-1, 0)));
 	self->movetype = PHYSICSTYPE_FLY;
-	self->svflags |= SVF_ALWAYS_SEND;
+	self->svflags |= (SVF_ALWAYS_SEND | SVF_TAKE_NO_IMPACT_DMG);
 
-	SpreaderDropWeapon (self);
-
-	self->svflags |= SVF_TAKE_NO_IMPACT_DMG;
-
+	SpreaderDropWeapon(self);
 	SetAnim(self, ANIM_FLY);
 }
 
