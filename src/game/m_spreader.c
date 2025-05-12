@@ -144,17 +144,17 @@ static void SpreaderTakeOff(edict_t* self) //mxd. Named 'spreaderTakeOff' in ori
 
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorMA(self->s.origin, -12.0f, forward, self->pos1);
+	VectorMA(self->s.origin, -12.0f, forward, self->spreader_mist_origin);
 
-	self->pos1[2] += self->maxs[2] * 0.8f; //TODO: pos1 -> add spreader_mist_origin name.
+	self->spreader_mist_origin[2] += self->maxs[2] * 0.8f;
 
 	// Create the volume effect for the damage.
-	edict_t* gas = CreateRadiusDamageEnt(self, self, 1, 0, 150.0f, 0.0f, DAMAGE_NO_BLOOD | DAMAGE_ALIVE_ONLY, 4.5f, 0.1f, NULL, self->pos1, true);
+	edict_t* gas = CreateRadiusDamageEnt(self, self, 1, 0, 150.0f, 0.0f, DAMAGE_NO_BLOOD | DAMAGE_ALIVE_ONLY, 4.5f, 0.1f, NULL, self->spreader_mist_origin, true);
 
 	gas->svflags |= SVF_ALWAYS_SEND;
 	gas->s.effects = EF_MARCUS_FLAG1;
 
-	gi.CreateEffect(&gas->s, FX_PLAGUEMISTEXPLODE, CEF_OWNERS_ORIGIN, self->pos1, "b", 70);
+	gi.CreateEffect(&gas->s, FX_PLAGUEMISTEXPLODE, CEF_OWNERS_ORIGIN, self->spreader_mist_origin, "b", 70);
 
 	gi.sound(self, CHAN_VOICE, sounds[SND_PAIN], 1.0f, ATTN_NORM, 0.0f);
 	gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1.0f, ATTN_NORM, 0.0f);
@@ -957,11 +957,11 @@ void spreader_fly(edict_t* self) //mxd. Named 'spreaderFly' in original logic.
 
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorMA(self->s.origin, -12.0f, forward, self->pos1);
-	self->pos1[2] += self->maxs[2] * 0.8f;
+	VectorMA(self->s.origin, -12.0f, forward, self->spreader_mist_origin);
+	self->spreader_mist_origin[2] += self->maxs[2] * 0.8f;
 
 	vec3_t spray_dir = { flrand(-100.0f, 100.0f), flrand(-100.0f, 100.0f), -self->velocity[2] };
-	gi.CreateEffect(NULL, FX_PLAGUEMIST, 0, self->pos1, "vb", spray_dir, 41);
+	gi.CreateEffect(NULL, FX_PLAGUEMIST, 0, self->spreader_mist_origin, "vb", spray_dir, 41);
 
 	if (self->s.origin[2] > 3900.0f) //TODO: either add a delay, or track traveled distance instead?..
 	{

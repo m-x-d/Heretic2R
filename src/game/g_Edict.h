@@ -415,6 +415,7 @@ struct edict_s
 		vec3_t pos1;
 		vec3_t assassin_spawn_pos; //mxd
 		vec3_t elflord_beam_direction; //mxd
+		vec3_t spreader_mist_origin; //mxd
 	};
 
 	union
