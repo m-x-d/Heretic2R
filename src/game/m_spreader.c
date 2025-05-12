@@ -960,19 +960,15 @@ void spreaderFly(edict_t* self) //TODO: rename to spreader_fly.
 	}
 }
 
-void spreaderFlyLoop (edict_t *self)
+void spreaderFlyLoop(edict_t* self) //TODO: rename to spreader_fly_loop.
 {
 	SetAnim(self, ANIM_FLYLOOP);
 }
 
-void spreader_land(edict_t *self)
+void spreader_land(edict_t* self)
 {
-	gi.sound(self, CHAN_BODY, gi.soundindex("misc/land.wav"), 1, ATTN_NORM, 0);
-	gi.CreateEffect(&self->s,
-					   FX_DUST_PUFF,
-					   CEF_OWNERS_ORIGIN,
-					   self->s.origin,
-					   NULL);
+	gi.sound(self, CHAN_BODY, gi.soundindex("misc/land.wav"), 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&self->s, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
 }
 
 void spreaderApplyJump (edict_t *self)
