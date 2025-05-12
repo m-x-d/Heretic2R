@@ -463,117 +463,57 @@ static void SpreaderEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	}
 }
 
-void spreader_death(edict_t *self, G_Message_t *msg)
+static void SpreaderDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_death' in original logic.
 {
-	edict_t	*targ, *inflictor, *attacker;
-	float	damage;
-	vec3_t	dVel, vf, yf;
+	edict_t* target = NULL; //mxd. Pre-initialize.
 
-	if(msg)
-		ParseMsgParms(msg, "eeei", &targ, &inflictor, &attacker, &damage);
+	if (msg != NULL)
+	{
+		edict_t* inflictor;
+		edict_t* attacker;
+		float damage;
+		ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
+	}
 
-	spreader_hidegrenade(self);
-
+	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW; //mxd. Hide grenade. Original logic calls spreader_hidegrenade() here, which also plays SND_THROW.
 	M_StartDeath(self, ANIM_DEATH1_GO);
 
-	if (self->health < -80)
-	{
+	if (self->health < -80) // To be gibbed.
 		return;
-	}
-	else if (self->health < -10)
+
+	if (self->health < -10)
 	{
 		SetAnim(self, ANIM_DEATH1_GO);
+		VectorClear(self->knockbackvel);
 
-		VectorSet(self->knockbackvel, 0, 0, 0);
+		if (target != NULL) //BUGFIX: mxd. No NULL check in original logic.
+		{
+			vec3_t dir;
+			VectorNormalize2(target->velocity, dir);
 
-		VectorCopy(targ->velocity, vf);
-		VectorNormalize(vf);
+			vec3_t yaw_dir;
+			VectorScale(dir, -1.0f, yaw_dir);
 
-		VectorScale(vf, -1, yf);
+			self->ideal_yaw = VectorYaw(yaw_dir);
+			self->yaw_speed = 16.0f;
 
-		self->ideal_yaw = VectorYaw( yf );
-		self->yaw_speed = 16;
-
-		VectorScale(vf, 300, dVel);
-		dVel[2] = irand(150,250);
-
-		VectorCopy(dVel, self->velocity);
-//		self->groundentity = NULL;
+			VectorScale(dir, 300.0f, self->velocity);
+			self->velocity[2] = flrand(150.0f, 250.0f); //mxd. irand() in original logic.
+		}
 	}
 	else
 	{
 		SetAnim(self, ANIM_DEATH2);
 	}
 
-	gi.sound (self, CHAN_BODY, sounds[SND_DEATH], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_BODY, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*---------------------------------------------------------------
 
 	MG STUFF
 
 ---------------------------------------------------------------*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 qboolean canthrownode_ps (edict_t *self, int BP, int *throw_nodes)
 {//see if it's on, if so, add it to throw_nodes
@@ -848,7 +788,7 @@ void spreader_isblocked (edict_t *self, trace_t *trace)
 	T_Damage (self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20,0,MOD_DIED);
 	self->isBlocked = spreader_stop;
 	self->bounced = spreader_stop;
-	spreader_death(self, NULL);
+	SpreaderDeathMsgHandler(self, NULL);
 	self->avelocity[YAW] = 0;
 
 	self->elasticity = 1.3;
@@ -1093,7 +1033,7 @@ void SpreaderStaticsInit(void)
 	classStatics[CID_SPREADER].msgReceivers[MSG_JUMP] = spreader_jump;
 	classStatics[CID_SPREADER].msgReceivers[MSG_EVADE] = SpreaderEvadeMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_FALLBACK] = SpreaderFallbackMsgHandler;
-	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH] = spreader_death;
+	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH] = SpreaderDeathMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_PAIN] = SpreaderPainMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH_PAIN] = spreader_dead_pain;
 	classStatics[CID_SPREADER].msgReceivers[MSG_CHECK_MOOD] = SpreaderCheckMoodMsgHandler;
