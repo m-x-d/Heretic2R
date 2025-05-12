@@ -988,20 +988,14 @@ void spreader_go_inair(edict_t* self) //TODO: rename to spreader_inair_go.
 	SetAnim(self, ANIM_INAIR);
 }
 
-/*------------------------------------------------------------------------
-	startup stuff -- initialization for the spreader class and individual
-	spreaders
--------------------------------------------------------------------------
-	SpreaderStaticsInit
--------------------------------------------------------------------------*/
 void SpreaderStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/spreader/tris.fm");
-	
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/spreader/tris.fm");
+
 	classStatics[CID_SPREADER].msgReceivers[MSG_STAND] = SpreaderStandMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_RUN] = SpreaderRunMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_WALK] = SpreaderWalkMsgHandler;
@@ -1016,20 +1010,19 @@ void SpreaderStaticsInit(void)
 	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH_PAIN] = SpreaderDeathPainMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_CHECK_MOOD] = SpreaderCheckMoodMsgHandler;
 
-	sounds[SND_SPRAYSTART]	= gi.soundindex("monsters/spreader/spraystart.wav");
-	sounds[SND_SPRAYLOOP]	= gi.soundindex("monsters/spreader/sprayloop.wav");
-	sounds[SND_PAIN]		= gi.soundindex("monsters/spreader/pain1.wav");
-	sounds[SND_VOICE1]		= gi.soundindex("monsters/spreader/voice1.wav");
-	sounds[SND_VOICE2]		= gi.soundindex("monsters/spreader/voice2.wav");
-	sounds[SND_THROW]		= gi.soundindex("monsters/spreader/throw.wav");
-	sounds[SND_DEATH]		= gi.soundindex("monsters/spreader/death.wav");
-	sounds[SND_BOMB]		= gi.soundindex("monsters/spreader/gasbomb.wav");	
-	sounds[SND_SPRAYLOOP]	= gi.soundindex("monsters/spreader/sprayloop.wav");	
-	resInfo.numSounds = NUM_SOUNDS;
-	
-	resInfo.sounds = sounds;
+	sounds[SND_SPRAYSTART] = gi.soundindex("monsters/spreader/spraystart.wav");
+	sounds[SND_SPRAYLOOP] = gi.soundindex("monsters/spreader/sprayloop.wav");
+	sounds[SND_PAIN] = gi.soundindex("monsters/spreader/pain1.wav");
+	sounds[SND_VOICE1] = gi.soundindex("monsters/spreader/voice1.wav");
+	sounds[SND_VOICE2] = gi.soundindex("monsters/spreader/voice2.wav");
+	sounds[SND_THROW] = gi.soundindex("monsters/spreader/throw.wav");
+	sounds[SND_DEATH] = gi.soundindex("monsters/spreader/death.wav");
+	sounds[SND_BOMB] = gi.soundindex("monsters/spreader/gasbomb.wav");
 
-	classStatics[CID_SPREADER].resInfo = &resInfo;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
+
+	classStatics[CID_SPREADER].resInfo = &res_info;
 }
 
 /*QUAKED monster_spreader (1 .5 0) (-16 -16 -0) (16 16 32) AMBUSH ASLEEP WALKING 8 16 32 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
