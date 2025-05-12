@@ -60,24 +60,10 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-/*==========================================================================
-
-	NEW SPREADER IMPLEMENTATION
-
-==========================================================================*/
-
-/*==========================================================================
-
-	SPREADER HELPER FUNCTIONS
-
-==========================================================================*/
-
-void spreader_showgrenade(edict_t *self)
+void spreader_showgrenade(edict_t* self) //TODO: rename to spreader_show_grenade.
 {
-	if(self->monsterinfo.aiflags & AI_NO_MISSILE)
-		return;//fixme: actually prevent these anims
-
-	self->s.fmnodeinfo[MESH__BOMB].flags &= ~FMNI_NO_DRAW;
+	if (!(self->monsterinfo.aiflags & AI_NO_MISSILE)) //FIXME: actually prevent these anims.
+		self->s.fmnodeinfo[MESH__BOMB].flags &= ~FMNI_NO_DRAW;
 }
 
 void spreader_pain_sound(edict_t *self)
