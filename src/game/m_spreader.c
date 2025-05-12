@@ -66,17 +66,15 @@ void spreader_showgrenade(edict_t* self) //TODO: rename to spreader_show_grenade
 		self->s.fmnodeinfo[MESH__BOMB].flags &= ~FMNI_NO_DRAW;
 }
 
-void spreader_pain_sound(edict_t *self)
+void spreader_pain_sound(edict_t* self)
 {
-	gi.sound(self, CHAN_WEAPON, sounds[SND_PAIN], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_PAIN], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void spreader_miststartsound(edict_t *self)
+void spreader_miststartsound(edict_t* self) //TODO: rename to spreader_mist_start_sound.
 {
-	if(self->monsterinfo.aiflags & AI_NO_MELEE)
-		return;//fixme: actually prevent these anims
-
-	gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1, ATTN_IDLE, 0);
+	if (!(self->monsterinfo.aiflags & AI_NO_MELEE)) //FIXME: actually prevent these anims.
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1.0f, ATTN_IDLE, 0.0f);
 }
 
 /*-------------------------------------------------------------------------
