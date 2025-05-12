@@ -912,18 +912,17 @@ void spreaderSolidAgain(edict_t* self) //TODO: rename to spreader_become_solid.
 	}
 }
 
-void spreaderDropDown (edict_t *self)
+static void SpreaderDropDownThink(edict_t* self) //mxd. Named 'spreaderDropDown' in original logic.
 {
 	self->movetype = PHYSICSTYPE_NOCLIP;
-	self->solid=SOLID_NOT;
-	self->velocity[2] = -200;
-	self->avelocity[0] = irand(-300, 300);
-	self->avelocity[1] = irand(-300, 300);
-	self->avelocity[2] = irand(-300, 300);
+	self->solid = SOLID_NOT;
+	self->velocity[2] = -200.0f;
+	VectorRandomSet(self->avelocity, 300.0f);
 
 	SetAnim(self, ANIM_FDIE);
+
 	self->think = M_Think;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 void spreaderFly (edict_t *self)
@@ -955,7 +954,7 @@ void spreaderFly (edict_t *self)
 	{
 		self->movetype = PHYSICSTYPE_NONE;
 		VectorClear(self->velocity);
-		self->think = spreaderDropDown;
+		self->think = SpreaderDropDownThink;
 		self->nextthink = level.time + flrand(1.5, 3);
 	}
 	else if(self->health<=0)
