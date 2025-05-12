@@ -257,10 +257,9 @@ void spreader_pause(edict_t* self)
 	}
 }
 
-void spreader_check_mood (edict_t *self, G_Message_t *msg)
+static void SpreaderCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-
 	spreader_pause(self);
 }
 
@@ -1159,7 +1158,7 @@ void SpreaderStaticsInit(void)
 	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH] = spreader_death;
 	classStatics[CID_SPREADER].msgReceivers[MSG_PAIN] = spreader_pain;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH_PAIN] = spreader_dead_pain;
-	classStatics[CID_SPREADER].msgReceivers[MSG_CHECK_MOOD] = spreader_check_mood;
+	classStatics[CID_SPREADER].msgReceivers[MSG_CHECK_MOOD] = SpreaderCheckMoodMsgHandler;
 
 	sounds[SND_SPRAYSTART]	= gi.soundindex("monsters/spreader/spraystart.wav");
 	sounds[SND_SPRAYLOOP]	= gi.soundindex("monsters/spreader/sprayloop.wav");
