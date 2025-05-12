@@ -77,31 +77,21 @@ void spreader_miststartsound(edict_t* self) //TODO: rename to spreader_mist_star
 		gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-/*-------------------------------------------------------------------------
-	spreader_miststopsound
--------------------------------------------------------------------------*/
-void spreader_miststopsound(edict_t *self)
-{	
-//	gi.sound(self, CHAN_WEAPON, self->moveinfo.sound_end, 1, ATTN_NORM, 0);
-//	self->s.sound = 0;
+void spreader_miststopsound(edict_t* self) //TODO: remove?
+{
 }
 
-void spreader_idlenoise(edict_t *self)
+void spreader_idlenoise(edict_t* self) //TODO: rename to spreader_idle_noise.
 {
-	static int i = 0;
+	static int delay_noise = 0;
 
-	int chance = irand(0, 9);
-	if(i >= 50) i=0;	
-	
-	if(chance < 7 && i)
+	if (irand(0, 9) < 7 && delay_noise > 0)
 		return;
-	++i;
-	chance = irand(0, 9);
 
-	if(chance < 5 )
-		gi.sound(self, CHAN_AUTO, sounds[SND_VOICE1], 1, ATTN_IDLE, 0);
-	else
-		gi.sound(self, CHAN_AUTO, sounds[SND_VOICE2], 1, ATTN_IDLE, 0);
+	if (++delay_noise >= 50)
+		delay_noise = 0;
+
+	gi.sound(self, CHAN_AUTO, sounds[irand(SND_VOICE1, SND_VOICE2)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
 void spreader_hidegrenade(edict_t *self)
