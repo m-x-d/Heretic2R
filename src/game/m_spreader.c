@@ -351,58 +351,57 @@ static void SpreaderMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		SetAnim(self, ANIM_ATTACK2);
 }
 
-void spreader_missile(edict_t *self, G_Message_t *msg)
+static void SpreaderMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_missile' in original logic.
 {
-	float		dist;
-	int			chance;
-	qboolean	ret;
-	trace_t		trace;
-
-	chance = irand(0, 100);
-
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		dist = M_DistanceToTarget(self, self->enemy);	
+		SetAnim(self, ANIM_IDLE1);
+		return;
+	}
 
-		if (dist < 64)
-		{
-			if(!(self->monsterinfo.aiflags & AI_NO_MELEE) && irand(0, 5))
-				SetAnim(self, ANIM_BACKATTACK);
-			else
-				SetAnim(self, ANIM_BACKUP);
-		}
-		else if (dist < 128)
-		{
-			if (chance < 20)
-				SetAnim(self, ANIM_BACKUP);
-			else if (chance < 40)
-				SetAnim(self, ANIM_DUCKDOWN);
-			else if (chance < 60 || self->monsterinfo.aiflags & AI_NO_MELEE)
-				SetAnim(self, ANIM_RUN1);
-			else
-				SetAnim(self, ANIM_ATTACK2);
-		}
+	const float dist = M_DistanceToTarget(self, self->enemy);
+
+	if (dist < 64.0f)
+	{
+		if (!(self->monsterinfo.aiflags & AI_NO_MELEE) && irand(0, 5) != 0)
+			SetAnim(self, ANIM_BACKATTACK);
 		else
-		{
-			vec3_t	vf, attackVel;
-
-			AngleVectors(self->s.angles, vf, NULL, NULL);
-			VectorScale(vf, 200, attackVel);
-			ret  = M_PredictTargetEvasion( self, self->enemy, attackVel, self->enemy->velocity, 150, 5 );
-
-			//See what the predicted outcome is
-			if (!(self->monsterinfo.aiflags & AI_NO_MELEE) && ret && (M_CheckMeleeHit( self, 200, &trace) == self->enemy) && (chance < 25))
-				SetAnim(self, ANIM_RUNATTACK);
-			else if(self->monsterinfo.aiflags & AI_NO_MISSILE)
-				SetAnim(self, ANIM_RUN1);
-			else
-				SetAnim(self, ANIM_ATTACK1);
-		}
+			SetAnim(self, ANIM_BACKUP);
 
 		return;
 	}
-	
-	SetAnim(self, ANIM_IDLE1);
+
+	const int chance = irand(0, 100);
+
+	if (dist < 128.0f)
+	{
+		if (chance < 20)
+			SetAnim(self, ANIM_BACKUP);
+		else if (chance < 40)
+			SetAnim(self, ANIM_DUCKDOWN);
+		else if (chance < 60 || (self->monsterinfo.aiflags & AI_NO_MELEE))
+			SetAnim(self, ANIM_RUN1);
+		else
+			SetAnim(self, ANIM_ATTACK2);
+
+		return;
+	}
+
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+
+	vec3_t attack_vel;
+	VectorScale(forward, 200.0f, attack_vel);
+	const qboolean in_range = M_PredictTargetEvasion(self, self->enemy, attack_vel, self->enemy->velocity, 150.0f, 5.0f);
+
+	// See what the predicted outcome is.
+	trace_t trace;
+	if (!(self->monsterinfo.aiflags & AI_NO_MELEE) && in_range && chance < 25 && M_CheckMeleeHit(self, 200.0f, &trace) == self->enemy)
+		SetAnim(self, ANIM_RUNATTACK);
+	else if (self->monsterinfo.aiflags & AI_NO_MISSILE)
+		SetAnim(self, ANIM_RUN1);
+	else
+		SetAnim(self, ANIM_ATTACK1);
 }
 
 void spreader_fallback(edict_t *self, G_Message_t *msg)
@@ -1107,7 +1106,7 @@ void SpreaderStaticsInit(void)
 	classStatics[CID_SPREADER].msgReceivers[MSG_RUN] = SpreaderRunMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_WALK] = SpreaderWalkMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_MELEE] = SpreaderMeleeMsgHandler;
-	classStatics[CID_SPREADER].msgReceivers[MSG_MISSILE] = spreader_missile;
+	classStatics[CID_SPREADER].msgReceivers[MSG_MISSILE] = SpreaderMissileMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_JUMP] = spreader_jump;
 	classStatics[CID_SPREADER].msgReceivers[MSG_EVADE] = spreader_evade;
