@@ -100,48 +100,35 @@ void spreader_hidegrenade(edict_t* self) //TODO: rename to spreader_hide_grenade
 	gi.sound(self, CHAN_AUTO, sounds[SND_THROW], 1.0f, ATTN_IDLE, 0.0f); //TODO: move to spreader_toss_grenade()?
 }
 
-void spreader_flyback_loop(edict_t *self)
+void spreader_flyback_loop(edict_t* self)
 {
 	SetAnim(self, ANIM_DEATH1_LOOP);
 }
 
-void spreader_flyback_move(edict_t *self)
+void spreader_flyback_move(edict_t* self)
 {
-	vec3_t	endpos;
-	trace_t	trace;
-	int	flags = 0;
-
 	M_ChangeYaw(self);
 
-	VectorCopy(self->s.origin, endpos);
-	endpos[2] -= 48;
+	vec3_t end_pos;
+	VectorCopy(self->s.origin, end_pos);
+	end_pos[2] -= 48.0f;
 
-	gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&trace);
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
-	if(trace.fraction < 1 || trace.startsolid || trace.allsolid)
+	if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
 	{
-		if(trace.fraction < 1)
+		if (trace.fraction < 1.0f)
 		{
-			vec3_t	bottom;
-
-			if(irand(0, 1))
-				flags |= CEF_FLAG6;
-
-			VectorSet(bottom, trace.endpos[0]+flrand(-4, 4), trace.endpos[1]+flrand(-4, 4), trace.endpos[2] + self->mins[2]); 
-
-			gi.CreateEffect(NULL,
-				FX_BLOOD_TRAIL,
-				flags,
-				bottom,
-				"d",
-				trace.plane.normal);
+			const int fx_flags = (irand(0, 1) == 1 ? CEF_FLAG6 : 0);
+			const vec3_t bottom = { trace.endpos[0] + flrand(-4.0f, 4.0f), trace.endpos[1] + flrand(-4.0f, 4.0f), trace.endpos[2] + self->mins[2] };
+			gi.CreateEffect(NULL, FX_BLOOD_TRAIL, fx_flags, bottom, "d", trace.plane.normal);
 		}
 
-		if (self->curAnimID != ANIM_DEATH1_END && 
-				self->curAnimID != ANIM_DEATH1_GO)
+		if (self->curAnimID != ANIM_DEATH1_END && self->curAnimID != ANIM_DEATH1_GO)
 		{
-			self->elasticity = 1.1;
-			self->friction = 0.5;
+			self->elasticity = 1.1f;
+			self->friction = 0.5f;
 			SetAnim(self, ANIM_DEATH1_END);
 		}
 	}
