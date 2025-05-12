@@ -186,7 +186,7 @@ static qboolean SpreaderCheckUncrouch(edict_t* self) //mxd. Named 'spreader_chec
 	return true;
 }
 
-void spreader_duckpause(edict_t* self) //TODO: rename to spreader_duck_pause.
+void spreader_duck_pause(edict_t* self) //mxd. Named 'spreader_duckpause' in original logic.
 {
 	if (M_ValidTarget(self, self->enemy))
 	{

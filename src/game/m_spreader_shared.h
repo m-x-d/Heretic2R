@@ -93,7 +93,7 @@ extern void spreader_go_deadloop(edict_t* self);
 extern void spreaderSolidAgain(edict_t* self);
 
 extern void spreader_pause(edict_t* self);
-extern void spreader_duckpause(edict_t* self);
+extern void spreader_duck_pause(edict_t* self);
 extern void spreader_dead(edict_t* self);
 
 extern void spreader_flyback_move(edict_t* self);

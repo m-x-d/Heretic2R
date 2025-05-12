@@ -182,7 +182,7 @@ static const animframe_t spreader_frames_duckdown[] =
 	{ FRAME_duck3,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_duck4,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t spreader_move_duckdown = { 4, spreader_frames_duckdown, spreader_duckpause };
+const animmove_t spreader_move_duckdown = { 4, spreader_frames_duckdown, spreader_duck_pause };
 
 // Spreader Duck Still 1 - the spreader ducking, still.
 static const animframe_t spreader_frames_duckstill[] =
@@ -200,7 +200,7 @@ static const animframe_t spreader_frames_duckstill[] =
 	{ FRAME_dkidle11,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dkidle12,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t spreader_move_duckstill = { 12, spreader_frames_duckstill, spreader_duckpause };
+const animmove_t spreader_move_duckstill = { 12, spreader_frames_duckstill, spreader_duck_pause };
 
 // Spreader Duck Up - the spreader rises from a ducking position.
 static const animframe_t spreader_frames_duckup[] =
