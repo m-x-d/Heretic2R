@@ -104,7 +104,7 @@ extern void spreader_pain_sound(edict_t* self);
 extern void spreader_mist_start_sound(edict_t* self);
 extern void spreader_miststopsound(edict_t* self);
 extern void spreader_idle_sound(edict_t* self);
-extern void spreader_hidegrenade(edict_t* self);
+extern void spreader_hide_grenade(edict_t* self);
 extern void spreaderApplyJump(edict_t* self);
 extern void spreader_land(edict_t* self);
 extern void spreader_go_inair(edict_t* self);

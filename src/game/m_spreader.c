@@ -66,6 +66,12 @@ void spreader_show_grenade(edict_t* self) //mxd. Named 'spreader_showgrenade' in
 		self->s.fmnodeinfo[MESH__BOMB].flags &= ~FMNI_NO_DRAW;
 }
 
+void spreader_hide_grenade(edict_t* self) //mxd. Named 'spreader_hidegrenade' in original logic.
+{
+	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW;
+	gi.sound(self, CHAN_AUTO, sounds[SND_THROW], 1.0f, ATTN_IDLE, 0.0f); //TODO: move to spreader_toss_grenade()?
+}
+
 void spreader_pain_sound(edict_t* self)
 {
 	gi.sound(self, CHAN_WEAPON, sounds[SND_PAIN], 1.0f, ATTN_NORM, 0.0f);
@@ -92,12 +98,6 @@ void spreader_idle_sound(edict_t* self) //mxd. Named 'spreader_idlenoise' in ori
 		sound_delay = 0;
 
 	gi.sound(self, CHAN_AUTO, sounds[irand(SND_VOICE1, SND_VOICE2)], 1.0f, ATTN_IDLE, 0.0f);
-}
-
-void spreader_hidegrenade(edict_t* self) //TODO: rename to spreader_hide_grenade.
-{
-	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW;
-	gi.sound(self, CHAN_AUTO, sounds[SND_THROW], 1.0f, ATTN_IDLE, 0.0f); //TODO: move to spreader_toss_grenade()?
 }
 
 void spreader_flyback_loop(edict_t* self)
