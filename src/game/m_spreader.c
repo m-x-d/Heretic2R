@@ -748,57 +748,55 @@ static void SpreaderStopWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named 
 	self->bounced = NULL;
 }
 
-void spreader_isblocked (edict_t *self, trace_t *trace)
+static void SpreaderIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreader_isblocked' in original logic.
 {
-	edict_t *other;
-	vec3_t	gore_spot;
-
-	if(trace->surface)
+	if (trace->surface != NULL && (trace->surface->flags & SURF_SKY))
 	{
-		if(trace->surface->flags & SURF_SKY)
-		{
-			self->movetype = PHYSICSTYPE_NOCLIP;
-			self->solid = SOLID_NOT;
-			self->isBlocked = NULL;
-			self->bounced = NULL;
-			return;
-		}
-	}
+		self->movetype = PHYSICSTYPE_NOCLIP;
+		self->solid = SOLID_NOT;
+		self->isBlocked = NULL;
+		self->bounced = NULL;
 
-	other = trace->ent;
-	
-	if((other->movetype != PHYSICSTYPE_NONE) && (other->movetype != PHYSICSTYPE_PUSH))
-	{
-		if(other == self->enemy && self->touch_debounce_time > level.time)
-			return;
-		
-		self->enemy = other;
-		
-		VectorAdd(other->velocity, self->velocity, other->velocity);
-		
-		if(other->takedamage)
-			T_Damage (other, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20,0,MOD_DIED);
-		
-		self->touch_debounce_time = level.time + 0.3;
 		return;
 	}
 
+	edict_t* other = trace->ent;
 
+	if (other->movetype != PHYSICSTYPE_NONE && other->movetype != PHYSICSTYPE_PUSH)
+	{
+		if (other == self->enemy && self->touch_debounce_time > level.time)
+			return;
+
+		self->enemy = other;
+		VectorAdd(other->velocity, self->velocity, other->velocity);
+
+		if (other->takedamage != DAMAGE_NO)
+			T_Damage(other, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20, 0, MOD_DIED);
+
+		self->touch_debounce_time = level.time + 0.3f;
+
+		return;
+	}
+
+	// When crushed, enter headless mode...
 	self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_NO_DRAW;
+
+	vec3_t gore_spot;
 	VectorCopy(self->s.origin, gore_spot);
-	gore_spot[2]+=self->maxs[2] - 8;
+	gore_spot[2] += self->maxs[2] - 8.0f;
+
 	SprayDebris(self, gore_spot, 8, 100);
 
 	self->health = 1;
-	T_Damage (self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20,0,MOD_DIED);
+	T_Damage(self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20, 0, MOD_DIED);
+
 	self->isBlocked = SpreaderStopWhenBlocked;
 	self->bounced = SpreaderStopWhenBlocked;
 	SpreaderDeathMsgHandler(self, NULL);
-	self->avelocity[YAW] = 0;
 
-	self->elasticity = 1.3;
-	self->friction = 0.8;
-	return;
+	self->avelocity[YAW] = 0.0f;
+	self->elasticity = 1.3f;
+	self->friction = 0.8f;
 }
 
 void spreaderTakeOff (edict_t *self)
@@ -807,8 +805,8 @@ void spreaderTakeOff (edict_t *self)
 	edict_t	*gas;
 
 	self->msgHandler=DeadMsgHandler;
-	self->isBlocked = spreader_isblocked;
-	self->bounced = spreader_isblocked;
+	self->isBlocked = SpreaderIsBlocked;
+	self->bounced = SpreaderIsBlocked;
 	
 	AngleVectors(self->s.angles, forward, NULL, NULL);
 	VectorMA(self->s.origin, -12, forward, self->pos1);
