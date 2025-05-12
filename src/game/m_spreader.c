@@ -738,9 +738,11 @@ static void SpreaderDismember(edict_t* self, int damage, HitLocation_t hl) //mxd
 		self->monsterinfo.aiflags |= AI_NO_MISSILE;
 }
 
-void spreader_stop (edict_t *self, trace_t *trace)
-{//aparently being on ground no longer causes you to lose avelocity so I do it manually
+static void SpreaderStopWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreader_stop' in original logic.
+{
+	// Apparently being on ground no longer causes you to lose avelocity so I do it manually.
 	VectorClear(self->avelocity);
+
 	self->svflags &= ~SVF_TAKE_NO_IMPACT_DMG;
 	self->isBlocked = NULL;
 	self->bounced = NULL;
@@ -789,8 +791,8 @@ void spreader_isblocked (edict_t *self, trace_t *trace)
 
 	self->health = 1;
 	T_Damage (self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20,0,MOD_DIED);
-	self->isBlocked = spreader_stop;
-	self->bounced = spreader_stop;
+	self->isBlocked = SpreaderStopWhenBlocked;
+	self->bounced = SpreaderStopWhenBlocked;
 	SpreaderDeathMsgHandler(self, NULL);
 	self->avelocity[YAW] = 0;
 
