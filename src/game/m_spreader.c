@@ -156,9 +156,9 @@ void spreader_dead(edict_t* self)
 	M_EndDeath(self);
 }
 
-void spreader_crouch(edict_t *self)
+static void SpreaderCrouch(edict_t* self) //mxd. Named 'spreader_crouch' in original logic. //TODO: inline?
 {
-	VectorSet(self->maxs, 16, 16, 0);
+	VectorSet(self->maxs, 16.0f, 16.0f, 0.0f);
 	self->viewheight = 0;
 	SetAnim(self, ANIM_DUCKDOWN);
 }
@@ -547,7 +547,7 @@ void spreader_evade(edict_t *self, G_Message_t *msg)
 		if(chance < duck_chance)
 		{
 			self->evade_debounce_time = level.time + eta;
-			spreader_crouch(self);
+			SpreaderCrouch(self);
 			return;
 		}
 	}

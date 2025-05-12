@@ -125,7 +125,6 @@ extern void spreader_go_deadloop(edict_t* self);
 extern void spreaderSolidAgain(edict_t* self);
 
 extern void spreader_pause(edict_t* self);
-extern void spreader_crouch(edict_t* self);
 extern void spreader_duckpause(edict_t* self);
 extern void spreader_dead(edict_t* self);
 
