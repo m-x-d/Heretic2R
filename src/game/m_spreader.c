@@ -71,7 +71,7 @@ void spreader_pain_sound(edict_t* self)
 	gi.sound(self, CHAN_WEAPON, sounds[SND_PAIN], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void spreader_miststartsound(edict_t* self) //TODO: rename to spreader_mist_start_sound.
+void spreader_mist_start_sound(edict_t* self) //mxd. Named 'spreader_miststartsound' in original logic.
 {
 	if (!(self->monsterinfo.aiflags & AI_NO_MELEE)) //FIXME: actually prevent these anims.
 		gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1.0f, ATTN_IDLE, 0.0f);

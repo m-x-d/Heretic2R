@@ -42,7 +42,7 @@ static const animframe_t spreader_frames_attack2[] =
 	{ FRAME_atackb1,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atackb2,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atackb3,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_atackb4,	spreader_mist, 14.59f, -0.96f,  16.0f,  ai_charge2, 0, spreader_miststartsound },
+	{ FRAME_atackb4,	spreader_mist, 14.59f, -0.96f,  16.0f,  ai_charge2, 0, spreader_mist_start_sound },
 	{ FRAME_atackb5,	spreader_mist, 12.49f, -5.98f,  16.0f,  ai_charge2, 0, NULL },
 	{ FRAME_atackb6,	spreader_mist, 10.35f, -13.15f, 16.0f,  ai_charge2, 0, NULL },
 	{ FRAME_atackb7,	spreader_mist, 6.14f,  -17.95f, 16.0f,  ai_charge2, 0, NULL },
@@ -59,7 +59,7 @@ const animmove_t spreader_move_attack2 = { 14, spreader_frames_attack2, spreader
 // Spreader Back Attack 1 - the spreader backpedals while shooting.
 static const animframe_t spreader_frames_backattack1[] =
 {
-	{ FRAME_bkatck1,	spreader_mist, 14.4f,  10.24f, 16.0f, MG_AI_Run, -5, spreader_miststartsound },
+	{ FRAME_bkatck1,	spreader_mist, 14.4f,  10.24f, 16.0f, MG_AI_Run, -5, spreader_mist_start_sound },
 	{ FRAME_bkatck2,	spreader_mist, 14.22f, 10.03f, 16.0f, MG_AI_Run, -5, NULL },
 	{ FRAME_bkatck3,	spreader_mist, 13.79f, 9.79f,  16.0f, MG_AI_Run, -5, NULL },
 	{ FRAME_bkatck4,	spreader_mist, 13.62f, 9.63f,  16.0f, MG_AI_Run, -5, NULL },
@@ -152,7 +152,7 @@ const animmove_t spreader_move_death2 = { 14, spreader_frames_death2, NULL };
 // Spreader Duck Attack 1 - spreader ducking, shoots, rises.
 static const animframe_t spreader_frames_dkatck1[] =
 {
-	{ FRAME_dkatck_1,	spreader_mist, 21.39f,  11.26f, -16.0f, ai_move, 0, spreader_miststartsound },
+	{ FRAME_dkatck_1,	spreader_mist, 21.39f,  11.26f, -16.0f, ai_move, 0, spreader_mist_start_sound },
 	{ FRAME_dkatck_2,	spreader_mist, 12.08f,  24.16f, -16.0f, ai_move, 0, NULL },
 	{ FRAME_dkatck_3,	spreader_mist, 26.14f,  1.26f,  -16.0f, ai_move, 0, NULL },
 	{ FRAME_dkatck_4,	spreader_mist, 26.65f, -0.43f,  -16.0f, ai_move, 0, spreader_miststopsound },
@@ -322,7 +322,7 @@ const animmove_t spreader_move_fjump = { 15, spreader_frames_fjump, spreader_go_
 // Spreader Run Attack 1 - the spreader runs and shoots.
 static const animframe_t spreader_frames_rnatck1[] =
 {
-	{ FRAME_rnatck1,	spreader_mist_fast, 38.0f * 2.0f,  5.0f, 16.0f, MG_AI_Run, 20, spreader_miststartsound },
+	{ FRAME_rnatck1,	spreader_mist_fast, 38.0f * 2.0f,  5.0f, 16.0f, MG_AI_Run, 20, spreader_mist_start_sound },
 	{ FRAME_rnatck2,	spreader_mist_fast, 39.27f * 2.0f, 5.0f, 16.0f, MG_AI_Run, 18, NULL },
 	{ FRAME_rnatck3,	spreader_mist_fast, 37.43f * 2.0f, 5.0f, 16.0f, MG_AI_Run, 16, NULL },
 	{ FRAME_rnatck4,	spreader_mist_fast, 36.68f * 2.0f, 5.0f, 16.0f, MG_AI_Run, 18, spreader_pause },
