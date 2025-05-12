@@ -99,7 +99,7 @@ extern void spreader_dead(edict_t* self);
 extern void spreader_flyback_move(edict_t* self);
 extern void spreader_flyback_loop(edict_t* self);
 
-extern void spreader_showgrenade(edict_t* self);
+extern void spreader_show_grenade(edict_t* self);
 extern void spreader_pain_sound(edict_t* self);
 extern void spreader_miststartsound(edict_t* self);
 extern void spreader_miststopsound(edict_t* self);

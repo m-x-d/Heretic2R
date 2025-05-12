@@ -21,7 +21,7 @@ static const animframe_t spreader_frames_attack1[] =
 	{ FRAME_atacka3,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atacka4,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atacka5,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_atacka6,	NULL, 0, 0, 0, ai_charge2, 0, spreader_showgrenade },
+	{ FRAME_atacka6,	NULL, 0, 0, 0, ai_charge2, 0, spreader_show_grenade },
 	{ FRAME_atacka7,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atacka8,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atacka9,	NULL, 0, 0, 0, ai_charge2, 0, NULL },

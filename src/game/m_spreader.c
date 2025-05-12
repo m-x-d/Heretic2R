@@ -60,7 +60,7 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-void spreader_showgrenade(edict_t* self) //TODO: rename to spreader_show_grenade.
+void spreader_show_grenade(edict_t* self) //mxd. Named 'spreader_showgrenade' in original logic.
 {
 	if (!(self->monsterinfo.aiflags & AI_NO_MISSILE)) //FIXME: actually prevent these anims.
 		self->s.fmnodeinfo[MESH__BOMB].flags &= ~FMNI_NO_DRAW;
