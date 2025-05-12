@@ -925,42 +925,38 @@ static void SpreaderDropDownThink(edict_t* self) //mxd. Named 'spreaderDropDown'
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-void spreaderFly (edict_t *self)
+void spreaderFly(edict_t* self) //TODO: rename to spreader_fly.
 {
-	vec3_t spraydir, forward;
-
-	if(self->pain_debounce_time <= level.time)
+	if (self->pain_debounce_time <= level.time)
 	{
-		gi.sound(self, CHAN_BODY, sounds[SND_SPRAYLOOP], 1, ATTN_NORM, 0);
-		self->pain_debounce_time = level.time + flrand(0.4, 0.8);
+		gi.sound(self, CHAN_BODY, sounds[SND_SPRAYLOOP], 1.0f, ATTN_NORM, 0.0f);
+		self->pain_debounce_time = level.time + flrand(0.4f, 0.8f);
 	}
 
-	if(self->velocity[2]<800)
-		self->velocity[2] += 100;
+	if (self->velocity[2] < 800.0f)
+		self->velocity[2] += 100.0f;
 
-	if(self->velocity[2] > 800)
-		self->velocity[2] = 800;
+	self->velocity[2] = min(800.0f, self->velocity[2]);
 
+	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorMA(self->s.origin, -12, forward, self->pos1);
-	self->pos1[2] += self->maxs[2] * 0.8;
+	VectorMA(self->s.origin, -12.0f, forward, self->pos1);
+	self->pos1[2] += self->maxs[2] * 0.8f;
 
-	spraydir[0] = flrand(-100, 100);
-	spraydir[1] = flrand(-100, 100);
-	spraydir[2] = -self->velocity[2];
-	gi.CreateEffect(NULL, FX_PLAGUEMIST, 0, self->pos1, "vb", spraydir, 41);
+	vec3_t spray_dir = { flrand(-100.0f, 100.0f), flrand(-100.0f, 100.0f), -self->velocity[2] };
+	gi.CreateEffect(NULL, FX_PLAGUEMIST, 0, self->pos1, "vb", spray_dir, 41);
 
-	if(self->s.origin[2]>3900)
+	if (self->s.origin[2] > 3900.0f) //TODO: either add a delay, or track traveled distance instead?..
 	{
 		self->movetype = PHYSICSTYPE_NONE;
 		VectorClear(self->velocity);
+
 		self->think = SpreaderDropDownThink;
-		self->nextthink = level.time + flrand(1.5, 3);
+		self->nextthink = level.time + flrand(1.5f, 3.0f);
 	}
-	else if(self->health<=0)
+	else if (self->health <= 0)
 	{
 		VectorClear(self->avelocity);
-		//spreader_death(self);
 	}
 }
 
