@@ -206,9 +206,11 @@ void spreader_duckpause(edict_t* self) //TODO: rename to spreader_duck_pause.
 	SetAnim(self, (SpreaderCheckUncrouch(self) ? ANIM_DUCKUP : ANIM_DUCKSTILL));
 }
 
-void spreader_pause(edict_t *self)
+void spreader_pause(edict_t* self)
 {
-	if(self->spawnflags & MSF_FIXED && self->curAnimID == ANIM_DELAY && self->enemy)
+	const qboolean is_fixed = (self->spawnflags & MSF_FIXED); //mxd
+
+	if (is_fixed && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
 	{
 		self->monsterinfo.searchType = SEARCH_COMMON;
 		MG_FaceGoal(self, true);
@@ -218,49 +220,40 @@ void spreader_pause(edict_t *self)
 
 	switch (self->ai_mood)
 	{
-	case AI_MOOD_ATTACK:
-		QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_ATTACK:
+			QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_NAVIGATE:
-	case AI_MOOD_PURSUE:
-	case AI_MOOD_FLEE:
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_NAVIGATE:
+		case AI_MOOD_PURSUE:
+		case AI_MOOD_FLEE:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_STAND:
-		if (!self->enemy)
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_STAND:
+			if (self->enemy == NULL) //TODO: else what?
+				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_DELAY:
-		SetAnim(self, ANIM_DELAY);
-		break;
-
-	case AI_MOOD_WANDER:
-		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-		break;
-
-	case AI_MOOD_WALK:
-		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-		break;
-
-	case AI_MOOD_JUMP:
-		if(self->spawnflags&MSF_FIXED)
+		case AI_MOOD_DELAY:
 			SetAnim(self, ANIM_DELAY);
-		else
-			SetAnim(self, ANIM_FJUMP);
-		break;
+			break;
 
-	case AI_MOOD_BACKUP:
-		QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_WANDER:
+		case AI_MOOD_WALK:
+			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			break;
 
-	default :
-#ifdef _DEVEL
-		gi.dprintf("spreader: Unusable mood %d!\n", self->ai_mood);
-#endif
-		break;
+		case AI_MOOD_JUMP:
+			SetAnim(self, (is_fixed ? ANIM_DELAY : ANIM_FJUMP));
+			break;
+
+		case AI_MOOD_BACKUP:
+			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
+			break;
+
+		default:
+			break;
 	}
 }
 
