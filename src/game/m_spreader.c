@@ -19,8 +19,6 @@
 #include "Vector.h"
 #include "g_monster.h"
 
-static void SpreaderTakeOff(edict_t* self); //TODO: remove.
-
 #pragma region ========================== Spreader Base Info ==========================
 
 static const animmove_t* animations[NUM_ANIMS] =
@@ -60,101 +58,7 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-void spreader_show_grenade(edict_t* self) //mxd. Named 'spreader_showgrenade' in original logic.
-{
-	if (!(self->monsterinfo.aiflags & AI_NO_MISSILE)) //FIXME: actually prevent these anims.
-		self->s.fmnodeinfo[MESH__BOMB].flags &= ~FMNI_NO_DRAW;
-}
-
-void spreader_hide_grenade(edict_t* self) //mxd. Named 'spreader_hidegrenade' in original logic.
-{
-	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW;
-	gi.sound(self, CHAN_AUTO, sounds[SND_THROW], 1.0f, ATTN_IDLE, 0.0f); //TODO: move to spreader_toss_grenade()?
-}
-
-void spreader_pain_sound(edict_t* self)
-{
-	gi.sound(self, CHAN_WEAPON, sounds[SND_PAIN], 1.0f, ATTN_NORM, 0.0f);
-}
-
-void spreader_mist_start_sound(edict_t* self) //mxd. Named 'spreader_miststartsound' in original logic.
-{
-	if (!(self->monsterinfo.aiflags & AI_NO_MELEE)) //FIXME: actually prevent these anims.
-		gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1.0f, ATTN_IDLE, 0.0f);
-}
-
-void spreader_miststopsound(edict_t* self) //TODO: remove?
-{
-}
-
-void spreader_idle_sound(edict_t* self) //mxd. Named 'spreader_idlenoise' in original logic.
-{
-	static int sound_delay = 0;
-
-	if (irand(0, 9) < 7 && sound_delay > 0)
-		return;
-
-	if (++sound_delay >= 50)
-		sound_delay = 0;
-
-	gi.sound(self, CHAN_AUTO, sounds[irand(SND_VOICE1, SND_VOICE2)], 1.0f, ATTN_IDLE, 0.0f);
-}
-
-void spreader_flyback_loop(edict_t* self)
-{
-	SetAnim(self, ANIM_DEATH1_LOOP);
-}
-
-void spreader_flyback_move(edict_t* self)
-{
-	M_ChangeYaw(self);
-
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-	end_pos[2] -= 48.0f;
-
-	trace_t trace;
-	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
-
-	if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
-	{
-		if (trace.fraction < 1.0f)
-		{
-			const int fx_flags = (irand(0, 1) == 1 ? CEF_FLAG6 : 0);
-			const vec3_t bottom = { trace.endpos[0] + flrand(-4.0f, 4.0f), trace.endpos[1] + flrand(-4.0f, 4.0f), trace.endpos[2] + self->mins[2] };
-			gi.CreateEffect(NULL, FX_BLOOD_TRAIL, fx_flags, bottom, "d", trace.plane.normal);
-		}
-
-		if (self->curAnimID != ANIM_DEATH1_END && self->curAnimID != ANIM_DEATH1_GO)
-		{
-			self->elasticity = 1.1f;
-			self->friction = 0.5f;
-			SetAnim(self, ANIM_DEATH1_END);
-		}
-	}
-}
-
-void spreader_dead(edict_t* self)
-{
-	if (irand(0, 1) == 1 && self->curAnimID == ANIM_DEATH1_END)
-	{
-		const vec3_t spray_dir = { flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), flrand(10.0f, 100.0f) };
-		const vec3_t offset = { 0.0f, 0.0f, -24.0f };
-
-		//vec3_t spray_origin;
-		//VectorAdd(self->s.origin, offset, spray_origin);
-
-		// Create the volume effect for the damage.
-		edict_t* gas = CreateRadiusDamageEnt(self, self, 1, 0, 30, 1.0f, DAMAGE_NO_BLOOD | DAMAGE_ALIVE_ONLY, 4.5f, 0.2f, NULL, offset, true);
-
-		gas->svflags |= SVF_ALWAYS_SEND;
-		gas->s.effects = EF_MARCUS_FLAG1;
-
-		gi.CreateEffect(&gas->s, FX_PLAGUEMIST, CEF_OWNERS_ORIGIN, offset, "vb", spray_dir, 100); //FIXME: pass spray_origin, not offset? //TODO: test this.
-	}
-
-	M_EndDeath(self);
-}
+#pragma region ========================== Utility functions =========================
 
 static void SpreaderCrouch(edict_t* self) //mxd. Named 'spreader_crouch' in original logic. //TODO: inline?
 {
@@ -186,76 +90,93 @@ static qboolean SpreaderCheckUncrouch(edict_t* self) //mxd. Named 'spreader_chec
 	return true;
 }
 
-void spreader_duck_pause(edict_t* self) //mxd. Named 'spreader_duckpause' in original logic.
+static qboolean SpreaderCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_ps' in original logic.
 {
-	if (M_ValidTarget(self, self->enemy))
+	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
 	{
-		if (M_DistanceToTarget(self, self->enemy) < 128.0f)
-		{
-			SetAnim(self, ANIM_DUCKATTACK);
-			return;
-		}
+		BIT_PARENT,
+		BIT_CHILD,
+		BIT_BODY,
+		BIT_BOMB,
+		BIT_RITLEG,
+		BIT_LFTARM,
+		BIT_LFTLEG,
+		BIT_HEAD,
+		BIT_RITARM,
+		BIT_TANK3,
+		BIT_TANK2,
+		BIT_TANK1,
+		BIT_HOSE
+	};
 
-		if (self->evade_debounce_time > level.time || irand(0, 10) == 0)
-		{
-			SetAnim(self, ANIM_DUCKSTILL);
-			return;
-		}
+	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
+	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
+	{
+		*throw_nodes |= bit_for_mesh_node[node_id];
+		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
+
+		return true;
 	}
 
-	SetAnim(self, (SpreaderCheckUncrouch(self) ? ANIM_DUCKUP : ANIM_DUCKSTILL));
+	return false;
 }
 
-void spreader_pause(edict_t* self)
+static void SpreaderDropWeapon(edict_t* self) //mxd. Named 'spreader_dropweapon' in original logic.
 {
-	const qboolean is_fixed = (self->spawnflags & MSF_FIXED); //mxd
+	if (self->s.fmnodeinfo[BIT_BOMB].flags & FMNI_NO_DRAW)
+		return;
 
-	if (is_fixed && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
-	{
-		self->monsterinfo.searchType = SEARCH_COMMON;
-		MG_FaceGoal(self, true);
-	}
+	vec3_t right;
+	AngleVectors(self->s.angles, NULL, right, NULL);
 
-	self->mood_think(self);
+	vec3_t hand_pos = { 0 };
+	VectorMA(hand_pos, -12.0f, right, hand_pos);
 
-	switch (self->ai_mood)
-	{
-		case AI_MOOD_ATTACK:
-			QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_NAVIGATE:
-		case AI_MOOD_PURSUE:
-		case AI_MOOD_FLEE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_STAND:
-			if (self->enemy == NULL) //TODO: else what?
-				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_DELAY:
-			SetAnim(self, ANIM_DELAY);
-			break;
-
-		case AI_MOOD_WANDER:
-		case AI_MOOD_WALK:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_JUMP:
-			SetAnim(self, (is_fixed ? ANIM_DELAY : ANIM_FJUMP));
-			break;
-
-		case AI_MOOD_BACKUP:
-			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
-			break;
-
-		default:
-			break;
-	}
+	ThrowWeapon(self, &hand_pos, BIT_BOMB, 0, 0);
+	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW;
 }
+
+static void SpreaderTakeOff(edict_t* self) //mxd. Named 'spreaderTakeOff' in original logic.
+{
+	self->msgHandler = DeadMsgHandler;
+	self->isBlocked = SpreaderIsBlocked;
+	self->bounced = SpreaderIsBlocked;
+
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+	VectorMA(self->s.origin, -12.0f, forward, self->pos1);
+
+	self->pos1[2] += self->maxs[2] * 0.8f; //TODO: pos1 -> add spreader_mist_origin name.
+
+	// Create the volume effect for the damage.
+	edict_t* gas = CreateRadiusDamageEnt(self, self, 1, 0, 150.0f, 0.0f, DAMAGE_NO_BLOOD | DAMAGE_ALIVE_ONLY, 4.5f, 0.1f, NULL, self->pos1, true);
+
+	gas->svflags |= SVF_ALWAYS_SEND;
+	gas->s.effects = EF_MARCUS_FLAG1;
+
+	gi.CreateEffect(&gas->s, FX_PLAGUEMISTEXPLODE, CEF_OWNERS_ORIGIN, self->pos1, "b", 70);
+
+	gi.sound(self, CHAN_VOICE, sounds[SND_PAIN], 1.0f, ATTN_NORM, 0.0f);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1.0f, ATTN_NORM, 0.0f);
+	gi.sound(self, CHAN_AUTO, sounds[SND_BOMB], 1.0f, ATTN_NORM, 0.0f);
+
+	self->pain_debounce_time = level.time + flrand(0.4f, 0.8f); // For sound loop. //TODO: pain_debounce_time -> add spreader_spray_time name.
+
+	self->velocity[0] = 0.0f; // Not realistic, but funnier.
+	self->velocity[1] = 0.0f;
+	self->velocity[2] += 150.0f;
+
+	self->avelocity[YAW] = flrand(200.0f, 600.0f) * (float)(Q_sign(irand(-1, 0)));
+	self->movetype = PHYSICSTYPE_FLY;
+	self->svflags |= (SVF_ALWAYS_SEND | SVF_TAKE_NO_IMPACT_DMG);
+
+	SpreaderDropWeapon(self);
+	SetAnim(self, ANIM_FLY);
+}
+
+#pragma endregion
+
+#pragma region ========================== Message handlers ==========================
 
 static void SpreaderCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_check_mood' in original logic.
 {
@@ -509,57 +430,20 @@ static void SpreaderDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	gi.sound(self, CHAN_BODY, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f);
 }
 
-static qboolean SpreaderCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_ps' in original logic.
-{
-	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
-	{
-		BIT_PARENT,
-		BIT_CHILD,
-		BIT_BODY,
-		BIT_BOMB,
-		BIT_RITLEG,
-		BIT_LFTARM,
-		BIT_LFTLEG,
-		BIT_HEAD,
-		BIT_RITARM,
-		BIT_TANK3,
-		BIT_TANK2,
-		BIT_TANK1,
-		BIT_HOSE
-	};
-
-	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
-	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
-	{
-		*throw_nodes |= bit_for_mesh_node[node_id];
-		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
-
-		return true;
-	}
-
-	return false;
-}
-
-static void SpreaderDropWeapon(edict_t* self) //mxd. Named 'spreader_dropweapon' in original logic.
-{
-	if (self->s.fmnodeinfo[BIT_BOMB].flags & FMNI_NO_DRAW)
-		return;
-
-	vec3_t right;
-	AngleVectors(self->s.angles, NULL, right, NULL);
-
-	vec3_t hand_pos = { 0 };
-	VectorMA(hand_pos, -12.0f, right, hand_pos);
-
-	ThrowWeapon(self, &hand_pos, BIT_BOMB, 0, 0);
-	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW;
-}
-
 static void SpreaderDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_dead_pain' in original logic.
 {
 	if (msg != NULL && !(self->svflags & SVF_PARTS_GIBBED))
 		DismemberMsgHandler(self, msg);
 }
+
+static void SpreaderJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_jump' in original logic.
+{
+	SetAnim(self, ANIM_FJUMP);
+}
+
+#pragma endregion
+
+#pragma region ========================== Edict callbacks ===========================
 
 static qboolean SpreaderThrowHead(edict_t* self, float damage, const qboolean dismember_ok) //mxd. Added to simplify logic.
 {
@@ -799,44 +683,6 @@ static void SpreaderIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'sprea
 	self->friction = 0.8f;
 }
 
-static void SpreaderTakeOff(edict_t* self) //mxd. Named 'spreaderTakeOff' in original logic.
-{
-	self->msgHandler = DeadMsgHandler;
-	self->isBlocked = SpreaderIsBlocked;
-	self->bounced = SpreaderIsBlocked;
-
-	vec3_t forward;
-	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorMA(self->s.origin, -12.0f, forward, self->pos1);
-
-	self->pos1[2] += self->maxs[2] * 0.8f; //TODO: pos1 -> add spreader_mist_origin name.
-
-	// Create the volume effect for the damage.
-	edict_t* gas = CreateRadiusDamageEnt(self, self, 1, 0, 150.0f, 0.0f, DAMAGE_NO_BLOOD | DAMAGE_ALIVE_ONLY, 4.5f, 0.1f, NULL, self->pos1, true);
-
-	gas->svflags |= SVF_ALWAYS_SEND;
-	gas->s.effects = EF_MARCUS_FLAG1;
-
-	gi.CreateEffect(&gas->s, FX_PLAGUEMISTEXPLODE, CEF_OWNERS_ORIGIN, self->pos1, "b", 70);
-
-	gi.sound(self, CHAN_VOICE, sounds[SND_PAIN], 1.0f, ATTN_NORM, 0.0f);
-	gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1.0f, ATTN_NORM, 0.0f);
-	gi.sound(self, CHAN_AUTO, sounds[SND_BOMB], 1.0f, ATTN_NORM, 0.0f);
-
-	self->pain_debounce_time = level.time + flrand(0.4f, 0.8f); // For sound loop. //TODO: pain_debounce_time -> add spreader_spray_time name.
-
-	self->velocity[0] = 0.0f; // Not realistic, but funnier.
-	self->velocity[1] = 0.0f;
-	self->velocity[2] += 150.0f;
-
-	self->avelocity[YAW] = flrand(200.0f, 600.0f) * (float)(Q_sign(irand(-1, 0)));
-	self->movetype = PHYSICSTYPE_FLY;
-	self->svflags |= (SVF_ALWAYS_SEND | SVF_TAKE_NO_IMPACT_DMG);
-
-	SpreaderDropWeapon(self);
-	SetAnim(self, ANIM_FLY);
-}
-
 static void SpreaderSplatWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreaderSplat' in original logic.
 {
 	if (trace->ent != NULL && trace->ent->takedamage != DAMAGE_NO)
@@ -869,6 +715,190 @@ static void SpreaderSplatWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named
 	self->mass = 0; //mxd. '0.01' in original logic.
 	self->think = BecomeDebris;
 	self->nextthink = level.time + 0.01f;
+}
+
+static void SpreaderDropDownThink(edict_t* self) //mxd. Named 'spreaderDropDown' in original logic.
+{
+	self->movetype = PHYSICSTYPE_NOCLIP;
+	self->solid = SOLID_NOT;
+	self->velocity[2] = -200.0f;
+	VectorRandomSet(self->avelocity, 300.0f);
+
+	SetAnim(self, ANIM_FDIE);
+
+	self->think = M_Think;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+}
+
+#pragma endregion
+
+#pragma region ========================== Action functions ==========================
+
+void spreader_show_grenade(edict_t* self) //mxd. Named 'spreader_showgrenade' in original logic.
+{
+	if (!(self->monsterinfo.aiflags & AI_NO_MISSILE)) //FIXME: actually prevent these anims.
+		self->s.fmnodeinfo[MESH__BOMB].flags &= ~FMNI_NO_DRAW;
+}
+
+void spreader_hide_grenade(edict_t* self) //mxd. Named 'spreader_hidegrenade' in original logic.
+{
+	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW;
+	gi.sound(self, CHAN_AUTO, sounds[SND_THROW], 1.0f, ATTN_IDLE, 0.0f); //TODO: move to spreader_toss_grenade()?
+}
+
+void spreader_pain_sound(edict_t* self)
+{
+	gi.sound(self, CHAN_WEAPON, sounds[SND_PAIN], 1.0f, ATTN_NORM, 0.0f);
+}
+
+void spreader_mist_start_sound(edict_t* self) //mxd. Named 'spreader_miststartsound' in original logic.
+{
+	if (!(self->monsterinfo.aiflags & AI_NO_MELEE)) //FIXME: actually prevent these anims.
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1.0f, ATTN_IDLE, 0.0f);
+}
+
+void spreader_miststopsound(edict_t* self) //TODO: remove?
+{
+}
+
+void spreader_idle_sound(edict_t* self) //mxd. Named 'spreader_idlenoise' in original logic.
+{
+	static int sound_delay = 0;
+
+	if (irand(0, 9) < 7 && sound_delay > 0)
+		return;
+
+	if (++sound_delay >= 50)
+		sound_delay = 0;
+
+	gi.sound(self, CHAN_AUTO, sounds[irand(SND_VOICE1, SND_VOICE2)], 1.0f, ATTN_IDLE, 0.0f);
+}
+
+void spreader_flyback_loop(edict_t* self)
+{
+	SetAnim(self, ANIM_DEATH1_LOOP);
+}
+
+void spreader_flyback_move(edict_t* self)
+{
+	M_ChangeYaw(self);
+
+	vec3_t end_pos;
+	VectorCopy(self->s.origin, end_pos);
+	end_pos[2] -= 48.0f;
+
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
+
+	if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
+	{
+		if (trace.fraction < 1.0f)
+		{
+			const int fx_flags = (irand(0, 1) == 1 ? CEF_FLAG6 : 0);
+			const vec3_t bottom = { trace.endpos[0] + flrand(-4.0f, 4.0f), trace.endpos[1] + flrand(-4.0f, 4.0f), trace.endpos[2] + self->mins[2] };
+			gi.CreateEffect(NULL, FX_BLOOD_TRAIL, fx_flags, bottom, "d", trace.plane.normal);
+		}
+
+		if (self->curAnimID != ANIM_DEATH1_END && self->curAnimID != ANIM_DEATH1_GO)
+		{
+			self->elasticity = 1.1f;
+			self->friction = 0.5f;
+			SetAnim(self, ANIM_DEATH1_END);
+		}
+	}
+}
+
+void spreader_dead(edict_t* self)
+{
+	if (irand(0, 1) == 1 && self->curAnimID == ANIM_DEATH1_END)
+	{
+		const vec3_t spray_dir = { flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), flrand(10.0f, 100.0f) };
+		const vec3_t offset = { 0.0f, 0.0f, -24.0f };
+
+		//vec3_t spray_origin;
+		//VectorAdd(self->s.origin, offset, spray_origin);
+
+		// Create the volume effect for the damage.
+		edict_t* gas = CreateRadiusDamageEnt(self, self, 1, 0, 30, 1.0f, DAMAGE_NO_BLOOD | DAMAGE_ALIVE_ONLY, 4.5f, 0.2f, NULL, offset, true);
+
+		gas->svflags |= SVF_ALWAYS_SEND;
+		gas->s.effects = EF_MARCUS_FLAG1;
+
+		gi.CreateEffect(&gas->s, FX_PLAGUEMIST, CEF_OWNERS_ORIGIN, offset, "vb", spray_dir, 100); //FIXME: pass spray_origin, not offset? //TODO: test this.
+	}
+
+	M_EndDeath(self);
+}
+
+void spreader_duck_pause(edict_t* self) //mxd. Named 'spreader_duckpause' in original logic.
+{
+	if (M_ValidTarget(self, self->enemy))
+	{
+		if (M_DistanceToTarget(self, self->enemy) < 128.0f)
+		{
+			SetAnim(self, ANIM_DUCKATTACK);
+			return;
+		}
+
+		if (self->evade_debounce_time > level.time || irand(0, 10) == 0)
+		{
+			SetAnim(self, ANIM_DUCKSTILL);
+			return;
+		}
+	}
+
+	SetAnim(self, (SpreaderCheckUncrouch(self) ? ANIM_DUCKUP : ANIM_DUCKSTILL));
+}
+
+void spreader_pause(edict_t* self)
+{
+	const qboolean is_fixed = (self->spawnflags & MSF_FIXED); //mxd
+
+	if (is_fixed && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
+	{
+		self->monsterinfo.searchType = SEARCH_COMMON;
+		MG_FaceGoal(self, true);
+	}
+
+	self->mood_think(self);
+
+	switch (self->ai_mood)
+	{
+		case AI_MOOD_ATTACK:
+			QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_NAVIGATE:
+		case AI_MOOD_PURSUE:
+		case AI_MOOD_FLEE:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_STAND:
+			if (self->enemy == NULL) //TODO: else what?
+				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_DELAY:
+			SetAnim(self, ANIM_DELAY);
+			break;
+
+		case AI_MOOD_WANDER:
+		case AI_MOOD_WALK:
+			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_JUMP:
+			SetAnim(self, (is_fixed ? ANIM_DELAY : ANIM_FJUMP));
+			break;
+
+		case AI_MOOD_BACKUP:
+			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
+			break;
+
+		default:
+			break;
+	}
 }
 
 void spreader_deadloop_go(edict_t* self) //mxd. Named 'spreader_go_deadloop' in original logic.
@@ -910,19 +940,6 @@ void spreader_become_solid(edict_t* self) //mxd. Named 'spreaderSolidAgain' in o
 			VectorCopy(self->velocity, self->movedir);
 		}
 	}
-}
-
-static void SpreaderDropDownThink(edict_t* self) //mxd. Named 'spreaderDropDown' in original logic.
-{
-	self->movetype = PHYSICSTYPE_NOCLIP;
-	self->solid = SOLID_NOT;
-	self->velocity[2] = -200.0f;
-	VectorRandomSet(self->avelocity, 300.0f);
-
-	SetAnim(self, ANIM_FDIE);
-
-	self->think = M_Think;
-	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 void spreader_fly(edict_t* self) //mxd. Named 'spreaderFly' in original logic.
@@ -978,15 +995,12 @@ void spreader_jump(edict_t* self) //mxd. Named 'spreaderApplyJump' in original l
 	VectorNormalize(self->movedir);
 }
 
-static void SpreaderJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_jump' in original logic.
-{
-	SetAnim(self, ANIM_FJUMP);
-}
-
 void spreader_inair_go(edict_t* self) //mxd. Named 'spreader_go_inair' in original logic.
 {
 	SetAnim(self, ANIM_INAIR);
 }
+
+#pragma endregion
 
 void SpreaderStaticsInit(void)
 {
