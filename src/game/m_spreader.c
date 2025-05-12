@@ -81,15 +81,15 @@ void spreader_miststopsound(edict_t* self) //TODO: remove?
 {
 }
 
-void spreader_idlenoise(edict_t* self) //TODO: rename to spreader_idle_noise.
+void spreader_idle_sound(edict_t* self) //mxd. Named 'spreader_idlenoise' in original logic.
 {
-	static int delay_noise = 0;
+	static int sound_delay = 0;
 
-	if (irand(0, 9) < 7 && delay_noise > 0)
+	if (irand(0, 9) < 7 && sound_delay > 0)
 		return;
 
-	if (++delay_noise >= 50)
-		delay_noise = 0;
+	if (++sound_delay >= 50)
+		sound_delay = 0;
 
 	gi.sound(self, CHAN_AUTO, sounds[irand(SND_VOICE1, SND_VOICE2)], 1.0f, ATTN_IDLE, 0.0f);
 }

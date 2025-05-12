@@ -217,7 +217,7 @@ static const animframe_t spreader_frames_idle1[] =
 {
 	{ FRAME_idle1,	NULL, 0, 0, 0, ai_stand,	0, NULL },
 	{ FRAME_idle2,	NULL, 0, 0, 0, NULL,		0, NULL },
-	{ FRAME_idle3,	NULL, 0, 0, 0, ai_stand,	0, spreader_idlenoise },
+	{ FRAME_idle3,	NULL, 0, 0, 0, ai_stand,	0, spreader_idle_sound },
 	{ FRAME_idle4,	NULL, 0, 0, 0, NULL,		0, NULL },
 	{ FRAME_idle5,	NULL, 0, 0, 0, ai_stand,	0, NULL },
 	{ FRAME_idle6,	NULL, 0, 0, 0, NULL,		0, NULL },
@@ -336,7 +336,7 @@ const animmove_t spreader_move_rnatck1 = { 8, spreader_frames_rnatck1, spreader_
 // Spreader Walk 1 - the spreader walks.
 static const animframe_t spreader_frames_walk1[] =
 {
-	{ FRAME_walk1,	NULL, 0, 0, 0, ai_walk, 8, spreader_idlenoise },
+	{ FRAME_walk1,	NULL, 0, 0, 0, ai_walk, 8, spreader_idle_sound },
 	{ FRAME_walk2,	NULL, 0, 0, 0, ai_walk, 8, NULL },
 	{ FRAME_walk3,	NULL, 0, 0, 0, ai_walk, 8, NULL },
 	{ FRAME_walk4,	NULL, 0, 0, 0, ai_walk, 8, NULL },
@@ -420,7 +420,7 @@ static const animframe_t spreader_frames_delay[] =
 {
 	{ FRAME_idle1,	NULL, 0, 0, 0, NULL, 0, spreader_pause },
 	{ FRAME_idle2,	NULL, 0, 0, 0, NULL, 0, spreader_pause },
-	{ FRAME_idle3,	NULL, 0, 0, 0, NULL, 0, spreader_idlenoise },
+	{ FRAME_idle3,	NULL, 0, 0, 0, NULL, 0, spreader_idle_sound },
 	{ FRAME_idle4,	NULL, 0, 0, 0, NULL, 0, spreader_pause },
 	{ FRAME_idle5,	NULL, 0, 0, 0, NULL, 0, spreader_pause },
 	{ FRAME_idle6,	NULL, 0, 0, 0, NULL, 0, spreader_pause },
