@@ -561,190 +561,181 @@ static void SpreaderDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 		DismemberMsgHandler(self, msg);
 }
 
-void spreader_dismember(edict_t *self, int damage, int HitLocation)
-{//fixme: throw current weapon
-//fixme - make part fly dir the vector from hit loc to sever loc
-//remember- turn on caps!
+static qboolean SpreaderThrowHead(edict_t* self, float damage, const qboolean dismember_ok) //mxd. Added to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
+		return false;
 
-	int				throw_nodes = 0;
-	vec3_t			gore_spot, right;
-	qboolean dismember_ok = false;
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
 
-	if(HitLocation & hl_MeleeHit)
+	if (dismember_ok && flrand(0, (float)self->health) < damage * 0.3f)
 	{
-		dismember_ok = true;
-		HitLocation &= ~hl_MeleeHit;
+		int throw_nodes = 0;
+		SpreaderCanThrowNode(self, MESH__HEAD, &throw_nodes);
+
+		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
+		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+
+		Vec3AddAssign(self->s.origin, gore_spot);
+		SprayDebris(self, gore_spot, 8, damage);
+
+		if (self->health > 0)
+		{
+			self->health = 1;
+			T_Damage(self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20, 0, MOD_DIED);
+		}
+
+		return true;
 	}
 
-	if(HitLocation<1)
-		return;
+	self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_USE_SKIN;
+	self->s.fmnodeinfo[MESH__HEAD].skin = self->s.skinnum + 1;
 
-	if(HitLocation>hl_Max)
-		return;
-	
-	VectorCopy(vec3_origin,gore_spot);
-	switch(HitLocation)
+	return false;
+}
+
+static qboolean SpreaderThrowTorso(edict_t* self, float damage, const float damage_scaler, const int chance) //mxd. Added to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH__BODY].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (flrand(0, (float)self->health) < damage * damage_scaler && irand(0, chance) == 0) // One in 10 chance of the takeoff even if reqs met.
 	{
-		case hl_Head:
-			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
-			{
-				SpreaderCanThrowNode(self, MESH__HEAD,&throw_nodes);
+		// Fly straight up, hit ceiling, head squish, otherwise go though sky.
+		int throw_nodes = 0;
+		SpreaderCanThrowNode(self, MESH__TANK3, &throw_nodes);
+		SpreaderCanThrowNode(self, MESH__TANK2, &throw_nodes);
+		SpreaderCanThrowNode(self, MESH__TANK1, &throw_nodes);
+		SpreaderCanThrowNode(self, MESH__HOSE, &throw_nodes);
 
-				gore_spot[2]+=18;
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+		const vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
+		ThrowWeapon(self, &gore_spot, throw_nodes, 0, FRAME_death17);
 
-				VectorAdd(self->s.origin, gore_spot, gore_spot);
-				SprayDebris(self, gore_spot,(byte)(8),damage);
+		if (self->health > 0)
+			spreaderTakeOff(self);
 
-				if(self->health>0)
-				{
-					self->health = 1;
-					T_Damage (self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20,0,MOD_DIED);
-				}
-				return;
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__HEAD].skin = self->s.skinnum+1;
-			}
-			break;
-
-		case hl_TorsoFront://split in half?
-			if(self->s.fmnodeinfo[MESH__BODY].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0, self->health) < damage*0.3 && !irand(0,9))		// One in 10 chance of the takeoff even if reqs met.
-			{//fly straight up, hit cieling, head squish, otherwise go though sky
-				gore_spot[2]+=12;
-
-				SpreaderCanThrowNode(self, MESH__TANK3,&throw_nodes);
-				SpreaderCanThrowNode(self, MESH__TANK2,&throw_nodes);
-				SpreaderCanThrowNode(self, MESH__TANK1,&throw_nodes);
-				SpreaderCanThrowNode(self, MESH__HOSE,&throw_nodes);
-
-				ThrowWeapon(self, &gore_spot, throw_nodes, 0, FRAME_death17);
-
-				if(self->health>0)
-					spreaderTakeOff(self);
-				return;
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__BODY].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__BODY].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_TorsoBack://split in half?
-			if(self->s.fmnodeinfo[MESH__BODY].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0, self->health) < damage*0.7 && !irand(0,3))		// 25% chance of the takeoff even if reqs met..
-			{//fly straight up, hit cieling, head squish, otherwise go though sky
-				gore_spot[2]+=12;
-
-				SpreaderCanThrowNode(self, MESH__TANK3,&throw_nodes);
-				SpreaderCanThrowNode(self, MESH__TANK2,&throw_nodes);
-				SpreaderCanThrowNode(self, MESH__TANK1,&throw_nodes);
-				SpreaderCanThrowNode(self, MESH__HOSE,&throw_nodes);
-
-				ThrowWeapon(self, &gore_spot, throw_nodes, 0, FRAME_death17);
-
-				if(self->health>0)
-					spreaderTakeOff(self);
-				return;
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__BODY].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__BODY].skin = self->s.skinnum+1;
-			}
-			break;
-
-		case hl_ArmUpperLeft:
-		case hl_ArmLowerLeft://left arm
-			//what about hose?
-			if(self->s.fmnodeinfo[MESH__LFTARM].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__LFTARM].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				if(SpreaderCanThrowNode(self, MESH__LFTARM, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__LFTARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__LFTARM].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_ArmUpperRight:
-		case hl_ArmLowerRight://right arm
-			//what about grenade?
-			if(self->s.fmnodeinfo[MESH__RITARM].flags & FMNI_NO_DRAW)
-				break;
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				if(SpreaderCanThrowNode(self, MESH__RITARM, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,10,right,gore_spot);
-					SpreaderDropWeapon (self);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__RITARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__RITARM].skin = self->s.skinnum+1;
-			}
-			break;
-
-		case hl_LegUpperLeft:
-		case hl_LegLowerLeft://left leg
-			if(self->s.fmnodeinfo[MESH__LFTLEG].flags & FMNI_USE_SKIN)
-				break;
-			self->s.fmnodeinfo[MESH__LFTLEG].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH__LFTLEG].skin = self->s.skinnum+1;
-			break;
-		case hl_LegUpperRight:
-		case hl_LegLowerRight://right leg
-			if(self->s.fmnodeinfo[MESH__RITLEG].flags & FMNI_USE_SKIN)
-				break;
-			self->s.fmnodeinfo[MESH__RITLEG].flags |= FMNI_USE_SKIN;
-			self->s.fmnodeinfo[MESH__RITLEG].skin = self->s.skinnum+1;
-			break;
-
-		default:
-			if(flrand(0,self->health)<damage*0.25)
-				SpreaderDropWeapon (self);
-			break;
+		return true;
 	}
 
-	if(self->s.fmnodeinfo[MESH__LFTARM].flags&FMNI_NO_DRAW&&
-		self->s.fmnodeinfo[MESH__RITARM].flags&FMNI_NO_DRAW)			
+	self->s.fmnodeinfo[MESH__BODY].flags |= FMNI_USE_SKIN;
+	self->s.fmnodeinfo[MESH__BODY].skin = self->s.skinnum + 1;
+
+	return false;
+}
+
+static void SpreaderThrowArm(edict_t* self, float damage, const int mesh_part, const qboolean dismember_ok) //mxd. Added to simplify logic.
+{
+	if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
+		return;
+
+	const qboolean is_left_arm = (mesh_part == MESH__LFTARM); //mxd
+
+	if (is_left_arm && (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN))
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0, (float)self->health) < damage * 0.75f)
 	{
-		self->monsterinfo.aiflags |= AI_COWARD;
+		int throw_nodes = 0;
+
+		if (SpreaderCanThrowNode(self, mesh_part, &throw_nodes))
+		{
+			if (!is_left_arm)
+				SpreaderDropWeapon(self);
+
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			const float side = (is_left_arm ? -1.0f : 1.0f);
+			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
+
+			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+		}
 	}
 	else
 	{
-		if(self->s.fmnodeinfo[MESH__LFTARM].flags&FMNI_NO_DRAW)
-			self->monsterinfo.aiflags |= AI_NO_MELEE;
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+}
 
-		if(self->s.fmnodeinfo[MESH__RITARM].flags&FMNI_NO_DRAW)
-			self->monsterinfo.aiflags |= AI_NO_MISSILE;
+static void SpreaderThrowLeg(edict_t* self, const int mesh_part) //mxd. Added to simplify logic.
+{
+	if (!(self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW))
+	{
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+}
+
+static void SpreaderDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'spreader_dismember' in original logic.
+{
+	qboolean dismember_ok = false;
+
+	if (hl & hl_MeleeHit)
+	{
+		dismember_ok = true;
+		hl &= ~hl_MeleeHit;
 	}
 
-//	gi.dprintf(" done\n");
+	if (hl <= hl_NoneSpecific || hl >= hl_Max) //mxd. '> hl_Max' in original logic.
+		return;
+
+	switch (hl)
+	{
+		case hl_Head:
+			if (SpreaderThrowHead(self, (float)damage, dismember_ok))
+				return;
+			break;
+
+		case hl_TorsoFront: // Split in half?
+			if (SpreaderThrowTorso(self, (float)damage, 0.3f, 9)) // One in 10 chance of the takeoff even if requirements are met.
+				return;
+			break;
+
+		case hl_TorsoBack: // Split in half?
+			if (SpreaderThrowTorso(self, (float)damage, 0.7f, 3)) // 25% chance of the takeoff even if requirements are met.
+				return;
+			break;
+
+		case hl_ArmUpperLeft: // Left arm. //FIXME: what about hose?
+		case hl_ArmLowerLeft:
+			SpreaderThrowArm(self, (float)damage, MESH__LFTARM, dismember_ok); //mxd
+			break;
+
+		case hl_ArmUpperRight: // Right arm. //FIXME: what about grenade?
+		case hl_ArmLowerRight:
+			SpreaderThrowArm(self, (float)damage, MESH__RITARM, dismember_ok); //mxd
+			break;
+
+		case hl_LegUpperLeft: // Left leg.
+		case hl_LegLowerLeft:
+			SpreaderThrowLeg(self, MESH__LFTLEG); //mxd
+			break;
+
+		case hl_LegUpperRight: // Right leg.
+		case hl_LegLowerRight:
+			SpreaderThrowLeg(self, MESH__RITLEG); //mxd
+			break;
+
+		default:
+			if (flrand(0, (float)self->health) < (float)damage * 0.25f)
+				SpreaderDropWeapon(self);
+			break;
+	}
+
+	if ((self->s.fmnodeinfo[MESH__LFTARM].flags & FMNI_NO_DRAW) && (self->s.fmnodeinfo[MESH__RITARM].flags & FMNI_NO_DRAW))
+	{
+		self->monsterinfo.aiflags |= AI_COWARD;
+		return;
+	}
+
+	if (self->s.fmnodeinfo[MESH__LFTARM].flags & FMNI_NO_DRAW)
+		self->monsterinfo.aiflags |= AI_NO_MELEE;
+
+	if (self->s.fmnodeinfo[MESH__RITARM].flags & FMNI_NO_DRAW)
+		self->monsterinfo.aiflags |= AI_NO_MISSILE;
 }
 
 void spreader_stop (edict_t *self, trace_t *trace)
@@ -1135,7 +1126,7 @@ void SP_monster_spreader (edict_t *self)
 		
 	self->msgHandler = DefaultMsgHandler;
 	self->think = M_WalkmonsterStartGo;
-	self->monsterinfo.dismember = spreader_dismember;
+	self->monsterinfo.dismember = SpreaderDismember;
 
 	if (!self->health)
 		self->health = SPREADER_HEALTH;
