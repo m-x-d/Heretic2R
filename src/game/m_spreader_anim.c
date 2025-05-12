@@ -413,7 +413,7 @@ static const animframe_t spreader_frames_fdie[] =
 	{ FRAME_deathb16,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
 	{ FRAME_deathb17,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
 };
-const animmove_t spreader_move_fdie = { 14, spreader_frames_fdie, spreader_go_deadloop };
+const animmove_t spreader_move_fdie = { 14, spreader_frames_fdie, spreader_deadloop_go };
 
 // Spreader Delay.
 static const animframe_t spreader_frames_delay[] =

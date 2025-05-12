@@ -871,7 +871,7 @@ static void SpreaderSplatWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named
 	self->nextthink = level.time + 0.01f;
 }
 
-void spreader_go_deadloop(edict_t* self) //TODO: rename to spreader_deadloop_go.
+void spreader_deadloop_go(edict_t* self) //mxd. Named 'spreader_go_deadloop' in original logic.
 {
 	SetAnim(self, ANIM_DEAD);
 }
