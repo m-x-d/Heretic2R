@@ -509,21 +509,34 @@ static void SpreaderDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	gi.sound(self, CHAN_BODY, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*---------------------------------------------------------------
-
-	MG STUFF
-
----------------------------------------------------------------*/
-
-qboolean canthrownode_ps (edict_t *self, int BP, int *throw_nodes)
-{//see if it's on, if so, add it to throw_nodes
-	//turn it off on thrower
-	if(!(self->s.fmnodeinfo[BP].flags & FMNI_NO_DRAW))
+static qboolean SpreaderCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_ps' in original logic.
+{
+	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
 	{
-		*throw_nodes |= Bit_for_MeshNode_ps[BP];
-		self->s.fmnodeinfo[BP].flags |= FMNI_NO_DRAW;
+		BIT_PARENT,
+		BIT_CHILD,
+		BIT_BODY,
+		BIT_BOMB,
+		BIT_RITLEG,
+		BIT_LFTARM,
+		BIT_LFTLEG,
+		BIT_HEAD,
+		BIT_RITARM,
+		BIT_TANK3,
+		BIT_TANK2,
+		BIT_TANK1,
+		BIT_HOSE
+	};
+
+	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
+	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
+	{
+		*throw_nodes |= bit_for_mesh_node[node_id];
+		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
+
 		return true;
 	}
+
 	return false;
 }
 
@@ -580,7 +593,7 @@ void spreader_dismember(edict_t *self, int damage, int HitLocation)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
 			{
-				canthrownode_ps(self, MESH__HEAD,&throw_nodes);
+				SpreaderCanThrowNode(self, MESH__HEAD,&throw_nodes);
 
 				gore_spot[2]+=18;
 				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
@@ -609,10 +622,10 @@ void spreader_dismember(edict_t *self, int damage, int HitLocation)
 			{//fly straight up, hit cieling, head squish, otherwise go though sky
 				gore_spot[2]+=12;
 
-				canthrownode_ps(self, MESH__TANK3,&throw_nodes);
-				canthrownode_ps(self, MESH__TANK2,&throw_nodes);
-				canthrownode_ps(self, MESH__TANK1,&throw_nodes);
-				canthrownode_ps(self, MESH__HOSE,&throw_nodes);
+				SpreaderCanThrowNode(self, MESH__TANK3,&throw_nodes);
+				SpreaderCanThrowNode(self, MESH__TANK2,&throw_nodes);
+				SpreaderCanThrowNode(self, MESH__TANK1,&throw_nodes);
+				SpreaderCanThrowNode(self, MESH__HOSE,&throw_nodes);
 
 				ThrowWeapon(self, &gore_spot, throw_nodes, 0, FRAME_death17);
 
@@ -633,10 +646,10 @@ void spreader_dismember(edict_t *self, int damage, int HitLocation)
 			{//fly straight up, hit cieling, head squish, otherwise go though sky
 				gore_spot[2]+=12;
 
-				canthrownode_ps(self, MESH__TANK3,&throw_nodes);
-				canthrownode_ps(self, MESH__TANK2,&throw_nodes);
-				canthrownode_ps(self, MESH__TANK1,&throw_nodes);
-				canthrownode_ps(self, MESH__HOSE,&throw_nodes);
+				SpreaderCanThrowNode(self, MESH__TANK3,&throw_nodes);
+				SpreaderCanThrowNode(self, MESH__TANK2,&throw_nodes);
+				SpreaderCanThrowNode(self, MESH__TANK1,&throw_nodes);
+				SpreaderCanThrowNode(self, MESH__HOSE,&throw_nodes);
 
 				ThrowWeapon(self, &gore_spot, throw_nodes, 0, FRAME_death17);
 
@@ -660,7 +673,7 @@ void spreader_dismember(edict_t *self, int damage, int HitLocation)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				if(canthrownode_ps(self, MESH__LFTARM, &throw_nodes))
+				if(SpreaderCanThrowNode(self, MESH__LFTARM, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -681,7 +694,7 @@ void spreader_dismember(edict_t *self, int damage, int HitLocation)
 				break;
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				if(canthrownode_ps(self, MESH__RITARM, &throw_nodes))
+				if(SpreaderCanThrowNode(self, MESH__RITARM, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;

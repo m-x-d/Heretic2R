@@ -57,37 +57,6 @@ typedef enum SoundID_e
 	NUM_SOUNDS
 } SoundID_t;
 
-#define BIT_PARENT		0
-#define BIT_CHILD		1
-#define BIT_BODY		2
-#define BIT_BOMB		4
-#define BIT_RITLEG		8
-#define BIT_LFTARM		16
-#define BIT_LFTLEG		32
-#define BIT_HEAD		64
-#define BIT_RITARM		128
-#define BIT_TANK3		256
-#define BIT_TANK2		512
-#define BIT_TANK1		1024
-#define BIT_HOSE		2048
-
-static int Bit_for_MeshNode_ps[13] =
-{
-	BIT_PARENT,
-	BIT_CHILD,
-	BIT_BODY,
-	BIT_BOMB,
-	BIT_RITLEG,
-	BIT_LFTARM,
-	BIT_LFTLEG,
-	BIT_HEAD,
-	BIT_RITARM,
-	BIT_TANK3,
-	BIT_TANK2,
-	BIT_TANK1,
-	BIT_HOSE
-};
-
 extern const animmove_t spreader_move_attack1;
 extern const animmove_t spreader_move_attack2;
 extern const animmove_t spreader_move_backup1;
@@ -140,3 +109,17 @@ extern void spreader_hidegrenade(edict_t* self);
 extern void spreaderApplyJump(edict_t* self);
 extern void spreader_land(edict_t* self);
 extern void spreader_go_inair(edict_t* self);
+
+#define BIT_PARENT		0
+#define BIT_CHILD		1
+#define BIT_BODY		2
+#define BIT_BOMB		4
+#define BIT_RITLEG		8
+#define BIT_LFTARM		16
+#define BIT_LFTLEG		32
+#define BIT_HEAD		64
+#define BIT_RITARM		128
+#define BIT_TANK3		256
+#define BIT_TANK2		512
+#define BIT_TANK1		1024
+#define BIT_HOSE		2048
