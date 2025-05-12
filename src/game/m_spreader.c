@@ -404,11 +404,11 @@ static void SpreaderMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 		SetAnim(self, ANIM_ATTACK1);
 }
 
-void spreader_fallback(edict_t *self, G_Message_t *msg)
+static void SpreaderFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_fallback' in original logic.
 {
-	if(self->spawnflags&MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
 		SetAnim(self, ANIM_DELAY);
-	else if(!(self->monsterinfo.aiflags & AI_NO_MELEE))
+	else if (!(self->monsterinfo.aiflags & AI_NO_MELEE))
 		SetAnim(self, ANIM_BACKATTACK);
 	else
 		SetAnim(self, ANIM_BACKUP);
@@ -1110,7 +1110,7 @@ void SpreaderStaticsInit(void)
 	classStatics[CID_SPREADER].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_JUMP] = spreader_jump;
 	classStatics[CID_SPREADER].msgReceivers[MSG_EVADE] = spreader_evade;
-	classStatics[CID_SPREADER].msgReceivers[MSG_FALLBACK] = spreader_fallback;
+	classStatics[CID_SPREADER].msgReceivers[MSG_FALLBACK] = SpreaderFallbackMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH] = spreader_death;
 	classStatics[CID_SPREADER].msgReceivers[MSG_PAIN] = SpreaderPainMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH_PAIN] = spreader_dead_pain;
