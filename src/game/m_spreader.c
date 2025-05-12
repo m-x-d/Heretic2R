@@ -263,25 +263,19 @@ static void SpreaderCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 	spreader_pause(self);
 }
 
-/*==========================================================================
-
-	SPREADER MESSAGE FUNCTIONS
-
-==========================================================================*/
-
-void spreader_pain(edict_t *self, G_Message_t *msg)
+static void SpreaderPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_pain' in original logic.
 {
-	int				temp, damage;
-	qboolean		force_pain;
-	
+	int temp;
+	int damage;
+	qboolean force_pain;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
-	//Weighted random based on health compared to the maximum it was at
-	if (force_pain||((flrand(0, self->max_health+50) > self->health) && irand(0,2)))
+	// Weighted random based on health compared to the maximum it was at.
+	if (force_pain || (irand(0, self->max_health + 50) > self->health && irand(0, 2) != 0)) //mxd. flrand() in original logic.
 	{
-		gi.sound (self, CHAN_BODY, sounds[SND_PAIN], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_BODY, sounds[SND_PAIN], 1.0f, ATTN_NORM, 0.0f);
 		SetAnim(self, ANIM_PAIN1);
-	}	
+	}
 }
 
 void spreader_stand(edict_t *self, G_Message_t *msg)
@@ -1156,7 +1150,7 @@ void SpreaderStaticsInit(void)
 	classStatics[CID_SPREADER].msgReceivers[MSG_EVADE] = spreader_evade;
 	classStatics[CID_SPREADER].msgReceivers[MSG_FALLBACK] = spreader_fallback;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH] = spreader_death;
-	classStatics[CID_SPREADER].msgReceivers[MSG_PAIN] = spreader_pain;
+	classStatics[CID_SPREADER].msgReceivers[MSG_PAIN] = SpreaderPainMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH_PAIN] = spreader_dead_pain;
 	classStatics[CID_SPREADER].msgReceivers[MSG_CHECK_MOOD] = SpreaderCheckMoodMsgHandler;
 
