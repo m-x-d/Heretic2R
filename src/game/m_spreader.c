@@ -971,7 +971,7 @@ void spreader_land(edict_t* self)
 	gi.CreateEffect(&self->s, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
 }
 
-void spreaderApplyJump(edict_t* self) //TODO: rename to spreader_jump.
+void spreader_jump(edict_t* self) //mxd. Named 'spreaderApplyJump' in original logic.
 {
 	self->jump_time = level.time + 0.5f;
 	VectorCopy(self->movedir, self->velocity);

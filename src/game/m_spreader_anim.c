@@ -307,7 +307,7 @@ static const animframe_t spreader_frames_fjump[] =
 	{ FRAME_jump4,	NULL, 0, 0, 0, NULL, 0, NULL }, // Foot down.
 	{ FRAME_jump5,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump6,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_jump7,	NULL, 0, 0, 0, NULL, 0, spreaderApplyJump },
+	{ FRAME_jump7,	NULL, 0, 0, 0, NULL, 0, spreader_jump },
 	{ FRAME_jump8,	NULL, 0, 0, 0, NULL, 0, NULL }, // Foot down.
 	{ FRAME_jump9,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump10,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
