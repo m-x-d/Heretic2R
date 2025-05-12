@@ -876,7 +876,7 @@ void spreader_deadloop_go(edict_t* self) //mxd. Named 'spreader_go_deadloop' in 
 	SetAnim(self, ANIM_DEAD);
 }
 
-void spreaderSolidAgain(edict_t* self) //TODO: rename to spreader_become_solid.
+void spreader_become_solid(edict_t* self) //mxd. Named 'spreaderSolidAgain' in original logic.
 {
 	vec3_t org;
 	VectorCopy(self->s.origin, org);

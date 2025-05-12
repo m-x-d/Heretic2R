@@ -90,7 +90,7 @@ extern const animmove_t spreader_move_delay;
 extern void spreaderFly(edict_t* self);
 extern void spreaderFlyLoop(edict_t* self);
 extern void spreader_deadloop_go(edict_t* self);
-extern void spreaderSolidAgain(edict_t* self);
+extern void spreader_become_solid(edict_t* self);
 
 extern void spreader_pause(edict_t* self);
 extern void spreader_duck_pause(edict_t* self);

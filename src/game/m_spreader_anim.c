@@ -391,27 +391,27 @@ const animmove_t spreader_move_fly = { 4, spreader_frames_fly, spreaderFlyLoop }
 // Spreader Dead.
 static const animframe_t spreader_frames_dead[] =
 {
-	{ FRAME_deathb17,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
+	{ FRAME_deathb17,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
 };
 const animmove_t spreader_move_dead = { 1, spreader_frames_dead, NULL };
 
 // Spreader Die.
 static const animframe_t spreader_frames_fdie[] =
 {
-	{ FRAME_deathb1,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb2,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb3,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb4,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb6,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb7,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb9,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb10,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb11,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb12,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb13,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb14,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb16,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
-	{ FRAME_deathb17,	NULL, 0, 0, 0, NULL, 0, spreaderSolidAgain },
+	{ FRAME_deathb1,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb2,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb3,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb4,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb6,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb7,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb9,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb10,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb11,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb12,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb13,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb14,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb16,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
+	{ FRAME_deathb17,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
 };
 const animmove_t spreader_move_fdie = { 14, spreader_frames_fdie, spreader_deadloop_go };
 
