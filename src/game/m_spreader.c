@@ -960,7 +960,7 @@ void spreader_fly(edict_t* self) //mxd. Named 'spreaderFly' in original logic.
 	}
 }
 
-void spreaderFlyLoop(edict_t* self) //TODO: rename to spreader_fly_loop.
+void spreader_fly_loop(edict_t* self) //mxd. Named 'spreaderFlyLoop' in original logic.
 {
 	SetAnim(self, ANIM_FLYLOOP);
 }

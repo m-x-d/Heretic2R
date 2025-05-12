@@ -386,7 +386,7 @@ static const animframe_t spreader_frames_fly[] =
 	{ FRAME_pain3,	NULL, 0, 0, 0, NULL, 0, spreader_fly },
 	{ FRAME_pain4,	NULL, 0, 0, 0, NULL, 0, spreader_fly },
 };
-const animmove_t spreader_move_fly = { 4, spreader_frames_fly, spreaderFlyLoop };
+const animmove_t spreader_move_fly = { 4, spreader_frames_fly, spreader_fly_loop };
 
 // Spreader Dead.
 static const animframe_t spreader_frames_dead[] =
