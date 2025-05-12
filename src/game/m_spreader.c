@@ -971,19 +971,19 @@ void spreader_land(edict_t* self)
 	gi.CreateEffect(&self->s, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
 }
 
-void spreaderApplyJump (edict_t *self)
+void spreaderApplyJump(edict_t* self) //TODO: rename to spreader_jump.
 {
-	self->jump_time = level.time + 0.5;
+	self->jump_time = level.time + 0.5f;
 	VectorCopy(self->movedir, self->velocity);
 	VectorNormalize(self->movedir);
 }
 
-void spreader_jump (edict_t *self, G_Message_t *msg)
+static void SpreaderJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_jump' in original logic.
 {
 	SetAnim(self, ANIM_FJUMP);
 }
 
-void spreader_go_inair (edict_t *self)
+void spreader_go_inair(edict_t* self) //TODO: rename to spreader_inair_go.
 {
 	SetAnim(self, ANIM_INAIR);
 }
@@ -1008,7 +1008,7 @@ void SpreaderStaticsInit(void)
 	classStatics[CID_SPREADER].msgReceivers[MSG_MELEE] = SpreaderMeleeMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_MISSILE] = SpreaderMissileMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
-	classStatics[CID_SPREADER].msgReceivers[MSG_JUMP] = spreader_jump;
+	classStatics[CID_SPREADER].msgReceivers[MSG_JUMP] = SpreaderJumpMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_EVADE] = SpreaderEvadeMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_FALLBACK] = SpreaderFallbackMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH] = SpreaderDeathMsgHandler;
