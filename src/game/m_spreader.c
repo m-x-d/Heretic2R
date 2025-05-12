@@ -540,18 +540,18 @@ static qboolean SpreaderCanThrowNode(edict_t* self, const int node_id, int* thro
 	return false;
 }
 
-void spreader_dropweapon (edict_t *self)
-{//NO PART FLY FRAME!
-	vec3_t handspot, right;
-
-	AngleVectors(self->s.angles,NULL,right,NULL);
-
-	if(self->s.fmnodeinfo[BIT_BOMB].flags & FMNI_NO_DRAW)
+static void SpreaderDropWeapon(edict_t* self) //mxd. Named 'spreader_dropweapon' in original logic.
+{
+	if (self->s.fmnodeinfo[BIT_BOMB].flags & FMNI_NO_DRAW)
 		return;
 
-	VectorClear(handspot);
-	VectorMA(handspot, -12, right, handspot);
-	ThrowWeapon(self, &handspot, BIT_BOMB, 0, 0);
+	vec3_t right;
+	AngleVectors(self->s.angles, NULL, right, NULL);
+
+	vec3_t hand_pos = { 0 };
+	VectorMA(hand_pos, -12.0f, right, hand_pos);
+
+	ThrowWeapon(self, &hand_pos, BIT_BOMB, 0, 0);
 	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW;
 }
 
@@ -699,7 +699,7 @@ void spreader_dismember(edict_t *self, int damage, int HitLocation)
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,10,right,gore_spot);
-					spreader_dropweapon (self);
+					SpreaderDropWeapon (self);
 					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
 				}
 			}
@@ -727,7 +727,7 @@ void spreader_dismember(edict_t *self, int damage, int HitLocation)
 
 		default:
 			if(flrand(0,self->health)<damage*0.25)
-				spreader_dropweapon (self);
+				SpreaderDropWeapon (self);
 			break;
 	}
 
@@ -856,7 +856,7 @@ void spreaderTakeOff (edict_t *self)
 	self->movetype = PHYSICSTYPE_FLY;
 	self->svflags |= SVF_ALWAYS_SEND;
 
-	spreader_dropweapon (self);
+	SpreaderDropWeapon (self);
 
 	self->svflags |= SVF_TAKE_NO_IMPACT_DMG;
 
