@@ -555,11 +555,10 @@ static void SpreaderDropWeapon(edict_t* self) //mxd. Named 'spreader_dropweapon'
 	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW;
 }
 
-void spreader_dead_pain (edict_t *self, G_Message_t *msg)
+static void SpreaderDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_dead_pain' in original logic.
 {
-	if(msg)
-		if(!(self->svflags & SVF_PARTS_GIBBED))
-			DismemberMsgHandler(self, msg);
+	if (msg != NULL && !(self->svflags & SVF_PARTS_GIBBED))
+		DismemberMsgHandler(self, msg);
 }
 
 void spreader_dismember(edict_t *self, int damage, int HitLocation)
@@ -1048,7 +1047,7 @@ void SpreaderStaticsInit(void)
 	classStatics[CID_SPREADER].msgReceivers[MSG_FALLBACK] = SpreaderFallbackMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH] = SpreaderDeathMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_PAIN] = SpreaderPainMsgHandler;
-	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH_PAIN] = spreader_dead_pain;
+	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH_PAIN] = SpreaderDeathPainMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_CHECK_MOOD] = SpreaderCheckMoodMsgHandler;
 
 	sounds[SND_SPRAYSTART]	= gi.soundindex("monsters/spreader/spraystart.wav");
