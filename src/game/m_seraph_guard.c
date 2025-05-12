@@ -933,7 +933,7 @@ void SeraphGuardStaticsInit(void)
 // Spawnflags:
 // AMBUSH		- Will not be woken up by other monsters or shots from player.
 // ASLEEP		- Will not appear until triggered.
-// GOLEM		- 
+// GOLEM		- Engage statue mode.
 // WALKING		- Use WANDER instead.
 // WANDER		- Monster will wander around aimlessly (but follows buoys).
 // MELEE_LEAD	- Monster will try to cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not.
