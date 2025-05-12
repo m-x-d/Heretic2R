@@ -94,10 +94,10 @@ void spreader_idlenoise(edict_t* self) //TODO: rename to spreader_idle_noise.
 	gi.sound(self, CHAN_AUTO, sounds[irand(SND_VOICE1, SND_VOICE2)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void spreader_hidegrenade(edict_t *self)
+void spreader_hidegrenade(edict_t* self) //TODO: rename to spreader_hide_grenade.
 {
 	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW;
-	gi.sound(self, CHAN_AUTO, sounds[SND_THROW], 1, ATTN_IDLE, 0);
+	gi.sound(self, CHAN_AUTO, sounds[SND_THROW], 1.0f, ATTN_IDLE, 0.0f); //TODO: move to spreader_toss_grenade()?
 }
 
 void spreader_flyback_loop(edict_t *self)
