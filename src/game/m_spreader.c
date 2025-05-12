@@ -300,80 +300,55 @@ static void SpreaderWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_WALK1));
 }
 
-void spreader_melee(edict_t *self, G_Message_t *msg)
+static void SpreaderMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_melee' in original logic.
 {
-	int		chance;
-	float	dist;
-	
-	chance = irand(0, 100);
-
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		if(self->spawnflags&MSF_FIXED)
+		SetAnim(self, ANIM_IDLE1);
+		return;
+	}
+
+	const int chance = irand(0, 100);
+
+	if (self->spawnflags & MSF_FIXED)
+	{
+		SetAnim(self, ((chance < 50) ? ANIM_DUCKDOWN : ANIM_DELAY));
+		return;
+	}
+
+	if (M_DistanceToTarget(self, self->enemy) < 64.0f)
+	{
+		// Bumped into player? Knock him down.
+		if (self->curAnimID == ANIM_RUNATTACK && self->enemy->health > 0 && self->enemy->client != NULL && self->enemy->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
+			if (irand(0, 2) == 0 && AI_IsInfrontOf(self->enemy, self))
+				P_KnockDownPlayer(&self->enemy->client->playerinfo);
+
+		if (self->curAnimID == ANIM_RUNATTACK || (self->curAnimID == ANIM_RUN1 && self->s.frame > FRAME_run1))
 		{
-			if(chance<50)
+			if (chance < 40)
 				SetAnim(self, ANIM_DUCKDOWN);
 			else
-				SetAnim(self, ANIM_DELAY);
-			return;
-		}
-
-		dist = M_DistanceToTarget(self, self->enemy);
-
-		if (dist < 64)
-		{
-			if(self->curAnimID == ANIM_RUNATTACK)
-			{//bumped into player, knock him down
-				if(self->enemy->health>0)
-				{
-					if(self->enemy->client)
-					{
-						if(!irand(0, 2))
-						{
-							if(self->enemy->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
-							{
-								if(AI_IsInfrontOf(self->enemy, self))
-								{
-									P_KnockDownPlayer(&self->enemy->client->playerinfo);
-								}
-							}
-						}
-					}
-				}
-			}
-			
-			if(self->curAnimID == ANIM_RUNATTACK || (self->curAnimID == ANIM_RUN1 && self->s.frame > FRAME_run1))
-			{
-				if (chance < 40)
-					SetAnim(self, ANIM_DUCKDOWN);
-				else
-					SetAnim(self, ANIM_ATTACK2);
-				return;
-			}
-
-			if (irand(0,1) && !(self->monsterinfo.aiflags & AI_NO_MELEE))
-			{
-				SetAnim(self, ANIM_BACKATTACK);
-			}
-			else
-				SetAnim(self, ANIM_BACKUP);
+				SetAnim(self, ANIM_ATTACK2);
 		}
 		else
 		{
-			if (chance < 20)
-				SetAnim(self, ANIM_BACKUP);
-			else if (chance < 40)
-				SetAnim(self, ANIM_DUCKDOWN);
-			else if (chance < 60 || (self->monsterinfo.aiflags & AI_NO_MELEE))
-				SetAnim(self, ANIM_RUN1);
+			if (irand(0, 1) == 1 && !(self->monsterinfo.aiflags & AI_NO_MELEE))
+				SetAnim(self, ANIM_BACKATTACK);
 			else
-				SetAnim(self, ANIM_ATTACK2);
+				SetAnim(self, ANIM_BACKUP);
 		}
 
 		return;
 	}
-	
-	SetAnim(self, ANIM_IDLE1);
+
+	if (chance < 20)
+		SetAnim(self, ANIM_BACKUP);
+	else if (chance < 40)
+		SetAnim(self, ANIM_DUCKDOWN);
+	else if (chance < 60 || (self->monsterinfo.aiflags & AI_NO_MELEE))
+		SetAnim(self, ANIM_RUN1);
+	else
+		SetAnim(self, ANIM_ATTACK2);
 }
 
 void spreader_missile(edict_t *self, G_Message_t *msg)
@@ -1131,7 +1106,7 @@ void SpreaderStaticsInit(void)
 	classStatics[CID_SPREADER].msgReceivers[MSG_STAND] = SpreaderStandMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_RUN] = SpreaderRunMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_WALK] = SpreaderWalkMsgHandler;
-	classStatics[CID_SPREADER].msgReceivers[MSG_MELEE] = spreader_melee;
+	classStatics[CID_SPREADER].msgReceivers[MSG_MELEE] = SpreaderMeleeMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_MISSILE] = spreader_missile;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_JUMP] = spreader_jump;
