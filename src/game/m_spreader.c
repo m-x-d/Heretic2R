@@ -925,7 +925,7 @@ static void SpreaderDropDownThink(edict_t* self) //mxd. Named 'spreaderDropDown'
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-void spreaderFly(edict_t* self) //TODO: rename to spreader_fly.
+void spreader_fly(edict_t* self) //mxd. Named 'spreaderFly' in original logic.
 {
 	if (self->pain_debounce_time <= level.time)
 	{

@@ -374,17 +374,17 @@ const animmove_t spreader_move_walk2 = { 13, spreader_frames_walk2, spreader_pau
 // Spreader Fly Loop.
 static const animframe_t spreader_frames_flyloop[] =
 {
-	{ FRAME_pain5,	NULL, 0, 0, 0, NULL, 0, spreaderFly },
+	{ FRAME_pain5,	NULL, 0, 0, 0, NULL, 0, spreader_fly },
 };
 const animmove_t spreader_move_flyloop = { 1, spreader_frames_flyloop, NULL };
 
 // Spreader Fly.
 static const animframe_t spreader_frames_fly[] =
 {
-	{ FRAME_pain1,	NULL, 0, 0, 0, NULL, 0, spreaderFly },
-	{ FRAME_pain2,	NULL, 0, 0, 0, NULL, 0, spreaderFly },
-	{ FRAME_pain3,	NULL, 0, 0, 0, NULL, 0, spreaderFly },
-	{ FRAME_pain4,	NULL, 0, 0, 0, NULL, 0, spreaderFly },
+	{ FRAME_pain1,	NULL, 0, 0, 0, NULL, 0, spreader_fly },
+	{ FRAME_pain2,	NULL, 0, 0, 0, NULL, 0, spreader_fly },
+	{ FRAME_pain3,	NULL, 0, 0, 0, NULL, 0, spreader_fly },
+	{ FRAME_pain4,	NULL, 0, 0, 0, NULL, 0, spreader_fly },
 };
 const animmove_t spreader_move_fly = { 4, spreader_frames_fly, spreaderFlyLoop };
 
