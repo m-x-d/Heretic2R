@@ -983,7 +983,7 @@ static void SpreaderJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	SetAnim(self, ANIM_FJUMP);
 }
 
-void spreader_go_inair(edict_t* self) //TODO: rename to spreader_inair_go.
+void spreader_inair_go(edict_t* self) //mxd. Named 'spreader_go_inair' in original logic.
 {
 	SetAnim(self, ANIM_INAIR);
 }

@@ -107,7 +107,7 @@ extern void spreader_idle_sound(edict_t* self);
 extern void spreader_hide_grenade(edict_t* self);
 extern void spreader_jump(edict_t* self);
 extern void spreader_land(edict_t* self);
-extern void spreader_go_inair(edict_t* self);
+extern void spreader_inair_go(edict_t* self);
 
 #define BIT_PARENT		0
 #define BIT_CHILD		1

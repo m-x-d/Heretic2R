@@ -317,7 +317,7 @@ static const animframe_t spreader_frames_fjump[] =
 	{ FRAME_jump14,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump15,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t spreader_move_fjump = { 15, spreader_frames_fjump, spreader_go_inair };
+const animmove_t spreader_move_fjump = { 15, spreader_frames_fjump, spreader_inair_go };
 
 // Spreader Run Attack 1 - the spreader runs and shoots.
 static const animframe_t spreader_frames_rnatck1[] =
