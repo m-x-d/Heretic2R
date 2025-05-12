@@ -757,7 +757,7 @@ void spreader_mist_start_sound(edict_t* self) //mxd. Named 'spreader_miststartso
 		gi.sound(self, CHAN_WEAPON, sounds[SND_SPRAYSTART], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void spreader_miststopsound(edict_t* self) //TODO: remove?
+void spreader_mist_stop_sound(edict_t* self) //mxd. Named 'spreader_miststopsound' in original logic. //TODO: remove?
 {
 }
 

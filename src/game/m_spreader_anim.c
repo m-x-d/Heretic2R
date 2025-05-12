@@ -50,7 +50,7 @@ static const animframe_t spreader_frames_attack2[] =
 	{ FRAME_atackb9,	spreader_mist, 6.23f,  -14.4f,  16.0f,  ai_charge2, 0, NULL },
 	{ FRAME_atackb10,	spreader_mist, 12.85f, -4.18f,  16.0f,  ai_charge2, 0, NULL },
 	{ FRAME_atackb11,	spreader_mist, 13.88f,  10.8f,  16.36f, ai_charge2, 0, NULL },
-	{ FRAME_atackb12,	spreader_mist, 7.11f,   23.19f, 16.81f, ai_charge2, 0, spreader_miststopsound },
+	{ FRAME_atackb12,	spreader_mist, 7.11f,   23.19f, 16.81f, ai_charge2, 0, spreader_mist_stop_sound },
 	{ FRAME_atackb13,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atackb14,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
@@ -71,7 +71,7 @@ static const animframe_t spreader_frames_backattack1[] =
 	{ FRAME_bkatck10,	spreader_mist, 13.58f, 9.65f,  16.0f, MG_AI_Run, -5, NULL },
 	{ FRAME_bkatck11,	spreader_mist, 13.82f, 9.82f,  16.0f, MG_AI_Run, -5, NULL },
 	{ FRAME_bkatck12,	spreader_mist, 14.2f,  10.06f, 16.0f, MG_AI_Run, -5, NULL },
-	{ FRAME_bkatck13,	spreader_mist, 14.47f, 10.38f, 16.0f, MG_AI_Run, -5, spreader_miststopsound },
+	{ FRAME_bkatck13,	spreader_mist, 14.47f, 10.38f, 16.0f, MG_AI_Run, -5, spreader_mist_stop_sound },
 };
 const animmove_t spreader_move_backattack1 = { 13, spreader_frames_backattack1, spreader_pause };
 
@@ -155,7 +155,7 @@ static const animframe_t spreader_frames_dkatck1[] =
 	{ FRAME_dkatck_1,	spreader_mist, 21.39f,  11.26f, -16.0f, ai_move, 0, spreader_mist_start_sound },
 	{ FRAME_dkatck_2,	spreader_mist, 12.08f,  24.16f, -16.0f, ai_move, 0, NULL },
 	{ FRAME_dkatck_3,	spreader_mist, 26.14f,  1.26f,  -16.0f, ai_move, 0, NULL },
-	{ FRAME_dkatck_4,	spreader_mist, 26.65f, -0.43f,  -16.0f, ai_move, 0, spreader_miststopsound },
+	{ FRAME_dkatck_4,	spreader_mist, 26.65f, -0.43f,  -16.0f, ai_move, 0, spreader_mist_stop_sound },
 	{ FRAME_dkatck_5,	NULL, 0, 0, 0, ai_move, 0, NULL },
 	{ FRAME_dkatck_6,	NULL, 0, 0, 0, ai_move, 0, NULL },
 };
