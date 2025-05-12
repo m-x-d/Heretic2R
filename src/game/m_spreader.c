@@ -837,39 +837,38 @@ static void SpreaderTakeOff(edict_t* self) //mxd. Named 'spreaderTakeOff' in ori
 	SetAnim(self, ANIM_FLY);
 }
 
-void spreaderSplat (edict_t *self, trace_t *trace)//, edict_s *other, cplane_s *plane, csurface_s *surf)/*(edict_t *self, trace_t *trace)*/
+static void SpreaderSplatWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreaderSplat' in original logic.
 {
-	vec3_t dir;
-	float speed;
-
-	if(trace->ent)
+	if (trace->ent != NULL && trace->ent->takedamage != DAMAGE_NO)
 	{
-		if(trace->ent->takedamage)
+		vec3_t dir;
+		int damage;
+
+		if (Vec3IsZero(self->velocity))
 		{
-			if(Vec3IsZero(self->velocity))
-				VectorSet(dir, 0, 0, 1);
-			else
-			{
-				VectorCopy(self->velocity, dir);
-				speed = VectorNormalize(dir);
-			}
-			
-			if(speed<50)
-				speed = irand(50, 200);
-
-			T_Damage(trace->ent, self, self, dir, trace->endpos, dir, speed, 0, 0,MOD_DIED);
-
-			if(trace->ent->health>0)//else don't gib?
-				if(!stricmp(trace->ent->classname, "player"))
-					P_KnockDownPlayer(&trace->ent->client->playerinfo);
+			VectorCopy(vec3_up, dir);
+			damage = 0; //mxd. Not initialized in original logic.
 		}
+		else
+		{
+			VectorCopy(self->velocity, dir);
+			damage = (int)(VectorNormalize(dir));
+		}
+
+		if (damage < 50)
+			damage = irand(50, 200);
+
+		T_Damage(trace->ent, self, self, dir, trace->endpos, dir, damage, 0, 0, MOD_DIED);
+
+		if (trace->ent->health > 0 && trace->ent->client != NULL) // Else don't gib? //mxd. classname -> client check.
+			P_KnockDownPlayer(&trace->ent->client->playerinfo);
 	}
 
 	self->dead_state = DEAD_DEAD;
 	self->health = -1000;
-	self->mass = 0.01;
+	self->mass = 0; //mxd. '0.01' in original logic.
 	self->think = BecomeDebris;
-	self->nextthink = level.time + 0.01;
+	self->nextthink = level.time + 0.01f;
 }
 
 void spreader_go_deadloop (edict_t *self)
@@ -894,8 +893,8 @@ void spreaderSolidAgain (edict_t *self)
 		self->svflags &= ~SVF_ALWAYS_SEND;
 		self->movetype = PHYSICSTYPE_STEP;
 		self->solid = SOLID_BBOX;
-		self->isBlocked = spreaderSplat;
-		self->bounced = spreaderSplat;
+		self->isBlocked = SpreaderSplatWhenBlocked;
+		self->bounced = SpreaderSplatWhenBlocked;
 		self->svflags &= ~SVF_TAKE_NO_IMPACT_DMG;
 	}
 	else
