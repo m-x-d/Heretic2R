@@ -205,7 +205,7 @@
 
 #define MODEL_SCALE			1.0f
 
-#define NUM_MESH_NODES		13 //TODO: use.
+#define NUM_MESH_NODES		13
 
 #define MESH__PARENT		0 //TODO: unused.
 #define MESH__CHILD			1 //TODO: unused.

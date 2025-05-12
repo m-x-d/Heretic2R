@@ -119,7 +119,6 @@ extern const animmove_t spreader_move_dead;
 extern const animmove_t spreader_move_delay;
 
 extern void spreaderFly(edict_t* self);
-extern void spreaderTakeOff(edict_t* self);
 extern void spreaderFlyLoop(edict_t* self);
 extern void spreader_dropweapon(edict_t* self);
 extern void spreader_go_deadloop(edict_t* self);

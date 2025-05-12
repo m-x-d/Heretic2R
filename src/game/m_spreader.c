@@ -1,52 +1,29 @@
-
-//==============================================================================
 //
 // m_spreader.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
-
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "buoy.h"
-#include "vector.h"
-
-#include "g_Physics.h"
 
 #include "m_spreader.h"
 #include "m_spreader_shared.h"
 #include "m_spreader_anim.h"
 #include "m_spreadermist.h"
-#include "matrix.h"
-#include "Angles.h"
+#include "g_DefaultMessageHandler.h"
 #include "g_debris.h" //mxd
-#include "g_HitLocation.h"
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 #include "m_stats.h"
-#include "p_anim_branch.h"
 #include "p_anims.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_monster.h"
 
-// Stats
-/*#define SPREADER_HEALTH		(200.0)
-#define SPREADER_MASS		(300.0)*/
+static void spreaderTakeOff(edict_t* self); //TODO: remove.
 
-//FIXME I basically pulled these numbers out of the air
-#define SPREADER_TOO_CLOSE 	70
-#define SPREADER_CLOSE		120
-#define SPREADER_FAR 		300
-#define SPREADER_TOO_FAR 	600
+#pragma region ========================== Spreader Base Info ==========================
 
-/*---------------------------------------------------------------
-	spreader Base Info
----------------------------------------------------------------*/
-static const animmove_t *animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&spreader_move_attack1,
 	&spreader_move_attack2,
@@ -80,7 +57,8 @@ static const animmove_t *animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
+
+#pragma endregion
 
 /*==========================================================================
 
@@ -1245,6 +1223,8 @@ void spreader_go_inair (edict_t *self)
 -------------------------------------------------------------------------*/
 void SpreaderStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
 	resInfo.modelIndex = gi.modelindex("models/monsters/spreader/tris.fm");
