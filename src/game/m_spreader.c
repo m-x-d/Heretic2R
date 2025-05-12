@@ -414,70 +414,52 @@ static void SpreaderFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 		SetAnim(self, ANIM_BACKUP);
 }
 
-void spreader_evade(edict_t *self, G_Message_t *msg)
+static void SpreaderEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_evade' in original logic.
 {
-	edict_t			*projectile;
-	HitLocation_t	HitLocation;
-	int				duck_chance, chance;
+	edict_t* projectile;
+	HitLocation_t hl;
 	float eta;
+	ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
 
-	ParseMsgParms(msg, "eif", &projectile, &HitLocation, &eta);
-	
-	switch (self->curAnimID)
-	{
-	case ANIM_DUCKDOWN:
-	case ANIM_DUCKUP:
-	case ANIM_DUCKSTILL:
+	if (irand(0, 1) == 0 || self->curAnimID == ANIM_DUCKDOWN || self->curAnimID == ANIM_DUCKUP || self->curAnimID == ANIM_DUCKSTILL)
 		return;
-		break;
 
-	default:
-		break;
+	int duck_chance;
+
+	switch (hl)
+	{
+		case hl_Head:
+			duck_chance = 100;
+			break;
+
+		case hl_TorsoFront:
+		case hl_TorsoBack:
+		case hl_ArmUpperLeft:
+		case hl_ArmUpperRight:
+			duck_chance = 75;
+			break;
+
+		case hl_ArmLowerLeft:
+		case hl_ArmLowerRight:
+			duck_chance = 35;
+			break;
+
+		case hl_LegUpperLeft:
+		case hl_LegLowerLeft:
+		case hl_LegUpperRight:
+		case hl_LegLowerRight:
+			duck_chance = 0;
+			break;
+
+		default:
+			duck_chance = 10;
+			break;
 	}
 
-	if (irand(0,1))
+	if (irand(0, 100) < duck_chance)
 	{
-		switch(HitLocation)
-		{
-			case hl_Head:
-				duck_chance = 100;
-				break;
-			
-			case hl_TorsoFront:
-			case hl_TorsoBack:
-				duck_chance = 75;
-				break;
-			
-			case hl_ArmUpperLeft:
-			case hl_ArmUpperRight:
-				duck_chance = 75;
-				break;
-			
-			case hl_ArmLowerLeft:
-			case hl_ArmLowerRight:
-				duck_chance = 35;
-				break;
-			
-			case hl_LegUpperLeft:
-			case hl_LegLowerLeft:
-			case hl_LegUpperRight:
-			case hl_LegLowerRight:
-				duck_chance = 0;
-				break;
-		
-			default:
-				duck_chance = 10;
-
-			break;
-		}
-
-		chance = irand(0, 100);
-		if(chance < duck_chance)
-		{
-			self->evade_debounce_time = level.time + eta;
-			SpreaderCrouch(self);
-			return;
-		}
+		self->evade_debounce_time = level.time + eta; //TODO: add spreader_stay_duck_time name.
+		SpreaderCrouch(self);
 	}
 }
 
@@ -1109,7 +1091,7 @@ void SpreaderStaticsInit(void)
 	classStatics[CID_SPREADER].msgReceivers[MSG_MISSILE] = SpreaderMissileMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_JUMP] = spreader_jump;
-	classStatics[CID_SPREADER].msgReceivers[MSG_EVADE] = spreader_evade;
+	classStatics[CID_SPREADER].msgReceivers[MSG_EVADE] = SpreaderEvadeMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_FALLBACK] = SpreaderFallbackMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_DEATH] = spreader_death;
 	classStatics[CID_SPREADER].msgReceivers[MSG_PAIN] = SpreaderPainMsgHandler;
