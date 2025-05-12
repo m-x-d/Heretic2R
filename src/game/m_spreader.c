@@ -163,37 +163,27 @@ static void SpreaderCrouch(edict_t* self) //mxd. Named 'spreader_crouch' in orig
 	SetAnim(self, ANIM_DUCKDOWN);
 }
 
-qboolean spreader_check_uncrouch(edict_t *self)
-{//FIXME: Need to ultimately make sure this is ok!
-	vec3_t	mins, maxs, endpos;
-	trace_t	trace;
-	float	desired_height;
+static qboolean SpreaderCheckUncrouch(edict_t* self) //mxd. Named 'spreader_check_uncrouch' in original logic.
+{
+	//FIXME: Need to ultimately make sure this is ok!
+	const vec3_t mins = { self->mins[0], self->mins[1], 0.0f };
+	const vec3_t maxs = { self->maxs[0], self->maxs[1], 1.0f };
+	const float desired_height = STDMaxsForClass[CID_SPREADER][2] * self->s.scale;
 
-	VectorCopy(self->mins, mins);
-	VectorCopy(self->maxs, maxs);
-	
-	mins[2] = 0;
-	maxs[2] = 1;
+	vec3_t end_pos;
+	VectorCopy(self->s.origin, end_pos);
+	end_pos[2] += desired_height;
 
-	desired_height = STDMaxsForClass[CID_SPREADER][2] * self->s.scale;
+	trace_t trace;
+	gi.trace(self->s.origin, mins, maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
-	VectorCopy(self->s.origin, endpos);
-	endpos[2] += desired_height;
-
-	gi.trace(self->s.origin, mins, maxs, endpos, self, MASK_MONSTERSOLID,&trace);
-	if(trace.fraction < 1.0)
+	if (trace.fraction < 1.0f)
 		return false;
-/*
-	VectorCopy(self->mins,self->intentMins);
-	VectorCopy(self->maxs,self->intentMaxs);
-	self->intentMaxs[2] = 40;
-*/
-	self->maxs[2] = desired_height;
-	self->viewheight = self->maxs[2] - 8 * self->s.scale;
 
-//	self->physicsFlags |= PF_RESIZE;
+	self->maxs[2] = desired_height;
+	self->viewheight = (int)(self->maxs[2] - self->s.scale * 8.0f);
+
 	return true;
-//	SetAnim(self, ANIM_DUCKUP);
 }
 
 void spreader_duckpause(edict_t *self)
@@ -212,7 +202,7 @@ void spreader_duckpause(edict_t *self)
 			SetAnim(self, ANIM_DUCKATTACK);
 		else if ( !irand(0,10) || stay_duck)
 			SetAnim(self, ANIM_DUCKSTILL);
-		else if(spreader_check_uncrouch(self))
+		else if(SpreaderCheckUncrouch(self))
 			SetAnim(self, ANIM_DUCKUP);
 		else
 			SetAnim(self, ANIM_DUCKSTILL);
@@ -220,7 +210,7 @@ void spreader_duckpause(edict_t *self)
 		return;
 	}
 
-	if(spreader_check_uncrouch(self))
+	if(SpreaderCheckUncrouch(self))
 		SetAnim(self, ANIM_DUCKUP);
 	else
 		SetAnim(self, ANIM_DUCKSTILL);
