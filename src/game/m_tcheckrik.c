@@ -53,7 +53,7 @@ void insect_dismember(edict_t *self, int damage, int HitLocation);
 /*----------------------------------------------------------------------
   insect Base Info
 -----------------------------------------------------------------------*/
-static animmove_t *animations[ NUM_ANIMS] =
+static const animmove_t *animations[ NUM_ANIMS] =
 {
 	&insect_move_back,// = {10, insect_frames_back, insect_pause},
 	&insect_move_deathfr,// = {23, insect_frames_deathfr, insect_dead},

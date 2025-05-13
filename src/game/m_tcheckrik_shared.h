@@ -1,3 +1,13 @@
+//
+// m_tcheckrik_shared.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
+#include "g_local.h"
+
 typedef enum AnimID_e
 {	
 	ANIM_BACK,
@@ -64,66 +74,66 @@ typedef enum SoundID_e
 	NUM_SOUNDS
 } SoundID_t;
 
-extern animmove_t insect_move_back;
-extern animmove_t insect_move_deathfr;
-extern animmove_t insect_move_idle;
-extern animmove_t insect_move_land;
-extern animmove_t insect_move_inair;
-extern animmove_t insect_move_forcedjump;
-extern animmove_t insect_move_finair;
-extern animmove_t insect_move_fjump;
-extern animmove_t insect_move_paina;
-extern animmove_t insect_move_painc;
-extern animmove_t insect_move_run;
-extern animmove_t insect_move_spear;
-extern animmove_t insect_move_sword;
-extern animmove_t insect_move_spell;
-extern animmove_t insect_move_spell2;
-extern animmove_t insect_move_walk;
-extern animmove_t insect_delay;
+extern const animmove_t insect_move_back;
+extern const animmove_t insect_move_deathfr;
+extern const animmove_t insect_move_idle;
+extern const animmove_t insect_move_land;
+extern const animmove_t insect_move_inair;
+extern const animmove_t insect_move_forcedjump;
+extern const animmove_t insect_move_finair;
+extern const animmove_t insect_move_fjump;
+extern const animmove_t insect_move_paina;
+extern const animmove_t insect_move_painc;
+extern const animmove_t insect_move_run;
+extern const animmove_t insect_move_spear;
+extern const animmove_t insect_move_sword;
+extern const animmove_t insect_move_spell;
+extern const animmove_t insect_move_spell2;
+extern const animmove_t insect_move_walk;
+extern const animmove_t insect_delay;
 
-extern animmove_t insect_move_c_action1;
-extern animmove_t insect_move_c_action2;
-extern animmove_t insect_move_c_action3;
-extern animmove_t insect_move_c_action4;
-extern animmove_t insect_move_c_idle1;
-extern animmove_t insect_move_c_idle2;
-extern animmove_t insect_move_c_idle3;
-extern animmove_t insect_move_c_walk;
-extern animmove_t insect_move_c_run;
-extern animmove_t insect_move_c_backpedal;
-extern animmove_t insect_move_c_attack1;
-extern animmove_t insect_move_c_attack2;
-extern animmove_t insect_move_c_attack3;
-extern animmove_t insect_move_c_death1;
-extern animmove_t insect_move_c_pain1;
-extern animmove_t insect_move_knock1_go;
-extern animmove_t insect_move_knock1_loop;
-extern animmove_t insect_move_knock1_end;
-extern animmove_t insect_move_twitch;
+extern const animmove_t insect_move_c_action1;
+extern const animmove_t insect_move_c_action2;
+extern const animmove_t insect_move_c_action3;
+extern const animmove_t insect_move_c_action4;
+extern const animmove_t insect_move_c_idle1;
+extern const animmove_t insect_move_c_idle2;
+extern const animmove_t insect_move_c_idle3;
+extern const animmove_t insect_move_c_walk;
+extern const animmove_t insect_move_c_run;
+extern const animmove_t insect_move_c_backpedal;
+extern const animmove_t insect_move_c_attack1;
+extern const animmove_t insect_move_c_attack2;
+extern const animmove_t insect_move_c_attack3;
+extern const animmove_t insect_move_c_death1;
+extern const animmove_t insect_move_c_pain1;
+extern const animmove_t insect_move_knock1_go;
+extern const animmove_t insect_move_knock1_loop;
+extern const animmove_t insect_move_knock1_end;
+extern const animmove_t insect_move_twitch;
 
 extern void insect_c_reallydead (edict_t *self);
 
-void insectReleaseSpell (edict_t *self);
+extern void insectReleaseSpell (edict_t *self);
 
-void insectCut (edict_t *self, float attacktype);
-void insectSpell(edict_t *self, float whichspell);
-void insectStaff(edict_t *self);
-void insectCheckLoop (edict_t *self, float frame);
+extern void insectCut (edict_t *self, float attacktype);
+extern void insectSpell(edict_t *self, float whichspell);
+extern void insectStaff(edict_t *self);
+extern void insectCheckLoop (edict_t *self, float frame);
 
-void insect_dead(edict_t *self);
-void insectdeathsqueal(edict_t *self);
-void insectsqueal(edict_t *self);
-void insectgrowl(edict_t *self);
-void insect_pause (edict_t *self);
-void insect_dropweapon (edict_t *self, int weapon);
-void insect_go_inair(edict_t *self);
-void insect_sound(edict_t *self, float channel, float soundnum, float attn);
-void insect_wait_twitch (edict_t *self);
-void insect_flyback_loop(edict_t *self);
-void insect_flyback_move(edict_t *self);
-void insect_random_idle_sound (edict_t *self);
-void insect_go_finair(edict_t *self);
+extern void insect_dead(edict_t *self);
+extern void insectdeathsqueal(edict_t *self);
+extern void insectsqueal(edict_t *self);
+extern void insectgrowl(edict_t *self);
+extern void insect_pause (edict_t *self);
+extern void insect_dropweapon (edict_t *self, int weapon);
+extern void insect_go_inair(edict_t *self);
+extern void insect_sound(edict_t *self, float channel, float soundnum, float attn);
+extern void insect_wait_twitch (edict_t *self);
+extern void insect_flyback_loop(edict_t *self);
+extern void insect_flyback_move(edict_t *self);
+extern void insect_random_idle_sound (edict_t *self);
+extern void insect_go_finair(edict_t *self);
 
 #define BIT_MASTER		0
 #define BIT_LLEG		1
