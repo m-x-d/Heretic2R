@@ -22,7 +22,7 @@
 
 #pragma region ========================== Insect staff bolt spell ==========================
 
-static void create_insect_staff_bolt(edict_t* bolt); //TODO: remove.
+static void InsectStaffBoltInit(edict_t* bolt); //TODO: remove.
 
 static void InsectStaffBoltThink(edict_t* self) //mxd. Named 'InsectStaffThink' in original logic.
 {
@@ -66,7 +66,7 @@ static void InsectStaffBoltTouch(edict_t* self, edict_t* other, cplane_t* plane,
 	{
 		edict_t* bolt = G_Spawn();
 
-		create_insect_staff_bolt(bolt);
+		InsectStaffBoltInit(bolt);
 
 		bolt->owner = self->owner;
 		bolt->enemy = NULL;
@@ -112,20 +112,22 @@ static void InsectStaffBoltTouch(edict_t* self, edict_t* other, cplane_t* plane,
 	G_SetToFree(self);
 }
 
-// create the guts of the insect staff bolt
-void create_insect_staff_bolt(edict_t *InsectStaff)
+// Create the guts of the insect staff bolt.
+static void InsectStaffBoltInit(edict_t* bolt) //mxd. Named 'create_insect_staff_bolt' in original logic.
 {
-	InsectStaff->s.effects = EF_NODRAW_ALWAYS_SEND|EF_CAMERA_NO_CLIP;
-	InsectStaff->movetype = MOVETYPE_FLYMISSILE;
-	InsectStaff->solid = SOLID_BBOX;
-	InsectStaff->classname = "Spell_InsectStaff";
-	InsectStaff->touch = InsectStaffBoltTouch;
- 	InsectStaff->dmg = irand(TC_FEMALE_DMG_HACK_MIN, TC_FEMALE_DMG_HACK_MAX) * (skill->value + 1)/3;
-	InsectStaff->clipmask = MASK_MONSTERSOLID|MASK_SHOT;
-	VectorClear(InsectStaff->mins);
-	VectorClear(InsectStaff->maxs);
-	InsectStaff->think = InsectStaffBoltThink;
-	InsectStaff->nextthink = level.time+0.1;
+	bolt->s.effects = (EF_NODRAW_ALWAYS_SEND | EF_CAMERA_NO_CLIP);
+	bolt->movetype = MOVETYPE_FLYMISSILE;
+	bolt->solid = SOLID_BBOX;
+	bolt->classname = "Spell_InsectStaff";
+	bolt->dmg = irand(TC_FEMALE_DMG_HACK_MIN, TC_FEMALE_DMG_HACK_MAX) * (SKILL + 1) / 3;
+	bolt->clipmask = (MASK_MONSTERSOLID | MASK_SHOT);
+
+	VectorClear(bolt->mins);
+	VectorClear(bolt->maxs);
+
+	bolt->touch = InsectStaffBoltTouch;
+	bolt->think = InsectStaffBoltThink;
+	bolt->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 // ************************************************************************************************
@@ -145,7 +147,7 @@ void SpellCastInsectStaff(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_
 	AngleVectors(AimAngles, forward, NULL,NULL);
 	VectorCopy(forward, InsectStaff->movedir);
 
-	create_insect_staff_bolt(InsectStaff);
+	InsectStaffBoltInit(InsectStaff);
 
 	InsectStaff->s.scale = 0.1;
 	InsectStaff->owner = Caster;
