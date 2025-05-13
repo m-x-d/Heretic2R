@@ -8,7 +8,6 @@
 #include "g_combat.h" //mxd
 #include "g_playstats.h"
 #include "m_stats.h"
-#include "m_morcalavin.h" //mxd
 #include "Decals.h"
 #include "Vector.h"
 #include "Random.h"
@@ -365,6 +364,49 @@ static void InsectSpearProjectileTouch(edict_t* self, edict_t* other, cplane_t* 
 	G_SetToFree(self);
 }
 
+static void InsectTrackingSpearProjectileHomeIn(edict_t* self) //mxd. Named 'projectile_homethink' in original logic, defined in m_morcalavin.c.
+{
+	vec3_t old_dir;
+	VectorNormalize2(self->velocity, old_dir);
+
+	vec3_t hunt_dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, hunt_dir);
+	VectorNormalize(hunt_dir);
+
+	const float old_vel_mult = ((self->delay != 0.0f) ? self->delay : 1.3f); //TODO: add projectile_turn_speed custom name?
+	Vec3ScaleAssign(old_vel_mult, old_dir);
+
+	vec3_t new_dir;
+	VectorAdd(old_dir, hunt_dir, new_dir);
+
+	float new_vel_div = 1.0f / (old_vel_mult + 1.0f);
+	Vec3ScaleAssign(new_vel_div, new_dir);
+
+	float speed_mod = DotProduct(old_dir, new_dir);
+	speed_mod = max(0.05f, speed_mod);
+
+	new_vel_div *= self->ideal_yaw * speed_mod;
+
+	Vec3ScaleAssign(old_vel_mult, old_dir);
+	VectorAdd(old_dir, hunt_dir, new_dir);
+
+	VectorScale(new_dir, new_vel_div, self->velocity);
+
+	if (self->random != 0.0f) //mxd. Inline projectile_veer().
+	{
+		// Useful code for making projectiles wander randomly to a specified degree.
+		const float speed = VectorLength(self->velocity);
+
+		vec3_t veer_dir;
+		VectorRandomSet(veer_dir, self->random);
+
+		Vec3AddAssign(veer_dir, self->velocity);
+		VectorNormalize(self->velocity);
+
+		Vec3ScaleAssign(speed, self->velocity);
+	}
+}
+
 // This function will make a projectile wander from it's course in a random manner.
 static void InsectTrackingSpearProjectileThink(edict_t* self) //mxd. Named 'yellowjacket_proj_think' in original logic.
 {
@@ -384,7 +426,7 @@ static void InsectTrackingSpearProjectileThink(edict_t* self) //mxd. Named 'yell
 	VectorNormalize(enemy_dir);
 
 	if (DotProduct(enemy_dir, dir) > 0.0f && irand(2, 24) > self->count)
-		MorcalavinProjectileHomeIn(self);
+		InsectTrackingSpearProjectileHomeIn(self);
 
 	self->count++;
 

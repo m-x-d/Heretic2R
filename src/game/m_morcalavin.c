@@ -767,52 +767,6 @@ static void MorcalavinCheckKilledEnemy(edict_t* attacker) //mxd. Named 'mork_che
 	}
 }
 
-//TODO: used only by m_tcheckrik_spells.c. Move there? Merge into MorcalavinProjectileHomeIn()?
-static void MorcalavinProjectileVeer(edict_t* self, const float amount) //mxd. Named 'projectile_veer' in original logic.
-{
-	// Useful code for making projectiles wander randomly to a specified degree.
-	const float speed = VectorLength(self->velocity);
-	const vec3_t veer_dir = { flrand(-amount, amount), flrand(-amount, amount), flrand(-amount, amount) };
-
-	Vec3AddAssign(veer_dir, self->velocity);
-	VectorNormalize(self->velocity);
-
-	Vec3ScaleAssign(speed, self->velocity);
-}
-
-//TODO: used only by m_tcheckrik_spells.c. Move there?
-void MorcalavinProjectileHomeIn(edict_t* self) //mxd. Named 'projectile_homethink' in original logic.
-{
-	vec3_t old_dir;
-	VectorNormalize2(self->velocity, old_dir);
-
-	vec3_t hunt_dir;
-	VectorSubtract(self->enemy->s.origin, self->s.origin, hunt_dir);
-	VectorNormalize(hunt_dir);
-
-	const float old_vel_mult = ((self->delay != 0.0f) ? self->delay : 1.3f); //TODO: add projectile_turn_speed custom name?
-	Vec3ScaleAssign(old_vel_mult, old_dir);
-
-	vec3_t new_dir;
-	VectorAdd(old_dir, hunt_dir, new_dir);
-
-	float new_vel_div = 1.0f / (old_vel_mult + 1.0f);
-	Vec3ScaleAssign(new_vel_div, new_dir);
-
-	float speed_mod = DotProduct(old_dir, new_dir);
-	speed_mod = max(0.05f, speed_mod);
-
-	new_vel_div *= self->ideal_yaw * speed_mod;
-
-	Vec3ScaleAssign(old_vel_mult, old_dir);
-	VectorAdd(old_dir, hunt_dir, new_dir);
-
-	VectorScale(new_dir, new_vel_div, self->velocity);
-
-	if (self->random != 0.0f) //TODO: add add projectile_veer_amount custom name?
-		MorcalavinProjectileVeer(self, self->random);
-}
-
 static void MorcalavinChooseTeleportDestination(edict_t* self) //mxd. Removed unused return type. Named 'morcalavin_choose_teleport_destination' in original logic.
 {
 	// Instead of chance, do around self if evade, around other if ambush.

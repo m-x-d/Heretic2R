@@ -10,7 +10,6 @@
 
 extern void SP_monster_morcalavin(edict_t* self);
 extern void MorcalavinStaticsInit(void);
-extern void MorcalavinProjectileHomeIn(edict_t* self);
 
 // Local forward declarations for m_morcalavin.c.
 static void MorcalavinProjectileInit(edict_t* self, edict_t* proj);
