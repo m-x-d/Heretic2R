@@ -13,7 +13,7 @@
 #include "Random.h"
 #include "Utilities.h"
 
-#define INSECT_GLOBE_MAX_SCALE	1.8f //mxd. Named 'GLOBE_MAX_SCALE' in original logic.
+#define INSECT_GLOBE_MAX_SCALE			1.8f //mxd. Named 'GLOBE_MAX_SCALE' in original logic.
 #define INSECT_SPEAR_PROJECTILE_SPEED	600.0f //mxd. Named 'SPEARPROJ_SPEED' in original logic.
 
 #pragma region ========================== Insect staff bolt spell ==========================

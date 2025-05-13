@@ -947,7 +947,7 @@
     <ClInclude Include="m_spreadermist.h">
       <Filter>src\Monsters\Spreader</Filter>
     </ClInclude>
-    <ClInclude Include="m_tcheckrik_local.h">
+    <ClInclude Include="m_tcheckrik_shared.h">
       <Filter>src\Monsters\Tcheckrik</Filter>
     </ClInclude>
     <ClInclude Include="m_tcheckrik_anim.h">

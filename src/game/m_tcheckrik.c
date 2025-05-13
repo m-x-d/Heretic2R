@@ -36,7 +36,7 @@
 #include "vector.h"
 
 #include "m_tcheckrik.h"
-#include "m_tcheckrik_local.h"
+#include "m_tcheckrik_shared.h"
 #include "m_tcheckrik_anim.h"
 #include "g_HitLocation.h"
 #include "g_debris.h" //mxd

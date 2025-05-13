@@ -346,7 +346,7 @@
     <ClInclude Include="m_spreader_anim.h" />
     <ClInclude Include="m_stats.h" />
     <ClInclude Include="m_tcheckrik.h" />
-    <ClInclude Include="m_tcheckrik_local.h" />
+    <ClInclude Include="m_tcheckrik_shared.h" />
     <ClInclude Include="m_tcheckrik_anim.h" />
     <ClInclude Include="m_tcheckrik_spells.h" />
     <ClInclude Include="pcode.h" />

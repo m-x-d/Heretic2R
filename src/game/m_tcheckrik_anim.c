@@ -15,7 +15,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_tcheckrik_anim.h"
-#include "m_tcheckrik_local.h"
+#include "m_tcheckrik_shared.h"
 #include "c_ai.h"
 #include "mg_ai.h" //mxd
 #include "g_monster.h"
