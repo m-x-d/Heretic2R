@@ -277,58 +277,43 @@ static void InsectSpearProjectileInit(edict_t* proj) //mxd. Named 'create_spearp
 		proj->dmg = TC_DMG_SPEAR_MAX;
 }
 
-edict_t *SpearProjReflect(edict_t *self, edict_t *other, vec3_t vel)
+edict_t* SpearProjReflect(edict_t* self, edict_t* other, vec3_t vel) //TODO: rename to InsectSpearProjectileReflect.
 {
-	edict_t *spearproj;
+	edict_t* proj = G_Spawn();
 
-	spearproj = G_Spawn();
+	InsectSpearProjectileInit(proj);
 
-	VectorCopy(self->s.origin, spearproj->s.origin);
-	VectorCopy(vel, spearproj->velocity);
-	InsectSpearProjectileInit(spearproj);
-	VectorNormalize2(spearproj->velocity, spearproj->movedir);
-	AnglesFromDir(spearproj->movedir, spearproj->s.angles);
-	spearproj->reflect_debounce_time = self->reflect_debounce_time -1;
-	spearproj->reflected_time=self->reflected_time;
-	G_LinkMissile(spearproj); 
+	VectorCopy(self->s.origin, proj->s.origin);
+	VectorCopy(vel, proj->velocity);
+	VectorNormalize2(proj->velocity, proj->movedir);
+	AnglesFromDir(proj->movedir, proj->s.angles);
 
-	spearproj->health = self->health;
-	spearproj->think = self->think;
-	spearproj->owner = other;
-	spearproj->enemy = NULL;
-	spearproj->nextthink = self->nextthink;
-	spearproj->ideal_yaw = self->ideal_yaw;
-	spearproj->random = self->random;
-	spearproj->delay = self->delay;
-	spearproj->count = self->count;
-	spearproj->red_rain_count = self->red_rain_count;
-	if (spearproj->health == 1)
-	{
-		gi.CreateEffect(&spearproj->s,
-			FX_I_EFFECTS,
-			CEF_OWNERS_ORIGIN,
-			NULL,
-			"bv",
-			FX_I_SPEAR2,
-			vec3_origin);
-	}
+	proj->reflect_debounce_time = self->reflect_debounce_time - 1;
+	proj->reflected_time = self->reflected_time;
+
+	G_LinkMissile(proj);
+
+	proj->health = self->health;
+	proj->owner = other;
+	proj->enemy = NULL;
+	proj->ideal_yaw = self->ideal_yaw;
+	proj->random = self->random;
+	proj->delay = self->delay;
+	proj->count = self->count;
+	proj->red_rain_count = self->red_rain_count;
+	proj->think = self->think;
+	proj->nextthink = self->nextthink;
+
+	if (proj->health == 1)
+		gi.CreateEffect(&proj->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "bv", FX_I_SPEAR2, vec3_origin);
 	else
-	{
-		gi.CreateEffect(&spearproj->s,
-			FX_I_EFFECTS,
-			CEF_OWNERS_ORIGIN,
-			vec3_origin,
-			"bv",
-			FX_I_SPEAR,
-			spearproj->velocity);
-	}
+		gi.CreateEffect(&proj->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_I_SPEAR, proj->velocity);
 
-	// kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
+	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
 	G_SetToFree(self);
 
-	return(spearproj);
+	return proj;
 }
-
 
 // ****************************************************************************
 // SpearProjTouch
