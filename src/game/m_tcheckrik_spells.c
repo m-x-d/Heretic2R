@@ -263,7 +263,7 @@ static void InsectSpearProjectileInit(edict_t* proj) //mxd. Named 'create_spearp
 	proj->clipmask = MASK_SHOT;
 	proj->touch = InsectSpearProjectileTouch;
 
-	if (proj->count) // Powered projectile.
+	if (proj->insect_tracking_projectile_track_chance > 0) // Tracking projectile.
 		proj->dmg = irand(TC_DMG_YSPEAR_MIN, TC_DMG_YSPEAR_MAX);
 	else if (SKILL == SKILL_EASY)
 		proj->dmg = TC_DMG_SPEAR_MIN;
@@ -295,7 +295,7 @@ edict_t* SpearProjReflect(edict_t* self, edict_t* other, vec3_t vel) //TODO: ren
 	proj->ideal_yaw = self->ideal_yaw;
 	proj->insect_tracking_projectile_veer_amount = self->insect_tracking_projectile_veer_amount;
 	proj->insect_tracking_projectile_turn_speed = self->insect_tracking_projectile_turn_speed;
-	proj->count = self->count;
+	proj->insect_tracking_projectile_track_chance = self->insect_tracking_projectile_track_chance;
 	proj->red_rain_count = self->red_rain_count;
 	proj->think = self->think;
 	proj->nextthink = self->nextthink;
@@ -355,7 +355,7 @@ static void InsectSpearProjectileTouch(edict_t* self, edict_t* other, cplane_t* 
 	}
 
 	const byte fx_flags = (IsDecalApplicable(other, self->s.origin, surface, plane, NULL) ? CEF_FLAG6 : 0);
-	const int fx_type = (self->count ? FX_I_SP_MSL_HIT2 : FX_I_SP_MSL_HIT); //mxd
+	const int fx_type = (self->insect_tracking_projectile_track_chance > 0 ? FX_I_SP_MSL_HIT2 : FX_I_SP_MSL_HIT); //mxd
 	gi.CreateEffect(&self->s, FX_I_EFFECTS, fx_flags, vec3_origin, "bv", fx_type, self->movedir);
 
 	G_SetToFree(self);
@@ -422,10 +422,10 @@ static void InsectTrackingSpearProjectileThink(edict_t* self) //mxd. Named 'yell
 	VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
 	VectorNormalize(enemy_dir);
 
-	if (DotProduct(enemy_dir, dir) > 0.0f && irand(2, 24) > self->count)
+	if (DotProduct(enemy_dir, dir) > 0.0f && irand(2, 24) > self->insect_tracking_projectile_track_chance)
 		InsectTrackingSpearProjectileHomeIn(self);
 
-	self->count++;
+	self->insect_tracking_projectile_track_chance++;
 
 	if (self->insect_tracking_projectile_veer_amount < 100.0f)
 		self->insect_tracking_projectile_veer_amount += 10.0f;
@@ -513,7 +513,7 @@ void SpellCastInsectSpear(edict_t* caster, const vec3_t start_pos, const vec3_t 
 		proj->ideal_yaw = INSECT_SPEAR_PROJECTILE_SPEED / 2.0f;
 		proj->insect_tracking_projectile_veer_amount = 30.0f;
 		proj->insect_tracking_projectile_turn_speed = 1.5f;
-		proj->count = 1;
+		proj->insect_tracking_projectile_track_chance = 1;
 		proj->is_insect_tracking_projectile = true; // To indicate the homing projectile (affects FX only -- mxd).
 		proj->red_rain_count = 1; //TODO: unused?
 
@@ -524,7 +524,7 @@ void SpellCastInsectSpear(edict_t* caster, const vec3_t start_pos, const vec3_t 
 	}
 	else
 	{
-		proj->count = 0;
+		proj->insect_tracking_projectile_track_chance = 0;
 		gi.CreateEffect(&proj->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_I_SPEAR, proj->velocity);
 	}
 }
