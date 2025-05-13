@@ -296,7 +296,7 @@ edict_t* SpearProjReflect(edict_t* self, edict_t* other, vec3_t vel) //TODO: ren
 	proj->owner = other;
 	proj->enemy = NULL;
 	proj->ideal_yaw = self->ideal_yaw;
-	proj->random = self->random;
+	proj->insect_tracking_projectile_veer_amount = self->insect_tracking_projectile_veer_amount;
 	proj->insect_tracking_projectile_turn_speed = self->insect_tracking_projectile_turn_speed;
 	proj->count = self->count;
 	proj->red_rain_count = self->red_rain_count;
@@ -392,13 +392,13 @@ static void InsectTrackingSpearProjectileHomeIn(edict_t* self) //mxd. Named 'pro
 
 	VectorScale(new_dir, new_vel_div, self->velocity);
 
-	if (self->random != 0.0f) //mxd. Inline projectile_veer().
+	if (self->insect_tracking_projectile_veer_amount != 0.0f) //mxd. Inline projectile_veer().
 	{
 		// Useful code for making projectiles wander randomly to a specified degree.
 		const float speed = VectorLength(self->velocity);
 
 		vec3_t veer_dir;
-		VectorRandomSet(veer_dir, self->random);
+		VectorRandomSet(veer_dir, self->insect_tracking_projectile_veer_amount);
 
 		Vec3AddAssign(veer_dir, self->velocity);
 		VectorNormalize(self->velocity);
@@ -430,8 +430,8 @@ static void InsectTrackingSpearProjectileThink(edict_t* self) //mxd. Named 'yell
 
 	self->count++;
 
-	if (self->random < 100.0f) //TODO: add insect_spear_projectile_veer_amount name.
-		self->random += 10.0f;
+	if (self->insect_tracking_projectile_veer_amount < 100.0f)
+		self->insect_tracking_projectile_veer_amount += 10.0f;
 
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
@@ -514,7 +514,7 @@ void SpellCastInsectSpear(edict_t* caster, const vec3_t start_pos, const vec3_t 
 		proj->enemy = caster->enemy;
 		Vec3ScaleAssign(0.5f, proj->velocity);
 		proj->ideal_yaw = INSECT_SPEAR_PROJECTILE_SPEED / 2.0f;
-		proj->random = 30.0f;
+		proj->insect_tracking_projectile_veer_amount = 30.0f;
 		proj->insect_tracking_projectile_turn_speed = 1.5f;
 		proj->count = 1;
 		proj->is_insect_tracking_projectile = true; // To indicate the homing projectile (affects FX only -- mxd).

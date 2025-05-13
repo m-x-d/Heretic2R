@@ -314,7 +314,11 @@ struct edict_s
 		float insect_tracking_projectile_turn_speed; //mxd
 	};
 
-	float random;	// Used by func_timer and spl_meteorbarrier.
+	union
+	{
+		float random; // Used by func_timer and spl_meteorbarrier.
+		float insect_tracking_projectile_veer_amount; //mxd
+	};
 
 	// Used to delay monster 5 before going after a player sound. Only set on player.
 	union
