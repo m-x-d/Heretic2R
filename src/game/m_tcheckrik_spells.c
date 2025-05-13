@@ -15,9 +15,6 @@
 #include "Utilities.h"
 
 #define INSECT_GLOBE_MAX_SCALE	1.8f //mxd. Named 'GLOBE_MAX_SCALE' in original logic.
-
-// Radius of zero seems to prevent collision between bolts.
-#define INSECT_SPEAR_PROJECTILE_RADIUS	0.0f //mxd. Named 'SPEARPROJ_RADIUS' in original logic.
 #define INSECT_SPEAR_PROJECTILE_SPEED	600.0f //mxd. Named 'SPEARPROJ_SPEED' in original logic.
 
 #pragma region ========================== Insect staff bolt spell ==========================
@@ -122,6 +119,7 @@ static void InsectStaffBoltInit(edict_t* bolt) //mxd. Named 'create_insect_staff
 	bolt->dmg = irand(TC_FEMALE_DMG_HACK_MIN, TC_FEMALE_DMG_HACK_MAX) * (SKILL + 1) / 3;
 	bolt->clipmask = (MASK_MONSTERSOLID | MASK_SHOT);
 
+	// Radius of zero seems to prevent collision between bolts.
 	VectorClear(bolt->mins);
 	VectorClear(bolt->maxs);
 
@@ -249,36 +247,35 @@ void SpellCastGlobeOfOuchiness(edict_t* caster, const vec3_t start_pos, const ve
 
 #pragma endregion
 
-//Spear Projectiles
-static void SpearProjTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *Surface);
+#pragma region ========================== Insect spear projectile spell ==========================
 
-// guts of creating a spearproj
-void create_spearproj(edict_t *spearproj)
+static void SpearProjTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface);
+
+// Guts of creating a spear projectile.
+static void InsectSpearProjectileInit(edict_t* proj) //mxd. Named 'create_spearproj' in original logic.
 {
+	proj->classname = "Spell_SpearProj";
+	proj->s.effects |= (EF_ALWAYS_ADD_EFFECTS | EF_CAMERA_NO_CLIP);
+	proj->svflags |= SVF_ALWAYS_SEND;
+	proj->movetype = MOVETYPE_FLYMISSILE;
 
-	spearproj->s.effects |= EF_ALWAYS_ADD_EFFECTS|EF_CAMERA_NO_CLIP;
-	spearproj->svflags |= SVF_ALWAYS_SEND;
-	spearproj->movetype = MOVETYPE_FLYMISSILE;
+	// Radius of zero seems to prevent collision between bolts.
+	VectorClear(proj->mins);
+	VectorClear(proj->maxs);
 
-	VectorSet(spearproj->mins, -INSECT_SPEAR_PROJECTILE_RADIUS, -INSECT_SPEAR_PROJECTILE_RADIUS, -INSECT_SPEAR_PROJECTILE_RADIUS);
-	VectorSet(spearproj->maxs, INSECT_SPEAR_PROJECTILE_RADIUS, INSECT_SPEAR_PROJECTILE_RADIUS, INSECT_SPEAR_PROJECTILE_RADIUS);
+	proj->solid = SOLID_BBOX;
+	proj->clipmask = MASK_SHOT;
+	proj->touch = SpearProjTouch;
 
-	spearproj->solid = SOLID_BBOX;
-	spearproj->clipmask = MASK_SHOT;
-	spearproj->touch = SpearProjTouch;
-
-	if(spearproj->count)
-		spearproj->dmg = irand(TC_DMG_YSPEAR_MIN, TC_DMG_YSPEAR_MAX);
-	else if(skill->value > 1)
-		spearproj->dmg = TC_DMG_SPEAR_MAX;
-	else if(!skill->value)
-		spearproj->dmg = TC_DMG_SPEAR_MIN;
-	else
-		spearproj->dmg = irand(TC_DMG_SPEAR_MIN, TC_DMG_SPEAR_MAX);
-
-	spearproj->classname = "Spell_SpearProj";
+	if (proj->count) // Powered projectile.
+		proj->dmg = irand(TC_DMG_YSPEAR_MIN, TC_DMG_YSPEAR_MAX);
+	else if (SKILL == SKILL_EASY)
+		proj->dmg = TC_DMG_SPEAR_MIN;
+	else if (SKILL == SKILL_MEDIUM)
+		proj->dmg = irand(TC_DMG_SPEAR_MIN, TC_DMG_SPEAR_MAX);
+	else // HARD, HARD+
+		proj->dmg = TC_DMG_SPEAR_MAX;
 }
-
 
 edict_t *SpearProjReflect(edict_t *self, edict_t *other, vec3_t vel)
 {
@@ -288,7 +285,7 @@ edict_t *SpearProjReflect(edict_t *self, edict_t *other, vec3_t vel)
 
 	VectorCopy(self->s.origin, spearproj->s.origin);
 	VectorCopy(vel, spearproj->velocity);
-	create_spearproj(spearproj);
+	InsectSpearProjectileInit(spearproj);
 	VectorNormalize2(spearproj->velocity, spearproj->movedir);
 	AnglesFromDir(spearproj->movedir, spearproj->s.angles);
 	spearproj->reflect_debounce_time = self->reflect_debounce_time -1;
@@ -522,7 +519,7 @@ void SpellCastInsectSpear(edict_t *caster, vec3_t StartPos, vec3_t AimAngles, in
 
 	spearproj->owner = caster;
 	VectorNormalize2(spearproj->velocity, spearproj->movedir);
-	create_spearproj(spearproj);
+	InsectSpearProjectileInit(spearproj);
 	spearproj->reflect_debounce_time = MAX_REFLECT;
 
 	G_LinkMissile(spearproj); 
@@ -567,3 +564,5 @@ void SpellCastInsectSpear(edict_t *caster, vec3_t StartPos, vec3_t AimAngles, in
 			spearproj->velocity);
 	}
 }
+
+#pragma endregion
