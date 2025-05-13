@@ -20,46 +20,36 @@
 #define INSECT_SPEAR_PROJECTILE_RADIUS	0.0f //mxd. Named 'SPEARPROJ_RADIUS' in original logic.
 #define INSECT_SPEAR_PROJECTILE_SPEED	600.0f //mxd. Named 'SPEARPROJ_SPEED' in original logic.
 
-void create_insect_staff_bolt(edict_t *InsectStaff);
+#pragma region ========================== Insect staff bolt spell ==========================
 
-// ************************************************************************************************
-// InsectStaffThink
-// ************************************************************************************************
+static void create_insect_staff_bolt(edict_t* bolt); //TODO: remove.
 
-static void InsectStaffThink(edict_t *self)
+static void InsectStaffBoltThink(edict_t* self) //mxd. Named 'InsectStaffThink' in original logic.
 {
-	vec3_t	Forward;
+	vec3_t forward;
 
 	// Grow myself a bit.
+	self->s.scale = 1.0f;
 
-	self->s.scale=1.0;
-
-	// Do autotargeting.
-
-	if(self->enemy)
+	// Do auto-targeting.
+	if (self->enemy != NULL)
 	{
 		// I have a target (pointed at by self->enemy) so aim myself at it.
+		VectorSubtract(self->enemy->s.origin, self->s.origin, forward);
 
-		VectorCopy(self->s.origin,Forward);
+		for (int i = 0; i < 3; i++)
+			forward[i] += (self->enemy->mins[i] + self->enemy->maxs[i]) / 2.0f;
 
-		VectorSubtract(self->enemy->s.origin,Forward,Forward);
-
-		Forward[0]+=(self->enemy->mins[0]+self->enemy->maxs[0])/2.0;
-		Forward[1]+=(self->enemy->mins[1]+self->enemy->maxs[1])/2.0;
-		Forward[2]+=(self->enemy->mins[2]+self->enemy->maxs[2])/2.0;
-
-		VectorNormalize(Forward);
+		VectorNormalize(forward);
 	}
 	else
 	{
-		// I don't have a target so just I'll just fly straight forward.
-
-		AngleVectors(self->s.angles,Forward,0,0);
+		// No target, fly straight ahead.
+		AngleVectors(self->s.angles, forward, NULL, NULL);
 	}
 
-	// Give myself a velocity of 500 in my forward direction.
-	
-	VectorScale(Forward,INSECT_STAFF_AIMED_SPEED,self->velocity);
+	// Give myself a velocity of 750 in my forward direction.
+	VectorScale(forward, INSECT_STAFF_AIMED_SPEED, self->velocity);
 
 	self->think = NULL;
 }
@@ -174,7 +164,7 @@ void create_insect_staff_bolt(edict_t *InsectStaff)
 	InsectStaff->clipmask = MASK_MONSTERSOLID|MASK_SHOT;
 	VectorClear(InsectStaff->mins);
 	VectorClear(InsectStaff->maxs);
-	InsectStaff->think = InsectStaffThink;
+	InsectStaff->think = InsectStaffBoltThink;
 	InsectStaff->nextthink = level.time+0.1;
 }
 
@@ -228,6 +218,8 @@ void SpellCastInsectStaff(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_
 						vec3_origin);
 	}
 }
+
+#pragma endregion
 
 static void GlobeOfOuchinessGrowThink(edict_t *self);
 
