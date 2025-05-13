@@ -394,111 +394,99 @@ static void InsectTrackingSpearProjectileThink(edict_t* self) //mxd. Named 'yell
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-// ****************************************************************************
-// SpellCastSpearProj
-// ****************************************************************************
-
-
-void SpellCastInsectSpear(edict_t *caster, vec3_t StartPos, vec3_t AimAngles, int offset)
+void SpellCastInsectSpear(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const int offset)
 {
-	edict_t	*spearproj;
-	trace_t trace;
-	vec3_t	endpos, forward, right, up, dir;
-	float	dist;
-
 	// Spawn the magic-missile.
-
-	if(!caster->enemy)
+	if (caster->enemy == NULL)
 		return;
 
-	spearproj = G_Spawn();
+	edict_t* proj = G_Spawn();
 
-	VectorCopy(StartPos, spearproj->s.origin);
-	VectorSubtract(caster->enemy->s.origin, StartPos, dir);
-	dist = VectorLength(dir);
+	VectorCopy(start_pos, proj->s.origin);
 
-	if(offset && dist > 128)
+	vec3_t diff;
+	VectorSubtract(caster->enemy->s.origin, start_pos, diff);
+
+	if (offset > 0 && VectorLength(diff) > 128.0f)
 	{
-		AngleVectors(AimAngles, forward, right, up);
-		switch(offset)
+		vec3_t forward;
+		vec3_t right;
+		vec3_t up;
+		AngleVectors(aim_angles, forward, right, up);
+
+		switch (offset)
 		{
-		default:
-		case 1:
-			VectorAverage(forward, right, forward);
-			break;
-		
-		case 2:
-			Vec3ScaleAssign(-1, right);
-			VectorAverage(forward, right, forward);
-			break;
-		
-		case 3:
-			VectorAverage(forward, up, forward);
-			break;
+			default:
+			case 1:
+				VectorAverage(forward, right, forward);
+				break;
+
+			case 2:
+				Vec3ScaleAssign(-1.0f, right);
+				VectorAverage(forward, right, forward);
+				break;
+
+			case 3:
+				VectorAverage(forward, up, forward);
+				break;
 		}
-		VectorScale(forward, INSECT_SPEAR_PROJECTILE_SPEED, spearproj->velocity);
+
+		VectorScale(forward, INSECT_SPEAR_PROJECTILE_SPEED, proj->velocity);
 	}
 	else
 	{
-		//Check ahead first to see if it's going to hit anything at this angle
-		AngleVectors(AimAngles, forward, NULL, NULL);
-		VectorMA(StartPos, INSECT_SPEAR_PROJECTILE_SPEED, forward, endpos);
-		gi.trace(StartPos, vec3_origin, vec3_origin, endpos, caster, MASK_MONSTERSOLID,&trace);
-		if(trace.ent && OkToAutotarget(caster, trace.ent))
-		{//already going to hit a valid target at this angle- so don't autotarget
-			VectorScale(forward, INSECT_SPEAR_PROJECTILE_SPEED, spearproj->velocity);
-		}
+		// Check ahead first to see if it's going to hit anything at this angle.
+		vec3_t forward;
+		AngleVectors(aim_angles, forward, NULL, NULL);
+
+		vec3_t end_pos;
+		VectorMA(start_pos, INSECT_SPEAR_PROJECTILE_SPEED, forward, end_pos);
+
+		trace_t trace;
+		gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, caster, MASK_MONSTERSOLID, &trace);
+
+		if (trace.ent != NULL && OkToAutotarget(caster, trace.ent))
+			VectorScale(forward, INSECT_SPEAR_PROJECTILE_SPEED, proj->velocity); // Already going to hit a valid target at this angle, so don't autotarget.
 		else
-		{//autotarget current enemy
-			GetAimVelocity(caster->enemy, spearproj->s.origin, INSECT_SPEAR_PROJECTILE_SPEED, AimAngles, spearproj->velocity);
-		}
+			GetAimVelocity(caster->enemy, proj->s.origin, INSECT_SPEAR_PROJECTILE_SPEED, aim_angles, proj->velocity); // Autotarget current enemy.
 	}
 
-	spearproj->owner = caster;
-	VectorNormalize2(spearproj->velocity, spearproj->movedir);
-	InsectSpearProjectileInit(spearproj);
-	spearproj->reflect_debounce_time = MAX_REFLECT;
+	proj->owner = caster;
+	VectorNormalize2(proj->velocity, proj->movedir);
+	InsectSpearProjectileInit(proj);
+	proj->reflect_debounce_time = MAX_REFLECT;
 
-	G_LinkMissile(spearproj); 
+	G_LinkMissile(proj);
 
-	gi.trace(spearproj->s.origin, vec3_origin, vec3_origin, spearproj->s.origin, caster, MASK_PLAYERSOLID,&trace);
+	trace_t trace;
+	gi.trace(proj->s.origin, vec3_origin, vec3_origin, proj->s.origin, caster, MASK_PLAYERSOLID, &trace);
+
 	if (trace.startsolid)
 	{
-		InsectSpearProjectileTouch(spearproj, trace.ent, &trace.plane, trace.surface);
+		InsectSpearProjectileTouch(proj, trace.ent, &trace.plane, trace.surface);
 		return;
 	}
 
-	if(caster->spawnflags & MSF_INSECT_YELLOWJACKET)
+	if (caster->spawnflags & MSF_INSECT_YELLOWJACKET)
 	{
-		spearproj->think = InsectTrackingSpearProjectileThink;
-		spearproj->nextthink = level.time + 0.1;
-		spearproj->enemy = caster->enemy;
-		Vec3ScaleAssign(0.5, spearproj->velocity);
-		spearproj->ideal_yaw = INSECT_SPEAR_PROJECTILE_SPEED/2;
-		spearproj->random = 30;
-		spearproj->delay = 1.5;
-		spearproj->count = 1;
-		spearproj->health = 1;			// To indicate the homing projectile
-		spearproj->red_rain_count = 1;
+		proj->enemy = caster->enemy;
+		Vec3ScaleAssign(0.5f, proj->velocity);
+		proj->ideal_yaw = INSECT_SPEAR_PROJECTILE_SPEED / 2.0f;
+		proj->random = 30.0f;
+		proj->delay = 1.5f;
+		proj->count = 1;
+		proj->health = 1; // To indicate the homing projectile. //TODO: add qboolean spear_projectile_homing name? Affects FX only...
+		proj->red_rain_count = 1; //TODO: unused?
 
-		gi.CreateEffect(&spearproj->s,
-			FX_I_EFFECTS,
-			CEF_OWNERS_ORIGIN,
-			NULL,
-			"bv",
-			FX_I_SPEAR2,
-			vec3_origin);
+		proj->think = InsectTrackingSpearProjectileThink;
+		proj->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+		gi.CreateEffect(&proj->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "bv", FX_I_SPEAR2, vec3_origin);
 	}
 	else
 	{
-		spearproj->count = 0;
-		gi.CreateEffect(&spearproj->s,
-			FX_I_EFFECTS,
-			CEF_OWNERS_ORIGIN,
-			vec3_origin,
-			"bv",
-			FX_I_SPEAR,
-			spearproj->velocity);
+		proj->count = 0;
+		gi.CreateEffect(&proj->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_I_SPEAR, proj->velocity);
 	}
 }
 
