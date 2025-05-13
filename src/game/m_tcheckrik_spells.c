@@ -365,47 +365,35 @@ static void InsectSpearProjectileTouch(edict_t* self, edict_t* other, cplane_t* 
 	G_SetToFree(self);
 }
 
-/*
-====================================================
-void Veer(float amount)
-MG
-This function will make a projectile
-wander from it's course in a random
-manner.  It does not actually directly
-use the .veer value, you must send the
-veer amount value to the function as
-a parameter.  But this allows it to
-be used in other ways (call it once,
-etc.)  So you can call it by using
-Veer(self.veer) or Veer(random()*300)
-or Veer([any number]), etc.
-=====================================================
-*/
-void yellowjacket_proj_think (edict_t *self)
+// This function will make a projectile wander from it's course in a random manner.
+static void InsectTrackingSpearProjectileThink(edict_t* self) //mxd. Named 'yellowjacket_proj_think' in original logic.
 {
-	vec3_t		vdir, edir;
-	//No enemy, stop tracking
-	if (!self->enemy)
+	// No enemy, stop tracking.
+	if (self->enemy == NULL)
 	{
 		self->think = NULL;
 		return;
 	}
 
-	VectorCopy(self->velocity, vdir);
-	VectorNormalize(vdir);
-	VectorSubtract(self->enemy->s.origin, self->s.origin, edir);
-	VectorNormalize(edir);
+	vec3_t dir;
+	VectorCopy(self->velocity, dir);
+	VectorNormalize(dir);
 
-	if(DotProduct(edir, vdir) > 0 && irand(2, 24) > self->count)
+	vec3_t enemy_dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
+	VectorNormalize(enemy_dir);
+
+	if (DotProduct(enemy_dir, dir) > 0.0f && irand(2, 24) > self->count)
 		MorcalavinProjectileHomeIn(self);
 
 	self->count++;
 
-	if(self->random < 100)
-		self->random += 10;
+	if (self->random < 100.0f) //TODO: add insect_spear_projectile_veer_amount name.
+		self->random += 10.0f;
 
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
+
 // ****************************************************************************
 // SpellCastSpearProj
 // ****************************************************************************
@@ -482,7 +470,7 @@ void SpellCastInsectSpear(edict_t *caster, vec3_t StartPos, vec3_t AimAngles, in
 
 	if(caster->spawnflags & MSF_INSECT_YELLOWJACKET)
 	{
-		spearproj->think = yellowjacket_proj_think;
+		spearproj->think = InsectTrackingSpearProjectileThink;
 		spearproj->nextthink = level.time + 0.1;
 		spearproj->enemy = caster->enemy;
 		Vec3ScaleAssign(0.5, spearproj->velocity);
