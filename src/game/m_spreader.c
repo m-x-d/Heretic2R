@@ -379,7 +379,7 @@ static void SpreaderEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 
 	if (irand(0, 100) < duck_chance)
 	{
-		self->evade_debounce_time = level.time + eta; //TODO: add spreader_stay_duck_time name.
+		self->evade_debounce_time = level.time + eta;
 		SpreaderCrouch(self);
 	}
 }
