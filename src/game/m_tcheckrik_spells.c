@@ -54,98 +54,58 @@ static void InsectStaffBoltThink(edict_t* self) //mxd. Named 'InsectStaffThink' 
 	self->think = NULL;
 }
 
-// ************************************************************************************************
-// InsectStaffTouch
-// ************************************************************************************************
-
-static void InsectStaffTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *Surface)
+static void InsectStaffBoltTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'InsectStaffTouch' in original logic.
 {
-	vec3_t		Origin;
-	byte		makescorch;
-	edict_t	*InsectStaff;
-
-	if(Surface&&(Surface->flags&SURF_SKY))
+	if (surface != NULL && (surface->flags & SURF_SKY))
 	{
 		SkyFly(self);
 		return;
 	}
 
-	if(EntReflecting(Other, true, true))
+	if (EntReflecting(other, true, true))
 	{
-		InsectStaff=G_Spawn();
+		edict_t* bolt = G_Spawn();
 
-		create_insect_staff_bolt(InsectStaff);
+		create_insect_staff_bolt(bolt);
 
-		InsectStaff->owner = self->owner;
-		InsectStaff->enemy = NULL;
-		InsectStaff->s.scale= self->s.scale;
+		bolt->owner = self->owner;
+		bolt->enemy = NULL;
+		bolt->s.scale = self->s.scale;
 
-		VectorCopy(self->s.origin, InsectStaff->s.origin);
-		Create_rand_relect_vect(self->velocity, InsectStaff->velocity);
-		VectorCopy(InsectStaff->velocity, InsectStaff->movedir);
-		Vec3ScaleAssign(INSECT_STAFF_SPEED,InsectStaff->velocity);
-		vectoangles(InsectStaff->velocity, InsectStaff->s.angles);
+		VectorCopy(self->s.origin, bolt->s.origin);
+		Create_rand_relect_vect(self->velocity, bolt->velocity);
+		VectorCopy(bolt->velocity, bolt->movedir);
+		Vec3ScaleAssign(INSECT_STAFF_SPEED, bolt->velocity);
+		vectoangles(bolt->velocity, bolt->s.angles);
 
-		G_LinkMissile(InsectStaff); 
-
-		gi.CreateEffect(&InsectStaff->s,
-					FX_I_EFFECTS,
-					CEF_OWNERS_ORIGIN,
-					vec3_origin,
-					"bv",
-					FX_I_SP_MSL_HIT,
-					vec3_origin);
-
+		G_LinkMissile(bolt);
+		gi.CreateEffect(&bolt->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_I_SP_MSL_HIT, vec3_origin); //TODO: 'origin' arg should be bolt->s.origin; last arg should be bolt->movedir?
 		G_SetToFree(self);
 
 		return;
 	}
 
-	// Calculate the position for the explosion entity.
-
-	VectorMA(self->s.origin,-0.02,self->velocity,Origin);
-
-
-	if(Other->takedamage)
+	if (other->takedamage != DAMAGE_NO)
 	{
-		T_Damage(Other, self, self->owner, self->movedir, self->s.origin, Plane->normal, self->dmg, 0, DAMAGE_SPELL, MOD_DIED);
+		T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, self->dmg, 0, DAMAGE_SPELL, MOD_DIED);
 	}
 	else
 	{
-		// Back off the origin for the damage a bit. We are a point and this will
-		// help fix hitting base of a stair and not hurting a guy on next step up.
-		VectorMA(self->s.origin,-8.0,self->movedir,self->s.origin);
+		// Back off the origin for the damage a bit. We are a point and this will help fix hitting base of a stair and not hurting a guy on next step up.
+		VectorMA(self->s.origin, -8.0f, self->movedir, self->s.origin);
 	}
 
-	// Attempt to apply a scorchmark decal to the thing I hit.
-	makescorch = 0;
-	if(IsDecalApplicable(Other,self->s.origin,Surface,Plane,NULL))
+	if (self->count == 0)
 	{
-		makescorch = CEF_FLAG6;
-	}
-
-	if(!self->count)
-	{
-		gi.CreateEffect(NULL,
-					FX_I_EFFECTS,
-					makescorch,
-					self->s.origin,
-					"bv",
-					FX_I_ST_MSL_HIT,
-					self->movedir);
+		// Attempt to apply a scorchmark decal to the thing I hit.
+		const byte fx_flags = (IsDecalApplicable(other, self->s.origin, surface, plane, NULL) ? CEF_FLAG6 : 0);
+		gi.CreateEffect(NULL, FX_I_EFFECTS, fx_flags, self->s.origin, "bv", FX_I_ST_MSL_HIT, self->movedir);
 
 	}
 	else
 	{
-		gi.sound(self, CHAN_BODY, gi.soundindex("monsters/imp/fbfire.wav"), 1, ATTN_NORM, 0);
-
-		gi.CreateEffect(&self->s,
-					FX_M_EFFECTS,
-					CEF_OWNERS_ORIGIN,
-					self->s.origin,
-					"bv",
-					FX_IMP_FBEXPL,
-					vec3_origin);
+		gi.sound(self, CHAN_BODY, gi.soundindex("monsters/imp/fbfire.wav"), 1.0f, ATTN_NORM, 0.0f);
+		gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_IMP_FBEXPL, vec3_origin);
 
 	}
 
@@ -159,7 +119,7 @@ void create_insect_staff_bolt(edict_t *InsectStaff)
 	InsectStaff->movetype = MOVETYPE_FLYMISSILE;
 	InsectStaff->solid = SOLID_BBOX;
 	InsectStaff->classname = "Spell_InsectStaff";
-	InsectStaff->touch = InsectStaffTouch;
+	InsectStaff->touch = InsectStaffBoltTouch;
  	InsectStaff->dmg = irand(TC_FEMALE_DMG_HACK_MIN, TC_FEMALE_DMG_HACK_MAX) * (skill->value + 1)/3;
 	InsectStaff->clipmask = MASK_MONSTERSOLID|MASK_SHOT;
 	VectorClear(InsectStaff->mins);
