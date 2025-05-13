@@ -130,54 +130,36 @@ static void InsectStaffBoltInit(edict_t* bolt) //mxd. Named 'create_insect_staff
 	bolt->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-// ************************************************************************************************
-// SpellCastInsectStaff
-// ************************************************************************************************
-
-void SpellCastInsectStaff(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,qboolean power)
+void SpellCastInsectStaff(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const vec3_t aim_dir, const qboolean power) //TODO: rename to SpellCastInsectStaffBolt.
 {
-	vec3_t	forward;
-	edict_t	*InsectStaff;
+	edict_t* bolt = G_Spawn();
 
-	InsectStaff = G_Spawn();
+	InsectStaffBoltInit(bolt);
 
-	VectorCopy(StartPos, InsectStaff->s.origin);	
-	VectorCopy(AimAngles, InsectStaff->s.angles);
-	VectorScale(AimDir, INSECT_STAFF_SPEED, InsectStaff->velocity);
-	AngleVectors(AimAngles, forward, NULL,NULL);
-	VectorCopy(forward, InsectStaff->movedir);
+	VectorCopy(start_pos, bolt->s.origin);
+	VectorCopy(aim_angles, bolt->s.angles);
+	VectorScale(aim_dir, INSECT_STAFF_SPEED, bolt->velocity);
 
-	InsectStaffBoltInit(InsectStaff);
+	AngleVectors(aim_angles, bolt->movedir, NULL, NULL);
 
-	InsectStaff->s.scale = 0.1;
-	InsectStaff->owner = Caster;
-	InsectStaff->enemy = Caster->enemy;
+	bolt->s.scale = 0.1f;
+	bolt->owner = caster;
+	bolt->enemy = caster->enemy;
 
-	G_LinkMissile(InsectStaff); 
+	G_LinkMissile(bolt);
 
-	if(power)
+	if (power)
 	{
-		Vec3ScaleAssign(2, InsectStaff->velocity);
-		InsectStaff->dmg *= 2;
-		InsectStaff->count = 1;
-		gi.CreateEffect(&InsectStaff->s,
-					FX_M_EFFECTS,//just so I don't have to make a new FX_ id
-					CEF_OWNERS_ORIGIN,
-					NULL,
-					"bv",
-					FX_IMP_FIRE,
-					InsectStaff->velocity);
+		Vec3ScaleAssign(2.0f, bolt->velocity);
+		bolt->dmg *= 2;
+		bolt->count = 1; //TODO: add qboolean insect_staff_bolt_powered name.
+
+		gi.CreateEffect(&bolt->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "bv", FX_IMP_FIRE, bolt->velocity);
 	}
 	else
 	{
-		InsectStaff->count = 0;
-		gi.CreateEffect(&InsectStaff->s,
-						FX_I_EFFECTS,
-						CEF_OWNERS_ORIGIN,
-						vec3_origin,
-						"bv",
-						FX_I_STAFF,
-						vec3_origin);
+		bolt->count = 0;
+		gi.CreateEffect(&bolt->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_I_STAFF, vec3_origin);
 	}
 }
 
