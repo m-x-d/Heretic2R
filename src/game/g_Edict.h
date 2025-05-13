@@ -259,6 +259,7 @@ struct edict_s
 		qboolean morcalavin_barrier_enabled; //mxd
 		qboolean ssithra_watersplash_spawned; //mxd
 		float rat_flee_angle; //mxd
+		qboolean insect_staff_bolt_powered; //mxd
 	};
 
 	qboolean targeted; // Used by Ogle to denote a targeted action queued up. //mxd. int in original logic.

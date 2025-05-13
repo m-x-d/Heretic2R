@@ -91,18 +91,16 @@ static void InsectStaffBoltTouch(edict_t* self, edict_t* other, cplane_t* plane,
 		VectorMA(self->s.origin, -8.0f, self->movedir, self->s.origin);
 	}
 
-	if (self->count == 0)
+	if (self->insect_staff_bolt_powered)
+	{
+		gi.sound(self, CHAN_BODY, gi.soundindex("monsters/imp/fbfire.wav"), 1.0f, ATTN_NORM, 0.0f);
+		gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_IMP_FBEXPL, vec3_origin);
+	}
+	else
 	{
 		// Attempt to apply a scorchmark decal to the thing I hit.
 		const byte fx_flags = (IsDecalApplicable(other, self->s.origin, surface, plane, NULL) ? CEF_FLAG6 : 0);
 		gi.CreateEffect(NULL, FX_I_EFFECTS, fx_flags, self->s.origin, "bv", FX_I_ST_MSL_HIT, self->movedir);
-
-	}
-	else
-	{
-		gi.sound(self, CHAN_BODY, gi.soundindex("monsters/imp/fbfire.wav"), 1.0f, ATTN_NORM, 0.0f);
-		gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_IMP_FBEXPL, vec3_origin);
-
 	}
 
 	G_SetToFree(self);
@@ -142,6 +140,7 @@ void SpellCastInsectStaff(edict_t* caster, const vec3_t start_pos, const vec3_t 
 	bolt->s.scale = 0.1f;
 	bolt->owner = caster;
 	bolt->enemy = caster->enemy;
+	bolt->insect_staff_bolt_powered = power;
 
 	G_LinkMissile(bolt);
 
@@ -149,13 +148,11 @@ void SpellCastInsectStaff(edict_t* caster, const vec3_t start_pos, const vec3_t 
 	{
 		Vec3ScaleAssign(2.0f, bolt->velocity);
 		bolt->dmg *= 2;
-		bolt->count = 1; //TODO: add qboolean insect_staff_bolt_powered name.
 
 		gi.CreateEffect(&bolt->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "bv", FX_IMP_FIRE, bolt->velocity);
 	}
 	else
 	{
-		bolt->count = 0;
 		gi.CreateEffect(&bolt->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_I_STAFF, vec3_origin);
 	}
 }
