@@ -306,6 +306,7 @@ struct edict_s
 	{
 		float delay; // Delay before firing targets. Used by a few polys and targets.
 		float morcalavin_attack_delay; //mxd
+		float insect_tracking_projectile_turn_speed; //mxd
 	};
 
 	float random;	// Used by func_timer and spl_meteorbarrier.
