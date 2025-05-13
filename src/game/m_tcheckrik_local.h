@@ -22,7 +22,6 @@ typedef enum AnimID_e
 	ANIM_KNOCK1_END,
 	ANIM_TWITCH,
 
-
 	ANIM_C_ACTION1,
 	ANIM_C_ACTION2,
 	ANIM_C_ACTION3,
@@ -38,6 +37,7 @@ typedef enum AnimID_e
 	ANIM_C_PAIN1,
 	ANIM_C_RUN1,
 	ANIM_C_WALK1,
+
 	NUM_ANIMS
 } AnimID_t;
 
@@ -60,26 +60,27 @@ typedef enum SoundID_e
 	SND_GROWLF1,
 	SND_GROWLF2,
 	SND_THUD,
+
 	NUM_SOUNDS
 } SoundID_t;
 
-extern animmove_t insect_move_back;// = {10, insect_frames_back, insect_pause};
-extern animmove_t insect_move_deathfr;// = {23, insect_frames_deathfr, insect_dead};
-extern animmove_t insect_move_idle;// = { 50, insect_frames_idle, NULL};
-extern animmove_t insect_move_land;// = {6, insect_frames_land, insect_pause};
-extern animmove_t insect_move_inair;// = {1, insect_frames_inair, NULL};
-extern animmove_t insect_move_forcedjump;// = {9, insect_frames_forcedjump, insect_go_inair};
-extern animmove_t insect_move_finair;// = {1, insect_frames_inair, NULL};
-extern animmove_t insect_move_fjump;// = {9, insect_frames_forcedjump, insect_go_inair};
-extern animmove_t insect_move_paina;// = {7, insect_frames_paina, insect_pause};
-extern animmove_t insect_move_painc;// = {6, insect_frames_painc, insect_pause};
-extern animmove_t insect_move_run;// = {10, insect_frames_run, insect_pause};
-extern animmove_t insect_move_spear;// = {11, insect_frames_spear, insect_pause};
-extern animmove_t insect_move_sword;// = {9, insect_frames_sword, insect_pause};
-extern animmove_t insect_move_spell;// = {8, insect_frames_spell, insect_pause};
-extern animmove_t insect_move_spell2;// = {8, insect_frames_spell, insect_pause};
-extern animmove_t insect_move_walk;// = {20, insect_frames_walk, insect_pause};
-extern animmove_t insect_delay;// = {50 , insect_frames_delay, insect_pause};
+extern animmove_t insect_move_back;
+extern animmove_t insect_move_deathfr;
+extern animmove_t insect_move_idle;
+extern animmove_t insect_move_land;
+extern animmove_t insect_move_inair;
+extern animmove_t insect_move_forcedjump;
+extern animmove_t insect_move_finair;
+extern animmove_t insect_move_fjump;
+extern animmove_t insect_move_paina;
+extern animmove_t insect_move_painc;
+extern animmove_t insect_move_run;
+extern animmove_t insect_move_spear;
+extern animmove_t insect_move_sword;
+extern animmove_t insect_move_spell;
+extern animmove_t insect_move_spell2;
+extern animmove_t insect_move_walk;
+extern animmove_t insect_delay;
 
 extern animmove_t insect_move_c_action1;
 extern animmove_t insect_move_c_action2;
@@ -96,58 +97,24 @@ extern animmove_t insect_move_c_attack2;
 extern animmove_t insect_move_c_attack3;
 extern animmove_t insect_move_c_death1;
 extern animmove_t insect_move_c_pain1;
-extern animmove_t insect_move_c_pain2;
-extern animmove_t insect_move_c_jump;
-extern animmove_t insect_move_c_inair;
 extern animmove_t insect_move_knock1_go;
 extern animmove_t insect_move_knock1_loop;
 extern animmove_t insect_move_knock1_end;
 extern animmove_t insect_move_twitch;
 
-extern void insect_c_walk(edict_t *self, G_Message_t *msg);
-extern void insect_c_backpedal(edict_t *self, G_Message_t *msg);
-extern void insect_c_action1(edict_t *self, G_Message_t *msg);
-extern void insect_c_action2(edict_t *self, G_Message_t *msg);
-extern void insect_c_action3(edict_t *self, G_Message_t *msg);
-extern void insect_c_action4(edict_t *self, G_Message_t *msg);
-extern void insect_c_idle1(edict_t *self, G_Message_t *msg);
-extern void insect_c_idle2(edict_t *self, G_Message_t *msg);
-extern void insect_c_idle3(edict_t *self, G_Message_t *msg);
-extern void insect_c_attack1(edict_t *self, G_Message_t *msg);
-extern void insect_c_attack2(edict_t *self, G_Message_t *msg);
-extern void insect_c_attack3(edict_t *self, G_Message_t *msg);
-extern void insect_c_death1(edict_t *self, G_Message_t *msg);
-extern void insect_c_pain1(edict_t *self, G_Message_t *msg);
-extern void insect_c_jump(edict_t *self, G_Message_t *msg);
-extern void insect_c_pause (edict_t *self, G_Message_t *msg);
 extern void insect_c_reallydead (edict_t *self);
-extern void insect_c_go_inair (edict_t *self);
 
-void SpellCastInsectStaff(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,qboolean power);
-void SpellCastGlobeOfOuchiness(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir);
 void insectReleaseSpell (edict_t *self);
-void insectReadySpell (edict_t *self);
-void insectDoneSpell (edict_t *self);
 
 void insectCut (edict_t *self, float attacktype);
 void insectSpell(edict_t *self, float whichspell);
 void insectStaff(edict_t *self);
 void insectCheckLoop (edict_t *self, float frame);
 
-void insect_blocked(edict_t *self, G_Message_t *msg);
-void insect_death(edict_t *self, G_Message_t *msg);
-void insect_run(edict_t *self, G_Message_t *msg);
-void insect_walk(edict_t *self, G_Message_t *msg);
-void insect_melee(edict_t *self, G_Message_t *msg);
-void insect_stand(edict_t *self, G_Message_t *msg);
-void insect_pain(edict_t *self, G_Message_t *msg);
-
 void insect_dead(edict_t *self);
 void insectdeathsqueal(edict_t *self);
 void insectsqueal(edict_t *self);
 void insectgrowl(edict_t *self);
-void insectbite(edict_t *self);
-void insect_think_pain(edict_t *self);
 void insect_pause (edict_t *self);
 void insect_dropweapon (edict_t *self, int weapon);
 void insect_go_inair(edict_t *self);
@@ -157,9 +124,6 @@ void insect_flyback_loop(edict_t *self);
 void insect_flyback_move(edict_t *self);
 void insect_random_idle_sound (edict_t *self);
 void insect_go_finair(edict_t *self);
-
-void SP_monster_insect (edict_t *self);
-
 
 #define BIT_MASTER		0
 #define BIT_LLEG		1
@@ -178,7 +142,7 @@ void SP_monster_insect (edict_t *self);
 #define BIT_LWINGS		8192
 #define BIT_RLEG		16384
 
-#define TC_ATK_STAB	1
+#define TC_ATK_STAB	1 //TODO: never used?
 #define TC_ATK_HACK	2
 
 #define TC_SPL_FIRE		1

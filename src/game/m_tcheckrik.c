@@ -46,6 +46,7 @@
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 #include "m_stats.h"
+#include "m_tcheckrik_spells.h" //mxd
 
 void insect_dismember(edict_t *self, int damage, int HitLocation);
 
@@ -726,7 +727,7 @@ void insectReleaseSpell (edict_t *self)
 {
 	gi.RemoveEffects(&self->s, FX_I_EFFECTS);
 	self->s.effects |= EF_DISABLE_EXTRA_FX | EF_MARCUS_FLAG1;
-	self->damage_debounce_time = true;
+	self->damage_debounce_time = true; //TODO: add qboolean insect_globe_released name.
 }
 
 /*-------------------------------------------------------------------------
