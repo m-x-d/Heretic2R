@@ -209,67 +209,42 @@ static void InsectGlobeOfOuchinessGrowThink(edict_t* self) //mxd. Named 'GlobeOf
 	}
 }
 
-// ****************************************************************************
-// SpellCastGlobeOfOuchiness
-// ****************************************************************************
-
-void SpellCastGlobeOfOuchiness(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir)
+void SpellCastGlobeOfOuchiness(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const vec3_t aim_dir) //TODO: remove 'start_pos' arg, rename to SpellCastInsectGlobeOfOuchiness.
 {
-	edict_t	*Globe;
-	vec3_t	tempvec;
+	// Spawn the globe of annihilation as an invisible entity (i.e. modelindex = 0).
+	edict_t* globe = G_Spawn();
 
-	// Spawn the globe of annihilation as an invisible entity (i.e. modelindex=0).
+	VectorCopy(caster->s.origin, globe->s.origin);
 
-	Globe=G_Spawn();
+	globe->s.origin[0] += aim_dir[0] * 20.0f;
+	globe->s.origin[1] += aim_dir[1] * 20.0f;
+	globe->s.origin[2] += (float)caster->viewheight - 5.0f;
 
-	VectorCopy(Caster->s.origin,Globe->s.origin);	
-	Globe->s.origin[0]+=AimDir[0]*20.0;
-	Globe->s.origin[1]+=AimDir[1]*20.0;
-	Globe->s.origin[2]+=Caster->viewheight-5.0;
-	
-	vectoangles(AimAngles,Globe->s.angles);
+	vectoangles(aim_angles, globe->s.angles);
 
-	Globe->avelocity[YAW]=100.0;
-	Globe->avelocity[ROLL]=100.0;
+	globe->avelocity[YAW] = 100.0f;
+	globe->avelocity[ROLL] = 100.0f;
 
-	// whether or not I have been released. Would like a dedicated value in the 'edict_t' but this
-	// is unlikely to happen, sooooo...
+	globe->svflags |= SVF_ALWAYS_SEND;
+	globe->s.effects |= (EF_ALWAYS_ADD_EFFECTS | EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
+	globe->s.scale = 1.0f;
+	globe->owner = caster;
+	globe->enemy = caster->enemy;
+	globe->classname = "Spell_GlobeOfOuchiness";
+	globe->dmg = 0;
+	globe->count = 0;
+	globe->clipmask = MASK_MONSTERSOLID;
+	globe->movetype = PHYSICSTYPE_FLY;
+	globe->solid = SOLID_NOT;
 
-	Globe->svflags |= SVF_ALWAYS_SEND;
-	Globe->s.effects |= EF_ALWAYS_ADD_EFFECTS|EF_MARCUS_FLAG1|EF_CAMERA_NO_CLIP;
-	Globe->owner=Caster;
-	Globe->classname="Spell_GlobeOfOuchiness";
-	Globe->dmg=0;
-	Globe->s.scale=1.0;
-	Globe->enemy=Caster->enemy;
-	Globe->count=0;
-	Globe->clipmask=MASK_MONSTERSOLID;
-	Globe->movetype = PHYSICSTYPE_FLY;
-	Globe->solid=SOLID_NOT;
-	Globe->nextthink=level.time+0.1;
-	Globe->think=InsectGlobeOfOuchinessGrowThink;
+	globe->think = InsectGlobeOfOuchinessGrowThink;
+	globe->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
-	G_LinkMissile(Globe); 
+	G_LinkMissile(globe);
 
-	VectorSet(tempvec, (float)(Caster->s.number), 0, 0);
-
-	gi.CreateEffect(&Globe->s,
-					FX_I_EFFECTS,
-					CEF_OWNERS_ORIGIN,
-					vec3_origin,
-					"bv",
-					FX_I_GLOBE,
-					tempvec);
-
-	gi.CreateEffect(&Globe->s,
-					FX_I_EFFECTS,
-					CEF_OWNERS_ORIGIN,
-					vec3_origin,
-					"bv",
-					FX_I_GLOW,
-					tempvec);
-
-//	gi.sound(Globe,CHAN_WEAPON,gi.soundindex("weapons/GlobeOfOuchinessGrow.wav"),1,ATTN_NORM,0);
+	vec3_t temp_vec = { caster->s.number, 0.0f, 0.0f }; // Caster entnum for FX_I_GLOW.
+	gi.CreateEffect(&globe->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_I_GLOBE, temp_vec);
+	gi.CreateEffect(&globe->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_I_GLOW, temp_vec);
 }
 
 #pragma endregion
