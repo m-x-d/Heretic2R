@@ -292,7 +292,7 @@ edict_t* SpearProjReflect(edict_t* self, edict_t* other, vec3_t vel) //TODO: ren
 
 	G_LinkMissile(proj);
 
-	proj->health = self->health;
+	proj->is_insect_tracking_projectile = self->is_insect_tracking_projectile;
 	proj->owner = other;
 	proj->enemy = NULL;
 	proj->ideal_yaw = self->ideal_yaw;
@@ -303,7 +303,7 @@ edict_t* SpearProjReflect(edict_t* self, edict_t* other, vec3_t vel) //TODO: ren
 	proj->think = self->think;
 	proj->nextthink = self->nextthink;
 
-	if (proj->health == 1)
+	if (proj->is_insect_tracking_projectile)
 		gi.CreateEffect(&proj->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "bv", FX_I_SPEAR2, vec3_origin);
 	else
 		gi.CreateEffect(&proj->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_I_SPEAR, proj->velocity);
@@ -517,7 +517,7 @@ void SpellCastInsectSpear(edict_t* caster, const vec3_t start_pos, const vec3_t 
 		proj->random = 30.0f;
 		proj->insect_tracking_projectile_turn_speed = 1.5f;
 		proj->count = 1;
-		proj->health = 1; // To indicate the homing projectile. //TODO: add qboolean spear_projectile_homing name? Affects FX only...
+		proj->is_insect_tracking_projectile = true; // To indicate the homing projectile (affects FX only -- mxd).
 		proj->red_rain_count = 1; //TODO: unused?
 
 		proj->think = InsectTrackingSpearProjectileThink;

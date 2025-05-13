@@ -189,7 +189,12 @@ struct edict_s
 	// Used by just about every type of entity.
 	void (*use)(edict_t* self, edict_t* other, edict_t* activator);
 
-	int health;		// Used by anything that can be destroyed.
+	union
+	{
+		int health; // Used by anything that can be destroyed.
+		qboolean is_insect_tracking_projectile; //mxd
+	};
+
 	int max_health;	// Used by anything that can be destroyed.
 
 	union
