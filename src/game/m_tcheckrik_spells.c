@@ -1,26 +1,24 @@
 //
-// spl_flyingfist.c
+// m_tcheckrik_spells.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "m_tcheckrik_spells.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "vector.h"
-#include "random.h"
-#include "decals.h"
 #include "g_combat.h" //mxd
-#include "m_tcheckrik_local.h"
-#include "Utilities.h"
-#include "m_stats.h"
 #include "g_playstats.h"
+#include "m_stats.h"
 #include "m_morcalavin.h" //mxd
+#include "Decals.h"
+#include "Vector.h"
+#include "Random.h"
+#include "Utilities.h"
 
+#define INSECT_GLOBE_MAX_SCALE	1.8f //mxd. Named 'GLOBE_MAX_SCALE' in original logic.
 
-static void InsectStaffThink(edict_t *self);
-static void InsectStaffTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *Surface);
+// Radius of zero seems to prevent collision between bolts.
+#define INSECT_SPEAR_PROJECTILE_RADIUS	0.0f //mxd. Named 'SPEARPROJ_RADIUS' in original logic.
+#define INSECT_SPEAR_PROJECTILE_SPEED	600.0f //mxd. Named 'SPEARPROJ_SPEED' in original logic.
 
 void create_insect_staff_bolt(edict_t *InsectStaff);
 
@@ -231,12 +229,6 @@ void SpellCastInsectStaff(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_
 	}
 }
 
-
-
-#define GLOBE_MAX_SCALE				1.8
-#define GLOBE_SCALE_RANGE				0.8
-#define GLOBE_FLY_SPEED				600.0
-
 static void GlobeOfOuchinessGrowThink(edict_t *self);
 
 // ****************************************************************************
@@ -268,7 +260,7 @@ static void GlobeOfOuchinessGrowThink(edict_t *self)
 
 		self->count+=irand(1,2);
 		
-		if((self->count>10)&&(self->s.scale<GLOBE_MAX_SCALE))
+		if((self->count>10)&&(self->s.scale<INSECT_GLOBE_MAX_SCALE))
 		{
 			if(self->count>20)
 			{
@@ -367,11 +359,6 @@ void SpellCastGlobeOfOuchiness(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,
 //Spear Projectiles
 static void SpearProjTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *Surface);
 
-// Radius of zero seems to prevent collision between bolts
-
-#define SPEARPROJ_RADIUS		0.0
-#define SPEARPROJ_SPEED			600.0
-
 // guts of creating a spearproj
 void create_spearproj(edict_t *spearproj)
 {
@@ -380,8 +367,8 @@ void create_spearproj(edict_t *spearproj)
 	spearproj->svflags |= SVF_ALWAYS_SEND;
 	spearproj->movetype = MOVETYPE_FLYMISSILE;
 
-	VectorSet(spearproj->mins, -SPEARPROJ_RADIUS, -SPEARPROJ_RADIUS, -SPEARPROJ_RADIUS);
-	VectorSet(spearproj->maxs, SPEARPROJ_RADIUS, SPEARPROJ_RADIUS, SPEARPROJ_RADIUS);
+	VectorSet(spearproj->mins, -INSECT_SPEAR_PROJECTILE_RADIUS, -INSECT_SPEAR_PROJECTILE_RADIUS, -INSECT_SPEAR_PROJECTILE_RADIUS);
+	VectorSet(spearproj->maxs, INSECT_SPEAR_PROJECTILE_RADIUS, INSECT_SPEAR_PROJECTILE_RADIUS, INSECT_SPEAR_PROJECTILE_RADIUS);
 
 	spearproj->solid = SOLID_BBOX;
 	spearproj->clipmask = MASK_SHOT;
@@ -474,7 +461,7 @@ static void SpearProjTouch(edict_t *self, edict_t *other, cplane_t *plane, csurf
 		if(EntReflecting(other, true, true))
 		{
 			Create_rand_relect_vect(self->velocity, self->velocity);
-			Vec3ScaleAssign(SPEARPROJ_SPEED/2, self->velocity);
+			Vec3ScaleAssign(INSECT_SPEAR_PROJECTILE_SPEED/2, self->velocity);
 			SpearProjReflect(self, other, self->velocity);
 
 			return;
@@ -622,21 +609,21 @@ void SpellCastInsectSpear(edict_t *caster, vec3_t StartPos, vec3_t AimAngles, in
 			VectorAverage(forward, up, forward);
 			break;
 		}
-		VectorScale(forward, SPEARPROJ_SPEED, spearproj->velocity);
+		VectorScale(forward, INSECT_SPEAR_PROJECTILE_SPEED, spearproj->velocity);
 	}
 	else
 	{
 		//Check ahead first to see if it's going to hit anything at this angle
 		AngleVectors(AimAngles, forward, NULL, NULL);
-		VectorMA(StartPos, SPEARPROJ_SPEED, forward, endpos);
+		VectorMA(StartPos, INSECT_SPEAR_PROJECTILE_SPEED, forward, endpos);
 		gi.trace(StartPos, vec3_origin, vec3_origin, endpos, caster, MASK_MONSTERSOLID,&trace);
 		if(trace.ent && OkToAutotarget(caster, trace.ent))
 		{//already going to hit a valid target at this angle- so don't autotarget
-			VectorScale(forward, SPEARPROJ_SPEED, spearproj->velocity);
+			VectorScale(forward, INSECT_SPEAR_PROJECTILE_SPEED, spearproj->velocity);
 		}
 		else
 		{//autotarget current enemy
-			GetAimVelocity(caster->enemy, spearproj->s.origin, SPEARPROJ_SPEED, AimAngles, spearproj->velocity);
+			GetAimVelocity(caster->enemy, spearproj->s.origin, INSECT_SPEAR_PROJECTILE_SPEED, AimAngles, spearproj->velocity);
 		}
 	}
 
@@ -660,7 +647,7 @@ void SpellCastInsectSpear(edict_t *caster, vec3_t StartPos, vec3_t AimAngles, in
 		spearproj->nextthink = level.time + 0.1;
 		spearproj->enemy = caster->enemy;
 		Vec3ScaleAssign(0.5, spearproj->velocity);
-		spearproj->ideal_yaw = SPEARPROJ_SPEED/2;
+		spearproj->ideal_yaw = INSECT_SPEAR_PROJECTILE_SPEED/2;
 		spearproj->random = 30;
 		spearproj->delay = 1.5;
 		spearproj->count = 1;
