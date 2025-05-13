@@ -173,17 +173,17 @@ static void InsectGlobeOfOuchinessGrowThink(edict_t* self) //mxd. Named 'GlobeOf
 
 	if (!self->owner->damage_debounce_time) //TODO: add qboolean insect_globe_released name.
 	{
-		self->count += irand(1, 2);
+		self->insect_globe_grow_counter += irand(1, 2);
 
-		if (self->count > 10 && self->s.scale < INSECT_GLOBE_MAX_SCALE)
+		if (self->insect_globe_grow_counter > 10 && self->s.scale < INSECT_GLOBE_MAX_SCALE)
 		{
-			if (self->count > 20)
+			if (self->insect_globe_grow_counter > 20)
 				self->s.scale -= 0.01f;
 			else
 				self->s.scale += 0.1f;
 
-			if (self->count > 25)
-				self->count &= 3;
+			if (self->insect_globe_grow_counter > 25)
+				self->insect_globe_grow_counter &= 3;
 		}
 
 		vec3_t forward;
@@ -226,7 +226,7 @@ void SpellCastGlobeOfOuchiness(edict_t* caster, const vec3_t start_pos, const ve
 	globe->enemy = caster->enemy;
 	globe->classname = "Spell_GlobeOfOuchiness";
 	globe->dmg = 0;
-	globe->count = 0;
+	globe->insect_globe_grow_counter = 0;
 	globe->clipmask = MASK_MONSTERSOLID;
 	globe->movetype = PHYSICSTYPE_FLY;
 	globe->solid = SOLID_NOT;
