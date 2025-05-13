@@ -249,7 +249,7 @@ void SpellCastGlobeOfOuchiness(edict_t* caster, const vec3_t start_pos, const ve
 
 #pragma region ========================== Insect spear projectile spell ==========================
 
-static void SpearProjTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface);
+static void InsectSpearProjectileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface);
 
 // Guts of creating a spear projectile.
 static void InsectSpearProjectileInit(edict_t* proj) //mxd. Named 'create_spearproj' in original logic.
@@ -265,7 +265,7 @@ static void InsectSpearProjectileInit(edict_t* proj) //mxd. Named 'create_spearp
 
 	proj->solid = SOLID_BBOX;
 	proj->clipmask = MASK_SHOT;
-	proj->touch = SpearProjTouch;
+	proj->touch = InsectSpearProjectileTouch;
 
 	if (proj->count) // Powered projectile.
 		proj->dmg = irand(TC_DMG_YSPEAR_MIN, TC_DMG_YSPEAR_MAX);
@@ -315,88 +315,52 @@ edict_t* SpearProjReflect(edict_t* self, edict_t* other, vec3_t vel) //TODO: ren
 	return proj;
 }
 
-// ****************************************************************************
-// SpearProjTouch
-// ****************************************************************************
-
-static void SpearProjTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
+static void InsectSpearProjectileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'SpearProjTouch' in original logic.
 {
-	byte	makeScorch = 0;
-
-	// did we hit the sky ? 
-	if(surface && (surface->flags & SURF_SKY))
+	// Did we hit the sky ? 
+	if (surface != NULL && (surface->flags & SURF_SKY))
 	{
 		SkyFly(self);
 		return;
 	}
 
-	// did we hit someone where reflection is functional ?
-	if (self->reflect_debounce_time)
+	// Did we hit someone where reflection is functional?
+	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
 	{
-		if(EntReflecting(other, true, true))
-		{
-			Create_rand_relect_vect(self->velocity, self->velocity);
-			Vec3ScaleAssign(INSECT_SPEAR_PROJECTILE_SPEED/2, self->velocity);
-			SpearProjReflect(self, other, self->velocity);
+		Create_rand_relect_vect(self->velocity, self->velocity);
+		Vec3ScaleAssign(INSECT_SPEAR_PROJECTILE_SPEED / 2.0f, self->velocity);
+		SpearProjReflect(self, other, self->velocity);
 
-			return;
-		}
+		return;
 	}
 
-	if(other->takedamage)
+	if (other->takedamage != DAMAGE_NO)
 	{
-		if(level.fighting_beast)
+		if (level.fighting_beast)
 		{
-			if(other->classID == CID_TBEAST)
-			{	
-				if(other->enemy != self->owner)
-				{
-					other->enemy = self->owner;
-				}
+			if (other->classID == CID_TBEAST)
+			{
+				other->enemy = self->owner;
 			}
-			else if(other->classID == CID_BBRUSH)
+			else if (other->classID == CID_BBRUSH)
 			{
 				self->dmg = 0;
-				VectorMA(self->s.origin, -4.0, self->movedir, self->s.origin);
+				VectorMA(self->s.origin, -4.0f, self->movedir, self->s.origin);
 			}
 		}
 
-		if(self->dmg)//HACK = so can't collapse trial beast bridge
-			T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, self->dmg, 0, DAMAGE_SPELL,MOD_SPEAR);
+		if (self->dmg > 0) //HACK = so can't collapse trial beast bridge.
+			T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, self->dmg, 0, DAMAGE_SPELL, MOD_SPEAR);
 	}
 	else
 	{
-		// Back off the origin for the damage a bit. We are a point and this will
-		// help fix hitting base of a stair and not hurting a guy on next step up.
-		VectorMA(self->s.origin, -4.0, self->movedir, self->s.origin);
+		// Back off the origin for the damage a bit. We are a point and this will help fix hitting base of a stair and not hurting a guy on next step up.
+		VectorMA(self->s.origin, -4.0f, self->movedir, self->s.origin);
 	}
 
-	makeScorch = 0;
-	if(IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
-	{
-		makeScorch = CEF_FLAG6;
-	}
-
-	if(self->count)
-	{
-		gi.CreateEffect(&self->s,
-			FX_I_EFFECTS,
-			makeScorch,
-			vec3_origin,
-			"bv",
-			FX_I_SP_MSL_HIT2,
-			self->movedir);
-	}
-	else
-	{
-		gi.CreateEffect(&self->s,
-			FX_I_EFFECTS,
-			makeScorch,
-			vec3_origin,
-			"bv",
-			FX_I_SP_MSL_HIT,
-			self->movedir);
-	}
+	const byte fx_flags = (IsDecalApplicable(other, self->s.origin, surface, plane, NULL) ? CEF_FLAG6 : 0);
+	const int fx_type = (self->count ? FX_I_SP_MSL_HIT2 : FX_I_SP_MSL_HIT); //mxd
+	gi.CreateEffect(&self->s, FX_I_EFFECTS, fx_flags, vec3_origin, "bv", fx_type, self->movedir);
 
 	G_SetToFree(self);
 }
@@ -512,7 +476,7 @@ void SpellCastInsectSpear(edict_t *caster, vec3_t StartPos, vec3_t AimAngles, in
 	gi.trace(spearproj->s.origin, vec3_origin, vec3_origin, spearproj->s.origin, caster, MASK_PLAYERSOLID,&trace);
 	if (trace.startsolid)
 	{
-		SpearProjTouch(spearproj, trace.ent, &trace.plane, trace.surface);
+		InsectSpearProjectileTouch(spearproj, trace.ent, &trace.plane, trace.surface);
 		return;
 	}
 
