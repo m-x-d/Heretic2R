@@ -165,67 +165,47 @@ void SpellCastInsectStaff(edict_t* caster, const vec3_t start_pos, const vec3_t 
 
 #pragma endregion
 
-static void GlobeOfOuchinessGrowThink(edict_t *self);
+#pragma region ========================== Insect globe of ouchiness spell ==========================
 
-// ****************************************************************************
-// GlobeOfOuchinessGrowThink
-// ****************************************************************************
-
-static void GlobeOfOuchinessGrowThink(edict_t *self)
+static void InsectGlobeOfOuchinessGrowThink(edict_t* self) //mxd. Named 'GlobeOfOuchinessGrowThink' in original logic.
 {
-	vec3_t	Forward,Up;
-
-	if(self->owner->s.effects&EF_DISABLE_EXTRA_FX)
+	if (self->owner->s.effects & EF_DISABLE_EXTRA_FX)
 	{
-		gi.RemoveEffects(&self->s,0);
+		gi.RemoveEffects(&self->s, 0);
 		G_FreeEdict(self);
+
 		return;
 	}
-		
-	if (self->owner->client)
-		AngleVectors(self->owner->client->aimangles,Forward,NULL,Up);
-	else
-		AngleVectors(self->owner->s.angles,Forward,NULL,Up);
 
-	// whether or not I have been released. Would like a dedicated value in the 'edict_t' but this
-	// is unlikely to happen, sooooo...
-
-	if(!self->owner->damage_debounce_time)
+	if (!self->owner->damage_debounce_time) //TODO: add qboolean insect_globe_released name.
 	{
-//		self->svflags |= SVF_NOCLIENT;
+		self->count += irand(1, 2);
 
-		self->count+=irand(1,2);
-		
-		if((self->count>10)&&(self->s.scale<INSECT_GLOBE_MAX_SCALE))
+		if (self->count > 10 && self->s.scale < INSECT_GLOBE_MAX_SCALE)
 		{
-			if(self->count>20)
-			{
-				self->s.scale-=0.01;
-			}
+			if (self->count > 20)
+				self->s.scale -= 0.01f;
 			else
-			{
-				self->s.scale+=0.1;
-			}
+				self->s.scale += 0.1f;
 
-			if(self->count>25)
-			{
-				self->count&=3;
-			}
+			if (self->count > 25)
+				self->count &= 3;
 		}
 
-		self->velocity[0]=8.0*((self->owner->s.origin[0]+Forward[0]*22.0+flrand(-2.0F,2.0F))-self->s.origin[0]);
-		self->velocity[1]=8.0*((self->owner->s.origin[1]+Forward[1]*22.0+flrand(-2.0F,2.0F))-self->s.origin[1]);
-		self->velocity[2]=8.0*((self->owner->s.origin[2]+Up[2]*10.0)-self->s.origin[2]);
+		vec3_t forward;
+		vec3_t up;
+		AngleVectors(self->owner->s.angles, forward, NULL, up);
 
-		self->nextthink=level.time+0.1;
+		self->velocity[0] = 8.0f * ((self->owner->s.origin[0] + forward[0] * 22.0f + flrand(-2.0f, 2.0f)) - self->s.origin[0]);
+		self->velocity[1] = 8.0f * ((self->owner->s.origin[1] + forward[1] * 22.0f + flrand(-2.0f, 2.0f)) - self->s.origin[1]);
+		self->velocity[2] = 8.0f * ((self->owner->s.origin[2] + up[2] * 10.0f) - self->s.origin[2]);
+
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
 	else
 	{
-		self->owner->damage_debounce_time = true;
-
+		self->owner->damage_debounce_time = true; //TODO: not needed?
 		G_FreeEdict(self);
-		return;
-
 	}
 }
 
@@ -267,7 +247,7 @@ void SpellCastGlobeOfOuchiness(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,
 	Globe->movetype = PHYSICSTYPE_FLY;
 	Globe->solid=SOLID_NOT;
 	Globe->nextthink=level.time+0.1;
-	Globe->think=GlobeOfOuchinessGrowThink;
+	Globe->think=InsectGlobeOfOuchinessGrowThink;
 
 	G_LinkMissile(Globe); 
 
@@ -291,6 +271,8 @@ void SpellCastGlobeOfOuchiness(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,
 
 //	gi.sound(Globe,CHAN_WEAPON,gi.soundindex("weapons/GlobeOfOuchinessGrow.wav"),1,ATTN_NORM,0);
 }
+
+#pragma endregion
 
 //Spear Projectiles
 static void SpearProjTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *Surface);
