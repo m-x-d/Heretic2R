@@ -401,9 +401,9 @@ static void TcheckrikFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
-void insect_sound(edict_t *self, float channel, float soundnum, float attn)
+void insect_sound(edict_t* self, float channel, float sound_num, float attenuation) //TODO: rename to tcheckrik_sound.
 {
-	gi.sound (self, (int)(channel), sounds[(int)(soundnum)], 1, (int)(attn), 0);
+	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
 }
 
 void insect_melee(edict_t *self, G_Message_t *msg)
