@@ -9,7 +9,7 @@
 #include "g_local.h"
 
 typedef enum AnimID_e
-{	
+{
 	ANIM_BACK,
 	ANIM_DEATHFR,
 	ANIM_IDLE,
@@ -17,7 +17,7 @@ typedef enum AnimID_e
 	ANIM_INAIR,
 	ANIM_FORCED_JUMP,
 	ANIM_FINAIR,
-	ANIM_FJUMP,	
+	ANIM_FJUMP,
 	ANIM_PAINA,
 	ANIM_PAINC,
 	ANIM_RUN,
@@ -112,25 +112,25 @@ extern const animmove_t insect_move_knock1_loop;
 extern const animmove_t insect_move_knock1_end;
 extern const animmove_t insect_move_twitch;
 
-extern void tcheckrik_c_dead (edict_t *self);
+extern void tcheckrik_c_dead(edict_t* self);
 
-extern void tcheckrik_release_spell (edict_t *self);
+extern void tcheckrik_release_spell(edict_t* self);
 
-extern void tcheckrik_attack (edict_t *self, float attack_type);
-extern void tcheckrik_spell_attack(edict_t *self, float spell_type);
-extern void tcheckrik_staff_attack(edict_t *self);
-extern void tcheckrik_check_loop (edict_t *self, float frame);
+extern void tcheckrik_attack(edict_t* self, float attack_type);
+extern void tcheckrik_spell_attack(edict_t* self, float spell_type);
+extern void tcheckrik_staff_attack(edict_t* self);
+extern void tcheckrik_check_loop(edict_t* self, float frame);
 
-extern void tcheckrik_dead(edict_t *self);
-extern void tcheckrik_growl(edict_t *self);
-extern void tcheckrik_pause (edict_t *self);
-extern void tcheckrik_inair_go(edict_t *self);
-extern void tcheckrik_sound(edict_t *self, float channel, float sound_num, float attenuation);
-extern void tcheckrik_wait_twitch (edict_t *self);
-extern void tcheckrik_flyback_loop(edict_t *self);
-extern void tcheckrik_flyback_move(edict_t *self);
-extern void tcheckrik_idle_sound (edict_t *self);
-extern void tcheckrik_forced_inair_go(edict_t *self);
+extern void tcheckrik_dead(edict_t* self);
+extern void tcheckrik_growl(edict_t* self);
+extern void tcheckrik_pause(edict_t* self);
+extern void tcheckrik_inair_go(edict_t* self);
+extern void tcheckrik_sound(edict_t* self, float channel, float sound_num, float attenuation);
+extern void tcheckrik_wait_twitch(edict_t* self);
+extern void tcheckrik_flyback_loop(edict_t* self);
+extern void tcheckrik_flyback_move(edict_t* self);
+extern void tcheckrik_idle_sound(edict_t* self);
+extern void tcheckrik_forced_inair_go(edict_t* self);
 
 #define BIT_MASTER		0
 #define BIT_LLEG		1
