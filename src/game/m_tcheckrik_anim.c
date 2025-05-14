@@ -210,7 +210,7 @@ static const animframe_t insect_frames_fjump[] =
 	{ FRAME_jump8,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump9,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t insect_move_fjump = { 9, insect_frames_fjump, insect_go_finair };
+const animmove_t insect_move_fjump = { 9, insect_frames_fjump, tcheckrik_forced_inair_go };
 
 // Insect Pain A.
 static const animframe_t insect_frames_paina[] =
