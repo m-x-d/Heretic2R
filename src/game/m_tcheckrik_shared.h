@@ -122,7 +122,7 @@ extern void insectStaff(edict_t *self);
 extern void insectCheckLoop (edict_t *self, float frame);
 
 extern void tcheckrik_dead(edict_t *self);
-extern void insectgrowl(edict_t *self);
+extern void tcheckrik_growl(edict_t *self);
 extern void insect_pause (edict_t *self);
 extern void insect_go_inair(edict_t *self);
 extern void insect_sound(edict_t *self, float channel, float sound_num, float attenuation);

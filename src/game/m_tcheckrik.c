@@ -927,7 +927,7 @@ void tcheckrik_flyback_move(edict_t* self) //mxd. Named 'insect_flyback_move' in
 	}
 }
 
-void insectgrowl(edict_t* self) //TODO: rename to tcheckrik_growl.
+void tcheckrik_growl(edict_t* self) //mxd. Named 'insectgrowl' in original logic.
 {
 	if (irand(0, 10) > 2)
 		return;

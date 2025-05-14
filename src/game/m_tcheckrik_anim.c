@@ -111,7 +111,7 @@ static const animframe_t insect_frames_idle[] =
 	{ FRAME_idle6,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle7,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle8,	NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_idle9,	NULL, 0, 0, 0, ai_stand, 0, insectgrowl },
+	{ FRAME_idle9,	NULL, 0, 0, 0, ai_stand, 0, tcheckrik_growl },
 	{ FRAME_idle10,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle11,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle12,	NULL, 0, 0, 0, ai_stand, 0, NULL },
@@ -126,7 +126,7 @@ static const animframe_t insect_frames_idle[] =
 	{ FRAME_idle21,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle22,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle23,	NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_idle24,	NULL, 0, 0, 0, ai_stand, 0, insectgrowl },
+	{ FRAME_idle24,	NULL, 0, 0, 0, ai_stand, 0, tcheckrik_growl },
 	{ FRAME_idle25,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle26,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle27,	NULL, 0, 0, 0, ai_stand, 0, NULL },
@@ -147,7 +147,7 @@ static const animframe_t insect_frames_idle[] =
 	{ FRAME_idle42,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle43,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle44,	NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_idle45,	NULL, 0, 0, 0, ai_stand, 0, insectgrowl },
+	{ FRAME_idle45,	NULL, 0, 0, 0, ai_stand, 0, tcheckrik_growl },
 	{ FRAME_idle46,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle47,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle48,	NULL, 0, 0, 0, ai_stand, 0, NULL },
@@ -240,7 +240,7 @@ const animmove_t insect_move_painc = { 6, insect_frames_painc, insect_pause };
 // Insect Run.
 static const animframe_t insect_frames_run[] =
 {
-	{ FRAME_Run1,	NULL, 0, 0, 0, MG_AI_Run, 12, insectgrowl },
+	{ FRAME_Run1,	NULL, 0, 0, 0, MG_AI_Run, 12, tcheckrik_growl },
 	{ FRAME_Run2,	NULL, 0, 0, 0, MG_AI_Run, 13, insect_pause },
 	{ FRAME_Run3,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause },
 	{ FRAME_Run4,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause },
@@ -257,7 +257,7 @@ const animmove_t insect_move_run = { 11, insect_frames_run, insect_pause };
 // Insect Spear Attack.
 static const animframe_t insect_frames_spear[] =
 {
-	{ FRAME_SpearB1,	NULL, 0, 0, 0, ai_charge, 0, insectgrowl },
+	{ FRAME_SpearB1,	NULL, 0, 0, 0, ai_charge, 0, tcheckrik_growl },
 	{ FRAME_SpearB2,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_SpearB3,	NULL, 0, 0, 0, ai_charge, 0, insectStaff },
 	{ FRAME_SpearB4,	NULL, 0, 0, 0, ai_charge, 0, insectStaff },
@@ -274,7 +274,7 @@ const animmove_t insect_move_spear = { 11, insect_frames_spear, insect_pause };
 // Insect Sword Attack.
 static const animframe_t insect_frames_sword[] =
 {
-	{ FRAME_sword1,	NULL, 0, 0, 0, ai_charge, 0, insectgrowl },
+	{ FRAME_sword1,	NULL, 0, 0, 0, ai_charge, 0, tcheckrik_growl },
 	{ FRAME_sword2,	insect_sound, CHAN_WEAPON, SND_SWIPE, ATTN_NORM, ai_charge, 0, NULL },
 	{ FRAME_sword3,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_sword4,	NULL, 0, 0, 0, ai_charge, 0, NULL },
@@ -330,7 +330,7 @@ const animmove_t insect_move_spell2 = { 12, insect_frames_spell2, insect_pause }
 // Insect Walk.
 static const animframe_t insect_frames_walk[] =
 {
-	{ FRAME_Walk1,	NULL, 0, 0, 0, ai_walk, 6, insectgrowl },
+	{ FRAME_Walk1,	NULL, 0, 0, 0, ai_walk, 6, tcheckrik_growl },
 	{ FRAME_Walk2,	NULL, 0, 0, 0, ai_walk, 6, NULL },
 	{ FRAME_Walk3,	NULL, 0, 0, 0, ai_walk, 6, NULL },
 	{ FRAME_Walk4,	NULL, 0, 0, 0, ai_walk, 6, NULL },
