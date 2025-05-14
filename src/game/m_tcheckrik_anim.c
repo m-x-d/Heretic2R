@@ -48,7 +48,7 @@ static const animframe_t insect_frames_deathfr[] =
 	{ FRAME_deathfr17,	NULL, 0, 0, 0, ai_move, 4,  NULL },
 	{ FRAME_deathfr18,	NULL, 0, 0, 0, ai_move, 6,  MG_SetNoBlocking },
 	{ FRAME_deathfr19,	NULL, 0, 0, 0, ai_move, 12, NULL },
-	{ FRAME_deathfr20,	insect_sound, CHAN_BODY, SND_THUD, ATTN_NORM, ai_move, 4, NULL },
+	{ FRAME_deathfr20,	tcheckrik_sound, CHAN_BODY, SND_THUD, ATTN_NORM, ai_move, 4, NULL },
 	{ FRAME_deathfr21,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathfr22,	NULL, 0, 0, 0, NULL, 0, tcheckrik_dead },
 };
@@ -71,7 +71,7 @@ const animmove_t insect_move_knock1_loop = { 1, insect_frames_knock1_loop, NULL 
 // Insect Knockback End.
 static const animframe_t insect_frames_knock1_end[] =
 {
-	{ FRAME_knock3,		insect_sound, CHAN_BODY, SND_THUD, ATTN_NORM, ai_move, -4, tcheckrik_flyback_move },
+	{ FRAME_knock3,		tcheckrik_sound, CHAN_BODY, SND_THUD, ATTN_NORM, ai_move, -4, tcheckrik_flyback_move },
 	{ FRAME_knock4,		NULL, 0, 0, 0, ai_move, -3, tcheckrik_flyback_move },
 	{ FRAME_knock5,		NULL, 0, 0, 0, ai_move, -3, tcheckrik_flyback_move },
 	{ FRAME_knock6,		NULL, 0, 0, 0, ai_move, -3, tcheckrik_flyback_move },
@@ -159,7 +159,7 @@ const animmove_t insect_move_idle = { 50, insect_frames_idle, insect_pause };
 // Insect Land.
 static const animframe_t insect_frames_land[] =
 {
-	{ FRAME_jump11,	insect_sound, CHAN_BODY, SND_THUD, ATTN_NORM, NULL, 0, NULL }, // Sound.
+	{ FRAME_jump11,	tcheckrik_sound, CHAN_BODY, SND_THUD, ATTN_NORM, NULL, 0, NULL }, // Sound.
 	{ FRAME_jump12,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump13,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump14,	NULL, 0, 0, 0, NULL, 0, NULL },
@@ -275,7 +275,7 @@ const animmove_t insect_move_spear = { 11, insect_frames_spear, insect_pause };
 static const animframe_t insect_frames_sword[] =
 {
 	{ FRAME_sword1,	NULL, 0, 0, 0, ai_charge, 0, tcheckrik_growl },
-	{ FRAME_sword2,	insect_sound, CHAN_WEAPON, SND_SWIPE, ATTN_NORM, ai_charge, 0, NULL },
+	{ FRAME_sword2,	tcheckrik_sound, CHAN_WEAPON, SND_SWIPE, ATTN_NORM, ai_charge, 0, NULL },
 	{ FRAME_sword3,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_sword4,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_sword5,	NULL, 0, 0, 0, tcheckrik_attack, TC_ATK_HACK, NULL },
@@ -816,7 +816,7 @@ static const animframe_t insect_frames_c_death1[] =
 	{ FRAME_deathfr19,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathfr20,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathfr21,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_deathfr22, insect_sound, CHAN_BODY, SND_THUD, ATTN_NORM, NULL, 0, NULL },
+	{ FRAME_deathfr22, tcheckrik_sound, CHAN_BODY, SND_THUD, ATTN_NORM, NULL, 0, NULL },
 };
 const animmove_t insect_move_c_death1 = { 22, insect_frames_c_death1, tcheckrik_c_dead };
 
