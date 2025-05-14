@@ -1154,30 +1154,15 @@ static void TcheckrikRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN));
 }
 
-/*-------------------------------------------------------------------------
-	insect_stand
--------------------------------------------------------------------------*/
-void insect_stand(edict_t *self, G_Message_t *msg)
-{	
-	if (self->ai_mood == AI_MOOD_DELAY)
-		SetAnim(self, ANIM_DELAY);
-	else
-		SetAnim(self, ANIM_IDLE);	
-
-	return;
-}
-
-/*-------------------------------------------------------------------------
-	insect_walk
--------------------------------------------------------------------------*/
-void insect_walk(edict_t *self, G_Message_t *msg)
+static void TcheckrikStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_stand' in original logic.
 {
-	if(self->spawnflags&MSF_FIXED)
-		SetAnim(self, ANIM_DELAY);
-	else
-		SetAnim(self, ANIM_WALK);	
+	SetAnim(self, ((self->ai_mood == AI_MOOD_DELAY) ? ANIM_DELAY : ANIM_IDLE));
 }
 
+static void TcheckrikWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_walk' in original logic.
+{
+	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_WALK));
+}
 
 /*void Monster_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
@@ -1286,8 +1271,8 @@ void TcheckrikStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_STAND] = insect_stand;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_WALK] = insect_walk;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_STAND] = TcheckrikStandMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_WALK] = TcheckrikWalkMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_RUN] = TcheckrikRunMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MELEE] = TcheckrikMeleeMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MISSILE] = TcheckrikMissileMsgHandler;
