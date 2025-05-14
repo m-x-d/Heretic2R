@@ -989,37 +989,30 @@ static void TcheckrikDismember(edict_t* self, int damage, HitLocation_t hl) //mx
 	}
 }
 
-void insect_random_pain_sound (edict_t *self)
+static void TcheckrikPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_pain' in original logic.
 {
-	if(self->mass==MASS_TC_MALE)//irand(0,1))
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAINM], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAINF], 1, ATTN_NORM, 0);
-}
-
-void insect_pain(edict_t *self, G_Message_t *msg)
-{
-	int				temp, damage;
-	int				force_damage;
-	
+	int temp;
+	int damage;
+	int force_damage;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_damage, &damage, &temp);
 
-	if(!force_damage&&flrand(0,self->health)>damage)
+	if (!force_damage && irand(0, self->health) > damage) //mxd. flrand() in original logic.
 		return;
 
 	gi.RemoveEffects(&self->s, FX_I_EFFECTS);
 	self->s.effects |= EF_DISABLE_EXTRA_FX;
-	//sound
-	insect_random_pain_sound(self);
-	//remove spell effects
+
+	// Sound. 
+	const int snd_id = (self->mass == MASS_TC_MALE ? SND_PAINM : SND_PAINF); //mxd. Inline insect_random_pain_sound().
+	gi.sound(self, CHAN_VOICE, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
+
+	// Remove spell effects.
 	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
+
 	if (force_damage || self->pain_debounce_time < level.time)
 	{
-		self->pain_debounce_time = level.time + 1;
-		if(irand(0,1))
-			SetAnim(self, ANIM_PAINA);
-		else
-			SetAnim(self, ANIM_PAINC);
+		self->pain_debounce_time = level.time + 1.0f;
+		SetAnim(self, (irand(0, 1) == 1 ? ANIM_PAINA : ANIM_PAINC));
 	}
 }
 
@@ -1372,7 +1365,7 @@ void TcheckrikStaticsInit(void)
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_RUN] = insect_run;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MELEE] = TcheckrikMeleeMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MISSILE] = TcheckrikMissileMsgHandler;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_PAIN] = insect_pain;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_PAIN] = TcheckrikPainMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH] = TcheckrikDeathMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_FALLBACK] = TcheckrikFallbackMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
