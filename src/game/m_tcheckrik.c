@@ -48,7 +48,7 @@
 #include "m_stats.h"
 #include "m_tcheckrik_spells.h" //mxd
 
-void insect_dismember(edict_t *self, int damage, int HitLocation);
+static void insect_dropweapon(edict_t* self, int weapon_id); //TODO: remove?
 
 /*----------------------------------------------------------------------
   insect Base Info
@@ -784,7 +784,7 @@ void insect_chicken (edict_t *self, int coward, int flee, float fleetime)
 }
 
 //THROWS weapon, turns off those nodes, sets that weapon as gone
-void insect_dropweapon (edict_t *self, int weapon)
+static void insect_dropweapon (edict_t *self, int weapon)
 {//NO PART FLY FRAME!
 	vec3_t handspot, forward, right, up;
 //	float chance;

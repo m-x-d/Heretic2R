@@ -116,19 +116,17 @@ extern void insect_c_reallydead (edict_t *self);
 
 extern void insectReleaseSpell (edict_t *self);
 
-extern void insectCut (edict_t *self, float attacktype);
-extern void insectSpell(edict_t *self, float whichspell);
+extern void insectCut (edict_t *self, float attack_type);
+extern void insectSpell(edict_t *self, float spell_type);
 extern void insectStaff(edict_t *self);
 extern void insectCheckLoop (edict_t *self, float frame);
 
 extern void insect_dead(edict_t *self);
 extern void insectdeathsqueal(edict_t *self);
-extern void insectsqueal(edict_t *self);
 extern void insectgrowl(edict_t *self);
 extern void insect_pause (edict_t *self);
-extern void insect_dropweapon (edict_t *self, int weapon);
 extern void insect_go_inair(edict_t *self);
-extern void insect_sound(edict_t *self, float channel, float soundnum, float attn);
+extern void insect_sound(edict_t *self, float channel, float sound_num, float attenuation);
 extern void insect_wait_twitch (edict_t *self);
 extern void insect_flyback_loop(edict_t *self);
 extern void insect_flyback_move(edict_t *self);
@@ -152,8 +150,8 @@ extern void insect_go_finair(edict_t *self);
 #define BIT_LWINGS		8192
 #define BIT_RLEG		16384
 
-#define TC_ATK_STAB	1 //TODO: never used?
-#define TC_ATK_HACK	2
+#define TC_ATK_STAB		1 //TODO: never used?
+#define TC_ATK_HACK		2
 
 #define TC_SPL_FIRE		1
 #define TC_SPL_GLOW		2
