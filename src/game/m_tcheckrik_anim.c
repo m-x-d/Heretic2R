@@ -84,7 +84,7 @@ static const animframe_t insect_frames_knock1_end[] =
 	{ FRAME_knock13,	NULL, 0, 0, 0, ai_move,  0, insect_flyback_move },
 	{ FRAME_knock14,	NULL, 0, 0, 0, ai_move,  0, insect_flyback_move },
 	{ FRAME_knock15,	NULL, 0, 0, 0, ai_move,  0, MG_SetNoBlocking },
-	{ FRAME_knock15,	NULL, 0, 0, 0, NULL,	 0, insect_wait_twitch },
+	{ FRAME_knock15,	NULL, 0, 0, 0, NULL,	 0, tcheckrik_wait_twitch },
 };
 const animmove_t insect_move_knock1_end = { 14, insect_frames_knock1_end, NULL };
 
@@ -96,7 +96,7 @@ static const animframe_t insect_frames_twitch[] =
 	{ FRAME_knock17,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_knock18,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_knock19,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_knock19,	NULL, 0, 0, 0, NULL, 0, insect_wait_twitch },
+	{ FRAME_knock19,	NULL, 0, 0, 0, NULL, 0, tcheckrik_wait_twitch },
 };
 const animmove_t insect_move_twitch = { 5, insect_frames_twitch, NULL };
 

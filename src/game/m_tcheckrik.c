@@ -880,7 +880,7 @@ void tcheckrik_idle_sound(edict_t* self) //mxd. Named 'insect_random_idle_sound'
 		gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWLF1, SND_GROWLF2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void insect_wait_twitch(edict_t* self) //TODO: rename to tcheckrik_wait_twitch.
+void tcheckrik_wait_twitch(edict_t* self) //mxd. Named 'insect_wait_twitch' in original logic.
 {
 	if (self->curAnimID != ANIM_TWITCH && irand(0, 1) == 0)
 	{
