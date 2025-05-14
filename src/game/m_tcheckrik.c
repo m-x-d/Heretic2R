@@ -249,17 +249,6 @@ void insect_dead(edict_t* self) //TODO: rename to tcheckrik_dead.
 	M_EndDeath(self);
 }
 
-/*-------------------------------------------------------------------------
-	insect_death
--------------------------------------------------------------------------*/
-void insect_random_death_sound (edict_t *self)
-{
-	if(self->mass==MASS_TC_MALE)//irand(0,1))
-		gi.sound(self, CHAN_VOICE, sounds[SND_DIEM], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_VOICE, sounds[SND_DIEF], 1, ATTN_NORM, 0);
-}
-
 void insect_random_idle_sound (edict_t *self)
 {
 	if(self->mass==MASS_TC_MALE)//
@@ -376,7 +365,9 @@ void insect_death(edict_t *self, G_Message_t *msg)
 	}
 	else
 	{
-		insect_random_death_sound(self);
+		const int snd_id = ((self->mass == MASS_TC_MALE) ? SND_DIEM : SND_DIEF); //mxd. Inline insect_random_death_sound().
+		gi.sound(self, CHAN_VOICE, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
+
 		if(self->health<-20)
 		{
 			vec3_t vf, yf, dVel;
