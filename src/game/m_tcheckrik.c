@@ -161,19 +161,11 @@ static void TcheckrikCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) 
 	SetAnim(self, curr_anim);
 }
 
-/*-------------------------------------------------------------------------
-	insect_c_pause
--------------------------------------------------------------------------*/
-void insect_c_reallydead (edict_t *self)
+void insect_c_reallydead(edict_t* self) //TODO: rename to tcheckrik_c_dead.
 {
-	self->nextthink = level.time;
+	self->nextthink = level.time; //TODO: should be -1?..
 	self->think = NULL;
 }
-
-
-
-
-
 
 /*----------------------------------------------------------------------
   Action Functions for the monster
