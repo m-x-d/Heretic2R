@@ -592,38 +592,37 @@ void insectReleaseSpell(edict_t* self) //TODO: rename to tcheckrik_release_spell
 	self->damage_debounce_time = true; //TODO: add qboolean tcheckrik_globe_spell_released name.
 }
 
-/*-------------------------------------------------------------------------
-	insect_pain
--------------------------------------------------------------------------*/
-int Bit_for_MeshNode_tc [16] =
+static qboolean TcheckrikCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_tc' in original logic.
 {
-	BIT_MASTER,
-	BIT_LLEG,			
-	BIT_HEAD,			
-	BIT_LMANDIBLE,		
-	BIT_RMANDIBLE,		
-	BIT_CROWN,			
-	BIT_L2NDARM,	
-	BIT_SPEAR,		
-	BIT_FEMHAND,	
-	BIT_SWORD,	
-	BIT_STAFF,		
-	BIT_GEM,	
-	BIT_R2NDARM,
-	BIT_RWINGS,	
-	BIT_LWINGS,	
-	BIT_RLEG		
-};
-
-qboolean canthrownode_tc (edict_t *self, int BP, int *throw_nodes)
-{//see if it's on, if so, add it to throw_nodes
-	//turn it off on thrower
-	if(!(self->s.fmnodeinfo[BP].flags & FMNI_NO_DRAW))
+	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
 	{
-		*throw_nodes |= Bit_for_MeshNode_tc[BP];
-		self->s.fmnodeinfo[BP].flags |= FMNI_NO_DRAW;
+		BIT_MASTER,
+		BIT_LLEG,
+		BIT_HEAD,
+		BIT_LMANDIBLE,
+		BIT_RMANDIBLE,
+		BIT_CROWN,
+		BIT_L2NDARM,
+		BIT_SPEAR,
+		BIT_FEMHAND,
+		BIT_SWORD,
+		BIT_STAFF,
+		BIT_GEM,
+		BIT_R2NDARM,
+		BIT_RWINGS,
+		BIT_LWINGS,
+		BIT_RLEG
+	};
+
+	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
+	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
+	{
+		*throw_nodes |= bit_for_mesh_node[node_id];
+		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
+
 		return true;
 	}
+
 	return false;
 }
 
@@ -751,10 +750,10 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 				insect_dropweapon (self, 0);
 			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
 			{
-				canthrownode_tc(self, MESH__HEAD,&throw_nodes);
-				canthrownode_tc(self, MESH__CROWN,&throw_nodes);
-				canthrownode_tc(self, MESH__LMANDIBLE,&throw_nodes);
-				canthrownode_tc(self, MESH__RMANDIBLE,&throw_nodes);
+				TcheckrikCanThrowNode(self, MESH__HEAD,&throw_nodes);
+				TcheckrikCanThrowNode(self, MESH__CROWN,&throw_nodes);
+				TcheckrikCanThrowNode(self, MESH__LMANDIBLE,&throw_nodes);
+				TcheckrikCanThrowNode(self, MESH__RMANDIBLE,&throw_nodes);
 
 				gore_spot[2]+=24;
 				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
@@ -844,7 +843,7 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 					damage*=1.5;//greater chance to cut off if previously damaged
 				if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 				{
-					if(canthrownode_tc(self, MESH__L2NDARM, &throw_nodes))
+					if(TcheckrikCanThrowNode(self, MESH__L2NDARM, &throw_nodes))
 					{
 						AngleVectors(self->s.angles,NULL,right,NULL);
 						gore_spot[2]+=self->maxs[2]*0.3;
@@ -909,7 +908,7 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 					damage*=1.5;//greater chance to cut off if previously damaged
 				if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 				{
-					if(canthrownode_tc(self, MESH__R2NDARM, &throw_nodes))
+					if(TcheckrikCanThrowNode(self, MESH__R2NDARM, &throw_nodes))
 					{
 						AngleVectors(self->s.angles,NULL,right,NULL);
 						gore_spot[2]+=self->maxs[2]*0.3;
@@ -945,7 +944,7 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 			{
 				if(self->s.fmnodeinfo[MESH__LLEG].flags & FMNI_NO_DRAW)
 					break;
-				if(canthrownode_tc(self, MESH__LLEG, &throw_nodes))
+				if(TcheckrikCanThrowNode(self, MESH__LLEG, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -968,7 +967,7 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 			{
 				if(self->s.fmnodeinfo[MESH__RLEG].flags & FMNI_NO_DRAW)
 					break;
-				if(canthrownode_tc(self, MESH__RLEG, &throw_nodes))
+				if(TcheckrikCanThrowNode(self, MESH__RLEG, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
