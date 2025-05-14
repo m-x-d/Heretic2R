@@ -15,7 +15,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_mother_anim.h"
-#include "m_mother_local.h"
+#include "m_mother_shared.h"
 
 #include "g_monster.h"
 #include "c_ai.h"

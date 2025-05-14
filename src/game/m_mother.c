@@ -23,7 +23,7 @@
 #include "vector.h"
 
 #include "m_mother.h"
-#include "m_mother_local.h"
+#include "m_mother_shared.h"
 #include "m_mother_anim.h"
 #include "g_debris.h" //mxd
 #include "angles.h"

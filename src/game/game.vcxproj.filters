@@ -890,7 +890,7 @@
     <ClInclude Include="m_morcalavin_anim.h">
       <Filter>src\Monsters\Morcalavin</Filter>
     </ClInclude>
-    <ClInclude Include="m_mother_local.h">
+    <ClInclude Include="m_mother_shared.h">
       <Filter>src\Monsters\TcheckrikMother</Filter>
     </ClInclude>
     <ClInclude Include="m_mother_anim.h">
