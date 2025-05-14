@@ -27,11 +27,7 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-void mother_growl(edict_t* self)
-{
-	if (irand(0, 2) != 0)
-		gi.sound(self, CHAN_BODY, sounds[irand(SND_GROWL1, SND_GROWL2)], 1.0f, ATTN_NORM, 0.0f);
-}
+#pragma region ========================== Message handlers ==========================
 
 static void MotherPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'mother_pain' in original logic.
 {
@@ -54,11 +50,6 @@ static void MotherStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	SetAnim(self, ANIM_STAND);
 }
 
-void mother_pause(edict_t* self)
-{
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-}
-
 static void MotherDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'mother_gib' in original logic.
 {
 	gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
@@ -66,6 +57,23 @@ static void MotherDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	self->think = BecomeDebris;
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
+
+#pragma endregion
+
+#pragma region ========================== Action functions ==========================
+
+void mother_growl(edict_t* self)
+{
+	if (irand(0, 2) != 0)
+		gi.sound(self, CHAN_BODY, sounds[irand(SND_GROWL1, SND_GROWL2)], 1.0f, ATTN_NORM, 0.0f);
+}
+
+void mother_pause(edict_t* self)
+{
+	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+}
+
+#pragma endregion
 
 void MotherStaticsInit(void)
 {
