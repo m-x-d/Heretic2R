@@ -240,14 +240,12 @@ void insectCut(edict_t* self, float attack_type) //TODO: rename to tcheckrik_att
 	T_Damage(trace.ent, self, self, hit_dir, trace.endpos, vec3_origin, damage, damage * 2, DAMAGE_DISMEMBER, MOD_DIED);
 }
 
-/*-------------------------------------------------------------------------
-	insect_dead
--------------------------------------------------------------------------*/
-void insect_dead(edict_t *self)
+void insect_dead(edict_t* self) //TODO: rename to tcheckrik_dead.
 {
 	self->s.effects |= EF_DISABLE_EXTRA_FX;
 	self->msgHandler = DeadMsgHandler;
 	self->dead_state = DEAD_DEAD;
+
 	M_EndDeath(self);
 }
 
