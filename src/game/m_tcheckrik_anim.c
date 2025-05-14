@@ -259,10 +259,10 @@ static const animframe_t insect_frames_spear[] =
 {
 	{ FRAME_SpearB1,	NULL, 0, 0, 0, ai_charge, 0, tcheckrik_growl },
 	{ FRAME_SpearB2,	NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_SpearB3,	NULL, 0, 0, 0, ai_charge, 0, insectStaff },
-	{ FRAME_SpearB4,	NULL, 0, 0, 0, ai_charge, 0, insectStaff },
-	{ FRAME_SpearB5,	NULL, 0, 0, 0, ai_charge, 0, insectStaff },
-	{ FRAME_SpearB6,	NULL, 0, 0, 0, ai_charge, 0, insectStaff },
+	{ FRAME_SpearB3,	NULL, 0, 0, 0, ai_charge, 0, tcheckrik_staff_attack },
+	{ FRAME_SpearB4,	NULL, 0, 0, 0, ai_charge, 0, tcheckrik_staff_attack },
+	{ FRAME_SpearB5,	NULL, 0, 0, 0, ai_charge, 0, tcheckrik_staff_attack },
+	{ FRAME_SpearB6,	NULL, 0, 0, 0, ai_charge, 0, tcheckrik_staff_attack },
 	{ FRAME_SpearB7,	NULL, 0, 0, 0, insectCheckLoop, 3, NULL },
 	{ FRAME_SpearB8,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_SpearB9,	NULL, 0, 0, 0, ai_charge, 0, NULL }, // Check for loop.

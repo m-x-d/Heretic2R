@@ -943,7 +943,7 @@ void tcheckrik_sound(edict_t* self, float channel, float sound_num, float attenu
 	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
 }
 
-void insectStaff(edict_t* self) //TODO: rename to tcheckrik_staff_attack.
+void tcheckrik_staff_attack(edict_t* self) //mxd. Named 'insectStaff' in original logic.
 {
 	vec3_t forward;
 	vec3_t right;
