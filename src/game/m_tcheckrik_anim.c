@@ -188,7 +188,7 @@ static const animframe_t insect_frames_forcedjump[] =
 	{ FRAME_jump8,	MG_InAirMove, 50, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump9,	MG_InAirMove, 50, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t insect_move_forcedjump = { 9, insect_frames_forcedjump, insect_go_inair };
+const animmove_t insect_move_forcedjump = { 9, insect_frames_forcedjump, tcheckrik_inair_go };
 
 // Insect Forced In Air.
 static const animframe_t insect_frames_finair[] =

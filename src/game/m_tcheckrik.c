@@ -1188,7 +1188,7 @@ void tcheckrik_pause(edict_t* self) //mxd. Named 'insect_pause' in original logi
 	}
 }
 
-void insect_go_inair(edict_t* self) //TODO: rename to tcheckrik_inair_go.
+void tcheckrik_inair_go(edict_t* self) //mxd. Named 'insect_go_inair' in original logic.
 {
 	SetAnim(self, ANIM_INAIR);
 }
