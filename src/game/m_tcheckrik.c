@@ -465,40 +465,44 @@ static void TcheckrikMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 	}
 }
 
-extern void SpellCastInsectSpear(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,int offset);
-//extern void SpellCastFlyingFist(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value);
-void insectStaff(edict_t *self)
+void insectStaff(edict_t* self) //TODO: rename to tcheckrik_staff_attack.
 {
-	vec3_t	org, forward, right;
-
+	vec3_t forward;
+	vec3_t right;
 	AngleVectors(self->s.angles, forward, right, NULL);
+
+	vec3_t org;
 	VectorCopy(self->s.origin, org);
-	VectorMA(org, 12, forward, org);
-	VectorMA(org, 4, right, org);
-	if(self->spawnflags & MSF_INSECT_YELLOWJACKET)
+	VectorMA(org, 12.0f, forward, org);
+	VectorMA(org, 4.0f, right, org);
+
+	if (self->spawnflags & MSF_INSECT_YELLOWJACKET)
 	{
-		if(self->s.frame == FRAME_SpearB4)
+		if (self->s.frame == FRAME_SpearB4)
 		{
-			if(!skill->value)
+			if (SKILL == SKILL_EASY)
+			{
 				SpellCastInsectSpear(self, org, self->s.angles, irand(1, 3));
-			else if(skill->value == 1)
+			}
+			else if (SKILL == SKILL_MEDIUM)
 			{
 				SpellCastInsectSpear(self, org, self->s.angles, 1);
 				SpellCastInsectSpear(self, org, self->s.angles, 2);
 			}
-			else
+			else // HARD, HARD+.
 			{
 				SpellCastInsectSpear(self, org, self->s.angles, 1);
 				SpellCastInsectSpear(self, org, self->s.angles, 2);
 				SpellCastInsectSpear(self, org, self->s.angles, 3);
 			}
-			gi.sound (self, CHAN_WEAPON, sounds[SND_SPELLM2], 1, ATTN_NORM, 0);
+
+			gi.sound(self, CHAN_WEAPON, sounds[SND_SPELLM2], 1.0f, ATTN_NORM, 0.0f);
 		}
 	}
 	else
 	{
-		SpellCastInsectSpear(self, org, self->s.angles, false);
-		gi.sound (self, CHAN_WEAPON, sounds[SND_SPELLM], 1, ATTN_NORM, 0);
+		SpellCastInsectSpear(self, org, self->s.angles, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SPELLM], 1.0f, ATTN_NORM, 0.0f);
 	}
 }
 
