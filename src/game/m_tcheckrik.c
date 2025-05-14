@@ -378,41 +378,19 @@ static void TcheckrikDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	}
 }
 
-/*-------------------------------------------------------------------------
-	insectdeathsqueal
--------------------------------------------------------------------------*/
-void insectdeathsqueal (edict_t *self)
+void insectdeathsqueal(edict_t* self) //TODO: remove.
 {
-//	gi.sound(self, CHAN_WEAPON, Sounds[SND_DIE1], 1, ATTN_IDLE, 0);
-	return;
 }
 
-/*-------------------------------------------------------------------------
-	insectgrowl
--------------------------------------------------------------------------*/
-void insectgrowl (edict_t *self)
+void insectgrowl(edict_t* self) //TODO: rename to tcheckrik_growl.
 {
-	int chance;	
+	if (irand(0, 10) > 2)
+		return;
 
-	chance = irand(0, 10);
-
-	if (chance <= 2 )
-	{
-		if(irand(0, 1))
-		{
-			if(self->mass == MASS_TC_MALE)
-				gi.sound (self, CHAN_WEAPON, sounds[SND_GROWLM1], 1, ATTN_IDLE, 0);
-			else 
-				gi.sound (self, CHAN_WEAPON, sounds[SND_GROWLF1], 1, ATTN_IDLE, 0);
-		}
-		else 
-		{
-			if(self->mass == MASS_TC_MALE)
-				gi.sound (self, CHAN_WEAPON, sounds[SND_GROWLM2], 1, ATTN_IDLE, 0);
-			else 
-				gi.sound (self, CHAN_WEAPON, sounds[SND_GROWLF2], 1, ATTN_IDLE, 0);
-		}
-	}
+	if (self->mass == MASS_TC_MALE)
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_GROWLM1, SND_GROWLM2)], 1.0f, ATTN_IDLE, 0.0f);
+	else
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_GROWLF1, SND_GROWLF2)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
 /*-------------------------------------------------------------------------
