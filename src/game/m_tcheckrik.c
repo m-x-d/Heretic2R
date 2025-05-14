@@ -1219,12 +1219,9 @@ static void TcheckrikJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	}
 }
 
-/*-------------------------------------------------------------------------
-	insectStaticsInit
--------------------------------------------------------------------------*/
 void TcheckrikStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_STAND] = TcheckrikStandMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_WALK] = TcheckrikWalkMsgHandler;
@@ -1239,7 +1236,7 @@ void TcheckrikStaticsInit(void)
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH_PAIN] = TcheckrikDeathPain;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_CHECK_MOOD] = TcheckrikCheckMoodMsgHandler;
 
-	// Cinematics
+	// Cinematics.
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ACTION1] = TcheckrikCinematicActionMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ACTION2] = TcheckrikCinematicActionMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ACTION3] = TcheckrikCinematicActionMsgHandler;
@@ -1256,35 +1253,34 @@ void TcheckrikStaticsInit(void)
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_RUN1] = TcheckrikCinematicActionMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_WALK1] = TcheckrikCinematicActionMsgHandler;
 
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	
-	//note that the name is different in the path
-	resInfo.modelIndex = gi.modelindex("models/monsters/tcheckrik/male/tris.fm");
+	// Note that the name is different in the path.
+	res_info.modelIndex = gi.modelindex("models/monsters/tcheckrik/male/tris.fm");
 
-	sounds[SND_PAINM]=gi.soundindex("monsters/insect/painm.wav");
-	sounds[SND_PAINF]=gi.soundindex("monsters/insect/painf.wav");
-	sounds[SND_DIEM]=gi.soundindex("monsters/insect/deathm.wav");
-	sounds[SND_DIEF]=gi.soundindex("monsters/insect/deathf.wav");
-	sounds[SND_GIB]=gi.soundindex("monsters/insect/gib.wav");
-	sounds[SND_SWIPE]=gi.soundindex("monsters/insect/swipe.wav");
-	sounds[SND_SWIPEHITF]=gi.soundindex("monsters/plagueelf/hookhit.wav");
-	sounds[SND_SWIPEHITW]=gi.soundindex("monsters/insect/swipehitw.wav");
-	sounds[SND_SPELLM]=gi.soundindex("monsters/insect/spellm.wav");
-	sounds[SND_SPELLM2]=gi.soundindex("monsters/insect/spellm2.wav");
-	sounds[SND_SPLPWRUPF]=gi.soundindex("monsters/insect/splpwrupf.wav");
-	sounds[SND_SPELLF]=gi.soundindex("monsters/insect/spellf.wav");
-	sounds[SND_GROWLM1]=gi.soundindex("monsters/insect/growlm1.wav");
-	sounds[SND_GROWLM2] = gi.soundindex ("monsters/insect/growlm2.wav");
-	sounds[SND_GROWLF1]=gi.soundindex("monsters/insect/growlf1.wav");
-	sounds[SND_GROWLF2] = gi.soundindex ("monsters/insect/growlf2.wav");
-	sounds[SND_THUD] = gi.soundindex ("monsters/insect/thud.wav");
+	sounds[SND_PAINM] = gi.soundindex("monsters/insect/painm.wav");
+	sounds[SND_PAINF] = gi.soundindex("monsters/insect/painf.wav");
+	sounds[SND_DIEM] = gi.soundindex("monsters/insect/deathm.wav");
+	sounds[SND_DIEF] = gi.soundindex("monsters/insect/deathf.wav");
+	sounds[SND_GIB] = gi.soundindex("monsters/insect/gib.wav");
+	sounds[SND_SWIPE] = gi.soundindex("monsters/insect/swipe.wav");
+	sounds[SND_SWIPEHITF] = gi.soundindex("monsters/plagueelf/hookhit.wav");
+	sounds[SND_SWIPEHITW] = gi.soundindex("monsters/insect/swipehitw.wav");
+	sounds[SND_SPELLM] = gi.soundindex("monsters/insect/spellm.wav");
+	sounds[SND_SPELLM2] = gi.soundindex("monsters/insect/spellm2.wav");
+	sounds[SND_SPLPWRUPF] = gi.soundindex("monsters/insect/splpwrupf.wav");
+	sounds[SND_SPELLF] = gi.soundindex("monsters/insect/spellf.wav");
+	sounds[SND_GROWLM1] = gi.soundindex("monsters/insect/growlm1.wav");
+	sounds[SND_GROWLM2] = gi.soundindex("monsters/insect/growlm2.wav");
+	sounds[SND_GROWLF1] = gi.soundindex("monsters/insect/growlf1.wav");
+	sounds[SND_GROWLF2] = gi.soundindex("monsters/insect/growlf2.wav");
+	sounds[SND_THUD] = gi.soundindex("monsters/insect/thud.wav");
 
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
 
-	classStatics[CID_TCHECKRIK].resInfo = &resInfo;
+	classStatics[CID_TCHECKRIK].resInfo = &res_info;
 }
 
 /*QUAKED monster_tcheckrik_male (1 .5 0) (-16 -16 -32) (16 16 32) AMBUSH ASLEEP WALKING CINEMATIC BEAST_FODDER YELLOWJACKET 64 FIXED WANDER LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
