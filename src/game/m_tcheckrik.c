@@ -406,34 +406,35 @@ void insect_sound(edict_t* self, float channel, float sound_num, float attenuati
 	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
 }
 
-void insect_melee(edict_t *self, G_Message_t *msg)
+static void TcheckrikMeleeMsgHandler(edict_t* self, G_Message_t* msg)//mxd. Named 'insect_melee' in original logic.
 {
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		if(self->mass == MASS_TC_MALE)
-		{//male
-			if(self->enemy->classID == CID_TBEAST && self->enemy->enemy == self)
-			{
-				if(M_DistanceToTarget(self, self->enemy) < 250)
-				{
-					self->monsterinfo.aiflags |= AI_FLEE;
-					self->monsterinfo.flee_finished = level.time + 3;
-					QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-					return;
-				}
-			}
-			SetAnim(self, ANIM_SWORD);	
-		}
-		else//too close for female, back away(maybe attack anyway?)
-		{
-			if(!irand(0,5)&&!(self->monsterinfo.aiflags&AI_NO_MELEE)||(self->spawnflags&MSF_FIXED))
-				SetAnim(self, ANIM_SPELL);
-			else
-				SetAnim(self, ANIM_BACK);
-		}
-	}
-	else
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
+	}
+
+	if (self->mass == MASS_TC_MALE) // Male
+	{
+		// Run away from Trial Beast.
+		if (self->enemy->classID == CID_TBEAST && self->enemy->enemy == self && M_DistanceToTarget(self, self->enemy) < 250.0f)
+		{
+			self->monsterinfo.aiflags |= AI_FLEE;
+			self->monsterinfo.flee_finished = level.time + 3.0f;
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+
+			return;
+		}
+
+		SetAnim(self, ANIM_SWORD);
+	}
+	else // Too close for female, back away (maybe attack anyway?).
+	{
+		if ((irand(0, 5) == 0 && !(self->monsterinfo.aiflags & AI_NO_MELEE)) || (self->spawnflags & MSF_FIXED)) //mxd. Group irand() / aiflags checks.
+			SetAnim(self, ANIM_SPELL);
+		else
+			SetAnim(self, ANIM_BACK);
+	}
 }
 
 void insect_missile(edict_t *self, G_Message_t *msg)
@@ -1383,7 +1384,7 @@ void TcheckrikStaticsInit(void)
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_STAND] = insect_stand;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_WALK] = insect_walk;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_RUN] = insect_run;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MELEE] = insect_melee;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MELEE] = TcheckrikMeleeMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MISSILE] = insect_missile;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_PAIN] = insect_pain;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH] = TcheckrikDeathMsgHandler;
