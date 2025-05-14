@@ -795,7 +795,7 @@ const animmove_t insect_move_c_backpedal = { 10, insect_frames_c_backpedal, ai_c
 static const animframe_t insect_frames_c_death1[] =
 {
 	// Takes a couple steps back... May clip!
-	{ FRAME_deathfr1,	ai_c_move, -24, 0, 0, NULL, 0, insectdeathsqueal },
+	{ FRAME_deathfr1,	ai_c_move, -24, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathfr2,	ai_c_move, -18, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathfr3,	ai_c_move, -12, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathfr4,	ai_c_move, -8,  0, 0, NULL, 0, NULL },

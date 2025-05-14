@@ -927,10 +927,6 @@ void tcheckrik_flyback_move(edict_t* self) //mxd. Named 'insect_flyback_move' in
 	}
 }
 
-void insectdeathsqueal(edict_t* self) //TODO: remove.
-{
-}
-
 void insectgrowl(edict_t* self) //TODO: rename to tcheckrik_growl.
 {
 	if (irand(0, 10) > 2)
