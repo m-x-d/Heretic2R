@@ -49,13 +49,9 @@ static void MotherPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	gi.sound(self, CHAN_BODY, sounds[SND_PAIN], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*-------------------------------------------------------------------------
--------------------------------------------------------------------------*/
-void mother_stand(edict_t *self, G_Message_t *msg)
-{	
-	SetAnim(self, ANIM_STAND);	
-
-	return;
+static void MotherStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'mother_stand' in original logic.
+{
+	SetAnim(self, ANIM_STAND);
 }
 
 void mother_pause (edict_t *self)
@@ -78,7 +74,7 @@ void MotherStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_MOTHER].msgReceivers[MSG_STAND] = mother_stand;
+	classStatics[CID_MOTHER].msgReceivers[MSG_STAND] = MotherStandMsgHandler;
 	classStatics[CID_MOTHER].msgReceivers[MSG_PAIN] = MotherPainMsgHandler;
 	classStatics[CID_MOTHER].msgReceivers[MSG_DEATH] = mother_gib;
 
