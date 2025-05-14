@@ -249,22 +249,12 @@ void insect_dead(edict_t* self) //TODO: rename to tcheckrik_dead.
 	M_EndDeath(self);
 }
 
-void insect_random_idle_sound (edict_t *self)
+void insect_random_idle_sound(edict_t* self) //TODO: rename to tcheckrik_idle_sound.
 {
-	if(self->mass==MASS_TC_MALE)//
-	{
-		if(irand(0,1))
-			gi.sound(self, CHAN_VOICE, sounds[SND_GROWLM1], 1, ATTN_NORM, 0);
-		else
-			gi.sound(self, CHAN_VOICE, sounds[SND_GROWLM2], 1, ATTN_NORM, 0);
-	}
+	if (self->mass == MASS_TC_MALE)
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWLM1, SND_GROWLM2)], 1.0f, ATTN_NORM, 0.0f);
 	else
-	{
-		if(irand(0,1))
-			gi.sound(self, CHAN_VOICE, sounds[SND_GROWLF1], 1, ATTN_NORM, 0);
-		else
-			gi.sound(self, CHAN_VOICE, sounds[SND_GROWLF2], 1, ATTN_NORM, 0);
-	}
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWLF1, SND_GROWLF2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 void M_MoveFrame (edict_t *self);
