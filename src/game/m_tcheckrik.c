@@ -675,310 +675,316 @@ static void TcheckrikDropWeapon(edict_t* self, const int weapon_id) //mxd. Named
 	}
 }
 
-void insect_dismember(edict_t *self, int damage, int HitLocation)
-{//fixme: throw current weapon
-//fixme - make part fly dir the vector from hit loc to sever loc
-//remember- turn on caps!
-	int				throw_nodes = 0;
-	vec3_t			gore_spot, right;
-	qboolean dismember_ok = false;
+static qboolean TcheckrikThrowHead(edict_t* self, float damage, const qboolean dismember_ok, int* throw_nodes) //mxd. Added to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
+		return false;
 
-	if(HitLocation & hl_MeleeHit)
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (flrand(0.0f, (float)self->health) < damage * 0.25f)
+		TcheckrikDropWeapon(self, 0);
+
+	if (dismember_ok && flrand(0, (float)self->health) < damage * 0.3f)
 	{
-		dismember_ok = true;
-		HitLocation &= ~hl_MeleeHit;
+		TcheckrikCanThrowNode(self, MESH__HEAD, throw_nodes);
+		TcheckrikCanThrowNode(self, MESH__CROWN, throw_nodes);
+		TcheckrikCanThrowNode(self, MESH__LMANDIBLE, throw_nodes);
+		TcheckrikCanThrowNode(self, MESH__RMANDIBLE, throw_nodes);
+
+		vec3_t gore_spot = { 0.0f, 0.0f, 24.0f };
+		ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_partfly);
+
+		Vec3AddAssign(self->s.origin, gore_spot);
+		SprayDebris(self, gore_spot, 8, damage);
+
+		if (self->health > 0)
+		{
+			self->health = 1;
+			T_Damage(self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20, 0, MOD_DIED);
+		}
+
+		return true;
 	}
 
-	if(HitLocation<1)
+	int part_id = MESH__HEAD; //mxd
+
+	if (irand(0, 1) == 1 || (self->s.fmnodeinfo[part_id].flags & FMNI_USE_SKIN))
+	{
+		if (self->mass == MASS_TC_MALE)
+			part_id = ((irand(0, 1) == 1 || self->s.fmnodeinfo[MESH__RMANDIBLE].flags & FMNI_USE_SKIN) ? MESH__LMANDIBLE : MESH__RMANDIBLE);
+		else
+			part_id = MESH__CROWN;
+	}
+
+	self->s.fmnodeinfo[part_id].flags |= FMNI_USE_SKIN;
+	self->s.fmnodeinfo[part_id].skin = self->s.skinnum + 1;
+
+	return false;
+}
+
+static void TcheckrikThrowTorso(edict_t* self, const float damage) //mxd. Added to simplify logic.
+{
+	if (self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN)
 		return;
 
-	if(HitLocation>hl_Max)
-		return;
-//	gi.dprintf("HL: %d",HitLocation);
+	if (flrand(0.0f, (float)self->health) < damage * 0.5f)
+		TcheckrikDropWeapon(self, 0);
 
-/*	if(self->curAnimID==ANIM_MELEE1||self->curAnimID==ANIM_MELEE1)
-	{//Hit chest during melee, may have hit arms
-		if(HitLocation == hl_TorsoFront&&irand(0,10)<4)
+	self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;
+	self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum + 1;
+}
+
+static void TcheckrikThrowArmUpperLeft(edict_t* self, float damage) //mxd. Added to simplify logic.
+{
+	if (self->mass == MASS_TC_MALE) // Male - sword arm.
+	{
+		if (self->s.fmnodeinfo[MESH__L2NDARM].flags & FMNI_USE_SKIN)
+			damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+		if (flrand(0, (float)self->health) < damage * 0.4f)
+			TcheckrikDropWeapon(self, BIT_SWORD);
+
+		self->s.fmnodeinfo[MESH__L2NDARM].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__L2NDARM].skin = self->s.skinnum + 1;
+	}
+	else // Female.
+	{
+		if (self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN)
+			return;
+
+		self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum + 1;
+	}
+}
+
+static qboolean TcheckrikThrowArmLowerLeft(edict_t* self, float damage, const qboolean dismember_ok, int* throw_nodes) //mxd. Added to simplify logic.
+{
+	if (self->mass == MASS_TC_MALE) // Male - left spear arm.
+	{
+		// Male - left spear arm.
+		if (self->s.fmnodeinfo[MESH__L2NDARM].flags & FMNI_NO_DRAW)
+			return false;
+
+		if (self->s.fmnodeinfo[MESH__L2NDARM].flags & FMNI_USE_SKIN)
+			damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+		if (dismember_ok && flrand(0, (float)self->health) < damage * 0.75f)
 		{
-			if(irand(0,10)<7)
-				HitLocation = hl_ArmLowerRight;
-			else
-				HitLocation = hl_ArmLowerLeft;
+			if (TcheckrikCanThrowNode(self, MESH__L2NDARM, throw_nodes))
+			{
+				vec3_t right;
+				AngleVectors(self->s.angles, NULL, right, NULL);
+
+				vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+				VectorMA(gore_spot, -10.0f, right, gore_spot);
+
+				ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_partfly);
+
+				if ((self->s.fmnodeinfo[MESH__R2NDARM].flags & FMNI_NO_DRAW) && !(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
+					TcheckrikDropWeapon(self, BIT_SPEAR);
+			}
+		}
+		else
+		{
+			if (flrand(0, (float)self->health) < damage * 0.4f)
+				TcheckrikDropWeapon(self, BIT_SPEAR);
+
+			self->s.fmnodeinfo[MESH__L2NDARM].flags |= FMNI_USE_SKIN;
+			self->s.fmnodeinfo[MESH__L2NDARM].skin = self->s.skinnum + 1;
+		}
+
+		return false;
+	}
+
+	// Female.
+	if (!(self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN))
+	{
+		self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum + 1;
+	}
+
+	return true;
+}
+
+static void TcheckrikThrowArmUpperRight(edict_t* self, float damage) //mxd. Added to simplify logic.
+{
+	if (self->mass == MASS_TC_MALE) // Male - right upper arm - nothing in it.
+	{
+		if (self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN)
+			return;
+
+		self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum + 1;
+	}
+	else // Female.
+	{
+		if (self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN)
+		{
+			damage *= 1.5f; // Greater chance to cut off if previously damaged.
+		}
+		else
+		{
+			self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;
+			self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum + 1;
+		}
+
+		if (flrand(0, (float)self->health) < damage * 0.4f)
+			TcheckrikDropWeapon(self, BIT_STAFF);
+	}
+}
+
+static void TcheckrikThrowArmLowerRight(edict_t* self, float damage, const qboolean dismember_ok, int* throw_nodes) //mxd. Added to simplify logic.
+{
+	if (self->mass == MASS_TC_MALE) // Male - right spear arm.
+	{
+		if (self->s.fmnodeinfo[MESH__R2NDARM].flags & FMNI_NO_DRAW)
+			return;
+
+		if (self->s.fmnodeinfo[MESH__R2NDARM].flags & FMNI_USE_SKIN)
+			damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+		if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.75f)
+		{
+			if (TcheckrikCanThrowNode(self, MESH__R2NDARM, throw_nodes))
+			{
+				vec3_t right;
+				AngleVectors(self->s.angles, NULL, right, NULL);
+
+				vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+				VectorMA(gore_spot, 10.0f, right, gore_spot); //mxd. -10 (same as left arm) in original logic.
+
+				ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_partfly);
+
+				if ((self->s.fmnodeinfo[MESH__L2NDARM].flags & FMNI_NO_DRAW) && !(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
+					TcheckrikDropWeapon(self, BIT_SPEAR);
+			}
+		}
+		else
+		{
+			if (flrand(0.0f, (float)self->health) < damage * 0.4f)
+				TcheckrikDropWeapon(self, BIT_SPEAR);
+
+			self->s.fmnodeinfo[MESH__R2NDARM].flags |= FMNI_USE_SKIN;
+			self->s.fmnodeinfo[MESH__R2NDARM].skin = self->s.skinnum + 1;
 		}
 	}
+	else // Female.
+	{
+		if (self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN)
+		{
+			damage *= 1.5f; // Greater chance to cut off if previously damaged.
+		}
+		else
+		{
+			self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;
+			self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum + 1;
+		}
 
-	if(
-		(HitLocation == hl_ArmUpperLeft&& self->s.fmnodeinfo[MESH__L_ARM].flags & FMNI_NO_DRAW) ||
-		(HitLocation == hl_ArmUpperRight&& self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW)||
-		(
-			(HitLocation == hl_TorsoFront|| HitLocation == hl_TorsoBack) &&
-			self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW &&
-			self->s.fmnodeinfo[MESH__L_ARM].flags & FMNI_NO_DRAW &&
-			irand(0,10)<4)
-		)
-		HitLocation = hl_Head;//Decap
-*/
+		if (flrand(0, (float)self->health) < damage * 0.4f)
+			TcheckrikDropWeapon(self, BIT_STAFF);
+	}
+}
+
+static void TcheckrikThrowLeg(edict_t* self, const float damage, const int mesh_part, int* throw_nodes) //mxd. Added to simplify logic.
+{
+	if (self->health > 0) // Still alive.
+	{
+		if (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN)
+			return;
+
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+	else
+	{
+		if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
+			return;
+
+		if (TcheckrikCanThrowNode(self, mesh_part, throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			const float side = (mesh_part == MESH__LLEG ? -1.0f : 1.0f); //mxd. Original logic throws both legs in the same direction.
+			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
+			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_partfly);
+		}
+	}
+}
+
+static void TcheckrikDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'insect_dismember' in original logic.
+{
+	int throw_nodes = 0;
+	qboolean dismember_ok = false;
+
+	if (hl & hl_MeleeHit)
+	{
+		dismember_ok = true;
+		hl &= ~hl_MeleeHit;
+	}
+
+	if (hl <= hl_NoneSpecific || hl >= hl_Max) //mxd. '> hl_Max' in original logic.
+		return;
+
 	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
-	VectorClear(gore_spot);
-	switch(HitLocation)
+
+	switch (hl)
 	{
 		case hl_Head:
-			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.25)
-				TcheckrikDropWeapon (self, 0);
-			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
-			{
-				TcheckrikCanThrowNode(self, MESH__HEAD,&throw_nodes);
-				TcheckrikCanThrowNode(self, MESH__CROWN,&throw_nodes);
-				TcheckrikCanThrowNode(self, MESH__LMANDIBLE,&throw_nodes);
-				TcheckrikCanThrowNode(self, MESH__RMANDIBLE,&throw_nodes);
-
-				gore_spot[2]+=24;
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
-
-				VectorAdd(self->s.origin, gore_spot, gore_spot);
-				SprayDebris(self,gore_spot,8,damage);
-
-				if(self->health>0)
-				{
-					self->health = 1;
-					T_Damage (self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20,0,MOD_DIED);
-				}
+			if (TcheckrikThrowHead(self, (float)damage, dismember_ok, &throw_nodes)) //mxd
 				return;
-			}
-			else
-			{
-				if(irand(0,1)||self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
-				{
-					if(self->mass == MASS_TC_MALE)
-					{
-						if(irand(0,1)||self->s.fmnodeinfo[MESH__RMANDIBLE].flags & FMNI_USE_SKIN)
-						{
-							self->s.fmnodeinfo[MESH__LMANDIBLE].flags |= FMNI_USE_SKIN;
-							self->s.fmnodeinfo[MESH__LMANDIBLE].skin = self->s.skinnum+1;
-						}
-						else
-						{
-							self->s.fmnodeinfo[MESH__RMANDIBLE].flags |= FMNI_USE_SKIN;
-							self->s.fmnodeinfo[MESH__RMANDIBLE].skin = self->s.skinnum+1;
-						}
-					}
-					else
-					{
-						self->s.fmnodeinfo[MESH__CROWN].flags |= FMNI_USE_SKIN;
-						self->s.fmnodeinfo[MESH__CROWN].skin = self->s.skinnum+1;
-					}
-				}
-				else
-				{
-					self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_USE_SKIN;
-					self->s.fmnodeinfo[MESH__HEAD].skin = self->s.skinnum+1;
-				}
-			}
 			break;
-		case hl_TorsoFront://split in half?
-		case hl_TorsoBack://split in half?
-			if(self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN)
-				break;
-			if(flrand(0,self->health)<damage*0.5)
-				TcheckrikDropWeapon (self, 0);
-			self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum+1;
+
+		case hl_TorsoFront: // Split in half?
+		case hl_TorsoBack:
+			TcheckrikThrowTorso(self, (float)damage); //mxd
 			break;
+
 		case hl_ArmUpperLeft:
-			if(self->mass == MASS_TC_FEMALE)
-			{//female
-				if(self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN)
-					return;
-				self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum+1;
-				return;
-			}
-			else
-			{//male - sword arm
-				if(self->s.fmnodeinfo[MESH__L2NDARM].flags & FMNI_USE_SKIN)
-					damage*=1.5;//greater chance to cut off if previously damaged
-				if(flrand(0,self->health)<damage*0.4)
-					TcheckrikDropWeapon (self, BIT_SWORD);
-				self->s.fmnodeinfo[MESH__L2NDARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__L2NDARM].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_ArmLowerLeft://left arm
-			if(self->mass == MASS_TC_FEMALE)
-			{//female
-				if(self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN)
-					return;
-				self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum+1;
-				return;
-			}
-			else
-			{//male - left spear arm
-				if(self->s.fmnodeinfo[MESH__L2NDARM].flags & FMNI_NO_DRAW)
-					break;
-				if(self->s.fmnodeinfo[MESH__L2NDARM].flags & FMNI_USE_SKIN)
-					damage*=1.5;//greater chance to cut off if previously damaged
-				if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-				{
-					if(TcheckrikCanThrowNode(self, MESH__L2NDARM, &throw_nodes))
-					{
-						AngleVectors(self->s.angles,NULL,right,NULL);
-						gore_spot[2]+=self->maxs[2]*0.3;
-						VectorMA(gore_spot,-10,right,gore_spot);
-//						insect_chicken(self,6,8,flrand(7,15));
-						ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
-						if(self->s.fmnodeinfo[MESH__R2NDARM].flags & FMNI_NO_DRAW&&
-							!(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
-							TcheckrikDropWeapon (self, BIT_SPEAR);
-					}
-				}
-				else
-				{
-					if(flrand(0,self->health)<damage*0.4)
-						TcheckrikDropWeapon (self, BIT_SPEAR);
-					self->s.fmnodeinfo[MESH__L2NDARM].flags |= FMNI_USE_SKIN;			
-					self->s.fmnodeinfo[MESH__L2NDARM].skin = self->s.skinnum+1;
-				}
-			}
-			break;
-		case hl_ArmUpperRight:
-			if(self->mass == MASS_TC_FEMALE)
-			{//female
-				if(self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN)
-					damage*=1.5;//greater chance to cut off if previously damaged
-				else
-				{
-					self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;			
-					self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum+1;
-				}
-				if(flrand(0,self->health)<damage*0.4)
-					TcheckrikDropWeapon (self, BIT_STAFF);
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN)
-					return;
-				self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum+1;
-				return;
-			}
-			//male - right upper arm- nothing in it
-			break;
-		case hl_ArmLowerRight://right arm
-			if(self->mass == MASS_TC_FEMALE)
-			{//female
-				if(self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN)
-					damage*=1.5;//greater chance to cut off if previously damaged
-				else
-				{
-					self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;			
-					self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum+1;
-				}
-				if(flrand(0,self->health)<damage*0.4)
-					TcheckrikDropWeapon (self, BIT_STAFF);
-			}
-			else
-			{//male - right spear arm
-				if(self->s.fmnodeinfo[MESH__R2NDARM].flags & FMNI_NO_DRAW)
-					break;
-				if(self->s.fmnodeinfo[MESH__R2NDARM].flags & FMNI_USE_SKIN)
-					damage*=1.5;//greater chance to cut off if previously damaged
-				if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-				{
-					if(TcheckrikCanThrowNode(self, MESH__R2NDARM, &throw_nodes))
-					{
-						AngleVectors(self->s.angles,NULL,right,NULL);
-						gore_spot[2]+=self->maxs[2]*0.3;
-						VectorMA(gore_spot,-10,right,gore_spot);
-//						insect_chicken(self,6,8,flrand(7,15));
-						ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
-						if(self->s.fmnodeinfo[MESH__L2NDARM].flags & FMNI_NO_DRAW&&
-							!(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
-							TcheckrikDropWeapon (self, BIT_SPEAR);
-					}
-				}
-				else
-				{
-					if(flrand(0,self->health)<damage*0.4)
-						TcheckrikDropWeapon (self, BIT_SPEAR);
-					self->s.fmnodeinfo[MESH__R2NDARM].flags |= FMNI_USE_SKIN;			
-					self->s.fmnodeinfo[MESH__R2NDARM].skin = self->s.skinnum+1;
-				}
-			}
+			TcheckrikThrowArmUpperLeft(self, (float)damage); //mxd
 			break;
 
-		case hl_LegUpperLeft:
-		case hl_LegLowerLeft://left leg
-			if(self->health>0)
-			{//still alive
-				if(self->s.fmnodeinfo[MESH__LLEG].flags & FMNI_USE_SKIN)
-					break;
-				self->s.fmnodeinfo[MESH__LLEG].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__LLEG].skin = self->s.skinnum+1;
-				break;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__LLEG].flags & FMNI_NO_DRAW)
-					break;
-				if(TcheckrikCanThrowNode(self, MESH__LLEG, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
-				}
-			}
+		case hl_ArmLowerLeft: // Left arm.
+			if (TcheckrikThrowArmLowerLeft(self, (float)damage, dismember_ok, &throw_nodes)) //mxd
+				return;
 			break;
-		case hl_LegUpperRight:
-		case hl_LegLowerRight://right leg
-			if(self->health>0)
-			{//still alive
-				if(self->s.fmnodeinfo[MESH__RLEG].flags & FMNI_USE_SKIN)
-					break;
-				self->s.fmnodeinfo[MESH__RLEG].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__RLEG].skin = self->s.skinnum+1;
-				break;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__RLEG].flags & FMNI_NO_DRAW)
-					break;
-				if(TcheckrikCanThrowNode(self, MESH__RLEG, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
-				}
-			}
+
+		case hl_ArmUpperRight:
+			TcheckrikThrowArmUpperRight(self, (float)damage); //mxd
+			break;
+
+		case hl_ArmLowerRight:// Right arm.
+			TcheckrikThrowArmLowerRight(self, (float)damage, dismember_ok, &throw_nodes); //mxd
+			break;
+
+		case hl_LegUpperLeft: // Left leg.
+		case hl_LegLowerLeft:
+			TcheckrikThrowLeg(self, (float)damage, MESH__LLEG, &throw_nodes); //mxd
+			break;
+
+		case hl_LegUpperRight: // Right leg.
+		case hl_LegLowerRight:
+			TcheckrikThrowLeg(self, (float)damage, MESH__RLEG, &throw_nodes); //mxd
 			break;
 
 		default:
-			if(flrand(0,self->health)<damage*0.25)
-				TcheckrikDropWeapon (self, 0);
+			if (flrand(0.0f, (float)self->health) < (float)damage * 0.25f)
+				TcheckrikDropWeapon(self, 0);
 			break;
 	}
-	if(throw_nodes)
-		self->pain_debounce_time = 0;
 
-	/*if(self->mass == MASS_TC_FEMALE)
+	if (throw_nodes != 0)
+		self->pain_debounce_time = 0.0f;
+
+	if (self->mass == MASS_TC_MALE)
 	{
-		if(self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW)
-			self->monsterinfo.aiflags |= AI_NO_MISSILE;
-	}
-	else*/
-	if(self->mass == MASS_TC_MALE)
-	{
-//		if(self->s.fmnodeinfo[MESH__SWORD].flags & FMNI_NO_DRAW)
-		if(self->s.fmnodeinfo[MESH__MALEHAND].flags & FMNI_NO_DRAW)
+		if (self->s.fmnodeinfo[MESH__MALEHAND].flags & FMNI_NO_DRAW)
 			self->monsterinfo.aiflags |= AI_NO_MELEE;
 
-		if(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW)
+		if (self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW)
 			self->monsterinfo.aiflags |= AI_NO_MISSILE;
 	}
 }
@@ -1496,7 +1502,7 @@ void SP_monster_tcheckrik_male (edict_t *self)
 		
 	self->msgHandler = DefaultMsgHandler;
 	self->think = M_WalkmonsterStartGo;
-	self->monsterinfo.dismember = insect_dismember;
+	self->monsterinfo.dismember = TcheckrikDismember;
 
 	if (!self->health)
 	{
@@ -1656,7 +1662,7 @@ void SP_monster_tcheckrik_female (edict_t *self)
 		
 	self->msgHandler = DefaultMsgHandler;
 	self->think = M_WalkmonsterStartGo;
-	self->monsterinfo.dismember = insect_dismember;
+	self->monsterinfo.dismember = TcheckrikDismember;
 
 	if (!self->health)
 	{
