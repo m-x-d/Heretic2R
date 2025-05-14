@@ -506,80 +506,82 @@ void insectStaff(edict_t* self) //TODO: rename to tcheckrik_staff_attack.
 	}
 }
 
-void imp_fireball (edict_t *self);
-void insectSpell(edict_t *self, float whichspell)
+void insectSpell(edict_t* self, float spell_type) //TODO: rename to tcheckrik_spell_attack.
 {
-	vec3_t	org, forward, right;
-
 	if (!(self->spawnflags & MSF_INSECT_CINEMATIC))
-		ai_charge(self, 0);
-	
+		ai_charge(self, 0.0f);
+
+	vec3_t forward;
+	vec3_t right;
 	AngleVectors(self->s.angles, forward, right, NULL);
-	switch((int)whichspell)
+
+	vec3_t org;
+	VectorCopy(self->s.origin, org);
+
+	switch ((int)spell_type)
 	{
-	case TC_SPL_GLOW:
-		if(self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW)
-		{//no staff, weaker spell
-			VectorCopy(self->s.origin, org);
-			VectorMA(org, 8, forward, org);
-			VectorMA(org, 2, right, org);
-			org[2] += 6;
-			SpellCastInsectStaff(self, org, self->s.angles, forward, 0);
-			gi.sound (self, CHAN_WEAPON, sounds[SND_SPELLF], 1, ATTN_NORM, 0);
-			//SpellCastFlyingFist(self, org, self->s.angles, forward, 0);
-		}
-		else
-		{//staff, bigger spell
-			VectorCopy(self->s.origin, org);
-			VectorMA(org, 16, forward, org);
-			VectorMA(org, 4, right, org);
-			org[2] += 8;
+		case TC_SPL_GLOW:
+			if (self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW) // No staff, weaker spell.
+			{
+				VectorMA(org, 8.0f, forward, org);
+				VectorMA(org, 2.0f, right, org);
+				org[2] += 6.0f;
 
-			self->s.effects &= ~(EF_DISABLE_EXTRA_FX | EF_MARCUS_FLAG1);
-			self->damage_debounce_time = false;
-			SpellCastGlobeOfOuchiness(self, org, self->s.angles, forward);
-			gi.sound (self, CHAN_ITEM, sounds[SND_SPLPWRUPF], 1, ATTN_NORM, 0);
-		}
-		break;
-	case TC_SPL_FIRE:
-		if(self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW)
-		{//no staff
-			VectorCopy(self->s.origin, org);	// We need to initialize org, don't we?
-			VectorMA(org, 16, forward, org);
-			org[2] += 12;
-			SpellCastInsectStaff(self, org, self->s.angles, forward, 0);
-			gi.sound (self, CHAN_AUTO, sounds[SND_SPELLF], 1, ATTN_NORM, 0);
-			return;
-		}
-		else
-		{
-			VectorCopy(self->s.origin, org);
-			VectorMA(org, 16, forward, org);
-			org[2] += 12;
-			SpellCastInsectStaff(self, org, self->s.angles, forward, 0);
-			gi.sound (self, CHAN_AUTO, sounds[SND_SPELLF], 1, ATTN_NORM, 0);
-		}
-		break;
-	case TC_SPL_FIRE2:
-		if(!(self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW))
-		{//no staff
-			VectorCopy(self->s.origin, org);
-			VectorMA(org, 16, forward, org);
-			org[2] += 12;
-			SpellCastInsectStaff(self, org, self->s.angles, forward, 1);
-			gi.sound(self, CHAN_AUTO, gi.soundindex("monsters/imp/fireball.wav"), 1, ATTN_NORM, 0);
-		}
-		else
-		{
-			VectorCopy(self->s.origin, org);
-			VectorMA(org, 16, forward, org);
-			org[2] += 12;
-			SpellCastInsectStaff(self, org, self->s.angles, forward, 0);
-			gi.sound (self, CHAN_AUTO, sounds[SND_SPELLF], 1, ATTN_NORM, 0);
-		}
-		break;
+				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
+				gi.sound(self, CHAN_WEAPON, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
+			}
+			else // Staff, bigger spell.
+			{
+				VectorMA(org, 16.0f, forward, org);
+				VectorMA(org, 4.0f, right, org);
+				org[2] += 8.0f;
+
+				self->s.effects &= ~(EF_DISABLE_EXTRA_FX | EF_MARCUS_FLAG1);
+				self->damage_debounce_time = false;
+
+				SpellCastGlobeOfOuchiness(self, org, self->s.angles, forward);
+				gi.sound(self, CHAN_ITEM, sounds[SND_SPLPWRUPF], 1.0f, ATTN_NORM, 0.0f);
+			}
+			break;
+
+		case TC_SPL_FIRE:
+			if (self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW) // No staff, weaker spell. //TODO: identical if/else clauses. Shoot powered spell when have staff?..
+			{
+				VectorMA(org, 16.0f, forward, org);
+				org[2] += 12.0f;
+
+				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
+				gi.sound(self, CHAN_AUTO, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
+			}
+			else // Staff, bigger spell.
+			{
+				VectorMA(org, 16.0f, forward, org);
+				org[2] += 12.0f;
+
+				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
+				gi.sound(self, CHAN_AUTO, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
+			}
+			break;
+
+		case TC_SPL_FIRE2:
+			if (!(self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW)) // No staff, weaker spell.
+			{
+				VectorMA(org, 16.0f, forward, org);
+				org[2] += 12.0f;
+
+				SpellCastInsectStaff(self, org, self->s.angles, forward, true); //TODO: should be the other way around (unpowered here, powered below)?
+				gi.sound(self, CHAN_AUTO, gi.soundindex("monsters/imp/fireball.wav"), 1.0f, ATTN_NORM, 0.0f);
+			}
+			else // Staff, bigger spell.
+			{
+				VectorMA(org, 16.0f, forward, org);
+				org[2] += 12.0f;
+
+				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
+				gi.sound(self, CHAN_AUTO, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
+			}
+			break;
 	}
-
 }
 
 void insectReleaseSpell (edict_t *self)
