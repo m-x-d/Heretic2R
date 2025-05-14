@@ -1016,51 +1016,41 @@ static void TcheckrikPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	}
 }
 
-/*-------------------------------------------------------------------------
-	insect_pause
--------------------------------------------------------------------------*/
-void insect_pause (edict_t *self)
+void insect_pause(edict_t* self) //TODO: rename to tcheckrik_pause.
 {
-	vec3_t	v;
-	float	len;
-
-	if(self->spawnflags & MSF_INSECT_BEAST_FODDER)
+	if (self->spawnflags & MSF_INSECT_BEAST_FODDER)
 	{
-		edict_t	*found = NULL;
+		edict_t* tbeast = NULL;
 
-		if(found = G_Find(found, FOFS(classname), "monster_trial_beast"))
+		if ((tbeast = G_Find(tbeast, FOFS(classname), "monster_trial_beast")) != NULL && tbeast->health > 0)
 		{
-			if(found->health > 0)
-			{
-				self->enemy = found;
-				found->oldenemy = found->enemy;
-				found->enemy = self;
+			self->enemy = tbeast;
+			tbeast->oldenemy = tbeast->enemy;
+			tbeast->enemy = self;
 
-				self->spawnflags &= ~MSF_INSECT_BEAST_FODDER;
-				self->monsterinfo.aiflags &= ~AI_NO_MISSILE;
-				self->missile_range = 3000;
-				self->min_missile_range = 250;
+			self->spawnflags &= ~MSF_INSECT_BEAST_FODDER;
 
-				//self->monsterinfo.aiflags |= AI_NO_MELEE;
-				//self->melee_range = -250;
-				self->monsterinfo.aiflags &= ~AI_NO_MELEE;
-				self->melee_range = 48;
+			self->monsterinfo.aiflags &= ~AI_NO_MISSILE;
+			self->missile_range = 3000.0f;
+			self->min_missile_range = 250.0f;
+			self->bypass_missile_chance = 0;
 
-				self->bypass_missile_chance = 0;
-				self->s.fmnodeinfo[MESH__MALEHAND].flags &= ~FMNI_NO_DRAW;
-			}
+			self->monsterinfo.aiflags &= ~AI_NO_MELEE;
+			self->melee_range = 48.0f;
+
+			self->s.fmnodeinfo[MESH__MALEHAND].flags &= ~FMNI_NO_DRAW; //TODO: why is this done here and not in spawn function?..
 		}
 	}
 
-	if(self->monsterinfo.aiflags&AI_OVERRIDE_GUIDE)
+	if (self->monsterinfo.aiflags & AI_OVERRIDE_GUIDE)
 	{
-		if(self->groundentity)
+		if (self->groundentity != NULL)
 			self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
 		else
 			return;
 	}
 
-	if(self->spawnflags & MSF_FIXED && self->curAnimID == ANIM_DELAY && self->enemy)
+	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
 	{
 		self->monsterinfo.searchType = SEARCH_COMMON;
 		MG_FaceGoal(self, true);
@@ -1072,59 +1062,41 @@ void insect_pause (edict_t *self)
 	{
 		FindTarget(self);
 
-		if(self->enemy)
+		if (self->enemy != NULL)
 		{
-			VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-			len = VectorLength (v);
+			vec3_t diff;
+			VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
 
-			if ((len > 80) || (self->monsterinfo.aiflags & AI_FLEE))  // Far enough to run after
-			{
-				QPostMessage(self, MSG_RUN,PRI_DIRECTIVE, NULL);
-			}
-			else	// Close enough to Attack 
-			{
+			if (VectorLength(diff) > 80.0f || (self->monsterinfo.aiflags & AI_FLEE)) // Far enough to run after.
+				QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			else // Close enough to attack.
 				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-			}
 		}
+
+		return;
 	}
-	else
+
+	if (self->enemy != NULL && self->enemy->classID == CID_TBEAST && AI_IsVisible(self, self->enemy) && M_DistanceToTarget(self, self->enemy) > 250.0f)
 	{
-		//gi.dprintf("plageElf_pause:	Using High Level Functionality\n");
-		
-		
-		if(self->enemy)
+		if (AI_IsInfrontOf(self, self->enemy))
 		{
-			if(self->enemy->classID == CID_TBEAST)
-			{
-				if(AI_IsVisible(self, self->enemy))
-				{
-					if(M_DistanceToTarget(self, self->enemy) > 250)
-					{
-						if(AI_IsInfrontOf(self, self->enemy))
-						{
-							self->ai_mood = AI_MOOD_ATTACK;
-							self->monsterinfo.flee_finished = -1;
-							self->ai_mood_flags |= AI_MOOD_FLAG_MISSILE;
-						}
-						else
-						{
-							self->ai_mood = AI_MOOD_PURSUE;
-							self->ai_mood_flags &= ~AI_MOOD_FLAG_DUMB_FLEE;
-							self->monsterinfo.aiflags &= ~AI_FLEE;
-							self->monsterinfo.flee_finished = -1;
-						}
-					}
-				}
-			}
+			self->ai_mood = AI_MOOD_ATTACK;
+			self->ai_mood_flags |= AI_MOOD_FLAG_MISSILE;
+		}
+		else
+		{
+			self->ai_mood = AI_MOOD_PURSUE;
+			self->ai_mood_flags &= ~AI_MOOD_FLAG_DUMB_FLEE;
+			self->monsterinfo.aiflags &= ~AI_FLEE;
 		}
 
-		switch (self->ai_mood)
-		{
+		self->monsterinfo.flee_finished = -1.0f;
+	}
+
+	switch (self->ai_mood)
+	{
 		case AI_MOOD_ATTACK:
-			if(self->ai_mood_flags & AI_MOOD_FLAG_MISSILE)
-				QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
-			else
-				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+			QPostMessage(self, ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE), PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_PURSUE:
@@ -1141,11 +1113,7 @@ void insect_pause (edict_t *self)
 			SetAnim(self, ANIM_DELAY);
 			break;
 
-		
 		case AI_MOOD_WANDER:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-			break;
-		
 		case AI_MOOD_WALK:
 			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			break;
@@ -1155,18 +1123,11 @@ void insect_pause (edict_t *self)
 			break;
 
 		case AI_MOOD_JUMP:
-			if(self->spawnflags&MSF_FIXED)
-				SetAnim(self, ANIM_DELAY);
-			else
-				SetAnim(self, ANIM_FJUMP);
+			SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_FJUMP));
 			break;
 
-		default :
-#ifdef _DEVEL
-			gi.dprintf("insect: Unusable mood %d!\n", self->ai_mood);
-#endif
+		default:
 			break;
-		}
 	}
 }
 
