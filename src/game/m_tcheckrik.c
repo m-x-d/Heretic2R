@@ -1015,7 +1015,7 @@ void tcheckrik_spell_attack(edict_t* self, float spell_type) //mxd. Named 'insec
 				org[2] += 8.0f;
 
 				self->s.effects &= ~(EF_DISABLE_EXTRA_FX | EF_MARCUS_FLAG1);
-				self->damage_debounce_time = false;
+				self->tcheckrik_globe_spell_released = false;
 
 				SpellCastGlobeOfOuchiness(self, org, self->s.angles, forward);
 				gi.sound(self, CHAN_ITEM, sounds[SND_SPLPWRUPF], 1.0f, ATTN_NORM, 0.0f);
@@ -1070,7 +1070,7 @@ void tcheckrik_release_spell(edict_t* self) //mxd. Named 'insectReleaseSpell' in
 	gi.RemoveEffects(&self->s, FX_I_EFFECTS);
 
 	self->s.effects |= (EF_DISABLE_EXTRA_FX | EF_MARCUS_FLAG1);
-	self->damage_debounce_time = true; //TODO: add qboolean tcheckrik_globe_spell_released name.
+	self->tcheckrik_globe_spell_released = true;
 }
 
 void tcheckrik_pause(edict_t* self) //mxd. Named 'insect_pause' in original logic.

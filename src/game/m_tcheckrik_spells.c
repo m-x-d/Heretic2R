@@ -171,7 +171,7 @@ static void InsectGlobeOfOuchinessGrowThink(edict_t* self) //mxd. Named 'GlobeOf
 		return;
 	}
 
-	if (!self->owner->damage_debounce_time) //TODO: add qboolean insect_globe_released name.
+	if (!self->owner->tcheckrik_globe_spell_released)
 	{
 		self->insect_globe_grow_counter += irand(1, 2);
 
@@ -198,7 +198,6 @@ static void InsectGlobeOfOuchinessGrowThink(edict_t* self) //mxd. Named 'GlobeOf
 	}
 	else
 	{
-		self->owner->damage_debounce_time = true; //TODO: not needed?
 		G_FreeEdict(self);
 	}
 }

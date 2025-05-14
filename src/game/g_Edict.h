@@ -392,6 +392,7 @@ struct edict_s
 	{
 		float damage_debounce_time; // Used by monsters and player.
 		int spreadermist_damage_delta; //mxd
+		qboolean tcheckrik_globe_spell_released; //mxd
 	};
 	
 	float attack_debounce_time;	// Used by monsters.
