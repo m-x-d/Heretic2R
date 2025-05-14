@@ -393,43 +393,6 @@ void insectgrowl(edict_t* self) //TODO: rename to tcheckrik_growl.
 		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_GROWLF1, SND_GROWLF2)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-/*-------------------------------------------------------------------------
-	insect_melee
--------------------------------------------------------------------------*/
-/*
-void insect_melee(edict_t *self, G_Message_t *msg)
-{
-	if (!self->enemy)
-		return;
-
-	if (self->enemy->health <= 0)
-	{
-		if (!FindTarget(self))
-		{
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-			return;
-		}
-	}
-
-	if (anglemod(self->s.angles[YAW] - self->ideal_yaw) > self->yaw_speed)
-	{
-		M_ChangeYaw(self);
-		SetAnim(self, ANIM_RUN);
-		return;
-	}
-
-	if(self->mass == MASS_TC_MALE)
-	{//male
-		if(irand(0, 1)&&self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW)
-			SetAnim(self, ANIM_SPEAR);
-		else// if(self->s.fmnodeinfo[MESH__SWORD].flags & FMNI_NO_DRAW)
-			SetAnim(self, ANIM_SWORD);	
-	}
-	else//if no staff, diff spell?
-		SetAnim(self, ANIM_SPELL);
-}
-*/
-
 void insect_backpedal(edict_t *self, G_Message_t *msg)
 {
 	if (M_ValidTarget(self, self->enemy))
