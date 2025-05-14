@@ -33,23 +33,21 @@ void mother_growl(edict_t* self)
 		gi.sound(self, CHAN_BODY, sounds[irand(SND_GROWL1, SND_GROWL2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void mother_pain(edict_t *self, G_Message_t *msg)
+static void MotherPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'mother_pain' in original logic.
 {
-	int				temp, damage;
-	qboolean		force_pain;
-	
+	int temp;
+	int damage;
+	qboolean force_pain;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	if (self->pain_debounce_time < level.time)
 	{
-		self->pain_debounce_time = level.time + 1;
+		self->pain_debounce_time = level.time + 1.0f;
 		SetAnim(self, ANIM_PAIN);
 	}
 
-	gi.sound(self, CHAN_BODY, sounds[SND_PAIN], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_BODY, sounds[SND_PAIN], 1.0f, ATTN_NORM, 0.0f);
 }
-
-
 
 /*-------------------------------------------------------------------------
 -------------------------------------------------------------------------*/
@@ -81,7 +79,7 @@ void MotherStaticsInit(void)
 	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_MOTHER].msgReceivers[MSG_STAND] = mother_stand;
-	classStatics[CID_MOTHER].msgReceivers[MSG_PAIN] = mother_pain;
+	classStatics[CID_MOTHER].msgReceivers[MSG_PAIN] = MotherPainMsgHandler;
 	classStatics[CID_MOTHER].msgReceivers[MSG_DEATH] = mother_gib;
 
 	sounds[SND_GROWL1]=gi.soundindex("monsters/insect/growlf1.wav");	
