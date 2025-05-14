@@ -1198,7 +1198,7 @@ void tcheckrik_forced_inair_go(edict_t* self) //mxd. Named 'insect_go_finair' in
 	SetAnim(self, ANIM_FINAIR);
 }
 
-void insectCheckLoop(edict_t* self, float frame) //TODO: rename to tcheckrik_check_loop.
+void tcheckrik_check_loop(edict_t* self, float frame) //mxd. Named 'insectCheckLoop' in original logic.
 {
 #define TCHECKRIK_MELEE_RANGE	64.0f
 #define TCHECKRIK_MISSILE_RANGE	384.0f

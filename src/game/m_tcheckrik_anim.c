@@ -263,7 +263,7 @@ static const animframe_t insect_frames_spear[] =
 	{ FRAME_SpearB4,	NULL, 0, 0, 0, ai_charge, 0, tcheckrik_staff_attack },
 	{ FRAME_SpearB5,	NULL, 0, 0, 0, ai_charge, 0, tcheckrik_staff_attack },
 	{ FRAME_SpearB6,	NULL, 0, 0, 0, ai_charge, 0, tcheckrik_staff_attack },
-	{ FRAME_SpearB7,	NULL, 0, 0, 0, insectCheckLoop, 3, NULL },
+	{ FRAME_SpearB7,	NULL, 0, 0, 0, tcheckrik_check_loop, 3, NULL },
 	{ FRAME_SpearB8,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_SpearB9,	NULL, 0, 0, 0, ai_charge, 0, NULL }, // Check for loop.
 	{ FRAME_SpearB10,	NULL, 0, 0, 0, ai_charge, 0, NULL },
@@ -281,7 +281,7 @@ static const animframe_t insect_frames_sword[] =
 	{ FRAME_sword5,	NULL, 0, 0, 0, tcheckrik_attack, TC_ATK_HACK, NULL },
 	{ FRAME_sword6,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_sword7,	NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_sword8,	NULL, 0, 0, 0, insectCheckLoop, 1, NULL },
+	{ FRAME_sword8,	NULL, 0, 0, 0, tcheckrik_check_loop, 1, NULL },
 	{ FRAME_sword9,	NULL, 0, 0, 0, ai_charge, 0, NULL }, // Check for loop.
 };
 const animmove_t insect_move_sword = { 9, insect_frames_sword, tcheckrik_pause };
