@@ -27,16 +27,10 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-void mother_growl(edict_t *self)
+void mother_growl(edict_t* self)
 {
-	int chance;
-
-	chance = irand(0,2);
-
-	if (chance == 1)
-		gi.sound(self, CHAN_BODY, sounds[SND_GROWL1], 1, ATTN_NORM, 0);
-	else if (chance == 2)
-		gi.sound(self, CHAN_BODY, sounds[SND_GROWL2], 1, ATTN_NORM, 0);
+	if (irand(0, 2) != 0)
+		gi.sound(self, CHAN_BODY, sounds[irand(SND_GROWL1, SND_GROWL2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 void mother_pain(edict_t *self, G_Message_t *msg)
