@@ -1137,36 +1137,22 @@ static void TcheckrikCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd.
 	insect_pause(self);
 }
 
-/*-------------------------------------------------------------------------
-	insect_run
--------------------------------------------------------------------------*/
-void insect_run(edict_t *self, G_Message_t *msg)
+static void TcheckrikRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_run' in original logic.
 {
-	//turn on lerpflags
-
-	if (M_ValidTarget(self, self->enemy))
-	{
-		if(self->enemy->classID == CID_TBEAST && self->enemy->enemy != self)
-		{
-			if(M_DistanceToTarget(self, self->enemy) < 250)
-			{
-				self->monsterinfo.aiflags |= AI_FLEE;
-				self->monsterinfo.flee_finished = level.time + 3;
-			}
-		}
-
-		if(self->spawnflags&MSF_FIXED)
-			SetAnim(self, ANIM_DELAY);
-		else
-			SetAnim(self, ANIM_RUN);
-	}
-	else
+	if (!M_ValidTarget(self, self->enemy))
 	{
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
 	}
+
+	if (self->enemy->classID == CID_TBEAST && self->enemy->enemy != self && M_DistanceToTarget(self, self->enemy) < 250.0f)
+	{
+		self->monsterinfo.aiflags |= AI_FLEE;
+		self->monsterinfo.flee_finished = level.time + 3.0f;
+	}
+
+	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN));
 }
-
-
 
 /*----------------------------------------------------------------------
   insect runorder - order the insect to choose an run animation
@@ -1322,7 +1308,7 @@ void TcheckrikStaticsInit(void)
 
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_STAND] = insect_stand;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_WALK] = insect_walk;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_RUN] = insect_run;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_RUN] = TcheckrikRunMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MELEE] = TcheckrikMeleeMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MISSILE] = TcheckrikMissileMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_PAIN] = TcheckrikPainMsgHandler;
