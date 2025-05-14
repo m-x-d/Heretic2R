@@ -129,7 +129,7 @@ extern void insect_go_inair(edict_t *self);
 extern void insect_sound(edict_t *self, float channel, float sound_num, float attenuation);
 extern void tcheckrik_wait_twitch (edict_t *self);
 extern void tcheckrik_flyback_loop(edict_t *self);
-extern void insect_flyback_move(edict_t *self);
+extern void tcheckrik_flyback_move(edict_t *self);
 extern void tcheckrik_idle_sound (edict_t *self);
 extern void insect_go_finair(edict_t *self);
 

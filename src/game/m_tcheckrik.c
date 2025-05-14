@@ -908,7 +908,7 @@ void tcheckrik_flyback_loop(edict_t* self) //mxd. Named 'insect_flyback_loop' in
 	SetAnim(self, ANIM_KNOCK1_LOOP);
 }
 
-void insect_flyback_move(edict_t* self) //TODO: rename to tcheckrik_flyback_move.
+void tcheckrik_flyback_move(edict_t* self) //mxd. Named 'insect_flyback_move' in original logic.
 {
 	M_ChangeYaw(self);
 

@@ -57,32 +57,32 @@ const animmove_t insect_move_deathfr = { 22, insect_frames_deathfr, NULL };
 // Insect Knockback Start.
 static const animframe_t insect_frames_knock1_go[] =
 {
-	{ FRAME_knock1,	NULL, 0, 0, 0, NULL, 0, insect_flyback_move },
+	{ FRAME_knock1,	NULL, 0, 0, 0, NULL, 0, tcheckrik_flyback_move },
 };
 const animmove_t insect_move_knock1_go = { 1, insect_frames_knock1_go, tcheckrik_flyback_loop };
 
 // Insect Knockback Loop.
 static const animframe_t insect_frames_knock1_loop[] =
 {
-	{ FRAME_knock2,	NULL, 0, 0, 0, NULL, 0, insect_flyback_move },
+	{ FRAME_knock2,	NULL, 0, 0, 0, NULL, 0, tcheckrik_flyback_move },
 };
 const animmove_t insect_move_knock1_loop = { 1, insect_frames_knock1_loop, NULL };
 
 // Insect Knockback End.
 static const animframe_t insect_frames_knock1_end[] =
 {
-	{ FRAME_knock3,		insect_sound, CHAN_BODY, SND_THUD, ATTN_NORM, ai_move, -4, insect_flyback_move },
-	{ FRAME_knock4,		NULL, 0, 0, 0, ai_move, -3, insect_flyback_move },
-	{ FRAME_knock5,		NULL, 0, 0, 0, ai_move, -3, insect_flyback_move },
-	{ FRAME_knock6,		NULL, 0, 0, 0, ai_move, -3, insect_flyback_move },
-	{ FRAME_knock7,		NULL, 0, 0, 0, ai_move, -2, insect_flyback_move },
-	{ FRAME_knock8,		NULL, 0, 0, 0, ai_move, -2, insect_flyback_move },
-	{ FRAME_knock9,		NULL, 0, 0, 0, ai_move, -2, insect_flyback_move },
-	{ FRAME_knock10,	NULL, 0, 0, 0, ai_move, -1, insect_flyback_move },
-	{ FRAME_knock11,	NULL, 0, 0, 0, ai_move, -1, insect_flyback_move },
-	{ FRAME_knock12,	NULL, 0, 0, 0, ai_move,  0, insect_flyback_move },
-	{ FRAME_knock13,	NULL, 0, 0, 0, ai_move,  0, insect_flyback_move },
-	{ FRAME_knock14,	NULL, 0, 0, 0, ai_move,  0, insect_flyback_move },
+	{ FRAME_knock3,		insect_sound, CHAN_BODY, SND_THUD, ATTN_NORM, ai_move, -4, tcheckrik_flyback_move },
+	{ FRAME_knock4,		NULL, 0, 0, 0, ai_move, -3, tcheckrik_flyback_move },
+	{ FRAME_knock5,		NULL, 0, 0, 0, ai_move, -3, tcheckrik_flyback_move },
+	{ FRAME_knock6,		NULL, 0, 0, 0, ai_move, -3, tcheckrik_flyback_move },
+	{ FRAME_knock7,		NULL, 0, 0, 0, ai_move, -2, tcheckrik_flyback_move },
+	{ FRAME_knock8,		NULL, 0, 0, 0, ai_move, -2, tcheckrik_flyback_move },
+	{ FRAME_knock9,		NULL, 0, 0, 0, ai_move, -2, tcheckrik_flyback_move },
+	{ FRAME_knock10,	NULL, 0, 0, 0, ai_move, -1, tcheckrik_flyback_move },
+	{ FRAME_knock11,	NULL, 0, 0, 0, ai_move, -1, tcheckrik_flyback_move },
+	{ FRAME_knock12,	NULL, 0, 0, 0, ai_move,  0, tcheckrik_flyback_move },
+	{ FRAME_knock13,	NULL, 0, 0, 0, ai_move,  0, tcheckrik_flyback_move },
+	{ FRAME_knock14,	NULL, 0, 0, 0, ai_move,  0, tcheckrik_flyback_move },
 	{ FRAME_knock15,	NULL, 0, 0, 0, ai_move,  0, MG_SetNoBlocking },
 	{ FRAME_knock15,	NULL, 0, 0, 0, NULL,	 0, tcheckrik_wait_twitch },
 };
