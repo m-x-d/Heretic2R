@@ -903,7 +903,7 @@ void tcheckrik_wait_twitch(edict_t* self) //mxd. Named 'insect_wait_twitch' in o
 	}
 }
 
-void insect_flyback_loop(edict_t* self) //TODO: rename to tcheckrik_flyback_loop.
+void tcheckrik_flyback_loop(edict_t* self) //mxd. Named 'insect_flyback_loop' in original logic.
 {
 	SetAnim(self, ANIM_KNOCK1_LOOP);
 }

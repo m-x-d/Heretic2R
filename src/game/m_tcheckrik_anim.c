@@ -59,7 +59,7 @@ static const animframe_t insect_frames_knock1_go[] =
 {
 	{ FRAME_knock1,	NULL, 0, 0, 0, NULL, 0, insect_flyback_move },
 };
-const animmove_t insect_move_knock1_go = { 1, insect_frames_knock1_go, insect_flyback_loop };
+const animmove_t insect_move_knock1_go = { 1, insect_frames_knock1_go, tcheckrik_flyback_loop };
 
 // Insect Knockback Loop.
 static const animframe_t insect_frames_knock1_loop[] =
