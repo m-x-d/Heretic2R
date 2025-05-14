@@ -274,23 +274,24 @@ static void TcheckrikDeathPain(edict_t* self, G_Message_t* msg) //mxd. Named 'in
 	}
 }
 
-void insect_wait_twitch (edict_t *self)
+void insect_wait_twitch(edict_t* self) //TODO: rename to tcheckrik_wait_twitch.
 {
-	if(self->curAnimID!=ANIM_TWITCH&&!irand(0,1))
+	if (self->curAnimID != ANIM_TWITCH && irand(0, 1) == 0)
 	{
 		SetAnim(self, ANIM_TWITCH);
-		self->nextthink = level.time + 0.1;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
-	else if(irand(0, 5))
+	else if (irand(0, 5) != 0)
 	{
 		SetAnim(self, ANIM_TWITCH);
-		self->nextthink = level.time + flrand(0.2, 10);
+		self->nextthink = level.time + flrand(0.2f, 10.0f);
 	}
 	else
 	{
 		self->s.effects |= EF_DISABLE_EXTRA_FX;
 		self->msgHandler = DeadMsgHandler;
 		self->dead_state = DEAD_DEAD;
+
 		M_EndDeath(self);
 		self->think = NULL;
 	}
