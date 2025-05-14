@@ -301,7 +301,7 @@ static const animframe_t insect_frames_spell[] =
 	{ FRAME_spell10,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell11,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell12,	NULL, 0, 0, 0, tcheckrik_spell_attack, TC_SPL_FIRE, NULL },
-	{ FRAME_spell13,	NULL, 0, 0, 0, ai_charge, 0, insectReleaseSpell }, // Here if forwards.
+	{ FRAME_spell13,	NULL, 0, 0, 0, ai_charge, 0, tcheckrik_release_spell }, // Here if forwards.
 	{ FRAME_spell14,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell15,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell16,	NULL, 0, 0, 0, ai_charge, 0, NULL }, // Check for loop?

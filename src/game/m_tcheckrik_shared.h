@@ -114,7 +114,7 @@ extern const animmove_t insect_move_twitch;
 
 extern void tcheckrik_c_dead (edict_t *self);
 
-extern void insectReleaseSpell (edict_t *self);
+extern void tcheckrik_release_spell (edict_t *self);
 
 extern void tcheckrik_attack (edict_t *self, float attack_type);
 extern void tcheckrik_spell_attack(edict_t *self, float spell_type);

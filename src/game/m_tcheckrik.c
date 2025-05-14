@@ -1065,7 +1065,7 @@ void tcheckrik_spell_attack(edict_t* self, float spell_type) //mxd. Named 'insec
 	}
 }
 
-void insectReleaseSpell(edict_t* self) //TODO: rename to tcheckrik_release_spell.
+void tcheckrik_release_spell(edict_t* self) //mxd. Named 'insectReleaseSpell' in original logic.
 {
 	gi.RemoveEffects(&self->s, FX_I_EFFECTS);
 
