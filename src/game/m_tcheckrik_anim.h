@@ -411,7 +411,7 @@
 
 #define MODEL_SCALE			1.0f
 
-#define NUM_MESH_NODES		16 //TODO: use.
+#define NUM_MESH_NODES		16
 
 #define MESH_MASTER			0
 #define MESH__LLEG			1
