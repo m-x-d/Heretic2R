@@ -437,39 +437,32 @@ static void TcheckrikMeleeMsgHandler(edict_t* self, G_Message_t* msg)//mxd. Name
 	}
 }
 
-void insect_missile(edict_t *self, G_Message_t *msg)
+static void TcheckrikMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_missile' in original logic.
 {
-	if (M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
-		if(self->mass == MASS_TC_MALE)
-		{//male
-			if(self->enemy->classID == CID_TBEAST && self->enemy->enemy == self)
-			{
-				if(M_DistanceToTarget(self, self->enemy) < 250)
-				{
-					if(self->enemy->enemy != self)
-					{
-						self->enemy->oldenemy = self->enemy->enemy;
-						self->enemy->enemy = self;
-					}
-					self->monsterinfo.aiflags |= AI_FLEE;
-					self->monsterinfo.flee_finished = level.time + 3;
-					QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-					return;
-				}
-			}
-			SetAnim(self, ANIM_SPEAR);	
-		}
-		else
-		{
-			if(self->spawnflags & MSF_INSECT_ALTERNATE)
-				SetAnim(self, ANIM_SPELL2);
-			else
-				SetAnim(self, ANIM_SPELL);
-		}
-	}
-	else
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
+	}
+
+	if (self->mass == MASS_TC_MALE) // Male.
+	{
+		// Run away from Trial Beast.
+		if (self->enemy->classID == CID_TBEAST && self->enemy->enemy == self && M_DistanceToTarget(self, self->enemy) < 250.0f)
+		{
+			self->monsterinfo.aiflags |= AI_FLEE;
+			self->monsterinfo.flee_finished = level.time + 3.0f;
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+
+			return;
+		}
+
+		SetAnim(self, ANIM_SPEAR);
+	}
+	else // Female.
+	{
+		SetAnim(self, ((self->spawnflags & MSF_INSECT_ALTERNATE) ? ANIM_SPELL2 : ANIM_SPELL));
+	}
 }
 
 extern void SpellCastInsectSpear(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,int offset);
@@ -1385,7 +1378,7 @@ void TcheckrikStaticsInit(void)
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_WALK] = insect_walk;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_RUN] = insect_run;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MELEE] = TcheckrikMeleeMsgHandler;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MISSILE] = insect_missile;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MISSILE] = TcheckrikMissileMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_PAIN] = insect_pain;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH] = TcheckrikDeathMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_FALLBACK] = TcheckrikFallbackMsgHandler;
