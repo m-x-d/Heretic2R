@@ -393,15 +393,10 @@ void insectgrowl(edict_t* self) //TODO: rename to tcheckrik_growl.
 		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_GROWLF1, SND_GROWLF2)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void insect_backpedal(edict_t *self, G_Message_t *msg)
+static void TcheckrikFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_backpedal' in original logic.
 {
 	if (M_ValidTarget(self, self->enemy))
-	{
-		if(self->spawnflags&MSF_FIXED)
-			SetAnim(self, ANIM_DELAY);
-		else
-			SetAnim(self, ANIM_BACK);//not male?
-	}
+		SetAnim(self, (self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_BACK); // Not male?
 	else
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
@@ -1392,7 +1387,7 @@ void TcheckrikStaticsInit(void)
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MISSILE] = insect_missile;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_PAIN] = insect_pain;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH] = TcheckrikDeathMsgHandler;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_FALLBACK] = insect_backpedal;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_FALLBACK] = TcheckrikFallbackMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_JUMP] = insect_jump;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH_PAIN] = TcheckrikDeathPain;
