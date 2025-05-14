@@ -91,46 +91,38 @@ void MotherStaticsInit(void)
 	classStatics[CID_MOTHER].resInfo = &res_info;
 }
 
-/*QUAKED monster_tcheckrik_mothers (1 .5 0) (-40 -40 -75) (40 40 75) 
-Momma egg layer
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-*/
-void SP_monster_tcheckrik_mothers (edict_t *self)
+// QUAKED monster_tcheckrik_mothers (1 .5 0) (-40 -40 -75) (40 40 75)
+// Momma egg layer.
+// pain_target - Monsters will fire this target the first time it gets hurt (only once).
+void SP_monster_tcheckrik_mothers(edict_t* self)
 {
-	if (!M_Start(self))
-		return;					// Failed initialization
-		
-	self->msgHandler = DefaultMsgHandler;
-	self->think = M_WalkmonsterStartGo;
+	if (!M_WalkmonsterStart(self)) //mxd. M_Start -> M_WalkmonsterStart.
+		return; // Failed initialization.
 
-	if (!self->health)
-	{
-		self->health = PLAGUEELF_HEALTH;
-	}
+	self->msgHandler = DefaultMsgHandler;
+
+	if (self->health == 0)
+		self->health = PLAGUEELF_HEALTH; //TODO: Add separate define? //TODO: Also call MonsterHealth()?
 
 	self->mass = 2000;
-	self->yaw_speed = 20;
+	self->yaw_speed = 20.0f;
 
 	self->movetype = PHYSICSTYPE_STATIC;
 	VectorClear(self->knockbackvel);
-	
-	self->solid=SOLID_BBOX;
 
-	VectorSet (self->mins, -40, -40, -75);
-	VectorSet (self->maxs,  40,  40,  75);	
-	self->viewheight = self->maxs[2]*0.8;
-	
-	self->s.modelindex = classStatics[CID_MOTHER].resInfo->modelIndex;
-
-	if (!self->s.scale)
-	{
-		self->s.scale = self->monsterinfo.scale = MODEL_SCALE;
-	}
-
+	self->solid = SOLID_BBOX;
 	self->materialtype = MAT_INSECT;
-
 	self->svflags |= SVF_WAIT_NOTSOLID;
 
-}
+	VectorSet(self->mins, -40.0f, -40.0f, -75.0f); //TODO: init via STDMinsForClass?
+	VectorSet(self->maxs, 40.0f, 40.0f, 75.0f); //TODO: init via STDMaxsForClass?
+	self->viewheight = (int)(self->maxs[2] * 0.8f);
 
+	self->s.modelindex = (byte)classStatics[CID_MOTHER].resInfo->modelIndex;
+
+	if (self->s.scale == 0.0f)
+	{
+		self->s.scale = MODEL_SCALE;
+		self->monsterinfo.scale = self->s.scale;
+	}
+}
