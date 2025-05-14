@@ -1154,26 +1154,6 @@ static void TcheckrikRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN));
 }
 
-/*----------------------------------------------------------------------
-  insect runorder - order the insect to choose an run animation
------------------------------------------------------------------------*/
-void insect_runorder(edict_t *self)
-{
-	QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-}
-
-
-/*-------------------------------------------------------------------------
-	insectsqueal
--------------------------------------------------------------------------*/
-void insectsqueal (edict_t *self)
-{
-/*	if(irand(0, 1))
-		gi.sound(self, CHAN_WEAPON, Sounds[SND_PAIN1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_WEAPON, Sounds[SND_PAIN2], 1, ATTN_NORM, 0);*/
-}
-
 /*-------------------------------------------------------------------------
 	insect_stand
 -------------------------------------------------------------------------*/
