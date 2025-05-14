@@ -1174,42 +1174,32 @@ void insect_go_finair(edict_t* self) //TODO: rename to tcheckrik_forced_inair_go
 	SetAnim(self, ANIM_FINAIR);
 }
 
-void insectCheckLoop (edict_t *self, float frame)
-{//see if should fire again
-	vec3_t	v;
-	float	len, melee_range, min_seperation, missile_range;
+void insectCheckLoop(edict_t* self, float frame) //TODO: rename to tcheckrik_check_loop.
+{
+#define TCHECKRIK_MELEE_RANGE	64.0f
+#define TCHECKRIK_MISSILE_RANGE	384.0f
 
-	if(!self->enemy)
+	// See if should fire again.
+	if (self->enemy == NULL || self->enemy->health <= 0 || !AI_IsVisible(self, self->enemy) || !AI_IsInfrontOf(self, self->enemy))
 		return;
 
-	if(self->enemy->health <= 0)
+	ai_charge2(self, 0.0f);
+
+	if (irand(0, 100) < self->bypass_missile_chance || self->monsterinfo.attack_finished > level.time)
 		return;
-
-	if(!AI_IsVisible(self, self->enemy))
-		return;
-
-	if(!AI_IsInfrontOf(self, self->enemy))
-		return;
-
-	ai_charge2(self, 0);
-
-	if(irand(0,100)<self->bypass_missile_chance)
-		return;
-
-	if(self->monsterinfo.attack_finished > level.time)
-		return;
-
-	VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-	len = VectorLength (v);
-	melee_range = 64;
-	missile_range = 384;
-	min_seperation = self->maxs[0] + self->enemy->maxs[0];
 
 	if (AI_IsInfrontOf(self, self->enemy))
-	{//don't loop if enemy close enough
-		if (len < min_seperation + melee_range)
+	{
+		vec3_t diff;
+		VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+		const float len = VectorLength(diff);
+		const float min_seperation = self->maxs[0] + self->enemy->maxs[0];
+
+		// Don't loop if enemy close enough.
+		if (len < min_seperation + TCHECKRIK_MELEE_RANGE)
 			return;
-		else if (len < min_seperation + missile_range && irand(0,10)<3)
+
+		if (len < min_seperation + TCHECKRIK_MISSILE_RANGE && irand(0, 10) < 3)
 			return;
 	}
 
