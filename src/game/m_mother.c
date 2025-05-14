@@ -67,31 +67,28 @@ static void MotherDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*-------------------------------------------------------------------------
-	MotherStaticsInit
--------------------------------------------------------------------------*/
 void MotherStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_MOTHER].msgReceivers[MSG_STAND] = MotherStandMsgHandler;
 	classStatics[CID_MOTHER].msgReceivers[MSG_PAIN] = MotherPainMsgHandler;
 	classStatics[CID_MOTHER].msgReceivers[MSG_DEATH] = MotherDeathMsgHandler;
 
-	sounds[SND_GROWL1]=gi.soundindex("monsters/insect/growlf1.wav");	
-	sounds[SND_GROWL2] = gi.soundindex ("monsters/insect/growlf2.wav");	
-	sounds[SND_PAIN] = gi.soundindex("monsters/insect/painf.wav");	
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+
+	res_info.modelIndex = gi.modelindex("models/monsters/mother/tris.fm");
+
+	sounds[SND_GROWL1] = gi.soundindex("monsters/insect/growlf1.wav");
+	sounds[SND_GROWL2] = gi.soundindex("monsters/insect/growlf2.wav");
+	sounds[SND_PAIN] = gi.soundindex("monsters/insect/painf.wav");
 	sounds[SND_GIB] = gi.soundindex("monsters/insect/gib.wav");
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	
-	resInfo.modelIndex = gi.modelindex("models/monsters/mother/tris.fm");
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
 
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
-
-	classStatics[CID_MOTHER].resInfo = &resInfo;
+	classStatics[CID_MOTHER].resInfo = &res_info;
 }
 
 /*QUAKED monster_tcheckrik_mothers (1 .5 0) (-40 -40 -75) (40 40 75) 
