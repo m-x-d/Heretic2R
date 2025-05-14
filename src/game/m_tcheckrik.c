@@ -863,7 +863,7 @@ void tcheckrik_attack(edict_t* self, float attack_type) //mxd. Named 'insectCut'
 	T_Damage(trace.ent, self, self, hit_dir, trace.endpos, vec3_origin, damage, damage * 2, DAMAGE_DISMEMBER, MOD_DIED);
 }
 
-void insect_dead(edict_t* self) //TODO: rename to tcheckrik_dead.
+void tcheckrik_dead(edict_t* self) //mxd. Named 'insect_dead' in original logic.
 {
 	self->s.effects |= EF_DISABLE_EXTRA_FX;
 	self->msgHandler = DeadMsgHandler;

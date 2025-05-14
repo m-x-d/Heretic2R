@@ -121,7 +121,7 @@ extern void insectSpell(edict_t *self, float spell_type);
 extern void insectStaff(edict_t *self);
 extern void insectCheckLoop (edict_t *self, float frame);
 
-extern void insect_dead(edict_t *self);
+extern void tcheckrik_dead(edict_t *self);
 extern void insectdeathsqueal(edict_t *self);
 extern void insectgrowl(edict_t *self);
 extern void insect_pause (edict_t *self);

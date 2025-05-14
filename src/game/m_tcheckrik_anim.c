@@ -50,7 +50,7 @@ static const animframe_t insect_frames_deathfr[] =
 	{ FRAME_deathfr19,	NULL, 0, 0, 0, ai_move, 12, NULL },
 	{ FRAME_deathfr20,	insect_sound, CHAN_BODY, SND_THUD, ATTN_NORM, ai_move, 4, NULL },
 	{ FRAME_deathfr21,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_deathfr22,	NULL, 0, 0, 0, NULL, 0, insect_dead },
+	{ FRAME_deathfr22,	NULL, 0, 0, 0, NULL, 0, tcheckrik_dead },
 };
 const animmove_t insect_move_deathfr = { 22, insect_frames_deathfr, NULL };
 
