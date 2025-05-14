@@ -54,17 +54,17 @@ static void MotherStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	SetAnim(self, ANIM_STAND);
 }
 
-void mother_pause (edict_t *self)
+void mother_pause(edict_t* self)
 {
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
-
-void mother_gib(edict_t *self, G_Message_t *msg)
+static void MotherDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'mother_gib' in original logic.
 {
-	gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
+
 	self->think = BecomeDebris;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-------------------------------------------------------------------------
@@ -76,7 +76,7 @@ void MotherStaticsInit(void)
 
 	classStatics[CID_MOTHER].msgReceivers[MSG_STAND] = MotherStandMsgHandler;
 	classStatics[CID_MOTHER].msgReceivers[MSG_PAIN] = MotherPainMsgHandler;
-	classStatics[CID_MOTHER].msgReceivers[MSG_DEATH] = mother_gib;
+	classStatics[CID_MOTHER].msgReceivers[MSG_DEATH] = MotherDeathMsgHandler;
 
 	sounds[SND_GROWL1]=gi.soundindex("monsters/insect/growlf1.wav");	
 	sounds[SND_GROWL2] = gi.soundindex ("monsters/insect/growlf2.wav");	
