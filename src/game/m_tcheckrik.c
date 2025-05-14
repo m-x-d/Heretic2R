@@ -584,11 +584,12 @@ void insectSpell(edict_t* self, float spell_type) //TODO: rename to tcheckrik_sp
 	}
 }
 
-void insectReleaseSpell (edict_t *self)
+void insectReleaseSpell(edict_t* self) //TODO: rename to tcheckrik_release_spell.
 {
 	gi.RemoveEffects(&self->s, FX_I_EFFECTS);
-	self->s.effects |= EF_DISABLE_EXTRA_FX | EF_MARCUS_FLAG1;
-	self->damage_debounce_time = true; //TODO: add qboolean insect_globe_released name.
+
+	self->s.effects |= (EF_DISABLE_EXTRA_FX | EF_MARCUS_FLAG1);
+	self->damage_debounce_time = true; //TODO: add qboolean tcheckrik_globe_spell_released name.
 }
 
 /*-------------------------------------------------------------------------
