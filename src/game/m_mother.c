@@ -33,7 +33,7 @@
 
 /*----------------------------------------------------------------------
 -----------------------------------------------------------------------*/
-static animmove_t *animations[ NUM_ANIMS] =
+static const animmove_t *animations[ NUM_ANIMS] =
 {
 	&mother_move_pain,
 	&mother_move_stand,
