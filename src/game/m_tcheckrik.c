@@ -872,7 +872,7 @@ void tcheckrik_dead(edict_t* self) //mxd. Named 'insect_dead' in original logic.
 	M_EndDeath(self);
 }
 
-void insect_random_idle_sound(edict_t* self) //TODO: rename to tcheckrik_idle_sound.
+void tcheckrik_idle_sound(edict_t* self) //mxd. Named 'insect_random_idle_sound' in original logic.
 {
 	if (self->mass == MASS_TC_MALE)
 		gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWLM1, SND_GROWLM2)], 1.0f, ATTN_NORM, 0.0f);

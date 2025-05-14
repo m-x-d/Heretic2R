@@ -92,7 +92,7 @@ const animmove_t insect_move_knock1_end = { 14, insect_frames_knock1_end, NULL }
 static const animframe_t insect_frames_twitch[] =
 {
 	// Takes a couple steps back... May clip!
-	{ FRAME_knock16,	NULL, 0, 0, 0, NULL, 0, insect_random_idle_sound },
+	{ FRAME_knock16,	NULL, 0, 0, 0, NULL, 0, tcheckrik_idle_sound },
 	{ FRAME_knock17,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_knock18,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_knock19,	NULL, 0, 0, 0, NULL, 0, NULL },
