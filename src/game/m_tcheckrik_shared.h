@@ -112,7 +112,7 @@ extern const animmove_t insect_move_knock1_loop;
 extern const animmove_t insect_move_knock1_end;
 extern const animmove_t insect_move_twitch;
 
-extern void insect_c_reallydead (edict_t *self);
+extern void tcheckrik_c_dead (edict_t *self);
 
 extern void insectReleaseSpell (edict_t *self);
 

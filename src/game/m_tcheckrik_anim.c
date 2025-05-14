@@ -818,7 +818,7 @@ static const animframe_t insect_frames_c_death1[] =
 	{ FRAME_deathfr21,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathfr22, insect_sound, CHAN_BODY, SND_THUD, ATTN_NORM, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_death1 = { 22, insect_frames_c_death1, insect_c_reallydead };
+const animmove_t insect_move_c_death1 = { 22, insect_frames_c_death1, tcheckrik_c_dead };
 
 // Insect Cinematic Pain.
 static const animframe_t insect_frames_c_pain1[] =

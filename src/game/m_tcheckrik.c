@@ -784,7 +784,7 @@ static void TcheckrikDismember(edict_t* self, int damage, HitLocation_t hl) //mx
 
 #pragma region ========================== Action functions ==========================
 
-void insect_c_reallydead(edict_t* self) //TODO: rename to tcheckrik_c_dead.
+void tcheckrik_c_dead(edict_t* self) //mxd. Named 'insect_c_reallydead' in original logic.
 {
 	self->nextthink = level.time; //TODO: should be -1?..
 	self->think = NULL;
