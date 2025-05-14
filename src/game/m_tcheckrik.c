@@ -1414,157 +1414,108 @@ void SP_monster_tcheckrik_male(edict_t* self)
 	gi.CreateEffect(&self->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_I_RREFS, vec3_origin);
 }
 
-/*QUAKED monster_tcheckrik_female (1 .5 0) (-16 -16 -32) (16 16 32) AMBUSH ASLEEP WALKING CINEMATIC 16 ALTERNATE 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
+// QUAKED monster_tcheckrik_female (1 .5 0) (-16 -16 -32) (16 16 32) AMBUSH ASLEEP WALKING CINEMATIC 16 ALTERNATE 64 FIXED WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
+// The insect.
 
-The insect 
+// Spawnflags:
+// AMBUSH		- Will not be woken up by other monsters or shots from player.
+// ASLEEP		- Will not appear until triggered.
+// WALKING		- Use WANDER instead.
+// WANDER		- Monster will wander around aimlessly (but follows buoys).
+// ALTERNATE	- Fires alternate projectile, more damage, not multiple though.
+// MELEE_LEAD	- Monster will try to cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not.
+// STALK		- Monster will only approach and attack from behind. If you're facing the monster it will just stand there.
+//				  Once the monster takes pain, however, it will stop this behaviour and attack normally.
+// COWARD		- Monster starts off in flee mode (runs away from you when woken up).
 
-AMBUSH - Will not be woken up by other monsters or shots from player
-
-ASLEEP - will not appear until triggered
-
-WALKING - use WANDER instead
-
-WANDER - Monster will wander around aimlessly (but follows buoys)
-
-ALTERNATE - fires alternate projectile, more damage, not multiple though
-
-MELEE_LEAD - Monster will tryto cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not
-
-STALK - Monster will only approach and attack from behind- if you're facing the monster it will just stand there.  Once the monster takes pain, however, it will stop this behaviour and attack normally
-
-COWARD - Monster starts off in flee mode- runs away from you when woken up
-
-"homebuoy" - monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to)
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-mintel - monster intelligence- this basically tells a monster how many buoys away an enemy has to be for it to give up.
-
-melee_range - How close the player has to be, maximum, for the monster to go into melee.  If this is zero, the monster will never melee.  If it is negative, the monster will try to keep this distance from the player.  If the monster has a backup, he'll use it if too clode, otherwise, a negative value here means the monster will just stop running at the player at this distance.
-	Examples:
-		melee_range = 60 - monster will start swinging it player is closer than 60
-		melee_range = 0 - monster will never do a mele attack
-		melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close
-
-missile_range - Maximum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-min_missile_range - Minimum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-bypass_missile_chance - Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot.  This, in effect, will make the monster come in more often than hang back and fire.  A percentage (0 = always fire/never close in, 100 = never fire/always close in).- must be whole number
-
-jump_chance - every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time)- must be whole number
-
-wakeup_distance - How far (max) the player can be away from the monster before it wakes up.  This just means that if the monster can see the player, at what distance should the monster actually notice him and go for him.
-
-DEFAULTS:
-mintel					= 32
-melee_range				= -72
-missile_range			= 512
-min_missile_range		= 48
-bypass_missile_chance	= 0
-jump_chance				= 40
-wakeup_distance			= 1024
-
-NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1
-*/
-/*-------------------------------------------------------------------------
-	SP_monster_insect
--------------------------------------------------------------------------*/
-void SP_monster_tcheckrik_female (edict_t *self)
+// Variables:
+// homebuoy					- Monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to).
+// wakeup_target			- Monsters will fire this target the first time it wakes up (only once).
+// pain_target				- Monsters will fire this target the first time it gets hurt (only once).
+// mintel					- Monster intelligence - this basically tells a monster how many buoys away an enemy has to be for it to give up (default 32).
+// melee_range				- How close the player has to be for the monster to go into melee. If this is zero, the monster will never melee.
+//							  If it is negative, the monster will try to keep this distance from the player.
+//							  If the monster has a backup, he'll use it if too close, otherwise, a negative value here means the monster will just stop
+//							  running at the player at this distance (default -72).
+//							 Examples:
+//								melee_range = 60 - monster will start swinging it player is closer than 60.
+//								melee_range = 0 - monster will never do a melee attack.
+//								melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close.
+// missile_range			- Maximum distance the player can be from the monster to be allowed to use it's ranged attack (default 512).
+// min_missile_range		- Minimum distance the player can be from the monster to be allowed to use it's ranged attack (default 48).
+// bypass_missile_chance	- Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot. This, in effect, will make the monster
+//							  come in more often than hang back and fire. A percentage (0 = always fire/never close in, 100 = never fire/always close in) - must be whole number (default 0).
+// jump_chance				- Every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time) - must be whole number (default 40).
+// wakeup_distance			- How far (max) the player can be away from the monster before it wakes up. This means that if the monster can see the player,
+//							  at what distance should the monster actually notice him and go for him (default 1024).
+// NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1.
+void SP_monster_tcheckrik_female(edict_t* self)
 {
-	if(self->spawnflags & MSF_WALKING)
+	if (self->spawnflags & MSF_WALKING)
 	{
 		self->spawnflags |= MSF_WANDER;
 		self->spawnflags &= ~MSF_WALKING;
 	}
 
-	if (!M_Start(self))
-		return;					// Failed initialization
-		
+	if (!M_WalkmonsterStart(self)) //mxd. M_Start -> M_WalkmonsterStart.
+		return; // Failed initialization.
+
 	self->msgHandler = DefaultMsgHandler;
-	self->think = M_WalkmonsterStartGo;
 	self->monsterinfo.dismember = TcheckrikDismember;
-
-	if (!self->health)
-	{
-		self->health = TC_HEALTH_FEMALE;
-	}
-	self->max_health = self->health = MonsterHealth(self->health);
-
-	self->mass = MASS_TC_FEMALE;
-	self->yaw_speed = 20;
-
-	self->movetype = PHYSICSTYPE_STEP;
-	VectorClear(self->knockbackvel);
-	
-	self->solid=SOLID_BBOX;
-
-	VectorCopy(STDMinsForClass[self->classID], self->mins);
-	VectorCopy(STDMaxsForClass[self->classID], self->maxs);	
-	self->viewheight = self->maxs[2]*0.4;
-	
 	self->touch = M_Touch;
 
-	self->s.modelindex = gi.modelindex("models/monsters/tcheckrik/female/tris.fm");
+	if (self->health == 0)
+		self->health = TC_HEALTH_FEMALE;
 
-	// All skins are even numbers, pain skins are skin+1.
-	self->s.skinnum = 0;	
-//	self->s.skinnum = 2;
+	self->health = MonsterHealth(self->health);
+	self->max_health = self->health;
 
-	if (!self->s.scale)
-	{
-		self->s.scale = self->monsterinfo.scale = MODEL_SCALE;
-	}
+	self->mass = MASS_TC_FEMALE;
+	self->yaw_speed = 20.0f;
 
+	self->solid = SOLID_BBOX;
+	self->movetype = PHYSICSTYPE_STEP;
+	VectorClear(self->knockbackvel);
+
+	VectorCopy(STDMinsForClass[self->classID], self->mins);
+	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
+
+	self->viewheight = (int)(self->maxs[2] * 0.4f);
+	self->s.modelindex = (byte)gi.modelindex("models/monsters/tcheckrik/female/tris.fm");
 	self->materialtype = MAT_INSECT;
 
-	//turn on/off the weapons that aren't used
+	// All skins are even numbers, pain skins are skin + 1.
+	self->s.skinnum = 0;
+
+	if (self->s.scale == 0.0f)
+	{
+		self->s.scale = MODEL_SCALE;
+		self->monsterinfo.scale = self->s.scale;
+	}
+
+	// Turn on/off the weapons that aren't used.
 	self->s.fmnodeinfo[MESH__LMANDIBLE].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__RMANDIBLE].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__L2NDARM].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__R2NDARM].flags |= FMNI_NO_DRAW;
-	self->s.fmnodeinfo[MESH__MALEHAND].flags |= FMNI_NO_DRAW;//?
-//	self->s.fmnodeinfo[MESH__SWORD].flags |= FMNI_NO_DRAW;//?
-	self->s.fmnodeinfo[MESH__SPEAR].flags |= FMNI_NO_DRAW;//?
-	
-//	self->s.fmnodeinfo[MESH__GEM].flags |= FMNI_NO_DRAW;
-	
-	//FIXME (somewhere: otherenemy should be more than just *one* kind
+	self->s.fmnodeinfo[MESH__MALEHAND].flags |= FMNI_NO_DRAW; //?
+	self->s.fmnodeinfo[MESH__SPEAR].flags |= FMNI_NO_DRAW; //?
+
+	//FIXME (somewhere: otherenemy should be more than just *one* kind.
 	self->monsterinfo.otherenemyname = "monster_rat";
 
-	//set up my mood function
+	// Set up my mood function
 	MG_InitMoods(self);
-	if(!irand(0,2))
+
+	if (irand(0, 2) == 0)
 		self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
 
-	if(self->spawnflags & MSF_WANDER)
-	{
-		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-	}
-	else
-	{
-		QPostMessage(self,MSG_STAND,PRI_DIRECTIVE, NULL);
-	}
-
+	QPostMessage(self, ((self->spawnflags & MSF_WANDER) ? MSG_WALK : MSG_STAND), PRI_DIRECTIVE, NULL);
 	self->monsterinfo.aiflags |= AI_NO_MELEE;
-
-	gi.CreateEffect(&self->s,
-					FX_I_EFFECTS,
-					CEF_OWNERS_ORIGIN,
-					vec3_origin,
-					"bv",
-					FX_I_RREFS,
-					vec3_origin);
-	
 	self->svflags |= SVF_WAIT_NOTSOLID;
 
-	if(self->spawnflags & MSF_INSECT_ALTERNATE)
-	{
-		self->s.color.a = 255;
-		self->s.color.r = 250;
-		self->s.color.g = 150;
-		self->s.color.b = 100;
-	}
+	gi.CreateEffect(&self->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_I_RREFS, vec3_origin);
+
+	if (self->spawnflags & MSF_INSECT_ALTERNATE)
+		COLOUR_SET(self->s.color, 250, 150, 100);
 }
