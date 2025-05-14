@@ -19,7 +19,7 @@
 #include "Vector.h"
 #include "g_monster.h"
 
-static void insect_dropweapon(edict_t* self, int weapon_id); //TODO: remove?
+static void TcheckrikDropWeapon(edict_t* self, int weapon_id); //TODO: remove?
 
 #pragma region ========================== Tcheckrik Base Info ==========================
 
@@ -339,8 +339,8 @@ static void TcheckrikDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	self->s.effects |= EF_DISABLE_EXTRA_FX;
 	self->dead_state = DEAD_DEAD;
 
-	insect_dropweapon(self, BIT_SPEAR);
-	insect_dropweapon(self, BIT_STAFF);
+	TcheckrikDropWeapon(self, BIT_SPEAR);
+	TcheckrikDropWeapon(self, BIT_STAFF);
 
 	if (self->health <= -80) // Gib death.
 	{
@@ -626,53 +626,52 @@ static qboolean TcheckrikCanThrowNode(edict_t* self, const int node_id, int* thr
 	return false;
 }
 
-//THROWS weapon, turns off those nodes, sets that weapon as gone
-static void insect_dropweapon (edict_t *self, int weapon)
-{//NO PART FLY FRAME!
-	vec3_t handspot, forward, right, up;
-//	float chance;
+// Throws weapon, turns off those nodes, sets that weapon as gone.
+static void TcheckrikDropWeapon(edict_t* self, const int weapon_id) //mxd. Named 'insect_dropweapon' in original logic.
+{
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
-	VectorClear(handspot);
-	AngleVectors(self->s.angles,forward,right,up);
-
-//	if(self->deadflag == DEAD_DEAD||(self->s.fmnodeinfo[MESH__R_ARM].flags & FMNI_NO_DRAW))
-//		chance = 0;
-//	else
-//		chance = 3;
-	if((!weapon || weapon&BIT_STAFF) &&
-		!(self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW))
+	if ((weapon_id == 0 || (weapon_id & BIT_STAFF)) && !(self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW))
 	{
-		VectorMA(handspot,8,forward,handspot);
-		VectorMA(handspot,5,right,handspot);
-		VectorMA(handspot,12,up,handspot);
-		ThrowWeapon(self, &handspot, BIT_STAFF, 0, FRAME_partfly);
+		vec3_t hand_spot = { 0 };
+		VectorMA(hand_spot, 8.0f, forward, hand_spot);
+		VectorMA(hand_spot, 5.0f, right, hand_spot);
+		VectorMA(hand_spot, 12.0f, up, hand_spot);
+
+		ThrowWeapon(self, &hand_spot, BIT_STAFF, 0, FRAME_partfly);
+
 		self->s.fmnodeinfo[MESH__STAFF].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__GEM].flags |= FMNI_NO_DRAW;
-//		insect_chicken(self,2,4,flrand(3,8));
+
 		return;
 	}
-	if((!weapon || weapon&BIT_SPEAR)&&
-		!(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
+
+	if ((weapon_id == 0 || (weapon_id & BIT_SPEAR)) && !(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
 	{
-		VectorMA(handspot,6,forward,handspot);
-		VectorMA(handspot,4,right,handspot);
-		ThrowWeapon(self, &handspot, BIT_SPEAR, 0, FRAME_partfly);
+		vec3_t hand_spot = { 0 };
+		VectorMA(hand_spot, 6.0f, forward, hand_spot);
+		VectorMA(hand_spot, 4.0f, right, hand_spot);
+
+		ThrowWeapon(self, &hand_spot, BIT_SPEAR, 0, FRAME_partfly);
+
 		self->s.fmnodeinfo[MESH__SPEAR].flags |= FMNI_NO_DRAW;
-//		insect_chicken(self,2,4,flrand(3,8));
+
 		return;
 	}
-	if((!weapon || weapon&BIT_SWORD)&&
-		!(self->s.fmnodeinfo[MESH__MALEHAND].flags & FMNI_NO_DRAW))
-//		!(self->s.fmnodeinfo[MESH__SWORD].flags & FMNI_NO_DRAW))
+
+	if ((weapon_id == 0 || (weapon_id & BIT_SWORD)) && !(self->s.fmnodeinfo[MESH__MALEHAND].flags & FMNI_NO_DRAW))
 	{
-		VectorMA(handspot,6,forward,handspot);
-		VectorMA(handspot,-6,right,handspot);
-		VectorMA(handspot,-6,up,handspot);
-		ThrowWeapon(self, &handspot, BIT_SWORD, 0, FRAME_partfly);
+		vec3_t hand_spot = { 0 };
+		VectorMA(hand_spot, 6.0f, forward, hand_spot);
+		VectorMA(hand_spot, -6.0f, right, hand_spot);
+		VectorMA(hand_spot, -6.0f, up, hand_spot);
+
+		ThrowWeapon(self, &hand_spot, BIT_SWORD, 0, FRAME_partfly);
+
 		self->s.fmnodeinfo[MESH__MALEHAND].flags |= FMNI_NO_DRAW;
-//		self->s.fmnodeinfo[MESH__SWORD].flags |= FMNI_NO_DRAW;
-//		insect_chicken(self,2,4,flrand(3,8));
-		return;
 	}
 }
 
@@ -729,7 +728,7 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.25)
-				insect_dropweapon (self, 0);
+				TcheckrikDropWeapon (self, 0);
 			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
 			{
 				TcheckrikCanThrowNode(self, MESH__HEAD,&throw_nodes);
@@ -785,7 +784,7 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 			if(self->s.fmnodeinfo[MESH_MASTER].flags & FMNI_USE_SKIN)
 				break;
 			if(flrand(0,self->health)<damage*0.5)
-				insect_dropweapon (self, 0);
+				TcheckrikDropWeapon (self, 0);
 			self->s.fmnodeinfo[MESH_MASTER].flags |= FMNI_USE_SKIN;			
 			self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum+1;
 			break;
@@ -803,7 +802,7 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 				if(self->s.fmnodeinfo[MESH__L2NDARM].flags & FMNI_USE_SKIN)
 					damage*=1.5;//greater chance to cut off if previously damaged
 				if(flrand(0,self->health)<damage*0.4)
-					insect_dropweapon (self, BIT_SWORD);
+					TcheckrikDropWeapon (self, BIT_SWORD);
 				self->s.fmnodeinfo[MESH__L2NDARM].flags |= FMNI_USE_SKIN;			
 				self->s.fmnodeinfo[MESH__L2NDARM].skin = self->s.skinnum+1;
 			}
@@ -834,13 +833,13 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 						ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
 						if(self->s.fmnodeinfo[MESH__R2NDARM].flags & FMNI_NO_DRAW&&
 							!(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
-							insect_dropweapon (self, BIT_SPEAR);
+							TcheckrikDropWeapon (self, BIT_SPEAR);
 					}
 				}
 				else
 				{
 					if(flrand(0,self->health)<damage*0.4)
-						insect_dropweapon (self, BIT_SPEAR);
+						TcheckrikDropWeapon (self, BIT_SPEAR);
 					self->s.fmnodeinfo[MESH__L2NDARM].flags |= FMNI_USE_SKIN;			
 					self->s.fmnodeinfo[MESH__L2NDARM].skin = self->s.skinnum+1;
 				}
@@ -857,7 +856,7 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 					self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum+1;
 				}
 				if(flrand(0,self->health)<damage*0.4)
-					insect_dropweapon (self, BIT_STAFF);
+					TcheckrikDropWeapon (self, BIT_STAFF);
 			}
 			else
 			{
@@ -880,7 +879,7 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 					self->s.fmnodeinfo[MESH_MASTER].skin = self->s.skinnum+1;
 				}
 				if(flrand(0,self->health)<damage*0.4)
-					insect_dropweapon (self, BIT_STAFF);
+					TcheckrikDropWeapon (self, BIT_STAFF);
 			}
 			else
 			{//male - right spear arm
@@ -899,13 +898,13 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 						ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
 						if(self->s.fmnodeinfo[MESH__L2NDARM].flags & FMNI_NO_DRAW&&
 							!(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
-							insect_dropweapon (self, BIT_SPEAR);
+							TcheckrikDropWeapon (self, BIT_SPEAR);
 					}
 				}
 				else
 				{
 					if(flrand(0,self->health)<damage*0.4)
-						insect_dropweapon (self, BIT_SPEAR);
+						TcheckrikDropWeapon (self, BIT_SPEAR);
 					self->s.fmnodeinfo[MESH__R2NDARM].flags |= FMNI_USE_SKIN;			
 					self->s.fmnodeinfo[MESH__R2NDARM].skin = self->s.skinnum+1;
 				}
@@ -961,7 +960,7 @@ void insect_dismember(edict_t *self, int damage, int HitLocation)
 
 		default:
 			if(flrand(0,self->health)<damage*0.25)
-				insect_dropweapon (self, 0);
+				TcheckrikDropWeapon (self, 0);
 			break;
 	}
 	if(throw_nodes)
