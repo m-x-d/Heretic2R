@@ -289,18 +289,18 @@ const animmove_t insect_move_sword = { 9, insect_frames_sword, insect_pause };
 // Insect Spell Attack.
 static const animframe_t insect_frames_spell[] =
 {
-	{ FRAME_spell1,		NULL, 0, 0, 0, insectSpell, TC_SPL_GLOW, NULL },
+	{ FRAME_spell1,		NULL, 0, 0, 0, tcheckrik_spell_attack, TC_SPL_GLOW, NULL },
 	{ FRAME_spell2,		NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_spell3,		NULL, 0, 0, 0, insectSpell, TC_SPL_FIRE, NULL },
+	{ FRAME_spell3,		NULL, 0, 0, 0, tcheckrik_spell_attack, TC_SPL_FIRE, NULL },
 	{ FRAME_spell4,		NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell5,		NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_spell6,		NULL, 0, 0, 0, insectSpell, TC_SPL_FIRE, NULL },
+	{ FRAME_spell6,		NULL, 0, 0, 0, tcheckrik_spell_attack, TC_SPL_FIRE, NULL },
 	{ FRAME_spell7,		NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell8,		NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_spell9,		NULL, 0, 0, 0, insectSpell, TC_SPL_FIRE, NULL },
+	{ FRAME_spell9,		NULL, 0, 0, 0, tcheckrik_spell_attack, TC_SPL_FIRE, NULL },
 	{ FRAME_spell10,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell11,	NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_spell12,	NULL, 0, 0, 0, insectSpell, TC_SPL_FIRE, NULL },
+	{ FRAME_spell12,	NULL, 0, 0, 0, tcheckrik_spell_attack, TC_SPL_FIRE, NULL },
 	{ FRAME_spell13,	NULL, 0, 0, 0, ai_charge, 0, insectReleaseSpell }, // Here if forwards.
 	{ FRAME_spell14,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell15,	NULL, 0, 0, 0, ai_charge, 0, NULL },
@@ -319,7 +319,7 @@ static const animframe_t insect_frames_spell2[] =
 	{ FRAME_spell8,		NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell10,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell12,	NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_spell13,	NULL, 0, 0, 0, insectSpell, TC_SPL_FIRE2, NULL },
+	{ FRAME_spell13,	NULL, 0, 0, 0, tcheckrik_spell_attack, TC_SPL_FIRE2, NULL },
 	{ FRAME_spell14,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell15,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell16,	NULL, 0, 0, 0, ai_charge, 0, NULL },

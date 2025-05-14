@@ -984,7 +984,7 @@ void tcheckrik_staff_attack(edict_t* self) //mxd. Named 'insectStaff' in origina
 	}
 }
 
-void insectSpell(edict_t* self, float spell_type) //TODO: rename to tcheckrik_spell_attack.
+void tcheckrik_spell_attack(edict_t* self, float spell_type) //mxd. Named 'insectSpell' in original logic.
 {
 	if (!(self->spawnflags & MSF_INSECT_CINEMATIC))
 		ai_charge(self, 0.0f);
@@ -1058,6 +1058,9 @@ void insectSpell(edict_t* self, float spell_type) //TODO: rename to tcheckrik_sp
 				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
 				gi.sound(self, CHAN_AUTO, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
 			}
+			break;
+
+		default:
 			break;
 	}
 }
