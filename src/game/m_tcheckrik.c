@@ -626,24 +626,6 @@ static qboolean TcheckrikCanThrowNode(edict_t* self, const int node_id, int* thr
 	return false;
 }
 
-void insect_chicken (edict_t *self, int coward, int flee, float fleetime)
-{
-	float chance;
-
-	chance = flrand(0,10);
-	if(chance<coward)
-	{
-		self->monsterinfo.aiflags |= AI_COWARD;
-		return;
-	}
-
-	if(chance<flee)
-	{
-		self->monsterinfo.aiflags |= AI_FLEE;
-		self->monsterinfo.flee_finished = level.time + fleetime;
-	}
-}
-
 //THROWS weapon, turns off those nodes, sets that weapon as gone
 static void insect_dropweapon (edict_t *self, int weapon)
 {//NO PART FLY FRAME!
