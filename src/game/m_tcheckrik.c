@@ -1164,49 +1164,12 @@ static void TcheckrikWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_WALK));
 }
 
-/*void Monster_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
-{
-	vec3_t	pos1, pos2;
-	float	zdiff;
-
-	if ((other->svflags & SVF_MONSTER) || (!stricmp(other->classname, "player")))
-	{
-		VectorCopy(other->s.origin, pos1);
-		pos1[2] += other->mins[2];
-
-		VectorCopy(self->s.origin, pos2);
-		pos2[2] += self->maxs[2];
-
-		zdiff = pos1[2] - pos2[2];
-
-		if (zdiff >= 0 ) // On top
-		{
-			other->velocity[0] = flrand(75.0, 100.0);			
-			other->velocity[1] = flrand(75.0, 100.0);
-			other->velocity[2] += 101;
-	
-			if (irand(0,1))
-				other->velocity[0] *= -1;
-
-			if (irand(0,1))
-				other->velocity[1] *= -1;
-
-			self->velocity[0] = -(other->velocity[0]);
-			self->velocity[1] = -(other->velocity[1]);
-			self->velocity[2] += 100;
-
-			other->groundentity = NULL;
-			self->groundentity = NULL;
-		}
-	}
-}*/
-
-void insect_go_inair(edict_t *self)
+void insect_go_inair(edict_t* self) //TODO: rename to tcheckrik_inair_go.
 {
 	SetAnim(self, ANIM_INAIR);
 }
 
-void insect_go_finair(edict_t *self)
+void insect_go_finair(edict_t* self) //TODO: rename to tcheckrik_forced_inair_go.
 {
 	SetAnim(self, ANIM_FINAIR);
 }
