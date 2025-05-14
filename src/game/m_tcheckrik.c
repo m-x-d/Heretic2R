@@ -19,8 +19,6 @@
 #include "Vector.h"
 #include "g_monster.h"
 
-static void TcheckrikDropWeapon(edict_t* self, int weapon_id); //TODO: remove?
-
 #pragma region ========================== Tcheckrik Base Info ==========================
 
 static const animmove_t* animations[NUM_ANIMS] =
@@ -68,6 +66,309 @@ static const animmove_t* animations[NUM_ANIMS] =
 static int sounds[NUM_SOUNDS];
 
 #pragma endregion
+
+#pragma region ========================== Utility functions =========================
+
+static qboolean TcheckrikCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_tc' in original logic.
+{
+	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
+	{
+		BIT_MASTER,
+		BIT_LLEG,
+		BIT_HEAD,
+		BIT_LMANDIBLE,
+		BIT_RMANDIBLE,
+		BIT_CROWN,
+		BIT_L2NDARM,
+		BIT_SPEAR,
+		BIT_FEMHAND,
+		BIT_SWORD,
+		BIT_STAFF,
+		BIT_GEM,
+		BIT_R2NDARM,
+		BIT_RWINGS,
+		BIT_LWINGS,
+		BIT_RLEG
+	};
+
+	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
+	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
+	{
+		*throw_nodes |= bit_for_mesh_node[node_id];
+		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
+
+		return true;
+	}
+
+	return false;
+}
+
+// Throws weapon, turns off those nodes, sets that weapon as gone.
+static void TcheckrikDropWeapon(edict_t* self, const int weapon_id) //mxd. Named 'insect_dropweapon' in original logic.
+{
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
+
+	if ((weapon_id == 0 || (weapon_id & BIT_STAFF)) && !(self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW))
+	{
+		vec3_t hand_spot = { 0 };
+		VectorMA(hand_spot, 8.0f, forward, hand_spot);
+		VectorMA(hand_spot, 5.0f, right, hand_spot);
+		VectorMA(hand_spot, 12.0f, up, hand_spot);
+
+		ThrowWeapon(self, &hand_spot, BIT_STAFF, 0, FRAME_partfly);
+
+		self->s.fmnodeinfo[MESH__STAFF].flags |= FMNI_NO_DRAW;
+		self->s.fmnodeinfo[MESH__GEM].flags |= FMNI_NO_DRAW;
+
+		return;
+	}
+
+	if ((weapon_id == 0 || (weapon_id & BIT_SPEAR)) && !(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
+	{
+		vec3_t hand_spot = { 0 };
+		VectorMA(hand_spot, 6.0f, forward, hand_spot);
+		VectorMA(hand_spot, 4.0f, right, hand_spot);
+
+		ThrowWeapon(self, &hand_spot, BIT_SPEAR, 0, FRAME_partfly);
+
+		self->s.fmnodeinfo[MESH__SPEAR].flags |= FMNI_NO_DRAW;
+
+		return;
+	}
+
+	if ((weapon_id == 0 || (weapon_id & BIT_SWORD)) && !(self->s.fmnodeinfo[MESH__MALEHAND].flags & FMNI_NO_DRAW))
+	{
+		vec3_t hand_spot = { 0 };
+		VectorMA(hand_spot, 6.0f, forward, hand_spot);
+		VectorMA(hand_spot, -6.0f, right, hand_spot);
+		VectorMA(hand_spot, -6.0f, up, hand_spot);
+
+		ThrowWeapon(self, &hand_spot, BIT_SWORD, 0, FRAME_partfly);
+
+		self->s.fmnodeinfo[MESH__MALEHAND].flags |= FMNI_NO_DRAW;
+	}
+}
+
+#pragma endregion
+
+#pragma region ========================== Message handlers ==========================
+
+static void TcheckrikDeathPain(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_dead_pain' in original logic.
+{
+	if (msg != NULL && !(self->svflags & SVF_PARTS_GIBBED))
+		DismemberMsgHandler(self, msg);
+
+	if (self->curAnimID != ANIM_TWITCH && self->dead_state != DEAD_DEAD)
+		return; // Still dying.
+
+	if (self->s.frame == FRAME_knock15)
+	{
+		SetAnim(self, ANIM_TWITCH);
+
+		self->think = M_MoveFrame;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+	}
+}
+
+static void TcheckrikDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_death' in original logic.
+{
+	if (self->monsterinfo.aiflags & AI_DONT_THINK)
+	{
+		SetAnim(self, ANIM_DEATHFR);
+		return;
+	}
+
+	self->msgHandler = DeadMsgHandler;
+
+	if (self->dead_state == DEAD_DEAD) // Dead but still being hit.
+		return;
+
+	gi.RemoveEffects(&self->s, FX_I_EFFECTS);
+
+	self->s.effects |= EF_DISABLE_EXTRA_FX;
+	self->dead_state = DEAD_DEAD;
+
+	TcheckrikDropWeapon(self, BIT_SPEAR);
+	TcheckrikDropWeapon(self, BIT_STAFF);
+
+	if (self->health <= -80) // Gib death.
+	{
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
+
+		self->think = BecomeDebris;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+		return;
+	}
+
+	const int snd_id = ((self->mass == MASS_TC_MALE) ? SND_DIEM : SND_DIEF); //mxd. Inline insect_random_death_sound().
+	gi.sound(self, CHAN_VOICE, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
+
+	if (self->health < -20)
+	{
+		SetAnim(self, ANIM_KNOCK1_GO);
+		VectorClear(self->knockbackvel);
+
+		vec3_t dir;
+		VectorNormalize2(self->velocity, dir);
+
+		vec3_t yaw_dir;
+		VectorScale(dir, -1.0f, yaw_dir);
+
+		self->ideal_yaw = VectorYaw(yaw_dir);
+		self->yaw_speed = 16.0f;
+
+		VectorScale(dir, 300.0f, self->velocity);
+		self->velocity[2] = flrand(150.0f, 250.0f); //mxd. irand() in original logic.
+	}
+	else
+	{
+		SetAnim(self, ANIM_DEATHFR);
+	}
+}
+
+static void TcheckrikFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_backpedal' in original logic.
+{
+	if (M_ValidTarget(self, self->enemy))
+		SetAnim(self, (self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_BACK); // Not male?
+	else
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+}
+
+static void TcheckrikMeleeMsgHandler(edict_t* self, G_Message_t* msg)//mxd. Named 'insect_melee' in original logic.
+{
+	if (!M_ValidTarget(self, self->enemy))
+	{
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
+	}
+
+	if (self->mass == MASS_TC_MALE) // Male
+	{
+		// Run away from Trial Beast.
+		if (self->enemy->classID == CID_TBEAST && self->enemy->enemy == self && M_DistanceToTarget(self, self->enemy) < 250.0f)
+		{
+			self->monsterinfo.aiflags |= AI_FLEE;
+			self->monsterinfo.flee_finished = level.time + 3.0f;
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+
+			return;
+		}
+
+		SetAnim(self, ANIM_SWORD);
+	}
+	else // Too close for female, back away (maybe attack anyway?).
+	{
+		if ((irand(0, 5) == 0 && !(self->monsterinfo.aiflags & AI_NO_MELEE)) || (self->spawnflags & MSF_FIXED)) //mxd. Group irand() / aiflags checks.
+			SetAnim(self, ANIM_SPELL);
+		else
+			SetAnim(self, ANIM_BACK);
+	}
+}
+
+static void TcheckrikMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_missile' in original logic.
+{
+	if (!M_ValidTarget(self, self->enemy))
+	{
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
+	}
+
+	if (self->mass == MASS_TC_MALE) // Male.
+	{
+		// Run away from Trial Beast.
+		if (self->enemy->classID == CID_TBEAST && self->enemy->enemy == self && M_DistanceToTarget(self, self->enemy) < 250.0f)
+		{
+			self->monsterinfo.aiflags |= AI_FLEE;
+			self->monsterinfo.flee_finished = level.time + 3.0f;
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+
+			return;
+		}
+
+		SetAnim(self, ANIM_SPEAR);
+	}
+	else // Female.
+	{
+		SetAnim(self, ((self->spawnflags & MSF_INSECT_ALTERNATE) ? ANIM_SPELL2 : ANIM_SPELL));
+	}
+}
+
+static void TcheckrikPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_pain' in original logic.
+{
+	int temp;
+	int damage;
+	int force_damage;
+	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_damage, &damage, &temp);
+
+	if (!force_damage && irand(0, self->health) > damage) //mxd. flrand() in original logic.
+		return;
+
+	gi.RemoveEffects(&self->s, FX_I_EFFECTS);
+	self->s.effects |= EF_DISABLE_EXTRA_FX;
+
+	// Sound. 
+	const int snd_id = (self->mass == MASS_TC_MALE ? SND_PAINM : SND_PAINF); //mxd. Inline insect_random_pain_sound().
+	gi.sound(self, CHAN_VOICE, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
+
+	// Remove spell effects.
+	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
+
+	if (force_damage || self->pain_debounce_time < level.time)
+	{
+		self->pain_debounce_time = level.time + 1.0f;
+		SetAnim(self, (irand(0, 1) == 1 ? ANIM_PAINA : ANIM_PAINC));
+	}
+}
+
+static void TcheckrikCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_check_mood' in original logic.
+{
+	ParseMsgParms(msg, "i", &self->ai_mood);
+	insect_pause(self);
+}
+
+static void TcheckrikRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_run' in original logic.
+{
+	if (!M_ValidTarget(self, self->enemy))
+	{
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
+	}
+
+	if (self->enemy->classID == CID_TBEAST && self->enemy->enemy != self && M_DistanceToTarget(self, self->enemy) < 250.0f)
+	{
+		self->monsterinfo.aiflags |= AI_FLEE;
+		self->monsterinfo.flee_finished = level.time + 3.0f;
+	}
+
+	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN));
+}
+
+static void TcheckrikStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_stand' in original logic.
+{
+	SetAnim(self, ((self->ai_mood == AI_MOOD_DELAY) ? ANIM_DELAY : ANIM_IDLE));
+}
+
+static void TcheckrikWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_walk' in original logic.
+{
+	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_WALK));
+}
+
+static void TcheckrikJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_jump' in original logic.
+{
+	if (self->spawnflags & MSF_FIXED)
+	{
+		SetAnim(self, ANIM_DELAY);
+	}
+	else
+	{
+		SetAnim(self, ANIM_FORCED_JUMP);
+		self->monsterinfo.aiflags |= AI_OVERRIDE_GUIDE;
+	}
+}
 
 static void TcheckrikCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_c_anims' in original logic.
 {
@@ -161,519 +462,9 @@ static void TcheckrikCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) 
 	SetAnim(self, curr_anim);
 }
 
-void insect_c_reallydead(edict_t* self) //TODO: rename to tcheckrik_c_dead.
-{
-	self->nextthink = level.time; //TODO: should be -1?..
-	self->think = NULL;
-}
+#pragma endregion
 
-void insectCut(edict_t* self, float attack_type) //TODO: rename to tcheckrik_attack.
-{
-	static const vec3_t weapon_mins = { -2.0f, -2.0f, -1.0f };
-	static const vec3_t weapon_maxs = {  2.0f,  2.0f,  1.0f };
-
-	int damage; //mxd. float in original logic.
-
-	vec3_t forward;
-	vec3_t right;
-	AngleVectors(self->s.angles, forward, right, NULL);
-
-	vec3_t hit_start;
-	VectorCopy(self->s.origin, hit_start);
-
-	vec3_t hit_end;
-	VectorMA(hit_start, 72.0f, forward, hit_end);
-
-	switch ((int)attack_type)
-	{
-		case TC_ATK_STAB:
-			if (self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW)
-				return;
-			VectorMA(hit_end, -16.0f, right, hit_end);
-			damage = irand(TC_DMG_STAB_MIN, TC_DMG_STAB_MAX);
-			break;
-
-		case TC_ATK_HACK:
-			VectorMA(hit_start, 12.0f, forward, hit_start);
-			if (self->s.fmnodeinfo[MESH__MALEHAND].flags & FMNI_NO_DRAW)
-			{
-				hit_start[2] += 28.0f;
-				VectorMA(hit_end, 24.0f, right, hit_end);
-				damage = irand(TC_MALE_DMG_HACK_MIN, TC_MALE_DMG_HACK_MAX);
-			}
-			else
-			{
-				hit_start[2] += 18.0f;
-				VectorMA(hit_end, 12.0f, right, hit_end);
-				damage = irand(TC_FEMALE_DMG_HACK_MIN, TC_FEMALE_DMG_HACK_MAX);
-			}
-			break;
-
-		default:
-			return;
-	}
-
-	trace_t trace;
-	gi.trace(hit_start, weapon_mins, weapon_maxs, hit_end, self, MASK_MONSTERSOLID | MASK_SHOT, &trace);
-
-	// Do this check before the allsolid check, because trace is screwy -- fraction should be valid in all cases, so shouldn't be a problem.
-	if (trace.fraction == 1.0f)
-		return; // Missed totally.
-
-	if (trace.allsolid || trace.startsolid || trace.ent->takedamage == DAMAGE_NO)
-	{
-		// Ping!
-		vec3_t hit_angles;
-		vectoangles(trace.plane.normal, hit_angles);
-
-		gi.CreateEffect(NULL, FX_SPARKS, 0, trace.endpos, "d", hit_angles);
-		gi.sound(self, CHAN_AUTO, sounds[SND_SWIPEHITW], 1.0f, ATTN_NORM, 0.0f);
-
-		return;
-	}
-
-	// Hit someone, cut em!
-	vec3_t hit_dir;
-	VectorSubtract(hit_end, hit_start, hit_dir);
-
-	gi.sound(self, CHAN_AUTO, sounds[SND_SWIPEHITF], 1.0f, ATTN_NORM, 0.0f);
-	T_Damage(trace.ent, self, self, hit_dir, trace.endpos, vec3_origin, damage, damage * 2, DAMAGE_DISMEMBER, MOD_DIED);
-}
-
-void insect_dead(edict_t* self) //TODO: rename to tcheckrik_dead.
-{
-	self->s.effects |= EF_DISABLE_EXTRA_FX;
-	self->msgHandler = DeadMsgHandler;
-	self->dead_state = DEAD_DEAD;
-
-	M_EndDeath(self);
-}
-
-void insect_random_idle_sound(edict_t* self) //TODO: rename to tcheckrik_idle_sound.
-{
-	if (self->mass == MASS_TC_MALE)
-		gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWLM1, SND_GROWLM2)], 1.0f, ATTN_NORM, 0.0f);
-	else
-		gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWLF1, SND_GROWLF2)], 1.0f, ATTN_NORM, 0.0f);
-}
-
-static void TcheckrikDeathPain(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_dead_pain' in original logic.
-{
-	if (msg != NULL && !(self->svflags & SVF_PARTS_GIBBED))
-		DismemberMsgHandler(self, msg);
-
-	if (self->curAnimID != ANIM_TWITCH && self->dead_state != DEAD_DEAD)
-		return; // Still dying.
-
-	if (self->s.frame == FRAME_knock15)
-	{
-		SetAnim(self, ANIM_TWITCH);
-
-		self->think = M_MoveFrame;
-		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
-	}
-}
-
-void insect_wait_twitch(edict_t* self) //TODO: rename to tcheckrik_wait_twitch.
-{
-	if (self->curAnimID != ANIM_TWITCH && irand(0, 1) == 0)
-	{
-		SetAnim(self, ANIM_TWITCH);
-		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
-	}
-	else if (irand(0, 5) != 0)
-	{
-		SetAnim(self, ANIM_TWITCH);
-		self->nextthink = level.time + flrand(0.2f, 10.0f);
-	}
-	else
-	{
-		self->s.effects |= EF_DISABLE_EXTRA_FX;
-		self->msgHandler = DeadMsgHandler;
-		self->dead_state = DEAD_DEAD;
-
-		M_EndDeath(self);
-		self->think = NULL;
-	}
-}
-
-void insect_flyback_loop(edict_t* self) //TODO: rename to tcheckrik_flyback_loop.
-{
-	SetAnim(self, ANIM_KNOCK1_LOOP);
-}
-
-void insect_flyback_move(edict_t* self) //TODO: rename to tcheckrik_flyback_move.
-{
-	M_ChangeYaw(self);
-
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-	end_pos[2] -= 48.0f;
-
-	trace_t trace;
-	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
-
-	if ((trace.fraction < 1.0f || trace.startsolid || trace.allsolid) && self->curAnimID != ANIM_KNOCK1_END && self->curAnimID != ANIM_KNOCK1_GO)
-	{
-		self->elasticity = 1.1f;
-		self->friction = 0.5f;
-		SetAnim(self, ANIM_KNOCK1_END);
-	}
-}
-
-static void TcheckrikDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_death' in original logic.
-{
-	if (self->monsterinfo.aiflags & AI_DONT_THINK)
-	{
-		SetAnim(self, ANIM_DEATHFR);
-		return;
-	}
-
-	self->msgHandler = DeadMsgHandler;
-
-	if (self->dead_state == DEAD_DEAD) // Dead but still being hit.
-		return;
-
-	gi.RemoveEffects(&self->s, FX_I_EFFECTS);
-
-	self->s.effects |= EF_DISABLE_EXTRA_FX;
-	self->dead_state = DEAD_DEAD;
-
-	TcheckrikDropWeapon(self, BIT_SPEAR);
-	TcheckrikDropWeapon(self, BIT_STAFF);
-
-	if (self->health <= -80) // Gib death.
-	{
-		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
-
-		self->think = BecomeDebris;
-		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
-
-		return;
-	}
-
-	const int snd_id = ((self->mass == MASS_TC_MALE) ? SND_DIEM : SND_DIEF); //mxd. Inline insect_random_death_sound().
-	gi.sound(self, CHAN_VOICE, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
-
-	if (self->health < -20)
-	{
-		SetAnim(self, ANIM_KNOCK1_GO);
-		VectorClear(self->knockbackvel);
-
-		vec3_t dir;
-		VectorNormalize2(self->velocity, dir);
-
-		vec3_t yaw_dir;
-		VectorScale(dir, -1.0f, yaw_dir);
-
-		self->ideal_yaw = VectorYaw(yaw_dir);
-		self->yaw_speed = 16.0f;
-
-		VectorScale(dir, 300.0f, self->velocity);
-		self->velocity[2] = flrand(150.0f, 250.0f); //mxd. irand() in original logic.
-	}
-	else
-	{
-		SetAnim(self, ANIM_DEATHFR);
-	}
-}
-
-void insectdeathsqueal(edict_t* self) //TODO: remove.
-{
-}
-
-void insectgrowl(edict_t* self) //TODO: rename to tcheckrik_growl.
-{
-	if (irand(0, 10) > 2)
-		return;
-
-	if (self->mass == MASS_TC_MALE)
-		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_GROWLM1, SND_GROWLM2)], 1.0f, ATTN_IDLE, 0.0f);
-	else
-		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_GROWLF1, SND_GROWLF2)], 1.0f, ATTN_IDLE, 0.0f);
-}
-
-static void TcheckrikFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_backpedal' in original logic.
-{
-	if (M_ValidTarget(self, self->enemy))
-		SetAnim(self, (self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_BACK); // Not male?
-	else
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-}
-
-void insect_sound(edict_t* self, float channel, float sound_num, float attenuation) //TODO: rename to tcheckrik_sound.
-{
-	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
-}
-
-static void TcheckrikMeleeMsgHandler(edict_t* self, G_Message_t* msg)//mxd. Named 'insect_melee' in original logic.
-{
-	if (!M_ValidTarget(self, self->enemy))
-	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		return;
-	}
-
-	if (self->mass == MASS_TC_MALE) // Male
-	{
-		// Run away from Trial Beast.
-		if (self->enemy->classID == CID_TBEAST && self->enemy->enemy == self && M_DistanceToTarget(self, self->enemy) < 250.0f)
-		{
-			self->monsterinfo.aiflags |= AI_FLEE;
-			self->monsterinfo.flee_finished = level.time + 3.0f;
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-
-			return;
-		}
-
-		SetAnim(self, ANIM_SWORD);
-	}
-	else // Too close for female, back away (maybe attack anyway?).
-	{
-		if ((irand(0, 5) == 0 && !(self->monsterinfo.aiflags & AI_NO_MELEE)) || (self->spawnflags & MSF_FIXED)) //mxd. Group irand() / aiflags checks.
-			SetAnim(self, ANIM_SPELL);
-		else
-			SetAnim(self, ANIM_BACK);
-	}
-}
-
-static void TcheckrikMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_missile' in original logic.
-{
-	if (!M_ValidTarget(self, self->enemy))
-	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		return;
-	}
-
-	if (self->mass == MASS_TC_MALE) // Male.
-	{
-		// Run away from Trial Beast.
-		if (self->enemy->classID == CID_TBEAST && self->enemy->enemy == self && M_DistanceToTarget(self, self->enemy) < 250.0f)
-		{
-			self->monsterinfo.aiflags |= AI_FLEE;
-			self->monsterinfo.flee_finished = level.time + 3.0f;
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-
-			return;
-		}
-
-		SetAnim(self, ANIM_SPEAR);
-	}
-	else // Female.
-	{
-		SetAnim(self, ((self->spawnflags & MSF_INSECT_ALTERNATE) ? ANIM_SPELL2 : ANIM_SPELL));
-	}
-}
-
-void insectStaff(edict_t* self) //TODO: rename to tcheckrik_staff_attack.
-{
-	vec3_t forward;
-	vec3_t right;
-	AngleVectors(self->s.angles, forward, right, NULL);
-
-	vec3_t org;
-	VectorCopy(self->s.origin, org);
-	VectorMA(org, 12.0f, forward, org);
-	VectorMA(org, 4.0f, right, org);
-
-	if (self->spawnflags & MSF_INSECT_YELLOWJACKET)
-	{
-		if (self->s.frame == FRAME_SpearB4)
-		{
-			if (SKILL == SKILL_EASY)
-			{
-				SpellCastInsectSpear(self, org, self->s.angles, irand(1, 3));
-			}
-			else if (SKILL == SKILL_MEDIUM)
-			{
-				SpellCastInsectSpear(self, org, self->s.angles, 1);
-				SpellCastInsectSpear(self, org, self->s.angles, 2);
-			}
-			else // HARD, HARD+.
-			{
-				SpellCastInsectSpear(self, org, self->s.angles, 1);
-				SpellCastInsectSpear(self, org, self->s.angles, 2);
-				SpellCastInsectSpear(self, org, self->s.angles, 3);
-			}
-
-			gi.sound(self, CHAN_WEAPON, sounds[SND_SPELLM2], 1.0f, ATTN_NORM, 0.0f);
-		}
-	}
-	else
-	{
-		SpellCastInsectSpear(self, org, self->s.angles, 0);
-		gi.sound(self, CHAN_WEAPON, sounds[SND_SPELLM], 1.0f, ATTN_NORM, 0.0f);
-	}
-}
-
-void insectSpell(edict_t* self, float spell_type) //TODO: rename to tcheckrik_spell_attack.
-{
-	if (!(self->spawnflags & MSF_INSECT_CINEMATIC))
-		ai_charge(self, 0.0f);
-
-	vec3_t forward;
-	vec3_t right;
-	AngleVectors(self->s.angles, forward, right, NULL);
-
-	vec3_t org;
-	VectorCopy(self->s.origin, org);
-
-	switch ((int)spell_type)
-	{
-		case TC_SPL_GLOW:
-			if (self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW) // No staff, weaker spell.
-			{
-				VectorMA(org, 8.0f, forward, org);
-				VectorMA(org, 2.0f, right, org);
-				org[2] += 6.0f;
-
-				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
-				gi.sound(self, CHAN_WEAPON, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
-			}
-			else // Staff, bigger spell.
-			{
-				VectorMA(org, 16.0f, forward, org);
-				VectorMA(org, 4.0f, right, org);
-				org[2] += 8.0f;
-
-				self->s.effects &= ~(EF_DISABLE_EXTRA_FX | EF_MARCUS_FLAG1);
-				self->damage_debounce_time = false;
-
-				SpellCastGlobeOfOuchiness(self, org, self->s.angles, forward);
-				gi.sound(self, CHAN_ITEM, sounds[SND_SPLPWRUPF], 1.0f, ATTN_NORM, 0.0f);
-			}
-			break;
-
-		case TC_SPL_FIRE:
-			if (self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW) // No staff, weaker spell. //TODO: identical if/else clauses. Shoot powered spell when have staff?..
-			{
-				VectorMA(org, 16.0f, forward, org);
-				org[2] += 12.0f;
-
-				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
-				gi.sound(self, CHAN_AUTO, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
-			}
-			else // Staff, bigger spell.
-			{
-				VectorMA(org, 16.0f, forward, org);
-				org[2] += 12.0f;
-
-				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
-				gi.sound(self, CHAN_AUTO, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
-			}
-			break;
-
-		case TC_SPL_FIRE2:
-			if (!(self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW)) // No staff, weaker spell.
-			{
-				VectorMA(org, 16.0f, forward, org);
-				org[2] += 12.0f;
-
-				SpellCastInsectStaff(self, org, self->s.angles, forward, true); //TODO: should be the other way around (unpowered here, powered below)?
-				gi.sound(self, CHAN_AUTO, gi.soundindex("monsters/imp/fireball.wav"), 1.0f, ATTN_NORM, 0.0f);
-			}
-			else // Staff, bigger spell.
-			{
-				VectorMA(org, 16.0f, forward, org);
-				org[2] += 12.0f;
-
-				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
-				gi.sound(self, CHAN_AUTO, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
-			}
-			break;
-	}
-}
-
-void insectReleaseSpell(edict_t* self) //TODO: rename to tcheckrik_release_spell.
-{
-	gi.RemoveEffects(&self->s, FX_I_EFFECTS);
-
-	self->s.effects |= (EF_DISABLE_EXTRA_FX | EF_MARCUS_FLAG1);
-	self->damage_debounce_time = true; //TODO: add qboolean tcheckrik_globe_spell_released name.
-}
-
-static qboolean TcheckrikCanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_tc' in original logic.
-{
-	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
-	{
-		BIT_MASTER,
-		BIT_LLEG,
-		BIT_HEAD,
-		BIT_LMANDIBLE,
-		BIT_RMANDIBLE,
-		BIT_CROWN,
-		BIT_L2NDARM,
-		BIT_SPEAR,
-		BIT_FEMHAND,
-		BIT_SWORD,
-		BIT_STAFF,
-		BIT_GEM,
-		BIT_R2NDARM,
-		BIT_RWINGS,
-		BIT_LWINGS,
-		BIT_RLEG
-	};
-
-	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
-	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
-	{
-		*throw_nodes |= bit_for_mesh_node[node_id];
-		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
-
-		return true;
-	}
-
-	return false;
-}
-
-// Throws weapon, turns off those nodes, sets that weapon as gone.
-static void TcheckrikDropWeapon(edict_t* self, const int weapon_id) //mxd. Named 'insect_dropweapon' in original logic.
-{
-	vec3_t forward;
-	vec3_t right;
-	vec3_t up;
-	AngleVectors(self->s.angles, forward, right, up);
-
-	if ((weapon_id == 0 || (weapon_id & BIT_STAFF)) && !(self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW))
-	{
-		vec3_t hand_spot = { 0 };
-		VectorMA(hand_spot, 8.0f, forward, hand_spot);
-		VectorMA(hand_spot, 5.0f, right, hand_spot);
-		VectorMA(hand_spot, 12.0f, up, hand_spot);
-
-		ThrowWeapon(self, &hand_spot, BIT_STAFF, 0, FRAME_partfly);
-
-		self->s.fmnodeinfo[MESH__STAFF].flags |= FMNI_NO_DRAW;
-		self->s.fmnodeinfo[MESH__GEM].flags |= FMNI_NO_DRAW;
-
-		return;
-	}
-
-	if ((weapon_id == 0 || (weapon_id & BIT_SPEAR)) && !(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
-	{
-		vec3_t hand_spot = { 0 };
-		VectorMA(hand_spot, 6.0f, forward, hand_spot);
-		VectorMA(hand_spot, 4.0f, right, hand_spot);
-
-		ThrowWeapon(self, &hand_spot, BIT_SPEAR, 0, FRAME_partfly);
-
-		self->s.fmnodeinfo[MESH__SPEAR].flags |= FMNI_NO_DRAW;
-
-		return;
-	}
-
-	if ((weapon_id == 0 || (weapon_id & BIT_SWORD)) && !(self->s.fmnodeinfo[MESH__MALEHAND].flags & FMNI_NO_DRAW))
-	{
-		vec3_t hand_spot = { 0 };
-		VectorMA(hand_spot, 6.0f, forward, hand_spot);
-		VectorMA(hand_spot, -6.0f, right, hand_spot);
-		VectorMA(hand_spot, -6.0f, up, hand_spot);
-
-		ThrowWeapon(self, &hand_spot, BIT_SWORD, 0, FRAME_partfly);
-
-		self->s.fmnodeinfo[MESH__MALEHAND].flags |= FMNI_NO_DRAW;
-	}
-}
+#pragma region ========================== Edict callbacks ===========================
 
 static qboolean TcheckrikThrowHead(edict_t* self, float damage, const qboolean dismember_ok, int* throw_nodes) //mxd. Added to simplify logic.
 {
@@ -989,31 +780,298 @@ static void TcheckrikDismember(edict_t* self, int damage, HitLocation_t hl) //mx
 	}
 }
 
-static void TcheckrikPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_pain' in original logic.
-{
-	int temp;
-	int damage;
-	int force_damage;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_damage, &damage, &temp);
+#pragma endregion
 
-	if (!force_damage && irand(0, self->health) > damage) //mxd. flrand() in original logic.
+#pragma region ========================== Action functions ==========================
+
+void insect_c_reallydead(edict_t* self) //TODO: rename to tcheckrik_c_dead.
+{
+	self->nextthink = level.time; //TODO: should be -1?..
+	self->think = NULL;
+}
+
+void insectCut(edict_t* self, float attack_type) //TODO: rename to tcheckrik_attack.
+{
+	static const vec3_t weapon_mins = { -2.0f, -2.0f, -1.0f };
+	static const vec3_t weapon_maxs = {  2.0f,  2.0f,  1.0f };
+
+	int damage; //mxd. float in original logic.
+
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+
+	vec3_t hit_start;
+	VectorCopy(self->s.origin, hit_start);
+
+	vec3_t hit_end;
+	VectorMA(hit_start, 72.0f, forward, hit_end);
+
+	switch ((int)attack_type)
+	{
+		case TC_ATK_STAB:
+			if (self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW)
+				return;
+			VectorMA(hit_end, -16.0f, right, hit_end);
+			damage = irand(TC_DMG_STAB_MIN, TC_DMG_STAB_MAX);
+			break;
+
+		case TC_ATK_HACK:
+			VectorMA(hit_start, 12.0f, forward, hit_start);
+			if (self->s.fmnodeinfo[MESH__MALEHAND].flags & FMNI_NO_DRAW)
+			{
+				hit_start[2] += 28.0f;
+				VectorMA(hit_end, 24.0f, right, hit_end);
+				damage = irand(TC_MALE_DMG_HACK_MIN, TC_MALE_DMG_HACK_MAX);
+			}
+			else
+			{
+				hit_start[2] += 18.0f;
+				VectorMA(hit_end, 12.0f, right, hit_end);
+				damage = irand(TC_FEMALE_DMG_HACK_MIN, TC_FEMALE_DMG_HACK_MAX);
+			}
+			break;
+
+		default:
+			return;
+	}
+
+	trace_t trace;
+	gi.trace(hit_start, weapon_mins, weapon_maxs, hit_end, self, MASK_MONSTERSOLID | MASK_SHOT, &trace);
+
+	// Do this check before the allsolid check, because trace is screwy -- fraction should be valid in all cases, so shouldn't be a problem.
+	if (trace.fraction == 1.0f)
+		return; // Missed totally.
+
+	if (trace.allsolid || trace.startsolid || trace.ent->takedamage == DAMAGE_NO)
+	{
+		// Ping!
+		vec3_t hit_angles;
+		vectoangles(trace.plane.normal, hit_angles);
+
+		gi.CreateEffect(NULL, FX_SPARKS, 0, trace.endpos, "d", hit_angles);
+		gi.sound(self, CHAN_AUTO, sounds[SND_SWIPEHITW], 1.0f, ATTN_NORM, 0.0f);
+
+		return;
+	}
+
+	// Hit someone, cut em!
+	vec3_t hit_dir;
+	VectorSubtract(hit_end, hit_start, hit_dir);
+
+	gi.sound(self, CHAN_AUTO, sounds[SND_SWIPEHITF], 1.0f, ATTN_NORM, 0.0f);
+	T_Damage(trace.ent, self, self, hit_dir, trace.endpos, vec3_origin, damage, damage * 2, DAMAGE_DISMEMBER, MOD_DIED);
+}
+
+void insect_dead(edict_t* self) //TODO: rename to tcheckrik_dead.
+{
+	self->s.effects |= EF_DISABLE_EXTRA_FX;
+	self->msgHandler = DeadMsgHandler;
+	self->dead_state = DEAD_DEAD;
+
+	M_EndDeath(self);
+}
+
+void insect_random_idle_sound(edict_t* self) //TODO: rename to tcheckrik_idle_sound.
+{
+	if (self->mass == MASS_TC_MALE)
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWLM1, SND_GROWLM2)], 1.0f, ATTN_NORM, 0.0f);
+	else
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWLF1, SND_GROWLF2)], 1.0f, ATTN_NORM, 0.0f);
+}
+
+void insect_wait_twitch(edict_t* self) //TODO: rename to tcheckrik_wait_twitch.
+{
+	if (self->curAnimID != ANIM_TWITCH && irand(0, 1) == 0)
+	{
+		SetAnim(self, ANIM_TWITCH);
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+	}
+	else if (irand(0, 5) != 0)
+	{
+		SetAnim(self, ANIM_TWITCH);
+		self->nextthink = level.time + flrand(0.2f, 10.0f);
+	}
+	else
+	{
+		self->s.effects |= EF_DISABLE_EXTRA_FX;
+		self->msgHandler = DeadMsgHandler;
+		self->dead_state = DEAD_DEAD;
+
+		M_EndDeath(self);
+		self->think = NULL;
+	}
+}
+
+void insect_flyback_loop(edict_t* self) //TODO: rename to tcheckrik_flyback_loop.
+{
+	SetAnim(self, ANIM_KNOCK1_LOOP);
+}
+
+void insect_flyback_move(edict_t* self) //TODO: rename to tcheckrik_flyback_move.
+{
+	M_ChangeYaw(self);
+
+	vec3_t end_pos;
+	VectorCopy(self->s.origin, end_pos);
+	end_pos[2] -= 48.0f;
+
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
+
+	if ((trace.fraction < 1.0f || trace.startsolid || trace.allsolid) && self->curAnimID != ANIM_KNOCK1_END && self->curAnimID != ANIM_KNOCK1_GO)
+	{
+		self->elasticity = 1.1f;
+		self->friction = 0.5f;
+		SetAnim(self, ANIM_KNOCK1_END);
+	}
+}
+
+void insectdeathsqueal(edict_t* self) //TODO: remove.
+{
+}
+
+void insectgrowl(edict_t* self) //TODO: rename to tcheckrik_growl.
+{
+	if (irand(0, 10) > 2)
 		return;
 
-	gi.RemoveEffects(&self->s, FX_I_EFFECTS);
-	self->s.effects |= EF_DISABLE_EXTRA_FX;
+	if (self->mass == MASS_TC_MALE)
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_GROWLM1, SND_GROWLM2)], 1.0f, ATTN_IDLE, 0.0f);
+	else
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_GROWLF1, SND_GROWLF2)], 1.0f, ATTN_IDLE, 0.0f);
+}
 
-	// Sound. 
-	const int snd_id = (self->mass == MASS_TC_MALE ? SND_PAINM : SND_PAINF); //mxd. Inline insect_random_pain_sound().
-	gi.sound(self, CHAN_VOICE, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
+void insect_sound(edict_t* self, float channel, float sound_num, float attenuation) //TODO: rename to tcheckrik_sound.
+{
+	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
+}
 
-	// Remove spell effects.
-	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
+void insectStaff(edict_t* self) //TODO: rename to tcheckrik_staff_attack.
+{
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	if (force_damage || self->pain_debounce_time < level.time)
+	vec3_t org;
+	VectorCopy(self->s.origin, org);
+	VectorMA(org, 12.0f, forward, org);
+	VectorMA(org, 4.0f, right, org);
+
+	if (self->spawnflags & MSF_INSECT_YELLOWJACKET)
 	{
-		self->pain_debounce_time = level.time + 1.0f;
-		SetAnim(self, (irand(0, 1) == 1 ? ANIM_PAINA : ANIM_PAINC));
+		if (self->s.frame == FRAME_SpearB4)
+		{
+			if (SKILL == SKILL_EASY)
+			{
+				SpellCastInsectSpear(self, org, self->s.angles, irand(1, 3));
+			}
+			else if (SKILL == SKILL_MEDIUM)
+			{
+				SpellCastInsectSpear(self, org, self->s.angles, 1);
+				SpellCastInsectSpear(self, org, self->s.angles, 2);
+			}
+			else // HARD, HARD+.
+			{
+				SpellCastInsectSpear(self, org, self->s.angles, 1);
+				SpellCastInsectSpear(self, org, self->s.angles, 2);
+				SpellCastInsectSpear(self, org, self->s.angles, 3);
+			}
+
+			gi.sound(self, CHAN_WEAPON, sounds[SND_SPELLM2], 1.0f, ATTN_NORM, 0.0f);
+		}
 	}
+	else
+	{
+		SpellCastInsectSpear(self, org, self->s.angles, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SPELLM], 1.0f, ATTN_NORM, 0.0f);
+	}
+}
+
+void insectSpell(edict_t* self, float spell_type) //TODO: rename to tcheckrik_spell_attack.
+{
+	if (!(self->spawnflags & MSF_INSECT_CINEMATIC))
+		ai_charge(self, 0.0f);
+
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+
+	vec3_t org;
+	VectorCopy(self->s.origin, org);
+
+	switch ((int)spell_type)
+	{
+		case TC_SPL_GLOW:
+			if (self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW) // No staff, weaker spell.
+			{
+				VectorMA(org, 8.0f, forward, org);
+				VectorMA(org, 2.0f, right, org);
+				org[2] += 6.0f;
+
+				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
+				gi.sound(self, CHAN_WEAPON, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
+			}
+			else // Staff, bigger spell.
+			{
+				VectorMA(org, 16.0f, forward, org);
+				VectorMA(org, 4.0f, right, org);
+				org[2] += 8.0f;
+
+				self->s.effects &= ~(EF_DISABLE_EXTRA_FX | EF_MARCUS_FLAG1);
+				self->damage_debounce_time = false;
+
+				SpellCastGlobeOfOuchiness(self, org, self->s.angles, forward);
+				gi.sound(self, CHAN_ITEM, sounds[SND_SPLPWRUPF], 1.0f, ATTN_NORM, 0.0f);
+			}
+			break;
+
+		case TC_SPL_FIRE:
+			if (self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW) // No staff, weaker spell. //TODO: identical if/else clauses. Shoot powered spell when have staff?..
+			{
+				VectorMA(org, 16.0f, forward, org);
+				org[2] += 12.0f;
+
+				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
+				gi.sound(self, CHAN_AUTO, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
+			}
+			else // Staff, bigger spell.
+			{
+				VectorMA(org, 16.0f, forward, org);
+				org[2] += 12.0f;
+
+				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
+				gi.sound(self, CHAN_AUTO, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
+			}
+			break;
+
+		case TC_SPL_FIRE2:
+			if (!(self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW)) // No staff, weaker spell.
+			{
+				VectorMA(org, 16.0f, forward, org);
+				org[2] += 12.0f;
+
+				SpellCastInsectStaff(self, org, self->s.angles, forward, true); //TODO: should be the other way around (unpowered here, powered below)?
+				gi.sound(self, CHAN_AUTO, gi.soundindex("monsters/imp/fireball.wav"), 1.0f, ATTN_NORM, 0.0f);
+			}
+			else // Staff, bigger spell.
+			{
+				VectorMA(org, 16.0f, forward, org);
+				org[2] += 12.0f;
+
+				SpellCastInsectStaff(self, org, self->s.angles, forward, false);
+				gi.sound(self, CHAN_AUTO, sounds[SND_SPELLF], 1.0f, ATTN_NORM, 0.0f);
+			}
+			break;
+	}
+}
+
+void insectReleaseSpell(edict_t* self) //TODO: rename to tcheckrik_release_spell.
+{
+	gi.RemoveEffects(&self->s, FX_I_EFFECTS);
+
+	self->s.effects |= (EF_DISABLE_EXTRA_FX | EF_MARCUS_FLAG1);
+	self->damage_debounce_time = true; //TODO: add qboolean tcheckrik_globe_spell_released name.
 }
 
 void insect_pause(edict_t* self) //TODO: rename to tcheckrik_pause.
@@ -1131,39 +1189,6 @@ void insect_pause(edict_t* self) //TODO: rename to tcheckrik_pause.
 	}
 }
 
-static void TcheckrikCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_check_mood' in original logic.
-{
-	ParseMsgParms(msg, "i", &self->ai_mood);
-	insect_pause(self);
-}
-
-static void TcheckrikRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_run' in original logic.
-{
-	if (!M_ValidTarget(self, self->enemy))
-	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		return;
-	}
-
-	if (self->enemy->classID == CID_TBEAST && self->enemy->enemy != self && M_DistanceToTarget(self, self->enemy) < 250.0f)
-	{
-		self->monsterinfo.aiflags |= AI_FLEE;
-		self->monsterinfo.flee_finished = level.time + 3.0f;
-	}
-
-	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN));
-}
-
-static void TcheckrikStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_stand' in original logic.
-{
-	SetAnim(self, ((self->ai_mood == AI_MOOD_DELAY) ? ANIM_DELAY : ANIM_IDLE));
-}
-
-static void TcheckrikWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_walk' in original logic.
-{
-	SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_WALK));
-}
-
 void insect_go_inair(edict_t* self) //TODO: rename to tcheckrik_inair_go.
 {
 	SetAnim(self, ANIM_INAIR);
@@ -1206,18 +1231,7 @@ void insectCheckLoop(edict_t* self, float frame) //TODO: rename to tcheckrik_che
 	self->monsterinfo.currframeindex = (int)frame;
 }
 
-static void TcheckrikJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_jump' in original logic.
-{
-	if (self->spawnflags & MSF_FIXED)
-	{
-		SetAnim(self, ANIM_DELAY);
-	}
-	else
-	{
-		SetAnim(self, ANIM_FORCED_JUMP);
-		self->monsterinfo.aiflags |= AI_OVERRIDE_GUIDE;
-	}
-}
+#pragma endregion
 
 void TcheckrikStaticsInit(void)
 {
