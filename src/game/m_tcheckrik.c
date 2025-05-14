@@ -327,7 +327,7 @@ static void TcheckrikPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 static void TcheckrikCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-	insect_pause(self);
+	tcheckrik_pause(self);
 }
 
 static void TcheckrikRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_run' in original logic.
@@ -1073,7 +1073,7 @@ void tcheckrik_release_spell(edict_t* self) //mxd. Named 'insectReleaseSpell' in
 	self->damage_debounce_time = true; //TODO: add qboolean tcheckrik_globe_spell_released name.
 }
 
-void insect_pause(edict_t* self) //TODO: rename to tcheckrik_pause.
+void tcheckrik_pause(edict_t* self) //mxd. Named 'insect_pause' in original logic.
 {
 	if (self->spawnflags & MSF_INSECT_BEAST_FODDER)
 	{

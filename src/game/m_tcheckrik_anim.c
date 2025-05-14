@@ -24,7 +24,7 @@ static const animframe_t insect_frames_back[] =
 	{ FRAME_backpeddle9,	NULL, 0, 0, 0, ai_charge, -10, NULL },
 	{ FRAME_backpeddle10,	NULL, 0, 0, 0, ai_charge, -6,  NULL },
 };
-const animmove_t insect_move_back = { 10, insect_frames_back, insect_pause };
+const animmove_t insect_move_back = { 10, insect_frames_back, tcheckrik_pause };
 
 // Insect Death.
 static const animframe_t insect_frames_deathfr[] =
@@ -154,7 +154,7 @@ static const animframe_t insect_frames_idle[] =
 	{ FRAME_idle49,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle50,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t insect_move_idle = { 50, insect_frames_idle, insect_pause };
+const animmove_t insect_move_idle = { 50, insect_frames_idle, tcheckrik_pause };
 
 // Insect Land.
 static const animframe_t insect_frames_land[] =
@@ -166,7 +166,7 @@ static const animframe_t insect_frames_land[] =
 	{ FRAME_jump15,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump16,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_land = { 6, insect_frames_land, insect_pause };
+const animmove_t insect_move_land = { 6, insect_frames_land, tcheckrik_pause };
 
 // Insect In Air.
 static const animframe_t insect_frames_inair[] =
@@ -223,7 +223,7 @@ static const animframe_t insect_frames_paina[] =
 	{ FRAME_paina6,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_paina7,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_paina = { 7, insect_frames_paina, insect_pause };
+const animmove_t insect_move_paina = { 7, insect_frames_paina, tcheckrik_pause };
 
 // Insect Pain C.
 static const animframe_t insect_frames_painc[] =
@@ -235,24 +235,24 @@ static const animframe_t insect_frames_painc[] =
 	{ FRAME_paina5,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_paina6,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_painc = { 6, insect_frames_painc, insect_pause };
+const animmove_t insect_move_painc = { 6, insect_frames_painc, tcheckrik_pause };
 
 // Insect Run.
 static const animframe_t insect_frames_run[] =
 {
 	{ FRAME_Run1,	NULL, 0, 0, 0, MG_AI_Run, 12, tcheckrik_growl },
-	{ FRAME_Run2,	NULL, 0, 0, 0, MG_AI_Run, 13, insect_pause },
-	{ FRAME_Run3,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause },
-	{ FRAME_Run4,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause },
-	{ FRAME_Run5,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause },
-	{ FRAME_Run6,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause },
-	{ FRAME_Run7,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause },
-	{ FRAME_Run8,	NULL, 0, 0, 0, MG_AI_Run, 11, insect_pause },
-	{ FRAME_Run9,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause },
-	{ FRAME_Run10,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause },
-	{ FRAME_Run10,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause },
+	{ FRAME_Run2,	NULL, 0, 0, 0, MG_AI_Run, 13, tcheckrik_pause },
+	{ FRAME_Run3,	NULL, 0, 0, 0, MG_AI_Run, 14, tcheckrik_pause },
+	{ FRAME_Run4,	NULL, 0, 0, 0, MG_AI_Run, 14, tcheckrik_pause },
+	{ FRAME_Run5,	NULL, 0, 0, 0, MG_AI_Run, 14, tcheckrik_pause },
+	{ FRAME_Run6,	NULL, 0, 0, 0, MG_AI_Run, 14, tcheckrik_pause },
+	{ FRAME_Run7,	NULL, 0, 0, 0, MG_AI_Run, 14, tcheckrik_pause },
+	{ FRAME_Run8,	NULL, 0, 0, 0, MG_AI_Run, 11, tcheckrik_pause },
+	{ FRAME_Run9,	NULL, 0, 0, 0, MG_AI_Run, 14, tcheckrik_pause },
+	{ FRAME_Run10,	NULL, 0, 0, 0, MG_AI_Run, 14, tcheckrik_pause },
+	{ FRAME_Run10,	NULL, 0, 0, 0, MG_AI_Run, 14, tcheckrik_pause },
 };
-const animmove_t insect_move_run = { 11, insect_frames_run, insect_pause };
+const animmove_t insect_move_run = { 11, insect_frames_run, tcheckrik_pause };
 
 // Insect Spear Attack.
 static const animframe_t insect_frames_spear[] =
@@ -269,7 +269,7 @@ static const animframe_t insect_frames_spear[] =
 	{ FRAME_SpearB10,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_SpearB11,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t insect_move_spear = { 11, insect_frames_spear, insect_pause };
+const animmove_t insect_move_spear = { 11, insect_frames_spear, tcheckrik_pause };
 
 // Insect Sword Attack.
 static const animframe_t insect_frames_sword[] =
@@ -284,7 +284,7 @@ static const animframe_t insect_frames_sword[] =
 	{ FRAME_sword8,	NULL, 0, 0, 0, insectCheckLoop, 1, NULL },
 	{ FRAME_sword9,	NULL, 0, 0, 0, ai_charge, 0, NULL }, // Check for loop.
 };
-const animmove_t insect_move_sword = { 9, insect_frames_sword, insect_pause };
+const animmove_t insect_move_sword = { 9, insect_frames_sword, tcheckrik_pause };
 
 // Insect Spell Attack.
 static const animframe_t insect_frames_spell[] =
@@ -307,7 +307,7 @@ static const animframe_t insect_frames_spell[] =
 	{ FRAME_spell16,	NULL, 0, 0, 0, ai_charge, 0, NULL }, // Check for loop?
 	{ FRAME_spell17,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t insect_move_spell = { 17, insect_frames_spell, insect_pause };
+const animmove_t insect_move_spell = { 17, insect_frames_spell, tcheckrik_pause };
 
 // Insect Spell 2 Attack.
 static const animframe_t insect_frames_spell2[] =
@@ -325,7 +325,7 @@ static const animframe_t insect_frames_spell2[] =
 	{ FRAME_spell16,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell17,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t insect_move_spell2 = { 12, insect_frames_spell2, insect_pause };
+const animmove_t insect_move_spell2 = { 12, insect_frames_spell2, tcheckrik_pause };
 
 // Insect Walk.
 static const animframe_t insect_frames_walk[] =
@@ -351,63 +351,63 @@ static const animframe_t insect_frames_walk[] =
 	{ FRAME_Walk19,	NULL, 0, 0, 0, ai_walk, 6, NULL },
 	{ FRAME_Walk20,	NULL, 0, 0, 0, ai_walk, 6, NULL },
 };
-const animmove_t insect_move_walk = { 20, insect_frames_walk, insect_pause };
+const animmove_t insect_move_walk = { 20, insect_frames_walk, tcheckrik_pause };
 
 // Insect Delay - insect standing by, not thinking, just waiting for a door or plat or something.
 static const animframe_t insect_frames_delay[] =
 {
-	{ FRAME_idle1,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle2,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle3,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle4,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle5,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle6,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle7,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle8,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle9,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle10,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle11,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle12,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle13,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle14,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle15,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle16,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle17,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle18,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle19,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle20,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle21,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle22,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle23,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle24,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle25,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle26,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle27,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle28,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle29,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle30,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle31,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle32,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle33,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle34,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle35,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle36,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle37,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle38,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle39,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle40,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle41,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle42,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle43,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle44,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle45,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle46,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle47,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle48,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle49,	NULL, 0, 0, 0, NULL, 0, insect_pause },
-	{ FRAME_idle50,	NULL, 0, 0, 0, NULL, 0, insect_pause },
+	{ FRAME_idle1,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle2,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle3,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle4,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle5,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle6,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle7,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle8,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle9,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle10,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle11,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle12,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle13,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle14,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle15,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle16,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle17,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle18,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle19,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle20,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle21,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle22,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle23,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle24,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle25,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle26,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle27,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle28,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle29,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle30,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle31,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle32,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle33,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle34,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle35,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle36,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle37,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle38,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle39,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle40,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle41,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle42,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle43,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle44,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle45,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle46,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle47,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle48,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle49,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
+	{ FRAME_idle50,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
 };
-const animmove_t insect_delay = { 50, insect_frames_delay, insect_pause };
+const animmove_t insect_delay = { 50, insect_frames_delay, tcheckrik_pause };
 
 // Insect Cinematic Action 1.
 static const animframe_t insect_frames_c_action1[] =
