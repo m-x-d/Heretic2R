@@ -321,9 +321,9 @@ void insect_flyback_move(edict_t* self) //TODO: rename to tcheckrik_flyback_move
 	}
 }
 
-void insect_death(edict_t *self, G_Message_t *msg)
+static void TcheckrikDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_death' in original logic.
 {
-	if(self->monsterinfo.aiflags&AI_DONT_THINK)
+	if (self->monsterinfo.aiflags & AI_DONT_THINK)
 	{
 		SetAnim(self, ANIM_DEATHFR);
 		return;
@@ -331,58 +331,52 @@ void insect_death(edict_t *self, G_Message_t *msg)
 
 	self->msgHandler = DeadMsgHandler;
 
-	if(self->dead_state == DEAD_DEAD) //Dead but still being hit	
+	if (self->dead_state == DEAD_DEAD) // Dead but still being hit.
 		return;
 
 	gi.RemoveEffects(&self->s, FX_I_EFFECTS);
-	self->s.effects |= EF_DISABLE_EXTRA_FX;
 
+	self->s.effects |= EF_DISABLE_EXTRA_FX;
 	self->dead_state = DEAD_DEAD;
 
-	insect_dropweapon (self, BIT_SPEAR);
-	insect_dropweapon (self, BIT_STAFF);
-//	insect_dropweapon (self, BIT_SWORD);
+	insect_dropweapon(self, BIT_SPEAR);
+	insect_dropweapon(self, BIT_STAFF);
 
-	if(self->health <= -80) //gib death
+	if (self->health <= -80) // Gib death.
 	{
-		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
+
 		self->think = BecomeDebris;
-		self->nextthink = level.time + 0.1;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
 		return;
+	}
+
+	const int snd_id = ((self->mass == MASS_TC_MALE) ? SND_DIEM : SND_DIEF); //mxd. Inline insect_random_death_sound().
+	gi.sound(self, CHAN_VOICE, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
+
+	if (self->health < -20)
+	{
+		SetAnim(self, ANIM_KNOCK1_GO);
+		VectorClear(self->knockbackvel);
+
+		vec3_t dir;
+		VectorNormalize2(self->velocity, dir);
+
+		vec3_t yaw_dir;
+		VectorScale(dir, -1.0f, yaw_dir);
+
+		self->ideal_yaw = VectorYaw(yaw_dir);
+		self->yaw_speed = 16.0f;
+
+		VectorScale(dir, 300.0f, self->velocity);
+		self->velocity[2] = flrand(150.0f, 250.0f); //mxd. irand() in original logic.
 	}
 	else
 	{
-		const int snd_id = ((self->mass == MASS_TC_MALE) ? SND_DIEM : SND_DIEF); //mxd. Inline insect_random_death_sound().
-		gi.sound(self, CHAN_VOICE, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
-
-		if(self->health<-20)
-		{
-			vec3_t vf, yf, dVel;
-
-			SetAnim(self, ANIM_KNOCK1_GO);
-
-			VectorSet(self->knockbackvel, 0, 0, 0);
-
-			VectorCopy(self->velocity, vf);
-			VectorNormalize(vf);
-
-			VectorScale(vf, -1, yf);
-
-			self->ideal_yaw = VectorYaw( yf );
-			self->yaw_speed = 16;
-
-			VectorScale(vf, 300, dVel);
-			dVel[2] = irand(150,250);
-
-			VectorCopy(dVel, self->velocity);
-			return;
-		}
-
 		SetAnim(self, ANIM_DEATHFR);
-		return;
 	}
 }
-
 
 /*-------------------------------------------------------------------------
 	insectdeathsqueal
@@ -1456,7 +1450,7 @@ void TcheckrikStaticsInit(void)
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MELEE] = insect_melee;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_MISSILE] = insect_missile;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_PAIN] = insect_pain;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH] = insect_death;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH] = TcheckrikDeathMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_FALLBACK] = insect_backpedal;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_JUMP] = insect_jump;
