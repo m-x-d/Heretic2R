@@ -257,21 +257,20 @@ void insect_random_idle_sound(edict_t* self) //TODO: rename to tcheckrik_idle_so
 		gi.sound(self, CHAN_VOICE, sounds[irand(SND_GROWLF1, SND_GROWLF2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void M_MoveFrame (edict_t *self);
-void insect_dead_pain (edict_t *self, G_Message_t *msg)
+static void TcheckrikDeathPain(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_dead_pain' in original logic.
 {
-	if(msg)
-		if(!(self->svflags & SVF_PARTS_GIBBED))
-			DismemberMsgHandler(self, msg);
+	if (msg != NULL && !(self->svflags & SVF_PARTS_GIBBED))
+		DismemberMsgHandler(self, msg);
 
-	if(self->curAnimID!=ANIM_TWITCH&&self->dead_state!=DEAD_DEAD)
-		return;//still dying
+	if (self->curAnimID != ANIM_TWITCH && self->dead_state != DEAD_DEAD)
+		return; // Still dying.
 
-	if(self->s.frame==FRAME_knock15)
+	if (self->s.frame == FRAME_knock15)
 	{
-		self->think = M_MoveFrame;
 		SetAnim(self, ANIM_TWITCH);
-		self->nextthink = level.time + 0.1;
+
+		self->think = M_MoveFrame;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
 }
 
@@ -1463,7 +1462,7 @@ void TcheckrikStaticsInit(void)
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_FALLBACK] = insect_backpedal;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_JUMP] = insect_jump;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH_PAIN] = insect_dead_pain;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH_PAIN] = TcheckrikDeathPain;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_CHECK_MOOD] = insect_check_mood;
 
 	// Cinematics
