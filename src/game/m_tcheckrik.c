@@ -1131,10 +1131,9 @@ void insect_pause(edict_t* self) //TODO: rename to tcheckrik_pause.
 	}
 }
 
-void insect_check_mood (edict_t *self, G_Message_t *msg)
+static void TcheckrikCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-
 	insect_pause(self);
 }
 
@@ -1332,7 +1331,7 @@ void TcheckrikStaticsInit(void)
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_JUMP] = insect_jump;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH_PAIN] = TcheckrikDeathPain;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_CHECK_MOOD] = insect_check_mood;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_CHECK_MOOD] = TcheckrikCheckMoodMsgHandler;
 
 	// Cinematics
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ACTION1] = TcheckrikCinematicActionMsgHandler;
