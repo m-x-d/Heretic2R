@@ -167,88 +167,78 @@ void insect_c_reallydead(edict_t* self) //TODO: rename to tcheckrik_c_dead.
 	self->think = NULL;
 }
 
-/*----------------------------------------------------------------------
-  Action Functions for the monster
------------------------------------------------------------------------*/
-
-/*-------------------------------------------------------------------------
-	insectCut
--------------------------------------------------------------------------*/
-vec3_t TC_WPN_MINS = {-2.0, -2.0, -1.0};
-vec3_t TC_WPN_MAXS = {2.0, 2.0, 1.0};
-void insectCut (edict_t *self, float attacktype)
+void insectCut(edict_t* self, float attack_type) //TODO: rename to tcheckrik_attack.
 {
-	trace_t trace;
-	vec3_t pos1, pos2, dir, forward, right, hitangles;
-	float damage;
+	static const vec3_t weapon_mins = { -2.0f, -2.0f, -1.0f };
+	static const vec3_t weapon_maxs = {  2.0f,  2.0f,  1.0f };
 
+	int damage; //mxd. float in original logic.
+
+	vec3_t forward;
+	vec3_t right;
 	AngleVectors(self->s.angles, forward, right, NULL);
-	VectorCopy(self->s.origin, pos1);
-	VectorMA (pos1, 72, forward, pos2);
-	switch((int)attacktype)
+
+	vec3_t hit_start;
+	VectorCopy(self->s.origin, hit_start);
+
+	vec3_t hit_end;
+	VectorMA(hit_start, 72.0f, forward, hit_end);
+
+	switch ((int)attack_type)
 	{
-	case TC_ATK_STAB:
-		if(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW)
+		case TC_ATK_STAB:
+			if (self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW)
+				return;
+			VectorMA(hit_end, -16.0f, right, hit_end);
+			damage = irand(TC_DMG_STAB_MIN, TC_DMG_STAB_MAX);
+			break;
+
+		case TC_ATK_HACK:
+			VectorMA(hit_start, 12.0f, forward, hit_start);
+			if (self->s.fmnodeinfo[MESH__MALEHAND].flags & FMNI_NO_DRAW)
+			{
+				hit_start[2] += 28.0f;
+				VectorMA(hit_end, 24.0f, right, hit_end);
+				damage = irand(TC_MALE_DMG_HACK_MIN, TC_MALE_DMG_HACK_MAX);
+			}
+			else
+			{
+				hit_start[2] += 18.0f;
+				VectorMA(hit_end, 12.0f, right, hit_end);
+				damage = irand(TC_FEMALE_DMG_HACK_MIN, TC_FEMALE_DMG_HACK_MAX);
+			}
+			break;
+
+		default:
 			return;
-		VectorMA(pos2, -16, right, pos2);
-		damage = irand(TC_DMG_STAB_MIN, TC_DMG_STAB_MAX);
-		break;
-	case TC_ATK_HACK:
-//		if(self->s.fmnodeinfo[MESH__SWORD].flags & FMNI_NO_DRAW)
-		if(self->s.fmnodeinfo[MESH__MALEHAND].flags & FMNI_NO_DRAW)
-		{
-			VectorMA (pos1, 12, forward, pos1);
-			pos1[2]+= 28;
-			VectorMA(pos2, 24, right, pos2);
-			damage = irand(TC_MALE_DMG_HACK_MIN, TC_MALE_DMG_HACK_MAX);
-		}
-		else
-		{
-			VectorMA (pos1, 12, forward, pos1);
-			pos1[2]+= 18;
-			VectorMA(pos2, 12, right, pos2);
-			damage = irand(TC_FEMALE_DMG_HACK_MIN, TC_FEMALE_DMG_HACK_MAX);
-		}
-		break;
-	default:
-		return;
-		break;
 	}
 
-	gi.trace(pos1, TC_WPN_MINS, TC_WPN_MAXS, pos2, self, MASK_MONSTERSOLID|MASK_SHOT,&trace);
+	trace_t trace;
+	gi.trace(hit_start, weapon_mins, weapon_maxs, hit_end, self, MASK_MONSTERSOLID | MASK_SHOT, &trace);
 
-	//sfs--do this check before the allsolid check, because trace is screwy--fraction should be valid in all cases, so shouldn't be a problem
-	if(trace.fraction == 1.0)
-	{//missed totally
+	// Do this check before the allsolid check, because trace is screwy -- fraction should be valid in all cases, so shouldn't be a problem.
+	if (trace.fraction == 1.0f)
+		return; // Missed totally.
+
+	if (trace.allsolid || trace.startsolid || trace.ent->takedamage == DAMAGE_NO)
+	{
+		// Ping!
+		vec3_t hit_angles;
+		vectoangles(trace.plane.normal, hit_angles);
+
+		gi.CreateEffect(NULL, FX_SPARKS, 0, trace.endpos, "d", hit_angles);
+		gi.sound(self, CHAN_AUTO, sounds[SND_SWIPEHITW], 1.0f, ATTN_NORM, 0.0f);
+
 		return;
 	}
 
-	if(trace.allsolid || trace.startsolid || !trace.ent->takedamage)
-	{//ping!
-		vectoangles(trace.plane.normal, hitangles);
-		gi.CreateEffect(NULL, FX_SPARKS, 0, trace.endpos, "d", hitangles);
-		gi.sound (self, CHAN_AUTO, sounds[SND_SWIPEHITW], 1, ATTN_NORM, 0);
-//		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/staffhitwall.wav"), 1, ATTN_NORM, 0);
-		return;		
-	}
+	// Hit someone, cut em!
+	vec3_t hit_dir;
+	VectorSubtract(hit_end, hit_start, hit_dir);
 
-	//hit someone, cut em!
-	
-	VectorSubtract(pos2, pos1, dir);
-	gi.sound (self, CHAN_AUTO, sounds[SND_SWIPEHITF], 1, ATTN_NORM, 0);
-//	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/staffhit.wav"), 1, ATTN_NORM, 0);
-
-	T_Damage (trace.ent, self, self, dir, trace.endpos, vec3_origin, damage, damage*2, DAMAGE_DISMEMBER,MOD_DIED);
-	
-/*	gi.CreateEffect(&self->s,
-		FX_I_EFFECTS,
-		0,
-		vec3_origin,
-		"bv",
-		FX_I_SWORD,
-		vec3_origin);*/
+	gi.sound(self, CHAN_AUTO, sounds[SND_SWIPEHITF], 1.0f, ATTN_NORM, 0.0f);
+	T_Damage(trace.ent, self, self, hit_dir, trace.endpos, vec3_origin, damage, damage * 2, DAMAGE_DISMEMBER, MOD_DIED);
 }
-
 
 /*-------------------------------------------------------------------------
 	insect_dead
