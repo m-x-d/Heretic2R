@@ -1206,15 +1206,17 @@ void insectCheckLoop(edict_t* self, float frame) //TODO: rename to tcheckrik_che
 	self->monsterinfo.currframeindex = (int)frame;
 }
 
-void insect_jump (edict_t *self, G_Message_t *msg)
+static void TcheckrikJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_jump' in original logic.
 {
-	if(self->spawnflags&MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
 	{
 		SetAnim(self, ANIM_DELAY);
-		return;
 	}
-	SetAnim(self, ANIM_FORCED_JUMP);
-	self->monsterinfo.aiflags |= AI_OVERRIDE_GUIDE;
+	else
+	{
+		SetAnim(self, ANIM_FORCED_JUMP);
+		self->monsterinfo.aiflags |= AI_OVERRIDE_GUIDE;
+	}
 }
 
 /*-------------------------------------------------------------------------
@@ -1233,7 +1235,7 @@ void TcheckrikStaticsInit(void)
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH] = TcheckrikDeathMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_FALLBACK] = TcheckrikFallbackMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_JUMP] = insect_jump;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_JUMP] = TcheckrikJumpMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH_PAIN] = TcheckrikDeathPain;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_CHECK_MOOD] = TcheckrikCheckMoodMsgHandler;
 
