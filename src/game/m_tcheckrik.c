@@ -69,95 +69,97 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-/*----------------------------------------------------------------------
-  Cinematic Functions for the monster
------------------------------------------------------------------------*/
-
-
-/*-------------------------------------------------------------------------
-	plagueElf_c_anims
--------------------------------------------------------------------------*/
-void insect_c_anims(edict_t *self, G_Message_t *msg)
+static void TcheckrikCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_c_anims' in original logic.
 {
-	int int_msg;
 	int curr_anim;
 
 	ReadCinematicMessage(self, msg);
-	int_msg = (int) msg->ID;
+	self->monsterinfo.c_anim_flag = 0;
 
-	self->monsterinfo.c_anim_flag = 0; 
-
-	switch(int_msg)
+	switch (msg->ID)
 	{
 		case MSG_C_ACTION1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION1;
 			break;
+
 		case MSG_C_ACTION2:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION2;
 			break;
+
 		case MSG_C_ACTION3:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION3;
 			break;
+
 		case MSG_C_ACTION4:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION4;
 			break;
+
 		case MSG_C_ATTACK1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ATTACK1;
 			break;
+
 		case MSG_C_ATTACK2:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ATTACK2;
 			break;
+
 		case MSG_C_ATTACK3:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ATTACK3;
 			break;
+
 		case MSG_C_BACKPEDAL1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
 			curr_anim = ANIM_C_BACKPEDAL;
 			break;
+
 		case MSG_C_DEATH1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_DEATH1;
 			break;
+
 		case MSG_C_IDLE1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT | C_ANIM_IDLE;
 			curr_anim = ANIM_C_IDLE1;
 			break;
+
 		case MSG_C_IDLE2:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE2;
 			break;
+
 		case MSG_C_IDLE3:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE3;
 			break;
+
 		case MSG_C_PAIN1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_PAIN1;
 			break;
+
 		case MSG_C_RUN1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
 			curr_anim = ANIM_C_RUN1;
 			break;
+
 		case MSG_C_WALK1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
 			curr_anim = ANIM_C_WALK1;
 			break;
+
 		default:
-			self = self;
-			break;
-	} 
+			assert(0); //mxd
+			return; //mxd. 'break' in original version.
+	}
 
 	SetAnim(self, curr_anim);
 }
-
-
 
 /*-------------------------------------------------------------------------
 	insect_c_pause
@@ -1504,21 +1506,21 @@ void TcheckrikStaticsInit(void)
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_CHECK_MOOD] = insect_check_mood;
 
 	// Cinematics
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ACTION1] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ACTION2] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ACTION3] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ACTION4] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ATTACK1] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ATTACK2] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ATTACK3] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_BACKPEDAL1] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_DEATH1] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_IDLE1] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_IDLE2] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_IDLE3] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_PAIN1] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_RUN1] = insect_c_anims;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_WALK1] = insect_c_anims;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ACTION1] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ACTION2] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ACTION3] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ACTION4] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ATTACK1] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ATTACK2] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_ATTACK3] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_BACKPEDAL1] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_DEATH1] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_IDLE1] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_IDLE2] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_IDLE3] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_PAIN1] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_RUN1] = TcheckrikCinematicActionMsgHandler;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_C_WALK1] = TcheckrikCinematicActionMsgHandler;
 
 
 	resInfo.numAnims = NUM_ANIMS;
