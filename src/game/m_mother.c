@@ -1,47 +1,31 @@
-//==============================================================================
 //
 // m_mother.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//
-//	AI :
-//
-//	STAND1		: Looking straight ahead
-//	
-//
-//==============================================================================
-
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "buoy.h"
-#include "vector.h"
 
 #include "m_mother.h"
 #include "m_mother_shared.h"
 #include "m_mother_anim.h"
 #include "g_debris.h" //mxd
-#include "angles.h"
-#include "c_ai.h"
+#include "g_DefaultMessageHandler.h"
 #include "m_stats.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_monster.h"
 
+#pragma region ========================== Tcheckrik Mother Base Info ==========================
 
-/*----------------------------------------------------------------------
------------------------------------------------------------------------*/
-static const animmove_t *animations[ NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&mother_move_pain,
 	&mother_move_stand,
 };
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
 
+#pragma endregion
 
 void mother_growl(edict_t *self)
 {
@@ -100,6 +84,7 @@ void mother_gib(edict_t *self, G_Message_t *msg)
 -------------------------------------------------------------------------*/
 void MotherStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_MOTHER].msgReceivers[MSG_STAND] = mother_stand;
 	classStatics[CID_MOTHER].msgReceivers[MSG_PAIN] = mother_pain;
