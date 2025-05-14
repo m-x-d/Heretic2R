@@ -278,7 +278,7 @@ static const animframe_t insect_frames_sword[] =
 	{ FRAME_sword2,	insect_sound, CHAN_WEAPON, SND_SWIPE, ATTN_NORM, ai_charge, 0, NULL },
 	{ FRAME_sword3,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_sword4,	NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_sword5,	NULL, 0, 0, 0, insectCut, TC_ATK_HACK, NULL },
+	{ FRAME_sword5,	NULL, 0, 0, 0, tcheckrik_attack, TC_ATK_HACK, NULL },
 	{ FRAME_sword6,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_sword7,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_sword8,	NULL, 0, 0, 0, insectCheckLoop, 1, NULL },

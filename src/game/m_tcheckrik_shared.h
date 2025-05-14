@@ -116,7 +116,7 @@ extern void tcheckrik_c_dead (edict_t *self);
 
 extern void insectReleaseSpell (edict_t *self);
 
-extern void insectCut (edict_t *self, float attack_type);
+extern void tcheckrik_attack (edict_t *self, float attack_type);
 extern void insectSpell(edict_t *self, float spell_type);
 extern void insectStaff(edict_t *self);
 extern void insectCheckLoop (edict_t *self, float frame);

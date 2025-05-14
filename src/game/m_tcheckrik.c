@@ -790,7 +790,7 @@ void tcheckrik_c_dead(edict_t* self) //mxd. Named 'insect_c_reallydead' in origi
 	self->think = NULL;
 }
 
-void insectCut(edict_t* self, float attack_type) //TODO: rename to tcheckrik_attack.
+void tcheckrik_attack(edict_t* self, float attack_type) //mxd. Named 'insectCut' in original logic.
 {
 	static const vec3_t weapon_mins = { -2.0f, -2.0f, -1.0f };
 	static const vec3_t weapon_maxs = {  2.0f,  2.0f,  1.0f };
