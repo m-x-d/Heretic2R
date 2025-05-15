@@ -27,14 +27,14 @@ class Variable
 {
 protected:
 	char		Name[VAR_LENGTH];
-	VariableT	Type;
+	VariableType	Type;
 
 public:
-						Variable(char *NewName = "", VariableT NewType = TypeUNKNOWN);
+						Variable(char *NewName = "", VariableType NewType = TYPE_UNKNOWN);
 						Variable(FILE *FH, CScript *Script);
 	virtual void		Write(FILE *FH, CScript *Script, int ID = -1);
 	char				*GetName(void) { return Name; }
-	VariableT			GetType(void) { return Type; }
+	VariableType			GetType(void) { return Type; }
 	virtual int			GetIntValue(void) { return 0; }
 	virtual float		GetFloatValue(void) { return 0.0; }
 	virtual void		GetVectorValue(vec3_t &VecValue) { VecValue[0] = VecValue[1] = VecValue[2] = 0.0; }
@@ -293,7 +293,7 @@ class FieldDef
 {
 private:
 	char			Name[VAR_LENGTH];
-	VariableT		Type;
+	VariableType		Type;
 	int				Offset;
 	fieldtype_t		FieldType;
 

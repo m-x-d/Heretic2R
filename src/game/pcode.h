@@ -1,6 +1,15 @@
-#define SCRIPT_VERSION 3
+//
+// pcode.h
+//
+// Copyright 1998 Raven Software
+//
 
-#define NUM_PARMS 16
+#pragma once
+
+#define SCRIPT_VERSION	3
+
+#define NUM_PARMS	16 //TODO: rename to MAX_SCRIPT_PARAMS?
+#define VAR_LENGTH	64 //TODO: rename to MAX_VAR_NAME_LENGTH?
 
 enum OpCodes
 {
@@ -43,10 +52,10 @@ enum OpCodes
 	CODE_COPY_PLAYER_ATTRIBUTES,
 	CODE_SET_VIEW_ANGLES,
 	CODE_SET_CACHE_SIZE,
-	CODE_REMOVE,
-	CODE_HELICOPTER,
-	CODE_MOVEROTATE,
-	CODE_PLAYSONG,
+	CODE_REMOVE, //TODO: unused.
+	CODE_HELICOPTER, //TODO: unused.
+	CODE_MOVEROTATE, //TODO: unused.
+	CODE_PLAYSONG, //TODO: unused.
 };
 
 enum PushTypes
@@ -82,14 +91,14 @@ enum FunctionTypes
 	FUNC_GET_ACTIVATOR,
 };
 
-enum VariableT 
-{ 
-	TypeINT = 0, 
-	TypeFLOAT, 
-	TypeVECTOR, 
-	TypeENTITY, 
-	TypeSTRING,
-	TypeUNKNOWN, 
+enum VariableType
+{
+	TYPE_INT = 0,
+	TYPE_FLOAT,
+	TYPE_VECTOR,
+	TYPE_ENTITY,
+	TYPE_STRING,
+	TYPE_UNKNOWN,
 };
 
 enum FeatureTypes
@@ -100,58 +109,50 @@ enum FeatureTypes
 	FEATURE_PLAGUE_SKINS,
 };
 
-#define VAR_LENGTH 64
+#pragma region ========================== Command Flags ==========================
 
-// Command Flags
-// Move
+// Move.
 #define MOVE_DURATION	0x01
 #define MOVE_RATE		0x02
 #define MOVE_SIGNALER	0x04
 #define MOVE_ABSOLUTE	0x08
 
-// Rotate
+// Rotate.
 #define ROTATE_DURATION	0x01
 #define ROTATE_RATE		0x02
 #define ROTATE_SIGNALER	0x04
-#define ROTATE_ABSOLUTE	0x08
+#define ROTATE_ABSOLUTE	0x08 //TODO: unused.
 
-
-// MoveRotate (disk-file command)
-#define MOVEROTATE_SIGNALER 0x01
-
-// Wait
+// Wait.
 #define WAIT_CLEAR		0x80
 
-// Print
+// Print.
 #define PRINT_ENTITY	0x01
 #define PRINT_CENTERED	0x02
 #define PRINT_LEVEL		0x04
 #define PRINT_CAPTIONED	0x08
 
-// Play Sound
+// Play Sound.
 #define PLAY_SOUND_ENTITY		0x01
 #define PLAY_SOUND_VOLUME		0x02
 #define PLAY_SOUND_ATTENUATION	0x04
 #define PLAY_SOUND_CHANNEL		0x08
 #define PLAY_SOUND_TIMEDELAY	0x10
 
-// Animate
-#define ANIMATE_REPEAT		0x001
-#define ANIMATE_TURNING		0x002
-#define ANIMATE_MOVING		0x004
-#define ANIMATE_SIGNALER	0x008
-#define ANIMATE_SOURCE		0x010
-#define ANIMATE_MOVING_ABS	0x020
-#define ANIMATE_HOLD		0x040
+// Animate.
+#define ANIMATE_REPEAT		0x01
+#define ANIMATE_TURNING		0x02
+#define ANIMATE_MOVING		0x04
+#define ANIMATE_SIGNALER	0x08
+#define ANIMATE_SOURCE		0x10
+#define ANIMATE_MOVING_ABS	0x20 //TODO: unused.
+#define ANIMATE_HOLD		0x40 //TODO: unused.
 
-// Debug
+// Debug.
 #define DEBUG_ENABLE		0x01
 #define DEBUG_MOVE			0x02
 #define DEBUG_ROTATE		0x04
 #define DEBUG_TIME			0x08
-#define DEBUG_MOVEROTATE	0x10
+#define DEBUG_MOVEROTATE	0x10 //TODO: unused.
 
-//Helicopter
-#define HELICOPTER_TARG		0x01
-#define HELICOPTER_VECT		0x02
-#define HELICOPTER_FLOAT	0x04
+#pragma endregion

@@ -479,7 +479,7 @@ bool NewGlobal(Variable *Which)
 
 //==========================================================================
 
-Variable::Variable(char *NewName, VariableT NewType)
+Variable::Variable(char *NewName, VariableType NewType)
 {
 	strcpy(Name,NewName);
 	Type = NewType;
@@ -522,7 +522,7 @@ void Variable::Debug(CScript *Script)
 //==========================================================================
 
 IntVar::IntVar(char *Name, int InitValue)
-:Variable(Name, TypeINT)
+:Variable(Name, TYPE_INT)
 {
 	Value = InitValue;
 }
@@ -590,7 +590,7 @@ void IntVar::operator =(Variable *VI)
 //==========================================================================
 
 FloatVar::FloatVar(char *Name, float InitValue)
-:Variable(Name, TypeFLOAT)
+:Variable(Name, TYPE_FLOAT)
 {
 	Value = InitValue;
 }
@@ -648,7 +648,7 @@ void FloatVar::operator =(Variable *VI)
 //==========================================================================
 
 VectorVar::VectorVar(char *Name, float InitValueX, float InitValueY, float InitValueZ)
-:Variable(Name, TypeVECTOR)
+:Variable(Name, TYPE_VECTOR)
 {
 	Value[0] = InitValueX;
 	Value[1] = InitValueY;
@@ -656,7 +656,7 @@ VectorVar::VectorVar(char *Name, float InitValueX, float InitValueY, float InitV
 }
 
 VectorVar::VectorVar(vec3_t NewValue)
-:Variable("", TypeVECTOR)
+:Variable("", TYPE_VECTOR)
 {
 	VectorCopy(NewValue, Value);
 }
@@ -699,7 +699,7 @@ Variable *VectorVar::operator +(Variable *VI)
 {
 	vec3_t V2, NewV;
 
-	if (VI->GetType() == TypeINT || VI->GetType() == TypeFLOAT)
+	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
 	{
 		V2[0] = V2[1] = V2[2] = VI->GetFloatValue();
 	}
@@ -719,7 +719,7 @@ Variable *VectorVar::operator -(Variable *VI)
 {
 	vec3_t	V2, NewV;
 
-	if (VI->GetType() == TypeINT || VI->GetType() == TypeFLOAT)
+	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
 	{
 		V2[0] = V2[1] = V2[2] = VI->GetFloatValue();
 	}
@@ -739,7 +739,7 @@ Variable *VectorVar::operator *(Variable *VI)
 {
 	vec3_t V2, NewV;
 
-	if (VI->GetType() == TypeINT || VI->GetType() == TypeFLOAT)
+	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
 	{
 		V2[0] = V2[1] = V2[2] = VI->GetFloatValue();
 	}
@@ -759,7 +759,7 @@ Variable *VectorVar::operator /(Variable *VI)
 {
 	vec3_t V2, NewV;
 
-	if (VI->GetType() == TypeINT || VI->GetType() == TypeFLOAT)
+	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
 	{
 		V2[0] = V2[1] = V2[2] = VI->GetFloatValue();
 	}
@@ -784,11 +784,11 @@ bool VectorVar::operator ==(Variable *VI)
 { 
 	vec3_t vec;
 
-	if (VI->GetType() == TypeINT || VI->GetType() == TypeFLOAT)
+	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
 	{
 		return VectorLength(Value) == VI->GetFloatValue();
 	}
-	else if (VI->GetType() == TypeVECTOR)
+	else if (VI->GetType() == TYPE_VECTOR)
 	{
 		VI->GetVectorValue(vec);
 
@@ -802,11 +802,11 @@ bool VectorVar::operator !=(Variable *VI)
 { 
 	vec3_t vec;
 
-	if (VI->GetType() == TypeINT || VI->GetType() == TypeFLOAT)
+	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
 	{
 		return VectorLength(Value) != VI->GetFloatValue();
 	}
-	else if (VI->GetType() == TypeVECTOR)
+	else if (VI->GetType() == TYPE_VECTOR)
 	{
 		VI->GetVectorValue(vec);
 
@@ -821,11 +821,11 @@ bool VectorVar::operator <(Variable *VI)
 	vec3_t	vec;
 	float	compare;
 
-	if (VI->GetType() == TypeINT || VI->GetType() == TypeFLOAT)
+	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
 	{
 		compare = VI->GetFloatValue();
 	}
-	else if (VI->GetType() == TypeVECTOR)
+	else if (VI->GetType() == TYPE_VECTOR)
 	{
 		VI->GetVectorValue(vec);
 		compare = VectorLength(vec);
@@ -843,11 +843,11 @@ bool VectorVar::operator <=(Variable *VI)
 	vec3_t	vec;
 	float	compare;
 
-	if (VI->GetType() == TypeINT || VI->GetType() == TypeFLOAT)
+	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
 	{
 		compare = VI->GetFloatValue();
 	}
-	else if (VI->GetType() == TypeVECTOR)
+	else if (VI->GetType() == TYPE_VECTOR)
 	{
 		VI->GetVectorValue(vec);
 		compare = VectorLength(vec);
@@ -865,11 +865,11 @@ bool VectorVar::operator >(Variable *VI)
 	vec3_t	vec;
 	float	compare;
 
-	if (VI->GetType() == TypeINT || VI->GetType() == TypeFLOAT)
+	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
 	{
 		compare = VI->GetFloatValue();
 	}
-	else if (VI->GetType() == TypeVECTOR)
+	else if (VI->GetType() == TYPE_VECTOR)
 	{
 		VI->GetVectorValue(vec);
 		compare = VectorLength(vec);
@@ -887,11 +887,11 @@ bool VectorVar::operator >=(Variable *VI)
 	vec3_t	vec;
 	float	compare;
 
-	if (VI->GetType() == TypeINT || VI->GetType() == TypeFLOAT)
+	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
 	{
 		compare = VI->GetFloatValue();
 	}
-	else if (VI->GetType() == TypeVECTOR)
+	else if (VI->GetType() == TYPE_VECTOR)
 	{
 		VI->GetVectorValue(vec);
 		compare = VectorLength(vec);
@@ -907,7 +907,7 @@ bool VectorVar::operator >=(Variable *VI)
 //==========================================================================
 
 EntityVar::EntityVar(char *Name, int InitValue)
-:Variable(Name, TypeENTITY)
+:Variable(Name, TYPE_ENTITY)
 {
 	if (InitValue == -1)
 	{
@@ -920,7 +920,7 @@ EntityVar::EntityVar(char *Name, int InitValue)
 }
 
 EntityVar::EntityVar(edict_t *Which)
-:Variable("", TypeENTITY)
+:Variable("", TYPE_ENTITY)
 {
 	Value = Which;
 }
@@ -991,11 +991,11 @@ void EntityVar::operator =(Variable *VI)
 
 bool EntityVar::operator ==(Variable *VI)
 { 
-	if (VI->GetType() == TypeINT)
+	if (VI->GetType() == TYPE_INT)
 	{
 		return GetIntValue() == VI->GetIntValue();
 	}
-	else if (VI->GetType() == TypeENTITY)
+	else if (VI->GetType() == TYPE_ENTITY)
 	{
 		return GetEdictValue() == VI->GetEdictValue();
 	}
@@ -1005,11 +1005,11 @@ bool EntityVar::operator ==(Variable *VI)
 
 bool EntityVar::operator !=(Variable *VI)
 { 
-	if (VI->GetType() == TypeINT)
+	if (VI->GetType() == TYPE_INT)
 	{
 		return GetIntValue() != VI->GetIntValue();
 	}
-	else if (VI->GetType() == TypeENTITY)
+	else if (VI->GetType() == TYPE_ENTITY)
 	{
 		return GetEdictValue() != VI->GetEdictValue();
 	}
@@ -1020,7 +1020,7 @@ bool EntityVar::operator !=(Variable *VI)
 //==========================================================================
 
 StringVar::StringVar(char *Name, char *InitValue)
-:Variable(Name, TypeSTRING)
+:Variable(Name, TYPE_STRING)
 {
 	strcpy(Value, InitValue);
 }
@@ -1046,7 +1046,7 @@ void StringVar::ReadValue(CScript *Script)
 //==========================================================================
 
 VariableVar::VariableVar(char *Name)
-:Variable(Name, TypeUNKNOWN)
+:Variable(Name, TYPE_UNKNOWN)
 {
 	Value = NULL;
 }
@@ -1092,7 +1092,7 @@ void VariableVar::Debug(CScript *Script)
 //==========================================================================
 
 FieldVariableVar::FieldVariableVar(char *Name)
-:Variable(Name, TypeUNKNOWN)
+:Variable(Name, TYPE_UNKNOWN)
 {
 	Value = NULL;
 	Field = NULL;
@@ -1393,7 +1393,7 @@ FieldDef::FieldDef(CScript *Script)
 	bool	Found;
 
 	strcpy(Name, Script->ReadString());
-	Type = (VariableT)Script->ReadByte();
+	Type = (VariableType)Script->ReadByte();
 
 	FieldType = F_IGNORE;
 	Offset = -1;
@@ -2339,22 +2339,22 @@ Variable *CScript::ReadDeclaration(int &Index)
 	RetVal = NULL;
 	switch(Type)
 	{
-		case TypeINT:
+		case TYPE_INT:
 			RetVal =  new IntVar(Name);
 			break;
-		case TypeFLOAT:
+		case TYPE_FLOAT:
 			RetVal =  new FloatVar(Name);
 			break;
-		case TypeVECTOR:
+		case TYPE_VECTOR:
 			RetVal =  new VectorVar(Name);
 			break;
-		case TypeENTITY:
+		case TYPE_ENTITY:
 			RetVal =  new EntityVar(Name);
 			break;
-		case TypeSTRING:
+		case TYPE_STRING:
 			RetVal =  new StringVar(Name);
 			break;
-		case TypeUNKNOWN:
+		case TYPE_UNKNOWN:
 			break;
 	}
 
@@ -3022,7 +3022,7 @@ void CScript::HandlePrint(void)
 	{
 		Error("Invalid stack for Print");
 	}
-	if (Text->GetType() == TypeSTRING)
+	if (Text->GetType() == TYPE_STRING)
 	{
 		TextValue = Text->GetStringValue();
 	}
@@ -4324,20 +4324,20 @@ bool CScript::NewParameter(Variable *Which)
 
 	switch(Which->GetType())
 	{
-		case TypeENTITY:
+		case TYPE_ENTITY:
 			Search = G_Find(NULL, FOFS(targetname), ParmValue->GetStringValue());
 			temp = new EntityVar(Search);
 			break;
 
-		case TypeINT:
+		case TYPE_INT:
 			temp = new IntVar("parm",atol(ParmValue->GetStringValue()));
 			break;
 
-		case TypeFLOAT:
+		case TYPE_FLOAT:
 			temp = new FloatVar("parm",atof(ParmValue->GetStringValue()));
 			break;
 
-		case TypeVECTOR:
+		case TYPE_VECTOR:
 			sscanf (ParmValue->GetStringValue(), "%f %f %f", &vec[0], &vec[1], &vec[2]);
 			temp = new VectorVar("parm",vec[0],vec[1],vec[2]);
 			break;
