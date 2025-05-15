@@ -1,90 +1,182 @@
+//
+// list.h
+//
+// Copyright 1998 Raven Software
+//
+
 #pragma once
 
 template <class V>
-class List 
+class List
 {
-	struct Node;
-	friend struct Node;
 	struct Node
 	{
-		Node *next;
-		Node *prev;
+		Node* next;
+		Node* prev;
 		V value;
 	};
 
-	Node *NewNode() 
+	Node* NewNode()
 	{
-		Node *r=new Node;
-		r->prev=r;
-		r->next=r;
-		return r;
+		Node* n = new Node;
+		n->prev = n;
+		n->next = n;
+
+		return n;
 	}
-	Node *NewNode(const V& val,Node *n=0,Node *p=0) 
+
+	Node* NewNode(const V& val, Node* next = nullptr, Node* prev = nullptr)
 	{
-		Node *r=new Node;
-		r->value=val;
-		r->prev=p?p:r;
-		r->next=n?n:r;
-		return r;
+		Node* n = new Node;
+		n->value = val;
+		n->prev = (prev != nullptr ? prev : n);
+		n->next = (next != nullptr ? next : n);
+
+		return n;
 	}
-	void DelNode(Node *n) {delete n;}
-	Node *Head;
+
+	Node* head;
 	int size;
+
 public:
-	class Iter;
-	friend class Iter;
 	class Iter
 	{
-		Node *cur;
+		Node* cur;
+
 	public:
-		Iter() {}
-		Iter(Node *t) {cur=t;}
-		V & operator*() const {return cur->value;}
-		Iter& operator++() {cur=cur->next;return *this;}
-		Iter operator++(int) {Iter Tmp = *this;++*this;return Tmp;}
-		Iter& operator--() {cur=cur->prev;return *this;}
-		Iter operator--(int) {Iter Tmp = *this;--*this;return Tmp;}
-		bool operator==(const Iter& x) const {return cur == x.cur; }
-		bool operator!=(const Iter& x) const {return !(*this == x); }
-		Node *Mynode() const {return cur;}
+		Iter()
+		{
+			cur = nullptr; //mxd. Initialize.
+		}
+
+		Iter(Node* node)
+		{
+			cur = node;
+		}
+
+		V& operator*() const
+		{
+			return cur->value;
+		}
+
+		Iter& operator++()
+		{
+			cur = cur->next;
+			return *this;
+		}
+
+		Iter operator++(int)
+		{
+			Iter tmp = *this;
+			++*this;
+
+			return tmp;
+		}
+
+		Iter& operator--()
+		{
+			cur = cur->prev;
+			return *this;
+		}
+
+		Iter operator--(int)
+		{
+			Iter tmp = *this;
+			--*this;
+
+			return tmp;
+		}
+
+		bool operator==(const Iter& other) const
+		{
+			return cur == other.cur; //TODO: why implementation differs from operator!= ?
+		}
+
+		bool operator!=(const Iter& other) const
+		{
+			return !(*this == other);
+		}
+
+		Node* MyNode() const
+		{
+			return cur;
+		}
 	};
 
-	List() {Head=NewNode();size=0;}
+	List()
+	{
+		head = NewNode();
+		size = 0;
+	}
+
 	~List()
 	{
 		Erase(Begin(), End());
-		DelNode(Head);
-		Head = 0;
-		size = 0; 
+		delete head;
+		head = nullptr;
+		size = 0;
 	}
-	int Size() const {return size;}
-	Iter Begin() {return Iter(Head->next);}
-	Iter End() {return Iter(Head);}
-	void Insert(Iter P, const V& X)
+
+	int Size() const
 	{
-		Node *S = P.Mynode();
-		S->prev = NewNode(X,S,S->prev);
-		S = S->prev;
-		S->prev->next=S;
+		return size;
+	}
+
+	Iter Begin()
+	{
+		return Iter(head->next);
+	}
+
+	Iter End()
+	{
+		return Iter(head);
+	}
+
+	void Insert(Iter iter, const V& val)
+	{
+		Node* n = iter.MyNode();
+		n->prev = NewNode(val, n, n->prev);
+		n = n->prev;
+		n->prev->next = n;
 		size++;
 	}
-	Iter Erase(Iter P)
+
+	Iter Erase(Iter iter)
 	{
-		Node *S = (P++).Mynode();
-		S->prev->next=S->next;
-		S->next->prev=S->prev;
-		DelNode(S);
+		Node* n = (iter++).MyNode();
+		n->prev->next = n->next;
+		n->next->prev = n->prev;
+		delete n;
 		--size;
-		return (P); 
+
+		return iter;
 	}
-	Iter Erase(Iter F,Iter L)
+
+	Iter Erase(Iter start, Iter end)
 	{
-		while (F != L)
-			Erase(F++);
-		return (F); 
+		while (start != end)
+			Erase(start++);
+
+		return start;
 	}
-	void PushFront(const V& X) {Insert(Begin(), X); }
-	void PopFront() {Erase(Begin()); }
-	void PushBack(const V& X) {Insert(End(), X); }
-	void PopBack() {Erase(--End()); }
+
+	void PushFront(const V& val)
+	{
+		Insert(Begin(), val);
+	}
+
+	void PopFront()
+	{
+		Erase(Begin());
+	}
+
+	void PushBack(const V& val)
+	{
+		Insert(End(), val);
+	}
+
+	void PopBack()
+	{
+		Erase(--End());
+	}
 };
