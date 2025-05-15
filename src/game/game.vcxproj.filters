@@ -390,9 +390,6 @@
     <ClCompile Include="ds.cpp">
       <Filter>src\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="Script.c">
-      <Filter>src\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="g_breakable.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
@@ -617,6 +614,9 @@
     </ClCompile>
     <ClCompile Include="g_morcalavin_barrier.c">
       <Filter>src\Game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="ICScript.c">
+      <Filter>src\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

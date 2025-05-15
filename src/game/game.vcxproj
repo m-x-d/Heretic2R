@@ -98,6 +98,7 @@
     <ClCompile Include="g_utils.c" />
     <ClCompile Include="g_waterfx.c" />
     <ClCompile Include="g_weapon.c" />
+    <ClCompile Include="ICScript.c" />
     <ClCompile Include="mg_ai.c" />
     <ClCompile Include="mg_guide.c" />
     <ClCompile Include="m_assassin.c" />
@@ -155,7 +156,6 @@
     <ClCompile Include="p_teleport.c" />
     <ClCompile Include="p_view.c" />
     <ClCompile Include="q_shared.c" />
-    <ClCompile Include="Script.c" />
     <ClCompile Include="spl_blast.c" />
     <ClCompile Include="spl_BlueRing.c" />
     <ClCompile Include="spl_flyingfist.c" />
