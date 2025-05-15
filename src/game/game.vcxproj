@@ -98,7 +98,6 @@
     <ClCompile Include="g_utils.c" />
     <ClCompile Include="g_waterfx.c" />
     <ClCompile Include="g_weapon.c" />
-    <ClCompile Include="ICScript.c" />
     <ClCompile Include="mg_ai.c" />
     <ClCompile Include="mg_guide.c" />
     <ClCompile Include="m_assassin.c" />
@@ -276,7 +275,6 @@
     <ClInclude Include="p_teleport.h" />
     <ClInclude Include="spl_teleport.h" />
     <ClInclude Include="g_weapon.h" />
-    <ClInclude Include="ICScript.h" />
     <ClInclude Include="list.h" />
     <ClInclude Include="mg_ai.h" />
     <ClInclude Include="mg_guide.h" />

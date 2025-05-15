@@ -159,8 +159,6 @@ typedef struct
 	qboolean entitiesSpawned;
 } game_locals_t;
 
-#include "ICScript.h"
-
 // This structure is used for alert entities, which are spawned a lot.
 #define MAX_ALERT_ENTS	1024
 
@@ -204,9 +202,6 @@ typedef struct
 
 	edict_t* current_entity; // Entity running from G_RunFrame().
 	int body_que; // Dead bodies.
-
-	ICScript_t inGameCin;
-	qboolean cinActive;
 
 	buoy_t buoy_list[MAX_MAP_BUOYS]; // Buoy information for this map.
 	int active_buoys;	// Number of actual buoys on the level.

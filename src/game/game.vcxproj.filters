@@ -615,9 +615,6 @@
     <ClCompile Include="g_morcalavin_barrier.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
-    <ClCompile Include="ICScript.c">
-      <Filter>src\Scripting</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="decals.h">
@@ -804,9 +801,6 @@
       <Filter>src\Player</Filter>
     </ClInclude>
     <ClInclude Include="ds.h">
-      <Filter>src\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="ICScript.h">
       <Filter>src\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="g_misc.h">

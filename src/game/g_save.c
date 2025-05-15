@@ -357,8 +357,6 @@ void InitGame(void)
 	game.clients = gi.TagMalloc(game.maxclients * (int)sizeof(game.clients[0]), TAG_GAME);
 	globals.num_edicts = game.maxclients + 1;
 
-	level.cinActive = false;
-
 	LoadStrings();
 }
 
