@@ -110,27 +110,21 @@ RestoreList_t ScriptRL[] =
 	{ RLID_SCRIPT,				RF_Script },
 	{ RLID_FIELDDEF,			RF_FieldDef },
 
-	{ 0,						NULL },
+	{ 0,						nullptr},
 };
 
 //==========================================================================
 
-void* RestoreObject(FILE* FH, RestoreList_t* RestoreList, void* Data)
+void* RestoreObject(FILE* f, const RestoreList_t* list, void* data)
 {
-	int				ID;
-	RestoreList_t* pos;
+	int id;
+	fread(&id, 1, sizeof(id), f);
 
-	fread(&ID, 1, sizeof(ID), FH);
+	for (const RestoreList_t* pos = list; pos->alloc_func; pos++)
+		if (pos->ID == id)
+			return pos->alloc_func(f, data);
 
-	for (pos = RestoreList; pos->alloc_func; pos++)
-	{
-		if (pos->ID == ID)
-		{
-			return pos->alloc_func(FH, Data);
-		}
-	}
-
-	return NULL;
+	return nullptr;
 }
 
 //==========================================================================
