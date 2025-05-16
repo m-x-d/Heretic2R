@@ -13,6 +13,7 @@
 #include "p_view.h" //mxd
 #include "q_ClientServer.h"
 #include "q_Physics.h"
+#include "sc_Main.h" //mxd
 #include "FX.h"
 #include "Message.h"
 #include "Utilities.h"

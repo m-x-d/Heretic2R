@@ -16,7 +16,7 @@
 
 #include "game.h"
 #include "g_HitLocation.h" //mxd
-#include "Player.h"
+#include "p_item.h" //mxd
 
 // The "gameversion" client command will print this plus compile date.
 #define GAMEVERSION		"Heretic2v16"
@@ -628,11 +628,11 @@ extern qboolean PossessCorrectItem(const edict_t* ent, const gitem_t* item); //m
 extern "C"
 {
 #endif
-	// g_utils.c funcs used by ds.cpp...
+	// g_utils.c funcs used by cs_CScript.cpp...
 	extern edict_t* G_Find(edict_t* from, int fieldofs, const char* match);
 	extern edict_t* G_Spawn(void);
 
-	//mxd. Utilities.c funcs used by ds.cpp...
+	//mxd. Utilities.c funcs used ONLY by cs_CScript.cpp...
 	extern void RemoveNonCinematicEntities(void);
 	extern void ReinstateNonCinematicEntities(void);
 #ifdef __cplusplus
@@ -754,10 +754,6 @@ typedef struct gclient_s
 
 #include "g_Edict.h"
 
-#ifdef __cplusplus // This is for ds.cpp.
-	#include "Vector.h"
-#endif
-
 extern qboolean FindTarget(edict_t* self);
 
 // For simplicity of use... take it out later. //TODO: mxd. Take it out... later?
@@ -765,11 +761,3 @@ extern qboolean FindTarget(edict_t* self);
 #define ANARCHY				anarchy->value
 #define IMPACT_DAMAGE		impact_damage->value
 #define CHEATING_MONSTERS	cheating_monsters->value
-
-// Scripts ds.cpp
-#ifndef __cplusplus
-	extern void ProcessScripts(void);
-	extern void ShutdownScripts(qboolean Complete);
-	extern void SaveScripts(FILE* FH, qboolean DoGlobals);
-	extern void LoadScripts(FILE* FH, qboolean DoGlobals);
-#endif

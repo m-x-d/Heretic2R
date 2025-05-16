@@ -11,6 +11,7 @@
 #include "p_client.h" //mxd
 #include "p_hud.h" //mxd
 #include "q_Physics.h"
+#include "sc_Main.h" //mxd
 #include "qcommon.h"
 #include "g_local.h"
 

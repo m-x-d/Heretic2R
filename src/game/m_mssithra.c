@@ -15,6 +15,7 @@
 #include "Random.h"
 #include "Utilities.h"
 #include "Vector.h"
+#include "Player.h" //mxd
 #include "g_local.h"
 
 #pragma region ========================== Mutant Ssithra base info ==========================

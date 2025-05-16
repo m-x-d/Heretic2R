@@ -160,10 +160,13 @@ typedef void (*G_MsgReceiver_t)(struct edict_s* self, G_Message_t* msg);
 extern G_Message_t* G_Message_New(G_MsgID_t id, G_MsgPriority_t priority);
 extern void G_Message_Delete(G_Message_t* msg);
 
-#ifdef __cplusplus // Used by ds.cpp...
-	extern "C" void QPostMessage(struct edict_s* to, G_MsgID_t id, G_MsgPriority_t priority, char* format, ...);
-#else
+#ifdef __cplusplus // Used by sc_CScript.cpp...
+extern "C"
+{
+#endif
 	extern void QPostMessage(struct edict_s* to, G_MsgID_t id, G_MsgPriority_t priority, char* format, ...);
+#ifdef __cplusplus
+}
 #endif
 
 extern int ParseMsgParms(G_Message_t* msg, char* format, ...);

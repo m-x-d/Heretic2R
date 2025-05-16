@@ -19,6 +19,7 @@
 #include "p_client.h" //mxd
 #include "p_hud.h" //mxd
 #include "p_view.h" //mxd
+#include "sc_Main.h" //mxd
 #include "FX.h"
 #include "Random.h"
 #include "Utilities.h"

@@ -14,6 +14,7 @@
 #include "Random.h"
 #include "Utilities.h"
 #include "Vector.h"
+#include "Player.h" //mxd
 #include "g_local.h"
 
 #define IMP_CHECK_DIST		128.0f

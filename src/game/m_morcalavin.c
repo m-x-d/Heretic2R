@@ -16,6 +16,7 @@
 #include "Random.h"
 #include "Utilities.h"
 #include "Vector.h"
+#include "Player.h" //mxd
 #include "g_local.h"
 
 #define MORCALAVIN_GRAVITY	0.3f //mxd. Named 'MORK_GRAV' in original logic.

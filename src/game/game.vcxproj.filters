@@ -127,6 +127,12 @@
     <Filter Include="src\Monsters\Plague Ssithra">
       <UniqueIdentifier>{0de459c9-2734-4b88-ac21-9d6a1ae4a423}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Scripting\Variables">
+      <UniqueIdentifier>{9138f8a1-7422-45db-b8eb-b9abf132bb31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Scripting\Events">
+      <UniqueIdentifier>{7cebdf27-3edd-41b5-bc0c-44a4f18107a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="decals.c">
@@ -387,9 +393,6 @@
     <ClCompile Include="p_view.c">
       <Filter>src\Player</Filter>
     </ClCompile>
-    <ClCompile Include="ds.cpp">
-      <Filter>src\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="g_breakable.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
@@ -615,6 +618,60 @@
     <ClCompile Include="g_morcalavin_barrier.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
+    <ClCompile Include="sc_Variable.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_EntityVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_FieldVariableVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_FloatVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_IntVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_StringVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_VariableVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_VectorVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_FieldDef.cpp">
+      <Filter>src\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_Signaler.cpp">
+      <Filter>src\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_Event.cpp">
+      <Filter>src\Scripting\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_MoveDoneEvent.cpp">
+      <Filter>src\Scripting\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_RotateDoneEvent.cpp">
+      <Filter>src\Scripting\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_ExecuteEvent.cpp">
+      <Filter>src\Scripting\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_WaitEvent.cpp">
+      <Filter>src\Scripting\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_CScript.cpp">
+      <Filter>src\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_Main.cpp">
+      <Filter>src\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="sc_Utility.cpp">
+      <Filter>src\Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="decals.h">
@@ -799,9 +856,6 @@
     </ClInclude>
     <ClInclude Include="p_item.h">
       <Filter>src\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="ds.h">
-      <Filter>src\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="g_misc.h">
       <Filter>src\Game objects</Filter>
@@ -1207,6 +1261,60 @@
     </ClInclude>
     <ClInclude Include="g_morcalavin_barrier.h">
       <Filter>src\Game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_Variable.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_EntityVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_FieldVariableVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_FloatVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_IntVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_StringVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_VariableVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_VectorVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_FieldDef.h">
+      <Filter>src\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_Signaler.h">
+      <Filter>src\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_Event.h">
+      <Filter>src\Scripting\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_MoveDoneEvent.h">
+      <Filter>src\Scripting\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_RotateDoneEvent.h">
+      <Filter>src\Scripting\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_ExecuteEvent.h">
+      <Filter>src\Scripting\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_WaitEvent.h">
+      <Filter>src\Scripting\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_CScript.h">
+      <Filter>src\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_Main.h">
+      <Filter>src\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_Utility.h">
+      <Filter>src\Scripting</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

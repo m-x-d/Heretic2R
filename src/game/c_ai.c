@@ -15,6 +15,7 @@
 #include "mg_guide.h" //mxd
 #include "FX.h"
 #include "Vector.h"
+#include "Player.h" //mxd
 #include "g_local.h"
 
 #define SF_C_INVISIBLE	1 //mxd. Named 'ENT_INVISIBLE' in original logic.
