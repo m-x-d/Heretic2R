@@ -164,36 +164,22 @@ void WriteEnt(edict_t** to, FILE* f)
 
 //==========================================================================
 
-Variable* FindGlobal(char* Name)
+Variable* FindGlobal(const char* name)
 {
-	List<Variable*>::Iter	iv;
+	if (GlobalVariables.Size() > 0)
+		for (List<Variable*>::Iter var = GlobalVariables.Begin(); var != GlobalVariables.End(); ++var)
+			if (strcmp(name, (*var)->GetName()) == 0)
+				return *var;
 
-	if (GlobalVariables.Size())
-	{
-		for (iv = GlobalVariables.Begin(); iv != GlobalVariables.End(); iv++)
-		{
-			if (strcmp(Name, (*iv)->GetName()) == 0)
-			{
-				return *iv;
-			}
-		}
-	}
-
-	return NULL;
+	return nullptr;
 }
 
-bool NewGlobal(Variable* Which)
+bool NewGlobal(Variable* var)
 {
-	Variable* Check;
+	if (FindGlobal(var->GetName()) != nullptr)
+		return false; // Already exists.
 
-	Check = FindGlobal(Which->GetName());
-	if (Check)
-	{	// already exists
-		return false;
-	}
-
-	GlobalVariables.PushBack(Which);
-
+	GlobalVariables.PushBack(var);
 	return true;
 }
 
