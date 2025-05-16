@@ -7,7 +7,7 @@
 #pragma once
 
 #include "sc_List.h"
-#include "sc_Variable.h" //mxd
+#include "sc_Variable.h"
 #include "sc_Signaler.h"
 
 #define RLID_INTVAR				1
@@ -38,17 +38,17 @@ extern RestoreList_t ScriptRL[];
 extern void ReadEnt(edict_t** to, FILE* f);
 extern void WriteEnt(edict_t** to, FILE* f);
 extern void* RestoreObject(FILE* f, RestoreList_t* list, void* data);
-extern void script_signaler(edict_t* which, SignalT SignalType);
+extern void script_signaler(edict_t* which, SignalT signal_type);
 extern void animate_signaler(edict_t* which);
-extern Variable* FindGlobal(char* Name);
-extern bool NewGlobal(Variable* Which);
+extern Variable* FindGlobal(char* name);
+extern bool NewGlobal(Variable* var);
 
-template<class T> size_t tWrite(T* ptr, FILE* FH, int n = 1)
+template<class T> size_t tWrite(T* ptr, FILE* f, const int n = 1)
 {
-	return fwrite(ptr, n, sizeof(T), FH);
+	return fwrite(ptr, n, sizeof(T), f);
 }
 
-template<class T> size_t tRead(T* ptr, FILE* FH, int n = 1)
+template<class T> size_t tRead(T* ptr, FILE* f, const int n = 1)
 {
-	return fread(ptr, n, sizeof(T), FH);
+	return fread(ptr, n, sizeof(T), f);
 }
