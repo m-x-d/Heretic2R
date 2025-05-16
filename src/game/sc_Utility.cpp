@@ -23,74 +23,74 @@ List<Variable*>	GlobalVariables;
 
 //==========================================================================
 
-void* RF_IntVar(FILE* FH, void* Data)
+static void* RF_IntVar(FILE* f, void* data)
 {
-	return new IntVar(FH, (CScript*)Data);
+	return new IntVar(f, static_cast<CScript*>(data));
 }
 
-void* RF_FloatVar(FILE* FH, void* Data)
+static void* RF_FloatVar(FILE* f, void* data)
 {
-	return new FloatVar(FH, (CScript*)Data);
+	return new FloatVar(f, static_cast<CScript*>(data));
 }
 
-void* RF_VectorVar(FILE* FH, void* Data)
+static void* RF_VectorVar(FILE* f, void* data)
 {
-	return new VectorVar(FH, (CScript*)Data);
+	return new VectorVar(f, static_cast<CScript*>(data));
 }
 
-void* RF_EntityVar(FILE* FH, void* Data)
+static void* RF_EntityVar(FILE* f, void* data)
 {
-	return new EntityVar(FH, (CScript*)Data);
+	return new EntityVar(f, static_cast<CScript*>(data));
 }
 
-void* RF_StringVar(FILE* FH, void* Data)
+static void* RF_StringVar(FILE* f, void* data)
 {
-	return new StringVar(FH, (CScript*)Data);
+	return new StringVar(f, static_cast<CScript*>(data));
 }
 
-void* RF_VariableVar(FILE* FH, void* Data)
+static void* RF_VariableVar(FILE* f, void* data)
 {
-	return new VariableVar(FH, (CScript*)Data);
+	return new VariableVar(f, static_cast<CScript*>(data));
 }
 
-void* RF_FieldVariableVar(FILE* FH, void* Data)
+static void* RF_FieldVariableVar(FILE* f, void* data)
 {
-	return new FieldVariableVar(FH, (CScript*)Data);
+	return new FieldVariableVar(f, static_cast<CScript*>(data));
 }
 
-void* RF_Signaler(FILE* FH, void* Data)
+static void* RF_Signaler(FILE* f, void* data)
 {
-	return new Signaler(FH, (CScript*)Data);
+	return new Signaler(f, static_cast<CScript*>(data));
 }
 
-void* RF_MoveDoneEvent(FILE* FH, void* Data)
+static void* RF_MoveDoneEvent(FILE* f, void* data)
 {
-	return new MoveDoneEvent(FH, (CScript*)Data);
+	return new MoveDoneEvent(f, static_cast<CScript*>(data));
 }
 
-void* RF_RotateDoneEvent(FILE* FH, void* Data)
+static void* RF_RotateDoneEvent(FILE* f, void* data)
 {
-	return new RotateDoneEvent(FH, (CScript*)Data);
+	return new RotateDoneEvent(f, static_cast<CScript*>(data));
 }
 
-void* RF_ExecuteEvent(FILE* FH, void* Data)
+static void* RF_ExecuteEvent(FILE* f, void* data)
 {
-	return new ExecuteEvent(FH, (CScript*)Data);
+	return new ExecuteEvent(f, static_cast<CScript*>(data));
 }
 
-void* RF_WaitEvent(FILE* FH, void* Data)
+static void* RF_WaitEvent(FILE* f, void* data)
 {
-	return new WaitEvent(FH, (CScript*)Data);
+	return new WaitEvent(f, static_cast<CScript*>(data));
 }
 
-void* RF_Script(FILE* FH, void* Data)
+static void* RF_Script(FILE* f, void* data)
 {
-	return new CScript(FH);
+	return new CScript(f);
 }
 
-void* RF_FieldDef(FILE* FH, void* Data)
+static void* RF_FieldDef(FILE* f, void* data)
 {
-	return new FieldDef(FH, (CScript*)Data);
+	return new FieldDef(f, static_cast<CScript*>(data));
 }
 
 RestoreList_t ScriptRL[] =
