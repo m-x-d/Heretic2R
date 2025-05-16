@@ -838,7 +838,7 @@ static void ImpFireballBlocked(edict_t* self, trace_t* trace) //mxd. Named 'fire
 		return;
 	}
 
-	if (trace->ent->takedamage != DAMAGE_NO)
+	if (trace->ent != NULL && trace->ent->takedamage != DAMAGE_NO) //mxd. Add trace->ent NULL check.
 	{
 		vec3_t hit_dir;
 		VectorNormalize2(self->velocity, hit_dir);
