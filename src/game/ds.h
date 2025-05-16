@@ -2,8 +2,9 @@
 #define __DS
 
 #include "g_save.h" //mxd
-#include "pcode.h"
-#include "list.h"
+#include "sc_Pcode.h"
+#include "sc_List.h"
+#include "g_local.h"
 
 class CScript;
 

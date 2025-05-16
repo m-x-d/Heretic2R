@@ -1,9 +1,5 @@
-#include "g_local.h"
 #include "ds.h"
 #include "c_ai.h" //mxd
-
-//TODO: mxd. Remove _HERETIC2_ define? Not used by quake2.dll.
-#define _HERETIC2_
 
 #define SCRIPT_SAVE_VERSION 2
 
@@ -20,17 +16,12 @@ template<class T> size_t tRead(T *ptr,FILE *FH,int n=1)
 	return fread(ptr,n,sizeof(T),FH);
 }
 
-#ifdef _HERETIC2_
 extern "C"
 {
-#endif
 	extern void TriggerMultipleUse(edict_t *self, edict_t *other, edict_t *activator);
 	extern cvar_t 	*Cvar_Set (const char *var_name, const char *value);
-#ifdef _HERETIC2_
 }
-#endif
 
-#ifdef _HERETIC2_
 int msg_animtype  [NUM_MESSAGES] =
 {
 	MSG_C_ACTION1,
@@ -110,8 +101,6 @@ typedef struct CinematicSound_s //TODO: unused?
 CinematicSound_t CinematicSound[MAX_CINESNDS]; //TODO: unused?
 
 int CinematicSound_cnt;	// Count of the current # of sounds executed //TODO: unused?
-
-#endif
 
 //==========================================================================
 
@@ -421,11 +410,7 @@ extern "C" void SP_script_runner (edict_t *ent)
 		}
 	}
 
-#ifdef _HERETIC2_
 	ent->movetype = PHYSICSTYPE_NONE;
-#else
-	ent->movetype = MOVETYPE_NONE;
-#endif
 	ent->solid = SOLID_NOT;
 	ent->svflags |= SVF_NOCLIENT;
 	ent->use = script_use;
@@ -1375,14 +1360,12 @@ static field_t script_fields[] =
 	{ "angles",			FOFS(s.angles),					F_VECTOR },
 	{ "start_angles",	FOFS(moveinfo.start_angles),	F_VECTOR },
 	{ "state",			FOFS(moveinfo.state),			F_INT },
-#ifdef _HERETIC2_
 	{ "c_mode",			FOFS(monsterinfo.c_mode),		F_INT },
 	{ "skinnum",		FOFS(s.skinnum),				F_INT },
 	{ "ideal_yaw",		FOFS(ideal_yaw),				F_FLOAT },
 	{ "delta_angles",	SPEC_DELTA_ANGLES,				F_VECTOR },
 	{ "p_origin",		SPEC_P_ORIGIN,					F_VECTOR },
 	{ "takedamage",		FOFS(takedamage),				F_INT },
-#endif
 
 	{ NULL,				0,								F_INT }
 };
@@ -1498,7 +1481,7 @@ byte *FieldDef::GetOffset(Variable *Var)
 				Dest = (byte *)&ent->client->ps.pmove.delta_angles;
 			}
 			break;
-#ifdef _HERETIC2_
+
 		case SPEC_P_ORIGIN:
 			ent = Var->GetEdictValue();
 			if (ent && ent->client)
@@ -1506,7 +1489,7 @@ byte *FieldDef::GetOffset(Variable *Var)
 				Dest = (byte *)&ent->client->playerinfo.origin;
 			}
 			break;
-#endif
+
 		default:
 			ent = Var->GetEdictValue();
 			if (ent)
@@ -2523,13 +2506,11 @@ Variable *CScript::HandleSpawn(void)
 						break;
 					case F_IGNORE:
 						break;
-#ifdef _HERETIC2_
+
 					case F_RGBA:
 						break;
 					case F_RGB:
 						break;
-#endif
-
 				}
 				break;
 			}
@@ -3007,9 +2988,7 @@ void CScript::HandlePrint(void)
 	char		*TextValue;
 	int			LevelValue;
 	edict_t		*ent;
-#ifdef _HERETIC2_
 	int			TextIndex;
-#endif
 
 	Entity = Level = NULL;
 	LevelValue = PRINT_HIGH;
@@ -3028,12 +3007,8 @@ void CScript::HandlePrint(void)
 	}
 	else
 	{
-#ifdef _HERETIC2_
 		TextIndex = Text->GetIntValue();
 		TextValue = message_text[TextIndex].string;
-#else
-		TextValue = "";
-#endif
 	}
 
 	if (Flags & PRINT_LEVEL)
@@ -3056,11 +3031,8 @@ void CScript::HandlePrint(void)
 		ent = Entity->GetEdictValue();
 	}
 
-#ifdef _HERETIC2_
 	if (!sv_jumpcinematic->value || !sv_cinematicfreeze->value)
-#endif
 	{
-#ifdef _HERETIC2_
 		if (Flags & PRINT_CAPTIONED)
 		{
 			if (ent)
@@ -3072,17 +3044,11 @@ void CScript::HandlePrint(void)
 				gi.bcaption(PRINT_HIGH, TextIndex);		// Send the ID for the text to all players
 			}
 		}
-		else
-#endif // _HERETIC2_
-		if (Flags & PRINT_CENTERED)
+		else if (Flags & PRINT_CENTERED)
 		{
 			if (ent)
 			{
-#ifdef _HERETIC2_
 				gi.levelmsg_centerprintf(ent, TextIndex);			// Send the ID over the net rather than the string itself...
-#else
-				gi.centerprintf(ent, TextValue);
-#endif // _HERETIC2_
 			}
 		}
 		else
@@ -3123,12 +3089,7 @@ void CScript::HandlePlaySound(void)
 	ent = NULL;
 	VolumeValue = 1.0;
 	AttenuationValue = ATTN_NORM;
-
-#ifdef _HERETIC2_
 	ChannelValue = CHAN_VOICE;
-#else
-	ChannelValue = CHAN_AUTO;
-#endif
 
 	TimeDelayValue = 0.0;
 
@@ -3191,7 +3152,6 @@ void CScript::HandlePlaySound(void)
 		ent = Entity->GetEdictValue();
 	}
 
-#ifdef _HERETIC2_
 	if (sv_cinematicfreeze->value)		// In cinematic freezes, all sounds should be full volume.  Thus is it written.
 	{
 		AttenuationValue = ATTN_NONE;
@@ -3201,11 +3161,8 @@ void CScript::HandlePlaySound(void)
 		if (CinematicSound_cnt < MAX_CINESNDS-1 )
 			++CinematicSound_cnt; 	
 	}
-#endif
 
-#ifdef _HERETIC2_
 	if (!sv_jumpcinematic->value || !sv_cinematicfreeze->value)
-#endif
 	{
 		gi.sound(ent, ChannelValue, gi.soundindex(SoundValue), VolumeValue, AttenuationValue, TimeDelayValue);
 	}
@@ -3236,9 +3193,7 @@ void CScript::HandlePlaySound(void)
 void CScript::HandleFeature(bool Enable)
 {
 	int FeatureType;
-#ifdef _HERETIC2_
 	int i,null_snd;
-#endif
 
 	FeatureType = ReadByte();
 
@@ -3252,7 +3207,6 @@ void CScript::HandleFeature(bool Enable)
 			break;
 
 		case FEATURE_CINEMATICS:
-			#ifdef _HERETIC2_
 				if (Enable)
 				{
 					CinematicSound_cnt = 0;
@@ -3281,12 +3235,9 @@ void CScript::HandleFeature(bool Enable)
 					Cvar_Set("sv_cinematicfreeze","0");
 					ReinstateNonCinematicEntities();
 				}
-			#endif
 			break;
 
 		case FEATURE_PLAGUE_SKINS:
-			#ifdef _HERETIC2_
-			#endif
 			break;
 	}
 }
@@ -3296,10 +3247,6 @@ void CScript::HandleCacheSound(void)
 	Variable	*SoundName;
 	char		*SoundValue;
 
-#ifdef _HERETIC2_
-	// jscott - sound is being cached here, update status bar
-#endif
-
 	SoundName = PopStack();
 	if (!SoundName)
 	{
@@ -3307,9 +3254,7 @@ void CScript::HandleCacheSound(void)
 	}
 	SoundValue = SoundName->GetStringValue();
 
-#ifdef _HERETIC2_
 	if (!sv_jumpcinematic->value || !sv_cinematicfreeze->value)
-#endif
 	{
 		gi.soundindex(SoundValue);
 	}
@@ -3639,46 +3584,7 @@ void CScript::HandleAnimate(void)
 			SignalerRoutine = animate_signaler;
 		}
 
-#ifdef _HERETIC2_
-		/*
-		switch(Action->GetIntValue())
-		{	// Hardcoded yuckiness
-			case 0:
-				PostGameMessage(ent, MSG_C_WALK, PRI_DIRECTIVE, "iig",(int)MovingVal[0],(int)TurningVal[0],SignalerRoutine);
-				break;
-			case 1:
-				PostGameMessage(ent, MSG_C_RUN, PRI_DIRECTIVE, "iig",(int)MovingVal[0],(int)TurningVal[0],SignalerRoutine);
-				break;
-			case 2:
-				PostGameMessage(ent, MSG_C_IDLE, PRI_DIRECTIVE, "ig",(int)TurningVal[0],SignalerRoutine);
-				break;
-			case 3:
-				PostGameMessage(ent, MSG_C_ATTACK1, PRI_DIRECTIVE, "g",SignalerRoutine);
-				break;
-			case 4:
-				PostGameMessage(ent, MSG_C_ATTACK2, PRI_DIRECTIVE, "g",SignalerRoutine);
-				break;
-			case 5:
-				PostGameMessage(ent, MSG_C_ATTACK3, PRI_DIRECTIVE, "g",SignalerRoutine);
-				break;
-			case 6:
-				PostGameMessage(ent, MSG_C_BACKPEDAL, PRI_DIRECTIVE, "iig",(int)MovingVal[0],(int)TurningVal[0],SignalerRoutine);
-				break;
-			case 7:
-				PostGameMessage(ent, MSG_C_DEATH1, PRI_DIRECTIVE,"ig",(int)TurningVal[0],SignalerRoutine);
-				break;
-			case 8:
-				PostGameMessage(ent, MSG_C_PAIN1, PRI_DIRECTIVE,"ig",RepeatVal,SignalerRoutine);
-				break;
-			case 9:
-				PostGameMessage(ent, MSG_C_PAIN2, PRI_DIRECTIVE,"g",SignalerRoutine);
-				break;
-			default:
-				break;
-	} */
-
 		QPostMessage(ent,(enum G_MsgID_e) msg_animtype[ActionVal], PRI_DIRECTIVE, "iiige",(int)MovingVal[0],(int)TurningVal[0],(int)RepeatVal,SignalerRoutine,activator);
-#endif
 	}
 
 	delete Action;
@@ -3726,9 +3632,7 @@ void CScript::HandleCopyPlayerAttributes(void)
 	}
 	PlayerEnt = Player->GetEdictValue();
 
-#ifdef _HERETIC2_
 	CinematicSwapPlayer (PlayerEnt,DestinationEnt);
-#endif
 }
 
 void CScript::HandleSetViewAngles(void)
@@ -3736,9 +3640,7 @@ void CScript::HandleSetViewAngles(void)
 	Variable	*Player, *Angles;
 	edict_t		*PlayerEnt;
 	vec3_t		vec;
-#ifdef _HERETIC2_
 	vec3_t		HoldAngles;
-#endif
 
 	Angles = PopStack();
 	if (!Angles)
@@ -3754,7 +3656,6 @@ void CScript::HandleSetViewAngles(void)
 	}
 	PlayerEnt = Player->GetEdictValue();
 
-#ifdef _HERETIC2_
 	// use PlayerEnt and vec
 	// set angles
 	Angles->GetVectorValue(HoldAngles);
@@ -3766,8 +3667,6 @@ void CScript::HandleSetViewAngles(void)
 	PlayerEnt->s.angles[PITCH]=0;
 	PlayerEnt->s.angles[YAW]=HoldAngles[YAW];
 	PlayerEnt->s.angles[ROLL]=0;
-
-#endif
 }
 
 void CScript::HandleSetCacheSize(void)
@@ -3779,10 +3678,6 @@ void CScript::HandleSetCacheSize(void)
 	{
 		Error("Invalid stack for HandleSetCacheSize()");
 	}
-
-#ifdef _HERETIC2_
-	// jscott int size;  size = CacheSize->GetIntValue();
-#endif
 }
 
 void CScript::Move_Done(edict_t *ent)
@@ -4355,7 +4250,3 @@ bool CScript::NewParameter(Variable *Which)
 
 	return true;
 }
-
-//==========================================================================
-
-#undef _HERETIC2_ //TODO: mxd. Remove?
