@@ -54,18 +54,18 @@ public:
 			cur = node;
 		}
 
-		V& operator*() const
+		V& operator *() const
 		{
 			return cur->value;
 		}
 
-		Iter& operator++()
+		Iter& operator ++()
 		{
 			cur = cur->next;
 			return *this;
 		}
 
-		Iter operator++(int)
+		Iter operator ++(int)
 		{
 			Iter tmp = *this;
 			++*this;
@@ -73,13 +73,13 @@ public:
 			return tmp;
 		}
 
-		Iter& operator--()
+		Iter& operator --()
 		{
 			cur = cur->prev;
 			return *this;
 		}
 
-		Iter operator--(int)
+		Iter operator --(int)
 		{
 			Iter tmp = *this;
 			--*this;
@@ -87,12 +87,12 @@ public:
 			return tmp;
 		}
 
-		bool operator==(const Iter& other) const
+		bool operator ==(const Iter& other) const
 		{
-			return cur == other.cur; //TODO: why implementation differs from operator!= ?
+			return cur == other.cur; //TODO: why implementation differs from operator != ?
 		}
 
-		bool operator!=(const Iter& other) const
+		bool operator !=(const Iter& other) const
 		{
 			return !(*this == other);
 		}
