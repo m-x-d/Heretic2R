@@ -1,5 +1,5 @@
 //
-// pcode.h
+// sc_Pcode.h
 //
 // Copyright 1998 Raven Software
 //

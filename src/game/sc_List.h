@@ -1,5 +1,5 @@
 //
-// list.h
+// sc_List.h
 //
 // Copyright 1998 Raven Software
 //
