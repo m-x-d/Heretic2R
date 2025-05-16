@@ -806,10 +806,10 @@
     <ClInclude Include="g_misc.h">
       <Filter>src\Game objects</Filter>
     </ClInclude>
-    <ClInclude Include="list.h">
+    <ClInclude Include="sc_List.h">
       <Filter>src\Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="pcode.h">
+    <ClInclude Include="sc_Pcode.h">
       <Filter>src\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="m_assassin_shared.h">
