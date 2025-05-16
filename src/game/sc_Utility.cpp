@@ -185,17 +185,11 @@ bool NewGlobal(Variable* var)
 
 //==========================================================================
 
-void script_signaler(edict_t* which, SignalT SignalType)
+void script_signaler(edict_t* which, const SignalT signal_type)
 {
-	List<CScript*>::Iter	is;
-
-	if (Scripts.Size())
-	{
-		for (is = Scripts.Begin(); is != Scripts.End(); is++)
-		{
-			(*is)->CheckSignalers(which, SignalType);
-		}
-	}
+	if (Scripts.Size() > 0)
+		for (List<CScript*>::Iter script = Scripts.Begin(); script != Scripts.End(); ++script)
+			(*script)->CheckSignalers(which, signal_type);
 }
 
 void animate_signaler(edict_t* which)
