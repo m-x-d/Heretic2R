@@ -9,10 +9,11 @@
 #include <stdlib.h>
 #include "Motion.h"
 
-// 'accel' and 'dist' are expected to be positive values -- mxd.
-H2COMMON_API float GetTimeToReachDistance(const float vel, const float accel, const float dist)
+H2COMMON_API float GetTimeToReachDistance(const float vel, float accel, float dist)
 {
-	assert(accel >= 0.0f && dist >= 0.0f); //mxd
+	// 'accel' and 'dist' are expected to be positive values -- mxd.
+	accel = fabsf(accel);
+	dist = fabsf(dist);
 
 	if (accel == 0.0f)
 	{
