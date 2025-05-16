@@ -110,7 +110,7 @@ RestoreList_t ScriptRL[] =
 	{ RLID_SCRIPT,				RF_Script },
 	{ RLID_FIELDDEF,			RF_FieldDef },
 
-	{ 0,						nullptr},
+	{ 0,						nullptr },
 };
 
 //==========================================================================
@@ -129,30 +129,37 @@ void* RestoreObject(FILE* f, const RestoreList_t* list, void* data)
 
 //==========================================================================
 
-void ReadEnt(edict_t** to, FILE* FH)
+void ReadEnt(edict_t** to, FILE* f)
 {
 	int index;
-	tRead(&index, FH);
+	tRead(&index, f);
+
 	if (index < 0 || index >= globals.num_edicts)
 	{
-		assert(index == -1); //else invalid edict number
-		*to = 0;
+		assert(index == -1); // Else invalid edict number.
+		*to = nullptr;
 	}
 	else
+	{
 		*to = g_edicts + index;
+	}
 }
 
-void WriteEnt(edict_t** to, FILE* FH)
+void WriteEnt(edict_t** to, FILE* f)
 {
 	int index;
-	if (*to)
+
+	if (*to != nullptr)
 	{
-		index = (*to) - g_edicts;
-		assert(index >= 0 && index < globals.num_edicts); //else invalid edict pointer
+		index = *to - g_edicts;
+		assert(index >= 0 && index < globals.num_edicts); // Else invalid edict pointer.
 	}
 	else
+	{
 		index = -1;
-	tWrite(&index, FH);
+	}
+
+	tWrite(&index, f);
 }
 
 //==========================================================================
