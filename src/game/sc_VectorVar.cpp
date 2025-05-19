@@ -9,259 +9,219 @@
 #include "sc_Utility.h"
 #include "Vector.h"
 
-VectorVar::VectorVar(char* Name, float InitValueX, float InitValueY, float InitValueZ)
-	:Variable(Name, TYPE_VECTOR)
+VectorVar::VectorVar(const char* new_name, const float x, const float y, const float z) : Variable(new_name, TYPE_VECTOR)
 {
-	Value[0] = InitValueX;
-	Value[1] = InitValueY;
-	Value[2] = InitValueZ;
+	VectorSet(value, x, y, z);
 }
 
-VectorVar::VectorVar(vec3_t NewValue)
-	:Variable("", TYPE_VECTOR)
+VectorVar::VectorVar(vec3_t new_value) : Variable("", TYPE_VECTOR)
 {
-	VectorCopy(NewValue, Value);
+	VectorCopy(new_value, value);
 }
 
-VectorVar::VectorVar(FILE* FH, CScript* Script)
-	:Variable(FH, Script)
+VectorVar::VectorVar(FILE* f, CScript* script) : Variable(f, script)
 {
-	fread(&Value, 1, sizeof(Value), FH);
+	fread(&value, 1, sizeof(value), f);
 }
 
-void VectorVar::Write(FILE* FH, CScript* Script, int ID)
+void VectorVar::Write(FILE* f, CScript* script, int id)
 {
-	Variable::Write(FH, Script, RLID_VECTORVAR);
-
-	fwrite(Value, 1, sizeof(Value), FH);
+	Variable::Write(f, script, RLID_VECTORVAR);
+	fwrite(value, 1, sizeof(value), f);
 }
 
-void VectorVar::GetVectorValue(vec3_t& VecValue)
+void VectorVar::GetVectorValue(vec3_t& dest_value) const
 {
-	VecValue[0] = Value[0];
-	VecValue[1] = Value[1];
-	VecValue[2] = Value[2];
+	VectorCopy(value, dest_value);
 }
 
-void VectorVar::ReadValue(CScript* Script)
+void VectorVar::ReadValue(CScript* script)
 {
-	Value[0] = Script->ReadFloat();
-	Value[1] = Script->ReadFloat();
-	Value[2] = Script->ReadFloat();
+	value[0] = script->ReadFloat();
+	value[1] = script->ReadFloat();
+	value[2] = script->ReadFloat();
 }
 
-void VectorVar::Debug(CScript* Script)
+void VectorVar::Debug(CScript* script)
 {
-	Variable::Debug(Script);
-
-	Script->DebugLine("      Vector Value: [%0.f, %0.f, %0.f]\n", Value[0], Value[1], Value[2]);
+	Variable::Debug(script);
+	script->DebugLine("      Vector Value: [%0.f, %0.f, %0.f]\n", value[0], value[1], value[2]);
 }
 
-Variable* VectorVar::operator +(Variable* VI)
+Variable* VectorVar::operator +(Variable* v)
 {
-	vec3_t V2, NewV;
+	vec3_t other;
 
-	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
+	if (v->GetType() == TYPE_INT || v->GetType() == TYPE_FLOAT)
 	{
-		V2[0] = V2[1] = V2[2] = VI->GetFloatValue();
+		const float val = v->GetFloatValue();
+		VectorSet(other, val, val, val);
 	}
 	else
 	{
-		VI->GetVectorValue(V2);
+		v->GetVectorValue(other);
 	}
 
-	NewV[0] = Value[0] + V2[0];
-	NewV[1] = Value[1] + V2[1];
-	NewV[2] = Value[2] + V2[2];
+	Vec3AddAssign(value, other);
 
-	return new VectorVar("", NewV[0], NewV[1], NewV[2]);
+	return new VectorVar("", other[0], other[1], other[2]);
 }
 
-Variable* VectorVar::operator -(Variable* VI)
+Variable* VectorVar::operator -(Variable* v)
 {
-	vec3_t	V2, NewV;
+	vec3_t other;
 
-	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
+	if (v->GetType() == TYPE_INT || v->GetType() == TYPE_FLOAT)
 	{
-		V2[0] = V2[1] = V2[2] = VI->GetFloatValue();
+		const float val = v->GetFloatValue();
+		VectorSet(other, val, val, val);
 	}
 	else
 	{
-		VI->GetVectorValue(V2);
+		v->GetVectorValue(other);
 	}
 
-	NewV[0] = Value[0] - V2[0];
-	NewV[1] = Value[1] - V2[1];
-	NewV[2] = Value[2] - V2[2];
+	Vec3SubtractAssign(value, other);
 
-	return new VectorVar("", NewV[0], NewV[1], NewV[2]);
+	return new VectorVar("", other[0], other[1], other[2]);
 }
 
-Variable* VectorVar::operator *(Variable* VI)
+Variable* VectorVar::operator *(Variable* v)
 {
-	vec3_t V2, NewV;
+	vec3_t other;
 
-	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
+	if (v->GetType() == TYPE_INT || v->GetType() == TYPE_FLOAT)
 	{
-		V2[0] = V2[1] = V2[2] = VI->GetFloatValue();
+		const float val = v->GetFloatValue();
+		VectorSet(other, val, val, val);
 	}
 	else
 	{
-		VI->GetVectorValue(V2);
+		v->GetVectorValue(other);
 	}
 
-	NewV[0] = Value[0] * V2[0];
-	NewV[1] = Value[1] * V2[1];
-	NewV[2] = Value[2] * V2[2];
+	VectorScaleByVector(value, other, other);
 
-	return new VectorVar("", NewV[0], NewV[1], NewV[2]);
+	return new VectorVar("", other[0], other[1], other[2]);
 }
 
-Variable* VectorVar::operator /(Variable* VI)
+Variable* VectorVar::operator /(Variable* v)
 {
-	vec3_t V2, NewV;
+	vec3_t other;
 
-	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
+	if (v->GetType() == TYPE_INT || v->GetType() == TYPE_FLOAT)
 	{
-		V2[0] = V2[1] = V2[2] = VI->GetFloatValue();
+		const float val = v->GetFloatValue();
+		VectorSet(other, val, val, val);
 	}
 	else
 	{
-		VI->GetVectorValue(V2);
+		v->GetVectorValue(other);
 	}
 
-	NewV[0] = Value[0] / V2[0];
-	NewV[1] = Value[1] / V2[1];
-	NewV[2] = Value[2] / V2[2];
+	for (int i = 0; i < 3; i++)
+		other[i] = value[i] / other[i];
 
-	return new VectorVar("", NewV[0], NewV[1], NewV[2]);
+	return new VectorVar("", other[0], other[1], other[2]);
 }
 
-void VectorVar::operator =(Variable* VI)
+void VectorVar::operator =(Variable* v)
 {
-	VI->GetVectorValue(Value);
+	v->GetVectorValue(value);
 }
 
-bool VectorVar::operator ==(Variable* VI)
+bool VectorVar::operator ==(Variable* v)
 {
-	vec3_t vec;
+	if (v->GetType() == TYPE_INT || v->GetType() == TYPE_FLOAT)
+		return VectorLength(value) == v->GetFloatValue();
 
-	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
+	if (v->GetType() == TYPE_VECTOR)
 	{
-		return VectorLength(Value) == VI->GetFloatValue();
-	}
-	else if (VI->GetType() == TYPE_VECTOR)
-	{
-		VI->GetVectorValue(vec);
+		vec3_t vec;
+		v->GetVectorValue(vec);
 
-		return (VectorCompare(Value, vec) == 1);	// VC6 gives a warning about converting int to bool
+		return VectorCompare(value, vec); // VC6 gives a warning about converting int to bool // VC2022 doesn't -- mxd.
 	}
 
 	return false;
 }
 
-bool VectorVar::operator !=(Variable* VI)
+bool VectorVar::operator !=(Variable* v)
 {
-	vec3_t vec;
+	if (v->GetType() == TYPE_INT || v->GetType() == TYPE_FLOAT)
+		return VectorLength(value) != v->GetFloatValue();
 
-	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
+	if (v->GetType() == TYPE_VECTOR)
 	{
-		return VectorLength(Value) != VI->GetFloatValue();
-	}
-	else if (VI->GetType() == TYPE_VECTOR)
-	{
-		VI->GetVectorValue(vec);
+		vec3_t vec;
+		v->GetVectorValue(vec);
 
-		return !VectorCompare(Value, vec);
+		return !VectorCompare(value, vec);
 	}
 
 	return false;
 }
 
-bool VectorVar::operator <(Variable* VI)
+bool VectorVar::operator <(Variable* v)
 {
-	vec3_t	vec;
-	float	compare;
+	if (v->GetType() == TYPE_INT || v->GetType() == TYPE_FLOAT)
+		return VectorLength(value) < v->GetFloatValue();
 
-	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
+	if (v->GetType() == TYPE_VECTOR)
 	{
-		compare = VI->GetFloatValue();
-	}
-	else if (VI->GetType() == TYPE_VECTOR)
-	{
-		VI->GetVectorValue(vec);
-		compare = VectorLength(vec);
-	}
-	else
-	{
-		return false;
+		vec3_t vec;
+		v->GetVectorValue(vec);
+
+		return VectorLength(value) < VectorLength(vec);
 	}
 
-	return VectorLength(Value) < compare;
+	return false;
 }
 
-bool VectorVar::operator <=(Variable* VI)
+bool VectorVar::operator <=(Variable* v)
 {
-	vec3_t	vec;
-	float	compare;
+	if (v->GetType() == TYPE_INT || v->GetType() == TYPE_FLOAT)
+		return VectorLength(value) <= v->GetFloatValue();
 
-	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
+	if (v->GetType() == TYPE_VECTOR)
 	{
-		compare = VI->GetFloatValue();
-	}
-	else if (VI->GetType() == TYPE_VECTOR)
-	{
-		VI->GetVectorValue(vec);
-		compare = VectorLength(vec);
-	}
-	else
-	{
-		return false;
+		vec3_t vec;
+		v->GetVectorValue(vec);
+
+		return VectorLength(value) <= VectorLength(vec);
 	}
 
-	return VectorLength(Value) <= compare;
+	return false;
 }
 
-bool VectorVar::operator >(Variable* VI)
+bool VectorVar::operator >(Variable* v)
 {
-	vec3_t	vec;
-	float	compare;
+	if (v->GetType() == TYPE_INT || v->GetType() == TYPE_FLOAT)
+		return VectorLength(value) > v->GetFloatValue();
 
-	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
+	if (v->GetType() == TYPE_VECTOR)
 	{
-		compare = VI->GetFloatValue();
-	}
-	else if (VI->GetType() == TYPE_VECTOR)
-	{
-		VI->GetVectorValue(vec);
-		compare = VectorLength(vec);
-	}
-	else
-	{
-		return false;
+		vec3_t vec;
+		v->GetVectorValue(vec);
+
+		return VectorLength(value) > VectorLength(vec);
 	}
 
-	return VectorLength(Value) > compare;
+	return false;
 }
 
-bool VectorVar::operator >=(Variable* VI)
+bool VectorVar::operator >=(Variable* v)
 {
-	vec3_t	vec;
-	float	compare;
+	if (v->GetType() == TYPE_INT || v->GetType() == TYPE_FLOAT)
+		return VectorLength(value) >= v->GetFloatValue();
 
-	if (VI->GetType() == TYPE_INT || VI->GetType() == TYPE_FLOAT)
+	if (v->GetType() == TYPE_VECTOR)
 	{
-		compare = VI->GetFloatValue();
-	}
-	else if (VI->GetType() == TYPE_VECTOR)
-	{
-		VI->GetVectorValue(vec);
-		compare = VectorLength(vec);
-	}
-	else
-	{
-		return false;
+		vec3_t vec;
+		v->GetVectorValue(vec);
+
+		return VectorLength(value) >= VectorLength(vec);
 	}
 
-	return VectorLength(Value) >= compare;
+	return false;
 }

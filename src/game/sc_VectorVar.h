@@ -11,26 +11,28 @@
 class VectorVar : public Variable
 {
 protected:
-	vec3_t	Value;
+	vec3_t value = { 0 };
 
 public:
-	VectorVar(char* Name = "", float InitValueX = 0.0, float InitValueY = 0.0, float InitValueZ = 0.0);
-	VectorVar(vec3_t NewValue);
-	VectorVar(FILE* FH, CScript* Script);
-	virtual void		Write(FILE* FH, CScript* Script, int ID = -1);
-	virtual void		GetVectorValue(vec3_t& VecValue);
-	virtual void		ReadValue(CScript* Script);
-	virtual void		Debug(CScript* Script);
+	VectorVar(const char* new_name = "", float x = 0.0f, float y = 0.0f, float z = 0.0f);
+	VectorVar(vec3_t new_value);
+	VectorVar(FILE* f, CScript* script);
 
-	virtual Variable* operator	+(Variable* VI);
-	virtual Variable* operator	-(Variable* VI);
-	virtual Variable* operator	*(Variable* VI);
-	virtual Variable* operator	/(Variable* VI);
-	virtual void	operator	=(Variable* VI);
-	virtual bool	operator	==(Variable* VI);
-	virtual bool	operator	!=(Variable* VI);
-	virtual bool	operator	<(Variable* VI);
-	virtual bool	operator	<=(Variable* VI);
-	virtual bool	operator	>(Variable* VI);
-	virtual bool	operator	>=(Variable* VI);
+	void Write(FILE* f, CScript* script, int id = -1) override;
+	void GetVectorValue(vec3_t& dest_value) const override;
+	void ReadValue(CScript* script) override;
+	void Debug(CScript* script) override;
+
+	Variable* operator +(Variable* v) override;
+	Variable* operator -(Variable* v) override;
+	Variable* operator *(Variable* v) override;
+	Variable* operator /(Variable* v) override;
+	void operator =(Variable* v) override;
+
+	bool operator ==(Variable* v) override;
+	bool operator !=(Variable* v) override;
+	bool operator <(Variable* v) override;
+	bool operator <=(Variable* v) override;
+	bool operator >(Variable* v) override;
+	bool operator >=(Variable* v) override;
 };
