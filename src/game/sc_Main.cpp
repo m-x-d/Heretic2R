@@ -45,34 +45,26 @@ extern "C" void ShutdownScripts(const qboolean complete)
 	}
 }
 
-extern "C" void SaveScripts(FILE* FH, qboolean DoGlobals)
+extern "C" void SaveScripts(FILE* f, const qboolean do_globals)
 {
-	int						size;
-	List<CScript*>::Iter	is;
-	List<Variable*>::Iter	iv;
+	constexpr int version = SCRIPT_SAVE_VERSION;
+	fwrite(&version, 1, sizeof(version), f);
 
-	size = SCRIPT_SAVE_VERSION;
-	fwrite(&size, 1, sizeof(size), FH);
-
-	if (DoGlobals)
+	if (do_globals)
 	{
-		size = GlobalVariables.Size();
-		fwrite(&size, 1, sizeof(size), FH);
+		const int size = GlobalVariables.Size();
+		fwrite(&size, 1, sizeof(size), f);
 
-		for (iv = GlobalVariables.Begin(); iv != GlobalVariables.End(); iv++)
-		{
-			(*iv)->Write(FH, NULL);
-		}
+		for (List<Variable*>::Iter var = GlobalVariables.Begin(); var != GlobalVariables.End(); ++var)
+			(*var)->Write(f, nullptr);
 	}
 	else
 	{
-		size = Scripts.Size();
-		fwrite(&size, 1, sizeof(size), FH);
+		const int size = Scripts.Size();
+		fwrite(&size, 1, sizeof(size), f);
 
-		for (is = Scripts.Begin(); is != Scripts.End(); is++)
-		{
-			(*is)->Write(FH);
-		}
+		for (List<CScript*>::Iter script = Scripts.Begin(); script != Scripts.End(); ++script)
+			(*script)->Write(f);
 	}
 }
 
