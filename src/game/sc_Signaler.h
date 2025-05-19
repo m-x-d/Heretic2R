@@ -7,7 +7,6 @@
 #pragma once
 
 #include "sc_Variable.h"
-#include "g_local.h"
 
 enum SignalT
 {
@@ -18,19 +17,32 @@ enum SignalT
 
 class Signaler
 {
-private:
-	edict_t* Edict;
-	Variable* Var;
-	SignalT		SignalType;
+	edict_t* edict = nullptr;
+	Variable* var = nullptr;
+	SignalT signal_type = SIGNAL_MOVE;
 
 public:
-	Signaler(edict_t* NewEdict, Variable* NewVar, SignalT NewSignalType);
-	Signaler(FILE* FH, CScript* Script);
-	~Signaler(void);
-	virtual void				Write(FILE* FH, CScript* Script);
-	bool				Test(edict_t* Which, SignalT WhichType);
-	edict_t* GetEdict(void) { return Edict; }
-	Variable* GetVar(void) { return Var; }
-	SignalT				GetType(void) { return SignalType; }
-	bool	operator	==(Signaler* SI);
+	Signaler(edict_t* new_edict, Variable* new_var, SignalT new_signal_type);
+	Signaler(FILE* f, CScript* script);
+	~Signaler();
+
+	void Write(FILE* f, CScript* script);
+	bool Test(edict_t* which, SignalT which_type) const;
+
+	edict_t* GetEdict() const
+	{
+		return edict;
+	}
+
+	Variable* GetVar() const
+	{
+		return var;
+	}
+
+	SignalT GetType() const
+	{
+		return signal_type;
+	}
+
+	bool operator ==(const Signaler* other) const;
 };

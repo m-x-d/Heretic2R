@@ -7,65 +7,49 @@
 #include "sc_Signaler.h"
 #include "sc_Utility.h"
 
-Signaler::Signaler(edict_t* NewEdict, Variable* NewVar, SignalT NewSignalType)
+Signaler::Signaler(edict_t* new_edict, Variable* new_var, const SignalT new_signal_type)
 {
-	Edict = NewEdict;
-	Var = NewVar;
-	SignalType = NewSignalType;
+	edict = new_edict;
+	var = new_var;
+	signal_type = new_signal_type;
 }
 
-Signaler::Signaler(FILE* FH, CScript* Script)
+Signaler::Signaler(FILE* f, CScript* script)
 {
-	ReadEnt(&Edict, FH);
-	tRead(&SignalType, FH);
+	ReadEnt(&edict, f);
+	tRead(&signal_type, f);
 
-	Var = (Variable*)RestoreObject(FH, ScriptRL, Script);
+	var = static_cast<Variable*>(RestoreObject(f, ScriptRL, script));
 }
 
-Signaler::~Signaler(void)
+Signaler::~Signaler()
 {
-	if (Var)
+	delete var;
+}
+
+void Signaler::Write(FILE* f, CScript* script)
+{
+	constexpr int index = RLID_SIGNALER;
+	fwrite(&index, 1, sizeof(index), f);
+
+	WriteEnt(&edict, f);
+	tWrite(&signal_type, f);
+
+	var->Write(f, script);
+}
+
+bool Signaler::Test(edict_t* which, const SignalT which_type) const
+{
+	if (which_type == signal_type && edict == which)
 	{
-		delete Var;
-	}
-}
-
-void Signaler::Write(FILE* FH, CScript* Script)
-{
-	int index;
-
-	index = RLID_SIGNALER;
-	fwrite(&index, 1, sizeof(index), FH);
-
-	WriteEnt(&Edict, FH);
-	tWrite(&SignalType, FH);
-
-	Var->Write(FH, Script);
-}
-
-bool Signaler::Test(edict_t* Which, SignalT WhichType)
-{
-	if (WhichType != SignalType)
-	{
-		return false;
-	}
-
-	if (Edict != Which)
-	{
-		return false;
-	}
-
-	Var->Signal(Which);
-
-	return true;
-}
-
-bool Signaler::operator ==(Signaler* SI)
-{
-	if (Var == SI->GetVar())
-	{
+		var->Signal(which);
 		return true;
 	}
 
 	return false;
+}
+
+bool Signaler::operator ==(const Signaler* other) const
+{
+	return (var == other->GetVar());
 }
