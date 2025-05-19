@@ -11,12 +11,18 @@
 class StringVar : public Variable
 {
 protected:
-	char Value[VAR_LENGTH];
+	char value[VAR_LENGTH] = { 0 };
 
 public:
-	StringVar(char* Name = "", char* InitValue = "");
-	StringVar(FILE* FH, CScript* Script);
-	virtual void		Write(FILE* FH, CScript* Script, int ID = -1);
-	virtual char* GetStringValue(void) { return Value; }
-	virtual void		ReadValue(CScript* Script);
+	StringVar(const char* new_name = "", const char* new_value = "");
+	StringVar(FILE* f, CScript* script);
+
+	void Write(FILE* f, CScript* script, int id = -1) override;
+
+	const char* GetStringValue() const override
+	{
+		return value;
+	}
+
+	void ReadValue(CScript* script) override;
 };

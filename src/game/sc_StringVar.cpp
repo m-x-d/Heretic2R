@@ -7,28 +7,24 @@
 #include "sc_StringVar.h"
 #include "sc_CScript.h"
 #include "sc_Utility.h"
-#include "g_local.h"
 
-StringVar::StringVar(char* Name, char* InitValue)
-	:Variable(Name, TYPE_STRING)
+StringVar::StringVar(const char* new_name, const char* new_value) : Variable(new_name, TYPE_STRING)
 {
-	strcpy(Value, InitValue);
+	strcpy_s(value, new_value); //mxd. strcpy -> strcpy_s.
 }
 
-StringVar::StringVar(FILE* FH, CScript* Script)
-	:Variable(FH, Script)
+StringVar::StringVar(FILE* f, CScript* script) : Variable(f, script)
 {
-	fread(&Value, 1, sizeof(Value), FH);
+	fread(&value, 1, sizeof(value), f);
 }
 
-void StringVar::Write(FILE* FH, CScript* Script, int ID)
+void StringVar::Write(FILE* f, CScript* script, int id)
 {
-	Variable::Write(FH, Script, RLID_STRINGVAR);
-
-	fwrite(&Value, 1, sizeof(Value), FH);
+	Variable::Write(f, script, RLID_STRINGVAR);
+	fwrite(&value, 1, sizeof(value), f);
 }
 
-void StringVar::ReadValue(CScript* Script)
+void StringVar::ReadValue(CScript* script)
 {
-	strcpy(Value, Script->ReadString());
+	strcpy_s(value, script->ReadString()); //mxd. strcpy -> strcpy_s.
 }
