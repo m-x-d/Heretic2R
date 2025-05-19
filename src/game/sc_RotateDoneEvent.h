@@ -10,12 +10,12 @@
 
 class RotateDoneEvent : public Event
 {
-private:
-	edict_t* Ent;
+	edict_t* ent = nullptr;
 
 public:
-	RotateDoneEvent(float NewTime, edict_t* NewEnt);
-	RotateDoneEvent(FILE* FH, CScript* Script);
-	virtual void		Write(FILE* FH, CScript* Script, int ID = -1);
-	virtual bool		Process(CScript* Script);
+	RotateDoneEvent(float new_time, edict_t* new_ent);
+	RotateDoneEvent(FILE* f, CScript* script);
+
+	void Write(FILE* f, CScript* script, int id = -1) override;
+	bool Process(CScript* script) override;
 };

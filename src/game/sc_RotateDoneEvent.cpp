@@ -9,33 +9,29 @@
 #include "sc_Utility.h"
 #include "g_local.h"
 
-RotateDoneEvent::RotateDoneEvent(float NewTime, edict_t* NewEnt)
-	:Event(NewTime, EVENT_ROTATE_DONE)
+RotateDoneEvent::RotateDoneEvent(const float new_time, edict_t* new_ent) : Event(new_time, EVENT_ROTATE_DONE)
 {
-	Ent = NewEnt;
+	ent = new_ent;
 }
 
-RotateDoneEvent::RotateDoneEvent(FILE* FH, CScript* Script)
-	:Event(FH, Script)
+RotateDoneEvent::RotateDoneEvent(FILE* f, CScript* script) : Event(f, script)
 {
-	ReadEnt(&Ent, FH);
+	ReadEnt(&ent, f);
 }
 
-void RotateDoneEvent::Write(FILE* FH, CScript* Script, int ID)
+void RotateDoneEvent::Write(FILE* f, CScript* script, int id)
 {
-	Event::Write(FH, Script, RLID_ROTATEDONEEVENT);
-	WriteEnt(&Ent, FH);
+	Event::Write(f, script, RLID_ROTATEDONEEVENT);
+	WriteEnt(&ent, f);
 }
 
-bool RotateDoneEvent::Process(CScript* Script)
+bool RotateDoneEvent::Process(CScript* script)
 {
 	if (level.time < time)
-	{
 		return FALSE;
-	}
 
-	Script->Rotate_Done(Ent);
-	script_signaler(Ent, SIGNAL_ROTATE); //mxd. Inline rotate_signaler().
+	script->Rotate_Done(ent);
+	script_signaler(ent, SIGNAL_ROTATE); //mxd. Inline rotate_signaler().
 
 	return TRUE;
 }
