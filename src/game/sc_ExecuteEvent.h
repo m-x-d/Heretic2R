@@ -10,13 +10,13 @@
 
 class ExecuteEvent : public Event
 {
-private:
-	edict_t* Other;
-	edict_t* Activator;
+	edict_t* other = nullptr;
+	edict_t* activator = nullptr;
 
 public:
-	ExecuteEvent(float NewTime, edict_t* NewOther = NULL, edict_t* NewActivator = NULL);
-	ExecuteEvent(FILE* FH, CScript* Script);
-	virtual void		Write(FILE* FH, CScript* Script, int ID = -1);
-	virtual bool		Process(CScript* Script);
+	ExecuteEvent(float new_time, edict_t* new_other = nullptr, edict_t* new_activator = nullptr);
+	ExecuteEvent(FILE* f, CScript* script);
+
+	void Write(FILE* f, CScript* script, int id = -1) override;
+	bool Process(CScript* script) override;
 };

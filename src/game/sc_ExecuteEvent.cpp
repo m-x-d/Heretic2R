@@ -9,38 +9,32 @@
 #include "sc_Utility.h"
 #include "g_local.h"
 
-ExecuteEvent::ExecuteEvent(float NewTime, edict_t* NewOther, edict_t* NewActivator)
-	:Event(NewTime, EVENT_SCRIPT_EXECUTE)
+ExecuteEvent::ExecuteEvent(const float new_time, edict_t* new_other, edict_t* new_activator) : Event(new_time, EVENT_SCRIPT_EXECUTE)
 {
-	Other = NewOther;
-	Activator = NewActivator;
+	other = new_other;
+	activator = new_activator;
 }
 
-ExecuteEvent::ExecuteEvent(FILE* FH, CScript* Script)
-	:Event(FH, Script)
+ExecuteEvent::ExecuteEvent(FILE* f, CScript* script) : Event(f, script)
 {
-	ReadEnt(&Other, FH);
-	ReadEnt(&Activator, FH);
+	ReadEnt(&other, f);
+	ReadEnt(&activator, f);
 }
 
-void ExecuteEvent::Write(FILE* FH, CScript* Script, int ID)
+void ExecuteEvent::Write(FILE* f, CScript* script, int id)
 {
-	Event::Write(FH, Script, RLID_EXECUTEEVENT);
-	WriteEnt(&Other, FH);
-	WriteEnt(&Activator, FH);
+	Event::Write(f, script, RLID_EXECUTEEVENT);
+	WriteEnt(&other, f);
+	WriteEnt(&activator, f);
 }
 
-bool ExecuteEvent::Process(CScript* Script)
+bool ExecuteEvent::Process(CScript* script)
 {
 	if (level.time < time)
-	{
 		return FALSE;
-	}
 
-	if (Script->CheckWait())
-	{
-		Script->Execute(Other, Activator);
-	}
+	if (script->CheckWait())
+		script->Execute(other, activator);
 
 	return TRUE;
 }
