@@ -7,60 +7,55 @@
 #include "sc_FloatVar.h"
 #include "sc_CScript.h"
 #include "sc_Utility.h"
-#include "g_local.h"
 
-FloatVar::FloatVar(char* Name, float InitValue)
-	:Variable(Name, TYPE_FLOAT)
+FloatVar::FloatVar(const char* new_name, const float new_value) : Variable(new_name, TYPE_FLOAT)
 {
-	Value = InitValue;
+	value = new_value;
 }
 
-FloatVar::FloatVar(FILE* FH, CScript* Script)
-	:Variable(FH, Script)
+FloatVar::FloatVar(FILE* f, CScript* script) : Variable(f, script)
 {
-	fread(&Value, 1, sizeof(Value), FH);
+	fread(&value, 1, sizeof(value), f);
 }
 
-void FloatVar::Write(FILE* FH, CScript* Script, int ID)
+void FloatVar::Write(FILE* f, CScript* script, int id)
 {
-	Variable::Write(FH, Script, RLID_FLOATVAR);
-
-	fwrite(&Value, 1, sizeof(Value), FH);
+	Variable::Write(f, script, RLID_FLOATVAR);
+	fwrite(&value, 1, sizeof(value), f);
 }
 
-void FloatVar::ReadValue(CScript* Script)
+void FloatVar::ReadValue(CScript* script)
 {
-	Value = Script->ReadFloat();
+	value = script->ReadFloat();
 }
 
-void FloatVar::Debug(CScript* Script)
+void FloatVar::Debug(CScript* script)
 {
-	Variable::Debug(Script);
-
-	Script->DebugLine("      Float Value: %0.f\n", Value);
+	Variable::Debug(script);
+	script->DebugLine("      Float Value: %0.f\n", value);
 }
 
-Variable* FloatVar::operator +(Variable* VI)
+Variable* FloatVar::operator +(Variable* v)
 {
-	return new FloatVar("", Value + VI->GetFloatValue());
+	return new FloatVar("", value + v->GetFloatValue());
 }
 
-Variable* FloatVar::operator -(Variable* VI)
+Variable* FloatVar::operator -(Variable* v)
 {
-	return new FloatVar("", Value - VI->GetFloatValue());
+	return new FloatVar("", value - v->GetFloatValue());
 }
 
-Variable* FloatVar::operator *(Variable* VI)
+Variable* FloatVar::operator *(Variable* v)
 {
-	return new FloatVar("", Value * VI->GetFloatValue());
+	return new FloatVar("", value * v->GetFloatValue());
 }
 
-Variable* FloatVar::operator /(Variable* VI)
+Variable* FloatVar::operator /(Variable* v)
 {
-	return new FloatVar("", Value / VI->GetFloatValue());
+	return new FloatVar("", value / v->GetFloatValue());
 }
 
-void FloatVar::operator =(Variable* VI)
+void FloatVar::operator =(Variable* v)
 {
-	Value = VI->GetFloatValue();
+	value = v->GetFloatValue();
 }

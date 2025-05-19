@@ -11,27 +11,60 @@
 class FloatVar : public Variable
 {
 protected:
-	float	Value;
+	float value = 0.0f;
 
 public:
-	FloatVar(char* Name = "", float InitValue = 0.0);
-	FloatVar(FILE* FH, CScript* Script);
-	virtual void		Write(FILE* FH, CScript* Script, int ID = -1);
-	virtual int			GetIntValue(void) { return (int)Value; }
-	virtual float		GetFloatValue(void) { return Value; }
-	virtual void		ReadValue(CScript* Script);
-	virtual void		Debug(CScript* Script);
+	FloatVar(const char* new_name = "", float new_value = 0.0f);
+	FloatVar(FILE* f, CScript* script);
 
-	virtual Variable* operator	+(Variable* VI);
-	virtual Variable* operator	-(Variable* VI);
-	virtual Variable* operator	*(Variable* VI);
-	virtual Variable* operator	/(Variable* VI);
-	virtual void	operator	=(Variable* VI);
+	void Write(FILE* f, CScript* script, int id = -1) override;
 
-	virtual bool	operator	==(Variable* VI) { return Value == VI->GetFloatValue(); }
-	virtual bool	operator	!=(Variable* VI) { return Value != VI->GetFloatValue(); }
-	virtual bool	operator	<(Variable* VI) { return Value < VI->GetFloatValue(); }
-	virtual bool	operator	<=(Variable* VI) { return Value <= VI->GetFloatValue(); }
-	virtual bool	operator	>(Variable* VI) { return Value > VI->GetFloatValue(); }
-	virtual bool	operator	>=(Variable* VI) { return Value >= VI->GetFloatValue(); }
+	int GetIntValue() const override
+	{
+		return static_cast<int>(value);
+	}
+
+	float GetFloatValue() const override
+	{
+		return value;
+	}
+
+	void ReadValue(CScript* script) override;
+	void Debug(CScript* script) override;
+
+	Variable* operator +(Variable* v) override;
+	Variable* operator -(Variable* v) override;
+	Variable* operator *(Variable* v) override;
+	Variable* operator /(Variable* v) override;
+	void operator =(Variable* v) override;
+
+	bool operator ==(Variable* VI) override
+	{
+		return value == VI->GetFloatValue();
+	}
+
+	bool operator !=(Variable* VI) override
+	{
+		return value != VI->GetFloatValue();
+	}
+
+	bool operator <(Variable* VI) override
+	{
+		return value < VI->GetFloatValue();
+	}
+
+	bool operator <=(Variable* VI) override
+	{
+		return value <= VI->GetFloatValue();
+	}
+
+	bool operator >(Variable* VI) override
+	{
+		return value > VI->GetFloatValue();
+	}
+
+	bool operator >=(Variable* VI) override
+	{
+		return value >= VI->GetFloatValue();
+	}
 };
