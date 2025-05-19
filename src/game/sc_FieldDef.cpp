@@ -23,341 +23,297 @@
 
 static field_t script_fields[] =
 {
-	{ "x",				SPEC_X,							F_FLOAT },
-	{ "y",				SPEC_Y,							F_FLOAT },
-	{ "z",				SPEC_Z,							F_FLOAT },
-	{ "origin",			FOFS(s.origin),					F_VECTOR },
-	{ "movetype",		FOFS(movetype),					F_INT },
-	{ "start_origin",	FOFS(moveinfo.start_origin),	F_VECTOR },
-	{ "distance",		FOFS(moveinfo.distance),		F_FLOAT },
-	{ "owner",			FOFS(owner),					F_EDICT },
-	{ "wait",			FOFS(wait),						F_FLOAT },
-	{ "velocity",		FOFS(velocity),					F_VECTOR },
-	{ "angle_velocity",	FOFS(avelocity),				F_VECTOR },
-	{ "team_chain",		FOFS(teamchain),				F_EDICT },
-	{ "yaw_speed",		FOFS(yaw_speed),				F_FLOAT },
-	{ "modelindex",		FOFS(s.modelindex),				F_INT },
-	{ "count",			FOFS(count),					F_INT },
-	{ "solid",			FOFS(solid),					F_INT },
-	{ "angles",			FOFS(s.angles),					F_VECTOR },
-	{ "start_angles",	FOFS(moveinfo.start_angles),	F_VECTOR },
-	{ "state",			FOFS(moveinfo.state),			F_INT },
-	{ "c_mode",			FOFS(monsterinfo.c_mode),		F_INT },
-	{ "skinnum",		FOFS(s.skinnum),				F_INT },
-	{ "ideal_yaw",		FOFS(ideal_yaw),				F_FLOAT },
-	{ "delta_angles",	SPEC_DELTA_ANGLES,				F_VECTOR },
-	{ "p_origin",		SPEC_P_ORIGIN,					F_VECTOR },
-	{ "takedamage",		FOFS(takedamage),				F_INT },
+	{ "x",				SPEC_X,							F_FLOAT,	0 },
+	{ "y",				SPEC_Y,							F_FLOAT,	0 },
+	{ "z",				SPEC_Z,							F_FLOAT,	0 },
+	{ "origin",			FOFS(s.origin),					F_VECTOR,	0 },
+	{ "movetype",		FOFS(movetype),					F_INT,		0 },
+	{ "start_origin",	FOFS(moveinfo.start_origin),	F_VECTOR,	0 },
+	{ "distance",		FOFS(moveinfo.distance),		F_FLOAT,	0 },
+	{ "owner",			FOFS(owner),					F_EDICT,	0 },
+	{ "wait",			FOFS(wait),						F_FLOAT,	0 },
+	{ "velocity",		FOFS(velocity),					F_VECTOR,	0 },
+	{ "angle_velocity",	FOFS(avelocity),				F_VECTOR,	0 },
+	{ "team_chain",		FOFS(teamchain),				F_EDICT,	0 },
+	{ "yaw_speed",		FOFS(yaw_speed),				F_FLOAT,	0 },
+	{ "modelindex",		FOFS(s.modelindex),				F_INT,		0 },
+	{ "count",			FOFS(count),					F_INT,		0 },
+	{ "solid",			FOFS(solid),					F_INT,		0 },
+	{ "angles",			FOFS(s.angles),					F_VECTOR,	0 },
+	{ "start_angles",	FOFS(moveinfo.start_angles),	F_VECTOR,	0 },
+	{ "state",			FOFS(moveinfo.state),			F_INT,		0 },
+	{ "c_mode",			FOFS(monsterinfo.c_mode),		F_INT,		0 },
+	{ "skinnum",		FOFS(s.skinnum),				F_INT,		0 },
+	{ "ideal_yaw",		FOFS(ideal_yaw),				F_FLOAT,	0 },
+	{ "delta_angles",	SPEC_DELTA_ANGLES,				F_VECTOR,	0 },
+	{ "p_origin",		SPEC_P_ORIGIN,					F_VECTOR,	0 },
+	{ "takedamage",		FOFS(takedamage),				F_INT,		0 },
 
-	{ NULL,				0,								F_INT }
+	{ nullptr,			0,								F_INT,		0 }
 };
 
-FieldDef::FieldDef(CScript* Script)
+FieldDef::FieldDef(CScript* script)
 {
-	field_t* Field;
-	bool	Found;
+	strcpy_s(name, sizeof(name), script->ReadString()); //mxd. strcpy -> strcpy_s.
+	type = static_cast<VariableType>(script->ReadByte());
 
-	strcpy(Name, Script->ReadString());
-	Type = (VariableType)Script->ReadByte();
-
-	FieldType = F_IGNORE;
-	Offset = -1;
-
-	Found = false;
-	for (Field = script_fields; Field->name; Field++)
+	for (const field_t* field = script_fields; field->name; field++)
 	{
-		if (strcmp(Name, Field->name) == 0)
+		if (strcmp(name, field->name) == 0)
 		{
-			Offset = Field->ofs;
-			FieldType = Field->type;
-			Found = true;
+			offset = field->ofs;
+			field_type = field->type;
 
 			break;
 		}
 	}
-
-	if (!Found)
-	{
-#ifdef _DEVEL
-		Com_Printf("Unknown field '%s'\n", Name);
-#endif //_DEVEL
-	}
 }
 
-FieldDef::FieldDef(FILE* FH, CScript* Script)
+FieldDef::FieldDef(FILE* f, CScript* script)
 {
-	int		index;
-	bool	Found;
-	field_t* Field;
+	fread(name, 1, sizeof(name), f);
+	fread(&type, 1, sizeof(type), f);
 
-	fread(Name, 1, sizeof(Name), FH);
-	fread(&Type, 1, sizeof(Type), FH);
-
-	fread(&index, 1, sizeof(index), FH);
-	if (Script && index != -1)
-	{
-		Script->SetFieldIndex(index, this);
-	}
-
-	FieldType = F_IGNORE;
-	Offset = -1;
-
-	Found = false;
-	for (Field = script_fields; Field->name; Field++)
-	{
-		if (strcmp(Name, Field->name) == 0)
-		{
-			Offset = Field->ofs;
-			FieldType = Field->type;
-			Found = true;
-
-			break;
-		}
-	}
-
-	if (!Found)
-	{
-#ifdef _DEVEL
-		Com_Printf("Unknown field '%s'\n", Name);
-#endif //_DEVEL
-	}
-}
-
-void FieldDef::Write(FILE* FH, CScript* Script)
-{
 	int index;
+	fread(&index, 1, sizeof(index), f);
 
-	index = RLID_FIELDDEF;
-	fwrite(&index, 1, sizeof(index), FH);
+	if (script != nullptr && index != -1)
+		script->SetFieldIndex(index, this);
 
-	fwrite(Name, 1, sizeof(Name), FH);
-	fwrite(&Type, 1, sizeof(Type), FH);
-
-	index = -1;
-	if (Script)
+	for (const field_t* field = script_fields; field->name; field++)
 	{
-		index = Script->LookupFieldIndex(this);
+		if (strcmp(name, field->name) == 0)
+		{
+			offset = field->ofs;
+			field_type = field->type;
+
+			break;
+		}
 	}
-	fwrite(&index, 1, sizeof(index), FH);
 }
 
-byte* FieldDef::GetOffset(Variable* Var)
+void FieldDef::Write(FILE* f, CScript* script)
 {
-	edict_t* ent;
-	byte* b, * Dest;
+	constexpr int index = RLID_FIELDDEF;
+	fwrite(&index, 1, sizeof(index), f);
 
-	Dest = NULL;
+	fwrite(name, 1, sizeof(name), f);
+	fwrite(&type, 1, sizeof(type), f);
 
-	switch (Offset)
+	const int field_index = ((script != nullptr) ? script->LookupFieldIndex(this) : -1);
+	fwrite(&field_index, 1, sizeof(field_index), f);
+}
+
+byte* FieldDef::GetOffset(Variable* var) const
+{
+	byte* dest = nullptr;
+
+	switch (offset)
 	{
 		case SPEC_X:
-			break;
 		case SPEC_Y:
-			break;
 		case SPEC_Z:
 			break;
+
 		case SPEC_DELTA_ANGLES:
-			ent = Var->GetEdictValue();
-			if (ent && ent->client)
-			{
-				Dest = (byte*)&ent->client->ps.pmove.delta_angles;
-			}
-			break;
+		{
+			const edict_t* ent = var->GetEdictValue();
+			if (ent != nullptr && ent->client != nullptr)
+				dest = reinterpret_cast<byte*>(&ent->client->ps.pmove.delta_angles);
+		} break;
 
 		case SPEC_P_ORIGIN:
-			ent = Var->GetEdictValue();
-			if (ent && ent->client)
-			{
-				Dest = (byte*)&ent->client->playerinfo.origin;
-			}
-			break;
+		{
+			const edict_t* ent = var->GetEdictValue();
+			if (ent != nullptr && ent->client != nullptr)
+				dest = reinterpret_cast<byte*>(&ent->client->playerinfo.origin);
+		} break;
 
 		default:
-			ent = Var->GetEdictValue();
-			if (ent)
-			{
-				b = (byte*)ent;
-				Dest = b + Offset;
-			}
-			break;
+		{
+			edict_t* ent = var->GetEdictValue();
+			if (ent != nullptr)
+				dest = reinterpret_cast<byte*>(ent) + offset;
+		} break;
 	}
 
-	return Dest;
+	return dest;
 }
 
-Variable* FieldDef::GetValue(Variable* Var)
+Variable* FieldDef::GetValue(Variable* var) const
 {
-	vec3_t vec;
-
-	switch (FieldType)
+	switch (field_type)
 	{
 		case F_INT:
-			return new IntVar("", GetIntValue(Var));
-			break;
+			return new IntVar("", GetIntValue(var));
 
 		case F_FLOAT:
-			return new FloatVar("", GetFloatValue(Var));
-			break;
+			return new FloatVar("", GetFloatValue(var));
 
 		case F_EDICT:
-			return new EntityVar(GetEdictValue(Var));
-			break;
+			return new EntityVar(GetEdictValue(var));
 
 		case F_VECTOR:
-			GetVectorValue(Var, vec);
+		{
+			vec3_t vec;
+			GetVectorValue(var, vec);
 			return new VectorVar(vec);
-			break;
-	}
-
-	return NULL;
-}
-
-int FieldDef::GetIntValue(Variable* Var)
-{
-	byte* Dest;
-	vec3_t	data;
-
-	Dest = GetOffset(Var);
-
-	if (FieldType != F_INT || !Dest)
-	{
-		switch (Offset)
-		{
-			case SPEC_X:
-				Var->GetVectorValue(data);
-				return (int)data[0];
-				break;
-			case SPEC_Y:
-				Var->GetVectorValue(data);
-				return (int)data[1];
-				break;
-			case SPEC_Z:
-				Var->GetVectorValue(data);
-				return (int)data[2];
-				break;
 		}
 
-		return 0.0;
+		default:
+			return nullptr;
 	}
-
-	return *(int*)(Dest);
 }
 
-float FieldDef::GetFloatValue(Variable* Var)
+int FieldDef::GetIntValue(Variable* var) const
 {
-	byte* Dest;
-	vec3_t	data;
+	byte* dest = GetOffset(var);
 
-	Dest = GetOffset(Var);
-
-	if (FieldType != F_FLOAT || !Dest)
+	if (field_type != F_INT || dest == nullptr)
 	{
-		switch (Offset)
+		vec3_t data;
+
+		switch (offset)
 		{
 			case SPEC_X:
-				Var->GetVectorValue(data);
+				var->GetVectorValue(data);
+				return static_cast<int>(data[0]);
+
+			case SPEC_Y:
+				var->GetVectorValue(data);
+				return static_cast<int>(data[1]);
+
+			case SPEC_Z:
+				var->GetVectorValue(data);
+				return static_cast<int>(data[2]);
+
+			default:
+				return 0;
+		}
+	}
+
+	return *reinterpret_cast<int*>(dest);
+}
+
+float FieldDef::GetFloatValue(Variable* var) const
+{
+	byte* dest = GetOffset(var);
+
+	if (field_type != F_FLOAT || dest == nullptr)
+	{
+		vec3_t data;
+
+		switch (offset)
+		{
+			case SPEC_X:
+				var->GetVectorValue(data);
 				return data[0];
-				break;
+
 			case SPEC_Y:
-				Var->GetVectorValue(data);
+				var->GetVectorValue(data);
 				return data[1];
-				break;
+
 			case SPEC_Z:
-				Var->GetVectorValue(data);
+				var->GetVectorValue(data);
 				return data[2];
-				break;
+
+			default:
+				return 0.0f;
 		}
-
-		return 0.0;
 	}
 
-	return *(float*)(Dest);
+	return *reinterpret_cast<float*>(dest);
 }
 
-void FieldDef::GetVectorValue(Variable* Var, vec3_t& VecValue)
+void FieldDef::GetVectorValue(Variable* var, vec3_t& value) const
 {
-	byte* Dest;
+	byte* dest = GetOffset(var);
 
-	Dest = GetOffset(Var);
-
-	if (FieldType != F_VECTOR || !Dest)
-	{
-		VectorCopy(vec3_origin, VecValue);
-		return;
-	}
-
-	VectorCopy(*(vec3_t*)(Dest), VecValue);
+	if (field_type != F_VECTOR || dest == nullptr)
+		VectorCopy(vec3_origin, value);
+	else
+		VectorCopy(*reinterpret_cast<vec3_t*>(dest), value);
 }
 
-edict_t* FieldDef::GetEdictValue(Variable* Var)
+edict_t* FieldDef::GetEdictValue(Variable* var) const
 {
-	byte* Dest;
+	byte* dest = GetOffset(var);
 
-	Dest = GetOffset(Var);
+	if (field_type != F_EDICT || dest == nullptr)
+		return nullptr;
 
-	if (FieldType != F_EDICT || !Dest)
-	{
-		return NULL;
-	}
-
-	return *(edict_t**)(Dest);
+	return *reinterpret_cast<edict_t**>(dest);
 }
 
-char* FieldDef::GetStringValue(Variable* Var)
+char* FieldDef::GetStringValue(Variable* var) const //TODO: change return type to const char*.
 {
 	return "";
 }
 
-void FieldDef::SetValue(Variable* Var, Variable* Value)
+void FieldDef::SetValue(Variable* var, Variable* value) const
 {
-	byte* Dest;
-	vec3_t		data;
-	VectorVar* new_var;
+	byte* dest = GetOffset(var);
 
-	Dest = GetOffset(Var);
-	if (Dest == NULL)
+	if (dest == nullptr)
 	{
-		switch (Offset)
+		switch (offset)
 		{
 			case SPEC_X:
-				Var->GetVectorValue(data);
-				data[0] = Value->GetFloatValue();
-				new_var = new VectorVar(data);
-				*Var = new_var;
+			{
+				vec3_t data;
+				var->GetVectorValue(data);
+				data[0] = value->GetFloatValue();
+				auto* new_var = new VectorVar(data);
+				*var = new_var;
 				delete new_var;
-				break;
+			} break;
+
 			case SPEC_Y:
-				Var->GetVectorValue(data);
-				data[1] = Value->GetFloatValue();
-				new_var = new VectorVar(data);
-				*Var = new_var;
+			{
+				vec3_t data;
+				var->GetVectorValue(data);
+				data[1] = value->GetFloatValue();
+				auto* new_var = new VectorVar(data);
+				*var = new_var;
 				delete new_var;
-				break;
+			} break;
+
 			case SPEC_Z:
-				Var->GetVectorValue(data);
-				data[2] = Value->GetFloatValue();
-				new_var = new VectorVar(data);
-				*Var = new_var;
+			{
+				vec3_t data;
+				var->GetVectorValue(data);
+				data[2] = value->GetFloatValue();
+				auto* new_var = new VectorVar(data);
+				*var = new_var;
 				delete new_var;
+			} break;
+
+			default:
 				break;
 		}
-
-		return;
 	}
-
-	switch (FieldType)
+	else
 	{
-		case F_INT:
-			*(int*)(Dest) = Value->GetIntValue();
-			break;
-		case F_FLOAT:
-			*(float*)(Dest) = Value->GetFloatValue();
-			break;
-		case F_EDICT:
-			*(edict_t**)(Dest) = Value->GetEdictValue();
-			break;
-		case F_VECTOR:
-			Value->GetVectorValue(*(vec3_t*)(Dest));
-			break;
+		switch (field_type)
+		{
+			case F_INT:
+				*reinterpret_cast<int*>(dest) = value->GetIntValue();
+				break;
+
+			case F_FLOAT:
+				*reinterpret_cast<float*>(dest) = value->GetFloatValue();
+				break;
+
+			case F_EDICT:
+				*reinterpret_cast<edict_t**>(dest) = value->GetEdictValue();
+				break;
+
+			case F_VECTOR:
+				value->GetVectorValue(*reinterpret_cast<vec3_t*>(dest));
+				break;
+
+			default:
+				break;
+		}
 	}
 }

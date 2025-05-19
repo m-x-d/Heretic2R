@@ -11,22 +11,22 @@
 
 class FieldDef
 {
-private:
-	char Name[VAR_LENGTH];
-	VariableType Type;
-	int Offset;
-	fieldtype_t	 FieldType;
+	char name[VAR_LENGTH] = { 0 };
+	VariableType type = TYPE_INT;
+	int offset = -1;
+	fieldtype_t field_type = F_IGNORE;
 
 public:
-	FieldDef(CScript* Script);
-	FieldDef(FILE* FH, CScript* Script);
-	void Write(FILE* FH, CScript* Script);
-	byte* GetOffset(Variable* Var);
-	Variable* GetValue(Variable* Var);
-	int GetIntValue(Variable* Var);
-	float GetFloatValue(Variable* Var);
-	void GetVectorValue(Variable* Var, vec3_t& VecValue);
-	edict_t* GetEdictValue(Variable* Var);
-	char* GetStringValue(Variable* Var);
-	void SetValue(Variable* Var, Variable* Value);
+	explicit FieldDef(CScript* script);
+	FieldDef(FILE* f, CScript* script);
+
+	void Write(FILE* f, CScript* script);
+	byte* GetOffset(Variable* var) const;
+	Variable* GetValue(Variable* var) const;
+	int GetIntValue(Variable* var) const;
+	float GetFloatValue(Variable* var) const;
+	void GetVectorValue(Variable* var, vec3_t& value) const;
+	edict_t* GetEdictValue(Variable* var) const;
+	char* GetStringValue(Variable* var) const;
+	void SetValue(Variable* var, Variable* value) const;
 };
