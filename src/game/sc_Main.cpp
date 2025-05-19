@@ -68,43 +68,37 @@ extern "C" void SaveScripts(FILE* f, const qboolean do_globals)
 	}
 }
 
-extern "C" void LoadScripts(FILE* FH, qboolean DoGlobals)
+extern "C" void LoadScripts(FILE* f, const qboolean do_globals)
 {
-	int		size, i;
-	edict_t* ent;
+	int version;
+	fread(&version, 1, sizeof(version), f);
 
-	fread(&size, 1, sizeof(size), FH);
-	if (size != SCRIPT_SAVE_VERSION)
-	{
-		gi.error("LoadScripts(): Expecting version %d, found version %d", SCRIPT_SAVE_VERSION, size);
-	}
+	if (version != SCRIPT_SAVE_VERSION)
+		gi.error("LoadScripts(): Expecting version %d, found version %d", SCRIPT_SAVE_VERSION, version);
 
-	if (DoGlobals)
+	if (do_globals)
 	{
 		ShutdownScripts(true);
 
-		fread(&size, 1, sizeof(size), FH);
+		int size;
+		fread(&size, 1, sizeof(size), f);
 
-		for (i = 0; i < size; i++)
-		{
-			GlobalVariables.PushBack((Variable*)RestoreObject(FH, ScriptRL, NULL));
-		}
+		for (int i = 0; i < size; i++)
+			GlobalVariables.PushBack(static_cast<Variable*>(RestoreObject(f, ScriptRL, nullptr)));
 	}
 	else
 	{
 		ShutdownScripts(false);
 
-		for (i = 0, ent = g_edicts; i < globals.num_edicts; i++, ent++)
-		{
-			ent->Script = NULL;
-		}
+		edict_t* ent = &g_edicts[0];
+		for (int i = 0; i < globals.num_edicts; i++, ent++)
+			ent->Script = nullptr;
 
-		fread(&size, 1, sizeof(size), FH);
+		int size;
+		fread(&size, 1, sizeof(size), f);
 
-		for (i = 0; i < size; i++)
-		{
-			Scripts.PushBack((CScript*)RestoreObject(FH, ScriptRL, NULL));
-		}
+		for (int i = 0; i < size; i++)
+			Scripts.PushBack(static_cast<CScript*>(RestoreObject(f, ScriptRL, nullptr)));
 	}
 }
 
