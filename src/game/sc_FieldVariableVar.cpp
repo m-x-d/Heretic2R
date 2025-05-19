@@ -7,7 +7,6 @@
 #include "sc_FieldVariableVar.h"
 #include "sc_CScript.h"
 #include "sc_Utility.h"
-//#include "g_local.h"
 
 FieldVariableVar::FieldVariableVar(const char* new_name) : Variable(new_name, TYPE_UNKNOWN)
 {
