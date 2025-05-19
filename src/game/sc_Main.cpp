@@ -102,49 +102,32 @@ extern "C" void LoadScripts(FILE* f, const qboolean do_globals)
 	}
 }
 
-void script_use(edict_t* ent, edict_t* other, edict_t* activator)
+static void script_use(edict_t* ent, edict_t* other, edict_t* activator)
 {
 	ent->Script->AddEvent(new ExecuteEvent(level.time, other, activator));
 }
 
-/*QUAKED script_runner (.5 .5 .5) (-8 -8 -8) (8 8 8)
-set Script to the name of the script to run when triggered
-use parm1 through parm16 to send parameters to the script
-*/
+// QUAKED script_runner (.5 .5 .5) (-8 -8 -8) (8 8 8)
+// Set Script to the name of the script to run when triggered.
+// Use parm1 through parm16 to send parameters to the script.
 extern "C" void SP_script_runner(edict_t* ent)
 {
-	char	temp[MAX_PATH];
-	int		i;
+	char script_path[MAX_PATH];
+	sprintf_s(script_path, "ds/%s.os", st.script); //mxd. sprintf -> sprintf_s.
 
-	sprintf(temp, "ds/%s.os", st.script);
-	ent->Script = new CScript(temp, ent);
+	ent->Script = new CScript(script_path, ent);
 	Scripts.PushBack(ent->Script);
 
-	for (i = 0; i < NUM_PARMS; i++)
+	for (const auto& parm : st.parms)
 	{
-		if (st.parms[i])
-		{
-			ent->Script->SetParameter(st.parms[i]);
-		}
+		if (parm != nullptr)
+			ent->Script->SetParameter(parm);
 		else
-		{
 			break;
-		}
 	}
 
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->solid = SOLID_NOT;
 	ent->svflags |= SVF_NOCLIENT;
 	ent->use = script_use;
-
-	//	gi.setmodel (ent, ent->model);
-	//	gi.linkentity (ent);
-}
-
-/*QUAKE script_parms (.5 .5 .5) ?
-target the script_runner object
-use parm1 through parm16 to send parameters to the script
-*/
-extern "C" void SP_parms(edict_t* ent)
-{
 }
