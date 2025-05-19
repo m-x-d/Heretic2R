@@ -14,15 +14,9 @@
 
 extern "C" void ProcessScripts(void)
 {
-	List<CScript*>::Iter	is;
-
-	if (Scripts.Size())
-	{
-		for (is = Scripts.Begin(); is != Scripts.End(); is++)
-		{
+	if (Scripts.Size() > 0)
+		for (List<CScript*>::Iter is = Scripts.Begin(); is != Scripts.End(); ++is)
 			(*is)->Think();
-		}
-	}
 }
 
 extern "C" void ShutdownScripts(qboolean Complete)
