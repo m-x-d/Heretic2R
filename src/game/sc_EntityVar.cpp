@@ -9,113 +9,85 @@
 #include "sc_Utility.h"
 #include "g_local.h"
 
-EntityVar::EntityVar(char* Name, int InitValue)
-	:Variable(Name, TYPE_ENTITY)
+EntityVar::EntityVar(const char* new_name, const int ent_index) : Variable(new_name, TYPE_ENTITY)
 {
-	if (InitValue == -1)
-	{
-		Value = NULL;
-	}
+	if (ent_index == -1)
+		value = nullptr;
 	else
-	{
-		Value = &g_edicts[InitValue];
-	}
+		value = &g_edicts[ent_index]; //TODO: check if new_value >= 0 && < globals.num_edicts?
 }
 
-EntityVar::EntityVar(edict_t* Which)
-	:Variable("", TYPE_ENTITY)
+EntityVar::EntityVar(edict_t* which) : Variable("", TYPE_ENTITY)
 {
-	Value = Which;
+	value = which;
 }
 
-EntityVar::EntityVar(FILE* FH, CScript* Script)
-	:Variable(FH, Script)
+EntityVar::EntityVar(FILE* f, CScript* script) : Variable(f, script)
 {
 	int index;
-
-	fread(&index, 1, sizeof(index), FH);
+	fread(&index, 1, sizeof(index), f);
 
 	if (index == -1)
-	{
-		Value = NULL;
-	}
+		value = nullptr;
 	else
-	{
-		Value = &g_edicts[index];
-	}
+		value = &g_edicts[index]; //TODO: check if index >= 0 && < globals.num_edicts?
 }
 
-void EntityVar::Write(FILE* FH, CScript* Script, int ID)
+void EntityVar::Write(FILE* f, CScript* script, int id)
 {
-	int index;
+	Variable::Write(f, script, RLID_ENTITYVAR);
 
-	Variable::Write(FH, Script, RLID_ENTITYVAR);
-
-	index = GetIntValue();
-	fwrite(&index, 1, sizeof(index), FH);
+	const int index = GetIntValue();
+	fwrite(&index, 1, sizeof(index), f);
 }
 
-void EntityVar::ReadValue(CScript* Script)
+void EntityVar::ReadValue(CScript* script)
 {
-	int Index;
+	const int index = script->ReadInt();
 
-	Index = Script->ReadInt();
-	if (Index == -1)
-	{
-		Value = NULL;
-	}
+	if (index == -1)
+		value = nullptr;
 	else
-	{
-		Value = &g_edicts[Index];
-	}
+		value = &g_edicts[index]; //TODO: check if index >= 0 && < globals.num_edicts?
 }
 
-void EntityVar::Debug(CScript* Script)
+void EntityVar::Debug(CScript* script)
 {
-	Variable::Debug(Script);
-
-	Script->DebugLine("      Entity Value: %d\n", GetIntValue());
+	Variable::Debug(script);
+	script->DebugLine("      Entity Value: %d\n", GetIntValue());
 }
 
-int EntityVar::GetIntValue(void)
+int EntityVar::GetIntValue()
 {
-	if (Value)
-	{
-		return Value - g_edicts;
-	}
+	if (value != nullptr)
+		return value - g_edicts;
 
 	return -1;
 }
 
-void EntityVar::operator =(Variable* VI)
+void EntityVar::operator =(Variable* v)
 {
-	Value = VI->GetEdictValue();
+	value = v->GetEdictValue();
 }
 
-bool EntityVar::operator ==(Variable* VI)
+bool EntityVar::operator ==(Variable* v)
 {
-	if (VI->GetType() == TYPE_INT)
-	{
-		return GetIntValue() == VI->GetIntValue();
-	}
-	else if (VI->GetType() == TYPE_ENTITY)
-	{
-		return GetEdictValue() == VI->GetEdictValue();
-	}
+	if (v->GetType() == TYPE_INT)
+		return GetIntValue() == v->GetIntValue();
+
+	if (v->GetType() == TYPE_ENTITY)
+		return GetEdictValue() == v->GetEdictValue();
 
 	return false;
 }
 
-bool EntityVar::operator !=(Variable* VI)
+bool EntityVar::operator !=(Variable* v)
 {
-	if (VI->GetType() == TYPE_INT)
-	{
-		return GetIntValue() != VI->GetIntValue();
-	}
-	else if (VI->GetType() == TYPE_ENTITY)
-	{
-		return GetEdictValue() != VI->GetEdictValue();
-	}
+	if (v->GetType() == TYPE_INT)
+		return GetIntValue() != v->GetIntValue();
+
+	if (v->GetType() == TYPE_ENTITY)
+		return GetEdictValue() != v->GetEdictValue();
 
 	return false;
 }

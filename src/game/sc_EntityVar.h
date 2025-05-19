@@ -11,19 +11,25 @@
 class EntityVar : public Variable
 {
 protected:
-	edict_t* Value;
+	edict_t* value = nullptr;
 
 public:
-	EntityVar(char* Name = "", int InitValue = 0);
-	EntityVar(edict_t* Which);
-	EntityVar(FILE* FH, CScript* Script);
-	virtual void		Write(FILE* FH, CScript* Script, int ID = -1);
-	virtual int			GetIntValue(void);
-	virtual edict_t* GetEdictValue(void) { return Value; }
-	virtual void		ReadValue(CScript* Script);
-	virtual void		Debug(CScript* Script);
+	EntityVar(const char* new_name = "", int ent_index = 0);
+	EntityVar(edict_t* which);
+	EntityVar(FILE* f, CScript* script);
 
-	virtual void	operator	=(Variable* VI);
-	virtual bool	operator	==(Variable* VI);
-	virtual bool	operator	!=(Variable* VI);
+	void Write(FILE* f, CScript* script, int id = -1) override;
+	int GetIntValue() override;
+
+	edict_t* GetEdictValue() override
+	{
+		return value;
+	}
+
+	void ReadValue(CScript* script) override;
+	void Debug(CScript* script) override;
+
+	void operator =(Variable* v) override;
+	bool operator ==(Variable* v) override;
+	bool operator !=(Variable* v) override;
 };
