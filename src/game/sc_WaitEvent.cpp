@@ -12,7 +12,6 @@
 WaitEvent::WaitEvent(float NewTime)
 	:Event(NewTime, EVENT_SCRIPT_WAIT)
 {
-	Priority = 0;
 }
 
 WaitEvent::WaitEvent(FILE* FH, CScript* Script)
@@ -27,7 +26,7 @@ void WaitEvent::Write(FILE* FH, CScript* Script, int ID)
 
 bool WaitEvent::Process(CScript* Script)
 {
-	if (level.time < Time)
+	if (level.time < time)
 	{
 		return FALSE;
 	}

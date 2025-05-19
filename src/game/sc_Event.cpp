@@ -8,28 +8,32 @@
 #include "sc_Utility.h"
 #include "g_local.h"
 
-Event::Event(float NewTime, EventT NewType)
+Event::Event(const float new_time, const EventT new_type)
 {
-	Time = floor((NewTime + 0.05) * 10) / 10;		// avoids stupid math rounding errors
-	Type = NewType;
+	time = floorf((new_time + 0.05f) * 10.0f) / 10.0f; // Avoids stupid math rounding errors.
+	type = new_type;
 }
 
-Event::Event(FILE* FH, CScript* Script)
+Event::Event(FILE* f, CScript* script)
 {
-	tRead(&Time, FH);
-	tRead(&Type, FH);
-	tRead(&Priority, FH);
+	tRead(&time, f);
+	tRead(&type, f);
+
+	int priority; //mxd. Preserve compatibility...
+	tRead(&priority, f);
 }
 
-void Event::Write(FILE* FH, CScript* Script, int ID)
+void Event::Write(FILE* f, CScript* script, const int id)
 {
-	fwrite(&ID, 1, sizeof(ID), FH);
-	tWrite(&Time, FH);
-	tWrite(&Type, FH);
-	tWrite(&Priority, FH);
+	fwrite(&id, 1, sizeof(id), f);
+	tWrite(&time, f);
+	tWrite(&type, f);
+
+	int priority = 0; //mxd. Preserve compatibility...
+	tWrite(&priority, f);
 }
 
-bool Event::Process(CScript* Script)
+bool Event::Process(CScript* script)
 {
 	return FALSE;
 }

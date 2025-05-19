@@ -14,8 +14,6 @@ ExecuteEvent::ExecuteEvent(float NewTime, edict_t* NewOther, edict_t* NewActivat
 {
 	Other = NewOther;
 	Activator = NewActivator;
-
-	Priority = 0;
 }
 
 ExecuteEvent::ExecuteEvent(FILE* FH, CScript* Script)
@@ -34,7 +32,7 @@ void ExecuteEvent::Write(FILE* FH, CScript* Script, int ID)
 
 bool ExecuteEvent::Process(CScript* Script)
 {
-	if (level.time < Time)
+	if (level.time < time)
 	{
 		return FALSE;
 	}

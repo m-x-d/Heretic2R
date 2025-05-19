@@ -13,8 +13,6 @@ RotateDoneEvent::RotateDoneEvent(float NewTime, edict_t* NewEnt)
 	:Event(NewTime, EVENT_ROTATE_DONE)
 {
 	Ent = NewEnt;
-
-	Priority = 10;
 }
 
 RotateDoneEvent::RotateDoneEvent(FILE* FH, CScript* Script)
@@ -31,7 +29,7 @@ void RotateDoneEvent::Write(FILE* FH, CScript* Script, int ID)
 
 bool RotateDoneEvent::Process(CScript* Script)
 {
-	if (level.time < Time)
+	if (level.time < time)
 	{
 		return FALSE;
 	}

@@ -21,16 +21,24 @@ class CScript;
 class Event
 {
 protected:
-	float		Time;
-	EventT		Type;
-	int			Priority;
+	float time = 0.0f;
+	EventT type = EVENT_MOVE_DONE;
 
 public:
-	Event(float NewTime, EventT NewType);
-	Event(FILE* FH, CScript* Script);
-	virtual void		Write(FILE* FH, CScript* Script, int ID = -1);
-	float		GetTime(void) { return Time; }
-	EventT		GetType(void) { return Type; }
-	int			GetPriority(void) { return Priority; }
-	virtual bool		Process(CScript* Script);
+	Event(float new_time, EventT new_type);
+	Event(FILE* f, CScript* script);
+
+	virtual void Write(FILE* f, CScript* script, int id = -1);
+
+	float GetTime() const
+	{
+		return time;
+	}
+
+	EventT GetType() const
+	{
+		return type;
+	}
+
+	virtual bool Process(CScript* script);
 };

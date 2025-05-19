@@ -13,8 +13,6 @@ MoveDoneEvent::MoveDoneEvent(float NewTime, edict_t* NewEnt)
 	:Event(NewTime, EVENT_MOVE_DONE)
 {
 	Ent = NewEnt;
-
-	Priority = 10;
 }
 
 MoveDoneEvent::MoveDoneEvent(FILE* FH, CScript* Script)
@@ -31,7 +29,7 @@ void MoveDoneEvent::Write(FILE* FH, CScript* Script, int ID)
 
 bool MoveDoneEvent::Process(CScript* Script)
 {
-	if (level.time < Time)
+	if (level.time < time)
 	{
 		return FALSE;
 	}
