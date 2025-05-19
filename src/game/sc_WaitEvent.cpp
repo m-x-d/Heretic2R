@@ -9,34 +9,28 @@
 #include "sc_Utility.h"
 #include "g_local.h"
 
-WaitEvent::WaitEvent(float NewTime)
-	:Event(NewTime, EVENT_SCRIPT_WAIT)
+WaitEvent::WaitEvent(const float new_time) : Event(new_time, EVENT_SCRIPT_WAIT)
 {
 }
 
-WaitEvent::WaitEvent(FILE* FH, CScript* Script)
-	:Event(FH, Script)
+WaitEvent::WaitEvent(FILE* f, CScript* script) : Event(f, script)
 {
 }
 
-void WaitEvent::Write(FILE* FH, CScript* Script, int ID)
+void WaitEvent::Write(FILE* f, CScript* script, int id)
 {
-	Event::Write(FH, Script, RLID_WAITEVENT);
+	Event::Write(f, script, RLID_WAITEVENT);
 }
 
-bool WaitEvent::Process(CScript* Script)
+bool WaitEvent::Process(CScript* script)
 {
 	if (level.time < time)
-	{
 		return FALSE;
-	}
 
-	Script->ClearTimeWait();
+	script->ClearTimeWait();
 
-	if (Script->CheckWait())
-	{
-		Script->Execute(NULL, NULL);
-	}
+	if (script->CheckWait())
+		script->Execute(nullptr, nullptr);
 
 	return TRUE;
 }

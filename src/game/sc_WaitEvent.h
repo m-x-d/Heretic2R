@@ -11,8 +11,9 @@
 class WaitEvent : public Event
 {
 public:
-	WaitEvent(float NewTime);
-	WaitEvent(FILE* FH, CScript* Script);
-	virtual void		Write(FILE* FH, CScript* Script, int ID = -1);
-	virtual bool		Process(CScript* Script);
+	WaitEvent(float new_time);
+	WaitEvent(FILE* f, CScript* script);
+
+	void Write(FILE* f, CScript* script, int id = -1) override;
+	bool Process(CScript* script) override;
 };
