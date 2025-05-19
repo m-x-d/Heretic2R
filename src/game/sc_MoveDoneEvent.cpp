@@ -9,33 +9,29 @@
 #include "sc_Utility.h"
 #include "g_local.h"
 
-MoveDoneEvent::MoveDoneEvent(float NewTime, edict_t* NewEnt)
-	:Event(NewTime, EVENT_MOVE_DONE)
+MoveDoneEvent::MoveDoneEvent(const float new_time, edict_t* new_ent) : Event(new_time, EVENT_MOVE_DONE)
 {
-	Ent = NewEnt;
+	ent = new_ent;
 }
 
-MoveDoneEvent::MoveDoneEvent(FILE* FH, CScript* Script)
-	:Event(FH, Script)
+MoveDoneEvent::MoveDoneEvent(FILE* f, CScript* script) : Event(f, script)
 {
-	ReadEnt(&Ent, FH);
+	ReadEnt(&ent, f);
 }
 
-void MoveDoneEvent::Write(FILE* FH, CScript* Script, int ID)
+void MoveDoneEvent::Write(FILE* f, CScript* script, int id)
 {
-	Event::Write(FH, Script, RLID_MOVEDONEEVENT);
-	WriteEnt(&Ent, FH);
+	Event::Write(f, script, RLID_MOVEDONEEVENT);
+	WriteEnt(&ent, f);
 }
 
-bool MoveDoneEvent::Process(CScript* Script)
+bool MoveDoneEvent::Process(CScript* script)
 {
 	if (level.time < time)
-	{
 		return FALSE;
-	}
 
-	Script->Move_Done(Ent);
-	script_signaler(Ent, SIGNAL_MOVE); //mxd. Inline move_signaler().
+	script->Move_Done(ent);
+	script_signaler(ent, SIGNAL_MOVE); //mxd. Inline move_signaler().
 
 	return TRUE;
 }
