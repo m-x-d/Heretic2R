@@ -19,34 +19,28 @@ extern "C" void ProcessScripts(void)
 			(*is)->Think();
 }
 
-extern "C" void ShutdownScripts(qboolean Complete)
+extern "C" void ShutdownScripts(const qboolean complete)
 {
-	List<CScript*>::Iter	is;
-	List<Variable*>::Iter	iv;
-	int						i;
-	edict_t* ent;
-
-	while (Scripts.Size())
+	while (Scripts.Size() > 0)
 	{
-		is = Scripts.Begin();
-		delete (*is);
+		List<CScript*>::Iter script = Scripts.Begin();
+		delete (*script);
 
-		Scripts.Erase(is);
+		Scripts.Erase(script);
 	}
 
-	for (i = 0, ent = g_edicts; i < globals.num_edicts; i++, ent++)
-	{
-		ent->Script = NULL;
-	}
+	edict_t* ent = &g_edicts[0];
+	for (int i = 0; i < globals.num_edicts; i++, ent++)
+		ent->Script = nullptr;
 
-	if (Complete)
+	if (complete)
 	{
-		while (GlobalVariables.Size())
+		while (GlobalVariables.Size() > 0)
 		{
-			iv = GlobalVariables.Begin();
-			delete (*iv);
+			List<Variable*>::Iter var = GlobalVariables.Begin();
+			delete (*var);
 
-			GlobalVariables.Erase(iv);
+			GlobalVariables.Erase(var);
 		}
 	}
 }
