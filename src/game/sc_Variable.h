@@ -21,7 +21,7 @@ public:
 
 	virtual void Write(FILE* f, CScript* script, int id = -1);
 
-	char* GetName()
+	const char* GetName() const
 	{
 		return name;
 	}
@@ -31,29 +31,29 @@ public:
 		return type;
 	}
 
-	virtual int GetIntValue()
+	virtual int GetIntValue() const
 	{
 		return 0;
 	}
 
-	virtual float GetFloatValue()
+	virtual float GetFloatValue() const
 	{
 		return 0.0f;
 	}
 
-	virtual void GetVectorValue(vec3_t& value)
+	virtual void GetVectorValue(vec3_t& value) const
 	{
 		value[0] = 0.0f;
 		value[1] = 0.0f;
 		value[2] = 0.0f;
 	}
 
-	virtual edict_t* GetEdictValue()
+	virtual edict_t* GetEdictValue() const
 	{
 		return nullptr;
 	}
 
-	virtual char* GetStringValue() //TODO: change return type to const char*.
+	virtual const char* GetStringValue() const
 	{
 		return "";
 	}

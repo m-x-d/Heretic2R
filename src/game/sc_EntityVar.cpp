@@ -57,7 +57,7 @@ void EntityVar::Debug(CScript* script)
 	script->DebugLine("      Entity Value: %d\n", GetIntValue());
 }
 
-int EntityVar::GetIntValue()
+int EntityVar::GetIntValue() const
 {
 	if (value != nullptr)
 		return value - g_edicts;

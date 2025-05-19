@@ -1234,7 +1234,7 @@ void CScript::HandlePrint(void)
 {
 	int			Flags;
 	Variable* Text, * Entity, * Level;
-	char* TextValue;
+	const char* TextValue;
 	int			LevelValue;
 	edict_t* ent;
 	int			TextIndex;
@@ -1328,7 +1328,7 @@ void CScript::HandlePlaySound(void)
 {
 	int			Flags;
 	Variable* SoundName, * Entity, * Volume, * Attenuation, * Channel, * TimeDelay;
-	char* SoundValue;
+	const char* SoundValue;
 	float		VolumeValue, AttenuationValue, TimeDelayValue;
 	int			ChannelValue;
 	edict_t* ent;
@@ -1494,7 +1494,7 @@ void CScript::HandleFeature(bool Enable)
 void CScript::HandleCacheSound(void)
 {
 	Variable* SoundName;
-	char* SoundValue;
+	const char* SoundValue;
 
 	SoundName = PopStack();
 	if (!SoundName)
@@ -2391,7 +2391,7 @@ ScriptConditionT CScript::Execute(edict_t* new_other, edict_t* new_activator)
 	return ScriptCondition;
 }
 
-Variable* CScript::FindLocal(char* Name)
+Variable* CScript::FindLocal(const char* Name)
 {
 	List<Variable*>::Iter	iv;
 
@@ -2424,7 +2424,7 @@ bool CScript::NewLocal(Variable* Which)
 	return true;
 }
 
-Variable* CScript::FindParameter(char* Name)
+Variable* CScript::FindParameter(const char* Name)
 {
 	List<Variable*>::Iter	iv;
 

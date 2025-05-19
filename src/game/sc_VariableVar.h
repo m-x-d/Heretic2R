@@ -21,7 +21,7 @@ public:
 	virtual float		GetFloatValue(void) { return Value->GetFloatValue(); }
 	virtual void		GetVectorValue(vec3_t& VecValue) { Value->GetVectorValue(VecValue); }
 	virtual edict_t* GetEdictValue(void) { return Value->GetEdictValue(); }
-	virtual char* GetStringValue(void) { return Value->GetStringValue(); }
+	virtual const char* GetStringValue(void) { return Value->GetStringValue(); }
 	virtual void		ReadValue(CScript* Script);
 	virtual void		Debug(CScript* Script);
 	virtual void		Signal(edict_t* Which) { Value->Signal(Which); }

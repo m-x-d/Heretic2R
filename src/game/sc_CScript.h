@@ -135,8 +135,8 @@ public:
 	void				Think(void);
 	ScriptConditionT	Execute(edict_t* new_other, edict_t* new_activator);
 
-	Variable* FindLocal(char* Name);
+	Variable* FindLocal(const char* Name);
 	bool				NewLocal(Variable* Which);
-	Variable* FindParameter(char* Name);
+	Variable* FindParameter(const char* Name);
 	bool				NewParameter(Variable* Which);
 };

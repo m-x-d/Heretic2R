@@ -19,9 +19,9 @@ public:
 	EntityVar(FILE* f, CScript* script);
 
 	void Write(FILE* f, CScript* script, int id = -1) override;
-	int GetIntValue() override;
+	int GetIntValue() const override;
 
-	edict_t* GetEdictValue() override
+	edict_t* GetEdictValue() const override
 	{
 		return value;
 	}

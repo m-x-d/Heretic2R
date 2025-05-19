@@ -11,33 +11,42 @@
 class FieldVariableVar : public Variable
 {
 protected:
-	Variable* Value;
-	FieldDef* Field;
+	Variable* value;
+	FieldDef* field;
 
 public:
-	FieldVariableVar(char* Name = "");
-	FieldVariableVar(FILE* FH, CScript* Script);
-	virtual void		Write(FILE* FH, CScript* Script, int ID = -1);
-	virtual int			GetIntValue(void);
-	virtual float		GetFloatValue(void);
-	virtual void		GetVectorValue(vec3_t& VecValue);
-	virtual edict_t* GetEdictValue(void);
-	virtual char* GetStringValue(void);
-	virtual void		ReadValue(CScript* Script);
-	virtual void		Debug(CScript* Script);
-	virtual void		Signal(edict_t* Which) { Value->Signal(Which); }
-	virtual void		ClearSignal(void) { Value->ClearSignal(); }
+	FieldVariableVar(const char* new_name = "");
+	FieldVariableVar(FILE* f, CScript* script);
 
-	virtual Variable* operator	+(Variable* VI);
-	virtual Variable* operator	-(Variable* VI);
-	virtual Variable* operator	*(Variable* VI);
-	virtual Variable* operator	/(Variable* VI);
-	virtual void	operator	=(Variable* VI);
+	void Write(FILE* f, CScript* script, int id = -1) override;
+	int GetIntValue() const override;
+	float GetFloatValue() const override;
+	void GetVectorValue(vec3_t& vec_value) const override;
+	edict_t* GetEdictValue() const override;
+	const char* GetStringValue() const override;
+	void ReadValue(CScript* script) override;
+	void Debug(CScript* script) override;
 
-	virtual bool	operator	==(Variable* VI);
-	virtual bool	operator	!=(Variable* VI);
-	virtual bool	operator	<(Variable* VI);
-	virtual bool	operator	<=(Variable* VI);
-	virtual bool	operator	>(Variable* VI);
-	virtual bool	operator	>=(Variable* VI);
+	void Signal(edict_t* which) override
+	{
+		value->Signal(which);
+	}
+
+	void ClearSignal() override
+	{
+		value->ClearSignal();
+	}
+
+	Variable* operator +(Variable* v) override;
+	Variable* operator -(Variable* v) override;
+	Variable* operator *(Variable* v) override;
+	Variable* operator /(Variable* v) override;
+	void operator =(Variable* v) override;
+
+	bool operator ==(Variable* v) override;
+	bool operator !=(Variable* v) override;
+	bool operator <(Variable* v) override;
+	bool operator <=(Variable* v) override;
+	bool operator >(Variable* v) override;
+	bool operator >=(Variable* v) override;
 };

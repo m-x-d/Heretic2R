@@ -7,164 +7,142 @@
 #include "sc_FieldVariableVar.h"
 #include "sc_CScript.h"
 #include "sc_Utility.h"
-#include "g_local.h"
+//#include "g_local.h"
 
-FieldVariableVar::FieldVariableVar(char* Name)
-	:Variable(Name, TYPE_UNKNOWN)
+FieldVariableVar::FieldVariableVar(const char* new_name) : Variable(new_name, TYPE_UNKNOWN)
 {
-	Value = NULL;
-	Field = NULL;
+	value = nullptr;
+	field = nullptr;
 }
 
-FieldVariableVar::FieldVariableVar(FILE* FH, CScript* Script)
-	:Variable(FH, Script)
+FieldVariableVar::FieldVariableVar(FILE* f, CScript* script) : Variable(f, script)
 {
-	int index;
+	int var_index;
+	fread(&var_index, 1, sizeof(var_index), f);
+	value = script->LookupVar(var_index);
 
-	fread(&index, 1, sizeof(index), FH);
-	Value = Script->LookupVar(index);
-
-	fread(&index, 1, sizeof(index), FH);
-	Field = Script->LookupField(index);
+	int field_index;
+	fread(&field_index, 1, sizeof(field_index), f);
+	field = script->LookupField(field_index);
 }
 
-void FieldVariableVar::Write(FILE* FH, CScript* Script, int ID)
+void FieldVariableVar::Write(FILE* f, CScript* script, int id)
 {
-	int index;
+	Variable::Write(f, script, RLID_FIELDVARIABLEVAR);
 
-	Variable::Write(FH, Script, RLID_FIELDVARIABLEVAR);
+	const int var_index = script->LookupVarIndex(value);
+	fwrite(&var_index, 1, sizeof(var_index), f);
 
-	index = Script->LookupVarIndex(Value);
-	fwrite(&index, 1, sizeof(index), FH);
-
-	index = Script->LookupFieldIndex(Field);
-	fwrite(&index, 1, sizeof(index), FH);
+	const int field_index = script->LookupFieldIndex(field);
+	fwrite(&field_index, 1, sizeof(field_index), f);
 }
 
-void FieldVariableVar::ReadValue(CScript* Script)
+void FieldVariableVar::ReadValue(CScript* script)
 {
-	int Index;
+	const int var_index = script->ReadInt();
+	value = script->LookupVar(var_index);
 
-	Index = Script->ReadInt();
-	Value = Script->LookupVar(Index);
-
-	Index = Script->ReadInt();
-	Field = Script->LookupField(Index);
+	const int field_index = script->ReadInt();
+	field = script->LookupField(field_index);
 }
 
-void FieldVariableVar::Debug(CScript* Script)
+void FieldVariableVar::Debug(CScript* script)
 {
-	Value->Debug(Script);
+	value->Debug(script);
 }
 
-int FieldVariableVar::GetIntValue(void)
+int FieldVariableVar::GetIntValue() const
 {
-	return Field->GetIntValue(Value);
+	return field->GetIntValue(value);
 }
 
-float FieldVariableVar::GetFloatValue(void)
+float FieldVariableVar::GetFloatValue() const
 {
-	return Field->GetFloatValue(Value);
+	return field->GetFloatValue(value);
 }
 
-void FieldVariableVar::GetVectorValue(vec3_t& VecValue)
+void FieldVariableVar::GetVectorValue(vec3_t& vec_value) const
 {
-	Field->GetVectorValue(Value, VecValue);
+	field->GetVectorValue(value, vec_value);
 }
 
-edict_t* FieldVariableVar::GetEdictValue(void)
+edict_t* FieldVariableVar::GetEdictValue() const
 {
-	return Field->GetEdictValue(Value);
+	return field->GetEdictValue(value);
 }
 
-char* FieldVariableVar::GetStringValue(void)
+const char* FieldVariableVar::GetStringValue() const
 {
-	return Field->GetStringValue(Value);
+	return field->GetStringValue(value);
 }
 
-Variable* FieldVariableVar::operator +(Variable* VI)
+Variable* FieldVariableVar::operator +(Variable* v)
 {
-	Variable* Result, * Val;
+	Variable* val = field->GetValue(value);
+	Variable* result = *val + v;
+	delete val;
 
-	Val = Field->GetValue(Value);
-
-	Result = (*Val) + VI;
-
-	delete Val;
-
-	return Result;
+	return result;
 }
 
-Variable* FieldVariableVar::operator -(Variable* VI)
+Variable* FieldVariableVar::operator -(Variable* v)
 {
-	Variable* Result, * Val;
+	Variable* val = field->GetValue(value);
+	Variable* result = *val - v;
+	delete val;
 
-	Val = Field->GetValue(Value);
-
-	Result = (*Val) - VI;
-
-	delete Val;
-
-	return Result;
+	return result;
 }
 
-Variable* FieldVariableVar::operator *(Variable* VI)
+Variable* FieldVariableVar::operator *(Variable* v)
 {
-	Variable* Result, * Val;
+	Variable* val = field->GetValue(value);
+	Variable* result = *val * v;
+	delete val;
 
-	Val = Field->GetValue(Value);
-
-	Result = (*Val) * VI;
-
-	delete Val;
-
-	return Result;
+	return result;
 }
 
-Variable* FieldVariableVar::operator /(Variable* VI)
+Variable* FieldVariableVar::operator /(Variable* v)
 {
-	Variable* Result, * Val;
+	Variable* val = field->GetValue(value);
+	Variable* result = *val / v;
+	delete val;
 
-	Val = Field->GetValue(Value);
-
-	Result = (*Val) / VI;
-
-	delete Val;
-
-	return Result;
+	return result;
 }
 
-void FieldVariableVar::operator =(Variable* VI)
+void FieldVariableVar::operator =(Variable* v)
 {
-	Field->SetValue(Value, VI);
+	field->SetValue(value, v);
 }
 
-bool FieldVariableVar::operator ==(Variable* VI)
+bool FieldVariableVar::operator ==(Variable* v)
 {
-	return (*Value) == VI;
+	return *value == v;
 }
 
-bool FieldVariableVar::operator !=(Variable* VI)
+bool FieldVariableVar::operator !=(Variable* v)
 {
-	return (*Value) != VI;
+	return *value != v;
 }
 
-bool FieldVariableVar::operator <(Variable* VI)
+bool FieldVariableVar::operator <(Variable* v)
 {
-	return (*Value) < VI;
+	return *value < v;
 }
 
-bool FieldVariableVar::operator <=(Variable* VI)
+bool FieldVariableVar::operator <=(Variable* v)
 {
-	return (*Value) <= VI;
+	return *value <= v;
 }
 
-bool FieldVariableVar::operator >(Variable* VI)
+bool FieldVariableVar::operator >(Variable* v)
 {
-	return (*Value) > VI;
+	return *value > v;
 }
 
-bool FieldVariableVar::operator >=(Variable* VI)
+bool FieldVariableVar::operator >=(Variable* v)
 {
-	return (*Value) >= VI;
+	return *value >= v;
 }
