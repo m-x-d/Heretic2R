@@ -6,7 +6,6 @@
 
 #include "sc_Variable.h"
 #include "sc_CScript.h"
-#include "g_local.h"
 
 Variable::Variable(const char* new_name, const VariableType new_type)
 {
