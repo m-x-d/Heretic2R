@@ -16,7 +16,7 @@ protected:
 	VariableType type = TYPE_UNKNOWN;
 
 public:
-	Variable(const char* new_name = "", VariableType new_type = TYPE_UNKNOWN); //TODO: change new_name type to const char*.
+	Variable(const char* new_name = "", VariableType new_type = TYPE_UNKNOWN);
 	Variable(FILE* f, CScript* script);
 
 	virtual void Write(FILE* f, CScript* script, int id = -1);
