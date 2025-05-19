@@ -11,32 +11,104 @@
 class VariableVar : public Variable
 {
 protected:
-	Variable* Value;
+	Variable* value = nullptr;
 
 public:
-	VariableVar(char* Name = "");
-	VariableVar(FILE* FH, CScript* Script);
-	virtual void		Write(FILE* FH, CScript* Script, int ID = -1);
-	virtual int			GetIntValue(void) { return Value->GetIntValue(); }
-	virtual float		GetFloatValue(void) { return Value->GetFloatValue(); }
-	virtual void		GetVectorValue(vec3_t& VecValue) { Value->GetVectorValue(VecValue); }
-	virtual edict_t* GetEdictValue(void) { return Value->GetEdictValue(); }
-	virtual const char* GetStringValue(void) { return Value->GetStringValue(); }
-	virtual void		ReadValue(CScript* Script);
-	virtual void		Debug(CScript* Script);
-	virtual void		Signal(edict_t* Which) { Value->Signal(Which); }
-	virtual void		ClearSignal(void) { Value->ClearSignal(); }
+	VariableVar(const char* new_name = "");
+	VariableVar(FILE* f, CScript* script);
 
-	virtual Variable* operator	+(Variable* VI) { return (*Value) + VI; }
-	virtual Variable* operator	-(Variable* VI) { return (*Value) - VI; }
-	virtual Variable* operator	*(Variable* VI) { return (*Value) * VI; }
-	virtual Variable* operator	/(Variable* VI) { return (*Value) / VI; }
-	virtual void	operator	=(Variable* VI) { (*Value) = VI; }
+	void Write(FILE* f, CScript* script, int id = -1) override;
 
-	virtual bool	operator	==(Variable* VI) { return (*Value) == VI; }
-	virtual bool	operator	!=(Variable* VI) { return (*Value) != VI; }
-	virtual bool	operator	<(Variable* VI) { return (*Value) < VI; }
-	virtual bool	operator	<=(Variable* VI) { return (*Value) <= VI; }
-	virtual bool	operator	>(Variable* VI) { return (*Value) > VI; }
-	virtual bool	operator	>=(Variable* VI) { return (*Value) >= VI; }
+	int GetIntValue() const override
+	{
+		return value->GetIntValue();
+	}
+
+	float GetFloatValue() const override
+	{
+		return value->GetFloatValue();
+	}
+
+	void GetVectorValue(vec3_t& dest_value) const override
+	{
+		value->GetVectorValue(dest_value);
+	}
+
+	edict_t* GetEdictValue() const override
+	{
+		return value->GetEdictValue();
+	}
+
+	const char* GetStringValue() const override
+	{
+		return value->GetStringValue();
+	}
+
+	void ReadValue(CScript* script) override;
+	void Debug(CScript* script) override;
+
+	void Signal(edict_t* which) override
+	{
+		value->Signal(which);
+	}
+
+	void ClearSignal() override
+	{
+		value->ClearSignal();
+	}
+
+	Variable* operator +(Variable* v) override
+	{
+		return *value + v;
+	}
+
+	Variable* operator -(Variable* v) override
+	{
+		return *value - v;
+	}
+
+	Variable* operator *(Variable* v) override
+	{
+		return *value * v;
+	}
+
+	Variable* operator /(Variable* v) override
+	{
+		return *value / v;
+	}
+
+	void operator =(Variable* v) override
+	{
+		*value = v;
+	}
+
+	bool operator ==(Variable* v) override
+	{
+		return *value == v;
+	}
+
+	bool operator !=(Variable* v) override
+	{
+		return *value != v;
+	}
+
+	bool operator <(Variable* v) override
+	{
+		return *value < v;
+	}
+
+	bool operator <=(Variable* v) override
+	{
+		return *value <= v;
+	}
+
+	bool operator >(Variable* v) override
+	{
+		return *value > v;
+	}
+
+	bool operator >=(Variable* v) override
+	{
+		return *value >= v;
+	}
 };

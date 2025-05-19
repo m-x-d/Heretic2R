@@ -7,48 +7,38 @@
 #include "sc_VariableVar.h"
 #include "sc_CScript.h"
 #include "sc_Utility.h"
-#include "g_local.h"
 
-VariableVar::VariableVar(char* Name)
-	:Variable(Name, TYPE_UNKNOWN)
+VariableVar::VariableVar(const char* new_name) : Variable(new_name, TYPE_UNKNOWN)
 {
-	Value = NULL;
+	value = nullptr;
 }
 
-VariableVar::VariableVar(FILE* FH, CScript* Script)
-	:Variable(FH, Script)
+VariableVar::VariableVar(FILE* f, CScript* script) : Variable(f, script)
 {
 	int index;
+	fread(&index, 1, sizeof(index), f);
 
-	fread(&index, 1, sizeof(index), FH);
-	Value = Script->LookupVar(index);
+	value = script->LookupVar(index);
 }
 
-void VariableVar::Write(FILE* FH, CScript* Script, int ID)
+void VariableVar::Write(FILE* f, CScript* script, int id)
 {
-	int index;
+	Variable::Write(f, script, RLID_VARIABLEVAR);
 
-	Variable::Write(FH, Script, RLID_VARIABLEVAR);
-
-	index = Script->LookupVarIndex(Value);
-	fwrite(&index, 1, sizeof(index), FH);
+	const int index = script->LookupVarIndex(value);
+	fwrite(&index, 1, sizeof(index), f);
 }
 
-void VariableVar::ReadValue(CScript* Script)
+void VariableVar::ReadValue(CScript* script)
 {
-	int Index;
+	const int index = script->ReadInt();
+	value = script->LookupVar(index);
 
-	Index = Script->ReadInt();
-
-	Value = Script->LookupVar(Index);
-
-	if (Value)
-	{
-		type = Value->GetType();
-	}
+	if (value != nullptr)
+		type = value->GetType();
 }
 
-void VariableVar::Debug(CScript* Script)
+void VariableVar::Debug(CScript* script)
 {
-	Value->Debug(Script);
+	value->Debug(script);
 }
