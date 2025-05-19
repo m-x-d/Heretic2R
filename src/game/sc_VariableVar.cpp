@@ -44,7 +44,7 @@ void VariableVar::ReadValue(CScript* Script)
 
 	if (Value)
 	{
-		Type = Value->GetType();
+		type = Value->GetType();
 	}
 }
 

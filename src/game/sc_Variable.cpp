@@ -8,42 +8,35 @@
 #include "sc_CScript.h"
 #include "g_local.h"
 
-Variable::Variable(char* NewName, VariableType NewType)
+Variable::Variable(const char* new_name, const VariableType new_type)
 {
-	strcpy(Name, NewName);
-	Type = NewType;
+	strcpy_s(name, new_name); //mxd. strcpy -> strcpy_s.
+	type = new_type;
 }
 
-Variable::Variable(FILE* FH, CScript* Script)
+Variable::Variable(FILE* f, CScript* script)
 {
 	int index;
 
-	fread(Name, 1, sizeof(Name), FH);
-	fread(&Type, 1, sizeof(Type), FH);
-	fread(&index, 1, sizeof(index), FH);
+	fread(name, 1, sizeof(name), f);
+	fread(&type, 1, sizeof(type), f);
+	fread(&index, 1, sizeof(index), f);
 
-	if (Script && index != -1)
-	{
-		Script->SetVarIndex(index, this);
-	}
+	if (script != nullptr && index != -1)
+		script->SetVarIndex(index, this);
 }
 
-void Variable::Write(FILE* FH, CScript* Script, int ID)
+void Variable::Write(FILE* f, CScript* script, const int id)
 {
-	int	index = -1;
+	fwrite(&id, 1, sizeof(id), f);
+	fwrite(name, 1, sizeof(name), f);
+	fwrite(&type, 1, sizeof(type), f);
 
-	fwrite(&ID, 1, sizeof(ID), FH);
-	fwrite(Name, 1, sizeof(Name), FH);
-	fwrite(&Type, 1, sizeof(Type), FH);
-
-	if (Script)
-	{
-		index = Script->LookupVarIndex(this);
-	}
-	fwrite(&index, 1, sizeof(index), FH);
+	const int index = ((script != nullptr) ? script->LookupVarIndex(this) : -1);
+	fwrite(&index, 1, sizeof(index), f);
 }
 
-void Variable::Debug(CScript* Script)
+void Variable::Debug(CScript* script)
 {
-	Script->DebugLine("   Name: %s\n", Name);
+	script->DebugLine("   Name: %s\n", name);
 }
