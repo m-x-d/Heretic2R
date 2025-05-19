@@ -7,70 +7,65 @@
 #include "sc_IntVar.h"
 #include "sc_CScript.h"
 #include "sc_Utility.h"
-#include "g_local.h"
 
-IntVar::IntVar(char* Name, int InitValue)
-	:Variable(Name, TYPE_INT)
+IntVar::IntVar(const char* new_name, const int new_value) : Variable(new_name, TYPE_INT)
 {
-	Value = InitValue;
+	value = new_value;
 }
 
-IntVar::IntVar(FILE* FH, CScript* Script)
-	:Variable(FH, Script)
+IntVar::IntVar(FILE* f, CScript* script) : Variable(f, script)
 {
-	fread(&Value, 1, sizeof(Value), FH);
+	fread(&value, 1, sizeof(value), f);
 }
 
-void IntVar::Write(FILE* FH, CScript* Script, int ID)
+void IntVar::Write(FILE* f, CScript* script, int id)
 {
-	Variable::Write(FH, Script, RLID_INTVAR);
-
-	fwrite(&Value, 1, sizeof(Value), FH);
+	Variable::Write(f, script, RLID_INTVAR);
+	fwrite(&value, 1, sizeof(value), f);
 }
 
-void IntVar::ReadValue(CScript* Script)
+void IntVar::ReadValue(CScript* script)
 {
-	Value = Script->ReadInt();
+	value = script->ReadInt();
 }
 
-void IntVar::Debug(CScript* Script)
+void IntVar::Debug(CScript* script)
 {
-	Variable::Debug(Script);
-
-	Script->DebugLine("      Integer Value: %d\n", Value);
+	Variable::Debug(script);
+	script->DebugLine("      Integer Value: %d\n", value);
 }
 
-void IntVar::Signal(edict_t* Which)
+void IntVar::Signal(edict_t* which)
 {
-	Value++;
+	value++;
 }
 
-void IntVar::ClearSignal(void)
+void IntVar::ClearSignal()
 {
-	Value = 0;
+	value = 0;
 }
 
-Variable* IntVar::operator +(Variable* VI)
+Variable* IntVar::operator +(Variable* v)
 {
-	return new IntVar("", Value + VI->GetIntValue());
+	return new IntVar("", value + v->GetIntValue());
 }
 
-Variable* IntVar::operator -(Variable* VI)
+Variable* IntVar::operator -(Variable* v)
 {
-	return new IntVar("", Value - VI->GetIntValue());
+	return new IntVar("", value - v->GetIntValue());
 }
 
-Variable* IntVar::operator *(Variable* VI)
+Variable* IntVar::operator *(Variable* v)
 {
-	return new IntVar("", Value * VI->GetIntValue());
+	return new IntVar("", value * v->GetIntValue());
 }
 
-Variable* IntVar::operator /(Variable* VI)
+Variable* IntVar::operator /(Variable* v)
 {
-	return new IntVar("", Value / VI->GetIntValue());
+	return new IntVar("", value / v->GetIntValue());
 }
 
-void IntVar::operator =(Variable* VI)
+void IntVar::operator =(Variable* v)
 {
-	Value = VI->GetIntValue();
+	value = v->GetIntValue();
 }

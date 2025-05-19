@@ -11,29 +11,62 @@
 class IntVar : public Variable
 {
 protected:
-	int	Value;
+	int	value = 0;
 
 public:
-	IntVar(char* Name = "", int InitValue = 0);
-	IntVar(FILE* FH, CScript* Script);
-	virtual void		Write(FILE* FH, CScript* Script, int ID = -1);
-	virtual int			GetIntValue(void) { return Value; }
-	virtual float		GetFloatValue(void) { return (float)Value; }
-	virtual void		ReadValue(CScript* Script);
-	virtual void		Debug(CScript* Script);
-	virtual void		Signal(edict_t* Which);
-	virtual void		ClearSignal(void);
+	IntVar(const char* new_name = "", int new_value = 0);
+	IntVar(FILE* f, CScript* script);
 
-	virtual Variable* operator	+(Variable* VI);
-	virtual Variable* operator	-(Variable* VI);
-	virtual Variable* operator	*(Variable* VI);
-	virtual Variable* operator	/(Variable* VI);
-	virtual void	operator	=(Variable* VI);
+	void Write(FILE* f, CScript* script, int id = -1) override;
 
-	virtual bool	operator	==(Variable* VI) { return Value == VI->GetIntValue(); }
-	virtual bool	operator	!=(Variable* VI) { return Value != VI->GetIntValue(); }
-	virtual bool	operator	<(Variable* VI) { return Value < VI->GetIntValue(); }
-	virtual bool	operator	<=(Variable* VI) { return Value <= VI->GetIntValue(); }
-	virtual bool	operator	>(Variable* VI) { return Value > VI->GetIntValue(); }
-	virtual bool	operator	>=(Variable* VI) { return Value >= VI->GetIntValue(); }
+	int GetIntValue() const override
+	{
+		return value;
+	}
+
+	float GetFloatValue() const override
+	{
+		return static_cast<float>(value);
+	}
+
+	void ReadValue(CScript* script) override;
+	void Debug(CScript* script) override;
+	void Signal(edict_t* which) override;
+	void ClearSignal() override;
+
+	Variable* operator +(Variable* v) override;
+	Variable* operator -(Variable* v) override;
+	Variable* operator *(Variable* v) override;
+	Variable* operator /(Variable* v) override;
+	void operator =(Variable* v) override;
+
+	bool operator ==(Variable* v) override
+	{
+		return value == v->GetIntValue();
+	}
+
+	bool operator !=(Variable* v) override
+	{
+		return value != v->GetIntValue();
+	}
+
+	bool operator <(Variable* v) override
+	{
+		return value < v->GetIntValue();
+	}
+
+	bool operator <=(Variable* v) override
+	{
+		return value <= v->GetIntValue();
+	}
+
+	bool operator >(Variable* v) override
+	{
+		return value > v->GetIntValue();
+	}
+
+	bool operator >=(Variable* v) override
+	{
+		return value >= v->GetIntValue();
+	}
 };
