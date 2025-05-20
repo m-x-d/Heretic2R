@@ -222,85 +222,74 @@ void CScript::LoadFile()
 	}
 }
 
-void CScript::Free(bool DoData)
+void CScript::Free(const bool do_data) //TODO: do_data always true, remove?
 {
-	int						i;
-	List<Variable*>::Iter	iv;
-	List<Signaler*>::Iter	is;
-	List<StringVar*>::Iter	isv;
-	List<Event*>::Iter		iev;
-
-	if (data && DoData)
+	if (do_data && data != nullptr)
 	{
 		gi.FS_FreeFile(data);
-		data = NULL;
+		data = nullptr;
 	}
 
 	while (local_variables.Size())
 	{
-		iv = local_variables.Begin();
-		delete (*iv);
+		List<Variable*>::Iter var = local_variables.Begin();
+		delete *var;
 
-		local_variables.Erase(iv);
+		local_variables.Erase(var);
 	}
 
 	while (parameter_variables.Size())
 	{
-		iv = parameter_variables.Begin();
-		delete (*iv);
+		List<Variable*>::Iter var = parameter_variables.Begin();
+		delete *var;
 
-		parameter_variables.Erase(iv);
+		parameter_variables.Erase(var);
 	}
 
 	while (stack_variables.Size())
 	{
-		iv = stack_variables.Begin();
-		delete (*iv);
+		List<Variable*>::Iter var = stack_variables.Begin();
+		delete *var;
 
-		stack_variables.Erase(iv);
+		stack_variables.Erase(var);
 	}
 
 	while (waiting_variables.Size())
 	{
-		iv = waiting_variables.Begin();
-		delete (*iv);
+		List<Variable*>::Iter var = waiting_variables.Begin();
+		delete *var;
 
-		waiting_variables.Erase(iv);
+		waiting_variables.Erase(var);
 	}
 
 	while (signalers.Size())
 	{
-		is = signalers.Begin();
-		delete (*is);
+		List<Signaler*>::Iter signaler = signalers.Begin();
+		delete *signaler;
 
-		signalers.Erase(is);
+		signalers.Erase(signaler);
 	}
 
 	while (parameter_values.Size())
 	{
-		isv = parameter_values.Begin();
-		delete (*isv);
+		List<StringVar*>::Iter param_val = parameter_values.Begin();
+		delete *param_val;
 
-		parameter_values.Erase(isv);
+		parameter_values.Erase(param_val);
 	}
 
 	while (events.Size())
 	{
-		iev = events.Begin();
-		delete (*iev);
+		List<Event*>::Iter event = events.Begin();
+		delete *event;
 
-		events.Erase(iev);
+		events.Erase(event);
 	}
 
-	for (i = 0; i < MAX_INDEX; i++)
-	{
-		if (fielddefs[i])
-		{
-			delete fielddefs[i];
-		}
-	}
+	for (const auto& fielddef : fielddefs)
+		delete fielddef;
 
-	Clear(DoData);
+	Clear(do_data);
 }
 
 void CScript::Clear(bool DoData)
