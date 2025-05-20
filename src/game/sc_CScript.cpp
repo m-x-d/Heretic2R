@@ -1688,48 +1688,31 @@ void CScript::CheckSignalers(edict_t* which, const SignalT signal_type)
 		FinishWait(which, true);
 }
 
-bool CScript::CheckWait(void)
+bool CScript::CheckWait()
 {
-	List<Variable*>::Iter	iv;
-	int						count, needed;
+	int needed_vars;
 
 	if (script_condition == COND_WAIT_ALL)
-	{
-		needed = waiting_variables.Size();
-	}
+		needed_vars = waiting_variables.Size();
 	else if (script_condition == COND_WAIT_ANY)
-	{
-		needed = 1;
-	}
-	else if (script_condition == COND_WAIT_TIME)
-	{
-		return false;
-	}
+		needed_vars = 1;
 	else if (script_condition == COND_READY)
-	{
 		return true;
-	}
-	else
-	{
+	else // COND_WAIT_TIME, COND_COMPLETED, COND_SUSPENDED.
 		return false;
-	}
 
-	count = 0;
-	if (waiting_variables.Size())
+	int num_vars = 0;
+
+	if (waiting_variables.Size() > 0)
 	{
-		for (iv = waiting_variables.Begin(); iv != waiting_variables.End(); iv++)
-		{
-			if ((*iv)->GetIntValue())
-			{
-				count++;
-			}
-		}
+		for (List<Variable*>::Iter var = waiting_variables.Begin(); var != waiting_variables.End(); ++var)
+			if ((*var)->GetIntValue() != 0)
+				num_vars++;
 	}
 
-	if (count == needed)
+	if (num_vars == needed_vars)
 	{
 		script_condition = COND_READY;
-
 		return true;
 	}
 
