@@ -823,57 +823,49 @@ void CScript::HandleDivide()
 	delete v2;
 }
 
-void CScript::HandleDebug(void)
+void CScript::HandleDebug()
 {
-	List<Variable*>::Iter	iv;
-	int						Flags;
+	int flags = ReadByte();
 
-	Flags = ReadByte();
-
-	if (Flags)
+	if (flags != 0)
 	{
-		if (Flags & DEBUG_ENABLE)
+		if (flags & DEBUG_ENABLE)
 		{
-			Flags &= ~DEBUG_ENABLE;
-			debug_flags |= Flags;
+			flags &= ~DEBUG_ENABLE;
+			debug_flags |= flags;
 		}
 		else
 		{
-			debug_flags &= ~Flags;
+			debug_flags &= ~flags;
 		}
+
+		return;
 	}
-	else
+
+	StartDebug();
+
+	if (parameter_variables.Size() > 0)
 	{
-		StartDebug();
-
-		if (parameter_variables.Size())
-		{
-			DebugLine("   Parameters:\n");
-			for (iv = parameter_variables.Begin(); iv != parameter_variables.End(); iv++)
-			{
-				(*iv)->Debug(this);
-			}
-		}
-
-		if (GlobalVariables.Size())
-		{
-			DebugLine("   Global Variables:\n");
-			for (iv = GlobalVariables.Begin(); iv != GlobalVariables.End(); iv++)
-			{
-				(*iv)->Debug(this);
-			}
-		}
-
-		if (local_variables.Size())
-		{
-			DebugLine("   Local Variables:\n");
-			for (iv = local_variables.Begin(); iv != local_variables.End(); iv++)
-			{
-				(*iv)->Debug(this);
-			}
-		}
-		EndDebug();
+		DebugLine("   Parameters:\n");
+		for (List<Variable*>::Iter var = parameter_variables.Begin(); var != parameter_variables.End(); ++var)
+			(*var)->Debug(this);
 	}
+
+	if (GlobalVariables.Size() > 0)
+	{
+		DebugLine("   Global Variables:\n");
+		for (List<Variable*>::Iter var = GlobalVariables.Begin(); var != GlobalVariables.End(); ++var)
+			(*var)->Debug(this);
+	}
+
+	if (local_variables.Size() > 0)
+	{
+		DebugLine("   Local Variables:\n");
+		for (List<Variable*>::Iter var = local_variables.Begin(); var != local_variables.End(); ++var)
+			(*var)->Debug(this);
+	}
+
+	EndDebug();
 }
 
 void CScript::HandleDebugStatement(void)
