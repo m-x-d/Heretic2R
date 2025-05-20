@@ -105,12 +105,12 @@ extern "C"
 	extern cvar_t* Cvar_Set(const char* var_name, const char* value);
 }
 
-CScript::CScript(const char* ScriptName, edict_t* new_owner)
+CScript::CScript(const char* script_name, edict_t* new_owner)
 {
 	Clear(true);
 
 	owner = new_owner;
-	strcpy(name, ScriptName);
+	strcpy_s(name, script_name); //mxd. strcpy -> strcpy_s.
 
 	LoadFile();
 }
