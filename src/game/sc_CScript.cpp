@@ -1587,25 +1587,24 @@ void CScript::Rotate_Done(edict_t* ent)
 
 void CScript::Rotate(edict_t* ent)
 {
-	float	distance;
-	vec3_t	destdelta;
-	float	frames;
+	float frames;
 
-	VectorSubtract(ent->moveinfo.start_angles, ent->s.angles, destdelta);
-
-	distance = VectorNormalize(destdelta);
-	if (ent->moveinfo.speed <= 0)
+	if (ent->moveinfo.speed <= 0.0f)
 	{
-		frames = 0;
+		frames = 0.0f;
 		VectorClear(ent->avelocity);
 	}
 	else
 	{
-		frames = floor((distance / ent->moveinfo.speed) / FRAMETIME) + 1;
-		VectorScale(destdelta, distance / frames / FRAMETIME, ent->avelocity);
+		vec3_t dest_delta;
+		VectorSubtract(ent->moveinfo.start_angles, ent->s.angles, dest_delta);
+		const float distance = VectorNormalize(dest_delta);
+
+		frames = floorf(distance / ent->moveinfo.speed / FRAMETIME) + 1.0f;
+		VectorScale(dest_delta, distance / frames / FRAMETIME, ent->avelocity);
 	}
 
-	AddEvent(new RotateDoneEvent(level.time + (frames * FRAMETIME), ent));
+	AddEvent(new RotateDoneEvent(level.time + frames * FRAMETIME, ent));
 }
 
 void CScript::AddEvent(Event* Which)
