@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include <float.h>
 #include "client.h"
 #include "cl_effects.h"
 #include "cl_skeletons.h"
@@ -40,7 +41,7 @@ static void EmptyPlayerAction4(playerinfo_t* playerinfo) {}
 void CL_ResetPlayerInfo(void)
 {
 	cl.playerinfo.isclient = true;
-	cl.playerinfo.Highestleveltime = -10000000000000000000000000000000.0f; //TODO: is this exact value checked anywhere? Replace with FLT_MIN?
+	cl.playerinfo.Highestleveltime = -FLT_MAX; //mxd. -10000000000000000000000000000000.0f in original logic;
 	cl.playerinfo.CL_Sound = CL_Sound;
 	cl.playerinfo.CL_Trace = CL_Trace;
 	cl.playerinfo.CL_CreateEffect = CL_CreateEffect;
