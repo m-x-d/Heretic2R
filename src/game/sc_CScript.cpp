@@ -115,99 +115,79 @@ CScript::CScript(const char* script_name, edict_t* new_owner)
 	LoadFile();
 }
 
-CScript::CScript(FILE* FH)
+CScript::CScript(FILE* f)
 {
-	int						index;
-	int						size;
-	int						i;
-	char					name[VAR_LENGTH];
+	int index;
+	int size;
 
 	Clear(true);
 
-	fread(name, 1, sizeof(name), FH);
+	fread(name, 1, sizeof(name), f);
 	LoadFile();
 
-	fread(&script_condition, 1, sizeof(script_condition), FH);
-	fread(&condition_info, 1, sizeof(condition_info), FH);
-	fread(&length, 1, sizeof(length), FH);
-	fread(&position, 1, sizeof(position), FH);
-	fread(&debug_flags, 1, sizeof(debug_flags), FH);
+	fread(&script_condition, 1, sizeof(script_condition), f);
+	fread(&condition_info, 1, sizeof(condition_info), f);
+	fread(&length, 1, sizeof(length), f);
+	fread(&position, 1, sizeof(position), f);
+	fread(&debug_flags, 1, sizeof(debug_flags), f);
 
-	fread(&index, 1, sizeof(index), FH);
+	fread(&index, 1, sizeof(index), f);
 	if (index != -1)
 	{
 		owner = &g_edicts[index];
 		owner->Script = this;
 	}
 
-	fread(&index, 1, sizeof(index), FH);
+	fread(&index, 1, sizeof(index), f);
 	if (index != -1)
-	{
 		other = &g_edicts[index];
-	}
 
-	fread(&index, 1, sizeof(index), FH);
+	fread(&index, 1, sizeof(index), f);
 	if (index != -1)
-	{
 		activator = &g_edicts[index];
-	}
 
-	fread(&size, 1, sizeof(size), FH);
-	for (i = 0; i < size; i++)
-	{	// fields - they'll put themselves in
-		RestoreObject(FH, ScriptRL, this);
-	}
+	fread(&size, 1, sizeof(size), f);
+	for (int i = 0; i < size; i++)
+		RestoreObject(f, ScriptRL, this); // Fields - they'll put themselves in.
 
-	fread(&size, 1, sizeof(size), FH);
-	for (i = 0; i < size; i++)
+	fread(&size, 1, sizeof(size), f);
+	for (int i = 0; i < size; i++)
 	{
-		fread(&index, 1, sizeof(index), FH);
-		fread(name, 1, VAR_LENGTH, FH);
+		fread(&index, 1, sizeof(index), f);
 
-		variable_index[index] = FindGlobal(name);
+		char var_name[VAR_LENGTH];
+		fread(var_name, 1, VAR_LENGTH, f);
+
+		variable_index[index] = FindGlobal(var_name);
 	}
 
-	fread(&size, 1, sizeof(size), FH);
-	for (i = 0; i < size; i++)
-	{
-		local_variables.PushBack((Variable*)RestoreObject(FH, ScriptRL, this));
-	}
+	fread(&size, 1, sizeof(size), f);
+	for (int i = 0; i < size; i++)
+		local_variables.PushBack(static_cast<Variable*>(RestoreObject(f, ScriptRL, this)));
 
-	fread(&size, 1, sizeof(size), FH);
-	for (i = 0; i < size; i++)
-	{
-		parameter_variables.PushBack((Variable*)RestoreObject(FH, ScriptRL, this));
-	}
+	fread(&size, 1, sizeof(size), f);
+	for (int i = 0; i < size; i++)
+		parameter_variables.PushBack(static_cast<Variable*>(RestoreObject(f, ScriptRL, this)));
 
-	fread(&size, 1, sizeof(size), FH);
-	for (i = 0; i < size; i++)
-	{
-		stack_variables.PushBack((Variable*)RestoreObject(FH, ScriptRL, this));
-	}
+	fread(&size, 1, sizeof(size), f);
+	for (int i = 0; i < size; i++)
+		stack_variables.PushBack(static_cast<Variable*>(RestoreObject(f, ScriptRL, this)));
 
-	fread(&size, 1, sizeof(size), FH);
-	for (i = 0; i < size; i++)
-	{
-		waiting_variables.PushBack((Variable*)RestoreObject(FH, ScriptRL, this));
-	}
+	fread(&size, 1, sizeof(size), f);
+	for (int i = 0; i < size; i++)
+		waiting_variables.PushBack(static_cast<Variable*>(RestoreObject(f, ScriptRL, this)));
 
-	fread(&size, 1, sizeof(size), FH);
-	for (i = 0; i < size; i++)
-	{
-		signalers.PushBack((Signaler*)RestoreObject(FH, ScriptRL, this));
-	}
+	fread(&size, 1, sizeof(size), f);
+	for (int i = 0; i < size; i++)
+		signalers.PushBack(static_cast<Signaler*>(RestoreObject(f, ScriptRL, this)));
 
-	fread(&size, 1, sizeof(size), FH);
-	for (i = 0; i < size; i++)
-	{
-		parameter_values.PushBack((StringVar*)RestoreObject(FH, ScriptRL, this));
-	}
+	fread(&size, 1, sizeof(size), f);
+	for (int i = 0; i < size; i++)
+		parameter_values.PushBack(static_cast<StringVar*>(RestoreObject(f, ScriptRL, this)));
 
-	fread(&size, 1, sizeof(size), FH);
-	for (i = 0; i < size; i++)
-	{
-		events.PushBack((Event*)RestoreObject(FH, ScriptRL, this));
-	}
+	fread(&size, 1, sizeof(size), f);
+	for (int i = 0; i < size; i++)
+		events.PushBack(static_cast<Event*>(RestoreObject(f, ScriptRL, this)));
 }
 
 CScript::~CScript(void)
