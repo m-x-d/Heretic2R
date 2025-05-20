@@ -1984,22 +1984,16 @@ ScriptConditionT CScript::Execute(edict_t* new_other, edict_t* new_activator)
 	return script_condition;
 }
 
-Variable* CScript::FindLocal(const char* Name)
+Variable* CScript::FindLocal(const char* var_name)
 {
-	List<Variable*>::Iter	iv;
-
-	if (local_variables.Size())
+	if (local_variables.Size() > 0)
 	{
-		for (iv = local_variables.Begin(); iv != local_variables.End(); iv++)
-		{
-			if (strcmp(Name, (*iv)->GetName()) == 0)
-			{
-				return *iv;
-			}
-		}
+		for (List<Variable*>::Iter var = local_variables.Begin(); var != local_variables.End(); ++var)
+			if (strcmp(var_name, (*var)->GetName()) == 0)
+				return *var;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 bool CScript::NewLocal(Variable* Which)
