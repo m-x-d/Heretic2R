@@ -503,31 +503,26 @@ Variable* CScript::ReadDeclaration(int& index)
 	return var;
 }
 
-void CScript::PushStack(Variable* VI)
+void CScript::PushStack(Variable* v)
 {
-	if (!VI)
-	{
+	if (v == nullptr)
 		Error("Illegal push");
-	}
 
-	stack_variables.PushBack(VI);
+	stack_variables.PushBack(v);
 }
 
-Variable* CScript::PopStack(void)
+Variable* CScript::PopStack()
 {
-	Variable* Value;
-	List<Variable*>::Iter	iv;
-
-	if (stack_variables.Size())
+	if (stack_variables.Size() > 0)
 	{
-		iv = --stack_variables.End();
-		Value = *iv;
+		const List<Variable*>::Iter var_iter = --stack_variables.End();
+		Variable* var = *var_iter;
 		stack_variables.PopBack();
 
-		return Value;
+		return var;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void CScript::HandleGlobal(bool Assignment)
