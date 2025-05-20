@@ -1738,26 +1738,26 @@ void CScript::FinishWait(edict_t* which, const bool execute) //mxd. Second var n
 		Execute(which, nullptr);
 }
 
-void CScript::Error(const char* error, ...)
+void CScript::Error(const char* format, ...)
 {
 	va_list argptr;
-	char	text[1024];
+	char text[1024];
 
-	va_start(argptr, error);
-	vsprintf(text, error, argptr);
+	va_start(argptr, format);
+	vsprintf_s(text, format, argptr); //mxd. vsprintf -> vsprintf_s.
 	va_end(argptr);
 
 	gi.error(text);
 }
 
-void CScript::StartDebug(void)
+void CScript::StartDebug()
 {
 	DebugLine("-------------------------------\n");
 	DebugLine("Script: %s\n", name);
 	DebugLine("   DEBUG at %d\n", position);
 }
 
-void CScript::EndDebug(void)
+void CScript::EndDebug()
 {
 	DebugLine("-------------------------------\n");
 }
