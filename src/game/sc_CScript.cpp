@@ -767,72 +767,60 @@ void CScript::HandleAssignment()
 	delete value;
 }
 
-void CScript::HandleAdd(void)
+void CScript::HandleAdd()
 {
-	Variable* V1, * V2;
+	Variable* v1 = PopStack();
+	Variable* v2 = PopStack();
 
-	V1 = PopStack();
-	V2 = PopStack();
-	if (V1 == NULL || V2 == NULL)
-	{
+	if (v1 == nullptr || v2 == nullptr)
 		Error("Invalid stack for Add");
-	}
 
-	PushStack((*V1) + V2);
+	PushStack(*v1 + v2);
 
-	delete V1;
-	delete V2;
+	delete v1;
+	delete v2;
 }
 
-void CScript::HandleSubtract(void)
+void CScript::HandleSubtract()
 {
-	Variable* V1, * V2;
+	Variable* v1 = PopStack();
+	Variable* v2 = PopStack();
 
-	V1 = PopStack();
-	V2 = PopStack();
-	if (V1 == NULL || V2 == NULL)
-	{
+	if (v1 == nullptr || v2 == nullptr)
 		Error("Invalid stack for Subtract");
-	}
 
-	PushStack((*V1) - V2);
+	PushStack(*v1 - v2);
 
-	delete V1;
-	delete V2;
+	delete v1;
+	delete v2;
 }
 
-void CScript::HandleMultiply(void)
+void CScript::HandleMultiply()
 {
-	Variable* V1, * V2;
+	Variable* v1 = PopStack();
+	Variable* v2 = PopStack();
 
-	V1 = PopStack();
-	V2 = PopStack();
-	if (V1 == NULL || V2 == NULL)
-	{
+	if (v1 == nullptr || v2 == nullptr)
 		Error("Invalid stack for Multiply");
-	}
 
-	PushStack((*V1) * V2);
+	PushStack(*v1 * v2);
 
-	delete V1;
-	delete V2;
+	delete v1;
+	delete v2;
 }
 
-void CScript::HandleDivide(void)
+void CScript::HandleDivide()
 {
-	Variable* V1, * V2;
+	Variable* v1 = PopStack();
+	Variable* v2 = PopStack();
 
-	V1 = PopStack();
-	V2 = PopStack();
-	if (V1 == NULL || V2 == NULL)
-	{
+	if (v1 == nullptr || v2 == nullptr)
 		Error("Invalid stack for Divide");
-	}
 
-	PushStack((*V1) / V2);
+	PushStack(*v1 / v2);
 
-	delete V1;
-	delete V2;
+	delete v1;
+	delete v2;
 }
 
 void CScript::HandleDebug(void)
