@@ -1429,98 +1429,82 @@ void CScript::HandleTrigger(const bool enable)
 	delete entity_var; //mxd. Missing in original logic.
 }
 
-void CScript::HandleAnimate(void)
+void CScript::HandleAnimate()
 {
-	int			Flags;
-	Variable* Signaler, * Moving, * Turning, * Repeat, * Action, * Entity, * Source;
-	edict_t* ent, * SourceEnt;
-	vec3_t		MovingVal;
-	vec3_t		TurningVal;
-	int			RepeatVal, ActionVal;
+	const int flags = ReadByte();
 
-	void		(*SignalerRoutine)(edict_t*);
+	const Variable* source_var = ((flags & ANIMATE_SOURCE) ? PopStack() : nullptr);
+	Variable* signaler_var = ((flags & ANIMATE_SIGNALER) ? PopStack() : nullptr);
 
-	SignalerRoutine = NULL;
-	Signaler = Moving = Turning = Repeat = Action = Entity = Source = NULL;
-	SourceEnt = NULL;
-	VectorCopy(vec3_origin, MovingVal);
-	VectorCopy(vec3_origin, TurningVal);
-	RepeatVal = 0;
+	const Variable* moving_var;
+	vec3_t moving_val;
 
-	Flags = ReadByte();
-
-	if (Flags & ANIMATE_SOURCE)
+	if (flags & ANIMATE_MOVING)
 	{
-		Source = PopStack();
-		SourceEnt = Source->GetEdictValue();
+		moving_var = PopStack();
+		moving_var->GetVectorValue(moving_val);
+	}
+	else
+	{
+		moving_var = nullptr;
+		VectorCopy(vec3_origin, moving_val);
 	}
 
-	if (Flags & ANIMATE_SIGNALER)
+	const Variable* turning_var;
+	vec3_t turning_val;
+
+	if (flags & ANIMATE_TURNING)
 	{
-		Signaler = PopStack();
+		turning_var = PopStack();
+		turning_var->GetVectorValue(turning_val);
+	}
+	else
+	{
+		turning_var = nullptr;
+		VectorCopy(vec3_origin, turning_val);
 	}
 
-	if (Flags & ANIMATE_MOVING)
+	const Variable* repeat_var;
+	int repeat_val;
+
+	if (flags & ANIMATE_REPEAT)
 	{
-		Moving = PopStack();
-		Moving->GetVectorValue(MovingVal);
+		repeat_var = PopStack();
+		repeat_val = repeat_var->GetIntValue();
+	}
+	else
+	{
+		repeat_var = nullptr;
+		repeat_val = 0;
 	}
 
-	if (Flags & ANIMATE_TURNING)
+	const Variable* action_var = PopStack();
+	const int action_val = action_var->GetIntValue();
+
+	const Variable* entity_var = PopStack();
+	edict_t* ent = entity_var->GetEdictValue();
+
+	if (ent != nullptr)
 	{
-		Turning = PopStack();
-		Turning->GetVectorValue(TurningVal);
-	}
+		void (*signaler_routine)(edict_t*) = nullptr;
 
-	if (Flags & ANIMATE_REPEAT)
-	{
-		Repeat = PopStack();
-		RepeatVal = Repeat->GetIntValue();
-	}
-
-
-	Action = PopStack();
-	ActionVal = Action->GetIntValue();
-
-	Entity = PopStack();
-	ent = Entity->GetEdictValue();
-
-	if (ent)
-	{
-		if (Signaler)
+		if (signaler_var != nullptr)
 		{
-			AddSignaler(ent, Signaler, SIGNAL_ANIMATE);
-			SignalerRoutine = animate_signaler;
+			AddSignaler(ent, signaler_var, SIGNAL_ANIMATE);
+			signaler_routine = animate_signaler;
 		}
 
-		QPostMessage(ent, (enum G_MsgID_e)msg_animtype[ActionVal], PRI_DIRECTIVE, "iiige", (int)MovingVal[0], (int)TurningVal[0], (int)RepeatVal, SignalerRoutine, activator);
+		QPostMessage(ent, static_cast<G_MsgID_e>(msg_animtype[action_val]), PRI_DIRECTIVE, "iiige", static_cast<int>(moving_val[0]), static_cast<int>(turning_val[0]), repeat_val, signaler_routine, activator);
 	}
 
-	delete Action;
-	delete Entity;
-	if (Source)
-	{
-		delete Source;
-	}
-	//	Signaling routine will handle this
-	//	if (Signaler)
-	//	{
-	//		delete Signaler;
-	//	}
-	if (Repeat)
-	{
-		delete Repeat;
-	}
-	if (Turning)
-	{
-		delete Turning;
-	}
-	if (Moving)
-	{
-		delete Moving;
-	}
+	delete action_var;
+	delete entity_var;
+	delete source_var;
+	delete signaler_var;
+	delete repeat_var;
+	delete turning_var;
+	delete moving_var;
 }
-
 
 void CScript::HandleCopyPlayerAttributes(void)
 {
