@@ -2008,22 +2008,16 @@ bool CScript::NewLocal(Variable* which)
 	return false;
 }
 
-Variable* CScript::FindParameter(const char* Name)
+Variable* CScript::FindParameter(const char* param_name)
 {
-	List<Variable*>::Iter	iv;
-
-	if (parameter_variables.Size())
+	if (parameter_variables.Size() > 0)
 	{
-		for (iv = parameter_variables.Begin(); iv != parameter_variables.End(); iv++)
-		{
-			if (strcmp(Name, (*iv)->GetName()) == 0)
-			{
-				return *iv;
-			}
-		}
+		for (List<Variable*>::Iter var = parameter_variables.Begin(); var != parameter_variables.End(); ++var)
+			if (strcmp(param_name, (*var)->GetName()) == 0)
+				return *var;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 bool CScript::NewParameter(Variable* Which)
