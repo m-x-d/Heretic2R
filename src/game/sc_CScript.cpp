@@ -393,39 +393,27 @@ void CScript::Write(FILE* f)
 		(*event)->Write(f, this);
 }
 
-int CScript::LookupVarIndex(const Variable* Var) const
+int CScript::LookupVarIndex(const Variable* var) const
 {
-	int i;
-
-	for (i = 0; i < MAX_INDEX; i++)
-	{
-		if (variable_index[i] == Var)
-		{
+	for (int i = 0; i < MAX_INDEX; i++)
+		if (variable_index[i] == var)
 			return i;
-		}
-	}
 
 	return -1;
 }
 
-int	CScript::LookupFieldIndex(const FieldDef* Field) const
+int	CScript::LookupFieldIndex(const FieldDef* field) const
 {
-	int i;
-
-	for (i = 0; i < MAX_INDEX; i++)
-	{
-		if (fielddefs[i] == Field)
-		{
+	for (int i = 0; i < MAX_INDEX; i++)
+		if (fielddefs[i] == field)
 			return i;
-		}
-	}
 
 	return -1;
 }
 
-void CScript::SetParameter(const char* Value)
+void CScript::SetParameter(const char* value)
 {
-	parameter_values.PushBack(new StringVar("parm", Value));
+	parameter_values.PushBack(new StringVar("parm", value));
 }
 
 unsigned char CScript::ReadByte(void)
