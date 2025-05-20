@@ -1996,19 +1996,16 @@ Variable* CScript::FindLocal(const char* var_name)
 	return nullptr;
 }
 
-bool CScript::NewLocal(Variable* Which)
+bool CScript::NewLocal(Variable* which)
 {
-	Variable* Check;
-
-	Check = FindLocal(Which->GetName());
-	if (Check)
-	{	// already exists
-		return false;
+	if (FindLocal(which->GetName()) == nullptr)
+	{
+		local_variables.PushBack(which);
+		return true;
 	}
 
-	local_variables.PushBack(Which);
-
-	return true;
+	// Already exists.
+	return false;
 }
 
 Variable* CScript::FindParameter(const char* Name)
