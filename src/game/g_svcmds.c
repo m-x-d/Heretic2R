@@ -55,7 +55,7 @@ static qboolean StringToFilter(char* s, ipfilter_t* f)
 // or a game that only allows players from your local network.
 qboolean SV_FilterPacket(const char* from)
 {
-	byte ip_mask[4];
+	byte ip_mask[4] = { 0 }; //mxd. Initialize.
 
 	const char* s = from;
 	for (int i = 0; i < 4 && *s != 0 && *s != ':'; i++, s++)
