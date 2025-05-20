@@ -1316,114 +1316,83 @@ void CScript::HandleMove()
 	delete move_duration_var;
 }
 
-void CScript::HandleRotate(void)
+void CScript::HandleRotate()
 {
-	int			Flags;
-	Variable* Signaler, * Rate, * Duration, * Amount, * Entity;
-	edict_t* ent;
-	vec3_t		Vec, Dest, Diff;
-	vec_t		Length;
+	const int flags = ReadByte();
 
-	Signaler = Rate = Duration = NULL;
+	Variable* signaler_var = ((flags & ROTATE_SIGNALER) ? PopStack() : nullptr);
+	const Variable* rotation_rate_var = ((flags & ROTATE_RATE) ? PopStack() : nullptr);
+	const Variable* rotation_duration_var = ((flags & ROTATE_DURATION) ? PopStack() : nullptr);
+	const Variable* rotation_amount_var = PopStack();
+	const Variable* entity_var = PopStack();
 
-	Flags = ReadByte();
+	vec3_t vec;
+	rotation_amount_var->GetVectorValue(vec);
 
-	if (Flags & ROTATE_SIGNALER)
+	edict_t* ent = entity_var->GetEdictValue();
+
+	if (ent != nullptr)
 	{
-		Signaler = PopStack();
-	}
-
-	if (Flags & ROTATE_RATE)
-	{
-		Rate = PopStack();
-	}
-
-	if (Flags & ROTATE_DURATION)
-	{
-		Duration = PopStack();
-	}
-
-	Amount = PopStack();
-	Entity = PopStack();
-
-	Amount->GetVectorValue(Vec);
-
-	ent = Entity->GetEdictValue();
-	if (ent)
-	{
-		if (!Rate && !Duration)
+		if (rotation_rate_var == nullptr && rotation_duration_var == nullptr)
 		{
-			VectorAdd(ent->s.angles, Vec, ent->s.angles);
-			if (ent->chain)
-			{
-				VectorAdd(ent->chain->s.angles, Vec, ent->chain->s.angles);
-			}
+			Vec3AddAssign(vec, ent->s.angles);
+
+			if (ent->chain != nullptr)
+				Vec3AddAssign(vec, ent->chain->s.angles);
 		}
 		else
 		{
-			if (!(Flags & MOVE_ABSOLUTE))
+			vec3_t dest;
+
+			if (flags & MOVE_ABSOLUTE)
+				VectorCopy(vec, dest);
+			else
+				VectorAdd(ent->s.angles, vec, dest);
+
+			vec3_t diff;
+			VectorSubtract(ent->s.angles, dest, diff);
+
+			if (rotation_rate_var != nullptr && rotation_duration_var != nullptr)
 			{
-				VectorAdd(ent->s.angles, Vec, Dest);
+				ent->moveinfo.speed = rotation_rate_var->GetFloatValue();
+				const float dist = rotation_rate_var->GetFloatValue() * rotation_duration_var->GetFloatValue();
+
+				VectorNormalize(diff);
+				VectorMA(ent->s.angles, dist, diff, dest);
+			}
+			else if (rotation_rate_var != nullptr)
+			{
+				ent->moveinfo.speed = rotation_rate_var->GetFloatValue();
 			}
 			else
 			{
-				VectorCopy(Vec, Dest);
+				ent->moveinfo.speed = VectorLength(diff) / rotation_duration_var->GetFloatValue();
 			}
 
-			VectorSubtract(ent->s.angles, Dest, Diff);
-			Length = VectorLength(Diff);
-
-			if (Rate && Duration)
-			{
-				ent->moveinfo.speed = Rate->GetFloatValue();
-				Length = Rate->GetFloatValue() * Duration->GetFloatValue();
-				VectorNormalize(Diff);
-				VectorMA(ent->s.angles, Length, Diff, Dest);
-			}
-			else if (Rate)
-			{
-				ent->moveinfo.speed = Rate->GetFloatValue();
-			}
-			else
-			{
-				ent->moveinfo.speed = Length / Duration->GetFloatValue();
-			}
-
-			VectorCopy(Dest, ent->moveinfo.start_angles);
-			VectorCopy(Dest, ent->moveinfo.end_angles);
+			VectorCopy(dest, ent->moveinfo.start_angles);
+			VectorCopy(dest, ent->moveinfo.end_angles);
 
 			if (debug_flags & DEBUG_ROTATE)
 			{
 				StartDebug();
-				DebugLine("   Rotating Entity %d\n", Entity->GetIntValue());
+				DebugLine("   Rotating Entity %d\n", entity_var->GetIntValue());
 				DebugLine("      From (%7.3f, %7.3f, %7.3f)\n", ent->s.angles[0], ent->s.angles[1], ent->s.angles[2]);
 				DebugLine("      To   (%7.3f, %7.3f, %7.3f)\n", ent->moveinfo.end_angles[0], ent->moveinfo.end_angles[1], ent->moveinfo.end_angles[2]);
 				EndDebug();
 			}
 
-			if (Signaler)
-			{
-				AddSignaler(ent, Signaler, SIGNAL_ROTATE);
-			}
+			if (signaler_var != nullptr)
+				AddSignaler(ent, signaler_var, SIGNAL_ROTATE);
+
 			Rotate(ent);
 		}
 	}
 
-	delete Amount;
-	delete Entity;
-	//	Signaling routine will handle this
-	//	if (Signaler)
-	//	{
-	//		delete Signaler;
-	//	}
-	if (Rate)
-	{
-		delete Rate;
-	}
-	if (Duration)
-	{
-		delete Duration;
-	}
+	delete rotation_amount_var;
+	delete entity_var;
+	delete signaler_var;
+	delete rotation_rate_var;
+	delete rotation_duration_var;
 }
 
 void CScript::HandleUse(void)
