@@ -270,15 +270,18 @@ static void ElfLordSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 
 static void ElfLordProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named 'elflord_projectile_blocked' in original logic.
 {
-	if (Q_stricmp(trace->ent->classname, "elflord_projectile") == 0 || trace->ent == self->owner) //mxd. stricmp -> Q_stricmp
-		return;
-
-	if (trace->ent != NULL && trace->ent->takedamage != DAMAGE_NO)
+	if (trace->ent != NULL) //mxd. Done below Q_stricmp()/owner checks in original logic.
 	{
-		vec3_t dir;
-		VectorNormalize2(self->velocity, dir);
+		if (Q_stricmp(trace->ent->classname, "elflord_projectile") == 0 || trace->ent == self->owner) //mxd. stricmp -> Q_stricmp.
+			return;
 
-		T_Damage(trace->ent, self->owner, self->owner, dir, trace->endpos, trace->plane.normal, irand(ELFLORD_STAR_MIN_DAMAGE, ELFLORD_STAR_MAX_DAMAGE), 0, DAMAGE_NORMAL, MOD_DIED);
+		if (trace->ent->takedamage != DAMAGE_NO)
+		{
+			vec3_t dir;
+			VectorNormalize2(self->velocity, dir);
+
+			T_Damage(trace->ent, self->owner, self->owner, dir, trace->endpos, trace->plane.normal, irand(ELFLORD_STAR_MIN_DAMAGE, ELFLORD_STAR_MAX_DAMAGE), 0, DAMAGE_NORMAL, MOD_DIED);
+		}
 	}
 
 	// Create the star explosion.
