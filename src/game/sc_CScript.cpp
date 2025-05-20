@@ -2020,60 +2020,51 @@ Variable* CScript::FindParameter(const char* param_name)
 	return nullptr;
 }
 
-bool CScript::NewParameter(Variable* Which)
+bool CScript::NewParameter(Variable* which)
 {
-	Variable* Check;
-	StringVar* ParmValue;
-	edict_t* Search;
-	Variable* temp;
-	vec3_t		vec;
+	if (FindParameter(which->GetName()) != nullptr)
+		return false; // Already exists.
 
-	Check = FindParameter(Which->GetName());
-	if (Check)
-	{	// already exists
-		return false;
-	}
+	parameter_variables.PushBack(which);
 
-	parameter_variables.PushBack(Which);
-
-	if (!parameter_values.Size())
-	{
+	if (parameter_values.Size() == 0)
 		Error("Missing Parameter");
-	}
 
-	ParmValue = *parameter_values.Begin();
+	const StringVar* parm_value = *parameter_values.Begin();
 	parameter_values.Erase(parameter_values.Begin());
 
-	switch (Which->GetType())
+	Variable* temp;
+
+	switch (which->GetType())
 	{
 		case TYPE_ENTITY:
-			Search = G_Find(NULL, FOFS(targetname), ParmValue->GetStringValue());
-			temp = new EntityVar(Search);
+			temp = new EntityVar(G_Find(nullptr, FOFS(targetname), parm_value->GetStringValue()));
 			break;
 
 		case TYPE_INT:
-			temp = new IntVar("parm", atol(ParmValue->GetStringValue()));
+			temp = new IntVar("parm", atol(parm_value->GetStringValue()));
 			break;
 
 		case TYPE_FLOAT:
-			temp = new FloatVar("parm", atof(ParmValue->GetStringValue()));
+			temp = new FloatVar("parm", atof(parm_value->GetStringValue()));
 			break;
 
 		case TYPE_VECTOR:
-			sscanf(ParmValue->GetStringValue(), "%f %f %f", &vec[0], &vec[1], &vec[2]);
+		{
+			vec3_t vec;
+			sscanf_s(parm_value->GetStringValue(), "%f %f %f", &vec[0], &vec[1], &vec[2]); //mxd. sscanf -> sscanf_s.
 			temp = new VectorVar("parm", vec[0], vec[1], vec[2]);
-			break;
+		} break;
 
 		default:
-			delete ParmValue;
+			delete parm_value;
 			return false;
-			break;
 	}
 
-	(*Which) = temp;
+	*which = temp;
 
 	delete temp;
-	delete ParmValue;
+	delete parm_value;
 
 	return true;
 }
