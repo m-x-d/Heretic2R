@@ -1,5 +1,5 @@
 //
-// sc_FieldDef.cpp
+// sc_CScript.cpp
 //
 // Copyright 1998 Raven Software
 //
@@ -87,8 +87,8 @@ static int msg_animtype[NUM_MESSAGES] =
 	MSG_C_ATTACK5,
 };
 
-#define MAX_CINESNDS 255
-#define MAX_INSTRUCTIONS 500 //mxd. Named 'INSTRUCTION_MAX' in original logic.
+#define MAX_CINEMATIC_SOUNDS	255 //mxd. Named 'MAX_CINESNDS' in original logic.
+#define MAX_INSTRUCTIONS		500 //mxd. Named 'INSTRUCTION_MAX' in original logic.
 
 typedef struct CinematicSound_s
 {
@@ -96,8 +96,8 @@ typedef struct CinematicSound_s
 	int channel;
 } CinematicSound_t;
 
-static CinematicSound_t CinematicSound[MAX_CINESNDS];
-static int CinematicSound_cnt; // Count of the current # of sounds executed.
+static CinematicSound_t cinematic_sounds[MAX_CINEMATIC_SOUNDS]; //mxd. Named 'CinematicSound' in original logic.
+static int cinematic_sounds_count; // Count of the current # of sounds executed. //mxd. Named 'CinematicSound_cnt' in original logic.
 
 extern "C"
 {
@@ -1405,11 +1405,11 @@ void CScript::HandlePlaySound(void)
 	if (sv_cinematicfreeze->value)		// In cinematic freezes, all sounds should be full volume.  Thus is it written.
 	{
 		AttenuationValue = ATTN_NONE;
-		CinematicSound[CinematicSound_cnt].ent = ent;
-		CinematicSound[CinematicSound_cnt].channel = ChannelValue;
+		cinematic_sounds[cinematic_sounds_count].ent = ent;
+		cinematic_sounds[cinematic_sounds_count].channel = ChannelValue;
 
-		if (CinematicSound_cnt < MAX_CINESNDS - 1)
-			++CinematicSound_cnt;
+		if (cinematic_sounds_count < MAX_CINEMATIC_SOUNDS - 1)
+			++cinematic_sounds_count;
 	}
 
 	if (!sv_jumpcinematic->value || !sv_cinematicfreeze->value)
@@ -1459,7 +1459,7 @@ void CScript::HandleFeature(bool Enable)
 		case FEATURE_CINEMATICS:
 			if (Enable)
 			{
-				CinematicSound_cnt = 0;
+				cinematic_sounds_count = 0;
 				Cvar_Set("sv_cinematicfreeze", "1");
 				RemoveNonCinematicEntities();
 			}
@@ -1470,11 +1470,11 @@ void CScript::HandleFeature(bool Enable)
 					Cvar_Set("sv_jumpcinematic", "0");
 					null_snd = gi.soundindex("misc/null.wav");
 					gi.bcaption(PRINT_HIGH, 270);		// Send the ID for the text to all players
-					for (i = 0; i < CinematicSound_cnt; ++i)
+					for (i = 0; i < cinematic_sounds_count; ++i)
 					{
-						if (CinematicSound[i].ent)	// Does the entity still exist
+						if (cinematic_sounds[i].ent)	// Does the entity still exist
 						{
-							gi.sound(CinematicSound[i].ent, CinematicSound[i].channel,
+							gi.sound(cinematic_sounds[i].ent, cinematic_sounds[i].channel,
 								null_snd, 1, ATTN_NORM, 0);
 
 						}
