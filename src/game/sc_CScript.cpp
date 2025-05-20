@@ -1561,26 +1561,23 @@ void CScript::Move_Done(edict_t* ent)
 	VectorCopy(ent->moveinfo.end_origin, ent->s.origin);
 }
 
-void CScript::Move(edict_t* ent, const vec3_t Dest)
+void CScript::Move(edict_t* ent, const vec3_t dest)
 {
-	float	frames;
-
-	VectorCopy(Dest, ent->moveinfo.end_origin);
+	VectorCopy(dest, ent->moveinfo.end_origin);
 
 	VectorSubtract(ent->moveinfo.end_origin, ent->s.origin, ent->moveinfo.dir);
 	ent->moveinfo.remaining_distance = VectorNormalize(ent->moveinfo.dir);
-	if (ent->moveinfo.remaining_distance <= 0)
-	{
-		frames = 0;
-	}
+
+	float frames;
+
+	if (ent->moveinfo.remaining_distance <= 0.0f)
+		frames = 0.0f;
 	else
-	{
-		frames = floor((ent->moveinfo.remaining_distance / ent->moveinfo.speed) / FRAMETIME) + 1;
-	}
+		frames = floorf(ent->moveinfo.remaining_distance / ent->moveinfo.speed / FRAMETIME) + 1.0f;
 
 	VectorScale(ent->moveinfo.dir, ent->moveinfo.remaining_distance / frames / FRAMETIME, ent->velocity);
 
-	AddEvent(new MoveDoneEvent(level.time + (frames * FRAMETIME), ent));
+	AddEvent(new MoveDoneEvent(level.time + frames * FRAMETIME, ent));
 }
 
 void CScript::Rotate_Done(edict_t* ent)
