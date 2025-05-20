@@ -1548,21 +1548,16 @@ void CScript::HandleSetViewAngles()
 	player_ent->s.angles[ROLL] = 0.0f;
 }
 
-void CScript::HandleSetCacheSize(void)
+void CScript::HandleSetCacheSize()
 {
-	Variable* CacheSize;
-
-	CacheSize = PopStack();
-	if (!CacheSize)
-	{
+	const Variable* cache_size_var = PopStack();
+	if (cache_size_var == nullptr)
 		Error("Invalid stack for HandleSetCacheSize()");
-	}
 }
 
 void CScript::Move_Done(edict_t* ent)
 {
 	VectorClear(ent->velocity);
-
 	VectorCopy(ent->moveinfo.end_origin, ent->s.origin);
 }
 
