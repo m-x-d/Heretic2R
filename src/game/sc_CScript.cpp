@@ -1785,13 +1785,8 @@ void CScript::Think()
 
 ScriptConditionT CScript::Execute(edict_t* new_other, edict_t* new_activator)
 {
-	bool				Done;
-	int					InstructionCount;
-
 	if (script_condition != COND_READY)
-	{
 		return script_condition;
-	}
 
 	if (debug_flags & DEBUG_TIME)
 	{
@@ -1800,154 +1795,188 @@ ScriptConditionT CScript::Execute(edict_t* new_other, edict_t* new_activator)
 		EndDebug();
 	}
 
-	if (new_other)
-	{
+	if (new_other != nullptr)
 		other = new_other;
-	}
-	if (new_activator)
-	{
-		activator = new_activator;
-	}
 
-	InstructionCount = 0;
-	Done = false;
-	while (!Done)
+	if (new_activator != nullptr)
+		activator = new_activator;
+
+	int instructions_count = 0;
+	bool done = false;
+
+	while (!done)
 	{
-		InstructionCount++;
-		if (InstructionCount > MAX_INSTRUCTIONS)
-		{
+		instructions_count++;
+
+		if (instructions_count > MAX_INSTRUCTIONS)
 			Error("Runaway loop for script");
-		}
 
 		switch (ReadByte())
 		{
 			case CODE_NEW_GLOBAL:
 				HandleGlobal(false);
 				break;
+
 			case CODE_NEW_GLOBAL_PLUS_ASSIGNMENT:
 				HandleGlobal(true);
 				break;
 			case CODE_NEW_LOCAL:
 				HandleLocal(false);
 				break;
+
 			case CODE_NEW_LOCAL_PLUS_ASSIGNMENT:
 				HandleLocal(true);
 				break;
+
 			case CODE_NEW_PARAMETER:
 				HandleParameter(false);
 				break;
+
 			case CODE_NEW_PARAMETER_PLUS_DEFAULT:
 				HandleParameter(true);
 				break;
+
 			case CODE_FIELD:
 				HandleField();
 				break;
+
 			case CODE_ASSIGNMENT:
 				HandleAssignment();
 				break;
+
 			case CODE_ADD:
 				HandleAdd();
 				break;
+
 			case CODE_SUBTRACT:
 				HandleSubtract();
 				break;
+
 			case CODE_MULTIPLY:
 				HandleMultiply();
 				break;
+
 			case CODE_DIVIDE:
 				HandleDivide();
 				break;
+
 			case CODE_ADD_ASSIGNMENT:
 				HandleAddAssignment();
 				break;
+
 			case CODE_SUBTRACT_ASSIGNMENT:
 				HandleSubtractAssignment();
 				break;
+
 			case CODE_MULTIPLY_ASSIGNMENT:
 				HandleMultiplyAssignment();
 				break;
+
 			case CODE_DIVIDE_ASSIGNMENT:
 				HandleDivideAssignment();
 				break;
+
 			case CODE_GOTO:
 				HandleGoto();
 				break;
+
 			case CODE_PUSH:
 				HandlePush();
 				break;
+
 			case CODE_POP:
 				HandlePop();
 				break;
+
 			case CODE_IF:
 				HandleIf();
 				break;
+
 			case CODE_EXIT:
 				script_condition = COND_COMPLETED;
-				Done = true;
+				done = true;
 				break;
+
 			case CODE_SUSPEND:
-				//ScriptCondition = COND_SUSPENDED;
-				Done = true;
+				done = true;
 				break;
+
 			case CODE_DEBUG:
 				HandleDebug();
 				break;
+
 			case CODE_WAIT_SECONDS:
-				Done = HandleTimeWait();
+				done = HandleTimeWait();
 				break;
+
 			case CODE_WAIT_ALL:
-				Done = HandleWait(true);
+				done = HandleWait(true);
 				break;
+
 			case CODE_WAIT_ANY:
-				Done = HandleWait(false);
+				done = HandleWait(false);
 				break;
+
 			case CODE_MOVE:
 				HandleMove();
 				break;
+
 			case CODE_ROTATE:
 				HandleRotate();
 				break;
+
 			case CODE_USE:
 				HandleUse();
 				break;
+
 			case CODE_COPY_PLAYER_ATTRIBUTES:
 				HandleCopyPlayerAttributes();
 				break;
+
 			case CODE_SET_VIEW_ANGLES:
 				HandleSetViewAngles();
 				break;
+
 			case CODE_SET_CACHE_SIZE:
 				HandleSetCacheSize();
 				break;
+
 			case CODE_ANIMATE:
 				HandleAnimate();
 				break;
+
 			case CODE_PRINT:
 				HandlePrint();
 				break;
+
 			case CODE_PLAY_SOUND:
 				HandlePlaySound();
 				break;
+
 			case CODE_ENABLE:
 				HandleFeature(true);
 				break;
+
 			case CODE_DISABLE:
 				HandleFeature(false);
 				break;
+
 			case CODE_DEBUG_STATEMENT:
 				HandleDebugStatement();
 				break;
+
 			case CODE_CACHE_SOUND:
 				HandleCacheSound();
 				break;
+
 			default:
-				Done = true;
+				done = true;
 				break;
 		}
 
 		if (position >= length)
 		{
-			Done = true;
+			done = true;
 			script_condition = COND_COMPLETED;
 		}
 	}
