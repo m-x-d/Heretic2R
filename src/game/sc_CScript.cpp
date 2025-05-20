@@ -292,14 +292,12 @@ void CScript::Free(const bool do_data) //TODO: do_data always true, remove?
 	Clear(do_data);
 }
 
-void CScript::Clear(bool DoData)
+void CScript::Clear(const bool do_data) //TODO: unused arg, remove.
 {
-	if (DoData)
-	{
-		data = NULL;
-	}
-
-	owner = other = activator = NULL;
+	data = nullptr;
+	owner = nullptr;
+	other = nullptr;
+	activator = nullptr;
 
 	memset(fielddefs, 0, sizeof(fielddefs));
 	memset(variable_index, 0, sizeof(variable_index));
@@ -309,7 +307,6 @@ void CScript::Clear(bool DoData)
 
 	script_condition = COND_COMPLETED;
 	condition_info = 0;
-	data = NULL;
 	position = 0;
 	length = 0;
 }
