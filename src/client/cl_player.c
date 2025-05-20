@@ -32,9 +32,10 @@ static int CL_Irand(const playerinfo_t* playerinfo, const int min, const int max
 }
 
 //TODO: are these needed?..
-static void EmptyPlayerAction(playerinfo_t* playerinfo) { }
-static void EmptyPlayerAction2(playerinfo_t* playerinfo, int val) { }
-static void EmptyPlayerAction3(playerinfo_t* playerinfo, qboolean* val) { }
+static void EmptyPlayerAction(const playerinfo_t* playerinfo) { }
+static void EmptyPlayerAction2(const playerinfo_t* playerinfo, int val) { }
+static void EmptyPlayerAction3(const playerinfo_t* playerinfo, qboolean* val) { }
+static void EmptyPlayerAction4(playerinfo_t* playerinfo) {}
 
 void CL_ResetPlayerInfo(void)
 {
@@ -89,7 +90,7 @@ void CL_ResetPlayerInfo(void)
 	cl.playerinfo.PlayerActionRedRainBowAttack = EmptyPlayerAction;
 	cl.playerinfo.PlayerActionPhoenixBowAttack = EmptyPlayerAction;
 	cl.playerinfo.PlayerActionHellstaffAttack = EmptyPlayerAction;
-	cl.playerinfo.PlayerActionSpellDefensive = EmptyPlayerAction;
+	cl.playerinfo.PlayerActionSpellDefensive = EmptyPlayerAction4;
 	cl.playerinfo.irand = CL_Irand;
 
 	P_InitItems();
