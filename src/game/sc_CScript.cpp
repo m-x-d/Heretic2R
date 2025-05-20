@@ -1607,41 +1607,25 @@ void CScript::Rotate(edict_t* ent)
 	AddEvent(new RotateDoneEvent(level.time + frames * FRAMETIME, ent));
 }
 
-void CScript::AddEvent(Event* Which)
+void CScript::AddEvent(Event* which)
 {
-	List<Event*>::Iter	ie;
-	float				time;
-
-	if (events.Size())
+	if (events.Size() > 0)
 	{
-		time = Which->GetTime();
-		for (ie = events.Begin(); ie != events.End(); ie++)
+		const float time = which->GetTime();
+
+		for (List<Event*>::Iter event = events.Begin(); event != events.End(); ++event)
 		{
-			if ((*ie)->GetTime() > time)
+			if ((*event)->GetTime() > time)
 			{
+				events.Insert(event, which);
 				break;
 			}
 		}
-		events.Insert(ie, Which);
 	}
 	else
 	{
-		events.PushBack(Which);
+		events.PushBack(which);
 	}
-
-#ifdef _DEBUG
-	float				testtime;
-
-	time = 0;
-	for (ie = events.Begin(); ie != events.End(); ie++)
-	{
-		testtime = (*ie)->GetTime();
-		if (testtime < time)
-		{
-			DebugBreak();
-		}
-	}
-#endif
 }
 
 void CScript::ProcessEvents(void)
