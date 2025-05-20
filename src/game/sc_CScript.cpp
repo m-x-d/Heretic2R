@@ -1018,98 +1018,78 @@ void CScript::HandleIf()
 		position = location;
 }
 
-void CScript::HandlePrint(void)
+void CScript::HandlePrint()
 {
-	int			Flags;
-	Variable* Text, * Entity, * Level;
-	const char* TextValue;
-	int			LevelValue;
-	edict_t* ent;
-	int			TextIndex;
+	const char* text_value;
+	int text_index = -1; //mxd. Initialize.
 
-	Entity = Level = NULL;
-	LevelValue = PRINT_HIGH;
-	ent = NULL;
+	const Variable* ent_var = nullptr;
+	const Variable* level_var = nullptr;
+	const edict_t* ent = nullptr;
+	int print_level = PRINT_HIGH;
 
-	Flags = ReadByte();
+	const int flags = ReadByte();
+	const Variable* text_var = PopStack();
 
-	Text = PopStack();
-	if (!Text)
-	{
+	if (text_var == nullptr)
 		Error("Invalid stack for Print");
-	}
-	if (Text->GetType() == TYPE_STRING)
+
+	if (text_var->GetType() == TYPE_STRING)
 	{
-		TextValue = Text->GetStringValue();
+		text_value = text_var->GetStringValue();
 	}
 	else
 	{
-		TextIndex = Text->GetIntValue();
-		TextValue = message_text[TextIndex].string;
+		text_index = text_var->GetIntValue();
+		text_value = message_text[text_index].string;
 	}
 
-	if (Flags & PRINT_LEVEL)
+	if (flags & PRINT_LEVEL)
 	{
-		Level = PopStack();
-		if (!Level)
-		{
+		level_var = PopStack();
+
+		if (level_var == nullptr)
 			Error("Invalid stack for Print");
-		}
-		LevelValue = Level->GetIntValue();
+
+		print_level = level_var->GetIntValue();
 	}
 
-	if (Flags & PRINT_ENTITY)
+	if (flags & PRINT_ENTITY)
 	{
-		Entity = PopStack();
-		if (!Entity)
-		{
+		ent_var = PopStack();
+
+		if (ent_var == nullptr)
 			Error("Invalid stack for Print");
-		}
-		ent = Entity->GetEdictValue();
+
+		ent = ent_var->GetEdictValue();
 	}
 
-	if (!sv_jumpcinematic->value || !sv_cinematicfreeze->value)
+	if (!static_cast<int>(sv_jumpcinematic->value) || !static_cast<int>(sv_cinematicfreeze->value))
 	{
-		if (Flags & PRINT_CAPTIONED)
+		if ((flags & PRINT_CAPTIONED) && text_index > 0) //mxd. Add text_index check.
 		{
-			if (ent)
-			{
-				gi.captionprintf(ent, TextIndex);		// Send the ID for the text to the single player
-			}
+			if (ent != nullptr)
+				gi.captionprintf(ent, static_cast<short>(text_index)); // Send the ID for the text to the single player.
 			else
-			{
-				gi.bcaption(PRINT_HIGH, TextIndex);		// Send the ID for the text to all players
-			}
+				gi.bcaption(PRINT_HIGH, static_cast<short>(text_index)); // Send the ID for the text to all players.
 		}
-		else if (Flags & PRINT_CENTERED)
+		else if ((flags & PRINT_CENTERED) && text_index > 0) //mxd. Add text_index check.
 		{
-			if (ent)
-			{
-				gi.levelmsg_centerprintf(ent, TextIndex);			// Send the ID over the net rather than the string itself...
-			}
+			if (ent != nullptr)
+				gi.levelmsg_centerprintf(ent, static_cast<short>(text_index)); // Send the ID over the net rather than the string itself...
 		}
 		else
 		{
-			if (ent)
-			{
-				gi.cprintf(ent, LevelValue, TextValue);
-			}
+			if (ent != nullptr)
+				gi.cprintf(ent, print_level, text_value);
 			else
-			{
-				gi.bprintf(LevelValue, TextValue);
-			}
+				gi.bprintf(print_level, text_value);
 		}
 	}
 
-	delete Text;
-	if (Entity)
-	{
-		delete Entity;
-	}
-	if (Level)
-	{
-		delete Level;
-	}
+	delete text_var;
+	delete ent_var;
+	delete level_var;
 }
 
 void CScript::HandlePlaySound(void)
