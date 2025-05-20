@@ -190,16 +190,15 @@ CScript::CScript(FILE* f)
 		events.PushBack(static_cast<Event*>(RestoreObject(f, ScriptRL, this)));
 }
 
-CScript::~CScript(void)
+CScript::~CScript()
 {
 	Free(true);
 }
 
-void CScript::LoadFile(void)
+void CScript::LoadFile()
 {
-	int Version;
+	length = gi.FS_LoadFile(name, reinterpret_cast<void**>(&data));
 
-	length = gi.FS_LoadFile(name, (void**)&data);
 	if (length == -1)
 	{
 		Com_Printf("***********************************************\n");
@@ -208,12 +207,12 @@ void CScript::LoadFile(void)
 	}
 	else
 	{
-		Version = ReadInt();
+		const int version = ReadInt();
 
-		if (Version != SCRIPT_VERSION)
+		if (version != SCRIPT_VERSION)
 		{
 			Com_Printf("***********************************************\n");
-			Com_Printf("Bad script version for %s: found %d, expecting %d\n", name, Version, SCRIPT_VERSION);
+			Com_Printf("Bad script version for %s: found %d, expecting %d\n", name, version, SCRIPT_VERSION);
 			Com_Printf("***********************************************\n");
 		}
 		else
