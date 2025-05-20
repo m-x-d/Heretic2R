@@ -578,71 +578,61 @@ void CScript::HandleGoto()
 	position = ReadInt();
 }
 
-Variable* CScript::HandleSpawn(void)
+Variable* CScript::HandleSpawn()
 {
-	int			Count;
-	edict_t* ent;
-	Variable* Name;
-	Variable* Value;
-	const field_t* f;
-	const char* NameValue;
-	byte* b;
+	edict_t* ent = G_Spawn();
 
-	ent = G_Spawn();
-
-	for (Count = ReadByte(); Count; Count--)
+	for (int count = ReadByte(); count > 0; count--)
 	{
-		Name = PopStack();
-		Value = PopStack();
-		if (!Name || !Value)
-		{
+		const Variable* var_name = PopStack();
+		const Variable* var_value = PopStack();
+
+		if (var_name == nullptr || var_value == nullptr)
 			Error("Invalid stack for HandleSpawn()");
-		}
 
-		NameValue = Name->GetStringValue();
+		const char* name_value = var_name->GetStringValue();
 
-		for (f = fields; f->name; f++)
+		for (const field_t* f = fields; f->name != nullptr; f++)
 		{
-			if (!Q_stricmp(f->name, (char*)NameValue))
+			if (Q_stricmp(f->name, name_value) != 0)
+				continue;
+
+			byte* b;
+
+			if (f->flags & FFL_SPAWNTEMP)
+				b = reinterpret_cast<byte*>(&st);
+			else
+				b = reinterpret_cast<byte*>(ent);
+
+			switch (f->type)
 			{
-				if (f->flags & FFL_SPAWNTEMP)
-				{
-					b = (byte*)&st;
-				}
-				else
-				{
-					b = (byte*)ent;
-				}
+				case F_LSTRING:
+					*reinterpret_cast<char**>(b + f->ofs) = ED_NewString(var_value->GetStringValue());
+					break;
 
-				switch (f->type)
-				{
-					case F_LSTRING:
-						*(char**)(b + f->ofs) = ED_NewString(Value->GetStringValue());
-						break;
-					case F_VECTOR:
-						Value->GetVectorValue(*(vec3_t*)(b + f->ofs));
-						break;
-					case F_INT:
-						*(int*)(b + f->ofs) = Value->GetIntValue();
-						break;
-					case F_FLOAT:
-						*(float*)(b + f->ofs) = Value->GetFloatValue();
-						break;
-					case F_ANGLEHACK:
-						((float*)(b + f->ofs))[0] = 0;
-						((float*)(b + f->ofs))[1] = Value->GetFloatValue();
-						((float*)(b + f->ofs))[2] = 0;
-						break;
-					case F_IGNORE:
-						break;
+				case F_VECTOR:
+					var_value->GetVectorValue(*reinterpret_cast<vec3_t*>(b + f->ofs));
+					break;
 
-					case F_RGBA:
-						break;
-					case F_RGB:
-						break;
-				}
-				break;
+				case F_INT:
+					*reinterpret_cast<int*>(b + f->ofs) = var_value->GetIntValue();
+					break;
+
+				case F_FLOAT:
+					*reinterpret_cast<float*>(b + f->ofs) = var_value->GetFloatValue();
+					break;
+
+				case F_ANGLEHACK:
+					reinterpret_cast<float*>(b + f->ofs)[0] = 0.0f;
+					reinterpret_cast<float*>(b + f->ofs)[1] = var_value->GetFloatValue();
+					reinterpret_cast<float*>(b + f->ofs)[2] = 0.0f;
+					break;
+
+				default: //mxd. Added default case.
+					break;
 			}
+
+			break;
 		}
 	}
 
