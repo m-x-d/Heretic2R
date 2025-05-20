@@ -1648,25 +1648,17 @@ void CScript::ClearTimeWait()
 		script_condition = COND_READY;
 }
 
-void CScript::AddSignaler(edict_t* Edict, Variable* Var, SignalT SignalType)
+void CScript::AddSignaler(edict_t* edict, Variable* var, const SignalT signal_type)
 {
-	List<Signaler*>::Iter	is;
-	Signaler* NewSig;
+	auto* new_signaler = new Signaler(edict, var, signal_type);
 
-	NewSig = new Signaler(Edict, Var, SignalType);
+	// Note that this check does not need to be in there - signalers are very flexible, but if used incorrectly,
+	// they can result in weird behavior - this check prevents more than one command using the same signal variable prior to a wait command.
+	for (List<Signaler*>::Iter signaler = signalers.Begin(); signaler != signalers.End(); ++signaler)
+		if (*(*signaler) == new_signaler)
+			Error("AddSignaler: variable '%s' is being used for multiple signals", var->GetName());
 
-	// Note that this check does not need to be in there - signalers are very flexible, but if used
-	// incorrectly, they can result in weird behavior - this check prevents more than one command using
-	// the same signal varaible prior to a wait command
-	for (is = signalers.Begin(); is != signalers.End(); is++)
-	{
-		if (*(*is) == NewSig)
-		{
-			Error("Renner Error #1: Variable '%s' is being used for multiple signals", Var->GetName());
-		}
-	}
-
-	signalers.PushBack(NewSig);
+	signalers.PushBack(new_signaler);
 }
 
 void CScript::CheckSignalers(edict_t* Which, SignalT SignalType)
