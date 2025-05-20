@@ -974,70 +974,48 @@ bool CScript::HandleTimeWait()
 	return true;
 }
 
-void CScript::HandleIf(void)
+void CScript::HandleIf()
 {
-	int			Condition;
-	int			Location;
-	Variable* V1, * V2;
-	bool		Result;
+	const int condition = ReadByte();
+	const int location = ReadInt();
 
-	Condition = ReadByte();
-	Location = ReadInt();
+	Variable* v2 = PopStack();
+	Variable* v1 = PopStack();
 
-	V2 = PopStack();
-	V1 = PopStack();
-
-	if (V1 == NULL || V2 == NULL)
-	{
+	if (v1 == nullptr || v2 == nullptr)
 		Error("Invalid stack for If");
-	}
 
-	Result = false;
+	bool result = false;
 
-	switch (Condition)
+	switch (condition)
 	{
 		case COND_EQUAL:
-			if ((*V1) == V2)
-			{
-				Result = true;
-			}
+			result = (*v1 == v2);
 			break;
+
 		case COND_LESS_THAN:
-			if ((*V1) < V2)
-			{
-				Result = true;
-			}
+			result = (*v1 < v2);
 			break;
+
 		case COND_LESS_THAN_EQUAL:
-			if ((*V1) <= V2)
-			{
-				Result = true;
-			}
+			result = (*v1 <= v2);
 			break;
+
 		case COND_GREATER_THAN:
-			if ((*V1) > V2)
-			{
-				Result = true;
-			}
+			result = (*v1 > v2);
 			break;
+
 		case COND_GREATER_THAN_EQUAL:
-			if ((*V1) >= V2)
-			{
-				Result = true;
-			}
+			result = (*v1 >= v2);
 			break;
+
 		case COND_NOT_EQUAL:
-			if ((*V1) != V2)
-			{
-				Result = true;
-			}
+			result = (*v1 != v2);
 			break;
 	}
 
-	if (!Result)
-	{
-		position = Location;
-	}
+	if (!result)
+		position = location;
 }
 
 void CScript::HandlePrint(void)
