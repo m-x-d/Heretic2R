@@ -747,15 +747,10 @@ void CScript::HandlePush()
 	PushStack(var);
 }
 
-void CScript::HandlePop(void)
+void CScript::HandlePop()
 {
-	Variable* V;
-
-	V = PopStack();
-	if (V)
-	{
-		delete V;
-	}
+	const Variable* var = PopStack();
+	delete var;
 }
 
 void CScript::HandleAssignment(void)
