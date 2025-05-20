@@ -753,21 +753,18 @@ void CScript::HandlePop()
 	delete var;
 }
 
-void CScript::HandleAssignment(void)
+void CScript::HandleAssignment()
 {
-	Variable* Value, * Assignee;
+	Variable* assignee = PopStack();
+	Variable* value = PopStack();
 
-	Assignee = PopStack();
-	Value = PopStack();
-	if (Value == NULL || Assignee == NULL)
-	{
+	if (value == nullptr || assignee == nullptr)
 		Error("Invalid stack for Add");
-	}
 
-	(*Assignee) = Value;
+	*assignee = value;
 
-	delete Assignee;
-	delete Value;
+	delete assignee;
+	delete value;
 }
 
 void CScript::HandleAdd(void)
