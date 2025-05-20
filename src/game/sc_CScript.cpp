@@ -1092,119 +1092,92 @@ void CScript::HandlePrint()
 	delete level_var;
 }
 
-void CScript::HandlePlaySound(void)
+void CScript::HandlePlaySound()
 {
-	int			Flags;
-	Variable* SoundName, * Entity, * Volume, * Attenuation, * Channel, * TimeDelay;
-	const char* SoundValue;
-	float		VolumeValue, AttenuationValue, TimeDelayValue;
-	int			ChannelValue;
-	edict_t* ent;
+	edict_t* ent = nullptr;
+	float volume = 1.0f;
+	float attenuation = ATTN_NORM;
+	int channel = CHAN_VOICE;
+	float time_delay = 0.0f;
 
+	const int flags = ReadByte();
 
-	Entity = Volume = Attenuation = Channel = TimeDelay = NULL;
-	ent = NULL;
-	VolumeValue = 1.0;
-	AttenuationValue = ATTN_NORM;
-	ChannelValue = CHAN_VOICE;
+	const Variable* sound_name_var = PopStack();
 
-	TimeDelayValue = 0.0;
-
-	Flags = ReadByte();
-
-	SoundName = PopStack();
-	if (!SoundName)
-	{
+	if (sound_name_var == nullptr)
 		Error("Invalid stack for PlaySound");
-	}
-	SoundValue = SoundName->GetStringValue();
 
-	if (Flags & PLAY_SOUND_TIMEDELAY)
+	const char* sound_name = sound_name_var->GetStringValue();
+	delete sound_name_var;
+
+	if (flags & PLAY_SOUND_TIMEDELAY)
 	{
-		TimeDelay = PopStack();
-		if (!TimeDelay)
-		{
+		const Variable* time_delay_var = PopStack();
+
+		if (time_delay_var == nullptr)
 			Error("Invalid stack for PlaySound");
-		}
-		TimeDelayValue = TimeDelay->GetFloatValue();
+
+		time_delay = time_delay_var->GetFloatValue();
+		delete time_delay_var;
 	}
 
-	if (Flags & PLAY_SOUND_CHANNEL)
+	if (flags & PLAY_SOUND_CHANNEL)
 	{
-		Channel = PopStack();
-		if (!Channel)
-		{
+		const Variable* channel_var = PopStack();
+
+		if (channel_var == nullptr)
 			Error("Invalid stack for PlaySound");
-		}
-		ChannelValue = Channel->GetIntValue();
+
+		channel = channel_var->GetIntValue();
+		delete channel_var;
 	}
 
-	if (Flags & PLAY_SOUND_ATTENUATION)
+	if (flags & PLAY_SOUND_ATTENUATION)
 	{
-		Attenuation = PopStack();
-		if (!Attenuation)
-		{
+		const Variable* attenuation_var = PopStack();
+
+		if (attenuation_var == nullptr)
 			Error("Invalid stack for PlaySound");
-		}
-		AttenuationValue = Attenuation->GetFloatValue();
+
+		attenuation = attenuation_var->GetFloatValue();
+		delete attenuation_var;
 	}
 
-	if (Flags & PLAY_SOUND_VOLUME)
+	if (flags & PLAY_SOUND_VOLUME)
 	{
-		Volume = PopStack();
-		if (!Volume)
-		{
+		const Variable* volume_var = PopStack();
+
+		if (volume_var == nullptr)
 			Error("Invalid stack for PlaySound");
-		}
-		VolumeValue = Volume->GetFloatValue();
+
+		volume = volume_var->GetFloatValue();
+		delete volume_var;
 	}
 
-	if (Flags & PLAY_SOUND_ENTITY)
+	if (flags & PLAY_SOUND_ENTITY)
 	{
-		Entity = PopStack();
-		if (!Entity)
-		{
+		const Variable* entity_var = PopStack();
+
+		if (entity_var == nullptr)
 			Error("Invalid stack for PlaySound");
-		}
-		ent = Entity->GetEdictValue();
+
+		ent = entity_var->GetEdictValue();
+		delete entity_var;
 	}
 
-	if (sv_cinematicfreeze->value)		// In cinematic freezes, all sounds should be full volume.  Thus is it written.
+	// In cinematic freezes, all sounds should be at full volume.
+	if (static_cast<int>(sv_cinematicfreeze->value))
 	{
-		AttenuationValue = ATTN_NONE;
+		attenuation = ATTN_NONE;
 		cinematic_sounds[cinematic_sounds_count].ent = ent;
-		cinematic_sounds[cinematic_sounds_count].channel = ChannelValue;
+		cinematic_sounds[cinematic_sounds_count].channel = channel;
 
 		if (cinematic_sounds_count < MAX_CINEMATIC_SOUNDS - 1)
-			++cinematic_sounds_count;
+			cinematic_sounds_count++;
 	}
 
-	if (!sv_jumpcinematic->value || !sv_cinematicfreeze->value)
-	{
-		gi.sound(ent, ChannelValue, gi.soundindex(SoundValue), VolumeValue, AttenuationValue, TimeDelayValue);
-	}
-
-	delete SoundName;
-	if (Entity)
-	{
-		delete Entity;
-	}
-	if (Volume)
-	{
-		delete Volume;
-	}
-	if (Attenuation)
-	{
-		delete Attenuation;
-	}
-	if (Channel)
-	{
-		delete Channel;
-	}
-	if (TimeDelay)
-	{
-		delete TimeDelay;
-	}
+	if (!static_cast<int>(sv_jumpcinematic->value) || !static_cast<int>(sv_cinematicfreeze->value))
+		gi.sound(ent, channel, gi.soundindex(sound_name), volume, attenuation, time_delay);
 }
 
 void CScript::HandleFeature(bool Enable)
