@@ -92,11 +92,11 @@ void RemoveNonCinematicEntities(void) // mxd. Named 'remove_non_cinematic_entite
 	for (int i = 0; i < MAXCLIENTS; i++)
 	{
 		edict_t* player = &g_edicts[i + 1];
-		playerinfo_t* info = &player->client->playerinfo; //mxd
 
 		if (!player->inuse || player->client == NULL)
 			continue;
 
+		playerinfo_t* info = &player->client->playerinfo; //mxd
 		info->cinematic_starttime = level.time;
 
 		if (info->powerup_timer > info->cinematic_starttime)
@@ -128,10 +128,11 @@ void ReinstateNonCinematicEntities(void) // mxd. Named 'reinstate_non_cinematic_
 	for (int i = 0; i < MAXCLIENTS; i++)
 	{
 		edict_t* player = &g_edicts[i + 1];
-		playerinfo_t* info = &player->client->playerinfo; //mxd
 
 		if (!player->inuse || player->client == NULL)
 			continue;
+
+		playerinfo_t* info = &player->client->playerinfo; //mxd
 
 		if (level.time > info->cinematic_starttime)
 		{
