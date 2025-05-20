@@ -791,7 +791,7 @@ static qboolean AssassinDaggerUpdate(struct client_entity_s* self, centity_t* ow
 		self->LifeTime = 0;
 	}
 
-	MMoBlur(NULL, self->r.origin, self->r.angles, true);
+	MMoBlur(owner, self->r.origin, self->r.angles, true); //mxd. Pass owner to avoid compiler warning.
 	self->r.angles[PITCH] += self->velocity2[PITCH];
 
 	return true;
