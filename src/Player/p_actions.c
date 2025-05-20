@@ -1279,10 +1279,10 @@ qboolean PlayerActionCheckPushPull(playerinfo_t* info)
 	trace_t grabtrace;
 	vec3_t endpoint;
 
+	assert(info); //mxd. Moved above info->isclient check.
+
 	if (info->isclient) // Client does nothing.
 		return false;
-
-	assert(info);
 
 	vec3_t forward;
 	vec3_t right;
@@ -2030,7 +2030,7 @@ void PlayerActionCheckCreep(playerinfo_t* info)
 			PlayerAnimSetLowerSeq(info, ASEQ_CROUCH_WALK_L);
 		else if (info->seqcmd[ACMDL_STRAFE_R])
 			PlayerAnimSetLowerSeq(info, ASEQ_CROUCH_WALK_R);
-		else if (info->seqcmd[ACMDL_BACK])
+		else if (info->seqcmd[ACMDL_FWD]) //BUGFIX: mxd. ACMDL_BACK in original logic.
 			PlayerAnimSetLowerSeq(info, ASEQ_CROUCH_WALK_F);
 		else
 			PlayerAnimSetLowerSeq(info, ASEQ_CROUCH_GO);
