@@ -416,54 +416,49 @@ void CScript::SetParameter(const char* value)
 	parameter_values.PushBack(new StringVar("parm", value));
 }
 
-unsigned char CScript::ReadByte(void)
+byte CScript::ReadByte()
 {
 	return data[position++];
 }
 
-int CScript::ReadInt(void)
+int CScript::ReadInt()
 {
 	union
 	{
-		int				oldvalue;
-		unsigned char	newvalue[4];
+		int value;
+		byte byte_value[4];
 	};
 
-	newvalue[0] = ReadByte();
-	newvalue[1] = ReadByte();
-	newvalue[2] = ReadByte();
-	newvalue[3] = ReadByte();
+	byte_value[0] = ReadByte();
+	byte_value[1] = ReadByte();
+	byte_value[2] = ReadByte();
+	byte_value[3] = ReadByte();
 
-	return oldvalue;
+	return value;
 }
 
-float CScript::ReadFloat(void)
+float CScript::ReadFloat()
 {
 	union
 	{
-		float			oldvalue;
-		unsigned char	newvalue[4];
+		float value;
+		byte byte_value[4];
 	};
 
-	newvalue[0] = ReadByte();
-	newvalue[1] = ReadByte();
-	newvalue[2] = ReadByte();
-	newvalue[3] = ReadByte();
+	byte_value[0] = ReadByte();
+	byte_value[1] = ReadByte();
+	byte_value[2] = ReadByte();
+	byte_value[3] = ReadByte();
 
-	return oldvalue;
+	return value;
 }
 
-char* CScript::ReadString(void)
+char* CScript::ReadString()
 {
-	char* Pos;
+	char* start = reinterpret_cast<char*>(&data[position]); //TODO: but what if start is '\0'?
+	while (ReadByte() != 0) {}
 
-	Pos = (char*)&data[position];
-
-	while (ReadByte())
-	{
-	}
-
-	return Pos;
+	return start;
 }
 
 Variable* CScript::ReadDeclaration(int& Index)
