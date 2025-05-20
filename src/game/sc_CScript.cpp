@@ -694,48 +694,57 @@ Variable* CScript::HandleBuiltinFunction()
 	return var;
 }
 
-void CScript::HandlePush(void)
+void CScript::HandlePush()
 {
-	int			Type;
-	Variable* Var;
+	Variable* var;
+	const int type = ReadByte();
 
-	Type = ReadByte();
-	switch (Type)
+	switch (type)
 	{
 		case PUSH_CONST_INT:
-			Var = new IntVar();
-			Var->ReadValue(this);
+			var = new IntVar();
+			var->ReadValue(this);
 			break;
+
 		case PUSH_CONST_FLOAT:
-			Var = new FloatVar();
-			Var->ReadValue(this);
+			var = new FloatVar();
+			var->ReadValue(this);
 			break;
+
 		case PUSH_CONST_VECTOR:
-			Var = new VectorVar();
-			Var->ReadValue(this);
+			var = new VectorVar();
+			var->ReadValue(this);
 			break;
+
 		case PUSH_CONST_ENTITY:
-			Var = new EntityVar();
-			Var->ReadValue(this);
+			var = new EntityVar();
+			var->ReadValue(this);
 			break;
+
 		case PUSH_CONST_STRING:
-			Var = new StringVar();
-			Var->ReadValue(this);
+			var = new StringVar();
+			var->ReadValue(this);
 			break;
+
 		case PUSH_VAR:
-			Var = new VariableVar();
-			((VariableVar*)Var)->ReadValue(this);
+			var = new VariableVar();
+			dynamic_cast<VariableVar*>(var)->ReadValue(this);
 			break;
+
 		case PUSH_VAR_WITH_FIELD:
-			Var = new FieldVariableVar();
-			((VariableVar*)Var)->ReadValue(this); //TODO: (FieldVariableVar*)?
+			var = new FieldVariableVar();
+			dynamic_cast<FieldVariableVar*>(var)->ReadValue(this);
 			break;
+
 		case PUSH_FUNCTION:
-			Var = HandleBuiltinFunction();
+			var = HandleBuiltinFunction();
 			break;
+
+		default: //mxd. Added default case.
+			return;
 	}
 
-	PushStack(Var);
+	PushStack(var);
 }
 
 void CScript::HandlePop(void)
