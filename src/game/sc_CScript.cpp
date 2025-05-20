@@ -1180,24 +1180,18 @@ void CScript::HandlePlaySound()
 		gi.sound(ent, channel, gi.soundindex(sound_name), volume, attenuation, time_delay);
 }
 
-void CScript::HandleFeature(bool Enable)
+void CScript::HandleFeature(const bool enable)
 {
-	int FeatureType;
-	int i, null_snd;
+	const int feature_type = ReadByte();
 
-	FeatureType = ReadByte();
-
-	switch (FeatureType)
+	switch (feature_type)
 	{
 		case FEATURE_TRIGGER:
-			HandleTrigger(Enable);
-			break;
-
-		case FEATURE_AMBIENT_SOUNDS:
+			HandleTrigger(enable);
 			break;
 
 		case FEATURE_CINEMATICS:
-			if (Enable)
+			if (enable)
 			{
 				cinematic_sounds_count = 0;
 				Cvar_Set("sv_cinematicfreeze", "1");
@@ -1205,29 +1199,25 @@ void CScript::HandleFeature(bool Enable)
 			}
 			else
 			{
-				if (sv_jumpcinematic->value == 2)	// Jump sent from client
+				if (sv_jumpcinematic->value == 2.0f) // Jump sent from client.
 				{
 					Cvar_Set("sv_jumpcinematic", "0");
-					null_snd = gi.soundindex("misc/null.wav");
-					gi.bcaption(PRINT_HIGH, 270);		// Send the ID for the text to all players
-					for (i = 0; i < cinematic_sounds_count; ++i)
-					{
-						if (cinematic_sounds[i].ent)	// Does the entity still exist
-						{
-							gi.sound(cinematic_sounds[i].ent, cinematic_sounds[i].channel,
-								null_snd, 1, ATTN_NORM, 0);
+					const int null_snd = gi.soundindex("misc/null.wav");
 
-						}
-					}
+					gi.bcaption(PRINT_HIGH, 270); // Send the ID for the text to all players.
+
+					// Stop all cinematic sounds.
+					for (int i = 0; i < cinematic_sounds_count; i++)
+						if (cinematic_sounds[i].ent != nullptr) // Does the entity still exist?
+							gi.sound(cinematic_sounds[i].ent, cinematic_sounds[i].channel, null_snd, 1.0f, ATTN_NORM, 0.0f);
 				}
-
 
 				Cvar_Set("sv_cinematicfreeze", "0");
 				ReinstateNonCinematicEntities();
 			}
 			break;
 
-		case FEATURE_PLAGUE_SKINS:
+		default: // FEATURE_AMBIENT_SOUNDS, FEATURE_PLAGUE_SKINS.
 			break;
 	}
 }
