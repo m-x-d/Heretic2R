@@ -1395,20 +1395,15 @@ void CScript::HandleRotate()
 	delete rotation_duration_var;
 }
 
-void CScript::HandleUse(void)
+void CScript::HandleUse()
 {
-	Variable* Entity;
-	edict_t* use_ent;
+	const Variable* entity_var = PopStack();
+	edict_t* use_ent = entity_var->GetEdictValue();
 
-	Entity = PopStack();
-
-	use_ent = Entity->GetEdictValue();
-	if (use_ent && use_ent->use)
-	{
+	if (use_ent != nullptr && use_ent->use != nullptr)
 		use_ent->use(use_ent, other, activator);
-	}
 
-	delete Entity;
+	delete entity_var;
 }
 
 void CScript::HandleTrigger(bool Enable)
