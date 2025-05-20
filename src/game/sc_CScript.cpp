@@ -1628,32 +1628,24 @@ void CScript::AddEvent(Event* which)
 	}
 }
 
-void CScript::ProcessEvents(void)
+void CScript::ProcessEvents()
 {
-	List<Event*>::Iter	ie, next;
-
-	while (events.Size())
+	while (events.Size() > 0)
 	{
-		ie = events.Begin();
+		List<Event*>::Iter event = events.Begin();
 
-		if ((*ie)->Process(this))
-		{
-			delete (*ie);
-			events.Erase(ie);
-		}
-		else
-		{
+		if (!(*event)->Process(this))
 			break;
-		}
+
+		delete (*event);
+		events.Erase(event);
 	}
 }
 
-void CScript::ClearTimeWait(void)
+void CScript::ClearTimeWait()
 {
 	if (script_condition == COND_WAIT_TIME)
-	{
 		script_condition = COND_READY;
-	}
 }
 
 void CScript::AddSignaler(edict_t* Edict, Variable* Var, SignalT SignalType)
