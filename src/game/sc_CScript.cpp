@@ -1523,38 +1523,29 @@ void CScript::HandleCopyPlayerAttributes()
 	CinematicSwapPlayer(player_ent, destination_ent);
 }
 
-void CScript::HandleSetViewAngles(void)
+void CScript::HandleSetViewAngles()
 {
-	Variable* Player, * Angles;
-	edict_t* PlayerEnt;
-	vec3_t		vec;
-	vec3_t		HoldAngles;
-
-	Angles = PopStack();
-	if (!Angles)
-	{
+	const Variable* angles_var = PopStack();
+	if (angles_var == nullptr)
 		Error("Invalid stack for HandleSetViewAngles()");
-	}
-	Angles->GetVectorValue(vec);
 
-	Player = PopStack();
-	if (!Player)
-	{
+	vec3_t hold_angles;
+	angles_var->GetVectorValue(hold_angles);
+
+	const Variable* player_var = PopStack();
+	if (player_var == nullptr)
 		Error("Invalid stack for HandleSetViewAngles()");
-	}
-	PlayerEnt = Player->GetEdictValue();
 
-	// use PlayerEnt and vec
-	// set angles
-	Angles->GetVectorValue(HoldAngles);
+	edict_t* player_ent = player_var->GetEdictValue();
 
-	PlayerEnt->client->ps.pmove.delta_angles[PITCH] = 0;
-	PlayerEnt->client->ps.pmove.delta_angles[YAW] = ANGLE2SHORT(HoldAngles[YAW] - PlayerEnt->client->resp.cmd_angles[YAW]);
-	PlayerEnt->client->ps.pmove.delta_angles[ROLL] = 0;
+	// Set angles.
+	player_ent->client->ps.pmove.delta_angles[PITCH] = 0;
+	player_ent->client->ps.pmove.delta_angles[YAW] = ANGLE2SHORT(hold_angles[YAW] - player_ent->client->resp.cmd_angles[YAW]);
+	player_ent->client->ps.pmove.delta_angles[ROLL] = 0;
 
-	PlayerEnt->s.angles[PITCH] = 0;
-	PlayerEnt->s.angles[YAW] = HoldAngles[YAW];
-	PlayerEnt->s.angles[ROLL] = 0;
+	player_ent->s.angles[PITCH] = 0.0f;
+	player_ent->s.angles[YAW] = hold_angles[YAW];
+	player_ent->s.angles[ROLL] = 0.0f;
 }
 
 void CScript::HandleSetCacheSize(void)
