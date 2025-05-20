@@ -214,7 +214,7 @@ static void CL_PMTrace(const vec3_t start, const vec3_t mins, const vec3_t maxs,
 }
 
 // Q2 counterpart
-int CL_PMpointcontents(vec3_t point)
+int CL_PMpointcontents(const vec3_t point)
 {
 	int contents = CM_PointContents(point, 0);
 

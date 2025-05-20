@@ -614,7 +614,7 @@ void M_AddToServerList(const netadr_t* adr, const char* info);
 void CL_ParseInventory(void);
 
 // cl_pred.c
-int CL_PMpointcontents(vec3_t point); //mxd
+int CL_PMpointcontents(const vec3_t point); //mxd
 void CL_PredictMovement(void);
 void CL_StorePredictInfo(void); //mxd
 void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr);
