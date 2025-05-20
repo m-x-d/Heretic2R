@@ -473,12 +473,11 @@ void DeathmatchScoreboardMessage(qboolean log_file)
 	else // Sort the clients by score - for normal deathmatch play.
 	{
 		int total = 0;
-		int sorted[MAX_CLIENTS];
+		int sorted[MAX_CLIENTS] = { 0 }; //mxd. Initialize.
+		int sorted_scores[MAX_CLIENTS] = { 0 }; //mxd. Initialize.
 
 		for (int i = 0; i < game.maxclients; i++)
 		{
-			int sorted_scores[MAX_CLIENTS];
-
 			const edict_t* cl_ent = &g_edicts[i + 1];
 			if (!cl_ent->inuse)
 				continue;
