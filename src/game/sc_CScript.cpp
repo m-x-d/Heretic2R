@@ -956,25 +956,19 @@ bool CScript::HandleWait(const bool for_all)
 	return true;
 }
 
-bool CScript::HandleTimeWait(void)
+bool CScript::HandleTimeWait()
 {
-	Variable* V;
-	float		NextTime;
+	const Variable* var = PopStack();
 
-	V = PopStack();
-	if (!V)
-	{
+	if (var == nullptr)
 		Error("Invalid stack for Time Wait");
-	}
 
-	NextTime = level.time + V->GetFloatValue();
-	if (NextTime <= level.time)
-	{
+	const float next_time = level.time + var->GetFloatValue();
+
+	if (next_time <= level.time)
 		return false;
-	}
 
-	AddEvent(new WaitEvent(NextTime));
-
+	AddEvent(new WaitEvent(next_time));
 	script_condition = COND_WAIT_TIME;
 
 	return true;
