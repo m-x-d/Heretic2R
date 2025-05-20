@@ -110,7 +110,7 @@ CScript::CScript(const char* ScriptName, edict_t* new_owner)
 	Clear(true);
 
 	owner = new_owner;
-	strcpy(Name, ScriptName);
+	strcpy(name, ScriptName);
 
 	LoadFile();
 }
@@ -124,14 +124,14 @@ CScript::CScript(FILE* FH)
 
 	Clear(true);
 
-	fread(Name, 1, sizeof(Name), FH);
+	fread(name, 1, sizeof(name), FH);
 	LoadFile();
 
-	fread(&ScriptCondition, 1, sizeof(ScriptCondition), FH);
-	fread(&ConditionInfo, 1, sizeof(ConditionInfo), FH);
-	fread(&Length, 1, sizeof(Length), FH);
-	fread(&Position, 1, sizeof(Position), FH);
-	fread(&DebugFlags, 1, sizeof(DebugFlags), FH);
+	fread(&script_condition, 1, sizeof(script_condition), FH);
+	fread(&condition_info, 1, sizeof(condition_info), FH);
+	fread(&length, 1, sizeof(length), FH);
+	fread(&position, 1, sizeof(position), FH);
+	fread(&debug_flags, 1, sizeof(debug_flags), FH);
 
 	fread(&index, 1, sizeof(index), FH);
 	if (index != -1)
@@ -164,49 +164,49 @@ CScript::CScript(FILE* FH)
 		fread(&index, 1, sizeof(index), FH);
 		fread(name, 1, VAR_LENGTH, FH);
 
-		VarIndex[index] = FindGlobal(name);
+		variable_index[index] = FindGlobal(name);
 	}
 
 	fread(&size, 1, sizeof(size), FH);
 	for (i = 0; i < size; i++)
 	{
-		LocalVariables.PushBack((Variable*)RestoreObject(FH, ScriptRL, this));
+		local_variables.PushBack((Variable*)RestoreObject(FH, ScriptRL, this));
 	}
 
 	fread(&size, 1, sizeof(size), FH);
 	for (i = 0; i < size; i++)
 	{
-		ParameterVariables.PushBack((Variable*)RestoreObject(FH, ScriptRL, this));
+		parameter_variables.PushBack((Variable*)RestoreObject(FH, ScriptRL, this));
 	}
 
 	fread(&size, 1, sizeof(size), FH);
 	for (i = 0; i < size; i++)
 	{
-		Stack.PushBack((Variable*)RestoreObject(FH, ScriptRL, this));
+		stack_variables.PushBack((Variable*)RestoreObject(FH, ScriptRL, this));
 	}
 
 	fread(&size, 1, sizeof(size), FH);
 	for (i = 0; i < size; i++)
 	{
-		Waiting.PushBack((Variable*)RestoreObject(FH, ScriptRL, this));
+		waiting_variables.PushBack((Variable*)RestoreObject(FH, ScriptRL, this));
 	}
 
 	fread(&size, 1, sizeof(size), FH);
 	for (i = 0; i < size; i++)
 	{
-		Signalers.PushBack((Signaler*)RestoreObject(FH, ScriptRL, this));
+		signalers.PushBack((Signaler*)RestoreObject(FH, ScriptRL, this));
 	}
 
 	fread(&size, 1, sizeof(size), FH);
 	for (i = 0; i < size; i++)
 	{
-		ParameterValues.PushBack((StringVar*)RestoreObject(FH, ScriptRL, this));
+		parameter_values.PushBack((StringVar*)RestoreObject(FH, ScriptRL, this));
 	}
 
 	fread(&size, 1, sizeof(size), FH);
 	for (i = 0; i < size; i++)
 	{
-		Events.PushBack((Event*)RestoreObject(FH, ScriptRL, this));
+		events.PushBack((Event*)RestoreObject(FH, ScriptRL, this));
 	}
 }
 
@@ -219,11 +219,11 @@ void CScript::LoadFile(void)
 {
 	int Version;
 
-	Length = gi.FS_LoadFile(Name, (void**)&Data);
-	if (Length == -1)
+	length = gi.FS_LoadFile(name, (void**)&data);
+	if (length == -1)
 	{
 		Com_Printf("***********************************************\n");
-		Com_Printf("Could not open script %s\n", Name);
+		Com_Printf("Could not open script %s\n", name);
 		Com_Printf("***********************************************\n");
 	}
 	else
@@ -233,12 +233,12 @@ void CScript::LoadFile(void)
 		if (Version != SCRIPT_VERSION)
 		{
 			Com_Printf("***********************************************\n");
-			Com_Printf("Bad script version for %s: found %d, expecting %d\n", Name, Version, SCRIPT_VERSION);
+			Com_Printf("Bad script version for %s: found %d, expecting %d\n", name, Version, SCRIPT_VERSION);
 			Com_Printf("***********************************************\n");
 		}
 		else
 		{
-			ScriptCondition = COND_READY;
+			script_condition = COND_READY;
 		}
 	}
 }
@@ -251,73 +251,73 @@ void CScript::Free(bool DoData)
 	List<StringVar*>::Iter	isv;
 	List<Event*>::Iter		iev;
 
-	if (Data && DoData)
+	if (data && DoData)
 	{
-		gi.FS_FreeFile(Data);
-		Data = NULL;
+		gi.FS_FreeFile(data);
+		data = NULL;
 	}
 
-	while (LocalVariables.Size())
+	while (local_variables.Size())
 	{
-		iv = LocalVariables.Begin();
+		iv = local_variables.Begin();
 		delete (*iv);
 
-		LocalVariables.Erase(iv);
+		local_variables.Erase(iv);
 	}
 
-	while (ParameterVariables.Size())
+	while (parameter_variables.Size())
 	{
-		iv = ParameterVariables.Begin();
+		iv = parameter_variables.Begin();
 		delete (*iv);
 
-		ParameterVariables.Erase(iv);
+		parameter_variables.Erase(iv);
 	}
 
-	while (Stack.Size())
+	while (stack_variables.Size())
 	{
-		iv = Stack.Begin();
+		iv = stack_variables.Begin();
 		delete (*iv);
 
-		Stack.Erase(iv);
+		stack_variables.Erase(iv);
 	}
 
-	while (Waiting.Size())
+	while (waiting_variables.Size())
 	{
-		iv = Waiting.Begin();
+		iv = waiting_variables.Begin();
 		delete (*iv);
 
-		Waiting.Erase(iv);
+		waiting_variables.Erase(iv);
 	}
 
-	while (Signalers.Size())
+	while (signalers.Size())
 	{
-		is = Signalers.Begin();
+		is = signalers.Begin();
 		delete (*is);
 
-		Signalers.Erase(is);
+		signalers.Erase(is);
 	}
 
-	while (ParameterValues.Size())
+	while (parameter_values.Size())
 	{
-		isv = ParameterValues.Begin();
+		isv = parameter_values.Begin();
 		delete (*isv);
 
-		ParameterValues.Erase(isv);
+		parameter_values.Erase(isv);
 	}
 
-	while (Events.Size())
+	while (events.Size())
 	{
-		iev = Events.Begin();
+		iev = events.Begin();
 		delete (*iev);
 
-		Events.Erase(iev);
+		events.Erase(iev);
 	}
 
 	for (i = 0; i < MAX_INDEX; i++)
 	{
-		if (Fields[i])
+		if (fielddefs[i])
 		{
-			delete Fields[i];
+			delete fielddefs[i];
 		}
 	}
 
@@ -328,22 +328,22 @@ void CScript::Clear(bool DoData)
 {
 	if (DoData)
 	{
-		Data = NULL;
+		data = NULL;
 	}
 
 	owner = other = activator = NULL;
 
-	memset(Fields, 0, sizeof(Fields));
-	memset(VarIndex, 0, sizeof(VarIndex));
+	memset(fielddefs, 0, sizeof(fielddefs));
+	memset(variable_index, 0, sizeof(variable_index));
 
-	DebugFlags = 0;
-	memset(Name, 0, sizeof(Name));
+	debug_flags = 0;
+	memset(name, 0, sizeof(name));
 
-	ScriptCondition = COND_COMPLETED;
-	ConditionInfo = 0;
-	Data = NULL;
-	Position = 0;
-	Length = 0;
+	script_condition = COND_COMPLETED;
+	condition_info = 0;
+	data = NULL;
+	position = 0;
+	length = 0;
 }
 
 void CScript::Write(FILE* FH)
@@ -359,12 +359,12 @@ void CScript::Write(FILE* FH)
 	index = RLID_SCRIPT;
 	fwrite(&index, 1, sizeof(index), FH);
 
-	fwrite(Name, 1, sizeof(Name), FH);
-	fwrite(&ScriptCondition, 1, sizeof(ScriptCondition), FH);
-	fwrite(&ConditionInfo, 1, sizeof(ConditionInfo), FH);
-	fwrite(&Length, 1, sizeof(Length), FH);
-	fwrite(&Position, 1, sizeof(Position), FH);
-	fwrite(&DebugFlags, 1, sizeof(DebugFlags), FH);
+	fwrite(name, 1, sizeof(name), FH);
+	fwrite(&script_condition, 1, sizeof(script_condition), FH);
+	fwrite(&condition_info, 1, sizeof(condition_info), FH);
+	fwrite(&length, 1, sizeof(length), FH);
+	fwrite(&position, 1, sizeof(position), FH);
+	fwrite(&debug_flags, 1, sizeof(debug_flags), FH);
 
 	index = -1;
 	if (owner)
@@ -390,7 +390,7 @@ void CScript::Write(FILE* FH)
 	size = 0;
 	for (i = 0, size = 0; i < MAX_INDEX; i++)
 	{
-		if (Fields[i])
+		if (fielddefs[i])
 		{
 			size++;
 		}
@@ -398,9 +398,9 @@ void CScript::Write(FILE* FH)
 	fwrite(&size, 1, sizeof(size), FH);
 	for (i = 0; i < MAX_INDEX; i++)
 	{
-		if (Fields[i])
+		if (fielddefs[i])
 		{
-			Fields[i]->Write(FH, this);
+			fielddefs[i]->Write(FH, this);
 		}
 	}
 
@@ -423,52 +423,52 @@ void CScript::Write(FILE* FH)
 		}
 	}
 
-	size = LocalVariables.Size();
+	size = local_variables.Size();
 	fwrite(&size, 1, sizeof(size), FH);
-	for (iv = LocalVariables.Begin(); iv != LocalVariables.End(); iv++)
+	for (iv = local_variables.Begin(); iv != local_variables.End(); iv++)
 	{
 		(*iv)->Write(FH, this);
 	}
 
-	size = ParameterVariables.Size();
+	size = parameter_variables.Size();
 	fwrite(&size, 1, sizeof(size), FH);
-	for (iv = ParameterVariables.Begin(); iv != ParameterVariables.End(); iv++)
+	for (iv = parameter_variables.Begin(); iv != parameter_variables.End(); iv++)
 	{
 		(*iv)->Write(FH, this);
 	}
 
-	size = Stack.Size();
+	size = stack_variables.Size();
 	fwrite(&size, 1, sizeof(size), FH);
-	for (iv = Stack.Begin(); iv != Stack.End(); iv++)
+	for (iv = stack_variables.Begin(); iv != stack_variables.End(); iv++)
 	{
 		(*iv)->Write(FH, this);
 	}
 
-	size = Waiting.Size();
+	size = waiting_variables.Size();
 	fwrite(&size, 1, sizeof(size), FH);
-	for (iv = Waiting.Begin(); iv != Waiting.End(); iv++)
+	for (iv = waiting_variables.Begin(); iv != waiting_variables.End(); iv++)
 	{
 		(*iv)->Write(FH, this);
 	}
 
-	size = Signalers.Size();
+	size = signalers.Size();
 	fwrite(&size, 1, sizeof(size), FH);
-	for (is = Signalers.Begin(); is != Signalers.End(); is++)
+	for (is = signalers.Begin(); is != signalers.End(); is++)
 	{
 		(*is)->Write(FH, this);
 	}
 
 
-	size = ParameterValues.Size();
+	size = parameter_values.Size();
 	fwrite(&size, 1, sizeof(size), FH);
-	for (isv = ParameterValues.Begin(); isv != ParameterValues.End(); isv++)
+	for (isv = parameter_values.Begin(); isv != parameter_values.End(); isv++)
 	{
 		(*isv)->Write(FH, this);
 	}
 
-	size = Events.Size();
+	size = events.Size();
 	fwrite(&size, 1, sizeof(size), FH);
-	for (iev = Events.Begin(); iev != Events.End(); iev++)
+	for (iev = events.Begin(); iev != events.End(); iev++)
 	{
 		(*iev)->Write(FH, this);
 	}
@@ -480,7 +480,7 @@ int CScript::LookupVarIndex(const Variable* Var) const
 
 	for (i = 0; i < MAX_INDEX; i++)
 	{
-		if (VarIndex[i] == Var)
+		if (variable_index[i] == Var)
 		{
 			return i;
 		}
@@ -495,7 +495,7 @@ int	CScript::LookupFieldIndex(const FieldDef* Field) const
 
 	for (i = 0; i < MAX_INDEX; i++)
 	{
-		if (Fields[i] == Field)
+		if (fielddefs[i] == Field)
 		{
 			return i;
 		}
@@ -506,12 +506,12 @@ int	CScript::LookupFieldIndex(const FieldDef* Field) const
 
 void CScript::SetParameter(const char* Value)
 {
-	ParameterValues.PushBack(new StringVar("parm", Value));
+	parameter_values.PushBack(new StringVar("parm", Value));
 }
 
 unsigned char CScript::ReadByte(void)
 {
-	return Data[Position++];
+	return data[position++];
 }
 
 int CScript::ReadInt(void)
@@ -550,7 +550,7 @@ char* CScript::ReadString(void)
 {
 	char* Pos;
 
-	Pos = (char*)&Data[Position];
+	Pos = (char*)&data[position];
 
 	while (ReadByte())
 	{
@@ -596,7 +596,7 @@ Variable* CScript::ReadDeclaration(int& Index)
 		Error("Index out of range: %d > %d", Index, MAX_INDEX);
 	}
 
-	VarIndex[Index] = RetVal;
+	variable_index[Index] = RetVal;
 
 	return RetVal;
 }
@@ -608,7 +608,7 @@ void CScript::PushStack(Variable* VI)
 		Error("Illegal push");
 	}
 
-	Stack.PushBack(VI);
+	stack_variables.PushBack(VI);
 }
 
 Variable* CScript::PopStack(void)
@@ -616,11 +616,11 @@ Variable* CScript::PopStack(void)
 	Variable* Value;
 	List<Variable*>::Iter	iv;
 
-	if (Stack.Size())
+	if (stack_variables.Size())
 	{
-		iv = --Stack.End();
+		iv = --stack_variables.End();
 		Value = *iv;
-		Stack.PopBack();
+		stack_variables.PopBack();
 
 		return Value;
 	}
@@ -642,7 +642,7 @@ void CScript::HandleGlobal(bool Assignment)
 
 	if (!NewGlobal(Var))
 	{
-		VarIndex[Index] = FindGlobal(Var->GetName());
+		variable_index[Index] = FindGlobal(Var->GetName());
 
 		delete Var;
 	}
@@ -691,12 +691,12 @@ void CScript::HandleField(void)
 		Error("Index for field out of range: %d > %d\n", Index, MAX_INDEX);
 	}
 
-	Fields[Index] = NewField;
+	fielddefs[Index] = NewField;
 }
 
 void CScript::HandleGoto(void)
 {
-	Position = ReadInt();
+	position = ReadInt();
 }
 
 Variable* CScript::HandleSpawn(void)
@@ -980,21 +980,21 @@ void CScript::HandleDebug(void)
 		if (Flags & DEBUG_ENABLE)
 		{
 			Flags &= ~DEBUG_ENABLE;
-			DebugFlags |= Flags;
+			debug_flags |= Flags;
 		}
 		else
 		{
-			DebugFlags &= ~Flags;
+			debug_flags &= ~Flags;
 		}
 	}
 	else
 	{
 		StartDebug();
 
-		if (ParameterVariables.Size())
+		if (parameter_variables.Size())
 		{
 			DebugLine("   Parameters:\n");
-			for (iv = ParameterVariables.Begin(); iv != ParameterVariables.End(); iv++)
+			for (iv = parameter_variables.Begin(); iv != parameter_variables.End(); iv++)
 			{
 				(*iv)->Debug(this);
 			}
@@ -1009,10 +1009,10 @@ void CScript::HandleDebug(void)
 			}
 		}
 
-		if (LocalVariables.Size())
+		if (local_variables.Size())
 		{
 			DebugLine("   Local Variables:\n");
-			for (iv = LocalVariables.Begin(); iv != LocalVariables.End(); iv++)
+			for (iv = local_variables.Begin(); iv != local_variables.End(); iv++)
 			{
 				(*iv)->Debug(this);
 			}
@@ -1102,11 +1102,11 @@ bool CScript::HandleWait(bool ForAll)
 	count = ReadByte();
 	if (count & WAIT_CLEAR)
 	{
-		ConditionInfo = WAIT_CLEAR;
+		condition_info = WAIT_CLEAR;
 	}
 	else
 	{
-		ConditionInfo = 0;
+		condition_info = 0;
 	}
 
 	count &= ~WAIT_CLEAR;
@@ -1119,16 +1119,16 @@ bool CScript::HandleWait(bool ForAll)
 			Error("Invalid stack for HandleWait");
 		}
 
-		Waiting.PushBack(VI);
+		waiting_variables.PushBack(VI);
 	}
 
 	if (ForAll)
 	{
-		ScriptCondition = COND_WAIT_ALL;
+		script_condition = COND_WAIT_ALL;
 	}
 	else
 	{
-		ScriptCondition = COND_WAIT_ANY;
+		script_condition = COND_WAIT_ANY;
 	}
 
 	if (CheckWait())
@@ -1160,7 +1160,7 @@ bool CScript::HandleTimeWait(void)
 
 	AddEvent(new WaitEvent(NextTime));
 
-	ScriptCondition = COND_WAIT_TIME;
+	script_condition = COND_WAIT_TIME;
 
 	return true;
 }
@@ -1227,7 +1227,7 @@ void CScript::HandleIf(void)
 
 	if (!Result)
 	{
-		Position = Location;
+		position = Location;
 	}
 }
 
@@ -1585,7 +1585,7 @@ void CScript::HandleMove(void)
 				ent->moveinfo.decel = ent->moveinfo.accel = ent->moveinfo.speed = Length / Duration->GetFloatValue();
 			}
 
-			if (DebugFlags & DEBUG_MOVE)
+			if (debug_flags & DEBUG_MOVE)
 			{
 				StartDebug();
 				DebugLine("   Moving Entity %d\n", Entity->GetIntValue());
@@ -1696,7 +1696,7 @@ void CScript::HandleRotate(void)
 			VectorCopy(Dest, ent->moveinfo.start_angles);
 			VectorCopy(Dest, ent->moveinfo.end_angles);
 
-			if (DebugFlags & DEBUG_ROTATE)
+			if (debug_flags & DEBUG_ROTATE)
 			{
 				StartDebug();
 				DebugLine("   Rotating Entity %d\n", Entity->GetIntValue());
@@ -1992,28 +1992,28 @@ void CScript::AddEvent(Event* Which)
 	List<Event*>::Iter	ie;
 	float				time;
 
-	if (Events.Size())
+	if (events.Size())
 	{
 		time = Which->GetTime();
-		for (ie = Events.Begin(); ie != Events.End(); ie++)
+		for (ie = events.Begin(); ie != events.End(); ie++)
 		{
 			if ((*ie)->GetTime() > time)
 			{
 				break;
 			}
 		}
-		Events.Insert(ie, Which);
+		events.Insert(ie, Which);
 	}
 	else
 	{
-		Events.PushBack(Which);
+		events.PushBack(Which);
 	}
 
 #ifdef _DEBUG
 	float				testtime;
 
 	time = 0;
-	for (ie = Events.Begin(); ie != Events.End(); ie++)
+	for (ie = events.Begin(); ie != events.End(); ie++)
 	{
 		testtime = (*ie)->GetTime();
 		if (testtime < time)
@@ -2028,14 +2028,14 @@ void CScript::ProcessEvents(void)
 {
 	List<Event*>::Iter	ie, next;
 
-	while (Events.Size())
+	while (events.Size())
 	{
-		ie = Events.Begin();
+		ie = events.Begin();
 
 		if ((*ie)->Process(this))
 		{
 			delete (*ie);
-			Events.Erase(ie);
+			events.Erase(ie);
 		}
 		else
 		{
@@ -2046,9 +2046,9 @@ void CScript::ProcessEvents(void)
 
 void CScript::ClearTimeWait(void)
 {
-	if (ScriptCondition == COND_WAIT_TIME)
+	if (script_condition == COND_WAIT_TIME)
 	{
-		ScriptCondition = COND_READY;
+		script_condition = COND_READY;
 	}
 }
 
@@ -2062,7 +2062,7 @@ void CScript::AddSignaler(edict_t* Edict, Variable* Var, SignalT SignalType)
 	// Note that this check does not need to be in there - signalers are very flexible, but if used
 	// incorrectly, they can result in weird behavior - this check prevents more than one command using
 	// the same signal varaible prior to a wait command
-	for (is = Signalers.Begin(); is != Signalers.End(); is++)
+	for (is = signalers.Begin(); is != signalers.End(); is++)
 	{
 		if (*(*is) == NewSig)
 		{
@@ -2070,7 +2070,7 @@ void CScript::AddSignaler(edict_t* Edict, Variable* Var, SignalT SignalType)
 		}
 	}
 
-	Signalers.PushBack(NewSig);
+	signalers.PushBack(NewSig);
 }
 
 void CScript::CheckSignalers(edict_t* Which, SignalT SignalType)
@@ -2078,23 +2078,23 @@ void CScript::CheckSignalers(edict_t* Which, SignalT SignalType)
 	List<Signaler*>::Iter	is, next;
 	bool					DoCheckWait = false;
 
-	if (Signalers.Size())
+	if (signalers.Size())
 	{
-		for (is = Signalers.Begin(); is != Signalers.End(); is = next)
+		for (is = signalers.Begin(); is != signalers.End(); is = next)
 		{
 			next = is;
 			next++;
 			if ((*is)->Test(Which, SignalType))
 			{
 				delete (*is);
-				Signalers.Erase(is);
+				signalers.Erase(is);
 
 				DoCheckWait = true;
 			}
 		}
 	}
 
-	if (DoCheckWait && (ScriptCondition == COND_WAIT_ANY || ScriptCondition == COND_WAIT_ALL))
+	if (DoCheckWait && (script_condition == COND_WAIT_ANY || script_condition == COND_WAIT_ALL))
 	{
 		if (CheckWait())
 		{
@@ -2108,19 +2108,19 @@ bool CScript::CheckWait(void)
 	List<Variable*>::Iter	iv;
 	int						count, needed;
 
-	if (ScriptCondition == COND_WAIT_ALL)
+	if (script_condition == COND_WAIT_ALL)
 	{
-		needed = Waiting.Size();
+		needed = waiting_variables.Size();
 	}
-	else if (ScriptCondition == COND_WAIT_ANY)
+	else if (script_condition == COND_WAIT_ANY)
 	{
 		needed = 1;
 	}
-	else if (ScriptCondition == COND_WAIT_TIME)
+	else if (script_condition == COND_WAIT_TIME)
 	{
 		return false;
 	}
-	else if (ScriptCondition == COND_READY)
+	else if (script_condition == COND_READY)
 	{
 		return true;
 	}
@@ -2130,9 +2130,9 @@ bool CScript::CheckWait(void)
 	}
 
 	count = 0;
-	if (Waiting.Size())
+	if (waiting_variables.Size())
 	{
-		for (iv = Waiting.Begin(); iv != Waiting.End(); iv++)
+		for (iv = waiting_variables.Begin(); iv != waiting_variables.End(); iv++)
 		{
 			if ((*iv)->GetIntValue())
 			{
@@ -2143,7 +2143,7 @@ bool CScript::CheckWait(void)
 
 	if (count == needed)
 	{
-		ScriptCondition = COND_READY;
+		script_condition = COND_READY;
 
 		return true;
 	}
@@ -2155,11 +2155,11 @@ void CScript::FinishWait(edict_t* Which, bool NoExecute)
 {
 	List<Variable*>::Iter	iv;
 
-	if (Waiting.Size())
+	if (waiting_variables.Size())
 	{
-		for (iv = Waiting.Begin(); iv != Waiting.End(); iv++)
+		for (iv = waiting_variables.Begin(); iv != waiting_variables.End(); iv++)
 		{
-			if (ConditionInfo == WAIT_CLEAR)
+			if (condition_info == WAIT_CLEAR)
 			{
 				(*iv)->ClearSignal();
 			}
@@ -2167,7 +2167,7 @@ void CScript::FinishWait(edict_t* Which, bool NoExecute)
 			delete* iv;
 		}
 	}
-	Waiting.Erase(Waiting.Begin(), Waiting.End());
+	waiting_variables.Erase(waiting_variables.Begin(), waiting_variables.End());
 
 	if (NoExecute)
 	{
@@ -2190,8 +2190,8 @@ void CScript::Error(const char* error, ...)
 void CScript::StartDebug(void)
 {
 	DebugLine("-------------------------------\n");
-	DebugLine("Script: %s\n", Name);
-	DebugLine("   DEBUG at %d\n", Position);
+	DebugLine("Script: %s\n", name);
+	DebugLine("   DEBUG at %d\n", position);
 }
 
 void CScript::EndDebug(void)
@@ -2225,12 +2225,12 @@ ScriptConditionT CScript::Execute(edict_t* new_other, edict_t* new_activator)
 	bool				Done;
 	int					InstructionCount;
 
-	if (ScriptCondition != COND_READY)
+	if (script_condition != COND_READY)
 	{
-		return ScriptCondition;
+		return script_condition;
 	}
 
-	if (DebugFlags & DEBUG_TIME)
+	if (debug_flags & DEBUG_TIME)
 	{
 		StartDebug();
 		DebugLine("   Current Time: %10.1f\n", level.time);
@@ -2319,7 +2319,7 @@ ScriptConditionT CScript::Execute(edict_t* new_other, edict_t* new_activator)
 				HandleIf();
 				break;
 			case CODE_EXIT:
-				ScriptCondition = COND_COMPLETED;
+				script_condition = COND_COMPLETED;
 				Done = true;
 				break;
 			case CODE_SUSPEND:
@@ -2382,23 +2382,23 @@ ScriptConditionT CScript::Execute(edict_t* new_other, edict_t* new_activator)
 				break;
 		}
 
-		if (Position >= Length)
+		if (position >= length)
 		{
 			Done = true;
-			ScriptCondition = COND_COMPLETED;
+			script_condition = COND_COMPLETED;
 		}
 	}
 
-	return ScriptCondition;
+	return script_condition;
 }
 
 Variable* CScript::FindLocal(const char* Name)
 {
 	List<Variable*>::Iter	iv;
 
-	if (LocalVariables.Size())
+	if (local_variables.Size())
 	{
-		for (iv = LocalVariables.Begin(); iv != LocalVariables.End(); iv++)
+		for (iv = local_variables.Begin(); iv != local_variables.End(); iv++)
 		{
 			if (strcmp(Name, (*iv)->GetName()) == 0)
 			{
@@ -2420,7 +2420,7 @@ bool CScript::NewLocal(Variable* Which)
 		return false;
 	}
 
-	LocalVariables.PushBack(Which);
+	local_variables.PushBack(Which);
 
 	return true;
 }
@@ -2429,9 +2429,9 @@ Variable* CScript::FindParameter(const char* Name)
 {
 	List<Variable*>::Iter	iv;
 
-	if (ParameterVariables.Size())
+	if (parameter_variables.Size())
 	{
-		for (iv = ParameterVariables.Begin(); iv != ParameterVariables.End(); iv++)
+		for (iv = parameter_variables.Begin(); iv != parameter_variables.End(); iv++)
 		{
 			if (strcmp(Name, (*iv)->GetName()) == 0)
 			{
@@ -2457,15 +2457,15 @@ bool CScript::NewParameter(Variable* Which)
 		return false;
 	}
 
-	ParameterVariables.PushBack(Which);
+	parameter_variables.PushBack(Which);
 
-	if (!ParameterValues.Size())
+	if (!parameter_values.Size())
 	{
 		Error("Missing Parameter");
 	}
 
-	ParmValue = *ParameterValues.Begin();
-	ParameterValues.Erase(ParameterValues.Begin());
+	ParmValue = *parameter_values.Begin();
+	parameter_values.Erase(parameter_values.Begin());
 
 	switch (Which->GetType())
 	{

@@ -29,25 +29,25 @@ class Event;
 
 class CScript
 {
-	char Name[MAX_PATH] = { 0 };
-	byte* Data = nullptr;
-	ScriptConditionT ScriptCondition = COND_COMPLETED;
-	int ConditionInfo = 0;
-	int Length = 0;
-	int Position = 0;
-	List<Variable*> LocalVariables;
-	List<Variable*> ParameterVariables;
-	List<Variable*> Stack;
-	List<Signaler*> Signalers;
-	List<Variable*> Waiting;
-	List<StringVar*> ParameterValues;
-	List<Event*> Events;
-	Variable* VarIndex[MAX_INDEX] = { nullptr };
-	FieldDef* Fields[MAX_INDEX] = { nullptr };
+	char name[MAX_PATH] = { 0 };
+	byte* data = nullptr;
+	ScriptConditionT script_condition = COND_COMPLETED;
+	int condition_info = 0;
+	int length = 0;
+	int position = 0;
+	List<Variable*> local_variables;
+	List<Variable*> parameter_variables;
+	List<Variable*> stack_variables;
+	List<Variable*> waiting_variables;
+	List<Signaler*> signalers;
+	List<StringVar*> parameter_values;
+	List<Event*> events;
+	Variable* variable_index[MAX_INDEX] = { nullptr };
+	FieldDef* fielddefs[MAX_INDEX] = { nullptr };
 	edict_t* owner = nullptr;
 	edict_t* other = nullptr;
 	edict_t* activator = nullptr;
-	int DebugFlags = 0;
+	int debug_flags = 0;
 
 	void Free(bool do_data);
 	void Clear(bool do_data);
@@ -122,26 +122,26 @@ public:
 
 	Variable* LookupVar(const int index) const
 	{
-		return VarIndex[index];
+		return variable_index[index];
 	}
 
 	int LookupVarIndex(const Variable* var) const;
 
 	void SetVarIndex(const int index, Variable* var)
 	{
-		VarIndex[index] = var;
+		variable_index[index] = var;
 	}
 
 	FieldDef* LookupField(const int index) const
 	{
-		return Fields[index];
+		return fielddefs[index];
 	}
 
 	int LookupFieldIndex(const FieldDef* field) const;
 
 	void SetFieldIndex(const int index, FieldDef* field)
 	{
-		Fields[index] = field;
+		fielddefs[index] = field;
 	}
 
 	void SetParameter(const char* value);
