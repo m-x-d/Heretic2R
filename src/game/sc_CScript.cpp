@@ -1762,13 +1762,13 @@ void CScript::EndDebug()
 	DebugLine("-------------------------------\n");
 }
 
-void CScript::DebugLine(const char* debugtext, ...)
+void CScript::DebugLine(const char* format, ...)
 {
 	va_list argptr;
-	char	text[1024];
+	char text[1024];
 
-	va_start(argptr, debugtext);
-	vsprintf(text, debugtext, argptr);
+	va_start(argptr, format);
+	vsprintf_s(text, format, argptr); //mxd. vsprintf -> vsprintf_s.
 	va_end(argptr);
 
 	Com_Printf("%s", text);
@@ -1778,7 +1778,7 @@ void CScript::DebugLine(const char* debugtext, ...)
 #endif
 }
 
-void CScript::Think(void)
+void CScript::Think()
 {
 	ProcessEvents();
 }
