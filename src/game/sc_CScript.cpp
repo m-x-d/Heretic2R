@@ -641,60 +641,57 @@ Variable* CScript::HandleSpawn()
 	return new EntityVar(ent);
 }
 
-Variable* CScript::HandleBuiltinFunction(void)
+Variable* CScript::HandleBuiltinFunction()
 {
-	int			Index;
-	edict_t* Search;
-	Variable* V1;
-	Variable* Var;
+	Variable* var = nullptr;
+	const int index = ReadByte();
 
-	Index = ReadByte();
-	switch (Index)
+	switch (index)
 	{
 		case FUNC_FIND_ENTITY_WITH_TARGET:
-			V1 = PopStack();
-			Search = G_Find(NULL, FOFS(targetname), V1->GetStringValue());
-			Var = new EntityVar(Search);
-
-			delete V1;
-			break;
+		{
+			const Variable* value = PopStack();
+			edict_t* search = G_Find(nullptr, FOFS(targetname), value->GetStringValue());
+			var = new EntityVar(search);
+			delete value;
+		} break;
 
 		case FUNC_SIN:
-			V1 = PopStack();
-			Var = new FloatVar("", sin(DEG2RAD(V1->GetFloatValue())));
-
-			delete V1;
-			break;
+		{
+			const Variable* value = PopStack();
+			var = new FloatVar("", sinf(DEG2RAD(value->GetFloatValue())));
+			delete value;
+		} break;
 
 		case FUNC_COS:
-			V1 = PopStack();
-			Var = new FloatVar("", cos(DEG2RAD(V1->GetFloatValue())));
-
-			delete V1;
-			break;
+		{
+			const Variable* value = PopStack();
+			var = new FloatVar("", cosf(DEG2RAD(value->GetFloatValue())));
+			delete value;
+		} break;
 
 		case FUNC_FIND_ENTITY_WITH_SCRIPT:
-			V1 = PopStack();
-			Search = G_Find(NULL, FOFS(scripttarget), V1->GetStringValue());
-			Var = new EntityVar(Search);
-
-			delete V1;
-			break;
+		{
+			const Variable* value = PopStack();
+			edict_t* search = G_Find(nullptr, FOFS(scripttarget), value->GetStringValue());
+			var = new EntityVar(search);
+			delete value;
+		} break;
 
 		case FUNC_SPAWN:
-			Var = HandleSpawn();
+			var = HandleSpawn();
 			break;
 
 		case FUNC_GET_OTHER:
-			Var = new EntityVar(other);
+			var = new EntityVar(other);
 			break;
 
 		case FUNC_GET_ACTIVATOR:
-			Var = new EntityVar(activator);
+			var = new EntityVar(activator);
 			break;
 	}
 
-	return Var;
+	return var;
 }
 
 void CScript::HandlePush(void)
