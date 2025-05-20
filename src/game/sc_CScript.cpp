@@ -2042,11 +2042,11 @@ bool CScript::NewParameter(Variable* which)
 			break;
 
 		case TYPE_INT:
-			temp = new IntVar("parm", atol(parm_value->GetStringValue()));
+			temp = new IntVar("parm", strtol(parm_value->GetStringValue(), nullptr, 10)); //mxd. atol -> strtol.
 			break;
 
 		case TYPE_FLOAT:
-			temp = new FloatVar("parm", atof(parm_value->GetStringValue()));
+			temp = new FloatVar("parm", static_cast<float>(strtod(parm_value->GetStringValue(), nullptr))); //mxd. atof -> strtod.
 			break;
 
 		case TYPE_VECTOR:
