@@ -1222,24 +1222,17 @@ void CScript::HandleFeature(const bool enable)
 	}
 }
 
-void CScript::HandleCacheSound(void)
+void CScript::HandleCacheSound()
 {
-	Variable* SoundName;
-	const char* SoundValue;
+	const Variable* sound_name_var = PopStack();
 
-	SoundName = PopStack();
-	if (!SoundName)
-	{
+	if (sound_name_var == nullptr)
 		Error("Invalid stack for HandleChacheSound");
-	}
-	SoundValue = SoundName->GetStringValue();
 
-	if (!sv_jumpcinematic->value || !sv_cinematicfreeze->value)
-	{
-		gi.soundindex(SoundValue);
-	}
+	if (!static_cast<int>(sv_jumpcinematic->value) || !static_cast<int>(sv_cinematicfreeze->value))
+		gi.soundindex(sound_name_var->GetStringValue());
 
-	delete SoundName;
+	delete sound_name_var;
 }
 
 void CScript::HandleMove(void)
