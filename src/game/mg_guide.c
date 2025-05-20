@@ -250,6 +250,8 @@ static qboolean MG_IsValidBestBuoyForEnt(edict_t* ent, const buoy_t* test_buoy) 
 static qboolean MG_ResolveBuoyConnection(edict_t* self, const buoy_t* best_buoy, const buoy_t* e_best_buoy, const vec3_t goal_pos, qboolean dont_use_last, const qboolean skip_jump)
 {
 	// When called directly, this does not and should not set player_buoy.
+	assert(best_buoy != NULL); //mxd
+	assert(e_best_buoy != NULL); //mxd
 
 	//FIXME: Allow assassins to take any buoy even if can't make a connection, since they can teleport.
 	// Basically, pick the player's buoy and randomly pick one off of it or even that one?..
@@ -296,7 +298,7 @@ static qboolean MG_ResolveBuoyConnection(edict_t* self, const buoy_t* best_buoy,
 		return true;
 	}
 
-	if (best_buoy != NULL && e_best_buoy != NULL)
+	if (best_buoy != NULL && e_best_buoy != NULL) //TODO: NULL checks should be either done at function start or removed. Added asserts for now...
 	{
 		const buoy_t* dest = FindNextBuoy(self, best_buoy->id, e_best_buoy->id);
 
