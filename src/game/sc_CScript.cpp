@@ -461,46 +461,46 @@ char* CScript::ReadString()
 	return start;
 }
 
-Variable* CScript::ReadDeclaration(int& Index)
+Variable* CScript::ReadDeclaration(int& index)
 {
-	int			Type;
-	char* Name;
-	Variable* RetVal;
+	const char* var_name = ReadString();
+	const int var_type = ReadByte();
+	index = ReadInt();
 
-	Name = ReadString();
-	Type = ReadByte();
-	Index = ReadInt();
+	Variable* var = nullptr;
 
-	RetVal = NULL;
-	switch (Type)
+	switch (var_type)
 	{
 		case TYPE_INT:
-			RetVal = new IntVar(Name);
+			var = new IntVar(var_name);
 			break;
+
 		case TYPE_FLOAT:
-			RetVal = new FloatVar(Name);
+			var = new FloatVar(var_name);
 			break;
+
 		case TYPE_VECTOR:
-			RetVal = new VectorVar(Name);
+			var = new VectorVar(var_name);
 			break;
+
 		case TYPE_ENTITY:
-			RetVal = new EntityVar(Name);
+			var = new EntityVar(var_name);
 			break;
+
 		case TYPE_STRING:
-			RetVal = new StringVar(Name);
+			var = new StringVar(var_name);
 			break;
-		case TYPE_UNKNOWN:
+
+		default: // TYPE_UNKNOWN.
 			break;
 	}
 
-	if (Index >= MAX_INDEX)
-	{
-		Error("Index out of range: %d > %d", Index, MAX_INDEX);
-	}
+	if (index >= MAX_INDEX)
+		Error("Index out of range: %d > %d", index, MAX_INDEX);
 
-	variable_index[Index] = RetVal;
+	variable_index[index] = var;
 
-	return RetVal;
+	return var;
 }
 
 void CScript::PushStack(Variable* VI)
