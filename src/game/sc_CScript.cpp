@@ -868,77 +868,65 @@ void CScript::HandleDebug()
 	EndDebug();
 }
 
-void CScript::HandleDebugStatement(void)
+void CScript::HandleDebugStatement()
 {
 	DebugLine("%s\n", ReadString());
 }
 
-void CScript::HandleAddAssignment(void)
+void CScript::HandleAddAssignment()
 {
-	Variable* Value, * Assignee;
+	Variable* assignee = PopStack();
+	Variable* value = PopStack();
 
-	Assignee = PopStack();
-	Value = PopStack();
-	if (Value == NULL || Assignee == NULL)
-	{
+	if (value == nullptr || assignee == nullptr)
 		Error("Invalid stack for AddAssignment");
-	}
 
-	(*Assignee) = (*Assignee) + Value;
+	*assignee = *assignee + value;
 
-	delete Assignee;
-	delete Value;
+	delete assignee;
+	delete value;
 }
 
-void CScript::HandleSubtractAssignment(void)
+void CScript::HandleSubtractAssignment()
 {
-	Variable* Value, * Assignee;
+	Variable* assignee = PopStack();
+	Variable* value = PopStack();
 
-	Assignee = PopStack();
-	Value = PopStack();
-	if (Value == NULL || Assignee == NULL)
-	{
+	if (value == nullptr || assignee == nullptr)
 		Error("Invalid stack for SubtractAssignment");
-	}
 
-	(*Assignee) = (*Assignee) - Value;
+	*assignee = *assignee - value;
 
-	delete Assignee;
-	delete Value;
+	delete assignee;
+	delete value;
 }
 
-void CScript::HandleMultiplyAssignment(void)
+void CScript::HandleMultiplyAssignment()
 {
-	Variable* Value, * Assignee;
+	Variable* assignee = PopStack();
+	Variable* value = PopStack();
 
-	Assignee = PopStack();
-	Value = PopStack();
-	if (Value == NULL || Assignee == NULL)
-	{
+	if (value == nullptr || assignee == nullptr)
 		Error("Invalid stack for MultiplyAssignment");
-	}
 
-	(*Assignee) = (*Assignee) * Value;
+	*assignee = *assignee * value;
 
-	delete Assignee;
-	delete Value;
+	delete assignee;
+	delete value;
 }
 
-void CScript::HandleDivideAssignment(void)
+void CScript::HandleDivideAssignment()
 {
-	Variable* Value, * Assignee;
+	Variable* assignee = PopStack();
+	Variable* value = PopStack();
 
-	Assignee = PopStack();
-	Value = PopStack();
-	if (Value == NULL || Assignee == NULL)
-	{
+	if (value == nullptr || assignee == nullptr)
 		Error("Invalid stack for DivideAssignment");
-	}
 
-	(*Assignee) = (*Assignee) / Value;
+	*assignee = *assignee / value;
 
-	delete Assignee;
-	delete Value;
+	delete assignee;
+	delete value;
 }
 
 bool CScript::HandleWait(bool ForAll)
