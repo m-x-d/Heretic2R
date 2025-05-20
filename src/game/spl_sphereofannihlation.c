@@ -234,10 +234,10 @@ static void SpherePowerLaserThink(edict_t* self)
 				tr.ent = ent;
 		}
 
-		if (tr.ent->takedamage == DAMAGE_NO)
+		if (tr.ent != NULL && tr.ent->takedamage == DAMAGE_NO) //mxd. Added tr.ent NULL check.
 			break;
 
-		if ((tr.startsolid || tr.fraction < 0.99f) && tr.ent != NULL)
+		if (tr.ent != NULL && (tr.startsolid || tr.fraction < 0.99f))
 		{
 			// Reflect it off into space?
 			if (EntReflecting(tr.ent, true, true))
