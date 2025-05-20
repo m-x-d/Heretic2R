@@ -929,47 +929,27 @@ void CScript::HandleDivideAssignment()
 	delete value;
 }
 
-bool CScript::HandleWait(bool ForAll)
+bool CScript::HandleWait(const bool for_all)
 {
-	int			count;
-	Variable* VI;
+	int count = ReadByte();
 
-	count = ReadByte();
-	if (count & WAIT_CLEAR)
-	{
-		condition_info = WAIT_CLEAR;
-	}
-	else
-	{
-		condition_info = 0;
-	}
-
+	condition_info = ((count & WAIT_CLEAR) ? WAIT_CLEAR : 0);
 	count &= ~WAIT_CLEAR;
 
-	for (; count; count--)
+	for (; count > 0; count--)
 	{
-		VI = PopStack();
-		if (!VI)
-		{
+		Variable* var = PopStack();
+		if (var == nullptr)
 			Error("Invalid stack for HandleWait");
-		}
 
-		waiting_variables.PushBack(VI);
+		waiting_variables.PushBack(var);
 	}
 
-	if (ForAll)
-	{
-		script_condition = COND_WAIT_ALL;
-	}
-	else
-	{
-		script_condition = COND_WAIT_ANY;
-	}
+	script_condition = (for_all ? COND_WAIT_ALL : COND_WAIT_ANY);
 
 	if (CheckWait())
 	{
-		FinishWait(NULL, false);
-
+		FinishWait(nullptr, false);
 		return false;
 	}
 
