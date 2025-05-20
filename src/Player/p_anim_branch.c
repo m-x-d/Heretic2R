@@ -312,10 +312,10 @@ int ChickenBranchidle(playerinfo_t* info)
 
 int BranchLwrStanding(playerinfo_t* info)
 {
+	assert(info); //mxd. Moved above 'info->deadflag' check.
+
 	if (info->deadflag != DEAD_NO)
 		return ASEQ_NONE;
-
-	assert(info);
 
 	// Special move.
 	if (info->advancedstaff && info->seqcmd[ACMDL_ACTION] && info->seqcmd[ACMDU_ATTACK] &&
@@ -589,12 +589,12 @@ int BranchLwrStandingRun(playerinfo_t* info)
 
 int BranchLwrWalking(playerinfo_t* info)
 {
+	assert(info);
+
 	const qboolean is_running = (info->buttons & BUTTON_RUN); //mxd
 	const qboolean is_creeping = (info->buttons & BUTTON_CREEP); //mxd
 	const qboolean in_slime_or_lava = (info->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)); //mxd
 	const int curseq = info->lowerseq;
-
-	assert(info);
 
 	// Check for the player falling [LOW PROBABILITY, IMMEDIATE CONCERN].
 	if (info->groundentity == NULL && info->waterlevel < 2 && !in_slime_or_lava && CheckFall(info))
@@ -883,10 +883,10 @@ int BranchLwrRunningStrafe(playerinfo_t* info)
 
 int BranchLwrShortstep(playerinfo_t* info)
 {
+	assert(info);
+
 	const qboolean is_creeping = (info->buttons & BUTTON_CREEP); //mxd
 	const qboolean in_slime_or_lava = (info->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)); //mxd
-
-	assert(info);
 
 	if (info->groundentity == NULL && info->waterlevel < 2 && !in_slime_or_lava && CheckFall(info))
 		return ASEQ_FALLWALK_GO;
@@ -1047,10 +1047,9 @@ int BranchLwrKnockDown(const playerinfo_t* info)
 
 int BranchLwrCrouching(playerinfo_t* info)
 {
-	const qboolean is_creeping = (info->buttons & BUTTON_CREEP); //mxd
-
 	assert(info);
 
+	const qboolean is_creeping = (info->buttons & BUTTON_CREEP); //mxd
 	info->maxs[2] = 4.0f;
 
 	if (info->groundentity == NULL && info->waterlevel < 2 && CheckFall(info))
