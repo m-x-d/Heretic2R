@@ -1661,34 +1661,31 @@ void CScript::AddSignaler(edict_t* edict, Variable* var, const SignalT signal_ty
 	signalers.PushBack(new_signaler);
 }
 
-void CScript::CheckSignalers(edict_t* Which, SignalT SignalType)
+void CScript::CheckSignalers(edict_t* which, const SignalT signal_type)
 {
-	List<Signaler*>::Iter	is, next;
-	bool					DoCheckWait = false;
+	bool check_wait = false;
 
-	if (signalers.Size())
+	if (signalers.Size() > 0)
 	{
-		for (is = signalers.Begin(); is != signalers.End(); is = next)
-		{
-			next = is;
-			next++;
-			if ((*is)->Test(Which, SignalType))
-			{
-				delete (*is);
-				signalers.Erase(is);
+		List<Signaler*>::Iter next;
 
-				DoCheckWait = true;
+		for (List<Signaler*>::Iter signaler = signalers.Begin(); signaler != signalers.End(); signaler = next)
+		{
+			next = signaler;
+			++next;
+
+			if ((*signaler)->Test(which, signal_type))
+			{
+				delete (*signaler);
+				signalers.Erase(signaler);
+
+				check_wait = true;
 			}
 		}
 	}
 
-	if (DoCheckWait && (script_condition == COND_WAIT_ANY || script_condition == COND_WAIT_ALL))
-	{
-		if (CheckWait())
-		{
-			FinishWait(Which, true);
-		}
-	}
+	if (check_wait && (script_condition == COND_WAIT_ANY || script_condition == COND_WAIT_ALL) && CheckWait())
+		FinishWait(which, true);
 }
 
 bool CScript::CheckWait(void)
