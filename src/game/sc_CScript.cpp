@@ -1235,112 +1235,85 @@ void CScript::HandleCacheSound()
 	delete sound_name_var;
 }
 
-void CScript::HandleMove(void)
+void CScript::HandleMove()
 {
-	int			Flags;
-	Variable* Signaler, * Rate, * Duration, * Amount, * Entity;
-	edict_t* ent;
-	vec3_t		Vec, Dest, Diff;
-	vec_t		Length;
+	const int flags = ReadByte();
 
-	Signaler = Rate = Duration = NULL;
+	Variable* signaler_var = ((flags & MOVE_SIGNALER) ? PopStack() : nullptr);
+	const Variable* move_rate_var = ((flags & MOVE_RATE) ? PopStack() : nullptr);
+	const Variable* move_duration_var = ((flags & MOVE_DURATION) ? PopStack() : nullptr);
+	const Variable* move_amount_var = PopStack();
+	const Variable* entity_var = PopStack();
 
-	Flags = ReadByte();
+	edict_t* ent = entity_var->GetEdictValue();
 
-	if (Flags & MOVE_SIGNALER)
+	if (ent != nullptr)
 	{
-		Signaler = PopStack();
-	}
+		vec3_t vec;
+		move_amount_var->GetVectorValue(vec);
 
-	if (Flags & MOVE_RATE)
-	{
-		Rate = PopStack();
-	}
-
-	if (Flags & MOVE_DURATION)
-	{
-		Duration = PopStack();
-	}
-
-	Amount = PopStack();
-	Entity = PopStack();
-
-	Amount->GetVectorValue(Vec);
-
-	ent = Entity->GetEdictValue();
-	if (ent)
-	{
-		if (!Rate && !Duration)
+		if (move_rate_var == nullptr && move_duration_var == nullptr)
 		{
-			VectorAdd(ent->s.origin, Vec, ent->s.origin);
-			if (ent->chain)
-			{
-				VectorAdd(ent->chain->s.origin, Vec, ent->chain->s.origin);
-			}
+			Vec3AddAssign(vec, ent->s.origin);
+
+			if (ent->chain != nullptr)
+				Vec3AddAssign(vec, ent->chain->s.origin);
 		}
 		else
 		{
-			if (!(Flags & MOVE_ABSOLUTE))
+			vec3_t dest;
+
+			if (flags & MOVE_ABSOLUTE)
+				VectorCopy(vec, dest);
+			else
+				VectorAdd(ent->s.origin, vec, dest);
+
+			vec3_t diff;
+			VectorSubtract(ent->s.origin, dest, diff);
+
+			float move_rate;
+			if (move_rate_var != nullptr && move_duration_var != nullptr)
 			{
-				VectorAdd(ent->s.origin, Vec, Dest);
+				move_rate = move_rate_var->GetFloatValue();
+				const float dist = move_rate * move_duration_var->GetFloatValue();
+
+				VectorNormalize(diff);
+				VectorMA(ent->s.origin, dist, diff, dest);
+			}
+			else if (move_rate_var != nullptr)
+			{
+				move_rate = move_rate_var->GetFloatValue();
 			}
 			else
 			{
-				VectorCopy(Vec, Dest);
+				move_rate = VectorLength(diff) / move_rate_var->GetFloatValue();
 			}
 
-			VectorSubtract(ent->s.origin, Dest, Diff);
-			Length = VectorLength(Diff);
-
-			if (Rate && Duration)
-			{
-				ent->moveinfo.decel = ent->moveinfo.accel = ent->moveinfo.speed = Rate->GetFloatValue();
-				Length = Rate->GetFloatValue() * Duration->GetFloatValue();
-				VectorNormalize(Diff);
-				VectorMA(ent->s.origin, Length, Diff, Dest);
-			}
-			else if (Rate)
-			{
-				ent->moveinfo.decel = ent->moveinfo.accel = ent->moveinfo.speed = Rate->GetFloatValue();
-			}
-			else
-			{
-				ent->moveinfo.decel = ent->moveinfo.accel = ent->moveinfo.speed = Length / Duration->GetFloatValue();
-			}
+			ent->moveinfo.decel = move_rate;
+			ent->moveinfo.accel = move_rate;
+			ent->moveinfo.speed = move_rate;
 
 			if (debug_flags & DEBUG_MOVE)
 			{
 				StartDebug();
-				DebugLine("   Moving Entity %d\n", Entity->GetIntValue());
+				DebugLine("   Moving Entity %d\n", entity_var->GetIntValue());
 				DebugLine("      From (%7.3f, %7.3f, %7.3f)\n", ent->s.origin[0], ent->s.origin[1], ent->s.origin[2]);
-				DebugLine("      To   (%7.3f, %7.3f, %7.3f)\n", Dest[0], Dest[1], Dest[2]);
+				DebugLine("      To   (%7.3f, %7.3f, %7.3f)\n", dest[0], dest[1], dest[2]);
 				EndDebug();
 			}
 
-			if (Signaler)
-			{
-				AddSignaler(ent, Signaler, SIGNAL_MOVE);
-			}
+			if (signaler_var != nullptr)
+				AddSignaler(ent, signaler_var, SIGNAL_MOVE);
 
-			Move(ent, Dest);
+			Move(ent, dest);
 		}
 	}
 
-	delete Amount;
-	delete Entity;
-	//	Signaling routine will handle this
-	//	if (Signaler)
-	//	{
-	//		delete Signaler;
-	//	}
-	if (Rate)
-	{
-		delete Rate;
-	}
-	if (Duration)
-	{
-		delete Duration;
-	}
+	delete move_amount_var;
+	delete entity_var;
+	delete signaler_var;
+	delete move_rate_var;
+	delete move_duration_var;
 }
 
 void CScript::HandleRotate(void)
