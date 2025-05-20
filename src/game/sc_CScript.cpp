@@ -311,132 +311,86 @@ void CScript::Clear(const bool do_data) //TODO: unused arg, remove.
 	length = 0;
 }
 
-void CScript::Write(FILE* FH)
+void CScript::Write(FILE* f)
 {
-	int						index;
-	int						size;
-	List<Variable*>::Iter	iv;
-	List<Signaler*>::Iter	is;
-	List<StringVar*>::Iter	isv;
-	List<Event*>::Iter		iev;
-	int						i;
+	int index = RLID_SCRIPT;
+	fwrite(&index, 1, sizeof(index), f);
 
-	index = RLID_SCRIPT;
-	fwrite(&index, 1, sizeof(index), FH);
+	fwrite(name, 1, sizeof(name), f);
+	fwrite(&script_condition, 1, sizeof(script_condition), f);
+	fwrite(&condition_info, 1, sizeof(condition_info), f);
+	fwrite(&length, 1, sizeof(length), f);
+	fwrite(&position, 1, sizeof(position), f);
+	fwrite(&debug_flags, 1, sizeof(debug_flags), f);
 
-	fwrite(name, 1, sizeof(name), FH);
-	fwrite(&script_condition, 1, sizeof(script_condition), FH);
-	fwrite(&condition_info, 1, sizeof(condition_info), FH);
-	fwrite(&length, 1, sizeof(length), FH);
-	fwrite(&position, 1, sizeof(position), FH);
-	fwrite(&debug_flags, 1, sizeof(debug_flags), FH);
+	index = ((owner != nullptr) ? owner - g_edicts : -1);
+	fwrite(&index, 1, sizeof(index), f);
 
-	index = -1;
-	if (owner)
-	{
-		index = owner - g_edicts;
-	}
-	fwrite(&index, 1, sizeof(index), FH);
+	index = ((other != nullptr) ? other - g_edicts : -1);
+	fwrite(&index, 1, sizeof(index), f);
 
-	index = -1;
-	if (other)
-	{
-		index = other - g_edicts;
-	}
-	fwrite(&index, 1, sizeof(index), FH);
+	index = ((activator != nullptr) ? activator - g_edicts : -1);
+	fwrite(&index, 1, sizeof(index), f);
 
-	index = -1;
-	if (activator)
-	{
-		index = activator - g_edicts;
-	}
-	fwrite(&index, 1, sizeof(index), FH);
+	int size = 0;
+	for (const auto& fielddef : fielddefs)
+		if (fielddef != nullptr)
+			size++;
+	fwrite(&size, 1, sizeof(size), f);
+
+	for (const auto& fielddef : fielddefs)
+		if (fielddef != nullptr)
+			fielddef->Write(f, this);
 
 	size = 0;
-	for (i = 0, size = 0; i < MAX_INDEX; i++)
-	{
-		if (fielddefs[i])
-		{
+	for (List<Variable*>::Iter var = GlobalVariables.Begin(); var != GlobalVariables.End(); ++var)
+		if (LookupVarIndex(*var) != -1)
 			size++;
-		}
-	}
-	fwrite(&size, 1, sizeof(size), FH);
-	for (i = 0; i < MAX_INDEX; i++)
+	fwrite(&size, 1, sizeof(size), f);
+	for (List<Variable*>::Iter var = GlobalVariables.Begin(); var != GlobalVariables.End(); ++var)
 	{
-		if (fielddefs[i])
-		{
-			fielddefs[i]->Write(FH, this);
-		}
-	}
-
-	size = 0;
-	for (iv = GlobalVariables.Begin(); iv != GlobalVariables.End(); iv++)
-	{
-		if (LookupVarIndex(*iv) != -1)
-		{
-			size++;
-		}
-	}
-	fwrite(&size, 1, sizeof(size), FH);
-	for (iv = GlobalVariables.Begin(); iv != GlobalVariables.End(); iv++)
-	{
-		index = LookupVarIndex(*iv);
+		index = LookupVarIndex(*var);
 		if (index != -1)
 		{
-			fwrite(&index, 1, sizeof(index), FH);
-			fwrite((*iv)->GetName(), 1, VAR_LENGTH, FH);
+			fwrite(&index, 1, sizeof(index), f);
+			fwrite((*var)->GetName(), 1, VAR_LENGTH, f);
 		}
 	}
 
 	size = local_variables.Size();
-	fwrite(&size, 1, sizeof(size), FH);
-	for (iv = local_variables.Begin(); iv != local_variables.End(); iv++)
-	{
-		(*iv)->Write(FH, this);
-	}
+	fwrite(&size, 1, sizeof(size), f);
+	for (List<Variable*>::Iter var = local_variables.Begin(); var != local_variables.End(); ++var)
+		(*var)->Write(f, this);
 
 	size = parameter_variables.Size();
-	fwrite(&size, 1, sizeof(size), FH);
-	for (iv = parameter_variables.Begin(); iv != parameter_variables.End(); iv++)
-	{
-		(*iv)->Write(FH, this);
-	}
+	fwrite(&size, 1, sizeof(size), f);
+	for (List<Variable*>::Iter var = parameter_variables.Begin(); var != parameter_variables.End(); ++var)
+		(*var)->Write(f, this);
 
 	size = stack_variables.Size();
-	fwrite(&size, 1, sizeof(size), FH);
-	for (iv = stack_variables.Begin(); iv != stack_variables.End(); iv++)
-	{
-		(*iv)->Write(FH, this);
-	}
+	fwrite(&size, 1, sizeof(size), f);
+	for (List<Variable*>::Iter var = stack_variables.Begin(); var != stack_variables.End(); ++var)
+		(*var)->Write(f, this);
 
 	size = waiting_variables.Size();
-	fwrite(&size, 1, sizeof(size), FH);
-	for (iv = waiting_variables.Begin(); iv != waiting_variables.End(); iv++)
-	{
-		(*iv)->Write(FH, this);
-	}
+	fwrite(&size, 1, sizeof(size), f);
+	for (List<Variable*>::Iter var = waiting_variables.Begin(); var != waiting_variables.End(); ++var)
+		(*var)->Write(f, this);
 
 	size = signalers.Size();
-	fwrite(&size, 1, sizeof(size), FH);
-	for (is = signalers.Begin(); is != signalers.End(); is++)
-	{
-		(*is)->Write(FH, this);
-	}
-
+	fwrite(&size, 1, sizeof(size), f);
+	for (List<Signaler*>::Iter signaler = signalers.Begin(); signaler != signalers.End(); ++signaler)
+		(*signaler)->Write(f, this);
 
 	size = parameter_values.Size();
-	fwrite(&size, 1, sizeof(size), FH);
-	for (isv = parameter_values.Begin(); isv != parameter_values.End(); isv++)
-	{
-		(*isv)->Write(FH, this);
-	}
+	fwrite(&size, 1, sizeof(size), f);
+	for (List<StringVar*>::Iter param_val = parameter_values.Begin(); param_val != parameter_values.End(); ++param_val)
+		(*param_val)->Write(f, this);
 
 	size = events.Size();
-	fwrite(&size, 1, sizeof(size), FH);
-	for (iev = events.Begin(); iev != events.End(); iev++)
-	{
-		(*iev)->Write(FH, this);
-	}
+	fwrite(&size, 1, sizeof(size), f);
+	for (List<Event*>::Iter event = events.Begin(); event != events.End(); ++event)
+		(*event)->Write(f, this);
 }
 
 int CScript::LookupVarIndex(const Variable* Var) const
