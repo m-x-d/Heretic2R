@@ -6,15 +6,14 @@
 
 #pragma once
 
-#include <stdio.h>
 #include "sc_Event.h"
 #include "sc_FieldDef.h"
 #include "sc_StringVar.h"
 #include "sc_List.h"
 #include "sc_Signaler.h"
+#include "g_local.h"
 
-#define MAX_INDEX		100
-#define INSTRUCTION_MAX 500
+#define MAX_INDEX	100
 
 enum ScriptConditionT
 {
@@ -30,113 +29,138 @@ class Event;
 
 class CScript
 {
-private:
-	char				Name[260]; //TODO: MAX_PATH in original logic.
-	unsigned char* Data;
-	ScriptConditionT	ScriptCondition;
-	int					ConditionInfo;
-	int					Length;
-	int					Position;
-	List<Variable*>	LocalVariables;
-	List<Variable*>	ParameterVariables;
-	List<Variable*>	Stack;
-	List<Signaler*>	Signalers;
-	List<Variable*>	Waiting;
-	List<StringVar*>   ParameterValues;
-	List<Event*>		Events;
-	Variable* VarIndex[MAX_INDEX];
-	FieldDef* Fields[MAX_INDEX];
-	edict_t* owner, * other, * activator;
-	int					DebugFlags;
+	char Name[MAX_PATH] = { 0 };
+	byte* Data = nullptr;
+	ScriptConditionT ScriptCondition = COND_COMPLETED;
+	int ConditionInfo = 0;
+	int Length = 0;
+	int Position = 0;
+	List<Variable*> LocalVariables;
+	List<Variable*> ParameterVariables;
+	List<Variable*> Stack;
+	List<Signaler*> Signalers;
+	List<Variable*> Waiting;
+	List<StringVar*> ParameterValues;
+	List<Event*> Events;
+	Variable* VarIndex[MAX_INDEX] = { nullptr };
+	FieldDef* Fields[MAX_INDEX] = { nullptr };
+	edict_t* owner = nullptr;
+	edict_t* other = nullptr;
+	edict_t* activator = nullptr;
+	int DebugFlags = 0;
+
+	void Free(bool do_data);
+	void Clear(bool do_data);
+
+	Variable* ReadDeclaration(int& index);
+
+	void PushStack(Variable* v);
+	Variable* PopStack();
+
+	void HandleGlobal(bool assignment);
+	void HandleLocal(bool assignment);
+	void HandleParameter(bool assignment);
+	void HandleField();
+	void HandleGoto();
+	Variable* HandleSpawn();
+	Variable* HandleBuiltinFunction();
+	void HandlePush();
+	void HandlePop();
+	void HandleAssignment();
+	void HandleAdd();
+	void HandleSubtract();
+	void HandleMultiply();
+	void HandleDivide();
+	void HandleDebug();
+	void HandleDebugStatement();
+	void HandleAddAssignment();
+	void HandleSubtractAssignment();
+	void HandleMultiplyAssignment();
+	void HandleDivideAssignment();
+	bool HandleWait(bool for_all);
+	bool HandleTimeWait();
+	void HandleIf();
+
+	void HandlePrint();
+	void HandlePlaySound();
+	void HandleFeature(bool enable);
+	void HandleCacheSound();
+
+	void HandleMove();
+	void HandleRotate();
+	void HandleUse();
+	void HandleTrigger(bool enable);
+	void HandleAnimate();
+	void HandleCopyPlayerAttributes();
+	void HandleSetViewAngles();
+	void HandleSetCacheSize();
+
+	void Move(edict_t* ent, const vec3_t dest);
+	void Rotate(edict_t* ent);
+
+	void ProcessEvents();
+
+	void AddSignaler(edict_t* edict, Variable* var, SignalT signal_type);
+	void FinishWait(edict_t* which, bool execute);
+
+	void Error(const char* format, ...);
+	void StartDebug();
+	void EndDebug();
+
+	Variable* FindLocal(const char* var_name);
+	bool NewLocal(Variable* which);
+	Variable* FindParameter(const char* param_name);
+	bool NewParameter(Variable* which);
 
 public:
-	CScript(char* ScriptName, edict_t* new_owner);
-	CScript(FILE* FH);
-	~CScript(void);
+	CScript(const char* script_name, edict_t* new_owner);
+	CScript(FILE* f);
+	~CScript();
 
-	void				LoadFile(void);
-	void				Free(bool DoData);
-	void				Clear(bool DoData);
-	void				Write(FILE* FH);
+	void LoadFile();
+	void Write(FILE* f);
 
-	Variable* LookupVar(int Index) { return VarIndex[Index]; }
-	int					LookupVarIndex(Variable* Var);
-	void				SetVarIndex(int Index, Variable* Var) { VarIndex[Index] = Var; }
-	FieldDef* LookupField(int Index) { return Fields[Index]; }
-	int					LookupFieldIndex(FieldDef* Field);
-	void				SetFieldIndex(int Index, FieldDef* Field) { Fields[Index] = Field; }
-	void				SetParameter(char* Value);
+	Variable* LookupVar(const int index) const
+	{
+		return VarIndex[index];
+	}
 
-	unsigned char		ReadByte(void);
-	int					ReadInt(void);
-	float				ReadFloat(void);
-	char* ReadString(void);
-	Variable* ReadDeclaration(int& Index);
+	int LookupVarIndex(const Variable* var) const;
 
-	void				PushStack(Variable* VI);
-	Variable* PopStack(void);
+	void SetVarIndex(const int index, Variable* var)
+	{
+		VarIndex[index] = var;
+	}
 
-	void				HandleGlobal(bool Assignment);
-	void				HandleLocal(bool Assignment);
-	void				HandleParameter(bool Assignment);
-	void				HandleField(void);
-	void				HandleGoto(void);
-	Variable* HandleSpawn(void);
-	Variable* HandleBuiltinFunction(void);
-	void				HandlePush(void);
-	void				HandlePop(void);
-	void				HandleAssignment(void);
-	void				HandleAdd(void);
-	void				HandleSubtract(void);
-	void				HandleMultiply(void);
-	void				HandleDivide(void);
-	void				HandleDebug(void);
-	void				HandleDebugStatement(void);
-	void				HandleAddAssignment(void);
-	void				HandleSubtractAssignment(void);
-	void				HandleMultiplyAssignment(void);
-	void				HandleDivideAssignment(void);
-	bool				HandleWait(bool ForAll);
-	bool				HandleTimeWait(void);
-	void				HandleIf(void);
+	FieldDef* LookupField(const int index) const
+	{
+		return Fields[index];
+	}
 
-	void				HandlePrint(void);
-	void				HandlePlaySound(void);
-	void				HandleFeature(bool Enable);
-	void				HandleCacheSound(void);
+	int LookupFieldIndex(const FieldDef* field) const;
 
-	void				HandleMove(void);
-	void				HandleRotate(void);
-	void				HandleUse(void);
-	void				HandleTrigger(bool Enable);
-	void				HandleAnimate(void);
-	void				HandleCopyPlayerAttributes(void);
-	void				HandleSetViewAngles(void);
-	void				HandleSetCacheSize(void);
+	void SetFieldIndex(const int index, FieldDef* field)
+	{
+		Fields[index] = field;
+	}
 
-	void				Move_Done(edict_t* ent);
-	void				Move(edict_t* ent, vec3_t Dest);
-	void				Rotate_Done(edict_t* ent);
-	void				Rotate(edict_t* ent);
+	void SetParameter(const char* value);
 
-	void				AddEvent(Event* Which);
-	void				ProcessEvents(void);
-	void				ClearTimeWait(void);
+	byte ReadByte();
+	int ReadInt();
+	float ReadFloat();
+	char* ReadString();
 
-	void				AddSignaler(edict_t* Edict, Variable* Var, SignalT SignalType);
-	void				CheckSignalers(edict_t* Which, SignalT SignalType);
-	bool				CheckWait(void);
-	void				FinishWait(edict_t* Which, bool NoExecute);
-	void				Error(char* error, ...);
-	void				StartDebug(void);
-	void				EndDebug(void);
-	void				DebugLine(char* debugtext, ...);
+	void Move_Done(edict_t* ent);
+	void Rotate_Done(edict_t* ent);
 
-	void				Think(void);
-	ScriptConditionT	Execute(edict_t* new_other, edict_t* new_activator);
+	void AddEvent(Event* which);
+	void ClearTimeWait();
+	void CheckSignalers(edict_t* which, SignalT signal_type);
+	bool CheckWait();
+	
+	void DebugLine(const char* format, ...);
 
-	Variable* FindLocal(const char* Name);
-	bool				NewLocal(Variable* Which);
-	Variable* FindParameter(const char* Name);
-	bool				NewParameter(Variable* Which);
+	void Think();
+	ScriptConditionT Execute(edict_t* new_other, edict_t* new_activator);
 };

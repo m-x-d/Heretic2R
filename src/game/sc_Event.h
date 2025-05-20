@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "sc_CScript.h"
+#include "g_local.h"
 
 enum EventT
 {

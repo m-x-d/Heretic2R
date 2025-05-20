@@ -88,6 +88,7 @@ static int msg_animtype[NUM_MESSAGES] =
 };
 
 #define MAX_CINESNDS 255
+#define MAX_INSTRUCTIONS 500 //mxd. Named 'INSTRUCTION_MAX' in original logic.
 
 typedef struct CinematicSound_s
 {
@@ -104,7 +105,7 @@ extern "C"
 	extern cvar_t* Cvar_Set(const char* var_name, const char* value);
 }
 
-CScript::CScript(char* ScriptName, edict_t* new_owner)
+CScript::CScript(const char* ScriptName, edict_t* new_owner)
 {
 	Clear(true);
 
@@ -473,7 +474,7 @@ void CScript::Write(FILE* FH)
 	}
 }
 
-int CScript::LookupVarIndex(Variable* Var)
+int CScript::LookupVarIndex(const Variable* Var) const
 {
 	int i;
 
@@ -488,7 +489,7 @@ int CScript::LookupVarIndex(Variable* Var)
 	return -1;
 }
 
-int	CScript::LookupFieldIndex(FieldDef* Field)
+int	CScript::LookupFieldIndex(const FieldDef* Field) const
 {
 	int i;
 
@@ -503,7 +504,7 @@ int	CScript::LookupFieldIndex(FieldDef* Field)
 	return -1;
 }
 
-void CScript::SetParameter(char* Value)
+void CScript::SetParameter(const char* Value)
 {
 	ParameterValues.PushBack(new StringVar("parm", Value));
 }
@@ -1936,7 +1937,7 @@ void CScript::Move_Done(edict_t* ent)
 	VectorCopy(ent->moveinfo.end_origin, ent->s.origin);
 }
 
-void CScript::Move(edict_t* ent, vec3_t Dest)
+void CScript::Move(edict_t* ent, const vec3_t Dest)
 {
 	float	frames;
 
@@ -2174,7 +2175,7 @@ void CScript::FinishWait(edict_t* Which, bool NoExecute)
 	}
 }
 
-void CScript::Error(char* error, ...)
+void CScript::Error(const char* error, ...)
 {
 	va_list argptr;
 	char	text[1024];
@@ -2198,7 +2199,7 @@ void CScript::EndDebug(void)
 	DebugLine("-------------------------------\n");
 }
 
-void CScript::DebugLine(char* debugtext, ...)
+void CScript::DebugLine(const char* debugtext, ...)
 {
 	va_list argptr;
 	char	text[1024];
@@ -2250,7 +2251,7 @@ ScriptConditionT CScript::Execute(edict_t* new_other, edict_t* new_activator)
 	while (!Done)
 	{
 		InstructionCount++;
-		if (InstructionCount > INSTRUCTION_MAX)
+		if (InstructionCount > MAX_INSTRUCTIONS)
 		{
 			Error("Runaway loop for script");
 		}
