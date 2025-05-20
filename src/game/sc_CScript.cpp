@@ -1506,26 +1506,21 @@ void CScript::HandleAnimate()
 	delete moving_var;
 }
 
-void CScript::HandleCopyPlayerAttributes(void)
+void CScript::HandleCopyPlayerAttributes()
 {
-	Variable* Player, * Destination;
-	edict_t* PlayerEnt, * DestinationEnt;
-
-	Destination = PopStack();
-	if (!Destination)
-	{
+	const Variable* destination_var = PopStack();
+	if (destination_var == nullptr)
 		Error("Invalid stack for HandleCopyPlayerAttributes()");
-	}
-	DestinationEnt = Destination->GetEdictValue();
 
-	Player = PopStack();
-	if (!Player)
-	{
+	edict_t* destination_ent = destination_var->GetEdictValue();
+
+	const Variable* player_var = PopStack();
+	if (player_var == nullptr)
 		Error("Invalid stack for HandleCopyPlayerAttributes()");
-	}
-	PlayerEnt = Player->GetEdictValue();
 
-	CinematicSwapPlayer(PlayerEnt, DestinationEnt);
+	const edict_t* player_ent = player_var->GetEdictValue();
+
+	CinematicSwapPlayer(player_ent, destination_ent);
 }
 
 void CScript::HandleSetViewAngles(void)
