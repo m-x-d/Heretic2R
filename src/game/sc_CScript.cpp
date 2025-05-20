@@ -525,73 +525,55 @@ Variable* CScript::PopStack()
 	return nullptr;
 }
 
-void CScript::HandleGlobal(bool Assignment)
+void CScript::HandleGlobal(const bool assignment)
 {
-	Variable* Var;
-	int			Index;
+	int index;
+	Variable* var = ReadDeclaration(index);
 
-	Var = ReadDeclaration(Index);
+	if (assignment)
+		var->ReadValue(this);
 
-	if (Assignment)
+	if (!NewGlobal(var))
 	{
-		Var->ReadValue(this);
-	}
-
-	if (!NewGlobal(Var))
-	{
-		variable_index[Index] = FindGlobal(Var->GetName());
-
-		delete Var;
+		variable_index[index] = FindGlobal(var->GetName());
+		delete var;
 	}
 }
 
-void CScript::HandleLocal(bool Assignment)
+void CScript::HandleLocal(const bool assignment)
 {
-	Variable* Var;
-	int			Index;
+	int index;
+	Variable* var = ReadDeclaration(index);
 
-	Var = ReadDeclaration(Index);
+	if (assignment)
+		var->ReadValue(this);
 
-	if (Assignment)
-	{
-		Var->ReadValue(this);
-	}
-
-	NewLocal(Var);
+	NewLocal(var);
 }
 
-void CScript::HandleParameter(bool Assignment)
+void CScript::HandleParameter(const bool assignment)
 {
-	Variable* Var;
-	int			Index;
+	int index;
+	Variable* var = ReadDeclaration(index);
 
-	Var = ReadDeclaration(Index);
+	if (assignment)
+		var->ReadValue(this);
 
-	if (Assignment)
-	{
-		Var->ReadValue(this);
-	}
-
-	NewParameter(Var);
+	NewParameter(var);
 }
 
-void CScript::HandleField(void)
+void CScript::HandleField()
 {
-	int			Index;
-	FieldDef* NewField;
+	auto* field = new FieldDef(this);
 
-	NewField = new FieldDef(this);
+	const int index = ReadInt();
+	if (index < 0 || index >= MAX_INDEX)
+		Error("Index for field out of range: %d > %d\n", index, MAX_INDEX);
 
-	Index = ReadInt();
-	if (Index < 0 || Index >= MAX_INDEX)
-	{
-		Error("Index for field out of range: %d > %d\n", Index, MAX_INDEX);
-	}
-
-	fielddefs[Index] = NewField;
+	fielddefs[index] = field;
 }
 
-void CScript::HandleGoto(void)
+void CScript::HandleGoto()
 {
 	position = ReadInt();
 }
