@@ -229,7 +229,7 @@ static void PF_Configstring(const int index, const char* val)
 	}
 	else
 	{
-		strcpy_s(sv.configstrings[index], sizeof(sv.configstrings[index]), val);
+		strcpy_s(sv.configstrings[index], sizeof(sv.configstrings[0]), val);
 	}
 
 	if (sv.state != ss_loading)

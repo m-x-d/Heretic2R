@@ -101,7 +101,7 @@ static int SV_FindIndex(const char* name, const int start, const int max, const 
 		}
 	}
 
-	strncpy_s(sv.configstrings[start + index], sizeof(sv.configstrings[start + index]), short_name, sizeof(short_name)); // H2: name -> short_name //mxd. strncpy -> strncpy_s
+	strncpy_s(sv.configstrings[start + index], sizeof(sv.configstrings[0]), short_name, sizeof(short_name)); // H2: name -> short_name //mxd. strncpy -> strncpy_s
 
 	if (sv.state != ss_loading)
 	{
@@ -262,8 +262,8 @@ static void SV_SpawnServer(char* server, char* spawnpoint, const server_state_t 
 	sv.attractloop = attractloop;
 
 	// Save name and welcome message for levels that don't set message.
-	strcpy_s(sv.configstrings[CS_NAME], sizeof(sv.configstrings[CS_NAME]), server); //mxd. strcpy -> strcpy_s
-	strcpy_s(sv.configstrings[CS_WELCOME], sizeof(sv.configstrings[CS_WELCOME]), sv_welcome_mess->string); // H2 //mxd. strcpy -> strcpy_s
+	strcpy_s(sv.configstrings[CS_NAME], sizeof(sv.configstrings[0]), server); //mxd. strcpy -> strcpy_s
+	strcpy_s(sv.configstrings[CS_WELCOME], sizeof(sv.configstrings[0]), sv_welcome_mess->string); // H2 //mxd. strcpy -> strcpy_s
 
 	SZ_Init(&sv.multicast, sv.multicast_buf, sizeof(sv.multicast_buf));
 
@@ -283,12 +283,12 @@ static void SV_SpawnServer(char* server, char* spawnpoint, const server_state_t 
 
 	// Save name and welcome message for levels that don't set message. AGAIN. //TODO: why are these set twice?
 	strcpy_s(sv.name, sizeof(sv.name), server);
-	strcpy_s(sv.configstrings[CS_NAME], sizeof(sv.configstrings[CS_NAME]), server);
-	strcpy_s(sv.configstrings[CS_WELCOME], sizeof(sv.configstrings[CS_WELCOME]), sv_welcome_mess->string); // H2
+	strcpy_s(sv.configstrings[CS_NAME], sizeof(sv.configstrings[0]), server);
+	strcpy_s(sv.configstrings[CS_WELCOME], sizeof(sv.configstrings[0]), sv_welcome_mess->string); // H2
 
 	if (serverstate == ss_game)
 	{
-		Com_sprintf(sv.configstrings[CS_MODELS + 1], sizeof(sv.configstrings[CS_MODELS + 1]), "maps/%s.bsp", server);
+		Com_sprintf(sv.configstrings[CS_MODELS + 1], sizeof(sv.configstrings[0]), "maps/%s.bsp", server);
 		sv.models[1] = CM_LoadMap(sv.configstrings[CS_MODELS + 1], false, &checksum);
 	}
 	else
@@ -296,7 +296,7 @@ static void SV_SpawnServer(char* server, char* spawnpoint, const server_state_t 
 		sv.models[1] = CM_LoadMap("", false, &checksum); // No real map
 	}
 
-	Com_sprintf(sv.configstrings[CS_MAPCHECKSUM], sizeof(sv.configstrings[CS_MAPCHECKSUM]), "%i", checksum);
+	Com_sprintf(sv.configstrings[CS_MAPCHECKSUM], sizeof(sv.configstrings[0]), "%i", checksum);
 
 	// Clear physics interaction links.
 	SV_ClearWorld();
@@ -306,7 +306,7 @@ static void SV_SpawnServer(char* server, char* spawnpoint, const server_state_t 
 
 	for (int i = 1; i < CM_NumInlineModels(); i++)
 	{
-		Com_sprintf(sv.configstrings[CS_MODELS + 1 + i], sizeof(sv.configstrings[CS_MODELS + 1 + i]), "*%i", i);
+		Com_sprintf(sv.configstrings[CS_MODELS + 1 + i], sizeof(sv.configstrings[0]), "*%i", i);
 		sv.models[i + 1] = CM_InlineModel(sv.configstrings[CS_MODELS + 1 + i]);
 	}
 
@@ -334,7 +334,7 @@ static void SV_SpawnServer(char* server, char* spawnpoint, const server_state_t 
 
 	if ((int)dedicated->value) // H2
 	{
-		const int cooptimeout = (int)Cvar_VariableValue("sv_cooptimeout");
+		const int cooptimeout = (int)(Cvar_VariableValue("sv_cooptimeout"));
 		if (cooptimeout > 0)
 		{
 			char msg[MAX_OSPATH];

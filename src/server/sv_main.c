@@ -71,7 +71,7 @@ static void SV_SendWelcomeMessage(const char* msg) // H2
 	if (msg != NULL && *msg != 0)
 	{
 		sv.baselines[0].number = 0;
-		const int size = sizeof(sv.configstrings[CS_WELCOME]);
+		const int size = sizeof(sv.configstrings[0]);
 		strncpy_s(sv.configstrings[CS_WELCOME], size, msg, size); //mxd. strncpy -> strncpy_s
 
 		if (sv.state != ss_loading)
