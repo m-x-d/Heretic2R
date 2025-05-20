@@ -18,6 +18,7 @@ protected:
 public:
 	Variable(const char* new_name = "", VariableType new_type = TYPE_UNKNOWN);
 	Variable(FILE* f, CScript* script);
+	virtual ~Variable() = default; //mxd. Added to avoid compiler warning...
 
 	virtual void Write(FILE* f, CScript* script, int id = -1);
 

@@ -27,6 +27,7 @@ protected:
 public:
 	Event(float new_time, EventT new_type);
 	Event(FILE* f, CScript* script);
+	virtual ~Event() = default; //mxd. Added to avoid compiler warning...
 
 	virtual void Write(FILE* f, CScript* script, int id = -1);
 
