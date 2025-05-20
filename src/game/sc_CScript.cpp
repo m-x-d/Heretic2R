@@ -1637,7 +1637,7 @@ void CScript::ProcessEvents()
 		if (!(*event)->Process(this))
 			break;
 
-		delete (*event);
+		delete *event;
 		events.Erase(event);
 	}
 }
@@ -1676,7 +1676,7 @@ void CScript::CheckSignalers(edict_t* which, const SignalT signal_type)
 
 			if ((*signaler)->Test(which, signal_type))
 			{
-				delete (*signaler);
+				delete *signaler;
 				signalers.Erase(signaler);
 
 				check_wait = true;
@@ -1719,28 +1719,23 @@ bool CScript::CheckWait()
 	return false;
 }
 
-void CScript::FinishWait(edict_t* Which, bool NoExecute)
+void CScript::FinishWait(edict_t* which, const bool execute) //mxd. Second var named 'no_execute' in original logic.
 {
-	List<Variable*>::Iter	iv;
-
-	if (waiting_variables.Size())
+	if (waiting_variables.Size() > 0)
 	{
-		for (iv = waiting_variables.Begin(); iv != waiting_variables.End(); iv++)
+		for (List<Variable*>::Iter var = waiting_variables.Begin(); var != waiting_variables.End(); ++var)
 		{
 			if (condition_info == WAIT_CLEAR)
-			{
-				(*iv)->ClearSignal();
-			}
+				(*var)->ClearSignal();
 
-			delete* iv;
+			delete *var;
 		}
 	}
+
 	waiting_variables.Erase(waiting_variables.Begin(), waiting_variables.End());
 
-	if (NoExecute)
-	{
-		Execute(Which, NULL);
-	}
+	if (execute)
+		Execute(which, nullptr);
 }
 
 void CScript::Error(const char* error, ...)
