@@ -1406,17 +1406,14 @@ void CScript::HandleUse()
 	delete entity_var;
 }
 
-void CScript::HandleTrigger(bool Enable)
+void CScript::HandleTrigger(const bool enable)
 {
-	Variable* Entity;
-	edict_t* trigger_ent;
+	const Variable* entity_var = PopStack();
+	edict_t* trigger_ent = entity_var->GetEdictValue();
 
-	Entity = PopStack();
-
-	trigger_ent = Entity->GetEdictValue();
-	if (trigger_ent)
+	if (trigger_ent != nullptr)
 	{
-		if (Enable)
+		if (enable)
 		{
 			trigger_ent->solid = SOLID_TRIGGER;
 			trigger_ent->use = TriggerMultipleUse;
@@ -1425,9 +1422,11 @@ void CScript::HandleTrigger(bool Enable)
 		else
 		{
 			trigger_ent->solid = SOLID_NOT;
-			trigger_ent->use = NULL;
+			trigger_ent->use = nullptr;
 		}
 	}
+
+	delete entity_var; //mxd. Missing in original logic.
 }
 
 void CScript::HandleAnimate(void)
