@@ -1286,7 +1286,7 @@ void CScript::HandleMove()
 			}
 			else
 			{
-				move_rate = VectorLength(diff) / move_rate_var->GetFloatValue();
+				move_rate = VectorLength(diff) / move_duration_var->GetFloatValue(); //BUGFIX: mxd. Divided by move_rate_var->GetFloatValue() in original logic (which is nullptr here).
 			}
 
 			ent->moveinfo.decel = move_rate;
