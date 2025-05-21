@@ -371,7 +371,7 @@ void SP_shrine_heal_trigger(edict_t* ent) //mxd. Named 'shrine_heal' in original
 	ent->shrine_type = SHRINE_HEAL;
 	ent->classname = health_text;
 
-	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
+	if (!DEATHMATCH || !(DMFLAGS & DF_NO_SHRINE))
 		ent->touch = ShrineHealTouch;
 
 	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
@@ -461,7 +461,7 @@ void SP_shrine_armor_silver_trigger(edict_t* ent) //mxd. Named 'shrine_armor' in
 	ent->shrine_type = SHRINE_ARMOR_SILVER;
 	ent->classname = armor_silver_text;
 
-	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
+	if (!DEATHMATCH || !(DMFLAGS & DF_NO_SHRINE))
 		ent->touch = ShrineArmorSilverTouch;
 
 	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
@@ -537,7 +537,7 @@ void SP_shrine_armor_gold_trigger(edict_t* ent) //mxd. Named 'shrine_armor_gold'
 	ent->classname = armor_gold_text;
 
 	// No touch if flags say so.
-	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
+	if (!DEATHMATCH || !(DMFLAGS & DF_NO_SHRINE))
 		ent->touch = ShrineArmorGoldTouch;
 
 	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
@@ -629,7 +629,7 @@ void SP_shrine_staff_trigger(edict_t* ent) //mxd. Named 'shrine_staff' in origin
 	ent->shrine_type = SHRINE_STAFF;
 	ent->classname = staff_text;
 
-	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
+	if (!DEATHMATCH || !(DMFLAGS & DF_NO_SHRINE))
 		ent->touch = ShrineStaffTouch;
 
 	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
@@ -701,7 +701,7 @@ void SP_shrine_lungs_trigger(edict_t* ent) //mxd. Named 'shrine_lung' in origina
 	ent->shrine_type = SHRINE_LUNGS;
 	ent->classname = lungs_text;
 
-	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
+	if (!DEATHMATCH || !(DMFLAGS & DF_NO_SHRINE))
 		ent->touch = ShrineLungsTouch;
 
 	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
@@ -785,7 +785,7 @@ void SP_shrine_light_trigger(edict_t* ent) //mxd. Named 'shrine_light' in origin
 	ent->shrine_type = SHRINE_LIGHT;
 	ent->classname = light_text;
 
-	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
+	if (!DEATHMATCH || !(DMFLAGS & DF_NO_SHRINE))
 		ent->touch = ShrineLightTouch;
 
 	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
@@ -858,7 +858,7 @@ void SP_shrine_mana_trigger(edict_t* ent) //mxd. Named 'shrine_mana' in original
 	ent->shrine_type = SHRINE_MANA;
 	ent->classname = mana_text;
 
-	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
+	if (!DEATHMATCH || !(DMFLAGS & DF_NO_SHRINE))
 		ent->touch = ShrineManaTouch;
 
 	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
@@ -935,7 +935,7 @@ void SP_shrine_ghost_trigger(edict_t* ent) //mxd. Named 'shrine_ghost' in origin
 	ent->shrine_type = SHRINE_GHOST;
 	ent->classname = ghost_text;
 
-	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
+	if (!DEATHMATCH || !(DMFLAGS & DF_NO_SHRINE))
 		ent->touch = ShrineGhostTouch;
 
 	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
@@ -1012,7 +1012,7 @@ void SP_shrine_reflect_trigger(edict_t* ent) //mxd. Named 'shrine_reflect' in or
 	ent->shrine_type = SHRINE_REFLECT;
 	ent->classname = reflect_text;
 
-	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
+	if (!DEATHMATCH || !(DMFLAGS & DF_NO_SHRINE))
 		ent->touch = ShrineReflectTouch;
 
 	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
@@ -1096,7 +1096,7 @@ void SP_shrine_powerup_trigger(edict_t* ent) //mxd. Named 'shrine_powerup' in or
 	ent->shrine_type = SHRINE_POWERUP;
 	ent->classname = powerup_text;
 
-	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
+	if (!DEATHMATCH || !(DMFLAGS & DF_NO_SHRINE))
 		ent->touch = ShrinePowerupTouch;
 
 	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
@@ -1180,7 +1180,7 @@ void SP_shrine_speed_trigger(edict_t* ent) //mxd. Named 'shrine_speed' in origin
 	if ((int)no_runshrine->value)
 		return;
 
-	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
+	if (!DEATHMATCH || !(DMFLAGS & DF_NO_SHRINE))
 		ent->touch = ShrineSpeedTouch;
 
 	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
@@ -1357,7 +1357,7 @@ void SP_shrine_random_trigger(edict_t* ent) //mxd. Named 'shrine_random' in orig
 	ent->shrine_type = SHRINE_RANDOM;
 	ent->classname = chaos_text;
 
-	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
+	if (!DEATHMATCH || !(DMFLAGS & DF_NO_SHRINE))
 		ent->touch = ShrineRandomTouch;
 
 	gi.setmodel(ent, ent->model);
