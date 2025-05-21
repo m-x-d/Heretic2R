@@ -239,6 +239,7 @@ int CL_PMpointcontents(const vec3_t point)
 void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function...
 {
 	static short old_cmd_angles[3] = { 0, 0, 0 };
+	static csurface_t ground_surf; //mxd. Made static.
 
 	paceldata_t* player_anim;
 	short tmp_origin[3];
@@ -247,7 +248,6 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 	vec3_t maxs;
 	vec3_t origin;
 	pmove_t pm;
-	csurface_t ground_surf;
 
 	if ((int)cl_paused->value || (int)cl_freezeworld->value || cl.cinematictime > 0 || cl.frame.playerstate.cinematicfreeze)
 		return;
