@@ -1319,7 +1319,6 @@ void CScript::HandleMove()
 
 	delete move_amount_var;
 	delete entity_var;
-	delete signaler_var;
 	delete move_rate_var;
 	delete move_duration_var;
 }
@@ -1398,7 +1397,6 @@ void CScript::HandleRotate()
 
 	delete rotation_amount_var;
 	delete entity_var;
-	delete signaler_var;
 	delete rotation_rate_var;
 	delete rotation_duration_var;
 }
@@ -1508,7 +1506,6 @@ void CScript::HandleAnimate()
 	delete action_var;
 	delete entity_var;
 	delete source_var;
-	delete signaler_var;
 	delete repeat_var;
 	delete turning_var;
 	delete moving_var;
