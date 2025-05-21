@@ -911,9 +911,9 @@ _inline int Q_strncasecmp(const char* s1, const char* s2, const int n)
 	return _strnicmp(s1, s2, n);
 }
 
-_inline int Q_strcasecmp(const char* s1, const char* s2)
+_inline int Q_strcasecmp(const char* s1, const char* s2) //mxd. Unused.
 {
-	return _stricmp(s1, s2);
+	return Q_stricmp(s1, s2);
 }
 
 #pragma endregion
