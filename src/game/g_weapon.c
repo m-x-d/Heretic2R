@@ -150,7 +150,6 @@ void WeaponThink_SwordStaff(edict_t* caster, char* format, ...)
 	assert(caster->client != NULL);
 
 	playerinfo_t* info = &caster->client->playerinfo;
-	assert(info != NULL);
 
 	int power_level = info->pers.stafflevel;
 	if (info->powerup_timer > level.time)
