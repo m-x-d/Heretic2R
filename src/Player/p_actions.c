@@ -116,8 +116,6 @@ void PlayerActionCheckStrafe(playerinfo_t* info)
 			PlayerAnimSetLowerSeq(info, ASEQ_RUNF_GO);
 		else if (info->seqcmd[ACMDL_CREEP_B])			// BACKWARD
 			PlayerAnimSetLowerSeq(info, ASEQ_CREEPB);
-		else if (info->seqcmd[ACMDL_BACK])
-			PlayerAnimSetLowerSeq(info, ASEQ_WALKB);
 		else
 			PlayerAnimSetLowerSeq(info, SeqCtrl[info->lowerseq].ceaseseq);
 	}
@@ -1061,7 +1059,7 @@ void PlayerActionCheckGrab(playerinfo_t* info, float value)
 	int maxcheck;
 	if (!(info->flags & PLAYER_FLAG_NO_LARM) && !(info->flags & PLAYER_FLAG_NO_RARM))
 		maxcheck = 3; // All checks ok.
-	else if (!info->upperidle || ((info->flags & PLAYER_FLAG_NO_LARM) && (info->flags & PLAYER_FLAG_NO_RARM)))
+	else if ((info->flags & PLAYER_FLAG_NO_LARM) && (info->flags & PLAYER_FLAG_NO_RARM))
 		maxcheck = 1; // Only check ankle height.
 	else
 		maxcheck = 2; // Up to waist height.
