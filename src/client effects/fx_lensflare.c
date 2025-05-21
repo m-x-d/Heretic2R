@@ -159,9 +159,9 @@ static qboolean LensFlareThinkAttached(struct client_entity_s* self, centity_t* 
 void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 {
 	static int sprite_indices[] = { 1, 2, 4, 3, 6, 3 }; //mxd //TODO: index 5 is unused.
-	static float flare1_pos[] = { 1.0f, 0.7f, 0.3f, 0.1f, 0.0f, -0.2f };
-	static float flare2_pos[] = { 1.0f, 0.8f, 0.6f, 0.2f, 0.0f, -0.4f }; //mxd. Split into 2 arrays.
-	static float flare_scale[] = { 2.0f, 1.75f, 1.5f, 1.25f, 1.5f, 1.75f, 2.0f, 2.0f };
+	static float flare1_pos[] =  { 1.0f, 0.7f,  0.3f, 0.1f,  0.0f, -0.2f, -0.5f };
+	static float flare2_pos[] =  { 1.0f, 0.8f,  0.6f, 0.2f,  0.0f, -0.4f, -0.9f }; //mxd. Split into 2 arrays, added 7-th value.
+	static float flare_scale[] = { 2.0f, 1.75f, 1.5f, 1.25f, 1.5f,  1.75f, 2.0f }; //mxd. Removed 8-th value.
 
 	float alpha;
 	paletteRGBA_t tint;
@@ -196,7 +196,7 @@ void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 		if (flags & CEF_FLAG8)
 			flare->LifeTime = fxi.cl->time + 4000;
 
-		flare->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
+		flare->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST);
 		flare->Scale = flare_scale[i];
 		flare->NoOfAnimFrames = 1;
 		flare->Update = LensFlareThink;
