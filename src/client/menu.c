@@ -366,6 +366,8 @@ const char* Generic_MenuKey(const int key) // H2
 
 qboolean Field_Key(menufield_s* field, int key)
 {
+	const int orig_key = key; //mxd
+
 	switch (key)
 	{
 		case K_KP_HOME:
@@ -425,13 +427,11 @@ qboolean Field_Key(menufield_s* field, int key)
 			break;
 
 		default:
-			if (key > 127)
-				return false;
 			break;
 	}
 
 	// Support pasting from the clipboard.
-	if ((toupper(key) == 'V' && keydown[K_CTRL]) ||	((key == K_INS || key == K_KP_INS) && keydown[K_SHIFT]))
+	if ((toupper(key) == 'V' && keydown[K_CTRL]) || ((key == K_INS || orig_key == K_KP_INS) && keydown[K_SHIFT])) //mxd. K_KP_INS was already remapped to '0' above, so check orig_key.
 	{
 		char* cbd = Sys_GetClipboardData();
 
@@ -460,7 +460,6 @@ qboolean Field_Key(menufield_s* field, int key)
 
 		case K_BACKSPACE:
 		case K_LEFTARROW:
-		case K_KP_LEFTARROW:
 			if (field->cursor > 0)
 			{
 				field->cursor--;
@@ -476,11 +475,10 @@ qboolean Field_Key(menufield_s* field, int key)
 			break;
 
 		case K_DEL:
-		case K_KP_DEL:
 			break;
 
 		default:
-			if (!isdigit(key) && (field->generic.flags & QMF_NUMBERSONLY))
+			if (key > 127 || (!isdigit(key) && (field->generic.flags & QMF_NUMBERSONLY)))
 				return false;
 
 			if (field->cursor < field->length - 1) // Q2: if (field->cursor < field->length)
