@@ -389,7 +389,7 @@ static void PriestessProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Na
 				break;
 
 			case AS_HEAVENS_RAIN:
-				fx_type = HPMISSILE1_EXPLODE;
+				fx_type = HPMISSILE1_EXPLODE; //TODO: same as case 1. Use HPMISSILE4_EXPLODE or HPMISSILE5_EXPLODE instead?..
 				break;
 
 			default: //mxd
