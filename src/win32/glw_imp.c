@@ -30,7 +30,7 @@ qboolean VID_CreateWindow(const int width, const int height, const qboolean full
 	wc.hInstance = glw_state.hInstance;
 	wc.hIcon = LoadIcon(glw_state.hInstance, MAKEINTRESOURCE(103)); // Q2: 0
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (void*)COLOR_GRAYTEXT;
+	wc.hbrBackground = GetSysColorBrush(COLOR_GRAYTEXT); //mxd. Use GetSysColorBrush().
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = WINDOW_CLASS_NAME;
 
