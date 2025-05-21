@@ -635,7 +635,7 @@ static void CL_Rcon_f(void)
 	char message[1024];
 	netadr_t to;
 
-	if (rcon_client_password->string == NULL || strlen(rcon_client_password->string) == 0) // H2: extra strlen check.
+	if (rcon_client_password->string == NULL || rcon_client_password->string[0] == 0) // H2: extra strlen check. //mxd. strlen(str) -> str[0] check.
 	{
 		Com_Printf("You must set 'rcon_password' before\nissuing an rcon command.\n");
 		return;
@@ -665,7 +665,7 @@ static void CL_Rcon_f(void)
 	}
 	else
 	{
-		if (strlen(rcon_address->string) == 0)
+		if (rcon_address->string[0] == 0) //mxd. strlen(str) -> str[0] check.
 		{
 			Com_Printf("You must either be connected,\nor set the 'rcon_address' cvar\nto issue rcon commands\n");
 			return;
@@ -692,7 +692,7 @@ void CL_SaveConfig_f(void) // H2
 	if (cls.state == ca_uninitialized)
 		return;
 
-	if (name == NULL || strlen(name->string) == 0)
+	if (name == NULL || name->string[0] == 0) //mxd. strlen(str) -> str[0] check.
 	{
 		Com_Printf("ERROR: Set the name variable as the filename to save.\n");
 		return;

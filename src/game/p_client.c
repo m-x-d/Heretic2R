@@ -2103,7 +2103,7 @@ void ClientUserinfoChanged(edict_t* ent, char* userinfo) //TODO: add int userinf
 
 	// Autoweapon changeup.
 	const char* autoweapon = Info_ValueForKey(userinfo, "autoweapon");
-	if (strlen(autoweapon) > 0)
+	if (autoweapon[0] != 0) //mxd. strlen(str) -> str[0] check.
 		ent->client->playerinfo.pers.autoweapon = Q_atoi(autoweapon);
 
 	// Save off the userinfo in case we want to check something later.

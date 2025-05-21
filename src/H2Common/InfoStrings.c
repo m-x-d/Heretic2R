@@ -132,7 +132,7 @@ H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* valu
 
 	Info_RemoveKey(s, key);
 
-	if (value == NULL || strlen(value) == 0)
+	if (value == NULL || value[0] == 0) //mxd. strlen(str) -> str[0] check.
 		return;
 
 	Com_sprintf(newi, sizeof(newi), "\\%s\\%s", key, value);

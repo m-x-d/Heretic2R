@@ -404,7 +404,7 @@ static void SVC_DirectConnect(void)
 static qboolean Rcon_Validate(void)
 {
 	const char* pwd = rcon_password->string;
-	return strlen(pwd) > 0 && (strcmp(Cmd_Argv(1), pwd) == 0);
+	return pwd[0] != 0 && (strcmp(Cmd_Argv(1), pwd) == 0); //mxd. strlen(str) -> str[0] check.
 }
 
 // A client issued an rcon command. Shift down the remaining args. Redirect all printfs.
@@ -769,14 +769,14 @@ void SV_UserinfoChanged(client_t* client)
 
 	// rate command.
 	const char* rate = Info_ValueForKey(client->userinfo, "rate");
-	if (strlen(rate) > 0)
+	if (rate[0] != 0)
 		client->rate = ClampI(Q_atoi(rate), 100, 15000);
 	else
 		client->rate = 5000;
 
 	// msg command.
 	const char* msg = Info_ValueForKey(client->userinfo, "msg");
-	if (strlen(msg) > 0)
+	if (msg[0] != 0)
 		client->messagelevel = Q_atoi(msg);
 }
 

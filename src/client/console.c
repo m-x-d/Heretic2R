@@ -441,7 +441,7 @@ static qboolean ShouldDrawConsole(void) // H2
 	if ((int)developer->value)
 		return true;
 
-	if (nextserver != NULL && strlen(nextserver->string) > 0)
+	if (nextserver != NULL && nextserver->string[0] != 0) //mxd. strlen(str) -> str[0] check.
 	{
 		console_delay = 5;
 		return false;
