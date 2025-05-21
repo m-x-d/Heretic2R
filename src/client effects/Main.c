@@ -347,9 +347,7 @@ static void ParseEffects(centity_t* owner)
 				Vec3AddAssign(temp_owner->origin, position);
 		}
 
-		assert(effect < NUM_FX);
-
-		if (effect < 0 || effect >= NUM_FX)
+		if (effect >= NUM_FX)
 		{
 			fxi.Com_Error(ERR_DROP, "ParseClientEffects: bad effect %d last effect %d", effect, last_effect);
 			return;
