@@ -59,7 +59,8 @@ void FXSpellChange(centity_t* owner, const int type, const int flags, vec3_t ori
 			color.c = 0xFF0080FF;
 			part = PART_16x16_SPARK_Y;
 			break;
-		case 6: // Big red / red rain bow.
+
+		case 6: // Big red / red rain bow. //TODO: same as case 1...
 			color.c = 0xFF0000FF;
 			part = PART_16x16_SPARK_R;
 			break;
