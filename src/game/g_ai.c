@@ -67,12 +67,9 @@ void ai_stand(edict_t* self, const float dist) //mxd. 'dist' is always 0.
 	if (dist != 0.0f)
 		M_walkmove(self, self->s.angles[YAW], dist);
 
-	if (self->enemy != NULL) //TODO: move below AI_STAND_GROUND check?
-		return;
-
 	if (self->monsterinfo.aiflags & AI_STAND_GROUND)
 	{
-		if (self->enemy != NULL) //TODO: never executed: already returned if have enemy!
+		if (self->enemy != NULL) //mxd. Never executed in original logic. 
 		{
 			vec3_t diff;
 			VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
@@ -95,7 +92,7 @@ void ai_stand(edict_t* self, const float dist) //mxd. 'dist' is always 0.
 		return;
 	}
 
-	if (FindTarget(self))
+	if (self->enemy != NULL || FindTarget(self)) //mxd. Moved self->enemy NULL check below AI_STAND_GROUND check.
 		return;
 
 	//FIXME: 'walking a beat' monsters, but that may not be working, need to test! Check for target also?
