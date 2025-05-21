@@ -103,7 +103,7 @@ class CScript
 	void AddSignaler(edict_t* edict, Variable* var, SignalT signal_type);
 	void FinishWait(edict_t* which, bool execute);
 
-	void Error(const char* format, ...);
+	[[noreturn]] void Error(const char* format, ...);
 	void StartDebug();
 	void EndDebug();
 

@@ -1738,7 +1738,7 @@ void CScript::FinishWait(edict_t* which, const bool execute) //mxd. Second var n
 		Execute(which, nullptr);
 }
 
-void CScript::Error(const char* format, ...)
+[[noreturn]] void CScript::Error(const char* format, ...)
 {
 	va_list argptr;
 	char text[1024];
