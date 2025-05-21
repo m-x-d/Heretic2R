@@ -872,8 +872,6 @@ qboolean M_CheckAttack(edict_t* self) //TODO: move to g_monster.c, make static.
 
 	if (self->monsterinfo.aiflags & AI_STAND_GROUND)
 		chance = 0.4f;
-	else if (enemy_range == RANGE_MELEE)
-		chance = 0.2f;
 	else if (enemy_range == RANGE_NEAR)
 		chance = 0.1f;
 	else if (enemy_range == RANGE_MID)
