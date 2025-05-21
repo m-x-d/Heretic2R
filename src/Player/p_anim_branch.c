@@ -859,9 +859,6 @@ int BranchLwrRunningStrafe(playerinfo_t* info)
 	if (info->seqcmd[ACMDL_QUICKTURN])
 		return ASEQ_TURN180;
 
-	if (!info->seqcmd[ACMDL_STRAFE_L] && !info->seqcmd[ACMDL_STRAFE_R])
-		return (info->seqcmd[ACMDL_FWD] ? ASEQ_RUNF_GO : ASEQ_STAND); // We're just trying to go forward / We've let go of the important buttons.
-
 	// Look for the action key being pressed [LOW PROBABILITY].
 	if (info->seqcmd[ACMDL_ACTION])
 	{
@@ -878,7 +875,7 @@ int BranchLwrRunningStrafe(playerinfo_t* info)
 			return ASEQ_JUMPSTD_GO;
 	}
 
-	return ASEQ_NONE;
+	return (info->seqcmd[ACMDL_FWD] ? ASEQ_RUNF_GO : ASEQ_STAND); // We're just trying to go forward / We've let go of the important buttons.
 }
 
 int BranchLwrShortstep(playerinfo_t* info)
@@ -1240,7 +1237,7 @@ static int BranchUprReadySwordStaff(playerinfo_t* info)
 					return ASEQ_WSWORD_BACK;
 
 				if (info->upperseq == ASEQ_WSWORD_STABHOLD)
-					return (info->seqcmd[ACMDU_ATTACK] ? ASEQ_WSWORD_STABHOLD : ASEQ_WSWORD_PULLOUT);
+					return ASEQ_WSWORD_STABHOLD; //TODO: (info->seqcmd[ACMDU_ATTACK] ? ASEQ_WSWORD_STABHOLD : ASEQ_WSWORD_PULLOUT) in original logic. info->seqcmd[ACMDU_ATTACK] is always true here.
 
 				if (info->lowerseq == ASEQ_JUMPFWD && info->seqcmd[ACMDL_FWD])
 					return ASEQ_WSWORD_DOWNSTAB;
