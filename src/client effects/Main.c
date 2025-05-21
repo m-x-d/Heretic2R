@@ -178,12 +178,6 @@ static int DummyEffectParams(centity_t* ent, const int flags, const int effect)
 		msg_read = fxi.net_message;
 	}
 
-	if (format == NULL)
-	{
-		Com_Error(ERR_DROP, "CL_ReadEffect: null format string");
-		return 0;
-	}
-
 	int count = 0;
 
 	while (format[count] != 0)
