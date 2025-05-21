@@ -198,7 +198,7 @@ static qboolean GorgonCanJump(edict_t* self) //mxd. Named 'gorgon_check_jump' in
 	trace_t trace;
 	gi.trace(landing_spot, self->mins, self->maxs, test_spot, self, MASK_MONSTERSOLID | MASK_WATER, &trace);
 
-	if (trace.fraction == 1.0f || !(trace.contents & CONTENTS_SOLID) && !(trace.contents & CONTENTS_WATER))
+	if (trace.fraction == 1.0f || (!(trace.contents & CONTENTS_SOLID) && !(trace.contents & CONTENTS_WATER)))
 		return false;
 
 	self->jump_time = level.time + 0.5f;
