@@ -184,7 +184,7 @@ static qboolean NET_StringToSockaddr(const char* s, struct sockaddr* sadr)
 
 		sa_ipx->sa_family = AF_IPX;
 
-		int val;
+		uint val;
 		char temp[3];
 
 		// Network number
