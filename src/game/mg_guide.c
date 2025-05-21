@@ -120,7 +120,7 @@ int MG_SetFirstBuoy(edict_t* self)
 
 	const float search_pass_interval = MAX_BUOY_DIST / BUOY_SEARCH_PASSES;
 	const buoy_t* best_buoy = NULL;
-	float best_dist = 9999999.0f;
+	float best_dist = 9999999.0f; //TODO: use FLT_MAX instead?
 
 	// Now, do all the passes, going from closest to farthest.
 	for (int i = 0; i < BUOY_SEARCH_PASSES && best_buoy == NULL; i++)
@@ -364,7 +364,7 @@ static qboolean MG_MakeStartForcedConnection(edict_t* self, const int forced_buo
 	const buoy_t* best_buoy = &level.buoy_list[forced_buoy];
 
 	// Now, do all the passes, going from closest to farthest.
-	for (int i = 0; i < BUOY_SEARCH_PASSES && (best_buoy == NULL || e_best_buoy == NULL); i++)
+	for (int i = 0; i < BUOY_SEARCH_PASSES && e_best_buoy == NULL; i++)
 	{
 		for (int c = 0; c <= level.active_buoys; c++)
 		{
@@ -446,7 +446,7 @@ static qboolean MG_MakeForcedConnection(edict_t* self, const int forced_buoy, co
 	VectorCopy(e_best_buoy->origin, goal_pos);
 
 	const buoy_t* best_buoy = NULL;
-	float best_dist = 9999999.0f;
+	float best_dist = 9999999.0f; //TODO: use FLT_MAX instead?
 	const float radius = 24.0f + max(16.0f, self->maxs[0]);
 
 	// First, pre-calculate all distances.
@@ -470,7 +470,7 @@ static qboolean MG_MakeForcedConnection(edict_t* self, const int forced_buoy, co
 	const float search_pass_interval = MAX_BUOY_DIST / BUOY_SEARCH_PASSES;
 
 	// Now, do all the passes, going from closest to farthest.
-	for (int i = 0; i < BUOY_SEARCH_PASSES && (best_buoy == NULL || e_best_buoy == NULL); i++)
+	for (int i = 0; i < BUOY_SEARCH_PASSES && best_buoy == NULL; i++)
 	{
 		for (int c = 0; c <= level.active_buoys; c++)
 		{
@@ -496,7 +496,7 @@ static qboolean MG_MakeForcedConnection(edict_t* self, const int forced_buoy, co
 	}
 
 	// Don't skip jump buoys, they're crucial.
-	if (!(best_buoy->modflags & BUOY_JUMP) || skip_jump)
+	if (skip_jump || (best_buoy != NULL && !(best_buoy->modflags & BUOY_JUMP)))
 	{
 		vec3_t e_buoy_vec;
 		VectorSubtract(e_best_buoy->origin, self->s.origin, e_buoy_vec);
@@ -636,7 +636,7 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 		return false;
 
 	// Don't skip jump buoys, they're crucial.
-	if ((!(best_buoy->modflags & BUOY_JUMP) || skip_jump) && e_best_buoy != NULL)
+	if ((skip_jump || (best_buoy != NULL && !(best_buoy->modflags & BUOY_JUMP))) && e_best_buoy != NULL)
 	{
 		vec3_t e_buoy_vec;
 		VectorSubtract(e_best_buoy->origin, self->s.origin, e_buoy_vec);
