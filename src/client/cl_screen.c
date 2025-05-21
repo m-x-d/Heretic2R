@@ -897,7 +897,7 @@ static void SCR_DrawNames(void) // H2
 	for (int i = 0; i < Q_atoi(cl.configstrings[CS_MAXCLIENTS]); i++)
 	{
 		// Undefined skin (???)
-		if (cl.configstrings[CS_PLAYERSKINS + i] == 0)
+		if (cl.configstrings[CS_PLAYERSKINS + i][0] == 0)
 			continue;
 
 		// Not in player's view
