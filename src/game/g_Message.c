@@ -72,7 +72,7 @@ void QPostMessage(edict_t* to, const G_MsgID_t id, const G_MsgPriority_t priorit
 	{
 		va_list marker;
 		va_start(marker, format);
-		SetParms(parms, format, marker, false);
+		SetParms(parms, format, marker);
 		va_end(marker);
 	}
 

@@ -14,12 +14,7 @@ void QueueMessage(MsgQueue_t* this_ptr, void* msg)
 	SLList_Push(&this_ptr->msgs, temp);
 }
 
-#ifdef _GAME_DLL
-#include "g_local.h"
-size_t SetParms(SinglyLinkedList_t* this_ptr, const char* format, va_list marker, qboolean entsAsNames)
-#else
 size_t SetParms(SinglyLinkedList_t* this_ptr, const char* format, va_list marker)
-#endif
 {
 	qboolean append = false;
 	GenericUnion4_t parm;
@@ -52,43 +47,9 @@ size_t SetParms(SinglyLinkedList_t* this_ptr, const char* format, va_list marker
 				bytesParsed += sizeof(double);
 				break;
 
-			case 'e': // A pointer is a pointer is a pointer
-#ifdef _GAME_DLL
-				// This is pretty nasty, this may be an indication that something needs to be rethought.
-				// Currently this is only used in the ICScript_Advance.
-				// It does keep the code all in one place, which is nice.
-				if (entsAsNames)
-				{
-					int j = 0;
-					edict_t* ent = NULL;
-					char entityName[64];
-
-					do
-					{
-						entityName[j] = *(marker + j);
-					} while (*(marker + j++));
-
-					marker += j;
-
-					ent = G_Find(ent, FOFS(targetname), entityName);
-
-#ifdef _DEBUG
-					if (ent)
-					{
-						edict_t* ent2 = NULL;
-
-						ent2 = G_Find(ent, FOFS(targetname), entityName);
-
-						assert(!ent2);	// each entityName should be unique!!!
-					}
-#endif
-					parm.t_void_p = ent;
-					break;
-				}
-#endif
-
+			case 'e': // A pointer is a pointer is a pointer.
 			case 'v': // This better be not be a local variable or this will be bunk when the message is received and parsed.
-			case 'g': // g for generic
+			case 'g': // g for generic.
 				parm.t_void_p = va_arg(marker, void*);
 				bytesParsed += sizeof(void*);
 				break;
