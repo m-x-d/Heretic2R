@@ -546,7 +546,7 @@ void CL_LoadClientinfo(clientinfo_t* ci, const char* s, const int index)
 	strcpy_s(ci->skin_name, sizeof(ci->skin_name), skin_name); //mxd. strcpy -> strcpy_s
 
 	// Must have loaded all data types to be valid.
-	if (ci->skin[0] == NULL || ci->model == NULL)
+	if (ci->skin[0] == NULL || *ci->model == NULL) //mxd. ci->model NULL check in original logic.
 	{
 		ci->skin[0] = NULL;
 		ci->model = NULL;
