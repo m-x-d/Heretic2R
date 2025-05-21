@@ -74,7 +74,7 @@ static void PathCornerTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 		other->monsterinfo.pausetime = level.time + self->wait;
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
-	else if (other->movetarget != NULL)
+	else if (other->goalentity != NULL)
 	{
 		vec3_t v;
 		VectorSubtract(other->goalentity->s.origin, other->s.origin, v);
