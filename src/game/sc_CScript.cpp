@@ -516,16 +516,14 @@ void CScript::PushStack(Variable* v)
 
 Variable* CScript::PopStack()
 {
-	if (stack_variables.Size() > 0)
-	{
-		const List<Variable*>::Iter var_iter = --stack_variables.End();
-		Variable* var = *var_iter;
-		stack_variables.PopBack();
+	if (stack_variables.Size() == 0)
+		Error("Illegal pop"); //mxd. Throw error instead of returning nullptr.
 
-		return var;
-	}
+	const List<Variable*>::Iter var_iter = --stack_variables.End();
+	Variable* var = *var_iter;
+	stack_variables.PopBack();
 
-	return nullptr;
+	return var;
 }
 
 void CScript::HandleGlobal(const bool assignment)
