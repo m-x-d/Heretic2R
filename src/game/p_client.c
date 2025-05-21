@@ -2229,14 +2229,6 @@ static void PM_trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, c
 // So during a server frame, for a given client, ClientThink() probably be called several times.
 void ClientThink(edict_t* ent, usercmd_t* ucmd)
 {
-	/*gclient_t* client;
-	edict_t* other;
-	int i;
-	int j;
-	pmove_t pm;
-	vec3_t los_origin;
-	edict_t* target_ent;*/
-
 	level.current_entity = ent;
 	gclient_t* client = ent->client;
 
@@ -2319,7 +2311,6 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 	pm.desiredWaterHeight = 15.0f;
 	pm.waterheight = client->playerinfo.waterheight;
 	pm.waterlevel = ent->waterlevel;
-	pm.viewheight = (float)ent->viewheight;
 	pm.watertype = ent->watertype;
 	pm.groundentity = ent->groundentity;
 
@@ -2512,14 +2503,13 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 		if (other->touch == NULL)
 			continue;
 
-		for (int j = 0; j < i; j++)
-		{
-			if (pm.touchents[j] == other && j == i) // Not duplicated.
-			{
-				other->touch(other, ent, NULL, NULL);
+		int j;
+		for (j = 0; j < i; j++)
+			if (pm.touchents[j] == other)
 				break;
-			}
-		}
+
+		if (j == i) // Not duplicated.
+			other->touch(other, ent, NULL, NULL);
 	}
 
 	client->playerinfo.oldbuttons = client->playerinfo.buttons;
