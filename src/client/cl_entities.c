@@ -95,6 +95,8 @@ int CL_ParseEntityBits(byte* bf, byte* bfNonZero)
 //mxd. Written by MSG_WriteDeltaEntity().
 void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int number, const byte* bits)
 {
+	assert(from != NULL); //mxd
+
 	// Set everything to the state we are delta'ing from
 	*to = *from;
 
