@@ -125,7 +125,6 @@ static void CopyChunkToImage(const byte* src, const int w, const int h, const in
 	}
 }
 
-//TODO: 'alpha' arg is unused. Remove?
 void Draw_Cinematic(const int cols, const int rows, const byte* data, const paletteRGB_t* palette, const float alpha)
 {
 	int i;
