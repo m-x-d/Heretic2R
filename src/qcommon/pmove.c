@@ -359,9 +359,9 @@ LAB_NotSolid:
 
 			time_left -= time_step;
 
-			if (trace.plane.normal[2] <= MIN_STEP_NORMAL)
+			if (trace.plane.normal[2] <= MIN_STEP_NORMAL && trace.ent != NULL)
 			{
-				qboolean have_trace_ent = (pml.server && (trace.ent->solid == SOLID_BSP || trace.ent->solid == SOLID_BBOX)) || (!pml.server && trace.ent != NULL); //mxd
+				const qboolean have_trace_ent = (!pml.server || (trace.ent->solid == SOLID_BSP || trace.ent->solid == SOLID_BBOX)); //mxd
 				if (have_trace_ent && PM_CanMoveToPos(STEP_SIZE, time_left, &trace))
 					break;
 			}
