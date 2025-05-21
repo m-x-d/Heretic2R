@@ -1128,16 +1128,13 @@ void ogle_rest(edict_t* self)
 			break;
 
 		case ANIM_REST1_TRANS:
+		case ANIM_REST1_WIPE:
 			SetAnim(self, ANIM_REST1);
 			break;
 
 		case ANIM_REST1:
 			if (irand(0, 100) < 20)
 				SetAnim(self, ANIM_REST1_WIPE);
-			break;
-
-		case ANIM_REST1_WIPE:
-			SetAnim(self, ANIM_REST1);
 			break;
 
 		default:
