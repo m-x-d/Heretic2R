@@ -220,6 +220,8 @@ static void CompleteCommand(void)
 // Interactive line editing and console scrollback.
 static void Key_Console(int key)
 {
+	const int orig_key = key; //mxd
+
 	switch (key)
 	{
 		case K_KP_HOME:
@@ -292,7 +294,7 @@ static void Key_Console(int key)
 	con_have_previous_command = false; // H2
 
 	// Support pasting from the clipboard.
-	if ((toupper(key) == 'V' && keydown[K_CTRL]) || ((key == K_INS || key == K_KP_INS) && keydown[K_SHIFT]))
+	if ((toupper(key) == 'V' && keydown[K_CTRL]) || ((key == K_INS || orig_key == K_KP_INS) && keydown[K_SHIFT])) //mxd. K_KP_INS was already remapped to '0' above, so check orig_key.
 	{
 		char* cbd = Sys_GetClipboardData();
 		if (cbd != NULL)
@@ -346,8 +348,7 @@ static void Key_Console(int key)
 		return;
 	}
 
-	//TODO: Can't have K_KP_LEFTARROW here. Already remapped to K_4 above...
-	if (key == K_BACKSPACE || key == K_LEFTARROW || key == K_KP_LEFTARROW || (key == 'h' && keydown[K_CTRL]))
+	if (key == K_BACKSPACE || key == K_LEFTARROW || (key == 'h' && keydown[K_CTRL]))
 	{
 		if (key_linepos > 1)
 			key_linepos--;
@@ -355,7 +356,7 @@ static void Key_Console(int key)
 		return;
 	}
 
-	if (key == K_UPARROW || key == K_KP_UPARROW || (key == 'p' && keydown[K_CTRL]))
+	if (key == K_UPARROW || (key == 'p' && keydown[K_CTRL]))
 	{
 		do
 		{
@@ -371,7 +372,7 @@ static void Key_Console(int key)
 		return;
 	}
 
-	if (key == K_DOWNARROW || key == K_KP_DOWNARROW || (key == 'n' && keydown[K_CTRL]))
+	if (key == K_DOWNARROW || (key == 'n' && keydown[K_CTRL]))
 	{
 		if (history_line == edit_line)
 			return;
@@ -395,13 +396,13 @@ static void Key_Console(int key)
 		return;
 	}
 
-	if (key == K_PGUP || key == K_KP_PGUP)
+	if (key == K_PGUP)
 	{
 		con.display -= 2;
 		return;
 	}
 
-	if (key == K_PGDN || key == K_KP_PGDN)
+	if (key == K_PGDN)
 	{
 		con.display += 2;
 		con.display = min(con.display, con.current);
@@ -409,20 +410,20 @@ static void Key_Console(int key)
 		return;
 	}
 
-	if (key == K_HOME || key == K_KP_HOME)
+	if (key == K_HOME)
 	{
 		con.display = con.current - con.totallines + 10;
 		return;
 	}
 
-	if (key == K_END || key == K_KP_END)
+	if (key == K_END)
 	{
 		con.display = con.current;
 		return;
 	}
 
 	if (key < 32 || key > 127)
-		return;	// Non printable.
+		return; // Non-printable char.
 
 	if (key_linepos < MAXCMDLINE - 1)
 	{
