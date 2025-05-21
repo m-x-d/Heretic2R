@@ -220,7 +220,7 @@ H2COMMON_API void AnglesFromDirAndUp(vec3_t direction, vec3_t up, vec3_t angles)
 	m1[2][0] = direction[2];
 	m1[1][1] = 1.0f;
 	m1[0][0] = cosf(angles[0]);
-	m1[2][2] = cosf(angles[0]);
+	m1[2][2] = m1[0][0];
 	m1[0][2] = -m1[2][0];
 
 	Matrix3MultByVec3(m1, direction, v_dir);
@@ -230,7 +230,7 @@ H2COMMON_API void AnglesFromDirAndUp(vec3_t direction, vec3_t up, vec3_t angles)
 	memset(m2, 0, sizeof(matrix3_t));
 	m2[2][2] = 1.0f;
 	m2[0][0] = cosf(angles[1]);
-	m2[1][1] = cosf(angles[1]);
+	m2[1][1] = m2[0][0];
 	m2[0][1] = sinf(angles[1]);
 	m2[1][0] = -sinf(angles[1]);
 
