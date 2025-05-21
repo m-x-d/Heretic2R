@@ -25,7 +25,7 @@ static EffectsBuffer_t effects_buffers[256];
 static vec3_t effects_positions[256];
 static qboolean is_broadcast_effect[256];
 
-void SV_CreateEffect(entity_state_t* ent, const int type, int flags, const vec3_t origin, const char* format, ...)
+void SV_CreateEffect(entity_state_t* ent, const int fx_type, int flags, const vec3_t origin, const char* format, ...)
 {
 	EffectsBuffer_t* clfx;
 	int ent_num;
@@ -72,7 +72,7 @@ void SV_CreateEffect(entity_state_t* ent, const int type, int flags, const vec3_
 
 	if (flags != 0)
 	{
-		MSG_WriteShort(&sb, type | EFFECT_FLAGS);
+		MSG_WriteShort(&sb, fx_type | EFFECT_FLAGS);
 
 		if (broadcast && ent_num > 255)
 			flags |= CEF_ENTNUM16;
@@ -89,7 +89,7 @@ void SV_CreateEffect(entity_state_t* ent, const int type, int flags, const vec3_
 	}
 	else
 	{
-		MSG_WriteShort(&sb, type);
+		MSG_WriteShort(&sb, fx_type);
 	}
 
 	is_broadcast_effect[num_effects_buffers] = broadcast;
@@ -133,7 +133,7 @@ void SV_RemoveEffects(entity_state_t* ent, const int type)
 }
 
 //mxd. Parsed by ParseEffects() in ClientEffects/Main.c
-void SV_CreateEffectEvent(const byte EventId, entity_state_t* ent, const int type, int flags, const vec3_t origin, const char* format, ...)
+void SV_CreateEffectEvent(const byte event_id, entity_state_t* ent, const int fx_type, int flags, const vec3_t origin, const char* format, ...)
 {
 	EffectsBuffer_t* clfx;
 	int ent_num;
@@ -173,8 +173,8 @@ void SV_CreateEffectEvent(const byte EventId, entity_state_t* ent, const int typ
 
 	if (flags != 0)
 	{
-		MSG_WriteShort(&sb, type | EFFECT_PRED_INFO | EFFECT_FLAGS);
-		MSG_WriteByte(&sb, EventId);
+		MSG_WriteShort(&sb, fx_type | EFFECT_PRED_INFO | EFFECT_FLAGS);
+		MSG_WriteByte(&sb, event_id);
 
 		if (broadcast && ent_num > 255)
 			flags |= CEF_ENTNUM16;
@@ -191,7 +191,7 @@ void SV_CreateEffectEvent(const byte EventId, entity_state_t* ent, const int typ
 	}
 	else
 	{
-		MSG_WriteShort(&sb, type);
+		MSG_WriteShort(&sb, fx_type);
 	}
 
 	is_broadcast_effect[num_effects_buffers] = broadcast;

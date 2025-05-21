@@ -223,7 +223,7 @@ static int GetEffect(centity_t* ent, const int flags, const char* format, ...)
 }
 
 //mxd. Also written by SV_CreateEffectEvent(). Parsed by ParseEffects() in ClientEffects/Main.c
-int CL_CreateEffect(const byte EventId, const void* owner, const ushort type, const int flags, const vec3_t origin, const char* format, ...)
+int CL_CreateEffect(const byte event_id, const void* owner, const ushort fx_type, const int flags, const vec3_t origin, const char* format, ...)
 {
 	sizebuf_t sb;
 
@@ -241,12 +241,12 @@ int CL_CreateEffect(const byte EventId, const void* owner, const ushort type, co
 
 	if (flags != 0)
 	{
-		MSG_WriteShort(&sb, type | EFFECT_FLAGS);
+		MSG_WriteShort(&sb, fx_type | EFFECT_FLAGS);
 		MSG_WriteByte(&sb, flags);
 	}
 	else
 	{
-		MSG_WriteShort(&sb, type);
+		MSG_WriteShort(&sb, fx_type);
 	}
 
 	if (!(flags & CEF_OWNERS_ORIGIN))
@@ -263,7 +263,7 @@ int CL_CreateEffect(const byte EventId, const void* owner, const ushort type, co
 		ParseEffectToSizeBuf(&sb, format, argptr);
 		va_end(argptr);
 
-		effect_event_id_time_array[EventId] = cl.playerinfo.Highestleveltime;
+		effect_event_id_time_array[event_id] = cl.playerinfo.Highestleveltime;
 	}
 
 	client_prediction_effects.freeBlock += sb.cursize;
@@ -272,10 +272,10 @@ int CL_CreateEffect(const byte EventId, const void* owner, const ushort type, co
 	return sb.cursize;
 }
 
-void CL_RemoveEffects(const byte EventId, const void* owner, const int fx)
+void CL_RemoveEffects(const byte event_id, const void* owner, const int fx_type)
 {
 	if (owner != NULL)
-		CL_CreateEffect(EventId, ((const edict_t*)owner)->client, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "s", fx);
+		CL_CreateEffect(event_id, ((const edict_t*)owner)->client, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "s", fx_type);
 }
 
 void CL_UnloadClientEffects(void)
