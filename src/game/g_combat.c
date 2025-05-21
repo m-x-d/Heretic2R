@@ -321,7 +321,7 @@ static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 		return;
 	}
 
-	if (attacker->client == NULL && (target->monsterinfo.aiflags & AI_GOOD_GUY) && !(attacker->monsterinfo.aiflags & AI_GOOD_GUY))
+	if ((target->monsterinfo.aiflags & AI_GOOD_GUY) && !(attacker->monsterinfo.aiflags & AI_GOOD_GUY))
 	{
 		target->enemy = attacker;
 		AI_FoundTarget(target, true);
@@ -349,18 +349,11 @@ static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 		if (attacker->enemy == target && attacker->classID == target->classID && !(target->monsterinfo.aiflags & AI_AGRESSIVE))
 		{
 			// Attacker was shooting at me (target) and is my class, but I'm not aggressive so I didn't hit him first.
-			if (irand(0, 10) < 7)
+			if (irand(0, 10) < 7 && target->monsterinfo.flee_finished < level.time + 7.0f)
 			{
 				// Run away!
-				if (target->enemy == attacker && irand(0, 10) < 3 && Q_stricmp(attacker->classname, "player") != 0) //mxd. stricmp -> Q_stricmp
-				{
-					target->monsterinfo.flee_finished = 0;
-				}
-				else if (target->monsterinfo.flee_finished < level.time + 7.0f)
-				{
-					target->monsterinfo.aiflags |= AI_FLEE;
-					target->monsterinfo.flee_finished = level.time + flrand(3.0f, 7.0f);
-				}
+				target->monsterinfo.aiflags |= AI_FLEE;
+				target->monsterinfo.flee_finished = level.time + flrand(3.0f, 7.0f);
 			}
 
 			target->enemy = attacker;
