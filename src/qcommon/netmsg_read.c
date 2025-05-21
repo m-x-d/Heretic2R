@@ -235,7 +235,7 @@ void MSG_ReadDir(sizebuf_t* sb, vec3_t dir)
 	// Read in index into vector table.
 	const int b = MSG_ReadByte(sb);
 
-	if (b >= NUMVERTEXNORMALS)
+	if (b < 0 || b >= NUMVERTEXNORMALS) //mxd. Added lower bound check. MSG_ReadByte() returns -1 on error.
 		Com_Error(ERR_DROP, "MSF_ReadDir: out of range");
 
 	VectorCopy(bytedirs[b], dir);
@@ -246,7 +246,7 @@ void MSG_ReadDirMag(sizebuf_t* sb, vec3_t dir)
 	// Read in index into vector table
 	int b = MSG_ReadByte(sb);
 
-	if (b >= NUMVERTEXNORMALS)
+	if (b < 0 || b >= NUMVERTEXNORMALS) //mxd. Added lower bound check. MSG_ReadByte() returns -1 on error.
 		Com_Error(ERR_DROP, "MSF_ReadDirMag: out of range");
 
 	VectorCopy(bytedirs[b], dir);
@@ -346,6 +346,8 @@ void MSG_ReadJoints(sizebuf_t* sb, entity_state_t* ent)
 			break;
 
 		const int index = MSG_ReadByte(sb);
+		if (index < 0) //mxd. Added lower bound check. MSG_ReadByte() returns -1 on error.
+			Com_Error(ERR_DROP, "MSG_ReadJoints: joint index out of range");
 
 		if ((flags & JN_YAW_CHANGED) != 0)
 		{
