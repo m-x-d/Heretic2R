@@ -173,9 +173,6 @@ static qboolean MG_CheckBottom(edict_t* ent)
 			else
 			{
 				// Only return false if two adjacent corners are off-ledge.
-				if (ent->classID == CID_TBEAST)
-					return true; // Super hack - let big guy go up slopes.
-
 				corner_ok[corner_index] = true;
 			}
 
