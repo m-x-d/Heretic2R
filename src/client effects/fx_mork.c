@@ -242,7 +242,6 @@ static qboolean MorkBeamUpdate(struct client_entity_s* self, centity_t* owner)
 	beam_outer->r.model = &mork_projectile_models[2];
 	beam_outer->r.spriteType = SPRITE_LINE;
 	beam_outer->r.tile = 1.0f;
-	beam_outer->r.scale = 16.0f;
 	beam_outer->r.scale = 4.0f;
 	COLOUR_SET(beam_outer->r.color, 100, 75, 250); //mxd. Use macro.
 
