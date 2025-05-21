@@ -268,8 +268,11 @@ static void Mod_LoadTexinfo(const lump_t* l)
 
 	for (int i = 0; i < count; i++, in++, out++)
 	{
-		for (int j = 0; j < 8; j++)
+		for (int j = 0; j < 4; j++)
+		{
 			out->vecs[0][j] = LittleFloat(in->vecs[0][j]);
+			out->vecs[1][j] = LittleFloat(in->vecs[1][j]);
+		}
 
 		out->flags = LittleLong(in->flags);
 		const int next = LittleLong(in->nexttexinfo);
