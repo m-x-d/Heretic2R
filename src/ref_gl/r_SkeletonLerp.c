@@ -130,6 +130,8 @@ static void ApplySkeletonToRef(Placement_t* placement, const int joint_index, co
 
 static void LerpReferences(void)
 {
+	assert(fmdl_referenceInfo->jointIDs != NULL); //mxd
+
 	const float delta = r_newrefdef.time - fmdl_referenceInfo->lastUpdate;
 	fmdl_referenceInfo->lastUpdate = r_newrefdef.time;
 
@@ -195,7 +197,7 @@ static void LerpReferences(void)
 			update_placement = true;
 		}
 
-		if (fmdl_referenceInfo->jointIDs != NULL && fmdl_referenceInfo->jointIDs[i] != -1 && (int)r_references->value)
+		if (fmdl_referenceInfo->jointIDs != NULL && fmdl_referenceInfo->jointIDs[i] != -1 && (int)r_references->value) //TODO: fmdl_referenceInfo->jointIDs NULL check should be either removed or done at the beginning of the function.
 			ApplySkeletonToRef(cur_placement, i, update_placement);
 
 		if (delta > 1.0f)
