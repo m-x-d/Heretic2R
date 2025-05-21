@@ -19,7 +19,7 @@ H2COMMON_API void CreateRollMatrix(matrix3_t m, const float roll)
 	m[0][0] = 1.0f;
 
 	m[1][1] = cosf(roll);
-	m[2][2] = cosf(roll);
+	m[2][2] = m[1][1];
 
 	m[1][2] = sinf(roll);
 	m[2][1] = -sinf(roll);
@@ -29,10 +29,10 @@ H2COMMON_API void CreateRollMatrix(matrix3_t m, const float roll)
 H2COMMON_API void CreateYawMatrix(matrix3_t m, const float yaw)
 {
 	memset(m, 0, sizeof(matrix3_t));
-	
+
 	m[0][0] = cosf(yaw);
-	m[1][1] = cosf(yaw);
-	
+	m[1][1] = m[0][0];
+
 	m[0][1] = sinf(yaw);
 	m[1][0] = -sinf(yaw);
 
@@ -45,7 +45,7 @@ H2COMMON_API void CreatePitchMatrix(matrix3_t m, const float pitch)
 	memset(m, 0, sizeof(matrix3_t));
 
 	m[0][0] = cosf(-pitch);
-	m[2][2] = cosf(-pitch);
+	m[2][2] = m[0][0];
 
 	m[1][1] = 1.0f;
 
@@ -149,10 +149,10 @@ H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t 
 	memset(m_tmp, 0, sizeof(matrix3_t));
 	m_tmp[0][0] = 1.0f;
 
-	double roll = -(atan2(v_rotated_up[2], v_rotated_up[1]) - ANGLE_90);
+	double roll = -(atan2((double)v_rotated_up[2], (double)v_rotated_up[1]) - ANGLE_90);
 
 	m_tmp[1][1] = cosf((float)roll);
-	m_tmp[2][2] = cosf((float)roll);
+	m_tmp[2][2] = m_tmp[1][1];
 
 	m_tmp[1][2] = sinf((float)roll);
 	m_tmp[2][1] = -sinf((float)roll);
