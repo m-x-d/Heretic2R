@@ -498,6 +498,9 @@ Variable* CScript::ReadDeclaration(int& index)
 	if (index >= MAX_INDEX)
 		Error("Index out of range: %d > %d", index, MAX_INDEX);
 
+	if (var == nullptr) //mxd
+		Error("Invalid var '%s' type: %i", var_name, var_type);
+
 	variable_index[index] = var;
 
 	return var;
