@@ -95,7 +95,10 @@ void SV_CreateEffect(entity_state_t* ent, const int type, int flags, const vec3_
 	is_broadcast_effect[num_effects_buffers] = broadcast;
 
 	if (!(flags & CEF_OWNERS_ORIGIN))
+	{
+		assert(origin != NULL); //mxd
 		MSG_WritePos(&sb, origin);
+	}
 
 	if (format != NULL)
 	{
@@ -194,7 +197,10 @@ void SV_CreateEffectEvent(const byte EventId, entity_state_t* ent, const int typ
 	is_broadcast_effect[num_effects_buffers] = broadcast;
 
 	if (!(flags & CEF_OWNERS_ORIGIN))
+	{
+		assert(origin != NULL); //mxd
 		MSG_WritePos(&sb, origin);
+	}
 
 	if (format != NULL)
 	{

@@ -223,7 +223,7 @@ static int GetEffect(centity_t* ent, const int flags, const char* format, ...)
 }
 
 //mxd. Also written by SV_CreateEffectEvent(). Parsed by ParseEffects() in ClientEffects/Main.c
-int CL_CreateEffect(const byte EventId, const void* owner, const ushort type, const int flags, const vec3_t position, const char* format, ...)
+int CL_CreateEffect(const byte EventId, const void* owner, const ushort type, const int flags, const vec3_t origin, const char* format, ...)
 {
 	sizebuf_t sb;
 
@@ -250,7 +250,10 @@ int CL_CreateEffect(const byte EventId, const void* owner, const ushort type, co
 	}
 
 	if (!(flags & CEF_OWNERS_ORIGIN))
-		MSG_WritePos(&sb, position);
+	{
+		assert(origin != NULL); //mxd
+		MSG_WritePos(&sb, origin);
+	}
 
 	if (format != NULL)
 	{
