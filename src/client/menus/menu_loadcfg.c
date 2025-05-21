@@ -26,18 +26,15 @@ static void LoadCfgFunc(void* self) // H2
 static int LoadConfigFilenames(void) // H2
 {
 	char mask[MAX_OSPATH];
-
-	int num_configs = 0;
 	Com_sprintf(mask, sizeof(mask), "%s/config/*.cfg", FS_GetPath("config/*.cfg"));
+	const int len = (int)strlen(mask);
 
 	const char* cfg_filename = Sys_FindFirst(mask, 0, 0);
-	while (cfg_filename != NULL)
-	{
-		if (num_configs >= NUM_CONFIG_ITEMS)
-			break;
+	int num_configs = 0;
 
+	while (cfg_filename != NULL && num_configs < NUM_CONFIG_ITEMS)
+	{
 		// Get cfg filename without extension.
-		const int len = (int)strlen(mask);
 		strncpy_s(cfg_filenames[num_configs], sizeof(cfg_filenames[num_configs]), &cfg_filename[len - 5], strlen(cfg_filename) - len + 1); //mxd. strncpy -> strncpy_s
 
 		cfg_filename = Sys_FindNext(0, 0);
