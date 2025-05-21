@@ -435,7 +435,7 @@ static qboolean StaffCreateThink(struct client_entity_s* self, centity_t* owner)
 
 		trail->r.model = &staff_models[self->classID];
 		trail->alpha = 0.8f - (float)self->NoOfAnimFrames * 0.1f;
-		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		trail->AddToView = OffsetLinkedEntityUpdatePlacement;
 
 		if (self->classID == STAFF_TRAIL || self->refPoint == STAFF_TYPE_HELL)
@@ -454,7 +454,6 @@ static qboolean StaffCreateThink(struct client_entity_s* self, centity_t* owner)
 		}
 		else if (self->classID == STAFF_TRAIL2)
 		{
-			trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 			trail->r.scale = flrand(0.1f, 0.2f);
 			trail->d_scale = flrand(-0.5f, -0.25f);
 			trail->d_alpha = -2.0f;
@@ -468,7 +467,7 @@ static qboolean StaffCreateThink(struct client_entity_s* self, centity_t* owner)
 		}
 		else if (self->classID == STAFF_TRAIL3)
 		{
-			trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+			trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD);
 			trail->r.scale = 0.2f;
 			trail->d_scale = -0.35f;
 			trail->alpha = 0.75f;
@@ -605,7 +604,7 @@ static qboolean StaffRemoveThink(struct client_entity_s* self, centity_t* owner)
 		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, 100);
 
 		trail->r.model = &staff_models[self->classID];
-		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		trail->alpha = 0.6f - (float)self->NoOfAnimFrames * 0.1f;
 		trail->AddToView = OffsetLinkedEntityUpdatePlacement;
 
@@ -625,7 +624,6 @@ static qboolean StaffRemoveThink(struct client_entity_s* self, centity_t* owner)
 		}
 		else if (self->classID == STAFF_TRAIL2)
 		{
-			trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 			trail->r.scale = flrand(0.1f, 0.2f);
 			trail->d_scale = flrand(-1.0f, -0.5f);
 			trail->d_alpha = -2.0f;
@@ -639,7 +637,7 @@ static qboolean StaffRemoveThink(struct client_entity_s* self, centity_t* owner)
 		}
 		else if (self->classID == STAFF_TRAIL3)
 		{
-			trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+			trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD);
 			trail->r.scale = 0.2f;
 			trail->d_scale = -0.35f;
 			trail->alpha = 0.75f;
