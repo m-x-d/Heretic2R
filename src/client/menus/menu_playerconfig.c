@@ -94,11 +94,8 @@ static void ScanPlayerSkins(playermodelinfo_s* info) // H2
 	Com_sprintf(path, sizeof(path), "%s/%s/*_i.m8", info->directory, info->psex);
 	const char* skin_file = Sys_FindFirst(path, 0, 0);
 
-	while (skin_file != NULL)
+	while (skin_file != NULL && s_num_player_skins < MAX_PLAYER_SKINS)
 	{
-		if (s_num_player_skins >= MAX_PLAYER_SKINS)
-			break;
-
 		strcpy_s(skin_name, sizeof(skin_name), &skin_file[strlen(info->directory) + 1]); //mxd. strcpy -> strcpy_s
 		skin_name[strlen(skin_name) - 5] = 0; // Drop the '_i.m8' part.
 		Com_sprintf(skin_path, sizeof(skin_path), "%s/%s.m8", playerdir->string, skin_name);
