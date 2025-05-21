@@ -1095,6 +1095,12 @@ void CScript::HandlePrint()
 
 void CScript::HandlePlaySound()
 {
+	const Variable* time_delay_var = nullptr;
+	const Variable* channel_var = nullptr;
+	const Variable* attenuation_var = nullptr;
+	const Variable* volume_var = nullptr;
+	const Variable* entity_var = nullptr;
+
 	edict_t* ent = nullptr;
 	float volume = 1.0f;
 	float attenuation = ATTN_NORM;
@@ -1109,61 +1115,55 @@ void CScript::HandlePlaySound()
 		Error("Invalid stack for PlaySound");
 
 	const char* sound_name = sound_name_var->GetStringValue();
-	delete sound_name_var;
 
 	if (flags & PLAY_SOUND_TIMEDELAY)
 	{
-		const Variable* time_delay_var = PopStack();
+		time_delay_var = PopStack();
 
 		if (time_delay_var == nullptr)
 			Error("Invalid stack for PlaySound");
 
 		time_delay = time_delay_var->GetFloatValue();
-		delete time_delay_var;
 	}
 
 	if (flags & PLAY_SOUND_CHANNEL)
 	{
-		const Variable* channel_var = PopStack();
+		channel_var = PopStack();
 
 		if (channel_var == nullptr)
 			Error("Invalid stack for PlaySound");
 
 		channel = channel_var->GetIntValue();
-		delete channel_var;
 	}
 
 	if (flags & PLAY_SOUND_ATTENUATION)
 	{
-		const Variable* attenuation_var = PopStack();
+		attenuation_var = PopStack();
 
 		if (attenuation_var == nullptr)
 			Error("Invalid stack for PlaySound");
 
 		attenuation = attenuation_var->GetFloatValue();
-		delete attenuation_var;
 	}
 
 	if (flags & PLAY_SOUND_VOLUME)
 	{
-		const Variable* volume_var = PopStack();
+		volume_var = PopStack();
 
 		if (volume_var == nullptr)
 			Error("Invalid stack for PlaySound");
 
 		volume = volume_var->GetFloatValue();
-		delete volume_var;
 	}
 
 	if (flags & PLAY_SOUND_ENTITY)
 	{
-		const Variable* entity_var = PopStack();
+		entity_var = PopStack();
 
 		if (entity_var == nullptr)
 			Error("Invalid stack for PlaySound");
 
 		ent = entity_var->GetEdictValue();
-		delete entity_var;
 	}
 
 	// In cinematic freezes, all sounds should be at full volume.
@@ -1179,6 +1179,13 @@ void CScript::HandlePlaySound()
 
 	if (!static_cast<int>(sv_jumpcinematic->value) || !static_cast<int>(sv_cinematicfreeze->value))
 		gi.sound(ent, channel, gi.soundindex(sound_name), volume, attenuation, time_delay);
+
+	delete sound_name_var;
+	delete time_delay_var;
+	delete channel_var;
+	delete attenuation_var;
+	delete volume_var;
+	delete entity_var;
 }
 
 void CScript::HandleFeature(const bool enable)
