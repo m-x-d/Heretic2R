@@ -287,7 +287,7 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	}
 
 	// Turn off first node?
-	if (modelindex != 255 || (modelindex == 255 && !(body_part & 1)))
+	if (modelindex != 255 || !(body_part & 1))
 	{
 		debris->r.fmnodeinfo[0].flags |= FMNI_NO_DRAW;
 	}
