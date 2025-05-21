@@ -756,11 +756,10 @@ qboolean FindTarget(edict_t* self)
 		const int r = CategorizeRange(self, client, dist);
 
 		if (r == RANGE_FAR)
-			continue;
-
-		if ((self->monsterinfo.aiflags & AI_EATING) && r > RANGE_MID)
 		{
-			self->enemy = client;
+			if (self->monsterinfo.aiflags & AI_EATING) //mxd. Never executed in original logic.
+				self->enemy = client;
+
 			continue;
 		}
 
