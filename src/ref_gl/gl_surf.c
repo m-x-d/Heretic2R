@@ -853,8 +853,8 @@ static void R_DrawInlineBModel(void)
 		const float dot = DotProduct(modelorg, pplane->normal) - pplane->dist;
 
 		// Draw the polygon
-		if (((psurf->flags & SURF_PLANEBACK) && dot < -BACKFACE_EPSILON) ||
-			!(psurf->flags & SURF_PLANEBACK) && dot > BACKFACE_EPSILON)
+		if ( ((psurf->flags & SURF_PLANEBACK) && dot < -BACKFACE_EPSILON) ||
+			(!(psurf->flags & SURF_PLANEBACK) && dot > BACKFACE_EPSILON))
 		{
 			if (psurf->texinfo->flags & (SURF_TRANS33 | SURF_TRANS66))
 			{
