@@ -130,7 +130,7 @@ static void SphereOfAnnihilationGrowThink(edict_t* self)
 
 	// If we have released, or we are dead, or a chicken, release the sphere.
 	if (*self->sphere_charging_ptr && !(self->owner->dead_state & (DEAD_DYING | DEAD_DEAD))
-		&& (cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN)) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
+		&& cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
 		if (self->count < SPHERE_MAX_CHARGES)
 		{
@@ -143,14 +143,11 @@ static void SphereOfAnnihilationGrowThink(edict_t* self)
 		}
 
 		// Detect if we have teleported, need to move with the player if that's so.
-		if (cl != NULL)
-		{
-			VectorCopy(self->owner->s.origin, self->s.origin);
+		VectorCopy(self->owner->s.origin, self->s.origin);
 
-			self->s.origin[0] += forward[0] * 20.0f;
-			self->s.origin[1] += forward[1] * 20.0f;
-			self->s.origin[2] += (float)self->owner->viewheight - 5.0f;
-		}
+		self->s.origin[0] += forward[0] * 20.0f;
+		self->s.origin[1] += forward[1] * 20.0f;
+		self->s.origin[2] += (float)self->owner->viewheight - 5.0f;
 
 		self->nextthink = level.time + 0.1f;
 	}
@@ -169,7 +166,7 @@ static void SphereOfAnnihilationGrowThink(edict_t* self)
 
 		if (trace.ent != NULL && OkToAutotarget(self->owner, trace.ent))
 			VectorScale(forward, SPHERE_FLY_SPEED, self->velocity); // Already going to hit a valid target at this angle - so don't auto-target.
-		else
+		else if (cl != NULL) //mxd. Added cl NULL check. //TODO: else what?
 			GetAimVelocity(self->owner->enemy, self->s.origin, SPHERE_FLY_SPEED, cl->aimangles, self->velocity); // Auto-target current enemy.
 
 		VectorNormalize2(self->velocity, self->movedir);
@@ -321,7 +318,7 @@ static void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 
 	// If we have released, or we are dead, or a chicken, release the sphere.
 	if (*self->sphere_charging_ptr && !(self->owner->dead_state & (DEAD_DYING | DEAD_DEAD))
-		&& (cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN)) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
+		&& cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
 		if (self->count < SPHERE_MAX_CHARGES)
 		{
@@ -334,14 +331,11 @@ static void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 		}
 
 		// Detect if we have teleported, need to move with the player if that's so.
-		if (cl != NULL)
-		{
-			VectorCopy(self->owner->s.origin, self->s.origin);
+		VectorCopy(self->owner->s.origin, self->s.origin);
 
-			self->s.origin[0] += forward[0] * 20.0f;
-			self->s.origin[1] += forward[1] * 20.0f;
-			self->s.origin[2] += (float)self->owner->viewheight - 5.0f;
-		}
+		self->s.origin[0] += forward[0] * 20.0f;
+		self->s.origin[1] += forward[1] * 20.0f;
+		self->s.origin[2] += (float)self->owner->viewheight - 5.0f;
 
 		self->nextthink = level.time + 0.1f;
 	}
