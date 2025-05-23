@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "q_shared.h" //TODO: included only for NOT_IMPLEMENTED macro!
-
 extern cvar_t* snd_dll;
 
 // Sound library function pointers.
