@@ -15,6 +15,9 @@
     <ClCompile Include="snd_win.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="snd_mix.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="snd_local.h">
@@ -27,6 +30,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="snd_dma.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="snd_mix.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

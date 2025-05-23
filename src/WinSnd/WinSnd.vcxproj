@@ -12,12 +12,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="snd_dma.c" />
+    <ClCompile Include="snd_mix.c" />
     <ClCompile Include="snd_win.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="snd_dma.h" />
     <ClInclude Include="snd_local.h" />
+    <ClInclude Include="snd_mix.h" />
     <ClInclude Include="snd_win.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

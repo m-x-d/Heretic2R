@@ -23,6 +23,12 @@ static void DS_DestroyBuffers(void)
 	NOT_IMPLEMENTED
 }
 
+qboolean SNDDMA_Init(void) //mxd. Returns int in original logic.
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
 // Q2 counterpart.
 // Called when the main window gains or loses focus.
 // The window have been destroyed and recreated between a deactivate and an activate.

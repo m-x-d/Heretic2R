@@ -8,6 +8,17 @@
 
 #include "snd_local.h"
 
+extern dma_t dma;
+
+extern int paintedtime;
+
+extern cvar_t* s_volume;
+extern cvar_t* s_sounddir; // H2
+extern cvar_t* s_testsound;
+extern cvar_t* s_loadas8bit;
+extern cvar_t* s_khz;
+extern cvar_t* s_primary;
+
 // Exported sound library functions.
 SNDLIB_DECLSPEC extern void S_Init(void);
 SNDLIB_DECLSPEC extern void S_Shutdown(void);

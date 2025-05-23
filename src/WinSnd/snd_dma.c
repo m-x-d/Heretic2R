@@ -5,20 +5,101 @@
 //
 
 #include "snd_dma.h"
+#include "snd_mix.h"
+#include "snd_win.h"
+#include "qcommon.h"
 
 // Internal sound data & structures.
 channel_t channels[MAX_CHANNELS];
 
 static qboolean sound_started = false; //mxd. int in Q2.
 
+dma_t dma;
+
+static int soundtime; // Sample PAIRS.
+int paintedtime; // Sample PAIRS.
+
+static int num_sfx;
+
 #define MAX_PLAYSOUNDS	128
 static playsound_t s_playsounds[MAX_PLAYSOUNDS];
 static playsound_t s_freeplays;
 playsound_t s_pendingplays;
 
-void S_Init(void)
+cvar_t* s_volume;
+cvar_t* s_sounddir; // H2
+cvar_t* s_testsound;
+cvar_t* s_loadas8bit;
+cvar_t* s_khz;
+static cvar_t* s_show;
+static cvar_t* s_mixahead;
+cvar_t* s_primary;
+
+#pragma region ========================== Console commands ==========================
+
+static void S_Play(void) //TODO: rename to S_Play_f?
 {
 	NOT_IMPLEMENTED
+}
+
+static void S_SoundList(void) //TODO: rename to S_SoundList_f?
+{
+	NOT_IMPLEMENTED
+}
+
+static void S_SoundInfo_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+#pragma endregion
+
+void S_Init(void)
+{
+	Com_Printf("\n------- sound initialization -------\n");
+
+	const cvar_t* cv = Cvar_Get("s_initsound", "1", 0);
+	if (cv->value == 0.0f)
+	{
+		Com_Printf("not initializing.\n");
+	}
+	else
+	{
+		s_volume = Cvar_Get("s_volume", "0.5", CVAR_ARCHIVE);
+		s_sounddir = Cvar_Get("s_sounddir", "sound", CVAR_ARCHIVE); // H2
+		s_khz = Cvar_Get("s_khz", "44", CVAR_ARCHIVE);  // Q2: 11
+		s_loadas8bit = Cvar_Get("s_loadas8bit", "1", CVAR_ARCHIVE);
+
+		s_mixahead = Cvar_Get("s_mixahead", "0.1", CVAR_ARCHIVE); // Q2: 0.2
+		s_show = Cvar_Get("s_show", "0", 0);
+		s_testsound = Cvar_Get("s_testsound", "0", 0);
+		s_primary = Cvar_Get("s_primary", "0", CVAR_ARCHIVE);
+
+		// H2: extra attenuation cvars. Not used anywhere, though... --mxd
+		//s_attn_norm = Cvar_Get("s_attn_norm", "0.0008", 0);
+		//s_attn_idle = Cvar_Get("s_attn_idle", "0.002", 0);
+		//s_attn_static = Cvar_Get("s_attn_static", "0.006", 0);
+
+		Cmd_AddCommand("play", S_Play);
+		Cmd_AddCommand("stopsound", S_StopAllSounds);
+		Cmd_AddCommand("soundlist", S_SoundList);
+		Cmd_AddCommand("soundinfo", S_SoundInfo_f);
+
+		if (SNDDMA_Init())
+		{
+			S_InitScaletable();
+
+			sound_started = true;
+			num_sfx = 0;
+			soundtime = 0;
+			paintedtime = 0;
+
+			Com_Printf("sound sampling rate: %i\n", dma.speed);
+			S_StopAllSounds();
+		}
+	}
+
+	Com_Printf("------------------------------------\n");
 }
 
 // Shutdown sound engine.
