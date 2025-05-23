@@ -326,9 +326,6 @@
     <ClInclude Include="..\game\g_itemstats.h">
       <Filter>game</Filter>
     </ClInclude>
-    <ClInclude Include="..\client\snd_loc.h">
-      <Filter>client</Filter>
-    </ClInclude>
     <ClInclude Include="vid_dll.h">
       <Filter>win32</Filter>
     </ClInclude>
