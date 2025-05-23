@@ -209,7 +209,35 @@ static qboolean DS_CreateBuffers(void)
 
 static void DS_DestroyBuffers(void)
 {
-	NOT_IMPLEMENTED
+	Com_DPrintf("--------------------------------------\n"); // H2
+	Com_DPrintf("Destroying DS buffers\n");
+
+	if (pDS != NULL)
+	{
+		Com_DPrintf("...setting NORMAL coop level\n");
+		pDS->lpVtbl->SetCooperativeLevel(pDS, cl_hwnd, DSSCL_NORMAL);
+	}
+
+	if (pDSBuf != NULL)
+	{
+		Com_DPrintf("...stopping and releasing sound buffer\n");
+		pDSBuf->lpVtbl->Stop(pDSBuf);
+		pDSBuf->lpVtbl->Release(pDSBuf);
+	}
+
+	// Only release primary buffer if it's not also the mixing buffer we just released.
+	if (pDSPBuf != NULL && pDSBuf != pDSPBuf)
+	{
+		Com_DPrintf("...releasing primary buffer\n");
+		pDSPBuf->lpVtbl->Release(pDSPBuf);
+	}
+
+	pDSBuf = NULL;
+	pDSPBuf = NULL;
+
+	dma.buffer = NULL;
+
+	Com_DPrintf("--------------------------------------\n"); // H2
 }
 
 // Q2 counterpart.
