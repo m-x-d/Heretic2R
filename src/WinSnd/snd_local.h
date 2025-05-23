@@ -86,7 +86,7 @@ typedef struct
 
 #pragma endregion
 
-#define MAX_CHANNELS	34 // Q2: 32.
+#define MAX_CHANNELS	32
 extern channel_t channels[MAX_CHANNELS];
 
 extern playsound_t s_pendingplays;
