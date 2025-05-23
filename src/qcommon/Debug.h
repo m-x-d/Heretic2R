@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <assert.h>
 #include "Heretic2.h"
 #include "q_Typedef.h"
 
