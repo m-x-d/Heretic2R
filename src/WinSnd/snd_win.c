@@ -31,6 +31,7 @@ static qboolean primary_format_set;
 // Starts at 0 for disabled.
 static int snd_buffer_count = 0;
 static int sample16;
+static DWORD locksize;
 
 // DirectSound variables.
 static HANDLE hData;
@@ -51,6 +52,12 @@ static LPDIRECTSOUNDBUFFER pDSBuf;
 static LPDIRECTSOUNDBUFFER pDSPBuf;
 
 static HINSTANCE hInstDS;
+
+static const char* DSoundError(int error)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
 
 static qboolean DS_CreateBuffers(void)
 {
@@ -443,9 +450,48 @@ void SNDDMA_Shutdown(void)
 	FreeSound();
 }
 
+// Makes sure dma.buffer is valid.
 void SNDDMA_BeginPainting(void)
 {
-	NOT_IMPLEMENTED
+	if (pDSBuf == NULL)
+		return;
+
+	// If the buffer was lost or stopped, restore it and/or restart it.
+	DWORD dwStatus;
+	if (pDSBuf->lpVtbl->GetStatus(pDSBuf, &dwStatus) != DS_OK)
+		Com_Printf("Couldn't get sound buffer status\n");
+
+	if (dwStatus & DSBSTATUS_BUFFERLOST)
+		pDSBuf->lpVtbl->Restore(pDSBuf);
+
+	if (!(dwStatus & DSBSTATUS_PLAYING))
+		pDSBuf->lpVtbl->Play(pDSBuf, 0, 0, DSBPLAY_LOOPING);
+
+	// Lock the dsound buffer.
+	int retries = 0;
+	dma.buffer = NULL;
+
+	HRESULT hresult;
+	DWORD* pbuf;
+	DWORD* pbuf2;
+	DWORD dwSize2;
+	while ((hresult = pDSBuf->lpVtbl->Lock(pDSBuf, 0, gSndBufSize, (LPVOID*)&pbuf, &locksize, (LPVOID*)&pbuf2, &dwSize2, 0)) != DS_OK)
+	{
+		if (hresult != DSERR_BUFFERLOST)
+		{
+			Com_Printf("SNDDMA_BeginPainting: Lock failed with error '%s'\n", DSoundError(hresult)); //mxd. Print correct function name.
+			S_Shutdown();
+
+			return;
+		}
+
+		pDSBuf->lpVtbl->Restore(pDSBuf);
+
+		if (++retries > 2)
+			return;
+	}
+
+	dma.buffer = (byte*)pbuf;
 }
 
 void SNDDMA_Submit(void)
