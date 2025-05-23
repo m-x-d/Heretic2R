@@ -8,7 +8,6 @@
 #include "cl_effects.h"
 #include "cl_messages.h"
 #include "cmodel.h"
-#include "snd_loc.h"
 #include "sound.h"
 #include "tokens.h"
 #include "Vector.h"
@@ -820,7 +819,7 @@ static void CL_ParseStartSoundPacket(void)
 		pos = NULL;
 	}
 
-	sfx_t* sfx = cl.sound_precache[soundindex];
+	struct sfx_s* sfx = cl.sound_precache[soundindex];
 
 	if (sfx == NULL)
 		return;

@@ -9,7 +9,6 @@
 #include "client.h"
 #include "sound.h"
 #include "snd_dll.h" //mxd
-#include "snd_loc.h"
 #include "clfx_dll.h"
 
 cvar_t* snd_dll;
@@ -25,9 +24,9 @@ void (*S_StopAllSounds_Sounding)(void);
 void (*S_Update)(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up);
 void (*S_Activate)(qboolean active);
 void (*S_BeginRegistration)(void);
-sfx_t* (*S_RegisterSound)(const char* name);
+struct sfx_s* (*S_RegisterSound)(const char* name);
 void (*S_EndRegistration)(void);
-sfx_t* (*S_FindName)(char* name, qboolean create);
+struct sfx_s* (*S_FindName)(char* name, qboolean create);
 
 #ifdef __A3D_GEOM
 void (*S_A3D_ExportRenderGeom)(refexport_t* re);
