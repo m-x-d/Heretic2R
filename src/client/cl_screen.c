@@ -276,7 +276,7 @@ void SCR_BeginLoadingPlaque(void)
 
 	scr_draw_loading_plaque = true; // H2
 
-	if (!(int)cls.disable_screen && !(int)developer->value && cls.key_dest != key_console)
+	if (!cls.disable_screen && !(int)developer->value && cls.key_dest != key_console)
 	{
 		if (cl.cinematictime == 0)
 			scr_draw_loading = true;
@@ -284,14 +284,14 @@ void SCR_BeginLoadingPlaque(void)
 		scr_progressbar_width = 0; // H2
 
 		SCR_UpdateScreen();
-		cls.disable_screen = 1; // Q2: Sys_Milliseconds()
+		cls.disable_screen = true; // Q2: Sys_Milliseconds()
 		cls.disable_servercount = cl.servercount;
 	}
 }
 
 void SCR_EndLoadingPlaque(void)
 {
-	cls.disable_screen = 0;
+	cls.disable_screen = false;
 	scr_draw_loading_plaque = false; // H2
 	scr_draw_loading = false; // H2
 	Con_ClearNotify();
@@ -1010,7 +1010,7 @@ void SCR_UpdateScreen(void)
 	float separation[2] = { 0.0f, 0.0f };
 
 	// If the screen is disabled (loading plaque is up, or vid mode changing) or screen/console aren't initialized, do nothing at all.
-	if ((int)cls.disable_screen || !scr_initialized || !con.initialized)
+	if (cls.disable_screen || !scr_initialized || !con.initialized)
 		return;
 
 	// Range check cl_camera_separation so we don't inadvertently fry someone's brain.

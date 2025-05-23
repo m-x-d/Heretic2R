@@ -299,7 +299,7 @@ void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int num
 
 		MSG_ReadEffects(&net_message, fx_buf);
 
-		if (cls.disable_screen != 0.0f && fx_buf->buf != NULL)
+		if (cls.disable_screen && fx_buf->buf != NULL)
 		{
 			ResMngr_DeallocateResource(&fx_buffer_manager, fx_buf->buf, ENTITY_FX_BUF_SIZE);
 			fx_buf->buf = NULL;

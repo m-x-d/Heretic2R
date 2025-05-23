@@ -247,7 +247,7 @@ typedef struct
 
 	// Screen rendering information
 
-	float disable_screen; // Showing loading plaque between levels or changing rendering dlls if time gets > 30 seconds ahead, break it.
+	qboolean disable_screen; // Showing loading plaque between levels or changing rendering dlls if time gets > 30 seconds ahead, break it. //mxd. float in original logic.
 	int disable_servercount; // When we receive a frame and cl.servercount > cls.disable_servercount, clear disable_screen.
 
 	int r_numentities;

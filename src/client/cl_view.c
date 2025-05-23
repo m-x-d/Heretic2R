@@ -43,7 +43,7 @@ void CL_PrepRefresh(void)
 	if (cl.configstrings[CS_MODELS + 1][0] == 0)
 		return; // No map loaded.
 
-	cls.disable_screen = 0; // H2
+	cls.disable_screen = false; // H2
 
 	SCR_AddDirtyPoint(0, 0);
 	SCR_AddDirtyPoint(viddef.width - 1, viddef.height - 1);

@@ -1002,7 +1002,7 @@ static void CL_Precache_f(void)
 
 	if (Cmd_Argc() < 2 || strcmp(cls.servername, "localhost") == 0 || game_downloadable_type->value == 0.0f || Cvar_VariableValue("server_machine") != 0.0f) // H2: extra checks
 	{
-		cls.disable_screen = 1;
+		cls.disable_screen = true;
 
 		uint map_checksum; // For detecting cheater maps.
 		CM_LoadMap(cl.configstrings[CS_MODELS + 1], true, &map_checksum);

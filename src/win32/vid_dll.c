@@ -313,7 +313,7 @@ static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			if (reflib_active)
 				re.AppActivate(fActive != WA_INACTIVE);
 
-			cls.disable_screen = (float)(fActive == WA_INACTIVE); // H2
+			cls.disable_screen = (fActive == WA_INACTIVE); // H2
 		} break;
 
 		case WM_MOVE:
