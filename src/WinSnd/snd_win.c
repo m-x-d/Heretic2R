@@ -5,9 +5,10 @@
 //
 
 #include <dsound.h>
-#include "snd_dma.h"
 #include "snd_win.h"
+#include "snd_dma.h"
 #include "sys_win.h"
+#include "qcommon.h"
 
 typedef enum
 {
@@ -27,6 +28,12 @@ static int snd_buffer_count = 0;
 
 // DirectSound variables.
 static LPDIRECTSOUND pDS;
+static HINSTANCE hInstDS;
+
+static void FreeSound(void)
+{
+	NOT_IMPLEMENTED
+}
 
 static qboolean DS_CreateBuffers(void)
 {
@@ -39,10 +46,78 @@ static void DS_DestroyBuffers(void)
 	NOT_IMPLEMENTED
 }
 
+// DirectSound support.
 static sndinitstat SNDDMA_InitDirect(void)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	static HRESULT (WINAPI *pDirectSoundCreate)(GUID FAR* lpGUID, LPDIRECTSOUND FAR* lplpDS, IUnknown FAR* pUnkOuter) = NULL; //mxd. Made local static.
+
+	dma.channels = 2;
+	dma.samplebits = 16;
+	dma.speed = (s_khz->value == 44.0f ? 44100 : 22050); // H2: no 11025 speed.
+
+	Com_Printf("Initializing DirectSound\n");
+
+	if (hInstDS == NULL)
+	{
+		Com_DPrintf("...loading dsound.dll: ");
+		hInstDS = LoadLibrary("dsound.dll");
+
+		if (hInstDS == NULL)
+		{
+			Com_Printf("failed\n");
+			return SIS_FAILURE;
+		}
+
+		Com_DPrintf("ok\n");
+		pDirectSoundCreate = (void*)GetProcAddress(hInstDS, "DirectSoundCreate");
+
+		if (pDirectSoundCreate == NULL)
+		{
+			Com_Printf("*** couldn't get DS proc addr ***\n");
+			return SIS_FAILURE;
+		}
+	}
+
+	Com_DPrintf("...creating DS object: ");
+
+	HRESULT hresult;
+	while ((hresult = pDirectSoundCreate(NULL, &pDS, NULL)) != DS_OK)
+	{
+		if (hresult != DSERR_ALLOCATED)
+		{
+			Com_Printf("failed\n");
+			return SIS_FAILURE;
+		}
+
+		if (MessageBox(NULL, "The sound hardware is in use by another app.\n\nSelect Retry to try to start sound again or Cancel to run Heretic 2 with no sound.", "Sound not available", MB_RETRYCANCEL | MB_SETFOREGROUND | MB_ICONEXCLAMATION) != IDRETRY) // H3: Quake -> Heretic 2.
+		{
+			Com_Printf("failed, hardware already in use\n");
+			return SIS_NOTAVAIL;
+		}
+	}
+
+	Com_DPrintf("ok\n");
+
+	DSCAPS dscaps = { .dwSize = sizeof(dscaps) };
+	if (pDS->lpVtbl->GetCaps(pDS, &dscaps) != DS_OK)
+		Com_Printf("*** couldn't get DS caps ***\n");
+
+	if (dscaps.dwFlags & DSCAPS_EMULDRIVER)
+	{
+		Com_DPrintf("...no DSound driver found\n");
+		FreeSound();
+
+		return SIS_FAILURE;
+	}
+
+	if (!DS_CreateBuffers())
+		return SIS_FAILURE;
+
+	dsound_init = true;
+
+	Com_DPrintf("...completed successfully\n");
+
+	return SIS_SUCCESS;
 }
 
 static qboolean SNDDMA_InitWav(void)
