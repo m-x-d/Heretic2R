@@ -6,9 +6,7 @@
 
 #pragma once
 
-typedef float vec_t;		//TODO: remove
 typedef float vec3_t[3];
-
 typedef float matrix3_t[3][3];
 
 typedef unsigned short ushort;	//mxd. Way shorter than "unsigned short"...
