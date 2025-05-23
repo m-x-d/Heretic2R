@@ -443,6 +443,16 @@ void SNDDMA_Shutdown(void)
 	FreeSound();
 }
 
+void SNDDMA_BeginPainting(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void SNDDMA_Submit(void)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart.
 // Called when the main window gains or loses focus.
 // The window have been destroyed and recreated between a deactivate and an activate.

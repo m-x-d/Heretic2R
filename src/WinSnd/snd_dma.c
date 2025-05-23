@@ -201,7 +201,19 @@ void S_StartLocalSound(const char* sound)
 
 static void S_ClearBuffer(void)
 {
-	NOT_IMPLEMENTED
+	if (!sound_started)
+		return;
+
+	//H2: no s_rawend reset.
+	SNDDMA_BeginPainting();
+
+	if (dma.buffer != NULL)
+	{
+		const int clear = ((dma.samplebits == 8) ? 0x80 : 0);
+		memset(dma.buffer, clear, dma.samples * dma.samplebits / 8);
+	}
+
+	SNDDMA_Submit();
 }
 
 void S_StopAllSounds(void)
