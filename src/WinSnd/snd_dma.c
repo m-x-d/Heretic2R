@@ -7,6 +7,7 @@
 #include "snd_dma.h"
 #include "snd_mix.h"
 #include "snd_win.h"
+#include "q_clientserver.h"
 #include "qcommon.h"
 
 // Internal sound data & structures.
@@ -19,6 +20,10 @@ dma_t dma;
 static int soundtime; // Sample PAIRS.
 int paintedtime; // Sample PAIRS.
 
+// During registration it is possible to have more sounds than could actually be referenced during gameplay,
+// because we don't want to free anything until we are sure we won't need it.
+#define MAX_SFX	(MAX_SOUNDS * 2)
+static sfx_t known_sfx[MAX_SFX];
 static int num_sfx;
 
 #define MAX_PLAYSOUNDS	128
@@ -102,10 +107,35 @@ void S_Init(void)
 	Com_Printf("------------------------------------\n");
 }
 
+// Q2 counterpart.
 // Shutdown sound engine.
 void S_Shutdown(void)
 {
-	NOT_IMPLEMENTED
+	if (!sound_started)
+		return;
+
+	SNDDMA_Shutdown();
+
+	Cmd_RemoveCommand("play");
+	Cmd_RemoveCommand("stopsound");
+	Cmd_RemoveCommand("soundlist");
+	Cmd_RemoveCommand("soundinfo");
+
+	// Free all sounds.
+	sfx_t* sfx = known_sfx;
+	for (int i = 0; i < num_sfx; i++, sfx++)
+	{
+		if (sfx->name[0] == 0)
+			continue;
+
+		if (sfx->cache != NULL)
+			Z_Free(sfx->cache);
+
+		memset(sfx, 0, sizeof(*sfx));
+	}
+
+	num_sfx = 0;
+	sound_started = false;
 }
 
 sfx_t* S_FindName(char* name, qboolean create)

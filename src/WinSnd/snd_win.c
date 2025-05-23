@@ -44,7 +44,7 @@ static LPDIRECTSOUNDBUFFER pDSPBuf;
 
 static HINSTANCE hInstDS;
 
-static void FreeSound(void)
+void FreeSound(void)
 {
 	NOT_IMPLEMENTED
 }
@@ -340,6 +340,11 @@ qboolean SNDDMA_Init(void) //mxd. Returns int in original logic.
 	snd_buffer_count = 1;
 
 	return (dsound_init || wav_init); //H2: missing '*** No sound device initialized ***' logic.
+}
+
+void SNDDMA_Shutdown(void)
+{
+	FreeSound();
 }
 
 // Q2 counterpart.
