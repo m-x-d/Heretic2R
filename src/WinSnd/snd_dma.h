@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "snd_loc.h"
 #include "snd_local.h"
 
 // Exported sound library functions.
