@@ -1636,7 +1636,10 @@ void CL_Shutdown(void)
 	SMK_Shutdown();
 	CL_ClearGameMessages(); // H2
 	CDAudio_Shutdown();
-	S_Shutdown();
+
+	if (S_Shutdown != NULL) //mxd. Can be NULL if shutdown was caused by Sys_Error call during sound dll initialization.
+		S_Shutdown();
+
 	IN_DeactivateMouse();
 	VID_Shutdown();
 	SndDll_FreeLibrary();
