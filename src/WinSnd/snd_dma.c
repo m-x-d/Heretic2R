@@ -5,6 +5,7 @@
 //
 
 #include "snd_dma.h"
+#include "snd_mem.h"
 #include "snd_mix.h"
 #include "snd_win.h"
 #include "q_clientserver.h"
@@ -160,9 +161,32 @@ sfx_t* S_RegisterSound(const char* name)
 	return NULL;
 }
 
+// Q2 counterpart.
 void S_EndRegistration(void)
 {
-	NOT_IMPLEMENTED
+	// Free any sounds not from this registration sequence.
+	sfx_t* sfx = known_sfx;
+	for (int i = 0; i < num_sfx; i++, sfx++)
+	{
+		// Don't need this sound?
+		if (sfx->name[0] != 0 && sfx->registration_sequence != s_registration_sequence)
+		{
+			// It is possible to have a leftover from a server that didn't finish loading.
+			if (sfx->cache != NULL)	
+				Z_Free(sfx->cache);
+
+			memset(sfx, 0, sizeof(*sfx));
+		}
+		//mxd. Skip Com_PageInMemory() logic.
+	}
+
+	// Load everything in.
+	sfx = known_sfx;
+	for (int i = 0; i < num_sfx; i++, sfx++)
+		if (sfx->name[0] != 0)
+			S_LoadSound(sfx);
+
+	s_registering = false;
 }
 
 void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfx_t* sfx, float fvol, int attenuation, float timeofs)
