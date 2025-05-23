@@ -17,6 +17,9 @@ static qboolean sound_started = false; //mxd. int in Q2.
 
 dma_t dma;
 
+static int s_registration_sequence;
+static qboolean s_registering;
+
 static int soundtime; // Sample PAIRS.
 int paintedtime; // Sample PAIRS.
 
@@ -144,9 +147,11 @@ sfx_t* S_FindName(char* name, qboolean create)
 	return NULL;
 }
 
+// Q2 counterpart.
 void S_BeginRegistration(void)
 {
-	NOT_IMPLEMENTED
+	s_registration_sequence++;
+	s_registering = true;
 }
 
 sfx_t* S_RegisterSound(const char* name)
