@@ -17,4 +17,6 @@
 /src/ref_gl/release
 /src/win32/debug
 /src/win32/release
+/src/WinSnd/debug
+/src/WinSnd/release
 *.user

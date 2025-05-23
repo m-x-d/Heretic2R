@@ -37,9 +37,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Player", "Player\Player.vcx
 		{0344D3E0-BAA4-4747-8D13-8CAC69C60CEA} = {0344D3E0-BAA4-4747-8D13-8CAC69C60CEA}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game", "game\game.vcxproj", "{D69DFD98-F807-449A-A11F-37A3B512A4EB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gamex86", "game\game.vcxproj", "{D69DFD98-F807-449A-A11F-37A3B512A4EB}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0344D3E0-BAA4-4747-8D13-8CAC69C60CEA} = {0344D3E0-BAA4-4747-8D13-8CAC69C60CEA}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinSnd", "WinSnd\WinSnd.vcxproj", "{0CA7590E-B80D-4474-B135-5E48DF0C9964}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0344D3E0-BAA4-4747-8D13-8CAC69C60CEA} = {0344D3E0-BAA4-4747-8D13-8CAC69C60CEA}
+		{0D079EB7-E519-4759-AC96-23010BC0B083} = {0D079EB7-E519-4759-AC96-23010BC0B083}
 	EndProjectSection
 EndProject
 Global
@@ -76,6 +82,10 @@ Global
 		{D69DFD98-F807-449A-A11F-37A3B512A4EB}.Debug|x86.Build.0 = Debug|Win32
 		{D69DFD98-F807-449A-A11F-37A3B512A4EB}.Release|x86.ActiveCfg = Release|Win32
 		{D69DFD98-F807-449A-A11F-37A3B512A4EB}.Release|x86.Build.0 = Release|Win32
+		{0CA7590E-B80D-4474-B135-5E48DF0C9964}.Debug|x86.ActiveCfg = Debug|Win32
+		{0CA7590E-B80D-4474-B135-5E48DF0C9964}.Debug|x86.Build.0 = Debug|Win32
+		{0CA7590E-B80D-4474-B135-5E48DF0C9964}.Release|x86.ActiveCfg = Release|Win32
+		{0CA7590E-B80D-4474-B135-5E48DF0C9964}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
