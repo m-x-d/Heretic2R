@@ -199,6 +199,11 @@ void S_StartLocalSound(const char* sound)
 	NOT_IMPLEMENTED
 }
 
+static void S_ClearBuffer(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void S_StopAllSounds(void)
 {
 	if (!sound_started)
@@ -227,7 +232,8 @@ void S_StopAllSounds(void)
 
 void S_StopAllSounds_Sounding(void) // H2
 {
-	NOT_IMPLEMENTED
+	if (sound_started)
+		S_ClearBuffer();
 }
 
 void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
