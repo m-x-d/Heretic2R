@@ -22,7 +22,7 @@ extern cvar_t* s_primary;
 // Exported sound library functions.
 SNDLIB_DECLSPEC extern void S_Init(void);
 SNDLIB_DECLSPEC extern void S_Shutdown(void);
-SNDLIB_DECLSPEC extern void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up);
+SNDLIB_DECLSPEC extern void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up);
 SNDLIB_DECLSPEC extern sfx_t* S_FindName(char* name, qboolean create);
 
 SNDLIB_DECLSPEC extern void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfx_t* sfx, float fvol, int attenuation, float timeofs);

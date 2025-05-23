@@ -8,8 +8,10 @@
 #include "snd_mem.h"
 #include "snd_mix.h"
 #include "snd_win.h"
+#include "client.h"
 #include "q_clientserver.h"
 #include "qcommon.h"
+#include "Vector.h"
 
 // Internal sound data & structures.
 channel_t channels[MAX_CHANNELS];
@@ -17,6 +19,11 @@ channel_t channels[MAX_CHANNELS];
 static qboolean sound_started = false; //mxd. int in Q2.
 
 dma_t dma;
+
+static vec3_t listener_origin;
+static vec3_t listener_forward;
+static vec3_t listener_right;
+static vec3_t listener_up;
 
 static int s_registration_sequence;
 static qboolean s_registering;
@@ -189,6 +196,11 @@ void S_EndRegistration(void)
 	s_registering = false;
 }
 
+static void S_Spatialize(channel_t* ch)
+{
+	NOT_IMPLEMENTED
+}
+
 void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfx_t* sfx, float fvol, int attenuation, float timeofs)
 {
 	NOT_IMPLEMENTED
@@ -248,7 +260,74 @@ void S_StopAllSounds_Sounding(void) // H2
 		S_ClearBuffer();
 }
 
-void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
+static void S_AddLoopSounds(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static void S_Update_(void) //TODO: rename to S_MixSound?
+{
+	NOT_IMPLEMENTED
+}
+
+// Called once each time through the main loop.
+void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up)
+{
+	if (!sound_started)
+		return;
+
+	// If the loading plaque is up, clear everything out to make sure we aren't looping a dirty dma buffer while loading.
+	if (cls.disable_screen)
+	{
+		S_ClearBuffer();
+		return;
+	}
+
+	// Rebuild scale tables if volume is modified.
+	if (s_volume->modified)
+		S_InitScaletable();
+
+	VectorCopy(origin, listener_origin);
+	VectorCopy(forward, listener_forward);
+	VectorCopy(right, listener_right);
+	VectorCopy(up, listener_up);
+
+	// Update spatialization for dynamic sounds.
+	channel_t* ch = &channels[0];
+	for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+	{
+		if (ch->sfx == NULL)
+			continue;
+
+		if (ch->autosound)
+			memset(ch, 0, sizeof(*ch)); // Autosounds are regenerated fresh each frame.
+		else
+			S_Spatialize(ch); // Respatialize channel.
+
+		// H2: missing 'clear channel when it can't be heard' logic. //TODO: re-add? Missing because pre-3.21 Q2 source was used?
+	}
+
+	// Add looping sounds.
+	S_AddLoopSounds();
+
+	// Debugging output.
+	if (s_show->value)
+	{
+		int total_sounds = 0;
+
+		ch = &channels[0];
+		for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+		{
+			if (ch->sfx != NULL && (ch->leftvol > 0 || ch->rightvol > 0))
+			{
+				Com_Printf("%3i %3i %s\n", ch->leftvol, ch->rightvol, ch->sfx->name);
+				total_sounds++;
+			}
+		}
+
+		Com_Printf("----(%i)---- painted: %i\n", total_sounds, paintedtime);
+	}
+
+	// Mix some sound.
+	S_Update_();
 }
