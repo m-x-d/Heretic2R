@@ -10,6 +10,8 @@
 #include "sys_win.h"
 #include "qcommon.h"
 
+// 64K is > 1 second at 16-bit, 22050 Hz.
+#define	WAV_BUFFERS				64
 #define SECONDARY_BUFFER_SIZE	0x10000
 
 typedef enum
@@ -31,7 +33,13 @@ static int snd_buffer_count = 0;
 static int sample16;
 
 // DirectSound variables.
+static HANDLE hData;
 static HPSTR lpData;
+
+static HGLOBAL hWaveHdr;
+static LPWAVEHDR lpWaveHdr;
+
+static HWAVEOUT hWaveOut;
 
 static DWORD gSndBufSize;
 
@@ -43,11 +51,6 @@ static LPDIRECTSOUNDBUFFER pDSBuf;
 static LPDIRECTSOUNDBUFFER pDSPBuf;
 
 static HINSTANCE hInstDS;
-
-void FreeSound(void)
-{
-	NOT_IMPLEMENTED
-}
 
 static qboolean DS_CreateBuffers(void)
 {
@@ -207,6 +210,71 @@ static qboolean DS_CreateBuffers(void)
 static void DS_DestroyBuffers(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart.
+static void FreeSound(void)
+{
+	Com_DPrintf("Shutting down sound system\n");
+
+	if (pDS != NULL)
+		DS_DestroyBuffers();
+
+	if (hWaveOut != NULL)
+	{
+		Com_DPrintf("...resetting waveOut\n");
+		waveOutReset(hWaveOut);
+
+		if (lpWaveHdr != NULL)
+		{
+			Com_DPrintf("...unpreparing headers\n");
+
+			for (int i = 0; i < WAV_BUFFERS; i++)
+				waveOutUnprepareHeader(hWaveOut, lpWaveHdr + i, sizeof(WAVEHDR));
+		}
+
+		Com_DPrintf("...closing waveOut\n");
+		waveOutClose(hWaveOut);
+
+		if (hWaveHdr != NULL)
+		{
+			Com_DPrintf("...freeing WAV header\n");
+			GlobalUnlock(hWaveHdr);
+			GlobalFree(hWaveHdr);
+		}
+
+		if (hData != NULL)
+		{
+			Com_DPrintf("...freeing WAV buffer\n");
+			GlobalUnlock(hData);
+			GlobalFree(hData);
+		}
+	}
+
+	if (pDS != NULL)
+	{
+		Com_DPrintf("...releasing DS object\n");
+		pDS->lpVtbl->Release(pDS);
+	}
+
+	if (hInstDS != NULL)
+	{
+		Com_DPrintf("...freeing DSOUND.DLL\n");
+		FreeLibrary(hInstDS);
+		hInstDS = NULL;
+	}
+
+	pDS = NULL;
+	pDSBuf = NULL;
+	pDSPBuf = NULL;
+	hWaveOut = NULL;
+	hData = NULL;
+	hWaveHdr = NULL;
+	lpData = NULL;
+	lpWaveHdr = NULL;
+
+	dsound_init = false;
+	wav_init = false;
 }
 
 // DirectSound support.
