@@ -11,7 +11,8 @@
 #include "qcommon.h"
 
 // 64K is > 1 second at 16-bit, 22050 Hz.
-#define	WAV_BUFFERS				64
+#define WAV_BUFFERS				64
+#define WAV_MASK				0x3f
 #define SECONDARY_BUFFER_SIZE	0x10000
 
 typedef enum
@@ -31,6 +32,8 @@ static qboolean primary_format_set;
 // Starts at 0 for disabled.
 static int snd_buffer_count = 0;
 static int sample16;
+static int snd_sent;
+static int snd_completed;
 static DWORD locksize;
 
 // DirectSound variables.
@@ -494,9 +497,49 @@ void SNDDMA_BeginPainting(void)
 	dma.buffer = (byte*)pbuf;
 }
 
+// Send sound to device if buffer isn't really the dma buffer. Also unlocks the dsound buffer.
 void SNDDMA_Submit(void)
 {
-	NOT_IMPLEMENTED
+	if (dma.buffer == NULL)
+		return;
+
+	// Unlock the dsound buffer.
+	if (pDSBuf != NULL)
+		pDSBuf->lpVtbl->Unlock(pDSBuf, dma.buffer, locksize, NULL, 0);
+
+	if (!wav_init)
+		return;
+
+	// Find which sound blocks have completed.
+	while (true)
+	{
+		if (snd_completed == snd_sent)
+		{
+			Com_DPrintf("Sound overrun\n");
+			break;
+		}
+
+		if (!(lpWaveHdr[snd_completed & WAV_MASK].dwFlags & WHDR_DONE))
+			break;
+
+		snd_completed++; // This buffer has been played.
+	}
+
+	// Submit a few new sound blocks.
+	while ((snd_sent - snd_completed) >> sample16 < 8 && paintedtime / 256 <= snd_sent)
+	{
+		snd_sent++;
+
+		// Now the data block can be sent to the output device.
+		// The waveOutWrite function returns immediately and waveform data is sent to the output device in the background.
+		if (waveOutWrite(hWaveOut, &lpWaveHdr[snd_completed & WAV_MASK], sizeof(WAVEHDR)) != MMSYSERR_NOERROR)
+		{
+			Com_Printf("Failed to write block to device\n");
+			FreeSound();
+
+			return;
+		}
+	}
 }
 
 // Q2 counterpart.
