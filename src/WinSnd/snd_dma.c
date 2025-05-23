@@ -149,7 +149,7 @@ void S_Shutdown(void)
 	sound_started = false;
 }
 
-sfx_t* S_FindName(char* name, qboolean create)
+sfx_t* S_FindName(const char* name, qboolean create)
 {
 	NOT_IMPLEMENTED
 	return NULL;
@@ -162,10 +162,19 @@ void S_BeginRegistration(void)
 	s_registering = true;
 }
 
+// Q2 counterpart.
 sfx_t* S_RegisterSound(const char* name)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (!sound_started)
+		return NULL;
+
+	sfx_t* sfx = S_FindName(name, true);
+	sfx->registration_sequence = s_registration_sequence;
+
+	if (!s_registering)
+		S_LoadSound(sfx);
+
+	return sfx;
 }
 
 // Q2 counterpart.
@@ -311,7 +320,7 @@ void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t right, con
 	S_AddLoopSounds();
 
 	// Debugging output.
-	if (s_show->value)
+	if ((int)s_show->value)
 	{
 		int total_sounds = 0;
 
