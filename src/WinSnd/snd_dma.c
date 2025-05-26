@@ -405,9 +405,34 @@ static void S_AddLoopSounds(void)
 	}
 }
 
+// Q2 counterpart.
 static void GetSoundtime(void)
 {
-	NOT_IMPLEMENTED
+	static int buffers;
+	static int oldsamplepos;
+
+	const int fullsamples = dma.samples / dma.channels;
+
+	// It is possible to miscount buffers if it has wrapped twice between calls to S_Update. Oh well.
+	const int samplepos = SNDDMA_GetDMAPos();
+
+	if (samplepos < oldsamplepos)
+	{
+		buffers++; // Buffer wrapped.
+
+		if (paintedtime > 0x40000000)
+		{
+			// Time to chop things off to avoid 32 bit limits.
+			buffers = 0;
+			paintedtime = fullsamples;
+
+			S_StopAllSounds();
+		}
+	}
+
+	oldsamplepos = samplepos;
+
+	soundtime = buffers * fullsamples + samplepos / dma.channels;
 }
 
 // Q2 counterpart.

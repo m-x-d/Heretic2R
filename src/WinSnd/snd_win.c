@@ -453,6 +453,12 @@ void SNDDMA_Shutdown(void)
 	FreeSound();
 }
 
+int SNDDMA_GetDMAPos(void)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
 // Makes sure dma.buffer is valid.
 void SNDDMA_BeginPainting(void)
 {
