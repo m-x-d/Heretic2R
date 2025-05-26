@@ -19,9 +19,18 @@ static int snd_linear_count;
 static int snd_vol;
 static short* snd_out;
 
+// Q2 counterpart.
 static void S_WriteLinearBlastStereo16(void)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < snd_linear_count; i += 2)
+	{
+		// Write left and right channels.
+		for (int c = 0; c < 2; c++)
+		{
+			const int val = snd_p[i + c] >> 8;
+			snd_out[i + c] = (short)ClampI(val, -0x8000, 0x7fff);
+		}
+	}
 }
 
 // Q2 counterpart.
