@@ -270,6 +270,11 @@ static void S_Spatialize(channel_t* ch)
 	NOT_IMPLEMENTED
 }
 
+void S_IssuePlaysound(playsound_t* ps)
+{
+	NOT_IMPLEMENTED
+}
+
 void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfx_t* sfx, float fvol, int attenuation, float timeofs)
 {
 	NOT_IMPLEMENTED

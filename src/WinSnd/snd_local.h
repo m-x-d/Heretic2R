@@ -12,6 +12,12 @@
 
 #pragma region ========================== Sound structures ==========================
 
+typedef struct
+{
+	int left;
+	int right;
+} portable_samplepair_t;
+
 //mxd. Moved from snd_loc.h. Not used outside of sound library.
 typedef struct sfxcache_s
 {

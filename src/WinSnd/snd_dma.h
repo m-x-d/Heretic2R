@@ -34,3 +34,5 @@ SNDLIB_DECLSPEC extern void S_StopAllSounds_Sounding(void);
 SNDLIB_DECLSPEC extern void S_BeginRegistration(void);
 SNDLIB_DECLSPEC extern sfx_t* S_RegisterSound(const char* name);
 SNDLIB_DECLSPEC extern void S_EndRegistration(void);
+
+extern void S_IssuePlaysound(playsound_t* ps);
