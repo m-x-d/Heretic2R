@@ -14,9 +14,57 @@ static byte* last_chunk;
 static byte* iff_data;
 static int iff_chunk_len;
 
-static void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
+// Q2 counterpart.
+static void ResampleSfx(const sfx_t* sfx, const int inrate, const int inwidth, byte* data)
 {
-	NOT_IMPLEMENTED
+	sfxcache_t* sc = sfx->cache;
+
+	if (sc == NULL)
+		return;
+
+	const float stepscale = (float)inrate / (float)dma.speed; // This is usually 0.5, 1, or 2.
+
+	const int outcount = (int)((float)sc->length / stepscale);
+	sc->length = outcount;
+
+	if (sc->loopstart != -1)
+		sc->loopstart = (int)((float)sc->loopstart / stepscale);
+
+	sc->speed = dma.speed;
+	sc->width = ((int)s_loadas8bit->value ? 1 : inwidth);
+	sc->stereo = 0;
+
+	// Resample / decimate to the current source rate.
+	if (stepscale == 1.0f && inwidth == 1 && sc->width == 1)
+	{
+		// Fast special case.
+		for (int i = 0; i < outcount; i++)
+			((byte*)sc->data)[i] = data[i] - 128;
+
+		return;
+	}
+
+	// General case.
+	int samplefrac = 0;
+	const int fracstep = (int)(stepscale * 256.0f);
+
+	for (int i = 0; i < outcount; i++)
+	{
+		const int srcsample = samplefrac >> 8;
+		samplefrac += fracstep;
+
+		int sample;
+
+		if (inwidth == 2)
+			sample = LittleShort(((short*)data)[srcsample]);
+		else
+			sample = (data[srcsample] - 128) << 8;
+
+		if (sc->width == 2)
+			((short*)sc->data)[i] = (short)sample;
+		else
+			((char*)sc->data)[i] = (char)(sample >> 8);
+	}
 }
 
 // Q2 counterpart.
