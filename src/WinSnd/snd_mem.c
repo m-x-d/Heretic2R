@@ -8,16 +8,133 @@
 #include "snd_dma.h"
 #include "qcommon.h"
 
+static byte* data_p;
+static byte* iff_end;
+static byte* last_chunk;
+static byte* iff_data;
+static int iff_chunk_len;
+
 static void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
 {
 	NOT_IMPLEMENTED
 }
 
-static wavinfo_t GetWavinfo(char* name, byte* wav, int wavlength) //TODO: either return wavinfo_t*, or pass wavinfo_t* as arg?
+static short GetLittleShort(void)
 {
-	wavinfo_t info = { 0 };
-
 	NOT_IMPLEMENTED
+	return 0;
+}
+
+static int GetLittleLong(void)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+static void FindChunk(const char* name)
+{
+	NOT_IMPLEMENTED
+}
+
+static void FindNextChunk(const char* name)
+{
+	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart.
+static wavinfo_t GetWavinfo(const char* name, byte* wav, const int wavlength) //TODO: either return wavinfo_t*, or pass wavinfo_t* as arg?
+{
+	wavinfo_t info;
+
+	memset(&info, 0, sizeof(info));
+
+	if (wav == NULL)
+		return info;
+
+	iff_data = wav;
+	iff_end = wav + wavlength;
+
+	// Find "RIFF" chunk.
+	FindChunk("RIFF");
+
+	if (data_p == NULL || strncmp((char*)(&data_p[8]), "WAVE", 4) != 0)
+	{
+		Com_Printf("Missing RIFF/WAVE chunks\n");
+		return info;
+	}
+
+	// Get "fmt " chunk.
+	iff_data = &data_p[12];
+	FindChunk("fmt ");
+
+	if (data_p == NULL)
+	{
+		Com_Printf("Missing fmt chunk\n");
+		return info;
+	}
+
+	data_p += 8;
+	const int format = GetLittleShort();
+
+	if (format != 1)
+	{
+		Com_Printf("Microsoft PCM format only\n");
+		return info;
+	}
+
+	info.channels = GetLittleShort();
+	info.rate = GetLittleLong();
+
+	data_p += 6;
+	info.width = GetLittleShort() / 8;
+
+	// Get cue chunk.
+	FindChunk("cue ");
+
+	if (data_p != NULL)
+	{
+		data_p += 32;
+		info.loopstart = GetLittleLong();
+
+		// If the next chunk is a LIST chunk, look for a cue length marker.
+		FindNextChunk("LIST");
+
+		if (data_p != NULL && strncmp((char*)&data_p[28], "mark", 4) == 0)
+		{
+			// This is not a proper parse, but it works with cooledit...
+			data_p += 24;
+			info.samples = info.loopstart + GetLittleLong(); // Samples in loop.
+		}
+	}
+	else
+	{
+		info.loopstart = -1;
+	}
+
+	// Find data chunk.
+	FindChunk("data");
+
+	if (data_p == NULL)
+	{
+		Com_Printf("Missing data chunk\n");
+		return info;
+	}
+
+	data_p += 4;
+	const int samples = GetLittleLong() / info.width;
+
+	if (info.samples > 0)
+	{
+		if (samples < info.samples)
+			Com_Error(ERR_DROP, "Sound %s has a bad loop length", name);
+	}
+	else
+	{
+		info.samples = samples;
+	}
+
+	info.dataofs = data_p - wav;
+
 	return info;
 }
 
