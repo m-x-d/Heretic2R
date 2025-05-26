@@ -270,14 +270,96 @@ static void S_Spatialize(channel_t* ch)
 	NOT_IMPLEMENTED
 }
 
+static playsound_t* S_AllocPlaysound(void)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 void S_IssuePlaysound(playsound_t* ps)
 {
 	NOT_IMPLEMENTED
 }
 
-void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfx_t* sfx, float fvol, int attenuation, float timeofs)
+static sfx_t* S_RegisterSexedSound(entity_state_t* ent, char* base)
 {
 	NOT_IMPLEMENTED
+	return NULL;
+}
+
+// Q2 counterpart.
+// Validates the params and queues the sound up.
+// If origin is NULL, the sound will be dynamically sourced from the entity.
+// Entchannel 0 will never override a playing sound.
+void S_StartSound(const vec3_t origin, const int entnum, const int entchannel, sfx_t* sfx, const float fvol, const int attenuation, const float timeofs)
+{
+	static int s_beginofs = 0; //mxd. Made local static.
+
+	if (!sound_started || sfx == NULL)
+		return;
+
+	if (sfx->name[0] == '*')
+		sfx = S_RegisterSexedSound(&cl_entities[entnum].current, sfx->name);
+
+	// Make sure the sound is loaded.
+	if (S_LoadSound(sfx) == NULL)
+		return;
+
+	// Make the playsound_t.
+	playsound_t* ps = S_AllocPlaysound();
+
+	if (ps == NULL)
+		return;
+
+	if (origin != NULL)
+	{
+		VectorCopy(origin, ps->origin);
+		ps->fixed_origin = true;
+	}
+	else
+	{
+		ps->fixed_origin = false;
+	}
+
+	ps->entnum = entnum;
+	ps->entchannel = entchannel;
+	ps->attenuation = (float)attenuation;
+	ps->volume = fvol * 255.0f;
+	ps->sfx = sfx;
+
+	// Drift s_beginofs.
+	int start = (int)((float)cl.frame.servertime * 0.001f * (float)dma.speed) + s_beginofs;
+
+	if (start < paintedtime)
+	{
+		start = paintedtime;
+		s_beginofs = start - (int)((float)cl.frame.servertime * 0.001f * (float)dma.speed);
+	}
+	else if (start > (int)((float)paintedtime + 0.3f * (float)dma.speed))
+	{
+		start = (int)((float)paintedtime + 0.1f * (float)dma.speed);
+		s_beginofs = start - (int)((float)cl.frame.servertime * 0.001f * (float)dma.speed);
+	}
+	else
+	{
+		s_beginofs -= 10;
+	}
+
+	if (timeofs == 0.0f)
+		ps->begin = paintedtime;
+	else
+		ps->begin = (int)((float)start + timeofs * (float)dma.speed);
+
+	// Sort into the pending sound list.
+	playsound_t* sort = s_pendingplays.next;
+	while (sort != &s_pendingplays && sort->begin < ps->begin)
+		sort = sort->next;
+
+	ps->next = sort;
+	ps->prev = sort->prev;
+
+	ps->next->prev = ps;
+	ps->prev->next = ps;
 }
 
 void S_StartLocalSound(const char* sound)
