@@ -14,9 +14,69 @@ portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
 static int snd_scaletable[32][256];
 static int snd_vol;
 
-static void S_TransferPaintBuffer(int endtime)
+static void S_TransferStereo16(uint* pbuf, int endtime)
 {
 	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart.
+static void S_TransferPaintBuffer(const int endtime)
+{
+	if ((int)s_testsound->value)
+	{
+		// Write a fixed sine wave.
+		const int count = endtime - paintedtime;
+		
+		for (int i = 0; i < count; i++)
+		{
+			const int val = (int)(sinf((float)(paintedtime + i) * 0.1f) * 20000.0f * 256.0f);
+			paintbuffer[i].left = val;
+			paintbuffer[i].right = val;
+		}
+	}
+
+	if (dma.samplebits == 16 && dma.channels == 2)
+	{
+		// Optimized case.
+		S_TransferStereo16((uint*)dma.buffer, endtime);
+		return;
+	}
+
+	// General case.
+	const int* p = (int*)paintbuffer;
+	int count = (endtime - paintedtime) * dma.channels;
+	const int out_mask = dma.samples - 1;
+	int out_idx = (paintedtime * dma.channels) & out_mask;
+	const int step = 3 - dma.channels;
+
+	if (dma.samplebits == 16)
+	{
+		short* out = (short*)dma.buffer;
+
+		while (count--)
+		{
+			int val = *p >> 8;
+			p += step;
+
+			val = ClampI(val, -0x8000, 0x7fff);
+			out[out_idx] = (short)val;
+			out_idx = (out_idx + 1) & out_mask;
+		}
+	}
+	else if (dma.samplebits == 8)
+	{
+		byte* out = dma.buffer;
+
+		while (count--)
+		{
+			int val = *p >> 8;
+			p += step;
+
+			val = ClampI(val, -0x8000, 0x7fff);
+			out[out_idx] = (byte)((val >> 8) + 128);
+			out_idx = (out_idx + 1) & out_mask;
+		}
+	}
 }
 
 static void S_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int count, int offset)
