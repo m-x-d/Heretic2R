@@ -84,6 +84,16 @@ typedef struct
 	qboolean autosound;		// From an entity->sound, cleared each frame.
 } channel_t;
 
+typedef struct
+{
+	int rate;
+	int width;
+	int channels;
+	int loopstart;
+	int samples;
+	int dataofs; // Chunk starts this many bytes from file start.
+} wavinfo_t;
+
 #pragma endregion
 
 #define MAX_CHANNELS	32
