@@ -19,16 +19,22 @@ static void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart.
 static short GetLittleShort(void)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	const short val = (short)(data_p[0] + (data_p[1] << 8));
+	data_p += 2;
+
+	return val;
 }
 
+// Q2 counterpart.
 static int GetLittleLong(void)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	const int val = data_p[0] + (data_p[1] << 8) + (data_p[2] << 16) + (data_p[3] << 24);
+	data_p += 4;
+
+	return val;
 }
 
 // Q2 counterpart.
