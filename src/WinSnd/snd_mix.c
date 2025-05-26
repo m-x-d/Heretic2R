@@ -11,12 +11,42 @@
 
 #define PAINTBUFFER_SIZE	2048
 portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
-static int snd_scaletable[32][256];
-static int snd_vol;
 
-static void S_TransferStereo16(uint* pbuf, int endtime)
+static int snd_scaletable[32][256];
+
+static int* snd_p;
+static int snd_linear_count;
+static int snd_vol;
+static short* snd_out;
+
+static void S_WriteLinearBlastStereo16(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart.
+static void S_TransferStereo16(uint* pbuf, const int endtime)
+{
+	snd_p = (int*)paintbuffer;
+	int lpaintedtime = paintedtime;
+
+	while (lpaintedtime < endtime)
+	{
+		// Handle recirculating buffer issues.
+		const int lpos = lpaintedtime & ((dma.samples >> 1) - 1);
+
+		snd_out = (short*)pbuf + (lpos << 1);
+
+		snd_linear_count = (dma.samples >> 1) - lpos;
+		snd_linear_count = min(endtime - lpaintedtime, snd_linear_count);
+		snd_linear_count <<= 1;
+
+		// Write a linear blast of samples.
+		S_WriteLinearBlastStereo16();
+
+		snd_p += snd_linear_count;
+		lpaintedtime += (snd_linear_count >> 1);
+	}
 }
 
 // Q2 counterpart.
