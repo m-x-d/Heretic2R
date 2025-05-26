@@ -593,9 +593,9 @@ typedef struct
 #define ATTN_NORM				1
 #define ATTN_IDLE				2
 #define ATTN_STATIC				3	// Diminish very rapidly with distance.
-#define ATTN_VERYSTATIC			4
-#define ATTN_LEFT				256
-#define ATTN_RIGHT				512
+#define ATTN_VERYSTATIC			4 //TODO: unused.
+#define ATTN_LEFT				256 //TODO: unused.
+#define ATTN_RIGHT				512 //TODO: unused.
 
 // player_state->stats[] indexes.
 
