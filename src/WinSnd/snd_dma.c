@@ -405,9 +405,42 @@ static void S_AddLoopSounds(void)
 	}
 }
 
-static void S_Update_(void) //TODO: rename to S_MixSound?
+static void GetSoundtime(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart.
+static void S_Update_(void) //TODO: rename to S_MixSound?
+{
+	if (!sound_started)
+		return;
+
+	SNDDMA_BeginPainting();
+
+	if (dma.buffer == NULL)
+		return;
+
+	// Updates DMA time.
+	GetSoundtime();
+
+	// Check to make sure that we haven't overshot.
+	if (paintedtime < soundtime)
+	{
+		Com_DPrintf("S_Update_ : overflow\n");
+		paintedtime = soundtime;
+	}
+
+	// Mix ahead of current position.
+	uint endtime = soundtime + (int)(s_mixahead->value * (float)dma.speed);
+
+	// Mix to an even submission block size.
+	endtime = (endtime + dma.submission_chunk - 1) & ~(dma.submission_chunk - 1);
+
+	const uint samps = dma.samples >> (dma.channels - 1);
+
+	S_PaintChannels(min(endtime, soundtime + samps));
+	SNDDMA_Submit();
 }
 
 // Called once each time through the main loop.

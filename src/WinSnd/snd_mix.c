@@ -10,6 +10,11 @@
 
 static int snd_scaletable[32][256];
 
+void S_PaintChannels(int endtime)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart.
 void S_InitScaletable(void)
 {
