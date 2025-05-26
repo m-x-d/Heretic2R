@@ -149,10 +149,43 @@ void S_Shutdown(void)
 	sound_started = false;
 }
 
-sfx_t* S_FindName(const char* name, qboolean create)
+// Q2 counterpart.
+sfx_t* S_FindName(const char* name, const qboolean create)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (name == NULL || name[0] == 0) //mxd. Merged checks.
+		Com_Error(ERR_FATAL, "S_FindName: empty name\n");
+
+	if (strlen(name) >= MAX_QPATH)
+		Com_Error(ERR_FATAL, "Sound name too long: %s", name);
+
+	// See if already loaded.
+	for (int i = 0; i < num_sfx; i++)
+		if (strcmp(known_sfx[i].name, name) == 0)
+			return &known_sfx[i];
+
+	if (!create)
+		return NULL;
+
+	// Find a free sfx.
+	int free_slot = 0;
+	for (; free_slot < num_sfx; free_slot++)
+		if (known_sfx[free_slot].name[0] == 0)
+			break;
+
+	if (free_slot == num_sfx)
+	{
+		if (num_sfx == MAX_SFX)
+			Com_Error(ERR_FATAL, "S_FindName: out of sfx_t");
+
+		num_sfx++;
+	}
+
+	sfx_t* sfx = &known_sfx[free_slot];
+	memset(sfx, 0, sizeof(*sfx));
+	strcpy_s(sfx->name, sizeof(sfx->name), name); //mxd. strcpy -> strcpy_s.
+	sfx->registration_sequence = s_registration_sequence;
+
+	return sfx;
 }
 
 // Q2 counterpart.
