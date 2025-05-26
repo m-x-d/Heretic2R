@@ -13,6 +13,7 @@
 // 64K is > 1 second at 16-bit, 22050 Hz.
 #define WAV_BUFFERS				64
 #define WAV_MASK				0x3f
+#define WAV_BUFFER_SIZE			0x0400
 #define SECONDARY_BUFFER_SIZE	0x10000
 
 typedef enum
@@ -453,10 +454,27 @@ void SNDDMA_Shutdown(void)
 	FreeSound();
 }
 
+// Q2 counterpart.
+// Returns the current sample position (in mono samples read) inside the recirculating dma buffer,
+// so the mixing code will know how many sample are required to fill it up.
 int SNDDMA_GetDMAPos(void)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	int s = 0; //mxd. Initialize to avoid compiler warning.
+	
+	if (dsound_init)
+	{
+		MMTIME mmtime;
+		DWORD dwWrite;
+		pDSBuf->lpVtbl->GetCurrentPosition(pDSBuf, &mmtime.u.sample, &dwWrite);
+
+		s = (int)(mmtime.u.sample - mmstarttime.u.sample);
+	}
+	else if (wav_init)
+	{
+		s = snd_sent * WAV_BUFFER_SIZE;
+	}
+
+	return (s >> sample16) & (dma.samples - 1);
 }
 
 // Makes sure dma.buffer is valid.
