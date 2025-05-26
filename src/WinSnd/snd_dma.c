@@ -9,9 +9,12 @@
 #include "snd_mix.h"
 #include "snd_win.h"
 #include "client.h"
+#include "g_local.h"
 #include "q_clientserver.h"
 #include "qcommon.h"
 #include "Vector.h"
+
+#define ENT_ATTEN_MASK	(255 - ENT_VOL_MASK) //mxd
 
 // Internal sound data & structures.
 channel_t channels[MAX_CHANNELS];
@@ -30,6 +33,14 @@ static qboolean s_registering;
 
 static int soundtime; // Sample PAIRS.
 int paintedtime; // Sample PAIRS.
+
+static float snd_attenuations[] = // H2
+{
+	0.0f,		// ATTN_NONE
+	0.0008f,	// ATTN_NORM
+	0.002f,		// ATTN_IDLE
+	0.006f		// ATTN_STATIC
+};
 
 // During registration it is possible to have more sounds than could actually be referenced during gameplay,
 // because we don't want to free anything until we are sure we won't need it.
@@ -50,6 +61,11 @@ cvar_t* s_khz;
 static cvar_t* s_show;
 static cvar_t* s_mixahead;
 cvar_t* s_primary;
+
+// H2: sound attenuation cvars.
+static cvar_t* s_attn_norm;
+static cvar_t* s_attn_idle;
+static cvar_t* s_attn_static;
 
 #pragma region ========================== Console commands ==========================
 
@@ -91,10 +107,10 @@ void S_Init(void)
 		s_testsound = Cvar_Get("s_testsound", "0", 0);
 		s_primary = Cvar_Get("s_primary", "0", CVAR_ARCHIVE);
 
-		// H2: extra attenuation cvars. Not used anywhere, though... --mxd
-		//s_attn_norm = Cvar_Get("s_attn_norm", "0.0008", 0);
-		//s_attn_idle = Cvar_Get("s_attn_idle", "0.002", 0);
-		//s_attn_static = Cvar_Get("s_attn_static", "0.006", 0);
+		// H2: extra attenuation cvars.
+		s_attn_norm = Cvar_Get("s_attn_norm", "0.0008", 0);
+		s_attn_idle = Cvar_Get("s_attn_idle", "0.002", 0);
+		s_attn_static = Cvar_Get("s_attn_static", "0.006", 0);
 
 		Cmd_AddCommand("play", S_Play);
 		Cmd_AddCommand("stopsound", S_StopAllSounds);
@@ -238,6 +254,17 @@ void S_EndRegistration(void)
 	s_registering = false;
 }
 
+static channel_t* S_PickChannel(int entnum, int entchannel)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
+static void S_SpatializeOrigin(vec3_t origin, float master_vol, float dist_mult, int* left_vol, int* right_vol)
+{
+	NOT_IMPLEMENTED
+}
+
 static void S_Spatialize(channel_t* ch)
 {
 	NOT_IMPLEMENTED
@@ -302,9 +329,80 @@ void S_StopAllSounds_Sounding(void) // H2
 		S_ClearBuffer();
 }
 
+// Entities with a sound field will generate looped sounds that are automatically started, stopped and merged together as the entities are sent to the client.
 static void S_AddLoopSounds(void)
 {
-	NOT_IMPLEMENTED
+	int sounds[MAX_EDICTS];
+	float attenuations[MAX_EDICTS]; //H2
+	float volumes[MAX_EDICTS]; //H2
+	
+	if ((int)cl_paused->value || cls.state != ca_active || !cl.sound_prepped)
+		return;
+
+	for (int i = 0; i < cl.frame.num_entities; i++)
+	{
+		const int num = (cl.frame.parse_entities + i) & (MAX_PARSE_ENTITIES - 1);
+		const entity_state_t* ent = &cl_parse_entities[num];
+		sounds[i] = ent->sound;
+		attenuations[i] = snd_attenuations[ent->sound_data & ENT_ATTEN_MASK]; //H2
+		volumes[i] = (float)(ent->sound_data & ENT_VOL_MASK); //H2
+	}
+
+	for (int i = 0; i < cl.frame.num_entities; i++)
+	{
+		if (sounds[i] == 0)
+			continue;
+
+		sfx_t* sfx = cl.sound_precache[sounds[i]];
+
+		if (sfx == NULL || sfx->cache == NULL)
+			continue; // Bad sound effect.
+
+		int num = (cl.frame.parse_entities + i) & (MAX_PARSE_ENTITIES - 1);
+		entity_state_t* ent = &cl_parse_entities[num];
+
+		// Find the total contribution of all sounds of this type.
+		vec3_t origin;
+		VectorAdd(ent->origin, ent->bmodel_origin, origin); // H2. Original logic does Vec3NotZero(bmodel_origin) check before adding, but who cares... --mxd.
+
+		int left_total;
+		int right_total;
+		S_SpatializeOrigin(origin, volumes[i], attenuations[i], &left_total, &right_total);
+
+		for (int j = i + 1; j < cl.frame.num_entities; j++)
+		{
+			if (sounds[j] != sounds[i])
+				continue;
+
+			sounds[j] = 0; // Don't check this again later.
+
+			num = (cl.frame.parse_entities + j) & (MAX_PARSE_ENTITIES - 1);
+			ent = &cl_parse_entities[num];
+
+			int left;
+			int right;
+			S_SpatializeOrigin(ent->origin, volumes[j], attenuations[j], &left, &right);
+
+			left_total += left;
+			right_total += right;
+		}
+
+		if (left_total == 0 && right_total == 0)
+			continue; // Not audible.
+
+		// Allocate a channel.
+		channel_t* ch = S_PickChannel(0, 0);
+
+		if (ch == NULL)
+			return;
+
+		ch->leftvol = min(255, left_total);
+		ch->rightvol = min(255, right_total);
+		ch->autosound = true; // Remove next frame.
+		ch->sfx = sfx;
+		ch->pos = paintedtime % sfx->cache->length;
+		ch->end = paintedtime + sfx->cache->length - ch->pos;
+	}
 }
 
 static void S_Update_(void) //TODO: rename to S_MixSound?
@@ -325,9 +423,12 @@ void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t right, con
 		return;
 	}
 
-	// Rebuild scale tables if volume is modified.
-	if (s_volume->modified)
-		S_InitScaletable();
+	//H2:
+	snd_attenuations[ATTN_NORM] = s_attn_norm->value;
+	snd_attenuations[ATTN_IDLE] = s_attn_idle->value;
+	snd_attenuations[ATTN_STATIC] = s_attn_static->value;
+
+	//H2: missing S_InitScaletable() call.
 
 	VectorCopy(origin, listener_origin);
 	VectorCopy(forward, listener_forward);
