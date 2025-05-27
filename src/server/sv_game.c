@@ -330,7 +330,7 @@ static qboolean PF_inPHS(const vec3_t p1, const vec3_t p2)
 	return CM_AreasConnected(area1, area2); // A door blocks sight?
 }
 
-static void PF_StartSound(edict_t* ent, const int channel, const int soundindex, const float volume, const float attenuation, const float timeofs)
+static void PF_StartSound(const edict_t* ent, const int channel, const int soundindex, const float volume, const float attenuation, const float timeofs)
 {
 	if (ent == NULL || soundindex == -1)
 		return;
@@ -341,15 +341,15 @@ static void PF_StartSound(edict_t* ent, const int channel, const int soundindex,
 		SV_StartSound(NULL, ent, channel, soundindex, volume, attenuation, timeofs);
 }
 
-static void PF_SoundEvent(const byte EventId, const float leveltime, edict_t* ent, const int channel, const int soundindex, const float volume, const float attenuation, const float timeofs) // H2
+static void PF_SoundEvent(const byte event_id, const float leveltime, const edict_t* ent, const int channel, const int soundindex, const float volume, const float attenuation, const float timeofs) // H2
 {
 	if (ent == NULL || soundindex == -1)
 		return;
 
 	if (volume > 1.0f)
-		SV_StartEventSound(EventId, leveltime, ent->s.origin, ent, channel, soundindex, 1.0f, attenuation, timeofs);
+		SV_StartEventSound(event_id, leveltime, ent->s.origin, ent, channel, soundindex, 1.0f, attenuation, timeofs);
 	else
-		SV_StartEventSound(EventId, leveltime, NULL, ent, channel, soundindex, volume, attenuation, timeofs);
+		SV_StartEventSound(event_id, leveltime, NULL, ent, channel, soundindex, volume, attenuation, timeofs);
 }
 
 static void PF_ChangeCDtrack(const edict_t* ent, const int track, const int loop) // H2
