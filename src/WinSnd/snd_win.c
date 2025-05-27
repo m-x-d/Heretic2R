@@ -375,7 +375,8 @@ static sndinitstat SNDDMA_InitDirect(void)
 			return SIS_FAILURE;
 		}
 
-		if (MessageBox(NULL, "The sound hardware is in use by another app.\n\nSelect Retry to try to start sound again or Cancel to run Heretic 2 with no sound.", "Sound not available", MB_RETRYCANCEL | MB_SETFOREGROUND | MB_ICONEXCLAMATION) != IDRETRY) // H3: Quake -> Heretic 2.
+		if (MessageBox(NULL, "The sound hardware is in use by another app.\n\nSelect Retry to try to start sound again or Cancel to run Heretic 2 with no sound.",
+			"Sound not available", MB_RETRYCANCEL | MB_SETFOREGROUND | MB_ICONEXCLAMATION) != IDRETRY) // H2: Quake -> Heretic 2.
 		{
 			Com_Printf("failed, hardware already in use\n");
 			return SIS_NOTAVAIL;
@@ -406,10 +407,135 @@ static sndinitstat SNDDMA_InitDirect(void)
 	return SIS_SUCCESS;
 }
 
+// Crappy windows multimedia base.
 static qboolean SNDDMA_InitWav(void)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	Com_Printf("Initializing wave sound\n");
+
+	snd_sent = 0;
+	snd_completed = 0;
+
+	dma.channels = 2;
+	dma.samplebits = 16;
+	dma.speed = (s_khz->value == 44.0f ? 44100 : 22050); // H2: no 11025 speed.
+
+	WAVEFORMATEX format;
+	format.wFormatTag = WAVE_FORMAT_PCM;
+	format.nChannels = (short)dma.channels;
+	format.wBitsPerSample = (short)dma.samplebits;
+	format.nSamplesPerSec = dma.speed;
+	format.nBlockAlign = format.nChannels * format.wBitsPerSample / 8;
+	format.cbSize = 0;
+	format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
+
+	// Open a waveform device for output using window callback.
+	Com_DPrintf("...opening waveform device: ");
+
+	MMRESULT hr;
+	while ((hr = waveOutOpen(&hWaveOut, WAVE_MAPPER, &format, 0, 0, CALLBACK_NULL)) != MMSYSERR_NOERROR)
+	{
+		if (hr != MMSYSERR_ALLOCATED)
+		{
+			Com_Printf("failed\n");
+			return false;
+		}
+
+		if (MessageBox(NULL, "The sound hardware is in use by another app.\n\nSelect Retry to try to start sound again or Cancel to run Heretic 2 with no sound.",
+			"Sound not available", MB_RETRYCANCEL | MB_SETFOREGROUND | MB_ICONEXCLAMATION) != IDRETRY) // H2: Quake 2 -> Heretic 2.
+		{
+			Com_Printf("failed, hardware already in use\n");
+			return false;
+		}
+	}
+
+	Com_DPrintf("ok\n");
+
+	// Allocate and lock memory for the waveform data. The memory for waveform data must be globally allocated with GMEM_MOVEABLE and GMEM_SHARE flags.
+	Com_DPrintf("...allocating waveform buffer: ");
+
+	gSndBufSize = WAV_BUFFERS * WAV_BUFFER_SIZE;
+	hData = GlobalAlloc(GMEM_MOVEABLE | GMEM_SHARE, gSndBufSize);
+
+	if (hData == NULL)
+	{
+		Com_Printf(" failed\n");
+		FreeSound();
+
+		return false;
+	}
+
+	Com_DPrintf("ok\n");
+
+	Com_DPrintf("...locking waveform buffer: ");
+	lpData = GlobalLock(hData);
+
+	if (lpData == NULL)
+	{
+		Com_Printf(" failed\n");
+		FreeSound();
+
+		return false;
+	}
+
+	memset(lpData, 0, gSndBufSize);
+	Com_DPrintf("ok\n");
+
+	// Allocate and lock memory for the header. This memory must also be globally allocated with GMEM_MOVEABLE and GMEM_SHARE flags.
+	Com_DPrintf("...allocating waveform header: ");
+	hWaveHdr = GlobalAlloc(GMEM_MOVEABLE | GMEM_SHARE, (DWORD)sizeof(WAVEHDR) * WAV_BUFFERS);
+
+	if (hWaveHdr == NULL)
+	{
+		Com_Printf("failed\n");
+		FreeSound();
+
+		return false;
+	}
+
+	Com_DPrintf("ok\n");
+
+	Com_DPrintf("...locking waveform header: ");
+	lpWaveHdr = (LPWAVEHDR)GlobalLock(hWaveHdr);
+
+	if (lpWaveHdr == NULL)
+	{
+		Com_Printf("failed\n");
+		FreeSound();
+
+		return false;
+	}
+
+	memset(lpWaveHdr, 0, sizeof(WAVEHDR) * WAV_BUFFERS);
+	Com_DPrintf("ok\n");
+
+	// After allocation, set up and prepare headers.
+	Com_DPrintf("...preparing headers: ");
+
+	for (int i = 0; i < WAV_BUFFERS; i++)
+	{
+		lpWaveHdr[i].dwBufferLength = WAV_BUFFER_SIZE;
+		lpWaveHdr[i].lpData = lpData + i * WAV_BUFFER_SIZE;
+
+		if (waveOutPrepareHeader(hWaveOut, lpWaveHdr + i, sizeof(WAVEHDR)) != MMSYSERR_NOERROR)
+		{
+			Com_Printf("failed\n");
+			FreeSound();
+
+			return false;
+		}
+	}
+
+	Com_DPrintf("ok\n");
+
+	dma.samples = (int)(gSndBufSize / (dma.samplebits / 8));
+	dma.samplepos = 0;
+	dma.submission_chunk = 512;
+	dma.buffer = (byte*)lpData;
+	sample16 = (dma.samplebits / 8) - 1;
+
+	wav_init = true;
+
+	return true;
 }
 
 qboolean SNDDMA_Init(void) //mxd. Returns int in original logic.
