@@ -499,10 +499,60 @@ void S_IssuePlaysound(playsound_t* ps)
 	S_FreePlaysound(ps);
 }
 
-static sfx_t* S_RegisterSexedSound(entity_state_t* ent, char* base)
+static sfx_t* S_RegisterSexedSound(const entity_state_t* ent, char* base)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	char model[MAX_QPATH];
+
+	// Determine what model the client is using.
+	model[0] = 0;
+	const int n = CS_PLAYERSKINS + ent->number - 1;
+
+	if (cl.configstrings[n][0] != 0)
+	{
+		char* p = strchr(cl.configstrings[n], '\\');
+
+		if (p != NULL)
+		{
+			strcpy_s(model, sizeof(model), p + 1); //mxd. strcpy -> strcpy_s.
+
+			p = strchr(model, '/');
+			if (p != NULL)
+				*p = 0;
+			else
+				strcpy_s(model, sizeof(model), "male"); // H2 //mxd. strcpy -> strcpy_s.
+		}
+	}
+
+	// If we can't figure it out, they're male.
+	if (model[0] == 0)
+		strcpy_s(model, sizeof(model), "male"); //mxd. strcpy -> strcpy_s.
+
+	// See if we already know of the model specific sound.
+	char sexed_filename[MAX_QPATH];
+	Com_sprintf(sexed_filename, sizeof(sexed_filename), "#players/%s/%s", model, base + 1);
+	struct sfx_s* sfx = S_FindName(sexed_filename, false);
+
+	if (sfx == NULL)
+	{
+		// No, so see if it exists.
+		FILE* f;
+		FS_FOpenFile(&sexed_filename[1], &f);
+
+		if (f != NULL)
+		{
+			// Yes, close the file and register it.
+			FS_FCloseFile(f);
+			sfx = S_RegisterSound(sexed_filename);
+		}
+		else
+		{
+			// No, revert to the sound in base/player/male folder.
+			Com_sprintf(sexed_filename, sizeof(sexed_filename), "player/male/%s", base + 1);
+			sfx = S_FindName(sexed_filename, true); // H2: S_AliasName() in Q2.
+		}
+	}
+
+	return sfx;
 }
 
 // Q2 counterpart.
