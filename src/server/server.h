@@ -180,62 +180,62 @@ extern edict_t* sv_player;
 extern qboolean is_local_client; // H2
 
 // sv_main.c
-void SV_DropClient(client_t* drop);
-void SV_UserinfoChanged(client_t* client);
-void SV_PrepWorldFrame(void);
+extern void SV_DropClient(client_t* drop);
+extern void SV_UserinfoChanged(client_t* client);
+extern void SV_PrepWorldFrame(void);
 
 // sv_ccmds.c
-void SV_ReadLevelFile(void);
-void SV_InitOperatorCommands(void);
-void SV_WipeSavegame(const char* savename);
+extern void SV_ReadLevelFile(void);
+extern void SV_InitOperatorCommands(void);
+extern void SV_WipeSavegame(const char* savename);
 
 // sv_entities.c
-void SV_WriteFrameToClient(client_t* client, sizebuf_t* msg);
-void SV_BuildClientFrame(client_t* client);
+extern void SV_WriteFrameToClient(client_t* client, sizebuf_t* msg);
+extern void SV_BuildClientFrame(client_t* client);
 
 // sv_init.c
-int SV_ModelIndex(const char* name);
-int SV_SoundIndex(const char* name);
-int SV_ImageIndex(const char* name);
-void SV_ModelRemove(const char* name); // H2
-void SV_SoundRemove(const char* name); // H2
-void SV_InitGame(void);
-qboolean SV_ValidateMapFilename(const char* level);
-void SV_Map(qboolean attractloop, const char* levelstring, qboolean loadgame);
+extern int SV_ModelIndex(const char* name);
+extern int SV_SoundIndex(const char* name);
+extern int SV_ImageIndex(const char* name);
+extern void SV_ModelRemove(const char* name); // H2
+extern void SV_SoundRemove(const char* name); // H2
+extern void SV_InitGame(void);
+extern qboolean SV_ValidateMapFilename(const char* level);
+extern void SV_Map(qboolean attractloop, const char* levelstring, qboolean loadgame);
 
 // sv_game.c
 extern game_export_t* ge;
 
-void SV_InitGameProgs(void);
-void SV_ShutdownGameProgs(void);
-qboolean PF_inPVS(const vec3_t p1, const vec3_t p2);
+extern void SV_InitGameProgs(void);
+extern void SV_ShutdownGameProgs(void);
+extern qboolean PF_inPVS(const vec3_t p1, const vec3_t p2);
 
 // sv_send.c
-void SV_ClientGameMessage(client_t* cl, int printlevel, int message_id); // H2
-void SV_ClientPrintf(client_t* cl, int printlevel, const char* fmt, ...);
-void SV_ClientColorPrintf(client_t* cl, int printlevel, byte color, const char* fmt, ...); // H2
-void SV_BroadcastPrintf(int printlevel, const char* fmt, ...);
-void SV_BroadcastCaption(int printlevel, short stringid);
-void SV_BroadcastObituary(int printlevel, short stringid, short client1, short client2);
-void SV_BroadcastCommand(char* fmt, ...);
-void SV_Multicast(const vec3_t origin, multicast_t to);
-void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
-void SV_StartEventSound(byte event_id, float leveltime, const vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs); // H2
-void SV_SendClientMessages(qboolean send_client_data); // H2: + 'send_client_data' arg
+extern void SV_ClientGameMessage(client_t* cl, int printlevel, int message_id); // H2
+extern void SV_ClientPrintf(client_t* cl, int printlevel, const char* fmt, ...);
+extern void SV_ClientColorPrintf(client_t* cl, int printlevel, byte color, const char* fmt, ...); // H2
+extern void SV_BroadcastPrintf(int printlevel, const char* fmt, ...);
+extern void SV_BroadcastCaption(int printlevel, short stringid);
+extern void SV_BroadcastObituary(int printlevel, short stringid, short client1, short client2);
+extern void SV_BroadcastCommand(char* fmt, ...);
+extern void SV_Multicast(const vec3_t origin, multicast_t to);
+extern void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
+extern void SV_StartEventSound(byte event_id, float leveltime, const vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs); // H2
+extern void SV_SendClientMessages(qboolean send_client_data); // H2: + 'send_client_data' arg
 
 // sv_user.c
-void SV_Nextserver(void);
-void SV_ExecuteClientMessage(client_t* cl);
+extern void SV_Nextserver(void);
+extern void SV_ExecuteClientMessage(client_t* cl);
 
 // sv_world.c
-void SV_ClearWorld(void);
-void SV_LinkEdict(edict_t* ent);
-void SV_UnlinkEdict(edict_t* ent);
-int SV_AreaEdicts(const vec3_t mins, const vec3_t maxs, edict_t** list, int maxcount, int areatype);
-int SV_FindEntitiesInBounds(const vec3_t mins, const vec3_t maxs, struct SinglyLinkedList_s* list, int areatype); // H2
-int SV_PointContents(const vec3_t p);
-void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, uint contentmask, trace_t* tr); // H2: different definition
-void SV_TraceBoundingForm(struct FormMove_s* formMove); // H2
-qboolean SV_ResizeBoundingForm(edict_t* self, struct FormMove_s* formMove); // H2
-int SV_GetContentsAtPoint(const vec3_t point); // H2
-qboolean SV_CheckDistances(const vec3_t origin, float dist); // H2
+extern void SV_ClearWorld(void);
+extern void SV_LinkEdict(edict_t* ent);
+extern void SV_UnlinkEdict(edict_t* ent);
+extern int SV_AreaEdicts(const vec3_t mins, const vec3_t maxs, edict_t** list, int maxcount, int areatype);
+extern int SV_FindEntitiesInBounds(const vec3_t mins, const vec3_t maxs, struct SinglyLinkedList_s* list, int areatype); // H2
+extern int SV_PointContents(const vec3_t p);
+extern void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, uint contentmask, trace_t* tr); // H2: different definition
+extern void SV_TraceBoundingForm(struct FormMove_s* formMove); // H2
+extern qboolean SV_ResizeBoundingForm(edict_t* self, struct FormMove_s* formMove); // H2
+extern int SV_GetContentsAtPoint(const vec3_t point); // H2
+extern qboolean SV_CheckDistances(const vec3_t origin, float dist); // H2
