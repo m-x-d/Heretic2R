@@ -219,8 +219,8 @@ void SV_BroadcastCaption(int printlevel, short stringid);
 void SV_BroadcastObituary(int printlevel, short stringid, short client1, short client2);
 void SV_BroadcastCommand(char* fmt, ...);
 void SV_Multicast(const vec3_t origin, multicast_t to);
-void SV_StartSound(vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
-void SV_StartEventSound(byte EventId, float leveltime, vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs); // H2
+void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
+void SV_StartEventSound(byte event_id, float leveltime, vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs); // H2
 void SV_SendClientMessages(qboolean send_client_data); // H2: + 'send_client_data' arg
 
 // sv_user.c
