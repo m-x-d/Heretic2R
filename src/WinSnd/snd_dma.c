@@ -72,9 +72,20 @@ static cvar_t* s_attn_static;
 
 #pragma region ========================== Console commands ==========================
 
-static void S_Play(void) //TODO: rename to S_Play_f?
+// Q2 counterpart.
+static void S_Play_f(void) //mxd. Named 'S_Play' in original logic.
 {
-	NOT_IMPLEMENTED
+	for (int i = 1; i < Cmd_Argc(); i++)
+	{
+		char name[256];
+		strcpy_s(name, sizeof(name), Cmd_Argv(i)); //mxd. strcpy -> strcpy_s.
+
+		if (strrchr(Cmd_Argv(i), '.') == NULL)
+			strcat_s(name, sizeof(name), ".wav"); //mxd. strcat -> strcat_s.
+
+		sfx_t* sfx = S_RegisterSound(name);
+		S_StartSound(NULL, cl.playernum + 1, 0, sfx, 1.0f, ATTN_NORM, 0.0f);
+	}
 }
 
 static void S_SoundList(void) //TODO: rename to S_SoundList_f?
@@ -115,7 +126,7 @@ void S_Init(void)
 		s_attn_idle = Cvar_Get("s_attn_idle", "0.002", 0);
 		s_attn_static = Cvar_Get("s_attn_static", "0.006", 0);
 
-		Cmd_AddCommand("play", S_Play);
+		Cmd_AddCommand("play", S_Play_f);
 		Cmd_AddCommand("stopsound", S_StopAllSounds);
 		Cmd_AddCommand("soundlist", S_SoundList);
 		Cmd_AddCommand("soundinfo", S_SoundInfo_f);
