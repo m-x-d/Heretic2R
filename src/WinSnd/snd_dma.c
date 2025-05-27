@@ -256,10 +256,43 @@ void S_EndRegistration(void)
 	s_registering = false;
 }
 
-static channel_t* S_PickChannel(int entnum, int entchannel)
+// Q2 counterpart.
+static channel_t* S_PickChannel(const int entnum, const int entchannel)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (entchannel < 0)
+		Com_Error(ERR_DROP, "S_PickChannel: entchannel<0");
+
+	// Check for replacement sound, or find the best one to replace.
+	int first_to_die = -1;
+	int life_left = 0x7fffffff;
+
+	for (int ch_idx = 0; ch_idx < MAX_CHANNELS; ch_idx++)
+	{
+		if (entchannel != 0 && channels[ch_idx].entnum == entnum && channels[ch_idx].entchannel == entchannel) // Channel 0 never overrides.
+		{
+			// Always override sound from same entity.
+			first_to_die = ch_idx;
+			break;
+		}
+
+		// Don't let monster sounds override player sounds.
+		if (channels[ch_idx].entnum == cl.playernum + 1 && entnum != cl.playernum + 1 && channels[ch_idx].sfx != NULL)
+			continue;
+
+		if (channels[ch_idx].end - paintedtime < life_left)
+		{
+			life_left = channels[ch_idx].end - paintedtime;
+			first_to_die = ch_idx;
+		}
+	}
+
+	if (first_to_die == -1)
+		return NULL;
+
+	channel_t* ch = &channels[first_to_die];
+	memset(ch, 0, sizeof(*ch));
+
+	return ch;
 }
 
 // Q2 counterpart.
