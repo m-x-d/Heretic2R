@@ -428,17 +428,17 @@ typedef struct playerinfo_s
 	// Inputs only.
 
 	// Client side function callbacks (approximating functionality of server function callbacks).
-	void (*CL_Sound)(byte EventId, vec3_t origin, int channel, char* soundname, float fvol, int attenuation, float timeofs);
+	void (*CL_Sound)(byte event_id, const vec3_t origin, int channel, const char* soundname, float fvol, int attenuation, float timeofs);
 	void (*CL_Trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int brushmask, int flags, trace_t* trace);
-	int (*CL_CreateEffect)(byte EventId, const void* owner, ushort type, int flags, const vec3_t position, const char* format, ...);
-	void (*CL_RemoveEffects)(byte EventId, const void* owner, int fx);
+	int (*CL_CreateEffect)(byte event_id, const void* owner, ushort type, int flags, const vec3_t position, const char* format, ...);
+	void (*CL_RemoveEffects)(byte event_id, const void* owner, int fx);
 	
 	// Server (game) function callbacks (approximating functionality of client-side function callbacks).
 	void (*G_L_Sound)(edict_t* entity, int sound_num);
-	void (*G_Sound)(byte EventId, float leveltime, edict_t* entity, int channel, int sound_num, float volume, float attenuation, float timeofs);
+	void (*G_Sound)(byte event_id, float leveltime, const edict_t* entity, int channel, int sound_num, float volume, float attenuation, float timeofs);
 	void (*G_Trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, uint contentmask, trace_t* trace);
-	void (*G_CreateEffect)(byte EventId, entity_state_t* state, int type, int flags, const vec3_t origin, const char* format, ...);
-	void (*G_RemoveEffects)(byte Eventid, entity_state_t* state, int type);
+	void (*G_CreateEffect)(byte event_id, entity_state_t* state, int type, int flags, const vec3_t origin, const char* format, ...);
+	void (*G_RemoveEffects)(byte event_id, entity_state_t* state, int type);
 
 	// Server (game) function callbacks that have no client side equivalent.
 	int (*G_SoundIndex)(const char* name);
@@ -478,7 +478,7 @@ typedef struct playerinfo_s
 	void (*PlayerActionSpellFireball)(const playerinfo_t* playerinfo);
 	void (*PlayerActionSpellBlast)(const playerinfo_t* playerinfo);
 	void (*PlayerActionSpellArray)(const playerinfo_t* playerinfo, int value);
-	void (*PlayerActionSpellSphereCreate)(const playerinfo_t* playerinfo, qboolean* Charging);
+	void (*PlayerActionSpellSphereCreate)(const playerinfo_t* playerinfo, qboolean* charging);
 	void (*PlayerActionSpellFirewall)(const playerinfo_t* playerinfo);
 	void (*PlayerActionSpellBigBall)(const playerinfo_t* playerinfo);
 	void (*PlayerActionRedRainBowAttack)(const playerinfo_t* playerinfo);
