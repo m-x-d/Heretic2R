@@ -272,8 +272,16 @@ static void S_Spatialize(channel_t* ch)
 
 static playsound_t* S_AllocPlaysound(void)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	playsound_t* ps = s_freeplays.next;
+
+	if (ps == &s_freeplays)
+		return NULL; // No free playsounds.
+
+	// Unlink from freelist.
+	ps->prev->next = ps->next;
+	ps->next->prev = ps->prev;
+
+	return ps;
 }
 
 void S_IssuePlaysound(playsound_t* ps)
