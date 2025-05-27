@@ -14,8 +14,8 @@ cvar_t* m_item_none;
 
 static void Objectives_MenuDraw(void)
 {
-	char* message1 = NULL;
-	char* message2 = NULL;
+	const char* message1 = NULL;
+	const char* message2 = NULL;
 	const char* sound1 = NULL;
 
 	// Draw menu BG.
