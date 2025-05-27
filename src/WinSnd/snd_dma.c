@@ -391,9 +391,18 @@ static playsound_t* S_AllocPlaysound(void)
 	return ps;
 }
 
+// Q2 counterpart.
 static void S_FreePlaysound(playsound_t* ps)
 {
-	NOT_IMPLEMENTED
+	// Unlink from channel.
+	ps->prev->next = ps->next;
+	ps->next->prev = ps->prev;
+
+	// Add to free list.
+	ps->next = s_freeplays.next;
+	s_freeplays.next->prev = ps;
+	ps->prev = &s_freeplays;
+	s_freeplays.next = ps;
 }
 
 // Take the next playsound and begin it on the channel.
