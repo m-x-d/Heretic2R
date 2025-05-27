@@ -8,6 +8,7 @@
 #include "snd_dma.h"
 #include "snd_mem.h"
 #include "snd_local.h"
+#include "g_local.h"
 
 #define PAINTBUFFER_SIZE	2048
 portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
@@ -118,14 +119,42 @@ static void S_TransferPaintBuffer(const int endtime)
 	}
 }
 
-static void S_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int count, int offset)
+static void S_PaintChannelFrom8(channel_t* ch, const sfxcache_t* sc, const int count, const int offset)
 {
-	NOT_IMPLEMENTED
+	const int leftvol =  min(255, ch->leftvol) & ENT_VOL_MASK; // H2: &ENT_VOL_MASK.
+	const int rightvol = min(255, ch->rightvol) & ENT_VOL_MASK; // H2: &ENT_VOL_MASK.
+
+	//ZOID-- >>11 has been changed to >>3, >>11 didn't make much sense as it would always be zero.
+	const int* lscale = snd_scaletable[leftvol >> 3];
+	const int* rscale = snd_scaletable[rightvol >> 3];
+	const byte* sfx = &sc->data[ch->pos];
+
+	portable_samplepair_t* samp = &paintbuffer[offset];
+	for (int i = 0; i < count; i++, samp++)
+	{
+		const int data = sfx[i];
+		samp->left += lscale[data];
+		samp->right += rscale[data];
+	}
+
+	ch->pos += count;
 }
 
-static void S_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int count, int offset)
+// Q2 counterpart.
+static void S_PaintChannelFrom16(channel_t* ch, const sfxcache_t* sc, const int count, const int offset)
 {
-	NOT_IMPLEMENTED
+	const int leftvol = ch->leftvol * snd_vol;
+	const int rightvol = ch->rightvol * snd_vol;
+	const short* sfx = (short*)sc->data + ch->pos;
+
+	portable_samplepair_t* samp = &paintbuffer[offset];
+	for (int i = 0; i < count; i++, samp++)
+	{
+		samp->left +=  (sfx[i] * leftvol) >> 8;
+		samp->right += (sfx[i] * rightvol) >> 8;
+	}
+
+	ch->pos += count;
 }
 
 void S_PaintChannels(const int endtime)
