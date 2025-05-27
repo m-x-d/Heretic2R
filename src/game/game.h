@@ -144,9 +144,9 @@ typedef struct
 	void (*captionprintf)(const edict_t* ent, short msg);
 
 	// Sound playing routines.
-	void (*sound)(edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
-	void (*soundevent)(byte EventId, float leveltime, edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
-	void (*positioned_sound)(vec3_t origin, const edict_t* ent, int channel, int soundinedex, float volume, float attenuation, float timeofs);
+	void (*sound)(const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
+	void (*soundevent)(byte event_id, float leveltime, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
+	void (*positioned_sound)(const vec3_t origin, const edict_t* ent, int channel, int soundinedex, float volume, float attenuation, float timeofs);
 
 	// Config strings hold all the index strings, the lightstyles and misc data, like the sky definition and cdtrack.
 	// All of the current configstrings are sent to clients when they connect and changes are sent to all connected clients.
@@ -186,7 +186,7 @@ typedef struct
 	void (*Pmove)(pmove_t* pmove, qboolean server); // Player movement code, common with client prediction.
 
 	// New_Physics
-	int (*FindEntitiesInBounds)(vec3_t mins, vec3_t maxs, struct SinglyLinkedList_s* list, int areatype);
+	int (*FindEntitiesInBounds)(const vec3_t mins, const vec3_t maxs, struct SinglyLinkedList_s* list, int areatype);
 	void (*TraceBoundingForm)(struct FormMove_s* formMove);
 	qboolean (*ResizeBoundingForm)(edict_t* self, struct FormMove_s* formMove);
 	int (*GetContentsAtPoint)(const vec3_t point);
@@ -200,14 +200,14 @@ typedef struct
 	void (*WriteShort)(int c);
 	void (*WriteLong)(int c);
 	void (*WriteFloat)(float f);
-	void (*WriteString)(char* s);
-	void (*WritePosition)(vec3_t pos);	// Some fractional bits.
-	void (*WriteDir)(vec3_t pos);		// Single byte encoded, very coarse.
+	void (*WriteString)(const char* s);
+	void (*WritePosition)(const vec3_t pos); // Some fractional bits.
+	void (*WriteDir)(const vec3_t pos); // Single byte encoded, very coarse.
 	void (*WriteAngle)(float f);
 	void (*CreateEffect)(entity_state_t* ent, int type, int flags, const vec3_t origin, const char* format, ...);
 	void (*RemoveEffects)(entity_state_t* ent, int type);
-	void (*CreateEffectEvent)(byte EventId, entity_state_t* ent, int type, int flags, const vec3_t origin, const char* format, ...);
-	void (*RemoveEffectsEvent)(byte EventId, entity_state_t* ent, int type);
+	void (*CreateEffectEvent)(byte event_id, entity_state_t* ent, int type, int flags, const vec3_t origin, const char* format, ...);
+	void (*RemoveEffectsEvent)(byte event_id, entity_state_t* ent, int type);
 	int (*CreatePersistantEffect)(const entity_state_t* ent, int type, int flags, const vec3_t origin, const char* format, ...);
 
 	// Removes the effect from the server's persistent effect list. The effect is not removed on the client.
