@@ -229,9 +229,9 @@ void SV_CreateEffectEvent(const byte event_id, entity_state_t* ent, const int fx
 	}
 }
 
-void SV_RemoveEffectsEvent(const byte EventId, entity_state_t* ent, const int type)
+void SV_RemoveEffectsEvent(const byte event_id, entity_state_t* ent, const int type)
 {
-	SV_CreateEffectEvent(EventId, ent, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "s", type);
+	SV_CreateEffectEvent(event_id, ent, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "s", type);
 }
 
 int SV_CreatePersistantEffect(const entity_state_t* ent, const int type, int flags, const vec3_t origin, const char* format, ...)
