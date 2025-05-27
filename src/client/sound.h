@@ -6,6 +6,7 @@
 
 #pragma once
 
+#ifndef SNDLIB_DECLSPEC //mxd. So sound library could use this header...
 extern cvar_t* snd_dll;
 
 // Sound library function pointers.
@@ -38,7 +39,7 @@ extern void (*SNDEAX_SetEnvironmentLevel)(int level);
 // Sound module logic.
 void SndDll_Init(void);
 void SndDll_FreeLibrary(void);
+#endif
 
-// The sound code makes callbacks to the client for entitiy position information,
-// so entities can be dynamically re-spatialized.
+// The sound code makes callbacks to the client for entitiy position information, so entities can be dynamically re-spatialized.
 GAME_DECLSPEC void CL_GetEntitySoundOrigin(int ent, vec3_t org);
