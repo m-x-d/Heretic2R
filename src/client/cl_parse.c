@@ -754,11 +754,10 @@ static void CL_ParseStartSoundPacket(void)
 {
 	int channel;
 	int ent;
-	float attenuation;
+	int attenuation;
 	float volume;
 	float ofs;
 	float* pos;
-	vec3_t pos_v;
 	int event_id;
 	float leveltime;
 
@@ -783,9 +782,9 @@ static void CL_ParseStartSoundPacket(void)
 		volume = 1.0f;
 
 	if (flags & SND_ATTENUATION)
-		attenuation = (float)MSG_ReadByte(&net_message);
+		attenuation = MSG_ReadByte(&net_message);
 	else
-		attenuation = 1.0f;
+		attenuation = ATTN_NORM;
 
 	if (flags & SND_OFFSET)
 		ofs = (float)MSG_ReadByte(&net_message) / 1000.0f;
@@ -811,6 +810,7 @@ static void CL_ParseStartSoundPacket(void)
 
 	if (flags & SND_POS) // Positioned in space.
 	{
+		vec3_t pos_v;
 		MSG_ReadPos(&net_message, pos_v);
 		pos = pos_v;
 	}
@@ -825,7 +825,7 @@ static void CL_ParseStartSoundPacket(void)
 		return;
 
 	if (!(int)cl_predict->value || !have_prediction_info || sound_event_id_time_array[event_id] > leveltime || sound_event_id_time_array[event_id] == 0.0f)
-		S_StartSound(pos, ent, channel, sfx, volume, Q_ftol(attenuation), ofs);
+		S_StartSound(pos, ent, channel, sfx, volume, attenuation, ofs);
 
 	if (have_prediction_info && sound_event_id_time_array[event_id] <= leveltime) // H2
 		sound_event_id_time_array[event_id] = 0.0f;
