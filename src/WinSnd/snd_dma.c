@@ -88,9 +88,42 @@ static void S_Play_f(void) //mxd. Named 'S_Play' in original logic.
 	}
 }
 
-static void S_SoundList(void) //TODO: rename to S_SoundList_f?
+// Q2 counterpart.
+static void S_SoundList_f(void) //mxd. Named 'S_SoundList' in original logic.
 {
-	NOT_IMPLEMENTED
+	int total = 0;
+
+	sfx_t* sfx = &known_sfx[0];
+	for (int i = 0; i < num_sfx; i++, sfx++)
+	{
+		if (sfx->registration_sequence == 0)
+			continue;
+
+		const sfxcache_t* sc = sfx->cache;
+
+		if (sc != NULL)
+		{
+			const int size = sc->length * sc->width * (sc->stereo + 1);
+			total += size;
+
+			if (sc->loopstart >= 0)
+				Com_Printf("L");
+			else
+				Com_Printf(" ");
+
+			Com_Printf("(%2db) %6i : %s\n", sc->width * 8, size, sfx->name);
+		}
+		else if (sfx->name[0] == '*')
+		{
+			Com_Printf("  placeholder : %s\n", sfx->name);
+		}
+		else
+		{
+			Com_Printf("  not loaded  : %s\n", sfx->name);
+		}
+	}
+
+	Com_Printf("Total resident: %i bytes\n", total);
 }
 
 static void S_SoundInfo_f(void)
@@ -128,7 +161,7 @@ void S_Init(void)
 
 		Cmd_AddCommand("play", S_Play_f);
 		Cmd_AddCommand("stopsound", S_StopAllSounds);
-		Cmd_AddCommand("soundlist", S_SoundList);
+		Cmd_AddCommand("soundlist", S_SoundList_f);
 		Cmd_AddCommand("soundinfo", S_SoundInfo_f);
 
 		if (SNDDMA_Init())
