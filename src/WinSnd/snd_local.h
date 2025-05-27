@@ -46,7 +46,7 @@ typedef struct playsound_s
 	struct playsound_s* next;
 	sfx_t* sfx;
 	float volume;
-	float attenuation;
+	int attenuation_index; // H2: attenuation index (ATTN_NONE, ATTN_STATIC etc.) instead of actual value.
 	int entnum;
 	int entchannel;
 	qboolean fixed_origin; // Use origin field instead of entnum's origin.

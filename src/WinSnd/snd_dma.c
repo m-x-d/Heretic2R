@@ -329,9 +329,45 @@ static playsound_t* S_AllocPlaysound(void)
 	return ps;
 }
 
-void S_IssuePlaysound(playsound_t* ps)
+static void S_FreePlaysound(playsound_t* ps)
 {
 	NOT_IMPLEMENTED
+}
+
+// Take the next playsound and begin it on the channel.
+// This is never called directly by S_Play*, but only by the update loop.
+void S_IssuePlaysound(playsound_t* ps)
+{
+	if ((int)s_show->value)
+		Com_Printf("Issue %i\n", ps->begin);
+
+	// Pick a channel to play on.
+	channel_t* ch = S_PickChannel(ps->entnum, ps->entchannel);
+
+	if (ch == NULL)
+	{
+		S_FreePlaysound(ps);
+		return;
+	}
+
+	// Spatialize.
+	ch->dist_mult = snd_attenuations[ps->attenuation_index]; // H2
+	ch->master_vol = (int)ps->volume;
+	ch->entnum = ps->entnum;
+	ch->entchannel = ps->entchannel;
+	ch->sfx = ps->sfx;
+	ch->flags = ps->attenuation_index; // H2. Never used...
+	VectorCopy(ps->origin, ch->origin);
+	ch->fixed_origin = ps->fixed_origin;
+	ch->pos = 0;
+
+	S_Spatialize(ch);
+
+	const sfxcache_t* sc = S_LoadSound(ch->sfx);
+	ch->end = paintedtime + sc->length;
+
+	// Free the playsound.
+	S_FreePlaysound(ps);
 }
 
 static sfx_t* S_RegisterSexedSound(entity_state_t* ent, char* base)
@@ -376,7 +412,7 @@ void S_StartSound(const vec3_t origin, const int entnum, const int entchannel, s
 
 	ps->entnum = entnum;
 	ps->entchannel = entchannel;
-	ps->attenuation = (float)attenuation;
+	ps->attenuation_index = attenuation;
 	ps->volume = fvol * 255.0f;
 	ps->sfx = sfx;
 
