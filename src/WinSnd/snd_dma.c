@@ -522,9 +522,18 @@ void S_StartSound(const vec3_t origin, const int entnum, const int entchannel, s
 	ps->prev->next = ps;
 }
 
+// Q2 counterpart.
 void S_StartLocalSound(const char* sound)
 {
-	NOT_IMPLEMENTED
+	if (!sound_started)
+		return;
+
+	sfx_t* sfx = S_RegisterSound(sound);
+
+	if (sfx != NULL)
+		S_StartSound(NULL, cl.playernum + 1, 0, sfx, 1.0f, ATTN_NORM, 0.0f);
+	else
+		Com_Printf("S_StartLocalSound: can't cache %s\n", sound);
 }
 
 static void S_ClearBuffer(void)
