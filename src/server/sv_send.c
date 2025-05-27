@@ -413,7 +413,7 @@ void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, const i
 
 //mxd. Parsed by CL_ParseStartSoundPacket().
 // If channel & 8, the sound will be sent to everyone, not just things in the PHS.
-void SV_StartEventSound(const byte event_id, const float leveltime, vec3_t origin, const edict_t* ent, int channel, const int soundindex, const float volume, const float attenuation, const float timeofs) // H2
+void SV_StartEventSound(const byte event_id, const float leveltime, const vec3_t origin, const edict_t* ent, int channel, const int soundindex, const float volume, const float attenuation, const float timeofs) // H2
 {
 	vec3_t origin_v;
 	qboolean use_phs;
