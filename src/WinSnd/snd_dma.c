@@ -14,7 +14,9 @@
 #include "qcommon.h"
 #include "Vector.h"
 
-#define ENT_ATTEN_MASK	(255 - ENT_VOL_MASK) //mxd
+// Only begin attenuating sound volumes when outside the FULLVOLUME range.
+#define SOUND_FULLVOLUME	80
+#define ENT_ATTEN_MASK		(255 - ENT_VOL_MASK) //mxd
 
 // Internal sound data & structures.
 channel_t channels[MAX_CHANNELS];
@@ -260,9 +262,51 @@ static channel_t* S_PickChannel(int entnum, int entchannel)
 	return NULL;
 }
 
-static void S_SpatializeOrigin(vec3_t origin, float master_vol, float dist_mult, int* left_vol, int* right_vol)
+// Q2 counterpart.
+// Used for spatializing channels and autosounds.
+static void S_SpatializeOrigin(const vec3_t origin, const float master_vol, const float dist_mult, int* left_vol, int* right_vol)
 {
-	NOT_IMPLEMENTED
+	if (cls.state != ca_active)
+	{
+		*left_vol = 255;
+		*right_vol = 255;
+
+		return;
+	}
+
+	// calculate stereo separation and distance attenuation.
+	vec3_t source_vec;
+	VectorSubtract(origin, listener_origin, source_vec);
+
+	float dist = VectorNormalize(source_vec);
+	dist = max(0.0f, dist - SOUND_FULLVOLUME); // Close enough to be at full volume.
+	dist *= dist_mult; // Different attenuation levels.
+
+	float lscale;
+	float rscale;
+
+	if (dma.channels == 1 || dist_mult == 0.0f)
+	{
+		// No attenuation = no spatialization.
+		rscale = 1.0f;
+		lscale = 1.0f;
+	}
+	else
+	{
+		const float dot = DotProduct(listener_right, source_vec);
+
+		rscale = 0.5f * (1.0f + dot);
+		lscale = 0.5f * (1.0f - dot);
+	}
+
+	// Add in distance effect.
+	float scale = (1.0f - dist) * rscale;
+	*right_vol = (int)(master_vol * scale);
+	*right_vol = max(0, *right_vol);
+
+	scale = (1.0f - dist) * lscale;
+	*left_vol = (int)(master_vol * scale);
+	*left_vol = max(0, *left_vol);
 }
 
 static void S_Spatialize(channel_t* ch)
@@ -270,6 +314,7 @@ static void S_Spatialize(channel_t* ch)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart.
 static playsound_t* S_AllocPlaysound(void)
 {
 	playsound_t* ps = s_freeplays.next;
