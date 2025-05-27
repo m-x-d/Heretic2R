@@ -126,9 +126,23 @@ static void S_SoundList_f(void) //mxd. Named 'S_SoundList' in original logic.
 	Com_Printf("Total resident: %i bytes\n", total);
 }
 
+// Q2 counterpart.
 static void S_SoundInfo_f(void)
 {
-	NOT_IMPLEMENTED
+	if (!sound_started)
+	{
+		Com_Printf("Sound system not started\n");
+		return;
+	}
+
+	Com_Printf("sounddir: %s\n", s_sounddir->string); // H2
+	Com_Printf("%5d stereo\n", dma.channels - 1);
+	Com_Printf("%5d samples\n", dma.samples);
+	Com_Printf("%5d samplepos\n", dma.samplepos);
+	Com_Printf("%5d samplebits\n", dma.samplebits);
+	Com_Printf("%5d submission_chunk\n", dma.submission_chunk);
+	Com_Printf("%5d speed\n", dma.speed);
+	Com_Printf("0x%x dma buffer\n", dma.buffer);
 }
 
 #pragma endregion
