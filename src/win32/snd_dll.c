@@ -21,12 +21,12 @@ void (*S_StartSound)(const vec3_t origin, int entnum, int entchannel, struct sfx
 void (*S_StartLocalSound)(const char* sound);
 void (*S_StopAllSounds)(void);
 void (*S_StopAllSounds_Sounding)(void);
-void (*S_Update)(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up);
+void (*S_Update)(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up);
 void (*S_Activate)(qboolean active);
 void (*S_BeginRegistration)(void);
 struct sfx_s* (*S_RegisterSound)(const char* name);
 void (*S_EndRegistration)(void);
-struct sfx_s* (*S_FindName)(char* name, qboolean create);
+struct sfx_s* (*S_FindName)(const char* name, qboolean create);
 
 #ifdef __A3D_GEOM
 void (*S_A3D_ExportRenderGeom)(refexport_t* re);
