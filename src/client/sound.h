@@ -20,14 +20,14 @@ extern void (*S_StartLocalSound)(const char* sound);
 extern void (*S_StopAllSounds)(void);
 extern void (*S_StopAllSounds_Sounding)(void);
 
-extern void (*S_Update)(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up);
+extern void (*S_Update)(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up);
 extern void (*S_Activate)(qboolean active);
 
 extern void (*S_BeginRegistration)(void);
 extern struct sfx_s* (*S_RegisterSound)(const char* name);
 extern void (*S_EndRegistration)(void);
 
-extern struct sfx_s* (*S_FindName)(char* name, qboolean create);
+extern struct sfx_s* (*S_FindName)(const char* name, qboolean create);
 
 #ifdef __A3D_GEOM
 extern void (*S_A3D_ExportRenderGeom)(refexport_t* re);
