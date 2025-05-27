@@ -57,10 +57,26 @@ static LPDIRECTSOUNDBUFFER pDSPBuf;
 
 static HINSTANCE hInstDS;
 
-static const char* DSoundError(int error)
+// Q2 counterpart.
+static const char* DSoundError(const int error)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	switch (error)
+	{
+		case DSERR_BUFFERLOST:
+			return "DSERR_BUFFERLOST";
+
+		case DSERR_INVALIDCALL:
+			return "DSERR_INVALIDCALLS";
+
+		case DSERR_INVALIDPARAM:
+			return "DSERR_INVALIDPARAM";
+
+		case DSERR_PRIOLEVELNEEDED:
+			return "DSERR_PRIOLEVELNEEDED";
+
+		default:
+			return "unknown";
+	}
 }
 
 static qboolean DS_CreateBuffers(void)
