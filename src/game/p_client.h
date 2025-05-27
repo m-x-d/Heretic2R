@@ -23,7 +23,7 @@ extern void ClientBegin(edict_t* ent);
 extern void ClientBeginServerFrame(edict_t* ent);
 
 extern void PlayerPain(edict_t* self, edict_t* other, float kick, int damage);
-extern void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point);
+extern void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point);
 extern void PlayerDismember(edict_t* self, edict_t* other, int damage, HitLocation_t hl);
 extern void PlayerDecapitate(edict_t* self, edict_t* other); //mxd
 extern void ResetPlayerBaseNodes(edict_t* ent);

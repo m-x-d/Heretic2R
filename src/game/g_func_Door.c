@@ -307,7 +307,7 @@ static void FuncDoorBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_bl
 	}
 }
 
-static void FuncDoorDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'door_killed' in original logic.
+static void FuncDoorDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'door_killed' in original logic.
 {
 	for (edict_t* ent = self->teammaster; ent != NULL; ent = ent->teamchain)
 	{
@@ -789,7 +789,7 @@ static void FuncDoorSecretBlocked(edict_t* self, edict_t* other) //mxd. Named 'd
 	}
 }
 
-static void FuncDoorSecretDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'door_secret_die' in original logic.
+static void FuncDoorSecretDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'door_secret_die' in original logic.
 {
 	self->takedamage = DAMAGE_NO;
 	FuncDoorSecretUse(self, attacker, attacker);

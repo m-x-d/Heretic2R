@@ -1020,7 +1020,7 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 	self->next_post_think = level.time + 0.05f;
 }
 
-static void MorcalavinDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'morcalavin_resist_death' in original logic.
+static void MorcalavinDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'morcalavin_resist_death' in original logic.
 {
 	self->msgHandler = DeadMsgHandler;
 

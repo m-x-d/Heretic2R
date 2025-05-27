@@ -452,7 +452,7 @@ static void PriestessProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Na
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void PriestessProjectile2Die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'priestess_proj2_die' in original logic.
+static void PriestessProjectile2Die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'priestess_proj2_die' in original logic.
 {
 	gi.sound(self, CHAN_AUTO, sounds[SND_BUGHIT], 1.0f, ATTN_NORM, 0.0f);
 	gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE3_EXPLODE);

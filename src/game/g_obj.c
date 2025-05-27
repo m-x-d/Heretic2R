@@ -216,7 +216,7 @@ static void ObjBarrelExplodeThink(edict_t* self) //mxd. Named 'barrel_explode_th
 	G_SetToFree(self);
 }
 
-static void ObjBarrelDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'barrel_explode_think' in original logic.
+static void ObjBarrelDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'barrel_explode_think' in original logic.
 {
 	self->think = ObjBarrelExplodeThink;
 	self->nextthink = level.time + FRAMETIME;
@@ -605,7 +605,7 @@ static void ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damag
 		PlagueElfDyingSound(self, DYING_ELF_PAIN_VOICE);
 }
 
-static void ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'dying_elf_die' in original logic.
+static void ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'dying_elf_die' in original logic.
 {
 	gi.sound(self, CHAN_VOICE, gi.soundindex(va("monsters/plagueElf/death%i.wav", irand(1, 3))), 1.0f, ATTN_NORM, 0.0f);
 	BecomeDebris(self);

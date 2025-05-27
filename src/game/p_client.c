@@ -904,7 +904,7 @@ static void PlayerMakeGib(edict_t* self, edict_t* attacker)
 	self->takedamage = DAMAGE_NO;
 }
 
-void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'player_die' in original logic.
+void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'player_die' in original logic.
 {
 	//FIXME: Make sure you can still dismember and gib player while dying.
 	assert(self->client != NULL);
@@ -1222,7 +1222,7 @@ void InitBodyQue(void)
 	}
 }
 
-static void PlayerBodyDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'player_body_die' in original logic.
+static void PlayerBodyDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'player_body_die' in original logic.
 {
 	gi.sound(self, CHAN_BODY, gi.soundindex("misc/fleshbreak.wav"), 1.0f, ATTN_NORM, 0.0f);
 

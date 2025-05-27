@@ -15,5 +15,5 @@ extern void HighPriestessStaticsInit(void);
 static void PriestessProjectile1Blocked(edict_t* self, trace_t* trace);
 static void PriestessProjectile1DrunkenThink(edict_t* self);
 static void PriestessProjectile1Think(edict_t* self);
-static void PriestessProjectile2Die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point);
+static void PriestessProjectile2Die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point);
 static void PriestessProjectile2Think(edict_t* self);
