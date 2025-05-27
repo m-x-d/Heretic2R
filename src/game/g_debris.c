@@ -210,7 +210,7 @@ void SprayDebris(const edict_t* self, const vec3_t spot, byte num_chunks, float 
 
 #pragma region ========================== Body part / weapon throw logic ==========================
 
-void ThrowBodyPart(const edict_t* self, const vec3_t* spot, const int body_part, float damage, const int frame) //TODO: change 'damage' arg type to int.
+void ThrowBodyPart(edict_t* self, const vec3_t* spot, const int body_part, float damage, const int frame) //TODO: change 'damage' arg type to int.
 {
 	// Add blood spew to sever loc and blood trail on flying part.
 	if (damage > 0.0f)
