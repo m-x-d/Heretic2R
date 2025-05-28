@@ -6,8 +6,6 @@
 
 #pragma once
 
-//define PARANOID // Speed sapping error checking
-
 #include <math.h>
 #include <string.h>
 #include <stdarg.h>
@@ -514,30 +512,30 @@ qboolean CL_CheckOrDownloadFile(const char* filename);
 
 extern uint net_transmit_size; //mxd
 
-void CL_AddNetgraph(void);
-int CL_ParseEntityBits(byte* bf, byte* bfNonZero);
-void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, int number, const byte* bits);
-void CL_ParseFrame(void);
+extern void CL_AddNetgraph(void);
+extern int CL_ParseEntityBits(byte* bf, byte* bfNonZero);
+extern void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, int number, const byte* bits);
+extern void CL_ParseFrame(void);
 
-void CL_AddEntities(void); //mxd
-void CL_ClearSkeletalEntities(void); //mxd
-void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int brushmask, int flags, trace_t* t); //mxd
+extern void CL_AddEntities(void); //mxd
+extern void CL_ClearSkeletalEntities(void); //mxd
+extern void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int brushmask, int flags, trace_t* t); //mxd
 
-void CL_PrepRefresh(void);
-void CL_RegisterSounds(void);
+extern void CL_PrepRefresh(void);
+extern void CL_RegisterSounds(void);
 
-void CL_Quit_f(void);
+extern void CL_Quit_f(void);
 
 // cl_main.c
 extern refexport_t re; // Interface to refresh DLL.
 
-void CL_RequestNextDownload(void);
+extern void CL_RequestNextDownload(void);
 
-void CL_Disconnect(void);
-void CL_Disconnect_f(void);
-void CL_OnServerDisconnected(void); //mxd
-void CL_PingServers_f(void);
-void CL_Snd_Restart_f(void);
+extern void CL_Disconnect(void);
+extern void CL_Disconnect_f(void);
+extern void CL_OnServerDisconnected(void); //mxd
+extern void CL_PingServers_f(void);
+extern void CL_Snd_Restart_f(void);
 
 // cl_input.c
 typedef struct
@@ -557,20 +555,20 @@ extern kbutton_t in_down; //mxd
 extern qboolean in_do_autoaim; //mxd
 extern qboolean command_down; //mxd
 
-void CL_InitInput(void);
-void CL_SendCmd(void);
-void CL_ClearState(void);
-void CL_ReadPackets(void);
-void CL_BaseMove(usercmd_t* cmd);
+extern void CL_InitInput(void);
+extern void CL_SendCmd(void);
+extern void CL_ClearState(void);
+extern void CL_ReadPackets(void);
+extern void CL_BaseMove(usercmd_t* cmd);
 
-void IN_CenterView(void);
+extern void IN_CenterView(void);
 
-char* Key_KeynumToString(int keynum);
+extern char* Key_KeynumToString(int keynum);
 
 // cl_demo.c
-void CL_WriteDemoMessage(void);
-void CL_Stop_f(void);
-void CL_Record_f(void);
+extern void CL_WriteDemoMessage(void);
+extern void CL_Stop_f(void);
+extern void CL_Record_f(void);
 
 // cl_parse.c
 #define MAX_PLAYER_MODELS	32 //mxd
@@ -579,20 +577,20 @@ extern char* svc_strings[256];
 extern char client_string[128]; //mxd
 extern float sound_event_id_time_array[127]; //mxd
 
-void CL_ParseServerMessage(void);
-void CL_LoadClientinfo(clientinfo_t* ci, const char* s, int index);
-void SHOWNET(char* s);
-void CL_ParseClientinfo(int player);
-int COLOUR(const cvar_t* cvar);
+extern void CL_ParseServerMessage(void);
+extern void CL_LoadClientinfo(clientinfo_t* ci, const char* s, int index);
+extern void SHOWNET(char* s);
+extern void CL_ParseClientinfo(int player);
+extern int COLOUR(const cvar_t* cvar);
 
 // cl_player.c
-void CL_ResetPlayerInfo(void);
+extern void CL_ResetPlayerInfo(void);
 
 // cl_view.c
 extern int frame_index; //mxd
 
-void V_Init(void);
-void V_RenderView(float stereo_separation);
+extern void V_Init(void);
+extern void V_RenderView(float stereo_separation);
 
 // cl_prediction.c
 extern int pred_pm_flags; //mxd
@@ -600,24 +598,24 @@ extern int pred_pm_w_flags; //mxd
 extern qboolean trace_ignore_player; //mxd
 extern qboolean trace_ignore_camera; //mxd
 
-void CL_CheckPredictionError(void);
+extern void CL_CheckPredictionError(void);
 
-// menus
-void M_Init(void);
-void M_Keydown(int key);
-void M_Draw(void);
-void M_Menu_Main_f(void);
-void M_ForceMenuOff(void);
-void M_AddToServerList(const netadr_t* adr, const char* info);
+// Menus.
+extern void M_Init(void);
+extern void M_Keydown(int key);
+extern void M_Draw(void);
+extern void M_Menu_Main_f(void);
+extern void M_ForceMenuOff(void);
+extern void M_AddToServerList(const netadr_t* adr, const char* info);
 
 // cl_inv.c
 void CL_ParseInventory(void);
 
 // cl_pred.c
-int CL_PMpointcontents(const vec3_t point); //mxd
-void CL_PredictMovement(void);
-void CL_StorePredictInfo(void); //mxd
-void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr);
+extern int CL_PMpointcontents(const vec3_t point); //mxd
+extern void CL_PredictMovement(void);
+extern void CL_StorePredictInfo(void); //mxd
+extern void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr);
 
 // sys_win.c //mxd
 extern uint sys_frame_time;

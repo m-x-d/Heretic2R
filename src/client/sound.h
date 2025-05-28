@@ -37,9 +37,9 @@ extern void (*SNDEAX_SetEnvironment)(int env_index);
 extern void (*SNDEAX_SetEnvironmentLevel)(int level);
 
 // Sound module logic.
-void SndDll_Init(void);
-void SndDll_FreeLibrary(void);
+extern void SndDll_Init(void);
+extern void SndDll_FreeLibrary(void);
 #endif
 
 // The sound code makes callbacks to the client for entitiy position information, so entities can be dynamically re-spatialized.
-GAME_DECLSPEC void CL_GetEntitySoundOrigin(int ent, vec3_t org);
+GAME_DECLSPEC extern void CL_GetEntitySoundOrigin(int ent, vec3_t org);
