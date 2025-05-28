@@ -681,7 +681,7 @@ static void AddServerEntities(const frame_t* frame)
 			// So client effects can play with owners entity.
 			cent->entity = ent;
 
-			if (cent->effects && !(effects & (EF_DISABLE_ALL_CFX | EF_ALWAYS_ADD_EFFECTS)))
+			if (cent->effects != NULL && !(effects & (EF_DISABLE_ALL_CFX | EF_ALWAYS_ADD_EFFECTS)))
 				num_owned_inview += AddEffectsToView(&cent->effects, cent);
 
 			ent++;
