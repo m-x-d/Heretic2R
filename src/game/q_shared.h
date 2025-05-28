@@ -20,7 +20,7 @@
 #include "q_Typedef.h"
 #include "Debug.h" //mxd
 
-// Angle indexes
+// Angle indexes.
 #define PITCH				0		// up / down
 #define YAW					1		// left / right
 #define ROLL				2		// fall over
@@ -65,18 +65,18 @@
 #define COLOUR_COPY(src, dst)			((dst).r=(src).r, (dst).g=(src).g, (dst).b=(src).b)
 #define COLOUR_COPYA(src, dst)			((dst).r=(src).r, (dst).g=(src).g, (dst).b=(src).b, (dst).a=(src).a)
 
-H2COMMON_API int Q_log2(int val);
-H2COMMON_API int Q_sign(int val); //mxd
-H2COMMON_API float Q_signf(float val); //mxd
+H2COMMON_API extern int Q_log2(int val);
+H2COMMON_API extern int Q_sign(int val); //mxd
+H2COMMON_API extern float Q_signf(float val); //mxd
 
-H2COMMON_API void ClearBounds(vec3_t mins, vec3_t maxs);
-H2COMMON_API void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs);
+H2COMMON_API extern void ClearBounds(vec3_t mins, vec3_t maxs);
+H2COMMON_API extern void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs);
 
-H2COMMON_API float anglemod(float a);
-H2COMMON_API float anglemod_old(float a);
-H2COMMON_API float LerpAngle(float a1, float a2, float frac);
+H2COMMON_API extern float anglemod(float a);
+H2COMMON_API extern float anglemod_old(float a);
+H2COMMON_API extern float LerpAngle(float a1, float a2, float frac);
 
-int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, const struct cplane_s *plane);
+extern int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, const struct cplane_s *plane);
 
 #define MAX_COLORS	33
 
@@ -122,40 +122,40 @@ typedef enum
 	P_FRAGNAME,
 } PalIdx_t;
 
-H2COMMON_API char* COM_SkipPath(char* pathname);
-H2COMMON_API void COM_StripExtension(const char* in, char* out);
-H2COMMON_API void COM_FileBase(const char* in, char* out);
-H2COMMON_API void COM_FilePath(const char* in, char* out);
-H2COMMON_API void COM_DefaultExtension(char* path, const char* extension);
+H2COMMON_API extern char* COM_SkipPath(char* pathname);
+H2COMMON_API extern void COM_StripExtension(const char* in, char* out);
+H2COMMON_API extern void COM_FileBase(const char* in, char* out);
+H2COMMON_API extern void COM_FilePath(const char* in, char* out);
+H2COMMON_API extern void COM_DefaultExtension(char* path, const char* extension);
 
-H2COMMON_API char* COM_Parse(char** data_p);
-H2COMMON_API void Com_sprintf(char* dest, int size, const char* fmt, ...);
-H2COMMON_API void Com_PageInMemory(const byte *buffer, int size); //TODO: unused. Remove?
+H2COMMON_API extern char* COM_Parse(char** data_p);
+H2COMMON_API extern void Com_sprintf(char* dest, int size, const char* fmt, ...);
+H2COMMON_API extern void Com_PageInMemory(const byte *buffer, int size); //TODO: unused. Remove?
 
 
-H2COMMON_API short BigShort(short l);
-H2COMMON_API int BigLong(int l);
-H2COMMON_API float BigFloat(float f);
+H2COMMON_API extern short BigShort(short l);
+H2COMMON_API extern int BigLong(int l);
+H2COMMON_API extern float BigFloat(float f);
 
 #define LittleShort(x)	(x)
 #define LittleLong(x)	(x)
 #define LittleFloat(x)	(x)
 
-H2COMMON_API float Clamp(float src, float min, float max);
-H2COMMON_API int ClampI(int src, int min, int max);
-H2COMMON_API float Approach(float curr, float dest, float rate);
-H2COMMON_API char* va(const char* format, ...);
+H2COMMON_API extern float Clamp(float src, float min, float max);
+H2COMMON_API extern int ClampI(int src, int min, int max);
+H2COMMON_API extern float Approach(float curr, float dest, float rate);
+H2COMMON_API extern char* va(const char* format, ...);
 
-// Key / value info strings
+// Key / value info strings.
 #define MAX_INFO_KEY		64
 #define MAX_INFO_VALUE		64
 #define MAX_INFO_STRING		512
 
-H2COMMON_API char* Info_ValueForKey(const char* s, const char* key);
-H2COMMON_API void Info_RemoveKey(char* s, const char* key);
-H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* value);
-H2COMMON_API qboolean Info_Validate(const char* s);
-H2COMMON_API void Set_Com_Printf(void (*toSet)(const char* fmt, ...));
+H2COMMON_API extern char* Info_ValueForKey(const char* s, const char* key);
+H2COMMON_API extern void Info_RemoveKey(char* s, const char* key);
+H2COMMON_API extern void Info_SetValueForKey(char* s, const char* key, const char* value);
+H2COMMON_API extern qboolean Info_Validate(const char* s);
+H2COMMON_API extern void Set_Com_Printf(void (*toSet)(const char* fmt, ...));
 
 #pragma region ========================== SYSTEM SPECIFIC ==========================
 
@@ -165,22 +165,22 @@ struct cplane_s;
 extern "C"
 {
 #endif
-extern H2COMMON_API const vec3_t vec3_origin;
-extern H2COMMON_API const vec3_t vec3_up;
+H2COMMON_API extern const vec3_t vec3_origin;
+H2COMMON_API extern const vec3_t vec3_up;
 #ifdef __cplusplus
 }
 #endif
 
 extern int curtime; // Time returned by last Sys_Milliseconds.
 
-int Sys_Milliseconds(void);
-void Sys_Mkdir(const char* path);
+extern int Sys_Milliseconds(void);
+extern void Sys_Mkdir(const char* path);
 
 // Large block stack allocation routines.
-void* Hunk_Begin(int maxsize);
-void* Hunk_Alloc(int size);
-void Hunk_Free(void* buf);
-int Hunk_End(void);
+extern void* Hunk_Begin(int maxsize);
+extern void* Hunk_Alloc(int size);
+extern void Hunk_Free(void* buf);
+extern int Hunk_End(void);
 
 // Directory searching.
 #define SFF_ARCH	0x01
@@ -190,29 +190,26 @@ int Hunk_End(void);
 #define SFF_SYSTEM	0x10
 
 // Pass in an attribute mask of things you wish to REJECT.
-char* Sys_FindFirst(const char* path, uint musthave, uint canthave);
-char* Sys_FindNext(uint musthave, uint canthave);
-void Sys_FindClose(void);
+extern char* Sys_FindFirst(const char* path, uint musthave, uint canthave);
+extern char* Sys_FindNext(uint musthave, uint canthave);
+extern void Sys_FindClose(void);
 
-GAME_DECLSPEC void Sys_Error(const char* error, ...);
+GAME_DECLSPEC extern void Sys_Error(const char* error, ...);
 
 #ifdef __cplusplus //mxd. Needed, so code in game/ds.cpp could build...
 extern "C"
 {
 #endif
-GAME_DECLSPEC void Com_Printf(const char* fmt, ...);
+GAME_DECLSPEC extern void Com_Printf(const char* fmt, ...);
 #ifdef __cplusplus
 }
 #endif
 
-GAME_DECLSPEC void Com_ColourPrintf(PalIdx_t colour, const char* fmt, ...);
+GAME_DECLSPEC extern void Com_ColourPrintf(PalIdx_t colour, const char* fmt, ...);
 
 #pragma endregion
 
 #pragma region ========================== CVARS (console variables) ==========================
-
-#ifndef CVAR
-#define CVAR
 
 #define CVAR_ARCHIVE	1	// Set to cause it to be saved to vars.rc.
 #define CVAR_USERINFO	2	// Added to userinfo  when changed.
@@ -232,11 +229,9 @@ typedef struct cvar_s
 	struct cvar_s* next;
 } cvar_t;
 
-#endif // CVAR
-
 // Creates the variable if it doesn't exist, or returns the existing one if it exists.
 // The value will not be changed, but flags will be ORed in that allows variables to be unarchived without needing bitflags.
-GAME_DECLSPEC cvar_t* Cvar_Get(const char* var_name, const char* var_value, int flags);
+GAME_DECLSPEC extern cvar_t* Cvar_Get(const char* var_name, const char* var_value, int flags);
 
 #pragma endregion
 
@@ -263,7 +258,7 @@ typedef struct
 	int skin;
 } fmnodeinfo_t;
 
-// Flags
+// Flags.
 #define FMNI_USE_FRAME			0x1		//TODO: unused
 #define FMNI_USE_COLOR			0x2
 #define FMNI_USE_SKIN			0x4
@@ -276,7 +271,7 @@ typedef struct
 #pragma region ========================== Contents flags ==========================
 
 // Lower bits are stronger, and will eat weaker brushes completely.
-#define CONTENTS_EMPTY			0x00000000	// Nothing
+#define CONTENTS_EMPTY			0x00000000	// Nothing.
 #define CONTENTS_SOLID			0x00000001	// An eye is never valid in a solid.
 #define CONTENTS_WINDOW			0x00000002	// Translucent, but not watery.
 #define CONTENTS_ILLUSIONARY	0x00000004  // Was CONTENTS_AUX.
@@ -357,11 +352,11 @@ typedef struct
 #define SURF_QUAKE			0x4000		// Rock surface up and down when quake value on.
 
 //mxd. Helper define to check for non-lightmapped surfaces.
-#define SURF_FULLBRIGHT		(SURF_SKY | SURF_TRANS33 | SURF_TRANS66 | SURF_WARP | SURF_TALL_WALL) // H2: extra SURF_TALL_WALL flag
+#define SURF_FULLBRIGHT		(SURF_SKY | SURF_TRANS33 | SURF_TRANS66 | SURF_WARP | SURF_TALL_WALL) // H2: extra SURF_TALL_WALL flag.
 
 #pragma endregion
 
-// gi.BoxEdicts() can return a list of either solid or trigger entities
+// gi.BoxEdicts() can return a list of either solid or trigger entities.
 // FIXME: eliminate AREA_ distinction?
 #define AREA_SOLID		1
 #define AREA_TRIGGERS	2
@@ -370,26 +365,16 @@ typedef struct cplane_s
 {
 	vec3_t normal;
 	float dist;
-	byte type;		// For fast side tests
+	byte type;		// For fast side tests.
 	byte signbits;	// signx + (signy << 1) + (signz << 1)
 	byte pad[2];
 } cplane_t;
-
-// Structure offset for asm code	//TODO: mxd. Unused? 
-#define CPLANE_NORMAL_X			0
-#define CPLANE_NORMAL_Y			4
-#define CPLANE_NORMAL_Z			8
-#define CPLANE_DIST				12
-#define CPLANE_TYPE				16
-#define CPLANE_SIGNBITS			17
-#define CPLANE_PAD0				18
-#define CPLANE_PAD1				19
 
 typedef struct cmodel_s
 {
 	vec3_t mins;
 	vec3_t maxs;
-	vec3_t origin; // For sounds or lights
+	vec3_t origin; // For sounds or lights.
 	int headnode;
 } cmodel_t;
 
@@ -426,7 +411,7 @@ typedef enum
 	PM_INTERMISSION,	// An existing remote camera view is already underway.
 } pmtype_t;
 
-// pmove->pm_flags
+// pmove->pm_flags.
 #define PMF_STANDSTILL		0x0001
 #define PMF_ON_GROUND		0x0004
 #define PMF_TIME_LAND		0x0008	// pm_time is time before re-jump.
@@ -454,10 +439,10 @@ typedef struct
 	pmtype_t pm_type;
 	short origin[3];	// 12.3
 	short velocity[3];	// 12.3
-	byte pm_flags;		// ducked, jump_held, etc
-	byte w_flags;		// water state
-	byte c_flags;		// collision
-	byte pm_time;		// each unit = 8 ms
+	byte pm_flags;		// Ducked, jump_held, etc.
+	byte w_flags;		// Water state.
+	byte c_flags;		// Collision.
+	byte pm_time;		// Each unit = 8 ms.
 	short gravity;
 
 	// Added to command angles to get view direction. Changed by spawns, rotating objects and teleporters.
@@ -539,7 +524,7 @@ typedef struct
 	struct edict_s* self;
 } pmove_t;
 
-// entity_state_t->renderfx flags
+// entity_state_t->renderfx flags.
 #define RF_MINLIGHT			0x00000001		// Always have some light (viewmodel).
 #define RF_REFLECTION		0x00000002		// Use GL spherical mapping, if available.
 #define RF_WEAPONMODEL		0x00000004		// Only draw through eyes.
@@ -568,7 +553,7 @@ typedef struct
 
 #define RF_TRANS_ANY		(RF_TRANS_ADD | RF_TRANS_GHOST | RF_TRANSLUCENT)
 
-// player_state_t->refdef flags
+// player_state_t->refdef flags.
 #define RDF_UNDERWATER		0x00000001		// Warp the screen as appropriate.
 #define RDF_NOWORLDMODEL	0x00000002		// Used for player configuration screen.
 
@@ -999,7 +984,7 @@ typedef enum DoorSoundID_e
 	DS_MAX
 } DoorSoundID_t;
 
-// EAX sound presets
+// EAX sound presets.
 enum
 {
 	EAX_ENVIRONMENT_GENERIC,	// Factory default.
