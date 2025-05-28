@@ -5,6 +5,7 @@
 //
 
 #include "../ref_gl/gl_local.h"
+#include "../launcher/resource.h"
 #include "glw_win.h"
 
 #define WINDOW_CLASS_NAME "Heretic II R" // H2: 'Heretic 2'
@@ -28,7 +29,7 @@ qboolean VID_CreateWindow(const int width, const int height, const qboolean full
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = glw_state.hInstance;
-	wc.hIcon = LoadIcon(glw_state.hInstance, MAKEINTRESOURCE(103)); // Q2: 0
+	wc.hIcon = LoadIcon(glw_state.hInstance, MAKEINTRESOURCE(IDI_ICON1)); // Q2: 0
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = GetSysColorBrush(COLOR_GRAYTEXT); //mxd. Use GetSysColorBrush().
 	wc.lpszMenuName = NULL;
