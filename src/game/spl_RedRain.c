@@ -19,7 +19,7 @@
 
 static void RedRainRemove(edict_t* self)
 {
-	gi.RemoveEffects(&self->s, 0); //mxd. Type 0 means remove all effects.
+	gi.RemoveEffects(&self->s, FX_REMOVE_EFFECTS);
 	G_SetToFree(self);
 }
 

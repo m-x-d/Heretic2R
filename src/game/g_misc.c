@@ -830,7 +830,7 @@ static void SoundAmbientUse(edict_t* self, edict_t* other, edict_t* activator) /
 	if (self->count != 0) // This is just a flag to show it's on.
 	{
 		self->count = 0;
-		gi.RemoveEffects(&self->s, 0);
+		gi.RemoveEffects(&self->s, FX_REMOVE_EFFECTS);
 	}
 	else
 	{

@@ -13,7 +13,7 @@
 typedef enum FX_Types_e
 {
 	// NOTE: We currently have 126 client effects, we cannot exceed 32768 - ha !! Like we'll ever reach that!
-	FX_REMOVE_EFFECTS = 0,			// Special fx type for removing client fx.
+	FX_REMOVE_EFFECTS = 0,			// Special fx type for removing client fx. Means "remove all effects" when used by gi.RemoveEffects().
 	FX_TEST,						
 	FX_EXPLOSION1,					
 	FX_EXPLOSION2,					

@@ -274,7 +274,7 @@ static void TriggerPuzzleUse(edict_t* self, edict_t* other, edict_t* activator) 
 				puzzle->solid = SOLID_NOT;
 
 				// Once picked up, the item is gone forever, so remove it's client effect(s).
-				gi.RemoveEffects(&puzzle->s, 0);
+				gi.RemoveEffects(&puzzle->s, FX_REMOVE_EFFECTS);
 
 				// The persistent part is removed from the server here.
 				G_SetToFree(puzzle);

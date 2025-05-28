@@ -165,7 +165,7 @@ static void InsectGlobeOfOuchinessGrowThink(edict_t* self) //mxd. Named 'GlobeOf
 {
 	if (self->owner->s.effects & EF_DISABLE_EXTRA_FX)
 	{
-		gi.RemoveEffects(&self->s, 0);
+		gi.RemoveEffects(&self->s, FX_REMOVE_EFFECTS);
 		G_FreeEdict(self);
 
 		return;

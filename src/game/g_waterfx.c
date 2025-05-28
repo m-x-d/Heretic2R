@@ -24,7 +24,7 @@ static void EnvWaterDripUse(edict_t* self, edict_t* other, edict_t* activator) /
 {
 	if (self->PersistantCFX > 0)
 	{
-		gi.RemoveEffects(&self->s, 0);
+		gi.RemoveEffects(&self->s, FX_REMOVE_EFFECTS);
 		self->PersistantCFX = 0;
 	}
 	else

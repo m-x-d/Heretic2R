@@ -401,7 +401,7 @@ static void Touch_Item(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t
 	else
 	{
 		ent->solid = SOLID_NOT; // Going away for good, so make it noclipping.
-		gi.RemoveEffects(&ent->s, 0); // Once picked up, the item is gone forever, so remove it's client effect(s).
+		gi.RemoveEffects(&ent->s, FX_REMOVE_EFFECTS); // Once picked up, the item is gone forever, so remove it's client effect(s).
 		G_SetToFree(ent); // The persistent part is removed from the server here.
 	}
 }

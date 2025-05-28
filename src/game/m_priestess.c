@@ -999,7 +999,7 @@ void priestess_dead(edict_t* self)
 		self->PersistantCFX = 0;
 	}
 
-	gi.RemoveEffects(&self->s, 0);
+	gi.RemoveEffects(&self->s, FX_REMOVE_EFFECTS);
 	gi.linkentity(self);
 
 	self->think = G_FreeEdict;
