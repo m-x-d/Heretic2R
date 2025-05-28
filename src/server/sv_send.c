@@ -121,21 +121,21 @@ void SV_BroadcastObituary(const int printlevel, const short stringid, const shor
 }
 
 // Q2 counterpart
-void SV_BroadcastCommand(char* fmt, ...)
+void SV_BroadcastCommand(const char* fmt, ...)
 {
+	if (sv.state == ss_dead)
+		return;
+
 	va_list argptr;
 	char string[1024];
 
-	if (sv.state != ss_dead)
-	{
-		va_start(argptr, fmt);
-		vsprintf_s(string, sizeof(string), fmt, argptr); //mxd. vsprintf -> vsprintf_s
-		va_end(argptr);
+	va_start(argptr, fmt);
+	vsprintf_s(string, sizeof(string), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
 
-		MSG_WriteByte(&sv.multicast, svc_stufftext);
-		MSG_WriteString(&sv.multicast, string);
-		SV_Multicast(NULL, MULTICAST_ALL_R);
-	}
+	MSG_WriteByte(&sv.multicast, svc_stufftext);
+	MSG_WriteString(&sv.multicast, string);
+	SV_Multicast(NULL, MULTICAST_ALL_R);
 }
 
 // Sends the contents of sv.multicast to a subset of the clients, then clears sv.multicast.

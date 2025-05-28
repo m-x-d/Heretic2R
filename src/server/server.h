@@ -217,7 +217,7 @@ extern void SV_ClientColorPrintf(client_t* cl, int printlevel, byte color, const
 extern void SV_BroadcastPrintf(int printlevel, const char* fmt, ...);
 extern void SV_BroadcastCaption(int printlevel, short stringid);
 extern void SV_BroadcastObituary(int printlevel, short stringid, short client1, short client2);
-extern void SV_BroadcastCommand(char* fmt, ...);
+extern void SV_BroadcastCommand(const char* fmt, ...);
 extern void SV_Multicast(const vec3_t origin, multicast_t to);
 extern void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
 extern void SV_StartEventSound(byte event_id, float leveltime, const vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs); // H2
