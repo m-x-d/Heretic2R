@@ -177,12 +177,12 @@ void RemoveEffects(centity_t* owner, int type, const int flags, vec3_t origin)
 {
 	assert(owner != NULL);
 
-	if (owner->effects != NULL) //TODO: This check occasionally fails, but it should not.
-	{
-		short fx;
-		fxi.GetEffect(owner, flags, clientEffectSpawners[FX_REMOVE_EFFECTS].formatString, &fx);
+	// Need to parse server message even if owner has no effects attached.
+	short fx;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_REMOVE_EFFECTS].formatString, &fx);
+
+	if (owner->effects != NULL) //mxd. Original game logic calls gi.RemoveEffects() without checking if there are any effects attached.
 		RemoveEffectTypeList(&owner->effects, fx, owner);
-	}
 }
 
 void RegisterSounds(void) {} //TODO: remove?
