@@ -11,7 +11,7 @@
 
 glwstate_t glw_state;
 
-qboolean GLimp_InitGL(void); // VID_CreateWindow forward declaration
+static qboolean GLimp_InitGL(void); // VID_CreateWindow forward declaration.
 
 qboolean VID_CreateWindow(const int width, const int height, const qboolean fullscreen)
 {
@@ -21,8 +21,8 @@ qboolean VID_CreateWindow(const int width, const int height, const qboolean full
 	int exstyle;
 	int x;
 	int y;
-	
-	// Register the frame class
+
+	// Register the frame class.
 	wc.style = CS_OWNDC; // 0 in Q2
 	wc.lpfnWndProc = (WNDPROC)glw_state.wndproc;
 	wc.cbClsExtra = 0;
@@ -258,38 +258,38 @@ static void ReleaseContexts(void)
 	}
 }
 
-//mxd. Original H2 logic does extra strlwr on gl_driver->string before calling strstr
-qboolean GLimp_InitGL(void)
+//mxd. Original H2 logic does extra strlwr on gl_driver->string before calling strstr.
+static qboolean GLimp_InitGL(void)
 {
 	PIXELFORMATDESCRIPTOR pfd =
 	{
-		sizeof(PIXELFORMATDESCRIPTOR),	// Size of this pfd
-		1,								// Version number
-		PFD_DRAW_TO_WINDOW |			// Support window
-		PFD_SUPPORT_OPENGL |			// Support OpenGL
-		PFD_DOUBLEBUFFER,				// Double buffered
-		PFD_TYPE_RGBA,					// RGBA type
-		24,								// 24-bit color depth
-		0, 0, 0, 0, 0, 0,				// Color bits ignored
-		0,								// No alpha buffer
-		0,								// Shift bit ignored
-		0,								// No accumulation buffer
-		0, 0, 0, 0, 					// Accum bits ignored
-		32,								// 32-bit z-buffer
-		0,								// No stencil buffer
-		0,								// No auxiliary buffer
-		PFD_MAIN_PLANE,					// Main layer
-		0,								// Reserved
-		0, 0, 0							// Layer masks ignored
+		sizeof(PIXELFORMATDESCRIPTOR),	// Size of this pfd.
+		1,								// Version number.
+		PFD_DRAW_TO_WINDOW |			// Support window.
+		PFD_SUPPORT_OPENGL |			// Support OpenGL.
+		PFD_DOUBLEBUFFER,				// Double buffered.
+		PFD_TYPE_RGBA,					// RGBA type.
+		24,								// 24-bit color depth.
+		0, 0, 0, 0, 0, 0,				// Color bits ignored.
+		0,								// No alpha buffer.
+		0,								// Shift bit ignored.
+		0,								// No accumulation buffer.
+		0, 0, 0, 0, 					// Accum bits ignored.
+		32,								// 32-bit z-buffer.
+		0,								// No stencil buffer.
+		0,								// No auxiliary buffer.
+		PFD_MAIN_PLANE,					// Main layer.
+		0,								// Reserved.
+		0, 0, 0							// Layer masks ignored.
 	};
 
-	//mxd. Don't set PFD_STEREO
+	//mxd. Don't set PFD_STEREO.
 	gl_state.stereo_enabled = false;
 
-	//mxd. We are not running on a minidriver
+	//mxd. We are not running on a minidriver.
 	glw_state.minidriver = false;
 
-	// Get a DC for the specified window
+	// Get a DC for the specified window.
 	if (glw_state.hDC != NULL)
 		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - non-NULL DC exists\n");
 
@@ -300,7 +300,7 @@ qboolean GLimp_InitGL(void)
 		return false;
 	}
 
-	//mxd. Ignore minidriver logic
+	//mxd. Ignore minidriver logic.
 	const int pixelformat = ChoosePixelFormat(glw_state.hDC, &pfd);
 	if (pixelformat == 0)
 	{
@@ -324,7 +324,7 @@ qboolean GLimp_InitGL(void)
 		return false;
 	}
 
-	// Startup the OpenGL subsystem by creating a context and making it current
+	// Startup the OpenGL subsystem by creating a context and making it current.
 	glw_state.hGLRC = qwglCreateContext(glw_state.hDC);
 
 	if (glw_state.hGLRC == NULL)
@@ -341,9 +341,9 @@ qboolean GLimp_InitGL(void)
 		return false;
 	}
 
-	//mxd. Skip VerifyDriver() logic
+	//mxd. Skip VerifyDriver() logic.
 
-	// Print out PFD specifics
+	// Print out PFD specifics.
 	ri.Con_Printf(PRINT_ALL, "GL PFD: color(%d-bits) Z(%d-bit)\n", pfd.cColorBits, pfd.cDepthBits);
 	return true;
 }
@@ -351,14 +351,14 @@ qboolean GLimp_InitGL(void)
 // Q2 counterpart (in original H2 .dll)
 void GLimp_BeginFrame(const float camera_separation)
 {
-	//mxd. Skip gl_bitdepth / allowdisplaydepthchange logic
-	//mxd. Skip stereo rendering logic
+	//mxd. Skip gl_bitdepth / allowdisplaydepthchange logic.
+	//mxd. Skip stereo rendering logic.
 	qglDrawBuffer(GL_BACK);
 }
 
 void GLimp_EndFrame(void)
 {
-	//mxd. Missing: qglGetError() logic
+	//mxd. Missing: qglGetError() logic.
 
 	if (!_stricmp(gl_drawbuffer->string, "GL_BACK") && !qwglSwapBuffers(glw_state.hDC))
 		ri.Sys_Error(ERR_FATAL, "GLimp_EndFrame() - SwapBuffers() failed!\n");
