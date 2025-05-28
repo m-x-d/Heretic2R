@@ -129,7 +129,8 @@ void SV_CreateEffect(entity_state_t* ent, const int fx_type, int flags, const ve
 
 void SV_RemoveEffects(entity_state_t* ent, const int type)
 {
-	SV_CreateEffect(ent, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "s", type);
+	if (ent->clientEffects.numEffects > 0) //mxd. Don't remove effects if we have none attached.
+		SV_CreateEffect(ent, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "s", type);
 }
 
 //mxd. Parsed by ParseEffects() in ClientEffects/Main.c
