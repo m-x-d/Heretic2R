@@ -17,7 +17,7 @@ extern ResourceManager_t EffectsBufferMngr;
 extern int num_persistant_effects;
 extern PerEffectsBuffer_t persistant_effects[MAX_PERSISTANT_EFFECTS];
 
-extern int num_effects_buffers;
+extern int effects_buffer_index;
 extern int clfx_buffer_offset;
 
 void SV_CreateEffect(entity_state_t* ent, int fx_type, int flags, const vec3_t origin, const char* format, ...);

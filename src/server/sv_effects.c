@@ -20,10 +20,17 @@ PerEffectsBuffer_t persistant_effects[MAX_PERSISTANT_EFFECTS];
 int clfx_buffer_offset;
 static byte clfx_buffer[4096];
 
-int num_effects_buffers;
-static EffectsBuffer_t effects_buffers[256];
-static vec3_t effects_positions[256];
-static qboolean is_broadcast_effect[256];
+#define MAX_EFFECT_BUFFERS	256 //mxd
+
+typedef struct EffectsBufferInfo_s //mxd
+{
+	EffectsBuffer_t buffer;
+	vec3_t position;
+	qboolean is_broadcast;
+} EffectsBufferInfo_t;
+
+int effects_buffer_index;
+static EffectsBufferInfo_t effects_buffers[MAX_EFFECT_BUFFERS];
 
 void SV_CreateEffect(entity_state_t* ent, const int fx_type, int flags, const vec3_t origin, const char* format, ...)
 {
@@ -61,7 +68,7 @@ void SV_CreateEffect(entity_state_t* ent, const int fx_type, int flags, const ve
 	}
 	else
 	{
-		clfx = &effects_buffers[num_effects_buffers];
+		clfx = &effects_buffers[effects_buffer_index].buffer;
 		clfx->buf = clfx_buffer;
 		clfx->freeBlock = clfx_buffer_offset;
 
@@ -92,7 +99,7 @@ void SV_CreateEffect(entity_state_t* ent, const int fx_type, int flags, const ve
 		MSG_WriteShort(&sb, fx_type);
 	}
 
-	is_broadcast_effect[num_effects_buffers] = broadcast;
+	effects_buffers[effects_buffer_index].is_broadcast = broadcast;
 
 	if (!(flags & CEF_OWNERS_ORIGIN))
 	{
@@ -120,10 +127,10 @@ void SV_CreateEffect(entity_state_t* ent, const int fx_type, int flags, const ve
 		clfx->bufSize = sb.cursize;
 
 		if (!(flags & CEF_BROADCAST))
-			VectorCopy(origin, effects_positions[num_effects_buffers]);
+			VectorCopy(origin, effects_buffers[effects_buffer_index].position);
 
 		clfx_buffer_offset += sb.cursize;
-		num_effects_buffers++;
+		effects_buffer_index++;
 	}
 }
 
@@ -163,7 +170,7 @@ void SV_CreateEffectEvent(const byte event_id, entity_state_t* ent, const int fx
 	}
 	else
 	{
-		clfx = &effects_buffers[num_effects_buffers];
+		clfx = &effects_buffers[effects_buffer_index].buffer;
 		clfx->buf = clfx_buffer;
 		clfx->freeBlock = clfx_buffer_offset;
 
@@ -195,7 +202,7 @@ void SV_CreateEffectEvent(const byte event_id, entity_state_t* ent, const int fx
 		MSG_WriteShort(&sb, fx_type);
 	}
 
-	is_broadcast_effect[num_effects_buffers] = broadcast;
+	effects_buffers[effects_buffer_index].is_broadcast = broadcast;
 
 	if (!(flags & CEF_OWNERS_ORIGIN))
 	{
@@ -223,10 +230,10 @@ void SV_CreateEffectEvent(const byte event_id, entity_state_t* ent, const int fx
 		clfx->bufSize = sb.cursize;
 
 		if (!(flags & CEF_BROADCAST))
-			VectorCopy(origin, effects_positions[num_effects_buffers]);
+			VectorCopy(origin, effects_buffers[effects_buffer_index].position);
 
 		clfx_buffer_offset += sb.cursize;
-		num_effects_buffers++;
+		effects_buffer_index++;
 	}
 }
 
@@ -394,7 +401,7 @@ void SV_SendClientEffects(client_t* cl)
 	static byte fx_send_buffer[2000];
 	static byte fx_demo_send_buffer[2000];
 
-	int buffer_indices[2][256];
+	int buffer_indices[2][MAX_EFFECT_BUFFERS];
 
 	qboolean send_effects = false;
 	qboolean send_demo_effects = false;
@@ -408,7 +415,7 @@ void SV_SendClientEffects(client_t* cl)
 	int sent_demo_effects_count = 0;
 	int send_demo_buffer_offset = 0;
 
-	if (num_effects_buffers > 0)
+	if (effects_buffer_index > 0)
 	{
 		const float fov = cosf(cl->frames[sv.framenum & UPDATE_MASK].ps.fov * FOV_SCALER);
 
@@ -428,26 +435,26 @@ void SV_SendClientEffects(client_t* cl)
 		for (int i = 0; i < 3; i++)
 			delta[i] = cam_vieworg[i] - direction[i] * 200.0f;
 
-		for (int i = 0; i < num_effects_buffers; i++)
+		for (int i = 0; i < effects_buffer_index; i++)
 		{
 			int send_index = 1;
 
-			if (!is_broadcast_effect[i])
+			if (!effects_buffers[i].is_broadcast)
 			{
 				vec3_t fx_delta;
-				VectorSubtract(effects_positions[i], delta, fx_delta);
+				VectorSubtract(effects_buffers[i].position, delta, fx_delta);
 				const float dist = VectorNormalize(fx_delta);
 
 				if (dist <= r_farclipdist->value && 
 					(dist < 1000.0f || fov <= DotProduct(direction, fx_delta)) && 
-					PF_inPVS(cam_vieworg, effects_positions[i]))
+					PF_inPVS(cam_vieworg, effects_buffers[i].position))
 				{
 					send_index = 0;
 				}
 			}
 
 			buffer_indices[send_index][send_count[send_index]] = i;
-			send_sizes[send_index] += effects_buffers[i].bufSize;
+			send_sizes[send_index] += effects_buffers[i].buffer.bufSize;
 			send_count[send_index]++;
 		}
 	}
@@ -538,8 +545,9 @@ void SV_SendClientEffects(client_t* cl)
 		for (int i = 0; i < send_count[1]; i++)
 		{
 			const int fx_index = buffer_indices[1][i];
-			const int buf_offset = effects_buffers[fx_index].freeBlock;
-			SZ_Write(msg, &effects_buffers[fx_index].buf[buf_offset], effects_buffers[fx_index].bufSize);
+
+			const EffectsBuffer_t* buffer = &effects_buffers[fx_index].buffer;
+			SZ_Write(msg, &buffer->buf[buffer->freeBlock], buffer->bufSize);
 		}
 	}
 
@@ -551,8 +559,9 @@ void SV_SendClientEffects(client_t* cl)
 		for (int i = 0; i < send_count[0]; i++)
 		{
 			const int fx_index = buffer_indices[0][i];
-			const int buf_offset = effects_buffers[fx_index].freeBlock;
-			SZ_Write(&cl->datagram, &effects_buffers[fx_index].buf[buf_offset], effects_buffers[fx_index].bufSize);
+
+			const EffectsBuffer_t* buffer = &effects_buffers[fx_index].buffer;
+			SZ_Write(&cl->datagram, &buffer->buf[buffer->freeBlock], buffer->bufSize);
 		}
 	}
 }

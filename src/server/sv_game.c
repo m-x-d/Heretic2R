@@ -527,7 +527,7 @@ void SV_InitGameProgs(void)
 	ResMngr_Con(&sv_FXBufMngr, ENTITY_FX_BUF_SIZE, ENTITY_FX_BUF_BLOCK_SIZE);
 	ResMngr_Con(&EffectsBufferMngr, FX_BUF_SIZE, FX_BUF_BLOCK_SIZE);
 
-	num_effects_buffers = 0;
+	effects_buffer_index = 0;
 	clfx_buffer_offset = 0;
 	is_local_client = false;
 
