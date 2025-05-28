@@ -84,38 +84,38 @@ extern H2COMMON_API paletteRGBA_t TextPalette[MAX_COLORS];
 
 typedef enum
 {
-	P_BLACK,
+	P_BLACK, //TODO: unused.
 	P_RED,
 	P_GREEN,
 	P_YELLOW,
-	P_BLUE,
-	P_PURPLE,
+	P_BLUE, //TODO: unused.
+	P_PURPLE, //TODO: unused.
 	P_CYAN,
 	P_WHITE,
 
-	P_HBLACK,
-	P_HRED,
-	P_HGREEN,
-	P_HYELLOW,
-	P_HBLUE,
-	P_HPURPLE,
-	P_HCYAN,
-	P_HWHITE,
+	P_HBLACK, //TODO: unused.
+	P_HRED, //TODO: unused.
+	P_HGREEN, //TODO: unused.
+	P_HYELLOW, //TODO: unused.
+	P_HBLUE, //TODO: unused.
+	P_HPURPLE, //TODO: unused.
+	P_HCYAN, //TODO: unused.
+	P_HWHITE, //TODO: unused.
 
-	P_DESIGNER,
-	P_PROGRAMMER,
+	P_DESIGNER, //TODO: unused.
+	P_PROGRAMMER, //TODO: unused.
 	P_OBJ_NORMAL,
 	P_OBJ_BOLD,
 	P_OBIT,
 	P_CAPTION,
-	P_CHAT,
+	P_CHAT, //TODO: unused.
 	P_TEAM,
 
 	P_VERSION,
 	P_FRAGS,
 	P_ALTFRAGS,
 	P_MENUFIELD,
-	P_MSGBOX,
+	P_MSGBOX, //TODO: unused.
 	P_HEADER,
 	P_CRED_TITLE,
 	P_CRED_CONTENT,
