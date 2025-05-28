@@ -146,6 +146,7 @@ struct edict_s
 	{
 		char* combattarget;	// Monsters are the primary user of this.
 		char* jumptarget;	// For buoys only.
+		qboolean* sphere_charging_ptr; //mxd. Used by Sphere of Annihilation spell.
 	};
 
 	union
@@ -410,7 +411,6 @@ struct edict_s
 		int shrine_type;
 		int morph_timer;
 		int buoy_index;
-		qboolean* sphere_charging_ptr; //mxd. Used by Sphere of Annihilation spell.
 		csurface_t* fish_last_collision_surface; //mxd
 	};
 
