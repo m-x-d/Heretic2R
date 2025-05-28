@@ -68,6 +68,12 @@ void SV_CreateEffect(entity_state_t* ent, const int fx_type, int flags, const ve
 	}
 	else
 	{
+		if (effects_buffer_index == MAX_EFFECT_BUFFERS) //mxd. Added sanity check.
+		{
+			Com_DPrintf("Warning: unable to create frame effect\n");
+			return;
+		}
+
 		clfx = &effects_buffers[effects_buffer_index].buffer;
 		clfx->buf = clfx_buffer;
 		clfx->freeBlock = clfx_buffer_offset;
@@ -170,6 +176,12 @@ void SV_CreateEffectEvent(const byte event_id, entity_state_t* ent, const int fx
 	}
 	else
 	{
+		if (effects_buffer_index == MAX_EFFECT_BUFFERS) //mxd. Added sanity check.
+		{
+			Com_DPrintf("Warning: unable to create frame effect event\n");
+			return;
+		}
+
 		clfx = &effects_buffers[effects_buffer_index].buffer;
 		clfx->buf = clfx_buffer;
 		clfx->freeBlock = clfx_buffer_offset;
