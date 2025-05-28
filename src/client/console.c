@@ -478,29 +478,29 @@ void Con_DrawConsole(float frac)
 	else
 		frac = 1.0f;
 
-	// Draw the background
+	// Draw the background.
 	re.DrawStretchPic(0, lines - DEF_HEIGHT, DEF_WIDTH, DEF_HEIGHT, "misc/conback.m8", frac, true);
 
 	lines = (viddef.height * lines) / DEF_HEIGHT;
 	SCR_AddDirtyPoint(0, 0);
 	SCR_AddDirtyPoint(viddef.width - 1, lines - 1);
 
-	// Draw version
+	// Draw version.
 	char version[MAX_QPATH];
 	Com_sprintf(version, sizeof(version), "Heretic II: %s", VERSIONDISP);
 	DrawString(viddef.width - ((int)strlen(version) * 8 + 8), lines - 12, version, TextPalette[P_VERSION], -1);
 
-	// Draw the text
+	// Draw the text.
 	con.vislines = lines;
 
 	// H2 uses #if 0-ed version of Q2 logic.
-	int rows = (lines - 8) >> 3; // Rows of text to draw
+	int rows = (lines - 8) >> 3; // Rows of text to draw.
 	int y = lines - 24;
 
-	// Draw from the bottom up
+	// Draw from the bottom up.
 	if (con.display != con.current)
 	{
-		// Draw arrows to show the buffer is backscrolled
+		// Draw arrows to show the buffer is backscrolled.
 		DrawString(8, y, backscroll_arrows, TextPalette[P_WHITE], con.linewidth);
 
 		y -= 8;
@@ -511,12 +511,12 @@ void Con_DrawConsole(float frac)
 	for (int i = 0; i < rows; i++, y -= 8, row--)
 	{
 		if (row < 0 || con.current - row >= con.totallines)
-			break; // Past scrollback wrap point
+			break; // Past scrollback wrap point.
 
 		DrawString(8, y, &con.text[(row % con.totallines) * con.linewidth], con.color[row % con.totallines], con.linewidth);
 	}
 
-	// Draw the input prompt, user text, and cursor if desired
+	// Draw the input prompt, user text, and cursor if desired.
 	Con_DrawInput();
 }
 
