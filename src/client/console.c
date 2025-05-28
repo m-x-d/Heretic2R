@@ -80,7 +80,7 @@ void Con_ToggleConsole_f(void)
 	}
 }
 
-void Con_ToggleChat_f(void)
+static void Con_ToggleChat_f(void)
 {
 	Key_ClearTyping();
 
@@ -102,14 +102,14 @@ void Con_ToggleChat_f(void)
 }
 
 // Q2 counterpart
-void Con_MessageMode_f(void)
+static void Con_MessageMode_f(void)
 {
 	chat_team = false;
 	cls.key_dest = key_message;
 }
 
 // Q2 counterpart
-void Con_MessageMode2_f(void)
+static void Con_MessageMode2_f(void)
 {
 	chat_team = true;
 	cls.key_dest = key_message;
@@ -195,7 +195,7 @@ static void Con_Chars_f(void) // H2
 // If the line width has changed, reformat the buffer.
 void Con_CheckResize(void)
 {
-	static char tbuf[CON_TEXTSIZE]; //mxd. Made static
+	static char tbuf[CON_TEXTSIZE]; //mxd. Made static.
 	paletteRGBA_t cbuf[MAX_LINES];
 
 	const int width = (viddef.width >> 3) - 2;
@@ -203,7 +203,7 @@ void Con_CheckResize(void)
 	if (width == con.linewidth)
 		return;
 
-	if (width < 1) // Video hasn't been initialized yet
+	if (width < 1) // Video hasn't been initialized yet.
 	{
 		con.linewidth = 78;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
