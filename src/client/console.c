@@ -487,8 +487,8 @@ void Con_DrawConsole(float frac)
 
 	// Draw version.
 	char version[MAX_QPATH];
-	Com_sprintf(version, sizeof(version), "Heretic II: %s", VERSIONDISP);
-	DrawString(viddef.width - ((int)strlen(version) * 8 + 8), lines - 12, version, TextPalette[P_VERSION], -1);
+	Com_sprintf(version, sizeof(version), "Heretic II R %s", VERSIONDISP); //mxd.'Heretic II: %s' in original logic.
+	DrawString(viddef.width - ((int)strlen(version) * 8 + 8), lines - 12, version, TextPalette[P_GREEN], -1); //mxd. P_VERSION in original logic.
 
 	// Draw the text.
 	con.vislines = lines;
