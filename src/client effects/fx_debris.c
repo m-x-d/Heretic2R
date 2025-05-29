@@ -232,14 +232,11 @@ static void BodyPart_Spawn(const centity_t* owner, const int body_part, vec3_t o
 {
 	BodyPart_Throw(owner, body_part, origin, ke, frame, type, modelindex, flags, harpy);
 
-	vec3_t spray_org;
-	VectorAdd(origin, owner->origin, spray_org);
-
 	if (ke > 0.0f && type != FX_THROWWEAPON)
 		DoBloodSplash(origin, 5, flags & CEF_FLAG8);
 }
 
-static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t origin, float ke, const int frame, const int type, const byte modelindex, int flags, centity_t* harpy)
+static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t origin, float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy) //mxd. Named 'FXBodyPart_Throw' in original logic.
 {
 	//FIXME: make sure parts have correct skins, even node 0!
 	client_entity_t* debris = ClientEntity_new(type, 0, origin, NULL, 17); //flags sent as 0
@@ -273,7 +270,7 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	debris->r.skinnum = owner->current.skinnum; // Need to copy base skin also.
 
 	int node_num = 1;
-	for (int whichnode = 1; whichnode <= 16384; whichnode *= 2, node_num++) // bitwise
+	for (int whichnode = 1; whichnode <= 16384; whichnode *= 2, node_num++) // Bitwise.
 	{
 		if (body_part & whichnode)
 		{
@@ -378,7 +375,7 @@ static qboolean BodyPartAttachedUpdate(struct client_entity_s* self, centity_t* 
 	return true;
 }
 
-static qboolean BodyPart_Update(struct client_entity_s* self, centity_t* owner)
+static qboolean BodyPart_Update(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXBodyPart_Update' in original logic.
 {
 	const int cur_time = fxi.cl->time;
 	const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
