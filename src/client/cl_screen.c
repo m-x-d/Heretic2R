@@ -349,7 +349,7 @@ static void SCR_DrawNet(void)
 
 static void SCR_DrawPause(void)
 {
-	if (!(int)scr_showpause->value || !(int)cl_paused->value) // Turn off for screenshots
+	if (!(int)scr_showpause->value || !(int)cl_paused->value || scr_con_current > 0.0f) // Turn off for screenshots. //mxd. Also turn off when console is opened.
 		return;
 
 	if (Cvar_VariableValue("maxclients") < 2 && Com_ServerState() != 0)
