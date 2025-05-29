@@ -335,16 +335,19 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	debris->updateTime = 50;
 
 	const int detail = (int)r_detail->value; //mxd
-	if (detail == DETAIL_UBERHIGH) //TODO: add separate DETAIL_HIGH setting?
-		debris->LifeTime = fxi.cl->time + 10000;
-	else if (detail == DETAIL_LOW)
+
+	if (detail == DETAIL_LOW)
 		debris->LifeTime = fxi.cl->time + 1000;
-	else
+	else if (detail == DETAIL_NORMAL)
 		debris->LifeTime = fxi.cl->time + 3000;
+	else if (detail == DETAIL_HIGH) //mxd. Same as DETAIL_NORMAL in original logic.
+		debris->LifeTime = fxi.cl->time + 6000;
+	else // DETAIL_UBERHIGH
+		debris->LifeTime = fxi.cl->time + 10000;
 
 	if ((flags & CEF_FLAG6) && !IsInWater(origin)) // On fire - add dynamic light.
 	{
-		if (!ref_soft && detail == DETAIL_HIGH) //TODO: and uberhigh? 
+		if (!ref_soft && detail > DETAIL_NORMAL) //mxd. '== DETAIL_HIGH' in original logic (ignores DETAIL_UBERHIGH).
 		{
 			const paletteRGBA_t color = { .c = 0xe5007fff };
 
