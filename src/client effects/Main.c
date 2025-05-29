@@ -59,6 +59,12 @@ static void Clear(void)
 	}
 
 	CL_ClearLightStyles();
+
+	//mxd. Regenerate default {1, 1, 1} cl_lightstyle values. Fixes black screen after loading map in SP from console. Happens in original logic because:
+	// 1. cl_lightstyle is zeroed out on map change by CL_ClearLightStyles().
+	// 2. cl_paused is enabled when opening console in SP, so lightstypes update (fxe.UpdateEffects() -> CL_RunLightStyles()) is skipped in CL_Frame()).
+	CL_RunLightStyles(); //TODO: player model hideable meshes (armor, bow etc.) are not updated.
+
 	ClearCircularList(); //mxd
 }
 
