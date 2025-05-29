@@ -545,17 +545,17 @@ static void AddServerEntities(const frame_t* frame)
 		// Calculate angles.
 		if (effects & EF_MACE_ROTATE)
 		{
-			// Some bonus items auto-rotate.
-			ent->angles[0] = macerotate * 2;
+			// Mace balls auto-rotate.
+			ent->angles[0] = macerotate * 2.0f;
 			ent->angles[1] = macerotate;
-			ent->angles[2] = 0;
+			ent->angles[2] = 0.0f;
 		}
 		else if (effects & EF_ROTATE)
 		{
 			// Some bonus items auto-rotate.
-			ent->angles[0] = 0;
+			ent->angles[0] = 0.0f;
 			ent->angles[1] = autorotate;
-			ent->angles[2] = 0;
+			ent->angles[2] = 0.0f;
 		}
 		else
 		{
