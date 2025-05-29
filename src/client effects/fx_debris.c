@@ -239,7 +239,7 @@ static void BodyPart_Spawn(const centity_t* owner, const int body_part, vec3_t o
 static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t origin, float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy) //mxd. Named 'FXBodyPart_Throw' in original logic.
 {
 	//FIXME: make sure parts have correct skins, even node 0!
-	client_entity_t* debris = ClientEntity_new(type, 0, origin, NULL, 17); //flags sent as 0
+	client_entity_t* gib = ClientEntity_new(type, 0, origin, NULL, 17); //flags sent as 0
 
 	int material;
 	if (type == FX_THROWWEAPON) // Not elastic enough for effect?
@@ -249,116 +249,116 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	else
 		material = MAT_FLESH;
 
-	debris->SpawnInfo = material;
-	debris->classID = CID_DEBRIS; //FIXME: when do I run out of these? - ie, when is debris invalid?
-	debris->msgHandler = CE_DefaultMsgHandler;
+	gib->SpawnInfo = material;
+	gib->classID = CID_DEBRIS; //FIXME: when do I run out of these? - ie, when is debris invalid?
+	gib->msgHandler = CE_DefaultMsgHandler;
 
 	if (modelindex == 255) //FIXME: these will tilt up and down with the player's torso!!!
 	{
 		// Player special model.
-		debris->r.model = fxi.cl->clientinfo[owner->baseline.number - 1].model;
-		if (debris->r.model == NULL)
-			debris->r.model = fxi.cl->baseclientinfo.model;
+		gib->r.model = fxi.cl->clientinfo[owner->baseline.number - 1].model;
+		if (gib->r.model == NULL)
+			gib->r.model = fxi.cl->baseclientinfo.model;
 	}
 	else
 	{
-		debris->r.model = &fxi.cl->model_draw[modelindex];
+		gib->r.model = &fxi.cl->model_draw[modelindex];
 	}
 
-	debris->r.fmnodeinfo = FMNodeInfo_new();
-	debris->r.frame = frame; // First frame should be parts frame of a flexmodel.
-	debris->r.skinnum = owner->current.skinnum; // Need to copy base skin also.
+	gib->r.fmnodeinfo = FMNodeInfo_new();
+	gib->r.frame = frame; // First frame should be parts frame of a flexmodel.
+	gib->r.skinnum = owner->current.skinnum; // Need to copy base skin also.
 
 	int node_num = 1;
 	for (int whichnode = 1; whichnode <= 16384; whichnode *= 2, node_num++) // Bitwise.
 	{
 		if (body_part & whichnode)
 		{
-			debris->r.fmnodeinfo[node_num] = owner->current.fmnodeinfo[node_num]; // Copy skins and flags and colors.
-			debris->r.fmnodeinfo[node_num].flags &= ~FMNI_NO_DRAW;
+			gib->r.fmnodeinfo[node_num] = owner->current.fmnodeinfo[node_num]; // Copy skins and flags and colors.
+			gib->r.fmnodeinfo[node_num].flags &= ~FMNI_NO_DRAW;
 		}
 		else
 		{
-			debris->r.fmnodeinfo[node_num].flags |= FMNI_NO_DRAW;
+			gib->r.fmnodeinfo[node_num].flags |= FMNI_NO_DRAW;
 		}
 	}
 
 	// Turn off first node?
 	if (modelindex != 255 || !(body_part & 1))
 	{
-		debris->r.fmnodeinfo[0].flags |= FMNI_NO_DRAW;
+		gib->r.fmnodeinfo[0].flags |= FMNI_NO_DRAW;
 	}
 	else
 	{
-		debris->r.fmnodeinfo[0] = owner->current.fmnodeinfo[0]; // Copy skins and flags and colors.
-		debris->r.fmnodeinfo[0].flags &= ~FMNI_NO_DRAW;
+		gib->r.fmnodeinfo[0] = owner->current.fmnodeinfo[0]; // Copy skins and flags and colors.
+		gib->r.fmnodeinfo[0].flags &= ~FMNI_NO_DRAW;
 	}
 
-	debris->flags |= (CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS);
-	debris->r.skinnum = (owner->entity != NULL ? owner->entity->skinnum : 0);
-	debris->radius = 2.0f;
+	gib->flags |= (CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS);
+	gib->r.skinnum = (owner->entity != NULL ? owner->entity->skinnum : 0);
+	gib->radius = 2.0f;
 
 	if (harpy != NULL) //HACK: harpy took it!
 	{
-		debris->flags |= CEF_OWNERS_ORIGIN;
-		debris->Update = BodyPartAttachedUpdate;
-		debris->updateTime = 50;
-		AddEffect(harpy, debris);
+		gib->flags |= CEF_OWNERS_ORIGIN;
+		gib->Update = BodyPartAttachedUpdate;
+		gib->updateTime = 50;
+		AddEffect(harpy, gib);
 
 		return;
 	}
 
 	const vec3_t dir = { 0.0f, 0.0f, 1.0f };
-	VectorRandomCopy(dir, debris->velocity, 0.5f);
+	VectorRandomCopy(dir, gib->velocity, 0.5f);
 
 	if (ke == 0.0f)
 	{
 		ke = flrand(10.0f, 100.0f) * 10000.0f;
-		debris->color.c = 0x00000000;
+		gib->color.c = 0x00000000;
 	}
 	else
 	{
-		debris->color = color_white; //mxd
+		gib->color = color_white; //mxd
 	}
 
 	const int chunk_index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
-	Vec3ScaleAssign(sqrtf(ke / debris_chunks[chunk_index].mass), debris->velocity);
+	Vec3ScaleAssign(sqrtf(ke / debris_chunks[chunk_index].mass), gib->velocity);
 
-	debris->acceleration[2] = GetGravity();
+	gib->acceleration[2] = GetGravity();
 
-	debris->r.angles[0] = flrand(-ANGLE_180, ANGLE_180);
-	debris->r.angles[1] = flrand(-ANGLE_90, ANGLE_90);
+	gib->r.angles[0] = flrand(-ANGLE_180, ANGLE_180);
+	gib->r.angles[1] = flrand(-ANGLE_90, ANGLE_90);
 
-	debris->elasticity = debris_elasticity[MAT_FLESH];
+	gib->elasticity = debris_elasticity[MAT_FLESH];
 
-	debris->Update = BodyPart_Update;
-	debris->updateTime = 50;
+	gib->Update = BodyPart_Update;
+	gib->updateTime = 50;
 
 	const int detail = (int)r_detail->value; //mxd
 
 	if (detail == DETAIL_LOW)
-		debris->LifeTime = fxi.cl->time + 1000;
+		gib->LifeTime = fxi.cl->time + 1000;
 	else if (detail == DETAIL_NORMAL)
-		debris->LifeTime = fxi.cl->time + 3000;
+		gib->LifeTime = fxi.cl->time + 3000;
 	else if (detail == DETAIL_HIGH) //mxd. Same as DETAIL_NORMAL in original logic.
-		debris->LifeTime = fxi.cl->time + 6000;
+		gib->LifeTime = fxi.cl->time + 6000;
 	else // DETAIL_UBERHIGH
-		debris->LifeTime = fxi.cl->time + 10000;
+		gib->LifeTime = fxi.cl->time + 10000;
 
 	if ((flags & CEF_FLAG6) && !IsInWater(origin)) // On fire - add dynamic light.
 	{
 		if (!ref_soft && detail > DETAIL_NORMAL) //mxd. '== DETAIL_HIGH' in original logic (ignores DETAIL_UBERHIGH).
 		{
-			const paletteRGBA_t color = { .c = 0xe5007fff };
+			const paletteRGBA_t color = { .c = 0xe5007fff }; //TODO: randomize color a bit?
 
-			debris->flags |= CEF_FLAG7; // Don't spawn blood too, just flames.
-			debris->dlight = CE_DLight_new(color, 50.0f, -5.0f);
+			gib->flags |= CEF_FLAG7; // Don't spawn blood too, just flames.
+			gib->dlight = CE_DLight_new(color, 50.0f, -5.0f);
 		}
 
-		debris->flags |= CEF_FLAG6;
+		gib->flags |= CEF_FLAG6;
 	}
 
-	AddEffect(NULL, debris);
+	AddEffect(NULL, gib);
 }
 
 static qboolean BodyPartAttachedUpdate(struct client_entity_s* self, centity_t* owner)
