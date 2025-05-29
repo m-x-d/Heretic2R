@@ -15,7 +15,7 @@ typedef struct
 	float map[MAX_QPATH];
 } clightstyle_t;
 
-static clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
+static clightstyle_t cl_lightstyles[MAX_LIGHTSTYLES];
 static int lastofs;
 
 static void V_AddLightStyle(const int style, const float r, const float g, const float b)
@@ -36,7 +36,7 @@ static void V_AddLightStyle(const int style, const float r, const float g, const
 
 void CL_ClearLightStyles(void)
 {
-	memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
+	memset(cl_lightstyles, 0, sizeof(cl_lightstyles));
 	lastofs = -1;
 }
 
@@ -50,7 +50,7 @@ void CL_RunLightStyles(void)
 
 	lastofs = ofs;
 
-	clightstyle_t* ls = cl_lightstyle;
+	clightstyle_t* ls = &cl_lightstyles[0];
 	for (int i = 0; i < MAX_LIGHTSTYLES; i++, ls++)
 	{
 		if (ls->length == 0)
@@ -75,15 +75,15 @@ void CL_SetLightstyle(const int index)
 		fxi.Com_Error(ERR_DROP, "svc_lightstyle length=%i", len);
 	}
 
-	cl_lightstyle[index].length = len;
+	cl_lightstyles[index].length = len;
 
 	for (int i = 0; i < len; i++)
-		cl_lightstyle[index].map[i] = (float)(s[i] - 'a') / (float)('m' - 'a');
+		cl_lightstyles[index].map[i] = (float)(s[i] - 'a') / (float)('m' - 'a');
 }
 
 void CL_AddLightStyles(void)
 {
-	clightstyle_t* ls = cl_lightstyle;
+	clightstyle_t* ls = &cl_lightstyles[0];
 	for (int i = 0; i < MAX_LIGHTSTYLES; i++, ls++)
 		V_AddLightStyle(i, ls->value[0], ls->value[1], ls->value[2]);
 }
