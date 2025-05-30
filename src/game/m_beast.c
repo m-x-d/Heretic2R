@@ -2025,9 +2025,7 @@ void tbeast_gore_toy(edict_t* self, float jump_height)
 		VectorCopy(self->velocity, dir);
 		VectorNormalize(dir);
 
-		byte num_chunks = (byte)(self->targetEnt->health / 4);
-		num_chunks = min(15, num_chunks);
-
+		const int num_chunks = min(15, self->targetEnt->health / 4);
 		SprayDebris(self->targetEnt, self->targetEnt->s.origin, num_chunks, (float)self->targetEnt->health * 4.0f); //self->enemy is thingtype wood?!
 
 		if (Q_stricmp(self->targetEnt->classname, "player") != 0) //mxd. stricmp -> Q_stricmp //TODO: check for targetEnt->client instead?
@@ -2067,7 +2065,7 @@ void tbeast_anger_sound(edict_t* self)
 
 	if (self->targetEnt != NULL)
 	{
-		SprayDebris(self->targetEnt, self->targetEnt->s.origin, (byte)irand(1, 3), 100.0f);
+		SprayDebris(self->targetEnt, self->targetEnt->s.origin, irand(1, 3), 100.0f);
 
 		if (self->targetEnt->client == NULL)
 		{

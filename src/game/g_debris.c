@@ -162,24 +162,17 @@ void BecomeDebris(edict_t* self)
 	self->nextthink = level.time + 2.0f;
 }
 
-void SprayDebris(const edict_t* self, const vec3_t spot, byte num_chunks, float damage) //TODO: remove unused arg.
+void SprayDebris(const edict_t* self, const vec3_t spot, int num_chunks, float damage) //mxd. 'byte num_chunks' in original logic. //TODO: remove unused arg.
 {
 	byte b_mat = (byte)self->materialtype;
 	const byte b_mag = (byte)(Clamp(VectorLength(self->mins), 1.0f, 255.0f));
 
 	if (b_mat == MAT_FLESH || b_mat == MAT_INSECT)
 	{
-		const int violence = ((blood_level != NULL) ? (int)blood_level->value : VIOLENCE_DEFAULT); //TODO: why blood_level NULL check? Inited in InitGame(), accessed without NULL check in G_RunFrame()...
-
-		if (violence < VIOLENCE_NORMAL)
-		{
+		if (BLOOD_LEVEL == VIOLENCE_NONE) //mxd. Original logic does blood_level NULL check before using it. //mxd. 'BLOOD_LEVEL < VIOLENCE_NORMAL' in original logic.
 			b_mat = MAT_STONE;
-		}
-		else if (violence > VIOLENCE_NORMAL)
-		{
-			num_chunks *= (violence - VIOLENCE_NORMAL); //TODO: doesn't make much sense. Max violence configurable via menus is 3. Should be (violence - VIOLENCE_NORMAL + 1)?
-			num_chunks = min(255, num_chunks);
-		}
+		else if (BLOOD_LEVEL > VIOLENCE_BLOOD) //mxd. 'else if (BLOOD_LEVEL > VIOLENCE_NORMAL)' in original logic (doesn't make much sense. Max violence configurable via menus is 3).
+			num_chunks = min(255, num_chunks * BLOOD_LEVEL);  //mxd. 'BLOOD_LEVEL - VIOLENCE_NORMAL' in original logic.
 	}
 
 	if (b_mat == MAT_FLESH || b_mat == MAT_INSECT)
@@ -197,12 +190,12 @@ void SprayDebris(const edict_t* self, const vec3_t spot, byte num_chunks, float 
 		if (self->fire_damage_time > level.time || (self->svflags & SVF_ONFIRE))
 			fx_flags |= CEF_FLAG6;
 
-		gi.CreateEffect(NULL, FX_FLESH_DEBRIS, fx_flags, spot, "bdb", num_chunks, self->mins, b_mag);
+		gi.CreateEffect(NULL, FX_FLESH_DEBRIS, fx_flags, spot, "bdb", (byte)num_chunks, self->mins, b_mag);
 	}
 	else
 	{
-		num_chunks = (byte)(Clamp((float)num_chunks / 100.0f, 1.0f, 255.0f));
-		gi.CreateEffect(NULL, FX_DEBRIS, 0, spot, "bbdb", num_chunks, MAT_STONE, self->mins, b_mag);
+		num_chunks = max(1, num_chunks / 100);
+		gi.CreateEffect(NULL, FX_DEBRIS, 0, spot, "bbdb", (byte)num_chunks, MAT_STONE, self->mins, b_mag);
 	}
 }
 
