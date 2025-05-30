@@ -1058,6 +1058,9 @@ void CL_ParseFrame(void)
 
 			CL_ResetPlayerInfo(); // H2
 			Reset_Screen_Shake(); // H2
+
+			//mxd. Un-pause the game (game will still be paused when loading map from console) (Q1-style behaviour).
+			Cvar_SetValue("paused", 0.0f);
 		}
 
 		cl.sound_prepped = true; // Can start mixing ambient sounds.
