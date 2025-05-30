@@ -38,5 +38,5 @@ typedef struct FormMove_s
 	trace_t trace;
 } FormMove_t;
 
-H2COMMON_API void BounceVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float elasticity);
-H2COMMON_API qboolean BoundVelocity(float* vel);
+H2COMMON_API extern void BounceVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float elasticity);
+H2COMMON_API extern qboolean BoundVelocity(float* vel);
