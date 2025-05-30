@@ -18,12 +18,12 @@ cvar_t* m_item_effectsvol;
 cvar_t* m_item_cdmusic;
 cvar_t* m_item_soundquality;
 
-static menuframework_s s_sound_menu;
+static menuframework_t s_sound_menu;
 
 //static menulist_s s_snddll_box; //mxd. Disabled.
-static menuslider_s s_options_sfxvolume_slider;
+static menuslider_t s_options_sfxvolume_slider;
 //static menulist_s s_options_usecd_box; //mxd. Disabled.
-static menulist_s s_options_quality_list;
+static menulist_t s_options_quality_list;
 
 static char snd_dll_name[16];
 
@@ -164,12 +164,12 @@ static void Sound_MenuDraw(void) // H2
 	Menu_Draw(&s_sound_menu);
 }
 
-static char* Sound_HandleMenuKey(menuframework_s* menu, const int key) // H2
+static char* Sound_HandleMenuKey(menuframework_t* menu, const int key) // H2
 {
 	if (cls.m_menustate != 2)
 		return NULL;
 
-	menufield_s* item = (menufield_s*)Menu_ItemAtCursor(menu);
+	menufield_t* item = (menufield_t*)Menu_ItemAtCursor(menu);
 	if (item->generic.type == MTYPE_FIELD && Field_Key(item, key))
 		return NULL;
 

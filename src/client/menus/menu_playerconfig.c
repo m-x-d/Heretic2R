@@ -28,11 +28,11 @@ static qboolean current_skin_exists;
 static char* skin_names[MAX_PLAYER_SKINS];
 static cvar_t* skin;
 
-static menuframework_s s_player_config_menu;
+static menuframework_t s_player_config_menu;
 
-static menufield_s s_player_name_field;
-static menulist_s s_player_skin_box;
-static menulist_s s_shownames_box;
+static menufield_t s_player_name_field;
+static menulist_t s_player_skin_box;
+static menulist_t s_shownames_box;
 
 static void SkinNameFunc(void* self) // H2
 {

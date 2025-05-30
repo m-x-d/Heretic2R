@@ -15,12 +15,12 @@ cvar_t* m_item_mouseinvert;
 cvar_t* m_item_lookspring;
 cvar_t* m_item_freelook;
 
-static menuframework_s s_mousecfg_menu;
+static menuframework_t s_mousecfg_menu;
 
-static menulist_s s_options_freelook_box;
-static menuslider_s s_options_mousespeedx_slider;
-static menuslider_s s_options_mousespeedy_slider;
-static menulist_s s_mouseinvert_box;
+static menulist_t s_options_freelook_box;
+static menuslider_t s_options_mousespeedx_slider;
+static menuslider_t s_options_mousespeedy_slider;
+static menulist_t s_mouseinvert_box;
 
 static void FreeLookFunc(void* self)
 {

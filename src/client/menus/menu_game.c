@@ -18,15 +18,15 @@ cvar_t* m_item_medium;
 cvar_t* m_item_hard;
 cvar_t* m_item_nightmare;
 
-static menuframework_s s_game_menu;
+static menuframework_t s_game_menu;
 
-static menuaction_s s_tutorial_action;
-static menuaction_s s_easy_game_action;
-static menuaction_s s_medium_game_action;
-static menuaction_s s_hard_game_action;
-static menuaction_s s_load_game_action;
-static menuaction_s s_save_game_action;
-static menuaction_s s_credits_action;
+static menuaction_t s_tutorial_action;
+static menuaction_t s_easy_game_action;
+static menuaction_t s_medium_game_action;
+static menuaction_t s_hard_game_action;
+static menuaction_t s_load_game_action;
+static menuaction_t s_save_game_action;
+static menuaction_t s_credits_action;
 
 static void StartGame(char* mapname)
 {

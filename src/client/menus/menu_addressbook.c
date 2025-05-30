@@ -11,8 +11,8 @@ cvar_t* m_banner_address;
 
 #define NUM_ADDRESSBOOK_ENTRIES	8 // 9 in Q2
 
-static menuframework_s s_addressbook_menu;
-static menufield_s s_addressbook_fields[NUM_ADDRESSBOOK_ENTRIES];
+static menuframework_t s_addressbook_menu;
+static menufield_t s_addressbook_fields[NUM_ADDRESSBOOK_ENTRIES];
 
 static void AddressBook_MenuInit(void)
 {

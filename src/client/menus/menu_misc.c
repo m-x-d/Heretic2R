@@ -21,19 +21,19 @@ cvar_t* m_item_yawspeed;
 cvar_t* m_item_console;
 cvar_t* m_item_autoweapon;
 
-static menuframework_s s_misc_menu;
+static menuframework_t s_misc_menu;
 
-static menulist_s s_options_crosshair_box;
-static menulist_s s_options_alwaysrun_box;
-static menulist_s s_options_autotarget_box;
-static menulist_s s_options_autoweapon_box;
-static menulist_s s_options_captions_box;
-static menulist_s s_options_lookspring_box;
-static menulist_s s_options_noalttab_box;
-static menulist_s s_options_joystick_box;
-static menuslider_s s_options_yawspeed_slider;
-static menulist_s s_options_violence_box;
-static menuaction_s s_options_console_action;
+static menulist_t s_options_crosshair_box;
+static menulist_t s_options_alwaysrun_box;
+static menulist_t s_options_autotarget_box;
+static menulist_t s_options_autoweapon_box;
+static menulist_t s_options_captions_box;
+static menulist_t s_options_lookspring_box;
+static menulist_t s_options_noalttab_box;
+static menulist_t s_options_joystick_box;
+static menuslider_t s_options_yawspeed_slider;
+static menulist_t s_options_violence_box;
+static menuaction_t s_options_console_action;
 
 // Q2 counterpart
 static void CrosshairFunc(void* self)
@@ -82,13 +82,13 @@ static void JoystickFunc(void* self)
 
 static void YawSpeedFunc(void* self) // H2
 {
-	const menuslider_s* s = self;
+	const menuslider_t* s = self;
 	Cvar_SetValue("cl_yawspeed", s->curvalue * 15.0f);
 }
 
 static void ViolenceFunc(void* self) // H2
 {
-	const menulist_s* l = self;
+	const menulist_t* l = self;
 	Cvar_SetValue("blood_level", (float)l->curvalue);
 }
 

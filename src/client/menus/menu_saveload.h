@@ -8,8 +8,8 @@
 
 #include "menu.h"
 
-extern menuframework_s s_savegame_menu;
-extern menuframework_s s_loadgame_menu;
+extern menuframework_t s_savegame_menu;
+extern menuframework_t s_loadgame_menu;
 
 extern char m_savestrings[MAX_SAVEGAMES][64];
 

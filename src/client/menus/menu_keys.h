@@ -13,7 +13,7 @@ extern int keys_category_offset;
 extern qboolean use_doublebind;
 extern qboolean bind_grab;
 
-extern menuframework_s s_keys_menu;
+extern menuframework_t s_keys_menu;
 
 void M_FindKeysForCommand(int command_index, int* twokeys);
 void Keys_MenuInit(void);

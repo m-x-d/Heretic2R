@@ -12,10 +12,10 @@ cvar_t* m_banner_cameracfg;
 cvar_t* m_item_cameradamp;
 cvar_t* m_item_cameracombat;
 
-static menuframework_s s_cameracfg_menu;
+static menuframework_t s_cameracfg_menu;
 
-static menuslider_s s_options_cameradamp_slider;
-static menulist_s s_options_cameracombat_box;
+static menuslider_t s_options_cameradamp_slider;
+static menulist_t s_options_cameracombat_box;
 
 static void CameraDampFactorFunc(void* self) // H2
 {

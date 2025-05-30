@@ -15,18 +15,18 @@ cvar_t* m_item_allowdownloadsound;
 cvar_t* m_item_allowdownloadplayer;
 cvar_t* m_item_allowdownloadmodel;
 
-static menuframework_s s_downloadoptions_menu;
+static menuframework_t s_downloadoptions_menu;
 
-static menulist_s s_allow_download_box;
-static menulist_s s_allow_download_maps_box;
-static menulist_s s_allow_download_players_box;
-static menulist_s s_allow_download_models_box;
-static menulist_s s_allow_download_sounds_box;
+static menulist_t s_allow_download_box;
+static menulist_t s_allow_download_maps_box;
+static menulist_t s_allow_download_players_box;
+static menulist_t s_allow_download_models_box;
+static menulist_t s_allow_download_sounds_box;
 
 // Q2 counterpart
 static void DownloadCallback(const void* self)
 {
-	const menulist_s* f = self;
+	const menulist_t* f = self;
 
 	if (f == &s_allow_download_box)
 		Cvar_SetValue("allow_download", (float)f->curvalue);

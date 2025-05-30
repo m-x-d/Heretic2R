@@ -86,8 +86,8 @@ int keys_category_offset;
 qboolean use_doublebind;
 qboolean bind_grab;
 
-menuframework_s s_keys_menu;
-static menuinputkey_s s_keys_items[14];
+menuframework_t s_keys_menu;
+static menuinputkey_t s_keys_items[14];
 
 // Q2: M_UnbindCommand
 static void UnbindCommand(const char* command)
@@ -112,7 +112,7 @@ static void KeyBindingFunc(const void* self)
 {
 	int keys[2];
 
-	const menuinputkey_s* key = self;
+	const menuinputkey_t* key = self;
 	M_FindKeysForCommand(key->generic.localdata[0], keys);
 
 	if (keys[1] != -1)
@@ -133,7 +133,7 @@ void Keys_MenuInit(void)
 		const cvar_t* label = *bindnames[keys_category_offset + i].label;
 		Com_sprintf(key_labels[i], sizeof(key_labels[i]), "\x02%s", label->string);
 
-		menuinputkey_s* item = &s_keys_items[i];
+		menuinputkey_t* item = &s_keys_items[i];
 		item->generic.type = MTYPE_INPUT_KEY;
 		item->generic.flags = QMF_SINGLELINE;
 		item->generic.x = 0;
@@ -152,7 +152,7 @@ const char* Keys_MenuKey(const int key)
 {
 	char cmd[1024];
 
-	const menuinputkey_s* item = (menuinputkey_s*)Menu_ItemAtCursor(&s_keys_menu);
+	const menuinputkey_t* item = (menuinputkey_t*)Menu_ItemAtCursor(&s_keys_menu);
 	const int bind_index = item->generic.localdata[0] + keys_category_offset;
 
 	if (bind_grab)

@@ -9,10 +9,10 @@
 
 cvar_t* m_banner_quit;
 
-static menuframework_s s_quit_menu;
+static menuframework_t s_quit_menu;
 
-static menuaction_s s_quit_yes_action;
-static menuaction_s s_quit_no_action;
+static menuaction_t s_quit_yes_action;
+static menuaction_t s_quit_no_action;
 
 static void QuitFunc(void* self) // H2
 {
@@ -85,7 +85,7 @@ static const char* Quit_MenuKey(const int key)
 		case K_KP_ENTER:
 			if (Menu_SelectItem(&s_quit_menu))
 			{
-				const menulist_s* item = (menulist_s*)Menu_ItemAtCursor(&s_quit_menu);
+				const menulist_t* item = (menulist_t*)Menu_ItemAtCursor(&s_quit_menu);
 				if (item->generic.flags & QMF_SELECT_SOUND)
 					return SND_MENU1;
 			}

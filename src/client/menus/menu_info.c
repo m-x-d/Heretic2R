@@ -12,11 +12,11 @@
 
 cvar_t* m_banner_info;
 
-static menuframework_s s_info_menu;
+static menuframework_t s_info_menu;
 
-static menuaction_s s_info_worldmap_action;
-static menuaction_s s_info_citymap_action;
-static menuaction_s s_info_objectives_action;
+static menuaction_t s_info_worldmap_action;
+static menuaction_t s_info_citymap_action;
+static menuaction_t s_info_objectives_action;
 
 static void WorldMapFunc(void* self)
 {

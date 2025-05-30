@@ -20,16 +20,16 @@ cvar_t* m_item_hostname;
 cvar_t* m_item_deathmatch;
 cvar_t* m_item_coop;
 
-static menuframework_s s_startserver_menu;
+static menuframework_t s_startserver_menu;
 
-static menulist_s s_startmap_list;
-static menulist_s s_rules_box;
-static menufield_s s_timelimit_field;
-static menufield_s s_fraglimit_field;
-static menufield_s s_maxclients_field;
-static menufield_s s_hostname_field;
-static menuaction_s s_startserver_dmoptions_action;
-static menuaction_s s_startserver_start_action;
+static menulist_t s_startmap_list;
+static menulist_t s_rules_box;
+static menufield_t s_timelimit_field;
+static menufield_t s_fraglimit_field;
+static menufield_t s_maxclients_field;
+static menufield_t s_hostname_field;
+static menuaction_t s_startserver_dmoptions_action;
+static menuaction_t s_startserver_start_action;
 
 #define NUM_MAPNAMES	128
 static char* mapnames[NUM_MAPNAMES];

@@ -13,12 +13,12 @@
 
 cvar_t* m_banner_multi;
 
-static menuframework_s s_multiplayer_menu;
+static menuframework_t s_multiplayer_menu;
 
-static menuaction_s s_join_network_server_action;
-static menuaction_s s_start_network_server_action;
-static menuaction_s s_player_setup_action;
-static menuaction_s s_download_setup_action;
+static menuaction_t s_join_network_server_action;
+static menuaction_t s_start_network_server_action;
+static menuaction_t s_player_setup_action;
+static menuaction_t s_download_setup_action;
 
 static void JoinServerFunc(void* data)
 {

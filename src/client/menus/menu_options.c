@@ -21,18 +21,18 @@
 cvar_t* m_banner_options;
 cvar_t* m_banner_savecfg;
 
-static menuframework_s s_options_menu;
+static menuframework_t s_options_menu;
 
-static menuaction_s s_action_keys_action;
-static menuaction_s s_move_keys_action;
-static menuaction_s s_short_keys_action;
-static menuaction_s s_dt_keys_action;
-static menuaction_s s_mousecfg_action;
-static menuaction_s s_cameracfg_action;
-static menuaction_s s_misc_action;
-static menuaction_s s_loadcfg_action;
-static menuaction_s s_savecfg_action;
-static menuaction_s s_defaults_action;
+static menuaction_t s_action_keys_action;
+static menuaction_t s_move_keys_action;
+static menuaction_t s_short_keys_action;
+static menuaction_t s_dt_keys_action;
+static menuaction_t s_mousecfg_action;
+static menuaction_t s_cameracfg_action;
+static menuaction_t s_misc_action;
+static menuaction_t s_loadcfg_action;
+static menuaction_t s_savecfg_action;
+static menuaction_t s_defaults_action;
 
 static void ActionKeysFunc(void* self)
 {

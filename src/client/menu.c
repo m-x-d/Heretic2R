@@ -243,15 +243,15 @@ void M_PopMenu(void)
 	cls.m_menustate = 3;
 }
 
-char* Default_MenuKey(menuframework_s* menu, const int key)
+char* Default_MenuKey(menuframework_t* menu, const int key)
 {
 	if (cls.m_menustate != 2)
 		return NULL;
 
 	if (menu != NULL)
 	{
-		menucommon_s* item = Menu_ItemAtCursor(menu);
-		if (item != NULL && item->type == MTYPE_FIELD && Field_Key((menufield_s*)item, key))
+		menucommon_t* item = Menu_ItemAtCursor(menu);
+		if (item != NULL && item->type == MTYPE_FIELD && Field_Key((menufield_t*)item, key))
 			return NULL;
 	}
 
@@ -311,7 +311,7 @@ char* Default_MenuKey(menuframework_s* menu, const int key)
 		case K_AUX32:
 			if (menu != NULL && Menu_SelectItem(menu))
 			{
-				const menucommon_s* item = Menu_ItemAtCursor(menu);
+				const menucommon_t* item = Menu_ItemAtCursor(menu);
 				if (item->flags & QMF_SELECT_SOUND)
 					return SND_MENU1;
 			}
@@ -364,7 +364,7 @@ const char* Generic_MenuKey(const int key) // H2
 	return NULL;
 }
 
-qboolean Field_Key(menufield_s* field, int key)
+qboolean Field_Key(menufield_t* field, int key)
 {
 	const int orig_key = key; //mxd
 
@@ -741,23 +741,23 @@ int M_GetMenuLabelX(const int text_width) // H2
 	return x + 16;
 }
 
-int M_GetMenuOffsetY(const menuframework_s* menu) // H2
+int M_GetMenuOffsetY(const menuframework_t* menu) // H2
 {
 	return menu->y - 24;
 }
 
-void Menu_AddItem(menuframework_s* menu, void* item)
+void Menu_AddItem(menuframework_t* menu, void* item)
 {
 	if (menu->nitems < MAXMENUITEMS)
 	{
 		menu->items[menu->nitems] = item;
-		((menucommon_s*)menu->items[menu->nitems])->parent = menu;
+		((menucommon_t*)menu->items[menu->nitems])->parent = menu;
 		menu->nitems++;
 	}
 }
 
 // Q2 counterpart
-static qboolean Field_DoEnter(menufield_s* field)
+static qboolean Field_DoEnter(menufield_t* field)
 {
 	if (field->generic.callback != NULL)
 	{
@@ -769,24 +769,24 @@ static qboolean Field_DoEnter(menufield_s* field)
 }
 
 // Q2 counterpart
-static void Action_DoEnter(menuaction_s* action)
+static void Action_DoEnter(menuaction_t* action)
 {
 	if (action->generic.callback != NULL)
 		action->generic.callback(action);
 }
 
-qboolean Menu_SelectItem(const menuframework_s* menu)
+qboolean Menu_SelectItem(const menuframework_t* menu)
 {
-	menucommon_s* item = Menu_ItemAtCursor(menu);
+	menucommon_t* item = Menu_ItemAtCursor(menu);
 	if (item != NULL)
 	{
 		switch (item->type)
 		{
 			case MTYPE_FIELD:
-				return Field_DoEnter((menufield_s*)item);
+				return Field_DoEnter((menufield_t*)item);
 
 			case MTYPE_ACTION:
-				Action_DoEnter((menuaction_s*)item);
+				Action_DoEnter((menuaction_t*)item);
 				return true;
 
 			default:
@@ -798,7 +798,7 @@ qboolean Menu_SelectItem(const menuframework_s* menu)
 }
 
 // Q2 counterpart
-static void Slider_DoSlide(menuslider_s* slider, const int dir)
+static void Slider_DoSlide(menuslider_t* slider, const int dir)
 {
 	slider->curvalue += (float)dir;
 	slider->curvalue = Clamp(slider->curvalue, slider->minvalue, slider->maxvalue);
@@ -808,7 +808,7 @@ static void Slider_DoSlide(menuslider_s* slider, const int dir)
 }
 
 // Q2 counterpart
-static void SpinControl_DoSlide(menulist_s* spin_ctrl, const int dir)
+static void SpinControl_DoSlide(menulist_t* spin_ctrl, const int dir)
 {
 	spin_ctrl->curvalue += dir;
 
@@ -821,21 +821,21 @@ static void SpinControl_DoSlide(menulist_s* spin_ctrl, const int dir)
 		spin_ctrl->generic.callback(spin_ctrl);
 }
 
-void Menu_SlideItem(const menuframework_s* menu, const int dir)
+void Menu_SlideItem(const menuframework_t* menu, const int dir)
 {
-	menucommon_s* item = Menu_ItemAtCursor(menu);
+	menucommon_t* item = Menu_ItemAtCursor(menu);
 	if (item == NULL)
 		return;
 
 	switch (item->type)
 	{
 		case MTYPE_SLIDER:
-			Slider_DoSlide((menuslider_s*)item, dir);
+			Slider_DoSlide((menuslider_t*)item, dir);
 			break;
 
 		case MTYPE_SPINCONTROL:
 		case MTYPE_PLAYER_SKIN: // H2
-			SpinControl_DoSlide((menulist_s*)item, dir);
+			SpinControl_DoSlide((menulist_t*)item, dir);
 			break;
 
 		default:
@@ -845,7 +845,7 @@ void Menu_SlideItem(const menuframework_s* menu, const int dir)
 
 // This function takes the given menu, the direction, and attempts to adjust
 // the menu's cursor so that it's at the next available slot.
-void Menu_AdjustCursor(menuframework_s* menu, const int dir)
+void Menu_AdjustCursor(menuframework_t* menu, const int dir)
 {
 	// See if it's in a valid spot.
 	if (menu->cursor >= 0 && menu->cursor < menu->nitems && Menu_ItemAtCursor(menu) != NULL)
@@ -872,19 +872,19 @@ void Menu_AdjustCursor(menuframework_s* menu, const int dir)
 	}
 }
 
-void Menu_Center(menuframework_s* menu)
+void Menu_Center(menuframework_t* menu)
 {
 	int width = 0;
 	for (int i = 0; i < menu->nitems; i++)
-		width = max(width, ((menucommon_s*)menu->items[i])->width);
+		width = max(width, ((menucommon_t*)menu->items[i])->width);
 
 	menu->width = width;
 
-	const int height = ((menucommon_s*)menu->items[menu->nitems - 1])->y + 10;
+	const int height = ((menucommon_t*)menu->items[menu->nitems - 1])->y + 10;
 	menu->y = (DEF_HEIGHT - height) / 2;
 }
 
-static void Slider_Draw(menuslider_s* slider, const qboolean selected)
+static void Slider_Draw(menuslider_t* slider, const qboolean selected)
 {
 #define SLIDER_RANGE 10
 
@@ -921,7 +921,7 @@ static void Slider_Draw(menuslider_s* slider, const qboolean selected)
 	re.DrawChar(x + Q_ftol(slider->range * 8 * (SLIDER_RANGE - 1)), y, 3, color);
 }
 
-static void Field_Draw(const menufield_s* field, const qboolean selected)
+static void Field_Draw(const menufield_t* field, const qboolean selected)
 {
 	char tempbuffer[128];
 
@@ -956,7 +956,7 @@ static void Field_Draw(const menufield_s* field, const qboolean selected)
 
 	DrawString(ox, oy, tempbuffer, TextPalette[P_MENUFIELD], -1);
 
-	if ((menufield_s*)Menu_ItemAtCursor(field->generic.parent) == field)
+	if ((menufield_t*)Menu_ItemAtCursor(field->generic.parent) == field)
 	{
 		const int offset = (field->visible_offset != 0 ? field->visible_length : field->cursor);
 		const int ch = (Sys_Milliseconds() / 250 & 1 ? 11 : ' ');
@@ -964,7 +964,7 @@ static void Field_Draw(const menufield_s* field, const qboolean selected)
 	}
 }
 
-static void Action_Draw(const menuaction_s* action, const qboolean selected)
+static void Action_Draw(const menuaction_t* action, const qboolean selected)
 {
 	int x;
 	char name[MAX_QPATH];
@@ -995,7 +995,7 @@ static void Action_Draw(const menuaction_s* action, const qboolean selected)
 	}
 }
 
-static void InputKey_Draw(const menuinputkey_s* key, const qboolean selected) // H2
+static void InputKey_Draw(const menuinputkey_t* key, const qboolean selected) // H2
 {
 	char key_label[MAX_QPATH];
 	char key_name[MAX_QPATH];
@@ -1028,7 +1028,7 @@ static void InputKey_Draw(const menuinputkey_s* key, const qboolean selected) //
 	m_menu_side ^= 1;
 }
 
-static void PlayerSkin_Draw(const menucommon_s* item) // H2
+static void PlayerSkin_Draw(const menucommon_t* item) // H2
 {
 	char skin_path[MAX_QPATH];
 
@@ -1036,7 +1036,7 @@ static void PlayerSkin_Draw(const menucommon_s* item) // H2
 	re.DrawStretchPic(M_GetMenuLabelX(64), item->y + item->parent->y - 160, 64, 128, skin_path, cls.m_menualpha, true);
 }
 
-static void SpinControl_Draw(const menulist_s* list, const qboolean selected)
+static void SpinControl_Draw(const menulist_t* list, const qboolean selected)
 {
 	int x;
 	char buffer[MAX_QPATH];
@@ -1084,38 +1084,38 @@ static void SpinControl_Draw(const menulist_s* list, const qboolean selected)
 	}
 }
 
-void Menu_Draw(const menuframework_s* menu)
+void Menu_Draw(const menuframework_t* menu)
 {
 	// Draw contents.
 	for (int i = 0; i < menu->nitems; i++)
 	{
-		menucommon_s* item = (menucommon_s*)menu->items[i];
+		menucommon_t* item = (menucommon_t*)menu->items[i];
 
 		switch (item->type)
 		{
 			case MTYPE_SLIDER:
-				Slider_Draw((menuslider_s*)item, i == menu->cursor);
+				Slider_Draw((menuslider_t*)item, i == menu->cursor);
 				break;
 
 			case MTYPE_FIELD:
-				Field_Draw((menufield_s*)item, i == menu->cursor);
+				Field_Draw((menufield_t*)item, i == menu->cursor);
 				break;
 
 			case MTYPE_ACTION:
-				Action_Draw((menuaction_s*)item, i == menu->cursor);
+				Action_Draw((menuaction_t*)item, i == menu->cursor);
 				break;
 
 			case MTYPE_INPUT_KEY:
-				InputKey_Draw((menuinputkey_s*)item, i == menu->cursor);
+				InputKey_Draw((menuinputkey_t*)item, i == menu->cursor);
 				break;
 
 			case MTYPE_PLAYER_SKIN:
 				PlayerSkin_Draw(item);
-				SpinControl_Draw((menulist_s*)item, i == menu->cursor);
+				SpinControl_Draw((menulist_t*)item, i == menu->cursor);
 				break;
 
 			case MTYPE_SPINCONTROL:
-				SpinControl_Draw((menulist_s*)item, i == menu->cursor);
+				SpinControl_Draw((menulist_t*)item, i == menu->cursor);
 				break;
 
 			default: //mxd. Added default case.
@@ -1245,10 +1245,10 @@ void Menu_DrawTitle(const cvar_t* title) // H2
 }
 
 // Q2 counterpart
-menucommon_s* Menu_ItemAtCursor(const menuframework_s* menu)
+menucommon_t* Menu_ItemAtCursor(const menuframework_t* menu)
 {
 	if (menu->cursor >= 0 && menu->cursor < menu->nitems)
-		return (menucommon_s*)menu->items[menu->cursor];
+		return (menucommon_t*)menu->items[menu->cursor];
 
 	return NULL;
 }

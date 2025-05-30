@@ -25,30 +25,30 @@ cvar_t* m_item_friendlyfire;
 cvar_t* m_item_dismember;
 cvar_t* m_item_nonames;
 
-static menuframework_s s_dmoptions_menu;
+static menuframework_t s_dmoptions_menu;
 
-static menulist_s s_weapons_stay_box;
-static menulist_s s_powerups_box;
-static menulist_s s_shrines_box;
-static menulist_s s_health_box;
-static menulist_s s_offensive_spell_box;
-static menulist_s s_defensive_spell_box;
-static menulist_s s_infinitemana_box;
-static menulist_s s_nonames_box;
-static menulist_s s_force_respawn_box;
-static menulist_s s_allow_exit_box;
-static menulist_s s_samelevel_box;
-static menulist_s s_show_leader_box;
-static menulist_s s_teamplay_box;
-static menulist_s s_friendlyfire_box;
-static menulist_s s_allow_dismemberment_box;
+static menulist_t s_weapons_stay_box;
+static menulist_t s_powerups_box;
+static menulist_t s_shrines_box;
+static menulist_t s_health_box;
+static menulist_t s_offensive_spell_box;
+static menulist_t s_defensive_spell_box;
+static menulist_t s_infinitemana_box;
+static menulist_t s_nonames_box;
+static menulist_t s_force_respawn_box;
+static menulist_t s_allow_exit_box;
+static menulist_t s_samelevel_box;
+static menulist_t s_show_leader_box;
+static menulist_t s_teamplay_box;
+static menulist_t s_friendlyfire_box;
+static menulist_t s_allow_dismemberment_box;
 
 static void DMFlagCallback(void* self)
 {
 	uint bit = 0;
 	int remove_flag = 0;
 	uint flags = Q_ftol(Cvar_VariableValue("dmflags"));
-	const menulist_s* f = self;
+	const menulist_t* f = self;
 
 	if (f == &s_teamplay_box)
 	{

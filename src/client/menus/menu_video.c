@@ -30,18 +30,18 @@ static float m_detail;
 static float m_picmip;
 static float m_skinmip;
 
-static menuframework_s* s_current_menu;
-static menuframework_s s_opengl_menu;
-static menuframework_s s_software_menu;
+static menuframework_t* s_current_menu;
+static menuframework_t s_opengl_menu;
+static menuframework_t s_software_menu;
 
-static menulist_s s_ref_list[2];
-static menulist_s s_mode_list[2];
-static menuslider_s s_screensize_slider[2];
-static menuslider_s s_gamma_slider[2];
-static menuslider_s s_brightness_slider[2];
-static menuslider_s s_contrast_slider[2];
-static menuslider_s s_detail_slider[2];
-static menulist_s s_fs_box[2];
+static menulist_t s_ref_list[2];
+static menulist_t s_mode_list[2];
+static menuslider_t s_screensize_slider[2];
+static menuslider_t s_gamma_slider[2];
+static menuslider_t s_brightness_slider[2];
+static menuslider_t s_contrast_slider[2];
+static menuslider_t s_detail_slider[2];
+static menulist_t s_fs_box[2];
 //static menulist_s s_paletted_texture_box; //mxd. Disabled
 
 static int s_current_menu_index;
@@ -77,13 +77,13 @@ static void RendererCallback(void* self)
 // Q2 counterpart
 static void ScreenSizeCallback(void* self)
 {
-	const menuslider_s* slider = (menuslider_s*)self;
+	const menuslider_t* slider = (menuslider_t*)self;
 	Cvar_SetValue("viewsize", slider->curvalue * 10.0f);
 }
 
 static void GammaCallback(void* self) // H2
 {
-	const menuslider_s* slider = (menuslider_s*)self;
+	const menuslider_t* slider = (menuslider_t*)self;
 
 	if (s_current_menu_index == SOFTWARE_MENU)
 		s_gamma_slider[OPENGL_MENU].curvalue = s_gamma_slider[SOFTWARE_MENU].curvalue;
@@ -95,7 +95,7 @@ static void GammaCallback(void* self) // H2
 
 static void BrightnessCallback(void* self)
 {
-	const menuslider_s* slider = (menuslider_s*)self;
+	const menuslider_t* slider = (menuslider_t*)self;
 
 	if (s_current_menu_index == SOFTWARE_MENU)
 		s_brightness_slider[OPENGL_MENU].curvalue = s_brightness_slider[SOFTWARE_MENU].curvalue;
@@ -107,7 +107,7 @@ static void BrightnessCallback(void* self)
 
 static void ContrastCallback(void* self) // H2
 {
-	const menuslider_s* slider = (menuslider_s*)self;
+	const menuslider_t* slider = (menuslider_t*)self;
 
 	if (s_current_menu_index == SOFTWARE_MENU)
 		s_contrast_slider[OPENGL_MENU].curvalue = s_contrast_slider[SOFTWARE_MENU].curvalue;
@@ -119,7 +119,7 @@ static void ContrastCallback(void* self) // H2
 
 static void DetailCallback(void* self) // H2
 {
-	const menuslider_s* slider = (menuslider_s*)self;
+	const menuslider_t* slider = (menuslider_t*)self;
 
 	if (s_current_menu_index == SOFTWARE_MENU)
 		s_detail_slider[OPENGL_MENU].curvalue = s_detail_slider[SOFTWARE_MENU].curvalue;

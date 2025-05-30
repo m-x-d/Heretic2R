@@ -11,14 +11,14 @@ cvar_t* m_banner_loadcfg;
 
 #define NUM_CONFIG_ITEMS	8
 
-static menuframework_s s_loadcfg_menu;
-static menuaction_s loadcfg_items[NUM_CONFIG_ITEMS];
+static menuframework_t s_loadcfg_menu;
+static menuaction_t loadcfg_items[NUM_CONFIG_ITEMS];
 
 static char cfg_filenames[NUM_CONFIG_ITEMS][MAX_QPATH];
 
 static void LoadCfgFunc(void* self) // H2
 {
-	const menuaction_s* item = self;
+	const menuaction_t* item = self;
 	Cbuf_AddText(va("exec config/%s.cfg\n", cfg_filenames[item->generic.localdata[0]]));
 	M_PopMenu();
 }
@@ -58,7 +58,7 @@ static int LoadCfg_MenuInit(void) // H2
 	int oy = 0;
 	for (int i = 0; i < num_configs; i++, oy += 20)
 	{
-		menuaction_s* item = &loadcfg_items[i];
+		menuaction_t* item = &loadcfg_items[i];
 
 		item->generic.type = MTYPE_ACTION;
 		item->generic.flags = QMF_LEFT_JUSTIFY;

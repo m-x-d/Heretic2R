@@ -10,12 +10,12 @@
 
 cvar_t* m_banner_save;
 
-menuframework_s s_savegame_menu;
-static menuaction_s s_savegame_actions[MAX_SAVEGAMES - 1]; //mxd. Don't include the autosave slot.
+menuframework_t s_savegame_menu;
+static menuaction_t s_savegame_actions[MAX_SAVEGAMES - 1]; //mxd. Don't include the autosave slot.
 
 static void SaveGameCallback(void* self)
 {
-	const menuaction_s* action = (menuaction_s*)self;
+	const menuaction_t* action = (menuaction_t*)self;
 
 	Cbuf_AddText(va("save save%i\n", action->generic.localdata[0]));
 	M_ForceMenuOff();

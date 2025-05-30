@@ -115,7 +115,7 @@ extern uint m_menu_side;
 typedef void (*m_drawfunc_t)(void); //mxd
 typedef const char* (*m_keyfunc_t)(int key); //mxd
 
-typedef struct menuframework_t
+typedef struct menuframework_s
 {
 	int x;
 	int y;
@@ -124,8 +124,8 @@ typedef struct menuframework_t
 	int nitems;
 	struct menucommon_s* items[MAXMENUITEMS];
 	const char* statusbar;
-	void (*cursordraw)(struct menuframework_t* m);
-} menuframework_s;
+	void (*cursordraw)(struct menuframework_s* m);
+} menuframework_t;
 
 enum menuitem_type_e
 {
@@ -154,68 +154,68 @@ typedef struct
 	int y;
 	const char* name;
 	int width;
-	menuframework_s* parent;
+	menuframework_t* parent;
 	int cursor_offset; //TODO: unused?
 	int localdata[4];
 	uint flags;
 	void (*callback)(void* self);
-} menucommon_s;
+} menucommon_t;
 
 typedef struct
 {
-	menucommon_s generic;
+	menucommon_t generic;
 	int curvalue;
 	char** itemnames;
-} menulist_s;
+} menulist_t;
 
 typedef struct
 {
-	menucommon_s generic;
-} menuaction_s;
+	menucommon_t generic;
+} menuaction_t;
 
 typedef struct
 {
-	menucommon_s generic;
+	menucommon_t generic;
 	float minvalue;
 	float maxvalue;
 	float curvalue;
 	float range;
-} menuslider_s;
+} menuslider_t;
 
 typedef struct
 {
-	menucommon_s generic;
+	menucommon_t generic;
 	char buffer[80];
 	int cursor;
 	int length;
 	int visible_length;
 	int visible_offset;
-} menufield_s;
+} menufield_t;
 
 typedef struct
 {
-	menucommon_s generic;
-} menuinputkey_s;
+	menucommon_t generic;
+} menuinputkey_t;
 
-void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key);
-void M_PopMenu(void);
-char* Default_MenuKey(menuframework_s* menu, int key);
-const char* Generic_MenuKey(int key);
-qboolean Field_Key(menufield_s* field, int key);
-void M_UpdateOrigMode(void); // H2
-float M_GetMenuAlpha(void); // H2
-int M_GetMenuLabelX(int text_width); // H2
-int M_GetMenuOffsetY(const menuframework_s* menu); // H2
-void M_DrawTextBox(int x, int y, int width, int lines);
-void M_Print(int cx, int cy, int msg_index, paletteRGBA_t color);
+extern void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key);
+extern void M_PopMenu(void);
+extern char* Default_MenuKey(menuframework_t* menu, int key);
+extern const char* Generic_MenuKey(int key);
+extern qboolean Field_Key(menufield_t* field, int key);
+extern void M_UpdateOrigMode(void); // H2
+extern float M_GetMenuAlpha(void); // H2
+extern int M_GetMenuLabelX(int text_width); // H2
+extern int M_GetMenuOffsetY(const menuframework_t* menu); // H2
+extern void M_DrawTextBox(int x, int y, int width, int lines);
+extern void M_Print(int cx, int cy, int msg_index, paletteRGBA_t color);
 
-void Menu_AddItem(menuframework_s* menu, void* item);
-qboolean Menu_SelectItem(const menuframework_s* menu);
-void Menu_SlideItem(const menuframework_s* menu, int dir);
-void Menu_AdjustCursor(menuframework_s* menu, int dir);
-void Menu_Center(menuframework_s* menu);
-void Menu_Draw(const menuframework_s* menu);
-void Menu_DrawString(int x, int y, const char* name, float alpha, qboolean selected);
-void Menu_DrawObjectives(const char* message, int max_line_length); // H2
-void Menu_DrawTitle(const cvar_t* title); // H2
-menucommon_s* Menu_ItemAtCursor(const menuframework_s* menu);
+extern void Menu_AddItem(menuframework_t* menu, void* item);
+extern qboolean Menu_SelectItem(const menuframework_t* menu);
+extern void Menu_SlideItem(const menuframework_t* menu, int dir);
+extern void Menu_AdjustCursor(menuframework_t* menu, int dir);
+extern void Menu_Center(menuframework_t* menu);
+extern void Menu_Draw(const menuframework_t* menu);
+extern void Menu_DrawString(int x, int y, const char* name, float alpha, qboolean selected);
+extern void Menu_DrawObjectives(const char* message, int max_line_length); // H2
+extern void Menu_DrawTitle(const cvar_t* title); // H2
+extern menucommon_t* Menu_ItemAtCursor(const menuframework_t* menu);

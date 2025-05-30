@@ -16,11 +16,11 @@ cvar_t* m_item_refresh;
 
 #define MAX_LOCAL_SERVERS	8
 
-static menuframework_s s_joinserver_menu;
+static menuframework_t s_joinserver_menu;
 
-static menuaction_s s_joinserver_address_book_action;
-static menuaction_s s_joinserver_search_action;
-static menuaction_s s_joinserver_server_actions[MAX_LOCAL_SERVERS];
+static menuaction_t s_joinserver_address_book_action;
+static menuaction_t s_joinserver_search_action;
+static menuaction_t s_joinserver_server_actions[MAX_LOCAL_SERVERS];
 
 static int m_num_servers;
 
@@ -65,7 +65,7 @@ static void JoinServerFunc(void* self)
 {
 	char buffer[128];
 
-	const int index = (menuaction_s*)self - s_joinserver_server_actions;
+	const int index = (menuaction_t*)self - s_joinserver_server_actions;
 	if (index >= m_num_servers || Q_stricmp(local_server_names[index], MENU_EMPTY) == 0)
 		return;
 
@@ -103,7 +103,7 @@ void JoinServer_MenuInit(void)
 
 	for (int i = 0; i < MAX_LOCAL_SERVERS; i++)
 	{
-		menuaction_s* item = &s_joinserver_server_actions[i];
+		menuaction_t* item = &s_joinserver_server_actions[i];
 		item->generic.type = MTYPE_ACTION;
 		strcpy_s(local_server_names[i], sizeof(local_server_names[i]), MENU_EMPTY);
 		item->generic.name = local_server_names[i];

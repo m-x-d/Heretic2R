@@ -11,8 +11,8 @@
 
 cvar_t* m_banner_load;
 
-menuframework_s s_loadgame_menu;
-static menuaction_s s_loadgame_actions[MAX_SAVEGAMES];
+menuframework_t s_loadgame_menu;
+static menuaction_t s_loadgame_actions[MAX_SAVEGAMES];
 
 char m_savestrings[MAX_SAVEGAMES][64];
 static qboolean m_savevalid[MAX_SAVEGAMES];
@@ -76,7 +76,7 @@ void Create_Savestrings(void)
 
 static void LoadGameCallback(void* self)
 {
-	const menuaction_s* action = (menuaction_s*)self;
+	const menuaction_t* action = (menuaction_t*)self;
 	const int save_index = action->generic.localdata[0];
 
 	if (m_savevalid[save_index])
