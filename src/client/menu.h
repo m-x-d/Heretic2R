@@ -124,7 +124,7 @@ typedef struct menuframework_t
 	int nitems;
 	struct menucommon_s* items[MAXMENUITEMS];
 	const char* statusbar;
-	void (*cursordraw)(struct menuframework_s* m);
+	void (*cursordraw)(struct menuframework_t* m);
 } menuframework_s;
 
 enum menuitem_type_e
