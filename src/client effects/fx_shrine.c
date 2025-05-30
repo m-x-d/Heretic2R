@@ -296,10 +296,10 @@ static qboolean ShrineStaffThink(struct client_entity_s* self, centity_t* owner)
 
 	// Update the particles colors.
 	if (self->r.color.g > 0)
-		self->r.color.g += STAFF_GREEN_ADD;
+		self->r.color.g += (byte)STAFF_GREEN_ADD;
 
 	if (self->r.color.b > 0)
-		self->r.color.b += STAFF_BLUE_ADD;
+		self->r.color.b += (byte)STAFF_BLUE_ADD;
 
 	// Move the rings up/down next frame.
 	self->SpawnData += STAFF_HEIGHT_ADD;
