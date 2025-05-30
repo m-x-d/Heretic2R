@@ -263,7 +263,7 @@ void DeathmatchScoreboardMessage(qboolean log_file)
 #define MAX_STRING_SIZE 1400
 
 	const char* game_types[3] = { "Cooperative", "Death Match", "Team Play Death Match" };
-	FILE* logfile;
+	FILE* logfile = NULL; //mxd. Initialize to avoid compiler warning.
 
 	if (log_file && log_file_name->string[0] != 0)
 	{
