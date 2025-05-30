@@ -710,7 +710,7 @@ static void Cmd_DefPrev_f(const edict_t* ent)
 		if (pers->defence == def)
 		{
 			//TODO: shouldn't defence item itself play select sound?
-			cl->playerinfo.G_Sound(SND_PRED_NULL, level.time, ent, CHAN_AUTO, cl->playerinfo.G_SoundIndex("Weapons/DefenseSelect.wav"), 1.0f, ATTN_NORM, 0.0f);
+			cl->playerinfo.G_Sound((byte)SND_PRED_NULL, level.time, ent, CHAN_AUTO, cl->playerinfo.G_SoundIndex("Weapons/DefenseSelect.wav"), 1.0f, ATTN_NORM, 0.0f);
 			return; // Successful.
 		}
 	}
@@ -743,7 +743,7 @@ static void Cmd_DefNext_f(const edict_t* ent)
 		if (pers->defence == def)
 		{
 			//TODO: shouldn't defence item itself play select sound?
-			cl->playerinfo.G_Sound(SND_PRED_NULL, level.time, ent, CHAN_AUTO, cl->playerinfo.G_SoundIndex("Weapons/DefenseSelect.wav"), 1.0f, ATTN_NORM, 0.0f);
+			cl->playerinfo.G_Sound((byte)SND_PRED_NULL, level.time, ent, CHAN_AUTO, cl->playerinfo.G_SoundIndex("Weapons/DefenseSelect.wav"), 1.0f, ATTN_NORM, 0.0f);
 			return; // Successful.
 		}
 	}
