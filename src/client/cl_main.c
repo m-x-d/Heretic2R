@@ -582,11 +582,9 @@ static void CL_Connect_f(void)
 
 	if (Com_ServerState())
 		SV_Shutdown(va("Server quit\n", msg), false); // If running a local server, kill it and reissue.
-	else
-		CL_Disconnect();
 
 	const char* server = Cmd_Argv(1);
-	NET_Config(true); // Allow remote
+	NET_Config(true); // Allow remote.
 	CL_Disconnect();
 
 	cls.state = ca_connecting;
@@ -607,7 +605,6 @@ static void CL_Reconnect_f(void)
 		CL_ClearSkeletalEntities(); // H2
 
 		Com_Printf("reconnecting...\n");
-		cls.state = ca_connected;
 
 		MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
 		MSG_WriteString(&cls.netchan.message, "new");
