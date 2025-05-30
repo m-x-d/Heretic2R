@@ -35,7 +35,7 @@ int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, const cplane_t* plane)
 						plane->normal[1] * (yneg ? emaxs : emins)[1] +
 						plane->normal[2] * (zneg ? emaxs : emins)[2];
 
-	assert(!(p->signbits & ~7));
+	assert(!(plane->signbits & ~7));
 	
 	int sides = 0;
 

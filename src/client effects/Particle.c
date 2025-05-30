@@ -70,6 +70,10 @@ int AddParticlesToView(client_entity_t* ce)
 
 	for (prev = &ce->p_root, current = ce->p_root; current != NULL; current = current->next)
 	{
+#ifdef _DEBUG
+		const int ptype = (current->type & PFL_FLAG_MASK);
+#endif
+
 		const int d_msec = ParticleUpdateTime - current->startTime;
 		const float d_time = (float)d_msec * 0.001f;
 		int alpha = (int)current->color.a + Q_ftol(d_time * current->d_alpha);
