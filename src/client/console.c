@@ -67,8 +67,7 @@ void Con_ToggleConsole_f(void)
 
 	if (cls.key_dest == key_console)
 	{
-		M_ForceMenuOff();
-		Cvar_Set("paused", "0");
+		M_ForceMenuOff(); //mxd. Also un-pauses the game.
 	}
 	else
 	{
