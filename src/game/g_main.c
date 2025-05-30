@@ -367,8 +367,6 @@ static void EntityThink(edict_t* self)
 	// See if anything is happening to us we need to update...
 	CheckContinuousAutomaticEffects(self);
 
-	const float think_time = self->nextthink;
-
 	// Not used for guides anymore, but nice for effects like tinting/fading, etc. that should continue while the entity is doing other stuff.
 	if (self->pre_think != NULL && self->next_pre_think > 0.0f && self->next_pre_think < level.time)
 		self->pre_think(self);
