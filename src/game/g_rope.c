@@ -564,12 +564,8 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 	VectorCopy(self->s.origin, rope_rest);
 	rope_rest[2] -= grab_len;
 
-	// Find the length of the rope.
-	vec3_t v_rope;
-	VectorSubtract(rope_top, rope_rest, v_rope);
-	const float rope_len = VectorLength(v_rope);
-
 	// Find the vector towards the middle, and that distance (disregarding height).
+	vec3_t v_rope;
 	VectorSubtract(rope_rest, grab->s.origin, v_rope);
 	VectorNormalize(v_rope);
 	const float dist = vhlen(rope_rest, grab->s.origin);
