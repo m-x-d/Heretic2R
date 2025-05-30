@@ -35,7 +35,7 @@ static void SpawnDebris(edict_t* self, float size, vec3_t origin)
 	};
 
 	size /= 10.0f;
-	byte b_size = (byte)(Clamp(size, 1.0f, 255.0f));
+	int debris_size = ClampI((int)size, 1, 255);
 
 	vec3_t half_size;
 	VectorScale(self->size, 0.5f, half_size);
@@ -47,29 +47,23 @@ static void SpawnDebris(edict_t* self, float size, vec3_t origin)
 
 	if (self->materialtype == MAT_FLESH || self->materialtype == MAT_INSECT)
 	{
-		const int violence = ((blood_level != NULL) ? (int)blood_level->value : VIOLENCE_DEFAULT); //TODO: why blood_level NULL check? Inited in InitGame(), accessed without NULL check in G_RunFrame()...
-
-		if (violence < VIOLENCE_NORMAL)
+		if (BLOOD_LEVEL == VIOLENCE_NONE) //mxd. Original logic does blood_level NULL check before using it. //mxd. 'BLOOD_LEVEL < VIOLENCE_NORMAL' in original logic.
 		{
-			size /= 10.0f; //TODO: check this. Do we really need to divide by 10 AGAIN?
-			b_size = (byte)(Clamp(size, 1.0f, 255.0f));
-			gi.CreateEffect(NULL, FX_DEBRIS, fx_flags, origin, "bbdb", b_size, MAT_STONE, half_size, b_mag);
+			debris_size = max(1, debris_size / 10); //TODO: check this. Do we really need to divide by 10 AGAIN?
+			gi.CreateEffect(NULL, FX_DEBRIS, fx_flags, origin, "bbdb", (byte)debris_size, MAT_STONE, half_size, b_mag);
 		}
 		else
 		{
-			if (violence > VIOLENCE_NORMAL)
-			{
-				b_size *= (violence - VIOLENCE_NORMAL); //TODO: doesn't make much sense. Max violence configurable via menus is 3. Should be (violence - VIOLENCE_NORMAL + 1)?
-				b_size = min(255, b_size);
-			}
+			if (BLOOD_LEVEL > VIOLENCE_BLOOD) //mxd. 'else if (BLOOD_LEVEL > VIOLENCE_NORMAL)' in original logic (doesn't make much sense. Max violence configurable via menus is 3).
+				debris_size = min(255, debris_size * BLOOD_LEVEL);  //mxd. 'BLOOD_LEVEL - VIOLENCE_NORMAL' in original logic.
 
 			if (self->materialtype == MAT_INSECT)
 				fx_flags |= CEF_FLAG8;
 
 			if (Q_stricmp(self->classname, "monster_tcheckrik_male") == 0) //mxd. stricmp -> Q_stricmp
-				fx_flags |= CEF_FLAG7;//use male insect skin on chunks
+				fx_flags |= CEF_FLAG7; // Use male insect skin on chunks.
 
-			gi.CreateEffect(NULL, FX_FLESH_DEBRIS, fx_flags, origin, "bdb", b_size, half_size, b_mag);
+			gi.CreateEffect(NULL, FX_FLESH_DEBRIS, fx_flags, origin, "bdb", (byte)debris_size, half_size, b_mag);
 		}
 	}
 	else
@@ -77,11 +71,11 @@ static void SpawnDebris(edict_t* self, float size, vec3_t origin)
 		if (self->s.renderfx & RF_REFLECTION)
 			fx_flags |= CEF_FLAG8;
 
-		gi.CreateEffect(NULL, FX_DEBRIS, fx_flags, origin, "bbdb", b_size, (byte)self->materialtype, half_size, b_mag);
+		gi.CreateEffect(NULL, FX_DEBRIS, fx_flags, origin, "bbdb", (byte)debris_size, (byte)self->materialtype, half_size, b_mag);
 	}
 
 	if (self->classID == CID_OBJECT && (strcmp(self->classname, "obj_larvabrokenegg") == 0 || strcmp(self->classname, "obj_larvaegg") == 0))
-		self->materialtype = MAT_POTTERY;
+		self->materialtype = MAT_POTTERY; //TODO: set this on obj_larvabrokenegg and obj_larvaegg instead?
 
 	if (debris_sounds[self->materialtype] != NULL)
 		gi.sound(self, CHAN_VOICE, gi.soundindex(debris_sounds[self->materialtype]), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
