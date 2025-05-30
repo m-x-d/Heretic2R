@@ -61,6 +61,7 @@ size_t SetParms(SinglyLinkedList_t* this_ptr, const char* format, va_list marker
 
 			default:
 				assert(0);
+				return 0; //mxd
 		}
 
 		if (append)
