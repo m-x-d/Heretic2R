@@ -49,7 +49,7 @@ void CL_ClearSkeletalEntities(void) // H2
 	if (fxe.Clear != NULL)
 		fxe.Clear();
 
-	centity_t* ent = cl_entities;
+	centity_t* ent = &cl_entities[0];
 	for (int i = 0; i < MAX_NETWORKABLE_EDICTS; i++, ent++)
 	{
 		if (ent->referenceInfo != NULL)
@@ -142,7 +142,7 @@ void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int num
 	}
 
 	if (GetB(bits, U_SCALE))
-		to->scale = (float)MSG_ReadByte(&net_message) * 0.01f;
+		to->scale = (float)(MSG_ReadByte(&net_message)) * 0.01f;
 
 	if (GetB(bits, U_EFFECTS8) || GetB(bits, U_EFFECTS16))
 	{
