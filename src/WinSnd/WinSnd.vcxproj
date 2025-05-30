@@ -117,6 +117,7 @@
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>..\qcommon;..\client;..\game;..\Player;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4100; 4201</DisableSpecificWarnings>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>

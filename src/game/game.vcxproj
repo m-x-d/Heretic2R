@@ -503,6 +503,7 @@
       <AdditionalIncludeDirectories>..\Player;..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>
       </CompileAs>
+      <DisableSpecificWarnings>4100; 4201</DisableSpecificWarnings>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
