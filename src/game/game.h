@@ -187,8 +187,8 @@ typedef struct
 
 	// New_Physics
 	int (*FindEntitiesInBounds)(const vec3_t mins, const vec3_t maxs, struct SinglyLinkedList_s* list, int areatype);
-	void (*TraceBoundingForm)(struct FormMove_s* formMove);
-	qboolean (*ResizeBoundingForm)(edict_t* self, struct FormMove_s* formMove);
+	void (*TraceBoundingForm)(struct FormMove_s* form_move);
+	qboolean (*ResizeBoundingForm)(edict_t* self, struct FormMove_s* form_move);
 	int (*GetContentsAtPoint)(const vec3_t point);
 	qboolean (*CheckDistances)(const vec3_t origin, float dist);
 
@@ -212,7 +212,7 @@ typedef struct
 
 	// Removes the effect from the server's persistent effect list. The effect is not removed on the client.
 	// This should be done by removing the effects from the owning entity or freeing.
-	qboolean(*RemovePersistantEffect) (int toRemove, int call_from);
+	qboolean (*RemovePersistantEffect)(int to_remove, int call_from);
 
 	// Managed memory allocation.
 	void* (*TagMalloc)(int size, int tag);
