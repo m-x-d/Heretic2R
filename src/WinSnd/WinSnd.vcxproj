@@ -137,7 +137,7 @@
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <LinkDLL>true</LinkDLL>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>..\..\build\WinSnd.dll</OutputFile>
       <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
