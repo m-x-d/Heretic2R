@@ -76,8 +76,6 @@ H2COMMON_API extern float anglemod(float a);
 H2COMMON_API extern float anglemod_old(float a);
 H2COMMON_API extern float LerpAngle(float a1, float a2, float frac);
 
-extern int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, const struct cplane_s *plane);
-
 #define MAX_COLORS	33
 
 extern H2COMMON_API paletteRGBA_t TextPalette[MAX_COLORS];
@@ -859,6 +857,9 @@ typedef struct
 } player_state_t;
 
 #pragma endregion
+
+// The only q_shared.c function...
+extern int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, const cplane_t* plane);
 
 #pragma region ========================== Inlines ==========================
 //TODO: mxd. Remove
