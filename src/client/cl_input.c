@@ -592,7 +592,7 @@ static void CL_FinishMove(usercmd_t* cmd)
 	in_creep.state &= ~2;
 
 	// Autoaim
-	if ((in_autoaim.state & 3) != (uint)cl_doautoaim->value)
+	if ((in_autoaim.state & 3) != (int)cl_doautoaim->value)
 		cmd->buttons |= BUTTON_AUTOAIM;
 	in_autoaim.state &= ~2;
 
