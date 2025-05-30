@@ -167,7 +167,7 @@ static qboolean PlayerConfig_MenuInit(void)
 	s_player_name_field.generic.y = 0;
 	s_player_name_field.length = 20;
 	s_player_name_field.visible_length = 20;
-	strcpy_s(s_player_name_field.buffer, sizeof(s_player_name_field.buffer), name->string); //mxd. strcpy -> strcpy_s
+	strcpy_s(s_player_name_field.buffer, sizeof(s_player_name_field.buffer), player_name->string); //mxd. strcpy -> strcpy_s
 	s_player_name_field.cursor = (int)strlen(s_player_name_field.buffer);
 
 	Com_sprintf(name_skin, sizeof(name_skin), "\x02%s", m_item_skin->string);

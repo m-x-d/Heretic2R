@@ -115,7 +115,7 @@ static cvar_t* rate;
 static cvar_t* msg;
 static cvar_t* fov;
 
-cvar_t* name;
+cvar_t* player_name; //mxd. Named 'name' in Q2. Renamed to avoid collisions with local vars with the same name.
 cvar_t* autoweapon;
 cvar_t* colour_obituary;
 cvar_t* colour_chat;
@@ -692,13 +692,13 @@ void CL_SaveConfig_f(void) // H2
 	if (cls.state == ca_uninitialized)
 		return;
 
-	if (name == NULL || name->string[0] == 0) //mxd. strlen(str) -> str[0] check.
+	if (player_name == NULL || player_name->string[0] == 0) //mxd. strlen(str) -> str[0] check.
 	{
 		Com_Printf("ERROR: Set the name variable as the filename to save.\n");
 		return;
 	}
 
-	Com_sprintf(cfg_name, sizeof(cfg_name), "%s/config/%s.cfg", FS_Gamedir(), name->string);
+	Com_sprintf(cfg_name, sizeof(cfg_name), "%s/config/%s.cfg", FS_Gamedir(), player_name->string);
 	FS_CreatePath(cfg_name);
 
 	if (fopen_s(&f, cfg_name, "w") != 0) //mxd. fopen -> fopen_s
@@ -1252,7 +1252,7 @@ static void CL_InitLocal(void)
 
 	// userinfo
 	info_password = Cvar_Get("password", "", CVAR_USERINFO);
-	name = Cvar_Get("name", "Corvus", CVAR_ARCHIVE | CVAR_USERINFO);
+	player_name = Cvar_Get("name", "Corvus", CVAR_ARCHIVE | CVAR_USERINFO);
 	skin = Cvar_Get("skin", "Corvus", CVAR_ARCHIVE | CVAR_USERINFO);
 	skindir = Cvar_Get("skindir", "players", CVAR_ARCHIVE);
 	playerdir = Cvar_Get("playerdir", "players", CVAR_ARCHIVE);
