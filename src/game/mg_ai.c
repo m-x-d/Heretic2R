@@ -1177,7 +1177,7 @@ static void BodyPhaseOutPostThink(edict_t* self) //mxd. Named 'body_phase_out' i
 
 	if (self->s.color.a > PHASE_OUT_STEP)
 	{
-		self->s.color.a -= irand(PHASE_OUT_STEP / 2, PHASE_OUT_STEP);
+		self->s.color.a -= (byte)irand(PHASE_OUT_STEP / 2, PHASE_OUT_STEP);
 		self->next_post_think = level.time + 0.05f;
 	}
 	else
@@ -1677,7 +1677,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 		VectorCopy(trace.endpos, self->s.origin);
 
 	qboolean new_best_yaw = false;
-	float old_best_yaw;
+	float old_best_yaw = 0.0f; //mxd. Initialize to avoid compiler warning.
 
 	// If facing best_move_yaw and can't move that way, stop trying to move in that dir now.
 	if (self->monsterinfo.idle_time > level.time && self->s.angles[YAW] == self->best_move_yaw)
@@ -1949,7 +1949,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 		return true;
 
 	qboolean new_best_yaw = false;
-	float old_best_yaw;
+	float old_best_yaw = 0.0f; //mxd. Initialize to avoid compiler warning.
 
 	// If facing best_move_yaw and can't move that way, stop trying in that dir now.
 	if (self->monsterinfo.idle_time > level.time && self->s.angles[YAW] == self->best_move_yaw)
