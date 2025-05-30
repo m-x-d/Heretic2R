@@ -449,10 +449,10 @@ static void AssassinCloakFadePreThink(edict_t* self) //mxd. Named 'assassinCloak
 
 	for (int i = 0; i < 3; i++) // Fade out RGB.
 		if (self->s.color.c_array[i] > 50)
-			self->s.color.c_array[i] -= irand(0, FADE_INCREMENT * 3);
+			self->s.color.c_array[i] -= (byte)irand(0, FADE_INCREMENT * 3);
 
 	if (self->s.color.a > 150) // Fade out Alpha.
-		self->s.color.a -= irand(0, FADE_INCREMENT);
+		self->s.color.a -= (byte)irand(0, FADE_INCREMENT);
 
 	if (self->s.color.r <= 50 && self->s.color.g <= 50 && self->s.color.b <= 50 && self->s.color.a <= 150)
 		self->pre_think = AssassinCloakPreThink;

@@ -855,7 +855,7 @@ static void MorcalavinPhaseOutPreThink(edict_t* self) //mxd. Named 'morcalavin_p
 
 	if (self->s.color.a > PHASE_OUT_INTERVAL)
 	{
-		self->s.color.a -= irand(PHASE_OUT_INTERVAL / 2, PHASE_OUT_INTERVAL);
+		self->s.color.a -= (byte)irand(PHASE_OUT_INTERVAL / 2, PHASE_OUT_INTERVAL);
 		self->next_pre_think = level.time + 0.05f;
 	}
 	else
@@ -872,7 +872,7 @@ static void MorcalavinPhaseInPreThink(edict_t* self) //mxd. Named 'morcalavin_ph
 
 	if (self->s.color.a < 255 - PHASE_IN_INTERVAL)
 	{
-		self->s.color.a += irand(PHASE_IN_INTERVAL / 2, PHASE_IN_INTERVAL);
+		self->s.color.a += (byte)irand(PHASE_IN_INTERVAL / 2, PHASE_IN_INTERVAL);
 		self->next_pre_think = level.time + 0.05f;
 	}
 	else
