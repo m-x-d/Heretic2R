@@ -8,15 +8,17 @@
 
 #include "qcommon.h"
 
-// These are the maximum number that maybe rendered on any given frame
-#define	MAX_DLIGHTS			32
-#define	MAX_ENTITIES		128	
-#define MAX_ALPHA_ENTITIES	(MAX_ENTITIES * 2) //TODO: increase? Exceeded relatively often...
-#define	MAX_SERVER_ENTITIES	MAX_ENTITIES
-#define	MAX_PARTICLES		4096
-#define	MAX_LIGHTSTYLES		256
+#define API_VERSION			3
 
-#define NUM_PARTICLE_TYPES	62	// This doesn't use the macro because of referencing weirdness.
+// These are the maximum number that maybe rendered on any given frame
+#define MAX_DLIGHTS			32
+#define MAX_ENTITIES		128	
+#define MAX_ALPHA_ENTITIES	(MAX_ENTITIES * 2) //TODO: increase? Exceeded relatively often...
+#define MAX_SERVER_ENTITIES	MAX_ENTITIES
+#define MAX_PARTICLES		4096
+#define MAX_LIGHTSTYLES		256
+
+#define NUM_PARTICLE_TYPES	62 // This doesn't use the macro because of referencing weirdness.
 
 typedef struct entity_s
 {
@@ -161,8 +163,6 @@ typedef struct
 	int anum_particles;
 	particle_t* aparticles;
 } refdef_t;
-
-#define	API_VERSION		3
 
 // Functions exported by the refresh module
 typedef struct
