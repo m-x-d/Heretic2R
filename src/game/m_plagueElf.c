@@ -1168,7 +1168,7 @@ static void PlagueElfPhaseOutPreThink(edict_t* self) //mxd. Named 'pelf_phase_ou
 {
 	if (self->s.color.a > PLAGUEELF_PHASE_INTERVAL)
 	{
-		self->s.color.a -= irand(PLAGUEELF_PHASE_INTERVAL / 2, PLAGUEELF_PHASE_INTERVAL);
+		self->s.color.a -= (byte)irand(PLAGUEELF_PHASE_INTERVAL / 2, PLAGUEELF_PHASE_INTERVAL);
 		self->pre_think = PlagueElfPhaseOutPreThink;
 		self->next_pre_think = level.time + 0.05f;
 	}
@@ -1184,7 +1184,7 @@ static void PlagueElfPhaseInPreThink(edict_t* self) //mxd. Named 'pelf_phase_in'
 {
 	if (self->s.color.a < 255 - PLAGUEELF_PHASE_INTERVAL)
 	{
-		self->s.color.a += irand(PLAGUEELF_PHASE_INTERVAL / 2, PLAGUEELF_PHASE_INTERVAL);
+		self->s.color.a += (byte)irand(PLAGUEELF_PHASE_INTERVAL / 2, PLAGUEELF_PHASE_INTERVAL);
 		self->pre_think = PlagueElfPhaseInPreThink;
 		self->next_pre_think = level.time + 0.05f;
 	}
