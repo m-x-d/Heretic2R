@@ -1647,7 +1647,7 @@ static void PutClientInServer(edict_t* ent)
 	// Initialize the player's gclient_t and playerstate_t.
 
 	for (int i = 0; i < 3; i++)
-		client->ps.pmove.origin[i] = (short)(spawn_origin[i] * 8);
+		client->ps.pmove.origin[i] = (short)(spawn_origin[i] * 8.0f);
 
 	client->ps.fov = (float)(Q_atoi(Info_ValueForKey(client->playerinfo.pers.userinfo, "fov")));
 
@@ -2285,8 +2285,8 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 
 	for (int i = 0; i < 3; i++)
 	{
-		pm.s.origin[i] = (short)(ent->s.origin[i] * 8);
-		pm.s.velocity[i] = (short)(ent->velocity[i] * 8);
+		pm.s.origin[i] = (short)(ent->s.origin[i] * 8.0f);
+		pm.s.velocity[i] = (short)(ent->velocity[i] * 8.0f);
 	}
 
 	pm.cmd = *ucmd;
