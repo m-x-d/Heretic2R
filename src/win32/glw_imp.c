@@ -14,7 +14,7 @@ glwstate_t glw_state;
 
 static qboolean GLimp_InitGL(void); // VID_CreateWindow forward declaration.
 
-qboolean VID_CreateWindow(const int width, const int height, const qboolean fullscreen)
+static qboolean VID_CreateWindow(const int width, const int height, const qboolean fullscreen)
 {
 	WNDCLASS wc;
 	RECT r;
