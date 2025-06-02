@@ -10,7 +10,7 @@
 
 #define API_VERSION			3
 
-// These are the maximum number that maybe rendered on any given frame
+// These are the maximum number that maybe rendered on any given frame.
 #define MAX_DLIGHTS			32
 #define MAX_ENTITIES		128	
 #define MAX_ALPHA_ENTITIES	(MAX_ENTITIES * 2) //TODO: increase? Exceeded relatively often...
@@ -22,20 +22,20 @@
 
 typedef struct entity_s
 {
-	struct model_s** model; // Opaque type outside refresh // Q2: struct model_s*
+	struct model_s** model; // Opaque type outside refresh. // Q2: struct model_s*
 	float angles[3];
 	float origin[3];
 	int frame;
 
-	// Model scale
+	// Model scale.
 	float scale;
 
-	// Scale of model - but only for client entity models - not server side models.
-	// Required for scaling mins and maxs that are used to cull models - mins and maxs
-	// are scaled on the server side, but not on the client side when the models are loaded in.
+	// Scale of model - but only for client entity models - not server-side models.
+	// Required for scaling mins and maxs that are used to cull models - mins and maxs are scaled on the server side,
+	// but not on the client side when the models are loaded in.
 	float cl_scale;
 
-	// Distance to the camera origin, gets set every frame by AddEffectsToView 
+	// Distance to the camera origin, gets set every frame by AddEffectsToView.
 	float depth;
 
 	paletteRGBA_t color;
@@ -43,24 +43,24 @@ typedef struct entity_s
 
 	union
 	{
-		int rootJoint;	// rootJoint of the entities skeleton
+		int rootJoint;	// rootJoint of the entities skeleton.
 		int spriteType;
 	};
 
 	union
 	{
-		// Info for fmodels and bmodels
+		// Info for fmodels and bmodels.
 		struct
 		{
 			float oldorigin[3];	
 			int oldframe;
 
-			float backlerp;	// 0.0 = current, 1.0 = old
+			float backlerp;	// 0.0 = current, 1.0 = old.
 
 			int skinnum;
-			struct image_s* skin;		// NULL for inline skin
+			struct image_s* skin;		// NULL for inline skin.
 			struct image_s** skins;		// Pointer to the list of clientinfo skins.
-			char skinname[MAX_QPATH];	// For specific path to skin
+			char skinname[MAX_QPATH];	// For specific path to skin.
 
 			paletteRGB_t absLight;
 			byte padFor_3byte_absLight;
@@ -69,29 +69,29 @@ typedef struct entity_s
 			// Happily most client entities are sprites.
 			fmnodeinfo_t* fmnodeinfo;
 
-			int swapCluster;	// Cluster to swap on
+			int swapCluster;	// Cluster to swap on.
 
-			int swapFrame;		// Frame to swap clustered verts in for
-			int oldSwapFrame;	// Previous frame to swap clustered verts in for
+			int swapFrame;		// Frame to swap clustered verts in for.
+			int oldSwapFrame;	// Previous frame to swap clustered verts in for.
 
 			struct LERPedReferences_s* referenceInfo;
 			struct LERPedReferences_s* oldReferenceInfo;
 
-			int padToUnionSize[4];	// Use this space up to add any more nonsprite fields that may be needed
+			int padToUnionSize[4];	// Use this space up to add any more non-sprite fields that may be needed.
 		};
 
-		// Info for dynamic sprites
-		float verts[4][4];			// verts for dynamic sprites [x, y, s, t]
+		// Info for dynamic sprites.
+		float verts[4][4];			// verts for dynamic sprites [x, y, s, t].
 
-		// Info for variable sprites
+		// Info for variable sprites.
 		struct
 		{
-			float (*verts_p)[4];		// Pointer to verts for variable sprites
+			float (*verts_p)[4];		// Pointer to verts for variable sprites.
 			int numVerts;
-			int padToUnionSize2[11];	// Use this space up to add any more variable sprite fields
+			int padToUnionSize2[11];	// Use this space up to add any more variable sprite fields.
 		};
 
-		// Info for line sprites
+		// Info for line sprites.
 		struct
 		{
 			float startpos[3];
@@ -99,12 +99,10 @@ typedef struct entity_s
 			float scale2;
 			float tile;
 			float tileoffset;
-			int padToUnionSize3[7];		// Use this space up to add any more line sprite fields
+			int padToUnionSize3[7];		// Use this space up to add any more line sprite fields.
 		};
 	};
 } entity_t;
-
-#define ENTITY_FLAGS  68
 
 typedef struct
 {
@@ -115,8 +113,8 @@ typedef struct
 
 typedef struct
 {
-	float rgb[3];	// 0.0 - 2.0
-	float white;	// Highest of rgb
+	float rgb[3];	// 0.0 - 2.0.
+	float white;	// Highest of rgb.
 } lightstyle_t;
 
 typedef struct
@@ -129,7 +127,7 @@ typedef struct
 
 typedef struct
 {
-	int x;	// In virtual screen coordinates
+	int x;	// In virtual screen coordinates.
 	int y;
 	int width;
 	int height;
@@ -140,11 +138,11 @@ typedef struct
 	float vieworg[3];
 	float clientmodelorg[3];
 	float viewangles[3];
-	float blend[4];	// rgba 0-1 full screen blend
-	float time;		// Time is uesed to auto animate
-	int rdflags;	// RDF_UNDERWATER, etc
+	float blend[4];	// rgba 0-1 full screen blend.
+	float time;		// Time used to auto-animate.
+	int rdflags;	// RDF_UNDERWATER, etc.
 
-	byte* areabits;	// If not NULL, only areas with set bits will be drawn
+	byte* areabits;	// If not NULL, only areas with set bits will be drawn.
 
 	lightstyle_t* lightstyles;	// [MAX_LIGHTSTYLES]
 
@@ -164,33 +162,29 @@ typedef struct
 	particle_t* aparticles;
 } refdef_t;
 
-// Functions exported by the refresh module
+// Functions exported by the refresh module.
 typedef struct
 {
-	// If api_version is different, the dll cannot be used
+	// If api_version is different, the dll cannot be used.
 	int api_version;
 
-	// Set this to false if you don`t want any rendering commands issued
+	// Set this to false if you don`t want any rendering commands issued.
 	qboolean render;
 
-	// Called when the library is loaded
+	// Called when the library is loaded.
 	qboolean (*Init)(void* hinstance, void* wndproc);
 
-	// Called before the library is unloaded
+	// Called before the library is unloaded.
 	void (*Shutdown)(void);
 
-	// All data that will be used in a level should be
-	// registered before rendering any frames to prevent disk hits,
+	// All data that will be used in a level should be registered before rendering any frames to prevent disk hits,
 	// but they can still be registered at a later time if necessary.
 
 	// EndRegistration will free any remaining data that wasn't registered.
-	// Any model_s or skin_s pointers from before the BeginRegistration
-	// are no longer valid after EndRegistration.
+	// Any model_s or skin_s pointers from before the BeginRegistration are no longer valid after EndRegistration.
 
-	// Skins and images need to be differentiated, because skins
-	// are flood filled to eliminate mip map edge errors, and pics have
-	// an implicit "pics/" prepended to the name. (a pic name that starts with a
-	// slash will not use the "pics/" prefix or the ".pcx" postfix)
+	// Skins and images need to be differentiated, because skins are flood filled to eliminate mip map edge errors,
+	// and pics have an implicit "pics/" prepended to the name (a pic name that starts with a slash will not use the "pics/" prefix or the ".pcx" postfix).
 	void (*BeginRegistration)(const char* map);
 	struct model_s* (*RegisterModel)(const char* name);
 	struct image_s* (*RegisterSkin)(const char* name, qboolean* retval);
@@ -213,13 +207,13 @@ typedef struct
 	int (*BF_Strlen)(const char* text);
 	void (*BookDrawPic)(int w, int h, const char* name, float scale);
 
-	// Draw images for cinematic rendering (which can have a different palette). Note that calls
+	// Draw images for cinematic rendering (which can have a different palette).
 	void (*DrawInitCinematic)(int w, int h, char* overlay, char* backdrop);
 	void (*DrawCloseCinematic)(void);
 	void (*DrawCinematic)(int cols, int rows, const byte* data, const paletteRGB_t* palette, float alpha);
 	void (*Draw_Name)(const vec3_t origin, const char* name, paletteRGBA_t color);
 
-	// Video mode and refresh state management entry points
+	// Video mode and refresh state management entry points.
 	void (*BeginFrame)(float camera_separation);
 	void (*EndFrame)(void);
 
@@ -232,7 +226,7 @@ typedef struct
 #endif
 } refexport_t;
 
-// Functions imported by the refresh module
+// Functions imported by the refresh module.
 typedef struct
 {
 	struct CL_SkeletalJoint_s* skeletalJoints;
@@ -258,14 +252,13 @@ typedef struct
 	void (*Deactivate_Screen_Flash)(void);
 
 	// Files will be memory mapped read only.
-	// The returned buffer may be part of a larger pak file,
-	// or a discrete file from anywhere in the quake search path.
+	// The returned buffer may be part of a larger pak file, or a discrete file from anywhere in the quake search path.
 	// A -1 return means the file does not exist.
 	// NULL can be passed for buf to just determine existence.
 	int (*FS_LoadFile)(const char* name, void** buf);
 	void (*FS_FreeFile)(void* buf);
 
-	// gamedir will be the current directory that generated files should be stored to, ie: "f:\quake\id1"
+	// gamedir will be the current directory that generated files should be stored to, ie: "f:\quake\id1".
 	char* (*FS_Gamedir)(void);
 	char* (*FS_Userdir)(void);
 	void (*FS_CreatePath)(char* path);
@@ -275,5 +268,5 @@ typedef struct
 	void (*Vid_NewWindow)(int width, int height);
 } refimport_t;
 
-// This is the only function actually exported at the linker level
+// This is the only function actually exported at the linker level.
 typedef refexport_t (*GetRefAPI_t)(refimport_t);
