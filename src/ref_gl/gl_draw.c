@@ -37,7 +37,18 @@ void ShutdownFonts(void)
 	}
 }
 
-image_t* Draw_FindPicFilter(const char* name);
+static image_t* Draw_FindPicFilter(const char* name) // H2
+{
+	if (name[0] != '/' && name[0] != '\\')
+	{
+		char fullname[MAX_QPATH];
+		Com_sprintf(fullname, sizeof(fullname), "pics/%s", name);
+
+		return GL_FindImage(fullname, it_sky);
+	}
+
+	return GL_FindImage(name + 1, it_sky);
+}
 
 void Draw_InitLocal(void)
 {
@@ -113,19 +124,6 @@ image_t* Draw_FindPic(const char* name)
 	}
 
 	return GL_FindImage(name + 1, it_pic);
-}
-
-image_t* Draw_FindPicFilter(const char* name) // H2
-{
-	if (name[0] != '/' && name[0] != '\\')
-	{
-		char fullname[MAX_QPATH];
-		Com_sprintf(fullname, sizeof(fullname), "pics/%s", name);
-
-		return GL_FindImage(fullname, it_sky);
-	}
-
-	return GL_FindImage(name + 1, it_sky);
 }
 
 void Draw_GetPicSize(int* w, int* h, const char* name)
