@@ -28,18 +28,17 @@ typedef enum //mxd. Changed in H2
 typedef struct image_s //mxd. Changed in H2. Original size: 104 bytes
 {
 	struct image_s* next;
-	char name[MAX_QPATH];				// Game path, including extension
+	char name[MAX_QPATH];				// Game path, including extension.
 	imagetype_t type;
 	int width;
 	int height;
 	int registration_sequence;			// 0 = free
-	struct msurface_s* texturechain;	// For sort-by-texture world drawing
+	struct msurface_s* texturechain;	// For sort-by-texture world drawing.
 	struct msurface_s* multitexturechain;
-	int texnum;							// gl texture binding
+	int texnum;							// gl texture binding.
 	byte has_alpha;
 	byte num_frames;
-	//byte pad[2];
-	struct paletteRGB_s* palette;		// .M8 palette
+	struct paletteRGB_s* palette;		// .M8 palette.
 } image_t;
 
 // H2. Font character definition struct
@@ -202,22 +201,22 @@ extern glxy_t* font1; // H2
 extern glxy_t* font2; // H2
 extern qboolean gl_alphatest_broken; // H2 //TODO: remove?
 
-void Draw_InitLocal(void);
-void Draw_GetPicSize(int* w, int* h, const char* name);
-void Draw_Render(int x, int y, int w, int h, const image_t* image, float alpha); // H2
-void Draw_Pic(int x, int y, const char* name, float alpha);
-void Draw_StretchPic(int x, int y, int w, int h, const char* name, float alpha, qboolean scale);
-void Draw_Char(int x, int y, int c, paletteRGBA_t color);
-image_t* Draw_FindPic(const char* name); // Q2: not in gl_local.h
-void Draw_TileClear(int x, int y, int w, int h, const char* pic);
-void Draw_Fill(int x, int y, int w, int h, byte r, byte g, byte b);
-void Draw_FadeScreen(paletteRGBA_t color);
-void ShutdownFonts(void); // H2
+extern void Draw_InitLocal(void);
+extern void Draw_GetPicSize(int* w, int* h, const char* name);
+extern void Draw_Render(int x, int y, int w, int h, const image_t* image, float alpha); // H2
+extern void Draw_Pic(int x, int y, const char* name, float alpha);
+extern void Draw_StretchPic(int x, int y, int w, int h, const char* name, float alpha, qboolean scale);
+extern void Draw_Char(int x, int y, int c, paletteRGBA_t color);
+extern image_t* Draw_FindPic(const char* name); // Q2: not in gl_local.h
+extern void Draw_TileClear(int x, int y, int w, int h, const char* pic);
+extern void Draw_Fill(int x, int y, int w, int h, byte r, byte g, byte b);
+extern void Draw_FadeScreen(paletteRGBA_t color);
+extern void ShutdownFonts(void); // H2
 
 // gl_draw_book.c
-int BF_Strlen(const char* text); // H2
-void Draw_BigFont(int x, int y, const char* text, float alpha); // H2
-void Draw_BookPic(int w, int h, const char* name, float scale); // H2
+extern int BF_Strlen(const char* text); // H2
+extern void Draw_BigFont(int x, int y, const char* text, float alpha); // H2
+extern void Draw_BookPic(int w, int h, const char* name, float scale); // H2
 
 // gl_image.c
 #define GL_TEX_SOLID_FORMAT 3 //mxd. gl_tex_solid_format var in Q2
@@ -226,34 +225,34 @@ void Draw_BookPic(int w, int h, const char* name, float scale); // H2
 extern int gl_filter_min;
 extern int gl_filter_max;
 
-void InitGammaTable(void); // H2
-image_t* GL_GetFreeImage(void); // H2
-void GL_EnableMultitexture(qboolean enable);
-void GL_SelectTexture(GLenum texture);
-void GL_TexEnv(GLint mode);
-void GL_Bind(int texnum);
-void GL_BindImage(const image_t* image); // H2
-void GL_MBind(GLenum target, int texnum);
-void GL_MBindImage(GLenum target, const image_t* image); // H2
-void GL_TextureMode(const char* string);
-void GL_SetFilter(const image_t* image); // H2
-void GL_ImageList_f(void);
-void GL_UploadPaletted(int level, const byte* data, const paletteRGB_t* palette, int width, int height); // H2
-image_t* GL_FindImage(const char* name, imagetype_t type);
-void GL_FreeImageNoHash(image_t* image); // H2
-void GL_FreeUnusedImages(void);
-void GL_GammaAffect(void); // H2
-void GL_InitImages(void);
-void GL_ShutdownImages(void);
-void GL_DisplayHashTable(void); // H2
+extern void InitGammaTable(void); // H2
+extern image_t* GL_GetFreeImage(void); // H2
+extern void GL_EnableMultitexture(qboolean enable);
+extern void GL_SelectTexture(GLenum texture);
+extern void GL_TexEnv(GLint mode);
+extern void GL_Bind(int texnum);
+extern void GL_BindImage(const image_t* image); // H2
+extern void GL_MBind(GLenum target, int texnum);
+extern void GL_MBindImage(GLenum target, const image_t* image); // H2
+extern void GL_TextureMode(const char* string);
+extern void GL_SetFilter(const image_t* image); // H2
+extern void GL_ImageList_f(void);
+extern void GL_UploadPaletted(int level, const byte* data, const paletteRGB_t* palette, int width, int height); // H2
+extern image_t* GL_FindImage(const char* name, imagetype_t type);
+extern void GL_FreeImageNoHash(image_t* image); // H2
+extern void GL_FreeUnusedImages(void);
+extern void GL_GammaAffect(void); // H2
+extern void GL_InitImages(void);
+extern void GL_ShutdownImages(void);
+extern void GL_DisplayHashTable(void); // H2
 
 // gl_light.c
-void R_RenderDlights(void);
-void R_MarkLights(dlight_t* light, int bit, const mnode_t* node);
-void R_PushDlights(void);
-void R_LightPoint(vec3_t p, vec3_t color);
-void R_SetCacheState(msurface_t* surf);
-void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
+extern void R_RenderDlights(void);
+extern void R_MarkLights(dlight_t* light, int bit, const mnode_t* node);
+extern void R_PushDlights(void);
+extern void R_LightPoint(vec3_t p, vec3_t color);
+extern void R_SetCacheState(msurface_t* surf);
+extern void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
 
 // gl_main.c
 extern vec3_t vup;
@@ -277,49 +276,49 @@ extern model_t* currentmodel;
 extern cplane_t frustum[4];
 extern int r_framecount;
 
-qboolean R_CullBox(vec3_t mins, vec3_t maxs);
-void R_RotateForEntity(const entity_t* e);
-void HandleTrans(const entity_t* e); // H2
-void CleanupTrans(const entity_t* e); // H2
-void R_DrawNullModel(void); // Q2: local to gl_rmain.c
+extern qboolean R_CullBox(vec3_t mins, vec3_t maxs);
+extern void R_RotateForEntity(const entity_t* e);
+extern void HandleTrans(const entity_t* e); // H2
+extern void CleanupTrans(const entity_t* e); // H2
+extern void R_DrawNullModel(void); // Q2: local to gl_rmain.c
 
 // gl_misc.c
-void GL_ScreenShot_f(void);
-void GL_Strings_f(void);
-void GL_SetDefaultState(void);
-void GL_UpdateSwapInterval(void);
-void TransformVector(const vec3_t v, vec3_t out); // H2
+extern void GL_ScreenShot_f(void);
+extern void GL_Strings_f(void);
+extern void GL_SetDefaultState(void);
+extern void GL_UpdateSwapInterval(void);
+extern void TransformVector(const vec3_t v, vec3_t out); // H2
 
 // gl_model.c (Mod_XX function declarations are in gl_model.h)
 extern int registration_sequence;
 struct model_s* R_RegisterModel(const char* name);
 
 // gl_sky.c
-void R_AddSkySurface(const msurface_t* fa);
-void R_ClearSkyBox(void);
-void R_DrawSkyBox(void);
+extern void R_AddSkySurface(const msurface_t* fa);
+extern void R_ClearSkyBox(void);
+extern void R_DrawSkyBox(void);
 
 // gl_sprite.c
-void R_DrawSpriteModel(entity_t* e); // Q2: local to gl_rmain.c
+extern void R_DrawSpriteModel(entity_t* e); // Q2: local to gl_rmain.c
 
 // gl_surf.c
 extern int c_visible_lightmaps;
 extern int c_visible_textures;
 
-void R_DrawBrushModel(entity_t* e);
-void R_MarkLeaves(void);
-void R_SortAndDrawAlphaSurfaces(void); // H2
-void R_DrawWorld(void);
+extern void R_DrawBrushModel(entity_t* e);
+extern void R_MarkLeaves(void);
+extern void R_SortAndDrawAlphaSurfaces(void); // H2
+extern void R_DrawWorld(void);
 
 // gl_warp.c
-void EmitUnderWaterPolys(const msurface_t* fa); // H2
-void EmitQuakeFloorPolys(const msurface_t* fa); // H2
-void GL_SubdivideSurface(msurface_t* fa);
-void EmitWaterPolys(const msurface_t* fa, qboolean undulate); // H2: extra 'undulate' arg.
+extern void EmitUnderWaterPolys(const msurface_t* fa); // H2
+extern void EmitQuakeFloorPolys(const msurface_t* fa); // H2
+extern void GL_SubdivideSurface(msurface_t* fa);
+extern void EmitWaterPolys(const msurface_t* fa, qboolean undulate); // H2: extra 'undulate' arg.
 
 #pragma region ========================== GL config stuff  ==========================
 
-#define GL_RENDERER_DEFAULT 0 //mxd. Don't bother with ancient videocards
+#define GL_RENDERER_DEFAULT 0 //mxd. Don't bother with ancient videocards.
 
 // Q2 counterpart
 typedef struct
@@ -368,13 +367,13 @@ extern refimport_t ri;
 #pragma region ========================== IMPLEMENTATION-SPECIFIC FUNCTIONS ==========================
 
 // glw_imp.c
-void GLimp_BeginFrame(float camera_separation);
-void GLimp_EndFrame(void);
-qboolean GLimp_Init(void* hinstance, void* hWnd); //mxd. Changed return type
-void GLimp_Shutdown(void);
-rserr_t GLimp_SetMode(int* pwidth, int* pheight, int mode, qboolean fullscreen, qboolean create_window);
-void GLimp_AppActivate(qboolean active);
-void GLimp_EnableLogging(qboolean enable);
-void GLimp_LogNewFrame(void);
+extern void GLimp_BeginFrame(float camera_separation);
+extern void GLimp_EndFrame(void);
+extern qboolean GLimp_Init(void* hinstance, void* hWnd); //mxd. Changed return type.
+extern void GLimp_Shutdown(void);
+extern rserr_t GLimp_SetMode(int* pwidth, int* pheight, int mode, qboolean fullscreen, qboolean create_window);
+extern void GLimp_AppActivate(qboolean active);
+extern void GLimp_EnableLogging(qboolean enable);
+extern void GLimp_LogNewFrame(void);
 
 #pragma endregion
