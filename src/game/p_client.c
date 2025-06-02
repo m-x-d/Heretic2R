@@ -1626,8 +1626,8 @@ static void PutClientInServer(edict_t* ent)
 	client->tele_count = 0;
 	ent->s.color.c = 0;	// Restore model visibility.
 
-	ent->fire_damage_time = 0;
-	ent->fire_timestamp = 0;
+	ent->fire_damage_time = 0.0f;
+	ent->fire_timestamp = 0.0f;
 
 	ent->model = "players/male/tris.fm";
 
@@ -1651,10 +1651,10 @@ static void PutClientInServer(edict_t* ent)
 
 	client->ps.fov = (float)(Q_atoi(Info_ValueForKey(client->playerinfo.pers.userinfo, "fov")));
 
-	if (client->ps.fov < 1)
+	if (client->ps.fov < 1.0f)
 		client->ps.fov = FOV_DEFAULT;
-	else if (client->ps.fov > 160)
-		client->ps.fov = 160;
+	else if (client->ps.fov > 160.0f)
+		client->ps.fov = 160.0f;
 
 	VectorClear(client->ps.offsetangles);
 
