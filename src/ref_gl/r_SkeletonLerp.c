@@ -229,7 +229,7 @@ static void StandardFrameLerp(void)
 		sfl_cur_skel.back_vector[i] = framelerp * poldframe->scale[i];
 	}
 
-	if (currententity->scale != 1.0)
+	if (currententity->scale != 1.0f)
 	{
 		VectorScale(cur_skel_move, currententity->scale, cur_skel_move);
 		VectorScale(sfl_cur_skel.front_vector, currententity->scale, sfl_cur_skel.front_vector);
