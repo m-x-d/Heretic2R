@@ -46,7 +46,7 @@ void CL_CheckPredictionError(void)
 	if (cl.frame.playerstate.swapFrame != pred_currSwapFrame) // H2
 		pred_prevSwapFrame = pred_currSwapFrame;
 
-	// Compare what the server returned with what we had predicted it to be
+	// Compare what the server returned with what we had predicted it to be.
 	for (int i = 0; i < 3; i++)
 		delta[i] = cl.frame.playerstate.pmove.origin[i] - cl.predicted_origins[frame][i];
 
@@ -400,7 +400,7 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 	VectorSet(cl.playerinfo.oldvelocity, 0.0f, 0.0f, cl.frame.playerstate.oldvelocity_z);
 
 	int cmd_time_delta = 0;
-	int frame = 0;
+	int frame = min(ack + 1, current); // Initialize, in case we have no frames to run.
 
 	// Run frames.
 	while (++ack < current)
@@ -408,7 +408,7 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 		frame = ack & (CMD_BACKUP - 1);
 		pm.cmd = cl.cmds[frame];
 
-		if (cl.playerinfo.flags & PLAYER_FLAG_TURNLOCK && pm.s.pm_type == PM_NORMAL)
+		if ((cl.playerinfo.flags & PLAYER_FLAG_TURNLOCK) && pm.s.pm_type == PM_NORMAL)
 		{
 			pm.s.pm_flags |= PMF_LOCKTURN;
 		}
@@ -495,7 +495,7 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 		cl.playerinfo.GroundPlane = pm.GroundPlane;
 		cl.playerinfo.GroundContents = pm.GroundContents;
 
-		if (pm.waterlevel)
+		if (pm.waterlevel > 0)
 			cl.playerinfo.flags |= PLAYER_FLAG_BOWDRAWN;
 		else
 			cl.playerinfo.flags &= ~PLAYER_FLAG_BOWDRAWN;
@@ -574,8 +574,8 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 
 			for (int i = 0; i < 3; i++)
 			{
-				pm.s.origin[i] = (short)Q_ftol(cl.playerinfo.origin[i] * 8);
-				pm.s.velocity[i] = (short)Q_ftol(cl.playerinfo.velocity[i] * 8);
+				pm.s.origin[i] = (short)(cl.playerinfo.origin[i] * 8.0f);
+				pm.s.velocity[i] = (short)(cl.playerinfo.velocity[i] * 8.0f);
 			}
 
 			pm.s.pm_type = cl.playerinfo.movetype;
@@ -586,22 +586,21 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 
 	pred_playerLerp = (float)cmd_time_delta / 100.0f;
 	const float backlerp = 1.0f - pred_playerLerp;
-	vec3_t delta;
 
 	for (int i = 0; i < 3; i++)
 	{
-		delta[i] = cl.playerinfo.origin[i] - cl.prediction_error[i] * backlerp;
-		cl.predicted_origins[frame][i] = (short)Q_ftol(delta[i] * 8.0f);
+		float val = cl.playerinfo.origin[i] - cl.prediction_error[i] * backlerp;
+		cl.predicted_origins[frame][i] = (short)(val * 8.0f);
 	}
 
-	float dist = fabsf(delta[0] - cl.predicted_origin[0]) +
-				 fabsf(delta[1] - cl.predicted_origin[1]) +
-				 fabsf(delta[2] - cl.predicted_origin[2]);
+	float dist = fabsf((float)cl.predicted_origins[frame][0] / 8.0f - cl.predicted_origin[0]) +
+				 fabsf((float)cl.predicted_origins[frame][1] / 8.0f - cl.predicted_origin[1]) +
+				 fabsf((float)cl.predicted_origins[frame][2] / 8.0f - cl.predicted_origin[2]);
 
-	if (dist < 640.0f)
+	if (dist < 640.0f) // When dist > 80, assume player teleported.
 	{
 		for (int i = 0; i < 3; i++)
-			cl.predicted_origin[i] = (delta[i] + cl.predicted_origin[i]) * 0.5f;
+			cl.predicted_origin[i] = ((float)cl.predicted_origins[frame][i] / 8.0f + cl.predicted_origin[i]) * 0.5f;
 	}
 	else
 	{
