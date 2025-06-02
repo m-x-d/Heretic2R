@@ -1,13 +1,10 @@
 //
-// vid.h -- video driver defs
+// vid.h -- Video driver definitions.
 //
 // Copyright 1998 Raven Software
 //
 
 #pragma once
-
-#define MIN_GAMMA	0.1			// These also need to be defined in gl_local.h
-#define MAX_GAMMA	4.0
 
 #define DEF_WIDTH	640
 #define DEF_HEIGHT	480
@@ -27,14 +24,9 @@ typedef struct
 	byte* pixels;
 } viddef_t;
 
-extern viddef_t viddef;	// Global video state
+extern viddef_t viddef; // Global video state.
 
-// Video module initialisation etc
-void VID_Init(void);
-void VID_Shutdown(void);
-void VID_CheckChanges(void);
-
-//void VID_MenuInit(void); //mxd. Moved to menu_video.h
-//void VID_PreMenuInit(void); //mxd. Moved to vid_dll.h
-//void VID_MenuDraw(void); //mxd. No longer needed.
-//const char* VID_MenuKey(int); //mxd. No longer needed.
+// Video module initialization.
+extern void VID_Init(void);
+extern void VID_Shutdown(void);
+extern void VID_CheckChanges(void);
