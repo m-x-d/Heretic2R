@@ -156,7 +156,12 @@ static int entitycmpfnc(const void* a, const void* b)
 	entity_t** e1 = (entity_t**)a;
 	entity_t** e2 = (entity_t**)b;
 
-	return (int)roundf((*e1)->depth - (*e2)->depth);
+	return (int)roundf((*e1)->depth - (*e2)->depth); //mxd. Q_ftol() instead of roundf() in original logic.
+}
+
+static int alphaentitycmpfnc(const void* a, const void* b) // H2
+{
+	return entitycmpfnc(b, a); // Alpha surfaces are drawn back to front.
 }
 
 static void ClearRenderStats(void)
@@ -249,7 +254,7 @@ void V_RenderView(const float stereo_separation)
 	
 	// Sort entities for better cache locality
 	qsort(cls.r_entities, cls.r_numentities, sizeof(cls.r_entities[0]), entitycmpfnc);
-	qsort(cl.refdef.alpha_entities, cl.refdef.num_alpha_entities, sizeof(cl.refdef.alpha_entities[0]), entitycmpfnc); // H2
+	qsort(cl.refdef.alpha_entities, cl.refdef.num_alpha_entities, sizeof(cl.refdef.alpha_entities[0]), alphaentitycmpfnc); // H2
 
 	frame_index = re.RenderFrame(&cl.refdef);
 
