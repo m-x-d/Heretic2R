@@ -8,11 +8,11 @@
 #include <io.h>
 #include "qcommon.h"
 
-byte* membase;
+static byte* membase;
 
-int hunkcount;
-uint hunkmaxsize; //mxd. int -> uint
-uint cursize; //mxd. int -> uint
+static int hunkcount;
+static uint hunkmaxsize; //mxd. int -> uint
+static uint cursize; //mxd. int -> uint
 
 int curtime;
 
