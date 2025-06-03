@@ -661,7 +661,7 @@ const char* Cmd_CompleteCommandNext(const char* partial, const char* last) // H2
 	// Find previous function match...
 	const cmd_function_t* prev_cmd;
 	for (prev_cmd = cmd_functions; prev_cmd != NULL; prev_cmd = prev_cmd->next)
-		if (strncmp(last, prev_cmd->name, len) == 0)
+		if (strcmp(last, prev_cmd->name) == 0)
 			break;
 
 	if (prev_cmd != NULL)
@@ -683,7 +683,7 @@ const char* Cmd_CompleteCommandNext(const char* partial, const char* last) // H2
 		if (strcmp(last, prev_a->name) == 0)
 			break;
 
-	if (prev_a != NULL) //mxd. Added wrap-around logic.
+	if (prev_a != NULL)
 	{
 		// Check for next exact match.
 		for (const cmdalias_t* a = prev_a->next; a != NULL; a = a->next)
