@@ -852,7 +852,7 @@ void gorgon_bite(edict_t* self) //mxd. Named 'gorgonbite' in original logic.
 	trace_t trace;
 	gi.trace(melee_point, vec3_origin, vec3_origin, bite_end_pos, self, MASK_SHOT, &trace);
 
-	if (trace.fraction < 1.0f && !trace.startsolid && !trace.allsolid && trace.ent->takedamage) // A hit.
+	if (trace.fraction < 1.0f && !trace.startsolid && !trace.allsolid && trace.ent->takedamage != DAMAGE_NO) // A hit.
 	{
 		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_MELEEHIT1, SND_MELEEHIT2)], 1.0f, ATTN_NORM, 0.0f);
 

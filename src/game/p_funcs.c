@@ -735,7 +735,7 @@ void G_PlayerActionChickenBite(const playerinfo_t* info)
 
 	char* hit_type; //mxd
 
-	if (tr.ent != NULL && tr.ent->takedamage)
+	if (tr.ent != NULL && tr.ent->takedamage != DAMAGE_NO)
 	{
 		const int damage = ((info->edictflags & FL_SUPER_CHICKEN) ? 500 : 1); //mxd
 		T_Damage(tr.ent, self, self, vf, tr.endpos, tr.plane.normal, damage, 0, DAMAGE_AVOID_ARMOR, MOD_CHICKEN);

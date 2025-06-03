@@ -14,7 +14,7 @@ qboolean IsDecalApplicable(const edict_t* target, const vec3_t origin, const csu
 		return false;
 
 	// Target is not a brush or is damageable.
-	if (target->s.number > 0 || target->takedamage > 0)
+	if (target->s.number > 0 || target->takedamage != DAMAGE_NO)
 		return false;
 
 	const int contents = gi.pointcontents(origin);
