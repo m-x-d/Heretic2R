@@ -679,6 +679,8 @@ void R_SortAndDrawAlphaSurfaces(void)
 //mxd. Similar to Q2's GL_RenderLightmappedPoly (except for missing SURF_FLOWING logic). Original H2 .dll also includes GL_RenderLightmappedPoly_SGIS variant.
 static void GL_RenderLightmappedPoly_ARB(msurface_t* surf)
 {
+	static uint lightmap_pixels[BLOCK_WIDTH * BLOCK_HEIGHT]; //mxd. Made static.
+
 	int map;
 	int lmtex = surf->lightmaptexturenum;
 	qboolean lightmap_updated = false;
@@ -699,26 +701,24 @@ static void GL_RenderLightmappedPoly_ARB(msurface_t* surf)
 
 	if (is_dynamic)
 	{
-		uint temp[BLOCK_WIDTH * BLOCK_HEIGHT];
-
 		const int smax = (surf->extents[0] >> 4) + 1;
 		const int tmax = (surf->extents[1] >> 4) + 1;
 
 		if ((surf->styles[map] >= 32 || surf->styles[map] == 0) && surf->dlightframe != r_framecount)
 		{
-			R_BuildLightMap(surf, (byte*)temp, smax * 4);
+			R_BuildLightMap(surf, (byte*)lightmap_pixels, smax * 4);
 			R_SetCacheState(surf);
 			GL_MBind(GL_TEXTURE1, surf->lightmaptexturenum + gl_state.lightmap_textures);
 			lmtex = surf->lightmaptexturenum;
 		}
 		else
 		{
-			R_BuildLightMap(surf, (byte*)temp, smax * 4);
+			R_BuildLightMap(surf, (byte*)lightmap_pixels, smax * 4);
 			GL_MBind(GL_TEXTURE1, gl_state.lightmap_textures);
 			lmtex = 0;
 		}
 
-		qglTexSubImage2D(GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, temp);
+		qglTexSubImage2D(GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, lightmap_pixels);
 	}
 
 	c_brush_polys++;
