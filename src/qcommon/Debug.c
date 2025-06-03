@@ -127,3 +127,38 @@ void DBG_DrawMessages(void)
 
 #endif
 }
+
+GAME_DECLSPEC void DBG_AddBox(const vec3_t center, const float size, const paletteRGBA_t color, const float lifetime)
+{
+#if _DEBUG
+	re.AddDebugBox(center, size, color, lifetime);
+#endif
+}
+
+GAME_DECLSPEC void DBG_AddBbox(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime)
+{
+#if _DEBUG
+	re.AddDebugBbox(mins, maxs, color, lifetime);
+#endif
+}
+
+GAME_DECLSPEC void DBG_AddEntityBbox(const edict_t* ent, const paletteRGBA_t color)
+{
+#if _DEBUG
+	re.AddDebugEntityBbox(ent, color);
+#endif
+}
+
+GAME_DECLSPEC void DBG_AddLine(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
+{
+#if _DEBUG
+	re.AddDebugLine(start, end, color, lifetime);
+#endif
+}
+
+GAME_DECLSPEC void DBG_AddArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
+{
+#if _DEBUG
+	re.AddDebugArrow(start, end, color, lifetime);
+#endif
+}

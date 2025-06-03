@@ -96,6 +96,9 @@
     <ClCompile Include="..\qcommon\turbsin.c">
       <Filter>qcommon</Filter>
     </ClCompile>
+    <ClCompile Include="gl_debug.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">
@@ -175,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\turbsin.h">
       <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_debug.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

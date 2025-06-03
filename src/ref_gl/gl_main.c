@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "gl_debug.h" //mxd
 #include "gl_local.h"
 #include "gl_fmodel.h"
 #include "m_Reference.h"
@@ -1338,6 +1339,16 @@ refexport_t GetRefAPI(const refimport_t rimp)
 	re.EndFrame = GLimp_EndFrame;
 	re.AppActivate = GLimp_AppActivate;
 	re.FindSurface = FindSurface;
+
+#ifdef _DEBUG
+	//mxd. Debug draw logic.
+	re.AddDebugBox = R_AddDebugBox;
+	re.AddDebugBbox = R_AddDebugBbox;
+	re.AddDebugEntityBbox = R_AddDebugEntityBbox;
+
+	re.AddDebugLine = R_AddDebugLine;
+	re.AddDebugArrow = R_AddDebugArrow;
+#endif
 
 	// Missing: Swap_Init();
 	// Unbound: A3D_RenderGeometry();

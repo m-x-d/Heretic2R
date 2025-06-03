@@ -5,6 +5,7 @@
 //
 
 #include "gl_local.h"
+#include "gl_debug.h" //mxd
 #include "gl_fmodel.h"
 #include "Vector.h"
 
@@ -1098,7 +1099,7 @@ static void R_RecursiveWorldNode(mnode_t* node)
 
 void R_DrawWorld(void)
 {
-	if (!(int)r_drawworld->value || r_newrefdef.rdflags & RDF_NOWORLDMODEL)
+	if (!(int)r_drawworld->value || (r_newrefdef.rdflags & RDF_NOWORLDMODEL))
 		return;
 
 	currentmodel = r_worldmodel;
@@ -1106,7 +1107,7 @@ void R_DrawWorld(void)
 
 	// Auto cycle the world frame for texture animation
 	entity_t ent = { 0 }; //mxd. memset -> zero initialization.
-	ent.frame = (int)(r_newrefdef.time * 2);
+	ent.frame = (int)(r_newrefdef.time * 2.0f);
 	currententity = &ent;
 
 	gl_state.currenttextures[0] = -1;
@@ -1176,6 +1177,10 @@ void R_DrawWorld(void)
 
 	R_DrawSkyBox();
 	R_DrawTriangleOutlines();
+
+#ifdef _DEBUG
+	R_DrawDebugPrimitives(); //mxd.
+#endif
 }
 
 // Q2 counterpart

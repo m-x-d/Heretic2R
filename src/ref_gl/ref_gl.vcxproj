@@ -19,6 +19,7 @@
     <ClCompile Include="..\win32\glw_imp.c" />
     <ClCompile Include="..\win32\q_shwin.c" />
     <ClCompile Include="anormtab.c" />
+    <ClCompile Include="gl_debug.c" />
     <ClCompile Include="gl_fmodel.c" />
     <ClCompile Include="gl_draw.c" />
     <ClCompile Include="gl_draw_book.c" />
@@ -56,6 +57,7 @@
     <ClInclude Include="..\qcommon\turbsin.h" />
     <ClInclude Include="..\win32\glw_win.h" />
     <ClInclude Include="anormtab.h" />
+    <ClInclude Include="gl_debug.h" />
     <ClInclude Include="gl_fmodel.h" />
     <ClInclude Include="gl_local.h" />
     <ClInclude Include="gl_model.h" />
