@@ -291,6 +291,7 @@ H2COMMON_API void VectorMA(const vec3_t veca, const float scale, const vec3_t ve
 	out[2] = veca[2] + scale * vecb[2];
 }
 
+// out = (veca + vecb) * 0.5;
 H2COMMON_API void VectorAverage(const vec3_t veca, const vec3_t vecb, vec3_t out)
 {
 	assert(out != vec3_origin);
