@@ -588,7 +588,7 @@ extern cvar_t* maxclients;
 extern cvar_t* sv_maplist;
 
 // Specifies whether monsters should check to see if most of the distance of a move animation is unobstructed before setting it.
-extern cvar_t* checkanim;
+extern cvar_t* checkanim; //TODO: unused. Remove?
 extern cvar_t* allowillegalskins;
 
 extern cvar_t* dm_no_bodies;
