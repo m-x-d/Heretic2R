@@ -1624,7 +1624,7 @@ static void PutClientInServer(edict_t* ent)
 	client->playerinfo.flags &= ~PLAYER_FLAG_TELEPORT;
 	VectorClear(client->tele_dest);
 	client->tele_count = 0;
-	ent->s.color.c = 0;	// Restore model visibility.
+	ent->s.color.c = 0; // Restore model visibility. //TODO: this makes player model render as translucent in GL_DrawFlexFrameLerp().
 
 	ent->fire_damage_time = 0.0f;
 	ent->fire_timestamp = 0.0f;
