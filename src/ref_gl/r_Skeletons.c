@@ -279,27 +279,3 @@ void LinearllyInterpolateJoints(ModelSkeleton_t* newSkel, const int newIndex, Mo
 	VectorNormalize(liJoint->model.direction);
 	VectorNormalize(liJoint->model.up);
 }
-
-void SetupCompressedJoints(ModelSkeleton_t* liSkel, const int liIndex, float* lerp)
-{
-	M_SkeletalJoint_t* liJoint = liSkel->rootJoint + liIndex;
-
-	if (liJoint->children != ARRAYEDLISTNODE_NULL)
-		for (int liChild = liJoint->children; liChild != ARRAYEDLISTNODE_NULL; liChild = liSkel->rootNode[liChild].next)
-			SetupCompressedJoints(liSkel, liSkel->rootNode[liChild].data, lerp + 9);
-
-	VectorCopy(lerp, liJoint->model.origin);
-	lerp += 3;
-
-	VectorCopy(lerp, liJoint->model.direction);
-	lerp += 3;
-
-	VectorCopy(lerp, liJoint->model.up);
-
-	Vec3SubtractAssign(liJoint->model.origin, liJoint->model.direction);
-	Vec3SubtractAssign(liJoint->model.origin, liJoint->model.up);
-
-	// Re-normalize them
-	VectorNormalize(liJoint->model.direction);
-	VectorNormalize(liJoint->model.up);
-}
