@@ -187,7 +187,7 @@ void SpellCastFlyingFist(edict_t* caster, const vec3_t start_pos, const vec3_t a
 	else
 	{
 		// Not powered up.
-		const char* snd_name = (wimpy ? "weapons/FireballNoMana.wav" : "weapons/FlyingFistCast.wav"); // // Play special wimpy sound?
+		const char* snd_name = (wimpy ? "weapons/FireballNoMana.wav" : "weapons/FlyingFistCast.wav"); // Play special wimpy sound?
 		gi.sound(caster, CHAN_WEAPON, gi.soundindex(snd_name), 1.0f, ATTN_NORM, 0.0f);
 	}
 
