@@ -1567,14 +1567,14 @@ void CL_Frame(const int msec)
 void CL_Init(void)
 {
 	if ((int)dedicated->value)
-		return; // Nothing running on the client
+		return; // Nothing running on the client.
 
-	ResMngr_Con(&cl_FXBufMngr, LERPEDREF_SIZE, LERPEDREF_BLOCK_SIZE); // H2 //mxd. Was a separate function in original version.
+	ResMngr_Con(&cl_FXBufMngr, sizeof(LERPedReferences_t), LERPEDREF_BLOCK_SIZE); // H2 //mxd. Was a separate function in original version.
 
-	// All archived variables will now be loaded
+	// All archived variables will now be loaded.
 	Con_Init();
 	VID_Init();
-	S_Init(); // Sound must be initialized after window is created
+	S_Init(); // Sound must be initialized after window is created.
 
 	V_Init();
 

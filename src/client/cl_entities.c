@@ -25,7 +25,7 @@ static vec3_t look_angles;
 //mxd. Very similar to LERPedReferences_new().
 static LERPedReferences_t* AllocateLERPedReference(const int ref_type)
 {
-	LERPedReferences_t* ref = ResMngr_AllocateResource(&cl_FXBufMngr, LERPEDREF_SIZE);
+	LERPedReferences_t* ref = ResMngr_AllocateResource(&cl_FXBufMngr, sizeof(LERPedReferences_t));
 
 	ref->refType = ref_type;
 	ref->jointIDs = jointIDs[ref_type];
@@ -39,7 +39,7 @@ static LERPedReferences_t* AllocateLERPedReference(const int ref_type)
 
 static void DeallocateLERPedReference(void* data) // H2
 {
-	ResMngr_DeallocateResource(&cl_FXBufMngr, data, LERPEDREF_SIZE);
+	ResMngr_DeallocateResource(&cl_FXBufMngr, data, sizeof(LERPedReferences_t));
 }
 
 void CL_ClearSkeletalEntities(void) // H2

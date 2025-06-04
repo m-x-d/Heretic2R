@@ -10,7 +10,6 @@
 
 #define MAX_REFPOINTS			16
 #define REF_MINCULLTIME			1.0f //mxd. double -> float
-#define LERPEDREF_SIZE			1292 //mxd. == sizeof(LERPedReferences_t)
 #define LERPEDREF_BLOCK_SIZE	8 //mxd
 
 typedef struct Reference_s
