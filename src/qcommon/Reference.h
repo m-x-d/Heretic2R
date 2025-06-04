@@ -15,77 +15,82 @@
 
 typedef struct Reference_s
 {
-	int activecount;
+	int activecount; //TODO: unused. Replace Reference_t with Placement_t?.. Will need to change LERPEDREF_SIZE as well (or replace with sizeof(LERPedReferences_t)).
 	Placement_t placement;
 } Reference_t;
 
 typedef struct LERPedReferences_s
 {
-	int refType;
+	int refType; //TODO: set, but never used?
 	int* jointIDs;
 	float lastUpdate;
 	Reference_t references[MAX_REFPOINTS];
 	Reference_t oldReferences[MAX_REFPOINTS];
 } LERPedReferences_t;
 
-// Reference Types
+// Reference Types.
 enum
 {
 	REF_NULL = -1,
-	REF_CORVUS,		//0
-	REF_INSECT,		//1
-	REF_PRIESTESS,	//2
-	REF_MORK,		//3
-	NUM_REFERENCED	//4
+	REF_CORVUS,
+	REF_INSECT,
+	REF_PRIESTESS,
+	REF_MORK,
+
+	NUM_REFERENCED
 };
 
-// Corvus Reference Points
+// Corvus Reference Points.
 enum
 {
-	CORVUS_LEFTHAND,		//0
+	CORVUS_LEFTHAND,
 	CORVUS_RIGHTHAND,
 	CORVUS_LEFTFOOT,
 	CORVUS_RIGHTFOOT,
 	CORVUS_STAFF,
 	CORVUS_BLADE,
 	CORVUS_HELL_HEAD,
-	NUM_REFERENCES_CORVUS	//7
+
+	NUM_REFERENCES_CORVUS
 };
 
-// Tchekrik Reference Points
+// Tchekrik Reference Points.
 enum
 {
-	INSECT_STAFF,			//0
+	INSECT_STAFF,
 	INSECT_SWORD,
 	INSECT_SPEAR,
 	INSECT_RIGHTFOOT,
 	INSECT_LEFTFOOT,
-	NUM_REFERENCES_INSECT	//5
+
+	NUM_REFERENCES_INSECT
 };
 
-// High Priestess Reference Points
+// High Priestess Reference Points.
 enum
 {
-	PRIESTESS_BACK,				//0
+	PRIESTESS_BACK,
 	PRIESTESS_STAFF,
 	PRIESTESS_LHAND,
 	PRIESTESS_RHAND,
 	PRIESTESS_RFOOT,
 	PRIESTESS_LFOOT,
-	NUM_REFERENCES_PRIESTESS	//6
+
+	NUM_REFERENCES_PRIESTESS
 };
 
-// Morcalavin Reference Points
+// Morcalavin Reference Points.
 enum 
 {
-	MORK_STAFFREF,		//0
-	MORK_RFOOTREF,		//1
-	MORK_LFOOTREF,		//2
-	MORK_RHANDREF,		//3
-	MORK_LHANDREF,		//4
-	MORK_LEYEREF,		//5
-	MORK_REYEREF,		//6
-	NUM_REFERENCES_MORK	//7
+	MORK_STAFFREF,
+	MORK_RFOOTREF,
+	MORK_LFOOTREF,
+	MORK_RHANDREF,
+	MORK_LHANDREF,
+	MORK_LEYEREF,
+	MORK_REYEREF,
+
+	NUM_REFERENCES_MORK
 };
 
 #define CORVUS_LIMBS_MASK	((1 << CORVUS_LEFTHAND) | (1 << CORVUS_RIGHTHAND) | (1 << CORVUS_LEFTFOOT) | (1 << CORVUS_RIGHTFOOT))
@@ -96,16 +101,8 @@ enum
 #define PRIESTESS_MASK		((1 << PRIESTESS_BACK) | (1 << PRIESTESS_STAFF) | (1 << PRIESTESS_LHAND) | (1 << PRIESTESS_RHAND) | (1 << PRIESTESS_RFOOT) | (1 << PRIESTESS_LFOOT))
 #define MORK_MASK			((1 << MORK_STAFFREF) | (1 << MORK_RFOOTREF) | (1 << MORK_LFOOTREF) | (1 << MORK_RHANDREF) | (1 << MORK_LHANDREF) | (1 << MORK_LEYEREF) | (1 << MORK_REYEREF))
 
-extern char* referenceRootNames[];
-extern int referenceRootNameOffsets[];
 extern int numReferences[];
 extern int* jointIDs[NUM_REFERENCED]; //mxd
 
-void EnableRefPoints(LERPedReferences_t* ref_info, int mask);
-void DisableRefPoints(LERPedReferences_t* ref_info, int mask);
-
-void InitReferenceMngr(void);
-void ReleaseReferenceMngr(void);
-
-LERPedReferences_t* LERPedReferences_new(int init_refType);
-void LERPedReferences_delete(LERPedReferences_t* toDelete);
+extern void EnableRefPoints(LERPedReferences_t* ref_info, int mask);
+extern void DisableRefPoints(LERPedReferences_t* ref_info, int mask);

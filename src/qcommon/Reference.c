@@ -4,50 +4,10 @@
 // Copyright 1998 Raven Software
 //
 
-#include <string.h>
 #include "Reference.h"
-//#include "ArrayedList.h" //mxd. Disabled
-#include "ResourceManager.h"
 #include "Skeletons.h"
 
-char *referenceRootNames[] =
-{
-	"elf_Lhandroot",	//0
-	"elf_Rhandroot",
-	"elf_Rfootroot",
-	"elf_Lfootroot",
-	"elf_Bstaffroot",
-	"elf_bladeroot",
-	"elf_hellroot",
-	"StaffBone",		//7
-	"SwordBone",
-	"SpearBone",
-	"RFootBone",
-	"LFootBone",
-	"hp_backroot",		//12
-	"hp_staffroot",
-	"hp_lhandroot",
-	"hp_rhandroot",
-	"hp_rfootroot",
-	"hp_lfootroot",
-	"staffroot",		//18
-	"rfootroot",
-	"lfootroot",
-	"rhandroot",
-	"lhandroot",
-	"leyeroot",
-	"reyeroot"
-};
-
-int referenceRootNameOffsets[NUM_REFERENCED] =
-{
-	0,	// CORVUS
-	7,	// INSECT
-	12, // HIGH PRIESTESS
-	18,	// MORCALAVIN
-};
-
-int numReferences[NUM_REFERENCED] = 
+int numReferences[NUM_REFERENCED] =
 {
 	NUM_REFERENCES_CORVUS,
 	NUM_REFERENCES_INSECT,
@@ -70,33 +30,3 @@ int* jointIDs[NUM_REFERENCED] =
 {
 	corvusJointIDs,
 };
-
-static ResourceManager_t ReferenceMngr;
-
-void InitReferenceMngr(void)
-{
-	ResMngr_Con(&ReferenceMngr, sizeof(LERPedReferences_t), LERPEDREF_BLOCK_SIZE);
-}
-
-void ReleaseReferenceMngr(void)
-{
-	ResMngr_Des(&ReferenceMngr);
-}
-
-LERPedReferences_t* LERPedReferences_new(int init_refType)
-{
-	LERPedReferences_t* newRefs = ResMngr_AllocateResource(&ReferenceMngr, sizeof(*newRefs));
-	newRefs->refType = init_refType;
-	newRefs->jointIDs = jointIDs[init_refType];
-	newRefs->lastUpdate = -(REF_MINCULLTIME * 2.0f);
-
-	memset(newRefs->references, 0, MAX_REFPOINTS * sizeof(Reference_t));
-	memset(newRefs->oldReferences, 0, MAX_REFPOINTS * sizeof(Reference_t));
-
-	return newRefs;
-}
-
-void LERPedReferences_delete(LERPedReferences_t *toDelete)
-{
-	ResMngr_DeallocateResource(&ReferenceMngr, toDelete, sizeof(*toDelete));
-}
