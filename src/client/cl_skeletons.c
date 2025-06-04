@@ -43,7 +43,7 @@ void SK_ClearJoints(const int joint_index)
 	while (child != -1)
 	{
 		SK_ClearJoints(joint_nodes[child].data);
-		joint_nodes[child].inUse = 0;
+		joint_nodes[child].in_use = false;
 		child = joint_nodes[child].next;
 	}
 

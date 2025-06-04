@@ -6,23 +6,25 @@
 
 #pragma once
 
+#include "q_Typedef.h"
+
 typedef struct ArrayedListNode_s
 {
 	int data;
 	int next;
-	int inUse;
+	qboolean in_use; //mxd. 'int inUse' in original logic.
 } ArrayedListNode_t;
 
-#define ARRAYEDLISTNODE_NULL -1
+#define ARRAYEDLISTNODE_NULL (-1)
 
 //TODO: un-inline?
-_inline int GetFreeNode(ArrayedListNode_t* nodeArray, int max)
+_inline int GetFreeNode(ArrayedListNode_t* array, const int max)
 {
-	for (int i = 0; i < max; ++i)
+	for (int i = 0; i < max; i++)
 	{
-		if (!nodeArray[i].inUse)
+		if (!array[i].in_use)
 		{
-			nodeArray[i].inUse = 1;
+			array[i].in_use = true;
 			return i;
 		}
 	}
@@ -31,7 +33,7 @@ _inline int GetFreeNode(ArrayedListNode_t* nodeArray, int max)
 }
 
 //TODO: un-inline?
-_inline void FreeNode(ArrayedListNode_t* nodeArray, int index)
+_inline void FreeNode(ArrayedListNode_t* array, const int index)
 {
-	nodeArray[index].inUse = 0;
+	array[index].in_use = false;
 }
