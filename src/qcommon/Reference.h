@@ -6,11 +6,18 @@
 
 #pragma once
 
-#include "Placement.h"
+#include "q_Typedef.h"
 
 #define MAX_REFPOINTS			16
 #define REF_MINCULLTIME			1.0f //mxd. double -> float
 #define LERPEDREF_BLOCK_SIZE	8 //mxd
+
+typedef struct Placement_s //mxd. Defined in Placement.h in original logic.
+{
+	vec3_t origin; // In local coordinates.
+	vec3_t direction;
+	vec3_t up;
+} Placement_t;
 
 typedef struct Reference_s
 {

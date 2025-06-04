@@ -47,7 +47,6 @@
     <ClInclude Include="..\qcommon\anorms.h" />
     <ClInclude Include="..\qcommon\ArrayedList.h" />
     <ClInclude Include="..\qcommon\FlexModel.h" />
-    <ClInclude Include="..\qcommon\Placement.h" />
     <ClInclude Include="..\qcommon\qcommon.h" />
     <ClInclude Include="..\qcommon\qfiles.h" />
     <ClInclude Include="..\qcommon\q_Sprite.h" />

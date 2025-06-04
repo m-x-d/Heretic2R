@@ -125,9 +125,6 @@
     <ClInclude Include="m_Reference.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\qcommon\Placement.h">
-      <Filter>qcommon</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\ArrayedList.h">
       <Filter>qcommon</Filter>
     </ClInclude>
