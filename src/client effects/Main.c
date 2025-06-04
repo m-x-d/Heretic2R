@@ -645,7 +645,7 @@ static void AddServerEntities(const frame_t* frame)
 
 		ent->referenceInfo = cent->referenceInfo;
 
-		if (cent->current.clientEffects.numEffects)
+		if (cent->current.clientEffects.numEffects > 0)
 		{
 			*fxi.cl_effectpredict = 0;
 			ParseEffects(cent);
