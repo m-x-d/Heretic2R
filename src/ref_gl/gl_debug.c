@@ -70,7 +70,7 @@ static DebugPrimitive_t* InitDebugPrimitive(const vec3_t mins, const vec3_t maxs
 	if (lifetime == -1.0f)
 		p->lifetime = lifetime;
 	else
-		p->lifetime = r_newrefdef.time + max(lifetime, 0.1f); // Convert to absolute time, make sure it lives for at least FRAMETIME...
+		p->lifetime = r_newrefdef.time + max(lifetime, 0.025f); // Convert to absolute time, make sure it lives for at least a frame...
 
 	if (type == DPT_BOX || type == DPT_BBOX || type == DPT_ENTITY_BBOX)
 		SetDebugBoxVerts(p, mins, maxs);
