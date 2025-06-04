@@ -15,7 +15,7 @@
 static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 {
 	// If we've timed out, stop the effect (allow for fading). If we're not on a time limit, check the EF flag.
-	if ((self->LifeTime > 0 && self->LifeTime < fxi.cl->time) || !(owner->current.effects & EF_TRAILS_ENABLED))
+	if ((self->LifeTime > 0 && self->LifeTime < fxi.cl->time) || (self->LifeTime <= 0 && !(owner->current.effects & EF_TRAILS_ENABLED)))
 	{
 		self->Update = RemoveSelfAI;
 		self->nextThinkTime = fxi.cl->time + 500; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
@@ -110,7 +110,7 @@ void FXSpellHands(centity_t* owner, const int type, const int flags, vec3_t orig
 
 		client_entity_t* trail = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, cast_speed);
 
-		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		trail->SpawnInfo = (flags & (CEF_FLAG7 | CEF_FLAG8)) >> 6;
 		trail->LifeTime = ((lifetime > 0) ? fxi.cl->time + lifetime * 100 : -1);
 		trail->refPoint = p;
