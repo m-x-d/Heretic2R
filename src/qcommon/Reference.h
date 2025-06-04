@@ -19,9 +19,10 @@ typedef struct Placement_s //mxd. Defined in Placement.h in original logic.
 	vec3_t up;
 } Placement_t;
 
+//mxd. Should not be modified: used by Client Entities.dll!
 typedef struct Reference_s
 {
-	int activecount; //TODO: unused. Replace Reference_t with Placement_t?.. Will need to change LERPEDREF_SIZE as well (or replace with sizeof(LERPedReferences_t)).
+	int activecount; //mxd. Unused.
 	Placement_t placement;
 } Reference_t;
 
