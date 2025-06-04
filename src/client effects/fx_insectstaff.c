@@ -356,9 +356,6 @@ static void InsectGlow(centity_t* owner, const int type, const int flags, vec3_t
 
 static qboolean InsectFirstSeenInit(struct client_entity_s* self, centity_t* owner)
 {
-	self->refMask |= INSECT_MASK;
-	EnableRefPoints(owner->referenceInfo, self->refMask);
-
 	self->AddToView = NULL;
 	self->Update = KeepSelfAI;
 

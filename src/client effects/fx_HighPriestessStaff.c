@@ -49,9 +49,6 @@ static qboolean HPStaffTrailThink(struct client_entity_s* self, centity_t* owner
 
 static qboolean PriestessFirstSeenInit(struct client_entity_s* self, centity_t* owner)
 {
-	self->refMask |= PRIESTESS_MASK;
-	EnableRefPoints(owner->referenceInfo, self->refMask);
-
 	self->AddToView = NULL;
 	self->Update = HPStaffTrailThink;
 

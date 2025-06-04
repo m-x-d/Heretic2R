@@ -85,12 +85,8 @@ typedef struct client_entity_s
 
 	// Particle stuff.
 	paletteRGBA_t color; // Used to set the color of spawned particles in some cases.
-
 	struct client_particle_s* p_root; // Root of particle list.
-
-	// For models only - NOTE - DO NOT UNION THESE - they are used internally.
-	short refMask;	// Current refpoints attached to client entity.
-	short refPoint;	// Used for entities linked to one of another models.
+	short refPoint; // Used for entities linked to one of another models.
 
 	// Anim stuff for CE spawners.
 

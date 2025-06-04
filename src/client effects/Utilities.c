@@ -496,9 +496,6 @@ qboolean ReferencesInitialized(const centity_t* owner) //TODO: no longer needed?
 	return (owner->referenceInfo != NULL);
 }
 
-void EnableRefPoints(LERPedReferences_t* ref_info, int mask) { } //TODO: remove?
-void DisableRefPoints(LERPedReferences_t* ref_info, int mask) { } //TODO: remove?
-
 // Add a blood splat or a scorchmark to the circular list - removing an entity that's next in the list if there is one.
 void InsertInCircularList(client_entity_t* self)
 {

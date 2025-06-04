@@ -111,9 +111,6 @@ static void ClientEntity_delete(client_entity_t* to_delete, const centity_t* own
 	if (to_delete->r.fmnodeinfo != NULL)
 		ResMngr_DeallocateResource(&fm_node_info_manager, to_delete->r.fmnodeinfo, sizeof(fmnodeinfo_t) * MAX_FM_MESH_NODES);
 
-	if (owner != NULL && to_delete->refMask != 0)
-		DisableRefPoints(owner->referenceInfo, to_delete->refMask);
-
 	if (to_delete->r.spriteType == SPRITE_VARIABLE && to_delete->r.verts_p != NULL)
 		free(to_delete->r.verts_p);
 
@@ -291,17 +288,7 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 
 void AddEffect(centity_t* owner, client_entity_t* fx)
 {
-	if (owner != NULL)
-	{
-		AddEffectToList(&owner->effects, fx);
-
-		if (owner->referenceInfo != NULL && fx->refMask != 0)
-			EnableRefPoints(owner->referenceInfo, fx->refMask);
-	}
-	else
-	{
-		AddEffectToList(&clientEnts, fx);
-	}
+	AddEffectToList((owner != NULL ? &owner->effects : &clientEnts), fx);
 
 	// Copy up the scale on a model so it can be culled properly.
 	fx->r.cl_scale = fx->r.scale;

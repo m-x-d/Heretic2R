@@ -16,10 +16,6 @@ static qboolean PlayerFirstSeenInit(struct client_entity_s* self, centity_t* own
 	if (owner->current.modelindex != 255)
 		return false;
 
-	// Enable all Corvus' reference points.
-	self->refMask |= CORVUS_MASK;
-	EnableRefPoints(owner->referenceInfo, self->refMask);
-
 	self->AddToView = NULL;
 	self->Update = KeepSelfAI;
 
