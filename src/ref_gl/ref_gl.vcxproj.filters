@@ -33,9 +33,6 @@
     <ClCompile Include="gl_warp.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="m_Reference.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\qcommon\Skeletons.c">
       <Filter>qcommon</Filter>
     </ClCompile>
@@ -121,9 +118,6 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\qfiles.h">
       <Filter>qcommon</Filter>
-    </ClInclude>
-    <ClInclude Include="m_Reference.h">
-      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\ArrayedList.h">
       <Filter>qcommon</Filter>

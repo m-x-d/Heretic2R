@@ -7,7 +7,6 @@
 #include "r_SkeletonLerp.h"
 #include "gl_local.h"
 #include "ArrayedList.h"
-#include "m_Reference.h"
 #include "m_SkeletalCluster.h"
 #include "m_Skeleton.h"
 #include "Reference.h"
@@ -178,8 +177,8 @@ static void LerpReferences(void)
 		}
 		else if (currententity->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < currententity->swapCluster)
 		{
-			Placement_t* frame = &fmodel->refsForFrame[currententity->frame * num_refs + i].placement;
-			Placement_t* oldframe = &fmodel->refsForFrame[currententity->oldframe * num_refs + i].placement;
+			Placement_t* frame = &fmodel->refsForFrame[currententity->frame * num_refs + i];
+			Placement_t* oldframe = &fmodel->refsForFrame[currententity->oldframe * num_refs + i];
 
 			GL_LerpVert(frame->origin,		oldframe->origin,		cur_placement->origin,		cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
 			GL_LerpVert(frame->direction,	oldframe->direction,	cur_placement->direction,	cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
@@ -187,8 +186,8 @@ static void LerpReferences(void)
 		}
 		else
 		{
-			Placement_t* swapFrame = &fmodel->refsForFrame[currententity->swapFrame * num_refs].placement;
-			Placement_t* oldSwapFrame = &fmodel->refsForFrame[currententity->oldSwapFrame * num_refs].placement;
+			Placement_t* swapFrame = &fmodel->refsForFrame[currententity->swapFrame * num_refs];
+			Placement_t* oldSwapFrame = &fmodel->refsForFrame[currententity->oldSwapFrame * num_refs];
 
 			GL_LerpVert(swapFrame->origin,		oldSwapFrame->origin,		cur_placement->origin,		swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
 			GL_LerpVert(swapFrame->direction,	oldSwapFrame->direction,	cur_placement->direction,	swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);

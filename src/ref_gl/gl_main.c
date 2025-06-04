@@ -7,7 +7,6 @@
 #include "gl_debug.h" //mxd
 #include "gl_local.h"
 #include "gl_fmodel.h"
-#include "m_Reference.h"
 #include "q_Surface.h"
 #include "turbsin.h"
 #include "Vector.h"
@@ -1258,7 +1257,7 @@ static void GL_ScreenFlash(const paletteRGBA_t color)
 }
 
 // H2: return type: void -> int //TODO: useless: always returns 0 
-int R_RenderFrame(const refdef_t* fd)
+static int R_RenderFrame(const refdef_t* fd)
 {
 	paletteRGBA_t color;
 
@@ -1280,6 +1279,18 @@ int R_RenderFrame(const refdef_t* fd)
 	GL_ScreenFlash(color);
 
 	return 0;
+}
+
+static int R_GetReferencedID(const struct model_s* model) //mxd. Named 'GetReferencedID' (in m_Reference.c) in original logic.
+{
+	const fmdl_t* temp = model->extradata;
+
+	//mxd. H2 Toolkit code checks for model->model_type, decompiled code checks for model->skeletal_model...
+	//TODO: check which one is correct!
+	if (model->skeletal_model && temp->referenceType > REF_NULL && temp->referenceType < NUM_REFERENCED)
+		return temp->referenceType;
+
+	return REF_NULL;
 }
 
 // Referenced by GetRefAPI only:
@@ -1310,7 +1321,7 @@ refexport_t GetRefAPI(const refimport_t rimp)
 	re.RegisterPic = Draw_FindPic;
 	re.SetSky = R_SetSky;
 	re.EndRegistration = R_EndRegistration;
-	re.GetReferencedID = GetReferencedID;
+	re.GetReferencedID = R_GetReferencedID;
 
 	re.RenderFrame = R_RenderFrame;
 

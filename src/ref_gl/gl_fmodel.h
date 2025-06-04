@@ -9,6 +9,7 @@
 #include "q_Typedef.h" //mxd
 #include "FlexModel.h" //mxd
 #include "ref.h" //mxd
+#include "Reference.h" //mxd
 
 #define	MAX_FM_TRIANGLES	2048
 #define MAX_FM_VERTS		2048
@@ -147,14 +148,14 @@ typedef struct fmdl_s
 	struct ModelSkeleton_s* skeletons;
 
 	int referenceType;
-	struct M_Reference_s* refsForFrame;
+	Placement_t* refsForFrame; //mxd. 'struct M_Reference_s*' in original logic.
 } fmdl_t;
 
 // Flex Model Loading Routines
 extern fmdl_t* fmodel;
 
-void Mod_LoadFlexModel(struct model_s* mod, void* buffer, int length);
-void Mod_RegisterFlexModel(struct model_s* mod);
-void R_DrawFlexModel(entity_t* e);
+extern void Mod_LoadFlexModel(struct model_s* mod, void* buffer, int length);
+extern void Mod_RegisterFlexModel(struct model_s* mod);
+extern void R_DrawFlexModel(entity_t* e);
 
-void GL_LerpVert(vec3_t newPoint, vec3_t oldPoint, vec3_t interpolatedPoint, float move[3], float frontv[3], float backv[3]);
+extern void GL_LerpVert(vec3_t newPoint, vec3_t oldPoint, vec3_t interpolatedPoint, float move[3], float frontv[3], float backv[3]);

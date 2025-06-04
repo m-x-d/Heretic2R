@@ -8,7 +8,6 @@
 #include "gl_fmodel.h"
 #include "anorms.h"
 #include "anormtab.h"
-#include "m_Reference.h"
 #include "m_Skeleton.h"
 #include "Reference.h"
 #include "r_SkeletonLerp.h"
@@ -276,7 +275,7 @@ static qboolean fmLoadReferences(model_t* model, const int version, const int da
 	{
 		int referenceType;
 		qboolean haveRefs;
-		M_Reference_t* refsForFrame;
+		Placement_t* refsForFrame;
 	} dmreferences_t;
 
 	if (version != FM_REFERENCES_VER)
@@ -295,13 +294,13 @@ static qboolean fmLoadReferences(model_t* model, const int version, const int da
 	}
 
 	const int num_refs = numReferences[fmodel->referenceType];
-	fmodel->refsForFrame = Hunk_Alloc(fmodel->header.num_frames * num_refs * (int)sizeof(M_Reference_t));
+	fmodel->refsForFrame = Hunk_Alloc(fmodel->header.num_frames * num_refs * (int)sizeof(Placement_t));
 
 	if (fmodel->header.num_frames < 1)
 		return true;
 
-	const M_Reference_t* ref_in = (const M_Reference_t*)&in->refsForFrame;
-	M_Reference_t* ref_out = fmodel->refsForFrame;
+	const Placement_t* ref_in = (const Placement_t*)&in->refsForFrame;
+	Placement_t* ref_out = fmodel->refsForFrame;
 
 	for (int i = 0; i < fmodel->header.num_frames; i++)
 	{
@@ -310,9 +309,9 @@ static qboolean fmLoadReferences(model_t* model, const int version, const int da
 			for (int c = 0; c < 3; c++)
 			{
 				//TODO: done this way to perform byte-swapping (otherwise we can just memcpy the whole thing)?
-				ref_out->placement.origin[c] = ref_in->placement.origin[c];
-				ref_out->placement.direction[c] = ref_in->placement.direction[c];
-				ref_out->placement.up[c] = ref_in->placement.up[c];
+				ref_out->origin[c] = ref_in->origin[c];
+				ref_out->direction[c] = ref_in->direction[c];
+				ref_out->up[c] = ref_in->up[c];
 			}
 		}
 	}
