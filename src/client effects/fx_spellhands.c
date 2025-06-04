@@ -85,7 +85,7 @@ static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 
 		AddParticleToList(self, ce);
 
-		VectorAdd(real_trail_start, trail_delta, real_trail_start);
+		Vec3AddAssign(trail_delta, real_trail_start);
 	}
 
 	return true;

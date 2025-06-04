@@ -17,7 +17,7 @@ void DoWaterSplash(client_entity_t* effect, const paletteRGBA_t color, int count
 	{
 		client_particle_t* p = ClientParticle_new(PART_16x16_WATERDROP, color, 1000);
 
-		p->d_alpha = 0;
+		p->d_alpha = 0.0f;
 		p->d_scale = -1.0f;
 		p->velocity[0] = flrand(-20.0f, 20.0f);
 		p->velocity[1] = flrand(-20.0f, 20.0f);
