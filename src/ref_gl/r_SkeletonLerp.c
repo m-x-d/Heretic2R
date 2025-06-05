@@ -180,18 +180,18 @@ static void LerpReferences(void)
 			Placement_t* frame = &fmodel->refsForFrame[currententity->frame * num_refs + i];
 			Placement_t* oldframe = &fmodel->refsForFrame[currententity->oldframe * num_refs + i];
 
-			GL_LerpVert(frame->origin,		oldframe->origin,		cur_placement->origin,		cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
-			GL_LerpVert(frame->direction,	oldframe->direction,	cur_placement->direction,	cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
-			GL_LerpVert(frame->up,			oldframe->up,			cur_placement->up,			cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
+			GL_LerpVert(frame->origin,			oldframe->origin,			cur_placement->origin,		cur_skel_move,	sfl_cur_skel.front_vector,	sfl_cur_skel.back_vector);
+			GL_LerpVert(frame->direction,		oldframe->direction,		cur_placement->direction,	cur_skel_move,	sfl_cur_skel.front_vector,	sfl_cur_skel.back_vector);
+			GL_LerpVert(frame->up,				oldframe->up,				cur_placement->up,			cur_skel_move,	sfl_cur_skel.front_vector,	sfl_cur_skel.back_vector);
 		}
 		else
 		{
-			Placement_t* swapFrame = &fmodel->refsForFrame[currententity->swapFrame * num_refs];
-			Placement_t* oldSwapFrame = &fmodel->refsForFrame[currententity->oldSwapFrame * num_refs];
+			Placement_t* swapFrame = &fmodel->refsForFrame[currententity->swapFrame * num_refs + i];
+			Placement_t* oldSwapFrame = &fmodel->refsForFrame[currententity->oldSwapFrame * num_refs + i];
 
-			GL_LerpVert(swapFrame->origin,		oldSwapFrame->origin,		cur_placement->origin,		swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
-			GL_LerpVert(swapFrame->direction,	oldSwapFrame->direction,	cur_placement->direction,	swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
-			GL_LerpVert(swapFrame->up,			oldSwapFrame->up,			cur_placement->up,			swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
+			GL_LerpVert(swapFrame->origin,		oldSwapFrame->origin,		cur_placement->origin,		swap_skel_move,	sfl_swap_skel.front_vector,	sfl_swap_skel.back_vector);
+			GL_LerpVert(swapFrame->direction,	oldSwapFrame->direction,	cur_placement->direction,	swap_skel_move,	sfl_swap_skel.front_vector,	sfl_swap_skel.back_vector);
+			GL_LerpVert(swapFrame->up,			oldSwapFrame->up,			cur_placement->up,			swap_skel_move,	sfl_swap_skel.front_vector,	sfl_swap_skel.back_vector);
 
 			update_placement = true;
 		}
