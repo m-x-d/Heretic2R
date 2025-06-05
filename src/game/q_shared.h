@@ -432,6 +432,7 @@ typedef enum
 // This structure contains the information necessary for client side movement prediction.
 // It MUST be communicated bit-accurate from the server to the client to guarantee that prediction stays in sync, so no floats are used.
 // If any part of the game code modifies this struct, it will result in a prediction error of some degree.
+// NOTE: mxd. Can't change struct size, otherwise compatibility with original game dlls will break!
 typedef struct
 {
 	pmtype_t pm_type;
@@ -477,6 +478,7 @@ typedef struct usercmd_s
 
 #define MAXTOUCH	32
 
+// NOTE: mxd. Can't change struct size (348 bytes), otherwise compatibility with original game dlls will break!
 typedef struct
 {
 	// State (in / out).
@@ -484,6 +486,7 @@ typedef struct
 
 	// Command (in).
 	usercmd_t cmd;
+	qboolean snapinitial; //mxd. Unused. Can't remove.
 	qboolean run_shrine;
 	qboolean high_max;
 
