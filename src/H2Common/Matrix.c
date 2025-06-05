@@ -4,14 +4,12 @@
 // Copyright 1998 Raven Software
 //
 
-#include <math.h>
-#include <string.h>
 #include "Matrix.h"
 #include "Vector.h"
 
 H2COMMON_API qboolean HACK_Pitch_Adjust = false;
 
-// Rotation around the x axis
+// Rotation around the x axis.
 H2COMMON_API void CreateRollMatrix(matrix3_t m, const float roll)
 {
 	memset(m, 0, sizeof(matrix3_t));
@@ -25,7 +23,7 @@ H2COMMON_API void CreateRollMatrix(matrix3_t m, const float roll)
 	m[2][1] = -sinf(roll);
 }
 
-// Rotation around the z axis
+// Rotation around the z axis.
 H2COMMON_API void CreateYawMatrix(matrix3_t m, const float yaw)
 {
 	memset(m, 0, sizeof(matrix3_t));
@@ -39,7 +37,7 @@ H2COMMON_API void CreateYawMatrix(matrix3_t m, const float yaw)
 	m[2][2] = 1.0f;
 }
 
-// Rotation around the y axis
+// Rotation around the y axis.
 H2COMMON_API void CreatePitchMatrix(matrix3_t m, const float pitch)
 {
 	memset(m, 0, sizeof(matrix3_t));
@@ -53,7 +51,7 @@ H2COMMON_API void CreatePitchMatrix(matrix3_t m, const float pitch)
 	m[0][2] = sinf(pitch);
 }
 
-// Q2 counterpart (defined in q_shared.c)
+// Q2 counterpart (defined in q_shared.c).
 H2COMMON_API void R_ConcatTransforms(const float in1[3][4], const float in2[3][4], float out[3][4])
 {
 	out[0][0] = in1[0][0] * in2[0][0] + in1[0][1] * in2[1][0] +	in1[0][2] * in2[2][0];
@@ -97,37 +95,40 @@ H2COMMON_API void Matrix3MultByVec3(const matrix3_t a, const vec3_t b, vec3_t ou
 	out[2] = a[0][2] * c[0] + a[1][2] * c[1] + a[2][2] * c[2];
 }
 
-H2COMMON_API void Matrix3FromAngles(const vec3_t angles, matrix3_t rotationMatrix)
+H2COMMON_API void Matrix3FromAngles(const vec3_t angles, matrix3_t rotation)
 {
-	matrix3_t m_pitch, m_yaw, m_roll, m_tmp;
+	matrix3_t m_pitch;
+	matrix3_t m_yaw;
+	matrix3_t m_roll;
 
 	CreatePitchMatrix(m_pitch, angles[PITCH]);
 	CreateYawMatrix(m_yaw, angles[YAW]);
 	CreateRollMatrix(m_roll, angles[ROLL]);
 
+	matrix3_t m_tmp;
 	Matrix3MultByMatrix3(m_pitch, m_roll, m_tmp);
-	Matrix3MultByMatrix3(m_yaw, m_tmp, rotationMatrix);
+	Matrix3MultByMatrix3(m_yaw, m_tmp, rotation);
 }
 
-// Creates inverse matrix
-H2COMMON_API void IMatrix3FromAngles(const vec3_t angles, matrix3_t rotationMatrix)
+// Creates inverse rotation matrix.
+H2COMMON_API void IMatrix3FromAngles(const vec3_t angles, matrix3_t rotation)
 {
-	matrix3_t m_pitch, m_yaw, m_roll, m_tmp;
+	matrix3_t m_pitch;
+	matrix3_t m_yaw;
+	matrix3_t m_roll;
 
 	CreatePitchMatrix(m_pitch, -angles[PITCH]);
 	CreateYawMatrix(m_yaw, -angles[YAW]);
 	CreateRollMatrix(m_roll, -angles[ROLL]);
 
+	matrix3_t m_tmp;
 	Matrix3MultByMatrix3(m_pitch, m_yaw, m_tmp);
-	Matrix3MultByMatrix3(m_roll, m_tmp, rotationMatrix);
+	Matrix3MultByMatrix3(m_roll, m_tmp, rotation);
 }
 
 //mxd. Assumes "direction" is normalized. Decompiled logic does NOT match with CMatrix::Matricies3FromDirAndUp from Tools/qMView!
-H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t up, matrix3_t toWorld, matrix3_t partialToLocal)
+H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t up, matrix3_t to_world, matrix3_t partial_to_local)
 {
-	vec3_t v_pitch, v_rotated_up;
-	matrix3_t m_pitch, m_yaw, m_pitchyaw, m_tmp;
-
 	float pitch = asinf(direction[2]); //mxd. asinf expects value in [-1.0; 1.0] range.
 
 	assert(!isnan(pitch)); //mxd
@@ -135,21 +136,28 @@ H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t 
 	if (HACK_Pitch_Adjust && direction[0] < 0.0f)
 		pitch = ANGLE_180 - pitch;
 
+	matrix3_t m_pitch;
 	CreatePitchMatrix(m_pitch, -pitch);
+
+	vec3_t v_pitch;
 	Matrix3MultByVec3(m_pitch, direction, v_pitch);
 
 	float yaw = 0.0f;
 	if (direction[0] != 0.0f)
 		yaw = atan2f(v_pitch[1], v_pitch[0]);
 
+	matrix3_t m_yaw;
 	CreateYawMatrix(m_yaw, yaw);
+
+	matrix3_t m_pitchyaw;
 	Matrix3MultByMatrix3(m_pitch, m_yaw, m_pitchyaw);
 
+	vec3_t v_rotated_up;
 	Matrix3MultByVec3(m_pitchyaw, up, v_rotated_up);
 	v_rotated_up[0] = 0.0f;
 	VectorNormalize(v_rotated_up);
 
-	memset(m_tmp, 0, sizeof(matrix3_t));
+	matrix3_t m_tmp = { 0 };
 	m_tmp[0][0] = 1.0f;
 
 	double roll = -(atan2((double)v_rotated_up[2], (double)v_rotated_up[1]) - ANGLE_90);
@@ -160,13 +168,13 @@ H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t 
 	m_tmp[1][2] = sinf((float)roll);
 	m_tmp[2][1] = -sinf((float)roll);
 
-	Matrix3MultByMatrix3(m_tmp, m_pitchyaw, toWorld);
+	Matrix3MultByMatrix3(m_tmp, m_pitchyaw, to_world);
 
-	if (partialToLocal != NULL)
+	if (partial_to_local != NULL)
 	{
 		CreatePitchMatrix(m_pitch, pitch);
 		CreateYawMatrix(m_yaw, -yaw);
-		Matrix3MultByMatrix3(m_yaw, m_pitch, partialToLocal);
+		Matrix3MultByMatrix3(m_yaw, m_pitch, partial_to_local);
 		roll *= -1.0;
 	}
 
