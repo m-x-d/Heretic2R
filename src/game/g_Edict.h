@@ -17,6 +17,7 @@
 	class CScript;
 #endif
 
+// NOTE: mxd. Can't change struct size (1680), otherwise compatibility with original game dlls will break!
 struct edict_s
 {
 	// This is sent to the server as part of each client frame.
@@ -104,18 +105,13 @@ struct edict_s
 	{
 		edict_t* teamchain;
 		edict_t* targetEnt;
-		edict_t* slavechain; //TODO: unused.
 		edict_t* rope_grab; // Used to by the rope to hold the part of the rope which the player is holding.
 		edict_t* elflord_beam; //mxd
 		edict_t* morcalavin_barrier; //mxd
 		edict_t* ogle_overlord; //mxd
 	};
 
-	union
-	{
-		edict_t* guidemaster; //TODO: unused.
-		edict_t* teammaster;
-	};
+	edict_t* teammaster;
 
 	float nextthink;
 
@@ -219,7 +215,6 @@ struct edict_s
 		char* morph_classname; //mxd. Used by Morph spell.
 	};
 	
-
 	int viewheight; // Height above origin where eyesight is determined used by anything which can "see", player and monsters.
 	float reflected_time; // Used by objects to tell if they've been repulsed by something.
 
@@ -324,12 +319,7 @@ struct edict_s
 		float insect_tracking_projectile_veer_amount; //mxd
 	};
 
-	// Used to delay monster 5 before going after a player sound. Only set on player.
-	union
-	{
-		float teleport_time; //TODO: unused!
-		float time; // misc. time for whatever
-	};
+	float time; // Misc. time for whatever.
 
 	// Move these to clientinfo?
 
@@ -363,7 +353,7 @@ struct edict_s
 	float gravity; // Per-entity gravity multiplier (1.0 is normal). Used for lowgrav artifact, flares. //mxd. Lowgrav artifact?
 
 	// Not currently used by anyone, but it's a part of physics. Probably should remove it.
-	void (*prethink) (edict_t* ent); //TODO: unused. Remove?
+	void (*prethink) (edict_t* ent); //TODO: unused.
 
 	// Move into the moveinfo structure? Used by polys and turret and in physics. //mxd. Turret??
 	void (*blocked)(edict_t* self, edict_t* other);
@@ -418,7 +408,6 @@ struct edict_s
 	union
 	{
 		float last_buoy_time;
-		float fly_sound_debounce_time; //TODO: unused.
 		qboolean fish_is_turning; //mxd
 	};
 
@@ -486,11 +475,12 @@ struct edict_s
 	void (*post_think)(edict_t* self); // Nextthink time for postthinks.
 
 	int forced_buoy; // Monster is forced to go to this buoy.
-	buoy_t* enemy_buoy; // Monster's enemy's closest buoy. //TODO: unused!
+	buoy_t* enemy_buoy; // Monster's enemy's closest buoy. //mxd. Unused. Can't remove...
 	float pathfind_nextthink;
 	edict_t* nextbuoy[MAX_BUOY_BRANCHES];
 
 	float dead_size; // For dead thinking.
+	struct volume_effect_s* volfx; //mxd. Unused. Can't remove...
 
 	// New monster stuff.
 	char* wakeup_target;	// Target to fire when find an enemy.
@@ -509,7 +499,7 @@ struct edict_s
 		int plagueelf_spell_fx_type; //mxd
 	};
 	
-	int deathtype; // How you died. //TODO: unused!
+	int deathtype; // How you died. //mxd. Unused. Can't remove...
 	edict_t* fire_damage_enemy; // Who burnt you to death - for proper burning death credit.
 
 #ifndef __cplusplus
