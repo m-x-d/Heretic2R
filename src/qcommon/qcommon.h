@@ -53,9 +53,6 @@ extern void* SZ_GetSpace(sizebuf_t* buf, int length);
 extern void SZ_Write(sizebuf_t* buf, const void* data, int length);
 extern void SZ_Print(sizebuf_t* buf, const char* data); // strcats onto the sizebuf.
 
-struct usercmd_s;
-struct entity_state_s;
-
 extern byte GetB(const byte* buf, int bit);
 extern void SetB(byte* buf, int bit);
 
@@ -663,18 +660,6 @@ extern void FS_CreatePath(char* path);
 #pragma region ========================== MISC ==========================
 
 #define CFX_CULLING_DIST 1000.0f
-
-#define ERR_FATAL		0 // Exit the entire game with a popup window.
-#define ERR_DROP		1 // Print to console and disconnect from game.
-#define ERR_QUIT		2 // Not an error, just a normal exit.
-
-//mxd. Used by (non-implemented) Cbuf_ExecuteText().
-//#define EXEC_NOW		0 // Don't return until completed.
-//#define EXEC_INSERT		1 // Insert at current position, but don't run yet.
-//#define EXEC_APPEND		2 // Add to end of the command buffer.
-
-#define PRINT_ALL		0
-#define PRINT_DEVELOPER	1 // Only print when "developer 1".
 
 extern void Com_BeginRedirect(int target, char* buffer, int buffersize, void (*flush)(int, char*));
 extern void Com_EndRedirect(void);
