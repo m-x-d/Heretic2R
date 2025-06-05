@@ -8,4 +8,4 @@
 
 #include "Player.h"
 
-extern player_export_t	playerExport;
+extern player_export_t playerExport;

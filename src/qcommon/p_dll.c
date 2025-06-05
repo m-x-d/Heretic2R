@@ -6,7 +6,7 @@
 
 #include <windows.h>
 #include "p_dll.h" //mxd
-#ifdef _GAME_DLL
+#ifdef GAME_DLL
 	#include "g_local.h" //mxd
 #else
 	#include "dll_io.h" //mxd
@@ -78,7 +78,7 @@ void P_Freelib(void)
 	{
 		P_Shutdown();
 
-#ifdef _GAME_DLL
+#ifdef GAME_DLL
 		gi.Sys_UnloadGameDll("Player", &player_library);
 #else
 		Sys_UnloadGameDll("Player", &player_library);
@@ -94,7 +94,7 @@ uint P_Load(char *name)
 
 	P_Freelib();
 
-#ifdef _GAME_DLL
+#ifdef GAME_DLL
 	Com_Printf("------- Loading %s -------\n", name);
 	gi.Sys_LoadGameDll(name, &player_library, &playerdll_chksum);
 #else
@@ -282,7 +282,7 @@ uint P_Load(char *name)
 
 	playerExport = P_GetPlayerAPI();
 
-#ifdef	_GAME_DLL
+#ifdef GAME_DLL
 	Com_Printf("------------------------------------\n");
 #else
 	Com_ColourPrintf(P_HEADER, "------------------------------------\n");

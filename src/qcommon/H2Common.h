@@ -6,12 +6,8 @@
 
 #pragma once
 
-#ifdef H2COMMON_STATIC
-	#define H2COMMON_API
+#ifdef H2COMMON
+	#define H2COMMON_API __declspec(dllexport)
 #else
-	#ifdef H2COMMON
-		#define H2COMMON_API __declspec(dllexport)
-	#else
-		#define H2COMMON_API __declspec(dllimport)
-	#endif
+	#define H2COMMON_API __declspec(dllimport)
 #endif

@@ -56,13 +56,13 @@ typedef enum
 } itemammo_t;
 
 //mxd. For internal usage only.
-#ifdef _GAME_DLL
-	void G_InitItems(void);
-	void SetItemNames(void);
-	edict_t* Drop_Item(edict_t* ent, gitem_t* item);
-	void SpawnItem(edict_t* ent, gitem_t* item);
-	gitem_t* IsItem(const edict_t* ent);
-	qboolean Add_Ammo(const edict_t* ent, const gitem_t* ammo, int count);
-	qboolean AddDefenseToInventory(gitem_t* defence, const edict_t* player);
-	qboolean AddWeaponToInventory(gitem_t* weapon, const edict_t* player);
+#ifdef GAME_DLL
+	extern void G_InitItems(void);
+	extern void SetItemNames(void);
+	extern edict_t* Drop_Item(edict_t* ent, gitem_t* item);
+	extern void SpawnItem(edict_t* ent, gitem_t* item);
+	extern gitem_t* IsItem(const edict_t* ent);
+	extern qboolean Add_Ammo(const edict_t* ent, const gitem_t* ammo, int count);
+	extern qboolean AddDefenseToInventory(gitem_t* defence, const edict_t* player);
+	extern qboolean AddWeaponToInventory(gitem_t* weapon, const edict_t* player);
 #endif

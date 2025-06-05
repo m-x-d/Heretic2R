@@ -6,7 +6,7 @@
 
 #pragma once
 
-#ifdef _HERETIC2_
+#ifdef QUAKE2_DLL
 	#define GAME_DECLSPEC __declspec(dllexport)
 #else 
 	#define GAME_DECLSPEC __declspec(dllimport)
