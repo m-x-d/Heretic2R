@@ -319,6 +319,7 @@ typedef struct
 } spawn_temp_t;
 
 // This is used to hold information pertaining to an entity's movement.
+// NOTE: mxd. Can't change struct size, otherwise compatibility with original game dlls will break!
 typedef struct
 {
 	// Fixed data.
@@ -417,6 +418,7 @@ typedef struct
 	void (*const endfunc)(edict_t* self);
 } animmove_t;
 
+// NOTE: mxd. Can't change struct size, otherwise compatibility with original game dlls will break!
 typedef struct
 {
 	// Not used in new system.
