@@ -18,10 +18,8 @@
 #define VERSION_DATE		"0504"
 #define VERSION_ITERATION	"01"
 
-#define VERSIONDISP			"0.9 RC1" //(VERSION_MAJOR"."VERSION_MINOR) // Shown in console. (VERSION_MAJOR"."VERSION_MINOR) in original logic.
+#define VERSIONDISP			"0.9 RC1" // Shown in console. //mxd. (VERSION_MAJOR"."VERSION_MINOR) in original logic.
 #define VERSIONFULL			(VERSION_MAJOR"."VERSION_MINOR"."VERSION_LOCAL"."VERSION_DATE"."VERSION_ITERATION) // Stored in version cvar.
-
-#define NO_BLOOD 0 //TODO: unused?
 
 #ifdef _WIN32
 	#ifdef NDEBUG
@@ -117,13 +115,9 @@ extern void Info_Print(const char* s);
 #define PORT_MASTER			28900
 #define PORT_CLIENT			28901
 #define PORT_SERVER			28910
-//#define PORT_GAMESPY		28911	// Port that gamespy will communicate to our server on.
-//#define PORT_GAMESPYMASTER	27900	// Port we communicate to gamespy's master server.
 
 #define UPDATE_BACKUP		16 // Copies of entity_state_t to keep buffered. Must be power of two.
 #define UPDATE_MASK			(UPDATE_BACKUP - 1)
-
-#define MAX_PACKET_ENTITIES	64
 
 // Server to client. The svc_strings[] array in cl_parse.c should mirror this.
 enum svc_ops_e
@@ -165,7 +159,7 @@ enum svc_ops_e
 	svc_nameprint,				// Allow a client to print a message across the network without adding its name, instead, just its client number.
 };
 
-// Client to server
+// Client to server.
 enum clc_ops_e
 {
 	clc_bad,
@@ -177,101 +171,101 @@ enum clc_ops_e
 };
 
 // player_state_t communication delta flags. For every 8 bits of PLAYER_DEL_BYTES, a bit of PLAYER_DEL_NZBYTES is required.
-#define PLAYER_DEL_BYTES		(17)
-#define PLAYER_DELNZ_BYTES		(3)
+#define PLAYER_DEL_BYTES		17
+#define PLAYER_DELNZ_BYTES		3
 
-#define PS_VIEWANGLES			(0)
-#define PS_FRAMEINFO1			(1) // (1,0) = sent one, upper = lower (1,1) = sent both, (0,0) = sent neither.
-#define PS_FRAMEINFO2			(2)
-#define PS_M_ORIGIN_XY			(3)
-#define PS_M_ORIGIN_Z			(4)
-#define PS_M_VELOCITY_XY		(5)
-#define PS_M_VELOCITY_Z			(6)
-#define PS_FWDVEL				(7)
+#define PS_VIEWANGLES			0
+#define PS_FRAMEINFO1			1 // (1,0) = sent one, upper = lower (1,1) = sent both, (0,0) = sent neither.
+#define PS_FRAMEINFO2			2
+#define PS_M_ORIGIN_XY			3
+#define PS_M_ORIGIN_Z			4
+#define PS_M_VELOCITY_XY		5
+#define PS_M_VELOCITY_Z			6
+#define PS_FWDVEL				7
 
-#define PS_LOWERSEQ				(8)
-#define PS_LOWERMOVE_INDEX		(9)
-#define PS_AUTOTARGETENTITY		(10)
-#define PS_GROUNDPLANE_INFO1	(11) // (0,0) = zaxis, (1,0) = (0,0,0), (1,1) = all three sent.
-#define PS_GROUNDPLANE_INFO2	(12)
-#define PS_IDLETIME				(13)
-#define PS_UPPERSEQ				(14)
-#define PS_UPPERMOVE_INDEX		(15)
+#define PS_LOWERSEQ				8
+#define PS_LOWERMOVE_INDEX		9
+#define PS_AUTOTARGETENTITY		10
+#define PS_GROUNDPLANE_INFO1	11 // (0,0) = zaxis, (1,0) = (0,0,0), (1,1) = all three sent.
+#define PS_GROUNDPLANE_INFO2	12
+#define PS_IDLETIME				13
+#define PS_UPPERSEQ				14
+#define PS_UPPERMOVE_INDEX		15
 
-#define PS_M_TYPE				(16)
-#define PS_M_TIME				(17)
-#define PS_M_FLAGS				(18)
-#define PS_W_FLAGS				(19)
-#define PS_M_GRAVITY			(20)
-#define PS_M_DELTA_ANGLES		(21)
-#define PS_REMOTE_VIEWANGLES	(22)
-#define PS_REMOTE_VIEWORIGIN	(23)
+#define PS_M_TYPE				16
+#define PS_M_TIME				17
+#define PS_M_FLAGS				18
+#define PS_W_FLAGS				19
+#define PS_M_GRAVITY			20
+#define PS_M_DELTA_ANGLES		21
+#define PS_REMOTE_VIEWANGLES	22
+#define PS_REMOTE_VIEWORIGIN	23
 
-#define PS_REMOTE_ID			(24)
-#define PS_VIEWHEIGHT			(25)
-#define PS_OFFSETANGLES			(26)
-#define PS_FOV					(27)
-#define PS_RDFLAGS				(28)
-#define PS_FOG_DENSITY			(29)
-#define PS_MAP_PERCENTAGE		(30)
-#define PS_MISSION1				(31)
+#define PS_REMOTE_ID			24
+#define PS_VIEWHEIGHT			25
+#define PS_OFFSETANGLES			26
+#define PS_FOV					27
+#define PS_RDFLAGS				28
+#define PS_FOG_DENSITY			29
+#define PS_MAP_PERCENTAGE		30
+#define PS_MISSION1				31
 
-#define PS_MISSION2				(32)
-#define PS_MINSMAXS				(33)
-#define PS_INVENTORY			(34)
-#define PS_GROUNDBITS_NNGE		(35)
-#define PS_GROUNDBITS_GC		(36)
-#define PS_GROUNDBITS_SURFFLAGS (37)
-#define PS_WATERLEVEL			(38)
-#define PS_WATERTYPE			(39)
+#define PS_MISSION2				32
+#define PS_MINSMAXS				33
+#define PS_INVENTORY			34
+#define PS_GROUNDBITS_NNGE		35
+#define PS_GROUNDBITS_GC		36
+#define PS_GROUNDBITS_SURFFLAGS 37
+#define PS_WATERLEVEL			38
+#define PS_WATERTYPE			39
 
-#define PS_WATERHEIGHT			(40)
-#define PS_GRABLOC0				(41)
-#define PS_GRABLOC1				(42)
-#define PS_GRABLOC2				(43)
-#define PS_GRABANGLE			(44)
-#define PS_SIDEVEL				(45)
-#define PS_UPVEL				(46)
-#define PS_FLAGS				(47)
+#define PS_WATERHEIGHT			40
+#define PS_GRABLOC0				41
+#define PS_GRABLOC1				42
+#define PS_GRABLOC2				43
+#define PS_GRABANGLE			44
+#define PS_SIDEVEL				45
+#define PS_UPVEL				46
+#define PS_FLAGS				47
 
-#define PS_EDICTFLAGS			(48)
-#define PS_UPPERIDLE			(49)
-#define PS_LOWERIDLE			(50)
-#define PS_WEAPON				(51)
-#define PS_DEFENSE				(52)
-#define PS_LASTWEAPON			(53)
-#define PS_LASTDEFENSE			(54)
-#define PS_WEAPONREADY			(55)
+#define PS_EDICTFLAGS			48
+#define PS_UPPERIDLE			49
+#define PS_LOWERIDLE			50
+#define PS_WEAPON				51
+#define PS_DEFENSE				52
+#define PS_LASTWEAPON			53
+#define PS_LASTDEFENSE			54
+#define PS_WEAPONREADY			55
 
-#define PS_SWITCHTOWEAPON		(56)
-#define PS_NEWWEAPON			(57)
-#define PS_WEAP_AMMO_INDEX		(58)
-#define PS_DEF_AMMO_INDEX		(59)
-#define PS_ARMORTYPE			(60)
-#define PS_BOWTYPE				(61)
-#define PS_STAFFLEVEL			(62)
-#define PS_HELLTYPE				(63)
+#define PS_SWITCHTOWEAPON		56
+#define PS_NEWWEAPON			57
+#define PS_WEAP_AMMO_INDEX		58
+#define PS_DEF_AMMO_INDEX		59
+#define PS_ARMORTYPE			60
+#define PS_BOWTYPE				61
+#define PS_STAFFLEVEL			62
+#define PS_HELLTYPE				63
 
-#define PS_HANDFXTYPE			(64)
-#define PS_PLAGUELEVEL			(65)
-#define PS_SKINTYPE				(66)
-#define PS_ALTPARTS				(67)
-#define PS_WEAPONCHARGE			(68)
-#define PS_DEADFLAG				(69)
-#define PS_IDEAL_YAW			(70)
-#define PS_DMFLAGS				(71)
+#define PS_HANDFXTYPE			64
+#define PS_PLAGUELEVEL			65
+#define PS_SKINTYPE				66
+#define PS_ALTPARTS				67
+#define PS_WEAPONCHARGE			68
+#define PS_DEADFLAG				69
+#define PS_IDEAL_YAW			70
+#define PS_DMFLAGS				71
 
-#define PS_OLDVELOCITY_Z		(72)
-#define PS_STAT_BIT_0			(73)		// 1st of a contiguous block.
+#define PS_OLDVELOCITY_Z		72
+#define PS_STAT_BIT_0			73			// 1st of a contiguous block.
 #define PS_STAT_BIT_47			(74 + 47)	// Rest of the block.
-#define PS_CINEMATIC			(122)
-#define PS_PIV					(123)
-#define PS_METEORCOUNT			(124)
-#define PS_M_CAMERA_DELTA_ANGLES (125)
-#define PS_POWERUP_TIMER		(126)
-#define PS_QUICKTURN_RATE		(127)
+#define PS_CINEMATIC			122
+#define PS_PIV					123
+#define PS_METEORCOUNT			124
+#define PS_M_CAMERA_DELTA_ANGLES 125
+#define PS_POWERUP_TIMER		126
+#define PS_QUICKTURN_RATE		127
 
-#define PS_ADVANCEDSTAFF		(128)
+#define PS_ADVANCEDSTAFF		128
 
 // user_cmd_t communication delta flags. ms and light always sent, the others are optional.
 #define CM_ANGLE1 				(1 << 0)
@@ -302,58 +296,55 @@ enum clc_ops_e
 #define DEFAULT_SOUND_PACKET_VOLUME			1.0f
 #define DEFAULT_SOUND_PACKET_ATTENUATION	1.0f
 
-// entity_state_t communication delta flags. For every 8 bits of PLAYER_DEL_BYTES, a bit of PLAYER_DEL_NZBYTES is required.
-#define ENT_DEL_BYTES		(5)
-#define ENT_DELNZ_BYTES		(1)
+// entity_state_t communication delta flags.
+#define U_FRAME8			0
+#define U_FRAME16			1
+#define U_ORIGIN12			2
+#define U_ORIGIN3			3
+#define U_ANGLE1			4
+#define U_ANGLE2			5
+#define U_ANGLE3			6
+#define U_SWAPFRAME			7
 
-#define U_FRAME8			(0)
-#define U_FRAME16			(1)
-#define U_ORIGIN12			(2)
-#define U_ORIGIN3			(3)
-#define U_ANGLE1			(4)
-#define U_ANGLE2			(5)
-#define U_ANGLE3			(6)
-#define U_SWAPFRAME			(7)
+#define U_EFFECTS8			8
+#define U_EFFECTS16			9
+#define U_RENDERFX8			10
+#define U_RENDERFX16		11
+#define U_CLIENT_EFFECTS	12
+#define U_FM_INFO			13
+#define U_REMOVE			14
+#define U_ENT_FREED			15
 
-#define U_EFFECTS8			(8)
-#define U_EFFECTS16			(9)
-#define U_RENDERFX8			(10)
-#define U_RENDERFX16		(11)
-#define U_CLIENT_EFFECTS	(12)
-#define U_FM_INFO			(13)
-#define U_REMOVE			(14)
-#define U_ENT_FREED			(15)
+#define U_COLOR_R			16
+#define U_COLOR_G			17
+#define U_COLOR_B			18
+#define U_COLOR_A			19
+#define U_SKIN8				20
+#define U_SKIN16			21
+#define U_MODEL				22
+#define U_SCALE				23
 
-#define U_COLOR_R			(16)
-#define U_COLOR_G			(17)
-#define U_COLOR_B			(18)
-#define U_COLOR_A			(19)
-#define U_SKIN8				(20)
-#define U_SKIN16			(21)
-#define U_MODEL				(22)
-#define U_SCALE				(23)
+#define U_SOUND				24
+#define U_SOLID				25
+#define U_JOINTED			26
+#define U_ABSLIGHT			27
+#define U_OLDORIGIN			28
+#define U_USAGE_COUNT		29
+#define U_NUMBER16			30
+#define U_BMODEL			31
 
-#define U_SOUND				(24)
-#define U_SOLID				(25)
-#define U_JOINTED			(26)
-#define U_ABSLIGHT			(27)
-#define U_OLDORIGIN			(28)
-#define U_USAGE_COUNT		(29)
-#define U_NUMBER16			(30)
-#define U_BMODEL			(31)
+#define U_CLIENTNUM			32
 
-#define U_CLIENTNUM			(32)
+#define U_FM_HIGH			(1 << 7) // Means more then the first 7 updates.
 
-#define U_FM_HIGH			(1<<7)	// Means more then the first 7 updates.
-
-#define U_FM_FRAME			(1<<0)	// Individual bits for each update.
-#define U_FM_FRAME16		(1<<1)
-#define U_FM_COLOR_R		(1<<2)
-#define U_FM_COLOR_G		(1<<3)
-#define U_FM_COLOR_B		(1<<4)
-#define U_FM_COLOR_A		(1<<5)
-#define U_FM_FLAGS			(1<<6)
-#define U_FM_SKIN			(1<<7)
+#define U_FM_FRAME			(1 << 0) // Individual bits for each update.
+#define U_FM_FRAME16		(1 << 1)
+#define U_FM_COLOR_R		(1 << 2)
+#define U_FM_COLOR_G		(1 << 3)
+#define U_FM_COLOR_B		(1 << 4)
+#define U_FM_COLOR_A		(1 << 5)
+#define U_FM_FLAGS			(1 << 6)
+#define U_FM_SKIN			(1 << 7)
 
 #pragma endregion
 
