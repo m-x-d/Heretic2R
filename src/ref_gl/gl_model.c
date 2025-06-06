@@ -630,9 +630,6 @@ static void Mod_LoadBrushModel(model_t* mod, void* buffer)
 	Mod_LoadNodes(&header->lumps[LUMP_NODES]);
 	Mod_LoadSubmodels(&header->lumps[LUMP_MODELS]);
 
-	// Regular and alternate animation
-	mod->numframes = 2; 
-
 	// Set up the submodels
 	for (int i = 0; i < mod->numsubmodels; i++)
 	{
@@ -750,8 +747,6 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 	// H2: check for FlexModel header...
 	if (modfilelen > 6 && Q_strncasecmp(buf, "header", 6) == 0)
 	{
-		mod->skeletal_model = true;
-
 		int datasize = 0x200000;
 		if (strstr(name, "players/") || strstr(name, "models/player/"))
 			datasize = 0x400000;
@@ -761,8 +756,6 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 	}
 	else
 	{
-		mod->skeletal_model = false; // H2
-
 		// Call the appropriate loader
 		switch (LittleLong(*(uint*)buf))
 		{

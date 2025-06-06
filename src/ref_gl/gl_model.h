@@ -164,28 +164,17 @@ typedef enum
 typedef struct model_s
 {
 	char name[MAX_QPATH];
-
 	int registration_sequence;
-
 	modtype_t type;
-	int numframes;
 
-	int flags;
-
-	// Volume occupied by the model graphics
+	// Volume occupied by the model graphics.
 	vec3_t mins;
 	vec3_t maxs;
 	float radius;
 
-	// Solid volume for clipping 
-	qboolean clipbox;
-	vec3_t clipmins;
-	vec3_t clipmaxs;
-
-	// Brush model
+	// Brush model.
 	int firstmodelsurface;
 	int nummodelsurfaces;
-	int lightmap; // Only for submodels
 
 	int numsubmodels;
 	mmodel_t* submodels;
@@ -193,7 +182,7 @@ typedef struct model_s
 	int numplanes;
 	cplane_t* planes;
 
-	int numleafs; // Number of visible leafs, not counting 0
+	int numleafs; // Number of visible leafs, not counting 0.
 	mleaf_t* leafs;
 
 	int numvertexes;
@@ -221,20 +210,18 @@ typedef struct model_s
 	dvis_t* vis;
 	byte* lightdata;
 
-	// For models and skins
+	// For models and skins.
 	image_t* skins[MAX_FRAMES];
 
 	int extradatasize;
 	void* extradata;
-
-	qboolean skeletal_model; // false - Sprite/Book/Bsp; true - Skeletal model?
 } model_t;
 
 #pragma endregion
 
-mleaf_t* Mod_PointInLeaf(vec3_t p, const model_t* model);
-void Mod_Init(void);
-byte* Mod_ClusterPVS(int cluster, const model_t* model);
-void Mod_Modellist_f(void);
-void Mod_Free(model_t* mod);
-void Mod_FreeAll(void);
+extern mleaf_t* Mod_PointInLeaf(vec3_t p, const model_t* model);
+extern void Mod_Init(void);
+extern byte* Mod_ClusterPVS(int cluster, const model_t* model);
+extern void Mod_Modellist_f(void);
+extern void Mod_Free(model_t* mod);
+extern void Mod_FreeAll(void);
