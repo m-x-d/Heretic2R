@@ -462,6 +462,7 @@ typedef struct
 #define BUTTON_ANY			512	// Any key whatsoever.
 
 // Sent to the server each client frame.
+// NOTE: mxd. Can't change struct size (36 bytes), otherwise compatibility with original game dlls will break!
 typedef struct usercmd_s
 {
 	byte msec;
@@ -473,6 +474,7 @@ typedef struct usercmd_s
 	short forwardmove;
 	short sidemove;
 	short upmove;
+	byte prediction; //mxd. Unused. Can't remove.
 	byte lightlevel; // Light level the player is standing on.
 } usercmd_t;
 

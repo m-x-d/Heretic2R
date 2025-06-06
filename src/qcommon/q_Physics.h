@@ -36,6 +36,8 @@ typedef struct FormMove_s
 	const edict_t* pass_entity; //mxd. void* in original logic.
 	int clipmask;
 	trace_t trace;
+
+	//INFO: mxd. 6 extra properties below in original logic. None are used, though...
 } FormMove_t;
 
 H2COMMON_API extern void BounceVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float elasticity);
