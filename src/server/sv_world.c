@@ -171,16 +171,18 @@ void SV_LinkEdict(edict_t* ent)
 	// Encode the size into the entity_state for client prediction.
 	if (ent->solid == SOLID_BBOX && !(ent->svflags & SVF_DEADMONSTER))
 	{
+		//TODO: H2 uses non-square bboxes on XY axis (like obj_biotank)!
+
 		// Assume that x/y are equal and symmetric.
-		const int i = ClampI((int)(ent->maxs[0] / 8), 1, 31);
+		const int x = ClampI((int)(ent->maxs[0] / 8), 1, 31);
 
 		// Z is not symmetric.
-		const int j = ClampI((int)(-ent->mins[2] / 8), 1, 31);
+		const int zd = ClampI((int)(-ent->mins[2] / 8), 1, 31);
 
 		// And z maxs can be negative...
-		const int k = ClampI((int)((ent->maxs[2] + 32) / 8), 1, 63);
+		const int zu = ClampI((int)((ent->maxs[2] + 32) / 8), 1, 63);
 
-		ent->s.solid = (short)((k << 10) | (j << 5) | i);
+		ent->s.solid = (short)((zu << 10) | (zd << 5) | x);
 	}
 	else if (ent->solid == SOLID_BSP)
 	{
