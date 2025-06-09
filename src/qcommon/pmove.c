@@ -1065,7 +1065,7 @@ static void PM_SnapPosition(void)
 {
 	// Try all single bits first.
 	static uint jitterbits[] = { 0, 4, 1, 2, 3, 5, 6, 7 };
-	short sign[3];
+	short offset[3] = { 0 };
 	short base[3];
 
 	// Snap velocity to eights.
@@ -1074,15 +1074,10 @@ static void PM_SnapPosition(void)
 
 	for (int i = 0; i < 3; i++)
 	{
-		if (pml.origin[i] >= 0.0f)
-			sign[i] = 1;
-		else
-			sign[i] = -1;
-
 		pml.snapped_origin[i] = (short)(pml.origin[i] * 8.0f);
 
-		if (FloatIsZeroEpsilon((float)pml.snapped_origin[i] / 8.0f - pml.origin[i])) // H2: FloatIsZeroEpsilon() instead of direct comparison.
-			sign[i] = 0;
+		if (!FloatIsZeroEpsilon((float)pml.snapped_origin[i] / 8.0f - pml.origin[i])) // H2: FloatIsZeroEpsilon() instead of direct comparison.
+			offset[i] = (short)(Q_signf(pml.origin[i]));
 	}
 
 	VectorCopy_Macro(pml.snapped_origin, base);
@@ -1094,7 +1089,7 @@ static void PM_SnapPosition(void)
 
 		for (int i = 0; i < 3; i++)
 			if (jitterbits[j] & (1 << i))
-				pml.snapped_origin[i] += sign[i];
+				pml.snapped_origin[i] += offset[i];
 
 		if (PM_GoodPosition())
 		{
