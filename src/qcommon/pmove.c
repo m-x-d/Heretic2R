@@ -1064,9 +1064,8 @@ static qboolean PM_GoodPosition(void)
 static void PM_SnapPosition(void)
 {
 	// Try all single bits first.
-	static uint jitterbits[] = { 0, 4, 1, 2, 3, 5, 6, 7 };
+	static const uint jitterbits[] = { 0, 4, 1, 2, 3, 5, 6, 7 };
 	short offset[3] = { 0 };
-	short base[3];
 
 	// Snap velocity to eights.
 	for (int i = 0; i < 3; i++)
@@ -1080,6 +1079,7 @@ static void PM_SnapPosition(void)
 			offset[i] = (short)(Q_signf(pml.origin[i]));
 	}
 
+	short base[3];
 	VectorCopy_Macro(pml.snapped_origin, base);
 
 	// Try all combinations
