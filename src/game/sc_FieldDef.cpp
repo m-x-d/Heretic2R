@@ -23,33 +23,33 @@
 
 static field_t script_fields[] =
 {
-	{ "x",				SPEC_X,							F_FLOAT,	0 },
-	{ "y",				SPEC_Y,							F_FLOAT,	0 },
-	{ "z",				SPEC_Z,							F_FLOAT,	0 },
-	{ "origin",			FOFS(s.origin),					F_VECTOR,	0 },
-	{ "movetype",		FOFS(movetype),					F_INT,		0 },
-	{ "start_origin",	FOFS(moveinfo.start_origin),	F_VECTOR,	0 },
-	{ "distance",		FOFS(moveinfo.distance),		F_FLOAT,	0 },
-	{ "owner",			FOFS(owner),					F_EDICT,	0 },
-	{ "wait",			FOFS(wait),						F_FLOAT,	0 },
-	{ "velocity",		FOFS(velocity),					F_VECTOR,	0 },
-	{ "angle_velocity",	FOFS(avelocity),				F_VECTOR,	0 },
-	{ "team_chain",		FOFS(teamchain),				F_EDICT,	0 },
-	{ "yaw_speed",		FOFS(yaw_speed),				F_FLOAT,	0 },
-	{ "modelindex",		FOFS(s.modelindex),				F_INT,		0 },
-	{ "count",			FOFS(count),					F_INT,		0 },
-	{ "solid",			FOFS(solid),					F_INT,		0 },
-	{ "angles",			FOFS(s.angles),					F_VECTOR,	0 },
-	{ "start_angles",	FOFS(moveinfo.start_angles),	F_VECTOR,	0 },
-	{ "state",			FOFS(moveinfo.state),			F_INT,		0 },
-	{ "c_mode",			FOFS(monsterinfo.c_mode),		F_INT,		0 },
-	{ "skinnum",		FOFS(s.skinnum),				F_INT,		0 },
-	{ "ideal_yaw",		FOFS(ideal_yaw),				F_FLOAT,	0 },
-	{ "delta_angles",	SPEC_DELTA_ANGLES,				F_VECTOR,	0 },
-	{ "p_origin",		SPEC_P_ORIGIN,					F_VECTOR,	0 },
-	{ "takedamage",		FOFS(takedamage),				F_INT,		0 },
+	{ "x",				SPEC_X,							F_FLOAT,	FFL_NONE },
+	{ "y",				SPEC_Y,							F_FLOAT,	FFL_NONE },
+	{ "z",				SPEC_Z,							F_FLOAT,	FFL_NONE },
+	{ "origin",			FOFS(s.origin),					F_VECTOR,	FFL_RELINK }, //mxd. Needs re-linking...
+	{ "movetype",		FOFS(movetype),					F_INT,		FFL_NONE },
+	{ "start_origin",	FOFS(moveinfo.start_origin),	F_VECTOR,	FFL_NONE },
+	{ "distance",		FOFS(moveinfo.distance),		F_FLOAT,	FFL_NONE },
+	{ "owner",			FOFS(owner),					F_EDICT,	FFL_NONE },
+	{ "wait",			FOFS(wait),						F_FLOAT,	FFL_NONE },
+	{ "velocity",		FOFS(velocity),					F_VECTOR,	FFL_NONE },
+	{ "angle_velocity",	FOFS(avelocity),				F_VECTOR,	FFL_NONE },
+	{ "team_chain",		FOFS(teamchain),				F_EDICT,	FFL_NONE },
+	{ "yaw_speed",		FOFS(yaw_speed),				F_FLOAT,	FFL_NONE },
+	{ "modelindex",		FOFS(s.modelindex),				F_INT,		FFL_NONE },
+	{ "count",			FOFS(count),					F_INT,		FFL_NONE },
+	{ "solid",			FOFS(solid),					F_INT,		FFL_RELINK }, //mxd. Needs re-linking...
+	{ "angles",			FOFS(s.angles),					F_VECTOR,	FFL_NONE },
+	{ "start_angles",	FOFS(moveinfo.start_angles),	F_VECTOR,	FFL_NONE },
+	{ "state",			FOFS(moveinfo.state),			F_INT,		FFL_NONE },
+	{ "c_mode",			FOFS(monsterinfo.c_mode),		F_INT,		FFL_NONE },
+	{ "skinnum",		FOFS(s.skinnum),				F_INT,		FFL_NONE },
+	{ "ideal_yaw",		FOFS(ideal_yaw),				F_FLOAT,	FFL_NONE },
+	{ "delta_angles",	SPEC_DELTA_ANGLES,				F_VECTOR,	FFL_NONE },
+	{ "p_origin",		SPEC_P_ORIGIN,					F_VECTOR,	FFL_NONE },
+	{ "takedamage",		FOFS(takedamage),				F_INT,		FFL_NONE },
 
-	{ nullptr,			0,								F_INT,		0 }
+	{ nullptr, 0, F_INT, FFL_NONE }
 };
 
 FieldDef::FieldDef(CScript* script)
@@ -57,12 +57,13 @@ FieldDef::FieldDef(CScript* script)
 	strcpy_s(name, sizeof(name), script->ReadString()); //mxd. strcpy -> strcpy_s.
 	type = static_cast<VariableType>(script->ReadByte());
 
-	for (const field_t* field = script_fields; field->name; field++)
+	for (const field_t* field = script_fields; field->name != nullptr; field++)
 	{
 		if (strcmp(name, field->name) == 0)
 		{
 			offset = field->ofs;
 			field_type = field->type;
+			field_flags = field->flags; //mxd
 
 			break;
 		}
@@ -80,12 +81,13 @@ FieldDef::FieldDef(FILE* f, CScript* script)
 	if (script != nullptr && index != -1)
 		script->SetFieldIndex(index, this);
 
-	for (const field_t* field = script_fields; field->name; field++)
+	for (const field_t* field = script_fields; field->name != nullptr; field++)
 	{
 		if (strcmp(name, field->name) == 0)
 		{
 			offset = field->ofs;
 			field_type = field->type;
+			field_flags = field->flags; //mxd
 
 			break;
 		}
@@ -315,5 +317,16 @@ void FieldDef::SetValue(Variable* var, Variable* value) const
 			default:
 				break;
 		}
+	}
+
+	//BUGFIX: mxd. Entity needs to be relinked when origin, mins, maxs, or solid changes.
+	if (field_flags & FFL_RELINK)
+	{
+		edict_t* ent = var->GetEdictValue();
+
+		if (ent != nullptr)
+			gi.linkentity(ent);
+		else
+			Com_Printf("FieldDef::SetValue: failed to relink field %i!\n", field_type);
 	}
 }

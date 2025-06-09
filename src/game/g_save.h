@@ -9,7 +9,12 @@
 #include "q_Typedef.h"
 
 // Fields are needed for spawning from the entity string and saving / loading games.
-#define FFL_SPAWNTEMP	1
+typedef enum
+{
+	FFL_NONE,
+	FFL_SPAWNTEMP,
+	FFL_RELINK //mxd
+} fieldflags_t;
 
 typedef enum
 {
@@ -32,7 +37,7 @@ typedef struct
 	const char* name;
 	int ofs;
 	fieldtype_t type;
-	int flags;
+	fieldflags_t flags; //mxd. int in original logic.
 } field_t;
 
 #ifdef __cplusplus

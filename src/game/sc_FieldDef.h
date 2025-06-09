@@ -15,6 +15,7 @@ class FieldDef
 	VariableType type = TYPE_UNKNOWN;
 	int offset = -1;
 	fieldtype_t field_type = F_IGNORE;
+	fieldflags_t field_flags = FFL_NONE; //mxd
 
 public:
 	explicit FieldDef(CScript* script);
