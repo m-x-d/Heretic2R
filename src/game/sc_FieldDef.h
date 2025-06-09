@@ -17,17 +17,18 @@ class FieldDef
 	fieldtype_t field_type = F_IGNORE;
 	fieldflags_t field_flags = FFL_NONE; //mxd
 
+	byte* GetOffset(const Variable* var) const;
+
 public:
 	explicit FieldDef(CScript* script);
 	FieldDef(FILE* f, CScript* script);
 
-	void Write(FILE* f, CScript* script);
-	byte* GetOffset(Variable* var) const;
+	void Write(FILE* f, const CScript* script);
 	Variable* GetValue(Variable* var) const;
 	int GetIntValue(Variable* var) const;
 	float GetFloatValue(Variable* var) const;
 	void GetVectorValue(Variable* var, vec3_t& value) const;
 	edict_t* GetEdictValue(Variable* var) const;
-	char* GetStringValue(Variable* var) const;
+	const char* GetStringValue(Variable* var) const;
 	void SetValue(Variable* var, Variable* value) const;
 };

@@ -94,7 +94,7 @@ FieldDef::FieldDef(FILE* f, CScript* script)
 	}
 }
 
-void FieldDef::Write(FILE* f, CScript* script)
+void FieldDef::Write(FILE* f, const CScript* script)
 {
 	constexpr int index = RLID_FIELDDEF;
 	fwrite(&index, 1, sizeof(index), f);
@@ -106,7 +106,7 @@ void FieldDef::Write(FILE* f, CScript* script)
 	fwrite(&field_index, 1, sizeof(field_index), f);
 }
 
-byte* FieldDef::GetOffset(Variable* var) const
+byte* FieldDef::GetOffset(const Variable* var) const
 {
 	byte* dest = nullptr;
 
@@ -247,7 +247,7 @@ edict_t* FieldDef::GetEdictValue(Variable* var) const
 	return *reinterpret_cast<edict_t**>(dest);
 }
 
-char* FieldDef::GetStringValue(Variable* var) const //TODO: change return type to const char*.
+const char* FieldDef::GetStringValue(Variable* var) const
 {
 	return "";
 }
