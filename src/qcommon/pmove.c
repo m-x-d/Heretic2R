@@ -615,8 +615,7 @@ static void PM_AddCurrents(vec3_t wishvel)
 	}
 }
 
-//mxd. Return value is unused.
-static qboolean PM_TryMove(void) // H2
+static void PM_OnBboxSizeChanged(void) // H2 //mxd. Removed unused return value.
 {
 	int axis;
 	float sign;
@@ -682,7 +681,7 @@ static qboolean PM_TryMove(void) // H2
 				pm->trace(start, mins, maxs, end, &trace);
 
 				if (trace.startsolid || trace.allsolid)
-					return false;
+					return;
 			}
 
 			if (trace.fraction < 1.0f)
@@ -693,7 +692,7 @@ static qboolean PM_TryMove(void) // H2
 				pm->trace(start, mins, maxs, end, &trace);
 
 				if (trace.fraction != 1.0f)
-					return false;
+					return;
 
 				start[axis] -= diff;
 			}
@@ -704,14 +703,12 @@ static qboolean PM_TryMove(void) // H2
 
 	pm->trace(start, intent_mins, intent_maxs, start, &trace);
 
-	if (trace.startsolid)
-		return false;
-
-	VectorCopy(start, pml.origin);
-	VectorCopy(intent_mins, pm->mins);
-	VectorCopy(intent_maxs, pm->maxs);
-
-	return true;
+	if (!trace.startsolid)
+	{
+		VectorCopy(start, pml.origin);
+		VectorCopy(intent_mins, pm->mins);
+		VectorCopy(intent_maxs, pm->maxs);
+	}
 }
 
 static void PM_AirMove(void)
@@ -1063,8 +1060,7 @@ static qboolean PM_GoodPosition(void)
 	return true;
 }
 
-// On exit, the origin will have a value that is pre-quantized to the 0.125
-// precision of the network channel and in a valid position.
+// On exit, the origin will have a value that is pre-quantized to the 0.125 precision of the network channel and in a valid position.
 static void PM_SnapPosition(void)
 {
 	// Try all single bits first.
@@ -1382,14 +1378,8 @@ void Pmove(pmove_t* pmove, const qboolean server)
 	if (pm->intentMaxs != NULL)
 		VectorSubtract(pm->maxs, pm->intentMaxs, maxs_diff);
 
-	for (int i = 0; i < 3; i++)
-	{
-		if (fabsf(mins_diff[i]) >= FLOAT_ZERO_EPSILON || fabsf(maxs_diff[i]) >= FLOAT_ZERO_EPSILON)
-		{
-			PM_TryMove();
-			break;
-		}
-	}
+	if (!Vec3IsZeroEpsilon(mins_diff) || !Vec3IsZeroEpsilon(maxs_diff))
+		PM_OnBboxSizeChanged();
 
 	// Set groundentity, watertype, and waterlevel for final spot.
 	PM_CatagorizePosition();
