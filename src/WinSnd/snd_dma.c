@@ -211,7 +211,7 @@ void S_Shutdown(void)
 	Cmd_RemoveCommand("soundinfo");
 
 	// Free all sounds.
-	sfx_t* sfx = known_sfx;
+	sfx_t* sfx = &known_sfx[0];
 	for (int i = 0; i < num_sfx; i++, sfx++)
 	{
 		if (sfx->name[0] == 0)
@@ -292,7 +292,7 @@ static sfx_t* S_RegisterSound(const char* name)
 static void S_EndRegistration(void)
 {
 	// Free any sounds not from this registration sequence.
-	sfx_t* sfx = known_sfx;
+	sfx_t* sfx = &known_sfx[0];
 	for (int i = 0; i < num_sfx; i++, sfx++)
 	{
 		// Don't need this sound?
@@ -308,7 +308,7 @@ static void S_EndRegistration(void)
 	}
 
 	// Load everything in.
-	sfx = known_sfx;
+	sfx = &known_sfx[0];
 	for (int i = 0; i < num_sfx; i++, sfx++)
 		if (sfx->name[0] != 0)
 			S_LoadSound(sfx);
