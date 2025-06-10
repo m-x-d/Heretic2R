@@ -12,7 +12,7 @@
 #include "cl_skeletons.h"
 #include "cmodel.h"
 #include "ResourceManager.h"
-#include "sound.h"
+#include "snd_dll.h"
 #include "Vector.h"
 #include "FlexModel.h"
 #include "Reference.h"
@@ -333,7 +333,7 @@ static void CL_Userinfo_f(void)
 void CL_Snd_Restart_f(void)
 {
 	SndDll_Init();
-	S_Init();
+	se.Init();
 	CL_RegisterSounds();
 }
 
@@ -601,7 +601,7 @@ static void CL_Reconnect_f(void)
 
 	if (cls.state == ca_connected)
 	{
-		S_StopAllSounds_Sounding(); // H2
+		se.StopAllSounds_Sounding(); // H2
 		CL_ClearSkeletalEntities(); // H2
 
 		Com_Printf("reconnecting...\n");
@@ -1528,7 +1528,7 @@ void CL_Frame(const int msec)
 	SCR_UpdateScreen();
 
 	// Update audio.
-	S_Update(cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up);
+	se.Update(cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up);
 	CDAudio_Update();
 
 	// Advance local effects for next frame.
@@ -1574,7 +1574,7 @@ void CL_Init(void)
 	// All archived variables will now be loaded.
 	Con_Init();
 	VID_Init();
-	S_Init(); // Sound must be initialized after window is created.
+	se.Init(); // Sound must be initialized after window is created.
 
 	V_Init();
 
@@ -1615,13 +1615,6 @@ void CL_Shutdown(void)
 	isdown = true;
 
 	Cvar_SetValue("win_ignore_destroy", 1.0f);
-
-	if (SNDEAX_SetEnvironment != NULL)
-	{
-		SNDEAX_SetEnvironment(0);
-		SNDEAX_SetEnvironment = NULL;
-	}
-
 	ResMngr_Des(&cl_FXBufMngr); //mxd. Was a separate function in H2
 
 	CL_WriteConfiguration();
@@ -1633,10 +1626,7 @@ void CL_Shutdown(void)
 	SMK_Shutdown();
 	CL_ClearGameMessages(); // H2
 	CDAudio_Shutdown();
-
-	if (S_Shutdown != NULL) //mxd. Can be NULL if shutdown was caused by Sys_Error call during sound dll initialization.
-		S_Shutdown();
-
+	se.Shutdown();
 	IN_DeactivateMouse();
 	VID_Shutdown();
 	SndDll_FreeLibrary();

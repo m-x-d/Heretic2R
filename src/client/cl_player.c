@@ -8,15 +8,14 @@
 #include "client.h"
 #include "cl_effects.h"
 #include "cl_skeletons.h"
-#include "sound.h"
 #include "Vector.h"
 
 static void CL_Sound(const byte event_id, const vec3_t origin, const int channel, const char* soundname, const float fvol, const int attenuation, const float timeofs) // H2
 {
 	if (!cl.playerinfo.ishistory)
 	{
-		struct sfx_s* snd = S_FindName(soundname, true);
-		S_StartSound(origin, cl.playernum + 1, channel, snd, fvol, attenuation, timeofs);
+		struct sfx_s* snd = se.FindName(soundname, true);
+		se.StartSound(origin, cl.playernum + 1, channel, snd, fvol, attenuation, timeofs);
 
 		sound_event_id_time_array[event_id] = cl.playerinfo.Highestleveltime;
 	}

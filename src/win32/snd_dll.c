@@ -7,49 +7,84 @@
 #include <windows.h>
 #include "qcommon.h"
 #include "client.h"
-#include "sound.h"
 #include "snd_dll.h" //mxd
 #include "clfx_dll.h"
 
+snd_export_t se; //mxd
+
 cvar_t* snd_dll;
-HINSTANCE sound_library;
+static HINSTANCE sound_library;
 
-// Sound library function pointers.
-void (*S_Init)(void);
-void (*S_Shutdown)(void);
-void (*S_StartSound)(const vec3_t origin, int entnum, int entchannel, struct sfx_s* sfx, float fvol, int attenuation, float timeofs); //TODO: float attenuation in Q2. Which is correct?..
-void (*S_StartLocalSound)(const char* sound);
-void (*S_StopAllSounds)(void);
-void (*S_StopAllSounds_Sounding)(void);
-void (*S_Update)(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up);
-void (*S_Activate)(qboolean active);
-void (*S_BeginRegistration)(void);
-struct sfx_s* (*S_RegisterSound)(const char* name);
-void (*S_EndRegistration)(void);
-struct sfx_s* (*S_FindName)(const char* name, qboolean create);
-
-#ifdef __A3D_GEOM
-void (*S_A3D_ExportRenderGeom)(refexport_t* re);
-#endif
-
-void (*SNDEAX_SetEnvironment)(int env_index);
-void (*SNDEAX_SetEnvironmentLevel)(int level);
-
-static qboolean A3D_CheckAvailability(void)
+static void InitClientEffects(void)
 {
-	return false; //TODO: remove?
+	fxi.S_StartSound = se.StartSound;
+	fxi.S_RegisterSound = se.RegisterSound;
+
+	if (GetProcAddress(clfx_library, "GetfxAPI"))
+		CLFX_Init();
 }
 
-static qboolean EAX_CheckAvailability(void)
+#pragma region ========================== NULL SOUND CALLBACKS ==========================
+
+static void NullSnd_Init(void) { }
+static void NullSnd_Shutdown(void) { }
+static void NullSnd_StartSound(const vec3_t origin, int entnum, int entchannel, struct sfx_s* sfx, float fvol, int attenuation, float timeofs) { }
+static void NullSnd_StartLocalSound(const char* sound) { }
+static void NullSnd_StopAllSounds(void) { }
+static void NullSnd_StopAllSounds_Sounding(void) { }
+static void NullSnd_Update(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up) { }
+static void NullSnd_Activate(qboolean active) { }
+static void NullSnd_BeginRegistration(void) { }
+static struct sfx_s* NullSnd_RegisterSound(const char* name) { return NULL; }
+static void NullSnd_EndRegistration(void) { }
+static struct sfx_s* NullSnd_FindName(const char* name, qboolean create) { return NULL; }
+
+//mxd. So we can carry on without sound library...
+static void InitNullSound(void)
 {
-	return false; //TODO: remove?
+	se.api_version = SND_API_VERSION;
+	se.library_name = "Null Sound";
+
+	se.Init = NullSnd_Init;
+	se.Shutdown = NullSnd_Shutdown;
+
+	se.StartSound = NullSnd_StartSound;
+	se.StartLocalSound = NullSnd_StartLocalSound;
+
+	se.StopAllSounds = NullSnd_StopAllSounds;
+	se.StopAllSounds_Sounding = NullSnd_StopAllSounds_Sounding;
+
+	se.Update = NullSnd_Update;
+	se.Activate = NullSnd_Activate;
+
+	se.BeginRegistration = NullSnd_BeginRegistration;
+	se.RegisterSound = NullSnd_RegisterSound;
+	se.EndRegistration = NullSnd_EndRegistration;
+
+	se.FindName = NullSnd_FindName;
+
+	se.SetEaxEnvironment = NULL;
+
+	InitClientEffects();
 }
+
+#pragma endregion
 
 void SndDll_FreeLibrary(void)
 {
-	if (sound_library != NULL && !FreeLibrary(sound_library))
-		Sys_Error("Sound Lib FreeLibrary failed");
+	if (sound_library != NULL)
+	{
+		if (se.SetEaxEnvironment != NULL) //mxd. Done in CL_Shutdown() in original logic.
+		{
+			se.SetEaxEnvironment(0);
+			se.SetEaxEnvironment = NULL;
+		}
 
+		if (!FreeLibrary(sound_library))
+			Sys_Error("Sound Lib FreeLibrary failed");
+	}
+
+	memset(&se, 0, sizeof(se)); //mxd
 	sound_library = NULL;
 }
 
@@ -57,133 +92,68 @@ void SndDll_Init(void)
 {
 	if (sound_library != NULL)
 	{
-		S_Shutdown();
+		se.Shutdown();
 		SndDll_FreeLibrary();
 	}
- 
+
 	if (snd_dll == NULL)
-		snd_dll = Cvar_Get("snd_dll", "", 0);
-
-	if (Q_stricmp(snd_dll->string, "a3dsnd") == 0)
-	{
-		Com_ColourPrintf(P_OBIT, "Attempting A3D 2.0 support\n");
-		if (!A3D_CheckAvailability())
-		{
-			Com_ColourPrintf(P_OBIT, "A3D NOT supported\n");
-			Cvar_Set("snd_dll", "winsnd");
-		}
-	}
-	else if (Q_stricmp(snd_dll->string, "eaxsnd") == 0)
-	{
-		Com_ColourPrintf(P_OBIT, "Attempting EAX 1.0 support\n");
-		if (!EAX_CheckAvailability())
-		{
-			Com_ColourPrintf(P_OBIT, "EAX NOT supported\n");
-			Cvar_Set("snd_dll", "winsnd");
-		}
-	}
-	else if (Q_stricmp(snd_dll->string, "") == 0)
-	{
-		if (A3D_CheckAvailability())
-		{
-			Com_ColourPrintf(P_OBIT, "Found A3D 2.0 support\n");
-			Cvar_Set("snd_dll", "a3dsnd");
-		}
-		else if (EAX_CheckAvailability())
-		{
-			Com_ColourPrintf(P_OBIT, "Found EAX support\n");
-			Cvar_Set("snd_dll", "eaxsnd");
-		}
-		else
-		{
-			Cvar_Set("snd_dll", "winsnd");
-		}
-	}
-
-	if (Q_stricmp(snd_dll->string, "") == 0) //mxd. For whatever reason this check is inside of 'if (sound_library == NULL)' block in original version.
-		Sys_Error("Couldn\'t load default sound dll!");
-	else if (Q_stricmp(snd_dll->string, "winsnd") == 0)
-		Com_ColourPrintf(P_OBIT, "Setting Default Sound support\n");
+		snd_dll = Cvar_Get("snd_dll", DEFAULT_SOUND_LIBRARY_NAME, 0);
 
 	Com_ColourPrintf(P_HEADER, "------- Loading %s -------\n", snd_dll->string);
 
 	sound_library = LoadLibrary(snd_dll->string);
-	if (sound_library == NULL)
+	if (sound_library == NULL && Q_stricmp(snd_dll->string, DEFAULT_SOUND_LIBRARY_NAME) != 0)
 	{
-		Cvar_Set("snd_dll", "winsnd");
+		Com_ColourPrintf(P_OBIT, "Failed to load '%s' sound library. Trying default sound library...\n", snd_dll->string);
+		Cvar_Set("snd_dll", DEFAULT_SOUND_LIBRARY_NAME);
 
 		sound_library = LoadLibrary(snd_dll->string);
-		if (sound_library == NULL)
-			Sys_Error("LoadLibrary(\"%s\") failed\n", snd_dll->string);
 	}
 
-	// Bind sound library function pointers.
-	S_Init = (void*)GetProcAddress(sound_library, "S_Init");
-	if (S_Init == NULL)
-		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
+	if (sound_library == NULL)
+	{
+		Com_ColourPrintf(P_RED, "Failed to load '%s' sound library.\n", snd_dll->string);
+		InitNullSound();
 
-	S_Shutdown = (void*)GetProcAddress(sound_library, "S_Shutdown");
-	if (S_Shutdown == NULL)
-		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
+		return;
+	}
 
-	S_StartSound = (void*)GetProcAddress(sound_library, "S_StartSound");
-	if (S_StartSound == NULL)
-		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
+	snd_import_t si;
 
-	S_StartLocalSound = (void*)GetProcAddress(sound_library, "S_StartLocalSound");
-	if (S_StartLocalSound == NULL)
-		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
+	si.entities = cl_entities;
+	si.parse_entities = cl_parse_entities;
 
-	S_StopAllSounds = (void*)GetProcAddress(sound_library, "S_StopAllSounds");
-	if (S_StopAllSounds == NULL)
-		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
+	const GetSoundAPI_t GetSoundAPI = (void*)GetProcAddress(sound_library, "GetSoundAPI");
+	if (GetSoundAPI == NULL)
+	{
+		Com_ColourPrintf(P_RED, "GetProcAddress failed on %s", snd_dll->string);
+		SndDll_FreeLibrary();
+		InitNullSound();
 
-	// H2:
-	S_StopAllSounds_Sounding = (void*)GetProcAddress(sound_library, "S_StopAllSounds_Sounding");
-	if (S_StopAllSounds_Sounding == NULL)
-		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
+		return;
+	}
 
-	S_Update = (void*)GetProcAddress(sound_library, "S_Update");
-	if (S_Update == NULL)
-		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
+	se = GetSoundAPI(si);
 
-	S_Activate = (void*)GetProcAddress(sound_library, "S_Activate");
-	if (S_Activate == NULL)
-		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
+	if (se.api_version != SND_API_VERSION)
+	{
+		Com_ColourPrintf(P_RED, "%s has incompatible api_version", snd_dll->string);
+		SndDll_FreeLibrary();
 
-	S_BeginRegistration = (void*)GetProcAddress(sound_library, "S_BeginRegistration");
-	if (S_BeginRegistration == NULL)
-		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
+		// Retry with default sound library?..
+		if (Q_stricmp(snd_dll->string, DEFAULT_SOUND_LIBRARY_NAME) != 0)
+		{
+			Cvar_Set("snd_dll", DEFAULT_SOUND_LIBRARY_NAME);
+			SndDll_Init();
+		}
+		else
+		{
+			InitNullSound();
+		}
 
-	S_RegisterSound = (void*)GetProcAddress(sound_library, "S_RegisterSound");
-	if (S_RegisterSound == NULL)
-		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
+		return;
+	}
 
-	S_EndRegistration = (void*)GetProcAddress(sound_library, "S_EndRegistration");
-	if (S_EndRegistration == NULL)
-		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
-
-	S_FindName = (void*)GetProcAddress(sound_library, "S_FindName");
-	if (S_FindName == NULL)
-		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
-
-	// H2:
-#ifdef __A3D_GEOM
-	S_A3D_ExportRenderGeom = GetProcAddress(sound_library, "S_A3D_ExportRenderGeom");
-	if (S_A3D_ExportRenderGeom != NULL)
-		S_A3D_ExportRenderGeom(&re);
-	else if (re.A3D_RenderGeometry != NULL)
-		re.A3D_RenderGeometry = NULL;
-#endif
-
-	SNDEAX_SetEnvironment = (void*)GetProcAddress(sound_library, "SNDEAX_SetEnvironment"); // H2
-	SNDEAX_SetEnvironmentLevel = (void*)GetProcAddress(sound_library, "SNDEAX_SetEnvironmentLevel"); // H2 //TODO: unused?
-
-	fxi.S_StartSound = S_StartSound;
-	fxi.S_RegisterSound = S_RegisterSound;
-
-	if (GetProcAddress(clfx_library, "GetfxAPI"))
-		CLFX_Init();
-
+	InitClientEffects();
 	Com_ColourPrintf(P_HEADER, "------------------------------------\n");
 }

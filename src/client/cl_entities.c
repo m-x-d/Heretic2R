@@ -13,7 +13,6 @@
 #include "menu.h"
 #include "Reference.h"
 #include "ResourceManager.h"
-#include "sound.h"
 #include "Vector.h"
 
 ResourceManager_t cl_FXBufMngr;
@@ -44,7 +43,7 @@ static void DeallocateLERPedReference(void* data) // H2
 
 void CL_ClearSkeletalEntities(void) // H2
 {
-	S_StopAllSounds();
+	se.StopAllSounds();
 
 	if (fxe.Clear != NULL)
 		fxe.Clear();
@@ -1640,20 +1639,20 @@ static void CL_CalcViewValues(void)
 	// H2: Update EAX preset.
 	if (CL_PMpointcontents(cl.camera_vieworigin) & CONTENTS_WATER)
 	{
-		if (cl_camera_under_surface->value != 1.0f && Q_stricmp(snd_dll->string, "eaxsnd") == 0 && !(int)menus_active->value && SNDEAX_SetEnvironment != NULL)
+		if (cl_camera_under_surface->value != 1.0f && !(int)menus_active->value && se.SetEaxEnvironment != NULL)
 		{
 			Cvar_SetValue("EAX_preset", EAX_ENVIRONMENT_UNDERWATER); // H2_1.07: 22 -> 44.
-			SNDEAX_SetEnvironment(EAX_ENVIRONMENT_UNDERWATER);
+			se.SetEaxEnvironment(EAX_ENVIRONMENT_UNDERWATER);
 		}
 
 		cl_camera_under_surface->value = 1.0f;
 	}
 	else
 	{
-		if (Q_stricmp(snd_dll->string, "eaxsnd") == 0 && !(int)menus_active->value && SNDEAX_SetEnvironment != NULL)
+		if (!(int)menus_active->value && se.SetEaxEnvironment != NULL)
 		{
 			CL_UpdateWallDistances();
-			SNDEAX_SetEnvironment((int)EAX_preset->value);
+			se.SetEaxEnvironment((int)EAX_preset->value);
 		}
 
 		cl_camera_under_surface->value = 0.0f;

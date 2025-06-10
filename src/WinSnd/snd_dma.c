@@ -12,12 +12,13 @@
 #include "g_local.h"
 #include "q_clientserver.h"
 #include "qcommon.h"
-#include "sound.h"
 #include "Vector.h"
 
 // Only begin attenuating sound volumes when outside the FULLVOLUME range.
 #define SOUND_FULLVOLUME	80
 #define ENT_ATTEN_MASK		(255 - ENT_VOL_MASK) //mxd
+
+snd_import_t si; //mxd
 
 // Internal sound data & structures.
 channel_t channels[MAX_CHANNELS];
@@ -147,7 +148,7 @@ static void S_SoundInfo_f(void)
 
 #pragma endregion
 
-void S_Init(void)
+static void S_Init(void)
 {
 	Com_Printf("\n------- sound initialization -------\n");
 
@@ -227,7 +228,7 @@ void S_Shutdown(void)
 }
 
 // Q2 counterpart.
-sfx_t* S_FindName(const char* name, const qboolean create)
+static sfx_t* S_FindName(const char* name, const qboolean create)
 {
 	if (name == NULL || name[0] == 0) //mxd. Merged checks.
 		Com_Error(ERR_FATAL, "S_FindName: empty name\n");
@@ -266,14 +267,14 @@ sfx_t* S_FindName(const char* name, const qboolean create)
 }
 
 // Q2 counterpart.
-void S_BeginRegistration(void)
+static void S_BeginRegistration(void)
 {
 	s_registration_sequence++;
 	s_registering = true;
 }
 
 // Q2 counterpart.
-sfx_t* S_RegisterSound(const char* name)
+static sfx_t* S_RegisterSound(const char* name)
 {
 	if (!sound_started)
 		return NULL;
@@ -288,7 +289,7 @@ sfx_t* S_RegisterSound(const char* name)
 }
 
 // Q2 counterpart.
-void S_EndRegistration(void)
+static void S_EndRegistration(void)
 {
 	// Free any sounds not from this registration sequence.
 	sfx_t* sfx = known_sfx;
@@ -430,7 +431,7 @@ static void S_Spatialize(channel_t* ch)
 
 
 	if (!ch->fixed_origin && ch->entnum >= 0 && ch->entnum < MAX_EDICTS) //mxd. Inline CL_GetEntitySoundOrigin().
-		VectorCopy(cl_entities[ch->entnum].lerp_origin, ch->origin); // H2: update ch->origin instead of using separate var.
+		VectorCopy(si.entities[ch->entnum].lerp_origin, ch->origin); // H2: update ch->origin instead of using separate var.
 
 	S_SpatializeOrigin(ch->origin, (float)ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
 }
@@ -560,7 +561,7 @@ static sfx_t* S_RegisterSexedSound(const entity_state_t* ent, char* base)
 // Validates the params and queues the sound up.
 // If origin is NULL, the sound will be dynamically sourced from the entity.
 // Entchannel 0 will never override a playing sound.
-void S_StartSound(const vec3_t origin, const int entnum, const int entchannel, sfx_t* sfx, const float fvol, const int attenuation, const float timeofs)
+static void S_StartSound(const vec3_t origin, const int entnum, const int entchannel, sfx_t* sfx, const float fvol, const int attenuation, const float timeofs)
 {
 	static int s_beginofs = 0; //mxd. Made local static.
 
@@ -568,7 +569,7 @@ void S_StartSound(const vec3_t origin, const int entnum, const int entchannel, s
 		return;
 
 	if (sfx->name[0] == '*')
-		sfx = S_RegisterSexedSound(&cl_entities[entnum].current, sfx->name);
+		sfx = S_RegisterSexedSound(&si.entities[entnum].current, sfx->name);
 
 	// Make sure the sound is loaded.
 	if (S_LoadSound(sfx) == NULL)
@@ -632,7 +633,7 @@ void S_StartSound(const vec3_t origin, const int entnum, const int entchannel, s
 }
 
 // Q2 counterpart.
-void S_StartLocalSound(const char* sound)
+static void S_StartLocalSound(const char* sound)
 {
 	if (!sound_started)
 		return;
@@ -662,7 +663,7 @@ static void S_ClearBuffer(void)
 	SNDDMA_Submit();
 }
 
-void S_StopAllSounds(void)
+static void S_StopAllSounds(void)
 {
 	if (!sound_started)
 		return;
@@ -688,7 +689,7 @@ void S_StopAllSounds(void)
 	// H2: no S_ClearBuffer() call.
 }
 
-void S_StopAllSounds_Sounding(void) // H2
+static void S_StopAllSounds_Sounding(void) // H2
 {
 	if (sound_started)
 		S_ClearBuffer();
@@ -707,7 +708,7 @@ static void S_AddLoopSounds(void)
 	for (int i = 0; i < cl.frame.num_entities; i++)
 	{
 		const int num = (cl.frame.parse_entities + i) & (MAX_PARSE_ENTITIES - 1);
-		const entity_state_t* ent = &cl_parse_entities[num];
+		const entity_state_t* ent = &si.parse_entities[num];
 		sounds[i] = ent->sound;
 		attenuations[i] = snd_attenuations[ent->sound_data & ENT_ATTEN_MASK]; //H2
 		volumes[i] = (float)(ent->sound_data & ENT_VOL_MASK); //H2
@@ -724,7 +725,7 @@ static void S_AddLoopSounds(void)
 			continue; // Bad sound effect.
 
 		int num = (cl.frame.parse_entities + i) & (MAX_PARSE_ENTITIES - 1);
-		entity_state_t* ent = &cl_parse_entities[num];
+		const entity_state_t* ent = &si.parse_entities[num];
 
 		// Find the total contribution of all sounds of this type.
 		vec3_t origin;
@@ -742,7 +743,7 @@ static void S_AddLoopSounds(void)
 			sounds[j] = 0; // Don't check this again later.
 
 			num = (cl.frame.parse_entities + j) & (MAX_PARSE_ENTITIES - 1);
-			ent = &cl_parse_entities[num];
+			ent = &si.parse_entities[num];
 
 			int left;
 			int right;
@@ -834,7 +835,7 @@ static void S_Update_(void) //TODO: rename to S_MixSound?
 }
 
 // Called once each time through the main loop.
-void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up)
+static void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up)
 {
 	if (!sound_started)
 		return;
@@ -896,4 +897,37 @@ void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t right, con
 
 	// Mix some sound.
 	S_Update_();
+}
+
+//mxd
+SNDLIB_DECLSPEC snd_export_t GetSoundAPI(const snd_import_t snd_import)
+{
+	snd_export_t snd_export;
+
+	si = snd_import;
+
+	snd_export.api_version = SND_API_VERSION;
+	snd_export.library_name = "DirectSound";
+
+	snd_export.Init = S_Init;
+	snd_export.Shutdown = S_Shutdown;
+
+	snd_export.StartSound = S_StartSound;
+	snd_export.StartLocalSound = S_StartLocalSound;
+
+	snd_export.StopAllSounds = S_StopAllSounds;
+	snd_export.StopAllSounds_Sounding = S_StopAllSounds_Sounding;
+
+	snd_export.Update = S_Update;
+	snd_export.Activate = S_Activate;
+
+	snd_export.BeginRegistration = S_BeginRegistration;
+	snd_export.RegisterSound = S_RegisterSound;
+	snd_export.EndRegistration = S_EndRegistration;
+
+	snd_export.FindName = S_FindName;
+
+	snd_export.SetEaxEnvironment = NULL;
+
+	return snd_export;
 }

@@ -7,7 +7,6 @@
 #include <windows.h>
 #include "client.h"
 #include "cl_strings.h"
-#include "sound.h"
 #include "menu_options.h"
 #include "menu_actionkeys.h"
 #include "menu_cameracfg.h"
@@ -80,7 +79,7 @@ static void SaveConfigFunc(void* self) // H2
 
 	M_DrawTextBox(8, 72, 36, 1);
 	M_Print(32, 80, GM_CH_SAVECFG, TextPalette[P_WHITE]);
-	S_StopAllSounds_Sounding();
+	se.StopAllSounds_Sounding();
 
 	re.EndFrame();
 	Sleep(500);

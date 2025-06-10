@@ -6,10 +6,9 @@
 
 #include <windows.h>
 #include "client.h"
+#include "cl_strings.h"
 #include "menu_joinserver.h"
 #include "menu_addressbook.h"
-#include "cl_strings.h"
-#include "sound.h"
 
 cvar_t* m_banner_join;
 cvar_t* m_item_refresh;
@@ -45,7 +44,7 @@ static void SearchLocalGames(void)
 
 	M_DrawTextBox(8, 72, 36, 3);
 	M_Print(32, 80, GM_CH_SERVERS, TextPalette[P_WHITE]);
-	S_StopAllSounds_Sounding();
+	se.StopAllSounds_Sounding();
 
 	// The text box won't show up unless we do a buffer swap.
 	re.EndFrame();
@@ -69,7 +68,7 @@ static void JoinServerFunc(void* self)
 	if (index >= m_num_servers || Q_stricmp(local_server_names[index], MENU_EMPTY) == 0)
 		return;
 
-	S_StopAllSounds_Sounding(); // H2
+	se.StopAllSounds_Sounding(); // H2
 	Com_sprintf(buffer, sizeof(buffer), "connect %s\n", NET_AdrToString(&local_server_netadr[index]));
 	Cbuf_AddText(buffer);
 	M_ForceMenuOff();

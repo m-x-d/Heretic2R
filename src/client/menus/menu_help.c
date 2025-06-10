@@ -7,7 +7,6 @@
 #include "client.h"
 #include "cl_messages.h"
 #include "cl_strings.h"
-#include "sound.h"
 #include "vid.h"
 #include "menu_help.h"
 
@@ -35,7 +34,7 @@ static void Help_MenuDraw(void) // H2
 	}
 
 	if (help_snd != NULL)
-		S_StartLocalSound(help_snd);
+		se.StartLocalSound(help_snd);
 
 	m_menu_side ^= 1;
 
@@ -47,7 +46,7 @@ static void Help_MenuDraw(void) // H2
 		Menu_DrawObjectives(help_msg, line_length);
 
 	if (help_snd != NULL)
-		S_StartLocalSound(help_snd);
+		se.StartLocalSound(help_snd);
 
 	m_menu_side ^= 1;
 }

@@ -14,7 +14,7 @@
 #include "qcommon.h"
 #include "keys.h"
 #include "screen.h"
-#include "sound.h"
+#include "snd_dll.h"
 
 #define MAXPRINTMSG		4096
 #define MAX_NUM_ARGVS	50

@@ -293,9 +293,6 @@
     <ClInclude Include="..\client\keys.h">
       <Filter>client</Filter>
     </ClInclude>
-    <ClInclude Include="..\client\sound.h">
-      <Filter>client</Filter>
-    </ClInclude>
     <ClInclude Include="..\server\server.h">
       <Filter>server</Filter>
     </ClInclude>

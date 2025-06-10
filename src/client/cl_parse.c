@@ -8,7 +8,6 @@
 #include "cl_effects.h"
 #include "cl_messages.h"
 #include "cmodel.h"
-#include "sound.h"
 #include "tokens.h"
 #include "Vector.h"
 
@@ -237,7 +236,7 @@ qboolean CL_CheckOrDownloadFile(const char* filename)
 
 void CL_RegisterSounds(void)
 {
-	S_BeginRegistration();
+	se.BeginRegistration();
 
 	if (fxe.RegisterSounds != NULL) // H2
 		fxe.RegisterSounds();
@@ -246,12 +245,12 @@ void CL_RegisterSounds(void)
 	{
 		if (cl.configstrings[CS_SOUNDS + i][0])
 		{
-			cl.sound_precache[i] = S_RegisterSound(cl.configstrings[CS_SOUNDS + i]);
+			cl.sound_precache[i] = se.RegisterSound(cl.configstrings[CS_SOUNDS + i]);
 			Sys_SendKeyEvents(); // Pump message loop
 		}
 	}
 
-	S_EndRegistration();
+	se.EndRegistration();
 }
 
 // A download message has been received from the server.
@@ -723,7 +722,7 @@ static void CL_ParseConfigString(void)
 		}
 
 		if (cl.refresh_prepped)
-			cl.sound_precache[i - CS_SOUNDS] = S_RegisterSound(cl.configstrings[i]);
+			cl.sound_precache[i - CS_SOUNDS] = se.RegisterSound(cl.configstrings[i]);
 
 		return;
 	}
@@ -825,7 +824,7 @@ static void CL_ParseStartSoundPacket(void)
 		return;
 
 	if (!(int)cl_predict->value || !have_prediction_info || sound_event_id_time_array[event_id] > leveltime || sound_event_id_time_array[event_id] == 0.0f)
-		S_StartSound(pos, ent, channel, sfx, volume, attenuation, ofs);
+		se.StartSound(pos, ent, channel, sfx, volume, attenuation, ofs);
 
 	if (have_prediction_info && sound_event_id_time_array[event_id] <= leveltime) // H2
 		sound_event_id_time_array[event_id] = 0.0f;
@@ -940,12 +939,12 @@ void CL_ParseServerMessage(void)
 				const int mode = MSG_ReadByte(&net_message);
 				if (mode == PRINT_CHAT)
 				{
-					S_StartLocalSound("misc/talk.wav");
+					se.StartLocalSound("misc/talk.wav");
 					Com_ColourPrintf(COLOUR(colour_chat), "%s", MSG_ReadString(&net_message)); // H2
 				}
 				else if (mode == PRINT_TEAM) // H2
 				{
-					S_StartLocalSound("misc/talk.wav");
+					se.StartLocalSound("misc/talk.wav");
 					Com_ColourPrintf(COLOUR(colour_teamchat), "%s", MSG_ReadString(&net_message));
 				}
 				else
@@ -963,7 +962,7 @@ void CL_ParseServerMessage(void)
 
 				const char* sound = CL_GetGameWav(msg_index);
 				if (sound != NULL)
-					S_StartLocalSound(sound);
+					se.StartLocalSound(sound);
 			} break;
 
 			case svc_stufftext:
@@ -1000,7 +999,7 @@ void CL_ParseServerMessage(void)
 
 				const char* sound = CL_GetGameWav(msg_index);
 				if (sound != NULL)
-					S_StartLocalSound(sound);
+					se.StartLocalSound(sound);
 			} break;
 
 			case svc_gamemsgvar_centerprint: // H2
@@ -1018,7 +1017,7 @@ void CL_ParseServerMessage(void)
 
 				const char* sound = CL_GetGameWav(msg_index);
 				if (sound != NULL)
-					S_StartLocalSound(sound);
+					se.StartLocalSound(sound);
 			} break;
 
 			case svc_levelmsg_centerprint: // H2
@@ -1031,7 +1030,7 @@ void CL_ParseServerMessage(void)
 
 				const char* sound = CL_GetLevelWav(msg_index);
 				if (sound != NULL)
-					S_StartLocalSound(sound);
+					se.StartLocalSound(sound);
 			} break;
 
 			case svc_captionprint: // H2
@@ -1047,7 +1046,7 @@ void CL_ParseServerMessage(void)
 
 				const char* sound = CL_GetLevelWav(msg_index);
 				if (sound != NULL)
-					S_StartLocalSound(sound);
+					se.StartLocalSound(sound);
 			} break;
 
 			case svc_obituary: // H2
@@ -1069,7 +1068,7 @@ void CL_ParseServerMessage(void)
 
 				const char* sound = CL_GetGameWav(msg_index);
 				if (sound != NULL)
-					S_StartLocalSound(sound);
+					se.StartLocalSound(sound);
 			} break;
 
 			case svc_download:
@@ -1121,7 +1120,7 @@ void CL_ParseServerMessage(void)
 
 				const char* sound = CL_GetGameWav(msg_index1); //mxd. Done twice in original logic
 				if (sound != NULL)
-					S_StartLocalSound(sound);
+					se.StartLocalSound(sound);
 			} break;
 
 			case svc_nameprint: // H2
@@ -1138,7 +1137,7 @@ void CL_ParseServerMessage(void)
 				if (ignored_players[client_index])
 					continue;
 
-				S_StartLocalSound("misc/talk.wav");
+				se.StartLocalSound("misc/talk.wav");
 
 				if (team_chat)
 					Com_ColourPrintf(COLOUR(colour_teamchat), "%s", buffer + 4);

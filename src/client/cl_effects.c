@@ -13,7 +13,6 @@
 #include "game.h"
 #include "g_items.h"
 #include "ResourceManager.h"
-#include "sound.h"
 #include "Vector.h"
 #include "vid_dll.h"
 
@@ -325,8 +324,8 @@ void CL_InitClientEffects(const char* dll_name)
 	fxi.Activate_Screen_Flash = Activate_Screen_Flash;
 	fxi.Activate_Screen_Shake = Activate_Screen_Shake;
 	fxi.Get_Crosshair = Get_Crosshair;
-	fxi.S_StartSound = S_StartSound;
-	fxi.S_RegisterSound = S_RegisterSound;
+	fxi.S_StartSound = se.StartSound;
+	fxi.S_RegisterSound = se.RegisterSound;
 	fxi.RegisterModel = RegisterModel;
 	fxi.GetEffect = GetEffect;
 	fxi.TagMalloc = Z_TagMalloc;

@@ -5,7 +5,6 @@
 //
 
 #include "client.h"
-#include "sound.h"
 #include "vid_dll.h"
 #include "menu_video.h"
 
@@ -535,7 +534,7 @@ static const char* VID_MenuKey(const int key)
 		case K_ESCAPE:
 			if (!Menu_SelectItem(s_current_menu))
 			{
-				S_StopAllSounds_Sounding();
+				se.StopAllSounds_Sounding();
 				ApplyChanges();
 			}
 			break;
@@ -554,13 +553,13 @@ static const char* VID_MenuKey(const int key)
 
 		case K_LEFTARROW:
 		case K_KP_LEFTARROW:
-			S_StopAllSounds_Sounding();
+			se.StopAllSounds_Sounding();
 			Menu_SlideItem(s_current_menu, -1);
 			break;
 
 		case K_RIGHTARROW:
 		case K_KP_RIGHTARROW:
-			S_StopAllSounds_Sounding();
+			se.StopAllSounds_Sounding();
 			Menu_SlideItem(s_current_menu, 1);
 			break;
 

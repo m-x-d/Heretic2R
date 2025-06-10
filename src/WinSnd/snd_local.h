@@ -6,9 +6,11 @@
 
 #pragma once
 
-#include "q_shared.h"
+#include "client.h"
 
 #define SNDLIB_DECLSPEC __declspec(dllexport)
+
+extern snd_import_t si;
 
 #pragma region ========================== Sound structures ==========================
 

@@ -6,11 +6,8 @@
 
 #include "client.h"
 #include "cl_skeletons.h"
-#include "vid_dll.h"
 #include "clfx_dll.h"
-#include "snd_dll.h"
-#include "sound.h"
-#include "menu.h"
+#include "vid_dll.h"
 #include "sys_win.h"
 #include "menus/menu_video.h"
 
@@ -249,9 +246,7 @@ static void AppActivate(const BOOL fActive, const BOOL minimize)
 	// Minimize/restore mouse-capture on demand
 	IN_Activate(ActiveApp);
 	CDAudio_Activate(ActiveApp);
-
-	if (sound_library != NULL) // H2: new check
-		S_Activate(ActiveApp);
+	se.Activate(ActiveApp);
 
 	if ((int)win_noalttab->value)
 		WIN_SetAltTabState(ActiveApp); //mxd
@@ -550,7 +545,6 @@ void VID_CheckChanges(void)
 {
 	int height;
 	int width;
-	char name[100];
 
 	if (win_noalttab->modified)
 	{
@@ -569,16 +563,17 @@ void VID_CheckChanges(void)
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
 
-		if (sound_library != NULL) // H2
-			S_StopAllSounds();
+		se.StopAllSounds();
 
 		Cvar_SetValue("win_ignore_destroy", true); // H2
 
 		if (Q_stricmp(vid_ref->string, "soft") == 0 && (int)vid_fullscreen->value) // H2_1.07: "soft" -> "gl"
 			Cvar_SetValue("win_noalttab", false);
 
-		Com_sprintf(name, sizeof(name), "ref_%s.dll", vid_ref->string);
-		if (!VID_LoadRefresh(name))
+		char ref_name[100];
+		Com_sprintf(ref_name, sizeof(ref_name), "ref_%s.dll", vid_ref->string);
+
+		if (!VID_LoadRefresh(ref_name))
 		{
 			if (strcmp(vid_ref->string, "soft") == 0) // H2_1.07: "soft" -> "gl"
 				Com_Error(ERR_FATAL, "Couldn't fall back to software refresh!");

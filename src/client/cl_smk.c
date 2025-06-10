@@ -7,7 +7,6 @@
 #include "client.h"
 #include "screen.h"
 #include "snd_dll.h"
-#include "sound.h"
 #include "libsmacker/smacker.h"
 
 static cvar_t* cin_rate;
@@ -87,10 +86,6 @@ void SCR_PlayCinematic(const char* name)
 	SCR_BeginLoadingPlaque();
 
 	cin_rate = Cvar_Get("cin_rate", "15.0", 0); // H2
-
-	//CDAudio_Stop(); //mxd. Already done in SCR_BeginLoadingPlaque()!
-	if (sound_library != NULL)
-		S_Shutdown();
 
 	//mxd. Skip 'SmackW32.dll' loading logic.
 
@@ -180,6 +175,4 @@ void SCR_FinishCinematic(void)
 	SZ_Print(&cls.netchan.message, va("nextserver %i\n", cl.servercount));
 
 	SCR_StopCinematic();
-	if (sound_library != NULL) //TODO: not needed?
-		S_Init();
 }

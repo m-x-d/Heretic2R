@@ -6,7 +6,6 @@
 
 #include "client.h"
 #include "cl_messages.h"
-#include "sound.h"
 #include "Vector.h"
 #include "vid_dll.h"
 #include "menus/menu_worldmap.h"
@@ -270,7 +269,7 @@ static void SCR_DrawConsole(void)
 
 void SCR_BeginLoadingPlaque(void)
 {
-	S_StopAllSounds_Sounding();
+	se.StopAllSounds_Sounding();
 	cl.sound_prepped = false; // Don't play ambients
 	CDAudio_Stop();
 

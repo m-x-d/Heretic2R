@@ -12,18 +12,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "p_dll.h" //mxd
-#include "ref.h"
-#include "vid.h"
-#include "screen.h"
-#include "input.h"
-#include "keys.h"
 #include "console.h"
 #include "cl_music.h" //mxd. Was "cdaudio.h" in H2
-#include "q_ClientServer.h"
-#include "Player.h"
+#include "input.h"
+#include "keys.h"
 #include "LevelMaps.h"
+#include "p_dll.h" //mxd
+#include "Player.h"
+#include "q_ClientServer.h"
 #include "qfiles.h" //mxd
+#include "ref.h"
+#include "screen.h"
+#include "vid.h"
 
 // CF_XXX
 // Flags for the client side entity to know if its been deleted on the server, or is server culled.
@@ -292,6 +292,8 @@ typedef struct
 
 GAME_DECLSPEC extern client_static_t cls;
 
+#pragma region ========================== FX API IO ==========================
+
 #define FX_API_VERSION	3 // 1 in H2. //TODO: looks like client effects library uses API_VERSION form ref.h... Change to FX_API_VERSION after adding client effects code?
 
 // These are the data and functions exported by the client fx module
@@ -387,9 +389,58 @@ typedef struct
 	int (*FindSurface)(vec3_t start, vec3_t end, struct Surface_s* surface); //TODO: unused
 } client_fx_import_t;
 
-
 // This is the only function actually exported at the linker level.
 typedef client_fx_export_t (*GetfxAPI_t)(client_fx_import_t);
+
+#pragma endregion
+
+#pragma region ========================== SOUND API IO ==========================
+
+#define SND_API_VERSION	1 //mxd
+
+//mxd. Functions exported by the sound library module.
+typedef struct
+{
+	// If api_version is different, the dll cannot be used.
+	int api_version;
+	char* library_name; // To be displayed in menus.
+
+	// Sound library function pointers.
+	void (*Init)(void);
+	void (*Shutdown)(void);
+
+	// If origin is NULL, the sound will be dynamically sourced from the entity
+	void (*StartSound)(const vec3_t origin, int entnum, int entchannel, struct sfx_s* sfx, float fvol, int attenuation, float timeofs);
+	void (*StartLocalSound)(const char* sound);
+
+	void (*StopAllSounds)(void);
+	void (*StopAllSounds_Sounding)(void);
+
+	void (*Update)(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up);
+	void (*Activate)(qboolean active);
+
+	void (*BeginRegistration)(void);
+	struct sfx_s* (*RegisterSound)(const char* name);
+	void (*EndRegistration)(void);
+
+	struct sfx_s* (*FindName)(const char* name, qboolean create);
+
+	void (*SetEaxEnvironment)(int env_index);
+} snd_export_t;
+
+extern snd_export_t se; //mxd
+
+//mxd. Functions imported by the sound library module.
+typedef struct
+{
+	centity_t* entities;
+	entity_state_t* parse_entities;
+} snd_import_t;
+
+//mxd. This is the only function actually exported at the linker level.
+typedef snd_export_t(*GetSoundAPI_t)(snd_import_t);
+
+#pragma endregion
 
 #pragma region ========================== CVARS ==========================
 
@@ -494,8 +545,8 @@ extern struct ResourceManager_s cl_FXBufMngr;
 extern int camera_timer; //mxd
 extern qboolean viewoffset_changed; //mxd
 
-void DrawString(int x, int y, const char* s, paletteRGBA_t color, int maxlen);
-qboolean CL_CheckOrDownloadFile(const char* filename);
+extern void DrawString(int x, int y, const char* s, paletteRGBA_t color, int maxlen);
+extern qboolean CL_CheckOrDownloadFile(const char* filename);
 
 extern uint net_transmit_size; //mxd
 

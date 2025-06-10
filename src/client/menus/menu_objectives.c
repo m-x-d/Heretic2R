@@ -6,7 +6,6 @@
 
 #include "client.h"
 #include "cl_messages.h"
-#include "sound.h"
 #include "menu_objectives.h"
 
 cvar_t* m_banner_objectives;
@@ -39,7 +38,7 @@ static void Objectives_MenuDraw(void)
 		}
 
 		if (sound1 != NULL)
-			S_StartLocalSound(sound1);
+			se.StartLocalSound(sound1);
 	}
 
 	m_menu_side ^= 1;
@@ -57,7 +56,7 @@ static void Objectives_MenuDraw(void)
 		}
 
 		if (sound1 == NULL && sound2 != NULL)
-			S_StartLocalSound(sound2);
+			se.StartLocalSound(sound2);
 	}
 
 	m_menu_side ^= 1;

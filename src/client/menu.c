@@ -7,7 +7,6 @@
 #include <ctype.h>
 #include "client.h"
 #include "cl_messages.h"
-#include "sound.h"
 #include "vid_dll.h"
 #include "menu.h"
 
@@ -151,9 +150,6 @@ static void PrecacheGenericMenuItemsText(void) // H2
 	Com_sprintf(m_text_low, sizeof(m_text_low), "\x02%s", m_generic_low->string);
 	Com_sprintf(m_text_high, sizeof(m_text_high), "\x02%s", m_generic_high->string);
 
-	if (Q_stricmp(snd_dll->string, "eaxsnd") == 0 && SNDEAX_SetEnvironment != NULL)
-		SNDEAX_SetEnvironment(0);
-
 	Cvar_Set("menus_active", "1");
 }
 
@@ -212,6 +208,9 @@ void M_PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) // H2
 			cls.m_menustate = 5;
 			PrecacheGenericMenuItemsText();
 			UpdateVidModeVars();
+
+			if (se.SetEaxEnvironment != NULL) //mxd. Done in PrecacheGenericMenuItemsText() in original logic.
+				se.SetEaxEnvironment(0);
 		}
 		else
 		{
@@ -509,8 +508,8 @@ void M_ForceMenuOff(void)
 	Cvar_Set("menus_active", "0"); // H2
 
 	// H2: update EAX preset.
-	if (Q_stricmp(snd_dll->string, "eaxsnd") == 0 && SNDEAX_SetEnvironment != NULL)
-		SNDEAX_SetEnvironment((int)EAX_preset->value);
+	if (se.SetEaxEnvironment != NULL)
+		se.SetEaxEnvironment((int)EAX_preset->value);
 
 	m_entersound = false;
 }
@@ -1226,10 +1225,11 @@ void Menu_DrawObjectives(const char* message, const int max_line_length) // H2
 					break;
 
 				default:
+				{
 					paletteRGBA_t color = TextPalette[color_index];
 					color.a = (byte)Q_ftol(cls.m_menualpha * 255);
 					re.DrawChar(x, y, *s, color);
-					break;
+				} break;
 			}
 		}
 	}
@@ -1449,6 +1449,6 @@ void M_Keydown(const int key)
 	{
 		const char* sound_name = m_keyfunc2(key);
 		if (sound_name != NULL)
-			S_StartLocalSound(sound_name);
+			se.StartLocalSound(sound_name);
 	}
 }

@@ -8,7 +8,7 @@
 #include "client.h"
 #include "cl_strings.h"
 #include "qcommon.h"
-#include "sound.h"
+#include "snd_dll.h"
 #include "menu_sound.h"
 
 cvar_t* m_banner_sound;
@@ -55,7 +55,7 @@ void UpdateSoundQualityFunc(void* self)
 		M_DrawTextBox(8, 72, 36, 3);
 		M_Print(32, 80, GM_CH_SOUND, TextPalette[P_WHITE]);
 
-		S_StopAllSounds_Sounding();
+		se.StopAllSounds_Sounding();
 		re.EndFrame(); // The text box won't show up unless we do a buffer swap.
 
 		CL_Snd_Restart_f();
@@ -69,7 +69,7 @@ static void Sound_SetValues(void) // H2
 	//s_options_usecd_box.curvalue = (Cvar_VariableValue("cd_nocd") == 0.0f); //mxd. Disabled
 	s_options_quality_list.curvalue = (Cvar_VariableValue("s_loadas8bit") == 0.0f);
 
-	snd_dll = Cvar_Get("snd_dll", "", 0);
+	snd_dll = Cvar_Get("snd_dll", DEFAULT_SOUND_LIBRARY_NAME, 0); //mxd. Use DEFAULT_SOUND_LIBRARY_NAME instead of "".
 	strcpy_s(snd_dll_name, sizeof(snd_dll_name), snd_dll->string); //mxd. strcpy -> strcpy_s
 
 	//mxd. Skip 'winsnd' -> 'a3dsnd' -> 'eaxsnd' sound dll switching logic.

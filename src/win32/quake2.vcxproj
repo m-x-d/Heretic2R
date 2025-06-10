@@ -143,7 +143,6 @@
     <ClInclude Include="..\client\menus\menu_worldmap.h" />
     <ClInclude Include="..\client\ref.h" />
     <ClInclude Include="..\client\screen.h" />
-    <ClInclude Include="..\client\sound.h" />
     <ClInclude Include="..\client\vid.h" />
     <ClInclude Include="..\game\game.h" />
     <ClInclude Include="..\game\g_items.h" />
