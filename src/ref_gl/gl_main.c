@@ -1311,7 +1311,7 @@ refexport_t GetRefAPI(const refimport_t rimp)
 
 	ri = rimp;
 
-	re.api_version = API_VERSION;
+	re.api_version = REF_API_VERSION;
 	re.render = false; //mxd. Shut up compiler...
 
 	re.BeginRegistration = R_BeginRegistration;

@@ -8,7 +8,7 @@
 
 #include "qcommon.h"
 
-#define API_VERSION			3
+#define REF_API_VERSION		3
 
 // These are the maximum number that maybe rendered on any given frame.
 #define MAX_DLIGHTS			32

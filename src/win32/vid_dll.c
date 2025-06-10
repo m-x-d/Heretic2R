@@ -517,7 +517,7 @@ static qboolean VID_LoadRefresh(const char* name)
 
 	re = GetRefAPI(ri);
 
-	if (re.api_version != API_VERSION)
+	if (re.api_version != REF_API_VERSION)
 	{
 		VID_FreeReflib();
 		Com_Error(ERR_FATAL, "%s has incompatible api_version", name);
