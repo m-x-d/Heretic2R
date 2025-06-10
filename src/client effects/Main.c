@@ -721,7 +721,7 @@ client_fx_export_t GetfxAPI(const client_fx_import_t import)
 
 	fxi = import;
 
-	export.api_version = API_VERSION;
+	export.api_version = FX_API_VERSION;
 	export.client_string = clfx_string;
 
 	export.Init = Init;
