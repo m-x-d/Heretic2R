@@ -1691,8 +1691,8 @@ void CL_AddEntities(void)
 }
 
 // Q2 counterpart
-// Called to get the sound spatialization origin.
-void CL_GetEntitySoundOrigin(const int ent, vec3_t org)
+// The sound code makes callbacks to the client for entitiy position information, so entities can be dynamically re-spatialized.
+GAME_DECLSPEC void CL_GetEntitySoundOrigin(const int ent, vec3_t org) //mxd. No longer used by sound dll. Kept to maintain compatibility with original logic.
 {
 	if (ent >= 0 && ent < MAX_EDICTS)
 		VectorCopy(cl_entities[ent].lerp_origin, org);

@@ -428,8 +428,9 @@ static void S_Spatialize(channel_t* ch)
 		return;
 	}
 
-	if (!ch->fixed_origin)
-		CL_GetEntitySoundOrigin(ch->entnum, ch->origin); // H2: update ch->origin instead of using separate var.
+
+	if (!ch->fixed_origin && ch->entnum >= 0 && ch->entnum < MAX_EDICTS) //mxd. Inline CL_GetEntitySoundOrigin().
+		VectorCopy(cl_entities[ch->entnum].lerp_origin, ch->origin); // H2: update ch->origin instead of using separate var.
 
 	S_SpatializeOrigin(ch->origin, (float)ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
 }
@@ -563,7 +564,7 @@ void S_StartSound(const vec3_t origin, const int entnum, const int entchannel, s
 {
 	static int s_beginofs = 0; //mxd. Made local static.
 
-	if (!sound_started || sfx == NULL)
+	if (!sound_started || sfx == NULL || entnum < 0 || entnum >= MAX_EDICTS) //mxd. Add entnum sanity checks.
 		return;
 
 	if (sfx->name[0] == '*')
