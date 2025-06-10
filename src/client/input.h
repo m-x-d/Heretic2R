@@ -6,10 +6,11 @@
 
 #pragma once
 
-void IN_Init(void);
-void IN_Shutdown(void);
-void IN_Commands(void); // Opportunity for devices to stick commands on the script buffer
-void IN_Frame(void);
-void IN_Move(usercmd_t* cmd); // Add additional movement on top of the keyboard move cmd
-void IN_Activate(qboolean active);
-void IN_DeactivateMouse(void); // Local to in_win.c in Q2
+#include "q_shared.h"
+
+extern void IN_Init(void);
+extern void IN_Commands(void); // Opportunity for devices to stick commands on the script buffer.
+extern void IN_Frame(void);
+extern void IN_Move(usercmd_t* cmd); // Add additional movement on top of the keyboard move cmd.
+extern void IN_Activate(qboolean active);
+extern void IN_DeactivateMouse(void); // Local to in_win.c in Q2.
