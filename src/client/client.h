@@ -388,7 +388,7 @@ typedef struct
 } client_fx_import_t;
 
 
-// This is the only function actually exported at the linker level
+// This is the only function actually exported at the linker level.
 typedef client_fx_export_t (*GetfxAPI_t)(client_fx_import_t);
 
 #pragma region ========================== CVARS ==========================
@@ -396,7 +396,6 @@ typedef client_fx_export_t (*GetfxAPI_t)(client_fx_import_t);
 extern cvar_t* cl_stereo_separation;
 extern cvar_t* cl_stereo;
 
-//extern cvar_t* cl_gun; //mxd. Unused
 extern cvar_t* cl_add_blend;
 extern cvar_t* cl_add_lights;
 extern cvar_t* cl_add_particles;
@@ -480,19 +479,7 @@ extern cvar_t* cl_no_middle_text;
 
 #pragma endregion
 
-typedef struct
-{
-	int key;		// So entities can reuse same entry
-	vec3_t color;
-	vec3_t origin;
-	float radius;
-	float die;		// Stop lighting after this time
-	float decay;	// Drop this each second
-	float minlight;	// Don't add when contributing less
-} cdlight_t;
-
 GAME_DECLSPEC extern centity_t cl_entities[MAX_NETWORKABLE_EDICTS];
-extern cdlight_t cl_dlights[MAX_DLIGHTS];
 
 // The cl_parse_entities must be large enough to hold UPDATE_BACKUP frames of entities,
 // so that when a delta compressed message arrives from the server it can be un-deltad from the original.
