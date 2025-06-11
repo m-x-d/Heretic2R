@@ -20,10 +20,9 @@ static int lastofs;
 
 static void V_AddLightStyle(const int style, const float r, const float g, const float b)
 {
-	if (style < 0 || style > MAX_LIGHTSTYLES)
+	if (style < 0 || style >= MAX_LIGHTSTYLES) //BUGFIX: mxd. 'style > MAX_LIGHTSTYLES' in original logic.
 	{
-		assert(0);
-		Com_Error(ERR_DROP, "Bad light style %i", style);
+		fxi.Com_Error(ERR_DROP, "Bad light style %i", style); //mxd. Com_Error() -> fxi.Com_Error().
 	}
 	else
 	{
