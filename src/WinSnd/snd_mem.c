@@ -126,9 +126,7 @@ static void FindChunk(const char* name)
 // Q2 counterpart.
 static wavinfo_t GetWavinfo(const char* name, byte* wav, const int wavlength) //TODO: either return wavinfo_t*, or pass wavinfo_t* as arg?
 {
-	wavinfo_t info;
-
-	memset(&info, 0, sizeof(info));
+	wavinfo_t info = { 0 };
 
 	if (wav == NULL)
 		return info;
@@ -141,7 +139,7 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, const int wavlength) //
 
 	if (data_p == NULL || strncmp((char*)(&data_p[8]), "WAVE", 4) != 0)
 	{
-		Com_Printf("Missing RIFF/WAVE chunks\n");
+		si.Com_Printf("Missing RIFF/WAVE chunks\n");
 		return info;
 	}
 
@@ -151,7 +149,7 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, const int wavlength) //
 
 	if (data_p == NULL)
 	{
-		Com_Printf("Missing fmt chunk\n");
+		si.Com_Printf("Missing fmt chunk\n");
 		return info;
 	}
 
@@ -160,7 +158,7 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, const int wavlength) //
 
 	if (format != 1)
 	{
-		Com_Printf("Microsoft PCM format only\n");
+		si.Com_Printf("Microsoft PCM format only\n");
 		return info;
 	}
 
@@ -198,7 +196,7 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, const int wavlength) //
 
 	if (data_p == NULL)
 	{
-		Com_Printf("Missing data chunk\n");
+		si.Com_Printf("Missing data chunk\n");
 		return info;
 	}
 
@@ -208,7 +206,10 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, const int wavlength) //
 	if (info.samples > 0)
 	{
 		if (samples < info.samples)
-			Com_Error(ERR_DROP, "Sound %s has a bad loop length", name);
+		{
+			si.Com_Error(ERR_DROP, "Sound %s has a bad loop length", name);
+			return info;
+		}
 	}
 	else
 	{
@@ -237,11 +238,11 @@ sfxcache_t* S_LoadSound(sfx_t* s)
 		Com_sprintf(name_buffer, sizeof(name_buffer), "%s/%s", s_sounddir->string, s->name); //H2: use s_sounddir cvar.
 
 	byte* data;
-	const int size = FS_LoadFile(name_buffer, (void**)&data);
+	const int size = si.FS_LoadFile(name_buffer, (void**)&data);
 
 	if (data == NULL)
 	{
-		Com_DPrintf("S_LoadSound: couldn't load '%s'\n", name_buffer); //H2: function name added to message.
+		si.Com_DPrintf("S_LoadSound: couldn't load '%s'\n", name_buffer); //H2: function name added to message.
 		return NULL;
 	}
 
@@ -249,8 +250,8 @@ sfxcache_t* S_LoadSound(sfx_t* s)
 
 	if (info.channels != 1)
 	{
-		Com_Printf("S_LoadSound: skipping '%s' (expected mono sample)\n", s->name); //mxd. More specific message.
-		FS_FreeFile(data);
+		si.Com_Printf("S_LoadSound: skipping '%s' (expected mono sample)\n", s->name); //mxd. More specific message.
+		si.FS_FreeFile(data);
 
 		return NULL;
 	}
@@ -259,11 +260,11 @@ sfxcache_t* S_LoadSound(sfx_t* s)
 	int len = (int)((float)info.samples / stepscale);
 	len *= info.width * info.channels;
 
-	s->cache = Z_Malloc(len + (int)sizeof(sfxcache_t));
+	s->cache = si.Z_Malloc(len + (int)sizeof(sfxcache_t));
 
 	if (s->cache == NULL)
 	{
-		FS_FreeFile(data);
+		si.FS_FreeFile(data);
 		return NULL;
 	}
 
@@ -274,7 +275,7 @@ sfxcache_t* S_LoadSound(sfx_t* s)
 	s->cache->stereo = info.channels;
 
 	ResampleSfx(s, s->cache->speed, s->cache->width, data + info.dataofs);
-	FS_FreeFile(data);
+	si.FS_FreeFile(data);
 
 	return s->cache;
 }

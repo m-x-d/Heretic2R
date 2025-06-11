@@ -99,7 +99,7 @@
       <OutputFile>..\..\build\WinSnd.dll</OutputFile>
       <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
       <ModuleDefinitionFile>.\WinSnd.def</ModuleDefinitionFile>
-      <AdditionalDependencies>winmm.lib;H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -142,7 +142,7 @@
       <OutputFile>..\..\build\WinSnd.dll</OutputFile>
       <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
       <ModuleDefinitionFile>.\WinSnd.def</ModuleDefinitionFile>
-      <AdditionalDependencies>winmm.lib;H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

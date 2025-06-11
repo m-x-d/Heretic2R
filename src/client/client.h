@@ -433,8 +433,32 @@ extern snd_export_t se; //mxd
 //mxd. Functions imported by the sound library module.
 typedef struct
 {
-	centity_t* entities;
-	entity_state_t* parse_entities;
+	void* cl_hwnd;
+
+	client_state_t* cl;
+	client_static_t* cls;
+
+	centity_t* cl_entities;
+	entity_state_t* cl_parse_entities;
+
+	void (*Com_Error)(int code, const char* fmt, ...);
+	void (*Com_Printf)(const char* fmt, ...);
+	void (*Com_DPrintf)(const char* fmt, ...);
+
+	cvar_t* (*Cvar_Get)(const char* name, const char* value, int flags);
+
+	void (*Cmd_AddCommand)(const char* name, void (*cmd)(void));
+	void (*Cmd_RemoveCommand)(const char* name);
+	int (*Cmd_Argc)(void);
+	char* (*Cmd_Argv)(int i);
+
+	int (*FS_FOpenFile)(const char* filename, FILE** file);
+	void (*FS_FCloseFile)(FILE* f);
+	int (*FS_LoadFile)(const char* name, void** buf);
+	void (*FS_FreeFile)(void* buf);
+
+	void* (*Z_Malloc)(int size);
+	void (*Z_Free)(void* ptr);
 } snd_import_t;
 
 //mxd. This is the only function actually exported at the linker level.

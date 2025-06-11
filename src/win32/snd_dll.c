@@ -9,6 +9,7 @@
 #include "client.h"
 #include "snd_dll.h" //mxd
 #include "clfx_dll.h"
+#include "sys_win.h"
 
 snd_export_t se; //mxd
 
@@ -120,8 +121,30 @@ void SndDll_Init(void)
 
 	snd_import_t si;
 
-	si.entities = cl_entities;
-	si.parse_entities = cl_parse_entities;
+	si.cl_hwnd = cl_hwnd;
+	si.cl = &cl;
+	si.cls = &cls;
+	si.cl_entities = cl_entities;
+	si.cl_parse_entities = cl_parse_entities;
+
+	si.Com_Error = Com_Error;
+	si.Com_Printf = Com_Printf;
+	si.Com_DPrintf = Com_DPrintf;
+
+	si.Cvar_Get = Cvar_Get;
+	si.Cmd_AddCommand = Cmd_AddCommand;
+	si.Cmd_RemoveCommand = Cmd_RemoveCommand;
+
+	si.Cmd_Argc = Cmd_Argc;
+	si.Cmd_Argv = Cmd_Argv;
+
+	si.FS_FOpenFile = FS_FOpenFile;
+	si.FS_FCloseFile = FS_FCloseFile;
+	si.FS_LoadFile = FS_LoadFile;
+	si.FS_FreeFile = FS_FreeFile;
+
+	si.Z_Malloc = Z_Malloc;
+	si.Z_Free = Z_Free;
 
 	const GetSoundAPI_t GetSoundAPI = (void*)GetProcAddress(sound_library, "GetSoundAPI");
 	if (GetSoundAPI == NULL)
