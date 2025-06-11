@@ -203,7 +203,7 @@ static int LoadTextFile(char* name, char** addr)
 
 	if (length <= 0)
 	{
-		Sys_Error("Unable to load %s", name);
+		Sys_Error("LoadTextFile: unable to load '%s'", name);
 		return 0;
 	}
 
@@ -653,6 +653,8 @@ static void ReadEdict(FILE* f, edict_t* ent)
 // All pointer variables (except function pointers) must be handled specially.
 static void WriteLevelLocals(FILE* f)
 {
+	static level_locals_t temp; //mxd. Made local static to avoid excessive stack sizes.
+
 	// Set up some console vars as level save variables.
 	const cvar_t* r_farclipdist = gi.cvar("r_farclipdist", FAR_CLIP_DIST, 0);
 	level.far_clip_dist_f = r_farclipdist->value;
@@ -664,7 +666,7 @@ static void WriteLevelLocals(FILE* f)
 	level.fog_density = r_fog_density->value;
 
 	// All of the ints, floats, and vectors stay as they are.
-	level_locals_t temp = level;
+	temp = level;
 
 	// Change the pointers to lengths or indexes.
 	for (const field_t* field = levelfields; field->name != NULL; field++)
