@@ -18,9 +18,9 @@ void GL_ScreenShot_f(void)
 	//mxd. Skipping gl_screenshot_broken logic.
 
 	// Create the screenshots directory if it doesn't exist.
-	Com_sprintf(filename, sizeof(filename), "%s/scrnshot/", ri.FS_Userdir()); // H2: FS_Gamedir -> FS_Userdir
+	Com_sprintf(filename, sizeof(filename), "%s/scrnshot/", ri.FS_Userdir()); // H2: FS_Gamedir -> FS_Userdir //TODO: "scrnshot" -> "screenshots"?
 	ri.FS_CreatePath(filename);
-	strcpy_s(picname, sizeof(picname), "Htic2-00.tga");
+	strcpy_s(picname, sizeof(picname), "Htic2-00.tga"); //TODO: save in PNG format? "Htic2" -> "Heretic2R"?
 
 	for (i = 0; i < 100; i++)
 	{
@@ -36,7 +36,7 @@ void GL_ScreenShot_f(void)
 
 	if (i == 100)
 	{
-		Com_Printf("SCR_ScreenShot_f: Couldn\'t create a file\n");
+		ri.Con_Printf(PRINT_ALL, "SCR_ScreenShot_f: couldn't create a file: too many screenshots!\n"); //mxd. Com_Printf() -> ri.Con_Printf().
 		return;
 	}
 
@@ -45,7 +45,7 @@ void GL_ScreenShot_f(void)
 
 	if (buffer == NULL) // H2: extra sanity check
 	{
-		Com_Printf("SCR_ScreenShot_f: Unable to malloc\n");
+		ri.Con_Printf(PRINT_ALL, "SCR_ScreenShot_f: unable to malloc %i bytes\n", tga_size); //mxd. Com_Printf() -> ri.Con_Printf().
 		return;
 	}
 
@@ -83,7 +83,7 @@ void GL_ScreenShot_f(void)
 
 	if (tga_size != written_size) // H2: extra sanity check
 	{
-		Com_Printf("Error writing %s\n", filename);
+		ri.Con_Printf(PRINT_ALL, "Error writing '%s'\n", filename);
 		return;
 	}
 
@@ -91,19 +91,18 @@ void GL_ScreenShot_f(void)
 	brightness /= (float)(tga_size - 18);
 
 	if (brightness < 5.0f)
-		Com_Printf("**WARNING** Overly dark image %s (brightness = %2.1f)\n", filename, brightness);
+		ri.Con_Printf(PRINT_ALL, "**WARNING** Overly dark image '%s' (brightness = %2.1f)\n", filename, brightness); //mxd. Com_Printf() -> ri.Con_Printf().
 	else if (brightness > 225.0f)
-		Com_Printf("**WARNING** Overly bright image %s (brightness = %2.1f)\n", filename, brightness);
+		ri.Con_Printf(PRINT_ALL, "**WARNING** Overly bright image '%s' (brightness = %2.1f)\n", filename, brightness); //mxd. Com_Printf() -> ri.Con_Printf().
 	else
-		Com_Printf("Wrote %s (brightness = %2.1f)\n", filename, brightness);
+		ri.Con_Printf(PRINT_ALL, "Wrote '%s' (brightness = %2.1f)\n", filename, brightness); //mxd. Com_Printf() -> ri.Con_Printf().
 }
 
 void GL_Strings_f(void)
 {
-	//mxd. ri.Con_Printf() in Q2.
-	Com_Printf("GL_VENDOR: %s\n", gl_config.vendor_string);
-	Com_Printf("GL_RENDERER: %s\n", gl_config.renderer_string);
-	Com_Printf("GL_VERSION: %s\n", gl_config.version_string);
+	ri.Con_Printf(PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string); //mxd. Com_Printf() -> ri.Con_Printf().
+	ri.Con_Printf(PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string); //mxd. Com_Printf() -> ri.Con_Printf().
+	ri.Con_Printf(PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string); //mxd. Com_Printf() -> ri.Con_Printf().
 	//Com_Printf("GL_EXT: %s\n", gl_config.extensions_string); //mxd. Disabled, because Com_Printf can't handle strings longer than 1024 chars. //TODO: implement?
 }
 

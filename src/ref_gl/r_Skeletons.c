@@ -9,6 +9,7 @@
 #include "m_SkeletalCluster.h"
 #include "m_Skeleton.h"
 #include "r_Skeletons.h"
+#include "Hunk.h" //mxd
 #include "Skeletons.h"
 #include "Vector.h"
 

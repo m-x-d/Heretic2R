@@ -88,7 +88,7 @@ void R_AddDebugBox(const vec3_t center, float size, const paletteRGBA_t color, c
 	const DebugPrimitive_t* box = InitDebugPrimitive(mins, maxs, color, lifetime, DPT_BOX);
 
 	if (box == NULL)
-		DBG_IDEPrint("R_AddDebugBox: failed to add box at %s...", pv(center));
+		ri.Con_Printf(PRINT_DEVELOPER, "R_AddDebugBox: failed to add box at [%f %f %f]...", center[0], center[1], center[2]);
 }
 
 void R_AddDebugBbox(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime)
@@ -100,7 +100,7 @@ void R_AddDebugBbox(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t co
 	{
 		vec3_t center;
 		VectorAverage(mins, maxs, center);
-		DBG_IDEPrint("R_AddDebugBbox: failed to add bbox at %s...", pv(center));
+		ri.Con_Printf(PRINT_DEVELOPER, "R_AddDebugBbox: failed to add bbox at [%f %f %f]...", center[0], center[1], center[2]);
 	}
 }
 
@@ -120,7 +120,7 @@ void R_AddDebugEntityBbox(const struct edict_s* ent, const paletteRGBA_t color)
 	{
 		vec3_t center;
 		VectorAverage(ent->mins, ent->maxs, center);
-		DBG_IDEPrint("R_AddDebugEntityBbox: failed to add entity bbox at %s...", pv(center));
+		ri.Con_Printf(PRINT_DEVELOPER, "R_AddDebugEntityBbox: failed to add entity bbox at [%f %f %f]...", center[0], center[1], center[2]);
 	}
 }
 
@@ -136,7 +136,7 @@ void R_AddDebugLine(const vec3_t start, const vec3_t end, const paletteRGBA_t co
 	}
 	else
 	{
-		DBG_IDEPrint("R_AddDebugLine: failed to add line at %s...", pv(start));
+		ri.Con_Printf(PRINT_DEVELOPER, "R_AddDebugLine: failed to add line at [%f %f %f] -> [%f %f %f]...", start[0], start[1], start[2], end[0], end[1], end[2]);
 	}
 }
 
@@ -175,7 +175,7 @@ void R_AddDebugArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t c
 	}
 	else
 	{
-		DBG_IDEPrint("R_AddDebugArrow: failed to add arrow at %s...", pv(start));
+		ri.Con_Printf(PRINT_DEVELOPER, "R_AddDebugArrow: failed to add arrow at [%f %f %f] -> [%f %f %f]...", start[0], start[1], start[2], end[0], end[1], end[2]);
 	}
 }
 

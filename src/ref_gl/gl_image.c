@@ -67,7 +67,7 @@ image_t* GL_GetFreeImage(void)
 	if (i == numgltextures)
 	{
 		if (numgltextures == MAX_GLTEXTURES)
-			Sys_Error("GL_GetFreeImage : No image_t slots free.\n");
+			ri.Sys_Error(ERR_DROP, "GL_GetFreeImage: no free image_t slots!\n"); //mxd. Sys_Error() -> ri.Sys_Error().
 
 		numgltextures++;
 	}
@@ -239,9 +239,6 @@ void GL_SetFilter(const image_t* image)
 
 void GL_ImageList_f(void)
 {
-	int i;
-	image_t* image;
-
 	int tex_count = 0;
 	int tex_texels = 0;
 	int sky_count = 0;
@@ -255,58 +252,59 @@ void GL_ImageList_f(void)
 	
 	char* palstrings[] = { "RGB", "PAL" };
 
-	Com_Printf("---------------------------\n");
+	ri.Con_Printf(PRINT_ALL, "---------------------------\n"); //mxd. Com_Printf() -> ri.Con_Printf() (here and below).
 
-	for (i = 0, image = gltextures; i < numgltextures; i++, image++)
+	image_t* image = &gltextures[0];
+	for (int i = 0; i < numgltextures; i++, image++)
 	{
 		switch (image->type)
 		{
 			case it_skin:
-				Com_Printf("M");
+				ri.Con_Printf(PRINT_ALL, "M");
 				skin_count++;
 				skin_texels += image->width * image->height;
 				break;
 
 			case it_sprite:
-				Com_Printf("S");
+				ri.Con_Printf(PRINT_ALL, "S");
 				sprite_count++;
 				sprite_texels += image->width * image->height;
 				break;
 
 			//mxd. Original code also handles types 3 and 7 here. These aren't used anywhere else in the code.
 			case it_wall:
-				Com_Printf("W");
+				ri.Con_Printf(PRINT_ALL, "W");
 				tex_count++;
 				tex_texels += (image->width * image->height * 4) / 3;
 				break;
 
 			case it_pic:
-				Com_Printf("P");
+				ri.Con_Printf(PRINT_ALL, "P");
 				pic_count++;
 				pic_texels += image->width * image->height;
 				break;
 
 			case it_sky:
-				Com_Printf("K"); //mxd. Was also "P" in original logic.
+				ri.Con_Printf(PRINT_ALL, "K"); //mxd. Was also "P" in original logic.
 				sky_count++;
 				sky_texels += image->width * image->height;
 				break;
 
-			default: //mxd. Added to silence compiler warning
-				Com_Printf("U%i", image->type, image->name);
+			default: //mxd. Added to silence compiler warning.
+				ri.Con_Printf(PRINT_ALL, "U%i", image->type, image->name);
 				break;
 		}
 
-		Com_Printf(" %3i %3i %s %s\n", image->width, image->height, palstrings[image->palette != NULL], image->name);
+		ri.Con_Printf(PRINT_ALL, " %3i %3i %s %s\n", image->width, image->height, palstrings[image->palette != NULL], image->name);
 	}
 	
-	Com_Printf("-------------------------------\n");
-	Com_Printf("Total skin   : %i (%i texels)\n", skin_count, skin_texels);
-	Com_Printf("Total world  : %i (%i texels)\n", tex_count, tex_texels);
-	Com_Printf("Total sky    : %i (%i texels)\n", sky_count, sky_texels);
-	Com_Printf("Total sprite : %i (%i texels)\n", sprite_count, sprite_texels);
-	Com_Printf("Total pic    : %i (%i texels)\n", pic_count, pic_texels);
-	Com_Printf("-------------------------------\n");
+	ri.Con_Printf(PRINT_ALL, "-------------------------------\n");
+	ri.Con_Printf(PRINT_ALL, "Total skin   : %i (%i texels)\n", skin_count, skin_texels);
+	ri.Con_Printf(PRINT_ALL, "Total world  : %i (%i texels)\n", tex_count, tex_texels);
+	ri.Con_Printf(PRINT_ALL, "Total sky    : %i (%i texels)\n", sky_count, sky_texels);
+	ri.Con_Printf(PRINT_ALL, "Total sprite : %i (%i texels)\n", sprite_count, sprite_texels);
+	ri.Con_Printf(PRINT_ALL, "Total pic    : %i (%i texels)\n", pic_count, pic_texels);
+	ri.Con_Printf(PRINT_ALL, "-------------------------------\n");
 }
 
 #pragma region ========================== .M8 LOADING ==========================
@@ -314,7 +312,7 @@ void GL_ImageList_f(void)
 //mxd. Somewhat similar to Q2's GL_Upload8()
 void GL_UploadPaletted(const int level, const byte* data, const paletteRGB_t* palette, const int width, const int height) // H2
 {
-	paletteRGBA_t trans[256 * 256];
+	paletteRGBA_t trans[256 * 256]; //TODO: increase to at least 1024 x 1024? Or dynamically allocate based on size? 
 
 	//mxd. Skipping qglColorTableEXT logic
 
@@ -322,7 +320,7 @@ void GL_UploadPaletted(const int level, const byte* data, const paletteRGB_t* pa
 
 	//mxd. Added sanity check
 	if (size > sizeof(trans) / 4)
-		Sys_Error("GL_UploadPaletted : Image is too large (%i x %i).\n", width, height);
+		ri.Sys_Error(ERR_DROP, "GL_UploadPaletted: image is too large (%i x %i)!\n", width, height);
 
 	for (uint i = 0; i < size; i++)
 	{
@@ -388,13 +386,13 @@ static image_t* GL_LoadWal(const char* name, const imagetype_t type)
 
 	if (mt == NULL)
 	{
-		Com_Printf("GL_LoadWal : Can't load %s\n", name);
+		ri.Con_Printf(PRINT_ALL, "GL_LoadWal: can't load '%s'\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
 		return NULL;
 	}
 
 	if (mt->version != MIP_VERSION)
 	{
-		Com_Printf("GL_LoadWal : Invalid version for %s\n", name);
+		ri.Con_Printf(PRINT_ALL, "GL_LoadWal: can't load '%s': invalid version (%i)\n", name, mt->version); //mxd. Com_Printf() -> ri.Con_Printf().
 		ri.FS_FreeFile(mt); //mxd
 
 		return NULL;
@@ -402,7 +400,7 @@ static image_t* GL_LoadWal(const char* name, const imagetype_t type)
 
 	if (strlen(name) >= MAX_QPATH)
 	{
-		Com_Printf("GL_LoadWal : \"%s\" is too long a string\n", name);
+		ri.Con_Printf(PRINT_ALL, "GL_LoadWal: can't load '%s': filename too long\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
 		ri.FS_FreeFile(mt); //mxd
 
 		return NULL;
@@ -488,13 +486,13 @@ static image_t* GL_LoadWal32(const char* name, const imagetype_t type) // H2
 	ri.FS_LoadFile(name, (void**)&mt);
 	if (mt == NULL)
 	{
-		Com_Printf("GL_LoadWal32 : Can\'t load %s\n", name);
+		ri.Con_Printf(PRINT_ALL, "GL_LoadWal32: can't load '%s'\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
 		return NULL;
 	}
 
 	if (mt->version != MIP32_VERSION)
 	{
-		Com_Printf("GL_LoadWal32 : Invalid version for %s\n", name);
+		ri.Con_Printf(PRINT_ALL, "GL_LoadWal32: can't load '%s': invalid version (%i)\n", name, mt->version); //mxd. Com_Printf() -> ri.Con_Printf().
 		ri.FS_FreeFile(mt); //mxd
 
 		return NULL;
@@ -502,7 +500,7 @@ static image_t* GL_LoadWal32(const char* name, const imagetype_t type) // H2
 
 	if (strlen(name) >= MAX_QPATH)
 	{
-		Com_Printf("GL_LoadWal32 : \"%s\" is too long a string\n", name);
+		ri.Con_Printf(PRINT_ALL, "GL_LoadWal32: can't load '%s': filename too long\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
 		ri.FS_FreeFile(mt); //mxd
 
 		return NULL;
@@ -539,7 +537,7 @@ image_t* GL_FindImage(const char* name, const imagetype_t type)
 
 	if (name == NULL)
 	{
-		Com_Printf("GL_FindImage: Invalid null name\n");
+		ri.Con_Printf(PRINT_ALL, "GL_FindImage: Invalid null name\n"); //mxd. Com_Printf() -> ri.Con_Printf().
 		return r_notexture;
 	}
 
@@ -547,7 +545,7 @@ image_t* GL_FindImage(const char* name, const imagetype_t type)
 
 	if (len < 8)
 	{
-		Com_Printf("GL_FindImage: Name too short (%s)\n", name);
+		ri.Con_Printf(PRINT_ALL, "GL_FindImage: Name too short (%s)\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
 		return r_notexture;
 	}
 
@@ -577,7 +575,7 @@ image_t* GL_FindImage(const char* name, const imagetype_t type)
 	else if (strcmp(name + len - 4, ".m32") == 0)
 		image = GL_LoadWal32(name, type);
 	else
-		Com_Printf("GL_FindImage: Extension not recognized in %s\n", name);
+		ri.Con_Printf(PRINT_ALL, "GL_FindImage: Extension not recognized in %s\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
 
 	if (image == NULL)
 		return r_notexture;
@@ -753,5 +751,5 @@ void GL_DisplayHashTable(void)
 		}
 	}
 
-	Com_Printf("Hash entries: %d, Total images: %d\n", hashed_count, total_count);
+	ri.Con_Printf(PRINT_ALL, "Hash entries: %d, Total images: %d\n", hashed_count, total_count); //mxd. Com_Printf() -> ri.Con_Printf().
 }

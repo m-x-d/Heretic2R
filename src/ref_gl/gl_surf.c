@@ -7,6 +7,7 @@
 #include "gl_local.h"
 #include "gl_debug.h" //mxd
 #include "gl_fmodel.h"
+#include "Hunk.h" //mxd
 #include "Vector.h"
 
 static vec3_t modelorg; // Relative to viewpoint
@@ -399,7 +400,7 @@ static void R_RenderBrushPoly(msurface_t* fa)
 	}
 	else
 	{
-		Com_Printf("WARNING: To many tall wall surfaces!");
+		ri.Con_Printf(PRINT_ALL, "WARNING: too many tall wall surfaces!"); //mxd. Com_Printf() -> ri.Con_Printf().
 	}
 }
 
@@ -503,7 +504,7 @@ static void R_DrawAlphaEntity(entity_t* ent) // H2
 
 	if (ent->model == NULL)
 	{
-		Com_DPrintf("Attempt to draw NULL alpha model\n");
+		ri.Con_Printf(PRINT_DEVELOPER, "Attempt to draw NULL alpha model\n"); //mxd. Com_DPrintf() -> ri.Con_Printf().
 		R_DrawNullModel();
 
 		return;
@@ -520,7 +521,7 @@ static void R_DrawAlphaEntity(entity_t* ent) // H2
 	switch (currentmodel->type)
 	{
 		case mod_bad:
-			Com_Printf("WARNING:  currentmodel->type == 0; reload the map\n");
+			ri.Con_Printf(PRINT_ALL, "WARNING: currentmodel->type == 0; reload the map\n"); //mxd. Com_Printf() -> ri.Con_Printf().
 			break;
 
 		case mod_brush:
@@ -536,7 +537,7 @@ static void R_DrawAlphaEntity(entity_t* ent) // H2
 			break;
 
 		default:
-			Sys_Error("Bad modeltype");
+			ri.Sys_Error(ERR_DROP, "Bad modeltype"); //mxd. Sys_Error() -> ri.Sys_Error().
 			break;
 	}
 }
@@ -638,7 +639,7 @@ void R_SortAndDrawAlphaSurfaces(void)
 
 		if (num_surfaces >= MAX_ALPHA_SURFACES)
 		{
-			Com_DPrintf("Warning: attempting to draw too many alpha surfaces.\n");
+			ri.Con_Printf(PRINT_DEVELOPER, "Warning: attempting to draw too many alpha surfaces\n"); //mxd. Com_DPrintf() -> ri.Con_Printf().
 			break;
 		}
 	}

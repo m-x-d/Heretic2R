@@ -55,7 +55,7 @@ void Draw_InitLocal(void)
 	r_notexture = NULL;
 	r_notexture = GL_FindImage("textures/general/notex.m8", it_wall);
 	if (r_notexture == NULL)
-		Sys_Error("Draw_InitLocal: could not find textures/general/notex.m8");
+		ri.Sys_Error(ERR_DROP, "Draw_InitLocal: could not find textures/general/notex.m8"); //mxd. Sys_Error() -> ri.Sys_Error().
 
 	draw_chars = Draw_FindPic("misc/conchars.m32");
 	r_particletexture = Draw_FindPicFilter("misc/particle.m32");

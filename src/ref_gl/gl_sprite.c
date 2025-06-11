@@ -134,9 +134,6 @@ static void R_DrawLineSprite(const entity_t* e, const dsprframe_t* frame, vec3_t
 
 void R_DrawSpriteModel(entity_t* e)
 {
-	vec3_t fixed_up;
-	vec3_t fixed_right;
-	vec3_t dir;
 	float* up;
 	float* right;
 
@@ -168,7 +165,11 @@ void R_DrawSpriteModel(entity_t* e)
 
 	if (e->flags & RF_FIXED)
 	{
+		vec3_t dir;
+		vec3_t fixed_up;
 		DirAndUpFromAngles(currententity->angles, dir, fixed_up);
+
+		vec3_t fixed_right;
 		CrossProduct(fixed_up, dir, fixed_right);
 		VectorNormalize(fixed_right);
 		
@@ -201,7 +202,7 @@ void R_DrawSpriteModel(entity_t* e)
 			break;
 
 		default: //mxd. Avoid compiler warnings...
-			Sys_Error("Unknown sprite type: %i!", e->spriteType);
+			ri.Sys_Error(ERR_DROP, "R_DrawSpriteModel: unknown sprite type (%i)!", e->spriteType); //mxd. Sys_Error() -> ri.Sys_Error().
 			break;
 	}
 

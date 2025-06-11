@@ -169,7 +169,7 @@ void Draw_BookPic(const int w, const int h, const char* name, const float scale)
 
 	if (mod == NULL)
 	{
-		Com_Printf("Draw_BookPic : Can't find book: %s\n", name);
+		ri.Con_Printf(PRINT_ALL, "Draw_BookPic: can't find book '%s'\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
 		return;
 	}
 

@@ -5,6 +5,7 @@
 //
 
 #include "gl_local.h"
+#include "Hunk.h" //mxd
 #include "turbsin.h"
 #include "Vector.h"
 

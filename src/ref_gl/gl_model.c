@@ -6,6 +6,7 @@
 
 #include "gl_local.h"
 #include "gl_fmodel.h"
+#include "Hunk.h" //mxd
 #include "Vector.h"
 
 int registration_sequence;
@@ -111,30 +112,29 @@ void Mod_Init(void)
 
 static void Mod_LoadBookModel(model_t* mod, const void* buffer) // H2
 {
-	int i;
-	bookframe_t* frame;
-	char frame_name[MAX_QPATH];
-
 	const book_t* book_in = buffer;
 	book_t* book_out = Hunk_Alloc(modfilelen);
 
 	if (book_in->bheader.version != BOOK_VERSION)
-		Sys_Error("%s has wrong version number (%i should be %i)", mod->name, book_in->bheader.version, BOOK_VERSION);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadBookModel: '%s' has wrong version number (%i should be %i)!", mod->name, book_in->bheader.version, BOOK_VERSION); //mxd. Sys_Error() -> ri.Sys_Error().
 
 	if (book_in->bheader.num_segments > MAX_FRAMES)
-		Sys_Error("%s has too many frames (%i > %i)", mod->name, book_in->bheader.num_segments, MAX_FRAMES);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadBookModel: '%s' has too many frames (%i > %i)!", mod->name, book_in->bheader.num_segments, MAX_FRAMES); //mxd. Sys_Error() -> ri.Sys_Error().
 
-	// Copy everything
+	// Copy everything.
 	memcpy(book_out, book_in, book_in->bheader.num_segments * sizeof(bookframe_t) + sizeof(bookheader_t));
 
-	// Pre-load frame images
-	for (i = 0, frame = book_out->bframes; i < book_out->bheader.num_segments; i++, frame++)
+	// Pre-load frame images.
+	bookframe_t* frame = book_out->bframes;
+	for (int i = 0; i < book_out->bheader.num_segments; i++, frame++)
 	{
+		char frame_name[MAX_QPATH];
 		Com_sprintf(frame_name, sizeof(frame_name), "Book/%s", frame->name);
+
 		mod->skins[i] = GL_FindImage(frame_name, it_pic);
 	}
 
-	// Set model type
+	// Set model type.
 	mod->type = mod_book;
 }
 
@@ -777,7 +777,7 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 				break;
 
 			default:
-				Sys_Error("Mod_ForName: unknown file id for %s", mod->name);
+				ri.Sys_Error(ERR_DROP, "Mod_ForName: unknown file id for %s", mod->name);
 				break;
 		}
 	}
@@ -852,7 +852,7 @@ struct model_s* R_RegisterModel(const char* name)
 		} break;
 
 		default:
-			Sys_Error("R_RegisterModel %s failed\n", name);
+			ri.Sys_Error(ERR_DROP, "R_RegisterModel '%s' failed\n", name); //mxd. Sys_Error() -> ri.Sys_Error().
 			return NULL;
 	}
 

@@ -127,7 +127,7 @@ cvar_t* gl_texturemode;
 cvar_t* gl_lockpvs;
 
 cvar_t* gl_drawflat;
-cvar_t* gl_devel1;
+cvar_t* gl_devel1; //TODO: unused
 cvar_t* gl_trans33;
 cvar_t* gl_trans66;
 cvar_t* gl_picmip;
@@ -293,7 +293,7 @@ void R_DrawEntitiesOnList(void)
 		currententity = r_newrefdef.entities[i];
 		if (currententity->model == NULL) // H2: extra sanity check
 		{
-			Com_Printf("Attempt to draw NULL model\n");
+			ri.Con_Printf(PRINT_ALL, "Attempt to draw NULL model\n"); //mxd. Com_Printf() -> ri.Con_Printf().
 			R_DrawNullModel();
 			continue;
 		}
@@ -309,7 +309,7 @@ void R_DrawEntitiesOnList(void)
 		switch (currentmodel->type)
 		{
 			case mod_bad:
-				Com_Printf("WARNING:  currentmodel->type == 0; reload the map\n");
+				ri.Con_Printf(PRINT_ALL, "WARNING: currentmodel->type == 0; reload the map\n"); //mxd. Com_Printf() -> ri.Con_Printf().
 				break;
 
 			case mod_brush:
@@ -325,7 +325,7 @@ void R_DrawEntitiesOnList(void)
 				break;
 
 			default:
-				Sys_Error("Bad modeltype"); // Q2: ri.Sys_Error
+				ri.Sys_Error(ERR_DROP, "Bad modeltype"); // Q2: ri.Sys_Error //mxd. Sys_Error() -> ri.Sys_Error().
 				break;
 		}
 	}
@@ -530,7 +530,7 @@ static void R_SetFrustum(void)
 		// H2:
 		const float frustum_dist = VectorLength(frustum[i].normal);
 		if (frustum_dist <= 0.999999f)
-			Com_Printf("Frustum normal dist %f < 1.0\n", (double)frustum_dist);
+			ri.Con_Printf(PRINT_ALL, "Frustum normal dist %f < 1.0\n", (double)frustum_dist); //mxd. Com_Printf() -> ri.Con_Printf().
 
 		frustum[i].type = PLANE_ANYZ;
 		frustum[i].dist = DotProduct(r_origin, frustum[i].normal);
@@ -783,98 +783,98 @@ static void R_Clear(void)
 
 void R_Register(void)
 {
-	r_norefresh = Cvar_Get("r_norefresh", "0", 0);
-	r_fullbright = Cvar_Get("r_fullbright", "0", 0);
-	r_drawentities = Cvar_Get("r_drawentities", "1", 0);
-	r_drawworld = Cvar_Get("r_drawworld", "1", 0);
-	r_novis = Cvar_Get("r_novis", "0", 0);
-	r_nocull = Cvar_Get("r_nocull", "0", 0);
-	r_lerpmodels = Cvar_Get("r_lerpmodels", "1", 0);
-	r_speeds = Cvar_Get("r_speeds", "0", 0);
+	r_norefresh = ri.Cvar_Get("r_norefresh", "0", 0);
+	r_fullbright = ri.Cvar_Get("r_fullbright", "0", 0);
+	r_drawentities = ri.Cvar_Get("r_drawentities", "1", 0);
+	r_drawworld = ri.Cvar_Get("r_drawworld", "1", 0);
+	r_novis = ri.Cvar_Get("r_novis", "0", 0);
+	r_nocull = ri.Cvar_Get("r_nocull", "0", 0);
+	r_lerpmodels = ri.Cvar_Get("r_lerpmodels", "1", 0);
+	r_speeds = ri.Cvar_Get("r_speeds", "0", 0);
 
-	r_lightlevel = Cvar_Get("r_lightlevel", "0", 0);
+	r_lightlevel = ri.Cvar_Get("r_lightlevel", "0", 0);
 
 	// NEW:
-	r_farclipdist = Cvar_Get("r_farclipdist", "4096.0", 0);
-	r_fog = Cvar_Get("r_fog", "0", 0);
-	r_fog_mode = Cvar_Get("r_fog_mode", "1", 0);
-	r_fog_density = Cvar_Get("r_fog_density", "0.004", 0);
-	r_fog_startdist = Cvar_Get("r_fog_startdist", "50.0", 0);
-	r_fog_color_r = Cvar_Get("r_fog_color_r", "1.0", 0);
-	r_fog_color_g = Cvar_Get("r_fog_color_g", "1.0", 0);
-	r_fog_color_b = Cvar_Get("r_fog_color_b", "1.0", 0);
-	r_fog_color_a = Cvar_Get("r_fog_color_a", "0.0", 0);
-	r_fog_color_scale = Cvar_Get("r_fog_color_scale", "1.0", 0);
-	r_fog_lightmap_adjust = Cvar_Get("r_fog_lightmap_adjust", "5.0", 0);
-	r_fog_underwater = Cvar_Get("r_fog_underwater", "0", 0); //TODO: unused
-	r_fog_underwater_mode = Cvar_Get("r_fog_underwater_mode", "1", 0);
-	r_fog_underwater_density = Cvar_Get("r_fog_underwater_density", "0.0015", 0);
-	r_fog_underwater_startdist = Cvar_Get("r_fog_underwater_startdist", "100.0", 0);
-	r_fog_underwater_color_r = Cvar_Get("r_fog_underwater_color_r", "1.0", 0);
-	r_fog_underwater_color_g = Cvar_Get("r_fog_underwater_color_g", "1.0", 0);
-	r_fog_underwater_color_b = Cvar_Get("r_fog_underwater_color_b", "1.0", 0);
-	r_fog_underwater_color_a = Cvar_Get("r_fog_underwater_color_a", "0.0", 0);
-	r_fog_underwater_color_scale = Cvar_Get("r_fog_underwater_color_scale", "1.0", 0);
-	r_fog_underwater_lightmap_adjust = Cvar_Get("r_fog_underwater_lightmap_adjust", "5.0", 0);
-	r_underwater_color = Cvar_Get("r_underwater_color", "0x70c06000", 0);
-	r_frameswap = Cvar_Get("r_frameswap", "1.0", 0);
-	r_references = Cvar_Get("r_references", "1.0", 0);
+	r_farclipdist = ri.Cvar_Get("r_farclipdist", "4096.0", 0);
+	r_fog = ri.Cvar_Get("r_fog", "0", 0);
+	r_fog_mode = ri.Cvar_Get("r_fog_mode", "1", 0);
+	r_fog_density = ri.Cvar_Get("r_fog_density", "0.004", 0);
+	r_fog_startdist = ri.Cvar_Get("r_fog_startdist", "50.0", 0);
+	r_fog_color_r = ri.Cvar_Get("r_fog_color_r", "1.0", 0);
+	r_fog_color_g = ri.Cvar_Get("r_fog_color_g", "1.0", 0);
+	r_fog_color_b = ri.Cvar_Get("r_fog_color_b", "1.0", 0);
+	r_fog_color_a = ri.Cvar_Get("r_fog_color_a", "0.0", 0);
+	r_fog_color_scale = ri.Cvar_Get("r_fog_color_scale", "1.0", 0);
+	r_fog_lightmap_adjust = ri.Cvar_Get("r_fog_lightmap_adjust", "5.0", 0);
+	r_fog_underwater = ri.Cvar_Get("r_fog_underwater", "0", 0); //TODO: unused
+	r_fog_underwater_mode = ri.Cvar_Get("r_fog_underwater_mode", "1", 0);
+	r_fog_underwater_density = ri.Cvar_Get("r_fog_underwater_density", "0.0015", 0);
+	r_fog_underwater_startdist = ri.Cvar_Get("r_fog_underwater_startdist", "100.0", 0);
+	r_fog_underwater_color_r = ri.Cvar_Get("r_fog_underwater_color_r", "1.0", 0);
+	r_fog_underwater_color_g = ri.Cvar_Get("r_fog_underwater_color_g", "1.0", 0);
+	r_fog_underwater_color_b = ri.Cvar_Get("r_fog_underwater_color_b", "1.0", 0);
+	r_fog_underwater_color_a = ri.Cvar_Get("r_fog_underwater_color_a", "0.0", 0);
+	r_fog_underwater_color_scale = ri.Cvar_Get("r_fog_underwater_color_scale", "1.0", 0);
+	r_fog_underwater_lightmap_adjust = ri.Cvar_Get("r_fog_underwater_lightmap_adjust", "5.0", 0);
+	r_underwater_color = ri.Cvar_Get("r_underwater_color", "0x70c06000", 0);
+	r_frameswap = ri.Cvar_Get("r_frameswap", "1.0", 0);
+	r_references = ri.Cvar_Get("r_references", "1.0", 0);
 
-	gl_nosubimage = Cvar_Get("gl_nosubimage", "0", 0);
-	gl_allow_software = Cvar_Get("gl_allow_software", "0", 0);
+	gl_nosubimage = ri.Cvar_Get("gl_nosubimage", "0", 0);
+	gl_allow_software = ri.Cvar_Get("gl_allow_software", "0", 0);
 
-	gl_particle_min_size = Cvar_Get("gl_particle_min_size", "2", CVAR_ARCHIVE);
-	gl_particle_max_size = Cvar_Get("gl_particle_max_size", "40", CVAR_ARCHIVE);
-	gl_particle_size = Cvar_Get("gl_particle_size", "40", CVAR_ARCHIVE);
-	gl_particle_att_a = Cvar_Get("gl_particle_att_a", "0.01", CVAR_ARCHIVE);
-	gl_particle_att_b = Cvar_Get("gl_particle_att_b", "0.0", CVAR_ARCHIVE);
-	gl_particle_att_c = Cvar_Get("gl_particle_att_c", "0.01", CVAR_ARCHIVE);
-	gl_noartifacts = Cvar_Get("gl_noartifacts", "0", 0); // NEW
+	gl_particle_min_size = ri.Cvar_Get("gl_particle_min_size", "2", CVAR_ARCHIVE);
+	gl_particle_max_size = ri.Cvar_Get("gl_particle_max_size", "40", CVAR_ARCHIVE);
+	gl_particle_size = ri.Cvar_Get("gl_particle_size", "40", CVAR_ARCHIVE);
+	gl_particle_att_a = ri.Cvar_Get("gl_particle_att_a", "0.01", CVAR_ARCHIVE);
+	gl_particle_att_b = ri.Cvar_Get("gl_particle_att_b", "0.0", CVAR_ARCHIVE);
+	gl_particle_att_c = ri.Cvar_Get("gl_particle_att_c", "0.01", CVAR_ARCHIVE);
+	gl_noartifacts = ri.Cvar_Get("gl_noartifacts", "0", 0); // NEW
 
-	gl_modulate = Cvar_Get("gl_modulate", "1", CVAR_ARCHIVE);
-	gl_log = Cvar_Get("gl_log", "0", 0);
-	gl_bitdepth = Cvar_Get("gl_bitdepth", "0", 0);
-	gl_lightmap = Cvar_Get("gl_lightmap", "0", 0);
-	gl_shadows = Cvar_Get("gl_shadows", "0", CVAR_ARCHIVE);
-	gl_dynamic = Cvar_Get("gl_dynamic", "1", 0);
-	gl_nobind = Cvar_Get("gl_nobind", "0", 0);
-	gl_round_down = Cvar_Get("gl_round_down", "1", 0);
-	gl_showtris = Cvar_Get("gl_showtris", "0", 0);
-	gl_reporthash = Cvar_Get("gl_reporthash", "0", 0);
-	gl_ztrick = Cvar_Get("gl_ztrick", "0", 0);
-	gl_finish = Cvar_Get("gl_finish", "0", 0);
-	gl_clear = Cvar_Get("gl_clear", "0", 0);
-	gl_cull = Cvar_Get("gl_cull", "1", 0);
-	gl_polyblend = Cvar_Get("gl_polyblend", "1", 0);
-	gl_flashblend = Cvar_Get("gl_flashblend", "0", 0);
-	gl_playermip = Cvar_Get("gl_playermip", "0", 0);
-	gl_monolightmap = Cvar_Get("gl_monolightmap", "0", 0); //TODO: unused. Remove?
-	gl_driver = Cvar_Get("gl_driver", "opengl32", CVAR_ARCHIVE);
-	gl_texturemode = Cvar_Get("gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE);
+	gl_modulate = ri.Cvar_Get("gl_modulate", "1", CVAR_ARCHIVE);
+	gl_log = ri.Cvar_Get("gl_log", "0", 0);
+	gl_bitdepth = ri.Cvar_Get("gl_bitdepth", "0", 0);
+	gl_lightmap = ri.Cvar_Get("gl_lightmap", "0", 0);
+	gl_shadows = ri.Cvar_Get("gl_shadows", "0", CVAR_ARCHIVE);
+	gl_dynamic = ri.Cvar_Get("gl_dynamic", "1", 0);
+	gl_nobind = ri.Cvar_Get("gl_nobind", "0", 0);
+	gl_round_down = ri.Cvar_Get("gl_round_down", "1", 0);
+	gl_showtris = ri.Cvar_Get("gl_showtris", "0", 0);
+	gl_reporthash = ri.Cvar_Get("gl_reporthash", "0", 0);
+	gl_ztrick = ri.Cvar_Get("gl_ztrick", "0", 0);
+	gl_finish = ri.Cvar_Get("gl_finish", "0", 0);
+	gl_clear = ri.Cvar_Get("gl_clear", "0", 0);
+	gl_cull = ri.Cvar_Get("gl_cull", "1", 0);
+	gl_polyblend = ri.Cvar_Get("gl_polyblend", "1", 0);
+	gl_flashblend = ri.Cvar_Get("gl_flashblend", "0", 0);
+	gl_playermip = ri.Cvar_Get("gl_playermip", "0", 0);
+	gl_monolightmap = ri.Cvar_Get("gl_monolightmap", "0", 0); //TODO: unused. Remove?
+	gl_driver = ri.Cvar_Get("gl_driver", "opengl32", CVAR_ARCHIVE);
+	gl_texturemode = ri.Cvar_Get("gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE);
 	// Missing: gl_texturealphamode, gl_texturesolidmode?
-	gl_lockpvs = Cvar_Get("gl_lockpvs", "0", 0);
+	gl_lockpvs = ri.Cvar_Get("gl_lockpvs", "0", 0);
 
 	// NEW:
-	gl_drawflat = Cvar_Get("gl_drawflat", "0", 0);
-	gl_devel1 = Cvar_Get("gl_devel1", "0", 0);
-	gl_trans33 = Cvar_Get("gl_trans33", "0.33", 0); // H2_1.07: 0.33 -> 1
-	gl_trans66 = Cvar_Get("gl_trans66", "0.66", 0); // H2_1.07: 0.66 -> 1
-	gl_picmip = Cvar_Get("gl_picmip", "0", CVAR_ARCHIVE);
-	gl_skinmip = Cvar_Get("gl_skinmip", "0", CVAR_ARCHIVE);
-	gl_bookalpha = Cvar_Get("gl_bookalpha", "1.0", 0);
+	gl_drawflat = ri.Cvar_Get("gl_drawflat", "0", 0);
+	gl_devel1 = ri.Cvar_Get("gl_devel1", "0", 0);
+	gl_trans33 = ri.Cvar_Get("gl_trans33", "0.33", 0); // H2_1.07: 0.33 -> 1
+	gl_trans66 = ri.Cvar_Get("gl_trans66", "0.66", 0); // H2_1.07: 0.66 -> 1
+	gl_picmip = ri.Cvar_Get("gl_picmip", "0", CVAR_ARCHIVE);
+	gl_skinmip = ri.Cvar_Get("gl_skinmip", "0", CVAR_ARCHIVE);
+	gl_bookalpha = ri.Cvar_Get("gl_bookalpha", "1.0", 0);
 
-	gl_ext_swapinterval = Cvar_Get("gl_ext_swapinterval", "1", CVAR_ARCHIVE);
-	gl_ext_gamma = Cvar_Get("gl_ext_gamma", "1", CVAR_ARCHIVE);
-	gl_ext_palettedtexture = Cvar_Get("gl_ext_palettedtexture", "1", CVAR_ARCHIVE); //TODO: ignored. Remove?
-	gl_ext_multitexture = Cvar_Get("gl_ext_multitexture", "1", CVAR_ARCHIVE);
-	gl_ext_pointparameters = Cvar_Get("gl_ext_pointparameters", "1", CVAR_ARCHIVE);
-	gl_drawmode = Cvar_Get("gl_drawmode", "0", 0);
+	gl_ext_swapinterval = ri.Cvar_Get("gl_ext_swapinterval", "1", CVAR_ARCHIVE);
+	gl_ext_gamma = ri.Cvar_Get("gl_ext_gamma", "1", CVAR_ARCHIVE);
+	gl_ext_palettedtexture = ri.Cvar_Get("gl_ext_palettedtexture", "1", CVAR_ARCHIVE); //TODO: ignored. Remove?
+	gl_ext_multitexture = ri.Cvar_Get("gl_ext_multitexture", "1", CVAR_ARCHIVE);
+	gl_ext_pointparameters = ri.Cvar_Get("gl_ext_pointparameters", "1", CVAR_ARCHIVE);
+	gl_drawmode = ri.Cvar_Get("gl_drawmode", "0", 0);
 
-	gl_drawbuffer = Cvar_Get("gl_drawbuffer", "GL_BACK", 0);
-	gl_swapinterval = Cvar_Get("gl_swapinterval", "1", CVAR_ARCHIVE);
-	gl_sortmulti = Cvar_Get("gl_sortmulti", "0", CVAR_ARCHIVE); // NEW
+	gl_drawbuffer = ri.Cvar_Get("gl_drawbuffer", "GL_BACK", 0);
+	gl_swapinterval = ri.Cvar_Get("gl_swapinterval", "1", CVAR_ARCHIVE);
+	gl_sortmulti = ri.Cvar_Get("gl_sortmulti", "0", CVAR_ARCHIVE); // NEW
 
-	gl_saturatelighting = Cvar_Get("gl_saturatelighting", "0", 0);
+	gl_saturatelighting = ri.Cvar_Get("gl_saturatelighting", "0", 0);
 
 	// ri.Cvar_Get() in Q2
 	gl_3dlabs_broken = ri.Cvar_FullSet("gl_3dlabs_broken", "1", 0);
@@ -883,18 +883,18 @@ void R_Register(void)
 	gl_envmap_broken = ri.Cvar_FullSet("gl_envmap_broken", "0", 0); // NEW
 	gl_screenshot_broken = ri.Cvar_FullSet("gl_screenshot_broken", "0", 0); // NEW
 
-	vid_fullscreen = Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
-	vid_gamma = Cvar_Get("vid_gamma", "0.5", CVAR_ARCHIVE);
-	vid_brightness = Cvar_Get("vid_brightness", "0.5", CVAR_ARCHIVE); // NEW
-	vid_contrast = Cvar_Get("vid_contrast", "0.5", CVAR_ARCHIVE); // NEW
+	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
+	vid_gamma = ri.Cvar_Get("vid_gamma", "0.5", CVAR_ARCHIVE);
+	vid_brightness = ri.Cvar_Get("vid_brightness", "0.5", CVAR_ARCHIVE); // NEW
+	vid_contrast = ri.Cvar_Get("vid_contrast", "0.5", CVAR_ARCHIVE); // NEW
 
-	vid_ref = Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
+	vid_ref = ri.Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
 
 	// NEW:
-	vid_mode = Cvar_Get("vid_mode", "3", CVAR_ARCHIVE);
-	menus_active = Cvar_Get("menus_active", "0", 0);
-	cl_camera_under_surface = Cvar_Get("cl_camera_under_surface", "0", 0);
-	quake_amount = Cvar_Get("quake_amount", "0", 0);
+	vid_mode = ri.Cvar_Get("vid_mode", "3", CVAR_ARCHIVE);
+	menus_active = ri.Cvar_Get("menus_active", "0", 0);
+	cl_camera_under_surface = ri.Cvar_Get("cl_camera_under_surface", "0", 0);
+	quake_amount = ri.Cvar_Get("quake_amount", "0", 0);
 
 	ri.Cmd_AddCommand("imagelist", GL_ImageList_f);
 	ri.Cmd_AddCommand("screenshot", GL_ScreenShot_f);
@@ -908,9 +908,8 @@ qboolean R_SetMode(void)
 {
 	if (vid_fullscreen->modified && !gl_config.allow_cds)
 	{
-		Com_Printf("R_SetMode() - CDS not allowed with this driver\n");
-		Cvar_SetValue("vid_fullscreen", (float)!(int)vid_fullscreen->value);
-		vid_fullscreen->modified = false;
+		ri.Con_Printf(PRINT_ALL, "R_SetMode() - CDS not allowed with this driver\n"); //mxd. Com_Printf() -> ri.Con_Printf().
+		ri.Cvar_SetValue("vid_fullscreen", (float)!(int)vid_fullscreen->value);
 	}
 
 	vid_fullscreen->modified = false;
@@ -925,9 +924,9 @@ qboolean R_SetMode(void)
 
 	if (err == rserr_invalid_fullscreen)
 	{
-		Cvar_SetValue("vid_fullscreen", 0);
+		ri.Cvar_SetValue("vid_fullscreen", 0);
 		vid_fullscreen->modified = false;
-		Com_Printf("ref_gl::R_SetMode() - fullscreen unavailable in this mode\n");
+		ri.Con_Printf(PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n"); //mxd. Com_Printf() -> ri.Con_Printf().
 
 		err = GLimp_SetMode(&viddef.width, &viddef.height, (int)vid_mode->value, false, true);
 		if (err == rserr_ok)
@@ -935,16 +934,16 @@ qboolean R_SetMode(void)
 	}
 	else if (err == rserr_invalid_mode)
 	{
-		Cvar_SetValue("vid_mode", (float)gl_state.prev_mode);
+		ri.Cvar_SetValue("vid_mode", (float)gl_state.prev_mode);
 		vid_mode->modified = false;
-		Com_Printf("ref_gl::R_SetMode() - invalid mode\n");
+		ri.Con_Printf(PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n"); //mxd. Com_Printf() -> ri.Con_Printf().
 	}
 
 	// Try setting it back to something safe
 	err = GLimp_SetMode(&viddef.width, &viddef.height, gl_state.prev_mode, false, true);
 	if (err != rserr_ok)
 	{
-		Com_Printf("ref_gl::R_SetMode() - could not revert to safe mode\n");
+		ri.Con_Printf(PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n"); //mxd. Com_Printf() -> ri.Con_Printf().
 		return false;
 	}
 
@@ -956,17 +955,17 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	for (int j = 0; j < 256; j++)
 		turbsin[j] *= 0.5f;
 
-	Com_Printf("ref_gl version: "REF_VERSION"\n"); // ri.Con_Printf in Q2 (here and below)
+	ri.Con_Printf(PRINT_ALL, "ref_gl version: "REF_VERSION"\n"); //mxd. Com_Printf() -> ri.Con_Printf() (here and below).
 	R_Register();
 
 	// Initialize our QGL dynamic bindings
 	char driver_path[256];
-	Com_sprintf(driver_path, 256, "Drivers/%s", gl_driver->string); // H2: extra local driver QGL_Init call 
+	Com_sprintf(driver_path, sizeof(driver_path), "Drivers/%s", gl_driver->string); // H2: extra local driver QGL_Init call 
 
 	if (!QGL_Init(driver_path) && !QGL_Init(gl_driver->string))
 	{
 		QGL_Shutdown();
-		Com_Printf("%s - could not load \"%s\"\n", __func__, gl_driver->string);
+		ri.Con_Printf(PRINT_ALL, "ref_gl::R_Init() - could not load \"%s\"\n", gl_driver->string);
 		return false; //mxd. Decompiled code still returns -1 here...
 	}
 
@@ -984,17 +983,17 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	if (!R_SetMode())
 	{
 		QGL_Shutdown();
-		Com_Printf("ref_gl::R_Init() - could not R_SetMode()\n");
+		ri.Con_Printf(PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n");
 		return false; //mxd. Decompiled code still returns -1 here...
 	}
 
 	// Get our various GL strings
 	gl_config.vendor_string = (const char*)(*qglGetString)(GL_VENDOR);
-	Com_Printf("GL_VENDOR: %s\n", gl_config.vendor_string);
+	ri.Con_Printf(PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string);
 	gl_config.renderer_string = (const char*)(*qglGetString)(GL_RENDERER);
-	Com_Printf("GL_RENDERER: %s\n", gl_config.renderer_string);
+	ri.Con_Printf(PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string);
 	gl_config.version_string = (const char*)(*qglGetString)(GL_VERSION);
-	Com_Printf("GL_VERSION: %s\n", gl_config.version_string);
+	ri.Con_Printf(PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string);
 	gl_config.extensions_string = (const char*)(*qglGetString)(GL_EXTENSIONS);
 	//Com_Printf("GL_EXTENSIONS: %s\n", gl_config.extensions_string); // H2_1.07: "GL_EXT: hidden\n" //mxd. Modern extensions_string is longer than Com_Printf can handle...
 
@@ -1007,11 +1006,11 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	if (strstr(gl_config.extensions_string, "WGL_EXT_swap_control"))
 	{
 		qwglSwapIntervalEXT = (BOOL (WINAPI*)(int))qwglGetProcAddress("wglSwapIntervalEXT");
-		Com_Printf("...enabling WGL_EXT_swap_control\n");
+		ri.Con_Printf(PRINT_ALL, "...enabling WGL_EXT_swap_control\n");
 	}
 	else
 	{
-		Com_Printf("...WGL_EXT_swap_control not found\n");
+		ri.Con_Printf(PRINT_ALL, "...WGL_EXT_swap_control not found\n");
 	}
 #endif
 
@@ -1021,16 +1020,16 @@ qboolean R_Init(void* hinstance, void* hWnd)
 		{
 			qglPointParameterfEXT = (void (APIENTRY*)(GLenum, GLfloat))qwglGetProcAddress("glPointParameterfEXT");
 			qglPointParameterfvEXT = (void (APIENTRY*)(GLenum, const GLfloat*))qwglGetProcAddress("glPointParameterfvEXT");
-			Com_Printf("...using GL_EXT_point_parameters\n");
+			ri.Con_Printf(PRINT_ALL, "...using GL_EXT_point_parameters\n");
 		}
 		else
 		{
-			Com_Printf("...ignoring GL_EXT_point_parameters\n");
+			ri.Con_Printf(PRINT_ALL, "...ignoring GL_EXT_point_parameters\n");
 		}
 	}
 	else
 	{
-		Com_Printf("...GL_EXT_point_parameters not found\n");
+		ri.Con_Printf(PRINT_ALL, "...GL_EXT_point_parameters not found\n");
 	}
 
 	//mxd. Skip qglColorTableEXT logic. Required 'GL_EXT_shared_texture_palette' extension is unsupported since GeForceFX
@@ -1040,18 +1039,18 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	{
 		if ((int)gl_ext_multitexture->value)
 		{
-			Com_Printf("...using GL_ARB_multitexture\n");
+			ri.Con_Printf(PRINT_ALL, "...using GL_ARB_multitexture\n");
 			qglMultiTexCoord2fARB = (void (APIENTRY*)(GLenum, GLfloat, GLfloat))qwglGetProcAddress("glMultiTexCoord2fARB");
 			qglActiveTextureARB = (void (APIENTRY*)(GLenum))qwglGetProcAddress("glActiveTextureARB");
 		}
 		else
 		{
-			Com_Printf("...ignoring GL_ARB_multitexture\n");
+			ri.Con_Printf(PRINT_ALL, "...ignoring GL_ARB_multitexture\n");
 		}
 	}
 	else
 	{
-		Com_Printf("...GL_ARB_multitexture not found\n");
+		ri.Con_Printf(PRINT_ALL, "...GL_ARB_multitexture not found\n");
 	}
 
 	//mxd. GL_SGIS_multitexture logic skipped
@@ -1067,7 +1066,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	const GLenum err = qglGetError();
 	if (err != GL_NO_ERROR)
 	{
-		Com_Printf("glGetError() = 0x%x\n", err);
+		ri.Con_Printf(PRINT_ALL, "glGetError() = 0x%x\n", err);
 		return false;
 	}
 
@@ -1101,7 +1100,7 @@ void R_BeginFrame(const float camera_separation)
 	if (vid_mode->modified || vid_fullscreen->modified)
 	{
 		// FIXME: only restart if CDS is required
-		cvar_t* ref = Cvar_Get("vid_ref", "gl", 0); //TODO: can't we just use vid_ref global var here? 
+		cvar_t* ref = ri.Cvar_Get("vid_ref", "gl", 0); //TODO: can't we just use vid_ref global cvar here? 
 		ref->modified = true;
 	}
 
@@ -1178,7 +1177,7 @@ static void R_RenderView(const refdef_t* fd)
 	r_newrefdef = *fd;
 
 	if (r_worldmodel == NULL && !(r_newrefdef.rdflags & RDF_NOWORLDMODEL))
-		Sys_Error("R_RenderView: NULL worldmodel"); // Q2: ri.Sys_Error(ERR_DROP, "R_RenderView: NULL worldmodel");
+		ri.Sys_Error(ERR_DROP, "R_RenderView: NULL worldmodel"); // Q2: ri.Sys_Error(ERR_DROP, "R_RenderView: NULL worldmodel"); //mxd. Sys_Error() -> ri.Sys_Error().
 
 	if ((int)r_speeds->value)
 	{
@@ -1210,7 +1209,7 @@ static void R_RenderView(const refdef_t* fd)
 	R_PolyBlend();
 
 	if ((int)r_speeds->value)
-		Com_Printf("%4i wpoly %4i epoly %i tex %i lmaps\n", c_brush_polys, c_alias_polys, c_visible_textures, c_visible_lightmaps); // H2: ri.Con_Printf -> Com_Printf
+		ri.Con_Printf(PRINT_ALL, "%4i wpoly %4i epoly %i tex %i lmaps\n", c_brush_polys, c_alias_polys, c_visible_textures, c_visible_lightmaps); // H2: ri.Con_Printf -> Com_Printf //mxd. Com_Printf() -> ri.Con_Printf().
 
 	if ((int)gl_reporthash->value) // H2
 		GL_DisplayHashTable();

@@ -169,16 +169,10 @@ H2COMMON_API extern const vec3_t vec3_up;
 }
 #endif
 
-extern int curtime; // Time returned by last Sys_Milliseconds.
+extern int curtime; // Time returned by last Sys_Milliseconds() call.
 
 extern int Sys_Milliseconds(void);
 extern void Sys_Mkdir(const char* path);
-
-// Large block stack allocation routines.
-extern void* Hunk_Begin(int maxsize);
-extern void* Hunk_Alloc(int size);
-extern void Hunk_Free(void* buf);
-extern int Hunk_End(void);
 
 // Directory searching.
 #define SFF_ARCH	0x01

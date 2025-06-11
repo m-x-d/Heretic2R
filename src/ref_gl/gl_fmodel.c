@@ -8,6 +8,7 @@
 #include "gl_fmodel.h"
 #include "anorms.h"
 #include "anormtab.h"
+#include "Hunk.h" //mxd
 #include "m_Skeleton.h"
 #include "Reference.h"
 #include "r_SkeletonLerp.h"
@@ -182,7 +183,7 @@ static qboolean fmLoadSkeleton(model_t* model, const int version, const int data
 {
 	if (version != FM_SKELETON_VER)
 	{
-		ri.Con_Printf(PRINT_ALL, "invalid SKELETON version for block %s: %d != %d\n", FM_SKELETON_NAME, FM_SKELETON_VER, version);
+		ri.Con_Printf(PRINT_ALL, "Invalid SKELETON version for block %s: %d != %d\n", FM_SKELETON_NAME, FM_SKELETON_VER, version);
 		return false;
 	}
 
@@ -224,7 +225,7 @@ static qboolean fmLoadSkeleton(model_t* model, const int version, const int data
 		for (int v1 = 0; v1 < SkeletalClusters[c].numVerticies - 1; v1++)
 			for (int v2 = v1 + 1; v2 < SkeletalClusters[c].numVerticies; v2++)
 				if (SkeletalClusters[c].verticies[v1] == SkeletalClusters[c].verticies[v2])
-					Com_Printf("Warning duplicate vertex:  %d\n", SkeletalClusters[c].verticies[v1]);
+					ri.Con_Printf(PRINT_ALL, "Warning: duplicate skeletal cluster vertex: %d\n", SkeletalClusters[c].verticies[v1]); //mxd. Com_Printf() -> ri.Con_Printf().
 	}
 
 	const qboolean have_skeleton = *(++in_i);

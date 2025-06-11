@@ -17,7 +17,6 @@
     <ClCompile Include="..\qcommon\Skeletons.c" />
     <ClCompile Include="..\qcommon\turbsin.c" />
     <ClCompile Include="..\win32\glw_imp.c" />
-    <ClCompile Include="..\win32\q_shwin.c" />
     <ClCompile Include="anormtab.c" />
     <ClCompile Include="gl_debug.c" />
     <ClCompile Include="gl_fmodel.c" />
@@ -34,6 +33,7 @@
     <ClCompile Include="gl_sprite.c" />
     <ClCompile Include="gl_surf.c" />
     <ClCompile Include="gl_warp.c" />
+    <ClCompile Include="Hunk.c" />
     <ClCompile Include="qgl_win.c" />
     <ClCompile Include="r_SkeletonLerp.c" />
     <ClCompile Include="r_Skeletons.c" />
@@ -59,6 +59,7 @@
     <ClInclude Include="gl_fmodel.h" />
     <ClInclude Include="gl_local.h" />
     <ClInclude Include="gl_model.h" />
+    <ClInclude Include="Hunk.h" />
     <ClInclude Include="m_SkeletalCluster.h" />
     <ClInclude Include="m_Skeleton.h" />
     <ClInclude Include="qgl.h" />
@@ -146,7 +147,7 @@
       <ImportLibrary>
       </ImportLibrary>
       <ModuleDefinitionFile>.\ref_gl.def</ModuleDefinitionFile>
-      <AdditionalDependencies>Winmm.lib;H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -192,7 +193,7 @@
       <ImportLibrary>
       </ImportLibrary>
       <ModuleDefinitionFile>.\ref_gl.def</ModuleDefinitionFile>
-      <AdditionalDependencies>Winmm.lib;H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

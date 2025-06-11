@@ -54,9 +54,6 @@
     <ClCompile Include="gl_draw_book.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\win32\q_shwin.c">
-      <Filter>win32</Filter>
-    </ClCompile>
     <ClCompile Include="gl_surf.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -94,6 +91,9 @@
       <Filter>qcommon</Filter>
     </ClCompile>
     <ClCompile Include="gl_debug.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Hunk.c">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -171,6 +171,9 @@
       <Filter>qcommon</Filter>
     </ClInclude>
     <ClInclude Include="gl_debug.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="Hunk.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
