@@ -365,7 +365,10 @@ void Mod_LoadFlexModel(model_t* mod, void* buffer, int length)
 			if (Q_stricmp(loader->ident, header->ident) == 0)
 			{
 				if (!loader->load(mod, header->version, header->size, in)) //mxd. Added sanity check
-					Com_Error(ERR_DROP,"Mod_LoadFlexModel: failed to load block %s\n", header->ident);
+				{
+					ri.Com_Error(ERR_DROP, "Mod_LoadFlexModel: failed to load block %s\n", header->ident); //mxd. Com_Error() -> ri.Com_Error().
+					return;
+				}
 
 				break;
 			}
