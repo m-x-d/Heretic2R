@@ -164,7 +164,7 @@ void SndDll_Init(void)
 	const GetSoundAPI_t GetSoundAPI = (void*)GetProcAddress(sound_library, "GetSoundAPI");
 	if (GetSoundAPI == NULL)
 	{
-		Com_ColourPrintf(P_RED, "GetProcAddress failed on %s", snd_dll->string);
+		Com_ColourPrintf(P_RED, "GetProcAddress failed on %s\n", snd_dll->string);
 		SndDll_FreeLibrary();
 		InitNullSound();
 
@@ -175,7 +175,7 @@ void SndDll_Init(void)
 
 	if (se.api_version != SND_API_VERSION)
 	{
-		Com_ColourPrintf(P_RED, "%s has incompatible api_version", snd_dll->string);
+		Com_ColourPrintf(P_RED, "%s has incompatible api_version\n", snd_dll->string);
 		SndDll_FreeLibrary();
 
 		// Retry with default sound library?..
