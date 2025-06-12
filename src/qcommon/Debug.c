@@ -14,7 +14,7 @@
 #endif
 
 // Print to Visual Studio console.
-GAME_DECLSPEC void DBG_IDEPrint(const char* fmt, ...)
+Q2DLL_DECLSPEC void DBG_IDEPrint(const char* fmt, ...)
 {
 #if _DEBUG
 	va_list argptr;
@@ -30,7 +30,7 @@ GAME_DECLSPEC void DBG_IDEPrint(const char* fmt, ...)
 }
 
 // Print vector.
-GAME_DECLSPEC char* pv(const vec3_t v)
+Q2DLL_DECLSPEC char* pv(const vec3_t v)
 {
 	static char buf[8][128];
 	static int buf_index;
@@ -43,7 +43,7 @@ GAME_DECLSPEC char* pv(const vec3_t v)
 }
 
 // Print short vector.
-GAME_DECLSPEC char* psv(const short* v)
+Q2DLL_DECLSPEC char* psv(const short* v)
 {
 	static char buf[8][128];
 	static int buf_index;
@@ -65,7 +65,7 @@ typedef struct
 
 static DebugHudMessage_t dbg_messages[NUM_DEBUG_MESSAGES];
 
-GAME_DECLSPEC void DBG_HudPrint(const int slot, const char* label, const char* fmt, ...)
+Q2DLL_DECLSPEC void DBG_HudPrint(const int slot, const char* label, const char* fmt, ...)
 {
 #if _DEBUG
 
@@ -128,35 +128,35 @@ void DBG_DrawMessages(void)
 #endif
 }
 
-GAME_DECLSPEC void DBG_AddBox(const vec3_t center, const float size, const paletteRGBA_t color, const float lifetime)
+Q2DLL_DECLSPEC void DBG_AddBox(const vec3_t center, const float size, const paletteRGBA_t color, const float lifetime)
 {
 #if _DEBUG
 	re.AddDebugBox(center, size, color, lifetime);
 #endif
 }
 
-GAME_DECLSPEC void DBG_AddBbox(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime)
+Q2DLL_DECLSPEC void DBG_AddBbox(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime)
 {
 #if _DEBUG
 	re.AddDebugBbox(mins, maxs, color, lifetime);
 #endif
 }
 
-GAME_DECLSPEC void DBG_AddEntityBbox(const edict_t* ent, const paletteRGBA_t color)
+Q2DLL_DECLSPEC void DBG_AddEntityBbox(const edict_t* ent, const paletteRGBA_t color)
 {
 #if _DEBUG
 	re.AddDebugEntityBbox(ent, color);
 #endif
 }
 
-GAME_DECLSPEC void DBG_AddLine(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
+Q2DLL_DECLSPEC void DBG_AddLine(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
 {
 #if _DEBUG
 	re.AddDebugLine(start, end, color, lifetime);
 #endif
 }
 
-GAME_DECLSPEC void DBG_AddArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
+Q2DLL_DECLSPEC void DBG_AddArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
 {
 #if _DEBUG
 	re.AddDebugArrow(start, end, color, lifetime);

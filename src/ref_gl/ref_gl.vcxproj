@@ -146,9 +146,8 @@
       <OutputFile>..\..\build\ref_gl.dll</OutputFile>
       <ImportLibrary>
       </ImportLibrary>
-      <ModuleDefinitionFile>.\ref_gl.def</ModuleDefinitionFile>
       <AdditionalDependencies>Winmm.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\build\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -192,9 +191,8 @@
       <OutputFile>..\..\build\ref_gl.dll</OutputFile>
       <ImportLibrary>
       </ImportLibrary>
-      <ModuleDefinitionFile>.\ref_gl.def</ModuleDefinitionFile>
       <AdditionalDependencies>Winmm.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\build\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

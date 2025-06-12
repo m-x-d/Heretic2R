@@ -195,7 +195,7 @@ typedef struct
 	predictinfo_t predictinfo;
 } client_state_t;
 
-GAME_DECLSPEC extern client_state_t cl;
+Q2DLL_DECLSPEC extern client_state_t cl;
 
 typedef enum
 {
@@ -290,7 +290,7 @@ typedef struct
 	FILE* demofile;
 } client_static_t;
 
-GAME_DECLSPEC extern client_static_t cls;
+Q2DLL_DECLSPEC extern client_static_t cls;
 
 #pragma region ========================== FX API IO ==========================
 
@@ -514,7 +514,7 @@ extern cvar_t* m_side;
 
 extern cvar_t* cl_lightlevel; // FIXME HACK
 
-GAME_DECLSPEC extern cvar_t* cl_paused;
+Q2DLL_DECLSPEC extern cvar_t* cl_paused;
 extern cvar_t* cl_freezeworld;
 extern cvar_t* cl_timedemo;
 
@@ -554,12 +554,12 @@ extern cvar_t* cl_no_middle_text;
 
 #pragma endregion
 
-GAME_DECLSPEC extern centity_t cl_entities[MAX_NETWORKABLE_EDICTS];
+Q2DLL_DECLSPEC extern centity_t cl_entities[MAX_NETWORKABLE_EDICTS];
 
 // The cl_parse_entities must be large enough to hold UPDATE_BACKUP frames of entities,
 // so that when a delta compressed message arrives from the server it can be un-deltad from the original.
 #define MAX_PARSE_ENTITIES	1024
-GAME_DECLSPEC extern entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
+Q2DLL_DECLSPEC extern entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
 
 extern qboolean ignored_players[MAX_CLIENTS]; //mxd
 

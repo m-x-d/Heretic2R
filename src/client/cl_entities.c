@@ -72,13 +72,13 @@ void CL_ClearSkeletalEntities(void) // H2
 }
 
 // NOTE: mxd. Not used anywhere. Needed to match original quake2.dll exported functions list...
-GAME_DECLSPEC qboolean CL_CheckEntity(const int index, const centity_t* ent)
+Q2DLL_DECLSPEC qboolean CL_CheckEntity(const int index, const centity_t* ent)
 {
 	return (index >= 0 && index < MAX_NETWORKABLE_EDICTS && &cl_entities[index] == ent && cl_entities[index].flags != 0); //mxd. Added index sanity checks.
 }
 
 // NOTE: mxd. Not used anywhere. Needed to match original quake2.dll exported functions list...
-GAME_DECLSPEC centity_t* CL_FindOwner(const int index)
+Q2DLL_DECLSPEC centity_t* CL_FindOwner(const int index)
 {
 	if (index >= 0 && index < MAX_NETWORKABLE_EDICTS) //mxd. Added index sanity checks.
 		return &cl_entities[index];
@@ -1691,7 +1691,7 @@ void CL_AddEntities(void)
 
 // Q2 counterpart
 // The sound code makes callbacks to the client for entitiy position information, so entities can be dynamically re-spatialized.
-GAME_DECLSPEC void CL_GetEntitySoundOrigin(const int ent, vec3_t org) //mxd. No longer used by sound dll. Kept to maintain compatibility with original logic.
+Q2DLL_DECLSPEC void CL_GetEntitySoundOrigin(const int ent, vec3_t org) //mxd. No longer used by sound dll. Kept to maintain compatibility with original logic.
 {
 	if (ent >= 0 && ent < MAX_EDICTS)
 		VectorCopy(cl_entities[ent].lerp_origin, org);

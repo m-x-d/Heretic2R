@@ -12,6 +12,8 @@
 #include "Vector.h"
 #include "vid.h"
 
+#define REF_DECLSPEC	__declspec(dllexport)
+
 viddef_t viddef; // H2: renamed from vid, defined in vid.h?
 refimport_t ri;
 
@@ -1304,7 +1306,7 @@ void Draw_Cinematic(int cols, int rows, const byte* data, const paletteRGB_t* pa
 void Draw_Name(const vec3_t origin, const char* name, paletteRGBA_t color);
 int FindSurface(vec3_t start, vec3_t end, struct Surface_s* surface);
 
-refexport_t GetRefAPI(const refimport_t rimp)
+REF_DECLSPEC refexport_t GetRefAPI(const refimport_t rimp)
 {
 	refexport_t re;
 

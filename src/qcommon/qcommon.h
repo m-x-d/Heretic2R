@@ -403,9 +403,9 @@ extern void Cmd_Init(void);
 // Called by the init functions of other parts of the program to register commands and functions to call for them.
 // The cmd_name is referenced later, so it should not be in temp memory.
 // If function is NULL, the command will be forwarded to the server as a clc_stringcmd instead of executed locally.
-GAME_DECLSPEC extern void Cmd_AddCommand(const char* cmd_name, xcommand_t function);
+Q2DLL_DECLSPEC extern void Cmd_AddCommand(const char* cmd_name, xcommand_t function);
 
-GAME_DECLSPEC extern void Cmd_RemoveCommand(const char* cmd_name);
+Q2DLL_DECLSPEC extern void Cmd_RemoveCommand(const char* cmd_name);
 
 // Attempts to match a partial command for automatic command line completion. Returns NULL if nothing fits.
 extern const char* Cmd_CompleteCommand(const char* partial);
@@ -415,8 +415,8 @@ extern const char* Cmd_CompleteCommandNext(const char* partial, const char* last
 
 // The functions that execute commands get their parameters with these functions.
 // Cmd_Argv () will return an empty string, not a NULL if arg > argc, so string operations are always safe.
-GAME_DECLSPEC extern int Cmd_Argc(void);
-GAME_DECLSPEC extern char* Cmd_Argv(int arg);
+Q2DLL_DECLSPEC extern int Cmd_Argc(void);
+Q2DLL_DECLSPEC extern char* Cmd_Argv(int arg);
 extern char* Cmd_Args(void);
 
 // Takes a null terminated string. Does not need to be /n terminated. Breaks the string up into arg tokens.
@@ -449,7 +449,7 @@ extern cvar_t* cvar_vars;
 //mxd. Cvar_Get() defined in q_shared.h
 
 // Will create the variable if it doesn't exist.
-GAME_DECLSPEC extern cvar_t* Cvar_Set(const char* var_name, const char* value);
+Q2DLL_DECLSPEC extern cvar_t* Cvar_Set(const char* var_name, const char* value);
 
 // Will set the variable even if NOSET or LATCH.
 extern cvar_t* Cvar_ForceSet(const char* var_name, const char* value);
@@ -457,7 +457,7 @@ extern cvar_t* Cvar_ForceSet(const char* var_name, const char* value);
 extern cvar_t* Cvar_FullSet(const char* var_name, const char* value, int flags);
 
 // Expands value to a string and calls Cvar_Set.
-GAME_DECLSPEC extern void Cvar_SetValue(const char* var_name, float value);
+Q2DLL_DECLSPEC extern void Cvar_SetValue(const char* var_name, float value);
 
 // Returns 0 if not defined or non numeric.
 extern float Cvar_VariableValue(const char* var_name);
@@ -633,17 +633,17 @@ extern char* FS_Userdir(void);
 extern char* FS_NextPath(const char* prevpath);
 extern void FS_ExecAutoexec(void);
 
-GAME_DECLSPEC extern int FS_FOpenFile(const char* filename, FILE** file);
-GAME_DECLSPEC extern void FS_FCloseFile(FILE* f); // Note: this can't be called from another DLL, due to MS libc issues.
+Q2DLL_DECLSPEC extern int FS_FOpenFile(const char* filename, FILE** file);
+Q2DLL_DECLSPEC extern void FS_FCloseFile(FILE* f); // Note: this can't be called from another DLL, due to MS libc issues.
 
 // A null buffer will just return the file length without loading. A -1 length is not present.
-GAME_DECLSPEC extern int FS_LoadFile(const char* path, void** buffer);
+Q2DLL_DECLSPEC extern int FS_LoadFile(const char* path, void** buffer);
 
 // Properly handles partial reads.
 extern void FS_Read(void* buffer, int len, FILE* file);
 extern int FS_FileLength(FILE* f); //mxd. Made public.
 
-GAME_DECLSPEC extern void FS_FreeFile(void* buffer);
+Q2DLL_DECLSPEC extern void FS_FreeFile(void* buffer);
 extern void FS_CreatePath(char* path);
 
 #pragma endregion
@@ -654,8 +654,8 @@ extern void FS_CreatePath(char* path);
 
 extern void Com_BeginRedirect(int target, char* buffer, int buffersize, void (*flush)(int, char*));
 extern void Com_EndRedirect(void);
-GAME_DECLSPEC extern void Com_DPrintf(const char* fmt, ...);
-H2R_NORETURN GAME_DECLSPEC extern void Com_Error(int code, const char* fmt, ...);
+Q2DLL_DECLSPEC extern void Com_DPrintf(const char* fmt, ...);
+H2R_NORETURN Q2DLL_DECLSPEC extern void Com_Error(int code, const char* fmt, ...);
 H2R_NORETURN extern void Com_Quit(void);
 extern int Com_ServerState(void);
 extern void Com_SetServerState(int state);
@@ -677,8 +677,8 @@ extern cvar_t* allow_download_sounds;
 
 extern FILE* log_stats_file;
 
-GAME_DECLSPEC extern void Z_Free(void* ptr);
-GAME_DECLSPEC extern void* Z_Malloc(int size); // Returns 0-filled memory.
+Q2DLL_DECLSPEC extern void Z_Free(void* ptr);
+Q2DLL_DECLSPEC extern void* Z_Malloc(int size); // Returns 0-filled memory.
 extern void* Z_TagMalloc(int size, int tag);
 extern void Z_FreeTags(int tag);
 

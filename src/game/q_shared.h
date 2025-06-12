@@ -188,18 +188,18 @@ extern char* Sys_FindFirst(const char* path, uint musthave, uint canthave);
 extern char* Sys_FindNext(uint musthave, uint canthave);
 extern void Sys_FindClose(void);
 
-H2R_NORETURN GAME_DECLSPEC extern void Sys_Error(const char* error, ...);
+H2R_NORETURN Q2DLL_DECLSPEC extern void Sys_Error(const char* error, ...);
 
 #ifdef __cplusplus //mxd. Needed, so code in game/ds.cpp could build...
 extern "C"
 {
 #endif
-GAME_DECLSPEC extern void Com_Printf(const char* fmt, ...);
+Q2DLL_DECLSPEC extern void Com_Printf(const char* fmt, ...);
 #ifdef __cplusplus
 }
 #endif
 
-GAME_DECLSPEC extern void Com_ColourPrintf(PalIdx_t colour, const char* fmt, ...);
+Q2DLL_DECLSPEC extern void Com_ColourPrintf(PalIdx_t colour, const char* fmt, ...);
 
 #pragma endregion
 
@@ -225,7 +225,7 @@ typedef struct cvar_s
 
 // Creates the variable if it doesn't exist, or returns the existing one if it exists.
 // The value will not be changed, but flags will be ORed in that allows variables to be unarchived without needing bitflags.
-GAME_DECLSPEC extern cvar_t* Cvar_Get(const char* var_name, const char* var_value, int flags);
+Q2DLL_DECLSPEC extern cvar_t* Cvar_Get(const char* var_name, const char* var_value, int flags);
 
 #pragma endregion
 

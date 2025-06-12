@@ -15,6 +15,8 @@
 #include "q_Physics.h"
 #include "g_playstats.h"
 
+#define CLFX_DECLSPEC	__declspec(dllexport)
+
 // Important! This is the string that determines if you can join a server - ie you have the right Client Effects.dll.
 static char clfx_string[128] = "Heretic II v1.06"; //mxd. Renamed from client_string to avoid collisions with the var defined in client.h.
 
@@ -714,8 +716,8 @@ static void AddServerEntities(const frame_t* frame)
 	}
 }
 
-//mxd. Exported in Client Effects.def. Dynamically resolved in clfx_dll.c
-client_fx_export_t GetfxAPI(const client_fx_import_t import)
+//mxd. Dynamically resolved in clfx_dll.c
+CLFX_DECLSPEC client_fx_export_t GetfxAPI(const client_fx_import_t import)
 {
 	client_fx_export_t export;
 

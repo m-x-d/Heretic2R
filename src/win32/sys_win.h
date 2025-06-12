@@ -11,7 +11,7 @@
 
 extern HINSTANCE global_hInstance;
 
-GAME_DECLSPEC extern HWND cl_hwnd;
+Q2DLL_DECLSPEC extern HWND cl_hwnd;
 extern qboolean ActiveApp;
 extern qboolean Minimized;
 

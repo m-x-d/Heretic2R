@@ -7,7 +7,7 @@
 #pragma once
 
 #ifdef QUAKE2_DLL
-	#define GAME_DECLSPEC __declspec(dllexport)
+	#define Q2DLL_DECLSPEC __declspec(dllexport)
 #else 
-	#define GAME_DECLSPEC __declspec(dllimport)
+	#define Q2DLL_DECLSPEC __declspec(dllimport)
 #endif

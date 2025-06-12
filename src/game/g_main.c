@@ -26,6 +26,8 @@
 #include "Vector.h"
 #include "g_local.h"
 
+#define GAME_DECLSPEC	__declspec(dllexport)
+
 game_locals_t game;
 level_locals_t level;
 game_import_t gi;
@@ -123,8 +125,7 @@ static void ShutdownGame(void)
 	P_Freelib(); // Free the player lib.
 }
 
-//mxd. Exported in game.def.
-game_export_t* GetGameAPI(const game_import_t* import)
+GAME_DECLSPEC game_export_t* GetGameAPI(const game_import_t* import)
 {
 	gi = *import;
 
