@@ -1039,10 +1039,8 @@ void Key_Event(int key, const qboolean down, const uint time)
 
 			default:
 				Com_Error(ERR_FATAL, "Bad cls.key_dest");
-				break;
+				return;
 		}
-
-		return;
 	}
 
 	// Track if any key is down for BUTTON_ANY.
