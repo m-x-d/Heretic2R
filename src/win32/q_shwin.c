@@ -71,8 +71,7 @@ char* Sys_FindFirst(const char* path, const uint musthave, const uint canthave)
 	struct _finddata_t findinfo;
 
 	if (findhandle != 0)
-		Sys_Error("Sys_BeginFind without close");
-	//findhandle = 0; //mxd. Not needed.
+		Sys_Error("Sys_FindFirst called without close");
 
 	COM_FilePath(path, findbase);
 	findhandle = _findfirst(path, &findinfo);
