@@ -34,12 +34,12 @@ void CL_Record_f(void)
 	char name[MAX_OSPATH];
 	Com_sprintf(name, sizeof(name), "%s/demos/%s.hd2", FS_Gamedir(), Cmd_Argv(1));
 
-	Com_Printf("recording to %s.\n", name);
+	Com_Printf("Recording to '%s'.\n", name);
 	FS_CreatePath(name);
 
 	if (fopen_s(&cls.demofile, name, "wb") != 0) //mxd. fopen -> fopen_s
 	{
-		Com_Printf("ERROR: couldn\'t open.\n");
+		Com_Printf("ERROR: couldn't open demo file.\n");
 		return;
 	}
 

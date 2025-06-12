@@ -629,7 +629,7 @@ static void NET_OpenIP(void)
 
 		ip_sockets[NS_SERVER] = NET_IPSocket(ip->string, port);
 		if (is_dedicated && ip_sockets[NS_SERVER] == 0)
-			Com_Error(ERR_FATAL, "Couldn\'t allocate dedicated server IP port");
+			Com_Error(ERR_FATAL, "Couldn't allocate dedicated server IP port");
 	}
 
 	//mxd. Skip Gamespy IP port logic.
@@ -705,7 +705,7 @@ static int NET_IPXSocket(const int port)
 
 static void NET_OpenIPX(void)
 {
-	const qboolean is_dedicated = ((int)Cvar_VariableValue("dedicated") != 0);
+	const qboolean is_dedicated = ((int)(Cvar_VariableValue("dedicated")) != 0);
 
 	if (ipx_sockets[NS_SERVER] == 0)
 	{

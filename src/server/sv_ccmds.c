@@ -268,7 +268,7 @@ static void SV_ReadServerFile(void)
 	Com_sprintf(name, sizeof(name), "%s/save/current/server.ssv", FS_Userdir()); // H2: FS_Gamedir -> FS_Userdir.
 	if (fopen_s(&f, name, "rb") != 0)
 	{
-		Com_Printf("Couldn\'t read %s\n", name);
+		Com_Printf("Couldn't read '%s'\n", name);
 		return;
 	}
 

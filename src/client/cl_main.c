@@ -239,7 +239,7 @@ static void CL_ForwardToServer_f(void)
 {
 	if (cls.state != ca_connected && cls.state != ca_active)
 	{
-		Com_Printf("Can\'t \"%s\", not connected\n", Cmd_Argv(0));
+		Com_Printf("Can't '%s', not connected\n", Cmd_Argv(0));
 		return;
 	}
 
@@ -700,7 +700,7 @@ void CL_SaveConfig_f(void) // H2
 
 	if (fopen_s(&f, cfg_name, "w") != 0) //mxd. fopen -> fopen_s
 	{
-		Com_Printf("Couldn\'t write %s.\n", cfg_name);
+		Com_Printf("Couldn't write '%s'.\n", cfg_name);
 		return;
 	}
 
@@ -1340,7 +1340,7 @@ static void CL_WriteConfiguration(void)
 
 	if (fopen_s(&f, path, "w") != 0) //mxd. fopen -> fopen_s
 	{
-		Com_Printf("Couldn\'t write config.cfg.\n");
+		Com_Printf("Couldn't write 'config.cfg'.\n");
 		return;
 	}
 

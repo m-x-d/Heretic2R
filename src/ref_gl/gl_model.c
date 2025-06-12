@@ -148,7 +148,7 @@ static void Mod_LoadVertexes(const lump_t* l)
 	dvertex_t* in = (void*)(mod_base + l->fileofs);
 
 	if (l->filelen % sizeof(dvertex_t) != 0)
-		ri.Sys_Error(ERR_DROP, "Mod_LoadVertexes: funny lump size in %s", loadmodel->name);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadVertexes: funny lump size in '%s'", loadmodel->name);
 
 	const int count = l->filelen / (int)sizeof(dvertex_t);
 	mvertex_t* out = Hunk_Alloc(count * (int)sizeof(mvertex_t));
@@ -170,7 +170,7 @@ static void Mod_LoadEdges(const lump_t* l)
 	dedge_t* in = (void*)(mod_base + l->fileofs);
 
 	if (l->filelen % sizeof(dedge_t) != 0)
-		ri.Sys_Error(ERR_DROP, "Mod_LoadEdges: funny lump size in %s", loadmodel->name);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadEdges: funny lump size in '%s'", loadmodel->name);
 
 	const int count = l->filelen / (int)sizeof(dedge_t);
 	medge_t* out = Hunk_Alloc((count + 1) * (int)sizeof(medge_t));
@@ -191,12 +191,12 @@ static void Mod_LoadSurfedges(const lump_t* l)
 	const int* in = (void*)(mod_base + l->fileofs);
 
 	if (l->filelen % sizeof(int) != 0)
-		ri.Sys_Error(ERR_DROP, "Mod_LoadSurfedges: funny lump size in %s", loadmodel->name);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadSurfedges: funny lump size in '%s'", loadmodel->name);
 
 	const int count = l->filelen / (int)sizeof(int);
 
 	if (count < 1 || count >= MAX_MAP_SURFEDGES)
-		ri.Sys_Error(ERR_DROP, "Mod_LoadSurfedges: bad surfedges count in %s: %i", loadmodel->name, count);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadSurfedges: bad surfedges count in '%s': %i", loadmodel->name, count);
 
 	int* out = Hunk_Alloc(count * (int)sizeof(int));
 
@@ -227,7 +227,7 @@ static void Mod_LoadPlanes(const lump_t* l)
 	dplane_t* in = (void*)(mod_base + l->fileofs);
 
 	if (l->filelen % sizeof(dplane_t) != 0)
-		ri.Sys_Error(ERR_DROP, "Mod_LoadPlanes: funny lump size in %s", loadmodel->name);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadPlanes: funny lump size in '%s'", loadmodel->name);
 
 	const int count = l->filelen / (int)sizeof(dplane_t);
 	cplane_t* out = Hunk_Alloc(count * (int)sizeof(cplane_t) * 2);
@@ -258,7 +258,7 @@ static void Mod_LoadTexinfo(const lump_t* l)
 
 	texinfo_t* in = (void*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(texinfo_t) != 0)
-		ri.Sys_Error(ERR_DROP, "Mod_LoadTexinfo: funny lump size in %s", loadmodel->name);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadTexinfo: funny lump size in '%s'", loadmodel->name);
 
 	const int count = l->filelen / (int)sizeof(texinfo_t);
 	mtexinfo_t* out = Hunk_Alloc(count * (int)sizeof(mtexinfo_t));
@@ -287,7 +287,7 @@ static void Mod_LoadTexinfo(const lump_t* l)
 
 		if (out->image == NULL)
 		{
-			ri.Con_Printf(PRINT_ALL, "Couldn\'t load %s\n", name);
+			ri.Con_Printf(PRINT_ALL, "Couldn't load '%s'\n", name);
 			out->image = r_notexture;
 		}
 	}
@@ -358,7 +358,7 @@ static void Mod_LoadFaces(const lump_t* l)
 {
 	dface_t* in = (void*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(dface_t) != 0)
-		ri.Sys_Error(ERR_DROP, "Mod_LoadFaces: funny lump size in %s", loadmodel->name);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadFaces: funny lump size in '%s'", loadmodel->name);
 
 	const int count = l->filelen / (int)sizeof(dface_t);
 	msurface_t* out = Hunk_Alloc(count * (int)sizeof(msurface_t));
@@ -436,7 +436,7 @@ static void Mod_LoadMarksurfaces(const lump_t* l)
 {
 	const short* in = (void*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(short) != 0)
-		ri.Sys_Error(ERR_DROP, "Mod_LoadMarksurfaces: funny lump size in %s", loadmodel->name);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadMarksurfaces: funny lump size in '%s'", loadmodel->name);
 
 	const int count = l->filelen / (int)sizeof(short);
 	msurface_t** out = Hunk_Alloc(count * (int)sizeof(msurface_t*));
@@ -478,7 +478,7 @@ static void Mod_LoadLeafs(const lump_t* l)
 {
 	dleaf_t* in = (void*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(dleaf_t))
-		ri.Sys_Error(ERR_DROP, "Mod_LoadLeafs: funny lump size in %s", loadmodel->name);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadLeafs: funny lump size in '%s'", loadmodel->name);
 
 	const int count = l->filelen / (int)sizeof(dleaf_t);
 	mleaf_t* out = Hunk_Alloc(count * (int)sizeof(mleaf_t));
@@ -520,7 +520,7 @@ static void Mod_LoadNodes(const lump_t* l)
 {
 	dnode_t* in = (void*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(dnode_t))
-		ri.Sys_Error(ERR_DROP, "Mod_LoadNodes: funny lump size in %s", loadmodel->name);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadNodes: funny lump size in '%s'", loadmodel->name);
 
 	const int count = l->filelen / (int)sizeof(dnode_t);
 	mnode_t* out = Hunk_Alloc(count * (int)sizeof(mnode_t));
@@ -574,7 +574,7 @@ static void Mod_LoadSubmodels(const lump_t* l)
 {
 	dmodel_t* in = (void*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(dmodel_t))
-		ri.Sys_Error(ERR_DROP, "Mod_LoadSubmodels: funny lump size in %s", loadmodel->name);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadSubmodels: funny lump size in '%s'", loadmodel->name);
 
 	const int count = l->filelen / (int)sizeof(dmodel_t);
 	mmodel_t* out = Hunk_Alloc(count * (int)sizeof(mmodel_t));
@@ -609,7 +609,7 @@ static void Mod_LoadBrushModel(model_t* mod, void* buffer)
 	dheader_t* header = buffer;
 
 	if (header->version != BSPVERSION)
-		ri.Sys_Error(ERR_DROP, "Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, header->version, BSPVERSION);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadBrushModel: '%s' has wrong version number (%i should be %i)", mod->name, header->version, BSPVERSION);
 
 	// Swap all the lumps
 	mod_base = (byte*)header;
@@ -673,7 +673,7 @@ static void Mod_LoadSpriteModel(model_t* mod, const void* buffer)
 		ri.Sys_Error(ERR_DROP, "%s has wrong version number (%i should be %i)", mod->name, sprout->version, SPRITE_VERSION);
 
 	if (sprout->numframes > MAX_FRAMES)
-		ri.Sys_Error(ERR_DROP, "%s has too many frames (%i > %i)", mod->name, sprout->numframes, MAX_FRAMES);
+		ri.Sys_Error(ERR_DROP, "'%s' has too many frames (%i > %i)", mod->name, sprout->numframes, MAX_FRAMES);
 
 	// Byte swap everything
 	for (int i = 0; i < sprout->numframes; i++)
@@ -736,7 +736,7 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 	if (buf == NULL)
 	{
 		if (crash)
-			ri.Sys_Error(ERR_DROP, "Mod_ForName: %s not found", mod->name);
+			ri.Sys_Error(ERR_DROP, "Mod_ForName: '%s' not found", mod->name);
 
 		memset(mod, 0, sizeof(mod->name));
 		return NULL;
@@ -777,7 +777,7 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 				break;
 
 			default:
-				ri.Sys_Error(ERR_DROP, "Mod_ForName: unknown file id for %s", mod->name);
+				ri.Sys_Error(ERR_DROP, "Mod_ForName: unknown file id for '%s'", mod->name);
 				break;
 		}
 	}
