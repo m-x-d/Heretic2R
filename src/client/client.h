@@ -586,7 +586,7 @@ extern void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, c
 extern void CL_PrepRefresh(void);
 extern void CL_RegisterSounds(void);
 
-extern void CL_Quit_f(void);
+H2R_NORETURN extern void CL_Quit_f(void);
 
 // cl_main.c
 extern refexport_t re; // Interface to refresh DLL.
@@ -594,8 +594,8 @@ extern refexport_t re; // Interface to refresh DLL.
 extern void CL_RequestNextDownload(void);
 
 extern void CL_Disconnect(void);
-extern void CL_Disconnect_f(void);
-extern void CL_OnServerDisconnected(void); //mxd
+H2R_NORETURN extern void CL_Disconnect_f(void);
+H2R_NORETURN extern void CL_OnServerDisconnected(void); //mxd
 extern void CL_PingServers_f(void);
 extern void CL_Snd_Restart_f(void);
 

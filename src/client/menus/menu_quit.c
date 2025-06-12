@@ -14,7 +14,7 @@ static menuframework_t s_quit_menu;
 static menuaction_t s_quit_yes_action;
 static menuaction_t s_quit_no_action;
 
-static void QuitFunc(void* self) // H2
+H2R_NORETURN static void QuitFunc(void* self) // H2
 {
 	cls.key_dest = key_console;
 	CL_Quit_f();

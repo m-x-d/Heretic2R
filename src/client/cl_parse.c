@@ -372,7 +372,7 @@ static void CL_ParseServerData(void)
 	str = MSG_ReadString(&net_message);
 	if (Q_stricmp(str, client_string) != 0)
 	{
-		Com_Printf("Error ! Client effects on Server different from Local\n%s on server.\n%s on Local\n", str, client_string);
+		Com_Printf("Error! Client effects on Server different from Local\n%s on server.\n%s on Local\n", str, client_string);
 		Com_Error(ERR_DROP, "Dropping Connect.\n");
 	}
 
@@ -576,8 +576,8 @@ static void CL_ParseConfigString(void)
 		const uint len = strlen(s) + 1; // Count trailing zero
 		if (len > (CS_MAXCLIENTS - i) * sizeof(cl.configstrings[0]))
 			Com_Error(ERR_DROP, "configstring: too big statusbar layout string (%i at index %i)\n", len, i);
-		else
-			memcpy(cl.configstrings[i], s, len);
+
+		memcpy(cl.configstrings[i], s, len);
 	}
 	else
 	{
@@ -873,10 +873,7 @@ void CL_ParseServerMessage(void)
 	while (true)
 	{
 		if (net_message.readcount > net_message.cursize)
-		{
 			Com_Error(ERR_DROP, "CL_ParseServerMessage: Bad server message");
-			break;
-		}
 
 		const int cmd = MSG_ReadByte(&net_message);
 

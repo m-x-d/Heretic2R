@@ -148,7 +148,7 @@ void VID_Printf(const int print_level, const char* fmt, ...)
 }
 
 // Q2 counterpart
-void VID_Error(const int err_level, const char* fmt, ...)
+H2R_NORETURN void VID_Error(const int err_level, const char* fmt, ...)
 {
 	va_list argptr;
 	char msg[MAXPRINTMSG];

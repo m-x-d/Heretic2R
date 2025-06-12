@@ -162,17 +162,14 @@ void Com_DPrintf(const char* fmt, ...)
 }
 
 // Both client and server can use this, and it will do the appropriate things.
-void Com_Error(const int code, const char* fmt, ...)
+H2R_NORETURN void Com_Error(const int code, const char* fmt, ...)
 {
 	va_list argptr;
 	static char msg[MAXPRINTMSG];
 	static qboolean recursive;
 
 	if (recursive)
-	{
 		Sys_Error("recursive error after: %s", msg);
-		return;
-	}
 
 	recursive = true;
 
@@ -182,22 +179,22 @@ void Com_Error(const int code, const char* fmt, ...)
 
 	switch (code)
 	{
-	case ERR_DISCONNECT:
-		CL_Disconnect_f(); // H2
-		break;
+		case ERR_DISCONNECT:
+			CL_Disconnect_f(); // H2
+			break;
 
-	case ERR_DROP:
-		Com_Printf("*********************************\nERROR: %s\n****************************** ***\n", msg);
-		SV_Shutdown(va("Server crashed: %s\n", msg), false);
-		CL_Drop();
-		recursive = false;
-		longjmp(abortframe, -1);
-		break;
+		case ERR_DROP:
+			Com_Printf("*********************************\nERROR: %s\n****************************** ***\n", msg);
+			SV_Shutdown(va("Server crashed: %s\n", msg), false);
+			CL_Drop();
+			recursive = false;
+			longjmp(abortframe, -1);
+			break;
 
-	default:
-		SV_Shutdown(va("Server fatal crashed: %s\n", msg), false);
-		CL_Shutdown();
-		break;
+		default:
+			SV_Shutdown(va("Server fatal crashed: %s\n", msg), false);
+			CL_Shutdown();
+			break;
 	}
 
 	if (logfile != NULL)
@@ -210,7 +207,7 @@ void Com_Error(const int code, const char* fmt, ...)
 }
 
 // Both client and server can use this, and it will do the appropriate things.
-void Com_Quit(void)
+H2R_NORETURN void Com_Quit(void)
 {
 	SV_Shutdown("Server quit\n", false);
 	// Missing: CL_Shutdown ();
@@ -515,14 +512,14 @@ byte COM_BlockSequenceCheckByte(const byte* base, int length, const int sequence
 
 // Q2 counterpart
 // Just throw a fatal error to test error shutdown procedures.
-static void Com_Error_f(void)
+H2R_NORETURN static void Com_Error_f(void)
 {
 	Com_Error(ERR_FATAL, "%s", Cmd_Argv(1));
 }
 
 void Qcommon_Init(const int argc, char** argv)
 {
-	if (setjmp(abortframe))
+	if (setjmp(abortframe) != 0)
 		Sys_Error("Error during initialization");
 
 	z_chain.prev = &z_chain;

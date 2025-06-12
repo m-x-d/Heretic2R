@@ -296,10 +296,7 @@ void MSG_ReadEffects(sizebuf_t* sb, EffectsBuffer_t* fxBuf)
 	fxBuf->numEffects += MSG_ReadByte(sb);
 
 	if (fxBuf->numEffects < 0)
-	{
-		Com_Error(ERR_DROP, "MSG_ReadEffects: number of effects < 0");
-		return;
-	}
+		Com_Error(ERR_DROP, "MSG_ReadEffects: invalid number of effects (%i)", fxBuf->numEffects);
 
 	if (fxBuf->numEffects == 0)
 		return;
@@ -314,17 +311,15 @@ void MSG_ReadEffects(sizebuf_t* sb, EffectsBuffer_t* fxBuf)
 		len = MSG_ReadByte(sb);
 	}
 
-	assert(len > 0);
-
-	if (fxBuf->numEffects <= 0)
+	if (len > 0)
 	{
-		Com_Error(ERR_DROP, "MSG_ReadEffects: bufSize not > 0");
-		return;
+		MSG_ReadData(sb, &fxBuf->buf[fxBuf->bufSize], len);
+		fxBuf->bufSize += len;
 	}
-
-	MSG_ReadData(sb, fxBuf->buf + fxBuf->bufSize, len);
-
-	fxBuf->bufSize += len;
+	else
+	{
+		Com_Error(ERR_DROP, "MSG_ReadEffects: invalid buffer size (%i)", len);
+	}
 }
 
 #ifdef QUAKE2_DLL //mxd. Avoid referencing unneeded stuff in Client Effects...

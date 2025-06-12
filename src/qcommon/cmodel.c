@@ -517,10 +517,7 @@ cmodel_t* CM_LoadMap(const char* name, const qboolean clientload, uint* checksum
 	// Load the file.
 	const int length = FS_LoadFile(name, (void**)&buf);
 	if (buf == NULL)
-	{
-		Com_Error(ERR_DROP, "Couldn`t load %s", name);
-		return NULL; //mxd. Added to prevent false-positive code analysis warning.
-	}
+		Com_Error(ERR_DROP, "Couldn't load '%s'", name);
 
 	last_checksum = Com_BlockChecksum(buf, length);
 	*checksum = last_checksum;
@@ -528,7 +525,7 @@ cmodel_t* CM_LoadMap(const char* name, const qboolean clientload, uint* checksum
 	const dheader_t header = *(dheader_t*)buf;
 
 	if (header.version != BSPVERSION)
-		Com_Error(ERR_DROP, "CMod_LoadBrushModel: %s has wrong version number (%i should be %i)", name, header.version, BSPVERSION);
+		Com_Error(ERR_DROP, "CMod_LoadBrushModel: '%s' has wrong version number (%i should be %i)", name, header.version, BSPVERSION);
 
 	cmod_base = (byte*)buf;
 

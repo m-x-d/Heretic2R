@@ -320,13 +320,13 @@ void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, const i
 	qboolean use_phs;
 
 	if (volume < 0.0f || volume > 1.0f)
-		Com_Error(ERR_FATAL, "SV_StartSound: volume = %f", (double)volume);
+		Com_Error(ERR_FATAL, "SV_StartSound: invalid volume (%f)", (double)volume);
 
 	if (attenuation < 0.0f || attenuation > 4.0f)
-		Com_Error(ERR_FATAL, "SV_StartSound: attenuation = %f", (double)attenuation);
+		Com_Error(ERR_FATAL, "SV_StartSound: invalid attenuation (%f)", (double)attenuation);
 
 	if (timeofs < 0.0f || timeofs > 0.255f)
-		Com_Error(ERR_FATAL, "SV_StartSound: timeofs = %f", (double)timeofs);
+		Com_Error(ERR_FATAL, "SV_StartSound: invalid time offset (%f)", (double)timeofs);
 
 	if (channel & 8) // No PHS flag.
 	{
@@ -419,13 +419,13 @@ void SV_StartEventSound(const byte event_id, const float leveltime, const vec3_t
 	qboolean use_phs;
 
 	if (volume < 0.0f || volume > 1.0f)
-		Com_Error(ERR_FATAL, "SV_StartSound: volume = %f", (double)volume);
+		Com_Error(ERR_FATAL, "SV_StartEventSound: invalid volume (%f)", (double)volume);
 
 	if (attenuation < 0.0f || attenuation > 4.0f)
-		Com_Error(ERR_FATAL, "SV_StartSound: attenuation = %f", (double)attenuation);
+		Com_Error(ERR_FATAL, "SV_StartEventSound: invalid attenuation (%f)", (double)attenuation);
 
 	if (timeofs < 0.0f || timeofs > 0.255f)
-		Com_Error(ERR_FATAL, "SV_StartSound: timeofs = %f", (double)timeofs);
+		Com_Error(ERR_FATAL, "SV_StartEventSound: invalid time offset (%f)", (double)timeofs);
 
 	if (channel & 8) // No PHS flag.
 	{
@@ -611,8 +611,8 @@ void SV_SendClientMessages(const qboolean send_client_data)
 			return;
 		}
 
-		if (msglen > MAX_MSGLEN)
-			Com_Error(ERR_DROP, "SV_SendClientMessages: msglen > MAX_MSGLEN");
+		if (msglen < 1 || msglen >= MAX_MSGLEN) //mxd. Added lower bound check; 'msglen > MAX_MSGLEN' in original logic.
+			Com_Error(ERR_DROP, "SV_SendClientMessages: invalid msglen (%i)", msglen);
 
 		r = fread(msgbuf, msglen, 1, sv.demofile);
 		if (r != 1)

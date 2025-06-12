@@ -20,6 +20,8 @@
 #include "q_Typedef.h"
 #include "Debug.h" //mxd
 
+#define H2R_NORETURN	__declspec(noreturn) //mxd
+
 // Angle indexes.
 #define PITCH				0		// up / down
 #define YAW					1		// left / right
@@ -186,7 +188,7 @@ extern char* Sys_FindFirst(const char* path, uint musthave, uint canthave);
 extern char* Sys_FindNext(uint musthave, uint canthave);
 extern void Sys_FindClose(void);
 
-GAME_DECLSPEC extern void Sys_Error(const char* error, ...);
+H2R_NORETURN GAME_DECLSPEC extern void Sys_Error(const char* error, ...);
 
 #ifdef __cplusplus //mxd. Needed, so code in game/ds.cpp could build...
 extern "C"

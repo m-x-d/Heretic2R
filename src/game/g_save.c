@@ -202,10 +202,7 @@ static int LoadTextFile(char* name, char** addr)
 	const int length = gi.FS_LoadFile(name, (void**)&buffer);
 
 	if (length <= 0)
-	{
 		Sys_Error("LoadTextFile: unable to load '%s'", name);
-		return 0;
-	}
 
 	*addr = (char*)gi.TagMalloc(length + 1, 0);
 	memcpy(*addr, buffer, length);

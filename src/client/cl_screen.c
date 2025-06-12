@@ -548,10 +548,7 @@ static void DrawClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' a
 	const int client = Q_atoi(COM_Parse(&str));
 
 	if (client < 0 || client >= MAX_CLIENTS)
-	{
 		Com_Error(ERR_DROP, "client >= MAX_CLIENTS");
-		return;
-	}
 
 	const int score = Q_atoi(COM_Parse(&str));
 	const int ping = Q_atoi(COM_Parse(&str));
@@ -582,10 +579,7 @@ static void DrawAClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' 
 	const int client = Q_atoi(COM_Parse(&str));
 
 	if (client < 0 || client >= MAX_CLIENTS)
-	{
 		Com_Error(ERR_DROP, "client >= MAX_CLIENTS");
-		return;
-	}
 
 	const int score = Q_atoi(COM_Parse(&str));
 	const int ping = Q_atoi(COM_Parse(&str));

@@ -655,8 +655,8 @@ extern void FS_CreatePath(char* path);
 extern void Com_BeginRedirect(int target, char* buffer, int buffersize, void (*flush)(int, char*));
 extern void Com_EndRedirect(void);
 GAME_DECLSPEC extern void Com_DPrintf(const char* fmt, ...);
-GAME_DECLSPEC extern void Com_Error(int code, const char* fmt, ...);
-extern void Com_Quit(void);
+H2R_NORETURN GAME_DECLSPEC extern void Com_Error(int code, const char* fmt, ...);
+H2R_NORETURN extern void Com_Quit(void);
 extern int Com_ServerState(void);
 extern void Com_SetServerState(int state);
 
@@ -695,7 +695,7 @@ extern void Sys_AppActivate(void);
 extern char* Sys_ConsoleInput(void);
 extern void Sys_ConsoleOutput(const char* string);
 extern void Sys_SendKeyEvents(void);
-extern void Sys_Quit(void);
+H2R_NORETURN extern void Sys_Quit(void);
 extern char* Sys_GetClipboardData(void);
 
 #pragma endregion

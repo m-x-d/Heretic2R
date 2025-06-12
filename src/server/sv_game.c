@@ -178,7 +178,7 @@ static void PF_msgdual_centerprintf(const edict_t* ent, const short msg1, const 
 
 // Q2 counterpart
 // Abort the server with a game error
-static void PF_error(const char* fmt, ...)
+H2R_NORETURN static void PF_error(const char* fmt, ...)
 {
 	char msg[1024];
 	va_list argptr;
@@ -224,8 +224,8 @@ static void PF_Configstring(const int index, const char* val)
 		const uint len = strlen(val) + 1; // Count trailing zero
 		if (len > (CS_MAXCLIENTS - index) * sizeof(sv.configstrings[0]))
 			Com_Error(ERR_DROP, "configstring: too big statusbar layout string (%i at index %i)\n", len, index);
-		else
-			memcpy(sv.configstrings[index], val, len);
+
+		memcpy(sv.configstrings[index], val, len);
 	}
 	else
 	{
@@ -358,7 +358,7 @@ static void PF_ChangeCDtrack(const edict_t* ent, const int track, const int loop
 		return;
 
 	const int n = NUM_FOR_EDICT(ent);
-	if (n < 1 || n >(int)maxclients->value)
+	if (n < 1 || n > (int)maxclients->value)
 		Com_Error(ERR_DROP, "changeCDtrack to a non-client");
 
 	//mxd. Was done in a separate function in original version.

@@ -352,13 +352,13 @@ static void CL_Changing_f(void)
 	Com_Printf("\nChanging map...\n");
 }
 
-void CL_OnServerDisconnected(void) // H2
+H2R_NORETURN void CL_OnServerDisconnected(void) // H2
 {
 	CL_Drop();
 	longjmp(abortframe, -1);
 }
 
-void CL_Disconnect_f(void)
+H2R_NORETURN void CL_Disconnect_f(void)
 {
 	SV_Shutdown("Disconnected from server\n", false);
 	CL_OnServerDisconnected();
@@ -454,7 +454,7 @@ static void CL_ListIgnore_f(void) // H2
 }
 
 // Q2 counterpart
-void CL_Quit_f(void)
+H2R_NORETURN void CL_Quit_f(void)
 {
 	CL_Disconnect();
 	Com_Quit();
@@ -939,10 +939,7 @@ void CL_RequestNextDownload(void)
 
 		const uint cs_checksum = Q_atoi(cl.configstrings[CS_MAPCHECKSUM]);
 		if (map_checksum != cs_checksum)
-		{
 			Com_Error(ERR_DROP, "Local map version differs from server: %i != %i\n", map_checksum, cs_checksum);
-			return;
-		}
 	}
 
 	if (precache_check < TEXTURE_CNT)

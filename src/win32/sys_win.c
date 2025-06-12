@@ -27,7 +27,7 @@ HINSTANCE global_hInstance;
 
 #pragma region ========================== SYSTEM IO ==========================
 
-void Sys_Error(const char* error, ...)
+H2R_NORETURN void Sys_Error(const char* error, ...)
 {
 	va_list argptr;
 	char text[1024];
@@ -50,7 +50,7 @@ void Sys_Error(const char* error, ...)
 	exit(1);
 }
 
-void Sys_Quit(void)
+H2R_NORETURN void Sys_Quit(void)
 {
 	timeEndPeriod(1);
 
@@ -97,10 +97,7 @@ void Sys_LoadGameDll(const char* dll_name, HINSTANCE* hinst, DWORD* checksum)
 	}
 
 	if (*hinst == NULL)
-	{
 		Sys_Error("Failed to load %s", dll_name);
-		return;
-	}
 
 	// Read file checksum //TODO: remove? result never used?
 	if (fopen_s(&f, dll_path, "r") == 0)
@@ -137,7 +134,7 @@ void Sys_Init(void)
 
 	//mxd. Skip ancient OS versions checks.
 	if (!IsWindows7OrGreater())
-		Sys_Error("Heretic 2 R requires Windows 7 or greater");
+		Sys_Error("Heretic2R requires Windows 7 or greater");
 
 	if ((int)dedicated->value)
 	{
