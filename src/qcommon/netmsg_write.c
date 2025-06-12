@@ -360,11 +360,8 @@ void MSG_WriteDeltaEntity(const entity_state_t* from, entity_state_t* to, sizebu
 {
 	byte bits[NUM_ENTITY_HEADER_BITS];
 
-	if (to->number == 0)
-		Com_Error(ERR_FATAL, "Unset entity number");
-
-	if (to->number >= MAX_NETWORKABLE_EDICTS)
-		Com_Error(0, "Entity number >= MAX_NETWORKABLE_EDICTS");
+	if (to->number < 1 || to->number >= MAX_NETWORKABLE_EDICTS)
+		Com_Error(ERR_FATAL, "MSG_WriteDeltaEntity: invalid entity number (%i)", to->number);
 
 	// Send an update.
 	memset(bits, 0, sizeof(bits));
