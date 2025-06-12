@@ -754,7 +754,7 @@ void PlayerActionFootstep(const playerinfo_t* info, const float value)
 	if (info->waterlevel > 0)
 	{
 		const char* snd_name = (basestep == STEP_RUN ? "waterrun" : "waterwalk");
-		strcat_s(walk_sound, sizeof(walk_sound), va("player/%s%i.wav", snd_name, irand(1, 2)));
+		strcpy_s(walk_sound, sizeof(walk_sound), va("player/%s%i.wav", snd_name, irand(1, 2)));
 	}
 	else
 	{
