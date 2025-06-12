@@ -1,7 +1,6 @@
 //
 // p_anims.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 

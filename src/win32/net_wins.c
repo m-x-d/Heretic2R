@@ -1,5 +1,5 @@
 //
-// net_wins.c -- Exposes the only function needed by Heretic2R.exe.
+// net_wins.c
 //
 // Copyright 1998 Raven Software
 //

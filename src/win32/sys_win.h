@@ -1,5 +1,5 @@
 //
-// sys_win.h -- Win32-specific Quake header file
+// sys_win.h -- Win32-specific Heretic II header file
 //
 // Copyright 1998 Raven Software
 //
