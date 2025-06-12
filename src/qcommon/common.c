@@ -607,7 +607,7 @@ void Qcommon_Init(const int argc, char** argv)
 		SCR_EndLoadingPlaque();
 	}
 
-	Com_ColourPrintf(P_HEADER, "====== Heretic 2 Initialized ======\n\n"); // Q2: Com_Printf
+	Com_ColourPrintf(P_HEADER, "\n==== "GAME_FULLNAME" initialized ====\n\n"); // Q2: Com_Printf //mxd. Use define.
 }
 
 void Qcommon_Frame(int msec)

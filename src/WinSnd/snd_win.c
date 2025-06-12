@@ -375,7 +375,7 @@ static sndinitstat SNDDMA_InitDirect(void)
 			return SIS_FAILURE;
 		}
 
-		if (MessageBox(NULL, "The sound hardware is in use by another app.\n\nSelect Retry to try to start sound again or Cancel to run Heretic 2 with no sound.",
+		if (MessageBox(NULL, "The sound hardware is in use by another app.\n\nSelect Retry to try to start sound again or Cancel to run "GAME_NAME" with no sound.",
 			"Sound not available", MB_RETRYCANCEL | MB_SETFOREGROUND | MB_ICONEXCLAMATION) != IDRETRY) // H2: Quake -> Heretic 2.
 		{
 			si.Com_Printf("failed, hardware already in use\n");
@@ -440,7 +440,7 @@ static qboolean SNDDMA_InitWav(void)
 			return false;
 		}
 
-		if (MessageBox(NULL, "The sound hardware is in use by another app.\n\nSelect Retry to try to start sound again or Cancel to run Heretic 2 with no sound.",
+		if (MessageBox(NULL, "The sound hardware is in use by another app.\n\nSelect Retry to try to start sound again or Cancel to run "GAME_NAME" with no sound.",
 			"Sound not available", MB_RETRYCANCEL | MB_SETFOREGROUND | MB_ICONEXCLAMATION) != IDRETRY) // H2: Quake 2 -> Heretic 2.
 		{
 			si.Com_Printf("failed, hardware already in use\n");

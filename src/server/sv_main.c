@@ -813,7 +813,7 @@ void SV_Init(void)
 	sv_noreload = Cvar_Get("sv_noreload", "0", 0);
 
 	// H2:
-	sv_welcome_mess = Cvar_Get("welcome_mess", "Welcome to Heretic II", 0);
+	sv_welcome_mess = Cvar_Get("welcome_mess", "Welcome to "GAME_NAME, 0); //mxd. Use define.
 	sv_freezeworldset = Cvar_Get("freezeworldset", "0", 0);
 	sv_enforcetime = Cvar_Get("sv_enforcetime", "0", 0);
 	sv_pers_fx_send_cut_off = Cvar_Get("sv_pers_fx_send_cut_off", "300", 0);

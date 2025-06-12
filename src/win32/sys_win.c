@@ -134,12 +134,12 @@ void Sys_Init(void)
 
 	//mxd. Skip ancient OS versions checks.
 	if (!IsWindows7OrGreater())
-		Sys_Error("Heretic2R requires Windows 7 or greater");
+		Sys_Error(GAME_NAME" requires Windows 7 or greater");
 
 	if ((int)dedicated->value)
 	{
 		if (!AllocConsole())
-			Sys_Error("Couldn\'t create dedicated server console");
+			Sys_Error("Couldn't create dedicated server console");
 
 		hinput = GetStdHandle(STD_INPUT_HANDLE);
 		houtput = GetStdHandle(STD_OUTPUT_HANDLE);

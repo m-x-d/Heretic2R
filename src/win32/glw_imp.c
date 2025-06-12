@@ -8,7 +8,7 @@
 #include "../launcher/resource.h"
 #include "glw_win.h"
 
-#define WINDOW_CLASS_NAME "Heretic II R" // H2: 'Heretic 2'
+#define WINDOW_CLASS_NAME	GAME_NAME // H2: 'Heretic 2'
 
 glwstate_t glw_state;
 

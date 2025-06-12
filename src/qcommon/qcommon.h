@@ -21,6 +21,9 @@
 #define VERSIONDISP			"0.9 RC1" // Shown in console. //mxd. (VERSION_MAJOR"."VERSION_MINOR) in original logic.
 #define VERSIONFULL			(VERSION_MAJOR"."VERSION_MINOR"."VERSION_LOCAL"."VERSION_DATE"."VERSION_ITERATION) // Stored in version cvar.
 
+#define GAME_NAME			"Heretic2R" //mxd
+#define GAME_FULLNAME		GAME_NAME" "VERSIONDISP //mxd
+
 #ifdef _WIN32
 	#ifdef NDEBUG
 		#define BUILDSTRING "RELEASE"

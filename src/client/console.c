@@ -485,9 +485,7 @@ void Con_DrawConsole(float frac)
 	SCR_AddDirtyPoint(viddef.width - 1, lines - 1);
 
 	// Draw version.
-	char version[MAX_QPATH];
-	Com_sprintf(version, sizeof(version), "Heretic II R %s", VERSIONDISP); //mxd.'Heretic II: %s' in original logic.
-	DrawString(viddef.width - ((int)strlen(version) * 8 + 8), lines - 12, version, TextPalette[P_GREEN], -1); //mxd. P_VERSION in original logic.
+	DrawString(viddef.width - ((int)strlen(GAME_FULLNAME) * 8 + 8), lines - 12, GAME_FULLNAME, TextPalette[P_GREEN], -1); //mxd. P_VERSION in original logic.
 
 	// Draw the text.
 	con.vislines = lines;
