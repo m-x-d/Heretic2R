@@ -459,6 +459,22 @@ typedef struct
 
 	void* (*Z_Malloc)(int size);
 	void (*Z_Free)(void* ptr);
+
+#ifdef _DEBUG
+	//mxd. Debug logic.
+	char* (*pv)(const vec3_t v); // vtos() from g_utils.c, basically...
+	char* (*psv)(const short* v);
+
+	void (*DBG_IDEPrint)(const char* fmt, ...);
+	void (*DBG_HudPrint)(int slot, const char* label, const char* fmt, ...);
+
+	void (*DBG_AddBox)(const vec3_t center, float size, paletteRGBA_t color, float lifetime);
+	void (*DBG_AddBbox)(const vec3_t mins, const vec3_t maxs, paletteRGBA_t color, float lifetime);
+	void (*DBG_AddEntityBbox)(const edict_t* ent, paletteRGBA_t color);
+
+	void (*DBG_AddLine)(const vec3_t start, const vec3_t end, paletteRGBA_t color, float lifetime);
+	void (*DBG_AddArrow)(const vec3_t start, const vec3_t end, paletteRGBA_t color, float lifetime);
+#endif
 } snd_import_t;
 
 //mxd. This is the only function actually exported at the linker level.

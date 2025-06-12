@@ -506,6 +506,14 @@ static qboolean VID_LoadRefresh(const char* name)
 	ri.skeletalJoints = skeletal_joints;
 	ri.jointNodes = joint_nodes;
 
+#ifdef _DEBUG
+	ri.pv = pv;
+	ri.psv = psv;
+
+	ri.DBG_IDEPrint = DBG_IDEPrint;
+	ri.DBG_HudPrint = DBG_HudPrint;
+#endif
+
 	const GetRefAPI_t GetRefAPI = (void*)GetProcAddress(reflib_library, "GetRefAPI");
 	if (GetRefAPI == NULL)
 		Com_Error(ERR_FATAL, "GetProcAddress failed on %s", name);

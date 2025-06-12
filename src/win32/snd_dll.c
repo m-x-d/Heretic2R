@@ -146,6 +146,21 @@ void SndDll_Init(void)
 	si.Z_Malloc = Z_Malloc;
 	si.Z_Free = Z_Free;
 
+#ifdef _DEBUG
+	si.pv = pv;
+	si.psv = psv;
+
+	si.DBG_IDEPrint = DBG_IDEPrint;
+	si.DBG_HudPrint = DBG_HudPrint;
+
+	si.DBG_AddBox = DBG_AddBox;
+	si.DBG_AddBbox = DBG_AddBbox;
+	si.DBG_AddEntityBbox = DBG_AddEntityBbox;
+
+	si.DBG_AddLine = DBG_AddLine;
+	si.DBG_AddArrow = DBG_AddArrow;
+#endif
+
 	const GetSoundAPI_t GetSoundAPI = (void*)GetProcAddress(sound_library, "GetSoundAPI");
 	if (GetSoundAPI == NULL)
 	{

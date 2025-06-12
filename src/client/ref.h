@@ -276,6 +276,15 @@ typedef struct
 	qboolean (*Vid_GetModeInfo)(int* width, int* height, int mode);
 	void (*Vid_MenuInit)(void);
 	void (*Vid_NewWindow)(int width, int height);
+
+#ifdef _DEBUG
+	//mxd. Debug logic.
+	char* (*pv)(const vec3_t v); // vtos() from g_utils.c, basically...
+	char* (*psv)(const short* v);
+
+	void (*DBG_IDEPrint)(const char* fmt, ...);
+	void (*DBG_HudPrint)(int slot, const char* label, const char* fmt, ...);
+#endif
 } refimport_t;
 
 // This is the only function actually exported at the linker level.
