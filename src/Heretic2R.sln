@@ -48,6 +48,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinSnd", "WinSnd\WinSnd.vcx
 		{0344D3E0-BAA4-4747-8D13-8CAC69C60CEA} = {0344D3E0-BAA4-4747-8D13-8CAC69C60CEA}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "snd_sdl3", "snd_sdl3\snd_sdl3.vcxproj", "{D057930A-FC86-421D-99F3-B8636D2BFEEB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0344D3E0-BAA4-4747-8D13-8CAC69C60CEA} = {0344D3E0-BAA4-4747-8D13-8CAC69C60CEA}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -86,6 +91,10 @@ Global
 		{0CA7590E-B80D-4474-B135-5E48DF0C9964}.Debug|x86.Build.0 = Debug|Win32
 		{0CA7590E-B80D-4474-B135-5E48DF0C9964}.Release|x86.ActiveCfg = Release|Win32
 		{0CA7590E-B80D-4474-B135-5E48DF0C9964}.Release|x86.Build.0 = Release|Win32
+		{D057930A-FC86-421D-99F3-B8636D2BFEEB}.Debug|x86.ActiveCfg = Debug|Win32
+		{D057930A-FC86-421D-99F3-B8636D2BFEEB}.Debug|x86.Build.0 = Debug|Win32
+		{D057930A-FC86-421D-99F3-B8636D2BFEEB}.Release|x86.ActiveCfg = Release|Win32
+		{D057930A-FC86-421D-99F3-B8636D2BFEEB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
