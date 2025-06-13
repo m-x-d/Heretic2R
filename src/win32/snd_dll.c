@@ -98,7 +98,7 @@ void SndDll_Init(void)
 	}
 
 	if (snd_dll == NULL)
-		snd_dll = Cvar_Get("snd_dll", DEFAULT_SOUND_LIBRARY_NAME, 0);
+		snd_dll = Cvar_Get("snd_dll", DEFAULT_SOUND_LIBRARY_NAME, CVAR_ARCHIVE); //mxd. Make archiveable.
 
 	Com_ColourPrintf(P_HEADER, "------- Loading %s -------\n", snd_dll->string);
 

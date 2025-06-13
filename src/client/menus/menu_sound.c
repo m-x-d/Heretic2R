@@ -69,7 +69,7 @@ static void Sound_SetValues(void) // H2
 	//s_options_usecd_box.curvalue = (Cvar_VariableValue("cd_nocd") == 0.0f); //mxd. Disabled
 	s_options_quality_list.curvalue = (Cvar_VariableValue("s_loadas8bit") == 0.0f);
 
-	snd_dll = Cvar_Get("snd_dll", DEFAULT_SOUND_LIBRARY_NAME, 0); //mxd. Use DEFAULT_SOUND_LIBRARY_NAME instead of "".
+	snd_dll = Cvar_Get("snd_dll", DEFAULT_SOUND_LIBRARY_NAME, CVAR_ARCHIVE); //mxd. Use DEFAULT_SOUND_LIBRARY_NAME instead of "", make archiveable.
 	strcpy_s(snd_dll_name, sizeof(snd_dll_name), snd_dll->string); //mxd. strcpy -> strcpy_s
 
 	//mxd. Skip 'winsnd' -> 'a3dsnd' -> 'eaxsnd' sound dll switching logic.
