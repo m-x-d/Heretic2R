@@ -1179,7 +1179,7 @@ static void vectoangles2(vec3_t value1, vec3_t angles)
 	}
 }
 
-static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpolate) // H2
+static void CL_UpdateCameraOrientation(const float cam_fwd_offset, const qboolean interpolate) // H2 //mxd. Flipped 'interpolate' arg logic.
 {
 #define MAX_CAMERA_TIMER	500
 #define MASK_CAMERA			(CONTENTS_SOLID | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK)
@@ -1200,143 +1200,105 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 	static vec3_t prev_prev_start;
 	static vec3_t prev_end;
 	static vec3_t prev_prev_end;
-	static vec3_t start_lerped;
-	static vec3_t end_lerped;
-
-	int water_flags;
-	int waterlevel;
-	float fwd_offset;
-	vec3_t start;
-	vec3_t end;
-	vec3_t end_2;
-	vec3_t end_3;
-	vec3_t mins;
-	vec3_t maxs;
-	vec3_t mins_2;
-	vec3_t maxs_2;
-	vec3_t forward;
-	vec3_t right;
-	vec3_t up;
-	trace_t trace;
 
 	if (cls.state != ca_active)
 		return;
 
-	VectorSet(mins, -1.0f, -1.0f, -1.0f);
-	VectorSet(maxs, 1.0f, 1.0f, 1.0f);
-	VectorSet(mins_2, -3.0f, -3.0f, -3.0f);
-	VectorSet(maxs_2, 3.0f, 3.0f, 3.0f);
+	const vec3_t mins = { -1.0f, -1.0f, -1.0f };
+	const vec3_t maxs = {  1.0f,  1.0f,  1.0f };
+	const vec3_t mins_2 = { -3.0f, -3.0f, -3.0f };
+	const vec3_t maxs_2 = {  3.0f,  3.0f,  3.0f };
 
-	if ((int)cl_predict->value)
-	{
-		water_flags = cl.playerinfo.pm_w_flags;
-		waterlevel = cl.playerinfo.waterlevel;
-	}
-	else
-	{
-		water_flags = cl.frame.playerstate.pmove.w_flags;
-		waterlevel = cl.frame.playerstate.waterlevel;
-	}
+	const int water_flags = ((int)cl_predict->value ? cl.playerinfo.pm_w_flags : cl.frame.playerstate.pmove.w_flags);
+	const int waterlevel =  ((int)cl_predict->value ? cl.playerinfo.waterlevel : cl.frame.playerstate.waterlevel);
+
+	float fwd_offset = cam_fwd_offset;
 
 	if ((int)cl_camera_fpmode->value)
 	{
-		fwd_offset = cl_camera_fpheight->value;
+		fwd_offset += cl_camera_fpheight->value;
 		cam_transparency = cl_camera_fptrans->value;
 	}
 	else
 	{
-		fwd_offset = cl_camera_fpoffs->value + 16.0f;
+		fwd_offset += cl_camera_fpoffs->value + 16.0f;
 		cam_transparency = cl_playertrans->value;
 	}
 
-	AngleVectors(look_angles, forward, right, up);
+	vec3_t forward;
+	vec3_t up;
+	AngleVectors(look_angles, forward, NULL, up);
+
 	const cam_mode_e prev_cam_mode = cam_mode;
+
+	vec3_t start;
+	vec3_t end;
+	VectorCopy(PlayerEntPtr->origin, start);
 
 	if (water_flags != 0)
 	{
 		if (water_flags & (WF_SURFACE | WF_DIVE | WF_DIVING))
 		{
-			VectorCopy(PlayerEntPtr->origin, start);
+			VectorCopy(start, end);
+
 			start[2] += 100.0f;
+			end[2] -= 100.0f;
 
-			vec3_t tmp_end;
-			VectorCopy(PlayerEntPtr->origin, tmp_end);
-			tmp_end[2] -= 100.0f;
+			trace_t tr;
+			CL_Trace(start, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &tr);
 
-			CL_Trace(start, mins, maxs, tmp_end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
-
-			if (trace.fraction != 1.0f)
+			if (tr.fraction != 1.0f)
 			{
-				const float scaler = fwd_offset + lerp - 9.5f;
-
-				start[0] = PlayerEntPtr->origin[0];
-				start[1] = PlayerEntPtr->origin[1];
-				start[2] = trace.endpos[2];
-
-				end[0] = up[0] * scaler + PlayerEntPtr->origin[0];
-				end[1] = up[1] * scaler + PlayerEntPtr->origin[1];
-				end[2] = up[2] * scaler + trace.endpos[2];
+				start[2] = tr.endpos[2];
+				VectorMA(start, fwd_offset - 9.5f, up, end);
 
 				cam_mode = CM_SWIM;
 			}
 		}
 		else
 		{
-			fwd_offset += lerp;
-
-			VectorMA(PlayerEntPtr->origin, fwd_offset, forward, end);
-			VectorCopy(PlayerEntPtr->origin, start);
-
+			VectorMA(start, fwd_offset, forward, end);
 			cam_mode = CM_DIVE;
 		}
 	}
 	else
 	{
-		fwd_offset += lerp;
-		VectorMA(PlayerEntPtr->origin, fwd_offset, up, end);
+		VectorMA(start, fwd_offset, up, end);
 
-		CL_Trace(PlayerEntPtr->origin, mins_2, maxs_2, end, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+		trace_t tr;
+		CL_Trace(start, mins_2, maxs_2, end, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &tr);
 
-		if (trace.fraction != 1.0f)
-			VectorCopy(trace.endpos, end);
+		if (tr.fraction != 1.0f)
+			VectorCopy(tr.endpos, end);
 
 		end[2] -= 4.0f;
 
-		if ((CL_PMpointcontents(end) & MASK_WATER) == 0)
+		if (CL_PMpointcontents(end) & MASK_WATER)
 		{
-			VectorMA(PlayerEntPtr->origin, fwd_offset, up, end);
-			VectorCopy(PlayerEntPtr->origin, start);
-
-			cam_mode = CM_DEFAULT;
-		}
-		else
-		{
-			VectorCopy(PlayerEntPtr->origin, start);
-			start[2] += 100.0f;
-
 			vec3_t tmp_end;
-			VectorCopy(PlayerEntPtr->origin, tmp_end);
+			VectorCopy(start, tmp_end);
+
+			start[2] += 100.0f;
 			tmp_end[2] -= 100.0f;
 
-			CL_Trace(start, mins, maxs, tmp_end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+			CL_Trace(start, mins, maxs, tmp_end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &tr);
 
-			if (trace.fraction != 1.0f)
+			if (tr.fraction != 1.0f)
 			{
-				start[0] = PlayerEntPtr->origin[0];
-				start[1] = PlayerEntPtr->origin[1];
-				start[2] = trace.endpos[2] * 2 - end[2] + 4.0f;
-
-				end[0] = up[0] * fwd_offset + PlayerEntPtr->origin[0];
-				end[1] = up[1] * fwd_offset + PlayerEntPtr->origin[1];
-				end[2] = up[2] * fwd_offset + start[2];
-
-				trace.endpos[2] = start[2];
+				start[2] = tr.endpos[2] * 2.0f - end[2] + 4.0f;
+				VectorMA(start, fwd_offset, up, end);
 
 				cam_mode = CM_LIQUID_DEATH;
 			}
 		}
+		else
+		{
+			VectorMA(start, fwd_offset, up, end);
+			cam_mode = CM_DEFAULT;
+		}
 	}
 
+	// Interpolate position when switching camera mode.
 	if (prev_cam_mode != cam_mode)
 	{
 		if (!cam_timer_reset)
@@ -1351,32 +1313,30 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 
 	if (cam_timer_reset)
 	{
-		if (camera_timer > MAX_CAMERA_TIMER)
+		if (camera_timer >= MAX_CAMERA_TIMER)
 		{
 			cam_timer_reset = false;
 		}
 		else
 		{
-			VectorCopy(end, prev_end);
 			VectorCopy(start, prev_start);
+			VectorCopy(end, prev_end);
 
-			const float scaler = (float)camera_timer / (float)MAX_CAMERA_TIMER;
+			const float lerp = (float)camera_timer / (float)MAX_CAMERA_TIMER;
 			for (int i = 0; i < 3; i++)
 			{
-				end_lerped[i] = prev_prev_end[i] + (prev_end[i] - prev_prev_end[i]) * scaler;
-				start_lerped[i] = prev_prev_start[i] + (prev_start[i] - prev_prev_start[i]) * scaler;
+				start[i] = prev_prev_start[i] + (prev_start[i] - prev_prev_start[i]) * lerp;
+				end[i] = prev_prev_end[i] + (prev_end[i] - prev_prev_end[i]) * lerp;
 			}
-
-			VectorCopy(end_lerped, end);
-			VectorCopy(start_lerped, start);
 		}
 	}
 	else
 	{
-		VectorCopy(end, prev_end);
 		VectorCopy(start, prev_start);
+		VectorCopy(end, prev_end);
 	}
 
+	trace_t trace;
 	CL_Trace(start, mins_2, maxs_2, end, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
 
 	if (trace.fraction != 1.0f)
@@ -1388,6 +1348,7 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 	else
 		viewdist = -cl_camera_viewdist->value;
 
+	vec3_t end_2;
 	VectorMA(end, viewdist, forward, end_2);
 
 	if ((water_flags & WF_SWIMFREE) && (CL_PMpointcontents(end) & MASK_WATER))
@@ -1399,10 +1360,11 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 				end_2[i] = end[i] + (trace.endpos[i] - end[i]) * 0.9f;
 	}
 
+	vec3_t end_3;
 	if (!(int)cl_camera_clipdamp->value)
 		VectorCopy(end_2, end_3);
 
-	if (!interpolate)
+	if (interpolate)
 	{
 		float damp_factor = 0.0f;
 
@@ -1435,21 +1397,17 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 		{
 			VectorCopy(end_3, end_2);
 
-			CL_Trace(end, mins, maxs, end_3, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+			CL_Trace(end, mins, maxs, end_2, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
 
 			if (trace.fraction != 1.0f)
 				VectorCopy(trace.endpos, end_2);
 		}
 	}
 
-	if (waterlevel == 0 || (water_flags & ~WF_SWIMFREE) != 0 || (water_flags == 0 && in_down.state == 0))
+	if (waterlevel == 0 || (water_flags & ~WF_SWIMFREE) || (water_flags == 0 && in_down.state == 0))
 	{
 		const float roll_scaler = 1.0f - fabsf(look_angles[PITCH] / 89.0f);
-
-		vec3_t v;
-		v[0] = mins[0];
-		v[1] = mins[1];
-		v[2] = -1.0f - roll_scaler * 2.0f;
+		const vec3_t v = { mins[0], mins[1], -1.0f - roll_scaler * 2.0f };
 
 		CL_Trace(end, v, maxs, end_2, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
 
@@ -1489,7 +1447,7 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 	// Apply screen shake.
 	vec3_t shake_amount;
 	Perform_Screen_Shake(shake_amount, (float)cl.time);
-	VectorAdd(cl.refdef.vieworg, shake_amount, cl.refdef.vieworg);
+	Vec3AddAssign(shake_amount, cl.refdef.vieworg);
 
 	VectorCopy(PlayerEntPtr->origin, cl.refdef.clientmodelorg);
 }
@@ -1589,11 +1547,11 @@ static void CL_CalcViewValues(void)
 
 		if (ps->remote_id < 0) // When not looking through a remote camera.
 		{
-			const float cam_lerp = (float)ops->viewheight + (float)(ps->viewheight - ops->viewheight) * lerp;
+			const float cam_fwd_offset = (float)ops->viewheight + (float)(ps->viewheight - ops->viewheight) * lerp;
 
 			if (no_cam_lerp)
 			{
-				CL_UpdateCameraOrientation(cam_lerp, true);
+				CL_UpdateCameraOrientation(cam_fwd_offset, false);
 			}
 			else
 			{
@@ -1601,7 +1559,7 @@ static void CL_CalcViewValues(void)
 				const int num_frames = (int)roundf(frame_delta);
 
 				for (int i = 0; i < num_frames; i++)
-					CL_UpdateCameraOrientation(cam_lerp, false);
+					CL_UpdateCameraOrientation(cam_fwd_offset, true);
 
 				frame_delta -= (float)num_frames;
 			}
