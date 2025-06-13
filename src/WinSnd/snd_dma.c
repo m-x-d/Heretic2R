@@ -14,6 +14,8 @@
 #include "qcommon.h"
 #include "Vector.h"
 
+#define SNDLIB_DECLSPEC __declspec(dllexport)
+
 // Only begin attenuating sound volumes when outside the FULLVOLUME range.
 #define SOUND_FULLVOLUME	80
 #define ENT_ATTEN_MASK		(255 - ENT_VOL_MASK) //mxd
