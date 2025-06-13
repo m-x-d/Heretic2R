@@ -1497,9 +1497,7 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 // Sets cl.refdef view values.
 static void CL_CalcViewValues(void)
 {
-	static vec3_t viewoffset;
 	static vec3_t old_viewoffset;
-	static vec3_t old_lookangles;
 	static float frame_delta;
 
 	const float lerp = cl.lerpfrac;
@@ -1542,6 +1540,8 @@ static void CL_CalcViewValues(void)
 
 	if (viewoffset_changed)
 	{
+		vec3_t viewoffset;
+
 		if ((int)cl_predict->value)
 			VectorSubtract(cl.playerinfo.offsetangles, ps->offsetangles, viewoffset);
 		else
@@ -1573,26 +1573,20 @@ static void CL_CalcViewValues(void)
 		if (ps->pmove.pm_type == PM_FREEZE)
 		{
 			for (int i = 0; i < 3; i++)
-			{
 				cl.predicted_angles[i] = LerpAngle(ops->viewangles[i], ps->viewangles[i], lerp);
-				look_angles[i] = cl.predicted_angles[i];
-			}
+
+			VectorCopy(cl.predicted_angles, look_angles);
+		}
+		else if (in_lookaround.state & 1)
+		{
+			for (int i = 0; i < 3; i++)
+				look_angles[i] = cl.lookangles[i] + (float)ps->pmove.delta_angles[i] * SHORT_TO_ANGLE;
 		}
 		else
 		{
-			VectorCopy(look_angles, old_lookangles);
-
-			if (in_lookaround.state & 1)
-			{
-				for (int i = 0; i < 3; i++)
-					look_angles[i] = cl.lookangles[i] + (float)ps->pmove.delta_angles[i] * SHORT_TO_ANGLE;
-			}
-			else
-			{
-				VectorCopy(cl.predicted_angles, look_angles);
-			}
+			VectorCopy(cl.predicted_angles, look_angles);
 		}
-		
+
 		if (ps->remote_id < 0) // When not looking through a remote camera.
 		{
 			const float cam_lerp = (float)ops->viewheight + (float)(ps->viewheight - ops->viewheight) * lerp;
