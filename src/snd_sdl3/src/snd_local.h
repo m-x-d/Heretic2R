@@ -44,3 +44,5 @@ typedef struct
 } sound_t; // Q2: dma_t;
 
 #pragma endregion
+
+#define MAX_CHANNELS	32
