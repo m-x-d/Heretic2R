@@ -12,7 +12,21 @@
 
 snd_import_t si;
 
+// Internal sound data & structures.
+channel_t channels[MAX_CHANNELS];
+
 sound_t sound;
+
+int paintedtime;
+static int num_sfx;
+
+static qboolean sound_started;
+static qboolean s_active;
+
+#define MAX_PLAYSOUNDS	128
+static playsound_t s_playsounds[MAX_PLAYSOUNDS];
+static playsound_t s_freeplays;
+playsound_t s_pendingplays;
 
 cvar_t* s_volume;
 cvar_t* s_sounddir; // H2
@@ -23,18 +37,12 @@ static cvar_t* s_show;
 static cvar_t* s_mixahead;
 static cvar_t* s_paused; //mxd
 
-cvar_t* s_underwater_gain_hf; // YQ2
-
 // H2: sound attenuation cvars.
 static cvar_t* s_attn_norm;
 static cvar_t* s_attn_idle;
 static cvar_t* s_attn_static;
 
-static int num_sfx;
-int paintedtime;
-
-static qboolean sound_started;
-static qboolean s_active;
+cvar_t* s_underwater_gain_hf; // YQ2
 
 #pragma region ========================== Console commands ==========================
 
@@ -166,7 +174,28 @@ static void S_StartLocalSound(const char* name)
 
 static void S_StopAllSounds(void)
 {
-	NOT_IMPLEMENTED
+	if (!sound_started)
+		return;
+
+	// Clear all the playsounds.
+	memset(s_playsounds, 0, sizeof(s_playsounds));
+
+	s_freeplays.next = &s_freeplays;
+	s_freeplays.prev = &s_freeplays;
+	s_pendingplays.next = &s_pendingplays;
+	s_pendingplays.prev = &s_pendingplays;
+
+	for (int i = 0; i < MAX_PLAYSOUNDS; i++)
+	{
+		s_playsounds[i].prev = &s_freeplays;
+		s_playsounds[i].next = s_freeplays.next;
+		s_playsounds[i].prev->next = &s_playsounds[i];
+		s_playsounds[i].next->prev = &s_playsounds[i];
+	}
+
+	// Clear all the channels.
+	memset(channels, 0, sizeof(channels));
+	// H2: no SDL_ClearBuffer() call.
 }
 
 static void S_StopAllSounds_Sounding(void) // H2
