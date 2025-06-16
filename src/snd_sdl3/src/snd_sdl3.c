@@ -36,10 +36,26 @@ static void SDL_UpdateScaletable(void) // Q2: S_InitScaletable().
 	}
 }
 
-// Wrapper function, ties the old existing callback logic from the SDL 1.2 days and later fiddled into SDL 2 to a SDL 3 compatible callback...
-static void SDL_SDL3Callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount)
+// Callback function for SDL. Writes sound data to SDL when requested.
+static void SDL_Callback(void* data, byte* sdl_stream, int length)
 {
 	NOT_IMPLEMENTED
+}
+
+// Wrapper function, ties the old existing callback logic from the SDL 1.2 days and later fiddled into SDL 2 to a SDL 3 compatible callback...
+static void SDL_SDL3Callback(void* userdata, SDL_AudioStream* sdl_stream, int additional_amount, int total_amount)
+{
+	if (additional_amount < 1)
+		return;
+
+	byte* data = SDL_stack_alloc(byte, additional_amount);
+
+	if (data != NULL)
+	{
+		SDL_Callback(userdata, data, additional_amount);
+		SDL_PutAudioStreamData(sdl_stream, data, additional_amount);
+		SDL_stack_free(data);
+	}
 }
 
 // Initializes the SDL sound backend and sets up SDL.
