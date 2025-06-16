@@ -15,11 +15,25 @@ static SDL_AudioStream* stream;
 static int playpos = 0;
 static int samplesize = 0;
 static int soundtime = 0;
+static int snd_scaletable[32][256];
 
 // Updates the volume scale table based on current volume setting.
-static void SDL_UpdateScaletable(void)
+static void SDL_UpdateScaletable(void) // Q2: S_InitScaletable().
 {
-	NOT_IMPLEMENTED
+	if (s_volume->value > 2.0f) // YQ2: extra sanity checks.
+		si.Cvar_Set("s_volume", "2");
+	else if (s_volume->value < 0.0f)
+		si.Cvar_Set("s_volume", "0");
+
+	s_volume->modified = false;
+
+	for (int i = 0; i < 32; i++)
+	{
+		const int scale = (int)((float)i * 8.0f * 256.0f * s_volume->value);
+
+		for (int j = 0; j < 256; j++)
+			snd_scaletable[i][j] = (char)j * scale;
+	}
 }
 
 // Wrapper function, ties the old existing callback logic from the SDL 1.2 days and later fiddled into SDL 2 to a SDL 3 compatible callback...
@@ -54,7 +68,7 @@ qboolean SDL_BackendInit(void)
 
 	if (stream == NULL)
 	{
-		Com_Printf("SDL_OpenAudioDeviceStream() failed: %s\n", SDL_GetError());
+		si.Com_Printf("SDL_OpenAudioDeviceStream() failed: %s\n", SDL_GetError());
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 
 		return false;
