@@ -9,5 +9,3 @@
 #include "q_Typedef.h"
 
 extern qboolean SDL_BackendInit(void);
-
-extern void SDL_ClearBuffer(void);

@@ -21,6 +21,7 @@ static int s_registration_sequence;
 static qboolean s_registering;
 
 int paintedtime;
+int s_rawend;
 
 static qboolean sound_started;
 static qboolean s_active;
@@ -210,6 +211,21 @@ static void S_StartLocalSound(const char* name)
 	NOT_IMPLEMENTED
 }
 
+// Clears the playback buffer so that all playback stops.
+void S_ClearBuffer(void)
+{
+	if (!sound_started)
+		return;
+
+	s_rawend = 0;
+
+	if (sound.buffer != NULL)
+	{
+		const int clear = ((sound.samplebits == 8) ? 0x80 : 0);
+		memset(sound.buffer, clear, sound.samples * sound.samplebits / 8);
+	}
+}
+
 static void S_StopAllSounds(void)
 {
 	if (!sound_started)
@@ -239,7 +255,7 @@ static void S_StopAllSounds(void)
 static void S_StopAllSounds_Sounding(void) // H2
 {
 	if (sound_started)
-		SDL_ClearBuffer();
+		S_ClearBuffer();
 }
 
 // Called once each time through the main loop.

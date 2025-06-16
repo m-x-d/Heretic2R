@@ -17,12 +17,6 @@ static int samplesize = 0;
 static int soundtime = 0;
 static int snd_scaletable[32][256];
 
-// Clears the playback buffer so that all playback stops.
-void SDL_ClearBuffer(void)
-{
-	NOT_IMPLEMENTED
-}
-
 // Updates the volume scale table based on current volume setting.
 static void SDL_UpdateScaletable(void) // Q2: S_InitScaletable().
 {
