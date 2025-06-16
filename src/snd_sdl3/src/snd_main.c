@@ -17,6 +17,9 @@ channel_t channels[MAX_CHANNELS];
 
 sound_t sound;
 
+static int s_registration_sequence;
+static qboolean s_registering;
+
 int paintedtime;
 static int num_sfx;
 
@@ -141,7 +144,8 @@ static sfx_t* S_FindName(const char* name, const qboolean create)
 // Q2 counterpart.
 static void S_BeginRegistration(void)
 {
-	NOT_IMPLEMENTED
+	s_registration_sequence++;
+	s_registering = true;
 }
 
 // Q2 counterpart.
