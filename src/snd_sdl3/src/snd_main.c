@@ -21,10 +21,15 @@ static int s_registration_sequence;
 static qboolean s_registering;
 
 int paintedtime;
-static int num_sfx;
 
 static qboolean sound_started;
 static qboolean s_active;
+
+// During registration it is possible to have more sounds than could actually be referenced during gameplay,
+// because we don't want to free anything until we are sure we won't need it.
+#define MAX_SFX	(MAX_SOUNDS * 2)
+static sfx_t known_sfx[MAX_SFX];
+static int num_sfx;
 
 #define MAX_PLAYSOUNDS	128
 static playsound_t s_playsounds[MAX_PLAYSOUNDS];
@@ -68,6 +73,12 @@ static void S_SoundInfo_f(void)
 }
 
 #pragma endregion
+
+sfxcache_t* S_LoadSound(sfx_t* s)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
 
 // Activate or deactivate sound backend.
 static void S_Activate(qboolean active)
@@ -158,7 +169,30 @@ static sfx_t* S_RegisterSound(const char* name)
 // Q2 counterpart.
 static void S_EndRegistration(void)
 {
-	NOT_IMPLEMENTED
+	// Free any sounds not from this registration sequence.
+	sfx_t* sfx = &known_sfx[0];
+	for (int i = 0; i < num_sfx; i++, sfx++) //TODO: implement S_HasFreeSpace() YQ2 logic?
+	{
+		// Don't need this sound?
+		if (sfx->name[0] != 0 && sfx->registration_sequence != s_registration_sequence)
+		{
+			// It is possible to have a leftover from a server that didn't finish loading.
+			if (sfx->cache != NULL)
+				si.Z_Free(sfx->cache);
+
+			sfx->cache = NULL;
+			sfx->name[0] = 0;
+		}
+		//mxd. Skip Com_PageInMemory() logic.
+	}
+
+	// Load everything in.
+	sfx = &known_sfx[0];
+	for (int i = 0; i < num_sfx; i++, sfx++)
+		if (sfx->name[0] != 0)
+			S_LoadSound(sfx);
+
+	s_registering = false;
 }
 
 // Q2 counterpart.

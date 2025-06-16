@@ -20,5 +20,7 @@ extern cvar_t* s_khz;
 
 extern cvar_t* s_underwater_gain_hf; // YQ2
 
+extern sfxcache_t* S_LoadSound(sfx_t* s);
+
 // Local forward declarations for snd_main.c:
 static void S_StopAllSounds(void);
