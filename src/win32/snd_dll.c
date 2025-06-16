@@ -132,6 +132,7 @@ void SndDll_Init(void)
 	si.Com_DPrintf = Com_DPrintf;
 
 	si.Cvar_Get = Cvar_Get;
+	si.Cvar_Set = Cvar_Set;
 	si.Cmd_AddCommand = Cmd_AddCommand;
 	si.Cmd_RemoveCommand = Cmd_RemoveCommand;
 

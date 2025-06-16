@@ -446,6 +446,7 @@ typedef struct
 	void (*Com_DPrintf)(const char* fmt, ...);
 
 	cvar_t* (*Cvar_Get)(const char* name, const char* value, int flags);
+	cvar_t* (*Cvar_Set)(const char* name, const char* value);
 
 	void (*Cmd_AddCommand)(const char* name, void (*cmd)(void));
 	void (*Cmd_RemoveCommand)(const char* name);
