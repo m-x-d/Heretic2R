@@ -37,9 +37,47 @@ static void SDL_UpdateScaletable(void) // Q2: S_InitScaletable().
 }
 
 // Callback function for SDL. Writes sound data to SDL when requested.
-static void SDL_Callback(void* data, byte* sdl_stream, int length)
+static void SDL_Callback(byte* sdl_stream, const int length)
 {
-	NOT_IMPLEMENTED
+	int pos = playpos * (sound.samplebits / 8);
+
+	if (pos >= samplesize)
+	{
+		playpos = 0;
+		pos = 0;
+	}
+
+	const int to_buffer_end = samplesize - pos;
+
+	int length1;
+	int length2;
+
+	if (length > to_buffer_end)
+	{
+		length1 = to_buffer_end;
+		length2 = length - length1;
+	}
+	else
+	{
+		length1 = length;
+		length2 = 0;
+	}
+
+	memcpy(sdl_stream, sound.buffer + pos, length1);
+
+	// Set new position.
+	if (length2 <= 0)
+	{
+		playpos += (length1 / (sound.samplebits / 8));
+	}
+	else
+	{
+		memcpy(sdl_stream + length1, sound.buffer, length2);
+		playpos = length2 / (sound.samplebits / 8);
+	}
+
+	if (playpos >= samplesize)
+		playpos = 0;
 }
 
 // Wrapper function, ties the old existing callback logic from the SDL 1.2 days and later fiddled into SDL 2 to a SDL 3 compatible callback...
@@ -52,7 +90,7 @@ static void SDL_SDL3Callback(void* userdata, SDL_AudioStream* sdl_stream, int ad
 
 	if (data != NULL)
 	{
-		SDL_Callback(userdata, data, additional_amount);
+		SDL_Callback(data, additional_amount);
 		SDL_PutAudioStreamData(sdl_stream, data, additional_amount);
 		SDL_stack_free(data);
 	}
