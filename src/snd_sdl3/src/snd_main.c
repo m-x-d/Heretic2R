@@ -67,7 +67,7 @@ static void S_Activate(qboolean active)
 // Initializes the sound system and it's requested backend.
 static void S_Init(void)
 {
-	si.Com_Printf("\n------- sound initialization -------\n");
+	si.Com_Printf("\n------- Sound initialization -------\n");
 
 	const cvar_t* cv = si.Cvar_Get("s_initsound", "1", 0);
 	if (cv->value == 0.0f)
@@ -85,7 +85,7 @@ static void S_Init(void)
 		s_show = si.Cvar_Get("s_show", "0", 0);
 		s_testsound = si.Cvar_Get("s_testsound", "0", 0);
 
-		s_underwater_gain_hf = Cvar_Get("s_underwater_gain_hf", "0.25", CVAR_ARCHIVE); // YQ2
+		s_underwater_gain_hf = si.Cvar_Get("s_underwater_gain_hf", "0.25", CVAR_ARCHIVE); // YQ2
 		//TODO: implement s_feedback_kind YQ2 logic?
 
 		// H2: extra attenuation cvars.
