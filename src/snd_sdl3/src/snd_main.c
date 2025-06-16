@@ -238,7 +238,8 @@ static void S_StopAllSounds(void)
 
 static void S_StopAllSounds_Sounding(void) // H2
 {
-	NOT_IMPLEMENTED
+	if (sound_started)
+		SDL_ClearBuffer();
 }
 
 // Called once each time through the main loop.
