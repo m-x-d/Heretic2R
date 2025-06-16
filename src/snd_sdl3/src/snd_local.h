@@ -29,7 +29,18 @@ typedef struct sfx_s
 	char name[MAX_QPATH];
 	int registration_sequence;
 	sfxcache_t* cache;
-	//char* truename; //mxd. Missing in H2.
 } sfx_t;
+
+// Interface to pass data and metadata between the frontend and the backends.
+typedef struct
+{
+	int channels;
+	int samples;			// Mono samples in buffer.
+	int submission_chunk;	// Don't mix less than this #.
+	int samplepos;			// In mono samples.
+	int samplebits;
+	int speed;
+	byte* buffer;
+} sound_t; // Q2: dma_t;
 
 #pragma endregion

@@ -5,10 +5,58 @@
 //
 
 #include "snd_main.h"
+#include "snd_ogg.h"
+#include "snd_sdl3.h"
 
 #define SNDLIB_DECLSPEC __declspec(dllexport)
 
 snd_import_t si;
+
+sound_t sound;
+
+cvar_t* s_volume;
+cvar_t* s_sounddir; // H2
+cvar_t* s_testsound;
+cvar_t* s_loadas8bit;
+cvar_t* s_khz;
+static cvar_t* s_show;
+static cvar_t* s_mixahead;
+static cvar_t* s_paused; //mxd
+
+cvar_t* s_underwater_gain_hf; // YQ2
+
+// H2: sound attenuation cvars.
+static cvar_t* s_attn_norm;
+static cvar_t* s_attn_idle;
+static cvar_t* s_attn_static;
+
+static int num_sfx;
+int paintedtime;
+
+static qboolean sound_started;
+static qboolean s_active;
+
+#pragma region ========================== Console commands ==========================
+
+// Q2 counterpart.
+static void S_Play_f(void) //mxd. Named 'S_Play' in original logic.
+{
+	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart.
+static void S_SoundList_f(void) //mxd. Named 'S_SoundList' in original logic.
+{
+	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart.
+static void S_SoundInfo_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+#pragma endregion
 
 // Activate or deactivate sound backend.
 static void S_Activate(qboolean active)
@@ -16,9 +64,58 @@ static void S_Activate(qboolean active)
 	NOT_IMPLEMENTED
 }
 
+// Initializes the sound system and it's requested backend.
 static void S_Init(void)
 {
-	NOT_IMPLEMENTED
+	si.Com_Printf("\n------- sound initialization -------\n");
+
+	const cvar_t* cv = si.Cvar_Get("s_initsound", "1", 0);
+	if (cv->value == 0.0f)
+	{
+		si.Com_Printf("Not initializing.\n");
+	}
+	else
+	{
+		s_volume = si.Cvar_Get("s_volume", "0.5", CVAR_ARCHIVE);
+		s_sounddir = si.Cvar_Get("s_sounddir", "sound", CVAR_ARCHIVE); // H2
+		s_khz = si.Cvar_Get("s_khz", "44", CVAR_ARCHIVE);  // Q2: 11 //TODO: remove? Always run at 44 Khz?
+		s_loadas8bit = si.Cvar_Get("s_loadas8bit", "0", CVAR_ARCHIVE); // Q2: 1
+
+		s_mixahead = si.Cvar_Get("s_mixahead", "0.14", CVAR_ARCHIVE); // Q2: 0.2
+		s_show = si.Cvar_Get("s_show", "0", 0);
+		s_testsound = si.Cvar_Get("s_testsound", "0", 0);
+
+		s_underwater_gain_hf = Cvar_Get("s_underwater_gain_hf", "0.25", CVAR_ARCHIVE); // YQ2
+		//TODO: implement s_feedback_kind YQ2 logic?
+
+		// H2: extra attenuation cvars.
+		s_attn_norm = si.Cvar_Get("s_attn_norm", "0.0008", 0);
+		s_attn_idle = si.Cvar_Get("s_attn_idle", "0.002", 0);
+		s_attn_static = si.Cvar_Get("s_attn_static", "0.006", 0);
+
+		s_paused = si.Cvar_Get("paused", "0", 0); //mxd
+
+		si.Cmd_AddCommand("play", S_Play_f);
+		si.Cmd_AddCommand("stopsound", S_StopAllSounds);
+		si.Cmd_AddCommand("soundlist", S_SoundList_f);
+		si.Cmd_AddCommand("soundinfo", S_SoundInfo_f);
+
+		if (SDL_BackendInit())
+		{
+			sound_started = true;
+
+			num_sfx = 0;
+			paintedtime = 0;
+			s_active = true;
+
+			OGG_Init();
+
+			si.Com_Printf("Sound sampling rate: %i\n", sound.speed);
+			S_StopAllSounds();
+		}
+	}
+
+	si.Com_Printf("------------------------------------\n");
 }
 
 static void S_Shutdown(void)

@@ -14,9 +14,13 @@
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="src\snd_local.h" />
     <ClInclude Include="src\snd_main.h" />
+    <ClInclude Include="src\snd_ogg.h" />
+    <ClInclude Include="src\snd_sdl3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\snd_main.c" />
+    <ClCompile Include="src\snd_ogg.c" />
+    <ClCompile Include="src\snd_sdl3.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />

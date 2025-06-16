@@ -10,6 +10,12 @@
     <ClInclude Include="src\snd_main.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\snd_ogg.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\snd_sdl3.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="game">
@@ -21,6 +27,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\snd_main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\snd_ogg.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\snd_sdl3.c">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
