@@ -17,27 +17,57 @@ static int iff_chunk_len;
 // Q2 counterpart.
 static short GetLittleShort(void)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	const short val = (short)(data_p[0] + (data_p[1] << 8));
+	data_p += 2;
+
+	return val;
 }
 
 // Q2 counterpart.
 static int GetLittleLong(void)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	const int val = data_p[0] + (data_p[1] << 8) + (data_p[2] << 16) + (data_p[3] << 24);
+	data_p += 4;
+
+	return val;
 }
 
 // Q2 counterpart.
 static void FindNextChunk(const char* name)
 {
-	NOT_IMPLEMENTED
+	while (true)
+	{
+		data_p = last_chunk;
+		data_p += 4;
+
+		if (data_p >= iff_end)
+		{
+			// Didn't find the chunk.
+			data_p = NULL;
+			return;
+		}
+
+		iff_chunk_len = GetLittleLong();
+
+		if (iff_chunk_len < 0)
+		{
+			data_p = NULL;
+			return;
+		}
+
+		data_p -= 8;
+		last_chunk = data_p + 8 + ((iff_chunk_len + 1) & ~1);
+
+		if (strncmp((char*)data_p, name, 4) == 0)
+			return;
+	}
 }
 
 // Q2 counterpart.
 static void FindChunk(const char* name)
 {
-	NOT_IMPLEMENTED
+	last_chunk = iff_data;
+	FindNextChunk(name);
 }
 
 // Q2 counterpart.
