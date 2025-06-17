@@ -513,9 +513,18 @@ static void S_StartSound(const vec3_t origin, const int ent_num, const int ent_c
 }
 
 // Q2 counterpart.
+// Plays a sound when we're not in a level. Used by the menu system.
 static void S_StartLocalSound(const char* name)
 {
-	NOT_IMPLEMENTED
+	if (!sound_started)
+		return;
+
+	sfx_t* sfx = S_RegisterSound(name);
+
+	if (sfx != NULL)
+		S_StartSound(NULL, si.cl->playernum + 1, 0, sfx, 1.0f, ATTN_NORM, 0.0f);
+	else
+		si.Com_Printf("S_StartLocalSound: can't cache '%s'\n", name);
 }
 
 // Clears the playback buffer so that all playback stops.
