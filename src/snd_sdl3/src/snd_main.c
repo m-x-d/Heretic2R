@@ -30,7 +30,7 @@ static qboolean s_registering;
 int paintedtime;
 int s_rawend;
 
-static float snd_attenuations[] = // H2
+float snd_attenuations[] = // H2
 {
 	0.0f,		// ATTN_NONE
 	0.0008f,	// ATTN_NORM
@@ -59,7 +59,7 @@ cvar_t* s_loadas8bit;
 cvar_t* s_khz;
 cvar_t* s_show;
 cvar_t* s_mixahead;
-static cvar_t* s_paused; //mxd
+cvar_t* s_paused; //mxd
 
 // H2: sound attenuation cvars.
 static cvar_t* s_attn_norm;
@@ -254,6 +254,12 @@ static void S_EndRegistration(void)
 			S_LoadSound(sfx);
 
 	s_registering = false;
+}
+
+channel_t* S_PickChannel(const int entnum, const int entchannel)
+{
+	NOT_IMPLEMENTED
+	return NULL;
 }
 
 // Q2 counterpart.

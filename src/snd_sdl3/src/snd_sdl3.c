@@ -9,7 +9,13 @@
 #include "snd_main.h"
 #include "snd_LowpassFilter.h"
 #include "snd_ogg.h"
+#include "Vector.h"
+#include "g_local.h"
 #include <SDL3/SDL.h> //mxd. Needs to be included below engine stuff: includes stdbool.h, which messes up qboolean define...
+
+// Only begin attenuating sound volumes when outside the FULLVOLUME range.
+#define SOUND_FULLVOLUME	80
+#define ENT_ATTEN_MASK		(255 - ENT_VOL_MASK) //mxd
 
 // Global stream handle.
 static SDL_AudioStream* stream;
@@ -27,14 +33,101 @@ static void SDL_PaintChannels(int endtime)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart.
+// Used for spatializing channels and autosounds.
+static void SDL_SpatializeOrigin(const vec3_t origin, const float master_vol, const float dist_mult, int* left_vol, int* right_vol)
+{
+	NOT_IMPLEMENTED
+}
+
 void SDL_Spatialize(channel_t* ch)
 {
 	NOT_IMPLEMENTED
 }
 
+// Entities with a sound field will generate looped sounds that are automatically started, stopped and merged together as the entities are sent to the client.
 static void SDL_AddLoopSounds(void)
 {
-	NOT_IMPLEMENTED
+	int sounds[MAX_EDICTS];
+	float attenuations[MAX_EDICTS]; //H2
+	float volumes[MAX_EDICTS]; //H2
+
+	if ((int)s_paused->value || si.cls->state != ca_active || !si.cl->sound_prepped)
+		return;
+
+	for (int i = 0; i < si.cl->frame.num_entities; i++)
+	{
+		const int num = (si.cl->frame.parse_entities + i) & (MAX_PARSE_ENTITIES - 1);
+		const entity_state_t* ent = &si.cl_parse_entities[num];
+		sounds[i] = ent->sound;
+		attenuations[i] = snd_attenuations[ent->sound_data & ENT_ATTEN_MASK]; //H2
+		volumes[i] = (float)(ent->sound_data & ENT_VOL_MASK); //H2
+	}
+
+	for (int i = 0; i < si.cl->frame.num_entities; i++)
+	{
+		if (sounds[i] == 0)
+			continue;
+
+		sfx_t* sfx = si.cl->sound_precache[sounds[i]];
+
+		if (sfx == NULL || sfx->cache == NULL)
+			continue; // Bad sound effect.
+
+		int num = (si.cl->frame.parse_entities + i) & (MAX_PARSE_ENTITIES - 1);
+		const entity_state_t* ent = &si.cl_parse_entities[num];
+
+		// Find the total contribution of all sounds of this type. //TODO: use YQ2 GetBSPEntitySoundOrigin()?
+		vec3_t origin;
+		VectorAdd(ent->origin, ent->bmodel_origin, origin); // H2. Original logic does Vec3NotZero(bmodel_origin) check before adding, but who cares... --mxd.
+
+		int left_total;
+		int right_total;
+		SDL_SpatializeOrigin(origin, volumes[i], attenuations[i], &left_total, &right_total);
+
+		for (int j = i + 1; j < si.cl->frame.num_entities; j++)
+		{
+			if (sounds[j] != sounds[i])
+				continue;
+
+			sounds[j] = 0; // Don't check this again later.
+
+			num = (si.cl->frame.parse_entities + j) & (MAX_PARSE_ENTITIES - 1);
+			ent = &si.cl_parse_entities[num];
+
+			int left;
+			int right;
+			SDL_SpatializeOrigin(ent->origin, volumes[j], attenuations[j], &left, &right);
+
+			left_total += left;
+			right_total += right;
+		}
+
+		if (left_total == 0 && right_total == 0)
+			continue; // Not audible.
+
+		// Allocate a channel.
+		channel_t* ch = S_PickChannel(0, 0);
+
+		if (ch == NULL)
+			return;
+
+		ch->leftvol = min(255, left_total);
+		ch->rightvol = min(255, right_total);
+		ch->autosound = true; // Remove next frame.
+		ch->sfx = sfx;
+
+		if (sfx->cache->length == 0) // YQ2
+		{
+			ch->pos = 0;
+			ch->end = 0;
+		}
+		else
+		{
+			ch->pos = paintedtime % sfx->cache->length;
+			ch->end = paintedtime + sfx->cache->length - ch->pos;
+		}
+	}
 }
 
 // Calculates the absolute timecode of current playback.
