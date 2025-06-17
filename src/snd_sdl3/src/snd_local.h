@@ -28,7 +28,7 @@ typedef struct sfxcache_s
 	int loopstart;
 	int speed; // Not needed, because converted on load?
 	int width;
-	int stereo;
+	qboolean stereo; //mxd. Was int in original logic.
 	byte data[1]; // Variable-sized.
 } sfxcache_t;
 

@@ -62,10 +62,56 @@ static void SDL_UpdateScaletable(void) // Q2: S_InitScaletable().
 	}
 }
 
-qboolean SDL_Cache(sfx_t* sfx, const wavinfo_t* info, byte* data, short volume, int begin_length, int  end_length, int attack_length, int fade_length)
+// Saves a sound sample into cache. If necessary, endianness conversions are performed.
+qboolean SDL_Cache(sfx_t* sfx, const wavinfo_t* info, byte* data)
 {
-	NOT_IMPLEMENTED
-	return false;
+	const float stepscale = (float)info->rate / (float)sound.speed; // This is usually 0.5, 1, or 2.
+	const int outcount = (int)((float)info->samples / stepscale);
+	const int len = outcount * info->width * info->channels;
+
+	if (len == 0)
+	{
+		si.Com_Printf("SDL_Cache: invalid sound file '%s' (zero length)\n", sfx->name);
+		return false;
+	}
+
+	sfx->cache = si.Z_Malloc(len + (int)sizeof(sfxcache_t));
+
+	sfxcache_t* sc = sfx->cache;
+
+	if (sc == NULL)
+		return false;
+
+	sc->loopstart = info->loopstart;
+	sc->stereo = (info->channels > 1);
+	sc->length = outcount;
+	sc->speed = sound.speed;
+	sc->width = ((int)s_loadas8bit->value ? 1 : info->width);
+
+	if (sc->loopstart != -1)
+		sc->loopstart = (int)((float)sc->loopstart / stepscale);
+
+	// Resample / decimate to the current source rate.
+	uint samplefrac = 0;
+	for (int i = 0; i < outcount; i++)
+	{
+		const uint srcsample = samplefrac >> 8;
+		samplefrac += (int)(stepscale * 256.0f);
+
+		int sample;
+
+		if (info->width == 2)
+			sample = LittleShort(((short*)data)[srcsample]);
+		else
+			sample = (data[srcsample] - 128) << 8;
+
+		if (sc->width == 2)
+			((short*)sc->data)[i] = (short)sample;
+		else
+			((char*)sc->data)[i] = (char)(sample >> 8);
+	}
+
+	return true;
 }
 
 // Runs every frame, handles all necessary sound calculations and fills the playback buffer.
