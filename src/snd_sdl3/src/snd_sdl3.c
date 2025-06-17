@@ -324,7 +324,35 @@ static void SDL_SpatializeOrigin(const vec3_t origin, const float master_vol, co
 
 void SDL_Spatialize(channel_t* ch)
 {
-	NOT_IMPLEMENTED
+	// Anything coming from the view entity will always be full volume.
+	if (ch->entnum == si.cl->playernum + 1)
+	{
+		ch->leftvol = ch->master_vol;
+		ch->rightvol = ch->master_vol;
+
+		return;
+	}
+
+	if (ch->flags == CF_LEFT_ONLY) // H2.
+	{
+		ch->leftvol = 255;
+		ch->rightvol = 0;
+
+		return;
+	}
+
+	if (ch->flags == CF_RIGHT_ONLY) // H2.
+	{
+		ch->leftvol = 0;
+		ch->rightvol = 255;
+
+		return;
+	}
+
+	if (!ch->fixed_origin && ch->entnum >= 0 && ch->entnum < MAX_EDICTS) //mxd. Inline CL_GetEntitySoundOrigin().
+		VectorCopy(si.cl_entities[ch->entnum].lerp_origin, ch->origin); // H2: update ch->origin instead of using separate var. //TODO: use YQ2 GetEntitySoundOrigin()?
+
+	SDL_SpatializeOrigin(ch->origin, (float)ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
 }
 
 // Entities with a sound field will generate looped sounds that are automatically started, stopped and merged together as the entities are sent to the client.
