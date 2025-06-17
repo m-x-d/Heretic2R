@@ -7,6 +7,7 @@
 #include "snd_sdl3.h"
 #include "client.h"
 #include "snd_main.h"
+#include "snd_LowpassFilter.h"
 #include <SDL3/SDL.h> //mxd. Needs to be included below engine stuff: includes stdbool.h, which messes up qboolean define...
 
 // Global stream handle.
@@ -16,6 +17,8 @@ static int playpos = 0;
 static int samplesize = 0;
 static int soundtime = 0;
 static int snd_scaletable[32][256];
+
+static LpfContext_t lpf_context;
 
 // Updates the volume scale table based on current volume setting.
 static void SDL_UpdateScaletable(void) // Q2: S_InitScaletable().
@@ -151,7 +154,7 @@ qboolean SDL_BackendInit(void)
 	sound.buffer = calloc(1, samplesize);
 
 	s_underwater_gain_hf->modified = true;
-	//lpf_initialize(&lpf_context, lpf_default_gain_hf, sound.speed); //TODO: implement.
+	LPF_Initialize(&lpf_context, LPF_DEFAULT_GAIN_HF, sound.speed);
 
 	SDL_UpdateScaletable();
 	SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(stream));

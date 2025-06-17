@@ -249,7 +249,7 @@ static void S_StopAllSounds(void)
 
 	// Clear all the channels.
 	memset(channels, 0, sizeof(channels));
-	// H2: no SDL_ClearBuffer() call.
+	// H2: no S_ClearBuffer() call.
 }
 
 static void S_StopAllSounds_Sounding(void) // H2

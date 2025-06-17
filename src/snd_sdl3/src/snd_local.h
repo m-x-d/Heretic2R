@@ -8,9 +8,18 @@
 
 #include "client.h"
 
+#define MAX_CHANNELS	32
+
 extern snd_import_t si;
 
 #pragma region ========================== Sound structures ==========================
+
+// Holds one sample with 2 channels.
+typedef struct
+{
+	int left;
+	int right;
+} portable_samplepair_t;
 
 //mxd. Moved from snd_loc.h. Not used outside of sound library.
 typedef struct sfxcache_s
@@ -85,8 +94,3 @@ typedef struct
 } channel_t;
 
 #pragma endregion
-
-#define MAX_CHANNELS	32
-extern channel_t channels[MAX_CHANNELS];
-
-extern playsound_t s_pendingplays;

@@ -16,6 +16,9 @@
     <ClInclude Include="src\snd_sdl3.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\snd_LowpassFilter.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="game">
@@ -33,6 +36,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\snd_sdl3.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\snd_LowpassFilter.c">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
