@@ -39,6 +39,12 @@ static void SDL_UpdateScaletable(void) // Q2: S_InitScaletable().
 	}
 }
 
+// Runs every frame, handles all necessary sound calculations and fills the playback buffer.
+void SDL_Update(void)
+{
+	NOT_IMPLEMENTED
+}
+
 // Callback function for SDL. Writes sound data to SDL when requested.
 static void SDL_Callback(byte* sdl_stream, const int length)
 {

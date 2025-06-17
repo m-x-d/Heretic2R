@@ -7,6 +7,7 @@
 #include "snd_main.h"
 #include "snd_ogg.h"
 #include "snd_sdl3.h"
+#include "Vector.h"
 
 #define SNDLIB_DECLSPEC __declspec(dllexport)
 
@@ -17,11 +18,24 @@ channel_t channels[MAX_CHANNELS];
 
 sound_t sound;
 
+static vec3_t listener_origin;
+static vec3_t listener_forward;
+static vec3_t listener_right;
+static vec3_t listener_up;
+
 static int s_registration_sequence;
 static qboolean s_registering;
 
 int paintedtime;
 int s_rawend;
+
+static float snd_attenuations[] = // H2
+{
+	0.0f,		// ATTN_NONE
+	0.0008f,	// ATTN_NORM
+	0.002f,		// ATTN_IDLE
+	0.006f		// ATTN_STATIC
+};
 
 static qboolean sound_started;
 static qboolean s_active;
@@ -261,7 +275,20 @@ static void S_StopAllSounds_Sounding(void) // H2
 // Called once each time through the main loop.
 static void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up)
 {
-	NOT_IMPLEMENTED
+	if (!sound_started || !s_active)
+		return;
+
+	//H2:
+	snd_attenuations[ATTN_NORM] = s_attn_norm->value;
+	snd_attenuations[ATTN_IDLE] = s_attn_idle->value;
+	snd_attenuations[ATTN_STATIC] = s_attn_static->value;
+
+	VectorCopy(origin, listener_origin);
+	VectorCopy(forward, listener_forward);
+	VectorCopy(right, listener_right);
+	VectorCopy(up, listener_up);
+
+	SDL_Update();
 }
 
 SNDLIB_DECLSPEC snd_export_t GetSoundAPI(const snd_import_t snd_import)
