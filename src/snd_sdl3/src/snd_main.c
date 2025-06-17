@@ -301,6 +301,13 @@ channel_t* S_PickChannel(const int entnum, const int entchannel)
 	return ch;
 }
 
+// Q2 counterpart.
+static playsound_t* S_AllocPlaysound(void)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 // Take the next playsound and begin it on the channel.
 // This is never called directly by S_Play*, but only by the update loop.
 void S_IssuePlaysound(playsound_t* ps)
@@ -308,13 +315,91 @@ void S_IssuePlaysound(playsound_t* ps)
 	NOT_IMPLEMENTED
 }
 
-// Q2 counterpart.
+static sfx_t* S_RegisterSexedSound(const entity_state_t* ent, char* base)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 // Validates the params and queues the sound up.
 // If origin is NULL, the sound will be dynamically sourced from the entity.
 // Entchannel 0 will never override a playing sound.
 static void S_StartSound(const vec3_t origin, const int ent_num, const int ent_channel, sfx_t* sfx, const float volume, const int attenuation, const float time_offset)
 {
-	NOT_IMPLEMENTED
+	static int s_beginofs = 0; //mxd. Made local static.
+
+	// YQ2: extra !s_active check: a hack to prevent temporary entities generating sounds when the sound backend is not active and the game is not paused.
+	if (!sound_started || !s_active || sfx == NULL || ent_num < 0 || ent_num >= MAX_EDICTS) //mxd. Add entnum sanity checks.
+		return;
+
+	if (sfx->name[0] == '*')
+	{
+		sfx = S_RegisterSexedSound(&si.cl_entities[ent_num].current, sfx->name);
+
+		if (sfx == NULL) // YQ2: extra sanity check.
+			return;
+	}
+
+	// Make sure the sound is loaded.
+	if (S_LoadSound(sfx) == NULL)
+		return;
+
+	// Make the playsound_t.
+	playsound_t* ps = S_AllocPlaysound();
+
+	if (ps == NULL)
+		return;
+
+	if (origin != NULL)
+	{
+		//TODO: add YQ2 GetBSPEntitySoundOrigin() logic?
+		VectorCopy(origin, ps->origin);
+		ps->fixed_origin = true;
+	}
+	else
+	{
+		ps->fixed_origin = false;
+	}
+
+	ps->entnum = ent_num;
+	ps->entchannel = ent_channel;
+	ps->attenuation_index = attenuation;
+	ps->volume = volume * 255.0f;
+	ps->sfx = sfx;
+
+	// Drift s_beginofs.
+	int start = (int)((float)si.cl->frame.servertime * 0.001f * (float)sound.speed) + s_beginofs;
+
+	if (start < paintedtime)
+	{
+		start = paintedtime;
+		s_beginofs = start - (int)((float)si.cl->frame.servertime * 0.001f * (float)sound.speed);
+	}
+	else if (start > (int)((float)paintedtime + 0.3f * (float)sound.speed))
+	{
+		start = (int)((float)paintedtime + 0.1f * (float)sound.speed);
+		s_beginofs = start - (int)((float)si.cl->frame.servertime * 0.001f * (float)sound.speed);
+	}
+	else
+	{
+		s_beginofs -= 10;
+	}
+
+	if (time_offset == 0.0f)
+		ps->begin = paintedtime;
+	else
+		ps->begin = (int)((float)start + time_offset * (float)sound.speed);
+
+	// Sort into the pending sound list.
+	playsound_t* sort = s_pendingplays.next;
+	while (sort != &s_pendingplays && sort->begin < ps->begin)
+		sort = sort->next;
+
+	ps->next = sort;
+	ps->prev = sort->prev;
+
+	ps->next->prev = ps;
+	ps->prev->next = ps;
 }
 
 // Q2 counterpart.
