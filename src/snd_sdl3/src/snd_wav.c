@@ -168,13 +168,48 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, const int wavlength) //
 	return info;
 }
 
-static short S_GetVolume(const byte* data, int sound_length, int width)
+static short S_GetVolume(const byte* data, const int sound_length, const int width) // YQ2
 {
-	NOT_IMPLEMENTED
-	return 0;
+	if (sound_length < 1) //mxd
+		return 0;
+
+	// Update sound volume.
+	double sound_volume = 0.0;
+
+	if (width == 2)
+	{
+		const short* sound_data = (const short*)data;
+		const short* sound_end = &sound_data[sound_length];
+
+		while (sound_data < sound_end)
+		{
+			const short sound_sample = LittleShort(*sound_data);
+			sound_volume += sound_sample * sound_sample;
+			sound_data++;
+		}
+	}
+	else if (width == 1)
+	{
+		const byte* sound_data = data;
+		const byte* sound_end = &sound_data[sound_length];
+
+		while (sound_data < sound_end)
+		{
+			// Normalize to 16 bit sound.
+			const short sound_sample = (short)(*sound_data << 8);
+			sound_volume += (sound_sample * sound_sample);
+			sound_data++;
+		}
+	}
+	else
+	{
+		si.Com_Error(ERR_DROP, "S_GetVolume: unsupported width %i!", width); //mxd
+	}
+
+	return (short)(sqrt(sound_volume / sound_length));
 }
 
-static void S_GetStatistics(const byte* data, int sound_length, int width, int channels, double sound_volume, int* begin_length, int* end_length, int* attack_length, int* fade_length)
+static void S_GetStatistics(const byte* data, int sound_length, int width, int channels, double sound_volume, int* begin_length, int* end_length, int* attack_length, int* fade_length) // YQ2
 {
 	NOT_IMPLEMENTED
 }
