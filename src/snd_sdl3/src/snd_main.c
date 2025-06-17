@@ -304,8 +304,30 @@ channel_t* S_PickChannel(const int entnum, const int entchannel)
 // Q2 counterpart.
 static playsound_t* S_AllocPlaysound(void)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	playsound_t* ps = s_freeplays.next;
+
+	if (ps == &s_freeplays)
+		return NULL; // No free playsounds. This results in stuttering an cracking.
+
+	// Unlink from freelist.
+	ps->prev->next = ps->next;
+	ps->next->prev = ps->prev;
+
+	return ps;
+}
+
+// Q2 counterpart.
+static void S_FreePlaysound(playsound_t* ps)
+{
+	// Unlink from channel.
+	ps->prev->next = ps->next;
+	ps->next->prev = ps->prev;
+
+	// Add to free list.
+	ps->next = s_freeplays.next;
+	s_freeplays.next->prev = ps;
+	ps->prev = &s_freeplays;
+	s_freeplays.next = ps;
 }
 
 // Take the next playsound and begin it on the channel.
