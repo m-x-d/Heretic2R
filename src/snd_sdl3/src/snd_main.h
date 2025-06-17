@@ -31,6 +31,4 @@ extern cvar_t* s_camera_under_surface; // H2
 
 extern void S_ClearBuffer(void);
 extern channel_t* S_PickChannel(int entnum, int entchannel);
-
-// Local forward declarations for snd_main.c:
-static void S_StopAllSounds(void);
+extern void S_StopAllSounds(void);

@@ -292,7 +292,7 @@ void S_ClearBuffer(void)
 	}
 }
 
-static void S_StopAllSounds(void)
+void S_StopAllSounds(void)
 {
 	if (!sound_started)
 		return;

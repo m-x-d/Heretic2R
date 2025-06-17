@@ -133,7 +133,28 @@ static void SDL_AddLoopSounds(void)
 // Calculates the absolute timecode of current playback.
 static void SDL_UpdateSoundtime(void)
 {
-	NOT_IMPLEMENTED
+	static int buffers;
+	static int oldsamplepos;
+
+	const int fullsamples = sound.samples / sound.channels;
+
+	// It is possible to miscount buffers if it has wrapped twice between calls to S_Update. Oh well.
+	if (playpos < oldsamplepos)
+	{
+		buffers++; // Buffer wrapped.
+
+		if (paintedtime > 0x40000000)
+		{
+			// Time to chop things off to avoid 32 bit limits.
+			buffers = 0;
+			paintedtime = fullsamples;
+
+			S_StopAllSounds();
+		}
+	}
+
+	oldsamplepos = playpos;
+	soundtime = buffers * fullsamples + playpos / sound.channels;
 }
 
 // Updates the volume scale table based on current volume setting.
