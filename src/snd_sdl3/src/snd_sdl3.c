@@ -33,9 +33,93 @@ static int snd_vol;
 
 static LpfContext_t lpf_context;
 
-static void SDL_TransferPaintBuffer(int endtime)
+// Transfers a mixed "paint buffer" to the SDL output buffer and places it at the appropriate position.
+static void SDL_TransferPaintBuffer(const int endtime)
 {
-	NOT_IMPLEMENTED
+	if ((int)s_testsound->value)
+	{
+		// Write a fixed sine wave.
+		const int count = endtime - paintedtime;
+
+		for (int i = 0; i < count; i++)
+		{
+			const int val = (int)(sinf((float)(paintedtime + i) * 0.1f) * 20000.0f * 256.0f);
+			paintbuffer[i].left = val;
+			paintbuffer[i].right = val;
+		}
+	}
+
+	// Optimized case.
+	if (sound.samplebits == 16 && sound.channels == 2)
+	{
+		const int* snd_p = (int*)paintbuffer;
+		int ls_paintedtime = paintedtime;
+
+		while (ls_paintedtime < endtime)
+		{
+			// Handle recirculating buffer issues.
+			const int lpos = ls_paintedtime & ((sound.samples >> 1) - 1);
+			short* snd_out = (short*)sound.buffer + (lpos << 1);
+
+			int snd_linear_count = (sound.samples >> 1) - lpos;
+			snd_linear_count = min(endtime - ls_paintedtime, snd_linear_count);
+			snd_linear_count <<= 1;
+
+			for (int i = 0; i < snd_linear_count; i += 2)
+			{
+				// Write left and right channels.
+				for (int c = 0; c < 2; c++)
+				{
+					const int val = snd_p[i + c] >> 8;
+					snd_out[i + c] = (short)ClampI(val, -0x8000, 0x7fff);
+				}
+			}
+
+			snd_p += snd_linear_count;
+			ls_paintedtime += (snd_linear_count >> 1);
+		}
+
+		return;
+	}
+
+	// General case.
+	const int* p = (int*)paintbuffer;
+	int count = (endtime - paintedtime) * sound.channels;
+	const int out_mask = sound.samples - 1;
+	int out_idx = (paintedtime * sound.channels) & out_mask;
+	const int step = 3 - sound.channels;
+
+	if (sound.samplebits == 16)
+	{
+		short* out = (short*)sound.buffer;
+
+		while (count--)
+		{
+			const int val = *p >> 8;
+			p += step;
+
+			out[out_idx] = (short)ClampI(val, -0x8000, 0x7fff);
+			out_idx = (out_idx + 1) & out_mask;
+		}
+	}
+	else if (sound.samplebits == 8)
+	{
+		byte* out = sound.buffer;
+
+		while (count--)
+		{
+			int val = *p >> 8;
+			p += step;
+
+			val = ClampI(val, -0x8000, 0x7fff);
+
+			// FIXME: val might be negative and right-shifting it is implementation defined
+			//        on x86 it does sign extension (=> fills up with 1 bits from the left)
+			//        so this /might/ break on other platforms - if it does, look at this code again.
+			out[out_idx] = (byte)((val >> 8) + 128);
+			out_idx = (out_idx + 1) & out_mask;
+		}
+	}
 }
 
 // Mixes an 8 bit sample into a channel.
