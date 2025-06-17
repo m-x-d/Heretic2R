@@ -749,5 +749,17 @@ qboolean SDL_BackendInit(void)
 // Shuts the SDL backend down.
 void SDL_BackendShutdown(void)
 {
-	NOT_IMPLEMENTED
+	si.Com_Printf("Closing SDL audio device...\n");
+
+	SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(stream));
+	SDL_DestroyAudioStream(stream);
+	SDL_QuitSubSystem(SDL_INIT_AUDIO);
+
+	free(sound.buffer);
+	sound.buffer = NULL;
+
+	playpos = 0;
+	samplesize = 0;
+
+	si.Com_Printf("SDL audio device shut down.\n");
 }
