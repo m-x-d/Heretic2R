@@ -17,3 +17,9 @@ void OGG_Init(void)
 {
 	//NOT_IMPLEMENTED //TODO: implement when the rest of the sound logic is in.
 }
+
+// Shutdown the Ogg Vorbis subsystem.
+void OGG_Shutdown(void)
+{
+	//NOT_IMPLEMENTED //TODO: implement when the rest of the sound logic is in.
+}

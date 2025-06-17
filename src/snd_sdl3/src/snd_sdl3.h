@@ -9,6 +9,7 @@
 #include "snd_local.h"
 
 extern qboolean SDL_BackendInit(void);
+extern void SDL_BackendShutdown(void);
 
 extern void SDL_Update(void);
 extern void SDL_Spatialize(channel_t* ch);

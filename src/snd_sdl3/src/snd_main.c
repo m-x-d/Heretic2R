@@ -155,9 +155,31 @@ static void S_Init(void)
 	si.Com_Printf("------------------------------------\n");
 }
 
+// Shutdown sound engine.
 static void S_Shutdown(void)
 {
-	NOT_IMPLEMENTED
+	if (!sound_started)
+		return;
+
+	si.Cmd_RemoveCommand("play");
+	si.Cmd_RemoveCommand("stopsound");
+	si.Cmd_RemoveCommand("soundlist");
+	si.Cmd_RemoveCommand("soundinfo");
+
+	S_StopAllSounds();
+	OGG_Shutdown();
+
+	// Free all sounds.
+	sfx_t* sfx = &known_sfx[0];
+	for (int i = 0; i < num_sfx; i++, sfx++)
+		if (sfx->name[0] != 0 && sfx->cache != NULL)
+			si.Z_Free(sfx->cache);
+
+	memset(known_sfx, 0, sizeof(known_sfx));
+	num_sfx = 0;
+
+	SDL_BackendShutdown();
+	sound_started = false;
 }
 
 // Q2 counterpart.

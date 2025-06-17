@@ -745,3 +745,9 @@ qboolean SDL_BackendInit(void)
 
 	return true;
 }
+
+// Shuts the SDL backend down.
+void SDL_BackendShutdown(void)
+{
+	NOT_IMPLEMENTED
+}
