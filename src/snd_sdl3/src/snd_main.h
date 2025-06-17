@@ -10,6 +10,11 @@
 
 extern sound_t sound; // Q2: dma_t dma.
 
+extern vec3_t listener_origin;
+extern vec3_t listener_forward;
+extern vec3_t listener_right;
+extern vec3_t listener_up;
+
 extern int paintedtime;
 extern int s_rawend;
 extern float snd_attenuations[]; //mxd

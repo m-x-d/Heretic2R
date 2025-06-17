@@ -19,10 +19,10 @@ channel_t channels[MAX_CHANNELS];
 
 sound_t sound;
 
-static vec3_t listener_origin;
-static vec3_t listener_forward;
-static vec3_t listener_right;
-static vec3_t listener_up;
+vec3_t listener_origin;
+vec3_t listener_forward;
+vec3_t listener_right;
+vec3_t listener_up;
 
 static int s_registration_sequence;
 static qboolean s_registering;

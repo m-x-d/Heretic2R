@@ -251,7 +251,47 @@ static void SDL_PaintChannels(const int endtime)
 // Used for spatializing channels and autosounds.
 static void SDL_SpatializeOrigin(const vec3_t origin, const float master_vol, const float dist_mult, int* left_vol, int* right_vol)
 {
-	NOT_IMPLEMENTED
+	if (si.cls->state != ca_active)
+	{
+		*left_vol = 255;
+		*right_vol = 255;
+
+		return;
+	}
+
+	// Calculate stereo separation and distance attenuation.
+	vec3_t source_vec;
+	VectorSubtract(origin, listener_origin, source_vec);
+
+	float dist = VectorNormalize(source_vec);
+	dist = max(0.0f, dist - SDL_FULLVOLUME); // Close enough to be at full volume.
+	dist *= dist_mult; // Different attenuation levels.
+
+	float lscale;
+	float rscale;
+
+	if (sound.channels == 1 || dist_mult == 0.0f)
+	{
+		// No attenuation -> no spatialization.
+		rscale = 1.0f;
+		lscale = 1.0f;
+	}
+	else
+	{
+		const float dot = DotProduct(listener_right, source_vec);
+
+		rscale = 0.5f * (1.0f + dot);
+		lscale = 0.5f * (1.0f - dot);
+	}
+
+	// Add in distance effect.
+	float scale = (1.0f - dist) * rscale;
+	*right_vol = (int)(master_vol * scale);
+	*right_vol = max(0, *right_vol);
+
+	scale = (1.0f - dist) * lscale;
+	*left_vol = (int)(master_vol * scale);
+	*left_vol = max(0, *left_vol);
 }
 
 void SDL_Spatialize(channel_t* ch)
