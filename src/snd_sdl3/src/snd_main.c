@@ -334,7 +334,47 @@ static void S_FreePlaysound(playsound_t* ps)
 // This is never called directly by S_Play*, but only by the update loop.
 void S_IssuePlaysound(playsound_t* ps)
 {
-	NOT_IMPLEMENTED
+	if (ps == NULL) // YQ2: extra NULL check.
+		return;
+
+	if ((int)s_show->value)
+		si.Com_Printf("Issue %i\n", ps->begin);
+
+	// Pick a channel to play on.
+	channel_t* ch = S_PickChannel(ps->entnum, ps->entchannel);
+
+	if (ch == NULL)
+	{
+		S_FreePlaysound(ps);
+		return;
+	}
+
+	const sfxcache_t* sc = S_LoadSound(ps->sfx);
+
+	if (sc == NULL) // YQ2: extra NULL check.
+	{
+		si.Com_Printf("S_IssuePlaysound: couldn't load '%s'\n", ps->sfx->name);
+		S_FreePlaysound(ps);
+
+		return;
+	}
+
+	// Spatialize.
+	ch->dist_mult = snd_attenuations[ps->attenuation_index]; // H2
+	ch->master_vol = (int)ps->volume;
+	ch->entnum = ps->entnum;
+	ch->entchannel = ps->entchannel;
+	ch->sfx = ps->sfx;
+	ch->flags = ps->attenuation_index; // H2. Never used...
+	VectorCopy(ps->origin, ch->origin);
+	ch->fixed_origin = ps->fixed_origin;
+	ch->pos = 0;
+	ch->end = paintedtime + sc->length;
+	
+	SDL_Spatialize(ch);
+
+	// Free the playsound.
+	S_FreePlaysound(ps);
 }
 
 static sfx_t* S_RegisterSexedSound(const entity_state_t* ent, char* base)
