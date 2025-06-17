@@ -21,3 +21,4 @@ typedef struct
 } LpfContext_t;
 
 extern void LPF_Initialize(LpfContext_t* lpf_context, float gain_hf, int target_frequency);
+extern void LPF_UpdateSamples(LpfContext_t* lpf_context, int sample_count, portable_samplepair_t* samples);

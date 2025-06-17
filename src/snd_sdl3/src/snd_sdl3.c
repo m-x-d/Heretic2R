@@ -9,28 +9,158 @@
 #include "snd_main.h"
 #include "snd_LowpassFilter.h"
 #include "snd_ogg.h"
+#include "snd_wav.h"
 #include "Vector.h"
 #include "g_local.h"
 #include <SDL3/SDL.h> //mxd. Needs to be included below engine stuff: includes stdbool.h, which messes up qboolean define...
 
-// Only begin attenuating sound volumes when outside the FULLVOLUME range.
-#define SOUND_FULLVOLUME	80
-#define ENT_ATTEN_MASK		(255 - ENT_VOL_MASK) //mxd
+#define SDL_PAINTBUFFER_SIZE 2048
+#define SDL_FULLVOLUME	80 // Only begin attenuating sound volumes when outside the FULLVOLUME range.
+
+#define ENT_ATTEN_MASK	(255 - ENT_VOL_MASK) //mxd
 
 // Global stream handle.
 static SDL_AudioStream* stream;
+
+static portable_samplepair_t paintbuffer[SDL_PAINTBUFFER_SIZE];
+static portable_samplepair_t s_rawsamples[MAX_RAW_SAMPLES];
 
 static int playpos = 0;
 static int samplesize = 0;
 static int soundtime = 0;
 static int snd_scaletable[32][256];
+static int snd_vol;
 
 static LpfContext_t lpf_context;
 
-// Mixes all pending sounds into the available output channels.
-static void SDL_PaintChannels(int endtime)
+static void SDL_TransferPaintBuffer(int endtime)
 {
 	NOT_IMPLEMENTED
+}
+
+// Mixes an 8 bit sample into a channel.
+static void SDL_PaintChannelFrom8(channel_t * ch, sfxcache_t * sc, int count, int offset)
+{
+	NOT_IMPLEMENTED
+}
+
+// Mixes an 16 bit sample into a channel.
+static void SDL_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int count, int offset)
+{
+	NOT_IMPLEMENTED
+}
+
+// Mixes all pending sounds into the available output channels.
+static void SDL_PaintChannels(const int endtime)
+{
+	snd_vol = (int)(s_volume->value * 256.0f);
+
+	while (paintedtime < endtime)
+	{
+		// If paintbuffer is smaller than SDL buffer.
+		int end = min(endtime, paintedtime + SDL_PAINTBUFFER_SIZE);
+
+		// Start any playsounds.
+		while (true)
+		{
+			playsound_t* ps = s_pendingplays.next;
+
+			if (ps == NULL || ps == &s_pendingplays) // YQ2: extra NULL check.
+				break; // No more pending sounds.
+
+			if ((int)ps->begin <= paintedtime)
+			{
+				S_IssuePlaysound(ps);
+				continue;
+			}
+
+			if ((int)ps->begin < end)
+				end = (int)ps->begin; // Stop here.
+
+			break;
+		}
+
+		// Clear the paint buffer.
+		memset(paintbuffer, 0, (end - paintedtime) * sizeof(portable_samplepair_t)); // H2: no s_rawend logic.
+
+		// Paint in the channels.
+		channel_t* ch = &channels[0];
+		for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+		{
+			int ltime = paintedtime;
+
+			while (ltime < end)
+			{
+				if (ch->sfx == NULL || (ch->leftvol == 0 && ch->rightvol == 0))
+					break;
+
+				// Max painting is to the end of the buffer.
+				int count = end - ltime;
+
+				// Might be stopped by running out of data.
+				if (ch->end - ltime < count)
+					count = ch->end - ltime;
+
+				sfxcache_t* sc = S_LoadSound(ch->sfx);
+
+				if (sc == NULL)
+					break;
+
+				if (count > 0)
+				{
+					if (sc->width == 1)
+						SDL_PaintChannelFrom8(ch, sc, count, ltime - paintedtime);
+					else
+						SDL_PaintChannelFrom16(ch, sc, count, ltime - paintedtime);
+
+					ltime += count;
+				}
+
+				// If at end of loop, restart.
+				if (ltime >= ch->end)
+				{
+					if (ch->autosound)
+					{
+						// Autolooping sounds always go back to start.
+						ch->pos = 0;
+						ch->end = ltime + sc->length;
+					}
+					else if (sc->loopstart >= 0)
+					{
+						ch->pos = sc->loopstart;
+						ch->end = ltime + sc->length - ch->pos;
+					}
+					else
+					{
+						// Channel just stopped.
+						ch->sfx = NULL;
+					}
+				}
+			}
+		}
+
+		if ((int)s_camera_under_surface->value)
+			LPF_UpdateSamples(&lpf_context, end - paintedtime, paintbuffer);
+		else
+			lpf_context.is_history_initialized = false;
+
+		if (s_rawend >= paintedtime)
+		{
+			// Add from the streaming sound source.
+			const int stop = (end < s_rawend) ? end : s_rawend;
+
+			for (int i = paintedtime; i < stop; i++)
+			{
+				const int s = i & (MAX_RAW_SAMPLES - 1);
+				paintbuffer[i - paintedtime].left += s_rawsamples[s].left;
+				paintbuffer[i - paintedtime].right += s_rawsamples[s].right;
+			}
+		}
+
+		// Transfer out according to SDL format.
+		SDL_TransferPaintBuffer(end);
+		paintedtime = end;
+	}
 }
 
 // Q2 counterpart.

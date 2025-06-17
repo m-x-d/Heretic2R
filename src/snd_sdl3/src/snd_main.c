@@ -262,6 +262,13 @@ channel_t* S_PickChannel(const int entnum, const int entchannel)
 	return NULL;
 }
 
+// Take the next playsound and begin it on the channel.
+// This is never called directly by S_Play*, but only by the update loop.
+void S_IssuePlaysound(playsound_t* ps)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart.
 // Validates the params and queues the sound up.
 // If origin is NULL, the sound will be dynamically sourced from the entity.

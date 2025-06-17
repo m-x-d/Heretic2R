@@ -25,3 +25,8 @@ void LPF_Initialize(LpfContext_t* lpf_context, const float gain_hf, const int ta
 	lpf_context->gain_hf = gain_hf;
 	lpf_context->is_history_initialized = false;
 }
+
+void LPF_UpdateSamples(LpfContext_t* lpf_context, int sample_count, portable_samplepair_t* samples)
+{
+	NOT_IMPLEMENTED
+}
