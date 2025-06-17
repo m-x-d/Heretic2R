@@ -433,7 +433,7 @@ extern snd_export_t se; //mxd
 //mxd. Functions imported by the sound library module.
 typedef struct
 {
-	void* cl_hwnd;
+	void* cl_hwnd; //TODO: remove? Unused by snd_sdl3.
 
 	client_state_t* cl;
 	client_static_t* cls;

@@ -92,9 +92,12 @@ static void S_SoundInfo_f(void)
 #pragma endregion
 
 // Activate or deactivate sound backend.
-static void S_Activate(qboolean active)
+static void S_Activate(const qboolean active)
 {
-	NOT_IMPLEMENTED
+	s_active = active;
+
+	if (!active)
+		S_StopAllSounds();
 }
 
 // Initializes the sound system and it's requested backend.
