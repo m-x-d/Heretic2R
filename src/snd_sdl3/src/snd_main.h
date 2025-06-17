@@ -21,8 +21,11 @@ extern cvar_t* s_sounddir; // H2
 extern cvar_t* s_testsound;
 extern cvar_t* s_loadas8bit;
 extern cvar_t* s_khz;
+extern cvar_t* s_show; //mxd
+extern cvar_t* s_mixahead; //mxd
 
 extern cvar_t* s_underwater_gain_hf; // YQ2
+extern cvar_t* s_camera_under_surface; // H2
 
 extern sfxcache_t* S_LoadSound(sfx_t* s);
 extern void S_ClearBuffer(void);

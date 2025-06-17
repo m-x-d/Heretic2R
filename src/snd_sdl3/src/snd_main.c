@@ -56,8 +56,8 @@ cvar_t* s_sounddir; // H2
 cvar_t* s_testsound;
 cvar_t* s_loadas8bit;
 cvar_t* s_khz;
-static cvar_t* s_show;
-static cvar_t* s_mixahead;
+cvar_t* s_show;
+cvar_t* s_mixahead;
 static cvar_t* s_paused; //mxd
 
 // H2: sound attenuation cvars.
@@ -66,6 +66,7 @@ static cvar_t* s_attn_idle;
 static cvar_t* s_attn_static;
 
 cvar_t* s_underwater_gain_hf; // YQ2
+cvar_t* s_camera_under_surface; // H2
 
 #pragma region ========================== Console commands ==========================
 
@@ -123,6 +124,7 @@ static void S_Init(void)
 		s_testsound = si.Cvar_Get("s_testsound", "0", 0);
 
 		s_underwater_gain_hf = si.Cvar_Get("s_underwater_gain_hf", "0.25", CVAR_ARCHIVE); // YQ2
+		s_camera_under_surface = si.Cvar_Get("cl_camera_under_surface", "0.0", 0); // H2
 		//TODO: implement s_feedback_kind YQ2 logic?
 
 		// H2: extra attenuation cvars.
@@ -277,6 +279,13 @@ static void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t rig
 {
 	if (!sound_started || !s_active)
 		return;
+
+	// If the loading plaque is up, clear everything out to make sure we aren't looping a dirty dma buffer while loading.
+	if (si.cls->disable_screen)
+	{
+		S_ClearBuffer();
+		return;
+	}
 
 	//H2:
 	snd_attenuations[ATTN_NORM] = s_attn_norm->value;

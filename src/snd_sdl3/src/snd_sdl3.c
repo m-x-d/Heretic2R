@@ -8,6 +8,7 @@
 #include "client.h"
 #include "snd_main.h"
 #include "snd_LowpassFilter.h"
+#include "snd_ogg.h"
 #include <SDL3/SDL.h> //mxd. Needs to be included below engine stuff: includes stdbool.h, which messes up qboolean define...
 
 // Global stream handle.
@@ -19,6 +20,28 @@ static int soundtime = 0;
 static int snd_scaletable[32][256];
 
 static LpfContext_t lpf_context;
+
+// Mixes all pending sounds into the available output channels.
+static void SDL_PaintChannels(int endtime)
+{
+	NOT_IMPLEMENTED
+}
+
+void SDL_Spatialize(channel_t* ch)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SDL_AddLoopSounds(void)
+{
+	NOT_IMPLEMENTED
+}
+
+// Calculates the absolute timecode of current playback.
+static void SDL_UpdateSoundtime(void)
+{
+	NOT_IMPLEMENTED
+}
 
 // Updates the volume scale table based on current volume setting.
 static void SDL_UpdateScaletable(void) // Q2: S_InitScaletable().
@@ -42,7 +65,81 @@ static void SDL_UpdateScaletable(void) // Q2: S_InitScaletable().
 // Runs every frame, handles all necessary sound calculations and fills the playback buffer.
 void SDL_Update(void)
 {
-	NOT_IMPLEMENTED
+	if (s_underwater_gain_hf->modified)
+	{
+		s_underwater_gain_hf->modified = false;
+		LPF_Initialize(&lpf_context, s_underwater_gain_hf->value, sound.speed);
+	}
+
+	// Rebuild scale tables if volume is modified.
+	if (s_volume->modified)
+		SDL_UpdateScaletable();
+
+	// Update spatialization for dynamic sounds.
+	channel_t* ch = &channels[0];
+	for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+	{
+		if (ch->sfx == NULL)
+			continue;
+
+		if (ch->autosound)
+			memset(ch, 0, sizeof(*ch)); // Autosounds are regenerated fresh each frame.
+		else
+			SDL_Spatialize(ch); // Re-spatialize channel.
+
+		// Clear channel when it can't be heard.
+		if (ch->leftvol == 0 && ch->rightvol == 0)
+			memset(ch, 0, sizeof(*ch));
+	}
+
+	// Add looping sounds.
+	SDL_AddLoopSounds();
+
+	// Debugging output.
+	if ((int)s_show->value)
+	{
+		int total_sounds = 0;
+
+		ch = &channels[0];
+		for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+		{
+			if (ch->sfx != NULL && (ch->leftvol > 0 || ch->rightvol > 0))
+			{
+				si.Com_Printf("%3i %3i %s\n", ch->leftvol, ch->rightvol, ch->sfx->name);
+				total_sounds++;
+			}
+		}
+
+		si.Com_Printf("----(%i)---- painted: %i\n", total_sounds, paintedtime);
+	}
+
+	// Stream music.
+	OGG_Stream();
+
+	if (sound.buffer == NULL)
+		return;
+
+	// Mix the samples.
+	SDL_UpdateSoundtime();
+
+	if (soundtime == 0)
+		return;
+
+	// Check to make sure that we haven't overshot.
+	if (paintedtime < soundtime)
+	{
+		si.Com_DPrintf("SDL_Update: overflow\n");
+		paintedtime = soundtime;
+	}
+
+	// Mix ahead of current position.
+	uint endtime = soundtime + (int)(s_mixahead->value * (float)sound.speed);
+
+	// Mix to an even submission block size.
+	endtime = (endtime + sound.submission_chunk - 1) & ~(sound.submission_chunk - 1);
+
+	const uint samps = sound.samples >> (sound.channels - 1);
+	SDL_PaintChannels(min(endtime, soundtime + samps));
 }
 
 // Callback function for SDL. Writes sound data to SDL when requested.

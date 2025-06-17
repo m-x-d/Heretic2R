@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include "q_Typedef.h"
+#include "snd_local.h"
 
 extern qboolean SDL_BackendInit(void);
 
 extern void SDL_Update(void);
+extern void SDL_Spatialize(channel_t* ch);
