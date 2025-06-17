@@ -123,15 +123,43 @@ static void SDL_TransferPaintBuffer(const int endtime)
 }
 
 // Mixes an 8 bit sample into a channel.
-static void SDL_PaintChannelFrom8(channel_t * ch, sfxcache_t * sc, int count, int offset)
+static void SDL_PaintChannelFrom8(channel_t * ch, const sfxcache_t * sc, const int count, const int offset)
 {
-	NOT_IMPLEMENTED
+	const int leftvol = min(255, ch->leftvol) & ENT_VOL_MASK; // H2: &ENT_VOL_MASK.
+	const int rightvol = min(255, ch->rightvol) & ENT_VOL_MASK; // H2: &ENT_VOL_MASK.
+
+	//ZOID-- >>11 has been changed to >>3, >>11 didn't make much sense as it would always be zero.
+	const int* lscale = snd_scaletable[leftvol >> 3];
+	const int* rscale = snd_scaletable[rightvol >> 3];
+	const byte* sfx = &sc->data[ch->pos];
+
+	portable_samplepair_t* samp = &paintbuffer[offset];
+	for (int i = 0; i < count; i++, samp++)
+	{
+		const int data = sfx[i];
+		samp->left += lscale[data];
+		samp->right += rscale[data];
+	}
+
+	ch->pos += count;
 }
 
+// Q2 counterpart.
 // Mixes an 16 bit sample into a channel.
-static void SDL_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int count, int offset)
+static void SDL_PaintChannelFrom16(channel_t* ch, const sfxcache_t* sc, const int count, const int offset)
 {
-	NOT_IMPLEMENTED
+	const int leftvol = ch->leftvol * snd_vol;
+	const int rightvol = ch->rightvol * snd_vol;
+	const short* sfx = (const short*)sc->data + ch->pos;
+
+	portable_samplepair_t* samp = &paintbuffer[offset];
+	for (int i = 0; i < count; i++, samp++)
+	{
+		samp->left += (sfx[i] * leftvol) >> 8;
+		samp->right += (sfx[i] * rightvol) >> 8;
+	}
+
+	ch->pos += count;
 }
 
 // Mixes all pending sounds into the available output channels.
