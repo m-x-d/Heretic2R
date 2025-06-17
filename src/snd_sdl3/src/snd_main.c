@@ -179,8 +179,16 @@ static void S_BeginRegistration(void)
 // Q2 counterpart.
 static sfx_t* S_RegisterSound(const char* name)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (!sound_started)
+		return NULL;
+
+	sfx_t* sfx = S_FindName(name, true);
+	sfx->registration_sequence = s_registration_sequence;
+
+	if (!s_registering)
+		S_LoadSound(sfx);
+
+	return sfx;
 }
 
 // Q2 counterpart.
