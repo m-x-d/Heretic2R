@@ -27,7 +27,6 @@ extern cvar_t* s_mixahead; //mxd
 extern cvar_t* s_underwater_gain_hf; // YQ2
 extern cvar_t* s_camera_under_surface; // H2
 
-extern sfxcache_t* S_LoadSound(sfx_t* s);
 extern void S_ClearBuffer(void);
 
 // Local forward declarations for snd_main.c:

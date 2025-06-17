@@ -7,6 +7,7 @@
 #include "snd_main.h"
 #include "snd_ogg.h"
 #include "snd_sdl3.h"
+#include "snd_wav.h"
 #include "Vector.h"
 
 #define SNDLIB_DECLSPEC __declspec(dllexport)
@@ -89,12 +90,6 @@ static void S_SoundInfo_f(void)
 }
 
 #pragma endregion
-
-sfxcache_t* S_LoadSound(sfx_t* s)
-{
-	NOT_IMPLEMENTED
-	return NULL;
-}
 
 // Activate or deactivate sound backend.
 static void S_Activate(qboolean active)

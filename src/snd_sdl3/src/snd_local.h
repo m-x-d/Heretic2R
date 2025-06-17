@@ -93,4 +93,15 @@ typedef struct
 	qboolean autosound;		// From an entity->sound, cleared each frame.
 } channel_t;
 
+// Information read from wave file header.
+typedef struct
+{
+	int rate;
+	int width;
+	int channels;
+	int loopstart;
+	int samples;
+	int dataofs; // Chunk starts this many bytes from file start.
+} wavinfo_t;
+
 #pragma endregion

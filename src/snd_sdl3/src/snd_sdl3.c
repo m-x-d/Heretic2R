@@ -62,6 +62,12 @@ static void SDL_UpdateScaletable(void) // Q2: S_InitScaletable().
 	}
 }
 
+qboolean SDL_Cache(sfx_t* sfx, const wavinfo_t* info, byte* data, short volume, int begin_length, int  end_length, int attack_length, int fade_length)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 // Runs every frame, handles all necessary sound calculations and fills the playback buffer.
 void SDL_Update(void)
 {
