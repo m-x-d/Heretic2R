@@ -103,7 +103,38 @@ static void S_Play_f(void) //mxd. Named 'S_Play' in original logic.
 // Q2 counterpart.
 static void S_SoundList_f(void) //mxd. Named 'S_SoundList' in original logic.
 {
-	NOT_IMPLEMENTED
+	int num_total = 0; //mxd
+	int bytes_total = 0;
+
+	sfx_t* sfx = &known_sfx[0];
+	for (int i = 0; i < num_sfx; i++, sfx++)
+	{
+		if (sfx->registration_sequence == 0 || sfx->name[0] == 0) // YQ2: extra sfx->name[0] check.
+			continue;
+
+		const sfxcache_t* sc = sfx->cache;
+
+		if (sc != NULL)
+		{
+			const int size = sc->length * sc->width * (sc->stereo + 1);
+			bytes_total += size;
+
+			si.Com_Printf(sc->loopstart >= 0 ? "L" : " ");
+			si.Com_Printf("(%2db) %6i : %s\n", sc->width * 8, size, sfx->name);
+		}
+		else if (sfx->name[0] == '*')
+		{
+			si.Com_Printf("  placeholder : %s\n", sfx->name);
+		}
+		else
+		{
+			si.Com_Printf("  not loaded  : %s\n", sfx->name);
+		}
+
+		num_total++;
+	}
+
+	si.Com_Printf("Used %i of %i sounds. Total resident: %i bytes (%.2f MB).\n", num_total, MAX_SFX, bytes_total, (float)bytes_total / 1024.0f / 1024.0f);
 }
 
 // Q2 counterpart.
