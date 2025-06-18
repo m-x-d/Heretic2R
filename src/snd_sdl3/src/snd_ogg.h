@@ -10,3 +10,4 @@ extern void OGG_Init(void);
 extern void OGG_Shutdown(void);
 
 extern void OGG_Stream(void);
+extern void OGG_Stop(void);

@@ -22,9 +22,19 @@ static int ogg_numsamples; // Number of samples read from the current file.
 static ogg_status_t ogg_status; // Status indicator.
 static qboolean ogg_started;
 
+#define MAX_OGG_TRACKS	128
+static char* ogg_tracks[MAX_OGG_TRACKS];
+static int ogg_maxfileindex;
+
 void OGG_Stream(void)
 {
 	//NOT_IMPLEMENTED //TODO: implement when the rest of the sound logic is in.
+}
+
+// Stop playing the current file.
+void OGG_Stop(void)
+{
+	NOT_IMPLEMENTED
 }
 
 // Initialize the Ogg Vorbis subsystem.
@@ -44,5 +54,22 @@ void OGG_Init(void)
 // Shutdown the Ogg Vorbis subsystem.
 void OGG_Shutdown(void)
 {
-	//NOT_IMPLEMENTED //TODO: implement when the rest of the sound logic is in.
+	if (!ogg_started)
+		return;
+
+	// Music must be stopped.
+	OGG_Stop();
+
+	// Free file list.
+	for (int i = 0; i < MAX_OGG_TRACKS; i++)
+	{
+		if (ogg_tracks[i] != NULL)
+		{
+			free(ogg_tracks[i]);
+			ogg_tracks[i] = NULL;
+		}
+	}
+
+	ogg_maxfileindex = 0;
+	ogg_started = false;
 }
