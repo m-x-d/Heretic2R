@@ -192,9 +192,7 @@ void PrepAddEffectsToView(void)
 
 int AddEffectsToView(client_entity_t** root, centity_t* owner)
 {
-	int	num_fx = 0;
-
-	cl_camera_under_surface = Cvar_Get("cl_camera_under_surface", "0", 0);
+	int num_fx = 0;
 
 	assert(root);
 	assert(*root);
