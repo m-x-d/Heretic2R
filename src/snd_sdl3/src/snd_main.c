@@ -74,7 +74,30 @@ cvar_t* s_camera_under_surface; // H2
 // Q2 counterpart.
 static void S_Play_f(void) //mxd. Named 'S_Play' in original logic.
 {
-	NOT_IMPLEMENTED
+	for (int i = 1; i < si.Cmd_Argc(); i++)
+	{
+		char name[256];
+		strcpy_s(name, sizeof(name), si.Cmd_Argv(i)); //mxd. strcpy -> strcpy_s.
+
+		if (strstr(name, "..") || name[0] == '/' || name[0] == '\\') // YQ2: extra sanity check.
+		{
+			si.Com_Printf("Bad sound filename: '%s'\n", name);
+			continue;
+		}
+
+		if (strrchr(si.Cmd_Argv(i), '.') == NULL)
+			strcat_s(name, sizeof(name), ".wav"); //mxd. strcat -> strcat_s.
+
+		sfx_t* sfx = S_RegisterSound(name);
+
+		if (sfx->cache == NULL) //mxd
+		{
+			si.Com_Printf("Failed to load sound '%s'\n", sfx->name);
+			continue;
+		}
+
+		S_StartSound(NULL, si.cl->playernum + 1, CHAN_AUTO, sfx, 1.0f, ATTN_NORM, 0.0f);
+	}
 }
 
 // Q2 counterpart.
