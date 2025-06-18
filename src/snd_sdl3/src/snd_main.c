@@ -11,6 +11,7 @@
 #include "Vector.h"
 
 #define SNDLIB_DECLSPEC __declspec(dllexport)
+#define SNDLIB_NAME	"SDL3"
 
 snd_import_t si;
 
@@ -137,10 +138,23 @@ static void S_SoundList_f(void) //mxd. Named 'S_SoundList' in original logic.
 	si.Com_Printf("Used %i of %i sounds. Total resident: %i bytes (%.2f MB).\n", num_total, MAX_SFX, bytes_total, (float)bytes_total / 1024.0f / 1024.0f);
 }
 
-// Q2 counterpart.
 static void S_SoundInfo_f(void)
 {
-	NOT_IMPLEMENTED
+	if (sound_started)
+	{
+		si.Com_Printf("sounddir: %s\n", s_sounddir->string); // H2
+		si.Com_Printf("%5d stereo\n", sound.channels - 1);
+		si.Com_Printf("%5d samples\n", sound.samples);
+		si.Com_Printf("%5d samplepos\n", sound.samplepos);
+		si.Com_Printf("%5d samplebits\n", sound.samplebits);
+		si.Com_Printf("%5d submission_chunk\n", sound.submission_chunk);
+		si.Com_Printf("%5d speed\n", sound.speed);
+		si.Com_Printf("%p sound buffer\n", sound.buffer);
+	}
+	else
+	{
+		si.Com_Printf(SNDLIB_NAME" sound system not started\n");
+	}
 }
 
 #pragma endregion
@@ -683,7 +697,7 @@ SNDLIB_DECLSPEC snd_export_t GetSoundAPI(const snd_import_t snd_import)
 	si = snd_import;
 
 	snd_export.api_version = SND_API_VERSION;
-	snd_export.library_name = "SDL3";
+	snd_export.library_name = SNDLIB_NAME;
 
 	snd_export.Init = S_Init;
 	snd_export.Shutdown = S_Shutdown;
