@@ -13,7 +13,6 @@
 #include <stdlib.h>
 
 #include "console.h"
-#include "cl_music.h" //mxd. Was "cdaudio.h" in H2
 #include "input.h"
 #include "keys.h"
 #include "LevelMaps.h"
@@ -425,6 +424,10 @@ typedef struct
 
 	struct sfx_s* (*FindName)(const char* name, qboolean create);
 
+	// Music playback.
+	void (*MusicPlay)(int track, qboolean looping);
+	void (*MusicStop)(void);
+
 	void (*SetEaxEnvironment)(int env_index);
 } snd_export_t;
 
@@ -457,6 +460,7 @@ typedef struct
 	void (*FS_FCloseFile)(FILE* f);
 	int (*FS_LoadFile)(const char* name, void** buf);
 	void (*FS_FreeFile)(void* buf);
+	char* (*FS_Gamedir)(void);
 
 	void* (*Z_Malloc)(int size);
 	void (*Z_Free)(void* ptr);

@@ -243,9 +243,6 @@
     <ClCompile Include="..\client\cl_effects.c">
       <Filter>client</Filter>
     </ClCompile>
-    <ClCompile Include="..\client\cl_music.c">
-      <Filter>client</Filter>
-    </ClCompile>
     <ClCompile Include="..\client\cl_messages.c">
       <Filter>client</Filter>
     </ClCompile>
@@ -487,9 +484,6 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\tokens.h">
       <Filter>qcommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\client\cl_music.h">
-      <Filter>client</Filter>
     </ClInclude>
     <ClInclude Include="..\client\cl_messages.h">
       <Filter>client</Filter>

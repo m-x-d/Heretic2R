@@ -240,13 +240,12 @@ static void AppActivate(const BOOL fActive, const BOOL minimize)
 
 	Key_ClearStates();
 
-	// We don't want to act like we're active if we're minimized
+	// We don't want to act like we're active if we're minimized.
 	ActiveApp = (fActive && !Minimized);
 
-	// Minimize/restore mouse-capture on demand
+	// Minimize/restore mouse-capture on demand.
 	IN_Activate(ActiveApp);
-	CDAudio_Activate(ActiveApp);
-	se.Activate(ActiveApp);
+	se.Activate(ActiveApp); //mxd. Also activates music backend.
 
 	if ((int)win_noalttab->value)
 		WIN_SetAltTabState(ActiveApp); //mxd

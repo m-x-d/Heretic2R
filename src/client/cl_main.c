@@ -1524,9 +1524,8 @@ void CL_Frame(const int msec)
 	Con_UpdateConsoleHeight(); // H2
 	SCR_UpdateScreen();
 
-	// Update audio.
+	// Update audio and music.
 	se.Update(cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up);
-	CDAudio_Update();
 
 	// Advance local effects for next frame.
 	if (cl.frame.valid && !(int)cl_paused->value && !(int)cl_freezeworld->value) // H2
@@ -1538,7 +1537,6 @@ void CL_Frame(const int msec)
 	}
 
 	SCR_RunCinematic();
-	CDAudio_RestartTrackIfNecessary(); // H2
 
 	cls.framecount++;
 
@@ -1571,7 +1569,7 @@ void CL_Init(void)
 	// All archived variables will now be loaded.
 	Con_Init();
 	VID_Init();
-	se.Init(); // Sound must be initialized after window is created.
+	se.Init(); // Sound must be initialized after window is created. Also initializes music backend --mxd.
 
 	V_Init();
 
@@ -1582,7 +1580,6 @@ void CL_Init(void)
 	SCR_Init();
 
 	// Missing: cls.disable_screen = true;
-	CDAudio_Init();
 	CL_InitLocal();
 	IN_Init();
 
@@ -1622,8 +1619,7 @@ void CL_Shutdown(void)
 	P_Freelib();
 	SMK_Shutdown();
 	CL_ClearGameMessages(); // H2
-	CDAudio_Shutdown();
-	se.Shutdown();
+	se.Shutdown(); //mxd. Also shuts down music backend.
 	IN_DeactivateMouse();
 	VID_Shutdown();
 	SndDll_FreeLibrary();

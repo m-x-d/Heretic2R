@@ -538,6 +538,71 @@ qboolean SDL_Cache(sfx_t* sfx, const wavinfo_t* info, byte* data)
 	return true;
 }
 
+// Playback of "raw samples", e.g. samples without an origin entity. Used for music and cinematic playback.
+void SDL_RawSamples(const int num_samples, const uint rate, const int width, const int num_channels, const byte* data, const float volume)
+{
+	const float scale = (float)rate / (float)sound.speed;
+	const int data_end = (int)((float)num_samples * scale); //mxd
+	int int_volume = (int)(volume * 256.0f);
+
+	if (width == 2 && num_channels == 2) // 16-bit stream, stereo.
+	{
+		for (int i = 0; i < data_end; i++)
+		{
+			const int src = (int)((float)i * scale);
+			const int dst = s_rawend & (MAX_RAW_SAMPLES - 1);
+			s_rawend++;
+
+			s_rawsamples[dst].left =  ((const short*)data)[src * 2 + 0] * int_volume;
+			s_rawsamples[dst].right = ((const short*)data)[src * 2 + 1] * int_volume;
+		}
+	}
+	else if (width == 2 && num_channels == 1) // 16-bit stream, mono.
+	{
+		for (int i = 0; i < data_end; i++)
+		{
+			const int src = (int)((float)i * scale);
+			const int dst = s_rawend & (MAX_RAW_SAMPLES - 1);
+			s_rawend++;
+
+			s_rawsamples[dst].left =  ((const short*)data)[src] * int_volume;
+			s_rawsamples[dst].right = s_rawsamples[dst].left;
+		}
+	}
+	else if (width == 1 && num_channels == 2) // 8-bit stream, stereo.
+	{
+		int_volume *= 256;
+
+		for (int i = 0; i < data_end; i++)
+		{
+			const int src = (int)((float)i * scale);
+			const int dst = s_rawend & (MAX_RAW_SAMPLES - 1);
+			s_rawend++;
+
+			s_rawsamples[dst].left =  (data[src * 2 + 0] - 128) * int_volume;
+			s_rawsamples[dst].right = (data[src * 2 + 1] - 128) * int_volume;
+		}
+	}
+	else if (width == 1 && num_channels == 1) // 8-bit stream, mono.
+	{
+		int_volume *= 256;
+
+		for (int i = 0; i < data_end; i++)
+		{
+			const int src = (int)((float)i * scale);
+			const int dst = s_rawend & (MAX_RAW_SAMPLES - 1);
+			s_rawend++;
+
+			s_rawsamples[dst].left = (data[src] - 128) * int_volume;
+			s_rawsamples[dst].right = s_rawsamples[dst].left;
+		}
+	}
+	else
+	{
+		si.Com_DPrintf("SDL_RawSamples: unsupported audio format (%i bits, %i channels)!\n", width * 8, num_channels); //mxd
+	}
+}
+
 // Runs every frame, handles all necessary sound calculations and fills the playback buffer.
 void SDL_Update(void)
 {

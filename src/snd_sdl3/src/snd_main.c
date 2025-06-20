@@ -664,6 +664,16 @@ static void S_StopAllSounds_Sounding(void) // H2
 		S_ClearBuffer();
 }
 
+// Used by cinematic streaming and music.
+void S_RawSamples(const int samples, const uint rate, const int width, const int num_channels, const byte* data, const float volume)
+{
+	if (sound_started)
+	{
+		s_rawend = max(paintedtime, s_rawend);
+		SDL_RawSamples(samples, rate, width, num_channels, data, volume);
+	}
+}
+
 // Called once each time through the main loop.
 static void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up)
 {
@@ -716,6 +726,10 @@ SNDLIB_DECLSPEC snd_export_t GetSoundAPI(const snd_import_t snd_import)
 	snd_export.EndRegistration = S_EndRegistration;
 
 	snd_export.FindName = S_FindName;
+
+	// Music playback.
+	snd_export.MusicPlay = OGG_PlayTrack;
+	snd_export.MusicStop = OGG_Stop;
 
 	snd_export.SetEaxEnvironment = NULL;
 

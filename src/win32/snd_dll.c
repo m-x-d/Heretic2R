@@ -143,6 +143,7 @@ void SndDll_Init(void)
 	si.FS_FCloseFile = FS_FCloseFile;
 	si.FS_LoadFile = FS_LoadFile;
 	si.FS_FreeFile = FS_FreeFile;
+	si.FS_Gamedir = FS_Gamedir;
 
 	si.Z_Malloc = Z_Malloc;
 	si.Z_Free = Z_Free;

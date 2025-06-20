@@ -270,8 +270,8 @@ static void SCR_DrawConsole(void)
 void SCR_BeginLoadingPlaque(void)
 {
 	se.StopAllSounds_Sounding();
-	cl.sound_prepped = false; // Don't play ambients
-	CDAudio_Stop();
+	se.MusicStop(); //mxd. CDAudio_Stop() in original logic.
+	cl.sound_prepped = false; // Don't play ambients.
 
 	scr_draw_loading_plaque = true; // H2
 

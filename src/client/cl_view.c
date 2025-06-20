@@ -135,7 +135,7 @@ void CL_PrepRefresh(void)
 	cls.key_dest = 0; // H2
 
 	// Start the cd track.
-	CDAudio_Play(Q_atoi(cl.configstrings[CS_CDTRACK]), true);
+	se.MusicPlay(Q_atoi(cl.configstrings[CS_CDTRACK]), true); //mxd. CDAudio_Play() in original logic.
 }
 
 // Q2 counterpart
