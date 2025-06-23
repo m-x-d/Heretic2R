@@ -7,7 +7,7 @@
 #include "client.h"
 #include "screen.h"
 #include "snd_dll.h"
-#include "libsmacker/smacker.h"
+#include <libsmacker/smacker.h>
 
 static cvar_t* cin_rate;
 
@@ -15,22 +15,24 @@ static int cinematic_frame;
 static int cinematic_total_frames;
 
 static smk smk_obj;
-static const byte* smk_frame;
+static const byte* smk_video_frame;
 static const byte* smk_palette;
-static int smk_width;
-static int smk_height;
 
-static void SMK_Stop(void)
-{
-	NOT_IMPLEMENTED
-}
+// Current .smk video properties.
+static int smk_vid_width;
+static int smk_vid_height;
+
+// Current .smk audio properties.
+static int smk_snd_channels;
+static int smk_snd_width;
+static int smk_snd_rate;
 
 // Returns number of frames in .smk
 static int SMK_Open(const char* name)
 {
 	char backdrop[MAX_QPATH];
 	char overlay[MAX_QPATH];
-	int frame_count;
+	ulong frame_count;
 
 	smk_obj = smk_open_file(name, SMK_MODE_DISK);
 	if (smk_obj == NULL)
@@ -38,44 +40,58 @@ static int SMK_Open(const char* name)
 
 	smk_enable_all(smk_obj, SMK_VIDEO_TRACK | SMK_AUDIO_TRACK_0);
 	smk_info_all(smk_obj, NULL, &frame_count, NULL);
-	smk_info_video(smk_obj, &smk_width, &smk_height, NULL);
+	smk_info_video(smk_obj, &smk_vid_width, &smk_vid_height, NULL);
+
+	byte s_channels[7];
+	byte s_bitdepth[7];
+	ulong s_rate[7];
+	smk_info_audio(smk_obj, NULL, s_channels, s_bitdepth, s_rate);
+
+	smk_snd_channels = s_channels[0];
+	smk_snd_width = s_bitdepth[0] / 8; // s_bitdepth: 8 or 16.
+	smk_snd_rate = (int)s_rate[0];
 
 	smk_first(smk_obj);
 	smk_palette = smk_get_palette(smk_obj);
 
-	if ((smk_width & 7) != 0 || (smk_height & 7) != 0)
+	if ((smk_vid_width & 7) != 0 || (smk_vid_height & 7) != 0)
 	{
 		Com_Printf("...Smacker file must but a multiple of 8 high and wide\n");
-		SMK_Stop();
+		SMK_Shutdown();
 
 		return 0;
 	}
 
-	re.DrawInitCinematic(smk_width, smk_height, overlay, backdrop);
+	re.DrawInitCinematic(smk_vid_width, smk_vid_height, overlay, backdrop);
 
-	return frame_count;
-}
-
-static void SMK_DoFrame(void)
-{
-	smk_frame = smk_get_video(smk_obj);
-	smk_next(smk_obj);
+	return (int)frame_count;
 }
 
 void SMK_Shutdown(void)
 {
 	if (smk_obj != NULL)
 	{
+		re.DrawCloseCinematic();
+
 		smk_close(smk_obj);
 		smk_obj = NULL;
-		smk_frame = NULL;
+
+		smk_video_frame = NULL;
 		smk_palette = NULL;
 	}
 }
 
-static void SCR_DoCinematicFrame(void)
+static void SCR_DoCinematicFrame(void) // Called when it's time to render next cinematic frame (e.g. at 15 fps).
 {
-	SMK_DoFrame();
+	smk_video_frame = smk_get_video(smk_obj);
+
+	const byte* smk_audio_frame = smk_get_audio(smk_obj, 0);
+	const int smk_audio_frame_size = (int)smk_get_audio_size(smk_obj, 0);
+
+	const int num_samples = smk_audio_frame_size / smk_snd_width / smk_snd_channels;
+	se.RawSamples(num_samples, smk_snd_rate, smk_snd_width, smk_snd_channels, smk_audio_frame, Cvar_VariableValue("s_volume"));
+
+	smk_next(smk_obj);
 	cinematic_frame++;
 }
 
@@ -93,14 +109,14 @@ void SCR_PlayCinematic(const char* name)
 	const char* path = FS_GetPath(smk_filepath);
 	if (path == NULL)
 	{
-		Com_Printf("...Unable to find file\n");
+		Com_Printf("...Unable to find file '%s'\n", smk_filepath);
 		SCR_FinishCinematic();
 
 		return;
 	}
 
 	sprintf_s(smk_filepath, sizeof(smk_filepath), "%s/video/%s", path, name); //mxd. sprintf -> sprintf_s
-	Com_Printf("Opening cinematic file : %s.....\n", smk_filepath);
+	Com_Printf("Opening cinematic file: '%s'...\n", smk_filepath);
 
 	cinematic_frame = 0;
 	cinematic_total_frames = SMK_Open(smk_filepath);
@@ -124,10 +140,10 @@ void SCR_PlayCinematic(const char* name)
 	cls.key_dest = key_game;
 }
 
-void SCR_DrawCinematic(void)
+void SCR_DrawCinematic(void) // Called every rendered frame.
 {
 	if (cl.cinematictime > 0)
-		re.DrawCinematic(smk_width, smk_height, smk_frame, (const paletteRGB_t*)smk_palette, 1.0f);
+		re.DrawCinematic(smk_vid_width, smk_vid_height, smk_video_frame, (const paletteRGB_t*)smk_palette, 1.0f);
 }
 
 void SCR_RunCinematic(void)

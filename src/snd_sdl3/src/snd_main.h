@@ -38,7 +38,7 @@ extern void S_ClearBuffer(void);
 extern channel_t* S_PickChannel(int entnum, int entchannel);
 extern void S_IssuePlaysound(playsound_t* ps);
 extern void S_StopAllSounds(void);
-extern void S_RawSamples(int samples, uint rate, int width, int num_channels, const byte* data, float volume);
+extern void S_RawSamples(int num_samples, uint rate, int width, int num_channels, const byte* data, float volume);
 
 // Local forward declarations for snd_main.c
 static sfx_t* S_RegisterSound(const char* name);

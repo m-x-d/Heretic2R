@@ -22,8 +22,8 @@
     <Filter Include="client\menus">
       <UniqueIdentifier>{cb9b321b-4852-456f-967f-67cf8ed4a248}</UniqueIdentifier>
     </Filter>
-    <Filter Include="client\libsmacker">
-      <UniqueIdentifier>{455aafc2-cfc8-4a76-8333-ac035562165f}</UniqueIdentifier>
+    <Filter Include="libsmacker">
+      <UniqueIdentifier>{8c1c9461-5d0c-482a-b819-b7a53dcc76ab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -231,15 +231,6 @@
     <ClCompile Include="..\client\cl_inventory.c">
       <Filter>client</Filter>
     </ClCompile>
-    <ClCompile Include="..\client\libsmacker\smacker.c">
-      <Filter>client\libsmacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\client\libsmacker\smk_bitstream.c">
-      <Filter>client\libsmacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\client\libsmacker\smk_hufftree.c">
-      <Filter>client\libsmacker</Filter>
-    </ClCompile>
     <ClCompile Include="..\client\cl_effects.c">
       <Filter>client</Filter>
     </ClCompile>
@@ -275,6 +266,9 @@
     </ClCompile>
     <ClCompile Include="..\qcommon\Reference.c">
       <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\libsmacker\smacker.c">
+      <Filter>libsmacker</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -470,18 +464,6 @@
     <ClInclude Include="..\qcommon\EffectFlags.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\client\libsmacker\smacker.h">
-      <Filter>client\libsmacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\client\libsmacker\smk_bitstream.h">
-      <Filter>client\libsmacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\client\libsmacker\smk_hufftree.h">
-      <Filter>client\libsmacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\client\libsmacker\smk_malloc.h">
-      <Filter>client\libsmacker</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\tokens.h">
       <Filter>qcommon</Filter>
     </ClInclude>
@@ -538,6 +520,12 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\p_dll.h">
       <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libsmacker\smacker.h">
+      <Filter>libsmacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libsmacker\smk_malloc.h">
+      <Filter>libsmacker</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

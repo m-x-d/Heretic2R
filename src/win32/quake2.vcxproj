@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\include\libsmacker\smacker.c" />
     <ClCompile Include="..\client\cl_demo.c" />
     <ClCompile Include="..\client\cl_effects.c" />
     <ClCompile Include="..\client\cl_entities.c" />
@@ -27,9 +28,6 @@
     <ClCompile Include="..\client\cl_view.c" />
     <ClCompile Include="..\client\console.c" />
     <ClCompile Include="..\client\keys.c" />
-    <ClCompile Include="..\client\libsmacker\smacker.c" />
-    <ClCompile Include="..\client\libsmacker\smk_bitstream.c" />
-    <ClCompile Include="..\client\libsmacker\smk_hufftree.c" />
     <ClCompile Include="..\client\menu.c" />
     <ClCompile Include="..\client\menus\menu_actionkeys.c" />
     <ClCompile Include="..\client\menus\menu_addressbook.c" />
@@ -96,6 +94,8 @@
     <ClCompile Include="vid_dll.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\libsmacker\smacker.h" />
+    <ClInclude Include="..\..\include\libsmacker\smk_malloc.h" />
     <ClInclude Include="..\client\client.h" />
     <ClInclude Include="..\client\cl_effects.h" />
     <ClInclude Include="..\client\cl_messages.h" />
@@ -103,10 +103,6 @@
     <ClInclude Include="..\client\console.h" />
     <ClInclude Include="..\client\input.h" />
     <ClInclude Include="..\client\keys.h" />
-    <ClInclude Include="..\client\libsmacker\smacker.h" />
-    <ClInclude Include="..\client\libsmacker\smk_bitstream.h" />
-    <ClInclude Include="..\client\libsmacker\smk_hufftree.h" />
-    <ClInclude Include="..\client\libsmacker\smk_malloc.h" />
     <ClInclude Include="..\client\menu.h" />
     <ClInclude Include="..\client\menus\menu_actionkeys.h" />
     <ClInclude Include="..\client\menus\menu_addressbook.h" />
@@ -233,7 +229,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\client;..\server;..\qcommon;..\game;..\Player;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\client;..\server;..\qcommon;..\game;..\Player;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -275,7 +271,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\client;..\server;..\qcommon;..\game;..\Player;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\client;..\server;..\qcommon;..\game;..\Player;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>

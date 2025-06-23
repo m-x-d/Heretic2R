@@ -428,6 +428,9 @@ typedef struct
 	void (*MusicPlay)(int track, qboolean looping);
 	void (*MusicStop)(void);
 
+	// Cinematics playback.
+	void (*RawSamples)(int samples, uint rate, int width, int num_channels, const byte* data, float volume);
+
 	void (*SetEaxEnvironment)(int env_index);
 } snd_export_t;
 
