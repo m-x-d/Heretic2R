@@ -213,7 +213,7 @@ static void SDL_PaintChannels(const int endtime)
 				if (ch->end - ltime < count)
 					count = ch->end - ltime;
 
-				sfxcache_t* sc = S_LoadSound(ch->sfx);
+				const sfxcache_t* sc = S_LoadSound(ch->sfx);
 
 				if (sc == NULL)
 					break;
@@ -259,7 +259,7 @@ static void SDL_PaintChannels(const int endtime)
 		if (s_rawend >= paintedtime)
 		{
 			// Add from the streaming sound source.
-			const int stop = (end < s_rawend) ? end : s_rawend;
+			const int stop = min(end, s_rawend);
 
 			for (int i = paintedtime; i < stop; i++)
 			{
@@ -542,7 +542,7 @@ qboolean SDL_Cache(sfx_t* sfx, const wavinfo_t* info, byte* data)
 void SDL_RawSamples(const int num_samples, const uint rate, const int width, const int num_channels, const byte* data, const float volume)
 {
 	const float scale = (float)rate / (float)sound.speed;
-	const int data_end = (int)((float)num_samples * scale); //mxd
+	const int data_end = (int)((float)num_samples / scale); //mxd
 	int int_volume = (int)(volume * 256.0f);
 
 	if (width == 2 && num_channels == 2) // 16-bit stream, stereo.
@@ -565,7 +565,7 @@ void SDL_RawSamples(const int num_samples, const uint rate, const int width, con
 			const int dst = s_rawend & (MAX_RAW_SAMPLES - 1);
 			s_rawend++;
 
-			s_rawsamples[dst].left =  ((const short*)data)[src] * int_volume;
+			s_rawsamples[dst].left = ((const short*)data)[src] * int_volume;
 			s_rawsamples[dst].right = s_rawsamples[dst].left;
 		}
 	}
