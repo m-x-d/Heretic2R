@@ -8,7 +8,7 @@
 
 #include "q_shared.h"
 
-#define DEFAULT_SOUND_LIBRARY_NAME	"WinSnd" //mxd //TODO: WinSnd -> snd_win?
+#define DEFAULT_SOUND_LIBRARY_NAME	"snd_sdl3" //mxd
 
 extern cvar_t* snd_dll;
 
