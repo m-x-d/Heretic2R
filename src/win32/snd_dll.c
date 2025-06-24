@@ -39,6 +39,9 @@ static void NullSnd_BeginRegistration(void) { }
 static struct sfx_s* NullSnd_RegisterSound(const char* name) { return NULL; }
 static void NullSnd_EndRegistration(void) { }
 static struct sfx_s* NullSnd_FindName(const char* name, qboolean create) { return NULL; }
+static void NullSnd_MusicPlay(int track, qboolean looping) { }
+static void NullSnd_MusicStop(void) { }
+static void NullSnd_RawSamples(int samples, uint rate, int width, int num_channels, const byte* data, float volume) { }
 
 //mxd. So we can carry on without sound library...
 static void InitNullSound(void)
@@ -63,6 +66,10 @@ static void InitNullSound(void)
 	se.EndRegistration = NullSnd_EndRegistration;
 
 	se.FindName = NullSnd_FindName;
+
+	se.MusicPlay = NullSnd_MusicPlay;
+	se.MusicStop = NullSnd_MusicStop;
+	se.RawSamples = NullSnd_RawSamples;
 
 	se.SetEaxEnvironment = NULL;
 
