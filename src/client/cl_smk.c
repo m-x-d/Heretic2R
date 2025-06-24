@@ -41,7 +41,7 @@ static int SMK_Open(const char* name)
 
 	double usf; // Microseconds per frame.
 	smk_info_all(smk_obj, NULL, &frame_count, &usf);
-	smk_fps = (int)(1000000.0 / usf);
+	smk_fps = floorf(1000000.0f / (float)usf);
 
 	smk_info_video(smk_obj, &smk_vid_width, &smk_vid_height, NULL);
 
