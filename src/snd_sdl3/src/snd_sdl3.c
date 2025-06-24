@@ -34,7 +34,7 @@ static int snd_vol;
 static LpfContext_t lpf_context;
 
 // Transfers a mixed "paint buffer" to the SDL output buffer and places it at the appropriate position.
-static void SDL_TransferPaintBuffer(const int endtime)
+static void SNDSDL3_TransferPaintBuffer(const int endtime)
 {
 	if ((int)s_testsound->value)
 	{
@@ -123,7 +123,7 @@ static void SDL_TransferPaintBuffer(const int endtime)
 }
 
 // Mixes an 8 bit sample into a channel.
-static void SDL_PaintChannelFrom8(channel_t * ch, const sfxcache_t * sc, const int count, const int offset)
+static void SNDSDL3_PaintChannelFrom8(channel_t * ch, const sfxcache_t * sc, const int count, const int offset)
 {
 	const int leftvol = min(255, ch->leftvol) & ENT_VOL_MASK; // H2: &ENT_VOL_MASK.
 	const int rightvol = min(255, ch->rightvol) & ENT_VOL_MASK; // H2: &ENT_VOL_MASK.
@@ -146,7 +146,7 @@ static void SDL_PaintChannelFrom8(channel_t * ch, const sfxcache_t * sc, const i
 
 // Q2 counterpart.
 // Mixes an 16 bit sample into a channel.
-static void SDL_PaintChannelFrom16(channel_t* ch, const sfxcache_t* sc, const int count, const int offset)
+static void SNDSDL3_PaintChannelFrom16(channel_t* ch, const sfxcache_t* sc, const int count, const int offset)
 {
 	const int leftvol = ch->leftvol * snd_vol;
 	const int rightvol = ch->rightvol * snd_vol;
@@ -163,7 +163,7 @@ static void SDL_PaintChannelFrom16(channel_t* ch, const sfxcache_t* sc, const in
 }
 
 // Mixes all pending sounds into the available output channels.
-static void SDL_PaintChannels(const int endtime)
+static void SNDSDL3_PaintChannels(const int endtime)
 {
 	snd_vol = (int)(s_volume->value * 256.0f);
 
@@ -221,9 +221,9 @@ static void SDL_PaintChannels(const int endtime)
 				if (count > 0)
 				{
 					if (sc->width == 1)
-						SDL_PaintChannelFrom8(ch, sc, count, ltime - paintedtime);
+						SNDSDL3_PaintChannelFrom8(ch, sc, count, ltime - paintedtime);
 					else
-						SDL_PaintChannelFrom16(ch, sc, count, ltime - paintedtime);
+						SNDSDL3_PaintChannelFrom16(ch, sc, count, ltime - paintedtime);
 
 					ltime += count;
 				}
@@ -270,14 +270,14 @@ static void SDL_PaintChannels(const int endtime)
 		}
 
 		// Transfer out according to SDL format.
-		SDL_TransferPaintBuffer(end);
+		SNDSDL3_TransferPaintBuffer(end);
 		paintedtime = end;
 	}
 }
 
 // Q2 counterpart.
 // Used for spatializing channels and autosounds.
-static void SDL_SpatializeOrigin(const vec3_t origin, const float master_vol, const float dist_mult, int* left_vol, int* right_vol)
+static void SNDSDL3_SpatializeOrigin(const vec3_t origin, const float master_vol, const float dist_mult, int* left_vol, int* right_vol)
 {
 	if (si.cls->state != ca_active)
 	{
@@ -322,7 +322,7 @@ static void SDL_SpatializeOrigin(const vec3_t origin, const float master_vol, co
 	*left_vol = max(0, *left_vol);
 }
 
-void SDL_Spatialize(channel_t* ch)
+void SNDSDL3_Spatialize(channel_t* ch)
 {
 	// Anything coming from the view entity will always be full volume.
 	if (ch->entnum == si.cl->playernum + 1)
@@ -352,11 +352,11 @@ void SDL_Spatialize(channel_t* ch)
 	if (!ch->fixed_origin && ch->entnum >= 0 && ch->entnum < MAX_EDICTS) //mxd. Inline CL_GetEntitySoundOrigin().
 		VectorCopy(si.cl_entities[ch->entnum].lerp_origin, ch->origin); // H2: update ch->origin instead of using separate var. //TODO: use YQ2 GetEntitySoundOrigin()?
 
-	SDL_SpatializeOrigin(ch->origin, (float)ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
+	SNDSDL3_SpatializeOrigin(ch->origin, (float)ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
 }
 
 // Entities with a sound field will generate looped sounds that are automatically started, stopped and merged together as the entities are sent to the client.
-static void SDL_AddLoopSounds(void)
+static void SNDSDL3_AddLoopSounds(void)
 {
 	int sounds[MAX_EDICTS];
 	float attenuations[MAX_EDICTS]; //H2
@@ -393,7 +393,7 @@ static void SDL_AddLoopSounds(void)
 
 		int left_total;
 		int right_total;
-		SDL_SpatializeOrigin(origin, volumes[i], attenuations[i], &left_total, &right_total);
+		SNDSDL3_SpatializeOrigin(origin, volumes[i], attenuations[i], &left_total, &right_total);
 
 		for (int j = i + 1; j < si.cl->frame.num_entities; j++)
 		{
@@ -407,7 +407,7 @@ static void SDL_AddLoopSounds(void)
 
 			int left;
 			int right;
-			SDL_SpatializeOrigin(ent->origin, volumes[j], attenuations[j], &left, &right);
+			SNDSDL3_SpatializeOrigin(ent->origin, volumes[j], attenuations[j], &left, &right);
 
 			left_total += left;
 			right_total += right;
@@ -441,7 +441,7 @@ static void SDL_AddLoopSounds(void)
 }
 
 // Calculates the absolute timecode of current playback.
-static void SDL_UpdateSoundtime(void)
+static void SNDSDL3_UpdateSoundtime(void)
 {
 	static int buffers;
 	static int oldsamplepos;
@@ -468,7 +468,7 @@ static void SDL_UpdateSoundtime(void)
 }
 
 // Updates the volume scale table based on current volume setting.
-static void SDL_UpdateScaletable(void) // Q2: S_InitScaletable().
+static void SNDSDL3_UpdateScaletable(void) // Q2: S_InitScaletable().
 {
 	if (s_volume->value > 2.0f) // YQ2: extra sanity checks.
 		si.Cvar_Set("s_volume", "2");
@@ -487,7 +487,7 @@ static void SDL_UpdateScaletable(void) // Q2: S_InitScaletable().
 }
 
 // Saves a sound sample into cache. If necessary, endianness conversions are performed.
-qboolean SDL_Cache(sfx_t* sfx, const wavinfo_t* info, byte* data)
+qboolean SNDSDL3_Cache(sfx_t* sfx, const wavinfo_t* info, byte* data)
 {
 	const float stepscale = (float)info->rate / (float)sound.speed; // This is usually 0.5, 1, or 2.
 	const int outcount = (int)((float)info->samples / stepscale);
@@ -539,7 +539,7 @@ qboolean SDL_Cache(sfx_t* sfx, const wavinfo_t* info, byte* data)
 }
 
 // Playback of "raw samples", e.g. samples without an origin entity. Used for music and cinematic playback.
-void SDL_RawSamples(const int num_samples, const uint rate, const int width, const int num_channels, const byte* data, const float volume)
+void SNDSDL3_RawSamples(const int num_samples, const uint rate, const int width, const int num_channels, const byte* data, const float volume)
 {
 	const float scale = (float)rate / (float)sound.speed;
 	const int data_end = (int)((float)num_samples / scale); //mxd
@@ -604,7 +604,7 @@ void SDL_RawSamples(const int num_samples, const uint rate, const int width, con
 }
 
 // Runs every frame, handles all necessary sound calculations and fills the playback buffer.
-void SDL_Update(void)
+void SNDSDL3_Update(void)
 {
 	if (s_underwater_gain_hf->modified)
 	{
@@ -614,7 +614,7 @@ void SDL_Update(void)
 
 	// Rebuild scale tables if volume is modified.
 	if (s_volume->modified)
-		SDL_UpdateScaletable();
+		SNDSDL3_UpdateScaletable();
 
 	// Update spatialization for dynamic sounds.
 	channel_t* ch = &channels[0];
@@ -626,7 +626,7 @@ void SDL_Update(void)
 		if (ch->autosound)
 			memset(ch, 0, sizeof(*ch)); // Autosounds are regenerated fresh each frame.
 		else
-			SDL_Spatialize(ch); // Re-spatialize channel.
+			SNDSDL3_Spatialize(ch); // Re-spatialize channel.
 
 		// Clear channel when it can't be heard.
 		if (ch->leftvol == 0 && ch->rightvol == 0)
@@ -634,7 +634,7 @@ void SDL_Update(void)
 	}
 
 	// Add looping sounds.
-	SDL_AddLoopSounds();
+	SNDSDL3_AddLoopSounds();
 
 	// Debugging output.
 	if ((int)s_show->value)
@@ -661,7 +661,7 @@ void SDL_Update(void)
 		return;
 
 	// Mix the samples.
-	SDL_UpdateSoundtime();
+	SNDSDL3_UpdateSoundtime();
 
 	if (soundtime == 0)
 		return;
@@ -680,11 +680,11 @@ void SDL_Update(void)
 	endtime = (endtime + sound.submission_chunk - 1) & ~(sound.submission_chunk - 1);
 
 	const uint samps = sound.samples >> (sound.channels - 1);
-	SDL_PaintChannels(min(endtime, soundtime + samps));
+	SNDSDL3_PaintChannels(min(endtime, soundtime + samps));
 }
 
 // Callback function for SDL. Writes sound data to SDL when requested.
-static void SDL_Callback(byte* sdl_stream, const int length)
+static void SNDSDL3_FillSDL3AudioBuffer(byte* sdl_stream, const int length)
 {
 	int pos = playpos * (sound.samplebits / 8);
 
@@ -728,7 +728,7 @@ static void SDL_Callback(byte* sdl_stream, const int length)
 }
 
 // Wrapper function, ties the old existing callback logic from the SDL 1.2 days and later fiddled into SDL 2 to a SDL 3 compatible callback...
-static void SDL_SDL3Callback(void* userdata, SDL_AudioStream* sdl_stream, int additional_amount, int total_amount)
+static void SNDSDL3_AudioStreamCallback(void* userdata, SDL_AudioStream* sdl_stream, int additional_amount, int total_amount)
 {
 	if (additional_amount < 1)
 		return;
@@ -737,14 +737,14 @@ static void SDL_SDL3Callback(void* userdata, SDL_AudioStream* sdl_stream, int ad
 
 	if (data != NULL)
 	{
-		SDL_Callback(data, additional_amount);
+		SNDSDL3_FillSDL3AudioBuffer(data, additional_amount);
 		SDL_PutAudioStreamData(sdl_stream, data, additional_amount);
 		SDL_stack_free(data);
 	}
 }
 
 // Initializes the SDL sound backend and sets up SDL.
-qboolean SDL_BackendInit(void)
+qboolean SNDSDL3_BackendInit(void)
 {
 	si.Com_Printf("Initializing SDL3 audio backend.\n");
 
@@ -765,7 +765,7 @@ qboolean SDL_BackendInit(void)
 	};
 
 	// Let's try our luck.
-	stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, SDL_SDL3Callback, NULL);
+	stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, SNDSDL3_AudioStreamCallback, NULL);
 
 	if (stream == NULL)
 	{
@@ -800,7 +800,7 @@ qboolean SDL_BackendInit(void)
 	s_underwater_gain_hf->modified = true;
 	LPF_Initialize(&lpf_context, LPF_DEFAULT_GAIN_HF, sound.speed);
 
-	SDL_UpdateScaletable();
+	SNDSDL3_UpdateScaletable();
 	SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(stream));
 
 	playpos = 0;
@@ -812,7 +812,7 @@ qboolean SDL_BackendInit(void)
 }
 
 // Shuts the SDL backend down.
-void SDL_BackendShutdown(void)
+void SNDSDL3_BackendShutdown(void)
 {
 	si.Com_Printf("Closing SDL audio device...\n");
 

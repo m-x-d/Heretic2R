@@ -203,7 +203,7 @@ sfxcache_t* S_LoadSound(sfx_t* s)
 		return NULL;
 	}
 
-	if (!SDL_Cache(s, &info, &data[info.dataofs]))
+	if (!SNDSDL3_Cache(s, &info, &data[info.dataofs]))
 	{
 		si.Com_Printf("S_LoadSound: couldn't precache '%s'\n", name_buffer);
 		si.FS_FreeFile(data);

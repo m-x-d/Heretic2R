@@ -8,10 +8,10 @@
 
 #include "snd_local.h"
 
-extern qboolean SDL_BackendInit(void);
-extern void SDL_BackendShutdown(void);
+extern qboolean SNDSDL3_BackendInit(void);
+extern void SNDSDL3_BackendShutdown(void);
 
-extern void SDL_Update(void);
-extern void SDL_Spatialize(channel_t* ch);
-extern qboolean SDL_Cache(sfx_t* sfx, const wavinfo_t* info, byte* data);
-extern void SDL_RawSamples(int num_samples, uint rate, int width, int num_channels, const byte* data, float volume);
+extern void SNDSDL3_Update(void);
+extern void SNDSDL3_Spatialize(channel_t* ch);
+extern qboolean SNDSDL3_Cache(sfx_t* sfx, const wavinfo_t* info, byte* data);
+extern void SNDSDL3_RawSamples(int num_samples, uint rate, int width, int num_channels, const byte* data, float volume);

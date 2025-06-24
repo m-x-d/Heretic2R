@@ -205,7 +205,7 @@ static void S_Init(void)
 		si.Cmd_AddCommand("soundlist", S_SoundList_f);
 		si.Cmd_AddCommand("soundinfo", S_SoundInfo_f);
 
-		if (SDL_BackendInit())
+		if (SNDSDL3_BackendInit())
 		{
 			sound_started = true;
 
@@ -246,7 +246,7 @@ static void S_Shutdown(void)
 	memset(known_sfx, 0, sizeof(known_sfx));
 	num_sfx = 0;
 
-	SDL_BackendShutdown();
+	SNDSDL3_BackendShutdown();
 	sound_started = false;
 }
 
@@ -461,7 +461,7 @@ void S_IssuePlaysound(playsound_t* ps)
 	ch->pos = 0;
 	ch->end = paintedtime + sc->length;
 	
-	SDL_Spatialize(ch);
+	SNDSDL3_Spatialize(ch);
 
 	// Free the playsound.
 	S_FreePlaysound(ps);
@@ -670,7 +670,7 @@ void S_RawSamples(const int num_samples, const uint rate, const int width, const
 	if (sound_started)
 	{
 		s_rawend = max(paintedtime, s_rawend);
-		SDL_RawSamples(num_samples, rate, width, num_channels, data, volume);
+		SNDSDL3_RawSamples(num_samples, rate, width, num_channels, data, volume);
 	}
 }
 
@@ -697,7 +697,7 @@ static void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t rig
 	VectorCopy(right, listener_right);
 	VectorCopy(up, listener_up);
 
-	SDL_Update();
+	SNDSDL3_Update();
 }
 
 SNDLIB_DECLSPEC snd_export_t GetSoundAPI(const snd_import_t snd_import)
