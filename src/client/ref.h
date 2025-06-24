@@ -172,7 +172,7 @@ typedef struct
 	qboolean render;
 
 	// Called when the library is loaded.
-	qboolean (*Init)(void* hinstance, void* wndproc);
+	qboolean (*Init)(void);
 
 	// Called before the library is unloaded.
 	void (*Shutdown)(void);
@@ -217,9 +217,7 @@ typedef struct
 	void (*BeginFrame)(float camera_separation);
 	void (*EndFrame)(void);
 
-	void (*AppActivate)(qboolean activate);
-
-	int (*FindSurface)(vec3_t start, vec3_t end, struct Surface_s* surface);
+	int (*FindSurface)(const vec3_t start, const vec3_t end, struct Surface_s* surface);
 
 #ifdef __A3D_GEOM
 	void (*A3D_RenderGeometry)(void* pA3D, void* pGeom, void* pMat, void* pGeomStatus);

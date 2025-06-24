@@ -1348,7 +1348,7 @@ REF_DECLSPEC refexport_t GetRefAPI(const refimport_t rimp)
 	// Missing: R_SetPalette
 	re.BeginFrame = R_BeginFrame;
 	re.EndFrame = GLimp_EndFrame;
-	re.AppActivate = GLimp_AppActivate;
+	//re.AppActivate = GLimp_AppActivate;
 	re.FindSurface = FindSurface;
 
 #ifdef _DEBUG

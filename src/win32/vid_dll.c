@@ -304,8 +304,8 @@ static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 			AppActivate(fActive != WA_INACTIVE, fMinimized);
 
-			if (reflib_active)
-				re.AppActivate(fActive != WA_INACTIVE);
+			//if (reflib_active)
+				//re.AppActivate(fActive != WA_INACTIVE);
 
 			cls.disable_screen = (fActive == WA_INACTIVE); // H2
 		} break;
@@ -525,7 +525,7 @@ static qboolean VID_LoadRefresh(const char* name)
 		Com_Error(ERR_FATAL, "%s has incompatible api_version", name);
 	}
 
-	if (re.Init(global_hInstance, (void*)MainWndProc) == -1)
+	if (re.Init(/*global_hInstance, (void*)MainWndProc*/) == -1)
 	{
 		re.Shutdown();
 		VID_FreeReflib();
@@ -618,7 +618,7 @@ void VID_Init(void)
 	vid_restart_required = true; // H2
 
 	// Create the video variables so we know how to start the graphics drivers
-	vid_ref = Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE); // H2_1.07: "soft" -> "gl"
+	vid_ref = Cvar_Get("vid_ref", "gl1", CVAR_ARCHIVE); // H2_1.07: "soft" -> "gl"
 	vid_xpos = Cvar_Get("vid_xpos", "0", CVAR_ARCHIVE);
 	vid_ypos = Cvar_Get("vid_ypos", "0", CVAR_ARCHIVE);
 	vid_fullscreen = Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);

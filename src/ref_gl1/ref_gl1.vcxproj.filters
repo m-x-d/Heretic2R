@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{3b68eabf-e430-4470-b430-3f9d0e091b29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="client">
+      <UniqueIdentifier>{ff52431e-ea05-452e-a647-fe5078db5540}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\gl1_Draw.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl1_DrawBook.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl1_DrawCinematic.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl1_Image.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl1_Main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl1_Model.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl1_Sky.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl1_SDL.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl1_FindSurface.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl1_Debug.c">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\gl1_Draw.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_DrawBook.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_DrawCinematic.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_Image.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_Local.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_Model.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_Sky.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_SDL.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_FindSurface.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_Debug.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\ref.h">
+      <Filter>client</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
