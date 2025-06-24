@@ -9,14 +9,13 @@
 #include "snd_dll.h"
 #include <libsmacker/smacker.h>
 
-static cvar_t* cin_rate;
-
 static int cinematic_frame;
 static int cinematic_total_frames;
 
 static smk smk_obj;
 static const byte* smk_video_frame;
 static const byte* smk_palette;
+static float smk_fps; //mxd. Original logic uses cin_rate cvar instead of this.
 
 // Current .smk video properties.
 static int smk_vid_width;
@@ -39,7 +38,11 @@ static int SMK_Open(const char* name)
 		return 0;
 
 	smk_enable_all(smk_obj, SMK_VIDEO_TRACK | SMK_AUDIO_TRACK_0);
-	smk_info_all(smk_obj, NULL, &frame_count, NULL);
+
+	double usf; // Microseconds per frame.
+	smk_info_all(smk_obj, NULL, &frame_count, &usf);
+	smk_fps = (int)(1000000.0 / usf);
+
 	smk_info_video(smk_obj, &smk_vid_width, &smk_vid_height, NULL);
 
 	byte s_channels[7];
@@ -101,8 +104,6 @@ void SCR_PlayCinematic(const char* name)
 
 	SCR_BeginLoadingPlaque();
 
-	cin_rate = Cvar_Get("cin_rate", "15.0", 0); // H2
-
 	//mxd. Skip 'SmackW32.dll' loading logic.
 
 	sprintf_s(smk_filepath, sizeof(smk_filepath), "video/%s", name); //mxd. sprintf -> sprintf_s
@@ -128,7 +129,7 @@ void SCR_PlayCinematic(const char* name)
 		return;
 	}
 
-	cl.cinematictime = (int)((float)(cls.realtime - 2000) / cin_rate->value);
+	cl.cinematictime = (int)((float)cls.realtime - 2000.0f / smk_fps);
 
 	SCR_DoCinematicFrame();
 	SCR_DrawCinematic();
@@ -154,11 +155,11 @@ void SCR_RunCinematic(void)
 	// Pause if menu or console is up.
 	if (cls.key_dest != key_game)
 	{
-		cl.cinematictime = cls.realtime - cinematic_frame * 1000 / (int)cin_rate->value; // Q2: / 14
+		cl.cinematictime = (int)((float)cls.realtime - (float)(cinematic_frame * 1000) / smk_fps); // Q2: / 14
 		return;
 	}
 
-	const int frame = (int)((float)(cls.realtime - cl.cinematictime) * cin_rate->value / 1000.0f);
+	const int frame = (int)((float)(cls.realtime - cl.cinematictime) * smk_fps / 1000.0f);
 
 	if (frame <= cinematic_frame) //mxd. Original code waits using SmackWait function.
 		return;
@@ -166,7 +167,7 @@ void SCR_RunCinematic(void)
 	if (frame > cinematic_frame + 1)
 	{
 		Com_Printf("Dropped frame: %i > %i\n", frame, cinematic_frame + 1);
-		cl.cinematictime = cls.realtime - cinematic_frame * 1000 / (int)cin_rate->value; // Q2: / 14
+		cl.cinematictime = (int)((float)cls.realtime - (float)(cinematic_frame * 1000) / smk_fps); // Q2: / 14
 	}
 
 	SCR_DoCinematicFrame();
