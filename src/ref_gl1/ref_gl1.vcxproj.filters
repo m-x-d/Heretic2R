@@ -7,6 +7,12 @@
     <Filter Include="client">
       <UniqueIdentifier>{ff52431e-ea05-452e-a647-fe5078db5540}</UniqueIdentifier>
     </Filter>
+    <Filter Include="qcommon">
+      <UniqueIdentifier>{4c59866a-09fb-455d-8f11-32a0bb10b6ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="glad">
+      <UniqueIdentifier>{36d33ac4-23d9-4415-bc2f-c34fcc0de8c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl1_Draw.c">
@@ -38,6 +44,18 @@
     </ClCompile>
     <ClCompile Include="src\gl1_Debug.c">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\anorms.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl1_Misc.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\glad-GL1.3\glad.c">
+      <Filter>glad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\turbsin.c">
+      <Filter>qcommon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +91,21 @@
     </ClInclude>
     <ClInclude Include="..\client\ref.h">
       <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\anorms.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_Misc.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\glad-GL1.3\glad.h">
+      <Filter>glad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\glad-GL1.3\khrplatform.h">
+      <Filter>glad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\turbsin.h">
+      <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

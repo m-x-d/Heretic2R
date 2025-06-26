@@ -6,6 +6,11 @@
 
 #include "gl1_Draw.h"
 
+void Draw_InitLocal(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void Draw_Char(const int x, const int y, int c, const paletteRGBA_t color)
 {
 	NOT_IMPLEMENTED

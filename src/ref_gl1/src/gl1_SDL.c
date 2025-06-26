@@ -11,3 +11,10 @@ void R_EndFrame(void) //mxd. GLimp_EndFrame in original logic.
 {
 	NOT_IMPLEMENTED
 }
+
+// Returns the address of an OpenGL function.
+void* R_GetProcAddress(const char* proc)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}

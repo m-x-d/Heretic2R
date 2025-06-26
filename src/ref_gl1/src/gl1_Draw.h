@@ -8,6 +8,8 @@
 
 #include "gl1_Local.h"
 
+extern void Draw_InitLocal(void);
+
 extern image_t* Draw_FindPic(const char* name);
 extern void Draw_GetPicSize(int* w, int* h, const char* name);
 

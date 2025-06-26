@@ -7,3 +7,4 @@
 #pragma once
 
 extern void R_EndFrame(void);
+extern void* R_GetProcAddress(const char* proc);

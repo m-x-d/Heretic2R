@@ -7,6 +7,11 @@
 #include "gl1_Local.h"
 #include "gl1_Model.h"
 
+void Mod_Init(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void R_BeginRegistration(const char* model)
 {
 	NOT_IMPLEMENTED

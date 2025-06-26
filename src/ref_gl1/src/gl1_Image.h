@@ -9,3 +9,4 @@
 #include "gl1_Local.h"
 
 extern struct image_s* R_RegisterSkin(const char* name, qboolean* retval);
+extern void R_InitImages(void);

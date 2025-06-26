@@ -11,6 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\include\glad-GL1.3\glad.c" />
+    <ClCompile Include="..\qcommon\anorms.c" />
+    <ClCompile Include="..\qcommon\turbsin.c" />
     <ClCompile Include="src\gl1_Debug.c" />
     <ClCompile Include="src\gl1_Draw.c" />
     <ClCompile Include="src\gl1_DrawBook.c" />
@@ -18,12 +21,17 @@
     <ClCompile Include="src\gl1_FindSurface.c" />
     <ClCompile Include="src\gl1_Image.c" />
     <ClCompile Include="src\gl1_Main.c" />
+    <ClCompile Include="src\gl1_Misc.c" />
     <ClCompile Include="src\gl1_Model.c" />
     <ClCompile Include="src\gl1_SDL.c" />
     <ClCompile Include="src\gl1_Sky.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\glad-GL1.3\glad.h" />
+    <ClInclude Include="..\..\include\glad-GL1.3\khrplatform.h" />
     <ClInclude Include="..\client\ref.h" />
+    <ClInclude Include="..\qcommon\anorms.h" />
+    <ClInclude Include="..\qcommon\turbsin.h" />
     <ClInclude Include="src\gl1_Debug.h" />
     <ClInclude Include="src\gl1_Draw.h" />
     <ClInclude Include="src\gl1_DrawBook.h" />
@@ -31,6 +39,7 @@
     <ClInclude Include="src\gl1_FindSurface.h" />
     <ClInclude Include="src\gl1_Image.h" />
     <ClInclude Include="src\gl1_Local.h" />
+    <ClInclude Include="src\gl1_Misc.h" />
     <ClInclude Include="src\gl1_Model.h" />
     <ClInclude Include="src\gl1_SDL.h" />
     <ClInclude Include="src\gl1_Sky.h" />
@@ -157,7 +166,7 @@
       <OutputFile>..\..\build\ref_gl1.dll</OutputFile>
       <ImportLibrary>
       </ImportLibrary>
-      <AdditionalDependencies>SDL3.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;SDL3.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\build\;$(SolutionDir)..\lib\SDL3\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

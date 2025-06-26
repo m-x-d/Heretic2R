@@ -6,9 +6,16 @@
 
 #pragma once
 
+#include <glad-GL1.3/glad.h> // Must be included before SDL.
 #include "ref.h"
 
-#define REF_VERSION	"H2R_GL1 1.0" // H2_1.07: "GL 2.1"; Q2: "GL 0.01".
+#define REF_VERSION			GAME_NAME" OpenGL 1.3 Refresher v1.0" // H2_1.07: "GL 2.1"; Q2: "GL 0.01".
+
+#define MAX_TEXTURE_UNITS	2
+
+#pragma region ========================== CVARS  ==========================
+
+#pragma endregion
 
 typedef enum //mxd. Changed in H2
 {
@@ -34,6 +41,33 @@ typedef struct image_s //mxd. Changed in H2. Original size: 104 bytes
 	byte num_frames;
 	struct paletteRGB_s* palette;		// .M8 palette.
 } image_t;
+
+#pragma region ========================== GL config stuff  ==========================
+
+typedef struct
+{
+	const char* renderer_string;
+	const char* vendor_string;
+	const char* version_string;
+	const char* extensions_string;
+	float max_anisotropy; // YQ2
+} glconfig_t;
+
+typedef struct
+{
+	float inverse_intensity;
+	qboolean fullscreen;
+
+	int prev_mode;
+	int lightmap_textures;
+	int currenttextures[MAX_TEXTURE_UNITS];
+	int currenttmu;
+} glstate_t;
+
+extern glconfig_t gl_config;
+extern glstate_t gl_state;
+
+#pragma endregion
 
 #pragma region ========================== IMPORTED FUNCTIONS ==========================
 

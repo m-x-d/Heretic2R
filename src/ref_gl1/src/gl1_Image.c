@@ -11,3 +11,8 @@ struct image_s*	R_RegisterSkin(const char* name, qboolean* retval)
 	NOT_IMPLEMENTED
 	return NULL;
 }
+
+void R_InitImages(void)
+{
+	NOT_IMPLEMENTED
+}
