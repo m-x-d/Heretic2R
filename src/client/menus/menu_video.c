@@ -267,7 +267,7 @@ static void GetDriverNames(void)
 	gl_drivername_labels[gl_drivers_count] = NULL;
 }
 
-void VID_PreMenuInit(void)
+void VID_PreMenuInit(void) //TODO: this needs to be updated because of reflib interface changes...
 {
 	static cvar_t* gl_driver;
 
