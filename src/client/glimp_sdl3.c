@@ -10,11 +10,37 @@
 #include "ref.h"
 #include <SDL3/SDL.h>
 
+// Lists all available display modes.
+static void PrintDisplayModes(void)
+{
+	NOT_IMPLEMENTED
+}
+
 // Initializes the SDL video subsystem. Must be called before anything else.
 qboolean GLimp_Init(void)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if (!SDL_WasInit(SDL_INIT_VIDEO))
+	{
+		if (!SDL_Init(SDL_INIT_VIDEO))
+		{
+			Com_Printf("Couldn't init SDL video: %s.\n", SDL_GetError());
+			return false;
+		}
+
+		const int version = SDL_GetVersion();
+
+		Com_Printf("-------- vid initialization --------\n");
+
+		Com_Printf("SDL version is: %i.%i.%i\n", SDL_VERSIONNUM_MAJOR(version), SDL_VERSIONNUM_MINOR(version), SDL_VERSIONNUM_MICRO(version));
+		Com_Printf("SDL video driver is \"%s\".\n", SDL_GetCurrentVideoDriver());
+
+		Com_Printf("SDL display modes:\n");
+		PrintDisplayModes();
+
+		Com_Printf("------------------------------------\n\n");
+	}
+
+	return true;
 }
 
 // Shuts the SDL video subsystem down. Must be called after everything's finished and cleaned up.
