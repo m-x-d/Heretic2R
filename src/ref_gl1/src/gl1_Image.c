@@ -6,6 +6,9 @@
 
 #include "gl1_Image.h"
 
+image_t gltextures[MAX_GLTEXTURES];
+int numgltextures;
+
 static byte gammatable[256];
 
 void InitGammaTable(void) // H2
@@ -52,6 +55,11 @@ struct image_s* R_RegisterSkin(const char* name, qboolean* retval)
 	return NULL;
 }
 
+static void GL_FreeImage(image_t* image) // H2
+{
+	NOT_IMPLEMENTED
+}
+
 void GL_InitImages(void)
 {
 	NOT_IMPLEMENTED
@@ -59,5 +67,8 @@ void GL_InitImages(void)
 
 void GL_ShutdownImages(void)
 {
-	NOT_IMPLEMENTED
+	image_t* image = &gltextures[0];
+	for (int i = 0; i < numgltextures; i++, image++)
+		if (image->registration_sequence != 0)
+			GL_FreeImage(image);
 }
