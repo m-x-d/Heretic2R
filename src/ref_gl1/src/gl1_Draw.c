@@ -6,6 +6,11 @@
 
 #include "gl1_Draw.h"
 
+void ShutdownFonts(void) // H2
+{
+	NOT_IMPLEMENTED
+}
+
 void Draw_InitLocal(void)
 {
 	NOT_IMPLEMENTED

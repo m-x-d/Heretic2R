@@ -8,6 +8,8 @@
 
 #include "gl1_Local.h"
 
+extern void ShutdownFonts(void);
+
 extern void Draw_InitLocal(void);
 
 extern image_t* Draw_FindPic(const char* name);

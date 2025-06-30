@@ -56,3 +56,8 @@ void GL_InitImages(void)
 {
 	NOT_IMPLEMENTED
 }
+
+void GL_ShutdownImages(void)
+{
+	NOT_IMPLEMENTED
+}

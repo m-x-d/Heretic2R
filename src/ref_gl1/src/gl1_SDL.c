@@ -18,3 +18,8 @@ void* R_GetProcAddress(const char* proc)
 {
 	return (void(*)(void))SDL_GL_GetProcAddress(proc);
 }
+
+void R_ShutdownContext(void)
+{
+	NOT_IMPLEMENTED
+}

@@ -7,6 +7,7 @@
 #pragma once
 
 extern void Mod_Init(void);
+extern void Mod_FreeAll(void);
 
 extern void Mod_Modellist_f(void);
 

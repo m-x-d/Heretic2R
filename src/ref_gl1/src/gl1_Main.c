@@ -266,7 +266,18 @@ static qboolean R_Init(void)
 
 static void R_Shutdown(void)
 {
-	NOT_IMPLEMENTED
+	ShutdownFonts(); // H2
+
+	ri.Cmd_RemoveCommand("modellist");
+	ri.Cmd_RemoveCommand("screenshot");
+	ri.Cmd_RemoveCommand("imagelist");
+	ri.Cmd_RemoveCommand("gl_strings");
+
+	Mod_FreeAll();
+	GL_ShutdownImages();
+
+	// Shutdown OS-specific OpenGL stuff like contexts, etc.
+	R_ShutdownContext(); // YQ2
 }
 
 static void R_BeginFrame(const float camera_separation)

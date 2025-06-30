@@ -8,3 +8,4 @@
 
 extern void R_EndFrame(void);
 extern void* R_GetProcAddress(const char* proc);
+extern void R_ShutdownContext(void);
