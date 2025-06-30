@@ -6,6 +6,7 @@
 
 #include "gl1_SDL.h"
 #include "gl1_Local.h"
+#include <SDL3/SDL.h>
 
 void R_EndFrame(void) //mxd. GLimp_EndFrame in original logic.
 {
@@ -15,6 +16,5 @@ void R_EndFrame(void) //mxd. GLimp_EndFrame in original logic.
 // Returns the address of an OpenGL function.
 void* R_GetProcAddress(const char* proc)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	return (void(*)(void))SDL_GL_GetProcAddress(proc);
 }
