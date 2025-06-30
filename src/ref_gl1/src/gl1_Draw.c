@@ -6,9 +6,23 @@
 
 #include "gl1_Draw.h"
 
+//mxd. Each font contains 224 char definitions.
+glxy_t* font1; // H2
+glxy_t* font2; // H2
+
 void ShutdownFonts(void) // H2
 {
-	NOT_IMPLEMENTED
+	if (font1 != NULL)
+	{
+		ri.FS_FreeFile(font1);
+		font1 = NULL;
+	}
+
+	if (font2 != NULL)
+	{
+		ri.FS_FreeFile(font2);
+		font2 = NULL;
+	}
 }
 
 void Draw_InitLocal(void)

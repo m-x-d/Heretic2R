@@ -8,6 +8,21 @@
 
 #include "gl1_Local.h"
 
+// H2. Font character definition struct.
+typedef struct glxy_s
+{
+	float xl;
+	float yt;
+	float xr;
+	float yb;
+	int w;
+	int h;
+	int baseline;
+} glxy_t;
+
+extern glxy_t* font1; // H2
+extern glxy_t* font2; // H2
+
 extern void ShutdownFonts(void);
 
 extern void Draw_InitLocal(void);
