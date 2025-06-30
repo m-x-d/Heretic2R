@@ -8,6 +8,9 @@
 #include "gl1_Local.h"
 #include <SDL3/SDL.h>
 
+static SDL_Window* window = NULL;
+static SDL_GLContext context = NULL;
+
 void R_EndFrame(void) //mxd. GLimp_EndFrame in original logic.
 {
 	NOT_IMPLEMENTED
@@ -19,7 +22,12 @@ void* R_GetProcAddress(const char* proc)
 	return (void(*)(void))SDL_GL_GetProcAddress(proc);
 }
 
+// Shuts the GL context down.
 void R_ShutdownContext(void)
 {
-	NOT_IMPLEMENTED
+	if (window != NULL && context != NULL)
+	{
+		SDL_GL_DestroyContext(context);
+		context = NULL;
+	}
 }
