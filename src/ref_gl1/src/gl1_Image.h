@@ -8,5 +8,8 @@
 
 #include "gl1_Local.h"
 
+extern void InitGammaTable(void);
+extern void GL_ImageList_f(void);
+
 extern struct image_s* R_RegisterSkin(const char* name, qboolean* retval);
-extern void R_InitImages(void);
+extern void GL_InitImages(void);

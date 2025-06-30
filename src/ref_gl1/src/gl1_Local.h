@@ -13,7 +13,64 @@
 
 #define MAX_TEXTURE_UNITS	2
 
-#pragma region ========================== CVARS  ==========================
+#pragma region ========================== CVARS ==========================
+
+extern cvar_t* r_norefresh;
+extern cvar_t* r_fullbright;
+extern cvar_t* r_drawentities;
+extern cvar_t* r_drawworld;
+extern cvar_t* r_novis;
+extern cvar_t* r_nocull;
+extern cvar_t* r_lerpmodels;
+
+extern cvar_t* r_lightlevel;
+
+extern cvar_t* r_farclipdist;
+extern cvar_t* r_fog;
+extern cvar_t* r_fog_mode;
+extern cvar_t* r_fog_density;
+extern cvar_t* r_fog_startdist;
+extern cvar_t* r_fog_lightmap_adjust;
+extern cvar_t* r_fog_underwater;
+extern cvar_t* r_fog_underwater_lightmap_adjust;
+extern cvar_t* r_frameswap;
+extern cvar_t* r_references;
+
+extern cvar_t* gl_noartifacts;
+
+extern cvar_t* gl_modulate;
+extern cvar_t* gl_lightmap;
+extern cvar_t* gl_dynamic;
+extern cvar_t* gl_nobind;
+extern cvar_t* gl_showtris;
+extern cvar_t* gl_flashblend;
+extern cvar_t* gl_texturemode;
+extern cvar_t* gl_lockpvs;
+
+extern cvar_t* gl_drawflat;
+extern cvar_t* gl_trans33;
+extern cvar_t* gl_trans66;
+extern cvar_t* gl_picmip;
+extern cvar_t* gl_skinmip;
+extern cvar_t* gl_bookalpha;
+
+extern cvar_t* gl_drawmode;
+extern cvar_t* gl_drawbuffer;
+extern cvar_t* gl_swapinterval;
+extern cvar_t* gl_sortmulti;
+extern cvar_t* gl_saturatelighting;
+
+extern cvar_t* vid_fullscreen;
+extern cvar_t* vid_gamma;
+extern cvar_t* vid_brightness;
+extern cvar_t* vid_contrast;
+
+extern cvar_t* vid_ref;
+
+extern cvar_t* vid_mode;
+extern cvar_t* menus_active;
+extern cvar_t* cl_camera_under_surface;
+extern cvar_t* quake_amount;
 
 #pragma endregion
 
