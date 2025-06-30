@@ -9,6 +9,7 @@
 #include "clfx_dll.h"
 #include "vid_dll.h"
 #include "sys_win.h"
+#include "glimp_sdl3.h" // YQ2
 #include "menus/menu_video.h"
 
 // Structure containing functions exported from refresh DLL
@@ -450,30 +451,34 @@ static void VID_NewWindow(const int width, const int height)
 	cl.force_refdef = true; // Can't use a paused refdef
 }
 
-// Q2 counterpart
-static void VID_FreeReflib(void)
+// Shuts the renderer down and unloads it.
+static void VID_ShutdownRenderer(void) // YQ2
 {
-	if (!FreeLibrary(reflib_library))
-		Com_Error(ERR_FATAL, "Reflib FreeLibrary failed");
+	if (reflib_active)
+	{
+		re.Shutdown();
+		GLimp_ShutdownGraphics();
 
-	memset(&re, 0, sizeof(re));
-	reflib_library = NULL;
-	reflib_active = false;
+		if (!FreeLibrary(reflib_library)) //TODO: replace with YQ2 Sys_FreeLibrary()?
+			Com_Error(ERR_FATAL, "Reflib FreeLibrary failed");
+
+		reflib_library = NULL;
+		memset(&re, 0, sizeof(re));
+
+		reflib_active = false;
+	}
 }
 
 static qboolean VID_LoadRefresh(const char* name)
 {
 	refimport_t ri;
 
-	if (reflib_active)
-	{
-		re.Shutdown();
-		VID_FreeReflib();
-	}
+	// If the refresher is already active, we need to shut it down before loading a new one.
+	VID_ShutdownRenderer(); // YQ2
 
 	Com_ColourPrintf(P_HEADER, "------- Loading %s -------\n", name); // Q2: Com_Printf
 
-	reflib_library = LoadLibrary(name);
+	reflib_library = LoadLibrary(name); //TODO: replace with YQ2 Sys_LoadLibrary()?
 	if (reflib_library == NULL)
 	{
 		Com_Printf("LoadLibrary(\"%s\") failed\n", name);
@@ -515,20 +520,22 @@ static qboolean VID_LoadRefresh(const char* name)
 
 	const GetRefAPI_t GetRefAPI = (void*)GetProcAddress(reflib_library, "GetRefAPI");
 	if (GetRefAPI == NULL)
-		Com_Error(ERR_FATAL, "GetProcAddress failed on %s", name);
+		Com_Error(ERR_FATAL, "GetProcAddress failed on '%s'", name);
 
 	re = GetRefAPI(ri);
 
 	if (re.api_version != REF_API_VERSION)
 	{
-		VID_FreeReflib();
-		Com_Error(ERR_FATAL, "%s has incompatible api_version", name);
+		Com_Printf("'%s' has incompatible api_version %i!\n", name, re.api_version); // H2 uses Com_Error() here.
+		VID_ShutdownRenderer(); // YQ2
+
+		return false;
 	}
 
 	if (!re.Init())
 	{
-		re.Shutdown();
-		VID_FreeReflib();
+		Com_Printf("Failed to initialize '%s' as rendering backend!\n", name);
+		VID_ShutdownRenderer(); // YQ2
 
 		return false;
 	}
@@ -632,7 +639,9 @@ void VID_Init(void)
 	Cmd_AddCommand("vid_front", VID_Front_f);
 	Cmd_AddCommand("vid_showmodes", VID_ShowModes_f); // H2
 
-	//mxd. Skip 'Disable the 3Dfx splash screen' logic.
+	// YQ2. Initializes the video backend. This is NOT the renderer itself, just the client side support stuff!
+	if (!GLimp_Init())
+		Com_Error(ERR_FATAL, "Couldn't initialize the graphics subsystem!\n");
 
 	VID_PreMenuInit(); // H2
 
@@ -640,12 +649,8 @@ void VID_Init(void)
 	VID_CheckChanges();
 }
 
-// Q2 counterpart
 void VID_Shutdown(void)
 {
-	if (reflib_active)
-	{
-		re.Shutdown();
-		VID_FreeReflib();
-	}
+	VID_ShutdownRenderer(); // YQ2
+	GLimp_Shutdown(); // YQ2
 }

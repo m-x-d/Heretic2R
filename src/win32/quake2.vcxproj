@@ -27,6 +27,7 @@
     <ClCompile Include="..\client\cl_smk.c" />
     <ClCompile Include="..\client\cl_view.c" />
     <ClCompile Include="..\client\console.c" />
+    <ClCompile Include="..\client\glimp_sdl3.c" />
     <ClCompile Include="..\client\keys.c" />
     <ClCompile Include="..\client\menu.c" />
     <ClCompile Include="..\client\menus\menu_actionkeys.c" />
@@ -101,6 +102,7 @@
     <ClInclude Include="..\client\cl_messages.h" />
     <ClInclude Include="..\client\cl_skeletons.h" />
     <ClInclude Include="..\client\console.h" />
+    <ClInclude Include="..\client\glimp_sdl3.h" />
     <ClInclude Include="..\client\input.h" />
     <ClInclude Include="..\client\keys.h" />
     <ClInclude Include="..\client\menu.h" />
@@ -255,8 +257,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>..\..\build\quake2.dll</OutputFile>
-      <AdditionalDependencies>winmm.lib;wsock32.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\build\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL3.lib;winmm.lib;wsock32.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\build\;$(SolutionDir)..\lib\SDL3\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -298,8 +300,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>..\..\build\quake2.dll</OutputFile>
-      <AdditionalDependencies>winmm.lib;wsock32.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\build\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL3.lib;winmm.lib;wsock32.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\build\;$(SolutionDir)..\lib\SDL3\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -270,6 +270,9 @@
     <ClCompile Include="..\..\include\libsmacker\smacker.c">
       <Filter>libsmacker</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\glimp_sdl3.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -526,6 +529,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\libsmacker\smk_malloc.h">
       <Filter>libsmacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\glimp_sdl3.h">
+      <Filter>client</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
