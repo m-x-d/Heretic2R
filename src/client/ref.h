@@ -275,6 +275,8 @@ typedef struct
 	void (*Vid_MenuInit)(void);
 	void (*Vid_NewWindow)(int width, int height);
 
+	qboolean (*GLimp_InitGraphics)(int* pwidth, int* pheight, qboolean fullscreen); // YQ2
+
 #ifdef _DEBUG
 	//mxd. Debug logic.
 	char* (*pv)(const vec3_t v); // vtos() from g_utils.c, basically...

@@ -107,5 +107,8 @@
     <ClInclude Include="..\qcommon\turbsin.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\client\vid.h">
+      <Filter>client</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

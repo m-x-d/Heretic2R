@@ -104,6 +104,13 @@ typedef struct image_s //mxd. Changed in H2. Original size: 104 bytes
 	struct paletteRGB_s* palette;		// .M8 palette.
 } image_t;
 
+typedef enum
+{
+	RSERR_OK,
+	RSERR_INVALID_MODE,
+	RSERR_UNKNOWN
+} rserr_t;
+
 extern image_t gltextures[MAX_GLTEXTURES];
 extern int numgltextures;
 

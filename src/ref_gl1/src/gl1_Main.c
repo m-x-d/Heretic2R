@@ -16,13 +16,15 @@
 #include "gl1_Sky.h"
 #include "turbsin.h"
 #include "gl1_Local.h"
+#include "vid.h"
 
 #define REF_DECLSPEC	__declspec(dllexport)
 
+viddef_t viddef; // H2: renamed from vid, defined in vid.h?
+refimport_t ri;
+
 glconfig_t gl_config;
 glstate_t gl_state;
-
-refimport_t ri;
 
 #pragma region ========================== CVARS  ==========================
 
@@ -192,10 +194,57 @@ static void R_Register(void)
 	InitGammaTable(); // H2
 }
 
+// Changes the video mode.
+static rserr_t SetMode_impl(int* pwidth, int* pheight, const int mode) // YQ2
+{
+	ri.Con_Printf(PRINT_ALL, "Setting mode %d:", mode);
+
+	if (!ri.Vid_GetModeInfo(pwidth, pheight, mode))
+	{
+		ri.Con_Printf(PRINT_ALL, " invalid mode\n");
+		return RSERR_INVALID_MODE;
+	}
+
+	const qboolean fullscreen = (mode == 0);
+	ri.Con_Printf(PRINT_ALL, (fullscreen ? " %dx%d (fullscreen)\n" : " %dx%d\n"), *pwidth, *pheight);
+
+	return (ri.GLimp_InitGraphics(pwidth, pheight, fullscreen) ? RSERR_OK : RSERR_INVALID_MODE);
+}
+
 static qboolean R_SetMode(void)
 {
-	NOT_IMPLEMENTED
-	return false;
+	rserr_t err = SetMode_impl(&viddef.width, &viddef.height, (int)vid_mode->value);
+
+	ri.Cvar_SetValue("vid_fullscreen", (int)vid_mode->value == 0 ? 1.0f : 0.0f); //mxd. Fullscreen when Mode 0, windowed otherwise.
+	vid_fullscreen->modified = false;
+
+	if (err == RSERR_OK)
+	{
+		gl_state.prev_mode = (int)vid_mode->value;
+		return true;
+	}
+
+	if (err == RSERR_INVALID_MODE)
+	{
+		ri.Con_Printf(PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n");
+
+		// Trying again would result in a crash anyway, give up already (this would happen if your initing fails at all and your resolution already was 640x480).
+		if ((int)vid_mode->value == gl_state.prev_mode)
+			return false;
+
+		ri.Cvar_SetValue("vid_mode", (float)gl_state.prev_mode);
+		vid_mode->modified = false;
+	}
+
+	// Try setting it back to something safe.
+	err = SetMode_impl(&viddef.width, &viddef.height, gl_state.prev_mode);
+	if (err != RSERR_OK)
+	{
+		ri.Con_Printf(PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n");
+		return false;
+	}
+
+	return true;
 }
 
 static qboolean R_Init(void)
@@ -206,22 +255,8 @@ static qboolean R_Init(void)
 	ri.Con_Printf(PRINT_ALL, "Refresh: "REF_VERSION"\n"); //mxd. Com_Printf() -> ri.Con_Printf() (here and below).
 	R_Register();
 
-	//mxd. Initialize OpenGL dynamic bindings. Must be called after GLimp_Init().
-	if (!gladLoadGLLoader(R_GetProcAddress))
-	{
-		ri.Con_Printf(PRINT_ALL, "ref_gl::R_Init() - OpenGL initialization failed!\n");
-		return false;
-	}
-
-	//mxd. Check OpenGL version.
-	if (!GLAD_GL_VERSION_1_3)
-	{
-		ri.Con_Printf(PRINT_ALL, "ref_gl::R_Init() - Unsupported OpenGL version. Expected 1.3, got %i.%i!\n", GLVersion.major, GLVersion.minor);
-		return false;
-	}
-
 	// Set our "safe" mode.
-	gl_state.prev_mode = 4; // H2: 3.
+	gl_state.prev_mode = 1; // H2: 3.
 
 	// Create the window and set up the context.
 	if (!R_SetMode())

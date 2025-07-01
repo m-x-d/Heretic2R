@@ -146,6 +146,13 @@ void GLimp_Shutdown(void)
 	NOT_IMPLEMENTED
 }
 
+// (Re)initializes the actual window.
+qboolean GLimp_InitGraphics(int* pwidth, int* pheight, qboolean fullscreen)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 // Shuts the window down.
 void GLimp_ShutdownGraphics(void)
 {

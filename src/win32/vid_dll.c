@@ -528,6 +528,7 @@ static qboolean VID_LoadRefresh(const char* name)
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
+	ri.GLimp_InitGraphics = GLimp_InitGraphics; // YQ2
 	ri.Is_Screen_Flashing = Is_Screen_Flashing;
 	ri.Deactivate_Screen_Flash = Deactivate_Screen_Flash;
 	ri.skeletalJoints = skeletal_joints;
