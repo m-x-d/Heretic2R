@@ -21,7 +21,6 @@ typedef struct
 {
 	int width;
 	int height;
-	byte* pixels;
 } viddef_t;
 
 extern viddef_t viddef; // Global video state.
@@ -30,3 +29,4 @@ extern viddef_t viddef; // Global video state.
 extern void VID_Init(void);
 extern void VID_Shutdown(void);
 extern void VID_CheckChanges(void);
+extern void VID_InitModes(viddef_t* modes, int num_modes); //mxd

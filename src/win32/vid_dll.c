@@ -37,29 +37,16 @@ HWND cl_hwnd; // Main window handle for life of program
 
 qboolean vid_restart_required; // H2
 
-#define VID_NUM_MODES	(sizeof(vid_modes) / sizeof(vid_modes[0]))
-
 typedef struct vidmode_s
 {
-	const char* description;
+	char description[32]; // Q2: char*
 	int width;
 	int height;
 	int mode;
 } vidmode_t;
 
-static vidmode_t vid_modes[] =
-{
-	{ "Mode 0: 320x240",	320,	240,	0 },
-	{ "Mode 1: 400x300",	400,	300,	1 },
-	{ "Mode 2: 512x384",	512,	384,	2 },
-	{ "Mode 3: 640x480",	640,	480,	3 },
-	{ "Mode 4: 800x600",	800,	600,	4 },
-	{ "Mode 5: 960x720",	960,	720,	5 },
-	{ "Mode 6: 1024x768",	1024,	768,	6 },
-	{ "Mode 7: 1152x864",	1152,	864,	7 },
-	{ "Mode 8: 1280x960",	1280,	960,	8 },
-	{ "Mode 9: 1600x1200",	1600,	1200,	9 }
-}; //mxd. H2 has no mode 10
+static vidmode_t* vid_modes; //mxd. Static array in Q2 / H2. H2 has no mode 10.
+static int num_vid_modes = 0; //mxd
 
 static byte scantokey[128] =
 {
@@ -406,7 +393,7 @@ static void VID_ShowModes_f(void) // H2
 {
 	Com_Printf("-------- Video Modes --------\n");
 
-	for (uint i = 0; i < VID_NUM_MODES; i++)
+	for (int i = 0; i < num_vid_modes; i++)
 		Com_Printf("%s\n", vid_modes[i].description);
 
 	Com_Printf("-----------------------------\n");
@@ -416,10 +403,46 @@ static void VID_ShowModes_f(void) // H2
 	Com_Printf("-----------------------------\n");
 }
 
-// Q2 counterpart
+//mxd
+static void VID_ShutdownModes(void)
+{
+	if (vid_modes != NULL)
+	{
+		free(vid_modes);
+		vid_modes = NULL;
+		num_vid_modes = 0;
+	}
+}
+
+//mxd
+void VID_InitModes(viddef_t* modes, const int num_modes)
+{
+	if (num_vid_modes > 0)
+		VID_ShutdownModes();
+
+	vid_modes = malloc(sizeof(vidmode_t) * num_modes);
+	num_vid_modes = num_modes;
+	
+	viddef_t* src_mode = &modes[0];
+	vidmode_t* dst_mode = &vid_modes[0];
+
+	// Mode 0 is desktop resolution.
+	for (int i = 0; i < num_modes; i++, src_mode++, dst_mode++)
+	{
+		dst_mode->width = src_mode->width;
+		dst_mode->height = src_mode->height;
+		dst_mode->mode = i;
+
+		sprintf_s(dst_mode->description, sizeof(dst_mode->description), "Mode %i: %ix%i", i, dst_mode->width, dst_mode->height);
+	}
+}
+
 static qboolean VID_GetModeInfo(int* width, int* height, const int mode)
 {
-	if (mode >= 0 && mode < (int)VID_NUM_MODES)
+	if (num_vid_modes < 1) //mxd. Add sanity check.
+		Com_Error(ERR_FATAL, "VID_GetModeInfo() called before VID_InitModes()!");
+
+	if (mode >= 0 && mode < num_vid_modes)
 	{
 		*width =  vid_modes[mode].width;
 		*height = vid_modes[mode].height;
@@ -653,4 +676,5 @@ void VID_Shutdown(void)
 {
 	VID_ShutdownRenderer(); // YQ2
 	GLimp_Shutdown(); // YQ2
+	VID_ShutdownModes(); //mxd
 }
