@@ -374,6 +374,10 @@ REF_DECLSPEC refexport_t GetRefAPI(const refimport_t rimp)
 	re.EndFrame = R_EndFrame;
 	re.FindSurface = FindSurface;
 
+	re.PrepareForWindow = R_PrepareForWindow; // YQ2
+	re.InitContext = R_InitContext; // YQ2
+	re.ShutdownContext = R_ShutdownContext; // YQ2
+
 #ifdef _DEBUG
 	//mxd. Debug draw logic.
 	re.AddDebugBox = R_AddDebugBox;

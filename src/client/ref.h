@@ -223,6 +223,15 @@ typedef struct
 	void (*A3D_RenderGeometry)(void* pA3D, void* pGeom, void* pMat, void* pGeomStatus);
 #endif
 
+	// Called by GLimp_InitGraphics() *after* creating window, passing the SDL_Window* (void* so we don't spill SDL.h here).
+	qboolean (*InitContext)(void* sdl_window); // YQ2
+
+	// Shuts down rendering (OpenGL) context.
+	void (*ShutdownContext)(void); // YQ2
+
+	// Called by GLimp_InitGraphics() before creating window, returns flags for SDL window creation, returns -1 on error.
+	int (*PrepareForWindow)(void); // YQ2
+
 #ifdef _DEBUG
 	//mxd. Debug draw logic.
 	void (*AddDebugBox)(const vec3_t center, float size, paletteRGBA_t color, float lifetime);

@@ -22,6 +22,18 @@ void* R_GetProcAddress(const char* proc)
 	return (void(*)(void))SDL_GL_GetProcAddress(proc);
 }
 
+int R_PrepareForWindow(void)
+{
+	NOT_IMPLEMENTED
+	return -1;
+}
+
+qboolean R_InitContext(void* win)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 // Shuts the GL context down.
 void R_ShutdownContext(void)
 {
