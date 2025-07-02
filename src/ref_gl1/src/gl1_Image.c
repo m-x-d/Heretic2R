@@ -10,6 +10,9 @@
 image_t gltextures[MAX_GLTEXTURES];
 int numgltextures;
 
+#define NUM_HASHED_GLTEXTURES	256
+static image_t* gltextures_hashed[NUM_HASHED_GLTEXTURES]; // H2
+
 static byte gammatable[256];
 
 int gl_filter_min = GL_NEAREST_MIPMAP_LINEAR; // Q2: GL_LINEAR_MIPMAP_NEAREST; H2: GL_NEAREST.
@@ -120,10 +123,79 @@ void R_ImageList_f(void) // Q2: GL_ImageList_f()
 	NOT_IMPLEMENTED
 }
 
-image_t* R_FindImage(const char* name, const imagetype_t type) // H2: GL_FindImage()
+#pragma region ========================== .M8 LOADING ==========================
+
+static image_t* R_LoadM8(const char* name, const imagetype_t type) // H2: GL_LoadWal().
 {
 	NOT_IMPLEMENTED
 	return NULL;
+}
+
+#pragma endregion
+
+#pragma region ========================== .M32 LOADING ==========================
+
+static image_t* R_LoadM32(const char* name, const imagetype_t type) // H2: GL_LoadWal32()
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
+#pragma endregion
+
+// Now with name hashing. When no texture found, returns r_notexture instead of NULL.
+image_t* R_FindImage(const char* name, const imagetype_t type) // H2: GL_FindImage()
+{
+	if (name == NULL)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_FindImage: Invalid null name\n"); //mxd. Com_Printf() -> ri.Con_Printf().
+		return r_notexture;
+	}
+
+	const uint len = strlen(name);
+
+	if (len < 8)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_FindImage: Name too short (%s)\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
+		return r_notexture;
+	}
+
+	// Check for hashed image first.
+	const byte hash = name[len - 7] + name[len - 5] * name[len - 6];
+	image_t* image = gltextures_hashed[hash];
+
+	if (image != NULL)
+	{
+		while (strcmp(name, image->name) != 0)
+		{
+			image = image->next;
+			if (image == NULL)
+				break;
+		}
+
+		if (image != NULL)
+		{
+			image->registration_sequence = registration_sequence;
+			return image;
+		}
+	}
+
+	// Not hashed. Load image from disk.
+	if (strcmp(name + len - 3, ".m8") == 0)
+		image = R_LoadM8(name, type);
+	else if (strcmp(name + len - 4, ".m32") == 0)
+		image = R_LoadM32(name, type);
+	else
+		ri.Con_Printf(PRINT_ALL, "R_FindImage: Extension not recognized in '%s'\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
+
+	if (image == NULL)
+		return r_notexture;
+
+	// Add image to hash.
+	image->next = gltextures_hashed[hash];
+	gltextures_hashed[hash] = image;
+
+	return image;
 }
 
 struct image_s* R_RegisterSkin(const char* name, qboolean* retval)
