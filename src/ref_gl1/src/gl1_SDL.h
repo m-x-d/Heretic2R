@@ -15,3 +15,4 @@ extern qboolean R_InitContext(void* win);
 extern void R_ShutdownContext(void);
 
 extern int R_PrepareForWindow(void);
+extern void R_SetVsync(void);

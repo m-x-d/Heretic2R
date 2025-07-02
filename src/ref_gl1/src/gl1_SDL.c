@@ -40,10 +40,51 @@ int R_PrepareForWindow(void)
 	return SDL_WINDOW_OPENGL;
 }
 
-qboolean R_InitContext(void* win)
+void R_SetVsync(void)
 {
 	NOT_IMPLEMENTED
-	return false;
+}
+
+// Initializes the OpenGL context.
+qboolean R_InitContext(void* win)
+{
+	if (win == NULL)
+	{
+		ri.Sys_Error(ERR_FATAL, "R_InitContext() called with NULL argument!");
+		return false;
+	}
+
+	window = (SDL_Window*)win;
+
+	// Initialize GL context.
+	context = SDL_GL_CreateContext(window);
+
+	if (context == NULL)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_InitContext(): failed to create OpenGL context: %s\n", SDL_GetError());
+		window = NULL;
+
+		return false;
+	}
+
+	//mxd. Load OpenGL function pointers through GLAD. Must be called after GLimp_Init().
+	if (!gladLoadGLLoader(R_GetProcAddress))
+	{
+		ri.Con_Printf(PRINT_ALL, "R_InitContext(): failed to initialize OpenGL\n");
+		return false;
+	}
+
+	//mxd. Check OpenGL version.
+	if (!GLAD_GL_VERSION_1_3)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_InitContext(): unsupported OpenGL version. Expected 1.3, got %i.%i!\n", GLVersion.major, GLVersion.minor);
+		return false;
+	}
+
+	R_SetVsync();
+	vid_gamma->modified = true; // Force R_UpdateGamma() call in R_BeginFrame().
+
+	return true;
 }
 
 // Shuts the GL context down.
