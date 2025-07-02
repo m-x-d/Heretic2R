@@ -442,6 +442,8 @@ static qboolean VID_GetModeInfo(int* width, int* height, const int mode)
 	if (num_vid_modes < 1) //mxd. Add sanity check.
 		Com_Error(ERR_FATAL, "VID_GetModeInfo() called before VID_InitModes()!");
 
+	//TODO: we can now get a mode outside of expected range when using .cfg from different PC or when switching to different display.
+	//TODO: clamp mode, return it instead of qboolean?..
 	if (mode >= 0 && mode < num_vid_modes)
 	{
 		*width =  vid_modes[mode].width;
