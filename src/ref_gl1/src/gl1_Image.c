@@ -69,7 +69,13 @@ void InitGammaTable(void) // H2
 // Q2 counterpart
 void R_TexEnv(const GLint mode) // Q2: GL_TexEnv()
 {
-	NOT_IMPLEMENTED
+	static GLint lastmodes[2] = { -1, -1 };
+
+	if (mode != lastmodes[gl_state.currenttmu])
+	{
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, mode); //mxd. Q2/H2: qglTexEnvf 
+		lastmodes[gl_state.currenttmu] = mode;
+	}
 }
 
 void R_BindImage(const image_t* image) // Q2: GL_BindImage()
