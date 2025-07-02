@@ -6,11 +6,27 @@
 
 #pragma once
 
-#include <assert.h>
 #include "Heretic2.h"
 #include "q_Typedef.h"
 
-#define NOT_IMPLEMENTED		assert(!("Not implemented!"));
+#if _DEBUG
+	#define NOT_IMPLEMENTED		__asm { int 3 } // https://learn.microsoft.com/en-us/cpp/intrinsics/debugbreak
+#else
+	#if NDEBUG
+		#define TOGGLE_NDEBUG	1
+	#endif
+
+	#if TOGGLE_NDEBUG
+		#undef NDEBUG
+	#endif
+
+	#include <assert.h>
+	#define NOT_IMPLEMENTED		assert(!("Not implemented!"));
+
+	#if TOGGLE_NDEBUG
+		#define NDEBUG
+	#endif
+#endif
 
 Q2DLL_DECLSPEC extern char* pv(const vec3_t v); // vtos() from g_utils.c, basically...
 Q2DLL_DECLSPEC extern char* psv(const short* v);
