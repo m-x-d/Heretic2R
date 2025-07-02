@@ -107,8 +107,7 @@ typedef struct image_s //mxd. Changed in H2. Original size: 104 bytes
 typedef enum
 {
 	RSERR_OK,
-	RSERR_INVALID_MODE,
-	RSERR_UNKNOWN
+	RSERR_INVALID_MODE
 } rserr_t;
 
 extern image_t gltextures[MAX_GLTEXTURES];

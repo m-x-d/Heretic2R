@@ -284,7 +284,7 @@ typedef struct
 	void (*Vid_MenuInit)(void);
 	void (*Vid_NewWindow)(int width, int height);
 
-	qboolean (*GLimp_InitGraphics)(int* pwidth, int* pheight, qboolean fullscreen); // YQ2
+	qboolean (*GLimp_InitGraphics)(int width, int height); // YQ2
 
 #ifdef _DEBUG
 	//mxd. Debug logic.

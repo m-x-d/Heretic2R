@@ -205,22 +205,22 @@ static rserr_t SetMode_impl(int* pwidth, int* pheight, const int mode) // YQ2
 		return RSERR_INVALID_MODE;
 	}
 
-	const qboolean fullscreen = (mode == 0);
-	ri.Con_Printf(PRINT_ALL, (fullscreen ? " %dx%d (fullscreen)\n" : " %dx%d\n"), *pwidth, *pheight);
+	ri.Con_Printf(PRINT_ALL, " %dx%d\n", *pwidth, *pheight);
 
-	return (ri.GLimp_InitGraphics(pwidth, pheight, fullscreen) ? RSERR_OK : RSERR_INVALID_MODE);
+	return (ri.GLimp_InitGraphics(*pwidth, *pheight) ? RSERR_OK : RSERR_INVALID_MODE);
 }
 
 static qboolean R_SetMode(void)
 {
 	rserr_t err = SetMode_impl(&viddef.width, &viddef.height, (int)vid_mode->value);
 
-	ri.Cvar_SetValue("vid_fullscreen", (int)vid_mode->value == 0 ? 1.0f : 0.0f); //mxd. Fullscreen when Mode 0, windowed otherwise.
-	vid_fullscreen->modified = false;
-
 	if (err == RSERR_OK)
 	{
 		gl_state.prev_mode = (int)vid_mode->value;
+
+		ri.Cvar_SetValue("vid_fullscreen", (int)vid_mode->value == 0 ? 1.0f : 0.0f); //mxd. Fullscreen when Mode 0, windowed otherwise.
+		vid_fullscreen->modified = false;
+
 		return true;
 	}
 
@@ -235,16 +235,25 @@ static qboolean R_SetMode(void)
 		ri.Cvar_SetValue("vid_mode", (float)gl_state.prev_mode);
 		vid_mode->modified = false;
 	}
-
-	// Try setting it back to something safe.
-	err = SetMode_impl(&viddef.width, &viddef.height, gl_state.prev_mode);
-	if (err != RSERR_OK)
+	else
 	{
-		ri.Con_Printf(PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n");
+		ri.Con_Printf(PRINT_ALL, "ref_gl::R_SetMode() - unknown error %i!\n", err);
 		return false;
 	}
 
-	return true;
+	// Try setting it back to something safe.
+	err = SetMode_impl(&viddef.width, &viddef.height, (int)vid_mode->value);
+
+	if (err == RSERR_OK)
+	{
+		ri.Cvar_SetValue("vid_fullscreen", (int)vid_mode->value == 0 ? 1.0f : 0.0f); //mxd. Fullscreen when Mode 0, windowed otherwise.
+		vid_fullscreen->modified = false;
+
+		return true;
+	}
+
+	ri.Con_Printf(PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n");
+	return false;
 }
 
 static qboolean R_Init(void)

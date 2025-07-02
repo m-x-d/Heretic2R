@@ -10,31 +10,36 @@
 #include "client.h"
 #include <SDL3/SDL.h>
 
-
 static int last_flags = 0;
 static SDL_Window* window = NULL;
-static qboolean init_successful = false;
 
-//mxd. Let's not rely on 640x480 video mode availability...
-static int safe_mode = -1;
-static int safe_width;
-static int safe_height;
-
-static qboolean CreateSDLWindow(SDL_WindowFlags flags, qboolean fullscreen, int w, int h)
+static qboolean CreateSDLWindow(const SDL_WindowFlags flags, const int width, const int height)
 {
-	NOT_IMPLEMENTED
-	return false;
-}
+	// Force the window to minimize when focus is lost. 
+	// The windows staying maximized has some odd implications for window ordering under Windows and some X11 window managers like kwin.
+	// See: https://github.com/libsdl-org/SDL/issues/4039 https://github.com/libsdl-org/SDL/issues/3656
+	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "1");
 
-static qboolean IsFullscreen(void)
-{
-	NOT_IMPLEMENTED
-	return false;
-}
+	const SDL_PropertiesID props = SDL_CreateProperties();
 
-static qboolean GetWindowSize(int* w, int* h)
-{
-	NOT_IMPLEMENTED
+	SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, GAME_NAME);
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, SDL_WINDOWPOS_CENTERED);
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDL_WINDOWPOS_CENTERED);
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, width);
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, height);
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER, (Sint64)flags);
+
+	window = SDL_CreateWindowWithProperties(props);
+	SDL_DestroyProperties(props);
+
+	if (window != NULL)
+	{
+		// Enable text input.
+		SDL_StartTextInput(window);
+		return true;
+	}
+
+	Com_Printf("Creating SDL window failed: %s\n", SDL_GetError());
 	return false;
 }
 
@@ -130,11 +135,6 @@ static qboolean InitDisplayModes(void) //mxd
 		for (int i = 0; i < num_valid_modes; i++)
 			Com_DPrintf(" - Mode %2i: %ix%i\n", i, valid_modes[i].width, valid_modes[i].height);
 
-		// Store our 'safe' video mode...
-		safe_mode = num_valid_modes - 1;
-		safe_width = valid_modes[safe_mode].width;
-		safe_height = valid_modes[safe_mode].height;
-
 		free(valid_modes);
 
 		return true;
@@ -190,45 +190,10 @@ void GLimp_Shutdown(void)
 }
 
 // (Re)initializes the actual window.
-qboolean GLimp_InitGraphics(int* pwidth, int* pheight, qboolean fullscreen)
+qboolean GLimp_InitGraphics(const int width, const int height)
 {
-	int cur_width;
-	int cur_height;
-	int width = *pwidth;
-	int height = *pheight;
-
-	assert(safe_mode > 0);
-
-	const SDL_WindowFlags fs_flag = (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
-
-	// Only do this if we already have a working window and a fully initialized rendering backend.
-	// GLimp_InitGraphics() is also	called when recovering if creating GL context fails or the one we got is unusable.
-	if (init_successful && GetWindowSize(&cur_width, &cur_height) && cur_width == width && cur_height == height)
-	{
-		// If we want fullscreen, but aren't.
-		if (IsFullscreen())
-		{
-			if (!SDL_SetWindowFullscreenMode(window, NULL))
-			{
-				Com_Printf("Couldn't set fullscreen mode: %s\n", SDL_GetError());
-				Cvar_SetValue("vid_fullscreen", 0);
-			}
-			else if (!SDL_SyncWindow(window))
-			{
-				Com_Printf("Couldn't synchronize window state: %s\n", SDL_GetError());
-				Cvar_SetValue("vid_fullscreen", 0);
-			}
-
-			Cvar_SetValue("vid_fullscreen", fullscreen);
-		}
-
-		// Are we now?
-		if (IsFullscreen())
-			return true;
-	}
-
 	// Is the surface used?
-	if (window != NULL)
+	if (window != NULL) //TODO: can't we just resize it?..
 	{
 		re.ShutdownContext();
 		ShutdownGraphics();
@@ -241,39 +206,15 @@ qboolean GLimp_InitGraphics(int* pwidth, int* pheight, qboolean fullscreen)
 
 	// Let renderer prepare things (set OpenGL attributes).
 	// FIXME: This is no longer necessary, the renderer could and should pass the flags when calling this function.
-	SDL_WindowFlags flags = re.PrepareForWindow();
+	const SDL_WindowFlags flags = re.PrepareForWindow();
 
 	if ((int)flags == -1)
 		return false; // It's PrepareForWindow() job to log an error.
 
-	flags |= fs_flag;
-
-	// Now the hard work. Let's create the window.
-	while (!CreateSDLWindow(flags, fullscreen, width, height))
-	{
-		if (width != safe_width || height != safe_height || (flags & fs_flag))
-		{
-			Com_Printf("SDL SetVideoMode failed: %s\n", SDL_GetError());
-			Com_Printf("Reverting to windowed mode %i (%ix%i).\n", safe_mode, safe_width, safe_height);
-
-			// Try to recover.
-			Cvar_SetValue("vid_mode", (float)safe_mode);
-			Cvar_SetValue("vid_fullscreen", 0);
-
-			width = safe_width;
-			height = safe_height;
-			*pwidth = width;
-			*pheight = height;
-
-			fullscreen = false;
-			flags &= ~fs_flag;
-		}
-		else
-		{
-			Com_Printf("Failed to revert to windowed mode. Will try another render backend...\n");
-			return false;
-		}
-	}
+	// Create the window. Will be borderless if width and height match current screen resolution.
+	// If this fails, R_SetMode() will retry with gl_state.prev_mode.
+	if (!CreateSDLWindow(flags, width, height))
+		return false;
 
 	last_flags = (int)flags;
 
@@ -284,12 +225,11 @@ qboolean GLimp_InitGraphics(int* pwidth, int* pheight, qboolean fullscreen)
 	// Another bug or design failure in SDL: when we are not high dpi aware, the drawable size returned by SDL may be too small.
 	// It seems like the window decoration are taken into account when they shouldn't. It can be seen when creating a fullscreen window.
 	// Work around that by always using the resolution and not the drawable size when we are not high dpi aware.
-	viddef.width = *pwidth;
-	viddef.height = *pheight;
+	viddef.width = width;
+	viddef.height = height;
 
 	SetSDLIcon();
 	SDL_ShowCursor();
-	init_successful = true;
 
 	return true;
 }

@@ -11,5 +11,5 @@
 extern qboolean GLimp_Init(void);
 extern void GLimp_Shutdown(void);
 
-extern qboolean GLimp_InitGraphics(int* pwidth, int* pheight, qboolean fullscreen);
+extern qboolean GLimp_InitGraphics(int width, int height);
 extern void GLimp_ShutdownGraphics(void);
