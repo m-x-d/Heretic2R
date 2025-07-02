@@ -34,7 +34,7 @@ static glmode_t modes[] =
 
 #define NUM_GL_MODES ((int)(sizeof(modes) / sizeof(glmode_t))) //mxd. Added int cast.
 
-void InitGammaTable(void) // H2
+void R_InitGammaTable(void) // H2: InitGammaTable()
 {
 	float contrast = 1.0f - vid_contrast->value;
 
@@ -115,7 +115,7 @@ void R_TextureMode(const char* string) // Q2: GL_TextureMode()
 	}
 }
 
-void GL_ImageList_f(void)
+void R_ImageList_f(void) // Q2: GL_ImageList_f()
 {
 	NOT_IMPLEMENTED
 }
@@ -126,21 +126,21 @@ struct image_s* R_RegisterSkin(const char* name, qboolean* retval)
 	return NULL;
 }
 
-static void GL_FreeImage(image_t* image) // H2
+static void R_FreeImage(image_t* image) // H2: GL_FreeImage()
 {
 	NOT_IMPLEMENTED
 }
 
-void GL_InitImages(void)
+void R_InitImages(void) // Q2: GL_InitImages()
 {
 	registration_sequence = 1;
 	gl_state.inverse_intensity = 1.0f;
 }
 
-void GL_ShutdownImages(void)
+void R_ShutdownImages(void) // Q2: GL_ShutdownImages()
 {
 	image_t* image = &gltextures[0];
 	for (int i = 0; i < numgltextures; i++, image++)
 		if (image->registration_sequence != 0)
-			GL_FreeImage(image);
+			R_FreeImage(image);
 }

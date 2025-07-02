@@ -11,12 +11,12 @@
 extern int gl_filter_min;
 extern int gl_filter_max;
 
-extern void InitGammaTable(void);
+extern void R_InitGammaTable(void);
 
-extern void GL_InitImages(void);
-extern void GL_ShutdownImages(void);
+extern void R_InitImages(void);
+extern void R_ShutdownImages(void);
 
-extern void GL_ImageList_f(void);
+extern void R_ImageList_f(void);
 
 extern void R_TexEnv(GLint mode);
 extern void R_BindImage(const image_t* image);

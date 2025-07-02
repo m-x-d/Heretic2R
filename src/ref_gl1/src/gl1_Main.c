@@ -188,12 +188,12 @@ static void R_Register(void)
 	cl_camera_under_surface = ri.Cvar_Get("cl_camera_under_surface", "0", 0);
 	quake_amount = ri.Cvar_Get("quake_amount", "0", 0);
 
-	ri.Cmd_AddCommand("imagelist", GL_ImageList_f);
-	ri.Cmd_AddCommand("screenshot", GL_ScreenShot_f);
+	ri.Cmd_AddCommand("imagelist", R_ImageList_f);
+	ri.Cmd_AddCommand("screenshot", R_ScreenShot_f);
 	ri.Cmd_AddCommand("modellist", Mod_Modellist_f);
-	ri.Cmd_AddCommand("gl_strings", GL_Strings_f);
+	ri.Cmd_AddCommand("gl_strings", R_Strings_f);
 
-	InitGammaTable(); // H2
+	R_InitGammaTable(); // H2
 }
 
 // Changes the video mode.
@@ -294,7 +294,7 @@ static qboolean R_Init(void)
 	ri.Con_Printf(PRINT_ALL, "Max. anisotropy: %i.\n", (int)gl_config.max_anisotropy);
 
 	R_SetDefaultState();
-	GL_InitImages();
+	R_InitImages();
 	Mod_Init();
 	Draw_InitLocal();
 
@@ -318,7 +318,7 @@ static void R_Shutdown(void)
 	ri.Cmd_RemoveCommand("gl_strings");
 
 	Mod_FreeAll();
-	GL_ShutdownImages();
+	R_ShutdownImages();
 
 	// Shutdown OS-specific OpenGL stuff like contexts, etc.
 	R_ShutdownContext(); // YQ2

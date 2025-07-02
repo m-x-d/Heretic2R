@@ -8,12 +8,12 @@
 #include "gl1_Image.h"
 #include "gl1_Local.h"
 
-void GL_ScreenShot_f(void)
+void R_ScreenShot_f(void) // Q2: GL_ScreenShot_f()
 {
 	NOT_IMPLEMENTED
 }
 
-void GL_Strings_f(void)
+void R_Strings_f(void) // Q2: GL_Strings_f()
 {
 	NOT_IMPLEMENTED
 }
