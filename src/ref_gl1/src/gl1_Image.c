@@ -11,6 +11,9 @@ int numgltextures;
 
 static byte gammatable[256];
 
+int gl_filter_min = GL_NEAREST_MIPMAP_LINEAR; // Q2: GL_LINEAR_MIPMAP_NEAREST; H2: GL_NEAREST.
+int gl_filter_max = GL_LINEAR;
+
 void InitGammaTable(void) // H2
 {
 	float contrast = 1.0f - vid_contrast->value;
@@ -42,6 +45,17 @@ void InitGammaTable(void) // H2
 
 		gammatable[i] = (byte)ClampI((int)inf, 0, 255);
 	}
+}
+
+// Q2 counterpart
+void R_TexEnv(const GLint mode) // Q2: GL_TexEnv()
+{
+	NOT_IMPLEMENTED
+}
+
+void R_TextureMode(const char* string) // Q2: GL_TextureMode()
+{
+	NOT_IMPLEMENTED
 }
 
 void GL_ImageList_f(void)
