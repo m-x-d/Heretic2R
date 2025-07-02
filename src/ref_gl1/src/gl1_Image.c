@@ -14,6 +14,25 @@ static byte gammatable[256];
 int gl_filter_min = GL_NEAREST_MIPMAP_LINEAR; // Q2: GL_LINEAR_MIPMAP_NEAREST; H2: GL_NEAREST.
 int gl_filter_max = GL_LINEAR;
 
+typedef struct
+{
+	char* name;
+	int	minimize;
+	int maximize;
+} glmode_t;
+
+static glmode_t modes[] =
+{
+	{ "GL_NEAREST", GL_NEAREST, GL_NEAREST },
+	{ "GL_LINEAR", GL_LINEAR, GL_LINEAR },
+	{ "GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST },
+	{ "GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR },
+	{ "GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST },
+	{ "GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR }
+};
+
+#define NUM_GL_MODES ((int)(sizeof(modes) / sizeof(glmode_t))) //mxd. Added int cast.
+
 void InitGammaTable(void) // H2
 {
 	float contrast = 1.0f - vid_contrast->value;
@@ -53,9 +72,40 @@ void R_TexEnv(const GLint mode) // Q2: GL_TexEnv()
 	NOT_IMPLEMENTED
 }
 
-void R_TextureMode(const char* string) // Q2: GL_TextureMode()
+void R_BindImage(const image_t* image) // Q2: GL_BindImage()
 {
 	NOT_IMPLEMENTED
+}
+
+void R_TextureMode(const char* string) // Q2: GL_TextureMode()
+{
+	int cur_mode;
+
+	for (cur_mode = 0; cur_mode < NUM_GL_MODES; cur_mode++)
+		if (!Q_stricmp(modes[cur_mode].name, string))
+			break;
+
+	if (cur_mode == NUM_GL_MODES)
+	{
+		ri.Con_Printf(PRINT_ALL, "Bad texture filter name\n"); // H2: text change.
+		return;
+	}
+
+	gl_filter_min = modes[cur_mode].minimize;
+	gl_filter_max = modes[cur_mode].maximize;
+
+	// Change all the existing mipmap texture objects.
+	image_t* glt = &gltextures[0];
+	for (int i = 0; i < numgltextures; i++, glt++)
+	{
+		if (glt->type != it_pic && glt->type != it_sky) // Mipmapped texture.
+		{
+			R_BindImage(glt); // Q2: GL_Bind(glt->texnum)
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min); // H2_1.07: GL_TEXTURE_MIN_FILTER -> 0x84fe //mxd. Q2/H2: qglTexParameterf
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max); // H2_1.07: GL_TEXTURE_MAG_FILTER -> 0x84fe //mxd. Q2/H2: qglTexParameterf
+		} //TODO: add 'texture has no mipmaps' YQ2 logic?
+	}
 }
 
 void GL_ImageList_f(void)

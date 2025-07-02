@@ -19,6 +19,7 @@ extern void GL_ShutdownImages(void);
 extern void GL_ImageList_f(void);
 
 extern void R_TexEnv(GLint mode);
+extern void R_BindImage(const image_t* image);
 extern void R_TextureMode(const char* string);
 
 extern struct image_s* R_RegisterSkin(const char* name, qboolean* retval);
