@@ -213,6 +213,8 @@ typedef struct model_s
 
 #pragma endregion
 
+extern int registration_sequence;
+
 extern void Mod_Init(void);
 extern void Mod_FreeAll(void);
 

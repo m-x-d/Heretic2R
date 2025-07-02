@@ -5,6 +5,7 @@
 //
 
 #include "gl1_Image.h"
+#include "gl1_Model.h"
 
 image_t gltextures[MAX_GLTEXTURES];
 int numgltextures;
@@ -69,7 +70,7 @@ void InitGammaTable(void) // H2
 // Q2 counterpart
 void R_TexEnv(const GLint mode) // Q2: GL_TexEnv()
 {
-	static GLint lastmodes[2] = { -1, -1 };
+	static GLint lastmodes[] = { -1, -1 };
 
 	if (mode != lastmodes[gl_state.currenttmu])
 	{
@@ -132,7 +133,8 @@ static void GL_FreeImage(image_t* image) // H2
 
 void GL_InitImages(void)
 {
-	NOT_IMPLEMENTED
+	registration_sequence = 1;
+	gl_state.inverse_intensity = 1.0f;
 }
 
 void GL_ShutdownImages(void)

@@ -7,6 +7,8 @@
 #include "gl1_Local.h"
 #include "gl1_Model.h"
 
+int registration_sequence;
+
 #define MAX_MOD_KNOWN 512
 static model_t mod_known[MAX_MOD_KNOWN];
 static int mod_numknown;
