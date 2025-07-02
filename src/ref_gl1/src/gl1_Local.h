@@ -114,6 +114,13 @@ typedef enum
 extern image_t gltextures[MAX_GLTEXTURES];
 extern int numgltextures;
 
+extern image_t* r_notexture;
+extern image_t* r_particletexture;
+extern image_t* r_aparticletexture;
+extern image_t* r_reflecttexture;
+extern image_t* r_font1;
+extern image_t* r_font2;
+
 #pragma region ========================== GL config stuff  ==========================
 
 typedef struct

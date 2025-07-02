@@ -120,6 +120,12 @@ void R_ImageList_f(void) // Q2: GL_ImageList_f()
 	NOT_IMPLEMENTED
 }
 
+image_t* R_FindImage(const char* name, const imagetype_t type) // H2: GL_FindImage()
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 struct image_s* R_RegisterSkin(const char* name, qboolean* retval)
 {
 	NOT_IMPLEMENTED

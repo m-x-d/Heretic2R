@@ -5,10 +5,19 @@
 //
 
 #include "gl1_Draw.h"
+#include "gl1_Image.h"
+
+image_t* draw_chars;
 
 //mxd. Each font contains 224 char definitions.
 glxy_t* font1; // H2
 glxy_t* font2; // H2
+
+static void InitFonts(void) // H2
+{
+	ri.FS_LoadFile("pics/misc/font1.fnt", (void**)&font1);
+	ri.FS_LoadFile("pics/misc/font2.fnt", (void**)&font2);
+}
 
 void ShutdownFonts(void) // H2
 {
@@ -25,9 +34,27 @@ void ShutdownFonts(void) // H2
 	}
 }
 
-void Draw_InitLocal(void)
+static image_t* Draw_FindPicFilter(const char* name) // H2
 {
 	NOT_IMPLEMENTED
+	return NULL;
+}
+
+void Draw_InitLocal(void)
+{
+	r_notexture = NULL;
+	r_notexture = R_FindImage("textures/general/notex.m8", it_wall);
+	if (r_notexture == NULL)
+		ri.Sys_Error(ERR_DROP, "Draw_InitLocal: could not find textures/general/notex.m8"); //mxd. Sys_Error() -> ri.Sys_Error().
+
+	draw_chars = Draw_FindPic("misc/conchars.m32");
+	r_particletexture = Draw_FindPicFilter("misc/particle.m32");
+	r_aparticletexture = Draw_FindPicFilter("misc/aparticle.m8");
+	r_font1 = Draw_FindPic("misc/font1.m32");
+	r_font2 = Draw_FindPic("misc/font2.m32");
+	r_reflecttexture = Draw_FindPicFilter("misc/reflect.m32");
+
+	InitFonts();
 }
 
 void Draw_Char(const int x, const int y, int c, const paletteRGBA_t color)

@@ -23,6 +23,8 @@ typedef struct glxy_s
 extern glxy_t* font1; // H2
 extern glxy_t* font2; // H2
 
+extern image_t* draw_chars;
+
 extern void ShutdownFonts(void);
 
 extern void Draw_InitLocal(void);

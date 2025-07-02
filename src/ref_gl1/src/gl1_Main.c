@@ -26,6 +26,13 @@ refimport_t ri;
 glconfig_t gl_config;
 glstate_t gl_state;
 
+image_t* r_notexture; // Used for missing textures.
+image_t* r_particletexture;
+image_t* r_aparticletexture;
+image_t* r_reflecttexture;
+image_t* r_font1;
+image_t* r_font2;
+
 #pragma region ========================== CVARS  ==========================
 
 cvar_t* r_norefresh;
