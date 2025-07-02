@@ -147,7 +147,7 @@ static qboolean InitDisplayModes(void) //mxd
 // Sets the window icon.
 static void SetSDLIcon(void)
 {
-	NOT_IMPLEMENTED
+	//TODO: implement? Game window already uses corrent icon... somehow.
 }
 
 // Shuts the SDL render backend down.

@@ -276,8 +276,6 @@ static qboolean R_Init(void)
 		return false; //mxd. Decompiled code still returns -1 here...
 	}
 
-	ri.Vid_MenuInit(); // YQ2
-
 	// Get our various GL strings.
 	gl_config.vendor_string = (const char*)glGetString(GL_VENDOR);
 	ri.Con_Printf(PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string);

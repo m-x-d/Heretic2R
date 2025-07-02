@@ -281,7 +281,7 @@ typedef struct
 	void (*FS_CreatePath)(char* path);
 
 	qboolean (*Vid_GetModeInfo)(int* width, int* height, int mode);
-	void (*Vid_MenuInit)(void);
+	void (*Vid_MenuInit)(void); //TODO: unused. Not needed?
 	void (*Vid_NewWindow)(int width, int height);
 
 	qboolean (*GLimp_InitGraphics)(int width, int height); // YQ2
