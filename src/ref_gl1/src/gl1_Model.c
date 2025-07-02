@@ -9,6 +9,8 @@
 
 int registration_sequence;
 
+static byte mod_novis[MAX_MAP_LEAFS / 8];
+
 #define MAX_MOD_KNOWN 512
 static model_t mod_known[MAX_MOD_KNOWN];
 static int mod_numknown;
@@ -18,9 +20,10 @@ void Mod_Modellist_f(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 void Mod_Init(void)
 {
-	NOT_IMPLEMENTED
+	memset(mod_novis, 0xff, sizeof(mod_novis));
 }
 
 static void Mod_Free(model_t* mod)
