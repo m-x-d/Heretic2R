@@ -36,6 +36,7 @@ cvar_t* r_novis;
 cvar_t* r_nocull;
 cvar_t* r_lerpmodels;
 static cvar_t* r_speeds;
+cvar_t* r_vsync; // YQ2
 
 cvar_t* r_lightlevel; // FIXME: This is a HACK to get the client's light level
 
@@ -116,6 +117,7 @@ static void R_Register(void)
 	r_nocull = ri.Cvar_Get("r_nocull", "0", 0);
 	r_lerpmodels = ri.Cvar_Get("r_lerpmodels", "1", 0);
 	r_speeds = ri.Cvar_Get("r_speeds", "0", 0);
+	r_vsync = ri.Cvar_Get("r_vsync", "1", CVAR_ARCHIVE); // YQ2
 
 	r_lightlevel = ri.Cvar_Get("r_lightlevel", "0", 0);
 

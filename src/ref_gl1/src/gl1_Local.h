@@ -27,6 +27,7 @@ extern cvar_t* r_drawworld;
 extern cvar_t* r_novis;
 extern cvar_t* r_nocull;
 extern cvar_t* r_lerpmodels;
+extern cvar_t* r_vsync; // YQ2
 
 extern cvar_t* r_lightlevel;
 

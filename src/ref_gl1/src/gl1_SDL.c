@@ -40,9 +40,28 @@ int R_PrepareForWindow(void)
 	return SDL_WINDOW_OPENGL;
 }
 
+// Enables or disables the vsync.
 void R_SetVsync(void)
 {
-	NOT_IMPLEMENTED
+	// Make sure that the user given value is SDL compatible...
+	int vsync = 0;
+
+	if (r_vsync->value == 1.0f)
+		vsync = 1;
+	else if (r_vsync->value == 2.0f)
+		vsync = -1;
+
+	if (!SDL_GL_SetSwapInterval(vsync) && vsync == -1)
+	{
+		// Not every system supports adaptive VSync, fallback to normal VSync.
+		ri.Con_Printf(PRINT_ALL, "Failed to set adaptive VSync, reverting to normal VSync.\n");
+		SDL_GL_SetSwapInterval(1);
+	}
+
+	if (!SDL_GL_GetSwapInterval(&vsync))
+		ri.Con_Printf(PRINT_ALL, "Failed to get VSync state, assuming no VSync.\n");
+
+	//TODO: update r_vsync cvar?
 }
 
 // Initializes the OpenGL context.
