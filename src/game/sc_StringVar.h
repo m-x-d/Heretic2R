@@ -11,7 +11,7 @@
 class StringVar : public Variable
 {
 protected:
-	char value[VAR_LENGTH] = { 0 };
+	char value[VAR_LENGTH] = {};
 
 public:
 	StringVar(const char* new_name = "", const char* new_value = "");

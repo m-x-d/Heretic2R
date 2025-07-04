@@ -11,7 +11,7 @@
 
 class FieldDef
 {
-	char name[VAR_LENGTH] = { 0 };
+	char name[VAR_LENGTH] = {};
 	VariableType type = TYPE_UNKNOWN;
 	int offset = -1;
 	fieldtype_t field_type = F_IGNORE;

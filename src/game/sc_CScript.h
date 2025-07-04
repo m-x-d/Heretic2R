@@ -29,7 +29,7 @@ class Event;
 
 class CScript
 {
-	char name[MAX_PATH] = { 0 };
+	char name[MAX_PATH] = {};
 	byte* data = nullptr;
 	ScriptConditionT script_condition = COND_COMPLETED;
 	int condition_info = 0;

@@ -12,7 +12,7 @@
 class Variable
 {
 protected:
-	char name[VAR_LENGTH] = { 0 };
+	char name[VAR_LENGTH] = {};
 	VariableType type = TYPE_UNKNOWN;
 
 public:
