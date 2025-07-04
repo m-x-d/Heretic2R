@@ -6,9 +6,11 @@
 
 #pragma once
 
+#include "Player.h"
+
 // Chicken Branch.
-extern int ChickenBranchLwrStanding(const playerinfo_t *info);
-extern int ChickenBranchidle(playerinfo_t *info);
+extern int ChickenBranchLwrStanding(playerinfo_t *info);
+extern void ChickenBranchIdle(playerinfo_t *info);
 
 // Player Lower Branch.
 extern int BranchLwrStanding(playerinfo_t *info);
@@ -22,7 +24,7 @@ extern int BranchLwrJumping(playerinfo_t *info);
 extern int BranchLwrSurfaceSwim(playerinfo_t *info);
 extern int BranchLwrUnderwaterSwim(playerinfo_t *info);
 extern int BranchLwrClimbing(playerinfo_t *info);
-extern int BranchLwrKnockDown(const playerinfo_t *info);
+extern int BranchLwrKnockDown(playerinfo_t *info);
 extern int BranchLwrRunningStrafe(playerinfo_t *info);
 
 // Player Upper Branch.

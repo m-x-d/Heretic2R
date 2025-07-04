@@ -4,8 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include "Player.h"
-#include "p_types.h"
+#include "p_anim_branch.h"
 #include "p_actions.h"
 #include "p_anims.h"
 #include "g_items.h"
@@ -180,7 +179,7 @@ PLAYER_API qboolean BranchCheckDismemberAction(const playerinfo_t* info, const i
 #pragma region ========================== CHICKEN ANIMATION LOGIC ==========================
 
 // Decide if we have just fallen off something, or we are falling down.
-int ChickenBranchLwrStanding(const playerinfo_t* info)
+int ChickenBranchLwrStanding(playerinfo_t* info)
 {
 	assert(info);
 
@@ -237,13 +236,13 @@ int ChickenBranchLwrStanding(const playerinfo_t* info)
 }
 
 // This allows the chicken to interrupt itself - if its idling.
-int ChickenBranchidle(playerinfo_t* info)
+void ChickenBranchIdle(playerinfo_t* info)
 {
 	// Do we need to attack?
 	if (info->seqcmd[ACMDU_ATTACK])
 	{
 		PlayerAnimSetLowerSeq(info, ASEQ_WSWORD_SPIN);
-		return ASEQ_WSWORD_SPIN;
+		return;
 	}
 
 	const qboolean do_jump = info->seqcmd[ACMDL_JUMP]; //mxd
@@ -254,7 +253,7 @@ int ChickenBranchidle(playerinfo_t* info)
 		const int seq = (do_jump ? ASEQ_JUMPFWD_WGO : ASEQ_WALKF_GO);
 		PlayerAnimSetLowerSeq(info, seq);
 
-		return seq;
+		return;
 	}
 
 	if (info->seqcmd[ACMDL_RUN_F])
@@ -263,16 +262,16 @@ int ChickenBranchidle(playerinfo_t* info)
 		const int seq = (do_jump ? ASEQ_JUMPFWD_RGO : ASEQ_RUNF_GO);
 		PlayerAnimSetLowerSeq(info, seq);
 
-		return seq;
+		return;
 	}
 
 	if (info->seqcmd[ACMDL_RUN_B])
 	{
 		//mxd. Do backward-jump or run backward.
-		const int seq = (do_jump ? ASEQ_JUMPFLIPL : ASEQ_WSTRAFE_LEFT);
+		const int seq = (do_jump ? ASEQ_JUMPFLIPL : ASEQ_WSTRAFE_LEFT); //TODO: these sequence names don't seem right!
 		PlayerAnimSetLowerSeq(info, seq);
 
-		return seq;
+		return;
 	}
 
 	if (info->seqcmd[ACMDL_BACK])
@@ -281,31 +280,28 @@ int ChickenBranchidle(playerinfo_t* info)
 		const int seq = (do_jump ? ASEQ_JUMPBACK : ASEQ_WALKB);
 		PlayerAnimSetLowerSeq(info, seq);
 
-		return seq;
+		return;
 	}
 
 	if (info->seqcmd[ACMDL_STRAFE_L])
 	{
 		// Strafing left.
 		PlayerAnimSetLowerSeq(info, ASEQ_STRAFEL);
-		return ASEQ_STRAFEL;
+		return;
 	}
 
 	if (info->seqcmd[ACMDL_STRAFE_R])
 	{
 		// Strafing right.
 		PlayerAnimSetLowerSeq(info, ASEQ_STRAFER);
-		return ASEQ_STRAFER;
+		return;
 	}
 
 	if (info->seqcmd[ACMDL_JUMP])
 	{
 		// Jumping in place.
 		PlayerAnimSetLowerSeq(info, ASEQ_JUMPUP);
-		return ASEQ_JUMPUP;
 	}
-
-	return ASEQ_NONE;
 }
 
 #pragma endregion
@@ -1037,7 +1033,7 @@ int BranchLwrJumping(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-int BranchLwrKnockDown(const playerinfo_t* info)
+int BranchLwrKnockDown(playerinfo_t* info)
 {
 	return (info->seqcmd[ACMDL_BACK] ? ASEQ_KNOCKDOWN_EVADE : ASEQ_KNOCKDOWN_GETUP);
 }
