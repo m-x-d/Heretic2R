@@ -4,7 +4,6 @@
 // Copyright 1998 Raven Software
 //
 
-#include "Player.h"
 #include "p_anims.h"
 #include "p_actions.h"
 #include "p_chicken.h"

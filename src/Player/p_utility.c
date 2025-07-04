@@ -6,8 +6,6 @@
 
 #include "Player.h"
 #include "p_utility.h"
-
-#include "Angles.h"
 #include "EffectFlags.h"
 
 //mxd. 'contantmask', 'flags' and 'passent' args are always the same in Player.dll, so...
