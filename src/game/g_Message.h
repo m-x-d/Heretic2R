@@ -164,7 +164,7 @@ extern void G_Message_Delete(G_Message_t* msg);
 extern "C"
 {
 #endif
-	extern void QPostMessage(struct edict_s* to, G_MsgID_t id, G_MsgPriority_t priority, char* format, ...);
+	extern void QPostMessage(struct edict_s* to, G_MsgID_t id, G_MsgPriority_t priority, const char* format, ...);
 #ifdef __cplusplus
 }
 #endif

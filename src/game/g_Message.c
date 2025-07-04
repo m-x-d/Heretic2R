@@ -54,7 +54,7 @@ void G_Message_Delete(G_Message_t* msg)
 	ResMngr_DeallocateResource(&messages_manager, msg, sizeof(G_Message_t));
 }
 
-void QPostMessage(edict_t* to, const G_MsgID_t id, const G_MsgPriority_t priority, char* format, ...)
+void QPostMessage(edict_t* to, const G_MsgID_t id, const G_MsgPriority_t priority, const char* format, ...)
 {
 	// Everything should really have one, but at this point everything doesn't.
 	// So, the messages will never get popped of the queue, so don't push them on in the first place.
