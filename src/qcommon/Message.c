@@ -92,20 +92,14 @@ int GetParms(SinglyLinkedList_t* this_ptr, const char* format, va_list marker)
 	assert(format);
 
 	if (format == NULL)
-	{
 		Sys_Error("GetParms: null format string");
-		return 0;
-	}
 
 	SLList_Front(this_ptr);
 
 	assert(!SLList_AtEnd(this_ptr));
 
 	if (SLList_AtEnd(this_ptr))
-	{
 		Sys_Error("Getthis: empty parameter list");
-		return 0;
-	}
 
 	while (format[count] != 0)
 	{
