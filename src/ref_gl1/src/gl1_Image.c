@@ -5,6 +5,7 @@
 //
 
 #include "gl1_Image.h"
+#include "gl1_Draw.h"
 #include "gl1_Model.h"
 
 image_t gltextures[MAX_GLTEXTURES];
@@ -70,6 +71,30 @@ void R_InitGammaTable(void) // H2: InitGammaTable()
 	}
 }
 
+//mxd. Part of GL_LoadPic logic in Q2
+image_t* R_GetFreeImage(void) // H2: GL_GetFreeImage().
+{
+	int index;
+	image_t* image;
+
+	// Find a free image_t
+	for (index = 0, image = &gltextures[0]; index < numgltextures; index++, image++)
+		if (image->registration_sequence == 0)
+			break;
+
+	if (index == numgltextures)
+	{
+		if (numgltextures == MAX_GLTEXTURES)
+			ri.Sys_Error(ERR_DROP, "R_GetFreeImage: no free image_t slots!\n"); //mxd. Sys_Error() -> ri.Sys_Error().
+
+		numgltextures++;
+	}
+
+	memset(image, 0, sizeof(image_t));
+
+	return image;
+}
+
 // Q2 counterpart
 void R_TexEnv(const GLint mode) // Q2: GL_TexEnv()
 {
@@ -82,9 +107,23 @@ void R_TexEnv(const GLint mode) // Q2: GL_TexEnv()
 	}
 }
 
+//mxd. Most likely was changed from GL_Bind in H2 to use image->palette in qglColorTableEXT logic (which we skip...)
 void R_BindImage(const image_t* image) // Q2: GL_BindImage()
 {
-	NOT_IMPLEMENTED
+	int texnum;
+
+	if ((int)gl_nobind->value && draw_chars != NULL) // Performance evaluation option.
+		texnum = draw_chars->texnum;
+	else
+		texnum = image->texnum;
+
+	if (gl_state.currenttextures[gl_state.currenttmu] != texnum)
+	{
+		//mxd. Skipping qglColorTableEXT logic.
+
+		gl_state.currenttextures[gl_state.currenttmu] = texnum;
+		glBindTexture(GL_TEXTURE_2D, texnum);
+	}
 }
 
 void R_TextureMode(const char* string) // Q2: GL_TextureMode()
@@ -118,6 +157,28 @@ void R_TextureMode(const char* string) // Q2: GL_TextureMode()
 	}
 }
 
+void R_SetFilter(const image_t* image)
+{
+	//mxd. Q2/H2: qglTexParameterf
+	switch (image->type)
+	{
+		case it_pic:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // H2_1.07: GL_LINEAR 
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // H2_1.07: GL_LINEAR
+			break;
+
+		case it_sky:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max); // H2_1.07: GL_TEXTURE_MIN_FILTER -> 0x84fe
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max); // H2_1.07: GL_TEXTURE_MAG_FILTER -> 0x84fe
+			break;
+
+		default:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+			break;
+	}
+}
+
 void R_ImageList_f(void) // Q2: GL_ImageList_f()
 {
 	NOT_IMPLEMENTED
@@ -125,10 +186,120 @@ void R_ImageList_f(void) // Q2: GL_ImageList_f()
 
 #pragma region ========================== .M8 LOADING ==========================
 
+//mxd. Somewhat similar to Q2's GL_Upload8()
+void R_UploadPaletted(const int level, const byte* data, const paletteRGB_t* palette, const int width, const int height) // H2: GL_UploadPaletted().
+{
+	paletteRGBA_t trans[256 * 256]; //TODO: increase to at least 1024 x 1024? Or dynamically allocate based on size? 
+
+	//mxd. Skipping qglColorTableEXT logic
+
+	const uint size = width * height;
+
+	//mxd. Added sanity check.
+	if (size > sizeof(trans) / 4)
+		ri.Sys_Error(ERR_DROP, "R_UploadPaletted: image is too large (%i x %i)!\n", width, height);
+
+	for (uint i = 0; i < size; i++)
+	{
+		const paletteRGB_t* src_p = palette + data[i];
+		paletteRGBA_t* dst_p = &trans[i];
+
+		// Copy rgb components.
+		dst_p->r = src_p->r;
+		dst_p->g = src_p->g;
+		dst_p->b = src_p->b;
+		dst_p->a = 255;
+	}
+
+	glTexImage2D(GL_TEXTURE_2D, level, GL_TEX_SOLID_FORMAT, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
+}
+
+static void GrabPalette(paletteRGB_t* src, paletteRGB_t* dst) // H2
+{
+	int i;
+	paletteRGB_t* src_p;
+	paletteRGB_t* dst_p;
+
+	for (i = 0, src_p = src, dst_p = dst; i < PAL_SIZE; i++, src_p++, dst_p++)
+	{
+		dst_p->r = gammatable[src_p->r];
+		dst_p->g = gammatable[src_p->g];
+		dst_p->b = gammatable[src_p->b];
+	}
+}
+
+static int R_GetMipLevel8(const miptex_t* mt, const imagetype_t type) // H2: GL_GetMipLevel8().
+{
+	int mip = (int)(type == it_skin ? gl_skinmip->value : gl_picmip->value);
+	mip = ClampI(mip, 0, MIPLEVELS - 1);
+	while (mip > 0 && (mt->width[mip] == 0 || mt->height[mip] == 0)) //mxd. Added mip > 0 sanity check
+		mip--;
+
+	return mip;
+}
+
+static void R_UploadM8(miptex_t* mt, const image_t* image) // H2: GL_Upload8M().
+{
+	int mip = R_GetMipLevel8(mt, image->type);
+
+	for (int level = 0; mip < MIPLEVELS; mip++, level++)
+	{
+		if (mt->width[mip] == 0 || mt->height[mip] == 0)
+			break;
+
+		R_UploadPaletted(level, (byte*)mt + mt->offsets[mip], image->palette, (int)mt->width[mip], (int)mt->height[mip]);
+	}
+
+	R_SetFilter(image);
+}
+
+// Loads .M8 image.
 static image_t* R_LoadM8(const char* name, const imagetype_t type) // H2: GL_LoadWal().
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	miptex_t* mt;
+	ri.FS_LoadFile(name, (void**)&mt);
+
+	if (mt == NULL)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_LoadM8: can't load '%s'\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
+		return NULL;
+	}
+
+	if (mt->version != MIP_VERSION)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_LoadM8: can't load '%s': invalid version (%i)\n", name, mt->version); //mxd. Com_Printf() -> ri.Con_Printf().
+		ri.FS_FreeFile(mt); //mxd
+
+		return NULL;
+	}
+
+	if (strlen(name) >= MAX_QPATH)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_LoadM8: can't load '%s': filename too long\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
+		ri.FS_FreeFile(mt); //mxd
+
+		return NULL;
+	}
+
+	paletteRGB_t* palette = malloc(768);
+	GrabPalette(mt->palette, palette);
+
+	image_t* image = R_GetFreeImage();
+	strcpy_s(image->name, sizeof(image->name), name);
+	image->registration_sequence = registration_sequence;
+	image->width = (int)mt->width[0];
+	image->height = (int)mt->height[0];
+	image->type = type;
+	image->palette = palette;
+	image->has_alpha = 0;
+	image->texnum = TEXNUM_IMAGES + (image - gltextures);
+	image->num_frames = (byte)mt->value;
+
+	R_BindImage(image);
+	R_UploadM8(mt, image);
+	ri.FS_FreeFile(mt);
+
+	return image;
 }
 
 #pragma endregion
