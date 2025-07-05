@@ -34,10 +34,30 @@ void ShutdownFonts(void) // H2
 	}
 }
 
-static image_t* Draw_FindPicFilter(const char* name) // H2
+image_t* Draw_FindPic(const char* name)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (name[0] != '/' && name[0] != '\\')
+	{
+		char fullname[MAX_QPATH];
+		Com_sprintf(fullname, sizeof(fullname), "pics/%s", name); // Q2: pics/%s.pcx
+
+		return R_FindImage(fullname, it_pic);
+	}
+
+	return R_FindImage(name + 1, it_pic);
+}
+
+static image_t* Draw_FindPicFilter(const char* name) // H2 //TODO: same as Draw_FindPic(), except for 'it_sky' image type...
+{
+	if (name[0] != '/' && name[0] != '\\')
+	{
+		char fullname[MAX_QPATH];
+		Com_sprintf(fullname, sizeof(fullname), "pics/%s", name);
+
+		return R_FindImage(fullname, it_sky);
+	}
+
+	return R_FindImage(name + 1, it_sky);
 }
 
 void Draw_InitLocal(void)
@@ -60,19 +80,6 @@ void Draw_InitLocal(void)
 void Draw_Char(const int x, const int y, int c, const paletteRGBA_t color)
 {
 	NOT_IMPLEMENTED
-}
-
-image_t* Draw_FindPic(const char* name)
-{
-	if (name[0] != '/' && name[0] != '\\')
-	{
-		char fullname[MAX_QPATH];
-		Com_sprintf(fullname, sizeof(fullname), "pics/%s", name); // Q2: pics/%s.pcx
-
-		return R_FindImage(fullname, it_pic);
-	}
-
-	return R_FindImage(name + 1, it_pic);
 }
 
 void Draw_GetPicSize(int* w, int* h, const char* name)
