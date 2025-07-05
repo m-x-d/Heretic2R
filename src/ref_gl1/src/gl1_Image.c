@@ -306,10 +306,97 @@ static image_t* R_LoadM8(const char* name, const imagetype_t type) // H2: GL_Loa
 
 #pragma region ========================== .M32 LOADING ==========================
 
+static void R_ApplyGamma32(miptex32_t* mt) // H2: GL_ApplyGamma32().
+{
+	for (int mip = 0; mip < MIPLEVELS - 1; mip++) //TODO: last mip level is skipped. Unintentional?
+	{
+		const uint mip_size = mt->width[mip] * mt->height[mip];
+		if (mip_size == 0)
+			return;
+
+		// Adjust RGBA colors at offset...
+		paletteRGBA_t* color = (paletteRGBA_t*)((byte*)mt + mt->offsets[mip]);
+		for (uint i = 0; i < mip_size; i++, color++)
+		{
+			color->r = gammatable[color->r];
+			color->g = gammatable[color->g];
+			color->b = gammatable[color->b];
+		}
+	}
+}
+
+//mxd. Same logic as in GL_GetMipLevel8(), but for miptex32_t...
+static int R_GetMipLevel32(const miptex32_t* mt, const imagetype_t type) // H2: GL_GetMipLevel32().
+{
+	int mip = (int)(type == it_skin ? gl_skinmip->value : gl_picmip->value);
+	mip = ClampI(mip, 0, MIPLEVELS - 1);
+	while (mip > 0 && (mt->width[mip] == 0 || mt->height[mip] == 0)) //mxd. Added mip > 0 sanity check
+		mip--;
+
+	return mip;
+}
+
+static void R_UploadM32(miptex32_t* mt, const image_t* img) // H2: GL_Upload32M().
+{
+	int mip = R_GetMipLevel32(mt, img->type);
+
+	for (int level = 0; mip < MIPLEVELS; mip++, level++)
+	{
+		if (mt->width[mip] == 0 || mt->height[mip] == 0)
+			break;
+
+		glTexImage2D(GL_TEXTURE_2D, level, GL_TEX_ALPHA_FORMAT, (int)mt->width[mip], (int)mt->height[mip], 0, GL_RGBA, GL_UNSIGNED_BYTE, (byte*)mt + mt->offsets[mip]);
+	}
+
+	R_SetFilter(img);
+}
+
+// Loads .M32 image.
 static image_t* R_LoadM32(const char* name, const imagetype_t type) // H2: GL_LoadWal32()
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	miptex32_t* mt;
+
+	ri.FS_LoadFile(name, (void**)&mt);
+	if (mt == NULL)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_LoadM32: can't load '%s'\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
+		return NULL;
+	}
+
+	if (mt->version != MIP32_VERSION)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_LoadM32: can't load '%s': invalid version (%i)\n", name, mt->version); //mxd. Com_Printf() -> ri.Con_Printf().
+		ri.FS_FreeFile(mt); //mxd
+
+		return NULL;
+	}
+
+	if (strlen(name) >= MAX_QPATH)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_LoadM32: can't load '%s': filename too long\n", name); //mxd. Com_Printf() -> ri.Con_Printf().
+		ri.FS_FreeFile(mt); //mxd
+
+		return NULL;
+	}
+
+	R_ApplyGamma32(mt);
+
+	image_t* image = R_GetFreeImage();
+	strcpy_s(image->name, sizeof(image->name), name);
+	image->registration_sequence = registration_sequence;
+	image->width = (int)mt->width[0];
+	image->height = (int)mt->height[0];
+	image->type = type;
+	image->palette = NULL;
+	image->has_alpha = 1;
+	image->texnum = TEXNUM_IMAGES + (image - gltextures);
+	image->num_frames = (byte)mt->value;
+
+	R_BindImage(image);
+	R_UploadM32(mt, image);
+	ri.FS_FreeFile(mt);
+
+	return image;
 }
 
 #pragma endregion
