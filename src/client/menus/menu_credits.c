@@ -844,7 +844,7 @@ static void M_Credits_MenuDraw(void)
 	char* line;
 
 	// Draw menu BG.
-	re.BookDrawPic(0, 0, "book/back/b_conback8.bk", cls.m_menuscale);
+	re.BookDrawPic("book/back/b_conback8.bk", cls.m_menuscale);
 
 	// Draw credits.
 	int y = viddef.height - (cls.realtime - credits_start_time) / 40;

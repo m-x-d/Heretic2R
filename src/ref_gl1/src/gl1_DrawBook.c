@@ -163,11 +163,8 @@ int BF_Strlen(const char* text)
 	}
 }
 
-//TODO: w and h args are ignored.
-void Draw_BookPic(const int w, const int h, const char* name, const float scale)
+void Draw_BookPic(const char* name, const float scale)
 {
-	char frame_name[MAX_QPATH];
-
 	const model_t* mod = R_RegisterModel(name);
 
 	if (mod == NULL)
@@ -190,15 +187,11 @@ void Draw_BookPic(const int w, const int h, const char* name, const float scale)
 	bookframe_t* bframe = &book->bframes[0];
 	for (int i = 0; i < book->bheader.num_segments; i++, bframe++)
 	{
-		//TODO: not needed? Mod_LoadBookModel already loads all frames into mod.skins[]. Could use mod.skins[i] instead of frame_img?
-		Com_sprintf(frame_name, sizeof(frame_name), "/book/%s", bframe->name);
-		const image_t* frame_img = Draw_FindPic(frame_name);
-
 		const int pic_x = (const int)floorf((float)bframe->x * vid_w / header_w * scale);
 		const int pic_y = (const int)floorf((float)bframe->y * vid_h / header_h * scale);
 		const int pic_w = (const int)ceilf((float)bframe->w * vid_w / header_w * scale);
 		const int pic_h = (const int)ceilf((float)bframe->h * vid_h / header_h * scale);
 
-		Draw_Render(offset_x + pic_x, offset_y + pic_y, pic_w, pic_h, frame_img, gl_bookalpha->value);
+		Draw_Render(offset_x + pic_x, offset_y + pic_y, pic_w, pic_h, mod->skins[i], gl_bookalpha->value);
 	}
 }

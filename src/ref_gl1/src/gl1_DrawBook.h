@@ -7,5 +7,5 @@
 #pragma once
 
 extern void Draw_BigFont(int x, int y, const char* text, float alpha);
-extern void Draw_BookPic(int w, int h, const char* name, float scale);
+extern void Draw_BookPic(const char* name, float scale);
 extern int BF_Strlen(const char* text);

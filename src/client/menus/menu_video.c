@@ -505,7 +505,7 @@ static void VID_MenuDraw(void)
 	s_current_menu = (s_current_menu_index ? &s_opengl_menu : &s_software_menu);
 
 	// Draw menu BG.
-	re.BookDrawPic(0, 0, "book/back/b_conback8.bk", cls.m_menuscale);
+	re.BookDrawPic("book/back/b_conback8.bk", cls.m_menuscale);
 
 	if (cls.m_menualpha == 0.0f)
 		return;

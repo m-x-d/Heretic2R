@@ -114,7 +114,7 @@ static void LoadGame_MenuDraw(void)
 	char title[MAX_QPATH];
 
 	// Draw menu BG.
-	re.BookDrawPic(0, 0, "book/back/b_conback8.bk", cls.m_menuscale);
+	re.BookDrawPic("book/back/b_conback8.bk", cls.m_menuscale);
 
 	if (cls.m_menualpha == 0.0f)
 		return;

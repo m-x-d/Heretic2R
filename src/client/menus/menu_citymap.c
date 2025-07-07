@@ -38,7 +38,7 @@ static void CityMap_DefaultDraw(void) // H2
 	char title[MAX_QPATH];
 
 	// Draw menu BG.
-	re.BookDrawPic(0, 0, "book/back/b_conback8.bk", cls.m_menuscale);
+	re.BookDrawPic("book/back/b_conback8.bk", cls.m_menuscale);
 
 	if (cls.m_menualpha == 0.0f)
 		return;
@@ -68,7 +68,7 @@ static void CityMap_MenuDraw(void) // H2
 		const level_map_info_t* info = &map_infos[level_num];
 
 		if (info->city_map != NULL)
-			re.BookDrawPic(0, 0, info->city_map, cls.m_menuscale);
+			re.BookDrawPic(info->city_map, cls.m_menuscale);
 	}
 	else
 	{
