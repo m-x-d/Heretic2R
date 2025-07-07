@@ -30,6 +30,11 @@ float gldepthmax;
 glconfig_t gl_config;
 glstate_t gl_state;
 
+int r_viewcluster;
+int r_viewcluster2;
+int r_oldviewcluster;
+int r_oldviewcluster2;
+
 #pragma region ========================== CVARS  ==========================
 
 cvar_t* r_norefresh;

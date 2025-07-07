@@ -187,7 +187,22 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 
 void R_BeginRegistration(const char* model)
 {
-	NOT_IMPLEMENTED
+	char fullname[MAX_QPATH];
+
+	registration_sequence++;
+	r_oldviewcluster = -1; // Force markleafs.
+
+	Com_sprintf(fullname, sizeof(fullname), "maps/%s.bsp", model);
+
+	// Explicitly free the old map if different. This guarantees that mod_known[0] is the world map.
+	const cvar_t* flushmap = ri.Cvar_Get("flushmap", "0", 0);
+	if (strcmp(mod_known[0].name, fullname) != 0 || (int)flushmap->value)
+		Mod_Free(mod_known);
+
+	r_worldmodel = Mod_ForName(fullname, true);
+	r_viewcluster = -1;
+
+	R_FreeUnusedImages(); // H2
 }
 
 struct model_s* R_RegisterModel(const char* name)

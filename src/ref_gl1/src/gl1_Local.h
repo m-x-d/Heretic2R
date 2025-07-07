@@ -156,6 +156,11 @@ typedef struct
 extern glconfig_t gl_config;
 extern glstate_t gl_state;
 
+extern int r_viewcluster;
+extern int r_viewcluster2;
+extern int r_oldviewcluster;
+extern int r_oldviewcluster2;
+
 #pragma endregion
 
 #pragma region ========================== IMPORTED FUNCTIONS ==========================
