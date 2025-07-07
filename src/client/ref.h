@@ -8,9 +8,9 @@
 
 #include "qcommon.h"
 
-#define REF_API_VERSION		3
+#define REF_API_VERSION		4 // H2: 3. Changed because of H2R rendering API changes.
 
-// These are the maximum number that maybe rendered on any given frame.
+// These are the maximum number that may be rendered on any given frame.
 #define MAX_DLIGHTS			32
 #define MAX_ENTITIES		128	
 #define MAX_ALPHA_ENTITIES	(MAX_ENTITIES * 2) //TODO: increase? Exceeded relatively often...
