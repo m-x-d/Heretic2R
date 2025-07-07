@@ -114,6 +114,9 @@ typedef enum
 	RSERR_INVALID_MODE
 } rserr_t;
 
+extern float gldepthmin;
+extern float gldepthmax;
+
 extern image_t gltextures[MAX_GLTEXTURES];
 extern int numgltextures;
 

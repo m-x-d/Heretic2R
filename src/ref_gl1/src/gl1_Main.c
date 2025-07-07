@@ -23,6 +23,9 @@
 viddef_t viddef; // H2: renamed from vid, defined in vid.h?
 refimport_t ri;
 
+float gldepthmin;
+float gldepthmax;
+
 glconfig_t gl_config;
 glstate_t gl_state;
 
@@ -113,9 +116,69 @@ cvar_t* quake_amount;
 
 #pragma endregion
 
-static void R_Clear(void)
+static void R_Fog(void) // H2: GL_Fog
 {
 	NOT_IMPLEMENTED
+}
+
+static void R_WaterFog(void) // H2: GL_WaterFog
+{
+	NOT_IMPLEMENTED
+}
+
+static void R_Clear(void)
+{
+	if ((int)gl_ztrick->value) //TODO: mxd. No fog rendering when gl_ztrick is enabled. Curious...
+	{
+		static int trickframe;
+
+		if ((int)gl_clear->value)
+			glClear(GL_COLOR_BUFFER_BIT);
+
+		trickframe++;
+
+		if (trickframe & 1)
+		{
+			gldepthmin = 0.0f;
+			gldepthmax = 0.49999f;
+			glDepthFunc(GL_LEQUAL);
+		}
+		else
+		{
+			gldepthmin = 1.0f;
+			gldepthmax = 0.5f;
+			glDepthFunc(GL_GEQUAL);
+		}
+	}
+	else
+	{
+		// H2: extra fog rendering logic. //mxd. Removed gl_fog_broken cvar checks.
+		if ((int)cl_camera_under_surface->value) //TODO: r_fog_underwater cvar check seems logical here, but isn't present in original dll.
+		{
+			R_WaterFog();
+		}
+		//mxd. Removed 'r_fog_startdist->value < r_farclipdist->value' check, because it's relevant only for fog mode 0.
+		// Also there's no r_fog_underwater_startdist check in GL_WaterFog case in original .dll.
+		else if ((int)r_fog->value)
+		{
+			R_Fog();
+		}
+		else
+		{
+			glDisable(GL_FOG);
+
+			if ((int)gl_clear->value)
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			else
+				glClear(GL_DEPTH_BUFFER_BIT);
+		}
+
+		gldepthmin = 0.0f;
+		gldepthmax = 1.0f;
+		glDepthFunc(GL_LEQUAL);
+	}
+
+	glDepthRange((double)gldepthmin, (double)gldepthmax);
 }
 
 static void R_Register(void)
