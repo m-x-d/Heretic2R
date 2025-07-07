@@ -8,6 +8,12 @@
 #include "gl1_Image.h"
 #include "vid.h"
 
+image_t* r_notexture; // Used for missing textures.
+image_t* r_particletexture;
+image_t* r_aparticletexture;
+image_t* r_reflecttexture;
+image_t* r_font1;
+image_t* r_font2;
 image_t* draw_chars;
 
 //mxd. Each font contains 224 char definitions.
