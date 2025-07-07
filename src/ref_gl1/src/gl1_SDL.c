@@ -11,9 +11,10 @@
 static SDL_Window* window = NULL;
 static SDL_GLContext context = NULL;
 
+// Swaps the buffers and shows the next frame.
 void R_EndFrame(void) //mxd. GLimp_EndFrame in original logic.
 {
-	NOT_IMPLEMENTED
+	SDL_GL_SwapWindow(window);
 }
 
 // Returns the address of an OpenGL function.
