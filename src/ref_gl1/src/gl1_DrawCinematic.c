@@ -7,7 +7,6 @@
 #include "gl1_DrawCinematic.h"
 #include "gl1_Draw.h"
 #include "gl1_Image.h"
-#include "gl1_Model.h"
 #include "vid.h"
 
 static image_t* cin_frame;

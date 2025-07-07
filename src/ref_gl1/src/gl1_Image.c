@@ -6,7 +6,6 @@
 
 #include "gl1_Image.h"
 #include "gl1_Draw.h"
-#include "gl1_Model.h"
 
 image_t gltextures[MAX_GLTEXTURES];
 int numgltextures;

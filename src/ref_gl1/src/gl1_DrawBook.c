@@ -6,7 +6,6 @@
 
 #include "gl1_DrawBook.h"
 #include "gl1_Draw.h"
-#include "gl1_Model.h"
 #include "qfiles.h"
 #include "vid.h"
 #include "gl1_Local.h"
