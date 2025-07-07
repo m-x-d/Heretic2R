@@ -87,6 +87,34 @@ void Draw_GetPicSize(int* w, int* h, const char* name)
 	NOT_IMPLEMENTED
 }
 
+void Draw_Render(const int x, const int y, const int w, const int h, const image_t* image, const float alpha)
+{
+	R_BindImage(image);
+
+	glColor4f(1.0f, 1.0f, 1.0f, alpha);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glAlphaFunc(GL_GREATER, 0.05f);
+	glEnable(GL_BLEND);
+
+	R_TexEnv(GL_MODULATE);
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex2i(x, y); //mxd. qglVertex2f -> qglVertex2i
+
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex2i(x + w, y); //mxd. qglVertex2f -> qglVertex2i
+
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i(x + w, y + h); //mxd. qglVertex2f -> qglVertex2i
+
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex2i(x, y + h); //mxd. qglVertex2f -> qglVertex2i
+
+	glEnd();
+	R_TexEnv(GL_REPLACE);
+}
+
 void Draw_StretchPic(int x, int y, int w, int h, const char* name, const float alpha, const qboolean scale)
 {
 	NOT_IMPLEMENTED

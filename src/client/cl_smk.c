@@ -141,7 +141,7 @@ void SCR_PlayCinematic(const char* name)
 void SCR_DrawCinematic(void) // Called every rendered frame.
 {
 	if (cl.cinematictime > 0)
-		re.DrawCinematic(smk_vid_width, smk_vid_height, smk_video_frame, (const paletteRGB_t*)smk_palette, 1.0f);
+		re.DrawCinematic(smk_video_frame, (const paletteRGB_t*)smk_palette);
 }
 
 void SCR_RunCinematic(void)

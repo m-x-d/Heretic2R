@@ -10,4 +10,4 @@
 
 extern void Draw_InitCinematic(int width, int height);
 extern void Draw_CloseCinematic(void);
-extern void Draw_Cinematic(int cols, int rows, const byte* data, const paletteRGB_t* palette, float alpha);
+extern void Draw_Cinematic(const byte* data, const paletteRGB_t* palette);

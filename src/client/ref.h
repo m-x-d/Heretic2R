@@ -210,7 +210,7 @@ typedef struct
 	// Draw images for cinematic rendering (which can have a different palette).
 	void (*DrawInitCinematic)(int width, int height);
 	void (*DrawCloseCinematic)(void);
-	void (*DrawCinematic)(int cols, int rows, const byte* data, const paletteRGB_t* palette, float alpha);
+	void (*DrawCinematic)(const byte* data, const paletteRGB_t* palette);
 	void (*Draw_Name)(const vec3_t origin, const char* name, paletteRGBA_t color);
 
 	// Video mode and refresh state management entry points.
