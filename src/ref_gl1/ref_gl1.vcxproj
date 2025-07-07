@@ -19,6 +19,7 @@
     <ClCompile Include="src\gl1_DrawBook.c" />
     <ClCompile Include="src\gl1_DrawCinematic.c" />
     <ClCompile Include="src\gl1_FindSurface.c" />
+    <ClCompile Include="src\gl1_FlexModel.c" />
     <ClCompile Include="src\gl1_Image.c" />
     <ClCompile Include="src\gl1_Main.c" />
     <ClCompile Include="src\gl1_Misc.c" />
@@ -38,6 +39,7 @@
     <ClInclude Include="src\gl1_DrawBook.h" />
     <ClInclude Include="src\gl1_DrawCinematic.h" />
     <ClInclude Include="src\gl1_FindSurface.h" />
+    <ClInclude Include="src\gl1_FlexModel.h" />
     <ClInclude Include="src\gl1_Image.h" />
     <ClInclude Include="src\gl1_Local.h" />
     <ClInclude Include="src\gl1_Misc.h" />

@@ -57,6 +57,9 @@
     <ClCompile Include="..\qcommon\turbsin.c">
       <Filter>qcommon</Filter>
     </ClCompile>
+    <ClCompile Include="src\gl1_FlexModel.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\gl1_Draw.h">
@@ -109,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="..\client\vid.h">
       <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_FlexModel.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

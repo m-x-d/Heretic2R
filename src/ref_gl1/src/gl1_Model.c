@@ -5,7 +5,8 @@
 //
 
 #include "gl1_Local.h"
-#include "gl1_Model.h"
+#include "gl1_FlexModel.h"
+#include "gl1_Image.h"
 
 int registration_sequence;
 
@@ -39,6 +40,11 @@ void Mod_FreeAll(void)
 			Mod_Free(&mod_known[i]);
 }
 
+static model_t* Mod_ForName(const char* name, const qboolean crash)
+{
+	NOT_IMPLEMENTED
+}
+
 void R_BeginRegistration(const char* model)
 {
 	NOT_IMPLEMENTED
@@ -46,8 +52,53 @@ void R_BeginRegistration(const char* model)
 
 struct model_s* R_RegisterModel(const char* name)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	char img_name[MAX_OSPATH];
+
+	model_t* mod = Mod_ForName(name, false);
+
+	if (mod == NULL)
+		return NULL;
+
+	mod->registration_sequence = registration_sequence;
+
+	switch (mod->type) //mxd. No mod_alias case.
+	{
+		case mod_brush:
+			for (int i = 0; i < mod->numtexinfo; i++)
+				mod->texinfo[i].image->registration_sequence = registration_sequence;
+			break;
+
+		case mod_sprite:
+		{
+			dsprite_t* sprout = mod->extradata;
+			for (int i = 0; i < sprout->numframes; i++)
+			{
+				Com_sprintf(img_name, sizeof(img_name), "Sprites/%s", sprout->frames[i].name); // H2: extra "Sprites/" prefix
+				mod->skins[i] = R_FindImage(img_name, it_sprite);
+			}
+		} break;
+
+		case mod_fmdl: // H2
+			Mod_RegisterFlexModel(mod);
+			break;
+
+		case mod_book: // H2
+		{
+			book_t* book = mod->extradata;
+			bookframe_t* bframe = book->bframes;
+			for (int i = 0; i < book->bheader.num_segments; i++, bframe++)
+			{
+				Com_sprintf(img_name, sizeof(img_name), "Book/%s", bframe->name);
+				mod->skins[i] = R_FindImage(img_name, it_pic);
+			}
+		} break;
+
+		default:
+			ri.Sys_Error(ERR_DROP, "R_RegisterModel '%s' failed\n", name); //mxd. Sys_Error() -> ri.Sys_Error().
+			return NULL;
+	}
+
+	return mod;
 }
 
 void R_EndRegistration(void)
