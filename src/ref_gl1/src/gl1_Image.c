@@ -467,6 +467,11 @@ static void R_FreeImage(image_t* image) // H2: GL_FreeImage()
 	NOT_IMPLEMENTED
 }
 
+void R_FreeImageNoHash(image_t* image)
+{
+	NOT_IMPLEMENTED
+}
+
 void R_FreeUnusedImages(void)
 {
 	// Never free r_notexture or particle texture.

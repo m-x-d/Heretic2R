@@ -19,6 +19,7 @@ extern image_t* R_FindImage(const char* name, imagetype_t type);
 extern image_t* R_GetFreeImage(void);
 extern void R_BindImage(const image_t* image);
 extern void R_UploadPaletted(int level, const byte* data, const paletteRGB_t* palette, int width, int height);
+extern void R_FreeImageNoHash(image_t* image);
 extern void R_FreeUnusedImages(void);
 
 extern void R_ImageList_f(void);

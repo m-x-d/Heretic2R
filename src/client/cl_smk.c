@@ -29,16 +29,13 @@ static int smk_snd_rate;
 // Returns number of frames in .smk
 static int SMK_Open(const char* name)
 {
-	char backdrop[MAX_QPATH];
-	char overlay[MAX_QPATH];
-	ulong frame_count;
-
 	smk_obj = smk_open_file(name, SMK_MODE_DISK);
 	if (smk_obj == NULL)
 		return 0;
 
 	smk_enable_all(smk_obj, SMK_VIDEO_TRACK | SMK_AUDIO_TRACK_0);
 
+	ulong frame_count;
 	double usf; // Microseconds per frame.
 	smk_info_all(smk_obj, NULL, &frame_count, &usf);
 	smk_fps = floorf(1000000.0f / (float)usf);
@@ -65,7 +62,7 @@ static int SMK_Open(const char* name)
 		return 0;
 	}
 
-	re.DrawInitCinematic(smk_vid_width, smk_vid_height, overlay, backdrop);
+	re.DrawInitCinematic(smk_vid_width, smk_vid_height);
 
 	return (int)frame_count;
 }

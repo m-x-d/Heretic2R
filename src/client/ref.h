@@ -208,7 +208,7 @@ typedef struct
 	void (*BookDrawPic)(int w, int h, const char* name, float scale);
 
 	// Draw images for cinematic rendering (which can have a different palette).
-	void (*DrawInitCinematic)(int w, int h, char* overlay, char* backdrop);
+	void (*DrawInitCinematic)(int width, int height);
 	void (*DrawCloseCinematic)(void);
 	void (*DrawCinematic)(int cols, int rows, const byte* data, const paletteRGB_t* palette, float alpha);
 	void (*Draw_Name)(const vec3_t origin, const char* name, paletteRGBA_t color);
