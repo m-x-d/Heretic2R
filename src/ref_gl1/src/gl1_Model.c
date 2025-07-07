@@ -7,14 +7,21 @@
 #include "gl1_Local.h"
 #include "gl1_FlexModel.h"
 #include "gl1_Image.h"
+#include "Hunk.h"
 
 int registration_sequence;
+
+model_t* loadmodel;
+static int modfilelen;
 
 static byte mod_novis[MAX_MAP_LEAFS / 8];
 
 #define MAX_MOD_KNOWN 512
 static model_t mod_known[MAX_MOD_KNOWN];
 static int mod_numknown;
+
+// The inline ('*1', '*2', ...) models from the current map are kept separate.
+static model_t mod_inline[MAX_MOD_KNOWN];
 
 void Mod_Modellist_f(void)
 {
@@ -40,9 +47,119 @@ void Mod_FreeAll(void)
 			Mod_Free(&mod_known[i]);
 }
 
-static model_t* Mod_ForName(const char* name, const qboolean crash)
+static void Mod_LoadBookModel(model_t* mod, const void* buffer) // H2
 {
 	NOT_IMPLEMENTED
+}
+
+static void Mod_LoadSpriteModel(model_t* mod, const void* buffer)
+{
+	NOT_IMPLEMENTED
+}
+
+#pragma region ========================== BRUSHMODEL LOADING ==========================
+
+static void Mod_LoadBrushModel(model_t* mod, void* buffer)
+{
+	NOT_IMPLEMENTED
+}
+
+#pragma endregion
+
+static model_t* Mod_ForName(const char* name, const qboolean crash)
+{
+	int i;
+	model_t* mod;
+
+	if (!name[0])
+		ri.Sys_Error(ERR_DROP, "Mod_ForName: NULL name");
+
+	// Inline models are grabbed only from worldmodel.
+	if (name[0] == '*')
+	{
+		const int index = (int)strtol(name + 1, NULL, 10); //mxd. atoi -> strtol
+		if (index < 1 || r_worldmodel == NULL || index >= r_worldmodel->numsubmodels)
+			ri.Sys_Error(ERR_DROP, "Mod_ForName: bad inline model number");
+
+		return &mod_inline[index];
+	}
+
+	// Search the currently loaded models.
+	for (i = 0, mod = &mod_known[0]; i < mod_numknown; i++, mod++)
+		if (mod->name[0] != 0 && strcmp(mod->name, name) == 0)
+			return mod;
+
+	// Find a free model slot.
+	for (i = 0, mod = &mod_known[0]; i < mod_numknown; i++, mod++)
+		if (mod->name[0] == 0)
+			break; // Free slot.
+
+	if (i == mod_numknown)
+	{
+		if (mod_numknown == MAX_MOD_KNOWN)
+			ri.Sys_Error(ERR_DROP, "Mod_ForName: mod_numknown == MAX_MOD_KNOWN");
+
+		mod_numknown++;
+	}
+
+	strcpy_s(mod->name, sizeof(mod->name), name); //mxd. strcpy -> strcpy_s
+
+	// Load the file.
+	char* buf;
+	modfilelen = ri.FS_LoadFile(mod->name, (void**)&buf);
+
+	if (buf == NULL)
+	{
+		if (crash)
+			ri.Sys_Error(ERR_DROP, "Mod_ForName: '%s' not found", mod->name);
+
+		memset(mod, 0, sizeof(mod->name));
+		return NULL;
+	}
+
+	loadmodel = mod;
+
+	// H2: check for FlexModel header...
+	if (modfilelen > 6 && Q_strncasecmp(buf, "header", 6) == 0)
+	{
+		int datasize = 0x200000;
+		if (strstr(name, "players/") || strstr(name, "models/player/"))
+			datasize = 0x400000;
+
+		mod->extradata = Hunk_Begin(datasize);
+		Mod_LoadFlexModel(mod, buf, modfilelen);
+	}
+	else
+	{
+		// Call the appropriate loader.
+		switch (LittleLong(*(uint*)buf))
+		{
+			// Missing: case IDALIASHEADER
+			case IDSPRITEHEADER:
+				mod->extradata = Hunk_Begin(0x10000);
+				Mod_LoadSpriteModel(mod, buf);
+				break;
+
+			case IDBOOKHEADER: // H2
+				mod->extradata = Hunk_Begin(0x10000);
+				Mod_LoadBookModel(mod, buf);
+				break;
+
+			case IDBSPHEADER:
+				mod->extradata = Hunk_Begin(0x1000000);
+				Mod_LoadBrushModel(mod, buf);
+				break;
+
+			default:
+				ri.Sys_Error(ERR_DROP, "Mod_ForName: unknown file id for '%s'", mod->name);
+				break;
+		}
+	}
+
+	mod->extradatasize = Hunk_End();
+	ri.FS_FreeFile(buf);
+
+	return mod;
 }
 
 void R_BeginRegistration(const char* model)

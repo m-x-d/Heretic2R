@@ -11,7 +11,6 @@
 #include "gl1_FindSurface.h"
 #include "gl1_Image.h"
 #include "gl1_Misc.h"
-#include "gl1_Model.h"
 #include "gl1_SDL.h"
 #include "gl1_Sky.h"
 #include "turbsin.h"
@@ -22,6 +21,8 @@
 
 viddef_t viddef; // H2: renamed from vid, defined in vid.h?
 refimport_t ri;
+
+model_t* r_worldmodel;
 
 float gldepthmin;
 float gldepthmax;

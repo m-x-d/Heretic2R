@@ -127,6 +127,10 @@ extern image_t* r_reflecttexture;
 extern image_t* r_font1;
 extern image_t* r_font2;
 
+#include "gl1_Model.h" //mxd. MUST be below image_t definition...
+
+extern model_t* r_worldmodel;
+
 #pragma region ========================== GL config stuff  ==========================
 
 typedef struct
