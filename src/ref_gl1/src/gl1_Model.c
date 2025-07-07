@@ -49,7 +49,30 @@ void Mod_FreeAll(void)
 
 static void Mod_LoadBookModel(model_t* mod, const void* buffer) // H2
 {
-	NOT_IMPLEMENTED
+	const book_t* book_in = buffer;
+	book_t* book_out = Hunk_Alloc(modfilelen);
+
+	if (book_in->bheader.version != BOOK_VERSION)
+		ri.Sys_Error(ERR_DROP, "Mod_LoadBookModel: '%s' has wrong version number (%i should be %i)!", mod->name, book_in->bheader.version, BOOK_VERSION); //mxd. Sys_Error() -> ri.Sys_Error().
+
+	if (book_in->bheader.num_segments > MAX_FRAMES)
+		ri.Sys_Error(ERR_DROP, "Mod_LoadBookModel: '%s' has too many frames (%i > %i)!", mod->name, book_in->bheader.num_segments, MAX_FRAMES); //mxd. Sys_Error() -> ri.Sys_Error().
+
+	// Copy everything.
+	memcpy(book_out, book_in, book_in->bheader.num_segments * sizeof(bookframe_t) + sizeof(bookheader_t));
+
+	// Pre-load frame images.
+	bookframe_t* frame = &book_out->bframes[0];
+	for (int i = 0; i < book_out->bheader.num_segments; i++, frame++)
+	{
+		char frame_name[MAX_QPATH];
+		Com_sprintf(frame_name, sizeof(frame_name), "Book/%s", frame->name);
+
+		mod->skins[i] = R_FindImage(frame_name, it_pic);
+	}
+
+	// Set model type.
+	mod->type = mod_book;
 }
 
 static void Mod_LoadSpriteModel(model_t* mod, const void* buffer)
