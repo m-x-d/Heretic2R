@@ -6,6 +6,7 @@
 
 #include "gl1_Draw.h"
 #include "gl1_Image.h"
+#include "vid.h"
 
 image_t* draw_chars;
 
@@ -117,7 +118,20 @@ void Draw_Render(const int x, const int y, const int w, const int h, const image
 
 void Draw_StretchPic(int x, int y, int w, int h, const char* name, const float alpha, const qboolean scale)
 {
-	NOT_IMPLEMENTED
+	const image_t* image = Draw_FindPicFilter(name);
+
+	if (scale)
+	{
+		const int xr = x + w;
+		const int yb = y + h;
+
+		x = viddef.width * x / DEF_WIDTH;
+		y = viddef.height * y / DEF_HEIGHT;
+		w = viddef.width * xr / DEF_WIDTH - x;
+		h = viddef.height * yb / DEF_HEIGHT - y;
+	}
+
+	Draw_Render(x, y, w, h, image, alpha);
 }
 
 void Draw_Pic(const int x, const int y, const char* name, const float alpha)
