@@ -60,6 +60,9 @@
     <ClCompile Include="src\gl1_FlexModel.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hunk.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\gl1_Draw.h">
@@ -114,6 +117,9 @@
       <Filter>client</Filter>
     </ClInclude>
     <ClInclude Include="src\gl1_FlexModel.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hunk.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

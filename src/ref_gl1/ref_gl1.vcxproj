@@ -26,6 +26,7 @@
     <ClCompile Include="src\gl1_Model.c" />
     <ClCompile Include="src\gl1_SDL.c" />
     <ClCompile Include="src\gl1_Sky.c" />
+    <ClCompile Include="src\Hunk.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\glad-GL1.3\glad.h" />
@@ -46,6 +47,7 @@
     <ClInclude Include="src\gl1_Model.h" />
     <ClInclude Include="src\gl1_SDL.h" />
     <ClInclude Include="src\gl1_Sky.h" />
+    <ClInclude Include="src\Hunk.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />
