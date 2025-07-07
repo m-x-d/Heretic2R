@@ -467,6 +467,37 @@ static void R_FreeImage(image_t* image) // H2: GL_FreeImage()
 	NOT_IMPLEMENTED
 }
 
+void R_FreeUnusedImages(void)
+{
+	// Never free r_notexture or particle texture.
+	r_notexture->registration_sequence = registration_sequence;
+	r_particletexture->registration_sequence = registration_sequence;
+
+	// H2: extra never-to-free textures:
+	r_aparticletexture->registration_sequence = registration_sequence;
+	r_reflecttexture->registration_sequence = registration_sequence;
+	draw_chars->registration_sequence = registration_sequence;
+	r_font1->registration_sequence = registration_sequence;
+	r_font2->registration_sequence = registration_sequence;
+
+	image_t* image = &gltextures[0];
+	for (int i = 0; i < numgltextures; i++, image++)
+	{
+		// Used in this sequence.
+		if (image->registration_sequence == registration_sequence)
+			continue;
+
+		// Free image_t slot.
+		if (image->registration_sequence == 0)
+			continue;
+
+		// Missing: it_pic check
+
+		// Free it.
+		R_FreeImage(image);
+	}
+}
+
 void R_InitImages(void) // Q2: GL_InitImages()
 {
 	registration_sequence = 1;
@@ -479,4 +510,48 @@ void R_ShutdownImages(void) // Q2: GL_ShutdownImages()
 	for (int i = 0; i < numgltextures; i++, image++)
 		if (image->registration_sequence != 0)
 			R_FreeImage(image);
+}
+
+static void R_RefreshImage(image_t* image) // H2
+{
+	glDeleteTextures(1, (GLuint*)&image->texnum);
+
+	const uint len = strlen(image->name);
+	if (strcmp(&image->name[len - 3], ".m8") == 0)
+	{
+		miptex_t* mt;
+		ri.FS_LoadFile(image->name, (void**)&mt);
+
+		GrabPalette(mt->palette, image->palette);
+		R_BindImage(image);
+		R_UploadM8(mt, image);
+
+		ri.FS_FreeFile(mt);
+	}
+	else if (strcmp(&image->name[len - 4], ".m32") == 0)
+	{
+		miptex32_t* mt;
+		ri.FS_LoadFile(image->name, (void**)&mt);
+
+		R_ApplyGamma32(mt);
+		R_BindImage(image);
+		R_UploadM32(mt, image);
+
+		ri.FS_FreeFile(mt);
+	}
+}
+
+void R_GammaAffect(void)
+{
+	R_FreeUnusedImages();
+
+	image_t* image = &gltextures[0];
+	for (int i = 0; i < numgltextures; i++, image++)
+	{
+		if (image->registration_sequence == 0) // Free image_t slot.
+			continue;
+
+		if (image->type == it_pic || image->type == it_sky || !(int)menus_active->value)
+			R_RefreshImage(image);
+	}
 }

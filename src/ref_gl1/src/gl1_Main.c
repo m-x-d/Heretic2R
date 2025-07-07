@@ -72,7 +72,6 @@ cvar_t* r_references;
 cvar_t* gl_noartifacts;
 
 cvar_t* gl_modulate;
-static cvar_t* gl_log;
 cvar_t* gl_lightmap;
 cvar_t* gl_dynamic;
 cvar_t* gl_nobind;
@@ -114,6 +113,11 @@ cvar_t* quake_amount;
 
 #pragma endregion
 
+static void R_Clear(void)
+{
+	NOT_IMPLEMENTED
+}
+
 static void R_Register(void)
 {
 	r_norefresh = ri.Cvar_Get("r_norefresh", "0", 0);
@@ -153,7 +157,6 @@ static void R_Register(void)
 	gl_noartifacts = ri.Cvar_Get("gl_noartifacts", "0", 0); // H2
 
 	gl_modulate = ri.Cvar_Get("gl_modulate", "1", CVAR_ARCHIVE);
-	gl_log = ri.Cvar_Get("gl_log", "0", 0);
 	gl_lightmap = ri.Cvar_Get("gl_lightmap", "0", 0);
 	gl_dynamic = ri.Cvar_Get("gl_dynamic", "1", 0);
 	gl_nobind = ri.Cvar_Get("gl_nobind", "0", 0);
@@ -331,9 +334,57 @@ static void R_Shutdown(void)
 	R_ShutdownContext(); // YQ2
 }
 
-static void R_BeginFrame(const float camera_separation)
+static void R_BeginFrame(const float camera_separation) //TODO: remove camera_separation arg?
 {
-	NOT_IMPLEMENTED
+	// Changed.
+	if (vid_gamma->modified || vid_brightness->modified || vid_contrast->modified)
+	{
+		R_InitGammaTable();
+		R_GammaAffect();
+
+		vid_gamma->modified = false;
+		vid_brightness->modified = false;
+		vid_contrast->modified = false;
+	}
+
+	// Go into 2D mode.
+	glViewport(0, 0, viddef.width, viddef.height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0, viddef.width, viddef.height, 0.0, -99999.0, 99999.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
+	glEnable(GL_ALPHA_TEST);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// Draw buffer stuff.
+	if (gl_drawbuffer->modified)
+	{
+		glDrawBuffer((Q_stricmp(gl_drawbuffer->string, "GL_FRONT") == 0) ? GL_FRONT : GL_BACK);
+		gl_drawbuffer->modified = false;
+	}
+
+	// Texturemode stuff.
+	if (gl_texturemode->modified)
+	{
+		R_TextureMode(gl_texturemode->string);
+		gl_texturemode->modified = false;
+	}
+
+	// Missing: gl_texturealphamode and gl_texturesolidmode logic
+
+	// Swapinterval stuff.
+	if (r_vsync->modified) // YQ2
+	{
+		R_SetVsync();
+		r_vsync->modified = false;
+	}
+
+	// Clear screen if desired.
+	R_Clear();
 }
 
 static int R_RenderFrame(const refdef_t* fd)
