@@ -34,9 +34,11 @@ void Mod_Init(void)
 	memset(mod_novis, 0xff, sizeof(mod_novis));
 }
 
+// Q2 counterpart
 static void Mod_Free(model_t* mod)
 {
-	NOT_IMPLEMENTED
+	Hunk_Free(mod->extradata);
+	memset(mod, 0, sizeof(*mod));
 }
 
 // Q2 counterpart
