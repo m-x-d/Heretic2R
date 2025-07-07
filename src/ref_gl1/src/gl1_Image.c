@@ -467,9 +467,16 @@ static void R_FreeImage(image_t* image) // H2: GL_FreeImage()
 	NOT_IMPLEMENTED
 }
 
-void R_FreeImageNoHash(image_t* image)
+void R_FreeImageNoHash(image_t* image) // H2: GL_FreeImageNoHash()
 {
-	NOT_IMPLEMENTED
+	glDeleteTextures(1, (GLuint*)&image->texnum);
+	if (image->palette != NULL)
+	{
+		free(image->palette);
+		image->palette = NULL;
+	}
+
+	image->registration_sequence = 0;
 }
 
 void R_FreeUnusedImages(void)
