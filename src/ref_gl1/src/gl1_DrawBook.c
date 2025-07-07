@@ -15,10 +15,54 @@ void Draw_BigFont(const int x, const int y, const char* text, const float alpha)
 	NOT_IMPLEMENTED
 }
 
+// BigFont_Strlen. Returns width of given text in pixels.
 int BF_Strlen(const char* text)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	if (font1 == NULL || font2 == NULL)
+		return 0;
+
+	int width = 0;
+	const glxy_t* cur_font = font1;
+
+	while (true)
+	{
+		const byte c = *text++;
+
+		switch (c)
+		{
+			case 0:
+			case 1:
+			case '\t':
+			case '\n':
+				return width;
+
+			case 2:
+				cur_font = font1;
+				break;
+
+			case 3:
+				cur_font = font2;
+				break;
+
+			case '\r':
+				break;
+
+			case 32: // Whitespace char.
+				width += 8;
+				break;
+
+			default:
+				if (c > 32) // When printable char.
+				{
+					const glxy_t* char_def = &cur_font[c - 32];
+					if (char_def->w == 0) //TODO: is this ever triggered?
+						char_def = &cur_font[14]; // Dot chardef?
+
+					width += char_def->w;
+				}
+				break;
+			}
+	}
 }
 
 //TODO: w and h args are ignored.
