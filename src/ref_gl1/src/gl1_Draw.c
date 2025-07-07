@@ -102,9 +102,26 @@ void Draw_TileClear(const int x, const int y, const int w, const int h, const ch
 	NOT_IMPLEMENTED
 }
 
+// Fills a box of pixels with a single color.
 void Draw_Fill(const int x, const int y, const int w, const int h, const byte r, const byte g, const byte b)
 {
-	NOT_IMPLEMENTED
+	glDisable(GL_TEXTURE_2D);
+
+	//mxd. qglColor4f -> qglColor3ub; H2: qglColor4f((float)r / 256.0f, (float)g / 256.0f,(float)b / 256.0f, 1.0f); Q2: color components divided by 255.0
+	glColor3ub(r, g, b);
+
+	glBegin(GL_QUADS);
+
+	//mxd. qglVertex2f -> qglVertex2i.
+	glVertex2i(x, y);
+	glVertex2i(x + w, y);
+	glVertex2i(x + w, y + h);
+	glVertex2i(x, y + h);
+
+	glEnd();
+
+	glColor3f(1.0f, 1.0f, 1.0f); // mxd. qglColor4f -> qglColor3f
+	glEnable(GL_TEXTURE_2D);
 }
 
 void Draw_FadeScreen(const paletteRGBA_t color)
