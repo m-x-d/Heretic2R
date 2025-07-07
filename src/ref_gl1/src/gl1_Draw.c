@@ -132,7 +132,18 @@ void Draw_Char(const int x, const int y, int c, const paletteRGBA_t color)
 
 void Draw_GetPicSize(int* w, int* h, const char* name)
 {
-	NOT_IMPLEMENTED
+	const image_t* image = R_FindImage(name, it_pic);
+
+	if (image != r_notexture)
+	{
+		*w = image->width;
+		*h = image->height;
+	}
+	else
+	{
+		*w = 0; // Q2: -1
+		*h = 0; // Q2: -1
+	}
 }
 
 void Draw_Render(const int x, const int y, const int w, const int h, const image_t* image, const float alpha)
