@@ -10,5 +10,5 @@
 
 extern void LM_BuildPolygonFromSurface(msurface_t* fa);
 extern void LM_CreateSurfaceLightmap(msurface_t* surf);
-extern void LM_BeginBuildingLightmaps(model_t* m);
+extern void LM_BeginBuildingLightmaps(void);
 extern void LM_EndBuildingLightmaps(void);

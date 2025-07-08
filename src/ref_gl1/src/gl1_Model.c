@@ -307,7 +307,7 @@ static void Mod_LoadFaces(const byte* mod_base, const lump_t* l)
 
 	currentmodel = loadmodel;
 
-	LM_BeginBuildingLightmaps(loadmodel);
+	LM_BeginBuildingLightmaps();
 
 	for (int surfnum = 0; surfnum < count; surfnum++, in++, out++)
 	{

@@ -156,6 +156,10 @@ typedef struct
 extern glconfig_t gl_config;
 extern glstate_t gl_state;
 
+extern refdef_t r_newrefdef;
+
+extern int r_framecount;
+
 extern int r_viewcluster;
 extern int r_viewcluster2;
 extern int r_oldviewcluster;

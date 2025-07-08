@@ -23,6 +23,7 @@ viddef_t viddef; // H2: renamed from vid, defined in vid.h?
 refimport_t ri;
 
 model_t* r_worldmodel;
+model_t* currentmodel;
 
 float gldepthmin;
 float gldepthmax;
@@ -30,7 +31,9 @@ float gldepthmax;
 glconfig_t gl_config;
 glstate_t gl_state;
 
-model_t* currentmodel;
+refdef_t r_newrefdef; // Screen size info.
+
+int r_framecount; // Used for dlight push checking.
 
 int r_viewcluster;
 int r_viewcluster2;
