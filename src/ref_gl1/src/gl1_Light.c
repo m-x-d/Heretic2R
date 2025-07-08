@@ -6,6 +6,7 @@
 
 #include "gl1_Light.h"
 
+static int r_dlightframecount; //mxd. Made static.
 static float s_blocklights[34 * 34 * 3];
 
 void R_RenderDlights(void)
@@ -13,10 +14,28 @@ void R_RenderDlights(void)
 	NOT_IMPLEMENTED
 }
 
-void R_PushDlights(void)
+#pragma region ========================== DYNAMIC LIGHTS MANAGEMENT ==========================
+
+// Q2 counterpart
+void R_MarkLights(dlight_t* light, const int bit, const mnode_t* node)
 {
 	NOT_IMPLEMENTED
 }
+
+// Q2 counterpart
+void R_PushDlights(void)
+{
+	if (!(int)gl_flashblend->value)
+	{
+		r_dlightframecount = r_framecount + 1; // Because the count hasn't advanced yet for this frame.
+
+		dlight_t* l = &r_newrefdef.dlights[0];
+		for (int i = 0; i < r_newrefdef.num_dlights; i++, l++)
+			R_MarkLights(l, 1 << i, r_worldmodel->nodes);
+	}
+}
+
+#pragma endregion
 
 static void R_AddDynamicLights(const msurface_t* surf)
 {
