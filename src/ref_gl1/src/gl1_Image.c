@@ -96,7 +96,17 @@ image_t* R_GetFreeImage(void) // H2: GL_GetFreeImage().
 
 void R_EnableMultitexture(const qboolean enable)
 {
-	NOT_IMPLEMENTED
+	R_SelectTexture(GL_TEXTURE1);
+
+	if (enable)
+		glEnable(GL_TEXTURE_2D);
+	else
+		glDisable(GL_TEXTURE_2D);
+
+	R_TexEnv(GL_REPLACE);
+
+	R_SelectTexture(GL_TEXTURE0);
+	R_TexEnv(GL_REPLACE);
 }
 
 void R_SelectTexture(const GLenum texture)
