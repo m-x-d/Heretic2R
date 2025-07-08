@@ -494,10 +494,14 @@ image_t* R_FindImage(const char* name, const imagetype_t type) // H2: GL_FindIma
 	return image;
 }
 
+// H2: new 'retval' arg.
 struct image_s* R_RegisterSkin(const char* name, qboolean* retval)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	image_t* img = R_FindImage(name, it_skin);
+	if (retval != NULL)
+		*retval = (img != r_notexture);
+
+	return img;
 }
 
 static void R_FreeImage(image_t* image) // H2: GL_FreeImage()
