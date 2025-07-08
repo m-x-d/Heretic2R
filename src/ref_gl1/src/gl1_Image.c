@@ -502,7 +502,24 @@ struct image_s* R_RegisterSkin(const char* name, qboolean* retval)
 
 static void R_FreeImage(image_t* image) // H2: GL_FreeImage()
 {
-	NOT_IMPLEMENTED
+	// Delete GL texture.
+	glDeleteTextures(1, (GLuint*)&image->texnum);
+	if (image->palette != NULL)
+	{
+		free(image->palette);
+		image->palette = NULL;
+	}
+
+	// Remove from hash.
+	const uint len = strlen(image->name);
+	const byte hash = image->name[len - 7] + image->name[len - 5] * image->name[len - 6];
+
+	image_t** tgt = &gltextures_hashed[hash];
+	for (image_t* img = gltextures_hashed[hash]; img != image; img = img->next)
+		tgt = &img->next;
+
+	*tgt = image->next;
+	image->registration_sequence = 0;
 }
 
 void R_FreeImageNoHash(image_t* image) // H2: GL_FreeImageNoHash()
