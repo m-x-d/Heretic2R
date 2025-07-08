@@ -21,11 +21,13 @@
     <ClCompile Include="src\gl1_FindSurface.c" />
     <ClCompile Include="src\gl1_FlexModel.c" />
     <ClCompile Include="src\gl1_Image.c" />
+    <ClCompile Include="src\gl1_Lightmap.c" />
     <ClCompile Include="src\gl1_Main.c" />
     <ClCompile Include="src\gl1_Misc.c" />
     <ClCompile Include="src\gl1_Model.c" />
     <ClCompile Include="src\gl1_SDL.c" />
     <ClCompile Include="src\gl1_Sky.c" />
+    <ClCompile Include="src\gl1_Warp.c" />
     <ClCompile Include="src\Hunk.c" />
   </ItemGroup>
   <ItemGroup>
@@ -42,11 +44,13 @@
     <ClInclude Include="src\gl1_FindSurface.h" />
     <ClInclude Include="src\gl1_FlexModel.h" />
     <ClInclude Include="src\gl1_Image.h" />
+    <ClInclude Include="src\gl1_Lightmap.h" />
     <ClInclude Include="src\gl1_Local.h" />
     <ClInclude Include="src\gl1_Misc.h" />
     <ClInclude Include="src\gl1_Model.h" />
     <ClInclude Include="src\gl1_SDL.h" />
     <ClInclude Include="src\gl1_Sky.h" />
+    <ClInclude Include="src\gl1_Warp.h" />
     <ClInclude Include="src\Hunk.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

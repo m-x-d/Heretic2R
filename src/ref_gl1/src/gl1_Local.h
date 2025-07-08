@@ -161,6 +161,8 @@ extern int r_viewcluster2;
 extern int r_oldviewcluster;
 extern int r_oldviewcluster2;
 
+extern model_t* currentmodel;
+
 #pragma endregion
 
 #pragma region ========================== IMPORTED FUNCTIONS ==========================

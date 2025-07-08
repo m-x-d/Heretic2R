@@ -30,6 +30,8 @@ float gldepthmax;
 glconfig_t gl_config;
 glstate_t gl_state;
 
+model_t* currentmodel;
+
 int r_viewcluster;
 int r_viewcluster2;
 int r_oldviewcluster;
