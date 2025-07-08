@@ -19,6 +19,7 @@
 #include "gl1_Local.h"
 #include "Reference.h"
 #include "turbsin.h"
+#include "Vector.h"
 #include "vid.h"
 
 #define REF_DECLSPEC	__declspec(dllexport)
@@ -37,6 +38,12 @@ float gldepthmax;
 glconfig_t gl_config;
 glstate_t gl_state;
 
+// View origin.
+vec3_t vup;
+vec3_t vpn;
+vec3_t vright;
+vec3_t r_origin;
+
 refdef_t r_newrefdef; // Screen size info.
 
 int r_framecount; // Used for dlight push checking.
@@ -48,6 +55,8 @@ int r_oldviewcluster2;
 
 int c_brush_polys;
 int c_alias_polys;
+
+static float v_blend[4]; // Final blending color. //mxd. Made static.
 
 #pragma region ========================== CVARS  ==========================
 
@@ -149,9 +158,55 @@ static void R_PolyBlend(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 static void R_SetupFrame(void)
 {
-	NOT_IMPLEMENTED
+	r_framecount++;
+
+	// Build the transformation matrix for the given view angles.
+	VectorCopy(r_newrefdef.vieworg, r_origin);
+	AngleVectors(r_newrefdef.viewangles, vpn, vright, vup);
+
+	// Current viewcluster.
+	if (!(r_newrefdef.rdflags & RDF_NOWORLDMODEL))
+	{
+		r_oldviewcluster = r_viewcluster;
+		r_oldviewcluster2 = r_viewcluster2;
+
+		const mleaf_t* leaf = Mod_PointInLeaf(r_origin, r_worldmodel);
+		r_viewcluster = leaf->cluster;
+		r_viewcluster2 = r_viewcluster;
+
+		// Check above and below so crossing solid water doesn't draw wrong.
+		vec3_t temp;
+		VectorCopy(r_origin, temp);
+
+		if (leaf->contents == 0)
+			temp[2] -= 16.0f; // Look down a bit.
+		else
+			temp[2] += 16.0f; // Look up a bit.
+
+		leaf = Mod_PointInLeaf(temp, r_worldmodel);
+		if (!(leaf->contents & CONTENTS_SOLID))
+			r_viewcluster2 = leaf->cluster;
+	}
+
+	for (int i = 0; i < 4; i++)
+		v_blend[i] = r_newrefdef.blend[i];
+
+	c_brush_polys = 0;
+	c_alias_polys = 0;
+
+	// Clear out the portion of the screen that the NOWORLDMODEL defines.
+	if (r_newrefdef.rdflags & RDF_NOWORLDMODEL)
+	{
+		glEnable(GL_SCISSOR_TEST);
+		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+		glScissor(r_newrefdef.x, viddef.height - r_newrefdef.height - r_newrefdef.y, r_newrefdef.width, r_newrefdef.height);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(1.0f, 0.0f, 0.5f, 0.5f);
+		glDisable(GL_SCISSOR_TEST);
+	}
 }
 
 static void R_SetupGL(void)

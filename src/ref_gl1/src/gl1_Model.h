@@ -219,6 +219,7 @@ extern model_t* loadmodel;
 extern void Mod_Init(void);
 extern void Mod_FreeAll(void);
 
+extern mleaf_t* Mod_PointInLeaf(vec3_t p, const model_t* model);
 extern void Mod_Modellist_f(void);
 
 extern void R_BeginRegistration(const char* model);

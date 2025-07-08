@@ -156,6 +156,11 @@ typedef struct
 extern glconfig_t gl_config;
 extern glstate_t gl_state;
 
+extern vec3_t vup;
+extern vec3_t vpn;
+extern vec3_t vright;
+extern vec3_t r_origin;
+
 extern refdef_t r_newrefdef;
 
 extern int r_framecount;
