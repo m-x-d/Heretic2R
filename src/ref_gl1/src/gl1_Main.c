@@ -46,6 +46,8 @@ vec3_t vpn;
 vec3_t vright;
 vec3_t r_origin;
 
+float r_world_matrix[16];
+
 refdef_t r_newrefdef; // Screen size info.
 
 int r_framecount; // Used for dlight push checking.
@@ -238,9 +240,72 @@ static void R_SetupFrame(void)
 	}
 }
 
+static void R_SetPerspective(GLdouble fovy) // YQ2
+{
+	// gluPerspective style parameters.
+	static const GLdouble zNear = 1.0; // Q2: 4.0
+	const GLdouble zFar = r_farclipdist->value;
+	const GLdouble aspectratio = (GLdouble)r_newrefdef.width / r_newrefdef.height;
+
+	// Traditional gluPerspective calculations - https://youtu.be/YqSNGcF5nvM?t=644
+	GLdouble ymax = zNear * tan(fovy * M_PI / 360.0);
+	GLdouble xmax = ymax * aspectratio;
+
+	GLdouble ymin = -ymax;
+	GLdouble xmin = -xmax;
+
+	glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
+}
+
 static void R_SetupGL(void)
 {
-	NOT_IMPLEMENTED
+	//mxd. Removed unneeded integer multiplications/divisions.
+	const int xl = r_newrefdef.x;
+	const int xr = r_newrefdef.x + r_newrefdef.width;
+	const int yt = viddef.height - r_newrefdef.y;
+	const int yb = viddef.height - (r_newrefdef.y + r_newrefdef.height);
+
+	glViewport(xl, yb, xr - xl, yt - yb);
+
+	// Set up projection matrix.
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	R_SetPerspective(r_newrefdef.fov_y);
+
+	glCullFace(GL_FRONT);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f); // Put Z going up.
+	glRotatef(90.0f, 0.0f, 0.0f, 1.0f); // Put Z going up.
+	glRotatef(-r_newrefdef.viewangles[2], 1.0f, 0.0f, 0.0f);
+	glRotatef(-r_newrefdef.viewangles[0], 0.0f, 1.0f, 0.0f);
+	glRotatef(-r_newrefdef.viewangles[1], 0.0f, 0.0f, 1.0f);
+	glTranslatef(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
+
+	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
+
+	// Set drawing parms.
+	if ((int)gl_cull->value)
+		glEnable(GL_CULL_FACE);
+	else
+		glDisable(GL_CULL_FACE);
+
+	glDisable(GL_BLEND);
+	glDisable(GL_ALPHA_TEST);
+
+	// H2: extra gl_drawmode logic.
+	if ((int)gl_drawmode->value)
+	{
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(1.0f, 0.0f, 0.5f, 0.5f);
+	}
+	else
+	{
+		glEnable(GL_DEPTH_TEST);
+	}
 }
 
 static void R_Fog(void) // H2: GL_Fog
