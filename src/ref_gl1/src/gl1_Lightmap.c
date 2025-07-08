@@ -7,6 +7,8 @@
 #include "gl1_Lightmap.h"
 #include "gl1_Image.h"
 #include "gl1_Light.h"
+#include "Hunk.h"
+#include "Vector.h"
 
 #define LIGHTMAP_BYTES			4
 
@@ -88,9 +90,62 @@ qboolean LM_AllocBlock(const int w, const int h, int* x, int* y)
 
 #pragma region ========================== LIGHTMAP BUILDING ==========================
 
+// Q2 counterpart
 void LM_BuildPolygonFromSurface(msurface_t* fa)
 {
-	NOT_IMPLEMENTED
+	// Reconstruct the polygon.
+	const medge_t* pedges = currentmodel->edges;
+	const int lnumverts = fa->numedges;
+
+	// Draw texture.
+	glpoly_t* poly = Hunk_Alloc((int)sizeof(glpoly_t) + (lnumverts - 4) * VERTEXSIZE * sizeof(float));
+	poly->next = fa->polys;
+	poly->flags = fa->flags;
+	fa->polys = poly;
+	poly->numverts = lnumverts;
+
+	for (int i = 0; i < lnumverts; i++)
+	{
+		const int lindex = currentmodel->surfedges[fa->firstedge + i];
+
+		float* vec;
+		if (lindex > 0)
+		{
+			const medge_t* r_pedge = &pedges[lindex];
+			vec = currentmodel->vertexes[r_pedge->v[0]].position;
+		}
+		else
+		{
+			const medge_t* r_pedge = &pedges[-lindex];
+			vec = currentmodel->vertexes[r_pedge->v[1]].position;
+		}
+
+		float s = DotProduct(vec, fa->texinfo->vecs[0]) + fa->texinfo->vecs[0][3];
+		s /= (float)fa->texinfo->image->width;
+
+		float t = DotProduct(vec, fa->texinfo->vecs[1]) + fa->texinfo->vecs[1][3];
+		t /= (float)fa->texinfo->image->height;
+
+		VectorCopy(vec, poly->verts[i]);
+		poly->verts[i][3] = s;
+		poly->verts[i][4] = t;
+
+		// Lightmap texture coordinates.
+		s = DotProduct(vec, fa->texinfo->vecs[0]) + fa->texinfo->vecs[0][3];
+		s -= (float)fa->texturemins[0];
+		s += (float)fa->light_s * 16;
+		s += 8;
+		s /= BLOCK_WIDTH * 16;
+
+		t = DotProduct(vec, fa->texinfo->vecs[1]) + fa->texinfo->vecs[1][3];
+		t -= (float)fa->texturemins[1];
+		t += (float)fa->light_t * 16;
+		t += 8;
+		t /= BLOCK_HEIGHT * 16;
+
+		poly->verts[i][5] = s;
+		poly->verts[i][6] = t;
+	}
 }
 
 // Q2 counterpart
@@ -157,9 +212,11 @@ void LM_BeginBuildingLightmaps(void) //mxd. Removed unused model_t* arg.
 	glTexImage2D(GL_TEXTURE_2D, 0, gl_lms.internal_format, BLOCK_WIDTH, BLOCK_HEIGHT, 0, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, dummy);
 }
 
+// Q2 counterpart
 void LM_EndBuildingLightmaps(void)
 {
-	NOT_IMPLEMENTED
+	LM_UploadBlock(false);
+	R_EnableMultitexture(false);
 }
 
 #pragma endregion
