@@ -39,14 +39,36 @@ static gllightmapstate_t gl_lms;
 
 #pragma region ========================== LIGHTMAP ALLOCATION ==========================
 
+// Q2 counterpart
 void LM_InitBlock(void)
 {
-	NOT_IMPLEMENTED
+	memset(gl_lms.allocated, 0, sizeof(gl_lms.allocated));
 }
 
+// Q2 counterpart
 void LM_UploadBlock(const qboolean dynamic)
 {
-	NOT_IMPLEMENTED
+	R_Bind(gl_state.lightmap_textures + (dynamic ? 0 : gl_lms.current_lightmap_texture));
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); //mxd. qglTexParameterf -> qglTexParameteri
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //mxd. qglTexParameterf -> qglTexParameteri
+
+	if (dynamic)
+	{
+		int height = 0;
+		for (int i = 0; i < BLOCK_WIDTH; i++)
+			height = max(gl_lms.allocated[i], height);
+
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, BLOCK_WIDTH, height, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, gl_lms.lightmap_buffer);
+	}
+	else
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, gl_lms.internal_format, BLOCK_WIDTH, BLOCK_HEIGHT, 0, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, gl_lms.lightmap_buffer);
+		gl_lms.current_lightmap_texture++;
+
+		if (gl_lms.current_lightmap_texture == MAX_LIGHTMAPS)
+			ri.Sys_Error(ERR_DROP, "LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n");
+	}
 }
 
 // Q2 counterpart. Returns a texture number and the position inside it.
