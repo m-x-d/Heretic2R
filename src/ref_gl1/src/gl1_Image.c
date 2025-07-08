@@ -111,7 +111,13 @@ void R_EnableMultitexture(const qboolean enable)
 
 void R_SelectTexture(const GLenum texture)
 {
-	NOT_IMPLEMENTED
+	const int tmu = (texture == GL_TEXTURE1);
+	if (tmu != gl_state.currenttmu)
+	{
+		gl_state.currenttmu = tmu;
+		glActiveTexture(texture);
+		// H2: missing qglClientActiveTextureARB(texture);
+	}
 }
 
 // Q2 counterpart
