@@ -45,6 +45,11 @@ mleaf_t* Mod_PointInLeaf(vec3_t p, const model_t* model)
 	return (mleaf_t*)node;
 }
 
+byte* Mod_ClusterPVS(const int cluster, const model_t* model)
+{
+	NOT_IMPLEMENTED
+}
+
 void Mod_Modellist_f(void)
 {
 	NOT_IMPLEMENTED
