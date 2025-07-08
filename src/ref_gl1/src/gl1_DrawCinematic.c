@@ -14,26 +14,22 @@ static byte* cin_frame_data;
 
 void Draw_InitCinematic(const int width, const int height) // H2
 {
-	static paletteRGB_t cin_palette[256];
-
 	cin_frame = R_GetFreeImage();
 
 	cin_frame->registration_sequence = registration_sequence;
 	cin_frame->width = width;
 	cin_frame->height = height;
 	cin_frame->type = it_pic;
-	cin_frame->palette = NULL;
-	cin_frame->texnum = TEXNUM_IMAGES + (cin_frame - gltextures);
+	cin_frame->palette = malloc(sizeof(paletteRGB_t) * 256);
 	cin_frame->has_alpha = false;
-	cin_frame->palette = cin_palette;
+	cin_frame->texnum = TEXNUM_IMAGES + (cin_frame - gltextures);
 
 	cin_frame_data = malloc(width * height);
 }
 
 void Draw_CloseCinematic(void) // H2
 {
-	cin_frame->palette = NULL; // R_FreeImageNoHash() frees image->palette. Explicitly set to NULL here to avoid that.
-	R_FreeImageNoHash(cin_frame);
+	R_FreeImageNoHash(cin_frame); // Will also free palette.
 	cin_frame = NULL;
 
 	free(cin_frame_data);
