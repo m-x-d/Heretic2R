@@ -47,9 +47,41 @@ void LM_UploadBlock(const qboolean dynamic)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart. Returns a texture number and the position inside it.
 qboolean LM_AllocBlock(const int w, const int h, int* x, int* y)
 {
-	NOT_IMPLEMENTED
+	int j;
+	int best = BLOCK_HEIGHT;
+
+	for (int i = 0; i < BLOCK_WIDTH - w; i++)
+	{
+		int best2 = 0;
+
+		for (j = 0; j < w; j++)
+		{
+			if (gl_lms.allocated[i + j] >= best)
+				break;
+
+			if (gl_lms.allocated[i + j] > best2)
+				best2 = gl_lms.allocated[i + j];
+		}
+
+		if (j == w)
+		{
+			// This is a valid spot.
+			*x = i;
+			*y = best2;
+			best = best2;
+		}
+	}
+
+	if (best + h > BLOCK_HEIGHT)
+		return false;
+
+	for (int i = 0; i < w; i++)
+		gl_lms.allocated[*x + i] = best + h;
+
+	return true;
 }
 
 #pragma endregion
