@@ -23,6 +23,8 @@ viddef_t viddef; // H2: renamed from vid, defined in vid.h?
 refimport_t ri;
 
 model_t* r_worldmodel;
+
+entity_t* currententity;
 model_t* currentmodel;
 
 float gldepthmin;

@@ -165,6 +165,7 @@ extern int r_viewcluster2;
 extern int r_oldviewcluster;
 extern int r_oldviewcluster2;
 
+extern entity_t* currententity;
 extern model_t* currentmodel;
 
 #pragma endregion
