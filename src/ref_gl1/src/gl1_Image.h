@@ -33,3 +33,4 @@ extern void R_SetFilter(const image_t* image);
 
 extern struct image_s* R_RegisterSkin(const char* name, qboolean* retval);
 extern void R_GammaAffect(void);
+extern void R_DisplayHashTable(void);

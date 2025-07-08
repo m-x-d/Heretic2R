@@ -90,6 +90,9 @@
     <ClCompile Include="..\qcommon\Reference.c">
       <Filter>qcommon</Filter>
     </ClCompile>
+    <ClCompile Include="src\gl1_Surface.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\gl1_Draw.h">
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\Reference.h">
       <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_Surface.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -626,3 +626,8 @@ void R_GammaAffect(void)
 			R_RefreshImage(image);
 	}
 }
+
+void R_DisplayHashTable(void)
+{
+	NOT_IMPLEMENTED
+}

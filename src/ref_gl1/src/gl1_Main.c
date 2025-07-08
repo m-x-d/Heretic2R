@@ -11,9 +11,11 @@
 #include "gl1_FindSurface.h"
 #include "gl1_FlexModel.h"
 #include "gl1_Image.h"
+#include "gl1_Light.h"
 #include "gl1_Misc.h"
 #include "gl1_SDL.h"
 #include "gl1_Sky.h"
+#include "gl1_Surface.h"
 #include "gl1_Local.h"
 #include "Reference.h"
 #include "turbsin.h"
@@ -43,6 +45,9 @@ int r_viewcluster;
 int r_viewcluster2;
 int r_oldviewcluster;
 int r_oldviewcluster2;
+
+int c_brush_polys;
+int c_alias_polys;
 
 #pragma region ========================== CVARS  ==========================
 
@@ -123,6 +128,36 @@ cvar_t* cl_camera_under_surface;
 cvar_t* quake_amount;
 
 #pragma endregion
+
+static void R_DrawEntitiesOnList(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void R_DrawParticles(const int num_particles, const particle_t* particles, const qboolean alpha_particle)
+{
+	NOT_IMPLEMENTED
+}
+
+static void R_SetFrustum(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void R_PolyBlend(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void R_SetupFrame(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void R_SetupGL(void)
+{
+	NOT_IMPLEMENTED
+}
 
 static void R_Fog(void) // H2: GL_Fog
 {
@@ -469,7 +504,48 @@ static void R_BeginFrame(const float camera_separation) //TODO: remove camera_se
 
 static void R_RenderView(const refdef_t* fd)
 {
-	NOT_IMPLEMENTED
+	if ((int)r_norefresh->value)
+		return;
+
+	r_newrefdef = *fd;
+
+	if (r_worldmodel == NULL && !(r_newrefdef.rdflags & RDF_NOWORLDMODEL))
+		ri.Sys_Error(ERR_DROP, "R_RenderView: NULL worldmodel"); //mxd. Sys_Error() -> ri.Sys_Error().
+
+	if ((int)r_speeds->value)
+	{
+		c_brush_polys = 0;
+		c_alias_polys = 0;
+	}
+
+	R_PushDlights();
+
+	if ((int)gl_finish->value)
+		glFinish();
+
+	R_SetupFrame();
+	R_SetFrustum();
+	R_SetupGL();
+	R_MarkLeaves(); // Done here so we know if we're in water.
+	R_DrawWorld();
+	R_DrawEntitiesOnList();
+	R_RenderDlights();
+
+	// Changed in H2:
+	glDepthMask(GL_FALSE);
+	R_SortAndDrawAlphaSurfaces();
+	R_DrawParticles(r_newrefdef.num_particles, r_newrefdef.particles, false);
+	R_DrawParticles(r_newrefdef.anum_particles, r_newrefdef.aparticles, true);
+	glDepthMask(GL_TRUE);
+
+	// Changed in H2: R_Flash() call replaced with R_PolyBlend() call (or optimization?).
+	R_PolyBlend();
+
+	if ((int)r_speeds->value)
+		ri.Con_Printf(PRINT_ALL, "%4i wpoly %4i epoly %i tex %i lmaps\n", c_brush_polys, c_alias_polys, c_visible_textures, c_visible_lightmaps); // H2: ri.Con_Printf -> Com_Printf //mxd. Com_Printf() -> ri.Con_Printf().
+
+	if ((int)gl_reporthash->value) // H2
+		R_DisplayHashTable();
 }
 
 static void R_SetGL2D(void)

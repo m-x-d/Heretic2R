@@ -31,6 +31,7 @@
     <ClCompile Include="src\gl1_Model.c" />
     <ClCompile Include="src\gl1_SDL.c" />
     <ClCompile Include="src\gl1_Sky.c" />
+    <ClCompile Include="src\gl1_Surface.c" />
     <ClCompile Include="src\gl1_Warp.c" />
     <ClCompile Include="src\Hunk.c" />
     <ClCompile Include="src\Skeletons\r_SkeletonLerp.c" />
@@ -60,6 +61,7 @@
     <ClInclude Include="src\gl1_Model.h" />
     <ClInclude Include="src\gl1_SDL.h" />
     <ClInclude Include="src\gl1_Sky.h" />
+    <ClInclude Include="src\gl1_Surface.h" />
     <ClInclude Include="src\gl1_Warp.h" />
     <ClInclude Include="src\Hunk.h" />
     <ClInclude Include="src\Skeletons\m_SkeletalCluster.h" />

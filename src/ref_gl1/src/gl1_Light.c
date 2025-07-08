@@ -8,6 +8,16 @@
 
 static float s_blocklights[34 * 34 * 3];
 
+void R_RenderDlights(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void R_PushDlights(void)
+{
+	NOT_IMPLEMENTED
+}
+
 static void R_AddDynamicLights(const msurface_t* surf)
 {
 	NOT_IMPLEMENTED

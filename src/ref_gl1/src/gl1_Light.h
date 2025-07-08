@@ -8,5 +8,8 @@
 
 #include "gl1_Local.h"
 
+extern void R_RenderDlights(void);
+extern void R_PushDlights(void);
+
 extern void R_SetCacheState(msurface_t* surf);
 extern void R_BuildLightMap(const msurface_t* surf, byte* dest, int stride);
