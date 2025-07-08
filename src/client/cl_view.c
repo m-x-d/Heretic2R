@@ -256,7 +256,7 @@ void V_RenderView(const float stereo_separation)
 	qsort(cls.r_entities, cls.r_numentities, sizeof(cls.r_entities[0]), entitycmpfnc);
 	qsort(cl.refdef.alpha_entities, cl.refdef.num_alpha_entities, sizeof(cl.refdef.alpha_entities[0]), alphaentitycmpfnc); // H2
 
-	frame_index = re.RenderFrame(&cl.refdef);
+	frame_index = re.RenderFrame(&cl.refdef); //TODO: re.RenderFrame() always returns 0!
 
 	if ((int)cl_stats->value)
 		Com_Printf("ent:%i  lt:%i  part:%i  ", cls.r_numentities, cls.r_numdlights, cls.r_numparticles);
