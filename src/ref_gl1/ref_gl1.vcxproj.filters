@@ -13,6 +13,9 @@
     <Filter Include="glad">
       <UniqueIdentifier>{36d33ac4-23d9-4415-bc2f-c34fcc0de8c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Skeletons">
+      <UniqueIdentifier>{6b434ae0-cd08-4784-beda-acd7474259d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl1_Draw.c">
@@ -71,6 +74,21 @@
     </ClCompile>
     <ClCompile Include="src\gl1_Light.c">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\anormtab.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Skeletons\r_SkeletonLerp.c">
+      <Filter>src\Skeletons</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Skeletons\r_Skeletons.c">
+      <Filter>src\Skeletons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\Skeletons.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\Reference.c">
+      <Filter>qcommon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +157,27 @@
     </ClInclude>
     <ClInclude Include="src\gl1_Light.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\anormtab.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Skeletons\m_SkeletalCluster.h">
+      <Filter>src\Skeletons</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Skeletons\m_Skeleton.h">
+      <Filter>src\Skeletons</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Skeletons\r_SkeletonLerp.h">
+      <Filter>src\Skeletons</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Skeletons\r_Skeletons.h">
+      <Filter>src\Skeletons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Skeletons.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Reference.h">
+      <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

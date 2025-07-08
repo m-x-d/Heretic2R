@@ -13,7 +13,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\include\glad-GL1.3\glad.c" />
     <ClCompile Include="..\qcommon\anorms.c" />
+    <ClCompile Include="..\qcommon\Reference.c" />
+    <ClCompile Include="..\qcommon\Skeletons.c" />
     <ClCompile Include="..\qcommon\turbsin.c" />
+    <ClCompile Include="src\anormtab.c" />
     <ClCompile Include="src\gl1_Debug.c" />
     <ClCompile Include="src\gl1_Draw.c" />
     <ClCompile Include="src\gl1_DrawBook.c" />
@@ -30,6 +33,8 @@
     <ClCompile Include="src\gl1_Sky.c" />
     <ClCompile Include="src\gl1_Warp.c" />
     <ClCompile Include="src\Hunk.c" />
+    <ClCompile Include="src\Skeletons\r_SkeletonLerp.c" />
+    <ClCompile Include="src\Skeletons\r_Skeletons.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\glad-GL1.3\glad.h" />
@@ -37,7 +42,10 @@
     <ClInclude Include="..\client\ref.h" />
     <ClInclude Include="..\client\vid.h" />
     <ClInclude Include="..\qcommon\anorms.h" />
+    <ClInclude Include="..\qcommon\Reference.h" />
+    <ClInclude Include="..\qcommon\Skeletons.h" />
     <ClInclude Include="..\qcommon\turbsin.h" />
+    <ClInclude Include="src\anormtab.h" />
     <ClInclude Include="src\gl1_Debug.h" />
     <ClInclude Include="src\gl1_Draw.h" />
     <ClInclude Include="src\gl1_DrawBook.h" />
@@ -54,6 +62,10 @@
     <ClInclude Include="src\gl1_Sky.h" />
     <ClInclude Include="src\gl1_Warp.h" />
     <ClInclude Include="src\Hunk.h" />
+    <ClInclude Include="src\Skeletons\m_SkeletalCluster.h" />
+    <ClInclude Include="src\Skeletons\m_Skeleton.h" />
+    <ClInclude Include="src\Skeletons\r_SkeletonLerp.h" />
+    <ClInclude Include="src\Skeletons\r_Skeletons.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />
