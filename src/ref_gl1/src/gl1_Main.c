@@ -32,6 +32,8 @@ model_t* r_worldmodel;
 entity_t* currententity;
 model_t* currentmodel;
 
+cplane_t frustum[4];
+
 float gldepthmin;
 float gldepthmax;
 
@@ -148,9 +150,36 @@ static void R_DrawParticles(const int num_particles, const particle_t* particles
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
+static byte R_SignbitsForPlane(const cplane_t* plane) //mxd. Changed return type to byte.
+{
+	// For fast box on planeside test.
+	byte bits = 0;
+	for (int i = 0; i < 3; i++)
+		if (plane->normal[i] < 0.0f)
+			bits |= 1 << i;
+
+	return bits;
+}
+
 static void R_SetFrustum(void)
 {
-	NOT_IMPLEMENTED
+	RotatePointAroundVector(frustum[0].normal, vup,		vpn, -(90.0f - r_newrefdef.fov_x * 0.5f));	// Rotate VPN right by FOV_X/2 degrees.
+	RotatePointAroundVector(frustum[1].normal, vup,		vpn,   90.0f - r_newrefdef.fov_x * 0.5f);	// Rotate VPN left by FOV_X/2 degrees.
+	RotatePointAroundVector(frustum[2].normal, vright,	vpn,   90.0f - r_newrefdef.fov_y * 0.5f);	// Rotate VPN up by FOV_X/2 degrees.
+	RotatePointAroundVector(frustum[3].normal, vright,	vpn, -(90.0f - r_newrefdef.fov_y * 0.5f));	// Rotate VPN down by FOV_X/2 degrees.
+
+	for (int i = 0; i < 4; i++)
+	{
+		// H2:
+		const float frustum_dist = VectorLength(frustum[i].normal);
+		if (frustum_dist <= 0.999999f)
+			ri.Con_Printf(PRINT_ALL, "Frustum normal dist %f < 1.0\n", (double)frustum_dist); //mxd. Com_Printf() -> ri.Con_Printf().
+
+		frustum[i].type = PLANE_ANYZ;
+		frustum[i].dist = DotProduct(r_origin, frustum[i].normal);
+		frustum[i].signbits = R_SignbitsForPlane(&frustum[i]);
+	}
 }
 
 static void R_PolyBlend(void)

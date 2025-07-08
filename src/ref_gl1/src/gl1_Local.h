@@ -176,6 +176,8 @@ extern int c_alias_polys;
 extern entity_t* currententity;
 extern model_t* currentmodel;
 
+extern cplane_t frustum[4];
+
 #pragma endregion
 
 #pragma region ========================== IMPORTED FUNCTIONS ==========================
