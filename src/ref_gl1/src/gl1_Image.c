@@ -280,7 +280,7 @@ static image_t* R_LoadM8(const char* name, const imagetype_t type) // H2: GL_Loa
 		return NULL;
 	}
 
-	paletteRGB_t* palette = malloc(768);
+	paletteRGB_t* palette = malloc(sizeof(paletteRGB_t) * 256);
 	GrabPalette(mt->palette, palette);
 
 	image_t* image = R_GetFreeImage();
@@ -290,7 +290,7 @@ static image_t* R_LoadM8(const char* name, const imagetype_t type) // H2: GL_Loa
 	image->height = (int)mt->height[0];
 	image->type = type;
 	image->palette = palette;
-	image->has_alpha = 0;
+	image->has_alpha = false;
 	image->texnum = TEXNUM_IMAGES + (image - gltextures);
 	image->num_frames = (byte)mt->value;
 
