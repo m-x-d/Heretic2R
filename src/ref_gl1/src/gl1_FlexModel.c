@@ -375,7 +375,12 @@ void Mod_LoadFlexModel(model_t* mod, void* buffer, int length)
 
 void Mod_RegisterFlexModel(model_t* mod)
 {
-	NOT_IMPLEMENTED
+	fmodel = (fmdl_t*)mod->extradata;
+
+	// Precache skins... //TODO: also done in fmLoadSkin(). One of these isn't needed?
+	char* skin_name = fmodel->skin_names;
+	for (int i = 0; i < fmodel->header.num_skins; i++, skin_name += MAX_FRAMENAME)
+		mod->skins[i] = R_FindImage(skin_name, it_skin);
 }
 
 #pragma endregion
