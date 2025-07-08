@@ -9,12 +9,14 @@
 #include "gl1_DrawBook.h"
 #include "gl1_DrawCinematic.h"
 #include "gl1_FindSurface.h"
+#include "gl1_FlexModel.h"
 #include "gl1_Image.h"
 #include "gl1_Misc.h"
 #include "gl1_SDL.h"
 #include "gl1_Sky.h"
-#include "turbsin.h"
 #include "gl1_Local.h"
+#include "Reference.h"
+#include "turbsin.h"
 #include "vid.h"
 
 #define REF_DECLSPEC	__declspec(dllexport)
@@ -471,10 +473,15 @@ static int R_RenderFrame(const refdef_t* fd)
 	return 0;
 }
 
-static int R_GetReferencedID(const struct model_s* model)
+static int R_GetReferencedID(const struct model_s* model) // H2 //mxd. Named 'GetReferencedID' (in m_Reference.c) in original logic.
 {
-	NOT_IMPLEMENTED
-	return 0;
+	const fmdl_t* temp = model->extradata;
+
+	//mxd. H2 Toolkit code checks for qboolean model->model_type.
+	if (model->type == mod_fmdl && temp->referenceType > REF_NULL && temp->referenceType < NUM_REFERENCED)
+		return temp->referenceType;
+
+	return REF_NULL;
 }
 
 REF_DECLSPEC refexport_t GetRefAPI(const refimport_t rimp)
