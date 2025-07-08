@@ -26,9 +26,23 @@ static int mod_numknown;
 // The inline ('*1', '*2', ...) models from the current map are kept separate.
 static model_t mod_inline[MAX_MOD_KNOWN];
 
+// Q2 counterpart
 mleaf_t* Mod_PointInLeaf(vec3_t p, const model_t* model)
 {
-	NOT_IMPLEMENTED
+	if (model == NULL || model->nodes == NULL)
+		ri.Sys_Error(ERR_DROP, "Mod_PointInLeaf: bad model");
+
+	mnode_t* node = model->nodes;
+	while (node->contents == -1)
+	{
+		const cplane_t* plane = node->plane;
+		if (DotProduct(p, plane->normal) - plane->dist > 0.0f)
+			node = node->children[0];
+		else
+			node = node->children[1];
+	}
+
+	return (mleaf_t*)node;
 }
 
 void Mod_Modellist_f(void)
