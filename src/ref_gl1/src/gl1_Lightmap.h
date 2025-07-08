@@ -8,6 +8,10 @@
 
 #include "gl1_Local.h"
 
+extern void LM_InitBlock(void);
+extern void LM_UploadBlock(qboolean dynamic);
+extern qboolean LM_AllocBlock(int w, int h, int* x, int* y);
+
 extern void LM_BuildPolygonFromSurface(msurface_t* fa);
 extern void LM_CreateSurfaceLightmap(msurface_t* surf);
 extern void LM_BeginBuildingLightmaps(void);

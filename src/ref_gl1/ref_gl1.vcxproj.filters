@@ -69,6 +69,9 @@
     <ClCompile Include="src\gl1_Warp.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\gl1_Light.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\gl1_Draw.h">
@@ -132,6 +135,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\gl1_Warp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_Light.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
