@@ -132,13 +132,21 @@ void R_TexEnv(const GLint mode) // Q2: GL_TexEnv()
 	}
 }
 
+// Q2 counterpart
 void R_Bind(int texnum)
 {
-	NOT_IMPLEMENTED
+	if ((int)gl_nobind->value && draw_chars != NULL) // Performance evaluation option.
+		texnum = draw_chars->texnum;
+
+	if (gl_state.currenttextures[gl_state.currenttmu] != texnum)
+	{
+		gl_state.currenttextures[gl_state.currenttmu] = texnum;
+		glBindTexture(GL_TEXTURE_2D, texnum);
+	}
 }
 
 //mxd. Most likely was changed from GL_Bind in H2 to use image->palette in qglColorTableEXT logic (which we skip...)
-void R_BindImage(const image_t* image) // Q2: GL_BindImage()
+void R_BindImage(const image_t* image) // Q2: GL_BindImage() //TODO: replace usages with R_Bind() (or replace R_Bind() usages with this)?..
 {
 	int texnum;
 
