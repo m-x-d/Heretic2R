@@ -14,7 +14,7 @@ int c_visible_lightmaps;
 int c_visible_textures;
 
 static int r_visframecount; // Bumped when going to a new PVS // Q2: defined in gl_rmain.c //mxd. Moved here & made static.
-static int num_sorted_multitextures; // H2
+static qboolean multitexture_mode; // H2
 
 static vec3_t modelorg; // Relative to viewpoint.
 
@@ -64,9 +64,88 @@ static void R_DrawTriangleOutlines(void)
 	NOT_IMPLEMENTED
 }
 
-static void DrawTextureChains(void)
+static void R_RenderBrushPoly(msurface_t* fa)
 {
 	NOT_IMPLEMENTED
+}
+
+static void R_RenderFlatShadedBrushPoly(msurface_t* fa) // H2
+{
+	NOT_IMPLEMENTED
+}
+
+//mxd. Similar to Q2's GL_RenderLightmappedPoly (except for missing SURF_FLOWING logic). Original H2 .dll also includes GL_RenderLightmappedPoly_SGIS variant.
+static void R_RenderLightmappedPoly(msurface_t* surf)
+{
+	NOT_IMPLEMENTED
+}
+
+static void R_DrawTextureChains(void) // Q2: DrawTextureChains().
+{
+	c_visible_textures = 0;
+
+	// H2: extra gl_sortmulti logic:
+	if (multitexture_mode)
+	{
+		R_EnableMultitexture(true);
+		R_SelectTexture(GL_TEXTURE0);
+		R_TexEnv(GL_REPLACE);
+		R_SelectTexture(GL_TEXTURE1);
+		R_TexEnv((int)gl_lightmap->value ? GL_REPLACE : GL_MODULATE);
+
+		image_t* image = &gltextures[0];
+		for (int i = 0; i < numgltextures; i++, image++)
+		{
+			if (image->registration_sequence == 0 || image->multitexturechain == NULL)
+				continue;
+
+			c_visible_textures++;
+
+			for (msurface_t* s = image->multitexturechain; s != NULL; s = s->texturechain)
+				R_RenderLightmappedPoly(s);
+
+			image->multitexturechain = NULL;
+		}
+
+		R_EnableMultitexture(false);
+		multitexture_mode = false;
+	}
+
+	void (*render_brush_poly)(msurface_t*) = ((int)gl_drawflat->value ? R_RenderFlatShadedBrushPoly : R_RenderBrushPoly); // H2: new gl_drawflat logic.
+
+	// Original Q2 logic:
+
+	// Render lightmapped surfaces.
+	image_t* image = &gltextures[0];
+	for (int i = 0; i < numgltextures; i++, image++)
+	{
+		if (!image->registration_sequence || image->texturechain == NULL)
+			continue;
+
+		c_visible_textures++;
+
+		for (msurface_t* s = image->texturechain; s != NULL; s = s->texturechain)
+			if (!(s->flags & SURF_DRAWTURB))
+				render_brush_poly(s); // H2: new gl_drawflat logic.
+	}
+
+	R_EnableMultitexture(false);
+
+	// Render warping (water) surfaces (no lightmaps).
+	image = &gltextures[0];
+	for (int i = 0; i < numgltextures; i++, image++)
+	{
+		if (!image->registration_sequence || image->texturechain == NULL)
+			continue;
+
+		for (msurface_t* s = image->texturechain; s != NULL; s = s->texturechain)
+			if (s->flags & SURF_DRAWTURB)
+				render_brush_poly(s); // H2: new gl_drawflat logic.
+
+		image->texturechain = NULL;
+	}
+
+	R_TexEnv(GL_REPLACE);
 }
 
 static qboolean R_CullBox(const vec3_t mins, const vec3_t maxs)
@@ -154,16 +233,16 @@ static void R_RecursiveWorldNode(mnode_t* node)
 		}
 		else if (!(surf->flags & SURF_DRAWTURB) && !(surf->flags & SURF_TALL_WALL) && !(int)r_fullbright->value && !(int)gl_drawflat->value) // H2: extra SURF_TALL_WALL, r_fullbright, gl_drawflat checks.
 		{
-			// The polygon is visible, so add it to the multi-texture sorted chain.
+			// The polygon is visible, so add it to the sorted multi-texture chain.
 			image_t* image = R_TextureAnimation(surf->texinfo);
 			surf->texturechain = image->multitexturechain;
 			image->multitexturechain = surf;
 
-			num_sorted_multitextures++;
+			multitexture_mode = true;
 		}
 		else //mxd. Skipping qglMTexCoord2fSGIS logic...
 		{
-			// The polygon is visible, so add it to the texture sorted chain.
+			// The polygon is visible, so add it to the sorted texture chain.
 			// FIXME: this is a hack for animation.
 			image_t* image = R_TextureAnimation(surf->texinfo);
 			surf->texturechain = image->texturechain;
@@ -202,7 +281,7 @@ void R_DrawWorld(void)
 
 	memset((void*)gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 	gl_lms.tallwall_lightmaptexturenum = 0; // H2
-	num_sorted_multitextures = 0; // H2
+	multitexture_mode = false; // H2
 
 	R_ClearSkyBox();
 
@@ -236,14 +315,14 @@ void R_DrawWorld(void)
 	{
 		glDisable(GL_TEXTURE_2D);
 
-		DrawTextureChains();
+		R_DrawTextureChains();
 
 		glEnable(GL_TEXTURE_2D);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	else
 	{
-		DrawTextureChains();
+		R_DrawTextureChains();
 	}
 
 	R_BlendLightmaps();
