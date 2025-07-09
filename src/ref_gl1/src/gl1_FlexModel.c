@@ -6,13 +6,19 @@
 
 #include "gl1_FlexModel.h"
 #include "gl1_Image.h"
+#include "gl1_Light.h"
 #include "Skeletons/r_Skeletons.h"
+#include "Skeletons/r_SkeletonLerp.h"
+#include "anormtab.h"
 #include "Hunk.h"
 #include "Vector.h"
 
-#pragma region ========================== FLEX MODEL LOADING ==========================
-
 fmdl_t* fmodel;
+
+static vec3_t shadelight;
+static vec3_t shadevector;
+
+#pragma region ========================== FLEX MODEL LOADING ==========================
 
 static qboolean fmLoadHeader(model_t* model, const int version, const int datasize, const void* buffer)
 {
@@ -387,9 +393,126 @@ void Mod_RegisterFlexModel(model_t* mod)
 
 #pragma region ========================== FLEX MODEL RENDERING ==========================
 
-void R_DrawFlexModel(entity_t* e)
+//mxd. Somewhat similar to R_CullAliasModel from Q2.
+static qboolean R_CullFlexModel(const fmdl_t* model, entity_t* e)
 {
 	NOT_IMPLEMENTED
+}
+
+//TODO: rewrite to use entity_t* arg instead of 'currententity'
+static image_t* R_GetSkin(void)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
+static void R_DrawFlexFrameLerp(void)
+{
+	NOT_IMPLEMENTED
+}
+
+//mxd. Somewhat similar to R_DrawAliasModel from Q2. Original code used 'currententity' global var instead of 'e' arg.
+void R_DrawFlexModel(entity_t* e)
+{
+	fmodel = (fmdl_t*)(*e->model)->extradata; //mxd. Original code used 'currentmodel' global var here.
+
+	if (R_CullFlexModel(fmodel, e))
+		return;
+
+	// Get lighting information.
+	if (e->flags & RF_TRANS_ADD_ALPHA)
+	{
+		const float alpha = (float)e->color.a / 255.0f;
+		VectorSet(shadelight, alpha, alpha, alpha);
+	}
+	else if (e->flags & RF_FULLBRIGHT)
+	{
+		VectorSet(shadelight, 1.0f, 1.0f, 1.0f);
+	}
+	else if (e->absLight.r != 0 || e->absLight.g != 0 || e->absLight.b != 0)
+	{
+		VectorSet(shadelight, (float)e->absLight.r / 255.0f, (float)e->absLight.g / 255.0f, (float)e->absLight.b / 255.0f);
+	}
+	else
+	{
+		R_LightPoint(e->origin, shadelight); //mxd. Skip RF_WEAPONMODEL logic (never set in H2), skip gl_monolightmap logic.
+	}
+
+	shadelight[0] *= (float)e->color.r / 255.0f;
+	shadelight[1] *= (float)e->color.g / 255.0f;
+	shadelight[2] *= (float)e->color.b / 255.0f;
+
+	if (e->flags & RF_MINLIGHT)
+	{
+		int c;
+		for (c = 0; c < 3; c++)
+			if (shadelight[c] > 0.1f)
+				break;
+
+		if (c == 3)
+			VectorSet(shadelight, 0.1f, 0.1f, 0.1f);
+	}
+
+	if (e->flags & RF_GLOW)
+	{
+		// Bonus items will pulse with time.
+		const float val = sinf(r_newrefdef.time * 7.0f) * 0.3f + 0.7f;
+		VectorSet(shadelight, val, val, val);
+	}
+
+	shadedots = r_avertexnormal_dots[((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0f * RAD_TO_ANGLE)) & (SHADEDOT_QUANT - 1))];
+
+	VectorSet(shadevector, cosf(-e->angles[1]), sinf(-e->angles[1]), 1.0f);
+	VectorNormalize(shadevector);
+
+	// Locate the proper data.
+	c_alias_polys += fmodel->header.num_tris;
+
+	// Draw all the triangles.
+	if (e->flags & RF_DEPTHHACK) // Hack the depth range to prevent view model from poking into walls.
+		glDepthRange(gldepthmin, (gldepthmax - gldepthmin) * 0.3f + gldepthmin);
+
+	glPushMatrix();
+	R_RotateForEntity(e);
+
+	// Select skin.
+	R_BindImage(R_GetSkin());
+
+	// Draw it.
+	glShadeModel(GL_SMOOTH);
+	R_TexEnv(GL_MODULATE);
+
+	if (e->frame < 0 || e->frame >= fmodel->header.num_frames)
+	{
+		e->frame = 0;
+		e->oldframe = 0;
+	}
+
+	if (e->oldframe < 0 || e->oldframe >= fmodel->header.num_frames)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_DrawFlexModel: no such oldframe %d\n");
+		e->frame = 0;
+		e->oldframe = 0;
+	}
+
+	if (!(int)r_lerpmodels->value)
+		e->backlerp = 0.0f;
+
+	framelerp = e->backlerp;
+
+	R_DrawFlexFrameLerp();
+
+	R_TexEnv(GL_REPLACE);
+	glShadeModel(GL_FLAT);
+	glPopMatrix();
+
+	if (e->flags & RF_TRANS_ANY)
+		glDisable(GL_BLEND);
+
+	if (e->flags & RF_DEPTHHACK)
+		glDepthRange(gldepthmin, gldepthmax);
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void R_LerpVert(const vec3_t new_point, const vec3_t old_point, vec3_t interpolated_point, const float move[3], const float frontv[3], const float backv[3])

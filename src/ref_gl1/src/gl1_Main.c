@@ -141,6 +141,11 @@ cvar_t* quake_amount;
 
 #pragma endregion
 
+void R_RotateForEntity(const entity_t* e)
+{
+	NOT_IMPLEMENTED
+}
+
 void R_DrawNullModel(void)
 {
 	NOT_IMPLEMENTED
