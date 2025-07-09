@@ -7,6 +7,7 @@
 #pragma once
 
 #include <glad-GL1.3/glad.h> // Must be included before SDL.
+#include "gl1_Debug.h"
 #include "ref.h"
 
 #define REF_VERSION			GAME_NAME" OpenGL 1.3 Refresher" // H2_1.07: "GL 2.1"; Q2: "GL 0.01".

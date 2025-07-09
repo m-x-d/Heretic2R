@@ -4,7 +4,6 @@
 // Copyright 1998 Raven Software
 //
 
-#include "gl1_Debug.h"
 #include "gl1_Draw.h"
 #include "gl1_DrawBook.h"
 #include "gl1_DrawCinematic.h"

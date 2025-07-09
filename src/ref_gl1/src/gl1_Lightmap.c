@@ -11,31 +11,9 @@
 #include "Vector.h"
 
 #define LIGHTMAP_BYTES			4
-
-#define BLOCK_WIDTH				128
-#define BLOCK_HEIGHT			128
-
-#define MAX_LIGHTMAPS			128
-#define MAX_TALLWALL_LIGHTMAPS	512 // H2
-
 #define GL_LIGHTMAP_FORMAT		GL_RGBA
 
-typedef struct
-{
-	int internal_format;
-	int current_lightmap_texture;
-
-	msurface_t* lightmap_surfaces[MAX_LIGHTMAPS];
-	msurface_t* tallwall_lightmap_surfaces[MAX_TALLWALL_LIGHTMAPS]; // H2
-	int tallwall_lightmaptexturenum; // H2
-
-	int allocated[BLOCK_WIDTH];
-
-	// The lightmap texture data needs to be kept in main memory so texsubimage can update properly
-	byte lightmap_buffer[BLOCK_WIDTH * BLOCK_HEIGHT * 4];
-} gllightmapstate_t;
-
-static gllightmapstate_t gl_lms;
+gllightmapstate_t gl_lms;
 
 #pragma region ========================== LIGHTMAP ALLOCATION ==========================
 
@@ -56,14 +34,14 @@ void LM_UploadBlock(const qboolean dynamic)
 	if (dynamic)
 	{
 		int height = 0;
-		for (int i = 0; i < BLOCK_WIDTH; i++)
+		for (int i = 0; i < LM_BLOCK_WIDTH; i++)
 			height = max(gl_lms.allocated[i], height);
 
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, BLOCK_WIDTH, height, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, gl_lms.lightmap_buffer);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, LM_BLOCK_WIDTH, height, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, gl_lms.lightmap_buffer);
 	}
 	else
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, gl_lms.internal_format, BLOCK_WIDTH, BLOCK_HEIGHT, 0, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, gl_lms.lightmap_buffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, gl_lms.internal_format, LM_BLOCK_WIDTH, LM_BLOCK_HEIGHT, 0, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, gl_lms.lightmap_buffer);
 		gl_lms.current_lightmap_texture++;
 
 		if (gl_lms.current_lightmap_texture == MAX_LIGHTMAPS)
@@ -75,9 +53,9 @@ void LM_UploadBlock(const qboolean dynamic)
 qboolean LM_AllocBlock(const int w, const int h, int* x, int* y)
 {
 	int j;
-	int best = BLOCK_HEIGHT;
+	int best = LM_BLOCK_HEIGHT;
 
-	for (int i = 0; i < BLOCK_WIDTH - w; i++)
+	for (int i = 0; i < LM_BLOCK_WIDTH - w; i++)
 	{
 		int best2 = 0;
 
@@ -99,7 +77,7 @@ qboolean LM_AllocBlock(const int w, const int h, int* x, int* y)
 		}
 	}
 
-	if (best + h > BLOCK_HEIGHT)
+	if (best + h > LM_BLOCK_HEIGHT)
 		return false;
 
 	for (int i = 0; i < w; i++)
@@ -157,13 +135,13 @@ void LM_BuildPolygonFromSurface(msurface_t* fa)
 		s -= (float)fa->texturemins[0];
 		s += (float)fa->light_s * 16;
 		s += 8;
-		s /= BLOCK_WIDTH * 16;
+		s /= LM_BLOCK_WIDTH * 16;
 
 		t = DotProduct(vec, fa->texinfo->vecs[1]) + fa->texinfo->vecs[1][3];
 		t -= (float)fa->texturemins[1];
 		t += (float)fa->light_t * 16;
 		t += 8;
-		t /= BLOCK_HEIGHT * 16;
+		t /= LM_BLOCK_HEIGHT * 16;
 
 		poly->verts[i][5] = s;
 		poly->verts[i][6] = t;
@@ -191,17 +169,17 @@ void LM_CreateSurfaceLightmap(msurface_t* surf)
 	surf->lightmaptexturenum = gl_lms.current_lightmap_texture;
 
 	byte* base = gl_lms.lightmap_buffer;
-	base += (surf->light_t * BLOCK_WIDTH + surf->light_s) * LIGHTMAP_BYTES;
+	base += (surf->light_t * LM_BLOCK_WIDTH + surf->light_s) * LIGHTMAP_BYTES;
 
 	R_SetCacheState(surf);
-	R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
+	R_BuildLightMap(surf, base, LM_BLOCK_WIDTH * LIGHTMAP_BYTES);
 }
 
 // Q2 counterpart
 void LM_BeginBuildingLightmaps(void) //mxd. Removed unused model_t* arg.
 {
-	static lightstyle_t	lightstyles[MAX_LIGHTSTYLES];
-	static uint dummy[BLOCK_WIDTH * BLOCK_HEIGHT]; //mxd. Made it static.
+	static lightstyle_t lightstyles[MAX_LIGHTSTYLES];
+	static uint dummy[LM_BLOCK_WIDTH * LM_BLOCK_HEIGHT]; //mxd. Made it static.
 
 	memset(gl_lms.allocated, 0, sizeof(gl_lms.allocated));
 
@@ -231,7 +209,7 @@ void LM_BeginBuildingLightmaps(void) //mxd. Removed unused model_t* arg.
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); //mxd. qglTexParameterf -> qglTexParameteri
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //mxd. qglTexParameterf -> qglTexParameteri
-	glTexImage2D(GL_TEXTURE_2D, 0, gl_lms.internal_format, BLOCK_WIDTH, BLOCK_HEIGHT, 0, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, dummy);
+	glTexImage2D(GL_TEXTURE_2D, 0, gl_lms.internal_format, LM_BLOCK_WIDTH, LM_BLOCK_HEIGHT, 0, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, dummy);
 }
 
 // Q2 counterpart
