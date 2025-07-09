@@ -9,6 +9,7 @@
 #include "gl1_Light.h"
 #include "Skeletons/r_Skeletons.h"
 #include "Skeletons/r_SkeletonLerp.h"
+#include "anorms.h"
 #include "anormtab.h"
 #include "Hunk.h"
 #include "Vector.h"
@@ -518,9 +519,171 @@ static image_t* R_GetSkin(const entity_t* ent) //mxd. Rewrote to use entity_t* a
 	return r_notexture;
 }
 
-static void R_DrawFlexFrameLerp(void)
+static image_t* R_GetSkinFromNode(const entity_t* ent, const int index) //mxd. Rewrote to use entity_t* arg instead of 'currententity'.
 {
 	NOT_IMPLEMENTED
+	return NULL;
+}
+
+static void R_InterpolateVertexNormals(const int num_xyz, const float lerp_inv, const float lerp, const fmtrivertx_t* verts, const fmtrivertx_t* old_verts, vec3_t* normals)
+{
+	NOT_IMPLEMENTED
+}
+
+static void R_DrawFlexFrameLerp(entity_t* e) //mxd. Original logic uses 'currententity' global var instead of 'e' arg.
+{
+	static vec3_t normals_array[MAX_FM_VERTS]; //mxd. Made static.
+
+	const qboolean draw_reflection = (e->flags & RF_REFLECTION); //mxd. Skipped gl_envmap_broken check.
+	const image_t* skin = R_GetSkin(e);
+	float alpha = 1.0f; //mxd. Set in Loki Linux version, but not in Windows version.
+
+	if (e->color.a != 255 || e->flags & RF_TRANS_ANY || skin->has_alpha)
+	{
+		if (e->flags & RF_TRANS_GHOST)
+			alpha = shadelight[0] * 0.5f;
+		else
+			alpha = (float)e->color.a / 255.0f;
+
+		R_HandleTransparency(e);
+	}
+
+	if (!(int)r_frameswap->value)
+		e->swapFrame = -1;
+
+	FrameLerp();
+
+	if (draw_reflection)
+	{
+		if (fmodel->frames != NULL)
+			R_InterpolateVertexNormals(fmdl_num_xyz, framelerp_inv, framelerp, sfl_cur_skel.verts, sfl_cur_skel.old_verts, normals_array);
+
+		glEnable(GL_TEXTURE_GEN_S);
+		glEnable(GL_TEXTURE_GEN_T);
+		glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+		glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+
+		R_BindImage(r_reflecttexture);
+	}
+
+	fmnodeinfo_t* nodeinfo = &e->fmnodeinfo[0];
+	for (int i = 0; i < fmodel->header.num_mesh_nodes; i++, nodeinfo++)
+	{
+		qboolean use_color = false;
+		qboolean use_skin = false;
+		qboolean use_reflect = false;
+
+		if (nodeinfo != NULL)
+		{
+			if (nodeinfo->flags & FMNI_NO_DRAW)
+				continue;
+
+			use_color = (nodeinfo->flags & FMNI_USE_COLOR);
+			if (use_color)
+			{
+				glEnable(GL_BLEND);
+				glColor4ub(nodeinfo->color.r, nodeinfo->color.g, nodeinfo->color.b, nodeinfo->color.a);
+			}
+
+			if (draw_reflection || !(nodeinfo->flags & FMNI_USE_REFLECT))
+			{
+				if (nodeinfo->flags & FMNI_USE_SKIN)
+				{
+					use_skin = true;
+					R_BindImage(R_GetSkinFromNode(e, i));
+				}
+			}
+			else
+			{
+				glEnable(GL_TEXTURE_GEN_S);
+				glEnable(GL_TEXTURE_GEN_T);
+				glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+				glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+
+				use_skin = true;
+				use_reflect = true;
+				R_BindImage(r_reflecttexture);
+			}
+		}
+
+		int* order = fmodel->glcmds + fmodel->mesh_nodes[i].start_glcmds;
+
+		while (true)
+		{
+			// Get the vertex count and primitive type.
+			int count = *order++;
+			if (count == 0)
+				break; // Done.
+
+			if (count < 0)
+			{
+				count = -count;
+				glBegin(GL_TRIANGLE_FAN);
+			}
+			else
+			{
+				glBegin(GL_TRIANGLE_STRIP);
+			}
+
+			do
+			{
+				const int index_xyz = order[2];
+
+				if (draw_reflection || use_reflect)
+				{
+					vec3_t* normal;
+					if (fmodel->frames == NULL)
+						normal = &bytedirs[fmodel->lightnormalindex[index_xyz]];
+					else if (draw_reflection)
+						normal = &normals_array[index_xyz];
+					else
+						normal = &bytedirs[sfl_cur_skel.verts[index_xyz].lightnormalindex];
+
+					glNormal3f((*normal)[0], (*normal)[1], (*normal)[2]);
+				}
+				else
+				{
+					// Texture coordinates come from the draw list.
+					glTexCoord2f(((float*)order)[0], ((float*)order)[1]);
+				}
+
+				order += 3;
+
+				if (!use_color && !(e->flags & RF_FULLBRIGHT))
+				{
+					float l;
+					if (fmodel->frames == NULL)
+						l = shadedots[fmodel->lightnormalindex[index_xyz]];
+					else
+						l = shadedots[sfl_cur_skel.verts[index_xyz].lightnormalindex];
+
+					glColor4f(l * shadelight[0], l * shadelight[1], l * shadelight[2], alpha);
+				}
+
+				glVertex3fv(s_lerped[index_xyz]);
+			} while (--count);
+
+			glEnd();
+		}
+
+		if (use_reflect)
+		{
+			glDisable(GL_TEXTURE_GEN_S);
+			glDisable(GL_TEXTURE_GEN_T);
+		}
+
+		if (use_skin)
+			R_BindImage(skin);
+	}
+
+	if (draw_reflection)
+	{
+		glDisable(GL_TEXTURE_GEN_S);
+		glDisable(GL_TEXTURE_GEN_T);
+		R_BindImage(skin);
+	}
+
+	R_CleanupTransparency(e);
 }
 
 //mxd. Somewhat similar to R_DrawAliasModel from Q2. Original code used 'currententity' global var instead of 'e' arg.
@@ -612,7 +775,7 @@ void R_DrawFlexModel(entity_t* e)
 
 	framelerp = e->backlerp;
 
-	R_DrawFlexFrameLerp();
+	R_DrawFlexFrameLerp(e);
 
 	R_TexEnv(GL_REPLACE);
 	glShadeModel(GL_FLAT);

@@ -151,6 +151,16 @@ void R_RotateForEntity(const entity_t* e)
 	glRotatef(-e->angles[2] * RAD_TO_ANGLE, 1.0f, 0.0f, 0.0f);
 }
 
+void R_HandleTransparency(const entity_t* e) // H2: HandleTrans().
+{
+	NOT_IMPLEMENTED
+}
+
+void R_CleanupTransparency(const entity_t* e) // H2: CleanupTrans().
+{
+	NOT_IMPLEMENTED
+}
+
 void R_DrawNullModel(void)
 {
 	NOT_IMPLEMENTED

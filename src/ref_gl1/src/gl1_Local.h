@@ -189,4 +189,6 @@ extern refimport_t ri;
 #pragma endregion
 
 extern void R_RotateForEntity(const entity_t* e);
+extern void R_HandleTransparency(const entity_t* e);
+extern void R_CleanupTransparency(const entity_t* e);
 extern void R_DrawNullModel(void);
