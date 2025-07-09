@@ -396,7 +396,109 @@ void Mod_RegisterFlexModel(model_t* mod)
 //mxd. Somewhat similar to R_CullAliasModel from Q2.
 static qboolean R_CullFlexModel(const fmdl_t* model, entity_t* e)
 {
-	NOT_IMPLEMENTED
+	vec3_t mins;
+	vec3_t maxs;
+
+	if (e->frame < 0 || e->frame >= model->header.num_frames)
+		e->frame = 0;
+
+	if (e->oldframe < 0 || e->oldframe >= model->header.num_frames)
+		e->oldframe = 0;
+
+	// Compute axially aligned mins and maxs.
+	if (model->frames == NULL)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			mins[i] = model->compdata[model->frame_to_group[e->frame]].bmin[i];
+			maxs[i] = model->compdata[model->frame_to_group[e->frame]].bmax[i];
+		}
+	}
+	else
+	{
+		fmaliasframe_t* pframe = (fmaliasframe_t*)((byte*)model->frames + e->frame * model->header.framesize);
+		fmaliasframe_t* poldframe = (fmaliasframe_t*)((byte*)model->frames + e->oldframe * model->header.framesize);
+
+		if (pframe == poldframe)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				mins[i] = pframe->translate[i];
+				maxs[i] = mins[i] + pframe->scale[i] * 255;
+			}
+		}
+		else
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				const float thismins = pframe->translate[i];
+				const float thismaxs = thismins + pframe->scale[i] * 255;
+
+				const float oldmins = poldframe->translate[i];
+				const float oldmaxs = oldmins + poldframe->scale[i] * 255;
+
+				mins[i] = min(thismins, oldmins);
+				maxs[i] = max(thismaxs, oldmaxs);
+			}
+		}
+	}
+
+	// Apply model scale.
+	if (e->cl_scale != 0.0f && e->cl_scale != 1.0f)
+	{
+		VectorScale(mins, e->cl_scale, mins);
+		VectorScale(maxs, e->cl_scale, maxs);
+	}
+
+	// Compute a full bounding box.
+	vec3_t bbox[8];
+	for (int i = 0; i < 8; i++)
+	{
+		bbox[i][0] = (i & 1 ? mins[0] : maxs[0]);
+		bbox[i][1] = (i & 2 ? mins[1] : maxs[1]);
+		bbox[i][2] = (i & 4 ? mins[2] : maxs[2]);
+	}
+
+	// Rotate the bounding box.
+	const vec3_t angles =
+	{
+		e->angles[0] * RAD_TO_ANGLE,
+		e->angles[1] * RAD_TO_ANGLE * -1.0f,
+		e->angles[2] * RAD_TO_ANGLE,
+	};
+
+	vec3_t vectors[3];
+	AngleVectors(angles, vectors[0], vectors[1], vectors[2]);
+
+	for (int i = 0; i < 8; i++)
+	{
+		vec3_t tmp;
+		VectorCopy(bbox[i], tmp);
+
+		bbox[i][0] = DotProduct(vectors[0], tmp);
+		bbox[i][1] = -DotProduct(vectors[1], tmp);
+		bbox[i][2] = DotProduct(vectors[2], tmp);
+
+		VectorAdd(e->origin, bbox[i], bbox[i]);
+	}
+
+	int aggregatemask = -1;
+
+	for (int p = 0; p < 8; p++)
+	{
+		int mask = 0;
+
+		for (int f = 0; f < 4; f++)
+		{
+			const float dp = DotProduct(frustum[f].normal, bbox[p]);
+			if (dp - frustum[f].dist < 0.0f)
+				mask |= 1 << f;
+		}
+
+		aggregatemask &= mask;
+	}
+
+	return aggregatemask != 0;
 }
 
 //TODO: rewrite to use entity_t* arg instead of 'currententity'
