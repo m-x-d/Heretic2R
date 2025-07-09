@@ -439,9 +439,39 @@ static void R_SetFrustum(void)
 	}
 }
 
+// Q2 counterpart
 static void R_PolyBlend(void)
 {
-	NOT_IMPLEMENTED
+	if ((int)gl_polyblend->value && v_blend[3] != 0.0f)
+	{
+		glDisable(GL_ALPHA_TEST);
+		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_TEXTURE_2D);
+
+		glLoadIdentity();
+
+		// FIXME: get rid of these.
+		glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);	// Put Z going up.
+		glRotatef(90.0f, 0.0f, 0.0f, 1.0f);		// Put Z going up.
+
+		glColor4fv(v_blend);
+
+		glBegin(GL_QUADS);
+
+		glVertex3f(10.0f, 100.0f, 100.0f);
+		glVertex3f(10.0f, -100.0f, 100.0f);
+		glVertex3f(10.0f, -100.0f, -100.0f);
+		glVertex3f(10.0f, 100.0f, -100.0f);
+
+		glEnd();
+
+		glDisable(GL_BLEND);
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_ALPHA_TEST);
+
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	}
 }
 
 // Q2 counterpart
