@@ -153,7 +153,46 @@ void R_RotateForEntity(const entity_t* e)
 
 void R_HandleTransparency(const entity_t* e) // H2: HandleTrans().
 {
-	NOT_IMPLEMENTED
+	if (e->flags & RF_TRANS_ADD)
+	{
+		if (e->flags & RF_ALPHA_TEXTURE)
+		{
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.0f);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			glColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
+		}
+		else
+		{
+			if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Skipped gl_fog_broken check.
+				glDisable(GL_FOG);
+
+			glDisable(GL_ALPHA_TEST);
+			glBlendFunc(GL_ONE, GL_ONE);
+
+			if (e->flags & RF_TRANS_ADD_ALPHA)
+			{
+				const float scaler = (float)e->color.a / 255.0f / 255.0f; //TODO: why is it divided twice?..
+				glColor3f((float)e->color.r * scaler, (float)e->color.g * scaler, (float)e->color.b * scaler); //mxd. qglColor4f -> qglColor3f
+			}
+			else
+			{
+				glColor3ub(e->color.r, e->color.g, e->color.b); //mxd. qglColor4ub -> qglColor3ub
+			}
+		}
+	}
+	else
+	{
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.05f);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		// H2_1.07: qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR) when RF_TRANS_GHOST flag is set.
+		if (!(e->flags & RF_TRANS_GHOST))
+			glColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
+	}
+
+	glEnable(GL_BLEND);
 }
 
 void R_CleanupTransparency(const entity_t* e) // H2: CleanupTrans().
