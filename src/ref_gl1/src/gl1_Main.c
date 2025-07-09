@@ -143,7 +143,12 @@ cvar_t* quake_amount;
 
 void R_RotateForEntity(const entity_t* e)
 {
-	NOT_IMPLEMENTED
+	glTranslatef(e->origin[0], e->origin[1], e->origin[2]);
+
+	// H2: new RAD_TO_ANGLE scaler.
+	glRotatef(e->angles[1] * RAD_TO_ANGLE, 0.0f, 0.0f, 1.0f);
+	glRotatef(-e->angles[0] * RAD_TO_ANGLE, 0.0f, 1.0f, 0.0f);
+	glRotatef(-e->angles[2] * RAD_TO_ANGLE, 1.0f, 0.0f, 0.0f);
 }
 
 void R_DrawNullModel(void)
