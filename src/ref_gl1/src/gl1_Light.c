@@ -5,9 +5,14 @@
 //
 
 #include "gl1_Light.h"
+#include "Vector.h"
 
 static int r_dlightframecount; //mxd. Made static.
 static float s_blocklights[34 * 34 * 3];
+
+static vec3_t pointcolor;
+static cplane_t* lightplane; // Used as shadow plane.
+static vec3_t lightspot;
 
 void R_RenderDlights(void)
 {
@@ -35,9 +40,42 @@ void R_PushDlights(void)
 	}
 }
 
-void R_LightPoint(const vec3_t p, vec3_t color)
+static int R_RecursiveLightPoint(const mnode_t* node, const vec3_t start, vec3_t end)
 {
 	NOT_IMPLEMENTED
+	return 0;
+}
+
+void R_LightPoint(const vec3_t p, vec3_t color)
+{
+	if (r_worldmodel->lightdata == NULL)
+	{
+		VectorSet(color, 1.0f, 1.0f, 1.0f);
+		return;
+	}
+
+	vec3_t end = { p[0], p[1], p[2] - 3072.0f }; // Q2: p[2] - 2048
+	const int r = R_RecursiveLightPoint(r_worldmodel->nodes, p, end);
+
+	if (r == -1)
+		VectorSet(color, 0.25f, 0.25f, 0.25f); // Q2: VectorCopy(vec3_origin, color)
+	else
+		VectorCopy(pointcolor, color);
+
+	// Add dynamic lights.
+	dlight_t* dl = &r_newrefdef.dlights[0];
+	for (int lnum = 0; lnum < r_newrefdef.num_dlights; lnum++, dl++)
+	{
+		vec3_t dist;
+		VectorSubtract(currententity->origin, dl->origin, dist);
+		const float add = (dl->intensity - VectorLength(dist)) / 256.0f;
+
+		if (add > 0.0f)
+			for (int i = 0; i < 3; i++)
+				color[i] += (float)dl->color.c_array[i] / 255.0f * add;
+	}
+
+	VectorScale(color, gl_modulate->value, color);
 }
 
 #pragma endregion
