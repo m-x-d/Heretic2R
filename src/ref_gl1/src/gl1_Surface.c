@@ -55,9 +55,167 @@ static image_t* R_TextureAnimation(const mtexinfo_t* tex)
 	return tex->image;
 }
 
-static void R_BlendLightmaps(void)
+// Q2 counterpart
+static void R_DrawGLPolyChain(glpoly_t* p, const float soffset, const float toffset)
 {
 	NOT_IMPLEMENTED
+}
+
+// This routine takes all the given lightmapped surfaces in the world and blends them into the framebuffer.
+static void R_BlendLightmaps(void)
+{
+	// Don't bother if we're set to fullbright.
+	if ((int)r_fullbright->value || r_worldmodel->lightdata == NULL)
+		return;
+
+	// Don't bother writing Z.
+	glDepthMask(GL_FALSE);
+
+	// Set the appropriate blending mode unless we're only looking at the lightmaps.
+	if (!(int)gl_lightmap->value)
+	{
+		glEnable(GL_BLEND);
+
+		if ((int)gl_saturatelighting->value)
+			glBlendFunc(GL_ONE, GL_ONE);
+		else
+			glBlendFunc(GL_ZERO, GL_SRC_COLOR); //mxd. Skipping gl_monolightmap logic
+	}
+
+	if (currentmodel == r_worldmodel)
+		c_visible_lightmaps = 0;
+
+	// H2: set fog values.
+	const qboolean render_fog = Q_ftol(r_fog->value);
+	const int fog_mode = Q_ftol(r_fog_mode->value);
+
+	if (render_fog) //mxd. Removed gl_fog_broken check.
+	{
+		if (fog_mode == 0)
+		{
+			glFogf(GL_FOG_START, r_fog_startdist->value * r_fog_lightmap_adjust->value);
+			glFogf(GL_FOG_END, r_farclipdist->value * r_fog_lightmap_adjust->value);
+		}
+		else
+		{
+			glFogf(GL_FOG_DENSITY, r_fog_lightmap_adjust->value * r_fog_density->value);
+		}
+	}
+
+	glDisable(GL_TEXTURE_2D);
+
+	// H2: draw tallwalls.
+	msurface_t* surf = gl_lms.tallwall_lightmap_surfaces[0];
+	for (int i = 0; i < gl_lms.tallwall_lightmaptexturenum; i++, surf++)
+	{
+		glColor4ub(surf->styles[0], surf->styles[1], surf->styles[2], surf->styles[3]);
+		glBegin(GL_POLYGON);
+
+		float* v = surf->polys->verts[0];
+		for (int j = 0; j < surf->polys->numverts; j++, v += VERTEXSIZE)
+			glVertex3fv(v);
+
+		glEnd();
+	}
+
+	glEnable(GL_TEXTURE_2D);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// Render static lightmaps first.
+	for (int i = 1; i < MAX_LIGHTMAPS; i++)
+	{
+		if (gl_lms.lightmap_surfaces[i] == NULL)
+			continue;
+
+		if (currentmodel == r_worldmodel)
+			c_visible_lightmaps++;
+
+		R_Bind(gl_state.lightmap_textures + i);
+
+		for (surf = gl_lms.lightmap_surfaces[i]; surf != NULL; surf = surf->lightmapchain)
+			if (surf->polys != NULL)
+				R_DrawGLPolyChain(surf->polys, 0.0f, 0.0f);
+	}
+
+	// Render dynamic lightmaps.
+	if ((int)gl_dynamic->value)
+	{
+		LM_InitBlock();
+		R_Bind(gl_state.lightmap_textures);
+
+		if (currentmodel == r_worldmodel)
+			c_visible_lightmaps++;
+
+		const msurface_t* newdrawsurf = gl_lms.lightmap_surfaces[0];
+
+		for (surf = gl_lms.lightmap_surfaces[0]; surf != NULL; surf = surf->lightmapchain)
+		{
+			const int smax = (surf->extents[0] >> 4) + 1;
+			const int tmax = (surf->extents[1] >> 4) + 1;
+
+			if (!LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t))
+			{
+				// Upload what we have so far.
+				LM_UploadBlock(true);
+
+				// Draw all surfaces that use this lightmap.
+				for (; newdrawsurf != surf; newdrawsurf = newdrawsurf->lightmapchain)
+				{
+					if (newdrawsurf->polys == NULL)
+						continue;
+
+					R_DrawGLPolyChain(newdrawsurf->polys,
+						(float)(newdrawsurf->light_s - newdrawsurf->dlight_s) * (1.0f / 128.0f),
+						(float)(newdrawsurf->light_t - newdrawsurf->dlight_t) * (1.0f / 128.0f));
+				}
+
+				// Clear the block.
+				LM_InitBlock();
+
+				// Try uploading the block now.
+				if (!LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t))
+					ri.Sys_Error(ERR_FATAL, "Consecutive calls to LM_AllocBlock(%d,%d) failed (dynamic)\n", smax, tmax);
+			}
+
+			byte* base = gl_lms.lightmap_buffer;
+			base += (surf->dlight_t * LM_BLOCK_WIDTH + surf->dlight_s) * LIGHTMAP_BYTES;
+
+			R_BuildLightMap(surf, base, LM_BLOCK_WIDTH * LIGHTMAP_BYTES);
+		}
+
+		// Draw remainder of dynamic lightmaps that haven't been uploaded yet.
+		if (newdrawsurf != NULL)
+			LM_UploadBlock(true);
+
+		for (; newdrawsurf != NULL; newdrawsurf = newdrawsurf->lightmapchain)
+		{
+			if (newdrawsurf->polys == NULL)
+				continue;
+
+			R_DrawGLPolyChain(newdrawsurf->polys,
+				(float)(newdrawsurf->light_s - newdrawsurf->dlight_s) * (1.0f / 128.0f),
+				(float)(newdrawsurf->light_t - newdrawsurf->dlight_t) * (1.0f / 128.0f));
+		}
+	}
+
+	// H2: new fog logic.
+	if (render_fog) //mxd. Removed gl_fog_broken check.
+	{
+		if (fog_mode == 0)
+		{
+			glFogf(GL_FOG_START, r_fog_startdist->value);
+			glFogf(GL_FOG_END, r_farclipdist->value);
+		}
+		else
+		{
+			glFogf(GL_FOG_DENSITY, r_fog_density->value);
+		}
+	}
+
+	// Restore state.
+	glDisable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR.
+	glDepthMask(GL_TRUE);
 }
 
 static void R_DrawTriangleOutlines(void)

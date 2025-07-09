@@ -8,6 +8,8 @@
 
 #include "gl1_Local.h"
 
+#define LIGHTMAP_BYTES			4
+
 #define LM_BLOCK_WIDTH			128
 #define LM_BLOCK_HEIGHT			128
 

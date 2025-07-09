@@ -10,8 +10,6 @@
 #include "Hunk.h"
 #include "Vector.h"
 
-#define LIGHTMAP_BYTES	4
-
 gllightmapstate_t gl_lms;
 
 #pragma region ========================== LIGHTMAP ALLOCATION ==========================
