@@ -501,11 +501,21 @@ static qboolean R_CullFlexModel(const fmdl_t* model, entity_t* e)
 	return aggregatemask != 0;
 }
 
-//TODO: rewrite to use entity_t* arg instead of 'currententity'
-static image_t* R_GetSkin(void)
+static image_t* R_GetSkin(const entity_t* ent) //mxd. Rewrote to use entity_t* arg instead of 'currententity'.
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (ent->skin != NULL)
+		return ent->skin;
+
+	const int skinnum = (ent->skinnum < MAX_FRAMES ? ent->skinnum : 0);
+	const model_t* mdl = *ent->model;
+
+	if (mdl->skins[skinnum] != NULL)
+		return mdl->skins[skinnum];
+
+	if (mdl->skins[0] != NULL)
+		return mdl->skins[0];
+
+	return r_notexture;
 }
 
 static void R_DrawFlexFrameLerp(void)
@@ -578,7 +588,7 @@ void R_DrawFlexModel(entity_t* e)
 	R_RotateForEntity(e);
 
 	// Select skin.
-	R_BindImage(R_GetSkin());
+	R_BindImage(R_GetSkin(e));
 
 	// Draw it.
 	glShadeModel(GL_SMOOTH);
