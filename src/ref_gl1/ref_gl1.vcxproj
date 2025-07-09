@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\include\glad-GL1.3\glad.c" />
+    <ClCompile Include="..\game\q_shared.c" />
     <ClCompile Include="..\qcommon\anorms.c" />
     <ClCompile Include="..\qcommon\Reference.c" />
     <ClCompile Include="..\qcommon\Skeletons.c" />
@@ -42,6 +43,7 @@
     <ClInclude Include="..\..\include\glad-GL1.3\khrplatform.h" />
     <ClInclude Include="..\client\ref.h" />
     <ClInclude Include="..\client\vid.h" />
+    <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\qcommon\anorms.h" />
     <ClInclude Include="..\qcommon\Reference.h" />
     <ClInclude Include="..\qcommon\Skeletons.h" />

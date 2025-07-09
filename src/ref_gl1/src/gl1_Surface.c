@@ -5,7 +5,6 @@
 //
 
 #include "gl1_Surface.h"
-
 #include "gl1_Image.h"
 #include "gl1_Lightmap.h"
 #include "gl1_Sky.h"
@@ -19,6 +18,8 @@ static int num_sorted_multitextures; // H2
 
 static vec3_t modelorg; // Relative to viewpoint.
 
+static msurface_t* r_alpha_surfaces;
+
 #pragma region ========================== ALPHA SURFACES RENDERING ==========================
 
 void R_SortAndDrawAlphaSurfaces(void)
@@ -29,6 +30,12 @@ void R_SortAndDrawAlphaSurfaces(void)
 #pragma endregion
 
 #pragma region ========================== BRUSH MODELS RENDERING ==========================
+
+static image_t* R_TextureAnimation(const mtexinfo_t* tex)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
 
 static void R_BlendLightmaps(void)
 {
@@ -45,13 +52,110 @@ static void DrawTextureChains(void)
 	NOT_IMPLEMENTED
 }
 
+static qboolean R_CullBox(const vec3_t mins, const vec3_t maxs)
+{
+	if (!(int)r_nocull->value)
+	{
+		for (int i = 0; i < 4; i++)
+			if (BoxOnPlaneSide(mins, maxs, &frustum[i]) == 2) // H2: BoxOnPlaneSide call instead of BOX_ON_PLANE_SIDE macro.
+				return true;
+	}
+
+	return false;
+}
+
 #pragma endregion
 
 #pragma region ========================== WORLD MODEL RENDERING ==========================
 
 static void R_RecursiveWorldNode(mnode_t* node)
 {
-	NOT_IMPLEMENTED
+	if (node->contents == CONTENTS_SOLID || node->visframe != r_visframecount || R_CullBox(node->minmaxs, node->minmaxs + 3))
+		return;
+
+	// If a leaf node, draw stuff.
+	if (node->contents != -1)
+	{
+		const mleaf_t* pleaf = (mleaf_t*)node;
+
+		// Check for door connected areas.
+		if (r_newrefdef.areabits != NULL && !(r_newrefdef.areabits[pleaf->area >> 3] & (1 << (pleaf->area & 7))))
+			return; // Not visible.
+
+		msurface_t** mark = pleaf->firstmarksurface;
+		for (int i = pleaf->nummarksurfaces; i > 0; i--)
+		{
+			(*mark)->visframe = r_framecount;
+			mark++;
+		}
+
+		return;
+	}
+
+	// Node is just a decision point, so go down the appropriate sides.
+
+	// Find which side of the node we are on.
+	const cplane_t* plane = node->plane;
+	float dot;
+
+	switch (plane->type)
+	{
+		case PLANE_X:
+		case PLANE_Y:
+		case PLANE_Z:
+			dot = modelorg[plane->type] - plane->dist;
+			break;
+
+		default:
+			dot = DotProduct(modelorg, plane->normal) - plane->dist;
+			break;
+	}
+
+	const int side = ((dot >= 0.0f) ? 0 : 1);
+	const int sidebit = ((dot >= 0.0f) ? 0 : SURF_PLANEBACK);
+
+	// Recurse down the children, front side first.
+	R_RecursiveWorldNode(node->children[side]);
+
+	// Draw stuff.
+	msurface_t* surf = &r_worldmodel->surfaces[node->firstsurface];
+	for (int c = node->numsurfaces; c > 0; c--, surf++)
+	{
+		if (surf->visframe != r_framecount || (surf->flags & SURF_PLANEBACK) != sidebit)
+			continue; // Wrong frame or side.
+
+		if (surf->texinfo->flags & SURF_SKY)
+		{
+			// Just adds to visible sky bounds.
+			R_AddSkySurface(surf);
+		}
+		else if (surf->texinfo->flags & (SURF_TRANS33 | SURF_TRANS66))
+		{
+			// Add to the translucent texture chain.
+			surf->texturechain = r_alpha_surfaces;
+			r_alpha_surfaces = surf;
+		}
+		else if (!(surf->flags & SURF_DRAWTURB) && !(surf->flags & SURF_TALL_WALL) && !(int)r_fullbright->value && !(int)gl_drawflat->value) // H2: extra SURF_TALL_WALL, r_fullbright, gl_drawflat checks.
+		{
+			// The polygon is visible, so add it to the multi-texture sorted chain.
+			image_t* image = R_TextureAnimation(surf->texinfo);
+			surf->texturechain = image->multitexturechain;
+			image->multitexturechain = surf;
+
+			num_sorted_multitextures++;
+		}
+		else //mxd. Skipping qglMTexCoord2fSGIS logic...
+		{
+			// The polygon is visible, so add it to the texture sorted chain.
+			// FIXME: this is a hack for animation.
+			image_t* image = R_TextureAnimation(surf->texinfo);
+			surf->texturechain = image->texturechain;
+			image->texturechain = surf;
+		}
+	}
+
+	// Recurse down the back side.
+	R_RecursiveWorldNode(node->children[!side]);
 }
 
 void R_DrawWorld(void)

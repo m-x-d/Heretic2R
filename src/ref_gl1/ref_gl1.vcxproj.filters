@@ -16,6 +16,9 @@
     <Filter Include="src\Skeletons">
       <UniqueIdentifier>{6b434ae0-cd08-4784-beda-acd7474259d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="game">
+      <UniqueIdentifier>{97d4ff17-f354-44fd-ad17-8c9cf53f908c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl1_Draw.c">
@@ -92,6 +95,9 @@
     </ClCompile>
     <ClCompile Include="src\gl1_Surface.c">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\q_shared.c">
+      <Filter>game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="src\gl1_Surface.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\q_shared.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

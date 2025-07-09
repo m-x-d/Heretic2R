@@ -124,7 +124,6 @@ cvar_t* gl_bookalpha;
 cvar_t* gl_drawmode;
 cvar_t* gl_drawbuffer;
 cvar_t* gl_swapinterval;
-cvar_t* gl_sortmulti;
 cvar_t* gl_saturatelighting;
 
 cvar_t* vid_fullscreen;
@@ -436,7 +435,6 @@ static void R_Register(void)
 	gl_drawmode = ri.Cvar_Get("gl_drawmode", "0", 0);
 	gl_drawbuffer = ri.Cvar_Get("gl_drawbuffer", "GL_BACK", 0);
 	gl_swapinterval = ri.Cvar_Get("gl_swapinterval", "1", CVAR_ARCHIVE);
-	gl_sortmulti = ri.Cvar_Get("gl_sortmulti", "0", CVAR_ARCHIVE); // H2
 	gl_saturatelighting = ri.Cvar_Get("gl_saturatelighting", "0", 0);
 
 	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
