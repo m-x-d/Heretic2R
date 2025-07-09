@@ -17,9 +17,16 @@ static float skymaxs[2][6];
 static float sky_min;
 static float sky_max;
 
+// Q2 counterpart
 void R_ClearSkyBox(void)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < 6; i++)
+	{
+		skymins[0][i] = 9999.0f;
+		skymins[1][i] = 9999.0f;
+		skymaxs[0][i] = -9999.0f;
+		skymaxs[1][i] = -9999.0f;
+	}
 }
 
 void R_DrawSkyBox(void)
