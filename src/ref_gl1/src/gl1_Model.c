@@ -45,9 +45,45 @@ mleaf_t* Mod_PointInLeaf(vec3_t p, const model_t* model)
 	return (mleaf_t*)node;
 }
 
+static byte* Mod_DecompressVis(const byte* in, const model_t* model)
+{
+	static byte decompressed[MAX_MAP_LEAFS / 8];
+
+	const int row = (model->vis->numclusters + 7) >> 3;
+	byte* out = decompressed;
+
+	if (in == NULL)
+	{
+		// No vis info, so make all visible.
+		memset(decompressed, 0xff, row); // H2: memset instead of manual assign.
+		return decompressed;
+	}
+
+	do
+	{
+		if (*in)
+		{
+			*out++ = *in++;
+			continue;
+		}
+
+		const uint c = in[1];
+		in += 2;
+
+		memset(out, 0, c); // H2: memset instead of manual assign.
+		out += c;
+	} while (out - decompressed < row);
+
+	return decompressed;
+}
+
+// Q2 counterpart
 byte* Mod_ClusterPVS(const int cluster, const model_t* model)
 {
-	NOT_IMPLEMENTED
+	if (cluster > -1 && model->vis != NULL)
+		return Mod_DecompressVis((byte*)model->vis + model->vis->bitofs[cluster][DVIS_PVS], model);
+
+	return mod_novis;
 }
 
 void Mod_Modellist_f(void)
