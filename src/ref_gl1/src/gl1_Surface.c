@@ -8,8 +8,20 @@
 #include "gl1_Image.h"
 #include "gl1_Light.h"
 #include "gl1_Lightmap.h"
+#include "gl1_Misc.h"
 #include "gl1_Sky.h"
 #include "Vector.h"
+
+//mxd. Reconstructed data type. Original name unknown.
+typedef struct
+{
+	union
+	{
+		entity_t* entity;
+		msurface_t* surface;
+	};
+	float depth;
+} AlphaSurfaceSortInfo_t;
 
 int c_visible_lightmaps;
 int c_visible_textures;
@@ -23,9 +35,118 @@ static msurface_t* r_alpha_surfaces;
 
 #pragma region ========================== ALPHA SURFACES RENDERING ==========================
 
-void R_SortAndDrawAlphaSurfaces(void)
+static int AlphaSurfComp(const AlphaSurfaceSortInfo_t* info1, const AlphaSurfaceSortInfo_t* info2) // H2
+{
+	return (int)((info2->depth - info1->depth) * 1000.0f);
+}
+
+//TODO: logic identical to for loop logic in R_DrawEntitiesOnList(). Move to gl_rmain as R_DrawEntity and replace said logic?
+static void R_DrawAlphaEntity(entity_t* ent) // H2
 {
 	NOT_IMPLEMENTED
+}
+
+static void R_DrawAlphaSurface(const msurface_t* surf) // H2
+{
+	NOT_IMPLEMENTED
+}
+
+void R_SortAndDrawAlphaSurfaces(void)
+{
+#define MAX_ALPHA_SURFACES 512 //TODO: is max number of alpha surfaces actually defined somewhere?
+
+	AlphaSurfaceSortInfo_t sorted_ents[MAX_ALPHA_ENTITIES + 1]; //mxd. Extra slot for terminator (depth -100000) entry.
+	AlphaSurfaceSortInfo_t sorted_surfs[MAX_ALPHA_SURFACES + 1]; //mxd. Extra slot for terminator (depth -100000) entry.
+
+	// Add alpha entities to array...
+	AlphaSurfaceSortInfo_t* info = &sorted_ents[0];
+	for (int i = 0; i < r_newrefdef.num_alpha_entities; i++, info++)
+	{
+		entity_t* ent = r_newrefdef.alpha_entities[i];
+
+		info->entity = ent;
+		info->depth = ent->depth;
+	}
+
+	VectorScale(r_origin, -1.0f, modelorg);
+
+	// Initialize last entity entry...
+	info = &sorted_ents[r_newrefdef.num_alpha_entities];
+	info->entity = NULL;
+	info->depth = -100000.0f;
+
+	currentmodel = r_worldmodel;
+
+	// Add alpha surfaces to array.
+	int num_surfaces;
+	msurface_t* surf = r_alpha_surfaces;
+	info = &sorted_surfs[0];
+	for (num_surfaces = 0; surf != NULL; num_surfaces++, surf = surf->texturechain, info++)
+	{
+		info->surface = surf;
+		info->depth = -100000.0f;
+
+		for (int i = 0; i < surf->numedges; i++)
+		{
+			const int lindex = r_worldmodel->surfedges[surf->firstedge + i];
+			float* vec;
+
+			if (lindex > 0)
+			{
+				const medge_t* edge = &r_worldmodel->edges[lindex];
+				vec = r_worldmodel->vertexes[edge->v[0]].position;
+			}
+			else
+			{
+				const medge_t* edge = &r_worldmodel->edges[-lindex];
+				vec = r_worldmodel->vertexes[edge->v[1]].position;
+			}
+
+			vec3_t diff;
+			VectorSubtract(vec, r_origin, diff);
+
+			vec3_t screen_pos;
+			TransformVector(diff, screen_pos);
+
+			info->depth = max(info->depth, screen_pos[2]);
+		}
+
+		if (num_surfaces >= MAX_ALPHA_SURFACES)
+		{
+			ri.Con_Printf(PRINT_DEVELOPER, "Warning: attempting to draw too many alpha surfaces\n"); //mxd. Com_DPrintf() -> ri.Con_Printf().
+			break;
+		}
+	}
+
+	// Initialize last surface entry...
+	info = &sorted_surfs[num_surfaces];
+	info->surface = NULL;
+	info->depth = -100000.0f;
+
+	// Sort surfaces...
+	qsort(sorted_surfs, num_surfaces, sizeof(AlphaSurfaceSortInfo_t), (int (*)(const void*, const void*))AlphaSurfComp);
+
+	const int num_elements = r_newrefdef.num_alpha_entities + num_surfaces;
+	const AlphaSurfaceSortInfo_t* sorted_ent = &sorted_ents[0];
+	const AlphaSurfaceSortInfo_t* sorted_surf = &sorted_surfs[0];
+
+	// Draw them all.
+	for (int i = 0; i < num_elements; i++)
+	{
+		if (sorted_surf->depth > sorted_ent->depth)
+		{
+			currentmodel = r_worldmodel;
+			R_DrawAlphaSurface(sorted_surf->surface);
+			sorted_surf++;
+		}
+		else
+		{
+			R_DrawAlphaEntity(sorted_ent->entity);
+			sorted_ent++;
+		}
+	}
+
+	r_alpha_surfaces = NULL;
 }
 
 #pragma endregion

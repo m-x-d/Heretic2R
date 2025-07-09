@@ -7,6 +7,7 @@
 #include "gl1_Misc.h"
 #include "gl1_Image.h"
 #include "gl1_Local.h"
+#include "Vector.h"
 
 void R_ScreenShot_f(void) // Q2: GL_ScreenShot_f()
 {
@@ -47,4 +48,12 @@ void R_SetDefaultState(void) // Q2: GL_SetDefaultState()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR.
 
 	R_TexEnv(GL_REPLACE);
+}
+
+// Transforms vector to screen space?
+void TransformVector(const vec3_t v, vec3_t out)
+{
+	out[0] = DotProduct(v, vright);
+	out[1] = DotProduct(v, vup);
+	out[2] = DotProduct(v, vpn);
 }
