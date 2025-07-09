@@ -43,6 +43,7 @@
     <ClInclude Include="..\..\include\glad-GL1.3\khrplatform.h" />
     <ClInclude Include="..\client\ref.h" />
     <ClInclude Include="..\client\vid.h" />
+    <ClInclude Include="..\game\game.h" />
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\qcommon\anorms.h" />
     <ClInclude Include="..\qcommon\Reference.h" />

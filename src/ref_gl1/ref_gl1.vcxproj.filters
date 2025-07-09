@@ -194,5 +194,8 @@
     <ClInclude Include="..\game\q_shared.h">
       <Filter>game</Filter>
     </ClInclude>
+    <ClInclude Include="..\game\game.h">
+      <Filter>game</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
