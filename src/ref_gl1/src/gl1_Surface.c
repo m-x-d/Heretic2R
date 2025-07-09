@@ -5,11 +5,13 @@
 //
 
 #include "gl1_Surface.h"
+#include "gl1_FlexModel.h"
 #include "gl1_Image.h"
 #include "gl1_Light.h"
 #include "gl1_Lightmap.h"
 #include "gl1_Misc.h"
 #include "gl1_Sky.h"
+#include "gl1_Sprite.h"
 #include "Vector.h"
 
 //mxd. Reconstructed data type. Original name unknown.
@@ -43,7 +45,49 @@ static int AlphaSurfComp(const AlphaSurfaceSortInfo_t* info1, const AlphaSurface
 //TODO: logic identical to for loop logic in R_DrawEntitiesOnList(). Move to gl_rmain as R_DrawEntity and replace said logic?
 static void R_DrawAlphaEntity(entity_t* ent) // H2
 {
-	NOT_IMPLEMENTED
+	currententity = ent;
+
+	if (!(int)r_drawentities->value)
+		return;
+
+	if (ent->model == NULL)
+	{
+		ri.Con_Printf(PRINT_DEVELOPER, "Attempt to draw NULL alpha model\n"); //mxd. Com_DPrintf() -> ri.Con_Printf().
+		R_DrawNullModel();
+
+		return;
+	}
+
+	if (*ent->model == NULL)
+	{
+		R_DrawNullModel();
+		return;
+	}
+
+	currentmodel = *ent->model;
+
+	switch (currentmodel->type)
+	{
+		case mod_bad:
+			ri.Con_Printf(PRINT_ALL, "WARNING: currentmodel->type == 0; reload the map\n"); //mxd. Com_Printf() -> ri.Con_Printf().
+			break;
+
+		case mod_brush:
+			R_DrawBrushModel(ent);
+			break;
+
+		case mod_sprite:
+			R_DrawSpriteModel(ent);
+			break;
+
+		case mod_fmdl:
+			R_DrawFlexModel(ent);
+			break;
+
+		default:
+			ri.Sys_Error(ERR_DROP, "Bad modeltype"); //mxd. Sys_Error() -> ri.Sys_Error().
+			break;
+	}
 }
 
 static void R_DrawAlphaSurface(const msurface_t* surf) // H2
