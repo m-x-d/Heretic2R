@@ -167,12 +167,16 @@ void R_BindImage(const image_t* image) // Q2: GL_BindImage() //TODO: replace usa
 // Q2 counterpart
 void R_MBind(const GLenum target, const int texnum)
 {
-	NOT_IMPLEMENTED
+	R_SelectTexture(target);
+	if (gl_state.currenttextures[target == GL_TEXTURE1] != texnum)
+		R_Bind(texnum);
 }
 
 void R_MBindImage(const GLenum target, const image_t* image)
 {
-	NOT_IMPLEMENTED
+	R_SelectTexture(target);
+	if (gl_state.currenttextures[target == GL_TEXTURE1] != image->texnum)
+		R_BindImage(image);
 }
 
 void R_TextureMode(const char* string) // Q2: GL_TextureMode()
