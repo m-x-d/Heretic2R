@@ -164,6 +164,17 @@ void R_BindImage(const image_t* image) // Q2: GL_BindImage() //TODO: replace usa
 	}
 }
 
+// Q2 counterpart
+void R_MBind(const GLenum target, const int texnum)
+{
+	NOT_IMPLEMENTED
+}
+
+void R_MBindImage(const GLenum target, const image_t* image)
+{
+	NOT_IMPLEMENTED
+}
+
 void R_TextureMode(const char* string) // Q2: GL_TextureMode()
 {
 	int cur_mode;

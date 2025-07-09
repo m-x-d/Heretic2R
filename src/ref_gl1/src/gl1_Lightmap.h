@@ -14,6 +14,8 @@
 #define MAX_LIGHTMAPS			128
 #define MAX_TALLWALL_LIGHTMAPS	512 // H2
 
+#define GL_LIGHTMAP_FORMAT		GL_RGBA
+
 typedef struct
 {
 	int internal_format;

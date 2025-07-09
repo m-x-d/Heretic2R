@@ -10,8 +10,7 @@
 #include "Hunk.h"
 #include "Vector.h"
 
-#define LIGHTMAP_BYTES			4
-#define GL_LIGHTMAP_FORMAT		GL_RGBA
+#define LIGHTMAP_BYTES	4
 
 gllightmapstate_t gl_lms;
 

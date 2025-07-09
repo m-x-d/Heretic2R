@@ -6,6 +6,7 @@
 
 #include "gl1_Surface.h"
 #include "gl1_Image.h"
+#include "gl1_Light.h"
 #include "gl1_Lightmap.h"
 #include "gl1_Sky.h"
 #include "Vector.h"
@@ -77,7 +78,66 @@ static void R_RenderFlatShadedBrushPoly(msurface_t* fa) // H2
 //mxd. Similar to Q2's GL_RenderLightmappedPoly (except for missing SURF_FLOWING logic). Original H2 .dll also includes GL_RenderLightmappedPoly_SGIS variant.
 static void R_RenderLightmappedPoly(msurface_t* surf)
 {
-	NOT_IMPLEMENTED
+	static uint lightmap_pixels[LM_BLOCK_WIDTH * LM_BLOCK_HEIGHT]; //mxd. Made static.
+
+	int map;
+	int lmtex = surf->lightmaptexturenum;
+	qboolean lightmap_updated = false;
+
+	for (map = 0; map < MAXLIGHTMAPS && surf->styles[map] != 255; map++)
+	{
+		if (r_newrefdef.lightstyles[surf->styles[map]].white != surf->cached_light[map])
+		{
+			lightmap_updated = true; //mxd. Avoid unnecessary gotos.
+			break;
+		}
+	}
+
+	// Dynamic this frame or dynamic previously.
+	qboolean is_dynamic = false;
+	if (lightmap_updated || surf->dlightframe == r_framecount)
+		is_dynamic = ((int)gl_dynamic->value && !(surf->texinfo->flags & SURF_FULLBRIGHT)); //mxd. SURF_FULLBRIGHT define.
+
+	if (is_dynamic)
+	{
+		const int smax = (surf->extents[0] >> 4) + 1;
+		const int tmax = (surf->extents[1] >> 4) + 1;
+
+		R_BuildLightMap(surf, (byte*)lightmap_pixels, smax * 4);
+
+		if ((surf->styles[map] >= 32 || surf->styles[map] == 0) && surf->dlightframe != r_framecount)
+		{
+			R_SetCacheState(surf);
+			R_MBind(GL_TEXTURE1, surf->lightmaptexturenum + gl_state.lightmap_textures);
+			lmtex = surf->lightmaptexturenum;
+		}
+		else
+		{
+			R_MBind(GL_TEXTURE1, gl_state.lightmap_textures);
+			lmtex = 0;
+		}
+
+		glTexSubImage2D(GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, lightmap_pixels);
+	}
+
+	c_brush_polys++;
+
+	R_MBindImage(GL_TEXTURE0, R_TextureAnimation(surf->texinfo)); // H2: GL_MBind -> GL_MBindImage
+	R_MBind(GL_TEXTURE1, gl_state.lightmap_textures + lmtex);
+
+	// Missing: SURF_FLOWING logic.
+	for (glpoly_t* p = surf->polys; p != NULL; p = p->chain)
+	{
+		float* v = p->verts[0];
+		glBegin(GL_POLYGON);
+		for (int i = 0; i < surf->polys->numverts; i++, v += VERTEXSIZE)
+		{
+			glMultiTexCoord2f(GL_TEXTURE0, v[3], v[4]);
+			glMultiTexCoord2f(GL_TEXTURE1, v[5], v[6]);
+			glVertex3fv(v);
+		}
+		glEnd();
+	}
 }
 
 static void R_DrawTextureChains(void) // Q2: DrawTextureChains().
