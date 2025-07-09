@@ -7,7 +7,7 @@
 #include "q_shared.h"
 
 // Returns 1, 2, or 1 + 2.
-int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, const cplane_t* plane)
+int BoxOnPlaneSide(const vec3_t emins, const vec3_t emaxs, const cplane_t* plane)
 {
 	// Fast axial cases.
 	if (plane->type < 3)

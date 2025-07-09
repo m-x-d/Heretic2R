@@ -860,7 +860,7 @@ typedef struct
 #pragma endregion
 
 // The only q_shared.c function...
-extern int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, const cplane_t* plane);
+extern int BoxOnPlaneSide(const vec3_t emins, const vec3_t emaxs, const cplane_t* plane);
 
 #pragma region ========================== Inlines ==========================
 //TODO: mxd. Remove
