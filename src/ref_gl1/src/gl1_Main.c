@@ -158,7 +158,20 @@ void R_HandleTransparency(const entity_t* e) // H2: HandleTrans().
 
 void R_CleanupTransparency(const entity_t* e) // H2: CleanupTrans().
 {
-	NOT_IMPLEMENTED
+	glDisable(GL_BLEND);
+
+	if (e->flags & (RF_TRANS_GHOST | RF_TRANS_ADD))
+	{
+		if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Removed gl_fog_broken cvar check.
+			glEnable(GL_FOG);
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR.
+	}
+	else
+	{
+		glDisable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.666f);
+	}
 }
 
 void R_DrawNullModel(void)
