@@ -12,10 +12,62 @@ static float s_blocklights[34 * 34 * 3];
 
 static vec3_t pointcolor;
 
+#pragma region ========================== DYNAMIC LIGHTS RENDERING ==========================
+
+// Q2 counterpart (except for dlight color handling).
+static void R_RenderDlight(const dlight_t* light)
+{
+	vec3_t v;
+
+	const float rad = light->intensity * 0.35f;
+	VectorSubtract(light->origin, r_origin, v);
+
+	glBegin(GL_TRIANGLE_FAN);
+
+	glColor3f((float)light->color.r / 255.0f * 0.2f, (float)light->color.g / 255.0f * 0.2f, (float)light->color.b / 255.0f * 0.2f);
+	for (int i = 0; i < 3; i++)
+		v[i] = light->origin[i] - vpn[i] * rad;
+	glVertex3fv(v);
+
+	glColor3f(0.0f, 0.0f, 0.0f);
+	for (int i = 16; i >= 0; i--)
+	{
+		const float a = (float)i / 16.0f * ANGLE_360;
+
+		for (int j = 0; j < 3; j++)
+			v[j] = light->origin[j] + vright[j] * cosf(a) * rad + vup[j] * sinf(a) * rad;
+
+		glVertex3fv(v);
+	}
+
+	glEnd();
+}
+
 void R_RenderDlights(void)
 {
-	NOT_IMPLEMENTED
+	if (!(int)gl_flashblend->value) // H2_1.07: the check is inverted.
+		return;
+
+	r_dlightframecount = r_framecount + 1; // Because the count hasn't advanced yet for this frame.
+
+	glDepthMask(GL_FALSE);
+	glDisable(GL_TEXTURE_2D);
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+
+	dlight_t* l = &r_newrefdef.dlights[0];
+	for (int i = 0; i < r_newrefdef.num_dlights; i++, l++)
+		R_RenderDlight(l);
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glDisable(GL_BLEND);
+	glEnable(GL_TEXTURE_2D);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR
+	glDepthMask(GL_TRUE);
 }
+
+#pragma endregion
 
 #pragma region ========================== DYNAMIC LIGHTS MANAGEMENT ==========================
 
