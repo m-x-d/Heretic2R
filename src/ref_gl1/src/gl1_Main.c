@@ -981,14 +981,35 @@ static void R_RenderView(const refdef_t* fd)
 		R_DisplayHashTable();
 }
 
+// Q2 counterpart
 static void R_SetGL2D(void)
 {
-	NOT_IMPLEMENTED
+	// Set 2D virtual screen size.
+	glViewport(0, 0, viddef.width, viddef.height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0, (double)viddef.width, (double)viddef.height, 0.0, -99999.0, 99999.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
+	glEnable(GL_ALPHA_TEST);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 static void R_SetLightLevel(void)
 {
-	NOT_IMPLEMENTED
+	if (!(r_newrefdef.rdflags & RDF_NOWORLDMODEL))
+	{
+		vec3_t shadelight;
+
+		// Save off light value for server to look at (BIG HACK!).
+		R_LightPoint(r_newrefdef.clientmodelorg, shadelight); // H2: vieworg -> clientmodelorg
+
+		// Pick the greatest component, which should be the same as the mono value returned by software.
+		r_lightlevel->value = max(shadelight[0], max(shadelight[1], shadelight[2])) * 150.0f;
+	}
 }
 
 static void R_ScreenFlash(const paletteRGBA_t color)
