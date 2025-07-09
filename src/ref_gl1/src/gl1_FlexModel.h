@@ -155,4 +155,5 @@ extern void Mod_LoadFlexModel(model_t* mod, void* buffer, int length);
 extern void Mod_RegisterFlexModel(model_t* mod);
 
 // Flex model rendering.
+extern void R_DrawFlexModel(entity_t* e);
 extern void R_LerpVert(const vec3_t new_point, const vec3_t old_point, vec3_t interpolated_point, const float move[3], const float frontv[3], const float backv[3]);

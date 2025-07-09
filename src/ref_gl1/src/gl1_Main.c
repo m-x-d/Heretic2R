@@ -14,6 +14,7 @@
 #include "gl1_Misc.h"
 #include "gl1_SDL.h"
 #include "gl1_Sky.h"
+#include "gl1_Sprite.h"
 #include "gl1_Surface.h"
 #include "gl1_Local.h"
 #include "Reference.h"
@@ -140,9 +141,60 @@ cvar_t* quake_amount;
 
 #pragma endregion
 
-static void R_DrawEntitiesOnList(void)
+void R_DrawNullModel(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// H2: simplified: no separate non-transparent/transparent drawing chains.
+static void R_DrawEntitiesOnList(void)
+{
+	if (!(int)r_drawentities->value)
+		return;
+
+	for (int i = 0; i < r_newrefdef.num_entities; i++)
+	{
+		currententity = r_newrefdef.entities[i];
+
+		if (currententity->model == NULL) // H2: extra sanity check.
+		{
+			ri.Con_Printf(PRINT_ALL, "Attempt to draw NULL model\n"); //mxd. Com_Printf() -> ri.Con_Printf().
+			R_DrawNullModel();
+
+			continue;
+		}
+
+		currentmodel = *currententity->model;
+		if (currentmodel == NULL)
+		{
+			R_DrawNullModel();
+			continue;
+		}
+
+		// H2: no mod_alias case, new mod_bad and mod_fmdl cases.
+		switch (currentmodel->type)
+		{
+			case mod_bad:
+				ri.Con_Printf(PRINT_ALL, "WARNING: currentmodel->type == 0; reload the map\n"); //mxd. Com_Printf() -> ri.Con_Printf().
+				break;
+
+			case mod_brush:
+				R_DrawBrushModel(currententity);
+				break;
+
+			case mod_sprite:
+				R_DrawSpriteModel(currententity);
+				break;
+
+			case mod_fmdl:
+				R_DrawFlexModel(currententity);
+				break;
+
+			default:
+				ri.Sys_Error(ERR_DROP, "Bad modeltype"); // Q2: ri.Sys_Error //mxd. Sys_Error() -> ri.Sys_Error().
+				break;
+		}
+	}
 }
 
 static void R_DrawParticles(const int num_particles, const particle_t* particles, const qboolean alpha_particle)

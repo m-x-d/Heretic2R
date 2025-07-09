@@ -187,3 +187,5 @@ extern cplane_t frustum[4];
 extern refimport_t ri;
 
 #pragma endregion
+
+extern void R_DrawNullModel(void);

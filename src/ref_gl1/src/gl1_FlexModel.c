@@ -387,6 +387,11 @@ void Mod_RegisterFlexModel(model_t* mod)
 
 #pragma region ========================== FLEX MODEL RENDERING ==========================
 
+void R_DrawFlexModel(entity_t* e)
+{
+	NOT_IMPLEMENTED
+}
+
 void R_LerpVert(const vec3_t new_point, const vec3_t old_point, vec3_t interpolated_point, const float move[3], const float frontv[3], const float backv[3])
 {
 	for (int i = 0; i < 3; i++)

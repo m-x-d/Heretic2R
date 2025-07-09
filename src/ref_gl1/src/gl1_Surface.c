@@ -406,6 +406,11 @@ static qboolean R_CullBox(const vec3_t mins, const vec3_t maxs)
 	return false;
 }
 
+void R_DrawBrushModel(entity_t* e)
+{
+	NOT_IMPLEMENTED
+}
+
 #pragma endregion
 
 #pragma region ========================== WORLD MODEL RENDERING ==========================

@@ -12,5 +12,6 @@ extern int c_visible_lightmaps;
 extern int c_visible_textures;
 
 extern void R_SortAndDrawAlphaSurfaces(void);
+extern void R_DrawBrushModel(entity_t* e);
 extern void R_DrawWorld(void);
 extern void R_MarkLeaves(void);
