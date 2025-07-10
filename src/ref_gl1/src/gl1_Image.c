@@ -234,7 +234,72 @@ void R_SetFilter(const image_t* image)
 
 void R_ImageList_f(void) // Q2: GL_ImageList_f()
 {
-	NOT_IMPLEMENTED
+	int tex_count = 0;
+	int tex_texels = 0;
+	int sky_count = 0;
+	int sky_texels = 0;
+	int skin_count = 0;
+	int skin_texels = 0;
+	int sprite_count = 0;
+	int sprite_texels = 0;
+	int pic_count = 0;
+	int pic_texels = 0;
+
+	const char* palstrings[] = { "RGB", "PAL" };
+
+	ri.Con_Printf(PRINT_ALL, "---------------------------\n"); //mxd. Com_Printf() -> ri.Con_Printf() (here and below).
+
+	image_t* image = &gltextures[0];
+	for (int i = 0; i < numgltextures; i++, image++)
+	{
+		switch (image->type)
+		{
+			case it_skin:
+				ri.Con_Printf(PRINT_ALL, "M");
+				skin_count++;
+				skin_texels += image->width * image->height;
+				break;
+
+			case it_sprite:
+				ri.Con_Printf(PRINT_ALL, "S");
+				sprite_count++;
+				sprite_texels += image->width * image->height;
+				break;
+
+			//mxd. Original code also handles types 3 and 7 here. These aren't used anywhere else in the code.
+			case it_wall:
+				ri.Con_Printf(PRINT_ALL, "W");
+				tex_count++;
+				tex_texels += (image->width * image->height * 4) / 3;
+				break;
+
+			case it_pic:
+				ri.Con_Printf(PRINT_ALL, "P");
+				pic_count++;
+				pic_texels += image->width * image->height;
+				break;
+
+			case it_sky:
+				ri.Con_Printf(PRINT_ALL, "K"); //mxd. Was also "P" in original logic.
+				sky_count++;
+				sky_texels += image->width * image->height;
+				break;
+
+			default: //mxd. Added to silence compiler warning.
+				ri.Con_Printf(PRINT_ALL, "U%i", image->type, image->name);
+				break;
+		}
+
+		ri.Con_Printf(PRINT_ALL, " %3i %3i %s %s\n", image->width, image->height, palstrings[image->palette != NULL], image->name);
+	}
+
+	ri.Con_Printf(PRINT_ALL, "-------------------------------\n");
+	ri.Con_Printf(PRINT_ALL, "Total skin   : %i (%i texels)\n", skin_count, skin_texels);
+	ri.Con_Printf(PRINT_ALL, "Total world  : %i (%i texels)\n", tex_count, tex_texels);
+	ri.Con_Printf(PRINT_ALL, "Total sky    : %i (%i texels)\n", sky_count, sky_texels);
+	ri.Con_Printf(PRINT_ALL, "Total sprite : %i (%i texels)\n", sprite_count, sprite_texels);
+	ri.Con_Printf(PRINT_ALL, "Total pic    : %i (%i texels)\n", pic_count, pic_texels);
+	ri.Con_Printf(PRINT_ALL, "-------------------------------\n");
 }
 
 #pragma region ========================== .M8 LOADING ==========================
@@ -644,5 +709,24 @@ void R_GammaAffect(void)
 
 void R_DisplayHashTable(void)
 {
-	NOT_IMPLEMENTED
+	int total_count = 0;
+	int hashed_count = 0;
+
+	image_t** gl = gltextures_hashed;
+	for (int i = 0; i < NUM_HASHED_GLTEXTURES; i++, gl++)
+	{
+		const image_t* image = *gl;
+		if (image != NULL)
+		{
+			while (image != NULL)
+			{
+				image = image->next;
+				total_count++;
+			}
+
+			hashed_count++;
+		}
+	}
+
+	ri.Con_Printf(PRINT_ALL, "Hash entries: %d, Total images: %d\n", hashed_count, total_count); //mxd. Com_Printf() -> ri.Con_Printf().
 }
