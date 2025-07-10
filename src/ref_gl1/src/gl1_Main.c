@@ -61,6 +61,7 @@ int c_brush_polys;
 int c_alias_polys;
 
 static float v_blend[4]; // Final blending color. //mxd. Made static.
+static GLint fog_modes[] = { GL_LINEAR, GL_EXP, GL_EXP2 };
 
 #pragma region ========================== CVARS  ==========================
 
@@ -518,12 +519,51 @@ static void R_SetupGL(void)
 
 static void R_Fog(void) // H2: GL_Fog
 {
-	NOT_IMPLEMENTED
+	const int mode = ClampI((int)r_fog_mode->value, 0, sizeof(fog_modes) / sizeof(fog_modes[0])); //mxd. Added ClampI().
+	glFogi(GL_FOG_MODE, fog_modes[mode]);
+
+	if (mode == 0)
+	{
+		glFogf(GL_FOG_START, r_fog_startdist->value);
+		glFogf(GL_FOG_END, r_farclipdist->value);
+	}
+	else
+	{
+		glFogf(GL_FOG_DENSITY, r_fog_density->value);
+	}
+
+	const float color[] = { r_fog_color_r->value, r_fog_color_g->value, r_fog_color_b->value, r_fog_color_a->value };
+	glFogfv(GL_FOG_COLOR, color);
+	glEnable(GL_FOG);
+
+	glClearColor(color[0], color[1], color[2], color[3]);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 static void R_WaterFog(void) // H2: GL_WaterFog
 {
-	NOT_IMPLEMENTED
+	//TODO: GL_EXP2 fog mode is ignored. Why?
+	const int mode = ClampI((int)r_fog_underwater_mode->value, 0, sizeof(fog_modes) / sizeof(fog_modes[0]) - 1); //mxd. Added ClampI().
+	glFogi(GL_FOG_MODE, fog_modes[mode]);
+
+	if (mode == 0)
+	{
+		glFogf(GL_FOG_START, r_fog_underwater_startdist->value);
+		glFogf(GL_FOG_END, r_farclipdist->value);
+	}
+	else
+	{
+		glFogf(GL_FOG_DENSITY, r_fog_underwater_density->value);
+	}
+
+	const float color[] = { r_fog_underwater_color_r->value, r_fog_underwater_color_g->value, r_fog_underwater_color_b->value, r_fog_underwater_color_a->value };
+	glFogfv(GL_FOG_COLOR, color);
+	glEnable(GL_FOG);
+
+	glClearColor(color[0], color[1], color[2], color[3]);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 static void R_Clear(void)
