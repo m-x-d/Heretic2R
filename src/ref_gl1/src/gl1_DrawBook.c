@@ -109,7 +109,7 @@ void Draw_BigFont(const int x, const int y, const char* text, const float alpha)
 					ox += char_def->w;
 				}
 				break;
-			}
+		}
 	}
 
 	glDisable(GL_ALPHA_TEST);
@@ -159,13 +159,13 @@ int BF_Strlen(const char* text)
 					width += char_def->w;
 				}
 				break;
-			}
+		}
 	}
 }
 
 void Draw_BookPic(const char* name, const float scale)
 {
-	const model_t* mod = R_RegisterModel(name);
+	const model_t* mod = RI_RegisterModel(name);
 
 	if (mod == NULL)
 	{

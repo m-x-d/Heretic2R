@@ -33,6 +33,6 @@ extern void R_Bind(int texnum);
 extern void R_TextureMode(const char* string);
 extern void R_SetFilter(const image_t* image);
 
-extern struct image_s* R_RegisterSkin(const char* name, qboolean* retval);
+extern struct image_s* RI_RegisterSkin(const char* name, qboolean* retval);
 extern void R_GammaAffect(void);
 extern void R_DisplayHashTable(void);

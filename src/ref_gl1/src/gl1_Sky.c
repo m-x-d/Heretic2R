@@ -324,7 +324,7 @@ void R_DrawSkyBox(void)
 	glPopMatrix();
 }
 
-void R_SetSky(const char* name, const float rotate, const vec3_t axis)
+void RI_SetSky(const char* name, const float rotate, const vec3_t axis)
 {
 	static char* surf[] = { "rt", "bk", "lf", "ft", "up", "dn" }; // 3dstudio environment map names. //mxd. Made local static.
 	char pathname[MAX_QPATH];

@@ -78,7 +78,7 @@ static DebugPrimitive_t* InitDebugPrimitive(const vec3_t mins, const vec3_t maxs
 	return p;
 }
 
-void R_AddDebugBox(const vec3_t center, float size, const paletteRGBA_t color, const float lifetime)
+void RI_AddDebugBox(const vec3_t center, float size, const paletteRGBA_t color, const float lifetime)
 {
 	size *= 0.5f;
 	const vec3_t mins = { center[0] - size, center[1] - size, center[2] - size };
@@ -88,10 +88,10 @@ void R_AddDebugBox(const vec3_t center, float size, const paletteRGBA_t color, c
 	const DebugPrimitive_t* box = InitDebugPrimitive(mins, maxs, color, lifetime, DPT_BOX);
 
 	if (box == NULL)
-		ri.Con_Printf(PRINT_DEVELOPER, "R_AddDebugBox: failed to add box at [%f %f %f]...", center[0], center[1], center[2]);
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugBox: failed to add box at [%f %f %f]...", center[0], center[1], center[2]);
 }
 
-void R_AddDebugBbox(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime)
+void RI_AddDebugBbox(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime)
 {
 	// Find free slot...
 	const DebugPrimitive_t* box = InitDebugPrimitive(mins, maxs, color, lifetime, DPT_BBOX);
@@ -100,11 +100,11 @@ void R_AddDebugBbox(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t co
 	{
 		vec3_t center;
 		VectorAverage(mins, maxs, center);
-		ri.Con_Printf(PRINT_DEVELOPER, "R_AddDebugBbox: failed to add bbox at [%f %f %f]...", center[0], center[1], center[2]);
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugBbox: failed to add bbox at [%f %f %f]...", center[0], center[1], center[2]);
 	}
 }
 
-void R_AddDebugEntityBbox(const struct edict_s* ent, const paletteRGBA_t color)
+void RI_AddDebugEntityBbox(const struct edict_s* ent, const paletteRGBA_t color)
 {
 	if (ent == NULL)
 		return;
@@ -120,11 +120,11 @@ void R_AddDebugEntityBbox(const struct edict_s* ent, const paletteRGBA_t color)
 	{
 		vec3_t center;
 		VectorAverage(ent->mins, ent->maxs, center);
-		ri.Con_Printf(PRINT_DEVELOPER, "R_AddDebugEntityBbox: failed to add entity bbox at [%f %f %f]...", center[0], center[1], center[2]);
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugEntityBbox: failed to add entity bbox at [%f %f %f]...", center[0], center[1], center[2]);
 	}
 }
 
-void R_AddDebugLine(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
+void RI_AddDebugLine(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
 {
 	// Find free slot...
 	DebugPrimitive_t* line = InitDebugPrimitive(start, end, color, lifetime, DPT_LINE);
@@ -136,11 +136,11 @@ void R_AddDebugLine(const vec3_t start, const vec3_t end, const paletteRGBA_t co
 	}
 	else
 	{
-		ri.Con_Printf(PRINT_DEVELOPER, "R_AddDebugLine: failed to add line at [%f %f %f] -> [%f %f %f]...", start[0], start[1], start[2], end[0], end[1], end[2]);
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugLine: failed to add line at [%f %f %f] -> [%f %f %f]...", start[0], start[1], start[2], end[0], end[1], end[2]);
 	}
 }
 
-void R_AddDebugArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
+void RI_AddDebugArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
 {
 #define ARROWHEAD_SIZE	16.0f
 
@@ -175,7 +175,7 @@ void R_AddDebugArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t c
 	}
 	else
 	{
-		ri.Con_Printf(PRINT_DEVELOPER, "R_AddDebugArrow: failed to add arrow at [%f %f %f] -> [%f %f %f]...", start[0], start[1], start[2], end[0], end[1], end[2]);
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugArrow: failed to add arrow at [%f %f %f] -> [%f %f %f]...", start[0], start[1], start[2], end[0], end[1], end[2]);
 	}
 }
 

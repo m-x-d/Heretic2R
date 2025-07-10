@@ -510,7 +510,7 @@ image_t* R_FindImage(const char* name, const imagetype_t type) // H2: GL_FindIma
 }
 
 // H2: new 'retval' arg.
-struct image_s* R_RegisterSkin(const char* name, qboolean* retval)
+struct image_s* RI_RegisterSkin(const char* name, qboolean* retval)
 {
 	image_t* img = R_FindImage(name, it_skin);
 	if (retval != NULL)

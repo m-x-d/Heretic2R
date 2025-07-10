@@ -222,6 +222,6 @@ extern mleaf_t* Mod_PointInLeaf(vec3_t p, const model_t* model);
 extern byte* Mod_ClusterPVS(int cluster, const model_t* model);
 extern void Mod_Modellist_f(void);
 
-extern void R_BeginRegistration(const char* model);
-extern struct model_s* R_RegisterModel(const char* name);
-extern void R_EndRegistration(void);
+extern void RI_BeginRegistration(const char* model);
+extern struct model_s* RI_RegisterModel(const char* name);
+extern void RI_EndRegistration(void);

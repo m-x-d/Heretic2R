@@ -781,7 +781,7 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 	return mod;
 }
 
-void R_BeginRegistration(const char* model)
+void RI_BeginRegistration(const char* model)
 {
 	char fullname[MAX_QPATH];
 
@@ -801,7 +801,7 @@ void R_BeginRegistration(const char* model)
 	R_FreeUnusedImages(); // H2
 }
 
-struct model_s* R_RegisterModel(const char* name)
+struct model_s* RI_RegisterModel(const char* name)
 {
 	char img_name[MAX_OSPATH];
 
@@ -845,7 +845,7 @@ struct model_s* R_RegisterModel(const char* name)
 		} break;
 
 		default:
-			ri.Sys_Error(ERR_DROP, "R_RegisterModel '%s' failed\n", name); //mxd. Sys_Error() -> ri.Sys_Error().
+			ri.Sys_Error(ERR_DROP, "RI_RegisterModel '%s' failed\n", name); //mxd. Sys_Error() -> ri.Sys_Error().
 			return NULL;
 	}
 
@@ -853,7 +853,7 @@ struct model_s* R_RegisterModel(const char* name)
 }
 
 // Q2 counterpart
-void R_EndRegistration(void)
+void RI_EndRegistration(void)
 {
 	model_t* mod = &mod_known[0];
 	for (int i = 0; i < mod_numknown; i++, mod++)

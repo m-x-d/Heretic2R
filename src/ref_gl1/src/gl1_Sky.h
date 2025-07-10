@@ -11,4 +11,4 @@
 extern void R_AddSkySurface(const msurface_t* fa);
 extern void R_ClearSkyBox(void);
 extern void R_DrawSkyBox(void);
-extern void R_SetSky(const char* name, float rotate, const vec3_t axis);
+extern void RI_SetSky(const char* name, float rotate, const vec3_t axis);

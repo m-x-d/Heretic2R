@@ -12,7 +12,7 @@ static SDL_Window* window = NULL;
 static SDL_GLContext context = NULL;
 
 // Swaps the buffers and shows the next frame.
-void R_EndFrame(void) //mxd. GLimp_EndFrame in original logic.
+void RI_EndFrame(void) //mxd. GLimp_EndFrame in original logic.
 {
 	SDL_GL_SwapWindow(window);
 }
@@ -25,7 +25,7 @@ void* R_GetProcAddress(const char* proc)
 
 // This function returns the flags used at the SDL window creation by GLimp_InitGraphics().
 // In case of error -1 is returned.
-int R_PrepareForWindow(void)
+int RI_PrepareForWindow(void)
 {
 	// Set GL context attributes bound to the window.
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -66,11 +66,11 @@ void R_SetVsync(void)
 }
 
 // Initializes the OpenGL context.
-qboolean R_InitContext(void* win)
+qboolean RI_InitContext(void* win)
 {
 	if (win == NULL)
 	{
-		ri.Sys_Error(ERR_FATAL, "R_InitContext() called with NULL argument!");
+		ri.Sys_Error(ERR_FATAL, "RI_InitContext() called with NULL argument!");
 		return false;
 	}
 
@@ -81,7 +81,7 @@ qboolean R_InitContext(void* win)
 
 	if (context == NULL)
 	{
-		ri.Con_Printf(PRINT_ALL, "R_InitContext(): failed to create OpenGL context: %s\n", SDL_GetError());
+		ri.Con_Printf(PRINT_ALL, "RI_InitContext(): failed to create OpenGL context: %s\n", SDL_GetError());
 		window = NULL;
 
 		return false;
@@ -90,14 +90,14 @@ qboolean R_InitContext(void* win)
 	//mxd. Load OpenGL function pointers through GLAD. Must be called after GLimp_Init().
 	if (!gladLoadGLLoader(R_GetProcAddress))
 	{
-		ri.Con_Printf(PRINT_ALL, "R_InitContext(): failed to initialize OpenGL\n");
+		ri.Con_Printf(PRINT_ALL, "RI_InitContext(): failed to initialize OpenGL\n");
 		return false;
 	}
 
 	//mxd. Check OpenGL version.
 	if (!GLAD_GL_VERSION_1_3)
 	{
-		ri.Con_Printf(PRINT_ALL, "R_InitContext(): unsupported OpenGL version. Expected 1.3, got %i.%i!\n", GLVersion.major, GLVersion.minor);
+		ri.Con_Printf(PRINT_ALL, "RI_InitContext(): unsupported OpenGL version. Expected 1.3, got %i.%i!\n", GLVersion.major, GLVersion.minor);
 		return false;
 	}
 
@@ -108,7 +108,7 @@ qboolean R_InitContext(void* win)
 }
 
 // Shuts the GL context down.
-void R_ShutdownContext(void)
+void RI_ShutdownContext(void)
 {
 	if (window != NULL && context != NULL)
 	{

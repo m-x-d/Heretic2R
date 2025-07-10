@@ -730,7 +730,7 @@ static qboolean R_SetMode(void)
 	return false;
 }
 
-static qboolean R_Init(void)
+static qboolean RI_Init(void)
 {
 	for (int j = 0; j < 256; j++)
 		turbsin[j] *= 0.5f;
@@ -744,7 +744,7 @@ static qboolean R_Init(void)
 	// Create the window and set up the context.
 	if (!R_SetMode())
 	{
-		ri.Con_Printf(PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n");
+		ri.Con_Printf(PRINT_ALL, "ref_gl::RI_Init() - could not R_SetMode()\n");
 		return false; //mxd. Decompiled code still returns -1 here...
 	}
 
@@ -770,7 +770,7 @@ static qboolean R_Init(void)
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
 	if (max_texture_size < 512)
 	{
-		ri.Con_Printf(PRINT_ALL, "ref_gl::R_Init() - maximum supported texture size too low! Expected at least 512, got %i\n", max_texture_size);
+		ri.Con_Printf(PRINT_ALL, "ref_gl::RI_Init() - maximum supported texture size too low! Expected at least 512, got %i\n", max_texture_size);
 		return false;
 	}
 
@@ -789,7 +789,7 @@ static qboolean R_Init(void)
 	return true; //mxd. Return value missing in Q2
 }
 
-static void R_Shutdown(void)
+static void RI_Shutdown(void)
 {
 	ShutdownFonts(); // H2
 
@@ -802,10 +802,10 @@ static void R_Shutdown(void)
 	R_ShutdownImages();
 
 	// Shutdown OS-specific OpenGL stuff like contexts, etc.
-	R_ShutdownContext(); // YQ2
+	RI_ShutdownContext(); // YQ2
 }
 
-static void R_BeginFrame(const float camera_separation) //TODO: remove camera_separation arg?
+static void RI_BeginFrame(const float camera_separation) //TODO: remove camera_separation arg?
 {
 	// Changed.
 	if (vid_gamma->modified || vid_brightness->modified || vid_contrast->modified)
@@ -941,7 +941,7 @@ static void R_ScreenFlash(const paletteRGBA_t color)
 }
 
 // H2: return type: void -> int //TODO: useless: always returns 0 
-static int R_RenderFrame(const refdef_t* fd)
+static int RI_RenderFrame(const refdef_t* fd)
 {
 	paletteRGBA_t color;
 
@@ -966,7 +966,7 @@ static int R_RenderFrame(const refdef_t* fd)
 	return 0;
 }
 
-static int R_GetReferencedID(const struct model_s* model) // H2 //mxd. Named 'GetReferencedID' (in m_Reference.c) in original logic.
+static int RI_GetReferencedID(const struct model_s* model) // H2 //mxd. Named 'GetReferencedID' (in m_Reference.c) in original logic.
 {
 	const fmdl_t* temp = model->extradata;
 
@@ -986,15 +986,15 @@ REF_DECLSPEC refexport_t GetRefAPI(const refimport_t rimp)
 	re.api_version = REF_API_VERSION;
 	re.render = false; //mxd. Avoid compiler warning.
 
-	re.BeginRegistration = R_BeginRegistration;
-	re.RegisterModel = R_RegisterModel;
-	re.RegisterSkin = R_RegisterSkin;
+	re.BeginRegistration = RI_BeginRegistration;
+	re.RegisterModel = RI_RegisterModel;
+	re.RegisterSkin = RI_RegisterSkin;
 	re.RegisterPic = Draw_FindPic;
-	re.SetSky = R_SetSky;
-	re.EndRegistration = R_EndRegistration;
-	re.GetReferencedID = R_GetReferencedID;
+	re.SetSky = RI_SetSky;
+	re.EndRegistration = RI_EndRegistration;
+	re.GetReferencedID = RI_GetReferencedID;
 
-	re.RenderFrame = R_RenderFrame;
+	re.RenderFrame = RI_RenderFrame;
 
 	re.DrawGetPicSize = Draw_GetPicSize;
 	re.DrawPic = Draw_Pic;
@@ -1012,25 +1012,25 @@ REF_DECLSPEC refexport_t GetRefAPI(const refimport_t rimp)
 	re.DrawCinematic = Draw_Cinematic;
 	re.Draw_Name = Draw_Name;
 
-	re.Init = R_Init;
-	re.Shutdown = R_Shutdown;
+	re.Init = RI_Init;
+	re.Shutdown = RI_Shutdown;
 
-	re.BeginFrame = R_BeginFrame;
-	re.EndFrame = R_EndFrame;
+	re.BeginFrame = RI_BeginFrame;
+	re.EndFrame = RI_EndFrame;
 	re.FindSurface = RI_FindSurface;
 
-	re.PrepareForWindow = R_PrepareForWindow; // YQ2
-	re.InitContext = R_InitContext; // YQ2
-	re.ShutdownContext = R_ShutdownContext; // YQ2
+	re.PrepareForWindow = RI_PrepareForWindow; // YQ2
+	re.InitContext = RI_InitContext; // YQ2
+	re.ShutdownContext = RI_ShutdownContext; // YQ2
 
 #ifdef _DEBUG
 	//mxd. Debug draw logic.
-	re.AddDebugBox = R_AddDebugBox;
-	re.AddDebugBbox = R_AddDebugBbox;
-	re.AddDebugEntityBbox = R_AddDebugEntityBbox;
+	re.AddDebugBox = RI_AddDebugBox;
+	re.AddDebugBbox = RI_AddDebugBbox;
+	re.AddDebugEntityBbox = RI_AddDebugEntityBbox;
 
-	re.AddDebugLine = R_AddDebugLine;
-	re.AddDebugArrow = R_AddDebugArrow;
+	re.AddDebugLine = RI_AddDebugLine;
+	re.AddDebugArrow = RI_AddDebugArrow;
 #endif
 
 	// Unbound: A3D_RenderGeometry();
