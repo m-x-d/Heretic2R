@@ -175,7 +175,7 @@ void R_LightPoint(const vec3_t p, vec3_t color)
 		return;
 	}
 
-	vec3_t end = { p[0], p[1], p[2] - 3072.0f }; // Q2: p[2] - 2048
+	const vec3_t end = { p[0], p[1], p[2] - 3072.0f }; // Q2: p[2] - 2048
 	const int r = R_RecursiveLightPoint(r_worldmodel->nodes, p, end);
 
 	if (r == -1)
