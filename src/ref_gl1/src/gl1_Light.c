@@ -7,6 +7,8 @@
 #include "gl1_Light.h"
 #include "Vector.h"
 
+#define DLIGHT_CUTOFF	64.0f
+
 static int r_dlightframecount; //mxd. Made static.
 static float s_blocklights[34 * 34 * 3];
 
@@ -74,7 +76,39 @@ void R_RenderDlights(void)
 // Q2 counterpart
 void R_MarkLights(dlight_t* light, const int bit, const mnode_t* node)
 {
-	NOT_IMPLEMENTED
+	if (node->contents != -1)
+		return;
+
+	const cplane_t* splitplane = node->plane;
+	const float dist = DotProduct(light->origin, splitplane->normal) - splitplane->dist;
+
+	if (dist > light->intensity - DLIGHT_CUTOFF)
+	{
+		R_MarkLights(light, bit, node->children[0]);
+		return;
+	}
+
+	if (dist < -light->intensity + DLIGHT_CUTOFF)
+	{
+		R_MarkLights(light, bit, node->children[1]);
+		return;
+	}
+
+	// Mark the polygons.
+	msurface_t* surf = &r_worldmodel->surfaces[node->firstsurface];
+	for (int i = 0; i < node->numsurfaces; i++, surf++)
+	{
+		if (surf->dlightframe != r_dlightframecount)
+		{
+			surf->dlightbits = 0;
+			surf->dlightframe = r_dlightframecount;
+		}
+
+		surf->dlightbits |= bit;
+	}
+
+	R_MarkLights(light, bit, node->children[0]);
+	R_MarkLights(light, bit, node->children[1]);
 }
 
 // Q2 counterpart
@@ -201,9 +235,61 @@ void R_LightPoint(const vec3_t p, vec3_t color)
 
 #pragma endregion
 
+// Q2 counterpart (except for dlight color handling).
 static void R_AddDynamicLights(const msurface_t* surf)
 {
-	NOT_IMPLEMENTED
+	const int smax = (surf->extents[0] >> 4) + 1;
+	const int tmax = (surf->extents[1] >> 4) + 1;
+	const mtexinfo_t* tex = surf->texinfo;
+
+	for (int lnum = 0; lnum < r_newrefdef.num_dlights; lnum++)
+	{
+		if (!(surf->dlightbits & (1 << lnum)))
+			continue; // Not lit by this light.
+
+		const dlight_t* dl = &r_newrefdef.dlights[lnum];
+		float fdist = DotProduct(dl->origin, surf->plane->normal) - surf->plane->dist;
+		const float frad = dl->intensity - fabsf(fdist);
+		// Rad is now the highest intensity on the plane.
+
+		float fminlight = DLIGHT_CUTOFF; // FIXME: make configurable?
+		if (frad < fminlight)
+			continue;
+
+		fminlight = frad - fminlight;
+
+		vec3_t impact;
+		for (int i = 0; i < 3; i++)
+			impact[i] = dl->origin[i] - surf->plane->normal[i] * fdist;
+
+		const int local_0 = (int)(DotProduct(impact, tex->vecs[0]) + tex->vecs[0][3] - (float)surf->texturemins[0]);
+		const int local_1 = (int)(DotProduct(impact, tex->vecs[1]) + tex->vecs[1][3] - (float)surf->texturemins[1]);
+
+		float* pfBL = &s_blocklights[0];
+		int ftacc = 0;
+		for (int t = 0; t < tmax; t++, ftacc += 16)
+		{
+			const int td = abs(local_1 - ftacc);
+
+			int fsacc = 0;
+			for (int s = 0; s < smax; s++, fsacc += 16, pfBL += 3)
+			{
+				const int sd = abs(local_0 - fsacc);
+
+				if (sd > td)
+					fdist = (float)(sd + (td >> 1));
+				else
+					fdist = (float)(td + (sd >> 1));
+
+				if (fdist < fminlight)
+				{
+					pfBL[0] += (frad - fdist) * ((float)dl->color.r / 255.0f); // H2: different color handling.
+					pfBL[1] += (frad - fdist) * ((float)dl->color.g / 255.0f);
+					pfBL[2] += (frad - fdist) * ((float)dl->color.b / 255.0f);
+				}
+			}
+		}
+	}
 }
 
 // Q2 counterpart
