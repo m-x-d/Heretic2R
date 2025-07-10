@@ -458,7 +458,7 @@ static void Mod_LoadFaces(const byte* mod_base, const lump_t* l)
 			}
 
 			// Cut up polygon for warps.
-			R_SubdivideSurface(currentmodel, out);
+			R_SubdivideSurface(loadmodel, out);
 		}
 
 		// Create lightmaps and polygons.
@@ -466,7 +466,7 @@ static void Mod_LoadFaces(const byte* mod_base, const lump_t* l)
 			LM_CreateSurfaceLightmap(out);
 
 		if (!(out->texinfo->flags & SURF_WARP))
-			LM_BuildPolygonFromSurface(out);
+			LM_BuildPolygonFromSurface(loadmodel, out);
 	}
 
 	LM_EndBuildingLightmaps();

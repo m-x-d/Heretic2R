@@ -39,7 +39,7 @@ extern void LM_InitBlock(void);
 extern void LM_UploadBlock(qboolean dynamic);
 extern qboolean LM_AllocBlock(int w, int h, int* x, int* y);
 
-extern void LM_BuildPolygonFromSurface(msurface_t* fa);
+extern void LM_BuildPolygonFromSurface(const model_t* mdl, msurface_t* fa);
 extern void LM_CreateSurfaceLightmap(msurface_t* surf);
 extern void LM_BeginBuildingLightmaps(void);
 extern void LM_EndBuildingLightmaps(void);

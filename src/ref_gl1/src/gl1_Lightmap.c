@@ -88,10 +88,10 @@ qboolean LM_AllocBlock(const int w, const int h, int* x, int* y)
 #pragma region ========================== LIGHTMAP BUILDING ==========================
 
 // Q2 counterpart
-void LM_BuildPolygonFromSurface(msurface_t* fa)
+void LM_BuildPolygonFromSurface(const model_t* mdl, msurface_t* fa) //mxd. Original logic uses 'currentmodel' global var here.
 {
 	// Reconstruct the polygon.
-	const medge_t* pedges = currentmodel->edges;
+	const medge_t* pedges = mdl->edges;
 	const int lnumverts = fa->numedges;
 
 	// Draw texture.
@@ -103,18 +103,18 @@ void LM_BuildPolygonFromSurface(msurface_t* fa)
 
 	for (int i = 0; i < lnumverts; i++)
 	{
-		const int lindex = currentmodel->surfedges[fa->firstedge + i];
+		const int lindex = mdl->surfedges[fa->firstedge + i];
 
 		float* vec;
 		if (lindex > 0)
 		{
 			const medge_t* r_pedge = &pedges[lindex];
-			vec = currentmodel->vertexes[r_pedge->v[0]].position;
+			vec = mdl->vertexes[r_pedge->v[0]].position;
 		}
 		else
 		{
 			const medge_t* r_pedge = &pedges[-lindex];
-			vec = currentmodel->vertexes[r_pedge->v[1]].position;
+			vec = mdl->vertexes[r_pedge->v[1]].position;
 		}
 
 		float s = DotProduct(vec, fa->texinfo->vecs[0]) + fa->texinfo->vecs[0][3];
