@@ -965,9 +965,8 @@ static void R_SetLightLevel(void)
 {
 	if (!(r_newrefdef.rdflags & RDF_NOWORLDMODEL))
 	{
-		vec3_t shadelight;
-
 		// Save off light value for server to look at (BIG HACK!).
+		vec3_t shadelight;
 		R_LightPoint(r_newrefdef.clientmodelorg, shadelight); // H2: vieworg -> clientmodelorg
 
 		// Pick the greatest component, which should be the same as the mono value returned by software.
