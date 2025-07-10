@@ -42,14 +42,14 @@ static void LerpVerts(const int num_verts, fmtrivertx_t* verts, fmtrivertx_t* ol
 			(*translation)[j] = (float)verts->v[j] * front[j] + (float)old_verts->v[j] * back[j] + move[j];
 }
 
-static void DoSkeletalRotations(void)
+static void DoSkeletalRotations(const entity_t* e) //mxd. Original logic uses 'currententity' global var.
 {
-	if (currententity->rootJoint == -1)
+	if (e->rootJoint == -1)
 		return;
 
-	if (currententity->swapFrame != -1)
+	if (e->swapFrame != -1)
 	{
-		RotateModelSegments(&swap_skeleton, 0, fmodel->rootCluster, currententity->rootJoint, s_lerped);
+		RotateModelSegments(&swap_skeleton, 0, fmodel->rootCluster, e->rootJoint, s_lerped);
 
 		for (int i = 0; i < fmdl_cur_skeletal_cluster->numVerticies; i++)
 		{
@@ -60,14 +60,13 @@ static void DoSkeletalRotations(void)
 	}
 	else
 	{
-		RotateModelSegments(&cur_skeleton, 0, fmodel->rootCluster, currententity->rootJoint, s_lerped);
+		RotateModelSegments(&cur_skeleton, 0, fmodel->rootCluster, e->rootJoint, s_lerped);
 	}
 }
 
-static void LerpStandardSkeleton(void)
+static void LerpStandardSkeleton(entity_t* e) //mxd. Original logic uses 'currententity' global var.
 {
 	static vec3_t lerped[2048];
-	entity_t* e = currententity;
 
 	if (e->swapFrame != -1)
 	{
@@ -104,7 +103,7 @@ static void LerpStandardSkeleton(void)
 		LinearllyInterpolateJoints(&fmodel->skeletons[e->frame], 0, &fmodel->skeletons[e->oldframe], 0, &cur_skeleton, 0, cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
 	}
 
-	DoSkeletalRotations();
+	DoSkeletalRotations(e);
 }
 
 static void ApplySkeletonToRef(Placement_t* placement, const int joint_index, const qboolean update_placement)
@@ -128,7 +127,7 @@ static void ApplySkeletonToRef(Placement_t* placement, const int joint_index, co
 	}
 }
 
-static void LerpReferences(void)
+static void LerpReferences(const entity_t* e) //mxd. Original logic uses 'currententity' global var.
 {
 	assert(fmdl_referenceInfo->jointIDs != NULL); //mxd
 
@@ -137,16 +136,16 @@ static void LerpReferences(void)
 
 	const int num_refs = numReferences[fmodel->referenceType];
 
-	if (currententity->rootJoint != -1)
+	if (e->rootJoint != -1)
 	{
 		HACK_Pitch_Adjust = true; //mxd. Interestingly, Loki version doesn't set/unset this here... //TODO: check Loki version of Matricies3FromDirAndUp()?
 
-		SetupJointRotations(&cur_skeleton, 0, currententity->rootJoint);
+		SetupJointRotations(&cur_skeleton, 0, e->rootJoint);
 		FinishJointRotations(&cur_skeleton, 0);
 
-		if (currententity->swapFrame != -1)
+		if (e->swapFrame != -1)
 		{
-			SetupJointRotations(&swap_skeleton, 0, currententity->rootJoint);
+			SetupJointRotations(&swap_skeleton, 0, e->rootJoint);
 			FinishJointRotations(&swap_skeleton, 0);
 		}
 
@@ -164,7 +163,7 @@ static void LerpReferences(void)
 
 		if (fmodel->frames == NULL) //TODO: can't happen? There's fmodel->frames NULL-check in FrameLerp().
 		{
-			if (currententity->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < currententity->swapCluster)
+			if (e->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < e->swapCluster)
 			{
 				VectorCopy(s_lerped[fmdl_num_xyz + i * 3 + 0], cur_placement->origin);
 				VectorCopy(s_lerped[fmdl_num_xyz + i * 3 + 1], cur_placement->direction);
@@ -176,10 +175,10 @@ static void LerpReferences(void)
 				ri.Com_Error(ERR_DROP, "LerpReferences: fmodel compressed frame lerp logic not implemented...");
 			}
 		}
-		else if (currententity->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < currententity->swapCluster)
+		else if (e->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < e->swapCluster)
 		{
-			const Placement_t* frame = &fmodel->refsForFrame[currententity->frame * num_refs + i];
-			const Placement_t* oldframe = &fmodel->refsForFrame[currententity->oldframe * num_refs + i];
+			const Placement_t* frame = &fmodel->refsForFrame[e->frame * num_refs + i];
+			const Placement_t* oldframe = &fmodel->refsForFrame[e->oldframe * num_refs + i];
 
 			R_LerpVert(frame->origin,			oldframe->origin,			cur_placement->origin,		cur_skel_move,	sfl_cur_skel.front_vector,	sfl_cur_skel.back_vector);
 			R_LerpVert(frame->direction,		oldframe->direction,		cur_placement->direction,	cur_skel_move,	sfl_cur_skel.front_vector,	sfl_cur_skel.back_vector);
@@ -187,8 +186,8 @@ static void LerpReferences(void)
 		}
 		else
 		{
-			const Placement_t* swapFrame = &fmodel->refsForFrame[currententity->swapFrame * num_refs + i];
-			const Placement_t* oldSwapFrame = &fmodel->refsForFrame[currententity->oldSwapFrame * num_refs + i];
+			const Placement_t* swapFrame = &fmodel->refsForFrame[e->swapFrame * num_refs + i];
+			const Placement_t* oldSwapFrame = &fmodel->refsForFrame[e->oldSwapFrame * num_refs + i];
 
 			R_LerpVert(swapFrame->origin,		oldSwapFrame->origin,		cur_placement->origin,		swap_skel_move,	sfl_swap_skel.front_vector,	sfl_swap_skel.back_vector);
 			R_LerpVert(swapFrame->direction,	oldSwapFrame->direction,	cur_placement->direction,	swap_skel_move,	sfl_swap_skel.front_vector,	sfl_swap_skel.back_vector);
@@ -205,10 +204,10 @@ static void LerpReferences(void)
 	}
 }
 
-static void StandardFrameLerp(void)
+static void StandardFrameLerp(entity_t* e) //mxd. Original logic uses 'currententity' global var.
 {
-	int frame = currententity->frame;
-	int oldframe = currententity->oldframe;
+	int frame = e->frame;
+	int oldframe = e->oldframe;
 
 	if (frame < 0 || frame >= fmodel->header.num_frames)
 		frame = 0;
@@ -229,28 +228,28 @@ static void StandardFrameLerp(void)
 		sfl_cur_skel.back_vector[i] = framelerp * poldframe->scale[i];
 	}
 
-	if (currententity->scale != 1.0f)
+	if (e->scale != 1.0f)
 	{
-		VectorScale(cur_skel_move, currententity->scale, cur_skel_move);
-		VectorScale(sfl_cur_skel.front_vector, currententity->scale, sfl_cur_skel.front_vector);
-		VectorScale(sfl_cur_skel.back_vector, currententity->scale, sfl_cur_skel.back_vector);
+		VectorScale(cur_skel_move, e->scale, cur_skel_move);
+		VectorScale(sfl_cur_skel.front_vector, e->scale, sfl_cur_skel.front_vector);
+		VectorScale(sfl_cur_skel.back_vector, e->scale, sfl_cur_skel.back_vector);
 	}
 
 	LerpVerts(fmdl_num_xyz, sfl_cur_skel.verts, sfl_cur_skel.old_verts, s_lerped, cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
 
 	if (fmodel->skeletalType != -1)
-		LerpStandardSkeleton();
+		LerpStandardSkeleton(e);
 
-	if (fmdl_referenceInfo != NULL && !(currententity->flags & RF_IGNORE_REFS))
-		LerpReferences();
+	if (fmdl_referenceInfo != NULL && !(e->flags & RF_IGNORE_REFS))
+		LerpReferences(e);
 }
 
-static void CompressedFrameLerp(void)
+static void CompressedFrameLerp(entity_t* e)
 {
 	ri.Com_Error(ERR_DROP, "CompressedFrameLerp not implemented..."); //TODO: is this ever used? Remove?
 }
 
-void FrameLerp(void)
+void FrameLerp(entity_t* e) //mxd. Original logic uses 'currententity' global var.
 {
 	swap_skeleton.rootJoint = fmdl_swap_skeleton_joints;
 	swap_skeleton.rootNode = fmdl_swap_skeleton_nodes;
@@ -258,20 +257,20 @@ void FrameLerp(void)
 	cur_skeleton.rootNode = fmdl_cur_skeleton_nodes;
 
 	if (fmodel->skeletalType != -1)
-		fmdl_cur_skeletal_cluster = SkeletalClusters + fmodel->rootCluster + currententity->swapCluster;
+		fmdl_cur_skeletal_cluster = SkeletalClusters + fmodel->rootCluster + e->swapCluster;
 
-	fmdl_referenceInfo = ((fmodel->referenceType == -1) ? NULL : currententity->referenceInfo);
+	fmdl_referenceInfo = ((fmodel->referenceType == -1) ? NULL : e->referenceInfo);
 	framelerp_inv = 1.0f - framelerp;
 	fmdl_num_xyz = fmodel->header.num_xyz;
 
 	if (fmodel->frames != NULL)
-		StandardFrameLerp();
+		StandardFrameLerp(e);
 	else
-		CompressedFrameLerp();
+		CompressedFrameLerp(e);
 
-	if (currententity->swapFrame != -1)
+	if (e->swapFrame != -1)
 		ClearSkeleton(&swap_skeleton, 0);
 
-	if (currententity->rootJoint != -1)
+	if (e->rootJoint != -1)
 		ClearSkeleton(&cur_skeleton, 0);
 }

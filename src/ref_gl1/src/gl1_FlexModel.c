@@ -574,7 +574,7 @@ static void R_DrawFlexFrameLerp(entity_t* e) //mxd. Original logic uses 'current
 	if (!(int)r_frameswap->value)
 		e->swapFrame = -1;
 
-	FrameLerp();
+	FrameLerp(e);
 
 	if (draw_reflection)
 	{
