@@ -66,7 +66,6 @@ extern cvar_t* gl_bookalpha;
 
 extern cvar_t* gl_drawmode;
 extern cvar_t* gl_drawbuffer;
-extern cvar_t* gl_swapinterval;
 extern cvar_t* gl_saturatelighting;
 
 extern cvar_t* vid_fullscreen;
