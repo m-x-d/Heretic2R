@@ -10,6 +10,25 @@
 
 #define SUBDIVIDE_SIZE	64.0f
 
+#pragma region ========================== POLYGON GENERATION ==========================
+
+void R_EmitWaterPolys(const msurface_t* fa, const qboolean undulate)
+{
+	NOT_IMPLEMENTED
+}
+
+void R_EmitUnderwaterPolys(const msurface_t* fa) // H2
+{
+	NOT_IMPLEMENTED
+}
+
+void R_EmitQuakeFloorPolys(const msurface_t* fa) // H2
+{
+	NOT_IMPLEMENTED
+}
+
+#pragma endregion
+
 // Q2 counterpart
 static void R_BoundPoly(const int numverts, const float* verts, vec3_t mins, vec3_t maxs)
 {

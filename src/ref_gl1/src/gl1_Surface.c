@@ -12,6 +12,7 @@
 #include "gl1_Misc.h"
 #include "gl1_Sky.h"
 #include "gl1_Sprite.h"
+#include "gl1_Warp.h"
 #include "Vector.h"
 
 //mxd. Reconstructed data type. Original name unknown.
@@ -221,6 +222,21 @@ static image_t* R_TextureAnimation(const mtexinfo_t* tex)
 }
 
 // Q2 counterpart
+static void R_DrawGLPoly(const glpoly_t* p)
+{
+	glBegin(GL_POLYGON);
+
+	const float* v = p->verts[0];
+	for (int i = 0; i < p->numverts; i++, v += VERTEXSIZE)
+	{
+		glTexCoord2f(v[3], v[4]);
+		glVertex3fv(v);
+	}
+
+	glEnd();
+}
+
+// Q2 counterpart
 static void R_DrawGLPolyChain(glpoly_t* p, const float soffset, const float toffset)
 {
 	NOT_IMPLEMENTED
@@ -418,7 +434,102 @@ static void R_DrawTriangleOutlines(void)
 
 static void R_RenderBrushPoly(msurface_t* fa)
 {
-	NOT_IMPLEMENTED
+	c_brush_polys++;
+
+	R_BindImage(R_TextureAnimation(fa->texinfo)); // Q2: GL_Bind().
+
+	// H2: new cl_camera_under_surface logic.
+	if ((int)cl_camera_under_surface->value)
+	{
+		R_EmitUnderwaterPolys(fa);
+		R_TexEnv(GL_REPLACE);
+
+		return;
+	}
+
+	// H2: new quake_amount logic.
+	if ((int)quake_amount->value)
+	{
+		R_EmitQuakeFloorPolys(fa);
+		R_TexEnv(GL_REPLACE);
+
+		return;
+	}
+
+	if (fa->flags & SURF_DRAWTURB)
+	{
+		// Warp texture, no lightmaps.
+		R_TexEnv(GL_MODULATE);
+		glColor4f(gl_state.inverse_intensity, gl_state.inverse_intensity, gl_state.inverse_intensity, 1.0f);
+		R_EmitWaterPolys(fa, fa->flags & SURF_UNDULATE);
+		R_TexEnv(GL_REPLACE);
+
+		return;
+	}
+
+	R_TexEnv(GL_REPLACE);
+
+	// H2: missing SURF_FLOWING flag logic.
+	R_DrawGLPoly(fa->polys);
+
+	int map;
+	qboolean is_dynamic = false;
+
+	// Check for lightmap modification.
+	for (map = 0; map < MAXLIGHTMAPS && fa->styles[map] != 255; map++)
+	{
+		if (r_newrefdef.lightstyles[fa->styles[map]].white != fa->cached_light[map])
+		{
+			is_dynamic = true; //mxd. Avoid unnecessary gotos.
+			break;
+		}
+	}
+
+	// Dynamic this frame or dynamic previously.
+	if (fa->dlightframe == r_framecount || is_dynamic)
+	{
+		if ((int)gl_dynamic->value && !(fa->texinfo->flags & SURF_FULLBRIGHT)) //mxd. SURF_FULLBRIGHT define.
+		{
+			if ((fa->styles[map] >= 32 || fa->styles[map] == 0) && fa->dlightframe != r_framecount)
+			{
+				uint temp[34 * 34];
+				const int smax = (fa->extents[0] >> 4) + 1;
+				const int tmax = (fa->extents[1] >> 4) + 1;
+
+				R_BuildLightMap(fa, (byte*)temp, smax * 4);
+				R_SetCacheState(fa);
+				R_Bind(gl_state.lightmap_textures + fa->lightmaptexturenum);
+
+				glTexSubImage2D(GL_TEXTURE_2D, 0, fa->light_s, fa->light_t, smax, tmax, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, temp);
+
+				fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
+				gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
+			}
+			else
+			{
+				fa->lightmapchain = gl_lms.lightmap_surfaces[0];
+				gl_lms.lightmap_surfaces[0] = fa;
+			}
+
+			return;
+		}
+	}
+
+	// H2: new tall wall logic:
+	if (!(fa->texinfo->flags & SURF_TALL_WALL))
+	{
+		fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
+		gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
+	}
+	else if (gl_lms.tallwall_lightmaptexturenum < 512)
+	{
+		gl_lms.tallwall_lightmap_surfaces[gl_lms.tallwall_lightmaptexturenum] = fa;
+		gl_lms.tallwall_lightmaptexturenum++;
+	}
+	else
+	{
+		ri.Con_Printf(PRINT_ALL, "WARNING: too many tall wall surfaces!"); //mxd. Com_Printf() -> ri.Con_Printf().
+	}
 }
 
 static void R_RenderFlatShadedBrushPoly(msurface_t* fa) // H2
