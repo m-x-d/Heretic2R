@@ -977,7 +977,11 @@ static void R_SetLightLevel(void)
 
 static void R_ScreenFlash(const paletteRGBA_t color)
 {
-	NOT_IMPLEMENTED
+	glDepthMask(GL_FALSE);
+	Draw_FadeScreen(color);
+	glDepthMask(GL_TRUE);
+
+	ri.Deactivate_Screen_Flash();
 }
 
 // H2: return type: void -> int //TODO: useless: always returns 0 
