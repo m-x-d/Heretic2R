@@ -522,13 +522,35 @@ static image_t* R_GetSkin(const entity_t* ent) //mxd. Rewrote to use entity_t* a
 
 static image_t* R_GetSkinFromNode(const entity_t* ent, const int index) //mxd. Rewrote to use entity_t* arg instead of 'currententity'.
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	image_t* skin;
+	const model_t* mdl = *ent->model;
+
+	if (ent->skin != NULL && ent->skins != NULL)
+		skin = ent->skins[ent->fmnodeinfo[index].skin];
+	else
+		skin = mdl->skins[ent->fmnodeinfo[index].skin];
+
+	if (skin != NULL)
+		return skin;
+
+	if (ent->skin != NULL)
+		return ent->skin;
+
+	if (mdl->skins[0] != NULL)
+		return mdl->skins[0];
+
+	return r_notexture;
 }
 
 static void R_InterpolateVertexNormals(const int num_xyz, const float lerp_inv, const float lerp, const fmtrivertx_t* verts, const fmtrivertx_t* old_verts, vec3_t* normals)
 {
-	NOT_IMPLEMENTED
+	const fmtrivertx_t* v = &verts[0];
+	const fmtrivertx_t* ov = &old_verts[0];
+	vec3_t* n = &normals[0];
+
+	for (int i = 0; i < num_xyz; i++, v++, ov++, n++)
+		for (int j = 0; j < 3; j++)
+			(*n)[j] = lerp * bytedirs[ov->lightnormalindex][j] + lerp_inv * bytedirs[v->lightnormalindex][j];
 }
 
 static void R_DrawFlexFrameLerp(entity_t* e) //mxd. Original logic uses 'currententity' global var instead of 'e' arg.
