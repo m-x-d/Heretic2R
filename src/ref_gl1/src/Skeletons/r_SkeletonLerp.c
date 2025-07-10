@@ -162,7 +162,7 @@ static void LerpReferences(void)
 		if (delta <= 1.0f)
 			memcpy(old_placement, cur_placement, sizeof(Placement_t));
 
-		if (fmodel->frames == NULL)
+		if (fmodel->frames == NULL) //TODO: can't happen? There's fmodel->frames NULL-check in FrameLerp().
 		{
 			if (currententity->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < currententity->swapCluster)
 			{
@@ -173,13 +173,13 @@ static void LerpReferences(void)
 			else
 			{
 				//mxd. Skipping compressed frame lerp logic for now (decompiled code is VERY cursed; is it even used in H2?)...
-				NOT_IMPLEMENTED
+				ri.Com_Error(ERR_DROP, "LerpReferences: fmodel compressed frame lerp logic not implemented...");
 			}
 		}
 		else if (currententity->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < currententity->swapCluster)
 		{
-			Placement_t* frame = &fmodel->refsForFrame[currententity->frame * num_refs + i];
-			Placement_t* oldframe = &fmodel->refsForFrame[currententity->oldframe * num_refs + i];
+			const Placement_t* frame = &fmodel->refsForFrame[currententity->frame * num_refs + i];
+			const Placement_t* oldframe = &fmodel->refsForFrame[currententity->oldframe * num_refs + i];
 
 			R_LerpVert(frame->origin,			oldframe->origin,			cur_placement->origin,		cur_skel_move,	sfl_cur_skel.front_vector,	sfl_cur_skel.back_vector);
 			R_LerpVert(frame->direction,		oldframe->direction,		cur_placement->direction,	cur_skel_move,	sfl_cur_skel.front_vector,	sfl_cur_skel.back_vector);
@@ -187,8 +187,8 @@ static void LerpReferences(void)
 		}
 		else
 		{
-			Placement_t* swapFrame = &fmodel->refsForFrame[currententity->swapFrame * num_refs + i];
-			Placement_t* oldSwapFrame = &fmodel->refsForFrame[currententity->oldSwapFrame * num_refs + i];
+			const Placement_t* swapFrame = &fmodel->refsForFrame[currententity->swapFrame * num_refs + i];
+			const Placement_t* oldSwapFrame = &fmodel->refsForFrame[currententity->oldSwapFrame * num_refs + i];
 
 			R_LerpVert(swapFrame->origin,		oldSwapFrame->origin,		cur_placement->origin,		swap_skel_move,	sfl_swap_skel.front_vector,	sfl_swap_skel.back_vector);
 			R_LerpVert(swapFrame->direction,	oldSwapFrame->direction,	cur_placement->direction,	swap_skel_move,	sfl_swap_skel.front_vector,	sfl_swap_skel.back_vector);
@@ -247,7 +247,7 @@ static void StandardFrameLerp(void)
 
 static void CompressedFrameLerp(void)
 {
-	NOT_IMPLEMENTED
+	ri.Com_Error(ERR_DROP, "CompressedFrameLerp not implemented..."); //TODO: is this ever used? Remove?
 }
 
 void FrameLerp(void)
