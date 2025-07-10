@@ -198,9 +198,36 @@ void Draw_Pic(const int x, const int y, const char* name, const float alpha)
 	Draw_Render(x, y, pic->width, pic->height, pic, alpha);
 }
 
+//mxd. Used in SCR_TileClear frame border drawing logic. //TODO: remove?
 void Draw_TileClear(const int x, const int y, const int w, const int h, const char* pic)
 {
-	NOT_IMPLEMENTED
+	const image_t* image = Draw_FindPic(pic);
+
+	//mxd. Skip gl_alphatest_broken cvar logic.
+	R_BindImage(image);
+
+	//mxd. Divided by 64 in Q2.
+	const float sl = (float)x / 128.0f;
+	const float sr = (float)(x + w) / 128.0f;
+	const float tt = (float)y / 128.0f;
+	const float tb = (float)(y + h) / 128.0f;
+
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(sl, tt);
+	glVertex2i(x, y); //mxd. qglVertex2f -> qglVertex2i
+
+	glTexCoord2f(sr, tt);
+	glVertex2i(x + w, y); //mxd. qglVertex2f -> qglVertex2i
+
+	glTexCoord2f(sr, tb);
+	glVertex2i(x + w, y + h); //mxd. qglVertex2f -> qglVertex2i
+
+	glTexCoord2f(sl, tb);
+	glVertex2i(x, y + h); //mxd. qglVertex2f -> qglVertex2i
+
+	glEnd();
+	//mxd. Skip gl_alphatest_broken cvar logic.
 }
 
 // Fills a box of pixels with a single color.
