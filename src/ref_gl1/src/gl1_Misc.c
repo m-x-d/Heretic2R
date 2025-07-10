@@ -6,6 +6,7 @@
 
 #include "gl1_Misc.h"
 #include "gl1_Image.h"
+#include "gl1_Light.h"
 #include "gl1_Local.h"
 #include "Vector.h"
 
@@ -50,9 +51,37 @@ void R_SetDefaultState(void) // Q2: GL_SetDefaultState()
 	R_TexEnv(GL_REPLACE);
 }
 
-void R_DrawNullModel(void)
+// Q2 counterpart
+void R_DrawNullModel(const entity_t* e) //mxd. Original logic uses 'currententity' global var.
 {
-	NOT_IMPLEMENTED
+	vec3_t shadelight;
+
+	if (e->flags & RF_FULLBRIGHT)
+		VectorSet(shadelight, 1.0f, 1.0f, 1.0f);
+	else
+		R_LightPoint(e->origin, shadelight);
+
+	glPushMatrix();
+	R_RotateForEntity(e);
+
+	glDisable(GL_TEXTURE_2D);
+	glColor3fv(shadelight);
+
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3f(0.0f, 0.0f, -16.0f);
+	for (int i = 0; i < 5; i++)
+		glVertex3f(16.0f * cosf((float)i * ANGLE_90), 16.0f * sinf((float)i * ANGLE_90), 0.0f); //mxd. M_PI/2 -> ANGLE_90
+	glEnd();
+
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3f(0.0f, 0.0f, 16.0f);
+	for (int i = 4; i > -1; i--)
+		glVertex3f(16.0f * cosf((float)i * ANGLE_90), 16.0f * sinf((float)i * ANGLE_90), 0.0f); //mxd. M_PI/2 -> ANGLE_90
+	glEnd();
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glPopMatrix();
+	glEnable(GL_TEXTURE_2D);
 }
 
 // Transforms vector to screen space?

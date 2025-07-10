@@ -154,7 +154,7 @@ static void R_DrawEntitiesOnList(void)
 		if (currententity->model == NULL) // H2: extra sanity check.
 		{
 			ri.Con_Printf(PRINT_ALL, "Attempt to draw NULL model\n"); //mxd. Com_Printf() -> ri.Con_Printf().
-			R_DrawNullModel();
+			R_DrawNullModel(currententity);
 
 			continue;
 		}
@@ -162,7 +162,7 @@ static void R_DrawEntitiesOnList(void)
 		currentmodel = *currententity->model;
 		if (currentmodel == NULL)
 		{
-			R_DrawNullModel();
+			R_DrawNullModel(currententity);
 			continue;
 		}
 

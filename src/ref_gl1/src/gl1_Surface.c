@@ -54,14 +54,14 @@ static void R_DrawAlphaEntity(entity_t* ent) // H2
 	if (ent->model == NULL)
 	{
 		ri.Con_Printf(PRINT_DEVELOPER, "Attempt to draw NULL alpha model\n"); //mxd. Com_DPrintf() -> ri.Con_Printf().
-		R_DrawNullModel();
+		R_DrawNullModel(ent);
 
 		return;
 	}
 
 	if (*ent->model == NULL)
 	{
-		R_DrawNullModel();
+		R_DrawNullModel(ent);
 		return;
 	}
 
