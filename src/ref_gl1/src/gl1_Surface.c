@@ -91,9 +91,39 @@ static void R_DrawAlphaEntity(entity_t* ent) // H2
 	}
 }
 
-static void R_DrawAlphaSurface(const msurface_t* surf) // H2
+static void R_DrawAlphaSurface(const msurface_t* fa) // H2
 {
-	NOT_IMPLEMENTED
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.05f);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR
+	glLoadMatrixf(r_world_matrix);
+	glEnable(GL_BLEND);
+	R_TexEnv(GL_MODULATE);
+
+	R_BindImage(fa->texinfo->image);
+	c_brush_polys += 1;
+	currentmodel = r_worldmodel;
+
+	float alpha;
+	if (fa->texinfo->flags & SURF_TRANS33)
+		alpha = gl_trans33->value;
+	else if (fa->texinfo->flags & SURF_TRANS66)
+		alpha = gl_trans66->value;
+	else
+		alpha = 1.0f;
+
+	glColor4f(gl_state.inverse_intensity, gl_state.inverse_intensity, gl_state.inverse_intensity, alpha);
+
+	if (fa->flags & SURF_DRAWTURB)
+		R_EmitWaterPolys(fa, fa->flags & SURF_UNDULATE);
+	else
+		R_DrawGLPoly(fa->polys);
+
+	R_TexEnv(GL_REPLACE);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glDisable(GL_BLEND);
+	glDisable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.666f);
 }
 
 void R_SortAndDrawAlphaSurfaces(void)

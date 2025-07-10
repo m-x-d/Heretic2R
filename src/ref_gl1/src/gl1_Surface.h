@@ -15,3 +15,6 @@ extern void R_SortAndDrawAlphaSurfaces(void);
 extern void R_DrawBrushModel(entity_t* e);
 extern void R_DrawWorld(void);
 extern void R_MarkLeaves(void);
+
+// Local forward declarations for gl1_Surface.c
+static void R_DrawGLPoly(const glpoly_t* p);
