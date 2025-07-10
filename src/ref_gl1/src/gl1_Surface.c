@@ -150,7 +150,7 @@ void R_SortAndDrawAlphaSurfaces(void)
 			VectorSubtract(vec, r_origin, diff);
 
 			vec3_t screen_pos;
-			TransformVector(diff, screen_pos);
+			R_TransformVector(diff, screen_pos);
 
 			info->depth = max(info->depth, screen_pos[2]);
 		}

@@ -7,6 +7,7 @@
 #include "gl1_FlexModel.h"
 #include "gl1_Image.h"
 #include "gl1_Light.h"
+#include "gl1_Misc.h"
 #include "Skeletons/r_Skeletons.h"
 #include "Skeletons/r_SkeletonLerp.h"
 #include "anorms.h"

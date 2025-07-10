@@ -6,6 +6,7 @@
 
 #include "gl1_Sprite.h"
 #include "gl1_Image.h"
+#include "gl1_Misc.h"
 #include "q_Sprite.h"
 #include "Vector.h"
 
