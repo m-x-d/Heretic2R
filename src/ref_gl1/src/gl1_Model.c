@@ -14,9 +14,6 @@
 
 int registration_sequence;
 
-static model_t* loadmodel;
-static int modfilelen;
-
 static byte mod_novis[MAX_MAP_LEAFS / 8];
 
 #define MAX_MOD_KNOWN 512
@@ -126,10 +123,10 @@ void Mod_FreeAll(void)
 			Mod_Free(&mod_known[i]);
 }
 
-static void Mod_LoadBookModel(model_t* mod, const void* buffer) // H2
+static void Mod_LoadBookModel(model_t* mod, const void* buffer, const int length) // H2
 {
 	const book_t* book_in = buffer;
-	book_t* book_out = Hunk_Alloc(modfilelen);
+	book_t* book_out = Hunk_Alloc(length);
 
 	if (book_in->bheader.version != BOOK_VERSION)
 		ri.Sys_Error(ERR_DROP, "Mod_LoadBookModel: '%s' has wrong version number (%i should be %i)!", mod->name, book_in->bheader.version, BOOK_VERSION); //mxd. Sys_Error() -> ri.Sys_Error().
@@ -154,12 +151,12 @@ static void Mod_LoadBookModel(model_t* mod, const void* buffer) // H2
 	mod->type = mod_book;
 }
 
-static void Mod_LoadSpriteModel(model_t* mod, const void* buffer)
+static void Mod_LoadSpriteModel(model_t* mod, const void* buffer, const int length)
 {
 	char sprite_name[MAX_OSPATH]; // H2
 
 	const dsprite_t* sprin = buffer;
-	dsprite_t* sprout = Hunk_Alloc(modfilelen);
+	dsprite_t* sprout = Hunk_Alloc(length);
 
 	sprout->ident = LittleLong(sprin->ident);
 	sprout->version = LittleLong(sprin->version);
@@ -190,7 +187,7 @@ static void Mod_LoadSpriteModel(model_t* mod, const void* buffer)
 #pragma region ========================== BRUSHMODEL LOADING ==========================
 
 // Q2 counterpart
-static void Mod_LoadVertexes(const byte* mod_base, const lump_t* l)
+static void Mod_LoadVertexes(model_t* loadmodel, const byte* mod_base, const lump_t* l)
 {
 	const dvertex_t* in = (const void*)(mod_base + l->fileofs);
 
@@ -212,7 +209,7 @@ static void Mod_LoadVertexes(const byte* mod_base, const lump_t* l)
 }
 
 // Q2 counterpart
-static void Mod_LoadEdges(const byte* mod_base, const lump_t* l)
+static void Mod_LoadEdges(model_t* loadmodel, const byte* mod_base, const lump_t* l)
 {
 	const dedge_t* in = (const void*)(mod_base + l->fileofs);
 
@@ -233,7 +230,7 @@ static void Mod_LoadEdges(const byte* mod_base, const lump_t* l)
 }
 
 // Q2 counterpart
-static void Mod_LoadSurfedges(const byte* mod_base, const lump_t* l)
+static void Mod_LoadSurfedges(model_t* loadmodel, const byte* mod_base, const lump_t* l)
 {
 	const int* in = (const void*)(mod_base + l->fileofs);
 
@@ -255,7 +252,7 @@ static void Mod_LoadSurfedges(const byte* mod_base, const lump_t* l)
 }
 
 // Q2 counterpart
-static void Mod_LoadLighting(const byte* mod_base, const lump_t* l)
+static void Mod_LoadLighting(model_t* loadmodel, const byte* mod_base, const lump_t* l)
 {
 	if (l->filelen > 0)
 	{
@@ -269,7 +266,7 @@ static void Mod_LoadLighting(const byte* mod_base, const lump_t* l)
 }
 
 // Q2 counterpart
-static void Mod_LoadPlanes(const byte* mod_base, const lump_t* l)
+static void Mod_LoadPlanes(model_t* loadmodel, const byte* mod_base, const lump_t* l)
 {
 	const dplane_t* in = (const void*)(mod_base + l->fileofs);
 
@@ -299,7 +296,7 @@ static void Mod_LoadPlanes(const byte* mod_base, const lump_t* l)
 	}
 }
 
-static void Mod_LoadTexinfo(const byte* mod_base, const lump_t* l)
+static void Mod_LoadTexinfo(model_t* loadmodel, const byte* mod_base, const lump_t* l)
 {
 	char name[MAX_QPATH];
 
@@ -351,7 +348,7 @@ static void Mod_LoadTexinfo(const byte* mod_base, const lump_t* l)
 }
 
 // Q2 counterpart. Fills in s->texturemins[] and s->extents[]
-static void CalcSurfaceExtents(msurface_t* s)
+static void CalcSurfaceExtents(model_t* loadmodel, msurface_t* s)
 {
 	float mins[2];
 	float maxs[2];
@@ -395,7 +392,7 @@ static void CalcSurfaceExtents(msurface_t* s)
 	}
 }
 
-static void Mod_LoadFaces(const byte* mod_base, const lump_t* l)
+static void Mod_LoadFaces(model_t* loadmodel, const byte* mod_base, const lump_t* l)
 {
 	const dface_t* in = (const void*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(dface_t) != 0)
@@ -431,7 +428,7 @@ static void Mod_LoadFaces(const byte* mod_base, const lump_t* l)
 
 		out->texinfo = loadmodel->texinfo + texinfo;
 
-		CalcSurfaceExtents(out);
+		CalcSurfaceExtents(loadmodel, out);
 
 		// Lighting info
 		for (int i = 0; i < MAXLIGHTMAPS; i++)
@@ -473,7 +470,7 @@ static void Mod_LoadFaces(const byte* mod_base, const lump_t* l)
 }
 
 // Q2 counterpart
-static void Mod_LoadMarksurfaces(const byte* mod_base, const lump_t* l)
+static void Mod_LoadMarksurfaces(model_t* loadmodel, const byte* mod_base, const lump_t* l)
 {
 	const short* in = (const void*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(short) != 0)
@@ -496,7 +493,7 @@ static void Mod_LoadMarksurfaces(const byte* mod_base, const lump_t* l)
 }
 
 // Q2 counterpart
-static void Mod_LoadVisibility(const byte* mod_base, const lump_t* l)
+static void Mod_LoadVisibility(model_t* loadmodel, const byte* mod_base, const lump_t* l)
 {
 	if (l->filelen == 0)
 	{
@@ -515,7 +512,7 @@ static void Mod_LoadVisibility(const byte* mod_base, const lump_t* l)
 	}
 }
 
-static void Mod_LoadLeafs(const byte* mod_base, const lump_t* l)
+static void Mod_LoadLeafs(model_t* loadmodel, const byte* mod_base, const lump_t* l)
 {
 	const dleaf_t* in = (const void*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(dleaf_t))
@@ -557,7 +554,7 @@ static void Mod_SetParent(mnode_t* node, mnode_t* parent)
 	}
 }
 
-static void Mod_LoadNodes(const byte* mod_base, const lump_t* l)
+static void Mod_LoadNodes(model_t* loadmodel, const byte* mod_base, const lump_t* l)
 {
 	const dnode_t* in = (const void*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(dnode_t))
@@ -611,7 +608,7 @@ static float RadiusFromBounds(const vec3_t mins, const vec3_t maxs)
 }
 
 // Q2 counterpart
-static void Mod_LoadSubmodels(byte* mod_base, const lump_t* l)
+static void Mod_LoadSubmodels(model_t* loadmodel, byte* mod_base, const lump_t* l)
 {
 	dmodel_t* in = (void*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(dmodel_t))
@@ -643,8 +640,8 @@ static void Mod_LoadSubmodels(byte* mod_base, const lump_t* l)
 // Q2 counterpart
 static void Mod_LoadBrushModel(model_t* mod, void* buffer)
 {
-	loadmodel->type = mod_brush;
-	if (loadmodel != mod_known)
+	mod->type = mod_brush;
+	if (mod != mod_known)
 		ri.Sys_Error(ERR_DROP, "Loaded a brush model after the world");
 
 	dheader_t* header = buffer;
@@ -658,18 +655,18 @@ static void Mod_LoadBrushModel(model_t* mod, void* buffer)
 	for (uint i = 0; i < sizeof(dheader_t) / 4; i++)
 		((int*)header)[i] = LittleLong(((int*)header)[i]);
 
-	Mod_LoadVertexes(mod_base, &header->lumps[LUMP_VERTEXES]);
-	Mod_LoadEdges(mod_base, &header->lumps[LUMP_EDGES]);
-	Mod_LoadSurfedges(mod_base, &header->lumps[LUMP_SURFEDGES]);
-	Mod_LoadLighting(mod_base, &header->lumps[LUMP_LIGHTING]);
-	Mod_LoadPlanes(mod_base, &header->lumps[LUMP_PLANES]);
-	Mod_LoadTexinfo(mod_base, &header->lumps[LUMP_TEXINFO]);
-	Mod_LoadFaces(mod_base, &header->lumps[LUMP_FACES]);
-	Mod_LoadMarksurfaces(mod_base, &header->lumps[LUMP_LEAFFACES]);
-	Mod_LoadVisibility(mod_base, &header->lumps[LUMP_VISIBILITY]);
-	Mod_LoadLeafs(mod_base, &header->lumps[LUMP_LEAFS]);
-	Mod_LoadNodes(mod_base, &header->lumps[LUMP_NODES]);
-	Mod_LoadSubmodels(mod_base, &header->lumps[LUMP_MODELS]);
+	Mod_LoadVertexes(mod, mod_base, &header->lumps[LUMP_VERTEXES]);
+	Mod_LoadEdges(mod, mod_base, &header->lumps[LUMP_EDGES]);
+	Mod_LoadSurfedges(mod, mod_base, &header->lumps[LUMP_SURFEDGES]);
+	Mod_LoadLighting(mod, mod_base, &header->lumps[LUMP_LIGHTING]);
+	Mod_LoadPlanes(mod, mod_base, &header->lumps[LUMP_PLANES]);
+	Mod_LoadTexinfo(mod, mod_base, &header->lumps[LUMP_TEXINFO]);
+	Mod_LoadFaces(mod, mod_base, &header->lumps[LUMP_FACES]);
+	Mod_LoadMarksurfaces(mod, mod_base, &header->lumps[LUMP_LEAFFACES]);
+	Mod_LoadVisibility(mod, mod_base, &header->lumps[LUMP_VISIBILITY]);
+	Mod_LoadLeafs(mod, mod_base, &header->lumps[LUMP_LEAFS]);
+	Mod_LoadNodes(mod, mod_base, &header->lumps[LUMP_NODES]);
+	Mod_LoadSubmodels(mod, mod_base, &header->lumps[LUMP_MODELS]);
 
 	// Set up the submodels.
 	for (int i = 0; i < mod->numsubmodels; i++)
@@ -677,13 +674,13 @@ static void Mod_LoadBrushModel(model_t* mod, void* buffer)
 		const mmodel_t* bm = &mod->submodels[i];
 		model_t* starmod = &mod_inline[i];
 
-		*starmod = *loadmodel;
+		*starmod = *mod;
 
 		starmod->firstmodelsurface = bm->firstface;
 		starmod->nummodelsurfaces = bm->numfaces;
 		starmod->firstnode = bm->headnode;
 
-		if (starmod->firstnode >= loadmodel->numnodes)
+		if (starmod->firstnode >= mod->numnodes)
 			ri.Sys_Error(ERR_DROP, "Inline model %i has bad firstnode", i);
 
 		VectorCopy(bm->maxs, starmod->maxs);
@@ -691,7 +688,7 @@ static void Mod_LoadBrushModel(model_t* mod, void* buffer)
 		starmod->radius = bm->radius;
 
 		if (i == 0)
-			*loadmodel = *starmod;
+			*mod = *starmod;
 
 		mod_inline[i].numleafs = bm->visleafs;
 	}
@@ -739,7 +736,7 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 
 	// Load the file.
 	char* buf;
-	modfilelen = ri.FS_LoadFile(mod->name, (void**)&buf);
+	const int modfilelen = ri.FS_LoadFile(mod->name, (void**)&buf);
 
 	if (buf == NULL)
 	{
@@ -749,8 +746,6 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 		memset(mod, 0, sizeof(mod->name));
 		return NULL;
 	}
-
-	loadmodel = mod;
 
 	// H2: check for FlexModel header...
 	if (modfilelen > 6 && Q_strncasecmp(buf, "header", 6) == 0)
@@ -770,12 +765,12 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 			// Missing: case IDALIASHEADER
 			case IDSPRITEHEADER:
 				mod->extradata = Hunk_Begin(0x10000);
-				Mod_LoadSpriteModel(mod, buf);
+				Mod_LoadSpriteModel(mod, buf, modfilelen);
 				break;
 
 			case IDBOOKHEADER: // H2
 				mod->extradata = Hunk_Begin(0x10000);
-				Mod_LoadBookModel(mod, buf);
+				Mod_LoadBookModel(mod, buf, modfilelen);
 				break;
 
 			case IDBSPHEADER:
