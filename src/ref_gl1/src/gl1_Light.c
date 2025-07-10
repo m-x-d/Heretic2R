@@ -222,7 +222,7 @@ void R_LightPoint(const vec3_t p, vec3_t color)
 	for (int lnum = 0; lnum < r_newrefdef.num_dlights; lnum++, dl++)
 	{
 		vec3_t dist;
-		VectorSubtract(currententity->origin, dl->origin, dist);
+		VectorSubtract(p, dl->origin, dist); //mxd. Original logic uses 'currententity->origin' instead of 'p' here.
 		const float add = (dl->intensity - VectorLength(dist)) / 256.0f;
 
 		if (add > 0.0f)
