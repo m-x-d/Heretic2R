@@ -6,6 +6,8 @@
 
 #include "gl1_Draw.h"
 #include "gl1_Image.h"
+#include "gl1_Misc.h"
+#include "Vector.h"
 #include "vid.h"
 
 image_t* r_notexture; // Used for missing textures.
@@ -254,10 +256,59 @@ void Draw_Fill(const int x, const int y, const int w, const int h, const byte r,
 
 void Draw_FadeScreen(const paletteRGBA_t color)
 {
-	NOT_IMPLEMENTED
+	glEnable(GL_BLEND);
+	glEnable(GL_ALPHA_TEST);
+	glDisable(GL_TEXTURE_2D);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR
+	glAlphaFunc(GL_GREATER, 0.05f);
+	glColor4ubv(color.c_array); //mxd. qglColor4ub -> qglColor4ubv
+
+	glBegin(GL_QUADS);
+
+	const int x = r_newrefdef.x;
+	const int y = viddef.height - r_newrefdef.y - r_newrefdef.height;
+	const int w = r_newrefdef.width;
+	const int h = r_newrefdef.height;
+
+	//mxd. qglVertex2f -> qglVertex2i
+	glVertex2i(x, y);
+	glVertex2i(x + w, y);
+	glVertex2i(x + w, y + h);
+	glVertex2i(x, y + h);
+
+	glEnd();
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 }
 
 void Draw_Name(const vec3_t origin, const char* name, const paletteRGBA_t color)
 {
-	NOT_IMPLEMENTED
+	vec3_t diff;
+	VectorSubtract(origin, r_origin, diff);
+
+	vec3_t screen_pos;
+	R_TransformVector(diff, screen_pos);
+
+	if (screen_pos[2] < 0.01f)
+		return;
+
+	const int len = (int)strlen(name);
+	const float center_x = (float)r_newrefdef.width * 0.5f;
+	const float center_y = (float)r_newrefdef.height * 0.5f;
+	const float scaler = center_x / screen_pos[2] * 1.28f;
+
+	int x = (int)(center_x + screen_pos[0] * scaler) - len * 4;
+	const int y = (int)(center_y - screen_pos[1] * scaler);
+
+	if (x < 0 || y < 0 || x + len * 8 > r_newrefdef.width || y + 8 > r_newrefdef.height)
+		return;
+
+	for (int i = 0; i < len; i++)
+	{
+		Draw_Char(x, y, name[i], color);
+		x += 8;
+	}
 }
