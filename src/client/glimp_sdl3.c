@@ -6,6 +6,7 @@
 // Copyright 2025 mxd
 //
 
+#include "glimp_sdl3.h"
 #include "qcommon.h"
 #include "client.h"
 #include <SDL3/SDL.h>
@@ -147,13 +148,19 @@ static qboolean InitDisplayModes(void) //mxd
 // Sets the window icon.
 static void SetSDLIcon(void)
 {
-	//TODO: implement? Game window already uses corrent icon... somehow.
+	//TODO: implement? Game window already uses correct icon... somehow.
 }
 
 // Shuts the SDL render backend down.
 static void ShutdownGraphics(void)
 {
-	NOT_IMPLEMENTED
+	if (window != NULL)
+	{
+		GLimp_GrabInput(false); // Cleanly ungrab input (needs window).
+		SDL_DestroyWindow(window);
+
+		window = NULL;
+	}
 }
 
 // Initializes the SDL video subsystem. Must be called before anything else.
@@ -186,7 +193,8 @@ qboolean GLimp_Init(void)
 // Shuts the SDL video subsystem down. Must be called after everything's finished and cleaned up.
 void GLimp_Shutdown(void)
 {
-	NOT_IMPLEMENTED
+	ShutdownGraphics();
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 // (Re)initializes the actual window.
@@ -237,5 +245,19 @@ qboolean GLimp_InitGraphics(const int width, const int height)
 // Shuts the window down.
 void GLimp_ShutdownGraphics(void)
 {
-	NOT_IMPLEMENTED
+	SDL_GL_ResetAttributes();
+	ShutdownGraphics();
+}
+
+// (Un)grab Input.
+void GLimp_GrabInput(const qboolean grab)
+{
+	if (window != NULL)
+	{
+		if (!SDL_SetWindowMouseGrab(window, grab))
+			Com_Printf("WARNING: failed to lock mouse to game window, reason: %s\n", SDL_GetError());
+
+		if (!SDL_SetWindowRelativeMouseMode(window, grab))
+			Com_Printf("WARNING: failed to set relative mouse mode, reason: %s\n", SDL_GetError());
+	}
 }
