@@ -67,14 +67,55 @@ void R_EmitWaterPolys(const msurface_t* fa, const qboolean undulate) // H2: extr
 	}
 }
 
+//TODO: Warps all bmodel polys when camera is underwater. Seems to be used only when r_fullbright is 1. H2 bug?
 void R_EmitUnderwaterPolys(const msurface_t* fa) // H2
 {
-	NOT_IMPLEMENTED
+	for (glpoly_t* p = fa->polys; p != NULL; p = p->next)
+	{
+		glBegin(GL_TRIANGLE_FAN);
+
+		float* v = p->verts[0];
+		for (int i = 0; i < p->numverts; i++, v += VERTEXSIZE)
+		{
+			vec3_t pos;
+			VectorCopy(v, pos);
+
+			pos[2] += turbsin[TURBSIN_V0(v[0], v[1])] * 0.5f +
+					  turbsin[TURBSIN_V1(v[0], v[1])] * 0.25f;
+
+			glTexCoord2f(v[3], v[4]);
+			glVertex3fv(pos);
+		}
+
+		glEnd();
+	}
 }
 
+//TODO: Warps all bmodel polys when quake_amount > 0. Seems to be used only when r_fullbright is 1. H2 bug?
 void R_EmitQuakeFloorPolys(const msurface_t* fa) // H2
 {
-	NOT_IMPLEMENTED
+	const float amount = (quake_amount->value * 0.05f);
+
+	for (glpoly_t* p = fa->polys; p != NULL; p = p->next)
+	{
+		glBegin(GL_TRIANGLE_FAN);
+
+		float* v = p->verts[0];
+		for (int i = 0; i < p->numverts; i++, v += VERTEXSIZE)
+		{
+			vec3_t pos;
+			VectorCopy(v, pos);
+
+			pos[2] += turbsin[TURBSIN_V0(v[0], v[1])] * amount * 0.5f +
+					  turbsin[TURBSIN_V1(v[0], v[1])] * amount * 0.25f;
+
+			glTexCoord2f(v[3], v[4]);
+			glVertex3fv(pos);
+
+		}
+
+		glEnd();
+	}
 }
 
 #pragma endregion
