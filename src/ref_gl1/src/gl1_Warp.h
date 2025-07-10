@@ -8,4 +8,4 @@
 
 #include "gl1_Local.h"
 
-extern void R_SubdivideSurface(msurface_t* fa);
+extern void R_SubdivideSurface(const model_t* mdl, msurface_t* fa); //mxd. Added 'mdl' arg.

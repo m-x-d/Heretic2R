@@ -14,7 +14,7 @@
 
 int registration_sequence;
 
-model_t* loadmodel;
+static model_t* loadmodel;
 static int modfilelen;
 
 static byte mod_novis[MAX_MAP_LEAFS / 8];
@@ -444,7 +444,7 @@ static void Mod_LoadFaces(const byte* mod_base, const lump_t* l)
 			}
 
 			// Cut up polygon for warps.
-			R_SubdivideSurface(out);
+			R_SubdivideSurface(currentmodel, out);
 		}
 
 		// Create lightmaps and polygons.
