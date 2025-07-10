@@ -232,7 +232,49 @@ void R_ClearSkyBox(void)
 
 static void R_MakeSkyVec(float s, float t, const int axis)
 {
-	NOT_IMPLEMENTED
+	// 1 = s, 2 = t, 3 = 2048
+	static int st_to_vec[6][3] =
+	{
+		{  3, -1,  2 },
+		{ -3,  1,  2 },
+
+		{  1,  3,  2 },
+		{ -1, -3,  2 },
+
+		{ -2, -1,  3 },	// 0 degrees yaw, look straight up.
+		{  2, -1, -3 }	// Look straight down.
+	};
+
+	float clipdist;
+
+	// H2: new r_farclipdist logic
+	if ((int)r_fog->value) //mxd. Removed gl_fog_broken cvar check.
+		clipdist = r_farclipdist->value;
+	else
+		clipdist = r_farclipdist->value * 0.5773503f; //TODO: what's with the scaler?
+
+	vec3_t b;
+	VectorSet(b, s * clipdist, t * clipdist, clipdist); // Q2: 2300
+
+	vec3_t v;
+	for (int i = 0; i < 3; i++)
+	{
+		const int k = st_to_vec[axis][i];
+		if (k < 0)
+			v[i] = -b[-k - 1];
+		else
+			v[i] = b[k - 1];
+	}
+
+	// Avoid bilerp seam.
+	s = (s + 1.0f) * 0.5f;
+	t = (t + 1.0f) * 0.5f;
+
+	s = Clamp(s, sky_min, sky_max);
+	t = Clamp(t, sky_min, sky_max);
+
+	glTexCoord2f(s, 1.0f - t);
+	glVertex3fv(v);
 }
 
 void R_DrawSkyBox(void)
