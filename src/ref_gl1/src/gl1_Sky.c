@@ -8,6 +8,9 @@
 #include "gl1_Image.h"
 #include "Vector.h"
 
+#define MAX_CLIP_VERTS	64
+#define ON_EPSILON		0.1f // Point on plane side epsilon.
+
 static float skyrotate;
 static vec3_t skyaxis;
 static image_t* sky_images[6];
@@ -17,9 +20,202 @@ static float skymaxs[2][6];
 static float sky_min;
 static float sky_max;
 
+// Q2 counterpart.
+static void R_DrawSkyPolygon(const int nump, vec3_t vecs)
+{
+	// s = [0]/[2], t = [1]/[2]
+	static int vec_to_st[6][3] =
+	{
+		{ -2,  3,  1 },
+		{  2,  3, -1 },
+
+		{  1,  3,  2 },
+		{ -1,  3, -2 },
+
+		{ -2, -1,  3 },
+		{ -2,  1, -3 }
+	};
+
+	// Decide which face it maps to.
+	vec3_t v;
+	VectorCopy(vec3_origin, v);
+
+	float* vp = vecs;
+	for (int i = 0; i < nump; i++, vp += 3)
+		VectorAdd(vp, v, v);
+
+	vec3_t av;
+	VectorAbs(v, av);
+
+	int axis;
+	if (av[0] > av[1] && av[0] > av[2])
+		axis = (v[0] < 0 ? 1 : 0);
+	else if (av[1] > av[2] && av[1] > av[0])
+		axis = (v[1] < 0 ? 3 : 2);
+	else
+		axis = (v[2] < 0 ? 5 : 4);
+
+	float dv;
+	float s;
+	float t;
+
+	// Project new texture coords.
+	for (int i = 0; i < nump; i++, vecs += 3)
+	{
+		int j = vec_to_st[axis][2];
+		if (j > 0)
+			dv = vecs[j - 1];
+		else
+			dv = -vecs[-j - 1];
+
+		if (dv < 0.001f)
+			continue; // Don't divide by zero.
+
+		j = vec_to_st[axis][0];
+		if (j < 0)
+			s = -vecs[-j - 1] / dv;
+		else
+			s = vecs[j - 1] / dv;
+
+		j = vec_to_st[axis][1];
+		if (j < 0)
+			t = -vecs[-j - 1] / dv;
+		else
+			t = vecs[j - 1] / dv;
+
+		skymins[0][axis] = min(s, skymins[0][axis]);
+		skymins[1][axis] = min(t, skymins[1][axis]);
+
+		skymaxs[0][axis] = max(s, skymaxs[0][axis]);
+		skymaxs[1][axis] = max(t, skymaxs[1][axis]);
+	}
+}
+
+// Q2 counterpart
+static void R_ClipSkyPolygon(const int nump, vec3_t vecs, const int stage)
+{
+	static vec3_t skyclip[] =
+	{
+		{  1.0f,  1.0f, 0.0f },
+		{  1.0f, -1.0f, 0.0f },
+		{  0.0f, -1.0f, 1.0f },
+		{  0.0f,  1.0f, 1.0f },
+		{  1.0f,  0.0f, 1.0f },
+		{ -1.0f,  0.0f, 1.0f }
+	};
+
+	int i;
+	float* v;
+	float dists[MAX_CLIP_VERTS];
+	int sides[MAX_CLIP_VERTS];
+	vec3_t newv[2][MAX_CLIP_VERTS];
+	int newc[2];
+
+	if (nump > MAX_CLIP_VERTS - 2)
+		ri.Sys_Error(ERR_DROP, "R_ClipSkyPolygon: MAX_CLIP_VERTS");
+
+	if (stage == 6)
+	{
+		// Fully clipped, so draw it.
+		R_DrawSkyPolygon(nump, vecs);
+		return;
+	}
+
+	qboolean front = false;
+	qboolean back = false;
+	const float* norm = skyclip[stage];
+
+	for (i = 0, v = vecs; i < nump; i++, v += 3)
+	{
+		const float d = DotProduct(v, norm);
+
+		if (d > ON_EPSILON)
+		{
+			front = true;
+			sides[i] = SIDE_FRONT;
+		}
+		else if (d < -ON_EPSILON)
+		{
+			back = true;
+			sides[i] = SIDE_BACK;
+		}
+		else
+		{
+			sides[i] = SIDE_ON;
+		}
+
+		dists[i] = d;
+	}
+
+	if (!front || !back)
+	{
+		// Not clipped.
+		R_ClipSkyPolygon(nump, vecs, stage + 1);
+		return;
+	}
+
+	// Clip it.
+	sides[i] = sides[0];
+	dists[i] = dists[0];
+	VectorCopy(vecs, vecs + i * 3);
+	newc[0] = 0;
+	newc[1] = 0;
+
+	for (i = 0, v = vecs; i < nump; i++, v += 3)
+	{
+		switch (sides[i])
+		{
+			case SIDE_FRONT:
+				VectorCopy(v, newv[0][newc[0]]);
+				newc[0]++;
+				break;
+
+			case SIDE_BACK:
+				VectorCopy(v, newv[1][newc[1]]);
+				newc[1]++;
+				break;
+
+			case SIDE_ON:
+				VectorCopy(v, newv[0][newc[0]]);
+				newc[0]++;
+				VectorCopy(v, newv[1][newc[1]]);
+				newc[1]++;
+				break;
+		}
+
+		if (sides[i] == SIDE_ON || sides[i + 1] == SIDE_ON || sides[i + 1] == sides[i])
+			continue;
+
+		const float d = dists[i] / (dists[i] - dists[i + 1]);
+		for (int j = 0; j < 3; j++)
+		{
+			const float e = v[j] + d * (v[j + 3] - v[j]);
+			newv[0][newc[0]][j] = e;
+			newv[1][newc[1]][j] = e;
+		}
+
+		newc[0]++;
+		newc[1]++;
+	}
+
+	// Continue.
+	R_ClipSkyPolygon(newc[0], newv[0][0], stage + 1);
+	R_ClipSkyPolygon(newc[1], newv[1][0], stage + 1);
+}
+
+// Q2 counterpart
 void R_AddSkySurface(const msurface_t* fa)
 {
-	NOT_IMPLEMENTED
+	vec3_t verts[MAX_CLIP_VERTS];
+
+	// Calculate vertex values for sky box.
+	for (const glpoly_t* p = fa->polys; p != NULL; p = p->next)
+	{
+		for (int i = 0; i < p->numverts; i++)
+			VectorSubtract(p->verts[i], r_origin, verts[i]);
+
+		R_ClipSkyPolygon(p->numverts, verts[0], 0);
+	}
 }
 
 // Q2 counterpart
