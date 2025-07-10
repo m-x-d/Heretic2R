@@ -521,7 +521,7 @@ static void R_RenderBrushPoly(msurface_t* fa)
 		fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
 		gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
 	}
-	else if (gl_lms.tallwall_lightmaptexturenum < 512)
+	else if (gl_lms.tallwall_lightmaptexturenum < MAX_TALLWALL_LIGHTMAPS)
 	{
 		gl_lms.tallwall_lightmap_surfaces[gl_lms.tallwall_lightmaptexturenum] = fa;
 		gl_lms.tallwall_lightmaptexturenum++;
