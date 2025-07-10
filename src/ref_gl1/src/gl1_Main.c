@@ -1017,7 +1017,7 @@ REF_DECLSPEC refexport_t GetRefAPI(const refimport_t rimp)
 
 	re.BeginFrame = R_BeginFrame;
 	re.EndFrame = R_EndFrame;
-	re.FindSurface = FindSurface;
+	re.FindSurface = RI_FindSurface;
 
 	re.PrepareForWindow = R_PrepareForWindow; // YQ2
 	re.InitContext = R_InitContext; // YQ2
