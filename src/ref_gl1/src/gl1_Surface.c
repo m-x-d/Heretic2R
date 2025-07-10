@@ -682,9 +682,162 @@ static qboolean R_CullBox(const vec3_t mins, const vec3_t maxs)
 	return false;
 }
 
+static void R_DrawInlineBModel(const entity_t* e) //mxd. Original logic uses 'currententity' global var.
+{
+#define BACKFACE_EPSILON 0.01f // Q2: defined in gl_local.h
+
+	const model_t* mdl = *e->model; //mxd. Original logic uses 'currentmodel' global var instead.
+
+	// Calculate dynamic lighting for bmodel.
+	if (!(int)gl_flashblend->value)
+	{
+		dlight_t* lt = r_newrefdef.dlights;
+		for (int k = 0; k < r_newrefdef.num_dlights; k++, lt++)
+			R_MarkLights(lt, 1 << k, mdl->nodes + mdl->firstnode);
+	}
+
+	msurface_t* psurf = &mdl->surfaces[mdl->firstmodelsurface];
+
+	// H2: extra RF_TRANS_ADD and RF_TRANS_GHOST flags.
+	if (e->flags & RF_TRANS_ANY)
+	{
+		glEnable(GL_BLEND);
+		glColor4f(1.0f, 1.0f, 1.0f, 0.25f);
+		R_TexEnv(GL_MODULATE);
+	}
+
+	// Draw texture.
+	for (int i = 0; i < mdl->nummodelsurfaces; i++, psurf++)
+	{
+		// Find which side of the node we are on.
+		const cplane_t* pplane = psurf->plane;
+		const float dot = DotProduct(modelorg, pplane->normal) - pplane->dist;
+
+		// Draw the polygon.
+		if (((psurf->flags & SURF_PLANEBACK) && dot < -BACKFACE_EPSILON) ||
+			(!(psurf->flags & SURF_PLANEBACK) && dot > BACKFACE_EPSILON))
+		{
+			if (psurf->texinfo->flags & (SURF_TRANS33 | SURF_TRANS66))
+			{
+				// Add to the translucent chain.
+				psurf->texturechain = r_alpha_surfaces;
+				r_alpha_surfaces = psurf;
+			}
+			else if (!(psurf->flags & SURF_DRAWTURB) && !(int)r_fullbright->value && !(int)gl_drawflat->value) // H2: extra r_fullbright and gl_drawflat checks
+			{
+				R_RenderLightmappedPoly(psurf); // Q2: GL_RenderLightmappedPoly
+			}
+			else //mxd. Skipped qglMTexCoord2fSGIS check.
+			{
+				R_EnableMultitexture(false);
+				R_RenderBrushPoly(psurf);
+				R_EnableMultitexture(true);
+			}
+		}
+	}
+
+	// H2: extra RF_TRANS_ADD and RF_TRANS_GHOST flags.
+	if (e->flags & RF_TRANS_ANY)
+	{
+		glDisable(GL_BLEND);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		R_TexEnv(GL_REPLACE);
+	}
+}
+
 void R_DrawBrushModel(entity_t* e)
 {
-	NOT_IMPLEMENTED
+	const model_t* mdl = *e->model; //mxd. Original logic uses 'currentmodel' global var instead.
+
+	if (mdl->nummodelsurfaces == 0)
+		return;
+
+	// H2: missing: currententity = e;
+	gl_state.currenttextures[0] = -1;
+	gl_state.currenttextures[1] = -1;
+
+	vec3_t mins;
+	vec3_t maxs;
+	qboolean rotated;
+
+	if (e->angles[0] != 0.0f || e->angles[1] != 0.0f || e->angles[2] != 0.0f)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			mins[i] = e->origin[i] - mdl->radius;
+			maxs[i] = e->origin[i] + mdl->radius;
+		}
+
+		rotated = true;
+	}
+	else
+	{
+		VectorAdd(e->origin, mdl->mins, mins);
+		VectorAdd(e->origin, mdl->maxs, maxs);
+
+		rotated = false;
+	}
+
+	if (R_CullBox(mins, maxs))
+		return;
+
+	// H2: new gl_drawmode logic.
+	if ((int)gl_drawmode->value)
+	{
+		glColor4f(1.0f, 1.0f, 1.0f, 0.4f);
+		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+	}
+	else
+	{
+		glColor3f(1.0f, 1.0f, 1.0f);
+	}
+
+	memset((void*)gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
+	VectorSubtract(r_newrefdef.vieworg, e->origin, modelorg);
+
+	if (rotated)
+	{
+		vec3_t angles;
+		VectorScale(e->angles, RAD_TO_ANGLE, angles); // H2: new RAD_TO_ANGLE rescale.
+
+		vec3_t temp;
+		VectorCopy(modelorg, temp);
+
+		vec3_t forward;
+		vec3_t right;
+		vec3_t up;
+		AngleVectors(angles, forward, right, up);
+
+		modelorg[0] = DotProduct(temp, forward);
+		modelorg[1] = -DotProduct(temp, right);
+		modelorg[2] = DotProduct(temp, up);
+	}
+
+	glPushMatrix();
+	e->angles[0] *= -1.0f; // stupid quake bug.
+	e->angles[2] *= -1.0f; // stupid quake bug.
+	R_RotateForEntity(e);
+	e->angles[0] *= -1.0f; // stupid quake bug.
+	e->angles[2] *= -1.0f; // stupid quake bug.
+
+	R_EnableMultitexture(true);
+	R_SelectTexture(GL_TEXTURE0);
+	R_TexEnv(GL_REPLACE);
+	R_SelectTexture(GL_TEXTURE1);
+	R_TexEnv(GL_MODULATE);
+
+	R_DrawInlineBModel(e);
+	R_EnableMultitexture(false);
+
+	// H2: new gl_drawmode logic.
+	if ((int)gl_drawmode->value)
+	{
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	glPopMatrix();
 }
 
 #pragma endregion
