@@ -128,7 +128,6 @@ void SndDll_Init(void)
 
 	snd_import_t si;
 
-	si.cl_hwnd = cl_hwnd;
 	si.cl = &cl;
 	si.cls = &cls;
 	si.cl_entities = cl_entities;
