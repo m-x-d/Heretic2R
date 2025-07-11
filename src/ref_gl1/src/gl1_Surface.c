@@ -46,8 +46,6 @@ static int AlphaSurfComp(const AlphaSurfaceSortInfo_t* info1, const AlphaSurface
 //TODO: logic identical to for loop logic in R_DrawEntitiesOnList(). Move to gl_rmain as R_DrawEntity and replace said logic?
 static void R_DrawAlphaEntity(entity_t* ent) // H2
 {
-	currententity = ent;
-
 	if (!(int)r_drawentities->value)
 		return;
 
@@ -59,15 +57,15 @@ static void R_DrawAlphaEntity(entity_t* ent) // H2
 		return;
 	}
 
-	if (*ent->model == NULL)
+	const model_t* mdl = *ent->model; //mxd. Original logic uses 'currentmodel' global var.
+
+	if (mdl == NULL)
 	{
 		R_DrawNullModel(ent);
 		return;
 	}
 
-	currentmodel = *ent->model;
-
-	switch (currentmodel->type)
+	switch (mdl->type)
 	{
 		case mod_bad:
 			ri.Con_Printf(PRINT_ALL, "WARNING: currentmodel->type == 0; reload the map\n"); //mxd. Com_Printf() -> ri.Con_Printf().
@@ -102,7 +100,6 @@ static void R_DrawAlphaSurface(const msurface_t* fa) // H2
 
 	R_BindImage(fa->texinfo->image);
 	c_brush_polys += 1;
-	currentmodel = r_worldmodel;
 
 	float alpha;
 	if (fa->texinfo->flags & SURF_TRANS33)
@@ -149,8 +146,6 @@ void R_SortAndDrawAlphaSurfaces(void)
 	info = &sorted_ents[r_newrefdef.num_alpha_entities];
 	info->entity = NULL;
 	info->depth = -100000.0f;
-
-	currentmodel = r_worldmodel;
 
 	// Add alpha surfaces to array.
 	int num_surfaces;
@@ -210,7 +205,6 @@ void R_SortAndDrawAlphaSurfaces(void)
 	{
 		if (sorted_surf->depth > sorted_ent->depth)
 		{
-			currentmodel = r_worldmodel;
 			R_DrawAlphaSurface(sorted_surf->surface);
 			sorted_surf++;
 		}
@@ -229,7 +223,7 @@ void R_SortAndDrawAlphaSurfaces(void)
 #pragma region ========================== BRUSH MODELS RENDERING ==========================
 
 // Returns the proper texture for a given time and base texture.
-static image_t* R_TextureAnimation(const mtexinfo_t* tex)
+static image_t* R_TextureAnimation(const entity_t* ent, const mtexinfo_t* tex) //mxd. Original logic uses 'currententity' global var.
 {
 	if (tex->next != NULL)
 	{
@@ -237,8 +231,8 @@ static image_t* R_TextureAnimation(const mtexinfo_t* tex)
 
 		if ((tex->flags & SURF_ANIMSPEED) && tex->image->num_frames > 0) // H2: extra SURF_ANIMSPEED logic.
 			frame = (int)((float)tex->image->num_frames * r_newrefdef.time);
-		else if (currententity != NULL) //mxd. Added sanity check.
-			frame = currententity->frame;
+		else if (ent != NULL) //mxd. Added sanity check.
+			frame = ent->frame;
 		else
 			return tex->image;
 
@@ -286,7 +280,7 @@ static void R_DrawGLPolyChain(glpoly_t* p, const float soffset, const float toff
 }
 
 // This routine takes all the given lightmapped surfaces in the world and blends them into the framebuffer.
-static void R_BlendLightmaps(void)
+static void R_BlendLightmaps(model_t* mdl) //mxd. Original logic uses 'currentmodel' global var.
 {
 	// Don't bother if we're set to fullbright.
 	if ((int)r_fullbright->value || r_worldmodel->lightdata == NULL)
@@ -306,7 +300,7 @@ static void R_BlendLightmaps(void)
 			glBlendFunc(GL_ZERO, GL_SRC_COLOR); //mxd. Skipping gl_monolightmap logic
 	}
 
-	if (currentmodel == r_worldmodel)
+	if (mdl == r_worldmodel)
 		c_visible_lightmaps = 0;
 
 	// H2: set fog values.
@@ -351,7 +345,7 @@ static void R_BlendLightmaps(void)
 		if (gl_lms.lightmap_surfaces[i] == NULL)
 			continue;
 
-		if (currentmodel == r_worldmodel)
+		if (mdl == r_worldmodel)
 			c_visible_lightmaps++;
 
 		R_Bind(gl_state.lightmap_textures + i);
@@ -367,7 +361,7 @@ static void R_BlendLightmaps(void)
 		LM_InitBlock();
 		R_Bind(gl_state.lightmap_textures);
 
-		if (currentmodel == r_worldmodel)
+		if (mdl == r_worldmodel)
 			c_visible_lightmaps++;
 
 		const msurface_t* newdrawsurf = gl_lms.lightmap_surfaces[0];
@@ -475,11 +469,11 @@ static void R_DrawTriangleOutlines(void)
 	glEnable(GL_TEXTURE_2D);
 }
 
-static void R_RenderBrushPoly(msurface_t* fa)
+static void R_RenderBrushPoly(const entity_t* ent, msurface_t* fa) //mxd. Added 'ent' arg.
 {
 	c_brush_polys++;
 
-	R_BindImage(R_TextureAnimation(fa->texinfo)); // Q2: GL_Bind().
+	R_BindImage(R_TextureAnimation(ent, fa->texinfo)); // Q2: GL_Bind().
 
 	// H2: new cl_camera_under_surface logic.
 	if ((int)cl_camera_under_surface->value)
@@ -575,7 +569,7 @@ static void R_RenderBrushPoly(msurface_t* fa)
 	}
 }
 
-static void R_RenderFlatShadedBrushPoly(msurface_t* fa) // H2
+static void R_RenderFlatShadedBrushPoly(const entity_t* ent, msurface_t* fa) // H2 //mxd. Added 'ent' arg.
 {
 	c_brush_polys++;
 
@@ -648,7 +642,7 @@ static void R_RenderFlatShadedBrushPoly(msurface_t* fa) // H2
 }
 
 //mxd. Similar to Q2's GL_RenderLightmappedPoly (except for missing SURF_FLOWING logic). Original H2 .dll also includes GL_RenderLightmappedPoly_SGIS variant.
-static void R_RenderLightmappedPoly(msurface_t* surf)
+static void R_RenderLightmappedPoly(const entity_t* ent, msurface_t* surf) //mxd. Added 'ent' arg.
 {
 	static uint lightmap_pixels[LM_BLOCK_WIDTH * LM_BLOCK_HEIGHT]; //mxd. Made static.
 
@@ -694,7 +688,7 @@ static void R_RenderLightmappedPoly(msurface_t* surf)
 
 	c_brush_polys++;
 
-	R_MBindImage(GL_TEXTURE0, R_TextureAnimation(surf->texinfo)); // H2: GL_MBind -> GL_MBindImage
+	R_MBindImage(GL_TEXTURE0, R_TextureAnimation(ent, surf->texinfo)); // H2: GL_MBind -> GL_MBindImage
 	R_MBind(GL_TEXTURE1, gl_state.lightmap_textures + lmtex);
 
 	// Missing: SURF_FLOWING logic.
@@ -712,7 +706,7 @@ static void R_RenderLightmappedPoly(msurface_t* surf)
 	}
 }
 
-static void R_DrawTextureChains(void) // Q2: DrawTextureChains().
+static void R_DrawTextureChains(const entity_t* ent) // Q2: DrawTextureChains(). //mxd. Added 'ent' arg.
 {
 	c_visible_textures = 0;
 
@@ -734,7 +728,7 @@ static void R_DrawTextureChains(void) // Q2: DrawTextureChains().
 			c_visible_textures++;
 
 			for (msurface_t* s = image->multitexturechain; s != NULL; s = s->texturechain)
-				R_RenderLightmappedPoly(s);
+				R_RenderLightmappedPoly(ent, s);
 
 			image->multitexturechain = NULL;
 		}
@@ -743,7 +737,7 @@ static void R_DrawTextureChains(void) // Q2: DrawTextureChains().
 		multitexture_mode = false;
 	}
 
-	void (*render_brush_poly)(msurface_t*) = ((int)gl_drawflat->value ? R_RenderFlatShadedBrushPoly : R_RenderBrushPoly); // H2: new gl_drawflat logic.
+	void (*render_brush_poly)(const entity_t*, msurface_t*) = ((int)gl_drawflat->value ? R_RenderFlatShadedBrushPoly : R_RenderBrushPoly); // H2: new gl_drawflat logic.
 
 	// Original Q2 logic:
 
@@ -758,7 +752,7 @@ static void R_DrawTextureChains(void) // Q2: DrawTextureChains().
 
 		for (msurface_t* s = image->texturechain; s != NULL; s = s->texturechain)
 			if (!(s->flags & SURF_DRAWTURB))
-				render_brush_poly(s); // H2: new gl_drawflat logic.
+				render_brush_poly(ent, s); // H2: new gl_drawflat logic.
 	}
 
 	R_EnableMultitexture(false);
@@ -772,7 +766,7 @@ static void R_DrawTextureChains(void) // Q2: DrawTextureChains().
 
 		for (msurface_t* s = image->texturechain; s != NULL; s = s->texturechain)
 			if (s->flags & SURF_DRAWTURB)
-				render_brush_poly(s); // H2: new gl_drawflat logic.
+				render_brush_poly(ent, s); // H2: new gl_drawflat logic.
 
 		image->texturechain = NULL;
 	}
@@ -792,11 +786,11 @@ static qboolean R_CullBox(const vec3_t mins, const vec3_t maxs)
 	return false;
 }
 
-static void R_DrawInlineBModel(const entity_t* e) //mxd. Original logic uses 'currententity' global var.
+static void R_DrawInlineBModel(const entity_t* ent) //mxd. Original logic uses 'currententity' global var.
 {
 #define BACKFACE_EPSILON 0.01f // Q2: defined in gl_local.h
 
-	const model_t* mdl = *e->model; //mxd. Original logic uses 'currentmodel' global var instead.
+	const model_t* mdl = *ent->model; //mxd. Original logic uses 'currentmodel' global var instead.
 
 	// Calculate dynamic lighting for bmodel.
 	if (!(int)gl_flashblend->value)
@@ -809,7 +803,7 @@ static void R_DrawInlineBModel(const entity_t* e) //mxd. Original logic uses 'cu
 	msurface_t* psurf = &mdl->surfaces[mdl->firstmodelsurface];
 
 	// H2: extra RF_TRANS_ADD and RF_TRANS_GHOST flags.
-	if (e->flags & RF_TRANS_ANY)
+	if (ent->flags & RF_TRANS_ANY)
 	{
 		glEnable(GL_BLEND);
 		glColor4f(1.0f, 1.0f, 1.0f, 0.25f);
@@ -835,19 +829,19 @@ static void R_DrawInlineBModel(const entity_t* e) //mxd. Original logic uses 'cu
 			}
 			else if (!(psurf->flags & SURF_DRAWTURB) && !(int)r_fullbright->value && !(int)gl_drawflat->value) // H2: extra r_fullbright and gl_drawflat checks
 			{
-				R_RenderLightmappedPoly(psurf); // Q2: GL_RenderLightmappedPoly
+				R_RenderLightmappedPoly(ent, psurf); // Q2: GL_RenderLightmappedPoly
 			}
 			else //mxd. Skipped qglMTexCoord2fSGIS check.
 			{
 				R_EnableMultitexture(false);
-				R_RenderBrushPoly(psurf);
+				R_RenderBrushPoly(ent, psurf);
 				R_EnableMultitexture(true);
 			}
 		}
 	}
 
 	// H2: extra RF_TRANS_ADD and RF_TRANS_GHOST flags.
-	if (e->flags & RF_TRANS_ANY)
+	if (ent->flags & RF_TRANS_ANY)
 	{
 		glDisable(GL_BLEND);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -855,14 +849,14 @@ static void R_DrawInlineBModel(const entity_t* e) //mxd. Original logic uses 'cu
 	}
 }
 
-void R_DrawBrushModel(entity_t* e)
+void R_DrawBrushModel(entity_t* ent)
 {
-	const model_t* mdl = *e->model; //mxd. Original logic uses 'currentmodel' global var instead.
+	const model_t* mdl = *ent->model; //mxd. Original logic uses 'currentmodel' global var instead.
 
 	if (mdl->nummodelsurfaces == 0)
 		return;
 
-	// H2: missing: currententity = e;
+	// H2: missing: currententity = ent;
 	gl_state.currenttextures[0] = -1;
 	gl_state.currenttextures[1] = -1;
 
@@ -870,20 +864,20 @@ void R_DrawBrushModel(entity_t* e)
 	vec3_t maxs;
 	qboolean rotated;
 
-	if (e->angles[0] != 0.0f || e->angles[1] != 0.0f || e->angles[2] != 0.0f)
+	if (ent->angles[0] != 0.0f || ent->angles[1] != 0.0f || ent->angles[2] != 0.0f)
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			mins[i] = e->origin[i] - mdl->radius;
-			maxs[i] = e->origin[i] + mdl->radius;
+			mins[i] = ent->origin[i] - mdl->radius;
+			maxs[i] = ent->origin[i] + mdl->radius;
 		}
 
 		rotated = true;
 	}
 	else
 	{
-		VectorAdd(e->origin, mdl->mins, mins);
-		VectorAdd(e->origin, mdl->maxs, maxs);
+		VectorAdd(ent->origin, mdl->mins, mins);
+		VectorAdd(ent->origin, mdl->maxs, maxs);
 
 		rotated = false;
 	}
@@ -904,12 +898,12 @@ void R_DrawBrushModel(entity_t* e)
 	}
 
 	memset((void*)gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
-	VectorSubtract(r_newrefdef.vieworg, e->origin, modelorg);
+	VectorSubtract(r_newrefdef.vieworg, ent->origin, modelorg);
 
 	if (rotated)
 	{
 		vec3_t angles;
-		VectorScale(e->angles, RAD_TO_ANGLE, angles); // H2: new RAD_TO_ANGLE rescale.
+		VectorScale(ent->angles, RAD_TO_ANGLE, angles); // H2: new RAD_TO_ANGLE rescale.
 
 		vec3_t temp;
 		VectorCopy(modelorg, temp);
@@ -925,11 +919,11 @@ void R_DrawBrushModel(entity_t* e)
 	}
 
 	glPushMatrix();
-	e->angles[0] *= -1.0f; // stupid quake bug.
-	e->angles[2] *= -1.0f; // stupid quake bug.
-	R_RotateForEntity(e);
-	e->angles[0] *= -1.0f; // stupid quake bug.
-	e->angles[2] *= -1.0f; // stupid quake bug.
+	ent->angles[0] *= -1.0f; // stupid quake bug.
+	ent->angles[2] *= -1.0f; // stupid quake bug.
+	R_RotateForEntity(ent);
+	ent->angles[0] *= -1.0f; // stupid quake bug.
+	ent->angles[2] *= -1.0f; // stupid quake bug.
 
 	R_EnableMultitexture(true);
 	R_SelectTexture(GL_TEXTURE0);
@@ -937,7 +931,7 @@ void R_DrawBrushModel(entity_t* e)
 	R_SelectTexture(GL_TEXTURE1);
 	R_TexEnv(GL_MODULATE);
 
-	R_DrawInlineBModel(e);
+	R_DrawInlineBModel(ent);
 	R_EnableMultitexture(false);
 
 	// H2: new gl_drawmode logic.
@@ -954,7 +948,7 @@ void R_DrawBrushModel(entity_t* e)
 
 #pragma region ========================== WORLD MODEL RENDERING ==========================
 
-static void R_RecursiveWorldNode(mnode_t* node)
+static void R_RecursiveWorldNode(const entity_t* ent, mnode_t* node) //mxd. Added 'ent' arg.
 {
 	if (node->contents == CONTENTS_SOLID || node->visframe != r_visframecount || R_CullBox(node->minmaxs, node->minmaxs + 3))
 		return;
@@ -1001,7 +995,7 @@ static void R_RecursiveWorldNode(mnode_t* node)
 	const int sidebit = ((dot >= 0.0f) ? 0 : SURF_PLANEBACK);
 
 	// Recurse down the children, front side first.
-	R_RecursiveWorldNode(node->children[side]);
+	R_RecursiveWorldNode(ent, node->children[side]);
 
 	// Draw stuff.
 	msurface_t* surf = &r_worldmodel->surfaces[node->firstsurface];
@@ -1024,7 +1018,7 @@ static void R_RecursiveWorldNode(mnode_t* node)
 		else if (!(surf->flags & SURF_DRAWTURB) && !(surf->flags & SURF_TALL_WALL) && !(int)r_fullbright->value && !(int)gl_drawflat->value) // H2: extra SURF_TALL_WALL, r_fullbright, gl_drawflat checks.
 		{
 			// The polygon is visible, so add it to the sorted multi-texture chain.
-			image_t* image = R_TextureAnimation(surf->texinfo);
+			image_t* image = R_TextureAnimation(ent, surf->texinfo);
 			surf->texturechain = image->multitexturechain;
 			image->multitexturechain = surf;
 
@@ -1034,14 +1028,14 @@ static void R_RecursiveWorldNode(mnode_t* node)
 		{
 			// The polygon is visible, so add it to the sorted texture chain.
 			// FIXME: this is a hack for animation.
-			image_t* image = R_TextureAnimation(surf->texinfo);
+			image_t* image = R_TextureAnimation(ent, surf->texinfo);
 			surf->texturechain = image->texturechain;
 			image->texturechain = surf;
 		}
 	}
 
 	// Recurse down the back side.
-	R_RecursiveWorldNode(node->children[!side]);
+	R_RecursiveWorldNode(ent, node->children[!side]);
 }
 
 void R_DrawWorld(void)
@@ -1049,12 +1043,10 @@ void R_DrawWorld(void)
 	if (!(int)r_drawworld->value || (r_newrefdef.rdflags & RDF_NOWORLDMODEL))
 		return;
 
-	currentmodel = r_worldmodel;
 	VectorCopy(r_newrefdef.vieworg, modelorg);
 
 	// Auto cycle the world frame for texture animation.
-	entity_t ent = { .frame = (int)(r_newrefdef.time * 2.0f) }; //mxd. memset -> zero initialization.
-	currententity = &ent;
+	const entity_t ent = { .frame = (int)(r_newrefdef.time * 2.0f) }; //mxd. memset -> zero initialization.
 
 	gl_state.currenttextures[0] = -1;
 	gl_state.currenttextures[1] = -1;
@@ -1089,13 +1081,13 @@ void R_DrawWorld(void)
 		else
 			R_TexEnv(GL_MODULATE);
 
-		R_RecursiveWorldNode(r_worldmodel->nodes);
+		R_RecursiveWorldNode(&ent, r_worldmodel->nodes);
 
 		R_EnableMultitexture(false);
 	}
 	else
 	{
-		R_RecursiveWorldNode(r_worldmodel->nodes);
+		R_RecursiveWorldNode(&ent, r_worldmodel->nodes);
 	}
 
 	// Theoretically nothing should happen in the next two functions if multitexture is enabled.
@@ -1105,17 +1097,17 @@ void R_DrawWorld(void)
 	{
 		glDisable(GL_TEXTURE_2D);
 
-		R_DrawTextureChains();
+		R_DrawTextureChains(&ent);
 
 		glEnable(GL_TEXTURE_2D);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	else
 	{
-		R_DrawTextureChains();
+		R_DrawTextureChains(&ent);
 	}
 
-	R_BlendLightmaps();
+	R_BlendLightmaps(r_worldmodel);
 
 	// H2: new gl_drawmode cvar logic.
 	if ((int)gl_drawmode->value)

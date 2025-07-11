@@ -404,8 +404,6 @@ static void Mod_LoadFaces(model_t* loadmodel, const byte* mod_base, const lump_t
 	loadmodel->surfaces = out;
 	loadmodel->numsurfaces = count;
 
-	currentmodel = loadmodel;
-
 	LM_BeginBuildingLightmaps();
 
 	for (int surfnum = 0; surfnum < count; surfnum++, in++, out++)

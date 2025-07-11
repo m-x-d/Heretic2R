@@ -161,6 +161,7 @@ extern vec3_t vright;
 extern vec3_t r_origin;
 
 extern float r_world_matrix[16];
+extern cplane_t frustum[4];
 
 extern refdef_t r_newrefdef;
 
@@ -173,11 +174,6 @@ extern int r_oldviewcluster2;
 
 extern int c_brush_polys;
 extern int c_alias_polys;
-
-extern entity_t* currententity;
-extern model_t* currentmodel;
-
-extern cplane_t frustum[4];
 
 #pragma endregion
 

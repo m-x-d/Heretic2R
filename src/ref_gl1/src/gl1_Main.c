@@ -29,11 +29,6 @@ refimport_t ri;
 
 model_t* r_worldmodel;
 
-entity_t* currententity;
-model_t* currentmodel;
-
-cplane_t frustum[4];
-
 float gldepthmin;
 float gldepthmax;
 
@@ -47,6 +42,7 @@ vec3_t vright;
 vec3_t r_origin;
 
 float r_world_matrix[16];
+cplane_t frustum[4];
 
 refdef_t r_newrefdef; // Screen size info.
 
@@ -149,40 +145,41 @@ static void R_DrawEntitiesOnList(void)
 
 	for (int i = 0; i < r_newrefdef.num_entities; i++)
 	{
-		currententity = r_newrefdef.entities[i];
+		entity_t* ent = r_newrefdef.entities[i]; //mxd. Original logic uses 'currententity' global var.
 
-		if (currententity->model == NULL) // H2: extra sanity check.
+		if (ent->model == NULL) // H2: extra sanity check.
 		{
 			ri.Con_Printf(PRINT_ALL, "Attempt to draw NULL model\n"); //mxd. Com_Printf() -> ri.Con_Printf().
-			R_DrawNullModel(currententity);
+			R_DrawNullModel(ent);
 
 			continue;
 		}
 
-		currentmodel = *currententity->model;
-		if (currentmodel == NULL)
+		const model_t* mdl = *ent->model; //mxd. Original logic uses 'currentmodel' global var.
+
+		if (mdl == NULL)
 		{
-			R_DrawNullModel(currententity);
+			R_DrawNullModel(ent);
 			continue;
 		}
 
 		// H2: no mod_alias case, new mod_bad and mod_fmdl cases.
-		switch (currentmodel->type)
+		switch (mdl->type)
 		{
 			case mod_bad:
 				ri.Con_Printf(PRINT_ALL, "WARNING: currentmodel->type == 0; reload the map\n"); //mxd. Com_Printf() -> ri.Con_Printf().
 				break;
 
 			case mod_brush:
-				R_DrawBrushModel(currententity);
+				R_DrawBrushModel(ent);
 				break;
 
 			case mod_sprite:
-				R_DrawSpriteModel(currententity);
+				R_DrawSpriteModel(ent);
 				break;
 
 			case mod_fmdl:
-				R_DrawFlexModel(currententity);
+				R_DrawFlexModel(ent);
 				break;
 
 			default:
