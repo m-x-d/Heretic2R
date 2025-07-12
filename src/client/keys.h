@@ -123,9 +123,13 @@ extern char chat_buffer[];
 extern int chat_bufferlen;
 extern qboolean chat_team;
 
-//mxd. Made global
-#define MAXCMDLINE	256
-extern char key_lines[32][MAXCMDLINE];
+//mxd. Made global.
+#define MAXCMDLINE		256
+
+// Number of console command lines saved in history, must be a power of two, because we use & (NUM_KEY_LINES-1) instead of % so -1 wraps to NUM_KEY_LINES - 1.
+#define NUM_KEY_LINES	32
+
+extern char key_lines[NUM_KEY_LINES][MAXCMDLINE];
 extern int edit_line;
 extern int key_linepos;
 

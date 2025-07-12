@@ -7,9 +7,9 @@
 #include <ctype.h>
 #include "client.h"
 
-// Key up events are sent even if in console mode
+// Key up events are sent even if in console mode.
 
-char key_lines[32][MAXCMDLINE];
+char key_lines[NUM_KEY_LINES][MAXCMDLINE];
 int key_linepos;
 qboolean keydown[256];
 int anykeydown;
@@ -337,7 +337,7 @@ static void Key_Console(int key)
 		Cbuf_AddText("\n");
 		Com_Printf("%s\n", key_lines[edit_line]);
 
-		edit_line = (edit_line + 1) & 31;
+		edit_line = (edit_line + 1) & (NUM_KEY_LINES - 1);
 		history_line = edit_line;
 		key_lines[edit_line][0] = '>'; // ']' in Q2
 		key_linepos = 1;
@@ -360,11 +360,11 @@ static void Key_Console(int key)
 	{
 		do
 		{
-			history_line = (history_line - 1) & 31;
+			history_line = (history_line - 1) & (NUM_KEY_LINES - 1);
 		} while (history_line != edit_line && key_lines[history_line][1] == 0);
 
 		if (history_line == edit_line)
-			history_line = (edit_line + 1) & 31;
+			history_line = (edit_line + 1) & (NUM_KEY_LINES - 1);
 
 		strcpy_s(key_lines[edit_line], sizeof(key_lines[edit_line]), key_lines[history_line]); //mxd. strcpy -> strcpy_s
 		key_linepos = (int)strlen(key_lines[edit_line]);
@@ -379,7 +379,7 @@ static void Key_Console(int key)
 
 		do
 		{
-			history_line = (history_line + 1) & 31;
+			history_line = (history_line + 1) & (NUM_KEY_LINES - 1);
 		} while (history_line != edit_line && key_lines[history_line][1] == 0);
 
 		if (history_line == edit_line)
@@ -830,7 +830,7 @@ static void Key_CommandsList_f(void)
 
 void Key_Init(void)
 {
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < NUM_KEY_LINES; i++)
 	{
 		key_lines[i][0] = '>'; // Q2: ']';
 		key_lines[i][1] = 0;
@@ -838,7 +838,7 @@ void Key_Init(void)
 	
 	key_linepos = 1;
 
-	// Init ascii characters in console mode
+	// Init ascii characters in console mode.
 	for (int i = 32; i < 128; i++)
 		consolekeys[i] = true;
 
