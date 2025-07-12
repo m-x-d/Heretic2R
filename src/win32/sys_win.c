@@ -23,8 +23,6 @@ uint sys_frame_time;
 static int argc;
 static char* argv[MAX_NUM_ARGVS];
 
-HINSTANCE global_hInstance;
-
 #pragma region ========================== SYSTEM IO ==========================
 
 H2R_NORETURN void Sys_Error(const char* error, ...)
@@ -325,22 +323,20 @@ Q2DLL_DECLSPEC int Quake2Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPST
 	int newtime;
 	MSG msg;
 
-	// Previous instances do not exist in Win32
+	// Previous instances do not exist in Win32.
 	if (hPrevInstance != NULL)
 		return 0;
 
-	global_hInstance = hInstance;
-
 	ParseCommandLine(lpCmdLine);
 
-	//mxd. Skip "if we find the CD, add a +set cddir xxx command line" logic
+	//mxd. Skip "if we find the CD, add a +set cddir xxx command line" logic.
 	Qcommon_Init(argc, argv);
 	int oldtime = Sys_Milliseconds();
 
-	// Main window message loop
+	// Main window message loop.
 	while (true)
 	{
-		// If at a full screen console, don't update unless needed
+		// If at a full screen console, don't update unless needed.
 		if (Minimized || (dedicated != NULL && (int)dedicated->value))
 			Sleep(1);
 
@@ -365,5 +361,5 @@ Q2DLL_DECLSPEC int Quake2Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPST
 		oldtime = newtime;
 	}
 
-	// never gets here
+	// Never gets here.
 }

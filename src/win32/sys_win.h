@@ -9,8 +9,6 @@
 #include <windows.h>
 #include "Heretic2.h"
 
-extern HINSTANCE global_hInstance;
-
 Q2DLL_DECLSPEC extern HWND cl_hwnd;
 extern qboolean ActiveApp;
 extern qboolean Minimized;
