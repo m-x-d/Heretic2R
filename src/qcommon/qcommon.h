@@ -693,13 +693,10 @@ extern void Qcommon_Frame(int msec);
 #pragma region ========================== NON-PORTABLE SYSTEM SERVICES ==========================
 
 extern void Sys_Init(void);
-extern void Sys_AppActivate(void);
 
 extern char* Sys_ConsoleInput(void);
 extern void Sys_ConsoleOutput(const char* string);
-extern void Sys_SendKeyEvents(void);
 H2R_NORETURN extern void Sys_Quit(void);
-extern char* Sys_GetClipboardData(void);
 
 #pragma endregion
 

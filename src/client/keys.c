@@ -19,16 +19,16 @@ static int history_line = 0;
 
 char* keybindings[256];
 char* keybindings_double[256];
-int key_repeats[256]; // if > 1, it is auto-repeating
+int key_repeats[256]; // if > 1, it is auto-repeating.
 
 char chat_buffer[MAXCMDLINE];
 int chat_bufferlen;
 qboolean chat_team;
 
 static char* commandbindings[256]; // H2
-static qboolean consolekeys[256];	// If true, can't be rebound while in console
-static qboolean menubound[256];		// If true, can't be rebound while in menu
-static int keyshift[256];			// Key to map to if Shift held down in console
+static qboolean consolekeys[256];	// If true, can't be rebound while in console.
+static qboolean menubound[256];		// If true, can't be rebound while in menu.
+static int keyshift[256];			// Key to map to if Shift held down in console.
 
 static qboolean con_have_previous_command; // H2
 
@@ -153,7 +153,7 @@ static void CompleteCommand(void)
 
 	const char* cmd;
 
-	char* s = &key_lines[edit_line][1];
+	const char* s = &key_lines[edit_line][1];
 	if (*s == '\\' || *s == '/')
 		s++;
 
@@ -296,24 +296,21 @@ static void Key_Console(int key)
 	// Support pasting from the clipboard.
 	if ((toupper(key) == 'V' && keydown[K_CTRL]) || ((key == K_INS || orig_key == K_KP_INS) && keydown[K_SHIFT])) //mxd. K_KP_INS was already remapped to '0' above, so check orig_key.
 	{
-		char* cbd = Sys_GetClipboardData();
-		if (cbd != NULL)
+		char cliptext[256];
+		IN_GetClipboardText(cliptext, sizeof(cliptext)); // YQ2
+
+		char* ptr = NULL; //mxd
+		strtok_s(cliptext, "\n\r\b", &ptr); //mxd. strtok -> strtok_s
+
+		int len = (int)strlen(cliptext);
+		if (key_linepos + len >= MAXCMDLINE)
+			len = MAXCMDLINE - key_linepos;
+
+		if (len > 0)
 		{
-			char* ptr = NULL; //mxd
-			strtok_s(cbd, "\n\r\b", &ptr); //mxd. strtok -> strtok_s
-
-			int len = (int)strlen(cbd);
-			if (key_linepos + len >= MAXCMDLINE)
-				len = MAXCMDLINE - key_linepos;
-
-			if (len > 0)
-			{
-				cbd[len] = 0;
-				strcat_s(key_lines[edit_line], sizeof(key_lines[edit_line]), cbd); //mxd. strcat -> strcat_s
-				key_linepos += len;
-			}
-
-			free(cbd);
+			cliptext[len] = 0;
+			strcat_s(key_lines[edit_line], sizeof(key_lines[edit_line]), cliptext); //mxd. strcat -> strcat_s
+			key_linepos += len;
 		}
 
 		return;
@@ -396,17 +393,15 @@ static void Key_Console(int key)
 		return;
 	}
 
-	if (key == K_PGUP)
+	if (key == K_PGUP || key == K_MWHEELUP) //mxd. +K_MWHEELUP
 	{
-		con.display -= 2;
+		con.display = max(con.display - 2, con.current - con.totallines + 10); //mxd. Added lower-bound check.
 		return;
 	}
 
-	if (key == K_PGDN)
+	if (key == K_PGDN || key == K_MWHEELDOWN) //mxd. +K_MWHEELDOWN
 	{
-		con.display += 2;
-		con.display = min(con.display, con.current);
-
+		con.display = min(con.display + 2, con.current);
 		return;
 	}
 
@@ -489,7 +484,7 @@ static int Key_StringToKeynum(const char* str)
 	if (str[1] == 0)
 		return str[0];
 
-	for (const keyname_t* kn = keynames; kn->name != NULL; kn++)
+	for (const keyname_t* kn = &keynames[0]; kn->name != NULL; kn++)
 		if (!Q_stricmp(str, kn->name)) // Q2: Q_strcasecmp
 			return kn->keynum;
 
@@ -517,7 +512,7 @@ char* Key_KeynumToString(const int keynum)
 		return tinystr[tinystr_index];
 	}
 
-	for (const keyname_t* kn = keynames; kn->name != NULL; kn++)
+	for (const keyname_t* kn = &keynames[0]; kn->name != NULL; kn++)
 		if (keynum == kn->keynum)
 			return kn->name;
 
@@ -530,14 +525,14 @@ void Key_SetBinding(const int keynum, const char* binding)
 	if (keynum == -1)
 		return;
 
-	// Free old bindings
+	// Free old bindings.
 	if (keybindings[keynum])
 	{
 		Z_Free(keybindings[keynum]);
 		keybindings[keynum] = NULL;
 	}
 
-	// Allocate memory for new binding
+	// Allocate memory for new binding.
 	const int l = (int)strlen(binding) + 1;
 	char* new = Z_Malloc(l);
 	strcpy_s(new, l, binding); //mxd. strcpy -> strcpy_s
@@ -545,20 +540,20 @@ void Key_SetBinding(const int keynum, const char* binding)
 	keybindings[keynum] = new;
 }
 
-// Very similar to Key_SetBinding
+// Very similar to Key_SetBinding().
 void Key_SetDoubleBinding(const int keynum, const char* binding)
 {
 	if (keynum == -1)
 		return;
 
-	// Free old bindings
+	// Free old bindings.
 	if (keybindings_double[keynum])
 	{
 		Z_Free(keybindings_double[keynum]);
 		keybindings_double[keynum] = NULL;
 	}
 
-	// Allocate memory for new binding
+	// Allocate memory for new binding.
 	const int l = (int)strlen(binding) + 1;
 	char* new = Z_Malloc(l);
 	strcpy_s(new, l, binding); //mxd. strcpy -> strcpy_s
@@ -566,20 +561,20 @@ void Key_SetDoubleBinding(const int keynum, const char* binding)
 	keybindings_double[keynum] = new;
 }
 
-// Very similar to Key_SetBinding
+// Very similar to Key_SetBinding().
 static void Key_SetCommandBinding(const int keynum, const char* binding)
 {
 	if (keynum == -1)
 		return;
 
-	// Free old bindings
+	// Free old bindings.
 	if (commandbindings[keynum])
 	{
 		Z_Free(commandbindings[keynum]);
 		commandbindings[keynum] = NULL;
 	}
 
-	// Allocate memory for new binding
+	// Allocate memory for new binding.
 	const int l = (int)strlen(binding) + 1;
 	char* new = Z_Malloc(l);
 	strcpy_s(new, l, binding); //mxd. strcpy -> strcpy_s
@@ -646,8 +641,8 @@ static void Key_Bind_f(void)
 		return;
 	}
 
-	// Copy the rest of the command line
-	cmd[0] = 0; // Start out with a null string
+	// Copy the rest of the command line.
+	cmd[0] = 0; // Start out with a null string.
 
 	for (int i = 2; i < c; i++)
 	{
@@ -731,8 +726,8 @@ static void Key_BindDouble_f(void)
 		return;
 	}
 
-	// Copy the rest of the command line
-	cmd[0] = 0; // Start out with a null string
+	// Copy the rest of the command line.
+	cmd[0] = 0; // Start out with a null string.
 
 	for (int i = 2; i < c; i++)
 	{
@@ -807,8 +802,8 @@ static void Key_BindCommand_f(void)
 		return;
 	}
 
-	// Copy the rest of the command line
-	cmd[0] = 0; // Start out with a null string
+	// Copy the rest of the command line.
+	cmd[0] = 0; // Start out with a null string.
 
 	for (int i = 2; i < c; i++)
 	{
@@ -842,6 +837,7 @@ void Key_Init(void)
 	for (int i = 32; i < 128; i++)
 		consolekeys[i] = true;
 
+	consolekeys[K_DEL] = true; // YQ2 //TODO: handle in Key_Console().
 	consolekeys[K_ENTER] = true;
 	consolekeys[K_KP_ENTER] = true;
 	consolekeys[K_TAB] = true;
@@ -870,6 +866,8 @@ void Key_Init(void)
 	consolekeys[K_KP_PLUS] = true;
 	consolekeys[K_KP_MINUS] = true;
 	consolekeys[K_KP_5] = true;
+	consolekeys[K_MWHEELUP] = true; // YQ2
+	consolekeys[K_MWHEELDOWN] = true; // YQ2
 
 	// Missing in H2:
 	//consolekeys['`'] = false;
@@ -908,7 +906,7 @@ void Key_Init(void)
 	for (int i = 0; i < 12; i++)
 		menubound[K_F1 + i] = true;
 
-	// Register our functions
+	// Register our functions.
 	Cmd_AddCommand("bind", Key_Bind_f);
 	Cmd_AddCommand("unbind", Key_Unbind_f);
 	Cmd_AddCommand("unbindall", Key_Unbindall_f);
@@ -973,7 +971,7 @@ void Key_Event(int key, const qboolean down, const uint time)
 	qboolean is_doubletap_key = false;
 
 	// H2
-	if (cls.key_dest != key_menu && time - key_doubletap_delays[key] < (uint)doubletap_speed->value)
+	if (cls.key_dest != key_menu && time - key_doubletap_delays[key] < (uint)doubletap_speed->value) //TODO: also when cls.key_dest != key_console?
 	{
 		key_doubletaps[key] = true;
 		is_doubletap_key = true;
@@ -996,7 +994,7 @@ void Key_Event(int key, const qboolean down, const uint time)
 		if (!IsAutorepeatKey(key)) // H2
 			return;
 
-		if (key >= 200 && keybindings[key] == NULL)
+		if (key >= K_MOUSE1 && keybindings[key] == NULL)
 			Com_Printf("%s is unbound.\n", Key_KeynumToString(key));
 	}
 	else
@@ -1039,7 +1037,6 @@ void Key_Event(int key, const qboolean down, const uint time)
 
 			default:
 				Com_Error(ERR_FATAL, "Bad cls.key_dest");
-				return;
 		}
 	}
 
@@ -1116,7 +1113,6 @@ void Key_Event(int key, const qboolean down, const uint time)
 
 			default:
 				Com_Error(ERR_FATAL, "Bad cls.key_dest");
-				return;
 		}
 	}
 

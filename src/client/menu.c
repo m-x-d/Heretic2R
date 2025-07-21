@@ -432,19 +432,15 @@ qboolean Field_Key(menufield_t* field, int key)
 	// Support pasting from the clipboard.
 	if ((toupper(key) == 'V' && keydown[K_CTRL]) || ((key == K_INS || orig_key == K_KP_INS) && keydown[K_SHIFT])) //mxd. K_KP_INS was already remapped to '0' above, so check orig_key.
 	{
-		char* cbd = Sys_GetClipboardData();
+		char cliptext[256];
+		IN_GetClipboardText(cliptext, sizeof(cliptext)); // YQ2
 
-		if (cbd != NULL)
-		{
-			char* ptr = NULL; //mxd
-			strtok_s(cbd, "\n\r\b", &ptr); //mxd. strtok -> strtok_s
-			strncpy_s(field->buffer, sizeof(field->buffer), cbd, field->length - 1); //mxd. strncpy -> strncpy_s
+		char* ptr = NULL; //mxd
+		strtok_s(cliptext, "\n\r\b", &ptr); //mxd. strtok -> strtok_s
+		strncpy_s(field->buffer, sizeof(field->buffer), cliptext, field->length - 1); //mxd. strncpy -> strncpy_s
 
-			field->cursor = (int)strlen(field->buffer);
-			field->visible_offset = max(0, field->cursor - field->visible_length);
-
-			free(cbd);
-		}
+		field->cursor = (int)strlen(field->buffer);
+		field->visible_offset = max(0, field->cursor - field->visible_length);
 
 		return true;
 	}
@@ -601,8 +597,6 @@ void M_Init(void)
 	m_item_lookspring = Cvar_Get("m_item_lookspring", "Lookspring", 0);
 	m_item_freelook = Cvar_Get("m_item_freelook", "Freelook", 0);
 	m_item_crosshair = Cvar_Get("m_item_crosshair", "Crosshair", 0);
-	m_item_noalttab = Cvar_Get("m_item_noalttab", "Disable Alt-Tab", 0);
-	m_item_joystick = Cvar_Get("m_item_joystick", "Use Joystick", 0);
 	m_item_defaults = Cvar_Get("m_item_defaults", "Reset to Defaults", 0);
 	m_item_autotarget = Cvar_Get("m_item_autotarget", "Auto Target", 0);
 	m_item_caption = Cvar_Get("m_item_caption", "Captioning", 0);
@@ -617,7 +611,6 @@ void M_Init(void)
 	m_item_contrast = Cvar_Get("m_item_contrast", "Contrast", 0);
 	m_item_detail = Cvar_Get("m_item_detail", "Detail Level", 0);
 	m_item_fullscreen = Cvar_Get("m_item_fullscreen", "Fullscreen", 0);
-	//m_item_palettedtextures = Cvar_Get("m_item_palettedtextures", "Paletted Textures", 0); //mxd. Disabled
 	m_item_snddll = Cvar_Get("m_item_snddll", "Sound System", 0);
 	m_item_effectsvol = Cvar_Get("m_item_effectsvol", "Effects Volume", 0);
 	m_item_cdmusic = Cvar_Get("m_item_cdmusic", "CD Music", 0);

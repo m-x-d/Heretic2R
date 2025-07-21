@@ -5,23 +5,20 @@
 //
 
 #include "Quake2Main.h"
-#include <VersionHelpers.h> //mxd
 #include "qcommon.h"
 #include "q_shared.h"
-#include "sys_win.h" //mxd
 
-qboolean ActiveApp;
-qboolean Minimized;
+#include <VersionHelpers.h> //mxd
 
 static HANDLE hinput;
 static HANDLE houtput;
 
-uint sys_msg_time;
-uint sys_frame_time;
-
 #define MAX_NUM_ARGVS	128
 static int argc;
 static char* argv[MAX_NUM_ARGVS];
+
+static char console_text[256];
+static int console_textlen;
 
 #pragma region ========================== SYSTEM IO ==========================
 
@@ -146,9 +143,6 @@ void Sys_Init(void)
 	}
 }
 
-static char console_text[256];
-static int console_textlen;
-
 // Q2 counterpart
 char* Sys_ConsoleInput(void)
 {
@@ -239,57 +233,6 @@ void Sys_ConsoleOutput(const char* string)
 }
 
 // Q2 counterpart
-// Send Key_Event calls.
-void Sys_SendKeyEvents(void)
-{
-	MSG msg;
-
-	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
-	{
-		if (!GetMessage(&msg, NULL, 0, 0))
-			Sys_Quit();
-
-		sys_msg_time = msg.time;
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-
-	// Grab frame time.
-	sys_frame_time = timeGetTime();	// FIXME: should this be at start?
-}
-
-// Q2 counterpart
-char* Sys_GetClipboardData(void)
-{
-	if (!OpenClipboard(NULL))
-		return NULL;
-
-	const HANDLE cdh = GetClipboardData(CF_TEXT);
-	if (cdh == NULL)
-		return NULL;
-
-	const char* cliptext = GlobalLock(cdh);
-	if (cliptext == NULL)
-		return NULL;
-
-	const uint size = GlobalSize(cdh) + 1;
-	char* data = malloc(size);
-	strcpy_s(data, size, cliptext); //mxd. strcpy -> strcpy_s
-
-	GlobalUnlock(cdh);
-	CloseClipboard();
-
-	return data;
-}
-
-// Q2 counterpart
-void Sys_AppActivate(void)
-{
-	ShowWindow(cl_hwnd, SW_RESTORE);
-	SetForegroundWindow(cl_hwnd);
-}
-
-// Q2 counterpart
 static void ParseCommandLine(LPSTR lpCmdLine)
 {
 	argc = 1;
@@ -319,36 +262,16 @@ static void ParseCommandLine(LPSTR lpCmdLine)
 
 Q2DLL_DECLSPEC int Quake2Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	int time;
-	int newtime;
-	MSG msg;
-
-	// Previous instances do not exist in Win32.
-	if (hPrevInstance != NULL)
-		return 0;
-
 	ParseCommandLine(lpCmdLine);
 
-	//mxd. Skip "if we find the CD, add a +set cddir xxx command line" logic.
 	Qcommon_Init(argc, argv);
 	int oldtime = Sys_Milliseconds();
 
 	// Main window message loop.
 	while (true)
 	{
-		// If at a full screen console, don't update unless needed.
-		if (Minimized || (dedicated != NULL && (int)dedicated->value))
-			Sleep(1);
-
-		while (PeekMessageA(&msg, NULL, 0, 0, PM_NOREMOVE))
-		{
-			if (!GetMessageA(&msg, NULL, 0, 0))
-				 Com_Quit();
-
-			sys_msg_time = msg.time;
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+		int time;
+		int newtime;
 
 		do
 		{

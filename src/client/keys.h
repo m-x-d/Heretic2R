@@ -133,10 +133,10 @@ extern char key_lines[NUM_KEY_LINES][MAXCMDLINE];
 extern int edit_line;
 extern int key_linepos;
 
-void Key_Event(int key, qboolean down, uint time);
-void Key_Init(void);
-void Key_WriteBindings(FILE* f);
-void Key_WriteBindings_Double(FILE* f); // H2
-void Key_SetBinding(int keynum, const char* binding);
-void Key_SetDoubleBinding(int keynum, const char* binding); // H2
-void Key_ClearStates(void);
+extern void Key_Event(int key, qboolean down, uint time);
+extern void Key_Init(void);
+extern void Key_WriteBindings(FILE* f);
+extern void Key_WriteBindings_Double(FILE* f); // H2
+extern void Key_SetBinding(int keynum, const char* binding);
+extern void Key_SetDoubleBinding(int keynum, const char* binding); // H2
+extern void Key_ClearStates(void);

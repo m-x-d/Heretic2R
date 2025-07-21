@@ -1076,7 +1076,6 @@ static void CL_ConnectionlessPacket(void)
 			return;
 		}
 
-		Sys_AppActivate();
 		Cbuf_AddText(MSG_ReadString(&net_message));
 		Cbuf_AddText("\n");
 	}
@@ -1445,11 +1444,9 @@ static void CL_FixCvarCheats(void)
 			Cvar_Set(var->name, var->value);
 }
 
-// Q2 counterpart
 static void CL_SendCommand(void)
 {
-	Sys_SendKeyEvents();	// Get new key events.
-	IN_Commands();			// Allow gamepads to add commands.
+	IN_Update(); // YQ2		// Run SDL3 message loop.
 	Cbuf_Execute();			// Process console commands.
 	CL_FixCvarCheats();		// Fix any cheat cvars.
 	CL_SendCmd();			// Send intentions now.
@@ -1476,9 +1473,6 @@ void CL_Frame(const int msec)
 		if ((float)extratime < 1000.0f / cl_maxfps->value)
 			return;
 	}
-
-	// Let the mouse activate or deactivate.
-	IN_Frame();
 
 	// Decide the simulation time.
 	cls.frametime = (float)extratime / 1000.0f;
@@ -1608,9 +1602,7 @@ void CL_Shutdown(void)
 
 	isdown = true;
 
-	Cvar_SetValue("win_ignore_destroy", 1.0f);
-	ResMngr_Des(&cl_FXBufMngr); //mxd. Was a separate function in H2
-
+	ResMngr_Des(&cl_FXBufMngr); //mxd. Was a separate function in H2.
 	CL_WriteConfiguration();
 
 	if (fxapi_initialized)
@@ -1620,7 +1612,7 @@ void CL_Shutdown(void)
 	SMK_Shutdown();
 	CL_ClearGameMessages(); // H2
 	se.Shutdown(); //mxd. Also shuts down music backend.
-	IN_DeactivateMouse();
+	IN_Shutdown(); // YQ2
 	VID_Shutdown();
 	SndDll_FreeLibrary();
 	NET_Shutdown();

@@ -246,7 +246,7 @@ void CL_RegisterSounds(void)
 		if (cl.configstrings[CS_SOUNDS + i][0])
 		{
 			cl.sound_precache[i] = se.RegisterSound(cl.configstrings[CS_SOUNDS + i]);
-			Sys_SendKeyEvents(); // Pump message loop
+			IN_Update(); // Pump message loop.
 		}
 	}
 
@@ -344,6 +344,9 @@ static void CL_ParseDownload(void)
 static void CL_ParseServerData(void)
 {
 	Com_DPrintf("Serverdata packet received.\n");
+
+	// Clear all key states.
+	In_FlushQueue(); // YQ2
 
 	// Wipe the client_state_t struct.
 	CL_ClearState();

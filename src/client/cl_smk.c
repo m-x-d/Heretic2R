@@ -134,7 +134,7 @@ void SCR_PlayCinematic(const char* name)
 	Cvar_SetValue("paused", 0);
 	cls.state = ca_connected;
 
-	Key_ClearStates();
+	In_FlushQueue(); // YQ2
 	cls.key_dest = key_game;
 }
 

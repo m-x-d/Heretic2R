@@ -4,36 +4,30 @@
 // Copyright 1998 Raven Software
 //
 
+#include "vid_dll.h"
 #include "client.h"
 #include "cl_skeletons.h"
 #include "clfx_dll.h"
-#include "vid_dll.h"
-#include "sys_win.h"
 #include "glimp_sdl3.h" // YQ2
 #include "menus/menu_video.h"
 
-// Structure containing functions exported from refresh DLL
+// Structure containing functions exported from refresh DLL.
 refexport_t re;
 
-cvar_t* win_noalttab;
-static qboolean s_alttab_disabled;
-
-// Console variables that we need to access from this module
+// Console variables that we need to access from this module.
 cvar_t* vid_gamma;
 cvar_t* vid_brightness; // H2
 cvar_t* vid_contrast; // H2
-cvar_t* vid_ref;			// Name of Refresh DLL loaded
-static cvar_t* vid_xpos;	// X coordinate of window position
-static cvar_t* vid_ypos;	// Y coordinate of window position
+cvar_t* vid_ref; // Name of Refresh DLL loaded.
 cvar_t* vid_fullscreen;
 cvar_t* vid_mode;
 
-// Global variables used internally by this module
-viddef_t viddef; // Global video state; used by other modules
-static HINSTANCE reflib_library; // Handle to refresh DLL 
+// Global variables used internally by this module.
+viddef_t viddef; // Global video state; used by other modules.
+static HINSTANCE reflib_library; // Handle to refresh DLL.
 static qboolean reflib_active = false;
 
-HWND cl_hwnd; // Main window handle for life of program
+Q2DLL_DECLSPEC HWND cl_hwnd; // Main window handle for life of program (unused, but still needs to be exported for vanilla mods to work... -- mxd).
 
 qboolean vid_restart_required; // H2
 
@@ -47,61 +41,6 @@ typedef struct vidmode_s
 
 static vidmode_t* vid_modes; //mxd. Static array in Q2 / H2. H2 has no mode 10.
 static int num_vid_modes = 0; //mxd
-
-static byte scantokey[128] =
-{
-//	0				1		2			3				4		5				6				7 
-//	8				9		A			B				C		D				E				F 
-	0,				27,		'1',		'2',			'3',	'4',			'5',			'6',
-	'7',			'8',	'9',		'0',			'-',	'=',			K_BACKSPACE,	9,		// 0 
-	'q',			'w',	'e',		'r',			't',	'y',			'u',			'i',
-	'o',			'p',	'[',		']',			13 ,	K_CTRL,			'a',			's',	// 1 
-	'd',			'f',	'g',		'h',			'j',	'k',			'l',			';',
-	'\'',			'`',	K_SHIFT,	'\\',			'z',	'x',			'c',			'v',	// 2 
-	'b',			'n',	'm',		',',			'.',	'/',			K_SHIFT,		'*',
-	K_ALT,			' ',	0,			K_F1,			K_F2,	K_F3,			K_F4,			K_F5,	// 3 
-	K_F6,			K_F7,	K_F8,		K_F9,			K_F10,	K_PAUSE,		0,				K_HOME,
-	K_UPARROW,		K_PGUP,	K_KP_MINUS,	K_LEFTARROW,	K_KP_5,	K_RIGHTARROW,	K_KP_PLUS,		K_END,	// 4 
-	K_DOWNARROW,	K_PGDN,	K_INS,		K_DEL,			0,		0,				0,				K_F11,
-	K_F12,			0,		0,			0,				0,		0,				0,				0,		// 5
-	0,				0,		0,			0,				0,		0,				0,				0,
-	0,				0,		0,			0,				0,		0,				0,				0,		// 6 
-	0,				0,		0,			0,				0,		0,				0,				0,
-	0,				0,		0,			0,				0,		0,				0,				0		// 7 
-};
-
-// Q2 counterpart
-static void WIN_DisableAltTab(void)
-{
-	if (!s_alttab_disabled)
-	{
-		//mxd. Skip s_win95 logic
-		RegisterHotKey(NULL, 0, MOD_ALT, VK_TAB);
-		RegisterHotKey(NULL, 1, MOD_ALT, VK_RETURN);
-		s_alttab_disabled = true;
-	}
-}
-
-// Q2 counterpart
-static void WIN_EnableAltTab(void)
-{
-	if (s_alttab_disabled)
-	{
-		//mxd. Skip s_win95 logic
-		UnregisterHotKey(NULL, 0);
-		UnregisterHotKey(NULL, 1);
-		s_alttab_disabled = false;
-	}
-}
-
-//mxd
-static void WIN_SetAltTabState(const qboolean disable)
-{
-	if (disable)
-		WIN_DisableAltTab();
-	else
-		WIN_EnableAltTab();
-}
 
 #pragma region ========================== DLL GLUE ==========================
 
@@ -150,243 +89,10 @@ H2R_NORETURN void VID_Error(const int err_level, const char* fmt, ...)
 
 #pragma endregion
 
-#pragma region ========================== WND PROC ==========================
-
-// Map from windows to quake keynums.
-static int MapKey(const int key)
-{
-	const int modified = (key >> 16) & 255;
-	if (modified > 127)
-		return 0;
-
-	const qboolean is_extended = key & (1 << 24);
-	const int result = scantokey[modified];
-
-	if (!is_extended)
-	{
-		switch (result)
-		{
-			case K_UPARROW:
-				return K_KP_UPARROW;
-
-			case K_DOWNARROW:
-				return K_KP_DOWNARROW;
-
-			case K_LEFTARROW:
-				return K_KP_LEFTARROW;
-
-			case K_RIGHTARROW:
-				return K_KP_RIGHTARROW;
-
-			case K_INS:
-				return K_KP_INS;
-
-			case K_DEL:
-				return K_KP_DEL;
-
-			case K_PGDN:
-				return K_KP_PGDN;
-
-			case K_PGUP:
-				return K_KP_PGUP;
-
-			case K_HOME:
-				return K_KP_HOME;
-
-			case K_END:
-				return K_KP_END;
-
-			default:
-				return result;
-		}
-	}
-	else
-	{
-		switch (result)
-		{
-			case K_ENTER:
-				return K_KP_ENTER;
-
-			case K_SLASH:
-				return K_KP_SLASH;
-
-			case K_KP_NUMLOCK:
-				return K_KP_PLUS;
-
-			case K_PAUSE: // H2
-				return K_KP_NUMLOCK;
-
-			default:
-				return result;
-		}
-	}
-}
-
-static void AppActivate(const BOOL fActive, const BOOL minimize)
-{
-	Minimized = minimize;
-
-	Key_ClearStates();
-
-	// We don't want to act like we're active if we're minimized.
-	ActiveApp = (fActive && !Minimized);
-
-	// Minimize/restore mouse-capture on demand.
-	IN_Activate(ActiveApp);
-	se.Activate(ActiveApp); //mxd. Also activates music backend.
-
-	if ((int)win_noalttab->value)
-		WIN_SetAltTabState(ActiveApp); //mxd
-}
-
-// Main window procedure
-static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	static uint MSH_MOUSEWHEEL;
-
-	if (uMsg == MSH_MOUSEWHEEL) //TODO: do we still need this logic? Should be handled by WM_MOUSEWHEEL on Win98+
-	{
-		const int key = ((int)wParam > 0 ? K_MWHEELUP : K_MWHEELDOWN);
-		Key_Event(key, true, sys_msg_time);
-		Key_Event(key, false, sys_msg_time);
-
-		return DefWindowProc(hWnd, uMsg, wParam, lParam);
-	}
-
-	switch (uMsg)
-	{
-		// This chunk of code theoretically only works under NT4 and Win98 since this message doesn't exist under Win95.
-		case WM_MOUSEWHEEL:
-		{
-			const int key = ((short)HIWORD(wParam) > 0 ? K_MWHEELUP : K_MWHEELDOWN);
-			Key_Event(key, true, sys_msg_time);
-			Key_Event(key, false, sys_msg_time);
-		} break;
-
-		case WM_HOTKEY:
-			return 0;
-
-		case WM_CREATE:
-			cl_hwnd = hWnd;
-			MSH_MOUSEWHEEL = RegisterWindowMessage("MSWHEEL_ROLLMSG");
-			break;
-
-		case WM_PAINT:
-			SCR_DirtyScreen(); // Force entire screen to update next frame
-			break;
-
-		case WM_DESTROY:
-			// Let sound and input know about this?
-			if (cl_hwnd != NULL && Cvar_VariableValue("win_ignore_destroy") == 0.0f) // Changed in H2
-			{
-				cl_hwnd = NULL;
-				Com_Quit();
-			}
-			break;
-
-		case WM_ACTIVATE:
-		{
-			// KJB: Watch this for problems in fullscreen modes with Alt-tabbing.
-			const int fActive = LOWORD(wParam);
-			const int fMinimized = HIWORD(wParam);
-
-			AppActivate(fActive != WA_INACTIVE, fMinimized);
-
-			//if (reflib_active)
-				//re.AppActivate(fActive != WA_INACTIVE);
-
-			cls.disable_screen = (fActive == WA_INACTIVE); // H2
-		} break;
-
-		case WM_MOVE:
-			if ((int)vid_fullscreen->value == 0)
-			{
-				const int xPos = (short)LOWORD(lParam); // Horizontal position 
-				const int yPos = (short)HIWORD(lParam); // Vertical position 
-
-				RECT r = { 0, 0, 1, 1 };
-				const int style = GetWindowLong(hWnd, GWL_STYLE);
-				AdjustWindowRect(&r, style, FALSE);
-
-				Cvar_SetValue("vid_xpos", (float)(xPos + r.left));
-				Cvar_SetValue("vid_ypos", (float)(yPos + r.top));
-				vid_xpos->modified = false;
-				vid_ypos->modified = false;
-
-				if (ActiveApp)
-					IN_Activate(true);
-			}
-			break;
-
-		// This is complicated because Win32 seems to pack multiple mouse events into one update sometimes,
-		// so we always check all states and look for events.
-		case WM_LBUTTONDOWN:
-		case WM_LBUTTONUP:
-		case WM_RBUTTONDOWN:
-		case WM_RBUTTONUP:
-		case WM_MBUTTONDOWN:
-		case WM_MBUTTONUP:
-		case WM_MOUSEMOVE:
-		{
-			int temp = 0;
-
-			if (wParam & MK_LBUTTON)
-				temp |= 1;
-
-			if (wParam & MK_RBUTTON)
-				temp |= 2;
-
-			if (wParam & MK_MBUTTON)
-				temp |= 4;
-
-			IN_MouseEvent(temp);
-		} break;
-
-		case WM_SYSCOMMAND:
-			if (wParam == SC_SCREENSAVE)
-				return 0;
-			break;
-
-		case WM_SYSKEYDOWN:
-			if (wParam == 13)
-			{
-				if (vid_fullscreen != NULL)
-					Cvar_SetValue("vid_fullscreen", (vid_fullscreen->value == 0.0f ? 1.0f : 0.0f));
-				return 0;
-			}
-		// Intentional fallthrough
-		case WM_KEYDOWN:
-			Key_Event(MapKey(lParam), true, sys_msg_time);
-			break;
-
-		case WM_SYSKEYUP:
-		case WM_KEYUP:
-			Key_Event(MapKey(lParam), false, sys_msg_time);
-			break;
-
-		//mxd. Skip MM_MCINOTIFY / CDAudio_MessageHandler logic.
-
-		default:
-			break;
-	}
-
-	// Pass all unhandled messages to DefWindowProc
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
-
-#pragma endregion
-
 // Console command to restart the video mode and refresh DLL.
 static void VID_Restart_f(void)
 {
 	vid_restart_required = true; // H2
-}
-
-// Q2 counterpart
-static void VID_Front_f(void)
-{
-	SetWindowLong(cl_hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
-	SetForegroundWindow(cl_hwnd);
 }
 
 static void VID_ShowModes_f(void) // H2
@@ -453,19 +159,6 @@ static qboolean VID_GetModeInfo(int* width, int* height, const int mode)
 	}
 
 	return false;
-}
-
-static void VID_UpdateWindowPosAndSize(const int x, const int y, const int width, const int height) // H2: extra 'width' and 'height' args. //mxd. Actually use 'x' and 'y' args.
-{
-	RECT r = { 0, 0, width, height };
-
-	const int style = GetWindowLong(cl_hwnd, GWL_STYLE);
-	AdjustWindowRect(&r, style, FALSE);
-
-	const int w = r.right - r.left;
-	const int h = r.bottom - r.top;
-
-	MoveWindow(cl_hwnd, x, y, w, h, TRUE);
 }
 
 // Q2 counterpart
@@ -581,20 +274,11 @@ static qboolean VID_LoadRefresh(const char* name)
 
 // This function gets called once just before drawing each frame, and it's sole purpose is to check to see
 // if any of the video mode parameters have changed, and if they have to update the rendering DLL and/or video mode to match.
-void VID_CheckChanges(void)
+void VID_CheckChanges(void) //TODO: check YQ2 logic.
 {
-	int height;
-	int width;
-
-	if (win_noalttab->modified)
-	{
-		WIN_SetAltTabState((int)win_noalttab->value);
-		win_noalttab->modified = false;
-	}
-
 	while (vid_restart_required || vid_ref->modified || vid_fullscreen->modified)
 	{
-		// Refresh has changed
+		// Refresh has changed.
 		vid_restart_required = false; // H2
 
 		vid_ref->modified = false;
@@ -604,11 +288,6 @@ void VID_CheckChanges(void)
 		cls.disable_screen = true;
 
 		se.StopAllSounds();
-
-		Cvar_SetValue("win_ignore_destroy", true); // H2
-
-		if (Q_stricmp(vid_ref->string, "soft") == 0 && (int)vid_fullscreen->value) // H2_1.07: "soft" -> "gl"
-			Cvar_SetValue("win_noalttab", false);
 
 		char ref_name[100];
 		Com_sprintf(ref_name, sizeof(ref_name), "ref_%s.dll", vid_ref->string);
@@ -627,22 +306,10 @@ void VID_CheckChanges(void)
 				Con_ToggleConsole_f();
 		}
 
-		Cvar_SetValue("win_ignore_destroy", false); // H2
-
 		if (cl.configstrings[CS_MODELS + 1][0]) // H2
 			CLFX_Init();
 
 		cls.disable_screen = false;
-	}
-
-	// Update our window position
-	if (vid_xpos->modified || vid_ypos->modified)
-	{
-		VID_GetModeInfo(&width, &height, (int)vid_mode->value); // H2
-		VID_UpdateWindowPosAndSize((int)vid_xpos->value, (int)vid_ypos->value, width, height);
-
-		vid_xpos->modified = false;
-		vid_ypos->modified = false;
 	}
 }
 
@@ -650,19 +317,15 @@ void VID_Init(void)
 {
 	vid_restart_required = true; // H2
 
-	// Create the video variables so we know how to start the graphics drivers
+	// Create the video variables so we know how to start the graphics drivers.
 	vid_ref = Cvar_Get("vid_ref", "gl1", CVAR_ARCHIVE); // H2_1.07: "soft" -> "gl"
-	vid_xpos = Cvar_Get("vid_xpos", "0", CVAR_ARCHIVE);
-	vid_ypos = Cvar_Get("vid_ypos", "0", CVAR_ARCHIVE);
 	vid_fullscreen = Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
 	vid_gamma = Cvar_Get("vid_gamma", "0.5", CVAR_ARCHIVE);
 	vid_brightness = Cvar_Get("vid_brightness", "0.5", CVAR_ARCHIVE); // H2
 	vid_contrast = Cvar_Get("vid_contrast", "0.5", CVAR_ARCHIVE); // H2
-	win_noalttab = Cvar_Get("win_noalttab", "0", CVAR_ARCHIVE);
 
-	// Add some console commands that we want to handle
+	// Add some console commands that we want to handle.
 	Cmd_AddCommand("vid_restart", VID_Restart_f);
-	Cmd_AddCommand("vid_front", VID_Front_f);
 	Cmd_AddCommand("vid_showmodes", VID_ShowModes_f); // H2
 
 	// YQ2. Initializes the video backend. This is NOT the renderer itself, just the client side support stuff!
@@ -671,7 +334,7 @@ void VID_Init(void)
 
 	VID_PreMenuInit(); // H2
 
-	// Start the graphics mode and load refresh DLL
+	// Start the graphics mode and load refresh DLL.
 	VID_CheckChanges();
 }
 

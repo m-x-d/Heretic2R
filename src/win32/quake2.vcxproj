@@ -28,6 +28,7 @@
     <ClCompile Include="..\client\cl_view.c" />
     <ClCompile Include="..\client\console.c" />
     <ClCompile Include="..\client\glimp_sdl3.c" />
+    <ClCompile Include="..\client\input_sdl3.c" />
     <ClCompile Include="..\client\keys.c" />
     <ClCompile Include="..\client\menu.c" />
     <ClCompile Include="..\client\menus\menu_actionkeys.c" />
@@ -87,7 +88,6 @@
     <ClCompile Include="..\server\sv_user.c" />
     <ClCompile Include="..\server\sv_world.c" />
     <ClCompile Include="clfx_dll.c" />
-    <ClCompile Include="input_win.c" />
     <ClCompile Include="net_wins.c" />
     <ClCompile Include="q_shwin.c" />
     <ClCompile Include="snd_dll.c" />
@@ -179,7 +179,6 @@
     <ClInclude Include="dll_io.h" />
     <ClInclude Include="Quake2Main.h" />
     <ClInclude Include="snd_dll.h" />
-    <ClInclude Include="sys_win.h" />
     <ClInclude Include="vid_dll.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "q_shared.h"
+
 extern cvar_t* vid_gamma;
 extern cvar_t* vid_ref;
 extern cvar_t* vid_fullscreen;

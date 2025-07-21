@@ -9,7 +9,6 @@
 #include "client.h"
 #include "snd_dll.h" //mxd
 #include "clfx_dll.h"
-#include "sys_win.h"
 
 snd_export_t se; //mxd
 

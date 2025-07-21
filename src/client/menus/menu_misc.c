@@ -12,8 +12,6 @@ cvar_t* m_banner_misc;
 
 cvar_t* m_item_alwaysrun;
 cvar_t* m_item_crosshair;
-cvar_t* m_item_noalttab;
-cvar_t* m_item_joystick;
 cvar_t* m_item_autotarget;
 cvar_t* m_item_caption;
 cvar_t* m_item_violence;
@@ -29,8 +27,6 @@ static menulist_t s_options_autotarget_box;
 static menulist_t s_options_autoweapon_box;
 static menulist_t s_options_captions_box;
 static menulist_t s_options_lookspring_box;
-static menulist_t s_options_noalttab_box;
-static menulist_t s_options_joystick_box;
 static menuslider_t s_options_yawspeed_slider;
 static menulist_t s_options_violence_box;
 static menuaction_t s_options_console_action;
@@ -66,18 +62,6 @@ static void ShowCaptionsFunc(void* self) // H2
 static void LookspringFunc(void* self)
 {
 	Cvar_SetValue("lookspring", (float)(lookspring->value == 0.0f));
-}
-
-// Q2 counterpart
-static void NoAltTabFunc(void* self)
-{
-	Cvar_SetValue("win_noalttab", (float)s_options_noalttab_box.curvalue);
-}
-
-// Q2 counterpart
-static void JoystickFunc(void* self)
-{
-	Cvar_SetValue("in_joystick", (float)s_options_joystick_box.curvalue);
 }
 
 static void YawSpeedFunc(void* self) // H2
@@ -122,12 +106,6 @@ static void Misc_SetValues(void) // H2
 
 	Cvar_SetValue("cl_doautoaim", Clamp(cl_doautoaim->value, 0, 1));
 	s_options_autotarget_box.curvalue = Q_ftol(cl_doautoaim->value);
-
-	Cvar_SetValue("in_joystick", Clamp(in_joystick->value, 0, 1));
-	s_options_joystick_box.curvalue = Q_ftol(in_joystick->value);
-
-	Cvar_SetValue("win_noalttab", Clamp(win_noalttab->value, 0, 1)); //mxd. Added value clamping.
-	s_options_noalttab_box.curvalue = Q_ftol(win_noalttab->value);
 }
 
 static void Misc_MenuInit(void) // H2
@@ -147,8 +125,6 @@ static void Misc_MenuInit(void) // H2
 	static char name_autoweapon[MAX_QPATH];
 	static char name_caption[MAX_QPATH];
 	static char name_lookspring[MAX_QPATH];
-	static char name_noalttab[MAX_QPATH];
-	static char name_joystick[MAX_QPATH];
 	static char name_yawspeed[MAX_QPATH];
 	static char name_violence[MAX_QPATH];
 	static char name_console[MAX_QPATH];
@@ -182,7 +158,6 @@ static void Misc_MenuInit(void) // H2
 	Cvar_SetValue("blood_level", Clamp(Cvar_VariableValue("blood_level"), 0, 3));
 
 	s_misc_menu.nitems = 0;
-	win_noalttab = Cvar_Get("win_noalttab", "0", CVAR_ARCHIVE);
 
 	Com_sprintf(name_crosshair, sizeof(name_crosshair), "\x02%s", m_item_crosshair->string);
 	s_options_crosshair_box.generic.type = MTYPE_SPINCONTROL;
@@ -245,38 +220,9 @@ static void Misc_MenuInit(void) // H2
 	s_options_lookspring_box.generic.flags = QMF_SINGLELINE;
 	s_options_lookspring_box.generic.callback = LookspringFunc;
 	s_options_lookspring_box.itemnames = yes_no_names;
-
-	int item_index = 6;
-	const qboolean show_noalttab_item = (Q_stricmp(Cvar_VariableString("vid_ref"), "soft") != 0 || Cvar_VariableValue("vid_fullscreen") == 0.0f); // H2_1.07: "soft" -> "gl".
-
-	if (show_noalttab_item)
-	{
-		//mxd. Disabled in Q2
-		Com_sprintf(name_noalttab, sizeof(name_noalttab), "\x02%s", m_item_noalttab->string);
-		s_options_noalttab_box.generic.type = MTYPE_SPINCONTROL;
-		s_options_noalttab_box.generic.x = 0;
-		s_options_noalttab_box.generic.y = 120;
-		s_options_noalttab_box.generic.name = name_noalttab;
-		s_options_noalttab_box.generic.width = re.BF_Strlen(name_noalttab);
-		s_options_noalttab_box.generic.flags = QMF_SINGLELINE;
-		s_options_noalttab_box.generic.callback = NoAltTabFunc;
-		s_options_noalttab_box.itemnames = yes_no_names;
-
-		item_index = 7;
-	}
-
-	Com_sprintf(name_joystick, sizeof(name_joystick), "\x02%s", m_item_joystick->string);
-	s_options_joystick_box.generic.y = item_index * 20;
-	s_options_joystick_box.generic.type = MTYPE_SPINCONTROL;
-	s_options_joystick_box.generic.x = 0;
-	s_options_joystick_box.generic.name = name_joystick;
-	s_options_joystick_box.generic.width = re.BF_Strlen(name_joystick);
-	s_options_joystick_box.generic.flags = QMF_SINGLELINE;
-	s_options_joystick_box.generic.callback = JoystickFunc;
-	s_options_joystick_box.itemnames = yes_no_names;
-
+	
 	Com_sprintf(name_yawspeed, sizeof(name_yawspeed), "\x02%s", m_item_yawspeed->string);
-	s_options_yawspeed_slider.generic.y = (item_index + 1) * 20;
+	s_options_yawspeed_slider.generic.y = 120;
 	s_options_yawspeed_slider.generic.type = MTYPE_SLIDER;
 	s_options_yawspeed_slider.generic.x = 0;
 	s_options_yawspeed_slider.generic.name = name_yawspeed;
@@ -287,7 +233,7 @@ static void Misc_MenuInit(void) // H2
 	s_options_yawspeed_slider.generic.callback = YawSpeedFunc;
 
 	Com_sprintf(name_violence, sizeof(name_violence), "\x02%s", m_item_violence->string);
-	s_options_violence_box.generic.y = (item_index + 3) * 20;
+	s_options_violence_box.generic.y = 160;
 	s_options_violence_box.generic.type = MTYPE_SPINCONTROL;
 	s_options_violence_box.generic.x = 0;
 	s_options_violence_box.generic.name = name_violence;
@@ -299,7 +245,7 @@ static void Misc_MenuInit(void) // H2
 
 	Com_sprintf(name_console, sizeof(name_console), "\x02%s", m_item_console->string);
 	s_options_console_action.generic.type = MTYPE_ACTION;
-	s_options_console_action.generic.y = (item_index + 18 + (item_index + 3) * 4) * 4;
+	s_options_console_action.generic.y = 240;
 	s_options_console_action.generic.x = 0;
 	s_options_console_action.generic.name = name_console;
 	s_options_console_action.generic.width = re.BF_Strlen(name_console);
@@ -311,14 +257,9 @@ static void Misc_MenuInit(void) // H2
 	Menu_AddItem(&s_misc_menu, &s_options_autoweapon_box);
 	Menu_AddItem(&s_misc_menu, &s_options_captions_box);
 	Menu_AddItem(&s_misc_menu, &s_options_lookspring_box);
-
-	if (show_noalttab_item)
-		Menu_AddItem(&s_misc_menu, &s_options_noalttab_box);
-
-	Menu_AddItem(&s_misc_menu, &s_options_joystick_box.generic);
-	Menu_AddItem(&s_misc_menu, &s_options_yawspeed_slider.generic);
-	Menu_AddItem(&s_misc_menu, &s_options_violence_box.generic);
-	Menu_AddItem(&s_misc_menu, &s_options_console_action.generic);
+	Menu_AddItem(&s_misc_menu, &s_options_yawspeed_slider);
+	Menu_AddItem(&s_misc_menu, &s_options_violence_box);
+	Menu_AddItem(&s_misc_menu, &s_options_console_action);
 
 	Misc_SetValues();
 	Menu_Center(&s_misc_menu);

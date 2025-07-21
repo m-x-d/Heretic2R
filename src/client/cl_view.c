@@ -73,7 +73,7 @@ void CL_PrepRefresh(void)
 			Com_Printf("%s\r", name);
 
 		SCR_UpdateScreen();
-		Sys_SendKeyEvents(); // Pump message loop.
+		IN_Update(); // H2. Pump message loop.
 
 		cl.model_draw[i] = re.RegisterModel(cl.configstrings[CS_MODELS + i]);
 		if (name[0] == '*')
@@ -91,7 +91,7 @@ void CL_PrepRefresh(void)
 	for (int i = 1; i < MAX_IMAGES && cl.configstrings[CS_IMAGES + i][0]; i++)
 	{
 		cl.image_precache[i] = re.RegisterPic(cl.configstrings[CS_IMAGES + i]);
-		Sys_SendKeyEvents(); // Pump message loop.
+		IN_Update(); // H2. Pump message loop.
 	}
 
 	SCR_UpdateProgressbar(0, 5); // H2
@@ -104,7 +104,7 @@ void CL_PrepRefresh(void)
 
 		Com_Printf("client %i\r", i);
 		SCR_UpdateScreen();
-		Sys_SendKeyEvents(); // Pump message loop.
+		IN_Update(); // H2. Pump message loop.
 		CL_ParseClientinfo(i);
 		Com_Printf("                                     \r");
 	}
@@ -131,7 +131,7 @@ void CL_PrepRefresh(void)
 	cl.refresh_prepped = true;
 	cl.force_refdef = true; // Make sure we have a valid refdef.
 
-	Key_ClearStates(); // H2
+	IN_Update(); // H2. Pump message loop.
 	cls.key_dest = 0; // H2
 
 	// Start the cd track.
