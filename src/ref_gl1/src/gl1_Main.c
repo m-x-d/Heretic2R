@@ -690,7 +690,7 @@ static void R_Register(void)
 	vid_ref = ri.Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
 
 	// H2:
-	vid_mode = ri.Cvar_Get("vid_mode", "3", CVAR_ARCHIVE);
+	vid_mode = ri.Cvar_Get("vid_mode", "1", CVAR_ARCHIVE); // H2: 3
 	menus_active = ri.Cvar_Get("menus_active", "0", 0);
 	cl_camera_under_surface = ri.Cvar_Get("cl_camera_under_surface", "0", 0);
 	quake_amount = ri.Cvar_Get("quake_amount", "0", 0);
@@ -770,7 +770,7 @@ static qboolean RI_Init(void)
 	for (int j = 0; j < 256; j++)
 		turbsin[j] *= 0.5f;
 
-	ri.Con_Printf(PRINT_ALL, "Refresh: "REF_VERSION"\n"); //mxd. Com_Printf() -> ri.Con_Printf() (here and below).
+	ri.Con_Printf(PRINT_ALL, "Refresh: "REF_TITLE"\n"); //mxd. Com_Printf() -> ri.Con_Printf() (here and below).
 	R_Register();
 
 	// Set our "safe" mode.
@@ -1022,7 +1022,7 @@ REF_DECLSPEC refexport_t GetRefAPI(const refimport_t rimp)
 	ri = rimp;
 
 	re.api_version = REF_API_VERSION;
-	re.render = false; //mxd. Avoid compiler warning.
+	re.title = REF_TITLE; //mxd
 
 	re.BeginRegistration = RI_BeginRegistration;
 	re.RegisterModel = RI_RegisterModel;

@@ -168,8 +168,8 @@ typedef struct
 	// If api_version is different, the dll cannot be used.
 	int api_version;
 
-	// Set this to false if you don`t want any rendering commands issued.
-	qboolean render;
+	// Refresh library title (like "OpenGL 1.3").
+	const char* title; //mxd
 
 	// Called when the library is loaded.
 	qboolean (*Init)(void);
