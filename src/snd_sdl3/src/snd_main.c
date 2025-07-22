@@ -173,7 +173,7 @@ static void S_Init(void)
 {
 	si.Com_Printf("\n------- Sound initialization -------\n");
 
-	const cvar_t* cv = si.Cvar_Get("s_initsound", "1", 0);
+	const cvar_t* cv = si.Cvar_Get("s_initsound", "1", 0); //TODO: remove?
 	if (cv->value == 0.0f)
 	{
 		si.Com_Printf("Not initializing.\n");
@@ -181,9 +181,9 @@ static void S_Init(void)
 	else
 	{
 		s_volume = si.Cvar_Get("s_volume", "0.5", CVAR_ARCHIVE);
-		s_sounddir = si.Cvar_Get("s_sounddir", "sound", CVAR_ARCHIVE); // H2
-		s_khz = si.Cvar_Get("s_khz", "44", CVAR_ARCHIVE);  // Q2: 11 //TODO: remove? Always run at 44 Khz?
-		s_loadas8bit = si.Cvar_Get("s_loadas8bit", "0", CVAR_ARCHIVE); // Q2: 1
+		s_sounddir = si.Cvar_Get("s_sounddir", "sound", CVAR_ARCHIVE); // H2 //TODO: remove?
+		s_khz = si.Cvar_Get("s_khz", "44", CVAR_ARCHIVE);  // Q2: 11 // H2: 22 //TODO: remove? Always run at 44 Khz?
+		s_loadas8bit = si.Cvar_Get("s_loadas8bit", "0", CVAR_ARCHIVE); // Q2: 1 //TODO: remove?
 
 		s_mixahead = si.Cvar_Get("s_mixahead", "0.14", CVAR_ARCHIVE); // Q2: 0.2
 		s_show = si.Cvar_Get("s_show", "0", 0);
@@ -618,7 +618,7 @@ static void S_StartLocalSound(const char* name)
 }
 
 // Clears the playback buffer so that all playback stops.
-void S_ClearBuffer(void)
+static void S_ClearBuffer(void)
 {
 	if (!sound_started)
 		return;
@@ -655,7 +655,9 @@ void S_StopAllSounds(void)
 
 	// Clear all the channels.
 	memset(channels, 0, sizeof(channels));
-	// H2: no S_ClearBuffer() call.
+
+	// Clear sound buffer. Skipped in original H2 logic. Need to clear it, otherwise last ogg music frame will keep repeating when the game window is minimized or not focused.
+	S_ClearBuffer();
 }
 
 static void S_StopAllSounds_Sounding(void) // H2

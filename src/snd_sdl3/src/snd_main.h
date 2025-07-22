@@ -34,7 +34,6 @@ extern cvar_t* s_paused; //mxd
 extern cvar_t* s_underwater_gain_hf; // YQ2
 extern cvar_t* s_camera_under_surface; // H2
 
-extern void S_ClearBuffer(void);
 extern channel_t* S_PickChannel(int entnum, int entchannel);
 extern void S_IssuePlaysound(playsound_t* ps);
 extern void S_StopAllSounds(void);
