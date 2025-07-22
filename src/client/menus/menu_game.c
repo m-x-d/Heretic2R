@@ -33,7 +33,7 @@ static void StartGame(char* mapname)
 	// Disable updates and start the cinematic going.
 	cl.servercount = -1;
 	M_ForceMenuOff();
-	M_UpdateOrigMode();
+
 	Cvar_SetValue("deathmatch", 0);
 	Cvar_SetValue("coop", 0);
 

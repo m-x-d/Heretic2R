@@ -83,7 +83,6 @@ static void LoadGameCallback(void* self)
 		Cbuf_AddText(va("load save%i\n", save_index));
 
 	M_ForceMenuOff();
-	M_UpdateOrigMode(); // H2
 }
 
 static void LoadGame_MenuInit(void)

@@ -72,7 +72,6 @@ static void JoinServerFunc(void* self)
 	Com_sprintf(buffer, sizeof(buffer), "connect %s\n", NET_AdrToString(&local_server_netadr[index]));
 	Cbuf_AddText(buffer);
 	M_ForceMenuOff();
-	M_UpdateOrigMode(); // H2
 }
 
 void JoinServer_MenuInit(void)

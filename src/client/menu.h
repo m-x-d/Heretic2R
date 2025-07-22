@@ -14,28 +14,25 @@
 #define MENU_CENTER_X	(DEF_WIDTH / 2) //mxd
 #define MAX_SAVEGAMES	8 // Q2: 15
 
-//mxd. Menu sounds
+//mxd. Menu sounds.
 #define SND_MENU1	"misc/menu1.wav"
 #define SND_MENU2	"misc/menu2.wav"
 #define SND_MENU3	"misc/menu3.wav"
 #define SND_MENU4	"misc/menu4.wav"
 
 extern cvar_t* vid_mode;
-extern cvar_t* vid_menu_mode;
 
 extern cvar_t* menus_active;
 
 extern cvar_t* m_item_defaults;
 extern cvar_t* m_item_driver;
 extern cvar_t* m_item_vidmode;
-extern cvar_t* m_item_screensize;
 extern cvar_t* m_item_gamma;
 extern cvar_t* m_item_brightness;
 extern cvar_t* m_item_contrast;
 extern cvar_t* m_item_detail;
-extern cvar_t* m_item_fullscreen;
 
-// Controls
+// Controls.
 extern cvar_t* m_item_attack;
 extern cvar_t* m_item_defend;
 extern cvar_t* m_item_action;
@@ -81,7 +78,7 @@ extern cvar_t* m_item_rollforward;
 extern cvar_t* m_item_rollback;
 extern cvar_t* m_item_spinattack;
 
-// Generic menu labels
+// Generic menu labels.
 extern cvar_t* m_generic_yes;
 extern cvar_t* m_generic_no;
 extern cvar_t* m_generic_high;
@@ -98,7 +95,6 @@ extern cvar_t* m_generic_crosshair2;
 extern cvar_t* m_generic_crosshair3;
 extern cvar_t* m_dmlist;
 extern cvar_t* m_cooplist;
-extern cvar_t* m_origmode;
 
 // H2. Generic menu item label texts.
 extern char m_text_no[MAX_QPATH];
@@ -202,7 +198,6 @@ extern void M_PopMenu(void);
 extern char* Default_MenuKey(menuframework_t* menu, int key);
 extern const char* Generic_MenuKey(int key);
 extern qboolean Field_Key(menufield_t* field, int key);
-extern void M_UpdateOrigMode(void); // H2
 extern float M_GetMenuAlpha(void); // H2
 extern int M_GetMenuLabelX(int text_width); // H2
 extern int M_GetMenuOffsetY(const menuframework_t* menu); // H2

@@ -157,7 +157,6 @@ static void StartServerActionFunc(void* self)
 	}
 
 	M_ForceMenuOff();
-	M_UpdateOrigMode();
 }
 
 static qboolean StartServer_MenuInit(void)

@@ -14,6 +14,10 @@
 // Structure containing functions exported from refresh DLL.
 refexport_t re;
 
+//mxd. Compatible ref_xxx.dlls info. For use in menu_video.c.
+reflib_info_t reflib_infos[MAX_REFLIBS];
+int num_reflib_infos = 0;
+
 // Console variables that we need to access from this module.
 cvar_t* vid_gamma;
 cvar_t* vid_brightness; // H2
@@ -31,16 +35,8 @@ Q2DLL_DECLSPEC HWND cl_hwnd; // Main window handle for life of program (unused, 
 
 qboolean vid_restart_required; // H2
 
-typedef struct vidmode_s
-{
-	char description[32]; // Q2: char*
-	int width;
-	int height;
-	int mode;
-} vidmode_t;
-
-static vidmode_t* vid_modes; //mxd. Static array in Q2 / H2. H2 has no mode 10.
-static int num_vid_modes = 0; //mxd
+vidmode_t* vid_modes; //mxd. Static array in Q2 / H2. H2 has no mode 10.
+int num_vid_modes = 0; //mxd
 
 #pragma region ========================== DLL GLUE ==========================
 
@@ -100,7 +96,7 @@ static void VID_ShowModes_f(void) // H2
 	Com_Printf("-------- Video Modes --------\n");
 
 	for (int i = 0; i < num_vid_modes; i++)
-		Com_Printf("%s\n", vid_modes[i].description);
+		Com_Printf("Mode %*i: %ix%i\n", 2, vid_modes[i].mode, vid_modes[i].width, vid_modes[i].height);
 
 	Com_Printf("-----------------------------\n");
 	Com_Printf("Gamma      : %f\n", (double)vid_gamma->value);
@@ -139,7 +135,10 @@ void VID_InitModes(viddef_t* modes, const int num_modes)
 		dst_mode->height = src_mode->height;
 		dst_mode->mode = i;
 
-		sprintf_s(dst_mode->description, sizeof(dst_mode->description), "Mode %i: %ix%i", i, dst_mode->width, dst_mode->height);
+		if (dst_mode->mode == 0)
+			sprintf_s(dst_mode->description, sizeof(dst_mode->description), "Desktop");
+		else
+			sprintf_s(dst_mode->description, sizeof(dst_mode->description), "%ix%i", dst_mode->width, dst_mode->height);
 	}
 }
 
@@ -272,6 +271,69 @@ static qboolean VID_LoadRefresh(const char* name)
 	return true;
 }
 
+static qboolean VID_StroreReflibInfo(const char* ref_path) //mxd
+{
+	// Try loading it...
+	const HINSTANCE reflib = LoadLibrary(ref_path); //TODO: replace with YQ2 Sys_LoadLibrary()?
+	if (reflib == NULL)
+		return false;
+
+	const GetRefAPI_t GetRefAPI = (void*)GetProcAddress(reflib, "GetRefAPI");
+	if (GetRefAPI == NULL)
+	{
+		FreeLibrary(reflib);
+		return false;
+	}
+
+	const refimport_t ref_import = { 0 }; // Assume GetRefAPI() doesn't use ref_import function pointers... 
+	const refexport_t ref_export = GetRefAPI(ref_import);
+
+	if (ref_export.api_version != REF_API_VERSION || ref_export.title == NULL)
+	{
+		FreeLibrary(reflib);
+		return false;
+	}
+
+	const char* start = strchr(ref_path, '_');
+	const char* end = strrchr(ref_path, '.');
+	const qboolean is_valid = (start != NULL && end != NULL);
+
+	if (is_valid)
+	{
+		// Seems valid. Store info...
+		reflib_info_t* info = &reflib_infos[num_reflib_infos];
+
+		strcpy_s(info->title, sizeof(info->title), ref_export.title);
+		strncpy_s(info->id, sizeof(info->id), start + 1, end - start - 1); // Strip "ref_" and ".dll" parts...
+	}
+
+	FreeLibrary(reflib);
+
+	return is_valid;
+}
+
+static void VID_InitReflibInfos(void) //mxd
+{
+	num_reflib_infos = 0;
+
+	// Find all compatible ref_xxx.dll libraries.
+	char mask[MAX_QPATH];
+	Com_sprintf(mask, sizeof(mask), "ref_*.dll");
+
+	const char* ref_path = Sys_FindFirst(mask, 0, 0);
+	
+	while (ref_path != NULL && num_reflib_infos < MAX_REFLIBS)
+	{
+		const char* path = strchr(ref_path, '/') + 1; // Skip starting '/'...
+		if (VID_StroreReflibInfo(path != NULL ? path : ref_path))
+			num_reflib_infos++;
+
+		ref_path = Sys_FindNext(0, 0);
+	}
+
+	Sys_FindClose();
+}
+
 // This function gets called once just before drawing each frame, and it's sole purpose is to check to see
 // if any of the video mode parameters have changed, and if they have to update the rendering DLL and/or video mode to match.
 void VID_CheckChanges(void) //TODO: check YQ2 logic.
@@ -332,6 +394,7 @@ void VID_Init(void)
 	if (!GLimp_Init())
 		Com_Error(ERR_FATAL, "Couldn't initialize the graphics subsystem!\n");
 
+	VID_InitReflibInfos(); //mxd
 	VID_PreMenuInit(); // H2
 
 	// Start the graphics mode and load refresh DLL.

@@ -19,7 +19,6 @@ static void SaveGameCallback(void* self)
 
 	Cbuf_AddText(va("save save%i\n", action->generic.localdata[0]));
 	M_ForceMenuOff();
-	M_UpdateOrigMode(); // H2
 }
 
 static void SaveGame_MenuInit(void)

@@ -41,9 +41,8 @@
 #include "menus/menu_video.h"
 #include "menus/menu_worldmap.h"
 
-cvar_t* vid_menu_mode;
 cvar_t* menus_active;
-cvar_t* quick_menus;
+cvar_t* quick_menus; //TODO: add UI control (in menu_misc.c menu?).
 
 cvar_t* m_item_defaults;
 
@@ -110,7 +109,6 @@ cvar_t* m_generic_crosshair2;
 cvar_t* m_generic_crosshair3;
 cvar_t* m_dmlist;
 cvar_t* m_cooplist;
-cvar_t* m_origmode;
 
 // H2. Generic menu item labels texts.
 char m_text_no[MAX_QPATH];
@@ -139,7 +137,6 @@ typedef struct
 uint m_menu_side; // H2 (0 - right, 1 - left)
 static menulayer_t m_layers[MAX_MENU_DEPTH + 1]; // Q2: MAX_MENU_DEPTH
 static int m_menudepth;
-static float quick_menus_old_value; // H2
 
 static void PrecacheGenericMenuItemsText(void) // H2
 {
@@ -151,19 +148,6 @@ static void PrecacheGenericMenuItemsText(void) // H2
 	Com_sprintf(m_text_high, sizeof(m_text_high), "\x02%s", m_generic_high->string);
 
 	Cvar_Set("menus_active", "1");
-}
-
-static void UpdateVidModeVars(void) // H2
-{
-	Cvar_SetValue("m_origmode", vid_mode->value);
-
-	if (Q_stricmp(vid_ref->string, "soft") == 0 && vid_mode->value < vid_menu_mode->value) // H2_v1.07: "soft" -> "gl".
-	{
-		Cvar_SetValue("vid_mode", vid_menu_mode->value);
-		quick_menus_old_value = quick_menus->value;
-		if (quick_menus->value < 1.0f)
-			Cvar_Set("quick_menus", "1.0");
-	}
 }
 
 // Similar to M_PushMenu() in Q2.
@@ -207,7 +191,6 @@ void M_PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) // H2
 		{
 			cls.m_menustate = 5;
 			PrecacheGenericMenuItemsText();
-			UpdateVidModeVars();
 
 			if (se.SetEaxEnvironment != NULL) //mxd. Done in PrecacheGenericMenuItemsText() in original logic.
 				se.SetEaxEnvironment(0);
@@ -605,12 +588,10 @@ void M_Init(void)
 	m_item_console = Cvar_Get("m_item_console", "Go to console", 0);
 	m_item_driver = Cvar_Get("m_item_driver", "Renderer", 0);
 	m_item_vidmode = Cvar_Get("m_item_vidmode", "Video Resolution", 0);
-	m_item_screensize = Cvar_Get("m_item_screensize", "Screen Size", 0);
 	m_item_gamma = Cvar_Get("m_item_gamma", "Gamma", 0);
 	m_item_brightness = Cvar_Get("m_item_brightness", "Brightness", 0);
 	m_item_contrast = Cvar_Get("m_item_contrast", "Contrast", 0);
 	m_item_detail = Cvar_Get("m_item_detail", "Detail Level", 0);
-	m_item_fullscreen = Cvar_Get("m_item_fullscreen", "Fullscreen", 0);
 	m_item_snddll = Cvar_Get("m_item_snddll", "Sound System", 0);
 	m_item_effectsvol = Cvar_Get("m_item_effectsvol", "Effects Volume", 0);
 	m_item_cdmusic = Cvar_Get("m_item_cdmusic", "CD Music", 0);
@@ -705,18 +686,9 @@ void M_Init(void)
 	m_generic_crosshair3 = Cvar_Get("m_generic_crosshair3", "Symbol", 0);
 	m_dmlist = Cvar_Get("m_dmlist", "dm", 0);
 	m_cooplist = Cvar_Get("m_cooplist", "coop", 0);
-	m_origmode = Cvar_Get("m_origmode", "3", 0);
 
 	Cvar_Get("blood_level", "0", CVAR_ARCHIVE);
 	Cvar_Get("dm_no_bodies", "0", CVAR_ARCHIVE);
-}
-
-void M_UpdateOrigMode(void) // H2
-{
-	if ((int)vid_mode->value != (int)m_origmode->value)
-		Cvar_SetValue("vid_mode", m_origmode->value);
-
-	Cvar_SetValue("quick_menus", quick_menus_old_value);
 }
 
 float M_GetMenuAlpha(void) // H2
@@ -1324,9 +1296,7 @@ void M_Draw(void)
 			if ((int)quick_menus->value || cls.state == ca_disconnected)
 			{
 				cls.m_menustate = 0;
-
 				M_ForceMenuOff();
-				M_UpdateOrigMode();
 			}
 			else
 			{
@@ -1347,15 +1317,11 @@ void M_Draw(void)
 			m_layers[0].draw();
 
 			if (cls.m_menuscale == 0.0f)
-			{
 				M_ForceMenuOff();
-				M_UpdateOrigMode();
-			}
 			break;
 
 		default: //mxd. Added default case.
 			Sys_Error("Unexpected menu index %i", cls.m_menustate);
-			break;
 	}
 }
 

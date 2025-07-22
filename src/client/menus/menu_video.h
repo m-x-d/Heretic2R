@@ -13,8 +13,10 @@ extern cvar_t* m_banner_video;
 // Cvars shared between client and menu_video logic.
 extern cvar_t* r_detail;
 
-void M_Menu_Video_f(void);
+extern void M_Menu_Video_f(void);
 
 // Functions shared between vid_dll and menu_video logic.
-void VID_MenuInit(void);
-void VID_MenuSetDetail(int detail);
+extern void VID_MenuInit(void);
+
+// Local forward declarations for menu_video.c
+static void VID_MenuSetDetail(int detail);
