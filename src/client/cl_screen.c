@@ -20,7 +20,7 @@ static int scr_progressbar_width; // H2
 
 vrect_t scr_vrect; // Position of render window on screen
 
-cvar_t* scr_viewsize;
+cvar_t* scr_viewsize; //TODO: remove?
 cvar_t* scr_centertime;
 static cvar_t* scr_showturtle;
 static cvar_t* scr_showpause;

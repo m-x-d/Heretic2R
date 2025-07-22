@@ -236,7 +236,7 @@ typedef struct
 
 	int startmenu;		// Time when the menu came up.
 	int startmenuzoom;	// Time since menu start.
-	int m_menustate;
+	int m_menustate; //TODO: convert to enum?
 	float m_menualpha;
 	float m_menuscale;
 
