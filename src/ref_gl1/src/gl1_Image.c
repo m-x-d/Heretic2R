@@ -53,7 +53,7 @@ void R_InitGammaTable(void) // H2: InitGammaTable()
 		float inf = 255.0f * powf(((float)i + 0.5f) / 255.5f, vid_gamma->value) + 0.5f;
 		float sign;
 
-		if (inf > 128.0f)
+		if (inf < 128.0f)
 		{
 			inf = 128.0f - inf;
 			sign = -1.0f;
