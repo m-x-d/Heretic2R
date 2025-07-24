@@ -667,6 +667,9 @@ static void R_RefreshImage(image_t* image) // H2
 {
 	glDeleteTextures(1, (GLuint*)&image->texnum);
 
+	if (gl_state.currenttextures[gl_state.currenttmu] == image->texnum) //BUGFIX: otherwise R_BindImage() won't re-bind it -- mxd.
+		gl_state.currenttextures[gl_state.currenttmu] = -1;
+
 	const uint len = strlen(image->name);
 	if (strcmp(&image->name[len - 3], ".m8") == 0)
 	{
