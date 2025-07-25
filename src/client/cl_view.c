@@ -138,16 +138,17 @@ void CL_PrepRefresh(void)
 	se.MusicPlay(Q_atoi(cl.configstrings[CS_CDTRACK]), true); //mxd. CDAudio_Play() in original logic.
 }
 
-// Q2 counterpart
-static float CalcFov(const float fov_x, const float width, const float height)
+static void CalcFov(const float width, const float height) //mxd. Added Hor+ widescreen fov calculation.
 {
-	if (fov_x < 1.0f || fov_x > 179.0f)
-		Com_Error(ERR_DROP, "Bad fov: %f", (double)fov_x);
-
-	const float x = width / tanf(fov_x / 360.0f * M_PI);
-	const float a = atanf(height / x) * 360.0f / M_PI;
-
-	return a;
+	if (width * 0.75f > height) //mxd. Widescreen aspect ratio.
+	{
+		cl.refdef.fov_y = cl.refdef.fov_x * 0.82f;
+		cl.refdef.fov_x = atanf(width / (height / tanf(cl.refdef.fov_y * M_PI / 360.0f))) * 360.0f / M_PI;
+	}
+	else // 4x3 (or less) aspect ratio.
+	{
+		cl.refdef.fov_y = atanf(height / (width / tanf(cl.refdef.fov_x * M_PI / 360.0f))) * 360.0f / M_PI;
+	}
 }
 
 //mxd. Defined in cl_scrn.c in Q2.
@@ -212,7 +213,7 @@ void V_RenderView(const float stereo_separation)
 	cl.refdef.width = scr_vrect.width;
 	cl.refdef.height = scr_vrect.height;
 	
-	cl.refdef.fov_y = CalcFov(cl.refdef.fov_x, (float)scr_vrect.width, (float)scr_vrect.height);
+	CalcFov((float)scr_vrect.width, (float)scr_vrect.height);
 
 	if (!(int)cl_paused->value)
 		cl.refdef.time = (float)cl.time * 0.001f;
