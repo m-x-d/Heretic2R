@@ -138,7 +138,7 @@ uint m_menu_side; // H2 (0 - right, 1 - left)
 static menulayer_t m_layers[MAX_MENU_DEPTH + 1]; // Q2: MAX_MENU_DEPTH
 static int m_menudepth;
 
-static void PrecacheGenericMenuItemsText(void) // H2
+static void OnMainMenuOpened(void) // H2
 {
 	Com_sprintf(m_text_no, sizeof(m_text_no), "\x02%s", m_generic_no->string);
 	Com_sprintf(m_text_yes, sizeof(m_text_yes), "\x02%s", m_generic_yes->string);
@@ -148,6 +148,9 @@ static void PrecacheGenericMenuItemsText(void) // H2
 	Com_sprintf(m_text_high, sizeof(m_text_high), "\x02%s", m_generic_high->string);
 
 	Cvar_Set("menus_active", "1");
+
+	if (se.SetEaxEnvironment != NULL)
+		se.SetEaxEnvironment(0);
 }
 
 // Similar to M_PushMenu() in Q2.
@@ -190,10 +193,7 @@ void M_PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) // H2
 		if (m_menudepth == 0)
 		{
 			cls.m_menustate = 5;
-			PrecacheGenericMenuItemsText();
-
-			if (se.SetEaxEnvironment != NULL) //mxd. Done in PrecacheGenericMenuItemsText() in original logic.
-				se.SetEaxEnvironment(0);
+			OnMainMenuOpened();
 		}
 		else
 		{
