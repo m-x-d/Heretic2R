@@ -66,7 +66,6 @@ extern cvar_t* gl_drawmode;
 extern cvar_t* gl_drawbuffer;
 extern cvar_t* gl_saturatelighting;
 
-extern cvar_t* vid_fullscreen;
 extern cvar_t* vid_gamma;
 extern cvar_t* vid_brightness;
 extern cvar_t* vid_contrast;

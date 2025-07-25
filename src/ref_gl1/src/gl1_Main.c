@@ -121,7 +121,6 @@ cvar_t* gl_drawmode;
 cvar_t* gl_drawbuffer;
 cvar_t* gl_saturatelighting;
 
-cvar_t* vid_fullscreen;
 cvar_t* vid_gamma;
 cvar_t* vid_brightness;
 cvar_t* vid_contrast;
@@ -679,7 +678,6 @@ static void R_Register(void)
 	gl_drawbuffer = ri.Cvar_Get("gl_drawbuffer", "GL_BACK", 0);
 	gl_saturatelighting = ri.Cvar_Get("gl_saturatelighting", "0", 0);
 
-	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
 	vid_gamma = ri.Cvar_Get("vid_gamma", "0.5", CVAR_ARCHIVE);
 	vid_brightness = ri.Cvar_Get("vid_brightness", "0.5", CVAR_ARCHIVE); // H2
 	vid_contrast = ri.Cvar_Get("vid_contrast", "0.5", CVAR_ARCHIVE); // H2
@@ -724,10 +722,6 @@ static qboolean R_SetMode(void)
 	if (err == RSERR_OK)
 	{
 		gl_state.prev_mode = (int)vid_mode->value;
-
-		ri.Cvar_SetValue("vid_fullscreen", (int)vid_mode->value == 0 ? 1.0f : 0.0f); //mxd. Fullscreen when Mode 0, windowed otherwise.
-		vid_fullscreen->modified = false;
-
 		return true;
 	}
 
@@ -751,16 +745,13 @@ static qboolean R_SetMode(void)
 	// Try setting it back to something safe.
 	err = SetMode_impl(&viddef.width, &viddef.height, (int)vid_mode->value);
 
-	if (err == RSERR_OK)
+	if (err != RSERR_OK)
 	{
-		ri.Cvar_SetValue("vid_fullscreen", (int)vid_mode->value == 0 ? 1.0f : 0.0f); //mxd. Fullscreen when Mode 0, windowed otherwise.
-		vid_fullscreen->modified = false;
-
-		return true;
+		ri.Con_Printf(PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n");
+		return false;
 	}
 
-	ri.Con_Printf(PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n");
-	return false;
+	return true;
 }
 
 static qboolean RI_Init(void)

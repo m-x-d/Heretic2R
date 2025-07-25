@@ -25,7 +25,6 @@ cvar_t* vid_contrast; // H2
 cvar_t* vid_textures_refresh_required; //mxd
 
 cvar_t* vid_ref; // Name of Refresh DLL loaded.
-cvar_t* vid_fullscreen;
 cvar_t* vid_mode;
 
 // Global variables used internally by this module.
@@ -340,13 +339,12 @@ static void VID_InitReflibInfos(void) //mxd
 // if any of the video mode parameters have changed, and if they have to update the rendering DLL and/or video mode to match.
 void VID_CheckChanges(void) //TODO: check YQ2 logic.
 {
-	while (vid_restart_required || vid_ref->modified || vid_fullscreen->modified)
+	while (vid_restart_required || vid_ref->modified)
 	{
 		// Refresh has changed.
 		vid_restart_required = false; // H2
-
 		vid_ref->modified = false;
-		vid_fullscreen->modified = true;
+
 		cl.force_refdef = true;
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
@@ -383,7 +381,6 @@ void VID_Init(void)
 
 	// Create the video variables so we know how to start the graphics drivers.
 	vid_ref = Cvar_Get("vid_ref", "gl1", CVAR_ARCHIVE); // H2_1.07: "soft" -> "gl"
-	vid_fullscreen = Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
 	vid_gamma = Cvar_Get("vid_gamma", "0.5", CVAR_ARCHIVE);
 	vid_brightness = Cvar_Get("vid_brightness", "0.5", CVAR_ARCHIVE); // H2
 	vid_contrast = Cvar_Get("vid_contrast", "0.5", CVAR_ARCHIVE); // H2
