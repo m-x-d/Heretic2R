@@ -33,6 +33,7 @@ extern int num_vid_modes; //mxd
 extern cvar_t* vid_gamma;
 extern cvar_t* vid_brightness; // H2
 extern cvar_t* vid_contrast; // H2
+extern cvar_t* vid_textures_refresh_required; //mxd
 extern cvar_t* vid_ref;
 extern cvar_t* vid_fullscreen;
 

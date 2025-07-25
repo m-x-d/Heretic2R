@@ -22,6 +22,8 @@ int num_reflib_infos = 0;
 cvar_t* vid_gamma;
 cvar_t* vid_brightness; // H2
 cvar_t* vid_contrast; // H2
+cvar_t* vid_textures_refresh_required; //mxd
+
 cvar_t* vid_ref; // Name of Refresh DLL loaded.
 cvar_t* vid_fullscreen;
 cvar_t* vid_mode;
@@ -385,6 +387,7 @@ void VID_Init(void)
 	vid_gamma = Cvar_Get("vid_gamma", "0.5", CVAR_ARCHIVE);
 	vid_brightness = Cvar_Get("vid_brightness", "0.5", CVAR_ARCHIVE); // H2
 	vid_contrast = Cvar_Get("vid_contrast", "0.5", CVAR_ARCHIVE); // H2
+	vid_textures_refresh_required = Cvar_Get("vid_textures_refresh_required", "0", 0); //mxd
 
 	// Add some console commands that we want to handle.
 	Cmd_AddCommand("vid_restart", VID_Restart_f);

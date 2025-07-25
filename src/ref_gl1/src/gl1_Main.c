@@ -115,8 +115,6 @@ cvar_t* gl_lockpvs;
 cvar_t* gl_drawflat;
 cvar_t* gl_trans33;
 cvar_t* gl_trans66;
-cvar_t* gl_picmip;
-cvar_t* gl_skinmip;
 cvar_t* gl_bookalpha;
 
 cvar_t* gl_drawmode;
@@ -127,6 +125,7 @@ cvar_t* vid_fullscreen;
 cvar_t* vid_gamma;
 cvar_t* vid_brightness;
 cvar_t* vid_contrast;
+static cvar_t* vid_textures_refresh_required; //mxd
 
 cvar_t* vid_ref;
 
@@ -674,8 +673,6 @@ static void R_Register(void)
 	gl_drawflat = ri.Cvar_Get("gl_drawflat", "0", 0);
 	gl_trans33 = ri.Cvar_Get("gl_trans33", "0.33", 0); // H2_1.07: 0.33 -> 1
 	gl_trans66 = ri.Cvar_Get("gl_trans66", "0.66", 0); // H2_1.07: 0.66 -> 1
-	gl_picmip = ri.Cvar_Get("gl_picmip", "0", CVAR_ARCHIVE);
-	gl_skinmip = ri.Cvar_Get("gl_skinmip", "0", CVAR_ARCHIVE);
 	gl_bookalpha = ri.Cvar_Get("gl_bookalpha", "1.0", 0);
 
 	gl_drawmode = ri.Cvar_Get("gl_drawmode", "0", 0);
@@ -686,6 +683,7 @@ static void R_Register(void)
 	vid_gamma = ri.Cvar_Get("vid_gamma", "0.5", CVAR_ARCHIVE);
 	vid_brightness = ri.Cvar_Get("vid_brightness", "0.5", CVAR_ARCHIVE); // H2
 	vid_contrast = ri.Cvar_Get("vid_contrast", "0.5", CVAR_ARCHIVE); // H2
+	vid_textures_refresh_required = ri.Cvar_Get("vid_textures_refresh_required", "0", 0); //mxd
 
 	vid_ref = ri.Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
 
@@ -846,11 +844,16 @@ static void RI_BeginFrame(const float camera_separation) //TODO: remove camera_s
 	if (vid_gamma->modified || vid_brightness->modified || vid_contrast->modified)
 	{
 		R_InitGammaTable();
-		R_GammaAffect();
+		R_GammaAffect(false);
 
 		vid_gamma->modified = false;
 		vid_brightness->modified = false;
 		vid_contrast->modified = false;
+	}
+	else if (vid_textures_refresh_required->value == 1.0f) //mxd. Roundabout way to apply gamma changes to ALL textures after Video menu is closed...
+	{
+		R_GammaAffect(true);
+		ri.Cvar_SetValue("vid_textures_refresh_required", 0.0f);
 	}
 
 	// Go into 2D mode.

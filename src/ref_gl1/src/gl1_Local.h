@@ -60,8 +60,6 @@ extern cvar_t* gl_lockpvs;
 extern cvar_t* gl_drawflat;
 extern cvar_t* gl_trans33;
 extern cvar_t* gl_trans66;
-extern cvar_t* gl_picmip;
-extern cvar_t* gl_skinmip;
 extern cvar_t* gl_bookalpha;
 
 extern cvar_t* gl_drawmode;

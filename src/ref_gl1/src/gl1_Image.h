@@ -34,5 +34,5 @@ extern void R_TextureMode(const char* string);
 extern void R_SetFilter(const image_t* image);
 
 extern struct image_s* RI_RegisterSkin(const char* name, qboolean* retval);
-extern void R_GammaAffect(void);
+extern void R_GammaAffect(qboolean refresh_all); //mxd. +refresh_all arg. 
 extern void R_DisplayHashTable(void);

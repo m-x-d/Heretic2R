@@ -346,27 +346,10 @@ static void GrabPalette(paletteRGB_t* src, paletteRGB_t* dst) // H2
 	}
 }
 
-static int R_GetMipLevel8(const miptex_t* mt, const imagetype_t type) // H2: GL_GetMipLevel8().
-{
-	int mip = (int)(type == it_skin ? gl_skinmip->value : gl_picmip->value);
-	mip = ClampI(mip, 0, MIPLEVELS - 1);
-	while (mip > 0 && (mt->width[mip] == 0 || mt->height[mip] == 0)) //mxd. Added mip > 0 sanity check
-		mip--;
-
-	return mip;
-}
-
 static void R_UploadM8(miptex_t* mt, const image_t* image) // H2: GL_Upload8M().
 {
-	int mip = R_GetMipLevel8(mt, image->type);
-
-	for (int level = 0; mip < MIPLEVELS; mip++, level++)
-	{
-		if (mt->width[mip] == 0 || mt->height[mip] == 0)
-			break;
-
-		R_UploadPaletted(level, (byte*)mt + mt->offsets[mip], image->palette, (int)mt->width[mip], (int)mt->height[mip]);
-	}
+	for (int mip = 0; mip < MIPLEVELS && mt->width[mip] > 0 && mt->height[mip] > 0; mip++)
+		R_UploadPaletted(mip, (byte*)mt + mt->offsets[mip], image->palette, (int)mt->width[mip], (int)mt->height[mip]);
 
 	R_SetFilter(image);
 }
@@ -443,28 +426,10 @@ static void R_ApplyGamma32(miptex32_t* mt) // H2: GL_ApplyGamma32().
 	}
 }
 
-//mxd. Same logic as in GL_GetMipLevel8(), but for miptex32_t...
-static int R_GetMipLevel32(const miptex32_t* mt, const imagetype_t type) // H2: GL_GetMipLevel32().
-{
-	int mip = (int)(type == it_skin ? gl_skinmip->value : gl_picmip->value);
-	mip = ClampI(mip, 0, MIPLEVELS - 1);
-	while (mip > 0 && (mt->width[mip] == 0 || mt->height[mip] == 0)) //mxd. Added mip > 0 sanity check
-		mip--;
-
-	return mip;
-}
-
 static void R_UploadM32(miptex32_t* mt, const image_t* img) // H2: GL_Upload32M().
 {
-	int mip = R_GetMipLevel32(mt, img->type);
-
-	for (int level = 0; mip < MIPLEVELS; mip++, level++)
-	{
-		if (mt->width[mip] == 0 || mt->height[mip] == 0)
-			break;
-
-		glTexImage2D(GL_TEXTURE_2D, level, GL_TEX_ALPHA_FORMAT, (int)mt->width[mip], (int)mt->height[mip], 0, GL_RGBA, GL_UNSIGNED_BYTE, (byte*)mt + mt->offsets[mip]);
-	}
+	for (int mip = 0; mip < MIPLEVELS && mt->width[mip] > 0 && mt->height[mip] > 0; mip++)
+		glTexImage2D(GL_TEXTURE_2D, mip, GL_TEX_ALPHA_FORMAT, (int)mt->width[mip], (int)mt->height[mip], 0, GL_RGBA, GL_UNSIGNED_BYTE, (byte*)mt + mt->offsets[mip]);
 
 	R_SetFilter(img);
 }
@@ -695,7 +660,7 @@ static void R_RefreshImage(image_t* image) // H2
 	}
 }
 
-void R_GammaAffect(void)
+void R_GammaAffect(const qboolean refresh_all)
 {
 	R_FreeUnusedImages();
 
@@ -705,7 +670,7 @@ void R_GammaAffect(void)
 		if (image->registration_sequence == 0) // Free image_t slot.
 			continue;
 
-		if (image->type == it_pic || image->type == it_sky || !(int)menus_active->value)
+		if (image->type == it_pic || image->type == it_sky || !(int)menus_active->value || refresh_all) //mxd. +refresh_all.
 			R_RefreshImage(image);
 	}
 }

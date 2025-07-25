@@ -20,9 +20,6 @@ cvar_t* m_item_detail;
 static float m_gamma;
 static float m_brightness;
 static float m_contrast;
-static float m_detail;
-static float m_picmip;
-static float m_skinmip;
 
 static menuframework_t s_video_menu;
 
@@ -64,26 +61,10 @@ static void DetailCallback(void* self) // H2
 {
 	const menuslider_t* slider = (menuslider_t*)self;
 	Cvar_SetValue("r_detail", slider->curvalue);
-
-	VID_MenuSetDetail(Q_ftol(slider->curvalue));
 }
 
 static void ApplyChanges(const qboolean close_menu) //mxd. +close_menu arg.
 {
-	const float gl_picmip = Cvar_VariableValue("gl_picmip");
-	if (gl_picmip != m_picmip)
-	{
-		m_picmip = gl_picmip;
-		vid_restart_required = true;
-	}
-
-	const float gl_skinmip = Cvar_VariableValue("gl_skinmip");
-	if (gl_skinmip != m_skinmip)
-	{
-		m_skinmip = gl_skinmip;
-		vid_restart_required = true;
-	}
-
 	if (initial_vid_mode != s_mode_list.curvalue)
 	{
 		Cvar_SetValue("vid_mode", (float)s_mode_list.curvalue);
@@ -98,52 +79,24 @@ static void ApplyChanges(const qboolean close_menu) //mxd. +close_menu arg.
 		vid_restart_required = true;
 	}
 
-	if (vid_gamma->value != m_gamma)
-	{
-		m_gamma = vid_gamma->value;
-		vid_restart_required = true;
-	}
-
-	if (vid_brightness->value != m_brightness)
-	{
-		m_brightness = vid_brightness->value;
-		vid_restart_required = true;
-	}
-
-	if (vid_contrast->value != m_contrast)
-	{
-		m_contrast = vid_contrast->value;
-		vid_restart_required = true;
-	}
-
 	if (vid_restart_required)
+	{
 		M_ForceMenuOff();
-	else if (close_menu)
+		return;
+	}
+
+	if (close_menu)
+	{
+		//mxd. These don't require vid_restart, but we still need to update ALL textures in RI_BeginFrame() AFTER menu is closed.
+		// (only it_pic/it_sky textures are updated by R_GammaAffect() when menus are open (for performance reasons)).
+		if (m_gamma != vid_gamma->value || m_brightness != vid_brightness->value || m_contrast != vid_contrast->value)
+			Cvar_SetValue("vid_textures_refresh_required", 1.0f);
+
 		M_PopMenu();
+	}
 }
 
 #pragma endregion
-
-static void VID_MenuSetDetail(const int detail)
-{
-	switch (detail)
-	{
-		case 0:
-			Cvar_SetValue("gl_picmip", 1.0f);
-			Cvar_SetValue("gl_skinmip", 2.0f);
-			break;
-
-		case 1:
-			Cvar_SetValue("gl_picmip", 0.0f);
-			Cvar_SetValue("gl_skinmip", 1.0f);
-			break;
-
-		default: //mxd (cases 2 and 3 in original logic).
-			Cvar_SetValue("gl_picmip", 0.0f);
-			Cvar_SetValue("gl_skinmip", 0.0f);
-			break;
-	}
-}
 
 void VID_PreMenuInit(void)
 {
@@ -177,9 +130,6 @@ void VID_PreMenuInit(void)
 
 	if (scr_viewsize == NULL)
 		scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
-
-	const float detail = Cvar_VariableValue("r_detail");
-	VID_MenuSetDetail((int)detail);
 }
 
 void VID_MenuInit(void)
@@ -197,13 +147,10 @@ void VID_MenuInit(void)
 	m_gamma = Cvar_VariableValue("vid_gamma");
 	m_brightness = Cvar_VariableValue("vid_brightness");
 	m_contrast = Cvar_VariableValue("vid_contrast");
-	m_detail = Cvar_VariableValue("r_detail");
-	m_picmip = Cvar_VariableValue("gl_picmip");
-	m_skinmip = Cvar_VariableValue("gl_skinmip");
 
 	s_video_menu.nitems = 0;
 
-	Cvar_SetValue("r_detail", Clamp(r_detail->value, 0, 3));
+	Cvar_SetValue("r_detail", Clamp(r_detail->value, 0.0f, 3.0f));
 
 	Com_sprintf(name_driver, sizeof(name_driver), "\x02%s", m_item_driver->string);
 	Com_sprintf(name_vidmode, sizeof(name_vidmode), "\x02%s", m_item_vidmode->string);
@@ -238,7 +185,7 @@ void VID_MenuInit(void)
 	s_gamma_slider.generic.callback = GammaCallback;
 	s_gamma_slider.minvalue = 0.0f;
 	s_gamma_slider.maxvalue = 16.0f;
-	s_gamma_slider.curvalue = 16.0f - m_gamma * 16.0f; //mxd. Original version used vid_gamma cvar here.
+	s_gamma_slider.curvalue = 16.0f - vid_gamma->value * 16.0f;
 
 	s_brightness_slider.generic.type = MTYPE_SLIDER;
 	s_brightness_slider.generic.flags = QMF_SELECT_SOUND;
@@ -249,7 +196,7 @@ void VID_MenuInit(void)
 	s_brightness_slider.generic.callback = BrightnessCallback;
 	s_brightness_slider.minvalue = 0.0f;
 	s_brightness_slider.maxvalue = 16.0f;
-	s_brightness_slider.curvalue = m_brightness * 16.0f; //mxd. Original version used vid_brightness cvar here.
+	s_brightness_slider.curvalue = vid_brightness->value * 16.0f;
 
 	s_contrast_slider.generic.type = MTYPE_SLIDER;
 	s_contrast_slider.generic.flags = QMF_SELECT_SOUND;
@@ -260,7 +207,7 @@ void VID_MenuInit(void)
 	s_contrast_slider.generic.callback = ContrastCallback;
 	s_contrast_slider.minvalue = 1.6f;
 	s_contrast_slider.maxvalue = 14.4f;
-	s_contrast_slider.curvalue = m_contrast * 16.0f; //mxd. Original version used vid_contrast cvar here.
+	s_contrast_slider.curvalue = vid_contrast->value * 16.0f;
 
 	s_detail_slider.generic.type = MTYPE_SLIDER;
 	s_detail_slider.generic.flags = QMF_SELECT_SOUND; //mxd. QMF_SELECT_SOUND flag was missing in original version.
@@ -271,7 +218,7 @@ void VID_MenuInit(void)
 	s_detail_slider.generic.callback = DetailCallback;
 	s_detail_slider.minvalue = 0.0f;
 	s_detail_slider.maxvalue = 3.0f;
-	s_detail_slider.curvalue = m_detail; //mxd. Original version used Cvar_VariableValue("r_detail") here.
+	s_detail_slider.curvalue = r_detail->value; //mxd. Original version used Cvar_VariableValue("r_detail") here.
 
 	Menu_AddItem(&s_video_menu, &s_ref_list);
 	Menu_AddItem(&s_video_menu, &s_mode_list);

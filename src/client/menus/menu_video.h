@@ -17,6 +17,3 @@ extern void M_Menu_Video_f(void);
 
 // Functions shared between vid_dll and menu_video logic.
 extern void VID_MenuInit(void);
-
-// Local forward declarations for menu_video.c
-static void VID_MenuSetDetail(int detail);

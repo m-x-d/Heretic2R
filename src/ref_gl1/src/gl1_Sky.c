@@ -340,7 +340,7 @@ void RI_SetSky(const char* name, const float rotate, const vec3_t axis)
 		Com_sprintf(pathname, sizeof(pathname), "pics/skies/%s%s.m8", skyname, surf[i]);
 		sky_images[i] = R_FindImage(pathname, it_sky);
 
-		if ((int)gl_picmip->value || skyrotate != 0.0f) // H2: gl_skymip -> gl_picmip
+		if (skyrotate != 0.0f) // H2: gl_skymip -> gl_picmip //mxd. Removed gl_picmip cvar.
 		{
 			// Take less memory.
 			sky_min = 1.0f / 256.0f;
