@@ -84,7 +84,7 @@ static void Sound_MenuInit(void) // H2
 	s_sound_sfxvolume_slider.curvalue = Cvar_VariableValue("s_volume") * 10.0f;
 
 	//mxd
-	Com_sprintf(name_musicvol, sizeof(name_effectsvol), "\x02%s", m_item_musicvol->string);
+	Com_sprintf(name_musicvol, sizeof(name_musicvol), "\x02%s", m_item_musicvol->string);
 	s_sound_musicvolume_slider.generic.type = MTYPE_SLIDER;
 	s_sound_musicvolume_slider.generic.x = 0;
 	s_sound_musicvolume_slider.generic.y = 40;
