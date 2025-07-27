@@ -10,9 +10,8 @@
 
 extern cvar_t* m_banner_sound;
 
-extern cvar_t* m_item_snddll;
 extern cvar_t* m_item_effectsvol;
-extern cvar_t* m_item_cdmusic;
+extern cvar_t* m_item_musicvol; //mxd
 extern cvar_t* m_item_soundquality;
 
-void M_Menu_Sound_f(void);
+extern void M_Menu_Sound_f(void);

@@ -558,12 +558,17 @@ void M_Init(void)
 	m_banner_misc = Cvar_Get("m_banner_misc", "More Options", 0);
 	m_banner_info = Cvar_Get("m_banner_info", "Maps/Objectives", 0);
 
+	// Game menu.
 	m_item_tutorial = Cvar_Get("m_item_tutorial", "Tutorial", 0);
 	m_item_easy = Cvar_Get("m_item_easy", "Easy", 0);
 	m_item_medium = Cvar_Get("m_item_medium", "Medium", 0);
 	m_item_hard = Cvar_Get("m_item_hard", "Hard", 0);
 	m_item_nightmare = Cvar_Get("m_item_nightmare", "Insane", 0);
+
+	// Join Server menu.
 	m_item_refresh = Cvar_Get("m_item_refresh", "Refresh Server List", 0);
+
+	// Start Server menu.
 	m_item_begin = Cvar_Get("m_item_begin", "Start the Slaughter", 0);
 	m_item_startmap = Cvar_Get("m_item_startmap", "Initial Map", 0);
 	m_item_rules = Cvar_Get("m_item_rules", "Rules", 0);
@@ -573,34 +578,49 @@ void M_Init(void)
 	m_item_hostname = Cvar_Get("m_item_hostname", "Hostname", 0);
 	m_item_deathmatch = Cvar_Get("m_item_deathmatch", "Deathmatch", 0);
 	m_item_coop = Cvar_Get("m_item_coop", "Cooperative", 0);
+	m_dmlist = Cvar_Get("m_dmlist", "dm", 0);
+	m_cooplist = Cvar_Get("m_cooplist", "coop", 0);
+
+	// Mouse Config menu.
 	m_item_mousespeedx = Cvar_Get("m_item_mousespeedx", "Mouse Horizontal Speed", 0);
 	m_item_mousespeedy = Cvar_Get("m_item_mousespeedy", "Mouse Vertical Speed", 0);
+	m_item_freelook = Cvar_Get("m_item_freelook", "Freelook", 0);
+
+	// Misc menu.
 	m_item_alwaysrun = Cvar_Get("m_item_alwaysrun", "Always run", 0);
 	m_item_mouseinvert = Cvar_Get("m_item_mouseinvert", "Invert Mouse", 0);
 	m_item_lookspring = Cvar_Get("m_item_lookspring", "Lookspring", 0);
-	m_item_freelook = Cvar_Get("m_item_freelook", "Freelook", 0);
 	m_item_crosshair = Cvar_Get("m_item_crosshair", "Crosshair", 0);
-	m_item_defaults = Cvar_Get("m_item_defaults", "Reset to Defaults", 0);
 	m_item_autotarget = Cvar_Get("m_item_autotarget", "Auto Target", 0);
 	m_item_caption = Cvar_Get("m_item_caption", "Captioning", 0);
 	m_item_violence = Cvar_Get("m_item_violence", "Violence Level", 0);
 	m_item_yawspeed = Cvar_Get("m_item_yawspeed", "Key Turn Speed", 0);
 	m_item_console = Cvar_Get("m_item_console", "Go to console", 0);
+
+	// Video Settings menu.
 	m_item_driver = Cvar_Get("m_item_driver", "Renderer", 0);
 	m_item_vidmode = Cvar_Get("m_item_vidmode", "Video Resolution", 0);
 	m_item_gamma = Cvar_Get("m_item_gamma", "Gamma", 0);
 	m_item_brightness = Cvar_Get("m_item_brightness", "Brightness", 0);
 	m_item_contrast = Cvar_Get("m_item_contrast", "Contrast", 0);
 	m_item_detail = Cvar_Get("m_item_detail", "Detail Level", 0);
-	m_item_snddll = Cvar_Get("m_item_snddll", "Sound System", 0);
+
+	// Options / Video Settings menus.
+	m_item_defaults = Cvar_Get("m_item_defaults", "Reset to Defaults", 0);
+
+	// Sound Settings menu.
 	m_item_effectsvol = Cvar_Get("m_item_effectsvol", "Effects Volume", 0);
-	m_item_cdmusic = Cvar_Get("m_item_cdmusic", "CD Music", 0);
+	m_item_musicvol = Cvar_Get("m_item_musicvol", "Music Volume", 0); //mxd
 	m_item_soundquality = Cvar_Get("m_item_soundquality", "Sound Quality", 0);
+
+	// Download Options menu.
 	m_item_allowdownload = Cvar_Get("m_item_allowdownload", "Allow Downloads", 0);
 	m_item_allowdownloadmap = Cvar_Get("m_item_allowdownloadmap", "Download Maps", 0);
 	m_item_allowdownloadsound = Cvar_Get("m_item_allowdownloadsound", "Download Sounds", 0);
 	m_item_allowdownloadplayer = Cvar_Get("m_item_allowdownloadplayer", "New Player Skins", 0);
 	m_item_allowdownloadmodel = Cvar_Get("m_item_allowdownloadmodel", "Download Models", 0);
+
+	// DM Options menu.
 	m_item_weaponsstay = Cvar_Get("m_item_weaponsstay", "Weapons Stay", 0);
 	m_item_allowpowerup = Cvar_Get("m_item_allowpowerup", "Allow Shrines", 0);
 	m_item_shrinechaos = Cvar_Get("m_item_shrinechaos", "All Shrines Chaos", 0);
@@ -616,6 +636,25 @@ void M_Init(void)
 	m_item_friendlyfire = Cvar_Get("m_item_friendlyfire", "Friendly Fire", 0);
 	m_item_dismember = Cvar_Get("m_item_dismember", "Dismemberment", 0);
 	m_item_nonames = Cvar_Get("m_item_nonames", "No Names", 0);
+
+	// Player Config menu.
+	m_item_name = Cvar_Get("m_item_name", "Name", 0);
+	m_item_skin = Cvar_Get("m_item_skin", "Skin", 0);
+	m_item_shownames = Cvar_Get("m_item_shownames", "Show Player Names", 0);
+	m_item_autoweapon = Cvar_Get("m_item_autoweapon", "Auto Weapon Change", 0);
+
+	// Objectives menu.
+	m_item_none = Cvar_Get("m_item_none", "No objectives have been written", 0);
+
+	// City map menu.
+	m_item_nomap = Cvar_Get("m_item_nomap", "No Map Available", 0);
+
+	// Camera cfg menu.
+	m_item_cameradamp = Cvar_Get("m_item_cameradamp", "Camera Stiffness", 0);
+	m_item_cameracombat = Cvar_Get("m_item_cameracombat", "Combat Camera", 0);
+
+	// Keys menu.
+	m_item_helpscreen = Cvar_Get("m_item_helpscreen", "Help Screen", 0);
 	m_item_attack = Cvar_Get("m_item_attack", "Attack", 0);
 	m_item_defend = Cvar_Get("m_item_defend", "Defend", 0);
 	m_item_action = Cvar_Get("m_item_action", "Action", 0);
@@ -641,14 +680,6 @@ void M_Init(void)
 	m_item_up = Cvar_Get("m_item_up", "Up / Jump", 0);
 	m_item_down = Cvar_Get("m_item_down", "Down / Crouch", 0);
 	m_item_quickturn = Cvar_Get("m_item_quickturn", "Quick Turn", 0);
-	m_item_name = Cvar_Get("m_item_name", "Name", 0);
-	m_item_skin = Cvar_Get("m_item_skin", "Skin", 0);
-	m_item_shownames = Cvar_Get("m_item_shownames", "Show Player Names", 0);
-	m_item_autoweapon = Cvar_Get("m_item_autoweapon", "Auto Weapon Change", 0);
-	m_item_none = Cvar_Get("m_item_none", "No objectives have been written", 0);
-	m_item_cameradamp = Cvar_Get("m_item_cameradamp", "Camera Stiffness", 0);
-	m_item_cameracombat = Cvar_Get("m_item_cameracombat", "Combat Camera", 0);
-	m_item_helpscreen = Cvar_Get("m_item_helpscreen", "Help Screen", 0);
 	m_item_powerup = Cvar_Get("m_item_powerup", "Power Up", 0);
 	m_item_bluering = Cvar_Get("m_item_bluering", "Ring of Repulsion", 0);
 	m_item_meteor = Cvar_Get("m_item_meteor", "Meteor Swarm", 0);
@@ -668,7 +699,6 @@ void M_Init(void)
 	m_item_rollforward = Cvar_Get("m_item_rollforward", "Roll Forward", 0);
 	m_item_rollback = Cvar_Get("m_item_rollback", "Roll Back", 0);
 	m_item_spinattack = Cvar_Get("m_item_spinattack", "Spin Attack", 0);
-	m_item_nomap = Cvar_Get("m_item_nomap", "No Map Available", 0);
 
 	m_generic_yes = Cvar_Get("m_generic_yes", "Yes", 0);
 	m_generic_no = Cvar_Get("m_generic_no", "No", 0);
@@ -684,8 +714,6 @@ void M_Init(void)
 	m_generic_crosshair1 = Cvar_Get("m_generic_crosshair1", "Cross", 0);
 	m_generic_crosshair2 = Cvar_Get("m_generic_crosshair2", "Circle", 0);
 	m_generic_crosshair3 = Cvar_Get("m_generic_crosshair3", "Symbol", 0);
-	m_dmlist = Cvar_Get("m_dmlist", "dm", 0);
-	m_cooplist = Cvar_Get("m_cooplist", "coop", 0);
 
 	Cvar_Get("blood_level", "0", CVAR_ARCHIVE);
 	Cvar_Get("dm_no_bodies", "0", CVAR_ARCHIVE);
