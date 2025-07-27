@@ -16,4 +16,4 @@ extern cvar_t* m_item_medium;
 extern cvar_t* m_item_hard;
 extern cvar_t* m_item_nightmare;
 
-void M_Menu_Game_f(void);
+extern void M_Menu_Game_f(void);

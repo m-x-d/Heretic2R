@@ -24,6 +24,7 @@ static menuaction_t s_tutorial_action;
 static menuaction_t s_easy_game_action;
 static menuaction_t s_medium_game_action;
 static menuaction_t s_hard_game_action;
+static menuaction_t s_nightmare_game_action; //mxd
 static menuaction_t s_load_game_action;
 static menuaction_t s_save_game_action;
 static menuaction_t s_credits_action;
@@ -61,7 +62,13 @@ static void MediumGameFunc(void* data)
 
 static void HardGameFunc(void* data)
 {
-	Cvar_ForceSet("skill", "3"); //mxd. Hard is skill 2 in Q2.
+	Cvar_ForceSet("skill", "2"); //H2: 3
+	StartGame("newgame");
+}
+
+static void NightmareGameFunc(void* data) //mxd
+{
+	Cvar_ForceSet("skill", "3");
 	StartGame("newgame");
 }
 
@@ -86,6 +93,7 @@ static void Game_MenuInit(void)
 	static char name_easy[MAX_QPATH];
 	static char name_medium[MAX_QPATH];
 	static char name_hard[MAX_QPATH];
+	static char name_nightmare[MAX_QPATH]; //mxd
 	static char name_load[MAX_QPATH];
 	static char name_save[MAX_QPATH];
 	static char name_credits[MAX_QPATH];
@@ -128,11 +136,20 @@ static void Game_MenuInit(void)
 	s_hard_game_action.generic.width = re.BF_Strlen(name_hard);
 	s_hard_game_action.generic.callback = HardGameFunc;
 
+	Com_sprintf(name_nightmare, sizeof(name_nightmare), "\x02%s", m_item_nightmare->string); //mxd
+	s_nightmare_game_action.generic.type = MTYPE_ACTION;
+	s_nightmare_game_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_nightmare_game_action.generic.x = 0;
+	s_nightmare_game_action.generic.y = 100;
+	s_nightmare_game_action.generic.name = name_nightmare;
+	s_nightmare_game_action.generic.width = re.BF_Strlen(name_nightmare);
+	s_nightmare_game_action.generic.callback = NightmareGameFunc;
+
 	Com_sprintf(name_load, sizeof(name_load), "\x02%s", m_banner_load->string);
 	s_load_game_action.generic.type = MTYPE_ACTION;
 	s_load_game_action.generic.flags = QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND; //mxd. Added QMF_SELECT_SOUND flag.
 	s_load_game_action.generic.x = 0;
-	s_load_game_action.generic.y = 120;
+	s_load_game_action.generic.y = 140;
 	s_load_game_action.generic.name = name_load;
 	s_load_game_action.generic.width = re.BF_Strlen(name_load);
 	s_load_game_action.generic.callback = LoadGameFunc;
@@ -141,7 +158,7 @@ static void Game_MenuInit(void)
 	s_save_game_action.generic.type = MTYPE_ACTION;
 	s_save_game_action.generic.flags = QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND; //mxd. Added QMF_SELECT_SOUND flag.
 	s_save_game_action.generic.x = 0;
-	s_save_game_action.generic.y = 140;
+	s_save_game_action.generic.y = 160;
 	s_save_game_action.generic.name = name_save;
 	s_save_game_action.generic.width = re.BF_Strlen(name_save);
 	s_save_game_action.generic.callback = SaveGameFunc;
@@ -150,7 +167,7 @@ static void Game_MenuInit(void)
 	s_credits_action.generic.type = MTYPE_ACTION;
 	s_credits_action.generic.flags = QMF_LEFT_JUSTIFY;
 	s_credits_action.generic.x = 0;
-	s_credits_action.generic.y = 180;
+	s_credits_action.generic.y = 200;
 	s_credits_action.generic.name = name_credits;
 	s_credits_action.generic.width = re.BF_Strlen(name_credits);
 	s_credits_action.generic.callback = CreditsGameFunc;
@@ -159,6 +176,7 @@ static void Game_MenuInit(void)
 	Menu_AddItem(&s_game_menu, &s_easy_game_action);
 	Menu_AddItem(&s_game_menu, &s_medium_game_action);
 	Menu_AddItem(&s_game_menu, &s_hard_game_action);
+	Menu_AddItem(&s_game_menu, &s_nightmare_game_action); //mxd
 	Menu_AddItem(&s_game_menu, &s_load_game_action);
 	Menu_AddItem(&s_game_menu, &s_save_game_action);
 	Menu_AddItem(&s_game_menu, &s_credits_action);
@@ -199,5 +217,4 @@ void M_Menu_Game_f(void)
 {
 	Game_MenuInit();
 	M_PushMenu(Game_MenuDraw, Game_MenuKey);
-	//m_game_cursor = 1; //mxd. Unused
 }
