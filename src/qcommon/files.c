@@ -17,12 +17,13 @@
 // The game directory can never be changed while quake is executing.
 // This is a precaution against having a malicious server instruct clients to write files over areas they shouldn't.
 
+#include <shlobj.h> //mxd
 #include "qcommon.h"
 #include "qfiles.h"
 
-char fs_gamedir[MAX_OSPATH];
-cvar_t* fs_basedir;
-cvar_t* fs_userdir; // H2
+static char fs_gamedir[MAX_OSPATH];
+static cvar_t* fs_basedir;
+static cvar_t* fs_userdir; // H2
 cvar_t* fs_gamedirvar;
 
 typedef struct
@@ -49,7 +50,7 @@ typedef struct filelink_s
 	char* to;
 } filelink_t;
 
-filelink_t* fs_links;
+static filelink_t* fs_links;
 
 typedef struct searchpath_s
 {
@@ -58,8 +59,8 @@ typedef struct searchpath_s
 	struct searchpath_s* next;
 } searchpath_t;
 
-searchpath_t* fs_searchpaths;
-searchpath_t* fs_base_searchpaths; // Without gamedirs
+static searchpath_t* fs_searchpaths;
+static searchpath_t* fs_base_searchpaths; // Without gamedirs
 
 qboolean file_from_pak = false; //mxd. int in Q2
 
@@ -349,7 +350,7 @@ static void FS_AddGameDirectory(char* dir)
 		fs_searchpaths = search;
 	}
 
-	// Add any pak files in the format Htic2-0.pak, Htic2-1.pak, ...
+	// Add any pak files in the format Htic2-0.pak .. Htic2-9.pak.
 	for (int i = 0; i < 10; i++)
 	{
 		char pakfile[MAX_OSPATH];
@@ -580,10 +581,10 @@ void FS_InitFilesystem(void)
 	else
 		fs_gamedirvar = Cvar_Get("game", "", CVAR_LATCH | CVAR_SERVERINFO);
 
-	if (fs_gamedirvar->string[0])
+	if (fs_gamedirvar->string[0] != 0)
 		FS_SetGamedir(fs_gamedirvar->string);
 
-	// H2: set user directory
+	// H2: set user directory.
 	arg_index = COM_CheckParm("-userdir");
 	if (arg_index > 0)
 	{
@@ -594,9 +595,27 @@ void FS_InitFilesystem(void)
 		char buffer[MAX_OSPATH];
 		char userdir[MAX_OSPATH];
 
-		Com_sprintf(buffer, sizeof(buffer), "%s", FS_Gamedir());
-		buffer[strlen(buffer) - strlen(BASEDIRNAME)] = 0; //TODO: does gamedir ALWAYS end with 'base'? Can't we just use fs_basedir here?
-		Com_sprintf(userdir, sizeof(userdir), "%suser", buffer);
+		//mxd. Change userdir location from "c:/Games/Heretic2/user" to "c:\Users\[User]\Saved Games\Heretic2R/user".
+		PWSTR ws_path = NULL;
+
+		if (SHGetKnownFolderPath(&FOLDERID_SavedGames, KF_FLAG_CREATE, NULL, &ws_path) == S_OK && ws_path != NULL)
+		{
+			sprintf_s(buffer, sizeof(buffer), "%ls/Heretic2R", ws_path); //TODO: this won't work when username contains non-ASCII chars...
+			CoTaskMemFree(ws_path);
+			Sys_Mkdir(buffer);
+		}
+		else // Fall back to original logic...
+		{
+			Com_sprintf(buffer, sizeof(buffer), "%s", fs_basedir->string);
+		}
+
+		//mxd. Original logic gets userdir by subtracting BASEDIRNAME length from FS_Gamedir(), then appending "user" to it, which resulted in strange or incorrect userdir path for any mod... 
+		char* gamedir = Cvar_VariableString("gamedir");
+
+		if (*gamedir == 0)
+			Com_sprintf(userdir, sizeof(userdir), "%s/user", buffer);
+		else
+			Com_sprintf(userdir, sizeof(userdir), "%s/user_%s", buffer, gamedir);
 
 		fs_userdir = Cvar_Get("userdir", userdir, 0); // "C:\Games\Heretic2/user"
 	}
