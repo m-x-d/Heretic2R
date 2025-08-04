@@ -564,6 +564,10 @@ static void R_FreeImage(image_t* image) // H2: GL_FreeImage()
 
 	*tgt = image->next;
 	image->registration_sequence = 0;
+
+	//BUGFIX: otherwise R_BindImage() may not re-bind next texture with the same texnum... -- mxd.
+	if (gl_state.currenttextures[gl_state.currenttmu] == image->texnum)
+		gl_state.currenttextures[gl_state.currenttmu] = -1;
 }
 
 void R_FreeImageNoHash(image_t* image) // H2: GL_FreeImageNoHash()
@@ -576,6 +580,10 @@ void R_FreeImageNoHash(image_t* image) // H2: GL_FreeImageNoHash()
 	}
 
 	image->registration_sequence = 0;
+
+	//BUGFIX: otherwise R_BindImage() may not re-bind the next texture with the same texnum... -- mxd.
+	if (gl_state.currenttextures[gl_state.currenttmu] == image->texnum)
+		gl_state.currenttextures[gl_state.currenttmu] = -1;
 }
 
 void R_FreeUnusedImages(void)
