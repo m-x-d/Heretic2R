@@ -505,20 +505,15 @@ image_t* R_FindImage(const char* name, const imagetype_t type) // H2: GL_FindIma
 	const byte hash = name[len - 7] + name[len - 5] * name[len - 6];
 	image_t* image = gltextures_hashed[hash];
 
-	if (image != NULL)
+	while (image != NULL)
 	{
-		while (strcmp(name, image->name) != 0)
-		{
-			image = image->next;
-			if (image == NULL)
-				break;
-		}
-
-		if (image != NULL)
+		if (strcmp(name, image->name) == 0)
 		{
 			image->registration_sequence = registration_sequence;
 			return image;
 		}
+
+		image = image->next;
 	}
 
 	// Not hashed. Load image from disk.
