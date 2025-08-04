@@ -726,11 +726,12 @@ float M_GetMenuAlpha(void) // H2
 
 int M_GetMenuLabelX(const int text_width) // H2
 {
-	const int x = (MENU_CENTER_X - text_width) / 2 + (int)(m_menu_side & 1) * MENU_CENTER_X;
-	if ((m_menu_side & 1) != 0)
-		return x - 16;
+#define MENU_CENTER_X		(DEF_WIDTH / 2) //mxd
+#define BOOK_PAGE_PADDING	32 // Horizontal gap between book cover and page.
+#define BOOK_PAGE_WIDTH		(MENU_CENTER_X - BOOK_PAGE_PADDING)
 
-	return x + 16;
+	const int x = (BOOK_PAGE_WIDTH - text_width) / 2;
+	return x + ((m_menu_side & 1) ? MENU_CENTER_X + 6 : BOOK_PAGE_PADDING); //mxd. Right page is a bit off-center...
 }
 
 int M_GetMenuOffsetY(const menuframework_t* menu) // H2
