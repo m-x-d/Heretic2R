@@ -14,6 +14,3 @@ extern cvar_t* m_banner_video;
 extern cvar_t* r_detail;
 
 extern void M_Menu_Video_f(void);
-
-// Functions shared between vid_dll and menu_video logic.
-extern void VID_MenuInit(void);

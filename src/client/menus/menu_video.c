@@ -132,7 +132,7 @@ void VID_PreMenuInit(void)
 		scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
 }
 
-void VID_MenuInit(void)
+static void VID_MenuInit(void)
 {
 	static char name_driver[MAX_QPATH];
 	static char name_vidmode[MAX_QPATH];

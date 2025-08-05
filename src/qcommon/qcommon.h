@@ -375,9 +375,6 @@ extern void Cbuf_AddText(const char* text);
 // inserted at the beginning of the buffer, before any remaining unexecuted commands.
 extern void Cbuf_InsertText(const char* text);
 
-// This can be used in place of either Cbuf_AddText or Cbuf_InsertText.
-extern void Cbuf_ExecuteText(int exec_when, char* text);
-
 // Adds all the +set commands from the command line.
 extern void Cbuf_AddEarlyCommands(qboolean clear);
 

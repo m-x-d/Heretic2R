@@ -161,14 +161,6 @@ static qboolean VID_GetModeInfo(int* width, int* height, const int mode)
 	return false;
 }
 
-// Q2 counterpart
-static void VID_NewWindow(const int width, const int height)
-{
-	viddef.width = width;
-	viddef.height = height;
-	cl.force_refdef = true; // Can't use a paused refdef
-}
-
 // Shuts the renderer down and unloads it.
 static void VID_ShutdownRenderer(void) // YQ2
 {
@@ -207,22 +199,13 @@ static qboolean VID_LoadRefresh(const char* name)
 	ri.Com_Error = Com_Error;
 	ri.Con_Printf = VID_Printf;
 	ri.Cvar_Get = Cvar_Get;
-	ri.Cvar_FullSet = Cvar_FullSet;
 	ri.Cvar_Set = Cvar_Set;
 	ri.Cvar_SetValue = Cvar_SetValue;
 	ri.Cmd_AddCommand = Cmd_AddCommand;
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
-	ri.Cmd_Argc = Cmd_Argc;
-	ri.Cmd_Argv = Cmd_Argv;
-	ri.Cmd_ExecuteText = Cbuf_ExecuteText; //TODO: unused?
 	ri.FS_LoadFile = FS_LoadFile;
 	ri.FS_FreeFile = FS_FreeFile;
-	ri.FS_Gamedir = FS_Gamedir;
-	ri.FS_Userdir = FS_Userdir;
-	ri.FS_CreatePath = FS_CreatePath;
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
-	ri.Vid_MenuInit = VID_MenuInit;
-	ri.Vid_NewWindow = VID_NewWindow;
 	ri.GLimp_InitGraphics = GLimp_InitGraphics; // YQ2
 	ri.Is_Screen_Flashing = Is_Screen_Flashing;
 	ri.Deactivate_Screen_Flash = Deactivate_Screen_Flash;
@@ -372,6 +355,7 @@ void VID_CheckChanges(void) //TODO: check YQ2 logic.
 			CLFX_Init();
 
 		cls.disable_screen = false;
+		SCR_UpdateUIScale(); //mxd
 	}
 }
 

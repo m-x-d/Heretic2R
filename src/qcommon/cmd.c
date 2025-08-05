@@ -91,11 +91,6 @@ void Cbuf_InsertFromDefer(void)
 	defer_text_buf[0] = 0;
 }
 
-void Cbuf_ExecuteText(int exec_when, char* text)
-{
-	NOT_IMPLEMENTED
-}
-
 // Q2 counterpart
 void Cbuf_Execute(void)
 {

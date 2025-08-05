@@ -254,15 +254,11 @@ typedef struct
 	void (*Con_Printf)(int print_level, const char* fmt, ...);
 
 	cvar_t* (*Cvar_Get)(const char* name, const char* value, int flags);
-	cvar_t* (*Cvar_FullSet)(const char* name, const char* value, int flags);
 	cvar_t* (*Cvar_Set)(const char* name, const char* value);
 	void (*Cvar_SetValue)(const char* name, float value);
 
 	void (*Cmd_AddCommand)(const char* name, void (*cmd)(void));
 	void (*Cmd_RemoveCommand)(const char* name);
-	int (*Cmd_Argc)(void);
-	char* (*Cmd_Argv)(int i);
-	void (*Cmd_ExecuteText)(int exec_when, char* text);
 
 	// This is used for the screen flash - there is a reason for doing this...
 	int (*Is_Screen_Flashing)(void);
@@ -275,15 +271,7 @@ typedef struct
 	int (*FS_LoadFile)(const char* name, void** buf);
 	void (*FS_FreeFile)(void* buf);
 
-	// gamedir will be the current directory that generated files should be stored to, ie: "f:\quake\id1".
-	char* (*FS_Gamedir)(void);
-	char* (*FS_Userdir)(void);
-	void (*FS_CreatePath)(char* path);
-
 	qboolean (*Vid_GetModeInfo)(int* width, int* height, int mode);
-	void (*Vid_MenuInit)(void); //TODO: unused. Not needed?
-	void (*Vid_NewWindow)(int width, int height);
-
 	qboolean (*GLimp_InitGraphics)(int width, int height); // YQ2
 
 #ifdef _DEBUG
