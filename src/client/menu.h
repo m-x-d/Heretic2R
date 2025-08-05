@@ -200,8 +200,8 @@ extern qboolean Field_Key(menufield_t* field, int key);
 extern float M_GetMenuAlpha(void); // H2
 extern int M_GetMenuLabelX(int text_width); // H2
 extern int M_GetMenuOffsetY(const menuframework_t* menu); // H2
-extern void M_DrawTextBox(int x, int y, int width, int lines);
-extern void M_Print(int cx, int cy, int msg_index, paletteRGBA_t color);
+extern void M_DrawTextBox(int line_len, int num_lines);
+extern void M_Print(int msg_index, paletteRGBA_t color);
 
 extern void Menu_AddItem(menuframework_t* menu, void* item);
 extern qboolean Menu_SelectItem(const menuframework_t* menu);

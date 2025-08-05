@@ -12,15 +12,27 @@ static cvar_t* con_notifytime;
 static cvar_t* con_alpha; // H2
 static cvar_t* nextserver; // H2
 
-void DrawString(int x, const int y, const char* s, const paletteRGBA_t color, int maxlen)
+static void DrawString_impl(int x, const int y, const char* s, const paletteRGBA_t color, int maxlen) //mxd
 {
-	while (*s != 0 && maxlen != 0)
+	while (*s != 0 && maxlen != 0) //NOTE: 'maxlen' can be -1!
 	{
-		re.DrawChar(x, y, *s, color);
+		re.DrawChar(x, y, ui_char_scale, *s, color);
 		s++;
-		x += 8;
+		x += ui_char_size;
 		maxlen--;
 	}
+}
+
+void DrawString(const int x, const int y, const char* s, const paletteRGBA_t color, const int maxlen) //mxd. +char scaling and shadow logic.
+{
+	static paletteRGBA_t shade_color = { .r = 32, .g = 32, .b = 32, .a = 255 }; //mxd
+
+	// Draw text shadow.
+	shade_color.a = color.a;
+	DrawString_impl(x + ui_char_scale, y + ui_char_scale, s, shade_color, maxlen);
+
+	// Draw text.
+	DrawString_impl(x, y, s, color, maxlen);
 }
 
 // Q2 counterpart
@@ -373,7 +385,7 @@ static void Con_DrawInput(void)
 		text += 1 + key_linepos - con.linewidth;
 
 	// Draw it.
-	DrawString(8, con.vislines - 16, text, TextPalette[P_WHITE], con.linewidth); // H2
+	DrawString(ui_char_size, con.vislines - ui_char_size * 2, text, TextPalette[P_WHITE], con.linewidth); // H2
 
 	// Remove cursor.
 	key_lines[edit_line][key_linepos] = 0;
@@ -394,8 +406,8 @@ void Con_DrawNotify(void)
 		if (time > 0 && cls.realtime - time <= (int)(con_notifytime->value * 1000))
 		{
 			const int line_index = (i % con.totallines);
-			DrawString(8, y, &con.text[line_index * con.linewidth], con.color[line_index], con.linewidth);
-			y += 8;
+			DrawString(ui_char_size, y, &con.text[line_index * con.linewidth], con.color[line_index], con.linewidth);
+			y += ui_char_size;
 		}
 	}
 
@@ -404,12 +416,12 @@ void Con_DrawNotify(void)
 		char* s = chat_buffer;
 		const cvar_t* cv_colour = (chat_team ? colour_teamchat : colour_chat);
 		const char* prompt = (chat_team ? "say_team:" : "say:");
-		const int max_line_width = viddef.width / 8 - (chat_team ? 12 : 6);
-		const int x = (chat_team ? 88 : 40);
+		const int max_line_width = viddef.width / ui_char_size - ui_char_scale * (chat_team ? 12 : 6);
+		const int x = ui_char_scale * (chat_team ? 88 : 40);
 
 		// Draw prompt.
 		const paletteRGBA_t colour = TextPalette[COLOUR(cv_colour)];
-		DrawString(8, y, prompt, colour, -1);
+		DrawString(ui_char_size, y, prompt, colour, -1);
 
 		if (chat_bufferlen > max_line_width)
 			s = &chat_buffer[chat_bufferlen - max_line_width];
@@ -423,7 +435,7 @@ void Con_DrawNotify(void)
 		DrawString(x, y, s, colour, -1);
 
 		s[len] = 0;
-		y += 8;
+		y += ui_char_size;
 	}
 
 	if (y > 0)
@@ -485,32 +497,34 @@ void Con_DrawConsole(float frac)
 	SCR_AddDirtyPoint(viddef.width - 1, lines - 1);
 
 	// Draw version.
-	DrawString(viddef.width - ((int)strlen(GAME_FULLNAME) * 8 + 8), lines - 12, GAME_FULLNAME, TextPalette[P_GREEN], -1); //mxd. P_VERSION in original logic.
+	const int ver_x = viddef.width - ((int)strlen(GAME_FULLNAME) * ui_char_size + ui_char_size);
+	const int ver_y = lines - ui_char_scale * 12;
+	DrawString(ver_x, ver_y, GAME_FULLNAME, TextPalette[P_GREEN], -1); //mxd. P_VERSION in original logic.
 
 	// Draw the text.
 	con.vislines = lines;
 
 	// H2 uses #if 0-ed version of Q2 logic.
 	int rows = (lines - 8) >> 3; // Rows of text to draw.
-	int y = lines - 24;
+	int y = lines - ui_char_size * 3;
 
 	// Draw from the bottom up.
 	if (con.display != con.current)
 	{
 		// Draw arrows to show the buffer is backscrolled.
-		DrawString(8, y, backscroll_arrows, TextPalette[P_WHITE], con.linewidth);
+		DrawString(ui_char_size, y, backscroll_arrows, TextPalette[P_WHITE], con.linewidth);
 
-		y -= 8;
+		y -= ui_char_size;
 		rows--;
 	}
 
 	int row = con.display;
-	for (int i = 0; i < rows; i++, y -= 8, row--)
+	for (int i = 0; i < rows; i++, y -= ui_char_size, row--)
 	{
 		if (row < 0 || con.current - row >= con.totallines)
 			break; // Past scrollback wrap point.
 
-		DrawString(8, y, &con.text[(row % con.totallines) * con.linewidth], con.color[row % con.totallines], con.linewidth);
+		DrawString(ui_char_size, y, &con.text[(row % con.totallines) * con.linewidth], con.color[row % con.totallines], con.linewidth);
 	}
 
 	// Draw the input prompt, user text, and cursor if desired.

@@ -38,5 +38,5 @@ extern void Draw_TileClear(int x, int y, int w, int h, const char* pic);
 extern void Draw_Fill(int x, int y, int w, int h, byte r, byte g, byte b);
 extern void Draw_FadeScreen(paletteRGBA_t color);
 extern void Draw_Name(const vec3_t origin, const char* name, paletteRGBA_t color);
-extern void Draw_Char(int x, int y, int c, paletteRGBA_t color);
+extern void Draw_Char(int x, int y, int scale, int c, paletteRGBA_t color); //mxd. +scale arg.
 extern void Draw_Render(int x, int y, int w, int h, const image_t* image, float alpha);

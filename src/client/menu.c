@@ -879,81 +879,83 @@ void Menu_Center(menuframework_t* menu)
 
 static void Slider_Draw(menuslider_t* slider, const qboolean selected)
 {
-#define SLIDER_RANGE 10
-
-	char item_name[64];
+#define SLIDER_RANGE	10
 
 	const float alpha = M_GetMenuAlpha();
-	const paletteRGBA_t color = { .a = (byte)Q_ftol(alpha * 255.0f), .r = 0xff, .g = 0xff, .b = 0xff};
+	const paletteRGBA_t color = { .r = 255, .g = 255, .b = 255, .a = (byte)Q_ftol(alpha * 255.0f) };
 
 	// Draw slider name.
 	int x = M_GetMenuLabelX(slider->generic.width);
 	int y = slider->generic.y + slider->generic.parent->y;
-	strcpy_s(item_name, sizeof(item_name), slider->generic.name); //mxd. strcpy -> strcpy_s
-	Menu_DrawString(x, y, item_name, alpha, selected);
+	Menu_DrawString(x, y, slider->generic.name, alpha, selected);
 
 	// Update range.
 	slider->range = (slider->curvalue - slider->minvalue) / (slider->maxvalue - slider->minvalue);
-	slider->range = Clamp(slider->range, 0, 1);
+	slider->range = Clamp(slider->range, 0.0f, 1.0f);
 
 	// Draw BG left.
-	x = M_GetMenuLabelX(8 * SLIDER_RANGE * DEF_WIDTH / viddef.width);
-	x = x * viddef.width / DEF_WIDTH;
-	y = (y + 10) * viddef.height / DEF_HEIGHT;
-	re.DrawChar(x - 8, y, 15, color);
+	x = M_GetMenuLabelX(CONCHAR_SIZE * SLIDER_RANGE); // Get x-coord in DEF_WIDTH x DEF_HEIGHT screen size.
+	x = (x * ui_screen_width / DEF_WIDTH) + ui_screen_offset_x; // Convert to real screen size.
+	y = (y + CONCHAR_LINE_HEIGHT) * viddef.height / DEF_HEIGHT;
+	re.DrawChar(x - ui_char_size, y, ui_char_scale, 15, color);
 
 	// Draw BG mid.
 	int ox = x;
-	for (int i = 0; i < SLIDER_RANGE; i++, ox += 8)
-		re.DrawChar(ox, y, 1, color);
+	for (int i = 0; i < SLIDER_RANGE; i++, ox += ui_char_size)
+		re.DrawChar(ox, y, ui_char_scale, 1, color);
 
 	// Draw BG right.
-	re.DrawChar(x + 8 * SLIDER_RANGE, y, 2, color);
+	re.DrawChar(x + ui_char_size * SLIDER_RANGE, y, ui_char_scale, 2, color);
 
 	// Draw slider value.
-	re.DrawChar(x + Q_ftol(slider->range * 8 * (SLIDER_RANGE - 1)), y, 3, color);
+	re.DrawChar(x + Q_ftol(slider->range * (float)ui_char_size * (SLIDER_RANGE - 1)), y, ui_char_scale, 3, color);
 }
 
 static void Field_Draw(const menufield_t* field, const qboolean selected)
 {
-	char tempbuffer[128];
-
 	const float alpha = M_GetMenuAlpha();
-	const paletteRGBA_t color = { .a = (byte)Q_ftol(alpha * 255.0f), .r = 0xff, .g = 0xff, .b = 0xff };
-	int oy = field->generic.y + field->generic.parent->y;
+	const paletteRGBA_t color = { .r = 255, .g = 255, .b = 255, .a = (byte)Q_ftol(alpha * 255.0f) };
 
+	int y = field->generic.y + field->generic.parent->y;
+
+	// Draw field name.
 	if (field->generic.name != NULL)
 	{
 		const int name_x = M_GetMenuLabelX(field->generic.width);
-		Menu_DrawString(name_x, oy, field->generic.name, alpha, selected);
-		oy += 20;
+		Menu_DrawString(name_x, y, field->generic.name, alpha, selected);
+		y += CONCHAR_LINE_HEIGHT * 2;
 	}
 
-	const int label_x = M_GetMenuLabelX(field->visible_length * 8 * DEF_WIDTH / viddef.width);
-	const int ox = label_x * viddef.width / DEF_WIDTH;
-	oy = (oy - 8) * viddef.height / DEF_HEIGHT;
+	int x = M_GetMenuLabelX(field->visible_length * CONCHAR_SIZE); // Get x-coord in DEF_WIDTH x DEF_HEIGHT screen size.
+	x = (x * ui_screen_width / DEF_WIDTH) + ui_screen_offset_x; // Convert to real screen size.
+	y = (y - CONCHAR_SIZE) * viddef.height / DEF_HEIGHT;
 
-	strncpy_s(tempbuffer, sizeof(tempbuffer), field->buffer + field->visible_offset, field->visible_length); //mxd. strncpy -> strncpy_s
+	// Draw field BG corners.
+	const int half_size = ui_char_size / 2; //mxd
+	re.DrawChar(x - ui_char_size, y - half_size, ui_char_scale, 18, color);
+	re.DrawChar(x - ui_char_size, y + half_size, ui_char_scale, 24, color);
+	re.DrawChar(x + field->visible_length * ui_char_size, y - half_size, ui_char_scale, 20, color);
+	re.DrawChar(x + field->visible_length * ui_char_size, y + half_size, ui_char_scale, 26, color);
 
-	re.DrawChar(ox - 8, oy - 4, 18, color);
-	re.DrawChar(ox - 8, oy + 4, 24, color);
-	re.DrawChar(ox + field->visible_length * 8, oy - 4, 20, color);
-	re.DrawChar(ox + field->visible_length * 8, oy + 4, 26, color);
-
-	int field_x = ox;
-	for (int i = 0; i < field->visible_length; i++, field_x += 8)
+	// Draw field BG middle part.
+	int ox = x;
+	for (int i = 0; i < field->visible_length; i++, ox += ui_char_size)
 	{
-		re.DrawChar(field_x, oy - 4, 19, color);
-		re.DrawChar(field_x, oy + 4, 25, color);
+		re.DrawChar(ox, y - half_size, ui_char_scale, 19, color);
+		re.DrawChar(ox, y + half_size, ui_char_scale, 25, color);
 	}
 
-	DrawString(ox, oy, tempbuffer, TextPalette[P_MENUFIELD], -1);
+	// Draw field value.
+	char value[128];
+	strncpy_s(value, sizeof(value), field->buffer + field->visible_offset, field->visible_length); //mxd. strncpy -> strncpy_s
+	DrawString(x, y, value, TextPalette[P_MENUFIELD], -1); //TODO: don't need text shadow here...
 
+	// Draw cursor?
 	if ((menufield_t*)Menu_ItemAtCursor(field->generic.parent) == field)
 	{
-		const int offset = (field->visible_offset != 0 ? field->visible_length : field->cursor);
-		const int ch = (Sys_Milliseconds() / 250 & 1 ? 11 : ' ');
-		re.DrawChar(ox + offset * 8, oy, ch, color);
+		const int offset = ((field->visible_offset != 0) ? field->visible_length : field->cursor);
+		const int ch = ((Sys_Milliseconds() / 250 & 1) ? 11 : ' ');
+		re.DrawChar(x + offset * ui_char_size, y, ui_char_scale, ch, color);
 	}
 }
 
@@ -967,14 +969,14 @@ static void Action_Draw(const menuaction_t* action, const qboolean selected)
 
 	if (action->generic.flags & QMF_MULTILINE && strchr(action->generic.name, '\n') != NULL)
 	{
-		// Draw left part
+		// Draw left part.
 		strcpy_s(name, sizeof(name), action->generic.name); //mxd. strcpy -> strcpy_s
 		*strchr(name, '\n') = 0;
 		x = M_GetMenuLabelX(re.BF_Strlen(name));
 		Menu_DrawString(x, y, name, alpha, selected);
 		m_menu_side ^= 1;
 
-		// Draw right part
+		// Draw right part.
 		strcpy_s(name, sizeof(name), strchr(action->generic.name, '\n') + 1); //mxd. strcpy -> strcpy_s
 		x = M_GetMenuLabelX(re.BF_Strlen(name));
 		Menu_DrawString(x, y, name, alpha, selected);
@@ -994,7 +996,7 @@ static void InputKey_Draw(const menuinputkey_t* key, const qboolean selected) //
 	char key_name[MAX_QPATH];
 	int keys[2];
 
-	// Draw key label (eg. "Attack")
+	// Draw key label (eg. "Attack").
 	Com_sprintf(key_label, sizeof(key_label), "%s", key->generic.name);
 
 	float alpha = M_GetMenuAlpha();
@@ -1003,7 +1005,7 @@ static void InputKey_Draw(const menuinputkey_t* key, const qboolean selected) //
 	Menu_DrawString(x, y, key_label, alpha, selected);
 	m_menu_side ^= 1;
 
-	// Draw keybind name(s) (eg. "Mouse1")
+	// Draw keybind name(s) (eg. "Mouse1").
 	M_FindKeysForCommand(key->generic.localdata[0], keys);
 
 	if (keys[0] == -1)
@@ -1053,7 +1055,7 @@ static void SpinControl_Draw(const menulist_t* list, const qboolean selected)
 		strcpy_s(buffer, sizeof(buffer), list->generic.name);
 		x = M_GetMenuLabelX(list->generic.width);
 		Menu_DrawString(x, y, buffer, alpha, selected);
-		y += 20;
+		y += CONCHAR_LINE_HEIGHT * 2;
 	}
 
 	strcpy_s(buffer, sizeof(buffer), list->itemnames[list->curvalue]);
@@ -1068,7 +1070,7 @@ static void SpinControl_Draw(const menulist_t* list, const qboolean selected)
 
 		newline++;
 		x = M_GetMenuLabelX(re.BF_Strlen(newline));
-		Menu_DrawString(x, y + 20, newline, alpha, selected);
+		Menu_DrawString(x, y + CONCHAR_LINE_HEIGHT * 2, newline, alpha, selected);
 	}
 	else // Draw value on single line
 	{
@@ -1185,8 +1187,10 @@ static int GetLineLength(const char* text) // H2
 	int len = 0;
 	while (*text != 0 && *text != '\n')
 	{
+		if (*text != '$' && *text != '%') //mxd. Don't count special chars.
+			len++;
+
 		text++;
-		len++;
 	}
 
 	return len;
@@ -1201,12 +1205,14 @@ void Menu_DrawObjectives(const char* message, const int max_line_length) // H2
 	int y = viddef.height * 80 / DEF_HEIGHT;
 	char* s = buffer;
 
-	for (int i = 0; i < num_lines; i++, s++, y += 8)
+	for (int i = 0; i < num_lines; i++, s++, y += ui_char_size)
 	{
 		const int len = GetLineLength(s);
-		int x = M_GetMenuLabelX(len * 8 * DEF_WIDTH / viddef.width) * viddef.width / DEF_WIDTH;
+		int x = M_GetMenuLabelX(0); // Get page center in DEF_WIDTH x DEF_HEIGHT screen size.
+		x = (x * ui_screen_width / DEF_WIDTH) + ui_screen_offset_x; // Convert to real screen size.
+		x -= len * ui_char_size / 2; // Factor in line length.
 
-		for (int j = 0; j < len; j++, s++, x += 8)
+		for (int j = 0; j < len; j++, s++, x += ui_char_size)
 		{
 			switch (*s)
 			{
@@ -1222,7 +1228,7 @@ void Menu_DrawObjectives(const char* message, const int max_line_length) // H2
 				{
 					paletteRGBA_t color = TextPalette[color_index];
 					color.a = (byte)Q_ftol(cls.m_menualpha * 255);
-					re.DrawChar(x, y, *s, color);
+					re.DrawChar(x, y, ui_char_scale, *s, color);
 				} break;
 			}
 		}
@@ -1354,80 +1360,75 @@ void M_Draw(void)
 	}
 }
 
-// Draws one solid graphics character
-// cx and cy are in 320 * 240 coordinates, and will be centered on higher res screens.
-static void M_DrawCharacter(const int cx, const int cy, const int num, const paletteRGBA_t color)
-{
-	re.DrawChar(cx + (viddef.width - 320) / 2, cy + (viddef.height - 240) / 2, num, color);
-}
-
-void M_DrawTextBox(const int x, const int y, const int width, const int lines)
+//mxd. Always draw centered.
+void M_DrawTextBox(const int line_len, const int num_lines)
 {
 	static paletteRGBA_t c_white = { .c = 0xffffffff };
 
-	// Draw left side
-	int cx = x;
-	int cy = y;
-	M_DrawCharacter(cx, cy, 18, c_white);
+	const int sx = (viddef.width - (line_len + 2) * ui_char_size) / 2;
+	const int sy = (viddef.height - (num_lines + 2) * ui_char_size) / 2;
 
-	for (int i = 0; i < lines; i++)
+	int x = sx;
+	int y = sy;
+
+	// Draw left side.
+	re.DrawChar(x, y, ui_char_scale, 18, c_white);
+
+	for (int i = 0; i < num_lines; i++)
 	{
-		cy += 8;
-		M_DrawCharacter(cx, cy, 21, c_white);
+		y += ui_char_size;
+		re.DrawChar(x, y, ui_char_scale, 21, c_white);
 	}
 
-	M_DrawCharacter(cx, cy + 8, 24, c_white);
+	re.DrawChar(x, y + ui_char_size, ui_char_scale, 24, c_white);
 
-	// Draw middle
-	cx += 8;
-	for (int i = 0; i < width; i++)
+	// Draw middle.
+	x += ui_char_size;
+	for (int i = 0; i < line_len; i++, x += ui_char_size)
 	{
-		cy = y;
-		M_DrawCharacter(cx, cy, 19, c_white);
+		y = sy;
+		re.DrawChar(x, y, ui_char_scale, 19, c_white);
 
-		for (int n = 0; n < lines; n++)
+		for (int n = 0; n < num_lines; n++)
 		{
-			cy += 8;
-			M_DrawCharacter(cx, cy, 22, c_white);
+			y += ui_char_size;
+			re.DrawChar(x, y, ui_char_scale, 22, c_white);
 		}
 
-		M_DrawCharacter(cx, cy + 8, 25, c_white);
-		cx += 8;
+		re.DrawChar(x, y + ui_char_size, ui_char_scale, 25, c_white);
 	}
 
-	// Draw right side
-	cy = y;
-	M_DrawCharacter(cx, cy, 20, c_white);
+	// Draw right side.
+	y = sy;
+	re.DrawChar(x, y, ui_char_scale, 20, c_white);
 
-	for (int i = 0; i < lines; i++)
+	for (int i = 0; i < num_lines; i++)
 	{
-		cy += 8;
-		M_DrawCharacter(cx, cy, 23, c_white);
+		y += ui_char_size;
+		re.DrawChar(x, y, ui_char_scale, 23, c_white);
 	}
 
-	M_DrawCharacter(cx, cy + 8, 26, c_white);
+	re.DrawChar(x, y + ui_char_size, ui_char_scale, 26, c_white);
 }
 
-void M_Print(const int cx, const int cy, const int msg_index, const paletteRGBA_t color)
+//mxd. Always draw centered.
+void M_Print(const int msg_index, const paletteRGBA_t color)
 {
+	char buffer[1024];
+
 	const char* str = CL_GetGameString(msg_index);
-	int x = cx;
-	int y = cy;
+	const int num_lines = SplitLines(buffer, sizeof(buffer), str, 36); //mxd. Just use what M_DrawTextBox() uses for line_length...
+	char* s = buffer;
 
-	while (*str != 0)
+	int y = (viddef.height - num_lines * ui_char_size) / 2;
+
+	for (int i = 0; i < num_lines; i++, s++, y += ui_char_size)
 	{
-		if (*str == '\n')
-		{
-			x = cx;
-			y += 8;
-		}
-		else
-		{
-			M_DrawCharacter(x, y, *str, color);
-			x += 8;
-		}
+		const int line_len = GetLineLength(s);
+		int x = (viddef.width - line_len * ui_char_size) / 2;
 
-		str++;
+		for (int j = 0; j < line_len; j++, s++, x += ui_char_size)
+			re.DrawChar(x, y, ui_char_scale, *s, color);
 	}
 }
 

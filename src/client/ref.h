@@ -20,6 +20,9 @@
 
 #define NUM_PARTICLE_TYPES	62 // This doesn't use the macro because of referencing weirdness.
 
+#define CONCHAR_SIZE		8 //mxd. Conchars char size. Each char is 8x8 pixels.
+#define CONCHAR_LINE_HEIGHT	10 //mxd. Not a console line height!
+
 typedef struct entity_s
 {
 	struct model_s** model; // Opaque type outside refresh. // Q2: struct model_s*
@@ -199,7 +202,7 @@ typedef struct
 	void (*DrawGetPicSize)(int* w, int* h, const char* name);
 	void (*DrawPic)(int x, int y, const char* name, float alpha);
 	void (*DrawStretchPic)(int x, int y, int w, int h, const char* name, float alpha, qboolean scale);
-	void (*DrawChar)(int x, int y, int c, paletteRGBA_t color);
+	void (*DrawChar)(int x, int y, int scale, int c, paletteRGBA_t color); //mxd. +scale arg.
 	void (*DrawTileClear)(int x, int y, int w, int h, const char* name);
 	void (*DrawFill)(int x, int y, int w, int h, byte r, byte g, byte b);
 	void (*DrawFadeScreen)(paletteRGBA_t color);

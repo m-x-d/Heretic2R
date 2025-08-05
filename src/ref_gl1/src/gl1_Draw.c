@@ -88,15 +88,16 @@ void Draw_InitLocal(void)
 
 // Draws one 8*8 graphics character with 0 being transparent.
 // It can be clipped to the top of the screen to allow the console to be smoothly scrolled off.
-void Draw_Char(const int x, const int y, int c, const paletteRGBA_t color)
+void Draw_Char(const int x, const int y, const int scale, int c, const paletteRGBA_t color)
 {
 #define CELL_SIZE	0.0625f	// 16 chars per row/column (0.0625 == 1 / 16).
-#define CHAR_SIZE	8		// Each char is 8x8 pixels.
 
 	c &= 255;
 
+	const int char_size = CONCHAR_SIZE * scale; //mxd
+
 	// Skip when whitespace char or totally off-screen.
-	if ((c & 127) == 32 || y <= -8)
+	if ((c & 127) == 32 || y <= -char_size)
 		return;
 
 	const float frow = (float)(c >> 4) * CELL_SIZE;
@@ -117,13 +118,13 @@ void Draw_Char(const int x, const int y, int c, const paletteRGBA_t color)
 	glVertex2i(x, y); //mxd. qglVertex2f -> qglVertex2i
 
 	glTexCoord2f(fcol + CELL_SIZE, frow);
-	glVertex2i(x + CHAR_SIZE, y); //mxd. qglVertex2f -> qglVertex2i
+	glVertex2i(x + char_size, y); //mxd. qglVertex2f -> qglVertex2i
 
 	glTexCoord2f(fcol + CELL_SIZE, frow + CELL_SIZE);
-	glVertex2i(x + CHAR_SIZE, y + CHAR_SIZE); //mxd. qglVertex2f -> qglVertex2i
+	glVertex2i(x + char_size, y + char_size); //mxd. qglVertex2f -> qglVertex2i
 
 	glTexCoord2f(fcol, frow + CELL_SIZE);
-	glVertex2i(x, y + CHAR_SIZE); //mxd. qglVertex2f -> qglVertex2i
+	glVertex2i(x, y + char_size); //mxd. qglVertex2f -> qglVertex2i
 
 	glEnd();
 	R_TexEnv(GL_REPLACE);
@@ -300,15 +301,16 @@ void Draw_Name(const vec3_t origin, const char* name, const paletteRGBA_t color)
 	const float center_y = (float)r_newrefdef.height * 0.5f;
 	const float scaler = center_x / screen_pos[2] * 1.28f;
 
-	int x = (int)(center_x + screen_pos[0] * scaler) - len * 4;
+	//mxd. Hires scaling...
+	const int ui_char_scale = (int)(roundf((float)viddef.height / DEF_HEIGHT));
+	const int ui_char_size = CONCHAR_SIZE * ui_char_scale;
+
+	int x = (int)(center_x + screen_pos[0] * scaler) - len * (ui_char_size / 2);
 	const int y = (int)(center_y - screen_pos[1] * scaler);
 
-	if (x < 0 || y < 0 || x + len * 8 > r_newrefdef.width || y + 8 > r_newrefdef.height)
+	if (x < 0 || y < 0 || x + len * ui_char_size > r_newrefdef.width || y + ui_char_size > r_newrefdef.height)
 		return;
 
-	for (int i = 0; i < len; i++)
-	{
-		Draw_Char(x, y, name[i], color);
-		x += 8;
-	}
+	for (int i = 0; i < len; i++, x += ui_char_size)
+		Draw_Char(x, y, ui_char_scale, name[i], color);
 }

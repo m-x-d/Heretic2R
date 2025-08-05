@@ -77,8 +77,8 @@ static void SaveConfigFunc(void* self) // H2
 {
 	CL_SaveConfig_f();
 
-	M_DrawTextBox(8, 72, 36, 1);
-	M_Print(32, 80, GM_CH_SAVECFG, TextPalette[P_WHITE]);
+	M_DrawTextBox(36, 1);
+	M_Print(GM_CH_SAVECFG, TextPalette[P_WHITE]);
 	se.StopAllSounds_Sounding();
 
 	re.EndFrame();

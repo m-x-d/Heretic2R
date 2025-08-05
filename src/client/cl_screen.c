@@ -14,6 +14,13 @@ float scr_con_current; // Approaches scr_conlines at scr_conspeed.
 
 static qboolean scr_initialized; // Ready to draw
 
+//mxd. conchars scaling for menus/console.
+int ui_char_size = CONCHAR_SIZE;
+int ui_char_scale = 1;
+int ui_line_height = (int)((float)CONCHAR_SIZE * 1.25f); //mxd. Original logic uses 10.
+int ui_screen_width = DEF_WIDTH; // Screen width sized to 4x3 aspect ratio.
+int ui_screen_offset_x = 0; // Horizontal offset from viddef.width to centered ui_screen_width.
+
 qboolean scr_draw_loading_plaque; // H2
 static qboolean scr_draw_loading; // int in Q2
 static int scr_progressbar_width; // H2
@@ -306,6 +313,25 @@ void SCR_UpdateProgressbar(int unused, const int section) // H2
 	SCR_UpdateScreen();
 }
 
+//mxd. Expected to be called when screen size changes.
+void SCR_UpdateUIScale(void)
+{
+	ui_char_scale = min((int)(roundf((float)viddef.width / DEF_WIDTH)), (int)(roundf((float)viddef.height / DEF_HEIGHT)));
+	ui_char_size = CONCHAR_SIZE * ui_char_scale;
+	ui_line_height = (int)((float)ui_char_size * 1.25f);
+
+	if ((float)viddef.width * 0.75f > (float)viddef.height) // Setup for widescreen aspect ratio.
+	{
+		ui_screen_width = viddef.height * 4 / 3;
+		ui_screen_offset_x = (viddef.width - ui_screen_width) / 2;
+	}
+	else
+	{
+		ui_screen_width = viddef.width;
+		ui_screen_offset_x = 0;
+	}
+}
+
 void SCR_Init(void)
 {
 	scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
@@ -522,28 +548,28 @@ static void DrawPic(const int x, const int y, char* str, const qboolean use_alph
 static void DrawTeamBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' args are ignored.
 {
 	int ox = Q_atoi(COM_Parse(&str));
-	ox += viddef.width / 2 - 128;
+	ox += viddef.width / 2 - 128 * ui_char_scale;
 
 	int oy = Q_atoi(COM_Parse(&str));
-	oy += viddef.height / 2 - 120;
+	oy += viddef.height / 2 - 120 * ui_char_scale;
 
 	const int score = Q_atoi(COM_Parse(&str));
 	const char* team = COM_Parse(&str);
 
 	DrawString(ox, oy, va("Team %s ", team), TextPalette[P_TEAM], -1);
-	DrawString(ox, oy + 8, va("Score %i", score), TextPalette[P_WHITE], -1);
+	DrawString(ox, oy + ui_char_size, va("Score %i", score), TextPalette[P_WHITE], -1);
 }
 
 static void DrawClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' args are ignored.
 {
 	int ox = Q_atoi(COM_Parse(&str));
-	ox += viddef.width / 2 - 160;
+	ox += viddef.width / 2 - 160 * ui_char_scale;
 
 	int oy = Q_atoi(COM_Parse(&str));
-	oy += viddef.height / 2 - 120;
+	oy += viddef.height / 2 - 120 * ui_char_scale;
 
 	SCR_AddDirtyPoint(ox, oy);
-	SCR_AddDirtyPoint(ox + 159, oy + 31);
+	SCR_AddDirtyPoint(ox + 159 * ui_char_scale, oy + 31 * ui_char_scale);
 
 	const int client = Q_atoi(COM_Parse(&str));
 
@@ -554,12 +580,12 @@ static void DrawClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' a
 	const int ping = Q_atoi(COM_Parse(&str));
 	const int time = Q_atoi(COM_Parse(&str));
 
-	DrawString(ox + 32, oy, cl.clientinfo[client].name, TextPalette[P_FRAGNAME], -1);
+	DrawString(ox + ui_char_size * 4, oy, cl.clientinfo[client].name, TextPalette[P_FRAGNAME], -1);
 
-	DrawString(ox + 32, oy + 8, "Score: ", TextPalette[P_FRAGS], -1);
-	DrawString(ox + 88, oy + 8,  va("%i", score), TextPalette[P_ALTFRAGS], -1);
-	DrawString(ox + 32, oy + 16, va("Ping:  %i", ping), TextPalette[P_FRAGS], -1);
-	DrawString(ox + 32, oy + 24, va("Time:  %i", time), TextPalette[P_FRAGS], -1);
+	DrawString(ox + ui_char_size * 4,  oy + ui_char_size, "Score: ", TextPalette[P_FRAGS], -1);
+	DrawString(ox + ui_char_size * 11, oy + ui_char_size, va("%i", score), TextPalette[P_ALTFRAGS], -1);
+	DrawString(ox + ui_char_size * 4,  oy + ui_char_size * 2, va("Ping:  %i", ping), TextPalette[P_FRAGS], -1);
+	DrawString(ox + ui_char_size * 4,  oy + ui_char_size * 3, va("Time:  %i", time), TextPalette[P_FRAGS], -1);
 }
 
 static void DrawAClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' args are ignored.
@@ -567,13 +593,13 @@ static void DrawAClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' 
 	char buffer[80];
 
 	int ox = Q_atoi(COM_Parse(&str));
-	ox += viddef.width / 2 - 160;
+	ox += viddef.width / 2 - 160 * ui_char_scale;
 
 	int oy = Q_atoi(COM_Parse(&str));
-	oy += viddef.height / 2 - 120;
+	oy += viddef.height / 2 - 120 * ui_char_scale;
 
 	SCR_AddDirtyPoint(ox, oy);
-	SCR_AddDirtyPoint(ox + 159, oy + 31);
+	SCR_AddDirtyPoint(ox + 159 * ui_char_scale, oy + 31 * ui_char_scale);
 
 	const int pal_index = Q_atoi(COM_Parse(&str));
 	const int client = Q_atoi(COM_Parse(&str));
@@ -700,8 +726,6 @@ static void SCR_ExecuteLayoutString(char* s)
 {
 	if (cls.state != ca_active || !cl.refresh_prepped || s[0] == 0)
 		return;
-
-	//TODO: add SCR_GetHUDScale logic from YQ2
 
 	int x = 0;
 	int y = 0;
@@ -839,8 +863,8 @@ static void SCR_ExecuteLayoutString(char* s)
 		}
 		else if (strcmp(token, "hstring") == 0) // H2
 		{
-			x = viddef.width / 2 - 160 + Q_atoi(COM_Parse(&s));
-			y = viddef.height / 2 - 120 + Q_atoi(COM_Parse(&s));
+			x = viddef.width / 2 - (160 + Q_atoi(COM_Parse(&s))) * ui_char_scale;
+			y = viddef.height / 2 - (120 + Q_atoi(COM_Parse(&s))) * ui_char_scale;
 			const int pal_index = Q_atoi(COM_Parse(&s));
 			const char* str = COM_Parse(&s);
 
@@ -947,7 +971,7 @@ static void SCR_DrawGameMessage(void) // H2
 		return;
 
 	const float scaler = (game_message_show_at_top ? 0.9f : 0.4f);
-	int y = (int)((float)viddef.height * scaler) - (game_message_num_lines / 2) * 8;
+	int y = (int)((float)viddef.height * scaler) - (game_message_num_lines / 2) * ui_char_size;
 
 	const char* s = game_message;
 	while (true)
@@ -957,10 +981,10 @@ static void SCR_DrawGameMessage(void) // H2
 			if (s[line_len] == 0 || s[line_len] == '\n')
 				break;
 
-		const int x = (viddef.width - line_len * 8) / 2;
+		const int x = (viddef.width - line_len * ui_char_size) / 2;
 		SCR_AddDirtyPoint(x, y);
 		DrawString(x, y, s, game_message_color, line_len);
-		SCR_AddDirtyPoint(x + line_len * 8, y + 8);
+		SCR_AddDirtyPoint(x + line_len * ui_char_size, y + ui_char_size);
 
 		// Skip to next line.
 		s += line_len;
@@ -969,7 +993,7 @@ static void SCR_DrawGameMessage(void) // H2
 			break;
 
 		s++; // Skip newline char.
-		y += 8;
+		y += ui_char_size;
 	}
 }
 

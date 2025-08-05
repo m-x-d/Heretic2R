@@ -95,7 +95,7 @@ void DBG_DrawMessages(void)
 #if _DEBUG
 
 	int ox = 0;
-	int oy = viddef.height / 2 - 4;
+	int oy = viddef.height - ui_char_size / 2;
 
 	for (int i = 0; i < NUM_DEBUG_MESSAGES; i++)
 	{
@@ -104,7 +104,7 @@ void DBG_DrawMessages(void)
 	}
 
 	// Convert to char offset, add pad...
-	ox = (ox + 1) * 8;
+	ox = (ox + 1) * ui_char_size;
 
 	for (int i = 0; i < NUM_DEBUG_MESSAGES; i++)
 	{
@@ -117,12 +117,12 @@ void DBG_DrawMessages(void)
 			continue;
 
 		// Title
-		DrawString(ox - t_len * 8, oy, msg->title, TextPalette[P_CYAN], -1);
+		DrawString(ox - t_len * ui_char_size, oy, msg->title, TextPalette[P_CYAN], -1);
 
 		// Message
-		DrawString(ox + 8, oy, msg->message, TextPalette[P_CYAN], -1);
+		DrawString(ox + ui_char_size, oy, msg->message, TextPalette[P_CYAN], -1);
 
-		oy += 10;
+		oy += ui_line_height;
 	}
 
 #endif

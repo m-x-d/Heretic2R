@@ -847,10 +847,10 @@ static void M_Credits_MenuDraw(void)
 	re.BookDrawPic("book/back/b_conback8.bk", cls.m_menuscale);
 
 	// Draw credits.
-	int y = viddef.height - (cls.realtime - credits_start_time) / 40;
-	for (int i = 0; raven_credits[i] != NULL && y < viddef.height; i++, y += 10)
+	int y = viddef.height - (cls.realtime - credits_start_time) / 24; //mxd. / 40 in original logic. Make it scroll a bit faster...
+	for (int i = 0; raven_credits[i] != NULL && y < viddef.height; i++, y += ui_line_height)
 	{
-		if (y <= -8)
+		if (y <= -ui_char_size)
 			continue;
 
 		if (raven_credits[i][0] == '+')
@@ -864,7 +864,7 @@ static void M_Credits_MenuDraw(void)
 			color = TextPalette[P_CRED_CONTENT];
 		}
 
-		const int x = (viddef.width - 8 * (int)strlen(line)) / 2;
+		const int x = (viddef.width - ui_char_size * (int)strlen(line)) / 2;
 		color.a = (byte)Q_ftol(cls.m_menualpha * 255);
 		DrawString(x, y, line, color, -1);
 	}
@@ -879,6 +879,7 @@ static const char* M_Credits_Key(const int key)
 	if (cls.m_menustate == 2 && key == K_ESCAPE)
 		M_PopMenu();
 
+	//TODO: scroll credits 2x faster when K_SPACE is pressed?
 	return NULL;
 }
 
