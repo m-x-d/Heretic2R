@@ -681,23 +681,29 @@ static void CL_Rcon_f(void)
 	NET_SendPacket(NS_CLIENT, (int)strlen(message) + 1, message, &to);
 }
 
+char* CL_GetConfigPath(void) //mxd
+{
+	static char cfg_name[MAX_QPATH];
+	Com_sprintf(cfg_name, sizeof(cfg_name), "%s/config/%s.cfg", FS_Gamedir(), player_name->string);
+
+	return cfg_name;
+}
+
 void CL_SaveConfig_f(void) // H2
 {
-	char cfg_name[MAX_QPATH];
-	FILE* f;
-
 	if (cls.state == ca_uninitialized)
 		return;
 
 	if (player_name == NULL || player_name->string[0] == 0) //mxd. strlen(str) -> str[0] check.
 	{
-		Com_Printf("ERROR: Set the name variable as the filename to save.\n");
+		Com_Printf("ERROR: Set the 'player_name' cvar to use as config filename!\n");
 		return;
 	}
 
-	Com_sprintf(cfg_name, sizeof(cfg_name), "%s/config/%s.cfg", FS_Gamedir(), player_name->string);
+	char* cfg_name = CL_GetConfigPath(); //mxd
 	FS_CreatePath(cfg_name);
 
+	FILE* f;
 	if (fopen_s(&f, cfg_name, "w") != 0) //mxd. fopen -> fopen_s
 	{
 		Com_Printf("Couldn't write '%s'.\n", cfg_name);
@@ -715,7 +721,7 @@ void CL_SaveConfig_f(void) // H2
 	fclose(f);
 
 	Cvar_WriteVariables(cfg_name);
-	Com_Printf("Saved personal config file to %s ok.\n", cfg_name);
+	Com_Printf("Saved personal config file to '%s'.\n", cfg_name);
 }
 
 static void CL_Setenv_f(void)

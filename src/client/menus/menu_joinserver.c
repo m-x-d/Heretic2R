@@ -42,13 +42,7 @@ static void SearchLocalGames(void)
 	for (int i = 0; i < MAX_LOCAL_SERVERS; i++)
 		strcpy_s(local_server_names[i], sizeof(local_server_names[i]), MENU_EMPTY); //mxd. strcpy -> strcpy_s
 
-	M_DrawTextBox(36, 3);
-	M_Print(GM_CH_SERVERS, TextPalette[P_WHITE]);
-	se.StopAllSounds_Sounding();
-
-	// The text box won't show up unless we do a buffer swap.
-	re.EndFrame();
-	Sleep(500); // H2
+	//mxd. Skip M_DrawTextBox() logic (searching for local servers takes less than a second nowadays).
 
 	// Send out info packets.
 	CL_PingServers_f();

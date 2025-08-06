@@ -4,9 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include <windows.h>
 #include "client.h"
-#include "cl_strings.h"
 #include "menu_options.h"
 #include "menu_actionkeys.h"
 #include "menu_cameracfg.h"
@@ -32,6 +30,12 @@ static menuaction_t s_misc_action;
 static menuaction_t s_loadcfg_action;
 static menuaction_t s_savecfg_action;
 static menuaction_t s_defaults_action;
+
+#define SAVECFG_DISPLAY_TIME	4000 //mxd. Display for 4 seconds.
+#define SAVECFG_FADEOUT_TIME	1000.0f //mxd. Fade-out over 1 second.
+
+static int savecfg_msg_display_time; //mxd
+static char savecfg_path[256]; //mxd
 
 static void ActionKeysFunc(void* self)
 {
@@ -77,12 +81,9 @@ static void SaveConfigFunc(void* self) // H2
 {
 	CL_SaveConfig_f();
 
-	M_DrawTextBox(36, 1);
-	M_Print(GM_CH_SAVECFG, TextPalette[P_WHITE]);
-	se.StopAllSounds_Sounding();
-
-	re.EndFrame();
-	Sleep(500);
+	//mxd. Display save config message in non-blocking fashion.
+	savecfg_msg_display_time = curtime + SAVECFG_DISPLAY_TIME;
+	sprintf_s(savecfg_path, sizeof(savecfg_path), "'%s'.", CL_GetConfigPath());
 }
 
 static void ControlsResetToDefaultsFunc(void* self)
@@ -220,6 +221,22 @@ static void Options_MenuDraw(void)
 	s_options_menu.x = M_GetMenuLabelX(s_options_menu.width);
 	Menu_AdjustCursor(&s_options_menu, 1);
 	Menu_Draw(&s_options_menu);
+
+	//mxd. Draw "saved config" message?
+	if (savecfg_msg_display_time > curtime)
+	{
+		const float delta = 1.0f - min(SAVECFG_FADEOUT_TIME, (float)(savecfg_msg_display_time - curtime)) / SAVECFG_FADEOUT_TIME;
+
+		paletteRGBA_t color = TextPalette[P_YELLOW];
+		color.a = (byte)(sinf((M_PI + M_PI * delta) * 0.5f) * 255.0f); // Ease-in fade-out over last second.
+
+		const char* info = "Saved configuration to";
+		int msg_len = (int)strlen(info);
+		DrawString((viddef.width - msg_len * ui_char_size) / 2, viddef.height - ui_line_height * 9, info, color, msg_len);
+
+		msg_len = (int)strlen(savecfg_path);
+		DrawString((viddef.width - msg_len * ui_char_size) / 2, viddef.height - ui_line_height * 8, savecfg_path, color, msg_len);
+	}
 }
 
 // Q2 counterpart
