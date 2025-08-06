@@ -479,7 +479,7 @@ extern void Cvar_GetLatchedVars(void);
 extern qboolean Cvar_Command(void);
 
 // Appends lines containing "set variable value" for all variables with the archive flag set to true.
-extern void Cvar_WriteVariables(const char* path);
+extern void Cvar_WriteVariables(FILE* f); //mxd. const char* path -> FILE* f.
 
 extern void Cvar_Init(void);
 
