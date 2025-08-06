@@ -32,7 +32,7 @@ void M_WorldMap_MenuDraw(void) // H2
 {
 	if (!HaveWorldMap())
 	{
-		re.BookDrawPic("book/back/b_worldmap.bk", cls.m_menuscale);
+		Menu_DrawBG("book/back/b_worldmap.bk", cls.m_menuscale);
 		return;
 	}
 
@@ -41,7 +41,7 @@ void M_WorldMap_MenuDraw(void) // H2
 	const level_map_info_t* info = &map_infos[level_num];
 
 	if (info->world_map != NULL)
-		re.BookDrawPic(info->world_map, cls.m_menuscale);
+		Menu_DrawBG(info->world_map, cls.m_menuscale);
 
 	if (cls.m_menualpha == 0.0f || (info->flags & LMI_NODRAW) != 0)
 		return;

@@ -72,7 +72,7 @@ static void CameraCfg_MenuDraw(void) // H2
 	char title[MAX_QPATH];
 
 	// Draw menu BG.
-	re.BookDrawPic("book/back/b_conback8.bk", cls.m_menuscale);
+	Menu_DrawBG("book/back/b_conback8.bk", cls.m_menuscale);
 
 	if (cls.m_menualpha == 0.0f)
 		return;

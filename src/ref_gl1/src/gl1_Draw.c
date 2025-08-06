@@ -239,7 +239,7 @@ void Draw_Fill(const int x, const int y, const int w, const int h, const palette
 	glDisable(GL_TEXTURE_2D);
 
 	//mxd. qglColor4f -> qglColor4ub; H2: qglColor4f((float)r / 256.0f, (float)g / 256.0f,(float)b / 256.0f, 1.0f); Q2: color components divided by 255.0
-	glColor4ub(color.r, color.g, color.b, color.a);
+	glColor3ub(color.r, color.g, color.b);
 
 	glBegin(GL_QUADS);
 

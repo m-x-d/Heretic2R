@@ -844,7 +844,7 @@ static void M_Credits_MenuDraw(void)
 	char* line;
 
 	// Draw menu BG.
-	re.BookDrawPic("book/back/b_conback8.bk", cls.m_menuscale);
+	Menu_DrawBG("book/back/b_conback8.bk", cls.m_menuscale);
 
 	// Draw credits.
 	int y = viddef.height - (cls.realtime - credits_start_time) / 24; //mxd. / 40 in original logic. Make it scroll a bit faster...

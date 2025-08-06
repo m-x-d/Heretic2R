@@ -210,4 +210,5 @@ extern void Menu_Draw(const menuframework_t* menu);
 extern void Menu_DrawString(int x, int y, const char* name, float alpha, qboolean selected);
 extern void Menu_DrawObjectives(const char* message, int max_line_length); // H2
 extern void Menu_DrawTitle(const cvar_t* title); // H2
+extern void Menu_DrawBG(const char* bk_path, float scale); //mxd
 extern menucommon_t* Menu_ItemAtCursor(const menuframework_t* menu);
