@@ -39,7 +39,7 @@ void Draw_CloseCinematic(void) // H2
 void Draw_Cinematic(const byte* data, const paletteRGB_t* palette) // H2
 {
 	// Draw black BG over whole screen.
-	Draw_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0);
+	Draw_Fill(0, 0, viddef.width, viddef.height, TextPalette[P_BLACK]);
 
 	// Copy frame palette and data.
 	memcpy(cin_frame->palette, palette, sizeof(paletteRGB_t) * 256);

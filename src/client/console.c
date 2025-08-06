@@ -475,7 +475,7 @@ void Con_DrawConsole(float frac)
 	
 	if (!ShouldDrawConsole()) // H2
 	{
-		re.DrawFill(0, 0, viddef.width, viddef.height, 0, 0, 0);
+		re.DrawFill(0, 0, viddef.width, viddef.height, TextPalette[P_BLACK]);
 		return;
 	}
 

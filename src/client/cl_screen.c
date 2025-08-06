@@ -102,26 +102,27 @@ static void SCR_AddTimeGraph(void) // H2
 
 static void SCR_DrawDebugGraph(void)
 {
+	static paletteRGBA_t c_bg = { .r = 64, .g = 64, .b = 64, .a = 255 }; //mxd
+
 	if (!(int)scr_debuggraph->value && !(int)scr_timegraph->value && !(int)scr_netgraph->value)
 		return;
 
 	const int x = (viddef.width - 256) / 2;
 	const int y = viddef.height - 8;
 	
-	re.DrawFill(x, viddef.height - (int)scr_graphheight->value - 8, 256, (int)scr_graphheight->value, 64, 64, 64);
+	re.DrawFill(x, viddef.height - (int)scr_graphheight->value - 8, 256, (int)scr_graphheight->value, c_bg);
 
 	for (int i = 0; i < 256; i++)
 	{
 		const int index = (current - i - 1) & 255;
 		const int value = ClampI((int)(values[index].value * scr_graphscale->value), 0, (int)scr_graphheight->value);
-		const paletteRGBA_t color = values[index].color;
 
-		re.DrawFill(x + 255 - i, y - value, 1, value, color.r, color.g, color.b);
+		re.DrawFill(x + 255 - i, y - value, 1, value, values[index].color);
 	}
 
-	re.DrawFill(x, y - (int)(scr_graphscale->value * 100.0f), 256, 1, 0, 0xff, 0);
-	re.DrawFill(x, y - (int)(scr_graphscale->value * 150.0f), 256, 1, 0xff, 0xff, 0);
-	re.DrawFill(x, y - (int)(scr_graphscale->value * 200.0f), 256, 1, 0xff, 0, 0);
+	re.DrawFill(x, y - (int)(scr_graphscale->value * 100.0f), 256, 1, TextPalette[P_GREEN]);
+	re.DrawFill(x, y - (int)(scr_graphscale->value * 150.0f), 256, 1, TextPalette[P_YELLOW]);
+	re.DrawFill(x, y - (int)(scr_graphscale->value * 200.0f), 256, 1, TextPalette[P_RED]);
 }
 
 #pragma endregion
@@ -954,8 +955,8 @@ static void SCR_DrawCinematicBorders(void) // H2
 		const int top_height = (viddef.height * 48) / DEF_HEIGHT;
 		const int bottom_height = (viddef.height * 64) / DEF_HEIGHT;
 
-		re.DrawFill(0, 0, viddef.width, top_height, 0, 0, 0);
-		re.DrawFill(0, viddef.height - bottom_height, viddef.width, bottom_height, 0, 0, 0);
+		re.DrawFill(0, 0, viddef.width, top_height, TextPalette[P_BLACK]);
+		re.DrawFill(0, viddef.height - bottom_height, viddef.width, bottom_height, TextPalette[P_BLACK]);
 	}
 }
 

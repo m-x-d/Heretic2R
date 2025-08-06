@@ -204,7 +204,7 @@ typedef struct
 	void (*DrawStretchPic)(int x, int y, int w, int h, const char* name, float alpha, qboolean scale);
 	void (*DrawChar)(int x, int y, int scale, int c, paletteRGBA_t color); //mxd. +scale arg.
 	void (*DrawTileClear)(int x, int y, int w, int h, const char* name);
-	void (*DrawFill)(int x, int y, int w, int h, byte r, byte g, byte b);
+	void (*DrawFill)(int x, int y, int w, int h, paletteRGBA_t color); //mxd. r, g, b -> color.
 	void (*DrawFadeScreen)(paletteRGBA_t color);
 	void (*DrawBigFont)(int x, int y, const char* text, float alpha);
 	int (*BF_Strlen)(const char* text);
