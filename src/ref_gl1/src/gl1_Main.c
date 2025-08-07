@@ -443,19 +443,19 @@ static void R_SetupFrame(void)
 	}
 }
 
-static void R_SetPerspective(GLdouble fovy) // YQ2
+static void R_SetPerspective(const GLdouble fovy) // YQ2
 {
 	// gluPerspective style parameters.
 	static const GLdouble zNear = 1.0; // Q2: 4.0
-	const GLdouble zFar = r_farclipdist->value;
+	const GLdouble zFar = (GLdouble)r_farclipdist->value;
 	const GLdouble aspectratio = (GLdouble)r_newrefdef.width / r_newrefdef.height;
 
 	// Traditional gluPerspective calculations - https://youtu.be/YqSNGcF5nvM?t=644
-	GLdouble ymax = zNear * tan(fovy * M_PI / 360.0);
-	GLdouble xmax = ymax * aspectratio;
+	const GLdouble ymax = zNear * tan(fovy * M_PI / 360.0);
+	const GLdouble xmax = ymax * aspectratio;
 
-	GLdouble ymin = -ymax;
-	GLdouble xmin = -xmax;
+	const GLdouble ymin = -ymax;
+	const GLdouble xmin = -xmax;
 
 	glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
 }
@@ -474,7 +474,7 @@ static void R_SetupGL(void)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	R_SetPerspective(r_newrefdef.fov_y);
+	R_SetPerspective((GLdouble)r_newrefdef.fov_y);
 
 	glCullFace(GL_FRONT);
 	glMatrixMode(GL_MODELVIEW);
