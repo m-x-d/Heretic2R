@@ -297,18 +297,25 @@ void Draw_Name(const vec3_t origin, const char* name, const paletteRGBA_t color)
 		return;
 
 	const int len = (int)strlen(name);
-	const float center_x = (float)r_newrefdef.width * 0.5f;
+
+	const float aspect_scaler = ((float)r_newrefdef.height * 1.25f) / (float)r_newrefdef.width;
+	const float center_x = (float)r_newrefdef.width *  0.5f;
 	const float center_y = (float)r_newrefdef.height * 0.5f;
-	const float scaler = center_x / screen_pos[2] * 1.28f;
+	const float scaler = center_x / screen_pos[2] * 1.28f * aspect_scaler; //mxd. Adjust for widescreen... //TODO: what's 1.28 scaler?
 
 	//mxd. Hires scaling...
 	const int ui_char_scale = (int)(roundf((float)viddef.height / DEF_HEIGHT));
 	const int ui_char_size = CONCHAR_SIZE * ui_char_scale;
 
-	int x = (int)(center_x + screen_pos[0] * scaler) - len * (ui_char_size / 2);
-	const int y = (int)(center_y - screen_pos[1] * scaler);
+	const int text_w = ui_char_size * len;
+	const int text_h = ui_char_size;
 
-	if (x < 0 || y < 0 || x + len * ui_char_size > r_newrefdef.width || y + ui_char_size > r_newrefdef.height)
+	// Setup top-left corner coords...
+	int x =       (int)(center_x + screen_pos[0] * scaler) - text_w / 2;
+	const int y = (int)(center_y - screen_pos[1] * scaler) - text_h / 2;
+
+	// Skip when completely off-screen...
+	if (x + text_w < 0 || y + text_h < 0 || x > r_newrefdef.width || y > r_newrefdef.height)
 		return;
 
 	for (int i = 0; i < len; i++, x += ui_char_size)
