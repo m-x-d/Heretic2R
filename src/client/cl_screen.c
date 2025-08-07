@@ -912,21 +912,20 @@ static void SCR_DrawLayout(void)
 
 static void SCR_DrawNames(void) // H2
 {
-	vec3_t origin;
-	paletteRGBA_t color;
-
 	if (!(int)shownames->value)
 		return;
 
 	for (int i = 0; i < Q_atoi(cl.configstrings[CS_MAXCLIENTS]); i++)
 	{
-		// Undefined skin (???)
+		// Undefined skin (???).
 		if (cl.configstrings[CS_PLAYERSKINS + i][0] == 0)
 			continue;
 
-		// Not in player's view
+		// Not in player's view.
 		if ((cl.PIV & cl.frame.playerstate.PIV & (1 << i)) == 0)
 			continue;
+
+		paletteRGBA_t color;
 
 		if (cl.frame.playerstate.dmflags & DF_SKINTEAMS)
 		{
@@ -947,8 +946,9 @@ static void SCR_DrawNames(void) // H2
 			color = TextPalette[COLOUR(colour_names)];
 		}
 
+		vec3_t origin;
 		VectorCopy(cl.clientinfo[i].origin, origin);
-		origin[2] += 64.0f - shownames->value * 32.0f;
+		origin[2] += 32.0f; //mxd. '+= 64.0f - shownames->value * 32.0f' in original logic.
 
 		re.Draw_Name(origin, cl.clientinfo[i].name, color);
 	}
