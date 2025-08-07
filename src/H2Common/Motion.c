@@ -4,7 +4,6 @@
 // Copyright 1998 Raven Software
 //
 
-#include <assert.h>
 #include <math.h>
 #include <stdlib.h>
 #include "Motion.h"
