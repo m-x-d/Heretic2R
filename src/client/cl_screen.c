@@ -549,30 +549,35 @@ static void DrawPic(const int x, const int y, char* str, const qboolean use_alph
 static void DrawTeamBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' args are ignored.
 {
 	int ox = Q_atoi(COM_Parse(&str));
-	ox += viddef.width / 2 - 128 * ui_char_scale;
+	ox += (ui_screen_width / 2 - 128 * ui_char_scale) + ui_screen_offset_x;
 
 	int oy = Q_atoi(COM_Parse(&str));
 	oy += viddef.height / 2 - 120 * ui_char_scale;
 
+	//TODO: needs the same 'oy' adjustment as in DrawClientBlock(). How do we get team index? Is this even used?
 	const int score = Q_atoi(COM_Parse(&str));
 	const char* team = COM_Parse(&str);
 
-	DrawString(ox, oy, va("Team %s ", team), TextPalette[P_TEAM], -1);
+	DrawString(ox, oy, va("Team %s", team), TextPalette[P_TEAM], -1);
 	DrawString(ox, oy + ui_char_size, va("Score %i", score), TextPalette[P_WHITE], -1);
 }
 
 static void DrawClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' args are ignored.
 {
 	int ox = Q_atoi(COM_Parse(&str));
-	ox += viddef.width / 2 - 160 * ui_char_scale;
+	ox += (ui_screen_width / 2 - 160 * ui_char_scale) + ui_screen_offset_x;
 
 	int oy = Q_atoi(COM_Parse(&str));
 	oy += viddef.height / 2 - 120 * ui_char_scale;
 
+	const int client = Q_atoi(COM_Parse(&str));
+
+	//mxd. Gross hacks: adjust 'oy' to match UI scaling by adding missing part of char height for 4 lines...
+	// Doing this correctly (by adjusting xy coords in DeathmatchScoreboardMessage()) will break vanilla compatibility...
+	oy += client * (ui_char_size - CONCHAR_SIZE) * 4;
+
 	SCR_AddDirtyPoint(ox, oy);
 	SCR_AddDirtyPoint(ox + 159 * ui_char_scale, oy + 31 * ui_char_scale);
-
-	const int client = Q_atoi(COM_Parse(&str));
 
 	if (client < 0 || client >= MAX_CLIENTS)
 		Com_Error(ERR_DROP, "client >= MAX_CLIENTS");
@@ -780,8 +785,9 @@ static void SCR_ExecuteLayoutString(char* s)
 			if ((cl.frame.playerstate.stats[STAT_LAYOUTS] & 4) != 0)
 				DrawPic(x, y, s, true);
 		}
-		else if (strcmp(token, "tm") == 0) // H2
+		else if (strcmp(token, "tm") == 0) // H2 //TODO: never used?
 		{
+			// Draw a team deathmatch team block.
 			DrawTeamBlock(x, y, s);
 		}
 		else if (strcmp(token, "client") == 0)
