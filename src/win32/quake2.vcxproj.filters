@@ -273,6 +273,9 @@
     <ClCompile Include="..\client\input_sdl3.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="vid_Screenshot.c">
+      <Filter>win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -529,6 +532,9 @@
     </ClInclude>
     <ClInclude Include="..\client\glimp_sdl3.h">
       <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="vid_Screenshot.h">
+      <Filter>win32</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

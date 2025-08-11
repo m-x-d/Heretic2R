@@ -5,11 +5,11 @@
 //
 
 #include "vid_dll.h"
+#include "vid_Screenshot.h" //mxd
 #include "client.h"
 #include "cl_skeletons.h"
 #include "clfx_dll.h"
 #include "glimp_sdl3.h" // YQ2
-#include "menus/menu_video.h"
 
 // Structure containing functions exported from refresh DLL.
 refexport_t re;
@@ -205,6 +205,7 @@ static qboolean VID_LoadRefresh(const char* name)
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
 	ri.FS_LoadFile = FS_LoadFile;
 	ri.FS_FreeFile = FS_FreeFile;
+	ri.Vid_WriteScreenshot = VID_WriteScreenshot; // YQ2
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.GLimp_InitGraphics = GLimp_InitGraphics; // YQ2
 	ri.Is_Screen_Flashing = Is_Screen_Flashing;

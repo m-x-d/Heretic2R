@@ -9,10 +9,26 @@
 #include "gl1_Light.h"
 #include "gl1_Local.h"
 #include "Vector.h"
+#include "vid.h"
 
-void R_ScreenShot_f(void) // Q2: GL_ScreenShot_f()
+void R_ScreenShot_f(void) // Based on YQ2 logic; Q2: GL_ScreenShot_f()
 {
-	NOT_IMPLEMENTED
+#define SCREENSHOT_COMP	3
+
+	const int buf_size = viddef.width * viddef.height * SCREENSHOT_COMP;
+	byte* buffer = malloc(buf_size);
+
+	if (buffer == NULL)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_ScreenShot_f: couldn't malloc %i bytes!\n", buf_size);
+		return;
+	}
+
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	glReadPixels(0, 0, viddef.width, viddef.height, GL_RGB, GL_UNSIGNED_BYTE, buffer);
+
+	ri.Vid_WriteScreenshot(viddef.width, viddef.height, SCREENSHOT_COMP, buffer);
+	free(buffer);
 }
 
 void R_Strings_f(void) // Q2: GL_Strings_f()

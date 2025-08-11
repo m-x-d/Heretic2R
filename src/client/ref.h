@@ -107,20 +107,20 @@ typedef struct entity_s
 	};
 } entity_t;
 
-typedef struct
+typedef struct dlight_s
 {
 	vec3_t origin;
 	paletteRGBA_t color;
 	float intensity;
 } dlight_t;
 
-typedef struct
+typedef struct lightstyle_s
 {
 	float rgb[3];	// 0.0 - 2.0.
 	float white;	// Highest of rgb.
 } lightstyle_t;
 
-typedef struct
+typedef struct particle_s
 {
 	vec3_t origin;
 	paletteRGBA_t color;
@@ -128,7 +128,7 @@ typedef struct
 	int type;
 } particle_t;
 
-typedef struct
+typedef struct refdef_s
 {
 	int x;	// In virtual screen coordinates.
 	int y;
@@ -174,7 +174,7 @@ typedef enum DrawStretchPicScaleMode_e
 } DrawStretchPicScaleMode_t;
 
 // Functions exported by the refresh module.
-typedef struct
+typedef struct refexport_s
 {
 	// If api_version is different, the dll cannot be used.
 	int api_version;
@@ -255,7 +255,7 @@ typedef struct
 } refexport_t;
 
 // Functions imported by the refresh module.
-typedef struct
+typedef struct refimport_s
 {
 	struct CL_SkeletalJoint_s* skeletalJoints;
 	struct ArrayedListNode_s* jointNodes;
@@ -281,6 +281,10 @@ typedef struct
 	// NULL can be passed for buf to just determine existence.
 	int (*FS_LoadFile)(const char* name, void** buf);
 	void (*FS_FreeFile)(void* buf);
+
+	// Called with image data of width * height pixel which 'comp' bytes per pixel (must be 3 or 4 for RGB or RGBA).
+	// Expects the pixels data to be row-wise, starting at top left.
+	void (*Vid_WriteScreenshot)(int width, int height, int comp, const void* data); // YQ2
 
 	qboolean (*Vid_GetModeInfo)(int* width, int* height, int mode);
 	qboolean (*GLimp_InitGraphics)(int width, int height); // YQ2

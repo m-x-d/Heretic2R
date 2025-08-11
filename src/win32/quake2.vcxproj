@@ -93,6 +93,7 @@
     <ClCompile Include="snd_dll.c" />
     <ClCompile Include="sys_win.c" />
     <ClCompile Include="vid_dll.c" />
+    <ClCompile Include="vid_Screenshot.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\libsmacker\smacker.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Quake2Main.h" />
     <ClInclude Include="snd_dll.h" />
     <ClInclude Include="vid_dll.h" />
+    <ClInclude Include="vid_Screenshot.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />
