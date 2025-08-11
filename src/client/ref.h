@@ -200,7 +200,7 @@ typedef struct
 	int (*RenderFrame)(const refdef_t* fd);
 
 	void (*DrawGetPicSize)(int* w, int* h, const char* name);
-	void (*DrawPic)(int x, int y, const char* name, float alpha);
+	void (*DrawPic)(int x, int y, int scale, const char* name, float alpha); //mxd. +scale arg.
 	void (*DrawStretchPic)(int x, int y, int w, int h, const char* name, float alpha, qboolean scale);
 	void (*DrawChar)(int x, int y, int scale, int c, paletteRGBA_t color); //mxd. +scale arg.
 	void (*DrawTileClear)(int x, int y, int w, int h, const char* name);

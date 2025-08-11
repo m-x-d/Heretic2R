@@ -32,7 +32,7 @@ extern void Draw_InitLocal(void);
 extern image_t* Draw_FindPic(const char* name);
 extern void Draw_GetPicSize(int* w, int* h, const char* name);
 
-extern void Draw_Pic(int x, int y, const char* name, float alpha);
+extern void Draw_Pic(int x, int y, int scale, const char* name, float alpha); //mxd. +scale arg.
 extern void Draw_StretchPic(int x, int y, int w, int h, const char* name, float alpha, qboolean scale);
 extern void Draw_TileClear(int x, int y, int w, int h, const char* pic);
 extern void Draw_Fill(int x, int y, int w, int h, paletteRGBA_t color); //mxd. r, g, b -> color.

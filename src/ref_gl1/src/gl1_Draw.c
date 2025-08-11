@@ -195,10 +195,10 @@ void Draw_StretchPic(int x, int y, int w, int h, const char* name, const float a
 	Draw_Render(x, y, w, h, image, alpha);
 }
 
-void Draw_Pic(const int x, const int y, const char* name, const float alpha)
+void Draw_Pic(const int x, const int y, const int scale, const char* name, const float alpha) //mxd. +scale arg.
 {
 	const image_t* pic = Draw_FindPic(name);
-	Draw_Render(x, y, pic->width, pic->height, pic, alpha);
+	Draw_Render(x, y, pic->width * scale, pic->height * scale, pic, alpha);
 }
 
 //mxd. Used in SCR_TileClear frame border drawing logic. //TODO: remove?
