@@ -1028,7 +1028,7 @@ static void PlayerSkin_Draw(const menucommon_t* item) // H2
 	char skin_path[MAX_QPATH];
 
 	Com_sprintf(skin_path, sizeof(skin_path), "/%s/%s_i.m8", playerdir->string, skin_temp->string);
-	re.DrawStretchPic(M_GetMenuLabelX(64), item->y + item->parent->y - 160, 64, 128, skin_path, cls.m_menualpha, true);
+	re.DrawStretchPic(M_GetMenuLabelX(64), item->y + item->parent->y - 160, 64, 128, skin_path, cls.m_menualpha, DSP_SCALE_4x3);
 }
 
 static void SpinControl_Draw(const menulist_t* list, const qboolean selected)

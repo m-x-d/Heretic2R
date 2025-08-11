@@ -177,19 +177,39 @@ void Draw_Render(const int x, const int y, const int w, const int h, const image
 	R_TexEnv(GL_REPLACE);
 }
 
-void Draw_StretchPic(int x, int y, int w, int h, const char* name, const float alpha, const qboolean scale)
+void Draw_StretchPic(int x, int y, int w, int h, const char* name, const float alpha, const DrawStretchPicScaleMode_t mode)
 {
 	const image_t* image = Draw_FindPicFilter(name);
 
-	if (scale)
+	switch (mode)
 	{
-		const int xr = x + w;
-		const int yb = y + h;
+		case DSP_SCALE_SCREEN:
+		{
+			const int xr = x + w;
+			const int yb = y + h;
 
-		x = viddef.width * x / DEF_WIDTH;
-		y = viddef.height * y / DEF_HEIGHT;
-		w = viddef.width * xr / DEF_WIDTH - x;
-		h = viddef.height * yb / DEF_HEIGHT - y;
+			x = viddef.width * x / DEF_WIDTH;
+			y = viddef.height * y / DEF_HEIGHT;
+			w = viddef.width * xr / DEF_WIDTH - x;
+			h = viddef.height * yb / DEF_HEIGHT - y;
+		} break;
+
+		case DSP_SCALE_4x3:
+		{
+			const int xr = x + w;
+			const int yb = y + h;
+
+			const int screen_width = viddef.height * 4 / 3;
+			const int screen_offset_x = (viddef.width - screen_width) / 2;
+
+			x = (screen_width * x / DEF_WIDTH) + screen_offset_x;
+			y = viddef.height * y / DEF_HEIGHT;
+			w = (screen_width * xr / DEF_WIDTH - x) + screen_offset_x;
+			h = viddef.height * yb / DEF_HEIGHT - y;
+		} break;
+
+		default: // DSP_NONE.
+			break;
 	}
 
 	Draw_Render(x, y, w, h, image, alpha);

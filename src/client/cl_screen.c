@@ -389,7 +389,7 @@ static void SCR_DrawPause(void)
 		const int w = re.BF_Strlen(pause_pic);
 		const int x = (DEF_WIDTH - w) / 2;
 
-		re.DrawStretchPic(x - 16, 48, w + 32, 48, "misc/textback.m32", 1.0f, true);
+		re.DrawStretchPic(x - 16, 48, w + 32, 48, "misc/textback.m32", 1.0f, DSP_SCALE_4x3);
 		re.DrawBigFont(x, 80, pause_pic, 1.0f);
 	}
 	else
@@ -419,12 +419,12 @@ static void SCR_DrawLoading(void)
 	const int x = (DEF_WIDTH - w) >> 1;
 
 	// Draw label.
-	re.DrawStretchPic(x - 16, 48, w + 32, 48, "misc/textback.m32", 1.0f, true);
+	re.DrawStretchPic(x - 16, 48, w + 32, 48, "misc/textback.m32", 1.0f, DSP_SCALE_4x3);
 	re.DrawBigFont(x, 80, label, 1.0f);
 
 	// Draw progressbar.
-	re.DrawStretchPic(49, 432, 70, 16, "icons/breath2.m8", 1.0f, true);
-	re.DrawStretchPic(52, 432, scr_progressbar_width, 16, "icons/breath.m8", 1.0f, true);
+	re.DrawStretchPic(49, 432, 70, 16, "icons/breath2.m8", 1.0f, DSP_SCALE_4x3);
+	re.DrawStretchPic(52, 432, scr_progressbar_width, 16, "icons/breath.m8", 1.0f, DSP_SCALE_4x3);
 }
 
 // Q2 counterpart
@@ -716,18 +716,18 @@ static void DrawBar(const int x, const int y, int width, const int height, const
 	if (width < height)
 	{
 		if (*bg_name != 0)
-			re.DrawStretchPic(x, y - 3 * ui_scale, width * ui_scale, (height + 6) * ui_scale, bg_name, 1.0f, false);
+			re.DrawStretchPic(x, y - 3 * ui_scale, width * ui_scale, (height + 6) * ui_scale, bg_name, 1.0f, DSP_NONE);
 
 		const int offset = Q_ftol((float)height - (float)(height * scaler) * 0.01f);
-		re.DrawStretchPic(x, y + offset * ui_scale, width * ui_scale, (height - offset) * ui_scale, bar_name, 1.0f, false);
+		re.DrawStretchPic(x, y + offset * ui_scale, width * ui_scale, (height - offset) * ui_scale, bar_name, 1.0f, DSP_NONE);
 	}
 	else
 	{
 		if (*bg_name != 0)
-			re.DrawStretchPic(x - 3 * ui_scale, y, (width + 6) * ui_scale, height * ui_scale, bg_name, 1.0f, false);
+			re.DrawStretchPic(x - 3 * ui_scale, y, (width + 6) * ui_scale, height * ui_scale, bg_name, 1.0f, DSP_NONE);
 
 		const int offset = Q_ftol((float)width - (float)(width * scaler) * 0.01f);
-		re.DrawStretchPic(x, y, (width - offset) * ui_scale, height * ui_scale, bar_name, 1.0f, false);
+		re.DrawStretchPic(x, y, (width - offset) * ui_scale, height * ui_scale, bar_name, 1.0f, DSP_NONE);
 	}
 }
 

@@ -470,7 +470,7 @@ static qboolean ShouldDrawConsole(void) // H2
 // Draws the console with the solid background.
 void Con_DrawConsole(float frac)
 {
-	//TODO: why it doesn't work as a #define?
+	//TODO: why doesn't it work as a #define?
 	static char* backscroll_arrows = " ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^  ";
 	
 	if (!ShouldDrawConsole()) // H2
@@ -479,34 +479,31 @@ void Con_DrawConsole(float frac)
 		return;
 	}
 
-	int lines = min((int)(frac * (float)DEF_HEIGHT), DEF_HEIGHT);
+	const int lines_y = min((int)(frac * (float)viddef.height), viddef.height);
 
-	if (lines < 1)
+	if (lines_y < 1)
 		return;
 
-	if (cls.state == ca_active)
-		frac = con_alpha->value;
-	else
-		frac = 1.0f;
+	frac = ((cls.state == ca_active) ? con_alpha->value : 1.0f);
 
 	// Draw the background.
-	re.DrawStretchPic(0, lines - DEF_HEIGHT, DEF_WIDTH, DEF_HEIGHT, "misc/conback.m8", frac, true);
+	const int conback_height = viddef.width / 4 * 3; //mxd. Keep aspect ratio in widescreen...
+	re.DrawStretchPic(0, lines_y - conback_height, viddef.width, conback_height, "misc/conback.m8", frac, DSP_NONE);
 
-	lines = (viddef.height * lines) / DEF_HEIGHT;
 	SCR_AddDirtyPoint(0, 0);
-	SCR_AddDirtyPoint(viddef.width - 1, lines - 1);
+	SCR_AddDirtyPoint(viddef.width - 1, lines_y - 1);
 
 	// Draw version.
 	const int ver_x = viddef.width - ((int)strlen(GAME_FULLNAME) * ui_char_size + ui_char_size);
-	const int ver_y = lines - ui_scale * 12;
+	const int ver_y = lines_y - ui_scale * 12;
 	DrawString(ver_x, ver_y, GAME_FULLNAME, TextPalette[P_GREEN], -1); //mxd. P_VERSION in original logic.
 
 	// Draw the text.
-	con.vislines = lines;
+	con.vislines = lines_y;
 
 	// H2 uses #if 0-ed version of Q2 logic.
-	int rows = (lines - 8) >> 3; // Rows of text to draw.
-	int y = lines - ui_char_size * 3;
+	int rows = (lines_y - 8) >> 3; // Rows of text to draw.
+	int y = lines_y - ui_char_size * 3;
 
 	// Draw from the bottom up.
 	if (con.display != con.current)

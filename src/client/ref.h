@@ -165,6 +165,14 @@ typedef struct
 	particle_t* aparticles;
 } refdef_t;
 
+//mxd. Scaling modes for DrawStretchPic().
+typedef enum DrawStretchPicScaleMode_e
+{
+	DSP_NONE,
+	DSP_SCALE_SCREEN,	// Scale to viddef.width x viddef.height rectangle.
+	DSP_SCALE_4x3,		// Scale to centered 4x3 rectangle.
+} DrawStretchPicScaleMode_t;
+
 // Functions exported by the refresh module.
 typedef struct
 {
@@ -201,7 +209,7 @@ typedef struct
 
 	void (*DrawGetPicSize)(int* w, int* h, const char* name);
 	void (*DrawPic)(int x, int y, int scale, const char* name, float alpha); //mxd. +scale arg.
-	void (*DrawStretchPic)(int x, int y, int w, int h, const char* name, float alpha, qboolean scale);
+	void (*DrawStretchPic)(int x, int y, int w, int h, const char* name, float alpha, DrawStretchPicScaleMode_t mode); //mxd. qboolean scale -> DrawStretchPicScaleMode_t mode.
 	void (*DrawChar)(int x, int y, int scale, int c, paletteRGBA_t color); //mxd. +scale arg.
 	void (*DrawTileClear)(int x, int y, int w, int h, const char* name);
 	void (*DrawFill)(int x, int y, int w, int h, paletteRGBA_t color); //mxd. r, g, b -> color.

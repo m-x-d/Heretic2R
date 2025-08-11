@@ -56,11 +56,11 @@ void M_WorldMap_MenuDraw(void) // H2
 			{
 				int* dot_coords = dot_info->dot_coords;
 				for (int c = 0; c < dot_info->count; c++, dot_coords += 2)
-					re.DrawStretchPic(dot_coords[0] - 4, dot_coords[1] - 4, 8, 8, "misc/dot.m32", cls.m_menualpha, true);
+					re.DrawStretchPic(dot_coords[0] - 4, dot_coords[1] - 4, 8, 8, "misc/dot.m32", cls.m_menualpha, DSP_SCALE_4x3);
 			}
 
 			if (dot_info->flags & LMI_DRAW)
-				re.DrawStretchPic(dot_info->x - 8, dot_info->y - 8, 16, 16, "misc/bigdot.m32", cls.m_menualpha, true);
+				re.DrawStretchPic(dot_info->x - 8, dot_info->y - 8, 16, 16, "misc/bigdot.m32", cls.m_menualpha, DSP_SCALE_4x3);
 		}
 	}
 
@@ -70,11 +70,11 @@ void M_WorldMap_MenuDraw(void) // H2
 		const int progress = cl.frame.playerstate.map_percentage * info->count / 100;
 		int* dot_coords = info->dot_coords;
 		for (int i = 0; i < progress; i++, dot_coords += 2)
-			re.DrawStretchPic(dot_coords[0] - 4, dot_coords[1] - 4, 8, 8, "misc/dot.m32", cls.m_menualpha, true);
+			re.DrawStretchPic(dot_coords[0] - 4, dot_coords[1] - 4, 8, 8, "misc/dot.m32", cls.m_menualpha, DSP_SCALE_4x3);
 	}
 
 	if (info->flags & LMI_DRAW)
-		re.DrawStretchPic(info->x - 8, info->y - 8, 16, 16, "misc/bigdot.m32", cls.m_menualpha, true);
+		re.DrawStretchPic(info->x - 8, info->y - 8, 16, 16, "misc/bigdot.m32", cls.m_menualpha, DSP_SCALE_4x3);
 }
 
 void M_Menu_World_Map_f(void) // H2
