@@ -207,9 +207,8 @@ static void Con_Chars_f(void) // H2
 void Con_CheckResize(void)
 {
 	static char tbuf[CON_TEXTSIZE]; //mxd. Made static.
-	paletteRGBA_t cbuf[MAX_LINES];
 
-	const int width = (viddef.width >> 3) - 2;
+	const int width = (viddef.width / ui_char_size) - 2; //mxd. Adjust for UI scale.
 
 	if (width == con.linewidth)
 		return;
@@ -234,8 +233,10 @@ void Con_CheckResize(void)
 
 		memcpy(tbuf, con.text, sizeof(tbuf));
 		memset(con.text, ' ', sizeof(con.text));
+
+		paletteRGBA_t cbuf[MAX_LINES];
 		memcpy(cbuf, con.color, sizeof(cbuf)); // H2
-		memset(con.color, 0xFF, sizeof(con.color)); // H2
+		memset(con.color, 0xff, sizeof(con.color)); // H2
 
 		for (int i = 0; i < numlines; i++)
 		{
