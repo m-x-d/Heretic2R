@@ -14,9 +14,9 @@ float scr_con_current; // Approaches scr_conlines at scr_conspeed.
 
 static qboolean scr_initialized; // Ready to draw
 
-//mxd. conchars scaling for menus/console.
+//mxd. Menu/UI/console scaling.
 int ui_char_size = CONCHAR_SIZE;
-int ui_char_scale = 1;
+int ui_scale = 1;
 int ui_line_height = (int)((float)CONCHAR_SIZE * 1.25f); //mxd. Original logic uses 10.
 int ui_screen_width = DEF_WIDTH; // Screen width sized to 4x3 aspect ratio.
 int ui_screen_offset_x = 0; // Horizontal offset from viddef.width to centered ui_screen_width.
@@ -317,8 +317,8 @@ void SCR_UpdateProgressbar(int unused, const int section) // H2
 //mxd. Expected to be called when screen size changes.
 void SCR_UpdateUIScale(void)
 {
-	ui_char_scale = min((int)(roundf((float)viddef.width / DEF_WIDTH)), (int)(roundf((float)viddef.height / DEF_HEIGHT)));
-	ui_char_size = CONCHAR_SIZE * ui_char_scale;
+	ui_scale = min((int)(roundf((float)viddef.width / DEF_WIDTH)), (int)(roundf((float)viddef.height / DEF_HEIGHT)));
+	ui_char_size = CONCHAR_SIZE * ui_scale;
 	ui_line_height = (int)((float)ui_char_size * 1.25f);
 
 	if ((float)viddef.width * 0.75f > (float)viddef.height) // Setup for widescreen aspect ratio.
@@ -371,8 +371,8 @@ static void SCR_DrawNet(void)
 {
 	if (cls.netchan.outgoing_sequence - cls.netchan.incoming_acknowledged >= CMD_BACKUP - 1)
 	{
-		const int offset = ui_char_scale * 16;
-		re.DrawPic(scr_vrect.x + offset, scr_vrect.y + offset, ui_char_scale, "misc/net.m8", 1.0f); // Q2: re.DrawPic(scr_vrect.x + 64, scr_vrect.y, "net");
+		const int offset = ui_scale * 16;
+		re.DrawPic(scr_vrect.x + offset, scr_vrect.y + offset, ui_scale, "misc/net.m8", 1.0f); // Q2: re.DrawPic(scr_vrect.x + 64, scr_vrect.y, "net");
 	}
 }
 
@@ -544,18 +544,18 @@ static void DrawPic(const int x, const int y, char* str, const qboolean use_alph
 	if (*img_name != 0)
 	{
 		SCR_AddDirtyPoint(x, y);
-		SCR_AddDirtyPoint(x + 31 * ui_char_scale, y + 31 * ui_char_scale);
-		re.DrawPic(x, y, ui_char_scale, img_name, alpha);
+		SCR_AddDirtyPoint(x + 31 * ui_scale, y + 31 * ui_scale);
+		re.DrawPic(x, y, ui_scale, img_name, alpha);
 	}
 }
 
 static void DrawTeamBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' args are ignored.
 {
 	int ox = Q_atoi(COM_Parse(&str));
-	ox += (ui_screen_width / 2 - 128 * ui_char_scale) + ui_screen_offset_x;
+	ox += (ui_screen_width / 2 - 128 * ui_scale) + ui_screen_offset_x;
 
 	int oy = Q_atoi(COM_Parse(&str));
-	oy += viddef.height / 2 - 120 * ui_char_scale;
+	oy += viddef.height / 2 - 120 * ui_scale;
 
 	//TODO: needs the same 'oy' adjustment as in DrawClientBlock(). How do we get team index? Is this even used?
 	const int score = Q_atoi(COM_Parse(&str));
@@ -568,10 +568,10 @@ static void DrawTeamBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' arg
 static void DrawClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' args are ignored.
 {
 	int ox = Q_atoi(COM_Parse(&str));
-	ox += (ui_screen_width / 2 - 160 * ui_char_scale) + ui_screen_offset_x;
+	ox += (ui_screen_width / 2 - 160 * ui_scale) + ui_screen_offset_x;
 
 	int oy = Q_atoi(COM_Parse(&str));
-	oy += viddef.height / 2 - 120 * ui_char_scale;
+	oy += viddef.height / 2 - 120 * ui_scale;
 
 	const int client = Q_atoi(COM_Parse(&str));
 
@@ -580,7 +580,7 @@ static void DrawClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' a
 	oy += client * (ui_char_size - CONCHAR_SIZE) * 4;
 
 	SCR_AddDirtyPoint(ox, oy);
-	SCR_AddDirtyPoint(ox + 159 * ui_char_scale, oy + 31 * ui_char_scale);
+	SCR_AddDirtyPoint(ox + 159 * ui_scale, oy + 31 * ui_scale);
 
 	if (client < 0 || client >= MAX_CLIENTS)
 		Com_Error(ERR_DROP, "client >= MAX_CLIENTS");
@@ -602,13 +602,13 @@ static void DrawAClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' 
 	char buffer[80];
 
 	int ox = Q_atoi(COM_Parse(&str));
-	ox += viddef.width / 2 - 160 * ui_char_scale;
+	ox += viddef.width / 2 - 160 * ui_scale;
 
 	int oy = Q_atoi(COM_Parse(&str));
-	oy += viddef.height / 2 - 120 * ui_char_scale;
+	oy += viddef.height / 2 - 120 * ui_scale;
 
 	SCR_AddDirtyPoint(ox, oy);
-	SCR_AddDirtyPoint(ox + 159 * ui_char_scale, oy + 31 * ui_char_scale);
+	SCR_AddDirtyPoint(ox + 159 * ui_scale, oy + 31 * ui_scale);
 
 	const int pal_index = Q_atoi(COM_Parse(&str));
 	const int client = Q_atoi(COM_Parse(&str));
@@ -679,16 +679,16 @@ static void DrawHudNum(const int x, const int y, int width, const int value, con
 		draw_width += menu_nums[num_index].width;
 	}
 
-	int ox = x - 30 * ui_char_scale + (width * 19 - draw_width) * ui_char_scale;
+	int ox = x - 30 * ui_scale + (width * 19 - draw_width) * ui_scale;
 
-	SCR_AddDirtyPoint(ox, y + 16 * ui_char_scale);
-	SCR_AddDirtyPoint(ox + draw_width * ui_char_scale, y + 24 * ui_char_scale);
+	SCR_AddDirtyPoint(ox, y + 16 * ui_scale);
+	SCR_AddDirtyPoint(ox + draw_width * ui_scale, y + 24 * ui_scale);
 
 	for (int i = 0; i < len; i++)
 	{
 		const int num_index = GetMenuNumsIndex(num[i], is_red);
-		re.DrawPic(ox, y + 16 * ui_char_scale, ui_char_scale, menu_nums[num_index].filename, 1.0f);
-		ox += menu_nums[num_index].width * ui_char_scale;
+		re.DrawPic(ox, y + 16 * ui_scale, ui_scale, menu_nums[num_index].filename, 1.0f);
+		ox += menu_nums[num_index].width * ui_scale;
 	}
 }
 
@@ -698,8 +698,8 @@ static void DrawBar(const int x, const int y, int width, const int height, const
 	const short bg_index = cl.frame.playerstate.stats[stat_index + 1];
 	short scaler = cl.frame.playerstate.stats[stat_index + 2];
 
-	SCR_AddDirtyPoint(x, y - 3 * ui_char_scale);
-	SCR_AddDirtyPoint(x + width * ui_char_scale, y + (height + 3) * ui_char_scale);
+	SCR_AddDirtyPoint(x, y - 3 * ui_scale);
+	SCR_AddDirtyPoint(x + width * ui_scale, y + (height + 3) * ui_scale);
 
 	const char* bar_name = cl.configstrings[CS_IMAGES + bar_index];
 	const char* bg_name = cl.configstrings[CS_IMAGES + bg_index];
@@ -716,18 +716,18 @@ static void DrawBar(const int x, const int y, int width, const int height, const
 	if (width < height)
 	{
 		if (*bg_name != 0)
-			re.DrawStretchPic(x, y - 3 * ui_char_scale, width * ui_char_scale, (height + 6) * ui_char_scale, bg_name, 1.0f, false);
+			re.DrawStretchPic(x, y - 3 * ui_scale, width * ui_scale, (height + 6) * ui_scale, bg_name, 1.0f, false);
 
 		const int offset = Q_ftol((float)height - (float)(height * scaler) * 0.01f);
-		re.DrawStretchPic(x, y + offset * ui_char_scale, width * ui_char_scale, (height - offset) * ui_char_scale, bar_name, 1.0f, false);
+		re.DrawStretchPic(x, y + offset * ui_scale, width * ui_scale, (height - offset) * ui_scale, bar_name, 1.0f, false);
 	}
 	else
 	{
 		if (*bg_name != 0)
-			re.DrawStretchPic(x - 3 * ui_char_scale, y, (width + 6) * ui_char_scale, height * ui_char_scale, bg_name, 1.0f, false);
+			re.DrawStretchPic(x - 3 * ui_scale, y, (width + 6) * ui_scale, height * ui_scale, bg_name, 1.0f, false);
 
 		const int offset = Q_ftol((float)width - (float)(width * scaler) * 0.01f);
-		re.DrawStretchPic(x, y, (width - offset) * ui_char_scale, height * ui_char_scale, bar_name, 1.0f, false);
+		re.DrawStretchPic(x, y, (width - offset) * ui_scale, height * ui_scale, bar_name, 1.0f, false);
 	}
 }
 
@@ -746,36 +746,36 @@ static void SCR_ExecuteLayoutString(char* s)
 
 		if (strcmp(token, "xl") == 0)
 		{
-			x = Q_atoi(COM_Parse(&s)) * ui_char_scale;
+			x = Q_atoi(COM_Parse(&s)) * ui_scale;
 		}
 		else if (strcmp(token, "xr") == 0)
 		{
-			x = viddef.width + Q_atoi(COM_Parse(&s)) * ui_char_scale;
+			x = viddef.width + Q_atoi(COM_Parse(&s)) * ui_scale;
 		}
 		else if (strcmp(token, "xv") == 0)
 		{
-			x = viddef.width / 2 - (160 + Q_atoi(COM_Parse(&s))) * ui_char_scale;
+			x = viddef.width / 2 - (160 + Q_atoi(COM_Parse(&s))) * ui_scale;
 		}
 		else if (strcmp(token, "xc") == 0) // H2
 		{
-			const int offset = cl.frame.playerstate.stats[STAT_PUZZLE_COUNT] * 40 * ui_char_scale;
-			x = (viddef.width - offset) / 2 + Q_atoi(COM_Parse(&s)) * ui_char_scale;
+			const int offset = cl.frame.playerstate.stats[STAT_PUZZLE_COUNT] * 40 * ui_scale;
+			x = (viddef.width - offset) / 2 + Q_atoi(COM_Parse(&s)) * ui_scale;
 		}
 		else if (strcmp(token, "yt") == 0)
 		{
-			y = Q_atoi(COM_Parse(&s)) * ui_char_scale;
+			y = Q_atoi(COM_Parse(&s)) * ui_scale;
 		}
 		else if (strcmp(token, "yb") == 0)
 		{
-			y = viddef.height + Q_atoi(COM_Parse(&s)) * ui_char_scale;
+			y = viddef.height + Q_atoi(COM_Parse(&s)) * ui_scale;
 		}
 		else if (strcmp(token, "yv") == 0)
 		{
-			y = viddef.height / 2 - (120 + Q_atoi(COM_Parse(&s))) * ui_char_scale;
+			y = viddef.height / 2 - (120 + Q_atoi(COM_Parse(&s))) * ui_scale;
 		}
 		else if (strcmp(token, "yp") == 0) // H2
 		{
-			y += Q_atoi(COM_Parse(&s)) * ui_char_scale;
+			y += Q_atoi(COM_Parse(&s)) * ui_scale;
 		}
 		else if (strcmp(token, "pic") == 0)
 		{
@@ -807,9 +807,9 @@ static void SCR_ExecuteLayoutString(char* s)
 		{
 			// Draw a pic from a name.
 			SCR_AddDirtyPoint(x, y);
-			SCR_AddDirtyPoint(x + 32 * ui_char_scale, y + 32 * ui_char_scale);
+			SCR_AddDirtyPoint(x + 32 * ui_scale, y + 32 * ui_scale);
 
-			re.DrawPic(x, y, ui_char_scale, COM_Parse(&s), 1.0f);
+			re.DrawPic(x, y, ui_scale, COM_Parse(&s), 1.0f);
 		}
 		else if (strcmp(token, "num") == 0)
 		{
@@ -873,8 +873,8 @@ static void SCR_ExecuteLayoutString(char* s)
 		}
 		else if (strcmp(token, "hstring") == 0) // H2
 		{
-			x = viddef.width / 2 - (160 + Q_atoi(COM_Parse(&s))) * ui_char_scale;
-			y = viddef.height / 2 - (120 + Q_atoi(COM_Parse(&s))) * ui_char_scale;
+			x = viddef.width / 2 - (160 + Q_atoi(COM_Parse(&s))) * ui_scale;
+			y = viddef.height / 2 - (120 + Q_atoi(COM_Parse(&s))) * ui_scale;
 			const int pal_index = Q_atoi(COM_Parse(&s));
 			const char* str = COM_Parse(&s);
 

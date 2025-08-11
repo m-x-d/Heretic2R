@@ -13,9 +13,9 @@ extern qboolean scr_draw_loading_plaque; //mxd
 
 extern float scr_con_current;
 
-//mxd. conchars scaling for menus/console.
+//mxd. Menu/UI/console scaling.
 extern int ui_char_size;
-extern int ui_char_scale;
+extern int ui_scale;
 extern int ui_line_height;
 extern int ui_screen_width;
 extern int ui_screen_offset_x;

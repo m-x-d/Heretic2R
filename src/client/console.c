@@ -16,7 +16,7 @@ static void DrawString_impl(int x, const int y, const char* s, const paletteRGBA
 {
 	while (*s != 0 && maxlen != 0) //NOTE: 'maxlen' can be -1!
 	{
-		re.DrawChar(x, y, ui_char_scale, *s, color);
+		re.DrawChar(x, y, ui_scale, *s, color);
 		s++;
 		x += ui_char_size;
 		maxlen--;
@@ -29,7 +29,7 @@ void DrawString(const int x, const int y, const char* s, const paletteRGBA_t col
 
 	// Draw text shadow.
 	shade_color.a = color.a;
-	DrawString_impl(x + ui_char_scale, y + ui_char_scale, s, shade_color, maxlen);
+	DrawString_impl(x + ui_scale, y + ui_scale, s, shade_color, maxlen);
 
 	// Draw text.
 	DrawString_impl(x, y, s, color, maxlen);
@@ -416,8 +416,8 @@ void Con_DrawNotify(void)
 		char* s = chat_buffer;
 		const cvar_t* cv_colour = (chat_team ? colour_teamchat : colour_chat);
 		const char* prompt = (chat_team ? "say_team:" : "say:");
-		const int max_line_width = viddef.width / ui_char_size - ui_char_scale * (chat_team ? 12 : 6);
-		const int x = ui_char_scale * (chat_team ? 88 : 40);
+		const int max_line_width = viddef.width / ui_char_size - ui_scale * (chat_team ? 12 : 6);
+		const int x = ui_scale * (chat_team ? 88 : 40);
 
 		// Draw prompt.
 		const paletteRGBA_t colour = TextPalette[COLOUR(cv_colour)];
@@ -498,7 +498,7 @@ void Con_DrawConsole(float frac)
 
 	// Draw version.
 	const int ver_x = viddef.width - ((int)strlen(GAME_FULLNAME) * ui_char_size + ui_char_size);
-	const int ver_y = lines - ui_char_scale * 12;
+	const int ver_y = lines - ui_scale * 12;
 	DrawString(ver_x, ver_y, GAME_FULLNAME, TextPalette[P_GREEN], -1); //mxd. P_VERSION in original logic.
 
 	// Draw the text.
