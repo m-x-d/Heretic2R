@@ -581,7 +581,7 @@ static void CL_Connect_f(void)
 	}
 
 	if (Com_ServerState())
-		SV_Shutdown(va("Server quit\n", msg), false); // If running a local server, kill it and reissue.
+		SV_Shutdown("Server quit\n", false); // If running a local server, kill it and reissue.
 
 	const char* server = Cmd_Argv(1);
 	NET_Config(true); // Allow remote.
