@@ -1035,6 +1035,17 @@ static void SCR_UpdateFogDensity(void)
 	old_msec = msec;
 }
 
+static void SCR_DrawFramecounter(void) //mxd
+{
+	static char text_buf[32];
+
+	if ((int)cl_frametime->value && !(int)cl_paused->value)
+	{
+		sprintf_s(text_buf, sizeof(text_buf), "FPS: %3.1f", (double)(1.0f / cls.rframetime));
+		DrawString(viddef.width - (int)strlen(text_buf) * ui_char_size - 2 * ui_scale, 2 * ui_scale, text_buf, TextPalette[P_YELLOW], -1);
+	}
+}
+
 // This is called every frame, and can also be called explicitly to flush text to the screen.
 void SCR_UpdateScreen(void)
 {
@@ -1105,9 +1116,10 @@ void SCR_UpdateScreen(void)
 
 			M_Draw();
 		}
-
-		DBG_DrawMessages(); //mxd.
 	}
+
+	DBG_DrawMessages(); //mxd.
+	SCR_DrawFramecounter(); //mxd
 
 	re.EndFrame();
 }

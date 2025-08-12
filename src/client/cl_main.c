@@ -1467,8 +1467,7 @@ void CL_Frame(const int packetdelta, const int renderdelta, const int timedelta,
 	cl.time += timedelta / 1000;
 	camera_timer += timedelta / 1000; // H2
 
-	if ((int)cl_frametime->value && !(int)cl_paused->value) // H2
-		Com_Printf("Framerate = %f.\n", (double)(1.0f / cls.rframetime));
+	//mxd. Skip cl_frametime logic: now done in SCR_DrawFramecounter().
 
 	// Don't extrapolate too far ahead.
 	cls.nframetime = min(0.5f, cls.nframetime);
