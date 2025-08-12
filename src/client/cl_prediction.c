@@ -406,6 +406,11 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 	while (++ack < current)
 	{
 		frame = ack & (CMD_BACKUP - 1);
+
+		// YQ2. Ignore null entries.
+		if (cl.cmds[frame].msec == 0)
+			continue;
+
 		pm.cmd = cl.cmds[frame];
 
 		if ((cl.playerinfo.flags & PLAYER_FLAG_TURNLOCK) && pm.s.pm_type == PM_NORMAL)
