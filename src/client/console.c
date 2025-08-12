@@ -257,14 +257,6 @@ void Con_CheckResize(void)
 	Key_ClearTyping(); // H2
 }
 
-void Con_UpdateConsoleHeight(void) // H2
-{
-	if (cls.key_dest == key_console)
-		scr_con_current = 0.5f;
-	else
-		scr_con_current = 0.0f;
-}
-
 void Con_Init(void)
 {
 	con.linewidth = -1;

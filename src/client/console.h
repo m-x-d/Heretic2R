@@ -35,12 +35,11 @@ typedef struct
 
 extern console_t con;
 
-void Con_CheckResize(void);
-void Con_UpdateConsoleHeight(void);
-void Con_Init(void);
-void Con_DrawConsole(float frac);
-void Con_Print(const char* txt);
-void Con_Clear_f(void);
-void Con_DrawNotify(void);
-void Con_ClearNotify(void);
-void Con_ToggleConsole_f(void);
+extern void Con_CheckResize(void);
+extern void Con_Init(void);
+extern void Con_DrawConsole(float frac);
+extern void Con_Print(const char* txt);
+extern void Con_Clear_f(void);
+extern void Con_DrawNotify(void);
+extern void Con_ClearNotify(void);
+extern void Con_ToggleConsole_f(void);

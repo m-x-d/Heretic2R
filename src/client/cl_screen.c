@@ -12,7 +12,7 @@
 
 float scr_con_current; // Approaches scr_conlines at scr_conspeed.
 
-static qboolean scr_initialized; // Ready to draw
+static qboolean scr_initialized; // Ready to draw.
 
 //mxd. Menu/UI/console scaling.
 int ui_char_size = CONCHAR_SIZE;
@@ -25,7 +25,7 @@ qboolean scr_draw_loading_plaque; // H2
 static qboolean scr_draw_loading; // int in Q2
 static int scr_progressbar_width; // H2
 
-vrect_t scr_vrect; // Position of render window on screen
+vrect_t scr_vrect; // Position of render window on screen.
 
 cvar_t* scr_viewsize; //TODO: remove?
 cvar_t* scr_centertime;
@@ -247,6 +247,11 @@ static void SCR_GammaDown_f(void) // H2. Actually increases brightness.
 {
 	if (vid_gamma->value > 0.1f)
 		Cvar_SetValue("vid_gamma", vid_gamma->value - 0.1f);
+}
+
+void SCR_RunConsole(void)
+{
+	scr_con_current = ((cls.key_dest == key_console) ? 0.5f : 0.0f);
 }
 
 static void SCR_DrawConsole(void)

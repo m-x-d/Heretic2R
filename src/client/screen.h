@@ -29,6 +29,7 @@ extern vrect_t scr_vrect; // Position of render window.
 extern void SCR_Init(void);
 extern void SCR_UpdateScreen(void);
 
+extern void SCR_RunConsole(void);
 extern void SCR_BeginLoadingPlaque(void);
 extern void SCR_EndLoadingPlaque(void);
 extern void SCR_UpdateProgressbar(int unused, int section); //mxd

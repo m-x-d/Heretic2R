@@ -1527,7 +1527,7 @@ void CL_Frame(const int packetdelta, const int renderdelta, const int timedelta,
 			CL_PrepRefresh();
 
 		// Update the screen.
-		Con_UpdateConsoleHeight(); // H2
+		SCR_RunConsole();
 		SCR_UpdateScreen();
 
 		// Update audio and music.
