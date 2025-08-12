@@ -1302,10 +1302,7 @@ void Pmove(pmove_t* pmove, const qboolean server)
 	// Drop timing counter.
 	if (pm->s.pm_time > 0)
 	{
-		byte msec = pm->cmd.msec >> 3;
-
-		if (msec == 0)
-			msec = 1;
+		const byte msec = max(1, pm->cmd.msec >> 3);
 
 		if (msec >= pm->s.pm_time)
 		{
