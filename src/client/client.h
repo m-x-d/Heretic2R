@@ -578,6 +578,8 @@ extern cvar_t* colour_game;
 extern cvar_t* game_downloadable_type;
 extern cvar_t* cl_no_middle_text;
 
+extern cvar_t* vid_maxfps; // YQ2
+
 #pragma endregion
 
 Q2DLL_DECLSPEC extern centity_t cl_entities[MAX_NETWORKABLE_EDICTS];

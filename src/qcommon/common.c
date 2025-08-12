@@ -34,7 +34,7 @@ static cvar_t* fixedtime;
 static cvar_t* logfile_active;	// 1 = buffer log, 2 = flush after each print
 static cvar_t* showtrace;
 cvar_t* dedicated;
-static cvar_t* vid_maxfps; // YQ2
+cvar_t* vid_maxfps; // YQ2
 
 // H2:
 static cvar_t* fpu_precision;

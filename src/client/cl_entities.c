@@ -1555,7 +1555,7 @@ static void CL_CalcViewValues(void)
 			}
 			else
 			{
-				frame_delta += cls.nframetime * cl_maxfps->value;
+				frame_delta += cls.rframetime * vid_maxfps->value; //mxd. cls.frametime * cl_maxfps->value in original logic.
 				const int num_frames = (int)roundf(frame_delta);
 
 				for (int i = 0; i < num_frames; i++)
@@ -1613,7 +1613,7 @@ static void CL_CalcViewValues(void)
 	// H2: Apply screen shake.
 	vec3_t shake;
 	Perform_Screen_Shake(shake, (float)cl.time);
-	VectorAdd(cl.refdef.vieworg, shake, cl.refdef.vieworg);
+	Vec3AddAssign(shake, cl.refdef.vieworg);
 
 	// Interpolate field of view.
 	cl.refdef.fov_x = ops->fov + (ps->fov - ops->fov) * lerp;
