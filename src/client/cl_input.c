@@ -467,13 +467,11 @@ void CL_RefreshCmd(void) // YQ2
 	usercmd_t* cmd = &cl.cmds[cls.netchan.outgoing_sequence & (CMD_BACKUP - 1)];
 
 	// Calculate delta.
-	frame_msec = sys_frame_time - old_sys_frame_time;
+	frame_msec = min(200, sys_frame_time - old_sys_frame_time);
 
 	// Check bounds.
 	if (frame_msec < 1)
 		return;
-
-	frame_msec = min(200, frame_msec);
 
 	// Add movement.
 	CL_BaseMove(cmd);
@@ -513,13 +511,11 @@ void CL_RefreshMove(void) // YQ2
 	usercmd_t* cmd = &cl.cmds[cls.netchan.outgoing_sequence & (CMD_BACKUP - 1)];
 
 	// Calculate delta.
-	frame_msec = sys_frame_time - old_sys_frame_time;
+	frame_msec = min(200, sys_frame_time - old_sys_frame_time);
 
 	// Check bounds.
 	if (frame_msec < 1)
 		return;
-
-	frame_msec = min(200, frame_msec);
 
 	// Add movement.
 	CL_BaseMove(cmd);
