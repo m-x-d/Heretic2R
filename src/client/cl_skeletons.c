@@ -25,7 +25,7 @@ void SK_UpdateSkeletons(void)
 			if (joint->angles[j] == joint->destAngles[j])
 				continue;
 
-			joint->angles[j] += joint->angVels[j] * cls.frametime;
+			joint->angles[j] += joint->angVels[j] * cls.rframetime;
 
 			if ((joint->angVels[j] < 0.0f && joint->angles[j] < joint->destAngles[j]) ||
 				(joint->angVels[j] > 0.0f && joint->angles[j] > joint->destAngles[j]))

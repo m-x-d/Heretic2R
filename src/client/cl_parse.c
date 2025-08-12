@@ -230,6 +230,7 @@ qboolean CL_CheckOrDownloadFile(const char* filename)
 	}
 
 	cls.downloadnumber++;
+	cls.force_packet = true; // YQ2
 
 	return false;
 }
@@ -312,6 +313,7 @@ static void CL_ParseDownload(void)
 
 		MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
 		SZ_Print(&cls.netchan.message, "nextdl");
+		cls.force_packet = true; // YQ2
 
 		return;
 	}

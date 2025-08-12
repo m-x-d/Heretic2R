@@ -223,7 +223,7 @@ typedef enum
 	key_menu
 } keydest_t;
 
-// The client_static_t structure is persistent through an arbitrary number of server connections
+// The client_static_t structure is persistent through an arbitrary number of server connections.
 typedef struct
 {
 	connstate_t state;
@@ -231,7 +231,7 @@ typedef struct
 
 	int framecount;
 	int realtime;			// Always increasing, no clamping, etc.
-	float frametime;		// Seconds since last frame.
+	float nframetime;		// YQ2: Seconds since last network frame.
 	float framemodifier;	// Variable to mod cfx by.
 
 	int startmenu;		// Time when the menu came up.
@@ -282,11 +282,15 @@ typedef struct
 	dltype_t downloadtype;
 	int downloadpercent;
 
-	// Demo recording info must be here, so it isn't cleared on level change
+	// Demo recording info must be here, so it isn't cleared on level change.
 	qboolean demorecording;
 	qboolean demosavingok;
 	qboolean demowaiting; // Don't record until a non-delta message is received.
 	FILE* demofile;
+
+	//mxd. YQ2 props. Added at the end of struct to maintain compatibility with vanilla mods...
+	float rframetime; // Seconds since last render frame.
+	qboolean force_packet; // Forces a packet to be sent next frame.
 } client_static_t;
 
 Q2DLL_DECLSPEC extern client_static_t cls;
@@ -642,6 +646,8 @@ extern qboolean in_do_autoaim; //mxd
 extern qboolean command_down; //mxd
 
 extern void CL_InitInput(void);
+extern void CL_RefreshCmd(void); // YQ2
+extern void CL_RefreshMove(void); // YQ2
 extern void CL_SendCmd(void);
 extern void CL_ClearState(void);
 extern void CL_ReadPackets(void);

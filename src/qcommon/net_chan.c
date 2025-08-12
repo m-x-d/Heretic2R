@@ -65,7 +65,10 @@ byte net_message_buffer[MAX_MSGLEN];
 void Netchan_Init(void)
 {
 	// Pick a port value that should be nice and random.
-	const int port = Sys_Milliseconds() & 0xffff;
+	// YQ2: The original code used Sys_Milliseconds() as base.
+	// It worked because the original Sys_Milliseconds included some amount of random data (Windows) or was dependend on seconds since epoche (Unix).
+	// Our Sys_Milliseconds() always starts at 0, so there's a very high probability for something like "./quake2 +connect example.com" - that two or more clients end up with the same qport.
+	const int port = time(NULL) & 0xffff;
 
 	showpackets = Cvar_Get("showpackets", "0", 0);
 	showdrop = Cvar_Get("showdrop", "0", 0);

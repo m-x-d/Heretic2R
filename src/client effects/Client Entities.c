@@ -300,7 +300,7 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 	client_entity_t* current;
 	trace_t trace;
 
-	const float d_time = fxi.cls->frametime;
+	const float d_time = fxi.cls->rframetime;
 	const float d_time2 = d_time * d_time * 0.5f;
 	int cur_trace = 0;
 	int num_fx = 0;

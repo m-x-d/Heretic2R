@@ -683,7 +683,7 @@ extern void* Z_TagMalloc(int size, int tag);
 extern void Z_FreeTags(int tag);
 
 extern void Qcommon_Init(int argc, char** argv);
-extern void Qcommon_Frame(int msec);
+extern void Qcommon_Frame(int usec);
 
 #pragma endregion
 
@@ -704,10 +704,10 @@ extern jmp_buf abortframe; //mxd
 extern void CL_Init(void);
 extern void CL_Drop(void);
 extern void CL_Shutdown(void);
-extern void CL_Frame(int msec);
+extern void CL_Frame(int packetdelta, int renderdelta, int timedelta, qboolean packetframe, qboolean renderframe); // YQ2: extra args
 
 extern void SV_Init(void);
 extern void SV_Shutdown(const char* finalmsg, qboolean reconnect);
-extern void SV_Frame(int msec);
+extern void SV_Frame(int usec);
 
 #pragma endregion

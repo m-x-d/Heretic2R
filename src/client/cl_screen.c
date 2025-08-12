@@ -454,7 +454,7 @@ static void SCR_TileClear(void)
 		SCR_DirtyScreen();
 
 	// Skip when fullscreen console, rendering or cinematic.
-	if (scr_con_current == 1.0f || scr_viewsize->value == 100.0f || cl.cinematictime > 0)
+	if (scr_con_current == 1.0f || scr_viewsize->value == 100.0f || cl.cinematictime > 0) //TODO: scr_con_current is never set to 1.0f.
 		return;
 
 	// Erase rect will be the union of the past three frames so triple buffering works properly
@@ -971,7 +971,7 @@ static void SCR_DrawCinematicBorders(void) // H2
 
 static void SCR_DrawGameMessage(void) // H2
 {
-	game_message_dispay_time -= cls.frametime;
+	game_message_dispay_time -= cls.rframetime;
 
 	if (game_message_dispay_time <= 0.0f)
 		return;

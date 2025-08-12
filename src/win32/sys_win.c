@@ -263,24 +263,20 @@ static void ParseCommandLine(LPSTR lpCmdLine)
 Q2DLL_DECLSPEC int Quake2Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	ParseCommandLine(lpCmdLine);
-
 	Qcommon_Init(argc, argv);
-	int oldtime = Sys_Milliseconds();
 
-	// Main window message loop.
+	long long oldtime = Sys_Microseconds();
+
+	// The main game loop.
 	while (true)
 	{
-		int time;
-		int newtime;
+		Sys_Nanosleep(5000); //TODO: implement YQ2 busywait logic?
 
-		do
-		{
-			newtime = Sys_Milliseconds();
-			time = newtime - oldtime;
-		} while (time < 1);
+		const long long newtime = Sys_Microseconds();
+		curtime = (int)(newtime / 1000ll); // Save global time for network and input code.
 
 		// Missing in H2: _controlfp( _PC_24, _MCW_PC );
-		Qcommon_Frame(time);
+		Qcommon_Frame((int)(newtime - oldtime));
 		oldtime = newtime;
 	}
 

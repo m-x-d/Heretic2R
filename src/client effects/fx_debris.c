@@ -737,7 +737,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 
 	BounceVelocity(self->velocity, trace->plane.normal, self->velocity, self->elasticity);
 
-	const float d_time = fxi.cls->frametime * trace->fraction;
+	const float d_time = fxi.cls->rframetime * trace->fraction;
 	if (d_time > 0.0f) // The game might crash with a zero movement. --Pat
 		Physics_MoveEnt(self, d_time, d_time * d_time * 0.5f, trace);
 }

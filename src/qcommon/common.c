@@ -34,6 +34,7 @@ static cvar_t* fixedtime;
 static cvar_t* logfile_active;	// 1 = buffer log, 2 = flush after each print
 static cvar_t* showtrace;
 cvar_t* dedicated;
+static cvar_t* vid_maxfps; // YQ2
 
 // H2:
 static cvar_t* fpu_precision;
@@ -563,6 +564,7 @@ void Qcommon_Init(const int argc, char** argv)
 	logfile_active = Cvar_Get("logfile", "0", 0);
 	showtrace = Cvar_Get("showtrace", "0", 0);
 	dedicated = Cvar_Get("dedicated", "0", CVAR_NOSET);
+	vid_maxfps = Cvar_Get("vid_maxfps", "60", CVAR_ARCHIVE); // YQ2
 
 	// H2:
 	fpu_precision = Cvar_Get("fpu_precision", "1", 0);
@@ -611,12 +613,17 @@ void Qcommon_Init(const int argc, char** argv)
 	Com_ColourPrintf(P_HEADER, "\n==== "GAME_FULLNAME" initialized ====\n\n"); // Q2: Com_Printf //mxd. Use define.
 }
 
-void Qcommon_Frame(int msec)
+void Qcommon_Frame(int usec) //mxd. msec -> usec.
 {
+	static int packetdelta = 1000000; // Time since last packetframe in microseconds.
+	static int renderdelta = 1000000; // Time since last renderframe in microseconds.
+	static int clienttimedelta = 0; // Accumulated time since last client run.
+	static int servertimedelta = 0; // Accumulated time since last server run.
+
 	uint control_word; //mxd
 
 	if (setjmp(abortframe))
-		return; // An ERR_DROP was thrown
+		return; // An ERR_DROP was thrown.
 
 	// H2: set fpu precision (done in WinMain in Q2). //TODO: is this relevant? _controlfp logic is removed in YQ2.
 	if (fpu_precision->value == 0.0f)
@@ -641,14 +648,9 @@ void Qcommon_Frame(int msec)
 	}
 
 	if ((int)fixedtime->value)
-	{
-		msec = (int)fixedtime->value;
-	}
+		usec = (int)fixedtime->value;
 	else if ((int)timescale->value)
-	{
-		msec *= (int)timescale->value;
-		msec = max(1, msec);
-	}
+		usec *= (int)timescale->value;
 
 	if ((int)showtrace->value)
 	{
@@ -658,6 +660,40 @@ void Qcommon_Frame(int msec)
 		c_pointcontents = 0;
 	}
 
+	// We can render 1000 frames at maximum, because the minimum frametime of the client is 1 millisecond.
+	if (vid_maxfps->value > 999 || vid_maxfps->value < 1)
+		Cvar_SetValue("vid_maxfps", 999);
+
+	if (cl_maxfps->value > 250)
+		Cvar_SetValue("cl_maxfps", 250);
+
+	const float rfps = vid_maxfps->value;
+	const float pfps = min(cl_maxfps->value, rfps); // We can't have more packet frames than render frames, so limit pfps to rfps.
+
+	// Calculate timings.
+	packetdelta += usec;
+	renderdelta += usec;
+	clienttimedelta += usec;
+	servertimedelta += usec;
+
+	qboolean renderframe = true;
+	qboolean packetframe = true;
+
+	if (!(int)cl_timedemo->value && cl.cinematictime == 0) // H2: extra cl.cinematictime check.
+	{
+		// Render frames.
+		if (renderdelta < (int)(1000000.0f / rfps))
+			renderframe = false;
+
+		// Network frames.
+		const int packettargetdelta = (int)(1000000.0f / pfps);
+
+		// "packetdelta + renderdelta/2 >= packettargetdelta" if now we're closer to when we want to run the next packetframe than we'd (probably) be after the next render frame.
+		if (!renderframe || packetdelta + renderdelta / 2 < packettargetdelta)
+			packetframe = false;
+	}
+
+	// Dedicated server terminal console.
 	while (true)
 	{
 		char* s = Sys_ConsoleInput();
@@ -669,6 +705,25 @@ void Qcommon_Frame(int msec)
 
 	// H2: no 'host_speeds' logic.
 	Cbuf_Execute();
-	SV_Frame(msec);
-	CL_Frame(msec);
+
+	// Run the server frame.
+	if (packetframe)
+	{
+		SV_Frame(servertimedelta);
+		servertimedelta = 0;
+	}
+
+	// Run the client frame.
+	if (packetframe || renderframe)
+	{
+		CL_Frame(packetdelta, renderdelta, clienttimedelta, packetframe, renderframe);
+		clienttimedelta = 0;
+
+		// Reset deltas and mark frame.
+		if (packetframe)
+			packetdelta = 0;
+
+		if (renderframe)
+			renderdelta = 0;
+	}
 }

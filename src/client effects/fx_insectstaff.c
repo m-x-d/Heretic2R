@@ -72,7 +72,7 @@ static qboolean InsectStaffTrailThink(struct client_entity_s* self, centity_t* o
 			return false;
 
 		float theta = (float)fxi.cl->time * FIST_DELTA_THETA;
-		const float delta_theta = fxi.cls->frametime * FIST_DELTA_THETA / (float)no_of_intervals;
+		const float delta_theta = fxi.cls->rframetime * FIST_DELTA_THETA / (float)no_of_intervals;
 		const int flags = (int)(self->flags & ~(CEF_OWNERS_ORIGIN | CEF_NO_DRAW)); //mxd
 
 		while (trail_length > 0.0f)

@@ -1555,7 +1555,7 @@ static void CL_CalcViewValues(void)
 			}
 			else
 			{
-				frame_delta += cls.frametime * cl_maxfps->value;
+				frame_delta += cls.nframetime * cl_maxfps->value;
 				const int num_frames = (int)roundf(frame_delta);
 
 				for (int i = 0; i < num_frames; i++)

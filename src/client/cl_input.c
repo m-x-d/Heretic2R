@@ -447,6 +447,87 @@ void CL_InitInput(void)
 	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
 }
 
+static void CL_ClampPitch(void)
+{
+	float pitch = SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[PITCH]);
+
+	if (pitch > 180.0f)
+		pitch -= 360.0f;
+
+	// H2. Clamp input angles.
+	cl.inputangles[PITCH] = Clamp(cl.inputangles[PITCH], -89.0f - pitch, 89.0f - pitch);
+
+	// Clamp view angles.
+	cl.viewangles[PITCH] = Clamp(cl.viewangles[PITCH], -89.0f - pitch, 89.0f - pitch);
+}
+
+void CL_RefreshCmd(void) // YQ2
+{
+	// CMD to fill.
+	usercmd_t* cmd = &cl.cmds[cls.netchan.outgoing_sequence & (CMD_BACKUP - 1)];
+
+	// Calculate delta.
+	frame_msec = sys_frame_time - old_sys_frame_time;
+
+	// Check bounds.
+	if (frame_msec < 1)
+		return;
+
+	frame_msec = min(200, frame_msec);
+
+	// Add movement.
+	CL_BaseMove(cmd);
+	IN_Move(cmd);
+
+	// Clamp angels for prediction.
+	CL_ClampPitch();
+
+	// Store angles in usercmd.
+	for (int i = 0; i < 3; i++)
+	{
+		cmd->angles[i] = ANGLE2SHORT(cl.inputangles[i]);
+		cmd->aimangles[i] = (short)(cl.frame.playerstate.pmove.delta_angles[i] - ANGLE2SHORT(-cl.viewangles[i]));
+		cmd->camera_vieworigin[i] = (short)(cl.camera_vieworigin[i] * 8.0f);
+		cmd->camera_viewangles[i] = ANGLE2SHORT(cl.camera_viewangles[i]);
+	}
+
+	// Update time for prediction.
+	int ms = (int)(cls.nframetime * 1000.0f);
+
+	if (ms > 250)
+		ms = 100;
+
+	cmd->msec = (byte)ms;
+
+	// Update frame time for the next call.
+	old_sys_frame_time = sys_frame_time;
+
+	// Important events are send immediately.
+	if ((in_attack.state & 2) || (in_defend.state & 2) || (in_action.state & 2))
+		cls.force_packet = true;
+}
+
+void CL_RefreshMove(void) // YQ2
+{
+	// CMD to fill.
+	usercmd_t* cmd = &cl.cmds[cls.netchan.outgoing_sequence & (CMD_BACKUP - 1)];
+
+	// Calculate delta.
+	frame_msec = sys_frame_time - old_sys_frame_time;
+
+	// Check bounds.
+	if (frame_msec < 1)
+		return;
+
+	frame_msec = min(200, frame_msec);
+
+	// Add movement.
+	CL_BaseMove(cmd);
+	IN_Move(cmd);
+
+	old_sys_frame_time = sys_frame_time;
+}
+
 // Q2 counterpart
 // Returns the fraction of the frame that the key was down.
 static float CL_KeyState(kbutton_t* key)
@@ -472,9 +553,9 @@ static void CL_AdjustAngles(void)
 	float scaler;
 
 	if (in_speed.state & 1)
-		speed = cls.frametime * cl_anglespeedkey->value;
+		speed = cls.nframetime * cl_anglespeedkey->value;
 	else
-		speed = cls.frametime;
+		speed = cls.nframetime;
 
 	if (!(in_strafe.state & 1))
 	{
@@ -528,28 +609,6 @@ void CL_BaseMove(usercmd_t* cmd)
 	}
 }
 
-static void CL_ClampPitch(void)
-{
-	float pitch = SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[PITCH]);
-
-	if (pitch > 180.0f)
-		pitch -= 360.0f;
-
-	// H2. Clamp input angles.
-	if (cl.inputangles[PITCH] + pitch > 89.0f)
-		cl.inputangles[PITCH] = 89.0f - pitch;
-
-	if (cl.inputangles[PITCH] + pitch < -89.0f)
-		cl.inputangles[PITCH] = -89.0f - pitch;
-
-	// Clamp view angles.
-	if (cl.viewangles[PITCH] + pitch > 89.0f)
-		cl.viewangles[PITCH] = 89.0f - pitch;
-
-	if (cl.viewangles[PITCH] + pitch < -89.0f)
-		cl.viewangles[PITCH] = -89.0f - pitch;
-}
-
 //TODO: rename 'st_unknown' cvars, check conditions & annotate of all angles calculation branches when we get to playable state.
 static void CL_FinishMove(usercmd_t* cmd)
 {
@@ -562,48 +621,48 @@ static void CL_FinishMove(usercmd_t* cmd)
 	static qboolean st_unknown5;
 	static qboolean st_unknown6;
 
-	// Figure button bits
+	// Figure button bits.
 
-	// He attac
+	// He attac.
 	if (in_attack.state & 3)
 		cmd->buttons |= BUTTON_ATTACK;
 	in_attack.state &= ~2;
 
-	// But also protec
+	// But also protec.
 	if (in_defend.state & 2)
 		cmd->buttons |= BUTTON_DEFEND;
 	in_defend.state &= ~2;
 
-	// Action
+	// Action.
 	if (in_action.state & 3 && !cl.frame.playerstate.cinematicfreeze)
 		cmd->buttons |= BUTTON_ACTION;
 	in_action.state &= ~2;
 
-	// Run
+	// Run.
 	const qboolean speed_state = (in_speed.state & 3);
 	const qboolean run = (int)cl_run->value;
 	if ((speed_state || run) && ((speed_state && !run) || speed_state == (cmd->forwardmove < -10)))
 		cmd->buttons |= BUTTON_RUN;
 	in_speed.state &= ~2;
 
-	// Crouch
+	// Crouch.
 	if (in_creep.state & 3)
 		cmd->buttons |= BUTTON_CREEP;
 	in_creep.state &= ~2;
 
-	// Autoaim
+	// Autoaim.
 	if ((in_autoaim.state & 3) != (int)cl_doautoaim->value)
 		cmd->buttons |= BUTTON_AUTOAIM;
 	in_autoaim.state &= ~2;
 
 	in_do_autoaim = (cmd->buttons & BUTTON_AUTOAIM);
 
-	// TR-style look around
+	// TR-style look around.
 	if (in_lookaround.state & 3)
 		cmd->buttons |= BUTTON_LOOKAROUND;
 	in_lookaround.state &= ~2;
 
-	// TR-style quick-turn
+	// TR-style quick-turn.
 	if (in_quickturn.state & 3)
 	{
 		cmd->buttons |= BUTTON_QUICKTURN;
@@ -612,7 +671,7 @@ static void CL_FinishMove(usercmd_t* cmd)
 	}
 	in_quickturn.state &= ~2;
 
-	// Open inventory
+	// Open inventory.
 	if (in_inventory.state & 3)
 		cmd->buttons |= BUTTON_INVENTORY;
 	in_inventory.state &= ~2;
@@ -646,7 +705,7 @@ static void CL_FinishMove(usercmd_t* cmd)
 		goto LABEL_END;
 	}
 
-	// When in water
+	// When in water.
 	if (pred_pm_w_flags != 0)
 	{
 		if (pred_pm_w_flags & (WF_SURFACE | WF_DIVE))
@@ -697,7 +756,7 @@ static void CL_FinishMove(usercmd_t* cmd)
 		goto LABEL_END;
 	}
 
-	// When on land
+	// When on land.
 	st_unknown1 = true;
 
 	// When not frozen in place.
@@ -725,7 +784,7 @@ static void CL_FinishMove(usercmd_t* cmd)
 		goto LABEL_END;
 	}
 
-	// When executing quickturn
+	// When executing quickturn.
 	if ((int)cl_predict->value)
 		quickturn_rate = cl.playerinfo.quickturn_rate;
 	else
@@ -733,7 +792,7 @@ static void CL_FinishMove(usercmd_t* cmd)
 
 	if (quickturn_rate_scaler > 0.0f && quickturn_rate != 0.0f)
 	{
-		quickturn_rate_scaler -= cls.frametime;
+		quickturn_rate_scaler -= cls.nframetime;
 
 		float scaled_rate = 0.0f;
 		if (quickturn_rate_scaler < 0.0f)
@@ -742,7 +801,7 @@ static void CL_FinishMove(usercmd_t* cmd)
 			quickturn_rate_scaler = 0.0f;
 		}
 
-		const float offset = cls.frametime * quickturn_rate + scaled_rate;
+		const float offset = cls.nframetime * quickturn_rate + scaled_rate;
 		cl.inputangles[YAW] += offset;
 		cl.viewangles[YAW] += offset;
 
@@ -838,55 +897,42 @@ LABEL_END:
 	cmd->lightlevel = (byte)cl_lightlevel->value;
 
 	// Send milliseconds of time to apply the move
-	int ms = (int)(cls.frametime * 1000.0f);
+	int ms = (int)(cls.nframetime * 1000.0f);
 	if (ms > 250)
-		ms = 100; // Time was unreasonable
+		ms = 100; // Time was unreasonable.
 
 	cmd->msec = (byte)ms;
 }
 
-static usercmd_t CL_CreateCmd(void)
+static void CL_FinalizeCmd(void) // YQ2
 {
 	static qboolean reset_input_angles = false;
-	usercmd_t cmd;
 
-	frame_msec = ClampI((int)(sys_frame_time - old_sys_frame_time), 1, 200);
+	// CMD to fill.
+	usercmd_t* cmd = &cl.cmds[cls.netchan.outgoing_sequence & (CMD_BACKUP - 1)];
 
 	if (cl.frame.playerstate.cinematicfreeze) // H2
 	{
-		memset(&cmd, 0, sizeof(cmd));
+		memset(cmd, 0, sizeof(*cmd));
 
 		if (cls.esc_cinematic)
 		{
-			cmd.buttons |= BUTTON_ACTION;
+			cmd->buttons |= BUTTON_ACTION;
 			cls.esc_cinematic = false;
 		}
 
 		reset_input_angles = true;
 	}
-	else
+	else if (reset_input_angles) // H2
 	{
-		// Get basic movement from keyboard.
-		CL_BaseMove(&cmd);
+		reset_input_angles = false;
 
-		// Allow mice or other external controllers to add to the move.
-		IN_Move(&cmd);
-
-		if (reset_input_angles) // H2
-		{
-			reset_input_angles = false;
-
-			VectorClear(cl.inputangles);
-			VectorClear(cl.delta_inputangles);
-			VectorClear(cl.viewangles);
-		}
+		VectorClear(cl.inputangles);
+		VectorClear(cl.delta_inputangles);
+		VectorClear(cl.viewangles);
 	}
 
-	CL_FinishMove(&cmd);
-
-	old_sys_frame_time = sys_frame_time;
-
-	return cmd;
+	CL_FinishMove(cmd);
 }
 
 // Builds a command even if not connected.
@@ -895,10 +941,9 @@ void CL_SendCmd(void)
 	// Save this command off for prediction.
 	const int index = cls.netchan.outgoing_sequence & (CMD_BACKUP - 1);
 	cl.cmd_time[index] = cls.realtime; // For netgraph ping calculation.
+	CL_FinalizeCmd(); // YQ2
 
-	usercmd_t* cmd = &cl.cmds[index];
-	*cmd = CL_CreateCmd();
-	cl.cmd = *cmd;
+	cl.cmd = cl.cmds[index];
 
 	if (cls.state == ca_disconnected || cls.state == ca_connecting)
 		return;
@@ -915,7 +960,7 @@ void CL_SendCmd(void)
 		return;
 	}
 
-	// Send a userinfo update if needed.
+	// Send userinfo update if needed.
 	if (userinfo_modified)
 	{
 		userinfo_modified = false;
@@ -928,7 +973,7 @@ void CL_SendCmd(void)
 	byte data[128];
 	SZ_Init(&buf, data, sizeof(data));
 
-	// Begin a client move command
+	// Begin client move command.
 	MSG_WriteByte(&buf, clc_move);
 
 	// Save the position for a checksum byte.
@@ -944,7 +989,7 @@ void CL_SendCmd(void)
 	const usercmd_t nullcmd = { 0 };
 
 	// Send this and the previous cmds in the message, so if the last packet was dropped, it can be recovered.
-	cmd = &cl.cmds[(cls.netchan.outgoing_sequence - 2) & (CMD_BACKUP - 1)];
+	const usercmd_t* cmd = &cl.cmds[(cls.netchan.outgoing_sequence - 2) & (CMD_BACKUP - 1)];
 	MSG_WriteDeltaUsercmd(&buf, &nullcmd, cmd);
 	const usercmd_t* oldcmd = cmd;
 

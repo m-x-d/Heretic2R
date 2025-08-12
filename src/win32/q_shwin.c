@@ -14,21 +14,41 @@ static char findbase[MAX_OSPATH];
 static char findpath[MAX_OSPATH];
 static int findhandle;
 
-// Q2 counterpart
-int Sys_Milliseconds(void)
+long long Sys_Microseconds(void) // YQ2
 {
-	static int base;
-	static qboolean	initialized = false;
+	static LARGE_INTEGER freq = { 0 };
+	static LARGE_INTEGER base = { 0 };
 
-	if (!initialized)
+	if (!freq.QuadPart)
+		QueryPerformanceFrequency(&freq);
+
+	if (!base.QuadPart)
 	{
-		// Let base retain 16 bits of effectively random data.
-		base = (int)(timeGetTime() & 0xffff0000);
-		initialized = true;
+		QueryPerformanceCounter(&base);
+		base.QuadPart -= 1001;
 	}
-	curtime = (int)timeGetTime() - base;
 
-	return curtime;
+	LARGE_INTEGER cur;
+	QueryPerformanceCounter(&cur);
+
+	return (cur.QuadPart - base.QuadPart) * 1000000 / freq.QuadPart;
+}
+
+int Sys_Milliseconds(void) // YQ2. No longer sets 'curtime' global var.
+{
+	return (int)(Sys_Microseconds() / 1000ll);
+}
+
+void Sys_Nanosleep(const int nanosec)
+{
+	const HANDLE timer = CreateWaitableTimer(NULL, TRUE, NULL);
+
+	// Windows has a max. resolution of 100ns.
+	const LARGE_INTEGER li = { .QuadPart = -nanosec / 100 };
+	SetWaitableTimer(timer, &li, 0, NULL, NULL, FALSE);
+	WaitForSingleObject(timer, INFINITE);
+
+	CloseHandle(timer);
 }
 
 // Q2 counterpart

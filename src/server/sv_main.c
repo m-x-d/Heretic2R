@@ -713,13 +713,13 @@ static void Master_Shutdown(void)
 	}
 }
 
-void SV_Frame(const int msec)
+void SV_Frame(const int usec) // YQ2: msec -> usec.
 {
 	// If server is not active, do nothing.
 	if (!svs.initialized)
 		return;
 
-	svs.realtime += msec;
+	svs.realtime += usec / 1000; // YQ2: msec -> usec / 1000.
 
 	rand(); // Keep the random time dependent.
 

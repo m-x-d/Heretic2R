@@ -477,7 +477,7 @@ void FXLinkedBlood(centity_t* owner, const int type, const int flags, vec3_t ori
 	byte refpointidx;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_LINKEDBLOOD].formatString, &life, &refpointidx);
 
-	client_entity_t* spawner = ClientEntity_new(type, flags, origin, NULL, Q_ftol(fxi.cls->frametime * 2000.0f));
+	client_entity_t* spawner = ClientEntity_new(type, flags, origin, NULL, Q_ftol(fxi.cls->rframetime * 2000.0f));
 
 	spawner->LifeTime = life;
 	spawner->flags |= CEF_NO_DRAW;

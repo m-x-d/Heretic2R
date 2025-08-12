@@ -42,7 +42,6 @@ cvar_t* cl_predict;
 cvar_t* cl_predict_local; // H2
 cvar_t* cl_predict_remote; // H2
 static cvar_t* cl_predict_lag; // H2
-static cvar_t* cl_minfps;
 cvar_t* cl_maxfps;
 
 cvar_t* cl_add_particles;
@@ -998,6 +997,7 @@ void CL_RequestNextDownload(void)
 
 	MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
 	MSG_WriteString(&cls.netchan.message, va("begin %i\n", precache_spawncount));
+	cls.force_packet = true; // YQ2
 }
 
 // The server will send this command right before allowing the client into the server.
@@ -1194,8 +1194,7 @@ static void CL_InitLocal(void)
 	cl_predict_local = Cvar_Get("cl_predict_local", "0", 0); // H2
 	cl_predict_remote = Cvar_Get("cl_predict_remote", "1", 0); // H2
 	cl_predict_lag = Cvar_Get("cl_predict_lag", "0.0", 0); // H2
-	cl_minfps = Cvar_Get("cl_minfps", "5", 0); // Commented out in Q2
-	cl_maxfps = Cvar_Get("cl_maxfps", "60", 0); // H2_1.07: "30" -> "60".
+	cl_maxfps = Cvar_Get("cl_maxfps", "30", 0); // H2_1.07: "30" -> "60".
 
 	cl_frametime = Cvar_Get("cl_frametime", "0.0", 0);
 	cl_yawspeed = Cvar_Get("cl_yawspeed", "70", CVAR_ARCHIVE);
@@ -1453,111 +1452,113 @@ static void CL_FixCvarCheats(void)
 			Cvar_Set(var->name, var->value);
 }
 
-static void CL_SendCommand(void)
+void CL_Frame(const int packetdelta, const int renderdelta, const int timedelta, qboolean packetframe, const qboolean renderframe)
 {
-	IN_Update(); // YQ2		// Run SDL3 message loop.
-	Cbuf_Execute();			// Process console commands.
-	CL_FixCvarCheats();		// Fix any cheat cvars.
-	CL_SendCmd();			// Send intentions now.
-	CL_CheckForResend();	// Resend a connection request if necessary.
-}
-
-void CL_Frame(const int msec)
-{
-	static int extratime;
 	static int lasttimecalled;
 
 	if ((int)dedicated->value)
 		return;
 
-	extratime += msec;
-
-	if (!(int)cl_timedemo->value && cl.cinematictime == 0) // H2: extra cl.cinematictime check
-	{
-		// Don't flood packets out while connecting.
-		if (cls.state == ca_connected && extratime < 100)
-			return;
-
-		// Framerate is too high.
-		if ((float)extratime < 1000.0f / cl_maxfps->value)
-			return;
-	}
-
 	// Decide the simulation time.
-	cls.frametime = (float)extratime / 1000.0f;
-	cls.framemodifier = GetFrameModifier(cls.frametime); // H2
+	cls.nframetime = (float)packetdelta / 1000000.0f;
+	cls.rframetime = (float)renderdelta / 1000000.0f;
+	cls.framemodifier = GetFrameModifier(cls.rframetime); // H2
+	cls.realtime = curtime;
+	cl.time += timedelta / 1000;
+	camera_timer += timedelta / 1000; // H2
 
 	if ((int)cl_frametime->value && !(int)cl_paused->value) // H2
-		Com_Printf("Framerate = %f.\n", (double)(1.0f / cls.frametime));
+		Com_Printf("Framerate = %f.\n", (double)(1.0f / cls.rframetime));
 
-	cl.time += extratime;
-	cls.realtime = curtime;
-	camera_timer += extratime; // H2
-
-	extratime = 0;
-
-	// #if 0-ed in Q2
-	cls.frametime = min(1.0f / cl_minfps->value, cls.frametime);
+	// Don't extrapolate too far ahead.
+	cls.nframetime = min(0.5f, cls.nframetime);
+	cls.rframetime = min(0.5f, cls.rframetime);
 
 	// If in the debugger last frame, don't timeout.
-	if (msec > 5000)
+	if (timedelta > 5000000)
 		cls.netchan.last_received = Sys_Milliseconds();
 
-	// Fetch results from server.
-	CL_ReadPackets();
+	// Don't throttle too much when connecting / loading.
+	if (!(int)cl_timedemo->value && cls.state == ca_connected && packetdelta > 100000)
+		packetframe = true;
 
-	if ((int)cl_predict->value) // H2
-		CL_StorePlayerInventoryInfo();
-
-	// Send a new command message to the server.
-	CL_SendCommand();
-
-	// Predict all unacknowledged movements.
-	CL_PredictMovement();
-
-	if ((int)cl_predict->value) // H2
-		CL_StorePredictInfo();
-
-	// Allow rendering DLL change.
-	VID_CheckChanges();
-	if (!cl.refresh_prepped && cls.state == ca_active)
-		CL_PrepRefresh();
-
-	// Update the screen.
-	Con_UpdateConsoleHeight(); // H2
-	SCR_UpdateScreen();
-
-	// Update audio and music.
-	se.Update(cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up);
-
-	// Advance local effects for next frame.
-	if (cl.frame.valid && !(int)cl_paused->value && !(int)cl_freezeworld->value) // H2
+	// Update input stuff.
+	if (packetframe || renderframe)
 	{
-		if (fxe.UpdateEffects != NULL)
-			fxe.UpdateEffects();
+		// Fetch results from server.
+		CL_ReadPackets();
 
-		SK_UpdateSkeletons();
+		if ((int)cl_predict->value) // H2
+			CL_StorePlayerInventoryInfo();
+
+		IN_Update(); // YQ2		// Run SDL3 message loop.
+		Cbuf_Execute();			// Process console commands.
+		CL_FixCvarCheats();		// Fix any cheat cvars.
+
+		if (cls.state > ca_connecting) // YQ2
+			CL_RefreshCmd();
+		else
+			CL_RefreshMove();
 	}
 
-	SCR_RunCinematic();
-
-	cls.framecount++;
-
-	if ((int)log_stats->value && cls.state == ca_active)
+	if (cls.force_packet || userinfo_modified)
 	{
-		if (lasttimecalled == 0)
-		{
-			lasttimecalled = Sys_Milliseconds();
-			if (log_stats_file != NULL)
-				fprintf(log_stats_file, "0\n");
-		}
-		else
-		{
-			const int now = Sys_Milliseconds();
-			if (log_stats_file != NULL)
-				fprintf(log_stats_file, "%d\n", now - lasttimecalled);
+		packetframe = true;
+		cls.force_packet = false;
+	}
 
-			lasttimecalled = now;
+	if (packetframe)
+	{
+		CL_SendCmd();			// Send intentions now.
+		CL_CheckForResend();	// Resend a connection request if necessary.
+	}
+
+	if (renderframe)
+	{
+		// Predict all unacknowledged movements.
+		CL_PredictMovement();
+
+		if ((int)cl_predict->value) // H2
+			CL_StorePredictInfo();
+
+		// Allow rendering DLL change.
+		VID_CheckChanges();
+		if (!cl.refresh_prepped && cls.state == ca_active)
+			CL_PrepRefresh();
+
+		// Update the screen.
+		Con_UpdateConsoleHeight(); // H2
+		SCR_UpdateScreen();
+
+		// Update audio and music.
+		se.Update(cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up);
+
+		// Advance local effects for next frame.
+		if (cl.frame.valid && !(int)cl_paused->value && !(int)cl_freezeworld->value) // H2
+		{
+			if (fxe.UpdateEffects != NULL) //TODO: should be called on packetframe to maintain vanilla compatibility?
+				fxe.UpdateEffects();
+
+			SK_UpdateSkeletons();
+		}
+
+		SCR_RunCinematic();
+
+		cls.framecount++;
+
+		if ((int)log_stats->value && log_stats_file != NULL && cls.state == ca_active)
+		{
+			if (lasttimecalled == 0)
+			{
+				lasttimecalled = Sys_Milliseconds();
+				fprintf(log_stats_file, "0\n");
+			}
+			else
+			{
+				const int now = Sys_Milliseconds();
+				fprintf(log_stats_file, "%d\n", now - lasttimecalled);
+				lasttimecalled = now;
+			}
 		}
 	}
 }

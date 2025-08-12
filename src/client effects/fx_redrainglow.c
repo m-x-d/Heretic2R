@@ -107,7 +107,7 @@ void FXRedRainGlow(centity_t* owner, const int type, const int flags, vec3_t ori
 	char lifetime;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_REDRAINGLOW].formatString, &lifetime);
 
-	client_entity_t* glow = ClientEntity_new(type, flags, vec3_origin, NULL, Q_ftol(fxi.cls->frametime * 2000.0f));
+	client_entity_t* glow = ClientEntity_new(type, flags, vec3_origin, NULL, Q_ftol(fxi.cls->rframetime * 2000.0f));
 
 	glow->radius = 128.0f;
 	glow->flags |= CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ADDITIVE_PARTS;
