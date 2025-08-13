@@ -123,11 +123,6 @@ static qboolean fmLoadGLCmds(model_t* model, const int version, const int datasi
 
 static qboolean fmLoadMeshNodes(model_t* model, const int version, const int datasize, const void* buffer)
 {
-	int i;
-	const fmmeshnode_t* in;
-	fmmeshnode_t* out;
-	short tri_indices[MAX_FM_TRIANGLES];
-
 	if (version != FM_MESH_VER)
 		ri.Sys_Error(ERR_DROP, "Invalid MESH version for block %s: %d != %d\n", FM_MESH_NAME, FM_MESH_VER, version);
 
@@ -136,17 +131,12 @@ static qboolean fmLoadMeshNodes(model_t* model, const int version, const int dat
 
 	fmodel->mesh_nodes = Hunk_Alloc(fmodel->header.num_mesh_nodes * (int)sizeof(fmmeshnode_t));
 
-	for (i = 0, in = buffer, out = fmodel->mesh_nodes; i < fmodel->header.num_mesh_nodes; i++, in++, out++)
-	{
-		// Copy tris.
-		int num_tris = 0;
-		for (int tri_index = 0; tri_index < fmodel->header.num_tris; tri_index++)
-			if ((1 << (tri_index & 7)) != 0 && in->tris[tri_index >> 3] != 0)
-				tri_indices[num_tris++] = (short)tri_index;
+	const fmmeshnode_t* in = buffer;
+	fmmeshnode_t* out = &fmodel->mesh_nodes[0];
 
-		out->num_tris = num_tris;
-		out->triIndicies = Hunk_Alloc(num_tris * (int)sizeof(short));
-		memcpy(out->triIndicies, tri_indices, num_tris);
+	for (int i = 0; i < fmodel->header.num_mesh_nodes; i++, in++, out++)
+	{
+		//mxd. Don't copy tris (unused).
 
 		// Copy verts.
 		memcpy(out->verts, in->verts, sizeof(out->verts));

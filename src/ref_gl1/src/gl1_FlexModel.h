@@ -75,17 +75,7 @@ typedef struct
 
 typedef struct
 {
-	union
-	{
-		byte tris[MAX_FM_TRIANGLES >> 3]; // 2048 >> 3 == 256
-
-		struct
-		{
-			short* triIndicies;
-			int num_tris;
-		};
-	};
-
+	byte unused[MAX_FM_TRIANGLES >> 3]; // 2048 >> 3 == 256 //mxd. Unused tris array. Needed here to maintain struct layout...
 	byte verts[MAX_FM_VERTS >> 3]; // 2048 >> 3 == 256
 	short start_glcmds;
 	short num_glcmds;
