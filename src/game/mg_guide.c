@@ -1114,18 +1114,14 @@ void MG_Pathfind(edict_t* self, const qboolean check_clear_path)
 		if (self->ai_mood != AI_MOOD_FLEE && self->ai_mood != AI_MOOD_WANDER)
 			self->ai_mood = AI_MOOD_NAVIGATE;
 
-		if (self->ai_mood == AI_MOOD_DELAY)
-			self->ai_mood = AI_MOOD_NAVIGATE;
-
-		if (self->ai_mood == AI_MOOD_JUMP && self->groundentity != NULL)
-			self->ai_mood = AI_MOOD_NAVIGATE;
+		//mxd. Removed AI_MOOD_DELAY and AI_MOOD_JUMP checks (always false).
 
 		if (MG_ReachedBuoy(self, NULL))
 		{
 			MG_RemoveBuoyEffects(self);
 
 			// Check the possibility of activating something.
-			if ((buoy->modflags & BUOY_ACTIVATE) && self->ai_mood != AI_MOOD_DELAY && self->wait < level.time)
+			if ((buoy->modflags & BUOY_ACTIVATE) && self->wait < level.time) //mxd. Removed AI_MOOD_DELAY check (always false).
 			{
 				self->wait = level.time + buoy->wait;
 				MG_MonsterFirePathTarget(self, buoy->pathtarget);
@@ -1142,7 +1138,7 @@ void MG_Pathfind(edict_t* self, const qboolean check_clear_path)
 
 			// If in AI_MOOD_FORCED_BUOY mode and this buoy is my forced_buoy, take off that ai_mood flag and clear forced_buoy.
 			// Also, if AI_MOOD_IGNORE_ENEMY flag is set, remove it.
-			if (self->ai_mood_flags & AI_MOOD_FLAG_FORCED_BUOY && self->forced_buoy == buoy->id)
+			if ((self->ai_mood_flags & AI_MOOD_FLAG_FORCED_BUOY) && self->forced_buoy == buoy->id)
 			{
 				self->forced_buoy = NULL_BUOY;
 				self->ai_mood_flags &= ~AI_MOOD_FLAG_FORCED_BUOY;
