@@ -175,12 +175,12 @@ static void IN_MouseMove(usercmd_t* cmd)
 
 	// Add mouse X/Y movement to cmd.
 	if ((in_strafe.state & 1) || ((int)lookstrafe->value && mlooking)) //TODO: remove 'lookstrafe' cvar, always freelook.
-		cmd->sidemove += (short)((float)mouse_x * m_side->value);
+		cmd->sidemove += (short)(mouse_x * m_side->value);
 	else
-		cl.delta_inputangles[YAW] -= (float)mouse_x * m_yaw->value;
+		cl.delta_inputangles[YAW] -= mouse_x * m_yaw->value;
 
 	if (!(in_strafe.state & 1) || ((int)freelook->value && mlooking)) // H2: no 'else' case //TODO: remove freelook cvar, always freelook.
-		cl.delta_inputangles[PITCH] += (float)mouse_y * m_pitch->value;
+		cl.delta_inputangles[PITCH] += mouse_y * m_pitch->value;
 
 	// Reset mouse position.
 	mouse_x = 0.0f;
