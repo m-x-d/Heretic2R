@@ -68,24 +68,24 @@ static qboolean InitDisplayModes(void) //mxd
 
 	if (modes != NULL)
 	{
-		//mxd. Collect available display resolutions, in descending order, starting at desktop resolution and stopping at 640x480.
-		// Good thing:	all display modes are guaranteed to be available on this display.
-		// Bad thing:	same vid_mode cvar value will result in different resolutions on different PCs / displays...
-		//TODO: mode 0 needs to be re-initialized when switching target display.
-		viddef_t* valid_modes = malloc(sizeof(viddef_t) * num_modes);
-		
-		// Mode 0 is desktop resolution.
-		const SDL_DisplayMode* desktop_mode = SDL_GetDesktopDisplayMode(cur_display);
-		valid_modes->width = desktop_mode->w;
-		valid_modes->height = desktop_mode->h;
-		int num_valid_modes = 1;
-
 		SDL_Rect safe_bounds;
 		if (!SDL_GetDisplayUsableBounds(cur_display, &safe_bounds))
 		{
 			Com_Printf("Failed get usable display bounds: %s\n", SDL_GetError());
 			return false;
 		}
+
+		//mxd. Collect available display resolutions, in descending order, starting at desktop resolution and stopping at 640x480.
+		// Good thing:	all display modes are guaranteed to be available on this display.
+		// Bad thing:	same vid_mode cvar value will result in different resolutions on different PCs / displays...
+		//TODO: mode 0 needs to be re-initialized when switching target display.
+		viddef_t* valid_modes = malloc(sizeof(viddef_t) * num_modes);
+
+		// Mode 0 is desktop resolution.
+		const SDL_DisplayMode* desktop_mode = SDL_GetDesktopDisplayMode(cur_display);
+		valid_modes->width = desktop_mode->w;
+		valid_modes->height = desktop_mode->h;
+		int num_valid_modes = 1;
 
 		// Add resolutions for windowed modes.
 		for (int i = 1; i < num_modes; i++)
