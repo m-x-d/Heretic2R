@@ -26,8 +26,8 @@ static int CL_Irand(const playerinfo_t* playerinfo, const int min, const int max
 	if (min >= max)
 		return min;
 
-	const int val = Q_ftol(roundf(playerinfo->leveltime * 10.0f));
-	return min + (val >> 7 ^ val >> 10 ^ val >> 5) % (max - (min - 1));
+	const int val = (int)(playerinfo->leveltime * 10.0f);
+	return min + (val >> 7 ^ val >> 10 ^ val >> 5) % (max - min + 1);
 }
 
 //TODO: are these needed?..

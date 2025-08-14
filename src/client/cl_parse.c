@@ -55,7 +55,7 @@ float sound_event_id_time_array[127];
 
 int COLOUR(const cvar_t* cvar)
 {
-	return Q_ftol(roundf(cvar->value)) % 32;
+	return (int)cvar->value % 32;
 }
 
 static void CenterPrint(const char* msg, const PalIdx_t color_index) // H2
