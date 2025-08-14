@@ -17,7 +17,7 @@
 
 ResourceManager_t cl_FXBufMngr;
 int camera_timer; // H2
-qboolean viewoffset_changed; // H2
+qboolean offsetangles_changed; // H2
 
 static vec3_t look_angles;
 
@@ -1038,7 +1038,7 @@ void CL_ParseFrame(void)
 	if (cmd != svc_playerinfo)
 		Com_Error(ERR_DROP, "CL_ParseFrame: not playerinfo");
 
-	viewoffset_changed = CL_ParsePlayerstate(old, &cl.frame); // H2: extra return from CL_ParsePlayerstate.
+	offsetangles_changed = CL_ParsePlayerstate(old, &cl.frame); // H2: extra return from CL_ParsePlayerstate.
 
 	// Read packet entities.
 	cmd = MSG_ReadByte(&net_message);
@@ -1389,7 +1389,7 @@ static void CL_UpdateCameraOrientation(const float cam_fwd_offset, const qboolea
 
 	if (trace.fraction != 1.0f)
 	{
-		if (cl_camera_clipdamp->value == 1.0f)
+		if ((int)cl_camera_clipdamp->value)
 		{
 			VectorCopy(trace.endpos, end_2);
 		}
@@ -1455,7 +1455,7 @@ static void CL_UpdateCameraOrientation(const float cam_fwd_offset, const qboolea
 // Sets cl.refdef view values.
 static void CL_CalcViewValues(void)
 {
-	static vec3_t old_viewoffset;
+	static vec3_t old_offsetangles;
 	static float frame_delta;
 
 	const float lerp = cl.lerpfrac;
@@ -1496,26 +1496,26 @@ static void CL_CalcViewValues(void)
 		VectorCopy(PlayerEntPtr->origin, PlayerEntPtr->oldorigin);
 	}
 
-	if (viewoffset_changed)
+	if (offsetangles_changed)
 	{
-		vec3_t viewoffset;
+		vec3_t offsetangles;
 
 		if ((int)cl_predict->value)
-			VectorSubtract(cl.playerinfo.offsetangles, ps->offsetangles, viewoffset);
+			VectorSubtract(cl.playerinfo.offsetangles, ps->offsetangles, offsetangles);
 		else
-			VectorSubtract(ps->offsetangles, ops->offsetangles, viewoffset);
+			VectorSubtract(ps->offsetangles, ops->offsetangles, offsetangles);
 
 		for (int i = 0; i < 3; i++)
 		{
-			if (viewoffset[i] != old_viewoffset[i])
+			if (offsetangles[i] != old_offsetangles[i])
 			{
-				cl.inputangles[i] += viewoffset[i];
-				cl.viewangles[i] += viewoffset[i];
+				cl.inputangles[i] += offsetangles[i];
+				cl.viewangles[i] += offsetangles[i];
 			}
 		}
 
-		VectorCopy(viewoffset, old_viewoffset);
-		viewoffset_changed = false;
+		VectorCopy(offsetangles, old_offsetangles);
+		offsetangles_changed = false;
 	}
 
 	if (ps->pmove.pm_type == PM_INTERMISSION)

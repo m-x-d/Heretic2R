@@ -620,11 +620,11 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 	if (VectorCompare(cl.playerinfo.offsetangles, cl.frame.playerstate.offsetangles))
 	{
 		VectorClear(cl.playerinfo.offsetangles);
-		viewoffset_changed = false;
+		offsetangles_changed = false;
 	}
 	else
 	{
-		viewoffset_changed = true;
+		offsetangles_changed = true;
 	}
 }
 
