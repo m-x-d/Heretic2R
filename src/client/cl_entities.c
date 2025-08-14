@@ -1455,15 +1455,12 @@ static void CL_UpdateCameraOrientation(const float cam_fwd_offset, const qboolea
 // Sets cl.refdef view values.
 static void CL_CalcViewValues(void)
 {
-	static vec3_t old_offsetangles;
-	static float frame_delta;
-
 	const float lerp = cl.lerpfrac;
 	const player_state_t* ps = &cl.frame.playerstate;
 
 	const int frame = (cl.frame.serverframe - 1) & UPDATE_MASK;
 	frame_t* oldframe = &cl.frames[frame];
-	qboolean no_cam_lerp = false;
+	qboolean player_teleported = false;
 
 	if (oldframe->serverframe != cl.frame.serverframe - 1 || !oldframe->valid)
 		oldframe = &cl.frame; // Previous frame was dropped or invalid.
@@ -1475,7 +1472,7 @@ static void CL_CalcViewValues(void)
 	{
 		// Don't interpolate.
 		oldframe = &cl.frame;
-		no_cam_lerp = true;
+		player_teleported = true;
 	}
 
 	player_state_t* ops = &oldframe->playerstate;
@@ -1498,6 +1495,7 @@ static void CL_CalcViewValues(void)
 
 	if (offsetangles_changed)
 	{
+		static vec3_t old_offsetangles;
 		vec3_t offsetangles;
 
 		if ((int)cl_predict->value)
@@ -1547,19 +1545,21 @@ static void CL_CalcViewValues(void)
 
 		if (ps->remote_id < 0) // When not looking through a remote camera.
 		{
-			const float cam_fwd_offset = (float)ops->viewheight + (float)(ps->viewheight - ops->viewheight) * lerp;
+			const float viewheight = (float)ops->viewheight + (float)(ps->viewheight - ops->viewheight) * lerp;
 
-			if (no_cam_lerp)
+			if (player_teleported)
 			{
-				CL_UpdateCameraOrientation(cam_fwd_offset, false);
+				CL_UpdateCameraOrientation(viewheight, false);
 			}
 			else
 			{
+				static float frame_delta;
+
 				frame_delta += cls.rframetime * vid_maxfps->value; //mxd. cls.frametime * cl_maxfps->value in original logic.
 				const int num_frames = (int)frame_delta;
 
 				for (int i = 0; i < num_frames; i++)
-					CL_UpdateCameraOrientation(cam_fwd_offset, true);
+					CL_UpdateCameraOrientation(viewheight, true);
 
 				frame_delta -= (float)num_frames;
 			}
@@ -1591,7 +1591,7 @@ static void CL_CalcViewValues(void)
 	// H2: Update EAX preset.
 	if (CL_PMpointcontents(cl.camera_vieworigin) & CONTENTS_WATER)
 	{
-		if (cl_camera_under_surface->value != 1.0f && !(int)menus_active->value && se.SetEaxEnvironment != NULL)
+		if (!(int)cl_camera_under_surface->value && !(int)menus_active->value && se.SetEaxEnvironment != NULL)
 		{
 			Cvar_SetValue("EAX_preset", EAX_ENVIRONMENT_UNDERWATER); // H2_1.07: 22 -> 44.
 			se.SetEaxEnvironment(EAX_ENVIRONMENT_UNDERWATER);
