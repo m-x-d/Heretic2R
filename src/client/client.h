@@ -134,7 +134,7 @@ typedef struct
 	// It is cleared to 0 upon entering each level. The server sends a delta each server-frame which is added
 	// to the locally tracked view angles to account for standing on rotating objects, and teleport direction changes.
 	vec3_t inputangles;
-	vec3_t delta_inputangles;
+	vec3_t delta_inputangles; // Cleared every renderframe.
 	vec3_t old_delta_inputangles;
 	vec3_t viewangles;
 	vec3_t lookangles;

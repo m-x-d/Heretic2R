@@ -376,7 +376,7 @@ void IN_Update(void) // YQ2
 	sys_frame_time = Sys_Milliseconds();
 }
 
-void IN_Move(usercmd_t* cmd)
+void IN_Move(usercmd_t* cmd) // Called on packetframe or renderframe.
 {
 	IN_MouseMove(cmd);
 	IN_ControllerMove(cmd);
