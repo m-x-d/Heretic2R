@@ -1154,7 +1154,7 @@ static void CL_UpdateWallDistances(void) // H2
 }
 
 // Q2 counterpart
-static void vectoangles2(vec3_t value1, vec3_t angles)
+static void vectoangles2(const vec3_t value1, vec3_t angles)
 {
 	if (value1[0] != 0.0f || value1[1] != 0.0f)
 	{
@@ -1179,7 +1179,7 @@ static void vectoangles2(vec3_t value1, vec3_t angles)
 	}
 }
 
-static void CL_UpdateCameraOrientation(const float cam_fwd_offset, const qboolean interpolate) // H2 //mxd. Flipped 'interpolate' arg logic.
+static void CL_UpdateCameraOrientation(float viewheight, const qboolean interpolate) // H2 //mxd. Flipped 'interpolate' arg logic.
 {
 #define MAX_CAMERA_TIMER	500
 #define MASK_CAMERA			(CONTENTS_SOLID | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK)
@@ -1212,16 +1212,14 @@ static void CL_UpdateCameraOrientation(const float cam_fwd_offset, const qboolea
 	const int water_flags = ((int)cl_predict->value ? cl.playerinfo.pm_w_flags : cl.frame.playerstate.pmove.w_flags);
 	const int waterlevel =  ((int)cl_predict->value ? cl.playerinfo.waterlevel : cl.frame.playerstate.waterlevel);
 
-	float fwd_offset = cam_fwd_offset;
-
 	if ((int)cl_camera_fpmode->value)
 	{
-		fwd_offset += cl_camera_fpheight->value;
+		viewheight += cl_camera_fpheight->value;
 		cam_transparency = cl_camera_fptrans->value;
 	}
 	else
 	{
-		fwd_offset += cl_camera_fpoffs->value + 16.0f;
+		viewheight += cl_camera_fpoffs->value + 16.0f;
 		cam_transparency = cl_playertrans->value;
 	}
 
@@ -1247,23 +1245,23 @@ static void CL_UpdateCameraOrientation(const float cam_fwd_offset, const qboolea
 			trace_t tr;
 			CL_Trace(start, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &tr);
 
-			if (tr.fraction != 1.0f)
+			if (tr.fraction < 1.0f)
 			{
 				start[2] = tr.endpos[2];
-				VectorMA(start, fwd_offset - 9.5f, up, end);
+				VectorMA(start, viewheight - 9.5f, up, end);
 
 				cam_mode = CM_SWIM;
 			}
 		}
-		else
+		else // WF_SWIMFREE | WF_SINK
 		{
-			VectorMA(start, fwd_offset, forward, end);
+			VectorMA(start, viewheight, forward, end);
 			cam_mode = CM_DIVE;
 		}
 	}
 	else
 	{
-		VectorMA(start, fwd_offset, up, end);
+		VectorMA(start, viewheight, up, end);
 
 		trace_t tr;
 		CL_Trace(start, mins_2, maxs_2, end, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &tr);
@@ -1286,14 +1284,14 @@ static void CL_UpdateCameraOrientation(const float cam_fwd_offset, const qboolea
 			if (tr.fraction != 1.0f)
 			{
 				start[2] = tr.endpos[2] * 2.0f - end[2] + 4.0f;
-				VectorMA(start, fwd_offset, up, end);
+				VectorMA(start, viewheight, up, end);
 
 				cam_mode = CM_LIQUID_DEATH;
 			}
 		}
 		else
 		{
-			VectorMA(start, fwd_offset, up, end);
+			VectorMA(start, viewheight, up, end);
 			cam_mode = CM_DEFAULT;
 		}
 	}
@@ -1364,22 +1362,13 @@ static void CL_UpdateCameraOrientation(const float cam_fwd_offset, const qboolea
 	if (!(int)cl_camera_clipdamp->value)
 		VectorCopy(end_2, end_3);
 
-	if (interpolate)
+	// Interpolate camera position when desired, not in fpmode and cl_camera_dampfactor vaues are sane.
+	if (interpolate && !(int)cl_camera_fpmode->value && cl_camera_dampfactor->value > 0.0f && cl_camera_dampfactor->value < 1.0f)
 	{
-		float damp_factor = 0.0f;
+		float damp_factor = fabsf(look_angles[PITCH]);
+		damp_factor = min(1.0f, damp_factor / 89.0f);
 
-		if ((int)cl_camera_fpmode->value)
-		{
-			damp_factor = 1.0f;
-		}
-		else if (cl_camera_dampfactor->value != 0.0f)
-		{
-			damp_factor = fabsf(look_angles[PITCH]);
-			damp_factor = min(89.0f, damp_factor);
-			damp_factor /= 89.0f;
-
-			damp_factor = (1.0f - cl_camera_dampfactor->value) * damp_factor * damp_factor * damp_factor + cl_camera_dampfactor->value;
-		}
+		damp_factor = (1.0f - cl_camera_dampfactor->value) * damp_factor * damp_factor * damp_factor + cl_camera_dampfactor->value;
 
 		for (int i = 0; i < 3; i++)
 			end_2[i] = old_vieworg[i] + (end_2[i] - old_vieworg[i]) * damp_factor;
