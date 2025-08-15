@@ -10,7 +10,6 @@
 
 #if _DEBUG
 	#include <windows.h>
-	#include <stdio.h>
 #endif
 
 // Print to Visual Studio console.
