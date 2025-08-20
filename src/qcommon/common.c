@@ -676,8 +676,8 @@ void Qcommon_Frame(int usec) //mxd. msec -> usec.
 	clienttimedelta += usec;
 	servertimedelta += usec;
 
-	qboolean renderframe = true;
-	qboolean packetframe = true;
+	qboolean packetframe = true; // Runs the server and the client, but not the renderer. The minimal interval is about 10000 microseconds. If run more often the movement prediction in pmove.c breaks. That's the Q2 variant of the famous 125hz bug.
+	qboolean renderframe = true; // Runs the renderer, but not the client or the server. The minimal interval is about 1000 microseconds.
 
 	if (!(int)cl_timedemo->value && cl.cinematictime == 0) // H2: extra cl.cinematictime check.
 	{
