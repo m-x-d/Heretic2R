@@ -1517,9 +1517,6 @@ void CL_Frame(const int packetdelta, const int renderdelta, const int timedelta,
 		// Predict all unacknowledged movements.
 		CL_PredictMovement();
 
-		if ((int)cl_predict->value) // H2
-			CL_StorePredictInfo();
-
 		// Allow rendering DLL change.
 		VID_CheckChanges();
 		if (!cl.refresh_prepped && cls.state == ca_active)

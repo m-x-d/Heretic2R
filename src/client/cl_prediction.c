@@ -30,11 +30,11 @@ static int pred_prevSwapFrame = 0;
 static vec3_t pred_currAngles = { 0 };
 static vec3_t pred_prevAngles = { 0 };
 
-void CL_CheckPredictionError(void)
+void CL_CheckPredictionError(void) //mxd. Called on packetframe.
 {
 	int delta[3];
 
-	if ((int)cl_predict->value == 0) // H2: no PMF_NO_PREDICTION check.
+	if (!(int)cl_predict->value) // H2: no PMF_NO_PREDICTION check.
 		return;
 
 	// Calculate the last usercmd_t we sent that the server has processed.
@@ -51,8 +51,8 @@ void CL_CheckPredictionError(void)
 		delta[i] = cl.frame.playerstate.pmove.origin[i] - cl.predicted_origins[frame][i];
 
 	// Save the prediction error for interpolation.
-	const int len = abs(delta[0]) + abs(delta[1]) + abs(delta[2]);
-	if (len > 640) // 80 world units
+	const int dist = abs(delta[0]) + abs(delta[1]) + abs(delta[2]);
+	if (dist > 80 * 8) // 80 world units.
 	{
 		// A teleport or something.
 		VectorClear(cl.prediction_error);
@@ -235,61 +235,30 @@ int CL_PMpointcontents(const vec3_t point)
 	return contents;
 }
 
-// Sets cl.predicted_origin and cl.predicted_angles.
-void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function...
+// Sets cl.predicted_origin and cl.predicted_angles. Called when cls.netchan.outgoing_sequence changes.
+static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H2 function...
 {
 	static short old_cmd_angles[3] = { 0, 0, 0 };
 	static csurface_t ground_surf; //mxd. Made static.
 
-	paceldata_t* player_anim;
-	short tmp_origin[3];
-	short tmp_vel[3];
-	vec3_t mins;
-	vec3_t maxs;
-	vec3_t origin;
-	pmove_t pm;
-
-	if ((int)cl_paused->value || (int)cl_freezeworld->value || cl.cinematictime > 0 || cl.frame.playerstate.cinematicfreeze)
-		return;
-
-	// Set angles.
-	for (int i = 0; i < 3; i++)
-		cl.predicted_angles[i] = cl.viewangles[i] + SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[i]);
-
-	if (cl_predict->value == 0.0f || cls.state != ca_active)
-		return;
-
-	int ack = cls.netchan.incoming_acknowledged;
-	const int current = cls.netchan.outgoing_sequence;
-
-	// If we are too far out of date, just freeze.
-	if (current - ack >= CMD_BACKUP)
-	{
-		if ((int)cl_showmiss->value)
-			Com_Printf("Exceeded CMD_BACKUP!\n");
-
-		return;
-	}
-
 	// Copy current state to pmove.
-	memset(&pm, 0, sizeof(pm));
-	pm.trace = CL_PMTrace;
-	pm.pointcontents = CL_PMpointcontents;
-	pm.s = cl.frame.playerstate.pmove;
-	pm.origin = origin; // H2
+	vec3_t origin; // H2
+	pmove_t pm = { .trace = CL_PMTrace, .pointcontents = CL_PMpointcontents, .s = cl.frame.playerstate.pmove, .origin = origin };
 
 	for (int i = 0; i < 3; i++)
 	{
-		cl.playerinfo.origin[i] = (float)pm.s.origin[i] / 8.0f;
-		cl.playerinfo.velocity[i] = (float)pm.s.velocity[i] / 8.0f;
+		cl.playerinfo.origin[i] =   (float)pm.s.origin[i] * 0.125f;
+		cl.playerinfo.velocity[i] = (float)pm.s.velocity[i] * 0.125f;
 	}
 
 	VectorCopy(cl.frame.playerstate.mins, pm.mins);
 	VectorCopy(cl.frame.playerstate.maxs, pm.maxs);
 
+	vec3_t mins;
 	VectorCopy(cl.frame.playerstate.mins, mins);
 	pm.intentMins = mins;
 
+	vec3_t maxs;
 	VectorCopy(cl.frame.playerstate.maxs, maxs);
 	pm.intentMaxs = maxs;
 
@@ -315,6 +284,7 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 	cl.playerinfo.lowerseq = cl.frame.playerstate.lowerseq;
 	cl.playerinfo.targetEnt = NULL;
 
+	paceldata_t* player_anim;
 	if (cl.frame.playerstate.edictflags & (FL_AVERAGE_CHICKEN | FL_SUPER_CHICKEN))
 		player_anim = playerExport.PlayerChickenData;
 	else
@@ -399,13 +369,14 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 
 	VectorSet(cl.playerinfo.oldvelocity, 0.0f, 0.0f, cl.frame.playerstate.oldvelocity_z);
 
+	int ack = cls.netchan.incoming_acknowledged;
+	const int current = cls.netchan.outgoing_sequence;
 	int cmd_time_delta = 0;
-	int frame = min(ack + 1, current); // Initialize, in case we have no frames to run.
 
 	// Run frames.
 	while (++ack < current)
 	{
-		frame = ack & (CMD_BACKUP - 1);
+		const int frame = ack & (CMD_BACKUP - 1);
 
 		// YQ2. Ignore null entries.
 		if (cl.cmds[frame].msec == 0)
@@ -423,8 +394,7 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 			cl.playerinfo.turncmd += SHORT2ANGLE(pm.cmd.angles[1] - old_cmd_angles[1]);
 		}
 
-		for (int i = 0; i < 3; i++)
-			old_cmd_angles[i] = pm.cmd.angles[i];
+		VectorCopy_Macro(pm.cmd.angles, old_cmd_angles);
 
 		pm.cmd.forwardmove = (short)Q_ftol(cl.playerinfo.fwdvel);
 		pm.cmd.sidemove = (short)Q_ftol(cl.playerinfo.sidevel);
@@ -442,24 +412,21 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 		pm.high_max = (cl.playerinfo.effects & EF_HIGH_MAX) != 0;
 		pm.run_shrine = (cl.playerinfo.effects & EF_SPEED_ACTIVE) != 0;
 
+		short tmp_origin[3];
+		short tmp_vel[3];
+
 		if (pm.s.pm_flags & PMF_LOCKMOVE)
 		{
-			for (int i = 0; i < 3; i++)
-			{
-				tmp_origin[i] = pm.s.origin[i];
-				tmp_vel[i] = pm.s.velocity[i];
-			}
+			VectorCopy_Macro(pm.s.origin, tmp_origin);
+			VectorCopy_Macro(pm.s.velocity, tmp_vel);
 		}
 
 		Pmove(&pm, false);
 		
 		if (pm.s.pm_flags & PMF_LOCKMOVE)
 		{
-			for (int i = 0; i < 3; i++)
-			{
-				pm.s.origin[i] = tmp_origin[i];
-				pm.s.velocity[i] = tmp_vel[i];
-			}
+			VectorCopy_Macro(tmp_origin, pm.s.origin);
+			VectorCopy_Macro(tmp_vel, pm.s.velocity);
 		}
 
 		if (pm.s.w_flags & (WF_DIVING | WF_SWIMFREE))
@@ -482,8 +449,8 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 
 		for (int i = 0; i < 3; i++)
 		{
-			cl.playerinfo.origin[i] = (float)pm.s.origin[i] / 8.0f;
-			cl.playerinfo.velocity[i] = (float)pm.s.velocity[i] / 8.0f;
+			cl.playerinfo.origin[i] = (float)pm.s.origin[i] * 0.125f;
+			cl.playerinfo.velocity[i] = (float)pm.s.velocity[i] * 0.125f;
 		}
 
 		VectorCopy(pm.intentMins, cl.playerinfo.mins);
@@ -567,8 +534,7 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 
 				cl.playerinfo.leveltime += 0.1f;
 
-				for (int c = 0; c < 3; c++)
-					cl.prediction_error[c] = cl.playerinfo.origin[c] - old_origin[c];
+				VectorSubtract(cl.playerinfo.origin, old_origin, cl.prediction_error);
 
 				pred_currFrame = cl.playerinfo.frame;
 				pred_currSwapFrame = cl.playerinfo.swapFrame;
@@ -590,32 +556,92 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 	}
 
 	pred_playerLerp = (float)cmd_time_delta / 100.0f;
-	const float backlerp = 1.0f - pred_playerLerp;
-
-	for (int i = 0; i < 3; i++)
-	{
-		float val = cl.playerinfo.origin[i] - cl.prediction_error[i] * backlerp;
-		cl.predicted_origins[frame][i] = (short)(val * 8.0f);
-	}
-
-	float dist = fabsf((float)cl.predicted_origins[frame][0] / 8.0f - cl.predicted_origin[0]) +
-				 fabsf((float)cl.predicted_origins[frame][1] / 8.0f - cl.predicted_origin[1]) +
-				 fabsf((float)cl.predicted_origins[frame][2] / 8.0f - cl.predicted_origin[2]);
-
-	if (dist < 640.0f) // When dist > 80, assume player teleported.
-	{
-		for (int i = 0; i < 3; i++)
-			cl.predicted_origin[i] = ((float)cl.predicted_origins[frame][i] / 8.0f + cl.predicted_origin[i]) * 0.5f;
-	}
-	else
-	{
-		VectorCopy(cl.playerinfo.origin, cl.predicted_origin);
-	}
 
 	pred_effects = cl.playerinfo.effects;
 	pred_clientnum = cl.playerinfo.clientnum;
 	pred_renderfx = cl.playerinfo.renderfx;
 	pred_skinnum = cl.playerinfo.skinnum;
+}
+
+// Updates player origin (among 1000 other things). Called on renderframe.
+//mxd. With decoupled packetframe/renderframe logic, we can have multiple CL_PredictMovement() calls for the same frame, resulting in re-calculating the same values multiple times.
+//mxd. For example, with cl_maxfps:30 and vid_maxfps:60 CL_PredictMovement() will be called twice for the same packet frame.
+//mxd. In such cases, skip most of the logic.
+void CL_PredictMovement(void)
+{
+	static int prev_current = -1;
+	static vec3_t prev_predicted_origin;
+	static float frame_lerp;
+	static float frame_lerp_increment;
+
+	if ((int)cl_paused->value || (int)cl_freezeworld->value || cl.cinematictime > 0 || cl.frame.playerstate.cinematicfreeze)
+		return;
+
+	// Set angles.
+	for (int i = 0; i < 3; i++)
+		cl.predicted_angles[i] = cl.viewangles[i] + SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[i]);
+
+	if (!(int)cl_predict->value || cls.state != ca_active)
+		return;
+
+	const int ack = cls.netchan.incoming_acknowledged;
+	const int current = cls.netchan.outgoing_sequence;
+	
+	// If we are too far out of date, just freeze.
+	if (current - ack >= CMD_BACKUP)
+	{
+		if ((int)cl_showmiss->value)
+			Com_Printf("Exceeded CMD_BACKUP!\n");
+
+		return;
+	}
+
+	const int frame = (current - 1) & (CMD_BACKUP - 1);
+	const qboolean new_frame = (prev_current != current);
+
+	//mxd. Call the main logic only when we have a new network frame.
+	if (new_frame)
+	{
+		CL_PredictMovement_impl();
+
+		const float backlerp = 1.0f - pred_playerLerp;
+
+		for (int i = 0; i < 3; i++)
+		{
+			const float val = cl.playerinfo.origin[i] - cl.prediction_error[i] * backlerp;
+			cl.predicted_origins[frame][i] = (short)(val * 8.0f);
+		}
+
+		VectorCopy(cl.predicted_origin, prev_predicted_origin); //mxd
+
+		frame_lerp_increment = 1.0f / ((vid_maxfps->value / cl_maxfps->value) + 1.0f); // For cl_maxfps:30 and vid_maxfps:60: 2 calls for the same frame with 0.33f and 0.66f frame_lerp.
+		frame_lerp = frame_lerp_increment;
+
+		prev_current = current;
+	}
+	else
+	{
+		frame_lerp += frame_lerp_increment;
+	}
+
+	const float dist = fabsf((float)cl.predicted_origins[frame][0] * 0.125f - cl.predicted_origin[0]) +
+					   fabsf((float)cl.predicted_origins[frame][1] * 0.125f - cl.predicted_origin[1]) +
+					   fabsf((float)cl.predicted_origins[frame][2] * 0.125f - cl.predicted_origin[2]);
+
+	if (dist < 640.0f) // When dist > 80, assume ETHEREAL TRAVEL.
+	{
+		//mxd. cl.predicted_origins[frame] will have the same value for same 'frame' on every CL_PredictMovement() call.
+		//mxd. So, we now need to interpolate cl.predicted_origin across such calls...
+		for (int i = 0; i < 3; i++)
+		{
+			const float new_pos = (float)cl.predicted_origins[frame][i] * 0.125f;
+			cl.predicted_origin[i] = prev_predicted_origin[i] + (new_pos - prev_predicted_origin[i]) * frame_lerp;
+		}
+	}
+	else
+	{
+		VectorCopy(cl.playerinfo.origin, cl.predicted_origin);
+	}
 
 	if (VectorCompare(cl.playerinfo.offsetangles, cl.frame.playerstate.offsetangles))
 	{
@@ -626,31 +652,32 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 	{
 		offsetangles_changed = true;
 	}
-}
 
-void CL_StorePredictInfo(void) // H2
-{
+	// Store prediction info. //mxd. Done in separate function in original logic.
 	VectorCopy(cl.predicted_origin, cl_entities[cl.playernum + 1].origin);
 
-	cl.predictinfo.currFrame = pred_currFrame;
-	cl.predictinfo.currSwapFrame = pred_currSwapFrame;
-	cl.predictinfo.prevFrame = pred_prevFrame;
-	cl.predictinfo.prevSwapFrame = pred_prevSwapFrame;
-
-	if (cl.playerinfo.deadflag == 0)
+	if (new_frame)
 	{
-		VectorCopy(pred_currAngles, cl.predictinfo.currAngles);
-		VectorCopy(pred_prevAngles, cl.predictinfo.prevAngles);
+		cl.predictinfo.currFrame = pred_currFrame;
+		cl.predictinfo.currSwapFrame = pred_currSwapFrame;
+		cl.predictinfo.prevFrame = pred_prevFrame;
+		cl.predictinfo.prevSwapFrame = pred_prevSwapFrame;
+
+		if (cl.playerinfo.deadflag == 0)
+		{
+			VectorCopy(pred_currAngles, cl.predictinfo.currAngles);
+			VectorCopy(pred_prevAngles, cl.predictinfo.prevAngles);
+		}
+
+		cl.predictinfo.effects = pred_effects;
+		cl.predictinfo.playerLerp = pred_playerLerp;
+		cl.predictinfo.clientnum = pred_clientnum;
+		cl.predictinfo.renderfx = pred_renderfx;
+		cl.predictinfo.skinnum = pred_skinnum;
+
+		memcpy(cl.predictinfo.fmnodeinfo, cl.playerinfo.fmnodeinfo, sizeof(cl.predictinfo.fmnodeinfo));
+
+		pred_pm_flags = cl.playerinfo.pm_flags;
+		pred_pm_w_flags = cl.playerinfo.pm_w_flags;
 	}
-
-	cl.predictinfo.effects = pred_effects;
-	cl.predictinfo.playerLerp = pred_playerLerp;
-	cl.predictinfo.clientnum = pred_clientnum;
-	cl.predictinfo.renderfx = pred_renderfx;
-	cl.predictinfo.skinnum = pred_skinnum;
-
-	memcpy(cl.predictinfo.fmnodeinfo, cl.playerinfo.fmnodeinfo, sizeof(cl.predictinfo.fmnodeinfo));
-
-	pred_pm_flags = cl.playerinfo.pm_flags;
-	pred_pm_w_flags = cl.playerinfo.pm_w_flags;
 }

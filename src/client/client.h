@@ -693,6 +693,9 @@ extern qboolean trace_ignore_player; //mxd
 extern qboolean trace_ignore_camera; //mxd
 
 extern void CL_CheckPredictionError(void);
+extern int CL_PMpointcontents(const vec3_t point); //mxd
+extern void CL_PredictMovement(void);
+extern void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr);
 
 // Menus.
 extern void M_Init(void);
@@ -702,14 +705,8 @@ extern void M_Menu_Main_f(void);
 extern void M_ForceMenuOff(void);
 extern void M_AddToServerList(const netadr_t* adr, const char* info);
 
-// cl_inv.c
-void CL_ParseInventory(void);
-
-// cl_pred.c
-extern int CL_PMpointcontents(const vec3_t point); //mxd
-extern void CL_PredictMovement(void);
-extern void CL_StorePredictInfo(void); //mxd
-extern void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr);
+// cl_inventory.c
+extern void CL_ParseInventory(void);
 
 // sys_win.c //mxd
 extern uint sys_frame_time;
