@@ -883,13 +883,6 @@ static void CL_FinishMove(usercmd_t* cmd) // Called on packetframe.
 
 	// Send the ambient light level at the player's current position.
 	cmd->lightlevel = (byte)cl_lightlevel->value;
-
-	// Send milliseconds of time to apply the move.
-	int ms = (int)(cls.nframetime * 1000.0f);
-	if (ms > 250)
-		ms = 100; // Time was unreasonable.
-
-	cmd->msec = (byte)ms;
 }
 
 static void CL_FinalizeCmd(void) // YQ2. Called on packetframe.
