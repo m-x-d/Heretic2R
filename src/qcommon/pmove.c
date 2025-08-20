@@ -32,7 +32,7 @@ typedef struct
 	float knockbackfactor; // H2
 	float desired_water_height; // H2
 
-	vec3_t previous_origin;
+	short previous_origin[3]; //mxd. vec3_t in H2.
 	short snapped_origin[3]; // H2
 } pml_t;
 
@@ -716,14 +716,14 @@ static void PM_AirMove(void)
 	vec3_t wishvel;
 
 	qboolean run_shrine = false; // H2
-	float fdmove = pm->cmd.forwardmove;
+	float fmove = pm->cmd.forwardmove;
 	const float smove = pm->cmd.sidemove;
 
 	pml.gravity = pm->s.gravity; // H2
 
-	if (!pm->high_max && pm->run_shrine && fdmove > 0.0f) // H2
+	if (!pm->high_max && pm->run_shrine && fmove > 0.0f) // H2
 	{
-		fdmove *= 1.65f;
+		fmove *= 1.65f;
 		run_shrine = true;
 	}
 
@@ -731,7 +731,7 @@ static void PM_AirMove(void)
 	VectorNormalize(pml.right);
 
 	for (int i = 0; i < 2; i++)
-		wishvel[i] = pml.forward[i] * fdmove + pml.right[i] * smove;
+		wishvel[i] = pml.forward[i] * fmove + pml.right[i] * smove;
 	wishvel[2] = 0.0f;
 
 	PM_AddCurrents(wishvel);
@@ -1047,7 +1047,7 @@ static qboolean PM_GoodPosition(void)
 	vec3_t origin;
 
 	for (int i = 0; i < 3; i++)
-		origin[i] = (float)pml.snapped_origin[i] / 8.0f;
+		origin[i] = (float)pml.snapped_origin[i] * 0.125f;
 
 	pm->trace(origin, pm->mins, pm->maxs, origin, &trace);
 
@@ -1075,21 +1075,21 @@ static void PM_SnapPosition(void)
 	{
 		pml.snapped_origin[i] = (short)(pml.origin[i] * 8.0f);
 
-		if (!FloatIsZeroEpsilon((float)pml.snapped_origin[i] / 8.0f - pml.origin[i])) // H2: FloatIsZeroEpsilon() instead of direct comparison.
+		if (!FloatIsZeroEpsilon((float)pml.snapped_origin[i] * 0.125f - pml.origin[i])) // H2: FloatIsZeroEpsilon() instead of direct comparison.
 			offset[i] = (short)(Q_signf(pml.origin[i]));
 	}
 
 	short base[3];
-	VectorCopy_Macro(pml.snapped_origin, base);
+	VectorCopy_Macro(pml.snapped_origin, base); // Q2: pm->s.origin (here and below).
 
-	// Try all combinations
-	for (int j = 0; j < 8; j++)
+	// Try all combinations.
+	for (int i = 0; i < 8; i++)
 	{
 		VectorCopy_Macro(base, pml.snapped_origin);
 
-		for (int i = 0; i < 3; i++)
-			if (jitterbits[j] & (1 << i))
-				pml.snapped_origin[i] += offset[i];
+		for (int c = 0; c < 3; c++)
+			if (jitterbits[i] & (1 << c))
+				pml.snapped_origin[c] += offset[c];
 
 		if (PM_GoodPosition())
 		{
@@ -1099,8 +1099,7 @@ static void PM_SnapPosition(void)
 	}
 
 	// Go back to the last position.
-	for (int i = 0; i < 3; i++)
-		pm->s.origin[i] = (short)pml.previous_origin[i];
+	VectorCopy_Macro(pml.previous_origin, pm->s.origin);
 }
 
 static void PM_InitialSnapPosition(void)
@@ -1126,7 +1125,7 @@ static void PM_InitialSnapPosition(void)
 				{
 					for (int i = 0; i < 3; i++)
 					{
-						pml.origin[i] = (float)pml.snapped_origin[i] / 8.0f;
+						pml.origin[i] = (float)pml.snapped_origin[i] * 0.125f;
 						pml.previous_origin[i] = pml.snapped_origin[i];
 					}
 
@@ -1216,14 +1215,14 @@ static void PM_UpdateWaterLevel(void) // H2. Part of PM_CatagorizePosition() log
 		if (trace.fraction < 1.0f && pml.desired_water_height < pm->waterheight)
 			pm->waterlevel = 2;
 	}
-	else // Fully submerged
+	else // Fully submerged.
 	{
 		pm->waterlevel = 3;
 		pm->waterheight = pm->maxs[2];
 	}
 }
 
-// Can be called by either the server or the client.
+// Can be called by either the server (at every packetframe) or the client (at every renderframe).
 void Pmove(pmove_t* pmove, const qboolean server)
 {
 	pm = pmove;
@@ -1239,16 +1238,20 @@ void Pmove(pmove_t* pmove, const qboolean server)
 
 	if (pml.server) // H2
 	{
-		VectorCopy(pm->origin, pml.origin);
-		VectorCopy(pm->velocity, pml.velocity);
+		//mxd. Snap to the 0.125 precision for consistency with !pml.server case. Original logic just copies vectors.
+		for (int i = 0; i < 3; i++)
+		{
+			pml.origin[i] = (float)((int)(pm->origin[i] * 8.0f)) * 0.125f;
+			pml.velocity[i] = (float)((int)(pm->velocity[i] * 8.0f)) * 0.125f;
+		}
 	}
 	else
 	{
 		// Convert origin and velocity to float values.
 		for (int i = 0; i < 3; i++)
 		{
-			pml.origin[i] = (float)pm->s.origin[i] / 8.0f;
-			pml.velocity[i] = (float)pm->s.velocity[i] / 8.0f;
+			pml.origin[i] = (float)pm->s.origin[i] * 0.125f;
+			pml.velocity[i] = (float)pm->s.velocity[i] * 0.125f;
 			pml.previous_origin[i] = pm->s.origin[i]; // H2
 			pml.snapped_origin[i] = pm->s.origin[i]; // H2
 		}
@@ -1329,7 +1332,7 @@ void Pmove(pmove_t* pmove, const qboolean server)
 		{
 			PM_LavaMove();
 		}
-		else if (pm->waterlevel == 0 || (pm->waterlevel == 1 && ((pm->s.w_flags & WF_SURFACE) == 0 || (pm->s.pm_flags & PMF_ON_GROUND) != 0)))
+		else if (pm->waterlevel == 0 || (pm->waterlevel == 1 && (!(pm->s.w_flags & WF_SURFACE) || (pm->s.pm_flags & PMF_ON_GROUND))))
 		{
 			pm->s.w_flags = 0;
 			PM_AirMove();
