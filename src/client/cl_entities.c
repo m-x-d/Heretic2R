@@ -1413,13 +1413,12 @@ static void CL_UpdateCameraOrientation(float viewheight, const qboolean interpol
 		VectorMA(end, -cl_camera_viewmax->value, diff, end_2);
 	}
 
-	// Copy calculated angles to refdef.
+	// Copy calculated angles and vieworg to refdef.
 	vec3_t viewangles;
 	VectorSubtract(end, end_2, viewangles);
 	VectorNormalize(viewangles);
 
 	vectoangles2(viewangles, cl.refdef.viewangles);
-
 	VectorCopy(end_2, cl.refdef.vieworg);
 
 	if ((int)cl_camera_freeze->value)
