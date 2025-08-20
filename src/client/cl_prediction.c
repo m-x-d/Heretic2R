@@ -10,6 +10,8 @@
 #include "p_main.h"
 #include "Vector.h"
 
+#define MIN_TELEPORT_DISTANCE	640 //mxd. 80 world units. When distance between previous and current player origin > this, assume player teleported.
+
 int pred_pm_flags;
 int pred_pm_w_flags;
 qboolean trace_ignore_player;
@@ -32,8 +34,6 @@ static vec3_t pred_prevAngles = { 0 };
 
 void CL_CheckPredictionError(void) //mxd. Called on packetframe.
 {
-	int delta[3];
-
 	if (!(int)cl_predict->value) // H2: no PMF_NO_PREDICTION check.
 		return;
 
@@ -47,12 +47,14 @@ void CL_CheckPredictionError(void) //mxd. Called on packetframe.
 		pred_prevSwapFrame = pred_currSwapFrame;
 
 	// Compare what the server returned with what we had predicted it to be.
+	int delta[3];
 	for (int i = 0; i < 3; i++)
 		delta[i] = cl.frame.playerstate.pmove.origin[i] - cl.predicted_origins[frame][i];
 
 	// Save the prediction error for interpolation.
 	const int dist = abs(delta[0]) + abs(delta[1]) + abs(delta[2]);
-	if (dist > 80 * 8) // 80 world units.
+
+	if (dist > MIN_TELEPORT_DISTANCE)
 	{
 		// A teleport or something.
 		VectorClear(cl.prediction_error);
@@ -624,11 +626,18 @@ void CL_PredictMovement(void)
 		frame_lerp += frame_lerp_increment;
 	}
 
-	const float dist = fabsf((float)cl.predicted_origins[frame][0] * 0.125f - cl.predicted_origin[0]) +
-					   fabsf((float)cl.predicted_origins[frame][1] * 0.125f - cl.predicted_origin[1]) +
-					   fabsf((float)cl.predicted_origins[frame][2] * 0.125f - cl.predicted_origin[2]);
+	int delta[3];
+	for (int i = 0; i < 3; i++)
+		delta[i] = cl.predicted_origins[frame][i] - (int)(cl.predicted_origin[i] * 8.0f);
 
-	if (dist < 640.0f) // When dist > 80, assume ETHEREAL TRAVEL.
+	const int dist = abs(delta[0]) + abs(delta[1]) + abs(delta[2]);
+
+	if (dist > MIN_TELEPORT_DISTANCE) //BUGFIX: mxd. Original logic compares distance, not distance * 8. //TODO: original logic uses '>=' check here, but not in similar case in CL_CheckPredictionError(). Also a bug?
+	{
+		// Assume ETHEREAL TRAVEL.
+		VectorCopy(cl.playerinfo.origin, cl.predicted_origin);
+	}
+	else
 	{
 		//mxd. cl.predicted_origins[frame] will have the same value for same 'frame' on every CL_PredictMovement() call.
 		//mxd. So, we now need to interpolate cl.predicted_origin across such calls...
@@ -637,10 +646,6 @@ void CL_PredictMovement(void)
 			const float new_pos = (float)cl.predicted_origins[frame][i] * 0.125f;
 			cl.predicted_origin[i] = prev_predicted_origin[i] + (new_pos - prev_predicted_origin[i]) * frame_lerp;
 		}
-	}
-	else
-	{
-		VectorCopy(cl.playerinfo.origin, cl.predicted_origin);
 	}
 
 	if (VectorCompare(cl.playerinfo.offsetangles, cl.frame.playerstate.offsetangles))
