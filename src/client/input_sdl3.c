@@ -388,3 +388,9 @@ void In_FlushQueue(void) // YQ2
 	SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
 	Key_ClearStates();
 }
+
+//mxd. Not the best place to put this. Oh well...
+inline void Sys_CpuPause(void) //TODO: YQ2 uses __forceinline.
+{
+	SDL_CPUPauseInstruction();
+}

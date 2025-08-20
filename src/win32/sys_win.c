@@ -6,7 +6,7 @@
 
 #include "Quake2Main.h"
 #include "qcommon.h"
-#include "q_shared.h"
+#include "input.h"
 
 #include <VersionHelpers.h> //mxd
 
@@ -270,7 +270,12 @@ Q2DLL_DECLSPEC int Quake2Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPST
 	// The main game loop.
 	while (true)
 	{
-		Sys_Nanosleep(5000); //TODO: implement YQ2 busywait logic?
+		//TODO: use Sys_Nanosleep(5000) instead of busywait logic when game window is unfocused or minimized?
+		const long long spintime = Sys_Microseconds();
+
+		// YQ2 busywait logic.
+		while (Sys_Microseconds() - spintime < 5)
+			Sys_CpuPause(); // Give the CPU a hint that this is a very tight spinloop.
 
 		const long long newtime = Sys_Microseconds();
 		curtime = (int)(newtime / 1000ll); // Save global time for network and input code.

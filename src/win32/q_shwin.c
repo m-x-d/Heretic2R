@@ -39,7 +39,7 @@ int Sys_Milliseconds(void) // YQ2. No longer sets 'curtime' global var.
 	return (int)(Sys_Microseconds() / 1000ll);
 }
 
-void Sys_Nanosleep(const int nanosec)
+void Sys_Nanosleep(const int nanosec) //TODO: currently unused.
 {
 	const HANDLE timer = CreateWaitableTimer(NULL, TRUE, NULL);
 
