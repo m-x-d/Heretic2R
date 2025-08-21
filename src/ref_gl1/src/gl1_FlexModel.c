@@ -369,6 +369,9 @@ void Mod_LoadFlexModel(model_t* mod, void* buffer, int length)
 		in += header->size; // Skip to next block header...
 		length -= (header->size + (int)sizeof(fmdl_blockheader_t));
 	}
+
+	//mxd. Never null?
+	assert(fmodel->frames != NULL);
 }
 
 void Mod_RegisterFlexModel(model_t* mod)
@@ -400,23 +403,20 @@ static qboolean R_CullFlexModel(const fmdl_t* model, entity_t* e)
 	// Compute axially aligned mins and maxs.
 	if (model->frames == NULL)
 	{
-		for (int i = 0; i < 3; i++)
-		{
-			mins[i] = model->compdata[model->frame_to_group[e->frame]].bmin[i];
-			maxs[i] = model->compdata[model->frame_to_group[e->frame]].bmax[i];
-		}
+		VectorCopy(model->compdata[model->frame_to_group[e->frame]].bmin, mins);
+		VectorCopy(model->compdata[model->frame_to_group[e->frame]].bmax, maxs);
 	}
 	else
 	{
-		fmaliasframe_t* pframe = (fmaliasframe_t*)((byte*)model->frames + e->frame * model->header.framesize);
-		fmaliasframe_t* poldframe = (fmaliasframe_t*)((byte*)model->frames + e->oldframe * model->header.framesize);
+		const fmaliasframe_t* pframe = (fmaliasframe_t*)((byte*)model->frames + e->frame * model->header.framesize);
+		const fmaliasframe_t* poldframe = (fmaliasframe_t*)((byte*)model->frames + e->oldframe * model->header.framesize);
 
 		if (pframe == poldframe)
 		{
 			for (int i = 0; i < 3; i++)
 			{
 				mins[i] = pframe->translate[i];
-				maxs[i] = mins[i] + pframe->scale[i] * 255;
+				maxs[i] = mins[i] + pframe->scale[i] * 255.0f;
 			}
 		}
 		else
@@ -424,10 +424,10 @@ static qboolean R_CullFlexModel(const fmdl_t* model, entity_t* e)
 			for (int i = 0; i < 3; i++)
 			{
 				const float thismins = pframe->translate[i];
-				const float thismaxs = thismins + pframe->scale[i] * 255;
+				const float thismaxs = thismins + pframe->scale[i] * 255.0f;
 
 				const float oldmins = poldframe->translate[i];
-				const float oldmaxs = oldmins + poldframe->scale[i] * 255;
+				const float oldmaxs = oldmins + poldframe->scale[i] * 255.0f;
 
 				mins[i] = min(thismins, oldmins);
 				maxs[i] = max(thismaxs, oldmaxs);
