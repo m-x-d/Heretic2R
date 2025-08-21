@@ -573,8 +573,9 @@ void CL_PredictMovement(void)
 {
 	static int prev_current = -1;
 	static vec3_t prev_predicted_origin;
-	static float frame_lerp;
-	static float frame_lerp_increment;
+	static float origin_lerp;
+	static float origin_lerp_increment;
+	static float player_lerp_increment;
 
 	if ((int)cl_paused->value || (int)cl_freezeworld->value || cl.cinematictime > 0 || cl.frame.playerstate.cinematicfreeze)
 		return;
@@ -606,6 +607,10 @@ void CL_PredictMovement(void)
 	{
 		CL_PredictMovement_impl();
 
+		//mxd. Setup playerLerp interpolation...
+		player_lerp_increment = ((vid_maxfps->value > 30.0f) ? 10.0f / vid_maxfps->value : 0.0f); // pred_playerLerp interpolates at 10 FPS.
+
+		pred_playerLerp -= player_lerp_increment;
 		const float backlerp = 1.0f - pred_playerLerp;
 
 		for (int i = 0; i < 3; i++)
@@ -614,16 +619,20 @@ void CL_PredictMovement(void)
 			cl.predicted_origins[frame][i] = (short)(val * 8.0f);
 		}
 
+		//mxd. Setup origin interpolation...
 		VectorCopy(cl.predicted_origin, prev_predicted_origin); //mxd
 
-		frame_lerp_increment = 1.0f / ((vid_maxfps->value / cl_maxfps->value) + 1.0f); // For cl_maxfps:30 and vid_maxfps:60: 2 calls for the same frame with 0.33f and 0.66f frame_lerp.
-		frame_lerp = frame_lerp_increment;
+		origin_lerp_increment = 1.0f / ((vid_maxfps->value / cl_maxfps->value) + 1.0f); // For cl_maxfps:30 and vid_maxfps:60: 2 calls for the same frame with 0.33f and 0.66f frame_lerp.
+		origin_lerp = origin_lerp_increment;
 
+		//mxd. Store current frame index...
 		prev_current = current;
 	}
 	else
 	{
-		frame_lerp += frame_lerp_increment;
+		//mxd. Interpolate between packetframes...
+		origin_lerp += origin_lerp_increment;
+		pred_playerLerp += player_lerp_increment;
 	}
 
 	int delta[3];
@@ -644,7 +653,7 @@ void CL_PredictMovement(void)
 		for (int i = 0; i < 3; i++)
 		{
 			const float new_pos = (float)cl.predicted_origins[frame][i] * 0.125f;
-			cl.predicted_origin[i] = prev_predicted_origin[i] + (new_pos - prev_predicted_origin[i]) * frame_lerp;
+			cl.predicted_origin[i] = prev_predicted_origin[i] + (new_pos - prev_predicted_origin[i]) * origin_lerp;
 		}
 	}
 
@@ -660,6 +669,7 @@ void CL_PredictMovement(void)
 
 	// Store prediction info. //mxd. Done in separate function in original logic.
 	VectorCopy(cl.predicted_origin, cl_entities[cl.playernum + 1].origin);
+	cl.predictinfo.playerLerp = pred_playerLerp;
 
 	if (new_frame)
 	{
@@ -675,7 +685,6 @@ void CL_PredictMovement(void)
 		}
 
 		cl.predictinfo.effects = pred_effects;
-		cl.predictinfo.playerLerp = pred_playerLerp;
 		cl.predictinfo.clientnum = pred_clientnum;
 		cl.predictinfo.renderfx = pred_renderfx;
 		cl.predictinfo.skinnum = pred_skinnum;
