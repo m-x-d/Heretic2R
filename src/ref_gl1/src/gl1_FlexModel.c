@@ -15,23 +15,18 @@
 #include "Hunk.h"
 #include "Vector.h"
 
-static fmdl_t* fmodel;
-
-static vec3_t shadelight;
-static vec3_t shadevector;
-
 #pragma region ========================== FLEX MODEL LOADING ==========================
 
-static qboolean fmLoadHeader(model_t* model, const int version, const int datasize, const void* buffer)
+static qboolean fmLoadHeader(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
 	if (version != FM_HEADER_VER)
 		ri.Sys_Error(ERR_DROP, "Invalid HEADER version for block %s: %d != %d\n", FM_HEADER_NAME, FM_HEADER_VER, version);
 
 	// Read header...
-	memcpy(&fmodel->header, buffer, sizeof(fmheader_t));
+	memcpy(&fmdl->header, buffer, sizeof(fmheader_t));
 
 	// Sanity checks...
-	const fmheader_t* h = &fmodel->header;
+	const fmheader_t* h = &fmdl->header;
 
 	if (h->skinwidth < 1 || h->skinwidth > SKINPAGE_WIDTH || h->skinheight < 1 || h->skinheight > SKINPAGE_HEIGHT) //mxd. Added SKINPAGE_WIDTH check.
 		ri.Sys_Error(ERR_DROP, "Model '%s' has invalid skin size (%ix%i)", model->name, h->skinwidth, h->skinheight);
@@ -54,87 +49,87 @@ static qboolean fmLoadHeader(model_t* model, const int version, const int datasi
 	return true;
 }
 
-static qboolean fmLoadSkin(model_t* model, const int version, const int datasize, const void* buffer)
+static qboolean fmLoadSkin(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
 	if (version != FM_SKIN_VER)
 		ri.Sys_Error(ERR_DROP, "Invalid SKIN version for block %s: %d != %d\n", FM_SKIN_NAME, FM_SKIN_VER, version);
 
-	const int skin_names_size = fmodel->header.num_skins * MAX_FRAMENAME;
+	const int skin_names_size = fmdl->header.num_skins * MAX_FRAMENAME;
 	if (skin_names_size != datasize)
 	{
 		ri.Con_Printf(PRINT_ALL, "Skin sizes do not match: %d != %d\n", datasize, skin_names_size);
 		return false;
 	}
 
-	fmodel->skin_names = (char*)Hunk_Alloc(skin_names_size);
-	memcpy(fmodel->skin_names, buffer, skin_names_size);
+	fmdl->skin_names = (char*)Hunk_Alloc(skin_names_size);
+	memcpy(fmdl->skin_names, buffer, skin_names_size);
 
 	// Precache skins...
-	char* skin_name = fmodel->skin_names;
-	for (int i = 0; i < fmodel->header.num_skins; i++, skin_name += MAX_FRAMENAME)
+	char* skin_name = fmdl->skin_names;
+	for (int i = 0; i < fmdl->header.num_skins; i++, skin_name += MAX_FRAMENAME)
 		model->skins[i] = R_FindImage(skin_name, it_skin);
 
 	return true;
 }
 
-static qboolean fmLoadST(model_t* model, const int version, const int datasize, const void* buffer)
+static qboolean fmLoadST(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
 	return true;
 }
 
-static qboolean fmLoadTris(model_t* model, const int version, const int datasize, const void* buffer)
+static qboolean fmLoadTris(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
 	return true;
 }
 
-static qboolean fmLoadFrames(model_t* model, const int version, const int datasize, const void* buffer)
+static qboolean fmLoadFrames(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
 	if (version != FM_FRAME_VER)
 		ri.Sys_Error(ERR_DROP, "Invalid FRAMES version for block %s: %d != %d\n", FM_FRAME_NAME, FM_FRAME_VER, version);
 
-	fmodel->frames = Hunk_Alloc(fmodel->header.num_frames * fmodel->header.framesize);
+	fmdl->frames = Hunk_Alloc(fmdl->header.num_frames * fmdl->header.framesize);
 
-	for (int i = 0; i < fmodel->header.num_frames; i++)
+	for (int i = 0; i < fmdl->header.num_frames; i++)
 	{
-		const fmaliasframe_t* in = (const fmaliasframe_t*)((const byte*)buffer + i * fmodel->header.framesize);
-		fmaliasframe_t* out = (fmaliasframe_t*)((byte*)fmodel->frames + i * fmodel->header.framesize);
+		const fmaliasframe_t* in = (const fmaliasframe_t*)((const byte*)buffer + i * fmdl->header.framesize);
+		fmaliasframe_t* out = (fmaliasframe_t*)((byte*)fmdl->frames + i * fmdl->header.framesize);
 
 		VectorCopy(in->scale, out->scale);
 		VectorCopy(in->translate, out->translate);
 
 		memcpy(out->name, in->name, sizeof(out->name));
-		memcpy(out->verts, in->verts, fmodel->header.num_xyz * sizeof(fmtrivertx_t));
+		memcpy(out->verts, in->verts, fmdl->header.num_xyz * sizeof(fmtrivertx_t));
 	}
 
 	return true;
 }
 
-static qboolean fmLoadGLCmds(model_t* model, const int version, const int datasize, const void* buffer)
+static qboolean fmLoadGLCmds(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
 	if (version != FM_GLCMDS_VER)
 		ri.Sys_Error(ERR_DROP, "Invalid GLCMDS version for block %s: %d != %d\n", FM_GLCMDS_NAME, FM_GLCMDS_VER, version);
 
-	const uint size = fmodel->header.num_glcmds * sizeof(int);
-	fmodel->glcmds = Hunk_Alloc((int)size);
-	memcpy(fmodel->glcmds, buffer, size);
+	const uint size = fmdl->header.num_glcmds * sizeof(int);
+	fmdl->glcmds = Hunk_Alloc((int)size);
+	memcpy(fmdl->glcmds, buffer, size);
 
 	return true;
 }
 
-static qboolean fmLoadMeshNodes(model_t* model, const int version, const int datasize, const void* buffer)
+static qboolean fmLoadMeshNodes(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
 	if (version != FM_MESH_VER)
 		ri.Sys_Error(ERR_DROP, "Invalid MESH version for block %s: %d != %d\n", FM_MESH_NAME, FM_MESH_VER, version);
 
-	if (fmodel->header.num_mesh_nodes < 1)
+	if (fmdl->header.num_mesh_nodes < 1)
 		return true;
 
-	fmodel->mesh_nodes = Hunk_Alloc(fmodel->header.num_mesh_nodes * (int)sizeof(fmmeshnode_t));
+	fmdl->mesh_nodes = Hunk_Alloc(fmdl->header.num_mesh_nodes * (int)sizeof(fmmeshnode_t));
 
 	const fmmeshnode_t* in = buffer;
-	fmmeshnode_t* out = &fmodel->mesh_nodes[0];
+	fmmeshnode_t* out = &fmdl->mesh_nodes[0];
 
-	for (int i = 0; i < fmodel->header.num_mesh_nodes; i++, in++, out++)
+	for (int i = 0; i < fmdl->header.num_mesh_nodes; i++, in++, out++)
 	{
 		//mxd. Don't copy tris (unused).
 
@@ -149,25 +144,25 @@ static qboolean fmLoadMeshNodes(model_t* model, const int version, const int dat
 	return true;
 }
 
-static qboolean fmLoadShortFrames(model_t* model, const int version, const int datasize, const void* buffer)
+static qboolean fmLoadShortFrames(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
 	NOT_IMPLEMENTED
 	return false;
 }
 
-static qboolean fmLoadNormal(model_t* model, const int version, const int datasize, const void* buffer)
+static qboolean fmLoadNormal(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
 	NOT_IMPLEMENTED
 	return false;
 }
 
-static qboolean fmLoadComp(model_t* model, const int version, const int datasize, const void* buffer)
+static qboolean fmLoadComp(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
 	NOT_IMPLEMENTED
 	return false;
 }
 
-static qboolean fmLoadSkeleton(model_t* model, const int version, const int datasize, const void* buffer)
+static qboolean fmLoadSkeleton(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
 	if (version != FM_SKELETON_VER)
 	{
@@ -177,8 +172,8 @@ static qboolean fmLoadSkeleton(model_t* model, const int version, const int data
 
 	const int* in_i = buffer;
 
-	fmodel->skeletalType = *in_i;
-	fmodel->rootCluster = CreateSkeleton(fmodel->skeletalType);
+	fmdl->skeletalType = *in_i;
+	fmdl->rootCluster = CreateSkeleton(fmdl->skeletalType);
 
 	const int num_clusters = *(++in_i);
 
@@ -188,7 +183,7 @@ static qboolean fmLoadSkeleton(model_t* model, const int version, const int data
 	{
 		num_verts += *(++in_i);
 
-		const int cluster_index = fmodel->rootCluster + cluster;
+		const int cluster_index = fmdl->rootCluster + cluster;
 		SkeletalClusters[cluster_index].numVerticies = num_verts;
 		SkeletalClusters[cluster_index].verticies = Hunk_Alloc(num_verts * (int)sizeof(int));
 	}
@@ -196,20 +191,20 @@ static qboolean fmLoadSkeleton(model_t* model, const int version, const int data
 	int start_vert_index = 0;
 	for (int cluster = num_clusters - 1; cluster > -1; cluster--)
 	{
-		for (int v = start_vert_index; v < SkeletalClusters[fmodel->rootCluster + cluster].numVerticies; v++)
+		for (int v = start_vert_index; v < SkeletalClusters[fmdl->rootCluster + cluster].numVerticies; v++)
 		{
 			const int vert_index = *(++in_i);
 			for (int c = 0; c <= cluster; c++)
-				SkeletalClusters[fmodel->rootCluster + c].verticies[v] = vert_index;
+				SkeletalClusters[fmdl->rootCluster + c].verticies[v] = vert_index;
 		}
 
-		start_vert_index = SkeletalClusters[fmodel->rootCluster + cluster].numVerticies;
+		start_vert_index = SkeletalClusters[fmdl->rootCluster + cluster].numVerticies;
 	}
 
 	// Check for duplicates...
 	for (int i = 0; i < num_clusters; i++)
 	{
-		const int c = fmodel->rootCluster + i;
+		const int c = fmdl->rootCluster + i;
 		for (int v1 = 0; v1 < SkeletalClusters[c].numVerticies - 1; v1++)
 			for (int v2 = v1 + 1; v2 < SkeletalClusters[c].numVerticies; v2++)
 				if (SkeletalClusters[c].verticies[v1] == SkeletalClusters[c].verticies[v2])
@@ -223,41 +218,41 @@ static qboolean fmLoadSkeleton(model_t* model, const int version, const int data
 	{
 		const float* in_f = (const float*)in_i;
 
-		fmodel->skeletons = Hunk_Alloc(fmodel->header.num_frames * (int)sizeof(ModelSkeleton_t));
+		fmdl->skeletons = Hunk_Alloc(fmdl->header.num_frames * (int)sizeof(ModelSkeleton_t));
 
-		for (int i = 0; i < fmodel->header.num_frames; i++)
+		for (int i = 0; i < fmdl->header.num_frames; i++)
 		{
-			CreateSkeletonAsHunk(fmodel->skeletalType, fmodel->skeletons + i);
+			CreateSkeletonAsHunk(fmdl->skeletalType, fmdl->skeletons + i);
 
 			for (int c = 0; c < num_clusters; c++)
 			{
-				fmodel->skeletons[i].rootJoint[c].model.origin[0] = *(++in_f);
-				fmodel->skeletons[i].rootJoint[c].model.origin[1] = *(++in_f);
-				fmodel->skeletons[i].rootJoint[c].model.origin[2] = *(++in_f);
+				fmdl->skeletons[i].rootJoint[c].model.origin[0] = *(++in_f);
+				fmdl->skeletons[i].rootJoint[c].model.origin[1] = *(++in_f);
+				fmdl->skeletons[i].rootJoint[c].model.origin[2] = *(++in_f);
 
-				fmodel->skeletons[i].rootJoint[c].model.direction[0] = *(++in_f);
-				fmodel->skeletons[i].rootJoint[c].model.direction[1] = *(++in_f);
-				fmodel->skeletons[i].rootJoint[c].model.direction[2] = *(++in_f);
+				fmdl->skeletons[i].rootJoint[c].model.direction[0] = *(++in_f);
+				fmdl->skeletons[i].rootJoint[c].model.direction[1] = *(++in_f);
+				fmdl->skeletons[i].rootJoint[c].model.direction[2] = *(++in_f);
 
-				fmodel->skeletons[i].rootJoint[c].model.up[0] = *(++in_f);
-				fmodel->skeletons[i].rootJoint[c].model.up[1] = *(++in_f);
-				fmodel->skeletons[i].rootJoint[c].model.up[2] = *(++in_f);
+				fmdl->skeletons[i].rootJoint[c].model.up[0] = *(++in_f);
+				fmdl->skeletons[i].rootJoint[c].model.up[1] = *(++in_f);
+				fmdl->skeletons[i].rootJoint[c].model.up[2] = *(++in_f);
 
-				VectorCopy(fmodel->skeletons[i].rootJoint[c].model.origin, fmodel->skeletons[i].rootJoint[c].parent.origin);
-				VectorCopy(fmodel->skeletons[i].rootJoint[c].model.direction, fmodel->skeletons[i].rootJoint[c].parent.direction);
-				VectorCopy(fmodel->skeletons[i].rootJoint[c].model.up, fmodel->skeletons[i].rootJoint[c].parent.up);
+				VectorCopy(fmdl->skeletons[i].rootJoint[c].model.origin,    fmdl->skeletons[i].rootJoint[c].parent.origin);
+				VectorCopy(fmdl->skeletons[i].rootJoint[c].model.direction, fmdl->skeletons[i].rootJoint[c].parent.direction);
+				VectorCopy(fmdl->skeletons[i].rootJoint[c].model.up,        fmdl->skeletons[i].rootJoint[c].parent.up);
 			}
 		}
 	}
 	else
 	{
-		fmodel->header.num_xyz -= num_clusters * 3;
+		fmdl->header.num_xyz -= num_clusters * 3;
 	}
 
 	return true;
 }
 
-static qboolean fmLoadReferences(model_t* model, const int version, const int datasize, const void* buffer)
+static qboolean fmLoadReferences(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
 	//mxd. Helper data type...
 	typedef struct
@@ -274,24 +269,24 @@ static qboolean fmLoadReferences(model_t* model, const int version, const int da
 	}
 
 	const dmreferences_t* in = buffer;
-	fmodel->referenceType = in->referenceType;
+	fmdl->referenceType = in->referenceType;
 
 	if (!in->haveRefs)
 	{
-		fmodel->header.num_xyz -= numReferences[fmodel->referenceType] * 3;
+		fmdl->header.num_xyz -= numReferences[fmdl->referenceType] * 3;
 		return true;
 	}
 
-	const int num_refs = numReferences[fmodel->referenceType];
-	fmodel->refsForFrame = Hunk_Alloc(fmodel->header.num_frames * num_refs * (int)sizeof(Placement_t));
+	const int num_refs = numReferences[fmdl->referenceType];
+	fmdl->refsForFrame = Hunk_Alloc(fmdl->header.num_frames * num_refs * (int)sizeof(Placement_t));
 
-	if (fmodel->header.num_frames < 1)
+	if (fmdl->header.num_frames < 1)
 		return true;
 
 	const Placement_t* ref_in = (const Placement_t*)&in->refsForFrame;
-	Placement_t* ref_out = fmodel->refsForFrame;
+	Placement_t* ref_out = fmdl->refsForFrame;
 
-	for (int i = 0; i < fmodel->header.num_frames; i++)
+	for (int i = 0; i < fmdl->header.num_frames; i++)
 	{
 		for (int j = 0; j < num_refs; j++, ref_in++, ref_out++)
 		{
@@ -312,7 +307,7 @@ static qboolean fmLoadReferences(model_t* model, const int version, const int da
 typedef struct
 {
 	char ident[FMDL_BLOCK_IDENT_SIZE];
-	qboolean (*load)(model_t* model, int version, int datasize, const void* buffer);
+	qboolean (*load)(fmdl_t* fmdl, model_t* model, int version, int datasize, const void* buffer);
 } fmdl_loader_t;
 
 static fmdl_loader_t fmblocks[] =
@@ -336,9 +331,10 @@ void Mod_LoadFlexModel(model_t* mod, void* buffer, int length)
 {
 	mod->type = mod_fmdl;
 
-	fmodel = Hunk_Alloc(sizeof(fmdl_t));
-	fmodel->skeletalType = -1;
-	fmodel->referenceType = -1;
+	// Stored in mod->extradata.
+	fmdl_t* fmdl = Hunk_Alloc(sizeof(fmdl_t));
+	fmdl->skeletalType = -1;
+	fmdl->referenceType = -1;
 
 	byte* in = buffer;
 
@@ -349,11 +345,11 @@ void Mod_LoadFlexModel(model_t* mod, void* buffer, int length)
 
 		// Find appropriate loader...
 		fmdl_loader_t* loader;
-		for (loader = fmblocks; loader->ident[0] != 0; loader++)
+		for (loader = &fmblocks[0]; loader->ident[0] != 0; loader++)
 		{
 			if (Q_stricmp(loader->ident, header->ident) == 0)
 			{
-				if (!loader->load(mod, header->version, header->size, in)) //mxd. Added sanity check
+				if (!loader->load(fmdl, mod, header->version, header->size, in)) //mxd. Added sanity check.
 				{
 					ri.Com_Error(ERR_DROP, "Mod_LoadFlexModel: failed to load block %s\n", header->ident); //mxd. Com_Error() -> ri.Com_Error().
 					return;
@@ -371,16 +367,16 @@ void Mod_LoadFlexModel(model_t* mod, void* buffer, int length)
 	}
 
 	//mxd. Never null?
-	assert(fmodel->frames != NULL);
+	assert(fmdl->frames != NULL);
 }
 
 void Mod_RegisterFlexModel(model_t* mod)
 {
-	fmodel = (fmdl_t*)mod->extradata;
+	const fmdl_t* fmdl = (fmdl_t*)mod->extradata;
 
 	// Precache skins... //TODO: also done in fmLoadSkin(). One of these isn't needed?
-	char* skin_name = fmodel->skin_names;
-	for (int i = 0; i < fmodel->header.num_skins; i++, skin_name += MAX_FRAMENAME)
+	char* skin_name = fmdl->skin_names;
+	for (int i = 0; i < fmdl->header.num_skins; i++, skin_name += MAX_FRAMENAME)
 		mod->skins[i] = R_FindImage(skin_name, it_skin);
 }
 
@@ -389,27 +385,27 @@ void Mod_RegisterFlexModel(model_t* mod)
 #pragma region ========================== FLEX MODEL RENDERING ==========================
 
 //mxd. Somewhat similar to R_CullAliasModel from Q2.
-static qboolean R_CullFlexModel(const fmdl_t* model, entity_t* e)
+static qboolean R_CullFlexModel(const fmdl_t* fmdl, entity_t* e)
 {
 	vec3_t mins;
 	vec3_t maxs;
 
-	if (e->frame < 0 || e->frame >= model->header.num_frames)
+	if (e->frame < 0 || e->frame >= fmdl->header.num_frames)
 		e->frame = 0;
 
-	if (e->oldframe < 0 || e->oldframe >= model->header.num_frames)
+	if (e->oldframe < 0 || e->oldframe >= fmdl->header.num_frames)
 		e->oldframe = 0;
 
 	// Compute axially aligned mins and maxs.
-	if (model->frames == NULL)
+	if (fmdl->frames == NULL)
 	{
-		VectorCopy(model->compdata[model->frame_to_group[e->frame]].bmin, mins);
-		VectorCopy(model->compdata[model->frame_to_group[e->frame]].bmax, maxs);
+		VectorCopy(fmdl->compdata[fmdl->frame_to_group[e->frame]].bmin, mins);
+		VectorCopy(fmdl->compdata[fmdl->frame_to_group[e->frame]].bmax, maxs);
 	}
 	else
 	{
-		const fmaliasframe_t* pframe = (fmaliasframe_t*)((byte*)model->frames + e->frame * model->header.framesize);
-		const fmaliasframe_t* poldframe = (fmaliasframe_t*)((byte*)model->frames + e->oldframe * model->header.framesize);
+		const fmaliasframe_t* pframe = (fmaliasframe_t*)((byte*)fmdl->frames + e->frame * fmdl->header.framesize);
+		const fmaliasframe_t* poldframe = (fmaliasframe_t*)((byte*)fmdl->frames + e->oldframe * fmdl->header.framesize);
 
 		if (pframe == poldframe)
 		{
@@ -543,7 +539,7 @@ static void R_InterpolateVertexNormals(const int num_xyz, const float lerp_inv, 
 			(*n)[j] = lerp * bytedirs[ov->lightnormalindex][j] + lerp_inv * bytedirs[v->lightnormalindex][j];
 }
 
-static void R_DrawFlexFrameLerp(entity_t* e) //mxd. Original logic uses 'currententity' global var instead of 'e' arg.
+static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelight) //mxd. Original logic uses 'fmodel', 'currententity' and 'shadelight' global vars.
 {
 	static vec3_t normals_array[MAX_FM_VERTS]; //mxd. Made static.
 
@@ -564,11 +560,11 @@ static void R_DrawFlexFrameLerp(entity_t* e) //mxd. Original logic uses 'current
 	if (!(int)r_frameswap->value)
 		e->swapFrame = -1;
 
-	FrameLerp(fmodel, e);
+	FrameLerp(fmdl, e);
 
 	if (draw_reflection)
 	{
-		if (fmodel->frames != NULL)
+		if (fmdl->frames != NULL)
 			R_InterpolateVertexNormals(fmdl_num_xyz, framelerp_inv, framelerp, sfl_cur_skel.verts, sfl_cur_skel.old_verts, normals_array);
 
 		glEnable(GL_TEXTURE_GEN_S);
@@ -580,7 +576,7 @@ static void R_DrawFlexFrameLerp(entity_t* e) //mxd. Original logic uses 'current
 	}
 
 	fmnodeinfo_t* nodeinfo = &e->fmnodeinfo[0];
-	for (int i = 0; i < fmodel->header.num_mesh_nodes; i++, nodeinfo++)
+	for (int i = 0; i < fmdl->header.num_mesh_nodes; i++, nodeinfo++)
 	{
 		qboolean use_color = false;
 		qboolean use_skin = false;
@@ -619,7 +615,7 @@ static void R_DrawFlexFrameLerp(entity_t* e) //mxd. Original logic uses 'current
 			}
 		}
 
-		int* order = fmodel->glcmds + fmodel->mesh_nodes[i].start_glcmds;
+		int* order = fmdl->glcmds + fmdl->mesh_nodes[i].start_glcmds;
 
 		while (true)
 		{
@@ -645,8 +641,8 @@ static void R_DrawFlexFrameLerp(entity_t* e) //mxd. Original logic uses 'current
 				if (draw_reflection || use_reflect)
 				{
 					vec3_t* normal;
-					if (fmodel->frames == NULL)
-						normal = &bytedirs[fmodel->lightnormalindex[index_xyz]];
+					if (fmdl->frames == NULL)
+						normal = &bytedirs[fmdl->lightnormalindex[index_xyz]];
 					else if (draw_reflection)
 						normal = &normals_array[index_xyz];
 					else
@@ -665,8 +661,8 @@ static void R_DrawFlexFrameLerp(entity_t* e) //mxd. Original logic uses 'current
 				if (!use_color && !(e->flags & RF_FULLBRIGHT))
 				{
 					float l;
-					if (fmodel->frames == NULL)
-						l = shadedots[fmodel->lightnormalindex[index_xyz]];
+					if (fmdl->frames == NULL)
+						l = shadedots[fmdl->lightnormalindex[index_xyz]];
 					else
 						l = shadedots[sfl_cur_skel.verts[index_xyz].lightnormalindex];
 
@@ -702,9 +698,10 @@ static void R_DrawFlexFrameLerp(entity_t* e) //mxd. Original logic uses 'current
 //mxd. Somewhat similar to R_DrawAliasModel from Q2. Original code used 'currententity' global var instead of 'e' arg.
 void R_DrawFlexModel(entity_t* e)
 {
-	fmodel = (fmdl_t*)(*e->model)->extradata; //mxd. Original code used 'currentmodel' global var here.
+	vec3_t shadelight;
+	const fmdl_t* fmdl = (fmdl_t*)(*e->model)->extradata; //mxd. Original code used 'currentmodel' global var here.
 
-	if (R_CullFlexModel(fmodel, e))
+	if (R_CullFlexModel(fmdl, e))
 		return;
 
 	// Get lighting information.
@@ -730,16 +727,8 @@ void R_DrawFlexModel(entity_t* e)
 	shadelight[1] *= (float)e->color.g / 255.0f;
 	shadelight[2] *= (float)e->color.b / 255.0f;
 
-	if (e->flags & RF_MINLIGHT)
-	{
-		int c;
-		for (c = 0; c < 3; c++)
-			if (shadelight[c] > 0.1f)
-				break;
-
-		if (c == 3)
-			VectorSet(shadelight, 0.1f, 0.1f, 0.1f);
-	}
+	if ((e->flags & RF_MINLIGHT) && shadelight[0] <= 0.1f && shadelight[1] <= 0.1f && shadelight[2] <= 0.1f)
+		VectorSet(shadelight, 0.1f, 0.1f, 0.1f);
 
 	if (e->flags & RF_GLOW)
 	{
@@ -750,11 +739,8 @@ void R_DrawFlexModel(entity_t* e)
 
 	shadedots = r_avertexnormal_dots[((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0f * RAD_TO_ANGLE)) & (SHADEDOT_QUANT - 1))];
 
-	VectorSet(shadevector, cosf(-e->angles[1]), sinf(-e->angles[1]), 1.0f);
-	VectorNormalize(shadevector);
-
 	// Locate the proper data.
-	c_alias_polys += fmodel->header.num_tris;
+	c_alias_polys += fmdl->header.num_tris;
 
 	// Draw all the triangles.
 	if (e->flags & RF_DEPTHHACK) // Hack the depth range to prevent view model from poking into walls.
@@ -770,13 +756,13 @@ void R_DrawFlexModel(entity_t* e)
 	glShadeModel(GL_SMOOTH);
 	R_TexEnv(GL_MODULATE);
 
-	if (e->frame < 0 || e->frame >= fmodel->header.num_frames)
+	if (e->frame < 0 || e->frame >= fmdl->header.num_frames)
 	{
 		e->frame = 0;
 		e->oldframe = 0;
 	}
 
-	if (e->oldframe < 0 || e->oldframe >= fmodel->header.num_frames)
+	if (e->oldframe < 0 || e->oldframe >= fmdl->header.num_frames)
 	{
 		ri.Con_Printf(PRINT_ALL, "R_DrawFlexModel: no such oldframe %d\n");
 		e->frame = 0;
@@ -788,7 +774,7 @@ void R_DrawFlexModel(entity_t* e)
 
 	framelerp = e->backlerp;
 
-	R_DrawFlexFrameLerp(e);
+	R_DrawFlexFrameLerp(fmdl, e, shadelight);
 
 	R_TexEnv(GL_REPLACE);
 	glShadeModel(GL_FLAT);
