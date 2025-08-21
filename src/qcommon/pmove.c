@@ -1238,12 +1238,8 @@ void Pmove(pmove_t* pmove, const qboolean server)
 
 	if (pml.server) // H2
 	{
-		//mxd. Snap to the 0.125 precision for consistency with !pml.server case. Original logic just copies vectors.
-		for (int i = 0; i < 3; i++)
-		{
-			pml.origin[i] = (float)((int)(pm->origin[i] * 8.0f)) * 0.125f;
-			pml.velocity[i] = (float)((int)(pm->velocity[i] * 8.0f)) * 0.125f;
-		}
+		VectorCopy(pm->origin, pml.origin);
+		VectorCopy(pm->velocity, pml.velocity);
 	}
 	else
 	{
