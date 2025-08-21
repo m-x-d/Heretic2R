@@ -1453,7 +1453,7 @@ static void CL_CalcViewValues(void)
 	if (oldframe->serverframe != cl.frame.serverframe - 1 || !oldframe->valid)
 		oldframe = &cl.frame; // Previous frame was dropped or invalid.
 
-	// See if the player entity was teleported this frame. //mxd. Original H2 logic doesn't seem to do abs() here. A bug?
+	// See if the player entity was teleported this frame. //mxd. Original H2 logic doesn't seem to do abs() here. A bug? //TODO: value doesn't match MIN_TELEPORT_DISTANCE used in cl_prediction.c...
 	if (abs(oldframe->playerstate.pmove.origin[0] - ps->pmove.origin[0]) > 256 * 8 ||
 		abs(oldframe->playerstate.pmove.origin[1] - ps->pmove.origin[1]) > 256 * 8 ||
 		abs(oldframe->playerstate.pmove.origin[2] - ps->pmove.origin[2]) > 256 * 8)
