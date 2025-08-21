@@ -42,14 +42,14 @@ static void LerpVerts(const int num_verts, fmtrivertx_t* verts, fmtrivertx_t* ol
 			(*translation)[j] = (float)verts->v[j] * front[j] + (float)old_verts->v[j] * back[j] + move[j];
 }
 
-static void DoSkeletalRotations(const entity_t* e) //mxd. Original logic uses 'currententity' global var.
+static void DoSkeletalRotations(const fmdl_t* fmdl, const entity_t* e) //mxd. Original logic uses 'fmodel' and 'currententity' global vars.
 {
 	if (e->rootJoint == -1)
 		return;
 
 	if (e->swapFrame != -1)
 	{
-		RotateModelSegments(&swap_skeleton, 0, fmodel->rootCluster, e->rootJoint, s_lerped);
+		RotateModelSegments(&swap_skeleton, 0, fmdl->rootCluster, e->rootJoint, s_lerped);
 
 		for (int i = 0; i < fmdl_cur_skeletal_cluster->numVerticies; i++)
 		{
@@ -60,21 +60,21 @@ static void DoSkeletalRotations(const entity_t* e) //mxd. Original logic uses 'c
 	}
 	else
 	{
-		RotateModelSegments(&cur_skeleton, 0, fmodel->rootCluster, e->rootJoint, s_lerped);
+		RotateModelSegments(&cur_skeleton, 0, fmdl->rootCluster, e->rootJoint, s_lerped);
 	}
 }
 
-static void LerpStandardSkeleton(entity_t* e) //mxd. Original logic uses 'currententity' global var.
+static void LerpStandardSkeleton(const fmdl_t* fmdl, entity_t* e) //mxd. Original logic uses 'fmodel' and 'currententity' global vars.
 {
 	static vec3_t lerped[2048];
 
 	if (e->swapFrame != -1)
 	{
-		CreateSkeletonInPlace(fmodel->skeletalType, &swap_skeleton);
+		CreateSkeletonInPlace(fmdl->skeletalType, &swap_skeleton);
 		e->swapCluster = 0;
 
-		fmaliasframe_t* pframe = (fmaliasframe_t*)((byte*)fmodel->frames + e->swapFrame * fmodel->header.framesize);
-		fmaliasframe_t* poldframe = (fmaliasframe_t*)((byte*)fmodel->frames + e->oldSwapFrame * fmodel->header.framesize);
+		fmaliasframe_t* pframe = (fmaliasframe_t*)((byte*)fmdl->frames + e->swapFrame * fmdl->header.framesize);
+		fmaliasframe_t* poldframe = (fmaliasframe_t*)((byte*)fmdl->frames + e->oldSwapFrame * fmdl->header.framesize);
 
 		sfl_swap_skel.verts = pframe->verts;
 		sfl_swap_skel.old_verts = poldframe->verts;
@@ -94,16 +94,16 @@ static void LerpStandardSkeleton(entity_t* e) //mxd. Original logic uses 'curren
 			VectorCopy(lerped[vert_index], s_lerped[vert_index]);
 		}
 
-		LinearllyInterpolateJoints(&fmodel->skeletons[e->swapFrame], 0, &fmodel->skeletons[e->oldSwapFrame], 0, &swap_skeleton, 0, swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
+		LinearllyInterpolateJoints(&fmdl->skeletons[e->swapFrame], 0, &fmdl->skeletons[e->oldSwapFrame], 0, &swap_skeleton, 0, swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
 	}
 
 	if (e->rootJoint != -1 || e->swapFrame != -1)
 	{
-		CreateSkeletonInPlace(fmodel->skeletalType, &cur_skeleton);
-		LinearllyInterpolateJoints(&fmodel->skeletons[e->frame], 0, &fmodel->skeletons[e->oldframe], 0, &cur_skeleton, 0, cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
+		CreateSkeletonInPlace(fmdl->skeletalType, &cur_skeleton);
+		LinearllyInterpolateJoints(&fmdl->skeletons[e->frame], 0, &fmdl->skeletons[e->oldframe], 0, &cur_skeleton, 0, cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
 	}
 
-	DoSkeletalRotations(e);
+	DoSkeletalRotations(fmdl, e);
 }
 
 static void ApplySkeletonToRef(Placement_t* placement, const int joint_index, const qboolean update_placement)
@@ -127,14 +127,14 @@ static void ApplySkeletonToRef(Placement_t* placement, const int joint_index, co
 	}
 }
 
-static void LerpReferences(const entity_t* e) //mxd. Original logic uses 'currententity' global var.
+static void LerpReferences(const fmdl_t* fmdl, const entity_t* e) //mxd. Original logic uses 'fmodel' and 'currententity' global vars.
 {
 	assert(fmdl_referenceInfo->jointIDs != NULL); //mxd
 
 	const float delta = r_newrefdef.time - fmdl_referenceInfo->lastUpdate;
 	fmdl_referenceInfo->lastUpdate = r_newrefdef.time;
 
-	const int num_refs = numReferences[fmodel->referenceType];
+	const int num_refs = numReferences[fmdl->referenceType];
 
 	if (e->rootJoint != -1)
 	{
@@ -161,7 +161,7 @@ static void LerpReferences(const entity_t* e) //mxd. Original logic uses 'curren
 		if (delta <= 1.0f)
 			memcpy(old_placement, cur_placement, sizeof(Placement_t));
 
-		if (fmodel->frames == NULL) //TODO: can't happen? There's fmodel->frames NULL-check in FrameLerp().
+		if (fmdl->frames == NULL) //TODO: can't happen? There's fmodel->frames NULL-check in FrameLerp().
 		{
 			if (e->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < e->swapCluster)
 			{
@@ -177,8 +177,8 @@ static void LerpReferences(const entity_t* e) //mxd. Original logic uses 'curren
 		}
 		else if (e->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < e->swapCluster)
 		{
-			const Placement_t* frame = &fmodel->refsForFrame[e->frame * num_refs + i];
-			const Placement_t* oldframe = &fmodel->refsForFrame[e->oldframe * num_refs + i];
+			const Placement_t* frame = &fmdl->refsForFrame[e->frame * num_refs + i];
+			const Placement_t* oldframe = &fmdl->refsForFrame[e->oldframe * num_refs + i];
 
 			R_LerpVert(frame->origin,			oldframe->origin,			cur_placement->origin,		cur_skel_move,	sfl_cur_skel.front_vector,	sfl_cur_skel.back_vector);
 			R_LerpVert(frame->direction,		oldframe->direction,		cur_placement->direction,	cur_skel_move,	sfl_cur_skel.front_vector,	sfl_cur_skel.back_vector);
@@ -186,8 +186,8 @@ static void LerpReferences(const entity_t* e) //mxd. Original logic uses 'curren
 		}
 		else
 		{
-			const Placement_t* swapFrame = &fmodel->refsForFrame[e->swapFrame * num_refs + i];
-			const Placement_t* oldSwapFrame = &fmodel->refsForFrame[e->oldSwapFrame * num_refs + i];
+			const Placement_t* swapFrame = &fmdl->refsForFrame[e->swapFrame * num_refs + i];
+			const Placement_t* oldSwapFrame = &fmdl->refsForFrame[e->oldSwapFrame * num_refs + i];
 
 			R_LerpVert(swapFrame->origin,		oldSwapFrame->origin,		cur_placement->origin,		swap_skel_move,	sfl_swap_skel.front_vector,	sfl_swap_skel.back_vector);
 			R_LerpVert(swapFrame->direction,	oldSwapFrame->direction,	cur_placement->direction,	swap_skel_move,	sfl_swap_skel.front_vector,	sfl_swap_skel.back_vector);
@@ -204,19 +204,19 @@ static void LerpReferences(const entity_t* e) //mxd. Original logic uses 'curren
 	}
 }
 
-static void StandardFrameLerp(entity_t* e) //mxd. Original logic uses 'currententity' global var.
+static void StandardFrameLerp(const fmdl_t* fmdl, entity_t* e) //mxd. Original logic uses 'fmodel' and 'currententity' global vars.
 {
 	int frame = e->frame;
 	int oldframe = e->oldframe;
 
-	if (frame < 0 || frame >= fmodel->header.num_frames)
+	if (frame < 0 || frame >= fmdl->header.num_frames)
 		frame = 0;
 
-	if (oldframe < 0 || oldframe >= fmodel->header.num_frames)
+	if (oldframe < 0 || oldframe >= fmdl->header.num_frames)
 		oldframe = 0;
 
-	fmaliasframe_t* pframe = (fmaliasframe_t*)((byte*)fmodel->frames + frame * fmodel->header.framesize);
-	fmaliasframe_t* poldframe = (fmaliasframe_t*)((byte*)fmodel->frames + oldframe * fmodel->header.framesize);
+	fmaliasframe_t* pframe = (fmaliasframe_t*)((byte*)fmdl->frames + frame * fmdl->header.framesize);
+	fmaliasframe_t* poldframe = (fmaliasframe_t*)((byte*)fmdl->frames + oldframe * fmdl->header.framesize);
 
 	sfl_cur_skel.verts = pframe->verts;
 	sfl_cur_skel.old_verts = poldframe->verts;
@@ -237,11 +237,11 @@ static void StandardFrameLerp(entity_t* e) //mxd. Original logic uses 'currenten
 
 	LerpVerts(fmdl_num_xyz, sfl_cur_skel.verts, sfl_cur_skel.old_verts, s_lerped, cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
 
-	if (fmodel->skeletalType != -1)
-		LerpStandardSkeleton(e);
+	if (fmdl->skeletalType != -1)
+		LerpStandardSkeleton(fmdl, e);
 
 	if (fmdl_referenceInfo != NULL && !(e->flags & RF_IGNORE_REFS))
-		LerpReferences(e);
+		LerpReferences(fmdl, e);
 }
 
 static void CompressedFrameLerp(entity_t* e)
@@ -249,22 +249,22 @@ static void CompressedFrameLerp(entity_t* e)
 	ri.Com_Error(ERR_DROP, "CompressedFrameLerp not implemented..."); //TODO: is this ever used? Remove?
 }
 
-void FrameLerp(entity_t* e) //mxd. Original logic uses 'currententity' global var.
+void FrameLerp(const fmdl_t* fmdl, entity_t* e) //mxd. Original logic uses 'fmodel' and 'currententity' global vars.
 {
 	swap_skeleton.rootJoint = fmdl_swap_skeleton_joints;
 	swap_skeleton.rootNode = fmdl_swap_skeleton_nodes;
 	cur_skeleton.rootJoint = fmdl_cur_skeleton_joints;
 	cur_skeleton.rootNode = fmdl_cur_skeleton_nodes;
 
-	if (fmodel->skeletalType != -1)
-		fmdl_cur_skeletal_cluster = SkeletalClusters + fmodel->rootCluster + e->swapCluster;
+	if (fmdl->skeletalType != -1)
+		fmdl_cur_skeletal_cluster = SkeletalClusters + fmdl->rootCluster + e->swapCluster;
 
-	fmdl_referenceInfo = ((fmodel->referenceType == -1) ? NULL : e->referenceInfo);
+	fmdl_referenceInfo = ((fmdl->referenceType == -1) ? NULL : e->referenceInfo);
 	framelerp_inv = 1.0f - framelerp;
-	fmdl_num_xyz = fmodel->header.num_xyz;
+	fmdl_num_xyz = fmdl->header.num_xyz;
 
-	if (fmodel->frames != NULL)
-		StandardFrameLerp(e);
+	if (fmdl->frames != NULL)
+		StandardFrameLerp(fmdl, e);
 	else
 		CompressedFrameLerp(e);
 

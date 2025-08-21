@@ -138,8 +138,6 @@ typedef struct fmdl_s
 	Placement_t* refsForFrame; //mxd. 'struct M_Reference_s*' in original logic.
 } fmdl_t;
 
-extern fmdl_t* fmodel;
-
 // Flex model loading.
 extern void Mod_LoadFlexModel(model_t* mod, void* buffer, int length);
 extern void Mod_RegisterFlexModel(model_t* mod);

@@ -15,7 +15,7 @@
 #include "Hunk.h"
 #include "Vector.h"
 
-fmdl_t* fmodel;
+static fmdl_t* fmodel;
 
 static vec3_t shadelight;
 static vec3_t shadevector;
@@ -564,7 +564,7 @@ static void R_DrawFlexFrameLerp(entity_t* e) //mxd. Original logic uses 'current
 	if (!(int)r_frameswap->value)
 		e->swapFrame = -1;
 
-	FrameLerp(e);
+	FrameLerp(fmodel, e);
 
 	if (draw_reflection)
 	{
