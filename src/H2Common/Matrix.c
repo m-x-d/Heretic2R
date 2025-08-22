@@ -4,6 +4,9 @@
 // Copyright 1998 Raven Software
 //
 
+#include <assert.h>
+#include <string.h>
+
 #include "Matrix.h"
 #include "Vector.h"
 

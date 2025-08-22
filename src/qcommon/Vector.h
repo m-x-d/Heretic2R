@@ -7,12 +7,10 @@
 #pragma once
 
 #include <math.h>
-#include <assert.h>
 
 #include "H2Common.h"
-#include "q_Typedef.h"
 #include "Angles.h"
-#include "q_shared.h"
+#include "q_Typedef.h"
 
 #ifdef __cplusplus //mxd. Needed, so code in game/ds.cpp could build...
 extern "C"

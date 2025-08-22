@@ -6,6 +6,11 @@
 
 #pragma once
 
+// Angle indexes. Originally defined in q_shared.h.
+#define PITCH			0 // up / down
+#define YAW				1 // left / right
+#define ROLL			2 // fall over
+
 // Angles in radians
 #define ANGLE_0			0.0f
 #define ANGLE_1			0.017453292f

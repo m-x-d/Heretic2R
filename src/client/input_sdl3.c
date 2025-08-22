@@ -4,9 +4,10 @@
 // Copyright 1998 Raven Software
 //
 
+#include "input.h"
+#include "Angles.h"
 #include "client.h"
 #include "glimp_sdl3.h"
-#include "input.h"
 #include "qcommon.h"
 #include "menus/menu_misc.h"
 

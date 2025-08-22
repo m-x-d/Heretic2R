@@ -4,8 +4,9 @@
 // Copyright 1998 Raven Software
 //
 
-#include <stdlib.h>
+#include <assert.h>
 #include <string.h>
+
 #include "Vector.h"
 #include "Matrix.h"
 #include "Random.h"
@@ -261,7 +262,7 @@ H2COMMON_API float VectorNormalize(vec3_t v)
 	return length;
 }
 
-//TODO: remove?
+// No longer used. Can't remove (will break vanilla compatibility)... -- mxd
 H2COMMON_API float Vec3Normalize(vec3_t v)
 {
 	return VectorNormalize(v);

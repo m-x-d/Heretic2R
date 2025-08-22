@@ -22,11 +22,6 @@
 
 #define H2R_NORETURN	__declspec(noreturn) //mxd
 
-// Angle indexes.
-#define PITCH				0		// up / down
-#define YAW					1		// left / right
-#define ROLL				2		// fall over
-
 //mxd. Player/monster step size. Used by pmove.c, m_move.c and mg_ai.c...
 #define STEP_SIZE			18.0f
 
