@@ -643,7 +643,7 @@ void fish_update_target_movedir(edict_t* self) //mxd. Named 'fish_target' in ori
 	// Figure out the vector from the fish to the target.
 	vec3_t dir;
 	VectorSubtract(self->enemy->s.origin, self->s.origin, dir);
-	Vec3Normalize(dir); // Normalise it.
+	VectorNormalize(dir); // Normalize it.
 
 	if (Vec3IsZero(dir))
 		return;
