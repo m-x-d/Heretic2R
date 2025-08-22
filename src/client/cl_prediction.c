@@ -607,8 +607,11 @@ void CL_PredictMovement(void)
 	{
 		CL_PredictMovement_impl();
 
-		//mxd. Setup playerLerp interpolation...
-		player_lerp_increment = ((vid_maxfps->value > 30.0f) ? 10.0f / vid_maxfps->value : 0.0f); // pred_playerLerp interpolates at 10 FPS.
+		//mxd. Setup playerLerp interpolation? pred_playerLerp interpolates at 10 FPS.
+		if (vid_maxfps->value > cl_maxfps->value)
+			player_lerp_increment = (10.0f / vid_maxfps->value) * (cl_maxfps->value / vid_maxfps->value); //TODO: this expects vid_maxfps to be multiple of cl_maxfps...
+		else
+			player_lerp_increment = 0.0f;
 
 		pred_playerLerp -= player_lerp_increment;
 		const float backlerp = 1.0f - pred_playerLerp;
