@@ -16,7 +16,6 @@
 
 int fmdl_num_xyz;
 float framelerp; //mxd. Named 'fl' in original .dll
-float framelerp_inv;
 
 vec3_t s_lerped[MAX_FM_VERTS];
 
@@ -78,6 +77,8 @@ static void LerpStandardSkeleton(const fmdl_t* fmdl, entity_t* e) //mxd. Origina
 
 		sfl_swap_skel.verts = pframe->verts;
 		sfl_swap_skel.old_verts = poldframe->verts;
+
+		const float framelerp_inv = 1.0f - framelerp; //mxd
 
 		for (int i = 0; i < 3; i++)
 		{
@@ -221,6 +222,8 @@ static void StandardFrameLerp(const fmdl_t* fmdl, entity_t* e) //mxd. Original l
 	sfl_cur_skel.verts = pframe->verts;
 	sfl_cur_skel.old_verts = poldframe->verts;
 
+	const float framelerp_inv = 1.0f - framelerp; //mxd
+
 	for (int i = 0; i < 3; i++)
 	{
 		cur_skel_move[i] = framelerp_inv * pframe->translate[i] + framelerp * poldframe->translate[i];
@@ -260,7 +263,6 @@ void FrameLerp(const fmdl_t* fmdl, entity_t* e) //mxd. Original logic uses 'fmod
 		fmdl_cur_skeletal_cluster = SkeletalClusters + fmdl->rootCluster + e->swapCluster;
 
 	fmdl_referenceInfo = ((fmdl->referenceType == -1) ? NULL : e->referenceInfo);
-	framelerp_inv = 1.0f - framelerp;
 	fmdl_num_xyz = fmdl->header.num_xyz;
 
 	if (fmdl->frames != NULL)

@@ -19,7 +19,6 @@ typedef struct
 
 extern int fmdl_num_xyz;
 extern float framelerp;
-extern float framelerp_inv;
 extern SkeletonFrameLerpInfo_t sfl_cur_skel;
 
 extern vec3_t s_lerped[MAX_FM_VERTS];

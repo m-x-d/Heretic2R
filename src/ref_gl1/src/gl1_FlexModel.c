@@ -528,11 +528,12 @@ static image_t* R_GetSkinFromNode(const entity_t* ent, const int index) //mxd. R
 	return r_notexture;
 }
 
-static void R_InterpolateVertexNormals(const int num_xyz, const float lerp_inv, const float lerp, const fmtrivertx_t* verts, const fmtrivertx_t* old_verts, vec3_t* normals)
+static void R_InterpolateVertexNormals(const int num_xyz, const float lerp, const fmtrivertx_t* verts, const fmtrivertx_t* old_verts, vec3_t* normals)
 {
 	const fmtrivertx_t* v = &verts[0];
 	const fmtrivertx_t* ov = &old_verts[0];
 	vec3_t* n = &normals[0];
+	const float lerp_inv = 1.0f - lerp; //mxd
 
 	for (int i = 0; i < num_xyz; i++, v++, ov++, n++)
 		for (int j = 0; j < 3; j++)
@@ -565,7 +566,7 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 	if (draw_reflection)
 	{
 		if (fmdl->frames != NULL)
-			R_InterpolateVertexNormals(fmdl_num_xyz, framelerp_inv, framelerp, sfl_cur_skel.verts, sfl_cur_skel.old_verts, normals_array);
+			R_InterpolateVertexNormals(fmdl_num_xyz, framelerp, sfl_cur_skel.verts, sfl_cur_skel.old_verts, normals_array);
 
 		glEnable(GL_TEXTURE_GEN_S);
 		glEnable(GL_TEXTURE_GEN_T);
