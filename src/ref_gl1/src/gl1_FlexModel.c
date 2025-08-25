@@ -540,7 +540,7 @@ static void R_InterpolateVertexNormals(const int num_xyz, const float lerp, cons
 			(*n)[j] = lerp * bytedirs[ov->lightnormalindex][j] + lerp_inv * bytedirs[v->lightnormalindex][j];
 }
 
-static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelight) //mxd. Original logic uses 'fmodel', 'currententity' and 'shadelight' global vars.
+static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelight) //mxd. Original logic uses 'fmodel', 'currententity', 'framelerp' and 'shadelight' global vars.
 {
 	static vec3_t normals_array[MAX_FM_VERTS]; //mxd. Made static.
 
@@ -566,7 +566,7 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 	if (draw_reflection)
 	{
 		if (fmdl->frames != NULL)
-			R_InterpolateVertexNormals(fmdl_num_xyz, framelerp, sfl_cur_skel.verts, sfl_cur_skel.old_verts, normals_array);
+			R_InterpolateVertexNormals(fmdl_num_xyz, e->backlerp, sfl_cur_skel.verts, sfl_cur_skel.old_verts, normals_array);
 
 		glEnable(GL_TEXTURE_GEN_S);
 		glEnable(GL_TEXTURE_GEN_T);
@@ -772,8 +772,6 @@ void R_DrawFlexModel(entity_t* e)
 
 	if (!(int)r_lerpmodels->value)
 		e->backlerp = 0.0f;
-
-	framelerp = e->backlerp;
 
 	R_DrawFlexFrameLerp(fmdl, e, shadelight);
 

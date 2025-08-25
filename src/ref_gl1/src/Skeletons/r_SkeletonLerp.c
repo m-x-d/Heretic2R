@@ -15,8 +15,6 @@
 #include "../gl1_Local.h"
 
 int fmdl_num_xyz;
-float framelerp; //mxd. Named 'fl' in original .dll
-
 vec3_t s_lerped[MAX_FM_VERTS];
 
 static ModelSkeleton_t cur_skeleton;
@@ -78,13 +76,13 @@ static void LerpStandardSkeleton(const fmdl_t* fmdl, entity_t* e) //mxd. Origina
 		sfl_swap_skel.verts = pframe->verts;
 		sfl_swap_skel.old_verts = poldframe->verts;
 
-		const float framelerp_inv = 1.0f - framelerp; //mxd
+		const float lerp = 1.0f - e->backlerp; //mxd
 
 		for (int i = 0; i < 3; i++)
 		{
-			swap_skel_move[i] = framelerp_inv * pframe->translate[i] + framelerp * poldframe->translate[i];
-			sfl_swap_skel.front_vector[i] = framelerp_inv * pframe->scale[i];
-			sfl_swap_skel.back_vector[i] = framelerp * poldframe->scale[i];
+			swap_skel_move[i] = lerp * pframe->translate[i] + e->backlerp * poldframe->translate[i];
+			sfl_swap_skel.front_vector[i] = lerp * pframe->scale[i];
+			sfl_swap_skel.back_vector[i] = e->backlerp * poldframe->scale[i];
 		}
 		
 		LerpVerts(fmdl_num_xyz, sfl_swap_skel.verts, sfl_swap_skel.old_verts, lerped, swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
@@ -222,13 +220,13 @@ static void StandardFrameLerp(const fmdl_t* fmdl, entity_t* e) //mxd. Original l
 	sfl_cur_skel.verts = pframe->verts;
 	sfl_cur_skel.old_verts = poldframe->verts;
 
-	const float framelerp_inv = 1.0f - framelerp; //mxd
+	const float lerp = 1.0f - e->backlerp; //mxd
 
 	for (int i = 0; i < 3; i++)
 	{
-		cur_skel_move[i] = framelerp_inv * pframe->translate[i] + framelerp * poldframe->translate[i];
-		sfl_cur_skel.front_vector[i] = framelerp_inv * pframe->scale[i];
-		sfl_cur_skel.back_vector[i] = framelerp * poldframe->scale[i];
+		cur_skel_move[i] = lerp * pframe->translate[i] + e->backlerp * poldframe->translate[i];
+		sfl_cur_skel.front_vector[i] = lerp * pframe->scale[i];
+		sfl_cur_skel.back_vector[i] = e->backlerp * poldframe->scale[i];
 	}
 
 	if (e->scale != 1.0f)
