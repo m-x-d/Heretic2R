@@ -500,10 +500,13 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 		cl.playerinfo.remember_buttons |= pm.cmd.buttons;
 		cl.playerinfo.latched_buttons |= ~cl.playerinfo.buttons & pm.cmd.buttons;
 
-		int oldframe = (frame - 1) & (CMD_BACKUP - 1);
+		const int oldframe = (frame - 1) & (CMD_BACKUP - 1);
 		cmd_time_delta += (cl.cmd_time[frame] - cl.cmd_time[oldframe]);
 
-		if (cmd_time_delta > 100)
+		//mxd. 'cmd_time_delta > 100' in original logic.
+		//mxd. In H2 cl.cmd_time seems to always increase by 34 ms. In H2R it increases by either 33 or 34 ms. (because of more precise YQ2 timing logic?).
+		//mxd. So, in our logic 'cmd_time_delta' CAN land at exactly 100 ms., which resulted in skipping the below logic for current packetframe...
+		if (cmd_time_delta >= 100)
 		{
 			const int steps = cmd_time_delta / 100;
 			cmd_time_delta %= 100;
