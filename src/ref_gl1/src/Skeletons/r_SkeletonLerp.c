@@ -14,7 +14,6 @@
 #include "Vector.h"
 #include "../gl1_Local.h"
 
-int fmdl_num_xyz;
 vec3_t s_lerped[MAX_FM_VERTS];
 
 static ModelSkeleton_t cur_skeleton;
@@ -85,7 +84,7 @@ static void LerpStandardSkeleton(const fmdl_t* fmdl, entity_t* e) //mxd. Origina
 			sfl_swap_skel.back_vector[i] = e->backlerp * poldframe->scale[i];
 		}
 		
-		LerpVerts(fmdl_num_xyz, sfl_swap_skel.verts, sfl_swap_skel.old_verts, lerped, swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
+		LerpVerts(fmdl->header.num_xyz, sfl_swap_skel.verts, sfl_swap_skel.old_verts, lerped, swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
 
 		for (int i = 0; i < fmdl_cur_skeletal_cluster->numVerticies; i++)
 		{
@@ -164,9 +163,9 @@ static void LerpReferences(const fmdl_t* fmdl, const entity_t* e) //mxd. Origina
 		{
 			if (e->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < e->swapCluster)
 			{
-				VectorCopy(s_lerped[fmdl_num_xyz + i * 3 + 0], cur_placement->origin);
-				VectorCopy(s_lerped[fmdl_num_xyz + i * 3 + 1], cur_placement->direction);
-				VectorCopy(s_lerped[fmdl_num_xyz + i * 3 + 2], cur_placement->up);
+				VectorCopy(s_lerped[fmdl->header.num_xyz + i * 3 + 0], cur_placement->origin);
+				VectorCopy(s_lerped[fmdl->header.num_xyz + i * 3 + 1], cur_placement->direction);
+				VectorCopy(s_lerped[fmdl->header.num_xyz + i * 3 + 2], cur_placement->up);
 			}
 			else
 			{
@@ -236,7 +235,7 @@ static void StandardFrameLerp(const fmdl_t* fmdl, entity_t* e) //mxd. Original l
 		VectorScale(sfl_cur_skel.back_vector, e->scale, sfl_cur_skel.back_vector);
 	}
 
-	LerpVerts(fmdl_num_xyz, sfl_cur_skel.verts, sfl_cur_skel.old_verts, s_lerped, cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
+	LerpVerts(fmdl->header.num_xyz, sfl_cur_skel.verts, sfl_cur_skel.old_verts, s_lerped, cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
 
 	if (fmdl->skeletalType != -1)
 		LerpStandardSkeleton(fmdl, e);
@@ -258,10 +257,9 @@ void FrameLerp(const fmdl_t* fmdl, entity_t* e) //mxd. Original logic uses 'fmod
 	cur_skeleton.rootNode = fmdl_cur_skeleton_nodes;
 
 	if (fmdl->skeletalType != -1)
-		fmdl_cur_skeletal_cluster = SkeletalClusters + fmdl->rootCluster + e->swapCluster;
+		fmdl_cur_skeletal_cluster = &SkeletalClusters[fmdl->rootCluster + e->swapCluster];
 
 	fmdl_referenceInfo = ((fmdl->referenceType == -1) ? NULL : e->referenceInfo);
-	fmdl_num_xyz = fmdl->header.num_xyz;
 
 	if (fmdl->frames != NULL)
 		StandardFrameLerp(fmdl, e);
