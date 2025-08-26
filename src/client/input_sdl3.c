@@ -175,12 +175,12 @@ static void IN_MouseMove(usercmd_t* cmd)
 	mouse_y *= mouse_sensitivity_y->value; // 'sensitivity' cvar in Q2
 
 	// Add mouse X/Y movement to cmd.
-	if ((in_strafe.state & 1) || ((int)lookstrafe->value && mlooking)) //TODO: remove 'lookstrafe' cvar, always freelook.
+	if ((in_strafe.state & KS_DOWN) || ((int)lookstrafe->value && mlooking)) //TODO: remove 'lookstrafe' cvar, always freelook.
 		cmd->sidemove += (short)(mouse_x * m_side->value);
 	else
 		cl.delta_inputangles[YAW] -= mouse_x * m_yaw->value;
 
-	if (!(in_strafe.state & 1) || ((int)freelook->value && mlooking)) // H2: no 'else' case //TODO: remove freelook cvar, always freelook.
+	if (!(in_strafe.state & KS_DOWN) || ((int)freelook->value && mlooking)) // H2: no 'else' case //TODO: remove freelook cvar, always freelook.
 		cl.delta_inputangles[PITCH] += mouse_y * m_pitch->value;
 
 	// Reset mouse position.
@@ -220,7 +220,7 @@ void IN_Init(void)
 	IN_InitController();
 
 	if (!SDL_WasInit(SDL_INIT_EVENTS) && !SDL_Init(SDL_INIT_EVENTS))
-		Com_Error(ERR_FATAL, "Couldn't initialize SDL event subsystem:%s\n", SDL_GetError());
+		Com_Error(ERR_FATAL, "Couldn't initialize SDL event subsystem: %s\n", SDL_GetError());
 
 	IN_StartupController();
 }

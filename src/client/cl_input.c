@@ -73,7 +73,7 @@ static void KeyUp(kbutton_t* b)
 		// Typed manually at the console, assume for unsticking, so clear all.
 		b->down[0] = 0;
 		b->down[1] = 0;
-		b->state = 4; // Impulse up.
+		b->state = KS_IMPULSE_UP; // Impulse up.
 
 		return;
 	}
@@ -87,7 +87,7 @@ static void KeyUp(kbutton_t* b)
 	else
 		return; // Key up without corresponding down (menu pass through).
 
-	if (b->down[0] || b->down[1] || !(b->state & 1))
+	if (b->down[0] || b->down[1] || !(b->state & KS_DOWN))
 		return; // Some other key is still holding it down or still up (this should not happen).
 
 	// Save timestamp.
@@ -97,8 +97,8 @@ static void KeyUp(kbutton_t* b)
 	else
 		b->msec += 10;
 
-	b->state &= ~1; // Now up.
-	b->state |= 4; // Impulse up.
+	b->state &= ~KS_DOWN; // Now up.
+	b->state |= KS_IMPULSE_UP; // Impulse up.
 }
 
 // Q2 counterpart
@@ -129,7 +129,7 @@ static void KeyDown(kbutton_t* b)
 		return;
 	}
 
-	if (b->state & 1)
+	if (b->state & KS_DOWN)
 		return; // Still down.
 
 	// Save timestamp.
@@ -139,7 +139,7 @@ static void KeyDown(kbutton_t* b)
 	if (b->downtime == 0)
 		b->downtime = sys_frame_time - 100;
 
-	b->state |= 1 + 2; // Down + impulse down.
+	b->state |= (KS_DOWN | KS_IMPULSE_DOWN); // Down + impulse down.
 }
 
 // Q2 counterpart
@@ -474,7 +474,7 @@ static void CL_UpdateClientAngles(void)
 	static qboolean st_unknown5;
 	static qboolean st_unknown6;
 
-	const qboolean do_lookaround = (in_lookaround.state & 1);
+	const qboolean do_lookaround = (in_lookaround.state & KS_DOWN);
 
 	// Look around key pressed?
 	if (do_lookaround)
@@ -719,7 +719,7 @@ void CL_RefreshCmd(void) // YQ2. Called on packetframe or renderframe.
 	old_sys_frame_time = sys_frame_time;
 
 	// Important events are send immediately.
-	if ((in_attack.state & 2) || (in_defend.state & 2) || (in_action.state & 2))
+	if ((in_attack.state & KS_IMPULSE_DOWN) || (in_defend.state & KS_IMPULSE_DOWN) || (in_action.state & KS_IMPULSE_DOWN))
 		cls.force_packet = true;
 }
 
@@ -747,12 +747,12 @@ void CL_RefreshMove(void) // YQ2. Called on packetframe or renderframe.
 // Returns the fraction of the frame that the key was down.
 static float CL_KeyState(kbutton_t* key)
 {
-	key->state &= 1; // Clear impulses.
+	key->state &= ~(KS_IMPULSE_DOWN | KS_IMPULSE_UP); // Clear impulses.
 
 	uint msec = key->msec;
 	key->msec = 0;
 
-	if (key->state) // Still down.
+	if (key->state == KS_DOWN) // Still down.
 	{
 		msec += sys_frame_time - key->downtime;
 		key->downtime = sys_frame_time;
@@ -767,12 +767,12 @@ static void CL_AdjustAngles(void)
 	float speed;
 	float scaler;
 
-	if (in_speed.state & 1)
+	if (in_speed.state & KS_DOWN)
 		speed = cls.nframetime * cl_anglespeedkey->value;
 	else
 		speed = cls.nframetime;
 
-	if (!(in_strafe.state & 1))
+	if (!(in_strafe.state & KS_DOWN))
 	{
 		scaler = speed * cl_yawspeed->value;
 
@@ -782,7 +782,7 @@ static void CL_AdjustAngles(void)
 
 	scaler = speed * cl_pitchspeed->value;
 
-	if (in_klook.state & 1)
+	if (in_klook.state & KS_DOWN)
 	{
 		cl.delta_inputangles[PITCH] -= CL_KeyState(&in_forward) * scaler;
 		cl.delta_inputangles[PITCH] += CL_KeyState(&in_back) * scaler;
@@ -802,7 +802,7 @@ void CL_BaseMove(usercmd_t* cmd)
 
 	CL_AdjustAngles();
 
-	if (in_strafe.state & 1)
+	if (in_strafe.state & KS_DOWN)
 	{
 		cmd->sidemove += (short)(CL_KeyState(&in_right) * MOVE_SCALER);
 		cmd->sidemove -= (short)(CL_KeyState(&in_left) * MOVE_SCALER);
@@ -814,7 +814,7 @@ void CL_BaseMove(usercmd_t* cmd)
 	cmd->upmove += (short)(CL_KeyState(&in_up) * MOVE_SCALER);
 	cmd->upmove -= (short)(CL_KeyState(&in_down) * MOVE_SCALER);
 
-	if (!(in_klook.state & 1))
+	if (!(in_klook.state & KS_DOWN))
 	{
 		cmd->forwardmove += (short)(CL_KeyState(&in_forward) * MOVE_SCALER);
 		cmd->forwardmove -= (short)(CL_KeyState(&in_back) * MOVE_SCALER);
@@ -826,57 +826,57 @@ static void CL_FinishMove(usercmd_t* cmd) // Called on packetframe.
 	// Figure button bits.
 
 	// He attac.
-	if (in_attack.state & 3)
+	if (in_attack.state & (KS_DOWN | KS_IMPULSE_DOWN))
 		cmd->buttons |= BUTTON_ATTACK;
-	in_attack.state &= ~2;
+	in_attack.state &= ~KS_IMPULSE_DOWN;
 
 	// But also protec.
-	if (in_defend.state & 2)
+	if (in_defend.state & KS_DOWN) //TODO: why no KS_IMPULSE_DOWN check here?..
 		cmd->buttons |= BUTTON_DEFEND;
-	in_defend.state &= ~2;
+	in_defend.state &= ~KS_IMPULSE_DOWN;
 
 	// Action.
-	if (in_action.state & 3 && !cl.frame.playerstate.cinematicfreeze)
+	if ((in_action.state & (KS_DOWN | KS_IMPULSE_DOWN)) && !cl.frame.playerstate.cinematicfreeze)
 		cmd->buttons |= BUTTON_ACTION;
-	in_action.state &= ~2;
+	in_action.state &= ~KS_IMPULSE_DOWN;
 
 	// Run.
-	const qboolean speed_state = (in_speed.state & 3);
+	const qboolean speed_state = (in_speed.state & (KS_DOWN | KS_IMPULSE_DOWN));
 	const qboolean run = (int)cl_run->value;
 	if ((speed_state || run) && ((speed_state && !run) || speed_state == (cmd->forwardmove < -10)))
 		cmd->buttons |= BUTTON_RUN;
-	in_speed.state &= ~2;
+	in_speed.state &= ~KS_IMPULSE_DOWN;
 
 	// Crouch.
-	if (in_creep.state & 3)
+	if (in_creep.state & (KS_DOWN | KS_IMPULSE_DOWN))
 		cmd->buttons |= BUTTON_CREEP;
-	in_creep.state &= ~2;
+	in_creep.state &= ~KS_IMPULSE_DOWN;
 
 	// Autoaim.
-	if ((in_autoaim.state & 3) != (int)cl_doautoaim->value)
+	if ((in_autoaim.state & (KS_DOWN | KS_IMPULSE_DOWN)) != (int)cl_doautoaim->value)
 		cmd->buttons |= BUTTON_AUTOAIM;
-	in_autoaim.state &= ~2;
+	in_autoaim.state &= ~KS_IMPULSE_DOWN;
 
 	in_do_autoaim = (cmd->buttons & BUTTON_AUTOAIM);
 
 	// TR-style look around.
-	if (in_lookaround.state & 3)
+	if (in_lookaround.state & (KS_DOWN | KS_IMPULSE_DOWN))
 		cmd->buttons |= BUTTON_LOOKAROUND;
-	in_lookaround.state &= ~2;
+	in_lookaround.state &= ~KS_IMPULSE_DOWN;
 
 	// TR-style quick-turn.
-	if (in_quickturn.state & 3)
+	if (in_quickturn.state & (KS_DOWN | KS_IMPULSE_DOWN))
 	{
 		cmd->buttons |= BUTTON_QUICKTURN;
 		if (quickturn_time == 0.0f)
 			quickturn_time = 0.5f;
 	}
-	in_quickturn.state &= ~2;
+	in_quickturn.state &= ~KS_IMPULSE_DOWN;
 
 	// Open inventory.
-	if (in_inventory.state & 3)
+	if (in_inventory.state & (KS_DOWN | KS_IMPULSE_DOWN))
 		cmd->buttons |= BUTTON_INVENTORY;
-	in_inventory.state &= ~2;
+	in_inventory.state &= ~KS_IMPULSE_DOWN;
 
 	if (anykeydown > 0 && cls.key_dest == key_game)
 		cmd->buttons |= BUTTON_ANY;

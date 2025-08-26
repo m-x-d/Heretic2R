@@ -630,12 +630,20 @@ extern void CL_PingServers_f(void);
 extern void CL_Snd_Restart_f(void);
 
 // cl_input.c
+typedef enum kbutton_state_e //mxd
+{
+	KS_NONE = 0,			// Not pressed.
+	KS_DOWN = 1,			// Pressed.
+	KS_IMPULSE_DOWN = 2,	// Pressed this frame.
+	KS_IMPULSE_UP = 4,		// Released this frame.
+} kbutton_state_t;
+
 typedef struct
 {
 	int down[2];	// Key nums holding it down
 	uint downtime;	// Msec timestamp
 	uint msec;		// Msec down this frame
-	int state;
+	kbutton_state_t state; //mxd. Int in original logic.
 } kbutton_t;
 
 extern kbutton_t in_klook;

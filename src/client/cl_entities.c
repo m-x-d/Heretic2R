@@ -1393,7 +1393,7 @@ static void CL_UpdateCameraOrientation(float viewheight, const qboolean interpol
 		}
 	}
 
-	if (waterlevel == 0 || (water_flags & ~WF_SWIMFREE) || (water_flags == 0 && in_down.state == 0))
+	if (waterlevel == 0 || (water_flags & ~WF_SWIMFREE) || (water_flags == 0 && in_down.state == KS_NONE))
 	{
 		const float roll_scaler = 1.0f - fabsf(look_angles[PITCH] / 89.0f);
 		const vec3_t v = { mins[0], mins[1], -1.0f - roll_scaler * 2.0f };
@@ -1521,7 +1521,7 @@ static void CL_CalcViewValues(void)
 
 			VectorCopy(cl.predicted_angles, look_angles);
 		}
-		else if (in_lookaround.state & 1)
+		else if (in_lookaround.state & KS_DOWN)
 		{
 			for (int i = 0; i < 3; i++)
 				look_angles[i] = cl.lookangles[i] + (float)ps->pmove.delta_angles[i] * SHORT_TO_ANGLE;
