@@ -233,9 +233,8 @@ void IN_Shutdown(void)
 	IN_ShutdownMouse();
 	IN_ShutdownController();
 
-	const SDL_InitFlags subsystems = (SDL_INIT_GAMEPAD | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_EVENTS);
-	if (SDL_WasInit(subsystems) == subsystems)
-		SDL_QuitSubSystem(subsystems);
+	if (SDL_WasInit(SDL_INIT_EVENTS))
+		SDL_QuitSubSystem(SDL_INIT_EVENTS);
 }
 
 // Updates the input queue state. Called every frame by the client and does nearly all the input magic.
