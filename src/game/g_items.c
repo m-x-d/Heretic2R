@@ -628,9 +628,8 @@ void SpawnItem(edict_t* ent, gitem_t* item)
 	if (DEATHMATCH)
 		ent->flags |= FL_RESPAWN;
 
-	ent->s.effects = item->world_model_flags;
+	ent->s.effects = (item->world_model_flags | EF_ALWAYS_ADD_EFFECTS);
 	ent->s.renderfx = RF_GLOW;
-	ent->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 
 	if (item->flags & IT_WEAPON)
 	{
