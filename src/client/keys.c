@@ -671,6 +671,93 @@ void Key_WriteBindings_Double(FILE* f)
 			fprintf(f, "bind_double %s \"%s\"\n", Key_KeynumToString(i), keybindings_double[i]);
 }
 
+void Key_WriteConsoleHistory(void) // YQ2
+{
+	char path[MAX_OSPATH];
+	Com_sprintf(path, sizeof(path), "%s/console_history.txt", FS_Userdir());
+
+	FILE* f;
+	if (fopen_s(&f, path, "w") != 0) //mxd. fopen -> fopen_s
+	{
+		Com_Printf("Opening console history '%s' for writing failed!\n", path);
+		return;
+	}
+
+	// Save the oldest lines first by starting at edit_line and going forward (and wrapping around).
+	const char* last_written_line = "";
+
+	for (int i = 0; i < NUM_KEY_LINES; i++)
+	{
+		const int line_index = (edit_line + i) & (NUM_KEY_LINES - 1);
+		const char* line = key_lines[line_index];
+
+		if (*line == '\0')
+			continue;
+
+		while ((*line == '>' || *line == '/' || *line == ' ') && line - key_lines[line_index] < MAXCMDLINE) //mxd. Skip '>' and '/' markers.
+			line++; 
+
+		if (*line != '\0' && strcmp(last_written_line, line) != 0)
+		{
+			// If the line actually contains something besides the '>' prompt and is not identical to the last written line, write it to the file.
+			fputs(line, f);
+			fputc('\n', f);
+
+			last_written_line = line;
+		}
+	}
+
+	fclose(f);
+}
+
+// Initializes key_lines from history file, if available.
+void Key_ReadConsoleHistory(void) // YQ2
+{
+	char path[MAX_OSPATH];
+	Com_sprintf(path, sizeof(path), "%s/console_history.txt", FS_Userdir());
+
+	FILE* f;
+	if (fopen_s(&f, path, "r") != 0) //mxd. fopen -> fopen_s
+	{
+		Com_Printf("Opening console history '%s' for reading failed!\n", path);
+		return;
+	}
+
+	for (int i = 0; i < NUM_KEY_LINES; i++)
+	{
+		if (fgets(key_lines[i], MAXCMDLINE, f) == NULL)
+		{
+			// Probably EOF... adjust edit_line and history_line and we're done here.
+			edit_line = i;
+			history_line = i;
+
+			break;
+		}
+
+		// Remove trailing newlines. And spaces --mxd.
+		//int last_char_index = (int)strlen(key_lines[i]) - 1;
+		char* last_char = &key_lines[i][(int)strlen(key_lines[i]) - 1];
+
+		while ((*last_char == '\n' || *last_char == '\r' || *last_char == ' ') && last_char >= &key_lines[i][0])
+		{
+			*last_char = '\0';
+			last_char--;
+		}
+
+		//mxd. Put back the '>' marker...
+		if (key_lines[i][0] != '>')
+		{
+			memmove(key_lines[i] + 1, key_lines[i], MAXCMDLINE - 1);
+			key_lines[i][0] = '>';
+		}
+	}
+
+	fclose(f);
+
+	// Don't remember the input line.
+	Key_ClearTyping();
+}
+
 // Q2 counterpart
 static void Key_Bindlist_f(void)
 {

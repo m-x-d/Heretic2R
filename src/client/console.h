@@ -43,3 +43,5 @@ extern void Con_Clear_f(void);
 extern void Con_DrawNotify(void);
 extern void Con_ClearNotify(void);
 extern void Con_ToggleConsole_f(void);
+
+extern void Key_ClearTyping(void);

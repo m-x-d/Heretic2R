@@ -1591,6 +1591,7 @@ void CL_Init(void)
 	Cbuf_AddText("exec user.cfg\n");
 	Cbuf_Execute();
 
+	Key_ReadConsoleHistory(); // YQ2
 	CL_LoadStrings();
 }
 
@@ -1610,6 +1611,7 @@ void CL_Shutdown(void)
 
 	ResMngr_Des(&cl_FXBufMngr); //mxd. Was a separate function in H2.
 	CL_WriteConfiguration();
+	Key_WriteConsoleHistory(); // YQ2
 
 	if (fxapi_initialized)
 		CL_UnloadClientEffects();

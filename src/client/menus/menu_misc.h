@@ -20,6 +20,3 @@ extern cvar_t* m_item_console;
 extern cvar_t* m_item_autoweapon;
 
 extern void M_Menu_Misc_f(void);
-
-// Functions shared between vid_dll and menu_misc logic.
-extern void Key_ClearTyping(void);

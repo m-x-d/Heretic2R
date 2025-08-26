@@ -137,6 +137,8 @@ extern void Key_Event(int key, qboolean down, uint time);
 extern void Key_Init(void);
 extern void Key_WriteBindings(FILE* f);
 extern void Key_WriteBindings_Double(FILE* f); // H2
+extern void Key_WriteConsoleHistory(void); // YQ2
+extern void Key_ReadConsoleHistory(void); // YQ2
 extern void Key_SetBinding(int keynum, const char* binding);
 extern void Key_SetDoubleBinding(int keynum, const char* binding); // H2
 extern void Key_ClearStates(void);
