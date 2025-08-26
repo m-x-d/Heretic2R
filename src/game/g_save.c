@@ -303,7 +303,6 @@ void InitGame(void)
 	password = gi.cvar("password", "", CVAR_USERINFO);
 	filterban = gi.cvar("filterban", "1", 0);
 
-	checkanim = gi.cvar("checkanim", "0", 0);
 	allowillegalskins = gi.cvar("allowillegalskins", "0", CVAR_ARCHIVE);
 
 	deactivate_buoys = gi.cvar("deactivate_buoys", "0", 0);

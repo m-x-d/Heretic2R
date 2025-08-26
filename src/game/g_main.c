@@ -61,7 +61,6 @@ cvar_t* sv_cheats;
 cvar_t* sv_nomonsters = NULL;
 cvar_t* sv_freezemonsters;
 
-cvar_t* checkanim; //TODO: unused. Remove.
 cvar_t* allowillegalskins;
 
 cvar_t* deactivate_buoys;
