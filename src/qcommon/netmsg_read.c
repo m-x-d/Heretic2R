@@ -6,9 +6,8 @@
 
 #include "anorms.h" //mxd
 #include "qcommon.h"
-#include "assert.h"
 #include "cl_skeletons.h"
-#include "vector.h"
+#include "Vector.h"
 
 void MSG_BeginReading(sizebuf_t *sb)
 {
@@ -292,24 +291,25 @@ void MSG_ReadYawPitch(sizebuf_t* sb, vec3_t dir)
 void MSG_ReadEffects(sizebuf_t* sb, EffectsBuffer_t* fxBuf)
 {
 	int len;
+	int num_fx = MSG_ReadByte(sb); //mxd. Original logic adds this directly to fxBuf->numEffects, which can potentially create ENTITY_FX_SIZE16 flag out of thin air...
 
-	fxBuf->numEffects += MSG_ReadByte(sb);
-
-	if (fxBuf->numEffects < 0)
-		Com_Error(ERR_DROP, "MSG_ReadEffects: invalid number of effects (%i)", fxBuf->numEffects);
-
-	if (fxBuf->numEffects == 0)
-		return;
-
-	if (fxBuf->numEffects & 0x80)
+	if (num_fx & FX_BUF_SIZE16)
 	{
-		fxBuf->numEffects &= ~0x80;
+		num_fx &= ~FX_BUF_SIZE16;
 		len = MSG_ReadShort(sb);
 	}
 	else
 	{
 		len = MSG_ReadByte(sb);
 	}
+
+	fxBuf->numEffects += num_fx;
+
+	if (fxBuf->numEffects < 0 || fxBuf->numEffects >= FX_BUF_MAX_EFFECTS) //mxd. Add upper bound check.
+		Com_Error(ERR_DROP, "MSG_ReadEffects: invalid number of effects (%i)", fxBuf->numEffects);
+
+	if (fxBuf->numEffects == 0)
+		return;
 
 	if (len > 0)
 	{

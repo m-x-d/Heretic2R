@@ -268,6 +268,8 @@ int CL_CreateEffect(const byte event_id, const void* owner, const ushort fx_type
 	client_prediction_effects.freeBlock += sb.cursize;
 	client_prediction_effects.numEffects++;
 
+	assert(client_prediction_effects.numEffects < FX_BUF_MAX_EFFECTS); //mxd
+
 	return sb.cursize;
 }
 

@@ -283,7 +283,7 @@ static void MSG_WriteEffects(sizebuf_t* sb, EffectsBuffer_t* fxBuf) // H2
 	}
 	else
 	{
-		fxBuf->numEffects |= 0x80;
+		fxBuf->numEffects |= FX_BUF_SIZE16;
 		MSG_WriteByte(sb, fxBuf->numEffects);
 		MSG_WriteShort(sb, fxBuf->freeBlock);
 	}

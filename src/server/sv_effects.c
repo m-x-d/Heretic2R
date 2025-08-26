@@ -126,6 +126,8 @@ void SV_CreateEffect(entity_state_t* ent, const int fx_type, int flags, const ve
 	{
 		clfx->freeBlock += sb.cursize;
 		clfx->numEffects++;
+
+		assert(clfx->numEffects < FX_BUF_MAX_EFFECTS); //mxd
 	}
 	else
 	{
@@ -235,6 +237,8 @@ void SV_CreateEffectEvent(const byte event_id, entity_state_t* ent, const int fx
 	{
 		clfx->freeBlock += sb.cursize;
 		clfx->numEffects++;
+
+		assert(clfx->numEffects < FX_BUF_MAX_EFFECTS); //mxd
 	}
 	else
 	{

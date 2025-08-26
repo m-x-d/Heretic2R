@@ -675,6 +675,9 @@ typedef struct
 #define ENTITY_FX_BUF_BLOCK_SIZE	256
 #define MAX_PERSISTANT_EFFECTS		512
 
+#define FX_BUF_SIZE16				128 //mxd
+#define FX_BUF_MAX_EFFECTS			FX_BUF_SIZE16 //mxd
+
 typedef struct EffectsBuffer_s
 {
 	byte* buf;
