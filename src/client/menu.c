@@ -151,6 +151,10 @@ static void OnMainMenuOpened(void) // H2
 
 	if (se.SetEaxEnvironment != NULL)
 		se.SetEaxEnvironment(0);
+
+	//mxd. When not ingame, play menu music.
+	if (cls.state != ca_active)
+		se.MusicPlay(14, true);
 }
 
 // Similar to M_PushMenu() in Q2.
