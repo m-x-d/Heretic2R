@@ -9,6 +9,7 @@
 #include "client.h"
 
 #define MAX_CHANNELS	32
+#define MAX_RAW_SAMPLES	8192
 
 extern snd_import_t si;
 
