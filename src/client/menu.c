@@ -1250,14 +1250,13 @@ void Menu_DrawTitle(const cvar_t* title) // H2
 
 void Menu_DrawBG(const char* bk_path, const float scale) //mxd
 {
+	if (scale < 0.001f)
+		return;
+
 	// Hide widescreen parts...
 	paletteRGBA_t color = TextPalette[P_BLACK];
 	color.a = (byte)(scale * 255.0f); // Use scale, because cls.m_menualpha is used to fade-in menu text AFTER zoom-in effect finishes.
-
-	if (scale == 1.0f) //mxd. For whatever reason, DrawFadeScreen() has no effect when loading map from command line, so use DrawFill() instead... //TODO: why does this happen?
-		re.DrawFill(0, 0, viddef.width, viddef.height, color);
-	else
-		re.DrawFadeScreen(color);
+	re.DrawFill(0, 0, viddef.width, viddef.height, color);
 
 	// Draw menu BG.
 	re.BookDrawPic(bk_path, scale);

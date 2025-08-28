@@ -256,10 +256,18 @@ void Draw_TileClear(const int x, const int y, const int w, const int h, const ch
 // Fills a box of pixels with a single color.
 void Draw_Fill(const int x, const int y, const int w, const int h, const paletteRGBA_t color)
 {
+	assert(color.a > 0); //mxd
+
+	if (color.a < 255) //mxd. Added transparency support.
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
 	glDisable(GL_TEXTURE_2D);
 
-	//mxd. qglColor4f -> qglColor4ub; H2: qglColor4f((float)r / 256.0f, (float)g / 256.0f,(float)b / 256.0f, 1.0f); Q2: color components divided by 255.0
-	glColor3ub(color.r, color.g, color.b);
+	//mxd. qglColor4f -> qglColor4ubv; H2: qglColor4f((float)r / 256.0f, (float)g / 256.0f,(float)b / 256.0f, 1.0f); Q2: color components divided by 255.0
+	glColor4ubv(color.c_array);
 
 	glBegin(GL_QUADS);
 
@@ -273,6 +281,9 @@ void Draw_Fill(const int x, const int y, const int w, const int h, const palette
 
 	glColor3f(1.0f, 1.0f, 1.0f); // mxd. qglColor4f -> qglColor3f
 	glEnable(GL_TEXTURE_2D);
+
+	if (color.a < 255) //mxd. Added transparency support.
+		glDisable(GL_BLEND);
 }
 
 void Draw_FadeScreen(const paletteRGBA_t color)
