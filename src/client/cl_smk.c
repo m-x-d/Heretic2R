@@ -7,58 +7,66 @@
 #include "client.h"
 #include <libsmacker/smacker.h>
 
-static int cinematic_frame;
-static int cinematic_total_frames;
+typedef struct SMKPlaybackInfo_s
+{
+	smk smk_obj;
 
-static smk smk_obj;
-static const byte* smk_video_frame;
-static const byte* smk_palette;
-static float smk_fps; //mxd. Original logic uses cin_rate cvar instead of this.
+	int frame;
+	int total_frames;
 
-// Current .smk video properties.
-static int smk_vid_width;
-static int smk_vid_height;
+	const byte* video_frame;
+	const byte* palette;
+	float fps; //mxd. Original logic uses cin_rate cvar instead of this.
 
-// Current .smk audio properties.
-static int smk_snd_channels;
-static int smk_snd_width;
-static int smk_snd_rate;
+	// Current .smk video properties.
+	int vid_width;
+	int vid_height;
 
-// Auxiliary sound buffer...
-static byte* smk_audio_buffer;
+	// Current .smk audio properties.
+	int snd_channels;
+	int snd_width;
+	int snd_rate;
+
+	// Auxiliary sound buffer...
+	byte* audio_buffer;
+	int audio_buffer_size;
+	int audio_buffer_end;
+} SMKPlaybackInfo_t;
+
+static SMKPlaybackInfo_t spi;
 
 static qboolean SMK_Open(const char* name)
 {
-	cinematic_frame = 0; // Reset frame counter.
+	spi.frame = 0; // Reset frame counter.
 
-	smk_obj = smk_open_file(name, SMK_MODE_DISK);
-	if (smk_obj == NULL)
+	spi.smk_obj = smk_open_file(name, SMK_MODE_DISK);
+	if (spi.smk_obj == NULL)
 		return false;
 
-	smk_enable_all(smk_obj, SMK_VIDEO_TRACK | SMK_AUDIO_TRACK_0);
+	smk_enable_all(spi.smk_obj, SMK_VIDEO_TRACK | SMK_AUDIO_TRACK_0);
 
 	ulong frame_count;
 	double usf; // Microseconds per frame.
-	smk_info_all(smk_obj, NULL, &frame_count, &usf);
+	smk_info_all(spi.smk_obj, NULL, &frame_count, &usf);
 
-	cinematic_total_frames = (int)frame_count;
-	smk_fps = floorf(1000000.0f / (float)usf);
+	spi.total_frames = (int)frame_count;
+	spi.fps = floorf(1000000.0f / (float)usf);
 
-	smk_info_video(smk_obj, &smk_vid_width, &smk_vid_height, NULL);
+	smk_info_video(spi.smk_obj, &spi.vid_width, &spi.vid_height, NULL);
 
 	byte s_channels[7];
 	byte s_bitdepth[7];
 	ulong s_rate[7];
-	smk_info_audio(smk_obj, NULL, s_channels, s_bitdepth, s_rate);
+	smk_info_audio(spi.smk_obj, NULL, s_channels, s_bitdepth, s_rate);
 
-	smk_snd_channels = s_channels[0];
-	smk_snd_width = s_bitdepth[0] / 8; // s_bitdepth: 8 or 16.
-	smk_snd_rate = (int)s_rate[0];
+	spi.snd_channels = s_channels[0];
+	spi.snd_width = s_bitdepth[0] / 8; // s_bitdepth: 8 or 16.
+	spi.snd_rate = (int)s_rate[0];
 
-	smk_first(smk_obj);
-	smk_palette = smk_get_palette(smk_obj);
+	smk_first(spi.smk_obj);
+	spi.palette = smk_get_palette(spi.smk_obj);
 
-	if ((smk_vid_width & 7) != 0 || (smk_vid_height & 7) != 0)
+	if ((spi.vid_width & 7) != 0 || (spi.vid_height & 7) != 0)
 	{
 		Com_Printf("...Smacker file must but a multiple of 8 high and wide\n");
 		SMK_Shutdown();
@@ -66,77 +74,74 @@ static qboolean SMK_Open(const char* name)
 		return false;
 	}
 
-	re.DrawInitCinematic(smk_vid_width, smk_vid_height);
+	re.DrawInitCinematic(spi.vid_width, spi.vid_height);
 
 	return true;
 }
 
 void SMK_Shutdown(void)
 {
-	if (smk_obj != NULL)
+	if (spi.smk_obj != NULL)
 	{
 		re.DrawCloseCinematic();
 
-		smk_close(smk_obj);
-		smk_obj = NULL;
+		smk_close(spi.smk_obj);
+		spi.smk_obj = NULL;
 
-		smk_video_frame = NULL;
-		smk_palette = NULL;
+		spi.video_frame = NULL;
+		spi.palette = NULL;
 
-		if (smk_audio_buffer != NULL)
+		if (spi.audio_buffer != NULL)
 		{
-			free(smk_audio_buffer);
-			smk_audio_buffer = NULL;
+			free(spi.audio_buffer);
+			spi.audio_buffer = NULL;
 		}
 	}
 }
 
 static void SCR_DoCinematicFrame(void) // Called when it's time to render next cinematic frame (e.g. at 15 fps).
 {
-	static int smk_audio_buffer_size;
-	static int smk_audio_buffer_end;
-
 	// Grab video frame.
-	smk_video_frame = smk_get_video(smk_obj);
+	spi.video_frame = smk_get_video(spi.smk_obj);
 
 	// Grab audio frame (way more involved than you may expect)...
-	const int smk_audio_frame_size = (int)smk_get_audio_size(smk_obj, 0);
+	const int smk_audio_frame_size = (int)smk_get_audio_size(spi.smk_obj, 0);
 
 	//mxd. The first smk frame contains 16 frames of audio data. This will overflow s_rawsamples[] if used as is, resulting in desynched audio, so use an auxiliary buffer...
 	//mxd. Interestingly, official RAD Video Tools (and SmackW32.dll bundled with vanilla H2) start audio playback from 2-nd frame & end 1 frame too early.
-	if (cinematic_frame == 0)
+	if (spi.frame == 0)
 	{
-		smk_audio_buffer = malloc(smk_audio_frame_size);
-		smk_audio_buffer_size = smk_audio_frame_size;
-		smk_audio_buffer_end = 0;
+		spi.audio_buffer = malloc(smk_audio_frame_size);
+		spi.audio_buffer_size = smk_audio_frame_size;
+		spi.audio_buffer_end = 0;
 	}
 
 	// Calculate audio frame size.
 	int frame_size;
 
 	//mxd. On frame 0, smk_audio_frame_size is 16 times bigger than needed. Zero smk_audio_frame_size means we have to use remaining buffered audio frames.
-	if (cinematic_frame == 0 || smk_audio_frame_size == 0)
-		frame_size = (int)((float)(smk_snd_rate * smk_snd_width) / smk_fps); // Calculate actual frame size.
+	if (spi.frame == 0 || smk_audio_frame_size == 0)
+		frame_size = (int)((float)(spi.snd_rate * spi.snd_width) / spi.fps); // Calculate actual frame size.
 	else
 		frame_size = smk_audio_frame_size; // Use provided frame size.
 
 	// Store audio frame in auxiliary buffer...
-	memcpy(smk_audio_buffer + smk_audio_buffer_end, smk_get_audio(smk_obj, 0), smk_audio_frame_size);
-	smk_audio_buffer_end += smk_audio_frame_size;
+	memcpy(spi.audio_buffer + spi.audio_buffer_end, smk_get_audio(spi.smk_obj, 0), smk_audio_frame_size);
+	spi.audio_buffer_end += smk_audio_frame_size;
 
 	// Upload audio chunk RawSamples() can handle...
-	const int num_samples = frame_size / (smk_snd_width * smk_snd_channels);
-	se.RawSamples(num_samples, smk_snd_rate, smk_snd_width, smk_snd_channels, smk_audio_buffer, Cvar_VariableValue("s_volume"));
+	const int num_samples = frame_size / (spi.snd_width * spi.snd_channels);
+	se.RawSamples(num_samples, spi.snd_rate, spi.snd_width, spi.snd_channels, spi.audio_buffer, Cvar_VariableValue("s_volume"));
 
 	// Remove uploaded audio chunk...
-	memmove_s(smk_audio_buffer, smk_audio_buffer_size, smk_audio_buffer + frame_size, smk_audio_buffer_size - frame_size);
-	smk_audio_buffer_end -= frame_size;
+	memmove_s(spi.audio_buffer, spi.audio_buffer_size, spi.audio_buffer + frame_size, spi.audio_buffer_size - frame_size);
+	spi.audio_buffer_end -= frame_size;
 
-	assert(smk_audio_buffer_end >= 0);
+	assert(spi.audio_buffer_end >= 0);
 
 	// Go to next frame.
-	smk_next(smk_obj);
-	cinematic_frame++;
+	smk_next(spi.smk_obj);
+	spi.frame++;
 }
 
 void SCR_PlayCinematic(const char* name)
@@ -170,7 +175,7 @@ void SCR_PlayCinematic(const char* name)
 		return;
 	}
 
-	cl.cinematictime = (int)((float)cls.realtime - 2000.0f / smk_fps);
+	cl.cinematictime = (int)((float)cls.realtime - 2000.0f / spi.fps);
 
 	SCR_DoCinematicFrame(); // Advance cinematic_frame to match with cl.cinematictime in SCR_RunCinematic()...
 
@@ -187,7 +192,7 @@ void SCR_PlayCinematic(const char* name)
 void SCR_DrawCinematic(void) // Called every rendered frame.
 {
 	if (cl.cinematictime > 0)
-		re.DrawCinematic(smk_video_frame, (const paletteRGB_t*)smk_palette);
+		re.DrawCinematic(spi.video_frame, (const paletteRGB_t*)spi.palette);
 }
 
 void SCR_RunCinematic(void) // Called every rendered frame.
@@ -198,26 +203,26 @@ void SCR_RunCinematic(void) // Called every rendered frame.
 	// Pause if menu or console is up.
 	if (cls.key_dest != key_game)
 	{
-		cl.cinematictime = (int)((float)cls.realtime - (float)(cinematic_frame * 1000) / smk_fps); // Q2: / 14
+		cl.cinematictime = (int)((float)cls.realtime - (float)(spi.frame * 1000) / spi.fps); // Q2: / 14
 		return;
 	}
 
 	//mxd. Do before SCR_DoCinematicFrame() call to allow the last smk frame to render.
-	if (cinematic_frame >= cinematic_total_frames)
+	if (spi.frame >= spi.total_frames)
 	{
 		SCR_FinishCinematic();
 		return;
 	}
 
-	const int frame = (int)((float)(cls.realtime - cl.cinematictime) * smk_fps / 1000.0f);
+	const int frame = (int)((float)(cls.realtime - cl.cinematictime) * spi.fps / 1000.0f);
 
-	if (frame <= cinematic_frame) //mxd. Original code waits using SmackWait function.
+	if (frame <= spi.frame) //mxd. Original code waits using SmackWait function.
 		return;
 
-	if (frame > cinematic_frame + 1)
+	if (frame > spi.frame + 1)
 	{
-		Com_Printf("Dropped frame: %i > %i\n", frame, cinematic_frame + 1);
-		cl.cinematictime = (int)((float)cls.realtime - (float)(cinematic_frame * 1000) / smk_fps); // Q2: / 14
+		Com_Printf("Dropped frame: %i > %i\n", frame, spi.frame + 1);
+		cl.cinematictime = (int)((float)cls.realtime - (float)(spi.frame * 1000) / spi.fps); // Q2: / 14
 	}
 
 	SCR_DoCinematicFrame();
