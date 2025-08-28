@@ -676,7 +676,7 @@ void S_RawSamples(const int num_samples, const uint rate, const int width, const
 	}
 }
 
-// Called once each time through the main loop.
+// Called on renderframe.
 static void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up)
 {
 	if (!sound_started || !s_active)

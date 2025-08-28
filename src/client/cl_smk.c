@@ -1,16 +1,13 @@
 //
-// cl_smk.c -- libsmacker interface (https://libsmacker.sourceforge.net)
+// cl_smk.c -- libsmacker interface (https://github.com/JonnyH/libsmacker)
 //
 // Copyright 1998 Raven Software
 //
 
 #include "client.h"
-#include "screen.h"
-#include "snd_dll.h"
 #include <libsmacker/smacker.h>
 
 static int cinematic_frame;
-static int cinematic_total_frames;
 
 static smk smk_obj;
 static const byte* smk_video_frame;
@@ -26,12 +23,17 @@ static int smk_snd_channels;
 static int smk_snd_width;
 static int smk_snd_rate;
 
-// Returns number of frames in .smk
-static int SMK_Open(const char* name)
+// Auxiliary sound buffer...
+static byte* smk_audio_buffer;
+static float snd_rate_scaler;
+
+static qboolean SMK_Open(const char* name)
 {
+	cinematic_frame = 0; // Reset frame counter.
+
 	smk_obj = smk_open_file(name, SMK_MODE_DISK);
 	if (smk_obj == NULL)
-		return 0;
+		return false;
 
 	smk_enable_all(smk_obj, SMK_VIDEO_TRACK | SMK_AUDIO_TRACK_0);
 
@@ -51,6 +53,11 @@ static int SMK_Open(const char* name)
 	smk_snd_width = s_bitdepth[0] / 8; // s_bitdepth: 8 or 16.
 	smk_snd_rate = (int)s_rate[0];
 
+	//mxd. Setup sound backend rate scaler...
+	const cvar_t* s_khz = Cvar_Get("s_khz", "44", CVAR_ARCHIVE);
+	const int snd_rate = (s_khz->value == 44.0f ? 44100 : 22050);
+	snd_rate_scaler = (float)smk_snd_rate / (float)snd_rate;
+
 	smk_first(smk_obj);
 	smk_palette = smk_get_palette(smk_obj);
 
@@ -59,12 +66,12 @@ static int SMK_Open(const char* name)
 		Com_Printf("...Smacker file must but a multiple of 8 high and wide\n");
 		SMK_Shutdown();
 
-		return 0;
+		return false;
 	}
 
 	re.DrawInitCinematic(smk_vid_width, smk_vid_height);
 
-	return (int)frame_count;
+	return true;
 }
 
 void SMK_Shutdown(void)
@@ -78,21 +85,57 @@ void SMK_Shutdown(void)
 
 		smk_video_frame = NULL;
 		smk_palette = NULL;
+
+		if (smk_audio_buffer != NULL)
+		{
+			free(smk_audio_buffer);
+			smk_audio_buffer = NULL;
+		}
 	}
 }
 
-static void SCR_DoCinematicFrame(void) // Called when it's time to render next cinematic frame (e.g. at 15 fps).
+static qboolean SCR_DoCinematicFrame(void) // Called when it's time to render next cinematic frame (e.g. at 15 fps).
 {
+	static int smk_audio_buffer_offset;
+	static int smk_audio_buffer_size;
+
+	// Grab video frame.
 	smk_video_frame = smk_get_video(smk_obj);
 
-	const byte* smk_audio_frame = smk_get_audio(smk_obj, 0);
+	// Grab audio frame.
 	const int smk_audio_frame_size = (int)smk_get_audio_size(smk_obj, 0);
 
-	const int num_samples = smk_audio_frame_size / smk_snd_width / smk_snd_channels;
-	se.RawSamples(num_samples, smk_snd_rate, smk_snd_width, smk_snd_channels, smk_audio_frame, Cvar_VariableValue("s_volume"));
+	//mxd. The first smk frame contains way more audio data than s_rawsamples[] can hold, so use an auxiliary buffer...
+	if (cinematic_frame == 0)
+	{
+		smk_audio_buffer = malloc(smk_audio_frame_size);
+		smk_audio_buffer_size = smk_audio_frame_size;
+		smk_audio_buffer_offset = 0;
+	}
+	else
+	{
+		assert(smk_audio_buffer_size >= smk_audio_buffer_offset + smk_audio_frame_size);
+	}
 
-	smk_next(smk_obj);
+	// Store audio frame in auxiliary buffer...
+	memcpy(smk_audio_buffer + smk_audio_buffer_offset, smk_get_audio(smk_obj, 0), smk_audio_frame_size);
+	smk_audio_buffer_offset += smk_audio_frame_size;
+
+	// Upload audio chunk RawSamples() can handle...
+	const int upload_frame_size = min((int)((MAX_RAW_SAMPLES - 2048) * snd_rate_scaler), smk_audio_frame_size);
+	const int num_samples = upload_frame_size / (smk_snd_width * smk_snd_channels);
+	se.RawSamples(num_samples, smk_snd_rate, smk_snd_width, smk_snd_channels, smk_audio_buffer, Cvar_VariableValue("s_volume"));
+
+	// Remove uploaded audio chunk...
+	memmove_s(smk_audio_buffer, smk_audio_buffer_size, smk_audio_buffer + upload_frame_size, smk_audio_buffer_size - upload_frame_size);
+	smk_audio_buffer_offset -= upload_frame_size;
+
+	assert(smk_audio_buffer_offset >= 0);
+
+	// Go to next frame.
 	cinematic_frame++;
+
+	return (smk_next(smk_obj) == SMK_MORE);
 }
 
 void SCR_PlayCinematic(const char* name)
@@ -116,9 +159,7 @@ void SCR_PlayCinematic(const char* name)
 	sprintf_s(smk_filepath, sizeof(smk_filepath), "%s/video/%s", path, name); //mxd. sprintf -> sprintf_s
 	Com_Printf("Opening cinematic file: '%s'...\n", smk_filepath);
 
-	cinematic_frame = 0;
-	cinematic_total_frames = SMK_Open(smk_filepath);
-	if (cinematic_total_frames == 0)
+	if (!SMK_Open(smk_filepath))
 	{
 		Com_Printf("...Unable to open file\n");
 		SCR_FinishCinematic();
@@ -167,9 +208,7 @@ void SCR_RunCinematic(void)
 		cl.cinematictime = (int)((float)cls.realtime - (float)(cinematic_frame * 1000) / smk_fps); // Q2: / 14
 	}
 
-	SCR_DoCinematicFrame();
-
-	if (cinematic_frame >= cinematic_total_frames - 1)
+	if (!SCR_DoCinematicFrame())
 		SCR_FinishCinematic();
 	else
 		SCR_EndLoadingPlaque();

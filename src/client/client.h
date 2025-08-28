@@ -32,6 +32,9 @@
 // Allow a lot of command backups for very fast systems.
 #define CMD_BACKUP	64
 
+//mxd. Maximum audio frame size for .ogg and .smk audio playback.
+#define MAX_RAW_SAMPLES	8192
+
 typedef struct
 {
 	qboolean valid; // Cleared if delta parsing was invalid.
