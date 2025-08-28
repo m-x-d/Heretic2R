@@ -95,12 +95,11 @@ static void SCR_DoCinematicFrame(void) // Called when it's time to render next c
 {
 	static int smk_audio_buffer_size;
 	static int smk_audio_buffer_end;
-	static int frame_size;
 
 	// Grab video frame.
 	smk_video_frame = smk_get_video(smk_obj);
 
-	// Grab audio frame.
+	// Grab audio frame (way more involved than you may expect)...
 	const int smk_audio_frame_size = (int)smk_get_audio_size(smk_obj, 0);
 
 	//mxd. The first smk frame contains 16 frames of audio data. This will overflow s_rawsamples[] if used as is, resulting in desynched audio, so use an auxiliary buffer...
@@ -110,27 +109,28 @@ static void SCR_DoCinematicFrame(void) // Called when it's time to render next c
 		smk_audio_buffer = malloc(smk_audio_frame_size);
 		smk_audio_buffer_size = smk_audio_frame_size;
 		smk_audio_buffer_end = 0;
+	}
 
-		// Calculate actual frame size.
-		frame_size = smk_audio_frame_size / 16; //TODO: is this always 16?
-	}
+	// Calculate audio frame size.
+	int frame_size;
+
+	//mxd. On frame 0, smk_audio_frame_size is 16 times bigger than needed. Zero smk_audio_frame_size means we have to use remaining buffered audio frames.
+	if (cinematic_frame == 0 || smk_audio_frame_size == 0)
+		frame_size = (int)((float)(smk_snd_rate * smk_snd_width) / smk_fps); // Calculate actual frame size.
 	else
-	{
-		assert(smk_audio_buffer_size >= smk_audio_buffer_end + smk_audio_frame_size);
-	}
+		frame_size = smk_audio_frame_size; // Use provided frame size.
 
 	// Store audio frame in auxiliary buffer...
 	memcpy(smk_audio_buffer + smk_audio_buffer_end, smk_get_audio(smk_obj, 0), smk_audio_frame_size);
 	smk_audio_buffer_end += smk_audio_frame_size;
 
 	// Upload audio chunk RawSamples() can handle...
-	const int cur_frame_size = min(smk_audio_buffer_end, frame_size); //mxd. Last frame may have insufficient data...
-	const int num_samples = cur_frame_size / (smk_snd_width * smk_snd_channels);
+	const int num_samples = frame_size / (smk_snd_width * smk_snd_channels);
 	se.RawSamples(num_samples, smk_snd_rate, smk_snd_width, smk_snd_channels, smk_audio_buffer, Cvar_VariableValue("s_volume"));
 
 	// Remove uploaded audio chunk...
-	memmove_s(smk_audio_buffer, smk_audio_buffer_size, smk_audio_buffer + cur_frame_size, smk_audio_buffer_size - cur_frame_size);
-	smk_audio_buffer_end -= cur_frame_size;
+	memmove_s(smk_audio_buffer, smk_audio_buffer_size, smk_audio_buffer + frame_size, smk_audio_buffer_size - frame_size);
+	smk_audio_buffer_end -= frame_size;
 
 	assert(smk_audio_buffer_end >= 0);
 
@@ -172,8 +172,7 @@ void SCR_PlayCinematic(const char* name)
 
 	cl.cinematictime = (int)((float)cls.realtime - 2000.0f / smk_fps);
 
-	//mxd. Grab first video frame without advancing .smk playback...
-	smk_video_frame = smk_get_video(smk_obj);
+	SCR_DoCinematicFrame(); // Advance cinematic_frame to match with cl.cinematictime in SCR_RunCinematic()...
 
 	Cvar_SetValue("paused", 0);
 	cls.state = ca_connected;
