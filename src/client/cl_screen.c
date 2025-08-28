@@ -1046,6 +1046,20 @@ static void SCR_DrawFramecounter(void) //mxd
 	}
 }
 
+//mxd. Draw fade-in effect during program initialization for smoother user experience.
+static void SCR_DrawInitialFadeIn(void)
+{
+	if (cls.realtime < 400)
+	{
+		// Draw fill.
+		const float alpha = (cls.realtime < 200 ? 1.0f : 1.0f - (float)(cls.realtime - 200) / 200.0f);
+		paletteRGBA_t color = TextPalette[P_BLACK];
+		color.a = (byte)(alpha * 255.0f);
+
+		re.DrawFill(0, 0, viddef.width, viddef.height, color);
+	}
+}
+
 // This is called every frame, and can also be called explicitly to flush text to the screen.
 void SCR_UpdateScreen(void)
 {
@@ -1118,6 +1132,7 @@ void SCR_UpdateScreen(void)
 		}
 	}
 
+	SCR_DrawInitialFadeIn(); //mxd
 	DBG_DrawMessages(); //mxd.
 	SCR_DrawFramecounter(); //mxd
 
