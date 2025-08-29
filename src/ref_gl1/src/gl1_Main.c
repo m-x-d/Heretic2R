@@ -117,7 +117,6 @@ cvar_t* gl_trans33;
 cvar_t* gl_trans66;
 cvar_t* gl_bookalpha;
 
-cvar_t* gl_drawmode;
 cvar_t* gl_drawbuffer;
 cvar_t* gl_saturatelighting;
 
@@ -498,17 +497,8 @@ static void R_SetupGL(void)
 	glDisable(GL_BLEND);
 	glDisable(GL_ALPHA_TEST);
 
-	// H2: extra gl_drawmode logic.
-	if ((int)gl_drawmode->value)
-	{
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(1.0f, 0.0f, 0.5f, 0.5f);
-	}
-	else
-	{
-		glEnable(GL_DEPTH_TEST);
-	}
+	//mxd. Skip H2 gl_drawmode logic.
+	glEnable(GL_DEPTH_TEST);
 }
 
 static void R_Fog(void) // H2: GL_Fog
@@ -674,7 +664,6 @@ static void R_Register(void)
 	gl_trans66 = ri.Cvar_Get("gl_trans66", "0.66", 0); // H2_1.07: 0.66 -> 1
 	gl_bookalpha = ri.Cvar_Get("gl_bookalpha", "1.0", 0);
 
-	gl_drawmode = ri.Cvar_Get("gl_drawmode", "0", 0);
 	gl_drawbuffer = ri.Cvar_Get("gl_drawbuffer", "GL_BACK", 0);
 	gl_saturatelighting = ri.Cvar_Get("gl_saturatelighting", "0", 0);
 

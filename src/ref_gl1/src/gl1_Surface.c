@@ -885,17 +885,8 @@ void R_DrawBrushModel(entity_t* ent)
 	if (R_CullBox(mins, maxs))
 		return;
 
-	// H2: new gl_drawmode logic.
-	if ((int)gl_drawmode->value)
-	{
-		glColor4f(1.0f, 1.0f, 1.0f, 0.4f);
-		glEnable(GL_BLEND);
-		glDisable(GL_DEPTH_TEST);
-	}
-	else
-	{
-		glColor3f(1.0f, 1.0f, 1.0f);
-	}
+	//mxd. Skip H2 gl_drawmode logic.
+	glColor3f(1.0f, 1.0f, 1.0f);
 
 	memset((void*)gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 	VectorSubtract(r_newrefdef.vieworg, ent->origin, modelorg);
@@ -934,13 +925,7 @@ void R_DrawBrushModel(entity_t* ent)
 	R_DrawInlineBModel(ent);
 	R_EnableMultitexture(false);
 
-	// H2: new gl_drawmode logic.
-	if ((int)gl_drawmode->value)
-	{
-		glDisable(GL_BLEND);
-		glEnable(GL_DEPTH_TEST);
-	}
-
+	//mxd. Skip H2 gl_drawmode logic.
 	glPopMatrix();
 }
 
@@ -1051,15 +1036,8 @@ void R_DrawWorld(void)
 	gl_state.currenttextures[0] = -1;
 	gl_state.currenttextures[1] = -1;
 
-	if ((int)gl_drawmode->value) // H2: new gl_drawmode logic.
-	{
-		glColor4f(1.0f, 1.0f, 1.0f, 0.4f);
-		glEnable(GL_BLEND);
-	}
-	else
-	{
-		glColor3f(1.0f, 1.0f, 1.0f);
-	}
+	//mxd. Skip H2 gl_drawmode logic.
+	glColor3f(1.0f, 1.0f, 1.0f);
 
 	memset((void*)gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 	gl_lms.tallwall_lightmaptexturenum = 0; // H2
@@ -1109,13 +1087,7 @@ void R_DrawWorld(void)
 
 	R_BlendLightmaps(r_worldmodel);
 
-	// H2: new gl_drawmode cvar logic.
-	if ((int)gl_drawmode->value)
-	{
-		glDisable(GL_BLEND);
-		glEnable(GL_DEPTH_TEST);
-	}
-
+	//mxd. Skip H2 gl_drawmode logic.
 	R_DrawSkyBox();
 	R_DrawTriangleOutlines();
 
