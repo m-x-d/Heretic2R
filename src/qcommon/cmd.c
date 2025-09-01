@@ -249,7 +249,7 @@ static void AddTextToCommandBuffer(const char* f, const int len)
 
 static qboolean Cmd_Exec(char* cmd)
 {
-	char filename[MAX_QPATH];
+	char filename[MAX_OSPATH]; //mxd. MAX_QPATH in original logic. Can overflow when using FS_Userdir(), because in that case full OS path is used (which can be rather long).
 	char* buf;
 	FILE* f;
 	int len;
