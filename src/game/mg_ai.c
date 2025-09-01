@@ -1141,9 +1141,7 @@ void MG_AI_Run(edict_t* self, const float dist) //mxd. Named 'ai_run' in origina
 		return;
 	}
 
-	assert(dist >= 0.0f); //mxd. Original logic used 'if(dist)' check below, so...
-
-	if (dist > 0.0f && !MG_MoveToGoal(self, dist) && self->classID == CID_SSITHRA)
+	if (dist != 0.0f && !MG_MoveToGoal(self, dist) && self->classID == CID_SSITHRA) //mxd. 'dist' can be negative.
 		SsithraCheckJump(self);
 
 	if (self->classID != CID_ASSASSIN && classStatics[self->classID].msgReceivers[MSG_EVADE] != NULL) // Assassin does his own checks.
