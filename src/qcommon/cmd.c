@@ -244,7 +244,7 @@ static void AddTextToCommandBuffer(const char* f, const int len)
 
 static qboolean Cmd_Exec(char* cmd)
 {
-	char filename[MAX_QPATH];
+	char filename[MAX_OSPATH]; //mxd. MAX_QPATH in original logic. Can overflow when using FS_Userdir(), because in that case full OS path is used (which can be rather long).
 	char* buf;
 	FILE* f;
 	int len;
@@ -254,7 +254,7 @@ static qboolean Cmd_Exec(char* cmd)
 	else
 		Com_sprintf(filename, sizeof(filename), "%s/%s", FS_Userdir(), cmd);
 
-	// Try to load from OS filesystem
+	// Try to load from OS filesystem.
 	if (fopen_s(&f, filename, "rb") == 0) //mxd. fopen -> fopen_s
 	{
 		Com_Printf("execing %s\n", cmd);
@@ -271,7 +271,7 @@ static qboolean Cmd_Exec(char* cmd)
 		return true;
 	}
 
-	// Load from quake filesystem
+	// Load from quake filesystem.
 	len = FS_LoadFile(cmd, (void**)&buf);
 	if (buf != NULL)
 	{
