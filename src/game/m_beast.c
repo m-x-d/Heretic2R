@@ -1040,7 +1040,7 @@ static void TBeastBlocked(edict_t* self, trace_t* trace) //mxd. Named 'tbeast_bl
 	if (self->curAnimID == ANIM_CHARGE || (self->curAnimID == ANIM_QUICK_CHARGE && self->s.frame >= FRAME_charge1 && self->s.frame <= FRAME_charge10))
 	{
 		qboolean stop = false;
-		const qboolean hit_slope = (trace->ent == world && !Vec3IsZero(trace->plane.normal) && trace->plane.normal[2] > GROUND_NORMAL); //mxd. Use define.
+		const qboolean hit_slope = (trace->ent == world && Vec3NotZero(trace->plane.normal) && trace->plane.normal[2] > GROUND_NORMAL); //mxd. Use define.
 
 		if (!hit_slope)
 		{
@@ -1805,7 +1805,7 @@ void tbeast_run(edict_t* self, float dist) //mxd. Named 'tbeast_run_think' in or
 	if (trace.ent != NULL && (AI_IsMovable(trace.ent) || trace.ent->solid != SOLID_BSP))
 		return;
 
-	if (trace.fraction == 1.0f || (!Vec3IsZero(trace.plane.normal) && trace.plane.normal[2] < GROUND_NORMAL)) // Nothing there || Not a slope can go up.
+	if (trace.fraction == 1.0f || (Vec3NotZero(trace.plane.normal) && trace.plane.normal[2] < GROUND_NORMAL)) // Nothing there || Not a slope can go up.
 		TBeastCheckJump(self); // Enemy was ahead!
 }
 
