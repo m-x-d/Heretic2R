@@ -111,9 +111,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>..\..\build\base\Player.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\build\</AdditionalLibraryDirectories>
       <AdditionalDependencies>H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>
+      </ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -153,9 +154,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>..\..\build\base\Player.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\build\</AdditionalLibraryDirectories>
       <AdditionalDependencies>H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>
+      </ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

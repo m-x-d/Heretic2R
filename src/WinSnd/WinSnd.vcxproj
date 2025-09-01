@@ -97,10 +97,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>..\..\build\WinSnd.dll</OutputFile>
-      <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>
+      </ImportLibrary>
       <ModuleDefinitionFile>.\WinSnd.def</ModuleDefinitionFile>
       <AdditionalDependencies>winmm.lib;H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\build\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -140,10 +141,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>..\..\build\WinSnd.dll</OutputFile>
-      <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>
+      </ImportLibrary>
       <ModuleDefinitionFile>.\WinSnd.def</ModuleDefinitionFile>
       <AdditionalDependencies>winmm.lib;H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\build\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

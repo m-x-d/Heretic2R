@@ -483,9 +483,10 @@
       <SubSystem>Windows</SubSystem>
       <OutputFile>..\..\build\base\gamex86.dll</OutputFile>
       <ModuleDefinitionFile>.\game.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\build\</AdditionalLibraryDirectories>
       <AdditionalDependencies>H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>
+      </ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -527,9 +528,10 @@
       <SubSystem>Windows</SubSystem>
       <OutputFile>..\..\build\base\gamex86.dll</OutputFile>
       <ModuleDefinitionFile>.\game.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\build\</AdditionalLibraryDirectories>
       <AdditionalDependencies>H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>
+      </ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
