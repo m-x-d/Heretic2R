@@ -77,21 +77,30 @@ static void TriggerActivated(edict_t* self)
 	}
 }
 
-static void TriggerMultipleTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_Multi' in original logic.
+static qboolean TriggerMultipleShouldTouch(const edict_t* self, const edict_t* other) //mxd. Added to simplify logic a bit.
 {
 	const qboolean is_player = (strcmp(other->classname, "player") == 0); //mxd
 	const qboolean is_monster = (other->svflags & SVF_MONSTER); //mxd
 
 	// Monsters or players can trigger it.
-	if ((self->spawnflags & SF_TRIGGER_ANY) && !is_player && !is_monster)
-		return;
+	if ((is_player || is_monster) && (self->spawnflags & SF_TRIGGER_ANY))
+		return true;
 
-	// Player can't trigger it.
-	if ((self->spawnflags & SF_TRIGGER_NOT_PLAYER) && is_player)
-		return;
+	// Player cannot trigger it.
+	if (is_player)
+		return !(self->spawnflags & SF_TRIGGER_NOT_PLAYER);
 
-	// Monsters can trigger it.
-	if (!(self->spawnflags & SF_TRIGGER_MONSTER) && is_monster)
+	// Just monster will trigger it.
+	if (is_monster)
+		return (self->spawnflags & SF_TRIGGER_MONSTER);
+
+	// Not player or monster. Ignore...
+	return false;
+}
+
+static void TriggerMultipleTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_Multi' in original logic.
+{
+	if (!TriggerMultipleShouldTouch(self, other))
 		return;
 
 	if (Vec3NotZero(self->movedir))
