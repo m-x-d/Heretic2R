@@ -91,7 +91,7 @@ static void TriggerMultipleTouch(edict_t* self, edict_t* other, cplane_t* plane,
 		return;
 
 	// Monsters can trigger it.
-	if ((self->spawnflags & SF_TRIGGER_MONSTER) && !is_monster)
+	if (!(self->spawnflags & SF_TRIGGER_MONSTER) && is_monster)
 		return;
 
 	if (Vec3NotZero(self->movedir))
