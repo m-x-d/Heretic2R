@@ -30,7 +30,7 @@
 #define MAX_TOKEN_CHARS		128		// Max length of an individual token.
 
 #define MAX_QPATH			64		// Max length of a quake game pathname.
-#define MAX_OSPATH			128		// Max length of a filesystem pathname.
+#define MAX_OSPATH			260		// Q2/H2: 128. Max length of a filesystem pathname (same as MAX_PATH).
 
 // Game print flags.
 #define PRINT_LOW			0		// Pickup messages.
