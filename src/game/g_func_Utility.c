@@ -42,7 +42,7 @@ static void MoveBegin(edict_t* ent) //mxd. Named 'Move_Begin' in original logic.
 	ent->think = MoveFinal;
 }
 
-void MoveCalc(edict_t* ent, const vec3_t dest, void(*func)(edict_t*)) //mxd. Named 'Move_Calc' in original logic.
+void MoveCalc(edict_t* ent, const vec3_t dest, void (*func)(edict_t*)) //mxd. Named 'Move_Calc' in original logic.
 {
 	VectorClear(ent->velocity);
 
