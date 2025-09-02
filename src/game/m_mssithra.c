@@ -285,7 +285,7 @@ void mssithra_dead(edict_t* self)
 	self->flags |= FL_DONTANIMATE;
 
 	self->think = NULL;
-	self->nextthink = -1.0f; //mxd. '0' in original logic. Changed for consistency sake.
+	self->nextthink = THINK_NEVER; //mxd. '0' in original logic. Changed for consistency sake.
 
 	gi.linkentity(self);
 }

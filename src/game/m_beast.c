@@ -1697,7 +1697,7 @@ void tbeast_dead(edict_t* self)
 	self->movetype = PHYSICSTYPE_NONE;
 	self->dead_state = DEAD_DEAD;
 	self->think = NULL;
-	self->nextthink = 0.0f;
+	self->nextthink = THINK_NEVER; //mxd. '0' in original logic. Changed for consistency sake.
 
 	level.fighting_beast = false;
 	gi.linkentity(self);

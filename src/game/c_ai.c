@@ -47,7 +47,7 @@ void ai_c_cycleend(edict_t* self)
 
 	if (self->monsterinfo.c_anim_flag & C_ANIM_DONE)
 	{
-		self->nextthink = -1;
+		self->nextthink = THINK_NEVER;
 		self->think = NULL;
 	}
 

@@ -148,7 +148,7 @@ void ObjectInit(edict_t* self, const int health, const int mass, const MaterialI
 		self->touch = PushableObjectTouch;
 
 		self->think = M_DropToFloor;
-		self->nextthink = level.time + (FRAMETIME * 2.0f);
+		self->nextthink = level.time + FRAMETIME * 2.0f;
 	}
 	else
 	{
@@ -2492,7 +2492,7 @@ static void ObjHivePriestessSymbolThink(edict_t* self) //mxd. Named 'symbolthink
 	}
 	else
 	{
-		self->nextthink = -1.0f;
+		self->nextthink = THINK_NEVER; //mxd. Use define.
 	}
 }
 

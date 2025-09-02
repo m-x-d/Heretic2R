@@ -112,7 +112,7 @@ static void FuncTrainWait(edict_t* self) //mxd. Named 'train_wait' in original l
 			FuncTrainNext(self);
 			self->spawnflags &= ~SF_TRAIN_START_ON;
 			VectorClear(self->velocity);
-			self->nextthink = 0.0f;
+			self->nextthink = THINK_NEVER; //mxd. '0' in original logic. Changed for consistency sake.
 		}
 
 		FuncPlayMoveEndSound(self); //mxd
@@ -263,7 +263,7 @@ static void FuncTrainUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 
 		self->spawnflags &= ~SF_TRAIN_START_ON;
 		VectorClear(self->velocity);
-		self->nextthink = 0.0f;
+		self->nextthink = THINK_NEVER; //mxd. '0' in original logic. Changed for consistency sake.
 	}
 	else if (self->target_ent != NULL)
 	{

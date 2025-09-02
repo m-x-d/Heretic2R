@@ -93,7 +93,7 @@ static void HarpyHeadThink(edict_t* self) //mxd. Named 'harpy_head_think' in ori
 		self->solid = SOLID_BBOX;
 		self->takedamage = DAMAGE_YES;
 		self->clipmask = MASK_MONSTERSOLID;
-		self->nextthink = -1.0f;
+		self->nextthink = THINK_NEVER; //mxd. Use define.
 		self->svflags |= SVF_DEADMONSTER;
 		self->health = 25;
 		self->die = HarpyHeadDie;
@@ -272,7 +272,7 @@ static void HarpyDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	{
 		BecomeDebris(self);
 		self->think = NULL;
-		self->nextthink = 0.0f;
+		self->nextthink = THINK_NEVER; //mxd. '0' in original logic. Changed for consistency sake.
 
 		gi.linkentity(self);
 	}

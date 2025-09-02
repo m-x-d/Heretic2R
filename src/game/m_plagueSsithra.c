@@ -1235,7 +1235,7 @@ static void SsithraSlideFallThink(edict_t* self) //mxd. Named 'ssithraSlideFall'
 		self->owner->nextthink = level.time;
 
 		self->think = NULL;
-		self->nextthink = -1.0f;
+		self->nextthink = THINK_NEVER; //mxd. Use define.
 	}
 }
 

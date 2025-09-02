@@ -222,7 +222,7 @@ static void ImpDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'im
 	{
 		BecomeDebris(self);
 		self->think = NULL;
-		self->nextthink = 0.0f;
+		self->nextthink = THINK_NEVER; //mxd. '0' in original logic. Changed for consistency sake.
 
 		gi.linkentity(self);
 	}

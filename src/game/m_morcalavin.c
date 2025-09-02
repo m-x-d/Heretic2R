@@ -418,7 +418,7 @@ static void MorcalavinBeamIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 
 static void MorcalavinBeamThink(edict_t* self) //mxd. Named 'beam_think' in original logic. //TODO: doesn't do anything useful. Can be removed?
 {
 	self->think = NULL;
-	self->nextthink = -1.0f;
+	self->nextthink = THINK_NEVER; //mxd. Use define.
 }
 
 void morcalavin_beam(edict_t* self)

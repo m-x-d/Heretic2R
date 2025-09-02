@@ -21,7 +21,7 @@ static void FuncTimerUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 
 	// If on, turn it off.
 	if (self->nextthink > 0.0f)
-		self->nextthink = 0.0f;
+		self->nextthink = THINK_NEVER; //mxd. '0' in original logic. Changed for consistency sake.
 	else if (self->delay > 0.0f) // Turn it on.
 		self->nextthink = level.time + self->delay;
 	else

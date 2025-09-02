@@ -29,7 +29,7 @@ static qboolean SV_RunThink(edict_t* ent)
 
 	if (ent->think != NULL && think_time > 0.0f && think_time <= level.time + 0.001f)
 	{
-		ent->nextthink = 0.0f;
+		ent->nextthink = THINK_NEVER; //mxd. '0' in original logic. Changed for consistency sake.
 		ent->think(ent);
 	}
 

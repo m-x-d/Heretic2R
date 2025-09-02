@@ -74,6 +74,7 @@
 
 // Timing constants that define the world heartbeat.
 #define FRAMETIME			0.1f
+#define THINK_NEVER			(-1.0f) //mxd
 #define MONSTER_THINK_INC	0.099f
 #define FRAMES_PER_SECOND	10.0f
 
@@ -93,23 +94,23 @@ typedef enum damage_s
 #define DAMAGE_NORMAL				0x00000000	// No modifiers to damage.
 #define DAMAGE_RADIUS				0x00000001	// Damage was indirect.
 #define DAMAGE_NO_KNOCKBACK			0x00000002	// Do not affect velocity, just view angles.
-#define DAMAGE_ALL_KNOCKBACK		0x00000004  // Ignore damage.
+#define DAMAGE_ALL_KNOCKBACK		0x00000004	// Ignore damage.
 #define DAMAGE_EXTRA_KNOCKBACK		0x00000008	// Throw in some extra z.
-#define DAMAGE_NO_PROTECTION		0x00000010  // Invulnerability and godmode have no effect.
-#define DAMAGE_NO_BLOOD				0x00000020  // Don't spawn any blood.
+#define DAMAGE_NO_PROTECTION		0x00000010	// Invulnerability and godmode have no effect.
+#define DAMAGE_NO_BLOOD				0x00000020	// Don't spawn any blood.
 #define DAMAGE_EXTRA_BLOOD			0x00000040	// Lots of blood.
-#define DAMAGE_SPELL				0x00000080  // This came from a spell - for use in calcing armor effects.
-#define DAMAGE_DISMEMBER			0x00000100  // Force this hit to use dismemberment message.
-#define DAMAGE_ATTACKER_IMMUNE		0x00000200  // Inflictor receives no effect.
-#define DAMAGE_ATTACKER_KNOCKBACK	0x00000400  // Inflictor takes knockback only.
+#define DAMAGE_SPELL				0x00000080	// This came from a spell - for use in calcing armor effects.
+#define DAMAGE_DISMEMBER			0x00000100	// Force this hit to use dismemberment message.
+#define DAMAGE_ATTACKER_IMMUNE		0x00000200	// Inflictor receives no effect.
+#define DAMAGE_ATTACKER_KNOCKBACK	0x00000400	// Inflictor takes knockback only.
 #define DAMAGE_REDRAIN				0x00000800	// Red rain acid damage.
 #define DAMAGE_BUBBLE				0x00001000	// Drowning damage.
-#define DAMAGE_FIRE					0x00002000  // Fire damage.
+#define DAMAGE_FIRE					0x00002000	// Fire damage.
 #define DAMAGE_ALIVE_ONLY			0x00004000	// Only damage living things made of flesh.
 #define DAMAGE_BLEEDING				0x00008000	// No protection.
 #define DAMAGE_AVOID_ARMOR			0x00010000	// Don't do the armor effect.
-#define DAMAGE_DOUBLE_DISMEMBER		0x00020000  // Force this hit to use dismemberment message with TWICE the chance of cutting.
-#define DAMAGE_HURT_FRIENDLY		0x00040000  // Always hurt friendly entities (e.g. fellow coop players).
+#define DAMAGE_DOUBLE_DISMEMBER		0x00020000	// Force this hit to use dismemberment message with TWICE the chance of cutting.
+#define DAMAGE_HURT_FRIENDLY		0x00040000	// Always hurt friendly entities (e.g. fellow coop players).
 #define DAMAGE_POWERPHOENIX			0x00080000	// Extra knockback to shooter, 1/4 damage.
 #define DAMAGE_FIRE_LINGER			0x00100000	// Do extra fire linger damage.
 #define DAMAGE_ENEMY_MAX			0x00200000	// Do maximum damage directly to the enemy in radius.

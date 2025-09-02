@@ -28,7 +28,7 @@ static void MorcalavinBarrierThink(edict_t* self) //mxd. Named 'morcalavin_barri
 			//mxd. Print warning.
 			gi.dprintf("Warning: obj_morcalavin_barrier without monster_morcalavin at %s!\n", vtos(self->s.origin));
 			self->think = NULL;
-			self->nextthink = -1;
+			self->nextthink = THINK_NEVER; //mxd. Use define.
 
 			return;
 		}
