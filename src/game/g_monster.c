@@ -313,10 +313,13 @@ void M_MoveFrame(edict_t* self)
 	{
 		// If move is NULL, then this monster needs to have an anim set on it or all is lost.
 		self->think = NULL;
-		self->nextthink = -1.0f;
+		self->nextthink = THINK_NEVER; //mxd. Use define.
 
 		return;
 	}
+
+	//mxd. Add sanity check.
+	assert(self->monsterinfo.thinkinc > 0.0f);
 
 	self->nextthink = level.time + self->monsterinfo.thinkinc;
 
@@ -1246,7 +1249,7 @@ void M_EndDeath(edict_t* self)
 	else
 	{
 		self->think = NULL;
-		self->nextthink = -1.0f; // Stop thinking.
+		self->nextthink = THINK_NEVER; // Stop thinking.
 		gi.RemoveEffects(&self->s, FX_REMOVE_EFFECTS);
 	}
 
