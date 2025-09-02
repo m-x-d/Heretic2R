@@ -1395,7 +1395,7 @@ void gorgon_gore_toy(edict_t* self, float jump_height)
 		}
 		else
 		{
-			self->enemy->nextthink = level.time;
+			self->enemy->nextthink = level.time + FRAMETIME; //mxd. Add FRAMETIME.
 			T_Damage(self->enemy, self, self, self->velocity, self->enemy->s.origin, dir, 2000, 300, 0, MOD_DIED);
 		}
 	}
