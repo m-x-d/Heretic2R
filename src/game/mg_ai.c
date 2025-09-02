@@ -688,7 +688,7 @@ static void MG_PostJump(edict_t* self) //mxd. Added to reduce code duplication.
 		}
 
 		QPostMessage(self, MSG_JUMP, PRI_DIRECTIVE, NULL);
-		self->nextthink = level.time + 0.01f;
+		self->nextthink = level.time + FRAMETIME; //mxd. 0.01f in original logic.
 	}
 	else
 	{

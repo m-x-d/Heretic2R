@@ -44,13 +44,14 @@ static edict_t* CreateFireBlast(vec3_t start_pos, vec3_t angles, edict_t* owner,
 	wall->solid = SOLID_BBOX;
 	wall->clipmask = MASK_DRIP;
 	wall->owner = owner;
-	wall->think = FireBlastStartThink;
-	wall->nextthink = level.time + 0.1f;
 	wall->dmg_radius = FIREBLAST_RADIUS;
 	wall->dmg = FIREBLAST_DAMAGE;
 
 	wall->health = health; // Can bounce 3 times.
 	wall->fire_timestamp = timestamp; // This marks the wall with a more-or-less unique value so the wall doesn't damage twice.
+
+	wall->think = FireBlastStartThink;
+	wall->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	gi.linkentity(wall);
 
@@ -143,7 +144,7 @@ static void FireBlastThink(edict_t* self)
 		ent->fire_timestamp = self->fire_timestamp; // Mark so the fire doesn't damage an ent twice.
 	}
 
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	self->dmg_radius += FIREBLAST_DRADIUS * 0.1f;
 	self->dmg = max(FIREBLAST_DAMAGE_MIN, self->dmg - 3);
 }
@@ -154,7 +155,7 @@ static void FireBlastStartThink(edict_t* self)
 
 	FireBlastThink(self);
 	self->think = FireBlastThink;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 static void CastFireBlast(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
@@ -235,13 +236,14 @@ static edict_t* CreateFireWall(vec3_t start_pos, vec3_t angles, edict_t* owner, 
 	wall->solid = SOLID_BBOX;
 	wall->clipmask = MASK_DRIP;
 	wall->owner = owner;
-	wall->think = FireWallMissileStartThink;
-	wall->nextthink = level.time + 0.1f;
 	wall->dmg = FIREWAVE_DAMAGE;
 	wall->dmg_radius = FIREWAVE_RADIUS;
 
 	wall->health = health; // Can bounce 3 times
 	wall->fire_timestamp = timestamp; // Mark the wall so it can't damage something twice.
+
+	wall->think = FireWallMissileStartThink;
+	wall->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	gi.linkentity(wall);
 
@@ -360,7 +362,7 @@ static void FireWallMissileThink(edict_t* self)
 		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/FirewallDamage.wav"), 1.0f, ATTN_NORM, 0.0f);
 	}
 
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	self->dmg_radius += FIREWAVE_DRADIUS * 0.1f;
 	self->dmg = max(FIREWAVE_DAMAGE_MIN, self->dmg - 3);
 }
@@ -371,7 +373,7 @@ static void FireWallMissileStartThink(edict_t* self)
 
 	FireWallMissileThink(self);
 	self->think = FireWallMissileThink;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 static void CastFireWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)

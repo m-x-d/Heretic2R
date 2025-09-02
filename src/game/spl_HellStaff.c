@@ -75,16 +75,16 @@ static void CreateHellbolt(edict_t* hellbolt)
 	hellbolt->svflags |= SVF_ALWAYS_SEND;
 	hellbolt->movetype = MOVETYPE_FLYMISSILE;
 	hellbolt->dmg = irand(HELLBOLT_DAMAGE_MIN, HELLBOLT_DAMAGE_MAX);
-
-	hellbolt->touch = HellboltTouch;
-	hellbolt->think = HellboltThink;
 	hellbolt->classname = "Spell_Hellbolt";
-	hellbolt->nextthink = level.time + 0.1f;
+	hellbolt->solid = SOLID_BBOX;
+	hellbolt->clipmask = MASK_SHOT;
+
 	VectorSet(hellbolt->mins, -HELLBOLT_RADIUS, -HELLBOLT_RADIUS, -HELLBOLT_RADIUS);
 	VectorSet(hellbolt->maxs,  HELLBOLT_RADIUS,  HELLBOLT_RADIUS,  HELLBOLT_RADIUS);
 
-	hellbolt->solid = SOLID_BBOX;
-	hellbolt->clipmask = MASK_SHOT;
+	hellbolt->touch = HellboltTouch;
+	hellbolt->think = HellboltThink;
+	hellbolt->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 edict_t* HellboltReflect(edict_t* self, edict_t* other, const vec3_t vel)

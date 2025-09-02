@@ -1249,10 +1249,10 @@ static void MiscRemoteCameraThink(edict_t* self) //mxd. Named 'misc_remote_camer
 	}
 	else
 	{
-		self->delay -= 0.1f;
+		self->delay -= FRAMETIME; //mxd. Use define.
 
 		if (self->delay >= 0.0f)
-			self->nextthink = level.time + 0.1f;
+			self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 		else
 			MiscRemoteCameraRemove(self);
 	}
@@ -1402,7 +1402,7 @@ static void MiscFireSparkerThink(edict_t* self) //mxd. Named 'fire_spark_think' 
 	else
 	{
 		self->think = MiscFireSparkerThink;
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
 }
 
@@ -1420,7 +1420,7 @@ static void MiscFireSparkerUse(edict_t* self, edict_t* other, edict_t* activator
 
 	self->use = MiscFireSparkerRemove;
 	self->think = MiscFireSparkerThink;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 // QUAKED misc_fire_sparker (0 0 0) (-4 -4 0) (4 4 8) FIREBALL
@@ -1466,7 +1466,7 @@ void SP_misc_flag(edict_t* self) //mxd. Defined in m_FMtest.c in original logic.
 	self->solid = SOLID_BBOX;
 
 	self->think = MiscFlagThink;
-	self->nextthink = level.time + flrand(0.0f, 1.0f);
+	self->nextthink = level.time + flrand(FRAMETIME, 1.0f); //mxd. flrand(0.0f, 1.0f) in original logic.
 
 	gi.linkentity(self);
 }

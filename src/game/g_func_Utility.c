@@ -38,7 +38,7 @@ static void MoveBegin(edict_t* ent) //mxd. Named 'Move_Begin' in original logic.
 
 	const float frames = floorf(ent->moveinfo.remaining_distance / ent->moveinfo.speed / FRAMETIME);
 	ent->moveinfo.remaining_distance -= frames * ent->moveinfo.speed * FRAMETIME;
-	ent->nextthink = level.time + (frames * FRAMETIME);
+	ent->nextthink = level.time + frames * FRAMETIME;
 	ent->think = MoveFinal;
 }
 

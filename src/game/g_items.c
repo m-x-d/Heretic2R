@@ -418,7 +418,7 @@ static void DropItemMakeTouchable(edict_t* ent) //mxd. Named 'drop_make_touchabl
 
 	if (DEATHMATCH)
 	{
-		ent->nextthink = level.time + 29;
+		ent->nextthink = level.time + 29.0f;
 		ent->think = G_FreeEdict;
 	}
 }

@@ -115,7 +115,7 @@ static void SpawnBleeder(edict_t* self, edict_t* other, vec3_t bleed_dir, vec3_t
 	VectorCopy(bleed_dir, bleeder->movedir);
 
 	bleeder->think = BleederThink;
-	bleeder->nextthink = level.time + 0.1f;
+	bleeder->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 static qboolean ShouldRepairPlayerNode(const int index) //mxd. Added to reduce code duplication.

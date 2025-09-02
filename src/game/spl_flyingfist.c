@@ -23,7 +23,7 @@ static void FlyingFistFizzleThink(edict_t* self)
 	if (!DEATHMATCH && self->health == 0)
 	{
 		self->dmg = max(FIREBALL_MIN_FIZZLE_DAMAGE, self->dmg - 2);
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
 }
 
@@ -121,16 +121,16 @@ static void CreateFlyingFist(edict_t* flying_fist)
 	flying_fist->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	flying_fist->svflags |= SVF_ALWAYS_SEND;
 	flying_fist->movetype = MOVETYPE_FLYMISSILE;
-
-	flying_fist->touch = FlyingFistTouch;
-	flying_fist->think = FlyingFistInitThink;
 	flying_fist->classname = "Spell_FlyingFist";
-	flying_fist->nextthink = level.time + 0.1f;
+	flying_fist->solid = SOLID_BBOX;
+	flying_fist->clipmask = MASK_SHOT;
+
 	VectorSet(flying_fist->mins, -FIST_RADIUS, -FIST_RADIUS, -FIST_RADIUS);
 	VectorSet(flying_fist->maxs,  FIST_RADIUS,  FIST_RADIUS,  FIST_RADIUS);
 
-	flying_fist->solid = SOLID_BBOX;
-	flying_fist->clipmask = MASK_SHOT;
+	flying_fist->touch = FlyingFistTouch;
+	flying_fist->think = FlyingFistInitThink;
+	flying_fist->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 edict_t* FlyingFistReflect(edict_t* self, edict_t* other, const vec3_t vel)

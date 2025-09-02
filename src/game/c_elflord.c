@@ -34,7 +34,7 @@ static void ElfLordCinematicGibMsgHandler(edict_t* self, G_Message_t* msg) //mxd
 	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/SphereImpact.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why volume is 2.0?
 
 	self->think = BecomeDebris;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 void elflord_c_boom(edict_t* self)

@@ -90,19 +90,19 @@ static void CreateMagicMissile(edict_t* missile) //mxd. Named 'create_magic' in 
 {
 	missile->s.effects = (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
 	missile->movetype = MOVETYPE_FLYMISSILE;
-
-	missile->touch = MagicMissileTouch;
 	missile->classname = "Spell_MagicMissile";
-	missile->nextthink = level.time + 0.1f;
+	missile->solid = SOLID_BBOX;
+	missile->clipmask = MASK_SHOT;
+
 	VectorSet(missile->mins, -MISSILE_RADIUS, -MISSILE_RADIUS, -MISSILE_RADIUS);
 	VectorSet(missile->maxs,  MISSILE_RADIUS,  MISSILE_RADIUS,  MISSILE_RADIUS);
 
-	missile->dmg = irand(MAGICMISSILE_DAMAGE_MIN, MAGICMISSILE_DAMAGE_MAX); //30 - 40
+	missile->dmg = irand(MAGICMISSILE_DAMAGE_MIN, MAGICMISSILE_DAMAGE_MAX); // 30 - 40
 	if (DEATHMATCH)
-		missile->dmg /= 2; //15 - 20
+		missile->dmg /= 2; // 15 - 20
 
-	missile->solid = SOLID_BBOX;
-	missile->clipmask = MASK_SHOT;
+	missile->touch = MagicMissileTouch;
+	missile->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 edict_t* MagicMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
@@ -197,5 +197,5 @@ void SpellCastMagicMissile(edict_t* caster, const vec3_t start_pos, const vec3_t
 	gi.CreateEffect(&missile->s, FX_WEAPON_MAGICMISSILE, CEF_OWNERS_ORIGIN, NULL, "ss", s_yaw, s_pitch);
 
 	missile->think = MagicMissileThink;
-	missile->nextthink = level.time + 0.1f;
+	missile->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }

@@ -93,7 +93,7 @@ static void RingThink(edict_t* self)
 		return;
 	}
 
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	// Since find radius is not specific enough for our needs, here is.
 	edict_t* ent = NULL;
@@ -249,11 +249,12 @@ void SpellCastBlueRing(edict_t* caster)
 	ring->svflags |= SVF_NOCLIENT;
 	ring->movetype = PHYSICSTYPE_NONE;
 	ring->classname = "Spell_Ring";
-	ring->nextthink = level.time + 0.1f;
-	ring->think = RingThink;
 	ring->count = RING_THINKS;
 	ring->timestamp = level.time;
 	VectorCopy(caster->s.origin, ring->s.origin);
+
+	ring->think = RingThink;
+	ring->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	gi.linkentity(ring);
 

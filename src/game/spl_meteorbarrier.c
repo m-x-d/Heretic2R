@@ -141,7 +141,7 @@ static void MeteorBarrierHuntThink(edict_t* self)
 		if (dist > METEOR_HUNT_SPEED * 0.1f)
 			VectorScale(self->movedir, METEOR_HUNT_SPEED, self->velocity);
 
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 		self->accel = 1.0f; // Signal that we have already gotten a target speed.
 	}
 	else
@@ -155,7 +155,7 @@ static void MeteorBarrierBounceThink(edict_t* self)
 	self->random += 20.0f; // Lifetime.
 
 	if (self->enemy->health > 0 && self->random < 5000.0f + (float)self->health * 200.0f)
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	else
 		Kill_Meteor(self); // My enemy has died so I die too.
 }
@@ -164,11 +164,9 @@ static void CreateMeteor(edict_t* meteor) //mxd. Named 'create_meteor' in origin
 {
 	meteor->movetype = PHYSICSTYPE_NOCLIP;
 	meteor->gravity = 0.0f; // No gravity.
-
 	meteor->classname = "Spell_MeteorBarrier";
-	meteor->isBlocked = MeteorBarrierOnBlocked;
-	meteor->isBlocking = MeteorBarrierOnBlocked;
-	meteor->nextthink = level.time + 0.1f;
+	meteor->takedamage = DAMAGE_NO;
+	meteor->clipmask = MASK_SHOT;
 
 	meteor->dmg = irand(METEOR_DAMAGE_MIN, METEOR_DAMAGE_MAX);
 	if (DEATHMATCH)
@@ -177,8 +175,9 @@ static void CreateMeteor(edict_t* meteor) //mxd. Named 'create_meteor' in origin
 	VectorSet(meteor->mins, -METEOR_RADIUS, -METEOR_RADIUS, -METEOR_RADIUS);
 	VectorSet(meteor->maxs, METEOR_RADIUS, METEOR_RADIUS, METEOR_RADIUS);
 
-	meteor->takedamage = DAMAGE_NO;
-	meteor->clipmask = MASK_SHOT;
+	meteor->isBlocked = MeteorBarrierOnBlocked;
+	meteor->isBlocking = MeteorBarrierOnBlocked;
+	meteor->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 edict_t* MeteorBarrierReflect(edict_t* self, edict_t* other, vec3_t vel)
@@ -206,7 +205,7 @@ edict_t* MeteorBarrierReflect(edict_t* self, edict_t* other, vec3_t vel)
 	meteor->svflags = SVF_ALWAYS_SEND;
 
 	meteor->think = MeteorBarrierBounceThink;
-	meteor->nextthink = level.time + 0.1f;
+	meteor->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	gi.linkentity(meteor);
 
@@ -253,7 +252,7 @@ static qboolean FindNewTarget(edict_t* self) //mxd. Split out of MeteorBarrierSe
 	self->alert_time = 0.0f;
 
 	self->think = MeteorBarrierHuntThink;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	// Did we start up inside someone?
 	trace_t	tr;
@@ -304,7 +303,7 @@ static void MeteorBarrierSearchThink(edict_t* self)
 		self->s.origin[1] += sinf(angle) * 30.0f;
 		self->s.origin[2] += cosf(angle / (ANGLE_180 / 5.0f)) * 10.0f;
 
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
 	else
 	{
@@ -330,7 +329,7 @@ static void MeteorBarrierSearchInitThink(edict_t* self)
 			self->think = MeteorBarrierSearchThink;
 		}
 
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
 	else
 	{

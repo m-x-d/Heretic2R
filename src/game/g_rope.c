@@ -273,7 +273,7 @@ static void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_th
 	VectorClear(self->velocity);
 
 	gi.linkentity(self);
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 static void TutorialChickenRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think2' in original logic.
@@ -323,7 +323,7 @@ static void TutorialChickenRopeEndThink(edict_t* self) //mxd. Named 'rope_end_th
 	// Move the length of the rope in that direction from the top.
 	VectorMA(rope_top, grab_len, end_vel, grab->s.origin);
 
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 static void TutorialChickenSpawn(edict_t* self) //mxd. Named 'spawn_hanging_chicken' in original logic.
@@ -367,7 +367,7 @@ static void TutorialChickenSpawn(edict_t* self) //mxd. Named 'spawn_hanging_chic
 	gi.CreatePersistantEffect(&self->s, FX_ROPE, CEF_BROADCAST, self->s.origin, "ssbvvv", end_id, end_id, RM_ROPE, end_ent->s.origin, end_ent->s.origin, end_ent->s.origin);
 
 	self->think = TutorialChickenRopeEndThink;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	gi.linkentity(self);
 
@@ -396,7 +396,7 @@ static void TutorialChickenSpawn(edict_t* self) //mxd. Named 'spawn_hanging_chic
 
 	chicken->pain = TutorialChickenPain;
 	chicken->think = TutorialChickenThink;
-	chicken->nextthink = level.time + 0.1f;
+	chicken->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	chicken->enemy = self;
 	chicken->targetEnt = self->rope_end;

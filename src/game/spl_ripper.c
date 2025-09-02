@@ -80,7 +80,7 @@ static void RipperExplodeBallThink(edict_t* self)
 	self->svflags |= SVF_NOCLIENT;
 
 	VectorCopy(self->s.origin, self->last_org);
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 static void RipperExplodeBallTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
@@ -145,14 +145,15 @@ static void RipperImpact(edict_t* caster, edict_t* other, const vec3_t start_pos
 		ripper->solid = SOLID_BBOX;
 		ripper->clipmask = MASK_SOLID;
 		ripper->classname = "Spell_Ripper";
-		ripper->touch = RipperExplodeBallTouch;
-		ripper->think = RipperExplodeBallThink;
-		ripper->nextthink = level.time + 0.1f;
 		ripper->dmg = RIPPER_EXPLODE_DAMAGE;
 		ripper->owner = caster;
 
 		// last_org is used for damaging things.
 		VectorCopy(ripper->s.origin, ripper->last_org);
+
+		ripper->touch = RipperExplodeBallTouch;
+		ripper->think = RipperExplodeBallThink;
+		ripper->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 		// Store the entity numbers for sending with the effect.
 		ball_array[i] = ripper->s.number;

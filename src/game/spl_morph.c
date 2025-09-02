@@ -23,7 +23,7 @@
 static void MonsterMorphFadeIn(edict_t* self) //mxd. Named 'MorphFadeIn' in original version.
 {
 	self->s.color.a += MORPH_TELE_FADE;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	if (--self->morph_timer == 0)
 		self->think = M_WalkmonsterStartGo;
@@ -33,7 +33,7 @@ static void MonsterMorphFadeIn(edict_t* self) //mxd. Named 'MorphFadeIn' in orig
 static void MonsterMorphFadeOut(edict_t* self) //mxd. Named 'MorphFadeOut' in original version.
 {
 	self->s.color.a -= MORPH_TELE_FADE;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	if (--self->morph_timer > 0)
 		return;
@@ -114,7 +114,7 @@ static void MorphMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 		{
 			// Deal with the existing bad guy.
 			other->think = MonsterMorphFadeOut;
-			other->nextthink = level.time + 0.1f;
+			other->nextthink = level.time + FRAMETIME; //mxd. Use define.
 			other->touch = NULL;
 			other->morph_timer = MORPH_TELE_TIME;
 			other->enemy = self->owner;
@@ -160,18 +160,17 @@ static void CreateMorphOvum(edict_t* egg) //mxd. Named 'create_morph' in origina
 	egg->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	egg->svflags |= SVF_ALWAYS_SEND;
 	egg->movetype = MOVETYPE_FLYMISSILE;
-
-	egg->touch = MorphMissileTouch;
-	egg->think = MorphMissileThink;
 	egg->classname = "Spell_MorphArrow";
-	egg->nextthink = level.time + 0.1f;
+	egg->solid = SOLID_BBOX;
+	egg->clipmask = MASK_MONSTERSOLID;
 
 	// Set up our collision boxes.
 	VectorSet(egg->mins, -OVUM_RADIUS, -OVUM_RADIUS, -OVUM_RADIUS);
 	VectorSet(egg->maxs,  OVUM_RADIUS,  OVUM_RADIUS,  OVUM_RADIUS);
 
-	egg->solid = SOLID_BBOX;
-	egg->clipmask = MASK_MONSTERSOLID;
+	egg->touch = MorphMissileTouch;
+	egg->think = MorphMissileThink;
+	egg->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 edict_t* MorphReflect(edict_t* self, edict_t* other, vec3_t vel)

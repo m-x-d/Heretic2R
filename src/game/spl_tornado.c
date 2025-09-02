@@ -88,7 +88,7 @@ static void TornadoThink(edict_t* self)
 	}
 	else
 	{
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
 }
 
@@ -96,8 +96,6 @@ static void TornadoThink(edict_t* self)
 static void CreateTornado(edict_t* tornado)
 {
 	tornado->classname = "Spell_Tornado";
-	tornado->think = TornadoThink;
-	tornado->nextthink = level.time + 0.1f;
 	tornado->timestamp = level.time;
 	tornado->count = (int)(level.time + SPIN_DUR);
 	tornado->gravity = 0.0f;
@@ -107,6 +105,9 @@ static void CreateTornado(edict_t* tornado)
 	tornado->s.sound = (byte)gi.soundindex("weapons/tornadospell.wav");
 	tornado->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
 	tornado->s.effects |= EF_SPEED_ACTIVE;
+
+	tornado->think = TornadoThink;
+	tornado->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	tornado->PersistantCFX = gi.CreatePersistantEffect(&tornado->s, FX_TORNADO, CEF_BROADCAST | CEF_OWNERS_ORIGIN, NULL, "");
 }
@@ -166,7 +167,7 @@ void SpellCastDropTornado(edict_t* caster, const vec3_t start_pos)
 		if (VectorLength(diff) < 80.0f)
 		{
 			tornado->think = G_SetToFree;
-			tornado->nextthink = level.time + 0.1f;
+			tornado->nextthink = level.time + FRAMETIME; //mxd. Use define.
 			gi.CreateEffect(NULL, FX_TORNADO_BALL_EXPLODE, 0, tornado->s.origin, "");
 
 			return;

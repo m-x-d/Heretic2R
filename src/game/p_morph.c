@@ -84,7 +84,7 @@ void MorphChickenToPlayerEnd(edict_t* self) //mxd. Named 'reset_morph_to_elf' in
 
 	// Reset our thinking.
 	self->think = self->oldthink;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	// Reset our animations.
 	P_PlayerBasicAnimReset(&self->client->playerinfo);
@@ -148,7 +148,7 @@ static void ChickenPlayerThink(edict_t* self) //mxd. Named 'watch_chicken' in or
 	if (self->morph_timer <= (int)level.time)
 		MorphChickenToPlayerStart(self);
 
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 // Switch the models from player to chicken and then make us re-appear ala teleport. For PLAYER only.
@@ -225,7 +225,7 @@ void MorphPlayerToChickenEnd(edict_t* self) //mxd. Named 'Perform_Morph' in orig
 	// Reset our thinking.
 	self->oldthink = self->think;
 	self->think = ChickenPlayerThink;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	self->physicsFlags |= PF_RESIZE;
 

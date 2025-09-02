@@ -50,7 +50,7 @@ static void MaceballThink(edict_t* self)
 
 	VectorCopy(self->s.origin, self->last_org);
 
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	// Now check if we should die soon.
 	if (self->dead_state == DEAD_DYING || self->touch_debounce_time + MACEBALL_EXTRALIFE <= level.time)
@@ -214,15 +214,11 @@ void SpellCastMaceball(edict_t* caster, const vec3_t start_pos, const vec3_t aim
 	ball->friction = 0.0f;
 	ball->gravity = MACEBALL_GRAVITY;
 	ball->svflags = SVF_DO_NO_IMPACT_DMG;
-
 	ball->movetype = PHYSICSTYPE_STEP;
-
 	ball->solid = SOLID_BBOX;
 	ball->clipmask = MASK_MONSTERSOLID;
 	ball->owner = caster;
-	ball->think = MaceballThink;
-	ball->nextthink = level.time + 0.1f;
-	ball->bounced = MaceballBounce;
+
 	ball->classname = "Spell_Maceball";
 	ball->touch_debounce_time = level.time + MACEBALL_LIFE; // The ball will expire the next bounce after this one.
 	ball->s.modelindex = (byte)gi.modelindex("models/spells/maceball/tris.fm");
@@ -231,6 +227,10 @@ void SpellCastMaceball(edict_t* caster, const vec3_t start_pos, const vec3_t aim
 	ball->health = 2;
 	ball->s.effects |= EF_MACE_ROTATE;
 	VectorCopy(ball->s.origin, ball->last_org);
+
+	ball->bounced = MaceballBounce;
+	ball->think = MaceballThink;
+	ball->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	gi.linkentity(ball);
 

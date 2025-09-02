@@ -714,7 +714,7 @@ static void SpreaderSplatWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named
 	self->health = -1000;
 	self->mass = 0; //mxd. '0.01' in original logic.
 	self->think = BecomeDebris;
-	self->nextthink = level.time + 0.01f;
+	self->nextthink = level.time + FRAMETIME; //mxd. '0.01' in original logic.
 }
 
 static void SpreaderDropDownThink(edict_t* self) //mxd. Named 'spreaderDropDown' in original logic.

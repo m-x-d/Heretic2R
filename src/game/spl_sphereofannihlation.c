@@ -54,7 +54,7 @@ static void SphereExplodeThink(edict_t* self)
 
 	self->count--;
 	self->dmg_radius += SPHERE_GROW_SPEED;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	if (self->count < 0)
 		G_SetToFree(self);
@@ -149,7 +149,7 @@ static void SphereOfAnnihilationGrowThink(edict_t* self)
 		self->s.origin[1] += forward[1] * 20.0f;
 		self->s.origin[2] += (float)self->owner->viewheight - 5.0f;
 
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
 	else
 	{
@@ -296,7 +296,7 @@ static void SpherePowerLaserThink(edict_t* self)
 	if (--self->count <= 0)
 		G_SetToFree(self);
 	else
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 static void SpherePowerLaserTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
@@ -337,7 +337,7 @@ static void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 		self->s.origin[1] += forward[1] * 20.0f;
 		self->s.origin[2] += (float)self->owner->viewheight - 5.0f;
 
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
 	else
 	{
@@ -382,7 +382,7 @@ static void CreateSphere(edict_t* sphere)
 	sphere->classname = "Spell_SphereOfAnnihilation";
 	sphere->clipmask = MASK_SHOT;
 	sphere->movetype = MOVETYPE_FLYMISSILE;
-	sphere->nextthink = level.time + 0.1f;
+	sphere->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 edict_t* SphereReflect(edict_t* self, edict_t* other, vec3_t vel)
@@ -402,7 +402,7 @@ edict_t* SphereReflect(edict_t* self, edict_t* other, vec3_t vel)
 	sphere->s.scale = self->s.scale;
 
 	sphere->touch = SphereOfAnnihilationTouch;
-	sphere->nextthink = level.time + 0.1f;
+	sphere->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	VectorCopy(vel, sphere->velocity);
 	VectorCopy(self->mins, sphere->mins);
@@ -460,7 +460,7 @@ static void SphereWatcherGrowThink(edict_t* self)
 				self->count &= 3;
 		}
 
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
 	else
 	{
@@ -492,9 +492,10 @@ static void SphereWatcherGrowThink(edict_t* self)
 		self->count = 0;
 		self->dmg = SPHERE_WATCHER_DAMAGE_MIN + (int)(SPHERE_WATCHER_DAMAGE_RANGE * ((self->s.scale - SPHERE_INIT_SCALE) / SPHERE_SCALE_RANGE));
 		self->dmg_radius = SPHERE_WATCHER_EXPLOSION_RADIUS_MIN + (SPHERE_WATCHER_EXPLOSION_RADIUS_MAX - SPHERE_WATCHER_EXPLOSION_RADIUS_MIN) * (self->s.scale - SPHERE_INIT_SCALE) / SPHERE_SCALE_RANGE;
+
 		self->touch = SphereWatcherTouch;
 		self->think = SphereWatcherFlyThink;
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 		VectorSet(self->mins, -SPHERE_RADIUS, -SPHERE_RADIUS, -SPHERE_RADIUS);
 		VectorSet(self->maxs,  SPHERE_RADIUS,  SPHERE_RADIUS,  SPHERE_RADIUS);
@@ -527,7 +528,7 @@ static edict_t* SphereWatcherReflect(edict_t* self, edict_t* other, vec3_t vel)
 
 	sphere->touch = SphereWatcherTouch;
 	sphere->think = SphereWatcherFlyThink;
-	sphere->nextthink = level.time + 0.1f;
+	sphere->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	VectorCopy(vel, sphere->velocity);
 	VectorCopy(self->mins, sphere->mins);

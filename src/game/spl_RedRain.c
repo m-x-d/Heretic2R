@@ -294,11 +294,10 @@ static void CreateRedRainArrow(edict_t* arrow)
 	arrow->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	arrow->svflags |= SVF_ALWAYS_SEND;
 	arrow->movetype = MOVETYPE_FLYMISSILE;
-
-	arrow->touch = RedRainMissileTouch;
-	arrow->think = RedRainMissileThink;
 	arrow->classname = "Spell_RedRainArrow";
-	arrow->nextthink = level.time + 0.1f;
+	arrow->solid = SOLID_BBOX;
+	arrow->clipmask = MASK_SHOT;
+
 	VectorSet(arrow->mins, -ARROW_RADIUS, -ARROW_RADIUS, -ARROW_RADIUS);
 	VectorSet(arrow->maxs,  ARROW_RADIUS,  ARROW_RADIUS,  ARROW_RADIUS);
 
@@ -307,8 +306,9 @@ static void CreateRedRainArrow(edict_t* arrow)
 	else
 		arrow->dmg = irand(RED_RAIN_DMG_ARROW_MIN, RED_RAIN_DMG_ARROW_MAX);
 
-	arrow->solid = SOLID_BBOX;
-	arrow->clipmask = MASK_SHOT;
+	arrow->touch = RedRainMissileTouch;
+	arrow->think = RedRainMissileThink;
+	arrow->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 edict_t* RedRainMissileReflect(edict_t* self, edict_t* other, vec3_t vel)

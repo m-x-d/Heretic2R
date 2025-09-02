@@ -100,7 +100,7 @@ void BecomeDebris(edict_t* self)
 
 		self->svflags |= SVF_PARTS_GIBBED;
 		self->think = BecomeDebris;
-		self->nextthink = level.time + 0.1f;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 		return;
 	}
