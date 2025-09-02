@@ -102,7 +102,7 @@ void DefaultReceiver_SetAnim(edict_t* self, G_Message_t* msg)
 void DefaultReceiver_RemoveSelf(edict_t* self, G_Message_t* msg)
 {
 	self->think = G_FreeEdict;
-	self->nextthink = 0.0f;
+	self->nextthink = level.time + FRAMETIME; //BUGFIX: mxd. 0.0f in original logic.
 }
 
 void DefaultReceiver_Suspend(edict_t* self, G_Message_t* msg)
