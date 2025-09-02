@@ -370,10 +370,6 @@ static void EntityThink(edict_t* self)
 	// See if anything is happening to us we need to update...
 	CheckContinuousAutomaticEffects(self);
 
-#ifdef _DEBUG
-	const float think_time = self->nextthink;
-#endif
-
 	// Not used for guides anymore, but nice for effects like tinting/fading, etc. that should continue while the entity is doing other stuff.
 	if (self->pre_think != NULL && self->next_pre_think > 0.0f && self->next_pre_think < level.time)
 		self->pre_think(self);
@@ -383,7 +379,7 @@ static void EntityThink(edict_t* self)
 		self->think(self);
 
 		// We expect that either ent is removed, ent->think callback is cleared or ent nextthink time is updated as a result of calling ent->think().
-		assert(!self->inuse || self->think == NULL || think_time != self->nextthink); //TODO: shouldn't we check for nextthink > think_time or nextthink > level.time instead? 
+		assert(!self->inuse || self->think == NULL || self->nextthink > level.time);
 	}
 }
 
