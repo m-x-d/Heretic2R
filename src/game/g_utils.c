@@ -232,8 +232,8 @@ void G_UseTargets(edict_t* ent, edict_t* activator)
 		return;
 	}
 
-	// Print messages.
-	if (!(activator->svflags & SVF_MONSTER))
+	// Print messages?
+	if (activator != NULL && !(activator->svflags & SVF_MONSTER)) //mxd. Added activator sanity check (func_door with DOOR_MOVE_LOOP will call this with NULL activator).
 	{
 		if (ent->message != NULL)
 		{
@@ -253,7 +253,7 @@ void G_UseTargets(edict_t* ent, edict_t* activator)
 		edict_t* killtarget = NULL;
 		while ((killtarget = G_Find(killtarget, FOFS(targetname), ent->killtarget)) != NULL)
 		{
-			QPostMessage(killtarget, MSG_DEATH, PRI_DIRECTIVE, "eeei", killtarget, ent, activator, 100000);
+			QPostMessage(killtarget, MSG_DEATH, PRI_DIRECTIVE, "eeei", killtarget, ent, activator, 100000); //TODO: activator can be NULL (e.g. func_door with DOOR_MOVE_LOOP enabled).
 
 			if (!ent->inuse)
 			{
@@ -276,7 +276,7 @@ void G_UseTargets(edict_t* ent, edict_t* activator)
 			if (target == ent)
 				gi.dprintf("WARNING: %s at %s used itself.\n", target->classname, vtos(target->s.origin)); //mxd. Print origin.
 			else if (target->use != NULL)
-				target->use(target, ent, activator);
+				target->use(target, ent, activator); //TODO: activator can be NULL (e.g. func_door with DOOR_MOVE_LOOP enabled).
 
 			if (!ent->inuse)
 			{
