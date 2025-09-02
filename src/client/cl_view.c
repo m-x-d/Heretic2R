@@ -16,15 +16,26 @@ static cvar_t* cl_stats;
 
 int frame_index; // H2
 
-// H2 screen flash
+// H2 screen flash.
 static int screen_flash_color;
 
-// H2 screen shake
-static float screen_shake_duration;
-static float screen_shake_intensity_min;
-static float screen_shake_intensity_max;
-static float screen_shake_endtime;
-static int screen_shake_flags;
+// H2 screen shake.
+typedef struct ScreenShakeInfo_s
+{
+	float start_amount;
+	float amount;
+	float duration;
+	float end_time;
+	int flags;
+
+	//mxd. Shake interpolation...
+	float time_delta;
+	float prev_time;
+	vec3_t start;
+	vec3_t end;
+} ScreenShakeInfo_t;
+
+static ScreenShakeInfo_t sshake;
 
 static void RegisterModels(void) // H2
 {
@@ -304,44 +315,72 @@ int Is_Screen_Flashing(void)
 
 void Activate_Screen_Shake(const float intensity, const float duration, const float current_time, const int flags)
 {
-	screen_shake_intensity_min = intensity;
-	screen_shake_intensity_max = intensity;
-	screen_shake_duration = duration;
-	screen_shake_flags = flags;
-	screen_shake_endtime = duration + current_time;
+	sshake.start_amount = intensity;
+	sshake.amount = intensity;
+	sshake.duration = duration;
+	sshake.end_time = current_time + duration;
+	sshake.flags = flags;
+
+	//mxd
+	sshake.time_delta = 0.0f;
+	sshake.prev_time = 0.0f;
+	VectorClear(sshake.start);
+	VectorClear(sshake.end);
 }
 
 void Perform_Screen_Shake(vec3_t out, const float current_time)
 {
+#define LERP_DURATION	32.0f
+
 	VectorClear(out);
 
-	if (current_time > screen_shake_endtime)
-	{
-		screen_shake_intensity_max = 0.0f;
+	if (current_time > sshake.end_time)
+		sshake.amount = 0.0f;
+
+	if (sshake.amount == 0.0f)
 		return;
+
+	sshake.amount = (sshake.end_time - current_time) / sshake.duration * sshake.start_amount;
+
+	//mxd. Time to update interpolation points (at 30 FPS)?
+	if (sshake.time_delta == 0.0f || sshake.time_delta >= LERP_DURATION)
+	{
+		VectorCopy(sshake.end, sshake.start);
+		VectorClear(sshake.end);
+
+		//mxd. Apply relative to camera direction (otherwise flags don't make much sense...).
+		vec3_t forward;
+		vec3_t right;
+		vec3_t up;
+		AngleVectors(cl.refdef.viewangles, forward, right, up);
+
+		if (sshake.flags & SHAKE_LATERAL)
+			VectorMA(sshake.end, flrand(-sshake.amount, sshake.amount), right, sshake.end); //mxd. Original logic uses irand() here.
+
+		if (sshake.flags & SHAKE_DEPTH)
+			VectorMA(sshake.end, flrand(-sshake.amount, sshake.amount), forward, sshake.end); //mxd. Original logic uses irand() here.
+
+		if (sshake.flags & SHAKE_VERTICAL)
+			VectorMA(sshake.end, flrand(-sshake.amount, sshake.amount), up, sshake.end); //mxd. Original logic uses irand() here.
+
+		sshake.time_delta = 0.0f;
 	}
 
-	if (screen_shake_intensity_max == 0.0f)
-		return;
+	//mxd. Interpolate between stored points.
+	const float lerp = sshake.time_delta / LERP_DURATION;
+	for (int i = 0; i < 3; i++)
+		out[i] = sshake.start[i] + (sshake.end[i] - sshake.start[i]) * lerp;
 
-	screen_shake_intensity_max = (screen_shake_endtime - current_time) / screen_shake_duration * screen_shake_intensity_min;
-
-	if (screen_shake_flags & SHAKE_LATERAL)
-		out[PITCH] = (float)irand((int)-screen_shake_intensity_max, (int)screen_shake_intensity_max);
-
-	if (screen_shake_flags & SHAKE_VERTICAL)
-		out[ROLL] = (float)irand((int)-screen_shake_intensity_max, (int)screen_shake_intensity_max);
-
-	if (screen_shake_flags & SHAKE_DEPTH)
-		out[YAW] = (float)irand((int)-screen_shake_intensity_max, (int)screen_shake_intensity_max);
+	sshake.time_delta += current_time - sshake.prev_time;
+	sshake.prev_time = current_time;
 }
 
 void Reset_Screen_Shake(void)
 {
-	screen_shake_duration = 0.0f;
-	screen_shake_intensity_max = 0.0f;
-	screen_shake_endtime = -1.0f;
-	screen_shake_flags = 0;
+	sshake.duration = 0.0f;
+	sshake.amount = 0.0f;
+	sshake.end_time = -1.0f;
+	sshake.flags = 0;
 }
 
 #pragma endregion
