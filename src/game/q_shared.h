@@ -595,9 +595,9 @@ typedef struct
 #define STAT_DEFMANA_ICON		11		// * Amount of defensive mana.
 #define STAT_DEFMANA_BACK		12
 #define STAT_DEFMANA			13
-#define STAT_FRAGS_ICON			14		// Cleared each frame, 1 = health, 2 = armor.
-#define STAT_FRAGS				15		// Which status to print.            
-#define STAT_FLASHES			16
+#define STAT_FRAGS_ICON			14
+#define STAT_FRAGS				15		// Which status to print.
+#define STAT_FLASHES			16		// Cleared each frame, 1 = health.
 #define STAT_LAYOUTS			17
 #define STAT_PUZZLE_ITEM1		18
 #define STAT_PUZZLE_ITEM2		19
