@@ -304,11 +304,8 @@ static void P_DamageFeedback(edict_t* player)
 {
 	gclient_t* client = player->client;
 
-	// Flash the backgrounds behind the status numbers.
-	client->ps.stats[STAT_FLASHES] = 0;
-
-	if (client->damage_blood > 0)
-		client->ps.stats[STAT_FLASHES] |= 1;
+	// Flash the backgrounds behind the status numbers?
+	client->ps.stats[STAT_FLASHES] = (short)((client->damage_blood > 0) ? 1 : 0);
 
 	// Total up the points of damage shot at the player this frame.
 	if (client->damage_blood == 0)
