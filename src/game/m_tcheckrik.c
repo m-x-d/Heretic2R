@@ -786,8 +786,8 @@ static void TcheckrikDismember(edict_t* self, int damage, HitLocation_t hl) //mx
 
 void tcheckrik_c_dead(edict_t* self) //mxd. Named 'insect_c_reallydead' in original logic.
 {
-	self->nextthink = level.time; //TODO: should be -1?..
 	self->think = NULL;
+	self->nextthink = THINK_NEVER; //mxd. level.time in original logic.
 }
 
 void tcheckrik_attack(edict_t* self, float attack_type) //mxd. Named 'insectCut' in original logic.
