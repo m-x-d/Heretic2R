@@ -5,16 +5,16 @@
 //
 
 #include "g_func_Door.h"
-#include "EffectFlags.h"
 #include "g_combat.h"
 #include "g_debris.h"
 #include "g_DefaultMessageHandler.h"
 #include "g_func_Utility.h"
+#include "EffectFlags.h"
 #include "Vector.h"
 
 #pragma region ========================== func_door, func_door_rotating, func_water ==========================
 
-#define DOOR_MOVE_LOOP	(-2.0f) //mxd
+#define DOOR_MOVE_LOOP	(-2) //mxd
 
 static void FuncDoorUseAreaportals(const edict_t* self, const qboolean open) //mxd. Named 'door_use_areaportals' in original logic.
 {
@@ -40,7 +40,7 @@ static void FuncDoorHitTop(edict_t* self) //mxd. Named 'door_hit_top' in origina
 		self->think = FuncDoorGoDown;
 		self->nextthink = level.time + self->moveinfo.wait;
 	}
-	else if (self->moveinfo.wait == DOOR_MOVE_LOOP)
+	else if ((int)self->moveinfo.wait == DOOR_MOVE_LOOP) // Endless cycle.
 	{
 		self->think = FuncDoorGoDown;
 		self->nextthink = level.time + FRAMETIME; // Next frame is soon enough to fire this off.
@@ -52,7 +52,7 @@ static void FuncDoorHitBottom(edict_t* self) //mxd. Named 'door_hit_bottom' in o
 	FuncPlayMoveEndSound(self); //mxd
 	self->moveinfo.state = STATE_BOTTOM;
 
-	if (self->moveinfo.wait == DOOR_MOVE_LOOP) // Endless cycle.
+	if ((int)self->moveinfo.wait == DOOR_MOVE_LOOP) // Endless cycle.
 		FuncDoorGoUp(self, NULL);
 	else
 		FuncDoorUseAreaportals(self, false);
@@ -84,10 +84,10 @@ static void FuncDoorGoUp(edict_t* self, edict_t* activator) //mxd. Named 'door_g
 	if (self->moveinfo.state == STATE_TOP)
 	{
 		// Reset top wait time.
-		if (self->moveinfo.wait >= 0)
+		if (self->moveinfo.wait >= 0.0f)
 			self->nextthink = level.time + self->moveinfo.wait;
-		else if (self->moveinfo.wait == DOOR_MOVE_LOOP)
-			self->nextthink = level.time;
+		else if ((int)self->moveinfo.wait == DOOR_MOVE_LOOP) // Endless cycle.
+			self->nextthink = level.time + FRAMETIME; //mxd. Add FRAMETIME (mostly for consistency's sake).
 
 		return;
 	}
@@ -292,7 +292,7 @@ static void FuncDoorBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_bl
 	T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
 
 	// If a door has a negative wait, it would never come back if blocked, (unless -2) so let it just squash the object to death real fast.
-	if (self->moveinfo.wait >= 0.0f || self->moveinfo.wait == DOOR_MOVE_LOOP)
+	if (self->moveinfo.wait >= 0.0f || (int)self->moveinfo.wait == DOOR_MOVE_LOOP)
 	{
 		if (self->moveinfo.state == STATE_DOWN)
 		{
