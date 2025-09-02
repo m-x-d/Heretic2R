@@ -1432,10 +1432,7 @@ static void CL_UpdateCameraOrientation(float viewheight, const qboolean interpol
 		VectorCopy(cl.refdef.vieworg, old_vieworg);
 	}
 
-	// Apply screen shake.
-	vec3_t shake_amount;
-	Perform_Screen_Shake(shake_amount, (float)cl.time);
-	Vec3AddAssign(shake_amount, cl.refdef.vieworg);
+	//mxd. Skip Perform_Screen_Shake() logic. Already done in CL_CalcViewValues().
 
 	VectorCopy(PlayerEntPtr->origin, cl.refdef.clientmodelorg);
 }
@@ -1599,9 +1596,9 @@ static void CL_CalcViewValues(void)
 	}
 
 	// H2: Apply screen shake.
-	vec3_t shake;
-	Perform_Screen_Shake(shake, (float)cl.time);
-	Vec3AddAssign(shake, cl.refdef.vieworg);
+	vec3_t shake_amount;
+	Perform_Screen_Shake(shake_amount, (float)cl.time);
+	Vec3AddAssign(shake_amount, cl.refdef.vieworg);
 
 	// Interpolate field of view.
 	cl.refdef.fov_x = ops->fov + (ps->fov - ops->fov) * lerp;
