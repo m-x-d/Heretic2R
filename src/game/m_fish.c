@@ -270,8 +270,6 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 		return;
 	}
 
-	self->nextthink = level.time + FRAMETIME;
-
 	if (self->enemy == NULL)
 		FindTarget(self);
 
@@ -279,7 +277,7 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 		self->enemy = NULL;
 
 	// Animate us.
-	M_MoveFrame(self);
+	M_MoveFrame(self); //mxd. Also sets self->nextthink.
 
 	// We are already dead or getting hit, we don't need to do anything.
 	if ((self->dead_state & DEAD_DEAD) || (self->dead_state & DEAD_DYING))
@@ -320,7 +318,7 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 				{
 					vec3_t dir;
 					AngleVectors(self->s.angles, dir, NULL, NULL);
-					VectorScale(dir, 200.0f, dir);
+					Vec3ScaleAssign(200.0f, dir);
 
 					const byte b_angle = (byte)Q_ftol((self->s.angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
 
@@ -789,6 +787,10 @@ void SP_monster_fish(edict_t* self)
 	self->flags |= (FL_SWIM | FL_NO_KNOCKBACK);
 	self->s.skinnum = (irand(0, 1) == 1 ? FISH_SKIN1 : FISH_SKIN2);
 	self->dead_state = DEAD_NO;
+
+	//mxd. Missing in original logic.
+	self->monsterinfo.thinkinc = MONSTER_THINK_INC;
+	self->monsterinfo.nextframeindex = -1;
 
 	self->ai_mood = AI_MOOD_STAND;
 	self->fish_is_turning = false;
