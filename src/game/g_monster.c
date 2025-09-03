@@ -458,6 +458,7 @@ static void M_TriggeredStart(edict_t* self) //mxd. Named 'monster_triggered_star
 	self->solid = SOLID_NOT;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
+	self->think = NULL; //mxd. Not cleared in original logic. Clear to avoid triggering assert in EntityThink(). Will be reassigned by M_TriggeredSpawnUse() anyway.
 	self->nextthink = 0.0f;
 	self->use = M_TriggeredSpawnUse;
 }
