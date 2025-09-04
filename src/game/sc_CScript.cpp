@@ -1636,15 +1636,14 @@ void CScript::AddEvent(Event* which)
 	if (events.Size() > 0)
 	{
 		const float time = which->GetTime();
+		List<Event*>::Iter ei;
 
-		for (List<Event*>::Iter ei = events.Begin(); ei != events.End(); ++ei)
-		{
+		// Insert by event time.
+		for (ei = events.Begin(); ei != events.End(); ++ei)
 			if ((*ei)->GetTime() > time)
-			{
-				events.Insert(ei, which);
 				break;
-			}
-		}
+
+		events.Insert(ei, which);
 	}
 	else
 	{
