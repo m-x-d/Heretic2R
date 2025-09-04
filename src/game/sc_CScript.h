@@ -50,7 +50,7 @@ class CScript
 	int debug_flags = 0;
 
 	void Free(bool do_data);
-	void Clear(bool do_data);
+	void Clear();
 
 	Variable* ReadDeclaration(int& index);
 

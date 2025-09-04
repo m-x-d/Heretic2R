@@ -107,7 +107,7 @@ extern "C"
 
 CScript::CScript(const char* script_name, edict_t* new_owner)
 {
-	Clear(true);
+	Clear();
 
 	owner = new_owner;
 	strcpy_s(name, script_name); //mxd. strcpy -> strcpy_s.
@@ -120,7 +120,7 @@ CScript::CScript(FILE* f)
 	int index;
 	int size;
 
-	Clear(true);
+	Clear();
 
 	fread(name, 1, sizeof(name), f);
 	LoadFile();
@@ -289,10 +289,10 @@ void CScript::Free(const bool do_data) //TODO: do_data always true, remove?
 	for (const auto& fielddef : fielddefs)
 		delete fielddef;
 
-	Clear(do_data);
+	Clear();
 }
 
-void CScript::Clear(const bool do_data) //TODO: unused arg, remove.
+void CScript::Clear() //mxd. Removed unused 'do_data' arg.
 {
 	data = nullptr;
 	owner = nullptr;
