@@ -280,10 +280,10 @@ void CScript::Free(const bool do_data) //TODO: do_data always true, remove?
 
 	while (events.Size())
 	{
-		List<Event*>::Iter event = events.Begin();
-		delete *event;
+		List<Event*>::Iter ei = events.Begin();
+		delete *ei;
 
-		events.Erase(event);
+		events.Erase(ei);
 	}
 
 	for (const auto& fielddef : fielddefs)
@@ -389,8 +389,8 @@ void CScript::Write(FILE* f)
 
 	size = events.Size();
 	fwrite(&size, 1, sizeof(size), f);
-	for (List<Event*>::Iter event = events.Begin(); event != events.End(); ++event)
-		(*event)->Write(f, this);
+	for (List<Event*>::Iter ei = events.Begin(); ei != events.End(); ++ei)
+		(*ei)->Write(f, this);
 }
 
 int CScript::LookupVarIndex(const Variable* var) const
@@ -1637,11 +1637,11 @@ void CScript::AddEvent(Event* which)
 	{
 		const float time = which->GetTime();
 
-		for (List<Event*>::Iter event = events.Begin(); event != events.End(); ++event)
+		for (List<Event*>::Iter ei = events.Begin(); ei != events.End(); ++ei)
 		{
-			if ((*event)->GetTime() > time)
+			if ((*ei)->GetTime() > time)
 			{
-				events.Insert(event, which);
+				events.Insert(ei, which);
 				break;
 			}
 		}
@@ -1656,13 +1656,13 @@ void CScript::ProcessEvents()
 {
 	while (events.Size() > 0)
 	{
-		List<Event*>::Iter event = events.Begin();
+		List<Event*>::Iter ei = events.Begin();
 
-		if (!(*event)->Process(this))
+		if (!(*ei)->Process(this))
 			break;
 
-		delete *event;
-		events.Erase(event);
+		delete *ei;
+		events.Erase(ei);
 	}
 }
 
