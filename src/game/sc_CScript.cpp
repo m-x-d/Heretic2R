@@ -192,7 +192,7 @@ CScript::CScript(FILE* f)
 
 CScript::~CScript()
 {
-	Free(true);
+	Free();
 }
 
 void CScript::LoadFile()
@@ -222,9 +222,9 @@ void CScript::LoadFile()
 	}
 }
 
-void CScript::Free(const bool do_data) //TODO: do_data always true, remove?
+void CScript::Free() //mxd. Removed unused 'do_data' arg.
 {
-	if (do_data && data != nullptr)
+	if (data != nullptr)
 	{
 		gi.FS_FreeFile(data);
 		data = nullptr;

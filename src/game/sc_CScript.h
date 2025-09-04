@@ -49,7 +49,7 @@ class CScript
 	edict_t* activator = nullptr;
 	int debug_flags = 0;
 
-	void Free(bool do_data);
+	void Free();
 	void Clear();
 
 	Variable* ReadDeclaration(int& index);
