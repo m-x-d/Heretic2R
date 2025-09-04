@@ -1248,6 +1248,7 @@ void CScript::HandleMove()
 	const int flags = ReadByte();
 
 	Variable* signaler_var = ((flags & MOVE_SIGNALER) ? PopStack() : nullptr);
+	qboolean signaler_added = false; //mxd
 	const Variable* move_rate_var = ((flags & MOVE_RATE) ? PopStack() : nullptr);
 	const Variable* move_duration_var = ((flags & MOVE_DURATION) ? PopStack() : nullptr);
 	const Variable* move_amount_var = PopStack();
@@ -1311,7 +1312,10 @@ void CScript::HandleMove()
 			}
 
 			if (signaler_var != nullptr)
+			{
 				AddSignaler(ent, signaler_var, SIGNAL_MOVE);
+				signaler_added = true; //mxd
+			}
 
 			Move(ent, dest);
 		}
@@ -1321,6 +1325,9 @@ void CScript::HandleMove()
 	delete entity_var;
 	delete move_rate_var;
 	delete move_duration_var;
+
+	if (!signaler_added) //mxd. Otherwise signaler_var will be deleted by signaling routine.
+		delete signaler_var;
 }
 
 void CScript::HandleRotate()
@@ -1328,6 +1335,7 @@ void CScript::HandleRotate()
 	const int flags = ReadByte();
 
 	Variable* signaler_var = ((flags & ROTATE_SIGNALER) ? PopStack() : nullptr);
+	qboolean signaler_added = false; //mxd
 	const Variable* rotation_rate_var = ((flags & ROTATE_RATE) ? PopStack() : nullptr);
 	const Variable* rotation_duration_var = ((flags & ROTATE_DURATION) ? PopStack() : nullptr);
 	const Variable* rotation_amount_var = PopStack();
@@ -1389,7 +1397,10 @@ void CScript::HandleRotate()
 			}
 
 			if (signaler_var != nullptr)
+			{
 				AddSignaler(ent, signaler_var, SIGNAL_ROTATE);
+				signaler_added = true; //mxd
+			}
 
 			Rotate(ent);
 		}
@@ -1399,6 +1410,9 @@ void CScript::HandleRotate()
 	delete entity_var;
 	delete rotation_rate_var;
 	delete rotation_duration_var;
+
+	if (!signaler_added) //mxd. Otherwise signaler_var will be deleted by signaling routine.
+		delete signaler_var;
 }
 
 void CScript::HandleUse()
@@ -1439,57 +1453,57 @@ void CScript::HandleAnimate()
 {
 	const int flags = ReadByte();
 
-	const Variable* source_var = ((flags & ANIMATE_SOURCE) ? PopStack() : nullptr);
-	Variable* signaler_var = ((flags & ANIMATE_SIGNALER) ? PopStack() : nullptr);
+	// Source
+	const Variable* source_var = nullptr;
 
-	const Variable* moving_var;
-	vec3_t moving_val;
+	if (flags & ANIMATE_SOURCE)
+		source_var = PopStack();
+
+	// Signaler
+	Variable* signaler_var = nullptr;
+	qboolean signaler_added = false; //mxd
+
+	if (flags & ANIMATE_SIGNALER)
+		signaler_var = PopStack();
+
+	// Moving
+	const Variable* moving_var = nullptr;
+	vec3_t moving_val = { 0 };
 
 	if (flags & ANIMATE_MOVING)
 	{
 		moving_var = PopStack();
 		moving_var->GetVectorValue(moving_val);
 	}
-	else
-	{
-		moving_var = nullptr;
-		VectorCopy(vec3_origin, moving_val);
-	}
 
-	const Variable* turning_var;
-	vec3_t turning_val;
+	// Turning
+	const Variable* turning_var = nullptr;
+	vec3_t turning_val = { 0 };
 
 	if (flags & ANIMATE_TURNING)
 	{
 		turning_var = PopStack();
 		turning_var->GetVectorValue(turning_val);
 	}
-	else
-	{
-		turning_var = nullptr;
-		VectorCopy(vec3_origin, turning_val);
-	}
 
-	const Variable* repeat_var;
-	int repeat_val;
+	// Repeat
+	const Variable* repeat_var = nullptr;
+	int repeat_val = 0;
 
 	if (flags & ANIMATE_REPEAT)
 	{
 		repeat_var = PopStack();
 		repeat_val = repeat_var->GetIntValue();
 	}
-	else
-	{
-		repeat_var = nullptr;
-		repeat_val = 0;
-	}
 
+	// The rest
 	const Variable* action_var = PopStack();
 	const int action_val = action_var->GetIntValue();
 
 	const Variable* entity_var = PopStack();
 	edict_t* ent = entity_var->GetEdictValue();
 
+	// Send message
 	if (ent != nullptr)
 	{
 		void (*signaler_routine)(edict_t*) = nullptr;
@@ -1498,17 +1512,22 @@ void CScript::HandleAnimate()
 		{
 			AddSignaler(ent, signaler_var, SIGNAL_ANIMATE);
 			signaler_routine = animate_signaler;
+			signaler_added = true; //mxd
 		}
 
 		QPostMessage(ent, static_cast<G_MsgID_e>(msg_animtype[action_val]), PRI_DIRECTIVE, "iiige", static_cast<int>(moving_val[0]), static_cast<int>(turning_val[0]), repeat_val, signaler_routine, activator);
 	}
 
+	// Cleanup
 	delete action_var;
 	delete entity_var;
 	delete source_var;
 	delete repeat_var;
 	delete turning_var;
 	delete moving_var;
+
+	if (!signaler_added) //mxd. Otherwise signaler_var will be deleted by signaling routine.
+		delete signaler_var;
 }
 
 void CScript::HandleCopyPlayerAttributes()
