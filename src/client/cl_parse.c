@@ -9,7 +9,6 @@
 #include "cl_messages.h"
 #include "cmodel.h"
 #include "tokens.h"
-#include "Vector.h"
 
 char* svc_strings[256] =
 {
