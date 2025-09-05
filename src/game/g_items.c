@@ -606,7 +606,7 @@ static void PrecacheItem(const gitem_t* item)
 // Items can't be immediately dropped to the floor because they might be on an entity that hasn't spawned yet.
 void SpawnItem(edict_t* ent, gitem_t* item)
 {
-	if ((ent->spawnflags & ITEM_COOP_ONLY) && !COOP)
+	if ((ent->spawnflags & ITEM_COOP_ONLY) && !COOP) //TODO: shouldn't this be done in IsValidItem()? Also: same check is also done in SpawnItemEffect().
 		return;
 
 	PrecacheItem(item);
