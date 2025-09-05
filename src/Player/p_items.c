@@ -40,8 +40,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_WSWORD_STD1,						// Player animation sequence to engage when used.
-		ASEQ_WSWORD_STD1,						// Player animation sequence to engage when powered
-		-1,										// Max uses (-1 = inifinite).
+		ASEQ_WSWORD_STD1,						// Player animation sequence to engage when powered.
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -66,8 +66,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_WFIREBALL,							// Player animation sequence to engage when used.
-		ASEQ_WFIREBALL,							// Player animation sequence to engage when powered
-		-1,										// Max uses (-1 = inifinite).
+		ASEQ_WFIREBALL,							// Player animation sequence to engage when powered.
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		AMMO_USE_FIREBALL,						// Ammo type/ammo use per shot.
 		"Off-mana",								// Ammo name (char *).
@@ -92,7 +92,7 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_WHELL_GO,							// Player animation sequence to engage when used.
-		ASEQ_WHELL_GO,							// Player animation sequence to engage when powered
+		ASEQ_WHELL_GO,							// Player animation sequence to engage when powered.
 		-1,										// Max uses (-1 = infinite).
 		2,										// Number of digits to display.
 		AMMO_USE_HELLSTAFF,						// Ammo type/ammo use per shot.
@@ -118,8 +118,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_WBLAST,							// Player animation sequence to engage when used.
-		ASEQ_WARRAY,							// Player animation sequence to engage when powered
-		-1,										// Max uses (-1 = inifinite).
+		ASEQ_WARRAY,							// Player animation sequence to engage when powered.
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		AMMO_USE_MAGICMISSILE,					// Ammo type/ammo use per shot.
 		"Off-mana",								// Ammo name (char *).
@@ -144,8 +144,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_WRRBOW_GO,							// Player animation sequence to engage when used.
-		ASEQ_WRRBOW_GO,							// Player animation sequence to engage when powered
-		-1,										// Max uses (-1 = inifinite).
+		ASEQ_WRRBOW_GO,							// Player animation sequence to engage when powered.
+		-1,										// Max uses (-1 = infinite).
 		2,										// Number of digits to display.
 		AMMO_USE_REDRAIN,						// Ammo type/ammo use per shot.
 		"Red-Rain-Arrows",						// Ammo name (char *).
@@ -170,8 +170,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_WFIREWALL,							// Player animation sequence to engage when used.
-		ASEQ_WFIREWALL,							// Player animation sequence to engage when powered
-		-1,										// Max uses (-1 = inifinite).
+		ASEQ_WFIREWALL,							// Player animation sequence to engage when powered.
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		AMMO_USE_FIREWALL,						// Ammo type/ammo use per shot.
 		"Off-mana",								// Ammo name (char *).
@@ -196,8 +196,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_WPHBOW_GO,							// Player animation sequence to engage when used.
-		ASEQ_WPHBOW_GO,							// Player animation sequence to engage when powered
-		-1,										// Max uses (-1 = inifinite).
+		ASEQ_WPHBOW_GO,							// Player animation sequence to engage when powered.
+		-1,										// Max uses (-1 = infinite).
 		2,										// Number of digits to display.
 		AMMO_USE_PHOENIX,						// Ammo type/ammo use per shot.
 		"Phoenix-Arrows",						// Ammo name (char *).
@@ -222,8 +222,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_WSPHERE_GO,						// Player animation sequence to engage when used.
-		ASEQ_WSPHERE_GO,						// Player animation sequence to engage when powered
-		-1,										// Max uses (-1 = inifinite).
+		ASEQ_WSPHERE_GO,						// Player animation sequence to engage when powered.
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		AMMO_USE_SPHERE,						// Ammo type/ammo use per shot.
 		"Off-mana",								// Ammo name (char *).
@@ -248,8 +248,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_WRIPPER,							// Player animation sequence to engage when used.
-		ASEQ_WBIGBALL,							// Player animation sequence to engage when powered
-		-1,										// Max uses (-1 = inifinite).
+		ASEQ_WBIGBALL,							// Player animation sequence to engage when powered.
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		AMMO_USE_MACEBALL,						// Ammo type/ammo use per shot.
 		"Off-mana",								// Ammo name (char *).
@@ -278,8 +278,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_SPELL_DEF,							// Player animation sequence to engage when used.
-		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered
-		-1,										// Max uses (-1 = inifinite).
+		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered.
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		MANA_USE_POWERUP,						// Ammo type/ammo use per shot.
 		"Def-mana",								// Ammo name (char *).
@@ -304,8 +304,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_SPELL_DEF,							// Player animation sequence to engage when used.
-		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered
-		-1,										// Max uses (-1 = inifinite).
+		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered.
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		MANA_USE_RING,							// Ammo type/ammo use per shot.
 		"Def-mana",								// Ammo name (char *).
@@ -330,8 +330,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_SPELL_DEF,							// Player animation sequence to engage when used.
-		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered
-		1,										// Max uses (-1 = inifinite).
+		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered.
+		1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		MANA_USE_SHIELD,						// Ammo type/ammo use per shot.
 		"Def-mana",								// Ammo name (char *).
@@ -356,8 +356,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_SPELL_DEF,							// Player animation sequence to engage when used.
-		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered
-		1,										// Max uses (-1 = inifinite).
+		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered.
+		1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		MANA_USE_TELEPORT,						// Ammo type/ammo use per shot.
 		"Def-mana",								// Ammo name (char *).
@@ -382,8 +382,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_SPELL_DEF,							// Player animation sequence to engage when used.
-		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered
-		1,										// Max uses (-1 = inifinite).
+		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered.
+		1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		MANA_USE_POLYMORPH,						// Ammo type/ammo use per shot.
 		"Def-mana",								// Ammo name (char *).
@@ -408,8 +408,8 @@ static gitem_t itemlist[] =
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_SPELL_DEF,							// Player animation sequence to engage when used.
-		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered
-		1,										// Max uses (-1 = inifinite).
+		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered.
+		1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		MANA_USE_METEORS,						// Ammo type/ammo use per shot.
 		"Def-mana",								// Ammo name (char *).
@@ -439,7 +439,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		-1,										// Max uses (-1 = inifinite).
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		HALF_OFF_MANA,							// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -465,7 +465,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		-1,										// Max uses (-1 = inifinite).
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		FULL_OFF_MANA,							// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -491,7 +491,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		-1,										// Max uses (-1 = inifinite).
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		HALF_DEF_MANA,							// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -517,7 +517,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		-1,										// Max uses (-1 = inifinite).
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		FULL_DEF_MANA,							// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -543,7 +543,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		-1,										// Max uses (-1 = inifinite).
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		HALF_COMBO_MANA,						// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -569,7 +569,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		-1,										// Max uses (-1 = inifinite).
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		FULL_COMBO_MANA,						// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -595,7 +595,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		-1,										// Max uses (-1 = inifinite).
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		AMMO_COUNT_REDRAINBOW,					// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -621,7 +621,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		-1,										// Max uses (-1 = inifinite).
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		AMMO_COUNT_PHOENIXBOW,					// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -647,7 +647,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		-1,										// Max uses (-1 = inifinite).
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		AMMO_COUNT_HELLSTAFF,					// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -677,13 +677,13 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		-1,										// Max uses (-1 = inifinite).
+		-1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		10,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
 		IT_HEALTH | EF_ALWAYS_ADD_EFFECTS, 		// IT_XXX flags.
 		NULL,									// void* info (unused).
-		ITEM_HEALTH1,							// Tag.//mxd.MODEL_HEALTH1 in original logic.
+		ITEM_HEALTH1,							// Tag. //mxd. MODEL_HEALTH1 in original logic.
 		NULL,									// Icon name (char *).
 	},
 
@@ -703,13 +703,13 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		30,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
 		IT_HEALTH | EF_ALWAYS_ADD_EFFECTS,		// IT_XXX flags.
 		NULL,									// void* info (unused).
-		ITEM_HEALTH2,							// Tag.//mxd.MODEL_HEALTH2 in original logic.
+		ITEM_HEALTH2,							// Tag. //mxd. MODEL_HEALTH2 in original logic.
 		NULL,									// Icon name (char *).
 	},
 
@@ -733,7 +733,7 @@ static gitem_t itemlist[] =
 		{  8.0f,  8.0f,  4.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -759,7 +759,7 @@ static gitem_t itemlist[] =
 		{  10.0f,  10.0f,  20.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -785,7 +785,7 @@ static gitem_t itemlist[] =
 		{  2.0f,  6.0f,  12.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -811,7 +811,7 @@ static gitem_t itemlist[] =
 		{  3.0f,  3.0f,  10.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -837,7 +837,7 @@ static gitem_t itemlist[] =
 		{  6.0f,  6.0f,  6.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -863,7 +863,7 @@ static gitem_t itemlist[] =
 		{  6.0f,  6.0f,  6.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -889,7 +889,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -915,7 +915,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -941,7 +941,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -967,7 +967,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -993,7 +993,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -1019,7 +1019,7 @@ static gitem_t itemlist[] =
 		{  1.0f,  6.0f,  6.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -1045,7 +1045,7 @@ static gitem_t itemlist[] =
 		{  10.0f,  10.0f,  8.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -1071,7 +1071,7 @@ static gitem_t itemlist[] =
 		{  3.0f,  12.0f,  2.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -1097,7 +1097,7 @@ static gitem_t itemlist[] =
 		{  1.0f,  18.0f,  9.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -1123,7 +1123,7 @@ static gitem_t itemlist[] =
 		{  8.0f,  8.0f,  3.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -1149,7 +1149,7 @@ static gitem_t itemlist[] =
 		{  12.0f,  12.0f,  6.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -1175,7 +1175,7 @@ static gitem_t itemlist[] =
 		{  12.0f,  12.0f,  4.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -1201,7 +1201,7 @@ static gitem_t itemlist[] =
 		{  12.0f,  12.0f,  4.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -1227,7 +1227,7 @@ static gitem_t itemlist[] =
 		{  12.0f,  12.0f,  4.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
-		0,										// Max uses (-1 = inifinite).
+		0,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		0,										// Ammo type/ammo use per shot.
 		NULL,									// Ammo name (char *).
@@ -1255,7 +1255,7 @@ static gitem_t itemlist[] =
 		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_SPELL_DEF,							// Player animation sequence to engage when used.
 		ASEQ_SPELL_DEF,							// Player animation sequence to engage when powered
-		1,										// Max uses (-1 = inifinite).
+		1,										// Max uses (-1 = infinite).
 		0,										// Number of digits to display.
 		MANA_USE_TORNADO,						// Ammo type/ammo use per shot.
 		"Def-mana",								// Ammo name (char *).
