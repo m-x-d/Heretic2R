@@ -831,7 +831,7 @@ static void CL_FinishMove(usercmd_t* cmd) // Called on packetframe.
 	in_attack.state &= ~KS_IMPULSE_DOWN;
 
 	// But also protec.
-	if (in_defend.state & KS_DOWN) //TODO: why no KS_IMPULSE_DOWN check here?..
+	if (in_defend.state & KS_IMPULSE_DOWN) //TODO: why no KS_DOWN check here?..
 		cmd->buttons |= BUTTON_DEFEND;
 	in_defend.state &= ~KS_IMPULSE_DOWN;
 
