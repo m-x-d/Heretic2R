@@ -132,13 +132,11 @@ typedef struct gitem_s
 	char* world_model; //TODO: unused?
 	int world_model_flags;
 
-	vec3_t mins; // Bounding box
-	vec3_t maxs; // Bounding box
+	vec3_t mins; // Bounding box.
+	vec3_t maxs; // Bounding box.
 
 	int playeranimseq;	// The ASEQ_ player sequence that should be engaged when this item is used.
 	int altanimseq;		// Powerup animation sequence.
-
-	int MaxActive; // Maximum allowable active uses of items of this type by a single player, at any instant in time. -1 indicates no limit. //TODO: unused.
 
 	// Client side information.
 	int count_width; // Number of digits to display by icon.
@@ -147,9 +145,7 @@ typedef struct gitem_s
 	char* ammo; // For weapons
 	int flags; // IT_XXX.
 
-	void* info; //TODO: unused?
 	int tag;
-
 	char* icon;
 } gitem_t;
 

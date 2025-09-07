@@ -33,7 +33,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_WSWORD_STD1,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_WSWORD_STD1,					// Player animation sequence to engage when powered.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.flags = IT_WEAPON,								// IT_XXX flags.
 		.tag = ITEM_WEAPON_SWORDSTAFF,					// Tag.
 		.icon = "icons/i_staff.m8",						// Icon name (char *).
@@ -48,7 +47,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_WFIREBALL,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_WFIREBALL,					// Player animation sequence to engage when powered.
-		.MaxActive  = -1,								// Max uses (-1 = infinite).
 		.quantity = AMMO_USE_FIREBALL,					// Ammo type/ammo use per shot.
 		.ammo = "Off-mana",								// Ammo name (char *).
 		.flags = (IT_WEAPON | IT_OFFENSE),				// IT_XXX flags.
@@ -66,7 +64,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_WHELL_GO,					// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_WHELL_GO,					// Player animation sequence to engage when powered.
-		.MaxActive  = -1,								// Max uses (-1 = infinite).
 		.count_width = 2,								// Number of digits to display.
 		.quantity = AMMO_USE_HELLSTAFF,					// Ammo type/ammo use per shot.
 		.ammo = "Hell-staff-ammo",						// Ammo name (char *).
@@ -86,7 +83,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_WBLAST,					// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_WARRAY,						// Player animation sequence to engage when powered.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = AMMO_USE_MAGICMISSILE,				// Ammo type/ammo use per shot.
 		.ammo = "Off-mana",								// Ammo name (char *).
 		.flags = (IT_WEAPON | IT_OFFENSE),				// IT_XXX flags.
@@ -104,7 +100,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_WRRBOW_GO,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_WRRBOW_GO,					// Player animation sequence to engage when powered.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.count_width = 2,								// Number of digits to display.
 		.quantity = AMMO_USE_REDRAIN,					// Ammo type/ammo use per shot.
 		.ammo = "Red-Rain-Arrows",						// Ammo name (char *).
@@ -124,7 +119,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_WFIREWALL,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_WFIREWALL,					// Player animation sequence to engage when powered.
-		.MaxActive  = -1,								// Max uses (-1 = infinite).
 		.quantity = AMMO_USE_FIREWALL,					// Ammo type/ammo use per shot.
 		.ammo = "Off-mana",								// Ammo name (char *).
 		.flags = (IT_WEAPON | IT_OFFENSE),				// IT_XXX flags.
@@ -142,7 +136,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_WPHBOW_GO,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_WPHBOW_GO,					// Player animation sequence to engage when powered.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.count_width = 2,								// Number of digits to display.
 		.quantity = AMMO_USE_PHOENIX,					// Ammo type/ammo use per shot.
 		.ammo = "Phoenix-Arrows",						// Ammo name (char *).
@@ -162,7 +155,6 @@ static gitem_t itemlist[] =
 		.maxs =PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_WSPHERE_GO,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_WSPHERE_GO,					// Player animation sequence to engage when powered.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = AMMO_USE_SPHERE,					// Ammo type/ammo use per shot.
 		.ammo = "Off-mana",								// Ammo name (char *).
 		.flags = (IT_WEAPON | IT_OFFENSE),				// IT_XXX flags.
@@ -181,7 +173,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_WRIPPER,					// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_WBIGBALL,					// Player animation sequence to engage when powered.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = AMMO_USE_MACEBALL,					// Ammo type/ammo use per shot.
 		.ammo = "Off-mana",								// Ammo name (char *).
 		.flags = (IT_WEAPON | IT_OFFENSE),				// IT_XXX flags.
@@ -204,7 +195,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_SPELL_DEF,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_SPELL_DEF,					// Player animation sequence to engage when powered.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = MANA_USE_POWERUP,					// Ammo type/ammo use per shot.
 		.ammo = "Def-mana",								// Ammo name (char *).
 		.flags = IT_DEFENSE,							// IT_XXX flags.
@@ -223,7 +213,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_SPELL_DEF,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_SPELL_DEF,					// Player animation sequence to engage when powered.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = MANA_USE_RING,						// Ammo type/ammo use per shot.
 		.ammo = "Def-mana",								// Ammo name (char *).
 		.flags = IT_DEFENSE,							// IT_XXX flags.
@@ -242,7 +231,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_SPELL_DEF,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_SPELL_DEF,					// Player animation sequence to engage when powered.
-		.MaxActive = 1,									// Max uses (-1 = infinite).
 		.quantity = MANA_USE_SHIELD,					// Ammo type/ammo use per shot.
 		.ammo = "Def-mana",								// Ammo name (char *).
 		.flags = IT_DEFENSE,							// IT_XXX flags.
@@ -261,7 +249,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_SPELL_DEF,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_SPELL_DEF,					// Player animation sequence to engage when powered.
-		.MaxActive = 1,									// Max uses (-1 = infinite).
 		.quantity = MANA_USE_TELEPORT,					// Ammo type/ammo use per shot.
 		.ammo = "Def-mana",								// Ammo name (char *).
 		.flags = IT_DEFENSE,							// IT_XXX flags.
@@ -280,7 +267,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_SPELL_DEF,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_SPELL_DEF,					// Player animation sequence to engage when powered.
-		.MaxActive = 1,									// Max uses (-1 = infinite).
 		.quantity = MANA_USE_POLYMORPH,					// Ammo type/ammo use per shot.
 		.ammo = "Def-mana",								// Ammo name (char *).
 		.flags = IT_DEFENSE,							// IT_XXX flags.
@@ -299,7 +285,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_SPELL_DEF,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_SPELL_DEF,					// Player animation sequence to engage when powered.
-		.MaxActive = 1,									// Max uses (-1 = infinite).
 		.quantity = MANA_USE_METEORS,					// Ammo type/ammo use per shot.
 		.ammo = "Def-mana",								// Ammo name (char *).
 		.flags = IT_DEFENSE,							// IT_XXX flags.
@@ -318,7 +303,6 @@ static gitem_t itemlist[] =
 		.pickup_sound = "player/picup.wav",				// Pickup sound (char *).
 		.mins = PICKUP_MIN,								// Bounding box mins.
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = HALF_OFF_MANA,						// Ammo type/ammo use per shot.
 		.flags = (IT_AMMO | IT_OFFENSE),				// IT_XXX flags.
 		.tag = ITEM_AMMO_MANA_OFFENSIVE_HALF,			// Tag.
@@ -331,7 +315,6 @@ static gitem_t itemlist[] =
 		.pickup_sound = "player/picup.wav",				// Pickup sound (char *).
 		.mins = PICKUP_MIN,								// Bounding box mins.
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = FULL_OFF_MANA,						// Ammo type/ammo use per shot.
 		.flags = (IT_AMMO | IT_OFFENSE),				// IT_XXX flags.
 		.tag = ITEM_AMMO_MANA_OFFENSIVE_FULL,			// Tag.
@@ -344,7 +327,6 @@ static gitem_t itemlist[] =
 		.pickup_sound = "player/picup.wav",				// Pickup sound (char *).
 		.mins = PICKUP_MIN,								// Bounding box mins.
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = HALF_DEF_MANA,						// Ammo type/ammo use per shot.
 		.flags = (IT_AMMO | IT_DEFENSE),				// IT_XXX flags.
 		.tag = ITEM_AMMO_MANA_DEFENSIVE_HALF,			// Tag.
@@ -357,7 +339,6 @@ static gitem_t itemlist[] =
 		.pickup_sound = "player/picup.wav",				// Pickup sound (char *).
 		.mins = PICKUP_MIN,								// Bounding box mins.
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = FULL_DEF_MANA,						// Ammo type/ammo use per shot.
 		.flags = (IT_AMMO | IT_DEFENSE),				// IT_XXX flags.
 		.tag = ITEM_AMMO_MANA_DEFENSIVE_FULL,			// Tag.
@@ -370,7 +351,6 @@ static gitem_t itemlist[] =
 		.pickup_sound = "player/picup.wav",				// Pickup sound (char *).
 		.mins = PICKUP_MIN,								// Bounding box mins.
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = HALF_COMBO_MANA,					// Ammo type/ammo use per shot.
 		.flags = IT_AMMO,								// IT_XXX flags.
 		.tag = ITEM_AMMO_MANA_COMBO_QUARTER,			// Tag.
@@ -383,7 +363,6 @@ static gitem_t itemlist[] =
 		.pickup_sound = "player/picup.wav",				// Pickup sound (char *).
 		.mins = PICKUP_MIN,								// Bounding box mins.
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = FULL_COMBO_MANA,					// Ammo type/ammo use per shot.
 		.flags = IT_AMMO,								// IT_XXX flags.
 		.tag = ITEM_AMMO_MANA_COMBO_HALF,				// Tag.
@@ -396,7 +375,6 @@ static gitem_t itemlist[] =
 		.pickup_sound = "player/picup.wav",				// Pickup sound (char *).
 		.mins = PICKUP_MIN,								// Bounding box mins.
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = AMMO_COUNT_REDRAINBOW,				// Ammo type/ammo use per shot.
 		.flags = (IT_AMMO | IT_OFFENSE),				// IT_XXX flags.
 		.tag = ITEM_AMMO_REDRAIN,						// Tag.
@@ -410,7 +388,6 @@ static gitem_t itemlist[] =
 		.pickup_sound = "player/picup.wav",				// Pickup sound (char *).
 		.mins = PICKUP_MIN,								// Bounding box mins.
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = AMMO_COUNT_PHOENIXBOW,				// Ammo type/ammo use per shot.
 		.flags = (IT_AMMO | IT_OFFENSE),				// IT_XXX flags.
 		.tag = ITEM_AMMO_PHOENIX,						// Tag.
@@ -424,7 +401,6 @@ static gitem_t itemlist[] =
 		.pickup_sound = "player/picup.wav",				// Pickup sound (char *).
 		.mins = PICKUP_MIN,								// Bounding box mins.
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = AMMO_COUNT_HELLSTAFF,				// Ammo type/ammo use per shot.
 		.flags = (IT_AMMO | IT_OFFENSE),				// IT_XXX flags.
 		.tag = ITEM_AMMO_HELLSTAFF,						// Tag.
@@ -443,7 +419,6 @@ static gitem_t itemlist[] =
 		//.world_model = "models/items/health/healthsmall/tris.fm", // World model (char *). //mxd. Unused.
 		.mins = PICKUP_MIN,								// Bounding box mins.
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
-		.MaxActive = -1,								// Max uses (-1 = infinite).
 		.quantity = 10,									// Ammo type/ammo use per shot.
 		.flags = (IT_HEALTH | EF_ALWAYS_ADD_EFFECTS), 	// IT_XXX flags.
 		.tag = ITEM_HEALTH1,							// Tag. //mxd. MODEL_HEALTH1 in original logic.
@@ -739,7 +714,6 @@ static gitem_t itemlist[] =
 		.maxs = PICKUP_MAX,								// Bounding box maxs.
 		.playeranimseq = ASEQ_SPELL_DEF,				// Player animation sequence to engage when used.
 		.altanimseq = ASEQ_SPELL_DEF,					// Player animation sequence to engage when powered
-		.MaxActive = 1,									// Max uses (-1 = infinite).
 		.quantity = MANA_USE_TORNADO,					// Ammo type/ammo use per shot.
 		.ammo = "Def-mana",								// Ammo name (char *).
 		.flags = IT_DEFENSE,							// IT_XXX flags.
