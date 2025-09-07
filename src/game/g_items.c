@@ -432,8 +432,8 @@ edict_t* Drop_Item(edict_t* ent, gitem_t* item)
 	dropped->spawnflags = DROPPED_ITEM;
 	dropped->s.effects = item->world_model_flags;
 	dropped->s.renderfx = RF_GLOW;
-	VectorSet(dropped->mins, -15.0f, -15.0f, -15.0f);
-	VectorSet(dropped->maxs,  15.0f,  15.0f,  15.0f);
+	VectorSet(dropped->mins, -15.0f, -15.0f, -15.0f); //TODO: SpawnItem() uses different mins.
+	VectorSet(dropped->maxs,  15.0f,  15.0f,  15.0f); //TODO: SpawnItem() uses different maxs.
 	gi.setmodel(dropped, dropped->item->world_model);
 	dropped->solid = SOLID_TRIGGER;
 	dropped->movetype = PHYSICSTYPE_NONE;
@@ -668,7 +668,7 @@ void SpawnItem(edict_t* ent, gitem_t* item)
 	}
 
 	// FIXME: Until all objects have bounding boxes, default to these vals.
-	if (Vec3IsZero(ent->mins))
+	if (Vec3IsZero(ent->mins)) //TODO: set in itemlist[] instead, use above logic in all cases?
 	{
 		VectorSet(ent->mins, -10.0f, -10.0f, -10.0f);
 		VectorSet(ent->maxs,  10.0f,  10.0f,  10.0f);
