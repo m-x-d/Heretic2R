@@ -15,6 +15,7 @@
 #define NUM_DEFENSE_PICKUP_SPARKS	4
 #define SPARK_TRAIL_DELAY			100
 #define SPARK_RADIUS				10.0f
+#define ANIMATION_SPEED				50 //mxd
 
 static struct model_s* defense_models[NUM_DEFENSE_PICKUPS];
 static struct model_s* defense_sparks[NUM_DEFENSE_PICKUPS]; //mxd
@@ -29,30 +30,33 @@ void PreCacheItemDefense(void)
 	defense_models[5] = fxi.RegisterModel("models/items/defense/tornado/tris.fm");			// ITEM_DEFENSE_TORNADO
 
 	defense_sparks[0] = fxi.RegisterModel("sprites/spells/spark_cyan.sp2");					// Cyan spark.
-	defense_sparks[1] = fxi.RegisterModel("sprites/spells/meteorbarrier.sp2");				// Meteor cloud.
-	defense_sparks[2] = fxi.RegisterModel("sprites/spells/spark_green.sp2");				// Green spark.
-	defense_sparks[3] = fxi.RegisterModel("sprites/spells/spark_red.sp2");					// Red spark.
+	defense_sparks[1] = fxi.RegisterModel("sprites/spells/spark_green.sp2");				// Green spark. //mxd. meteorbarrier.sp2 in original logic. Visually indistinguishable from spark_green.sp2, but requires custom scaling.
+	defense_sparks[2] = fxi.RegisterModel("sprites/spells/spark_yellow.sp2");				// Yellow spark. //mxd. spark_green.sp2 in original logic. Changed to differentiate from ITEM_DEFENSE_METEORBARRIER fx.
+	defense_sparks[3] = fxi.RegisterModel("sprites/spells/spark_red.sp2");					// Red spark. //mxd. spark_red.sp2 in original logic.
 	defense_sparks[4] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");					// Blue spark.
-	defense_sparks[5] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");					// Also blue spark.
+	defense_sparks[5] = fxi.RegisterModel("sprites/spells/spark_ind.sp2");					// Indigo spark. //mxd. spark_blue.sp2 in original logic. Changed to differentiate from ITEM_DEFENSE_SHIELD fx.
 }
 
-static qboolean DefensePickupSparkThink(struct client_entity_s* shield, centity_t* owner) //mxd. FXEggSparkThink in original version.
+static qboolean DefensePickupSparkThink(struct client_entity_s* self, centity_t* owner) //mxd. FXEggSparkThink in original version.
 {
-	vec3_t origin;
-	VectorCopy(shield->origin, origin);
-	origin[2] = shield->origin[2] + cosf(shield->d_scale2) * BOB_HEIGHT;
+	const int step = fxi.cl->time - self->nextThinkTime; //mxd
+	const float lerp = (float)step / ANIMATION_SPEED; //mxd
 
-	shield->d_scale2 += BOB_SPEED;
+	vec3_t origin;
+	VectorCopy(owner->current.origin, origin); //mxd. VectorCopy(self->origin, origin) in original logic. Changed, so sparks move in synch with pickup model.
+	origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
+	self->SpawnData += BOB_SPEED * lerp;
 
 	// Update the angle of the spark.
-	VectorMA(shield->direction, (float)(fxi.cl->time - shield->lastThinkTime) / 1000.0f, shield->velocity2, shield->direction);
+	VectorMA(self->direction, (float)step / 1000.0f, self->velocity2, self->direction);
 
 	// Update the position of the spark.
 	vec3_t angvect;
-	AngleVectors(shield->direction, angvect, NULL, NULL);
-	VectorMA(origin, shield->radius, angvect, shield->r.origin);
+	AngleVectors(self->direction, angvect, NULL, NULL);
+	VectorMA(origin, self->radius, angvect, self->r.origin);
 
-	shield->lastThinkTime = fxi.cl->time;
+	if (self->SpawnInfo == ITEM_DEFENSE_METEORBARRIER) //mxd. Offset to better match with pickup model center.
+		self->r.origin[2] += 8.0f;
 
 	return true;
 }
@@ -60,10 +64,13 @@ static qboolean DefensePickupSparkThink(struct client_entity_s* shield, centity_
 static qboolean DefensePickupThink(struct client_entity_s* self, centity_t* owner)
 {
 	// Rotate and bob.
-	self->r.angles[YAW] += ANGLE_5;
+	const int step = fxi.cl->time - self->nextThinkTime; //mxd
+	const float lerp = (float)step / ANIMATION_SPEED; //mxd
+
+	self->r.angles[YAW] += ANGLE_5 * lerp;
 	VectorCopy(owner->current.origin, self->r.origin);
 	self->r.origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
-	self->SpawnData += BOB_SPEED;
+	self->SpawnData += BOB_SPEED * lerp;
 
 	return true;
 }
@@ -76,18 +83,17 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	assert(tag < NUM_DEFENSE_PICKUPS); //mxd. A check in original version.
 
 	flags &= ~CEF_OWNERS_ORIGIN;
-	flags |= CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED;
-	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 50);
+	flags |= (CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED);
+	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 0); //mxd. next_think_time 50 in original logic. Set to 0, so self->nextThinkTime holds previous update time in AmmoPickupThink()...
 
 	VectorCopy(ce->r.origin, ce->origin);
-	ce->r.flags = RF_TRANSLUCENT | RF_GLOW;
+	ce->radius = 10.0f;
 	ce->r.model = &defense_models[tag];
+	ce->r.flags = RF_GLOW; //mxd. Remove RF_TRANSLUCENT flag and 0.8 alpha (looks broken with those enabled).
 
 	if (tag == ITEM_DEFENSE_TELEPORT)
 		ce->r.scale = 1.25f;
 
-	ce->radius = 10.0f;
-	ce->alpha = 0.8f;
 	ce->Update = DefensePickupThink;
 
 	AddEffect(owner, ce);
@@ -95,16 +101,16 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	// Add spinning electrical sparks.
 	for (int i = 0; i < NUM_DEFENSE_PICKUP_SPARKS; i++)
 	{
-		client_entity_t* spark = ClientEntity_new(type, flags, origin, 0, 50);
-		spark->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_VIEWSTATUSCHANGED;
-		spark->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		client_entity_t* spark = ClientEntity_new(type, flags, origin, NULL, 0); //mxd. next_think_time 50 in original logic. Set to 0, so self->nextThinkTime holds previous update time in AmmoPickupThink()...
+
+		spark->flags |= (CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_VIEWSTATUSCHANGED);
+		spark->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		spark->r.model = &defense_sparks[tag];
-		spark->r.scale = (tag == ITEM_DEFENSE_METEORBARRIER ? 0.2f : 0.8f);
-		spark->radius = SPARK_RADIUS;
+		spark->r.scale = flrand(0.45f, 0.8f); //mxd. Randomize scale a bit.
+		spark->radius = (tag == ITEM_DEFENSE_TORNADO ? SPARK_RADIUS * 1.4f : SPARK_RADIUS); //mxd. Bigger radius for ITEM_DEFENSE_TORNADO, so particles don't fly inside pickup model.
 		spark->color = color_white; //mxd
-		spark->alpha = 0.1f;
-		spark->d_alpha = 0.5f;
-		spark->SpawnData = tag;
+		spark->alpha = 0.65f; //mxd. 0.1 in original logic, but with d_alpha 0.5.
+		spark->SpawnInfo = tag;
 
 		spark->Update = DefensePickupSparkThink;
 		VectorCopy(spark->r.origin, spark->origin);
