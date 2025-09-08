@@ -260,4 +260,7 @@ void SpellCastBlueRing(edict_t* caster)
 
 	// Fire off a special effect.
 	gi.CreateEffect(&caster->s, FX_SPELL_BLUERING, CEF_OWNERS_ORIGIN, NULL, "");
+
+	//mxd. Play the reflect sound (unused in original logic).
+	gi.sound(caster, CHAN_VOICE, gi.soundindex("weapons/reflect.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
