@@ -129,6 +129,24 @@ static client_particle_t* InitComboManaParticle(const qboolean is_quarter) //mxd
 	return p;
 }
 
+static client_particle_t* InitHellstaffAmmoParticle(void) //mxd
+{
+	if (irand(0, 2))
+		return NULL;
+
+	paletteRGBA_t color;
+	COLOUR_SET(color, (byte)irand(210, 255), 0, 0);
+
+	// Spawn particle.
+	client_particle_t* p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 600);
+
+	VectorSet(p->origin, flrand(-MANA_RADIUS_HALF, MANA_RADIUS_HALF), flrand(-MANA_RADIUS_HALF, MANA_RADIUS_HALF), 0.0f);
+	VectorSet(p->velocity, flrand(-4.0f, 4.0f), flrand(-4.0f, 4.0f), flrand(-30.0f, -50.0f));
+	p->acceleration[2] = flrand(-10.0f, -20.0f);
+
+	return p;
+}
+
 static qboolean AmmoPickupThink(struct client_entity_s* self, centity_t* owner)
 {
 	// Rotate and bob.
@@ -166,8 +184,12 @@ static qboolean AmmoPickupThink(struct client_entity_s* self, centity_t* owner)
 			p = InitComboManaParticle(self->SpawnInfo == ITEM_AMMO_MANA_COMBO_QUARTER);
 			break;
 
+		case ITEM_AMMO_HELLSTAFF: //mxd. Add hellstaff ammo particles, because why not!
+			p = InitHellstaffAmmoParticle();
+			break;
+
 		default: //mxd
-			return true; // No particles for ITEM_AMMO_HELLSTAFF, ITEM_AMMO_REDRAIN and ITEM_AMMO_PHOENIX.
+			return true; // No particles for ITEM_AMMO_REDRAIN and ITEM_AMMO_PHOENIX.
 	}
 
 	// Add particle?
