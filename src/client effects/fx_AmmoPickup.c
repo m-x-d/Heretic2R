@@ -10,10 +10,11 @@
 #include "Random.h"
 #include "g_items.h"
 
-#define BOB_HEIGHT		6.0f
-#define BOB_SPEED		ANGLE_10
-#define MANA_RADIUS		6.0f
-#define ANIMATION_SPEED	50 //mxd
+#define BOB_HEIGHT			6.0f
+#define BOB_SPEED			ANGLE_10
+#define MANA_RADIUS_FULL	6.0f
+#define MANA_RADIUS_HALF	2.0f //mxd
+#define ANIMATION_SPEED		50 //mxd
 
 static struct model_s* ammo_models[9];
 
@@ -30,10 +31,106 @@ void PreCacheItemAmmo(void)
 	ammo_models[8] = fxi.RegisterModel("models/items/ammo/phoenix/tris.fm");	// ITEM_AMMO_PHOENIX
 }
 
-static qboolean AmmoPickupThink(struct client_entity_s* self, centity_t* owner)
+static client_particle_t* InitDefensiveManaParticle(const qboolean is_half) //mxd. Split into separate function.
 {
+	if (is_half && irand(0, 2)) //mxd
+		return NULL;
+
+	paletteRGBA_t color;
+	color.g = (byte)irand(90, 120); //mxd. Changed color to more light-blueish.
+	color.b = (byte)irand(210, 255);
+	color.r = color.g - 30;
+	color.a = 255;
+
+	// Spawn particle.
+	client_particle_t* p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 600);
+
+	const float radius = (is_half ? MANA_RADIUS_HALF : MANA_RADIUS_FULL);
+	VectorSet(p->origin, flrand(-radius, radius), flrand(-radius, radius), 0.0f);
+
+	VectorSet(p->velocity, 0.0f, 0.0f, flrand(20.0f, 40.0f));
+	p->acceleration[2] = 20.0f;
+
+	if (is_half)
+	{
+		Vec3ScaleAssign(0.75f, p->velocity);
+		p->acceleration[2] *= 0.75f;
+	}
+
+	return p;
+}
+
+static client_particle_t* InitOffensiveManaParticle(const qboolean is_half) //mxd. Split into separate function.
+{
+	if (is_half && irand(0, 2)) //mxd
+		return NULL;
+
+	paletteRGBA_t color;
+	color.r = (byte)irand(50, 90);
+	color.g = (byte)irand(210, 255);
+	color.b = color.r;
+	color.a = 255;
+
+	// Spawn particle.
+	client_particle_t* p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 600);
+
+	const float radius = (is_half ? MANA_RADIUS_HALF : MANA_RADIUS_FULL);
+	VectorSet(p->origin, flrand(-radius, radius), flrand(-radius, radius), 0.0f);
+
+	VectorSet(p->velocity, 0.0f, 0.0f, flrand(20.0f, 40.0f));
+	p->acceleration[2] = 20.0f;
+
+	if (is_half)
+	{
+		Vec3ScaleAssign(0.75f, p->velocity);
+		p->acceleration[2] *= 0.75f;
+	}
+
+	return p;
+}
+
+static client_particle_t* InitComboManaParticle(const qboolean is_quarter) //mxd. Split into separate function.
+{
+	if (is_quarter && irand(0, 2)) //mxd
+		return NULL;
+
 	paletteRGBA_t color;
 
+	if (irand(0, 1))
+	{
+		color.g = (byte)irand(90, 120); //mxd. Changed color to more light-blueish.
+		color.b = (byte)irand(210, 255);
+		color.r = color.g - 30;
+	}
+	else
+	{
+		color.r = (byte)irand(50, 90);
+		color.g = (byte)irand(210, 255);
+		color.b = color.r;
+	}
+
+	color.a = 255;
+
+	// Spawn particle.
+	client_particle_t* p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 600);
+
+	const float radius = (is_quarter ? MANA_RADIUS_HALF : MANA_RADIUS_FULL);
+	VectorSet(p->origin, flrand(-radius, radius), flrand(-radius, radius), 0.0f);
+
+	VectorSet(p->velocity, 0.0f, 0.0f, flrand(20.0f, 40.0f));
+	p->acceleration[2] = 20.0f;
+
+	if (is_quarter)
+	{
+		Vec3ScaleAssign(0.75f, p->velocity);
+		p->acceleration[2] *= 0.75f;
+	}
+
+	return p;
+}
+
+static qboolean AmmoPickupThink(struct client_entity_s* self, centity_t* owner)
+{
 	// Rotate and bob.
 	const int step = fxi.cl->time - self->nextThinkTime; //mxd
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
@@ -50,50 +147,32 @@ static qboolean AmmoPickupThink(struct client_entity_s* self, centity_t* owner)
 
 	self->LifeTime %= ANIMATION_SPEED;
 
+	client_particle_t* p;
+
 	switch (self->SpawnInfo)
 	{
-		case ITEM_AMMO_MANA_DEFENSIVE_HALF: //TODO: smaller spawn radius?
+		case ITEM_AMMO_MANA_DEFENSIVE_HALF:
 		case ITEM_AMMO_MANA_DEFENSIVE_FULL:
-			color.g = (byte)irand(50, 90);
-			color.b = (byte)irand(210, 255);
-			color.r = color.g;
+			p = InitDefensiveManaParticle(self->SpawnInfo == ITEM_AMMO_MANA_DEFENSIVE_HALF);
 			break;
 
-		case ITEM_AMMO_MANA_OFFENSIVE_HALF: //TODO: smaller spawn radius?
+		case ITEM_AMMO_MANA_OFFENSIVE_HALF:
 		case ITEM_AMMO_MANA_OFFENSIVE_FULL:
-			color.r = (byte)irand(50, 90);
-			color.g = (byte)irand(210, 255);
-			color.b = color.r;
+			p = InitOffensiveManaParticle(self->SpawnInfo == ITEM_AMMO_MANA_OFFENSIVE_HALF);
 			break;
 
 		case ITEM_AMMO_MANA_COMBO_QUARTER: //TODO: spawn green particles from center, blue from "horns"?
 		case ITEM_AMMO_MANA_COMBO_HALF:
-			if (irand(0, 1))
-			{
-				color.g = (byte)irand(50, 90);
-				color.b = (byte)irand(210, 255);
-				color.r = color.g;
-			}
-			else
-			{
-				color.r = (byte)irand(50, 90);
-				color.g = (byte)irand(210, 255);
-				color.b = color.r;
-			}
+			p = InitComboManaParticle(self->SpawnInfo == ITEM_AMMO_MANA_COMBO_QUARTER);
 			break;
 
 		default: //mxd
 			return true; // No particles for ITEM_AMMO_HELLSTAFF, ITEM_AMMO_REDRAIN and ITEM_AMMO_PHOENIX.
 	}
 
-	// Spawn particles.
-	color.a = 255;
-	client_particle_t* p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 600);
-
-	VectorSet(p->origin, flrand(-MANA_RADIUS, MANA_RADIUS), flrand(-MANA_RADIUS, MANA_RADIUS), 0.0f);
-	VectorSet(p->velocity, 0.0f, 0.0f, flrand(20.0f, 40.0f));
-	p->acceleration[2] = 20.0f;
-	AddParticleToList(self, p);
+	// Add particle?
+	if (p != NULL)
+		AddParticleToList(self, p);
 
 	return true;
 }
