@@ -474,7 +474,7 @@ static void CL_UpdateClientAngles(void)
 	static qboolean st_unknown5;
 	static qboolean st_unknown6;
 
-	const qboolean do_lookaround = (in_lookaround.state & KS_DOWN);
+	const qboolean do_lookaround = ((in_lookaround.state & KS_DOWN) != 0);
 
 	// Look around key pressed?
 	if (do_lookaround)
@@ -841,7 +841,7 @@ static void CL_FinishMove(usercmd_t* cmd) // Called on packetframe.
 	in_action.state &= ~KS_IMPULSE_DOWN;
 
 	// Run.
-	const qboolean speed_state = (in_speed.state & (KS_DOWN | KS_IMPULSE_DOWN));
+	const qboolean speed_state = ((in_speed.state & (KS_DOWN | KS_IMPULSE_DOWN)) != 0);
 	const qboolean run = (int)cl_run->value;
 	if ((speed_state || run) && ((speed_state && !run) || speed_state == (cmd->forwardmove < -10)))
 		cmd->buttons |= BUTTON_RUN;
