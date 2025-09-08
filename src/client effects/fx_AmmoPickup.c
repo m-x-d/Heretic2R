@@ -13,6 +13,7 @@
 #define BOB_HEIGHT		6.0f
 #define BOB_SPEED		ANGLE_10
 #define MANA_RADIUS		6.0f
+#define ANIMATION_SPEED	50 //mxd
 
 static struct model_s* ammo_models[9];
 
@@ -34,29 +35,39 @@ static qboolean AmmoPickupThink(struct client_entity_s* self, centity_t* owner)
 	paletteRGBA_t color;
 
 	// Rotate and bob.
-	self->r.angles[YAW] += ANGLE_5;
+	const int step = fxi.cl->time - self->nextThinkTime; //mxd
+	const float lerp = (float)step / ANIMATION_SPEED; //mxd
+	self->LifeTime += step; //mxd
+
+	self->r.angles[YAW] += ANGLE_5 * lerp;
 	VectorCopy(owner->current.origin, self->r.origin);
 	self->r.origin[2] += (cosf(self->SpawnData) * BOB_HEIGHT);
-	self->SpawnData += BOB_SPEED;
+	self->SpawnData += BOB_SPEED * lerp;
+
+	//mxd. Spawn particles at original rate.
+	if (self->LifeTime < ANIMATION_SPEED)
+		return true;
+
+	self->LifeTime %= ANIMATION_SPEED;
 
 	switch (self->SpawnInfo)
 	{
-		case 0:
-		case 1:
+		case ITEM_AMMO_MANA_DEFENSIVE_HALF: //TODO: smaller spawn radius?
+		case ITEM_AMMO_MANA_DEFENSIVE_FULL:
 			color.g = (byte)irand(50, 90);
 			color.b = (byte)irand(210, 255);
 			color.r = color.g;
 			break;
 
-		case 2:
-		case 3:
+		case ITEM_AMMO_MANA_OFFENSIVE_HALF: //TODO: smaller spawn radius?
+		case ITEM_AMMO_MANA_OFFENSIVE_FULL:
 			color.r = (byte)irand(50, 90);
 			color.g = (byte)irand(210, 255);
 			color.b = color.r;
 			break;
 
-		case 4:
-		case 5:
+		case ITEM_AMMO_MANA_COMBO_QUARTER: //TODO: spawn green particles from center, blue from "horns"?
+		case ITEM_AMMO_MANA_COMBO_HALF:
 			if (irand(0, 1))
 			{
 				color.g = (byte)irand(50, 90);
@@ -95,12 +106,11 @@ void FXAmmoPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	flags &= ~CEF_OWNERS_ORIGIN;
 	flags |= CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED;
-	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 50);
+	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 0); //mxd. next_think_time 50 in original logic. Set to 0, so self->nextThinkTime holds previous update time in AmmoPickupThink()...
 
 	ce->radius = 10.0f;
 	ce->r.model = &ammo_models[tag];
-	ce->r.flags = RF_TRANSLUCENT | RF_GLOW;
-	ce->alpha = 0.8f;
+	ce->r.flags = RF_GLOW; //mxd. Remove RF_TRANSLUCENT flag and 0.8 alpha (looks broken with those enabled).
 	ce->SpawnInfo = tag;
 
 	if (tag == ITEM_AMMO_MANA_DEFENSIVE_HALF || tag == ITEM_AMMO_MANA_DEFENSIVE_FULL) // Blue stuff.

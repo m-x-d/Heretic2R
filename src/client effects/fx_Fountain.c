@@ -99,7 +99,6 @@ static qboolean FountainParticleSpawner(client_entity_t* spawner, centity_t* own
 		const float accel = GetGravity();
 		const float dist = spawner->SpawnData - origin[2];
 		time = (int)(GetTimeToReachDistance(velocity[2], fabsf(accel), fabsf(dist))); //BUGFIX: mxd. GetTimeToReachDistance() expects positive acceleration and distance...
-		time = max(MIN_UPDATE_TIME, time); //BUGFIX: mxd. Avoid triggering assert in UpdateEffects()...
 
 		drop = ClientParticle_new((int)(PART_32x32_WFALL | PFL_NEARCULL), spawner->color, time);
 
