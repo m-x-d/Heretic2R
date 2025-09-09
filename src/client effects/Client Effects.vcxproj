@@ -57,7 +57,7 @@
     <ClCompile Include="fx_objects.c" />
     <ClCompile Include="fx_Phoenix.c" />
     <ClCompile Include="fx_pickup.c" />
-    <ClCompile Include="fx_pickuppuzzle.c" />
+    <ClCompile Include="fx_PuzzlePickup.c" />
     <ClCompile Include="fx_PlagueElfSpells.c" />
     <ClCompile Include="fx_PlagueMist.c" />
     <ClCompile Include="fx_PlagueMistExplode.c" />

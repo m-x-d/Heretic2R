@@ -13,6 +13,9 @@
     <Filter Include="src\Generic Effects">
       <UniqueIdentifier>{52bcf2bc-85f7-412f-9c13-f09052b8e30e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Effects\Pickups">
+      <UniqueIdentifier>{447788bb-52b8-4654-8978-e1025628b3db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ce_DefaultMessageHandler.c">
@@ -72,9 +75,6 @@
     <ClCompile Include="TestEffect.c">
       <Filter>src\Generic Effects</Filter>
     </ClCompile>
-    <ClCompile Include="fx_AmmoPickup.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
     <ClCompile Include="fx_animate.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
@@ -97,9 +97,6 @@
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_debris.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_DefensePickup.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_Dripper.c">
@@ -127,9 +124,6 @@
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_halo.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_HealthPickup.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_HellStaff.c">
@@ -175,12 +169,6 @@
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_Phoenix.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_pickup.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_pickuppuzzle.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_PlagueElfSpells.c">
@@ -273,14 +261,29 @@
     <ClCompile Include="fx_waterwake.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="fx_WeaponPickup.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
     <ClCompile Include="fx_StaffHit.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_Torch.c">
       <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_AmmoPickup.c">
+      <Filter>src\Effects\Pickups</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_DefensePickup.c">
+      <Filter>src\Effects\Pickups</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_HealthPickup.c">
+      <Filter>src\Effects\Pickups</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_pickup.c">
+      <Filter>src\Effects\Pickups</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_PuzzlePickup.c">
+      <Filter>src\Effects\Pickups</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_WeaponPickup.c">
+      <Filter>src\Effects\Pickups</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
