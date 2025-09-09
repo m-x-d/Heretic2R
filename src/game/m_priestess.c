@@ -1055,9 +1055,7 @@ void HighPriestessStaticsInit(void)
 // pain_target		- Monsters will fire this target the first time it gets hurt (only once).
 void SP_monster_high_priestess(edict_t* self)
 {
-	if (DEATHMATCH && !(SV_CHEATS & self_spawn))
-		return;
-
+	// Generic Monster Initialization.
 	if (!M_WalkmonsterStart(self)) // Failed initialization.
 		return;
 

@@ -2225,13 +2225,7 @@ void TBeastStaticsInit(void)
 void SP_monster_trial_beast(edict_t* self)
 {
 	// Generic Monster Initialization.
-	if (DEATHMATCH && !(SV_CHEATS & self_spawn))
-	{
-		G_FreeEdict(self);
-		return;
-	}
-
-	if (!M_WalkmonsterStart(self)) // Incomplete initialization.
+	if (!M_WalkmonsterStart(self)) // Failed initialization.
 		return;
 
 	self->msgHandler = DefaultMsgHandler;

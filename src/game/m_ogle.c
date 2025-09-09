@@ -1479,22 +1479,18 @@ void OgleStaticsInit(void)
 // NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1.
 void SP_monster_ogle(edict_t* self)
 {
-	if (DEATHMATCH && !(SV_CHEATS & self_spawn))
-	{
-		G_FreeEdict(self);
+	// Generic Monster Initialization.
+	if (!M_WalkmonsterStart(self)) // Failed initialization. //mxd. M_Start -> M_WalkmonsterStart.
 		return;
-	}
-
-	self->monsterinfo.ogleflags = self->spawnflags;
-	self->spawnflags = 0; // Don't want incorrect handling due to weird ogle spawnflags!
-
-	if (!M_WalkmonsterStart(self)) //mxd. M_Start -> M_WalkmonsterStart.
-		return; // Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;
 	self->monsterinfo.alert = NULL; // Can't be woken up.
 	self->monsterinfo.dismember = OgleDismember;
 	self->monsterinfo.otherenemyname = "monster_rat";
+
+	// Don't want incorrect handling due to weird ogle spawnflags!
+	self->monsterinfo.ogleflags = self->spawnflags;
+	self->spawnflags = 0; 
 
 	if (self->health == 0)
 		self->health = OGLE_HEALTH;
