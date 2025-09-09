@@ -668,18 +668,9 @@ void SpawnItem(edict_t* ent, gitem_t* item)
 		ent->delay = RESPAWN_TIME_MISC;
 	}
 
-	if (item->flags == IT_PUZZLE)
-	{
-		VectorCopy(ent->item->mins, ent->mins);
-		VectorCopy(ent->item->maxs, ent->maxs);
-	}
-
-	// FIXME: Until all objects have bounding boxes, default to these vals.
-	if (Vec3IsZero(ent->mins)) //TODO: set in itemlist[] instead, use above logic in all cases?
-	{
-		VectorSet(ent->mins, -10.0f, -10.0f, -10.0f);
-		VectorSet(ent->maxs,  10.0f,  10.0f,  10.0f);
-	}
+	//mxd. Always use ent->item->mins/maxs (original logic uses these for items with IT_PUZZLE flag only).
+	VectorCopy(ent->item->mins, ent->mins);
+	VectorCopy(ent->item->maxs, ent->maxs);
 }
 
 gitem_t* IsItem(const edict_t* ent)

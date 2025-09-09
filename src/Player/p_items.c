@@ -11,11 +11,16 @@
 #include "g_items.h"
 #include "g_itemstats.h"
 #include "cl_strings.h"
+#include "Vector.h"
 
 PLAYER_API int p_num_items = 0;
 PLAYER_API gitem_t* p_itemlist = NULL;
 
 #pragma region ========================== ITEMS LIST ==========================
+
+//mxd. Originally defined in p_types.h
+#define PICKUP_MIN	{ -10.0f, -10.0f, -10.0f } //mxd. Originally {0, 0, 0}.
+#define PICKUP_MAX	{  10.0f,  10.0f,  10.0f } //mxd. Originally {0, 0, 0}.
 
 // The complete list of all items that may be picked up / dropped / used by players.
 static gitem_t itemlist[] =
@@ -731,6 +736,13 @@ PLAYER_API void InitItems(void)
 {
 	p_itemlist = itemlist;
 	p_num_items = (sizeof(itemlist) / sizeof(itemlist[0])) - 1; //mxd. Last item is NULL end of list marker.
+
+#if _DEBUG
+	//mxd. Make sure mins/maxs are valid.
+	gitem_t* item = &itemlist[1];
+	for (int i = 1; i < p_num_items; i++, item++) // Skip 1-st item (le NULL).
+		assert(Vec3NotZero(item->mins) && Vec3NotZero(item->maxs));
+#endif
 }
 
 PLAYER_API int GetItemIndex(const gitem_t* item)
