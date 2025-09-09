@@ -423,8 +423,15 @@ static void DropItemMakeTouchable(edict_t* ent) //mxd. Named 'drop_make_touchabl
 	}
 }
 
-edict_t* Drop_Item(edict_t* ent, gitem_t* item)
+edict_t* Drop_Item(edict_t* ent, gitem_t* item) //TODO: return value never used.
 {
+	//BUGFIX: mxd. Avoid empty world_models...
+	if (item->world_model == NULL || item->world_model[0] == 0)
+	{
+		gi.dprintf("'%s' at %s tried to drop '%s' without world_model!\n", ent->classname, vtos(ent->s.origin), item->classname);
+		return NULL;
+	}
+
 	edict_t* dropped = G_Spawn();
 
 	dropped->classname = item->classname;
@@ -447,7 +454,7 @@ edict_t* Drop_Item(edict_t* ent, gitem_t* item)
 	{
 		AngleVectors(ent->client->v_angle, forward, right, NULL);
 
-		vec3_t offset = { 24.0f, 0.0f, -16.0f };
+		const vec3_t offset = { 24.0f, 0.0f, -16.0f };
 		G_ProjectSource(ent->s.origin, offset, forward, right, dropped->s.origin);
 
 		trace_t	trace;
