@@ -849,7 +849,7 @@ static void Cmd_SpawnEntity_f(const edict_t* ent)
 
 	vec3_t forward;
 	AngleVectors(ent->s.angles, forward, NULL, NULL);
-	VectorScale(forward, 100.0f, forward);
+	Vec3ScaleAssign(100.0f, forward);
 	VectorAdd(ent->s.origin, forward, new_ent->s.origin);
 
 	VectorCopy(ent->s.angles, new_ent->s.angles);
