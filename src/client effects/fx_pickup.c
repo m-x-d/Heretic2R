@@ -21,12 +21,15 @@ void FXPickup(centity_t* owner, const int type, const int flags, vec3_t origin)
 	halo->r.model = &pickup_model;
 	halo->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	halo->r.frame = 1;
+
 	halo->r.scale = 0.4f;
 	halo->d_scale = 1.0f;
-	halo->d_alpha = 2.5f;
+
 	halo->alpha = 0.8f; //mxd. Was also set to 0.75 above in original version.
-	halo->color.c = 0xc0ffffff;
+	halo->d_alpha = -2.5f; //mxd. 2.5 in original logic. Flipped for fade-out effect.
+
 	halo->r.origin[2] += 8.0f;
+	halo->acceleration[2] = 180.0f; //mxd
 
 	AddEffect(NULL, halo);
 }
