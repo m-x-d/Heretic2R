@@ -11,8 +11,8 @@
 // (lights, particles, frame animations) and happen constantly on the given entity.
 // An entity that has effects will be sent to the client even if it has a zero index model.
 
-#define	EF_ROTATE				0x00000001	// Rotate the entity's model (used for bonus items).
-#define EF_CL_PHYS_ALWAYS_BOUNCE 0x00000002
+//#define	EF_ROTATE				0x00000001	// Rotate the entity's model (used for bonus items). //mxd. Unused.
+//#define EF_CL_PHYS_ALWAYS_BOUNCE 0x00000002 //mxd. Unused.
 #define EF_JOINTED				0x00000004
 #define EF_SWAPFRAME			0x00000008
 #define EF_DISABLE_ALL_CFX		0x00000010	// All effects linked to this entity will no longer be rendered, but will continue to think.
@@ -24,12 +24,10 @@
 
 #define EF_MARCUS_FLAG1			0x00000080	// Used for toggling various client effects.
 #define EF_CAMERA_NO_CLIP		0x00000100	// Client-side camera's LOS won't clip against any entities that have this flag set.
-#define EF_CAMERA_ONLY			0x00000200	// Client-side camera LOS traces will clip against any entities that have this flag set,
-											// but other traces won't.
+#define EF_CAMERA_ONLY			0x00000200	// Client-side camera LOS traces will clip against any entities that have this flag set, but other traces won't.
 
 #define EF_ALTCLIENTFX			0x00000400	// A message flag to send to the client effects, for user's purpose.
-#define EF_ALWAYS_ADD_EFFECTS	0x00000800	// Any effects attached to the entity will always be added to the view.
-											// This overrides EF_DISABLE_*_CFX
+#define EF_ALWAYS_ADD_EFFECTS	0x00000800	// Any effects attached to the entity will always be added to the view. This overrides EF_DISABLE_*_CFX
 
 #define EF_ON_FIRE				0x00001000	// Tells that the entity is on fire.
 #define EF_TRAILS_ENABLED		0x00002000	// The hand/staff trails enabled. If removed, the trails remove themselves.

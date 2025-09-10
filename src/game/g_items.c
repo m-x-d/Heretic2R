@@ -373,109 +373,27 @@ static qboolean Pickup_Health(const edict_t* ent, edict_t* other)
 
 #pragma region ========================== GENERIC PICKUP LOGIC ==========================
 
-static void Touch_Item(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf)
+// Precaches all data needed for a given item.
+// This will be called for each item spawned in a level, and for each item in each client's inventory.
+static void PrecacheItem(const gitem_t* item)
 {
-	// Only alive players can touch items.
-	if (strcmp(other->classname, "player") != 0 || other->health <= 0)
+	if (item == NULL)
 		return;
 
-	// Not a grabbable item or player can't hold it.
-	if (ent->item->pickup == NULL || !ent->item->pickup(ent, other))
-		return;
+	if (item->pickup_sound != NULL)
+		gi.soundindex(item->pickup_sound);
 
-	//mxd. Skip Pickup_Health() chicken check. Pickup_Health() already checks for chicken.
+	if (item->icon != NULL)
+		gi.imageindex(item->icon);
 
-	gi.sound(other, CHAN_ITEM, gi.soundindex(ent->item->pickup_sound), 1.0f, ATTN_NORM, 0.0f);
-	gi.CreateEffect(NULL, FX_PICKUP, 0, ent->s.origin, "");
-
-	G_UseTargets(ent, other);
-
-	// Don't remove weapon/defence/puzzle pickup when coop or dm with DF_WEAPONS_STAY flag.
-	if ((ent->item->pickup == Pickup_Weapon || ent->item->pickup == Pickup_Defense || ent->item->pickup == Pickup_Puzzle) && (COOP || (DEATHMATCH && (DMFLAGS & DF_WEAPONS_STAY))))
-		return;
-
-	if (ent->flags & FL_RESPAWN)
+	// Parse everything for its ammo.
+	if (item->ammo != NULL && item->ammo[0] != 0)
 	{
-		SetRespawn(ent); // The item should respawn.
+		const gitem_t* ammo = P_FindItem(item->ammo);
+
+		if (ammo != item)
+			PrecacheItem(ammo);
 	}
-	else
-	{
-		ent->solid = SOLID_NOT; // Going away for good, so make it noclipping.
-		gi.RemoveEffects(&ent->s, FX_REMOVE_EFFECTS); // Once picked up, the item is gone forever, so remove it's client effect(s).
-		G_SetToFree(ent); // The persistent part is removed from the server here.
-	}
-}
-
-static void DropItemTempTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'drop_temp_touch' in original logic.
-{
-	if (other != ent->owner)
-		Touch_Item(ent, other, plane, surf);
-}
-
-static void DropItemMakeTouchable(edict_t* ent) //mxd. Named 'drop_make_touchable' in original logic.
-{
-	ent->touch = Touch_Item;
-
-	if (DEATHMATCH)
-	{
-		ent->think = G_FreeEdict;
-		ent->nextthink = level.time + 29.0f;
-	}
-}
-
-edict_t* Drop_Item(edict_t* ent, gitem_t* item) //TODO: return value never used.
-{
-	//BUGFIX: mxd. Avoid empty world_models...
-	if (item->world_model == NULL || item->world_model[0] == 0)
-	{
-		gi.dprintf("'%s' at %s tried to drop '%s' without world_model!\n", ent->classname, vtos(ent->s.origin), item->classname);
-		return NULL;
-	}
-
-	edict_t* dropped = G_Spawn();
-
-	dropped->classname = item->classname;
-	dropped->item = item;
-	dropped->spawnflags = DROPPED_ITEM;
-	dropped->s.effects = item->world_model_flags;
-	dropped->s.renderfx = RF_GLOW;
-	VectorSet(dropped->mins, -15.0f, -15.0f, -15.0f); //TODO: SpawnItem() uses different mins.
-	VectorSet(dropped->maxs,  15.0f,  15.0f,  15.0f); //TODO: SpawnItem() uses different maxs.
-	gi.setmodel(dropped, dropped->item->world_model);
-	dropped->solid = SOLID_TRIGGER;
-	dropped->movetype = PHYSICSTYPE_NONE;
-	dropped->touch = DropItemTempTouch;
-	dropped->owner = ent;
-
-	vec3_t forward;
-	vec3_t right;
-
-	if (ent->client != NULL)
-	{
-		AngleVectors(ent->client->v_angle, forward, right, NULL);
-
-		const vec3_t offset = { 24.0f, 0.0f, -16.0f };
-		G_ProjectSource(ent->s.origin, offset, forward, right, dropped->s.origin);
-
-		trace_t	trace;
-		gi.trace(ent->s.origin, dropped->mins, dropped->maxs, dropped->s.origin, ent, CONTENTS_SOLID, &trace);
-		VectorCopy(trace.endpos, dropped->s.origin);
-	}
-	else
-	{
-		AngleVectors(ent->s.angles, forward, right, NULL);
-		VectorCopy(ent->s.origin, dropped->s.origin);
-	}
-
-	VectorScale(forward, 100.0f, dropped->velocity);
-	dropped->velocity[2] = 300.0f;
-
-	dropped->think = DropItemMakeTouchable;
-	dropped->nextthink = level.time + 1.0f;
-
-	gi.linkentity(dropped);
-
-	return dropped;
 }
 
 static qboolean IsValidItem(const gitem_t* item) //mxd. Named 'ValidItem' in original version.
@@ -547,6 +465,124 @@ static void SpawnItemEffect(edict_t* ent, const gitem_t* item)
 		ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_PICKUP_HEALTH, CEF_BROADCAST, ent->s.origin, "");
 }
 
+static void Touch_Item(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf)
+{
+	// Only alive players can touch items.
+	if (strcmp(other->classname, "player") != 0 || other->health <= 0)
+		return;
+
+	// Not a grabbable item or player can't hold it.
+	if (ent->item->pickup == NULL || !ent->item->pickup(ent, other))
+		return;
+
+	//mxd. Skip Pickup_Health() chicken check. Pickup_Health() already checks for chicken.
+
+	gi.sound(other, CHAN_ITEM, gi.soundindex(ent->item->pickup_sound), 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(NULL, FX_PICKUP, 0, ent->s.origin, "");
+
+	G_UseTargets(ent, other);
+
+	// Don't remove weapon/defence/puzzle pickup when coop or dm with DF_WEAPONS_STAY flag.
+	if ((ent->item->pickup == Pickup_Weapon || ent->item->pickup == Pickup_Defense || ent->item->pickup == Pickup_Puzzle) && (COOP || (DEATHMATCH && (DMFLAGS & DF_WEAPONS_STAY))))
+		return;
+
+	if (ent->flags & FL_RESPAWN)
+	{
+		SetRespawn(ent); // The item should respawn.
+	}
+	else
+	{
+		ent->solid = SOLID_NOT; // Going away for good, so make it noclipping.
+		gi.RemoveEffects(&ent->s, FX_REMOVE_EFFECTS); // Once picked up, the item is gone forever, so remove it's client effect(s).
+		G_SetToFree(ent); // The persistent part is removed from the server here.
+	}
+}
+
+static void DropItemMakeTouchable(edict_t* ent) //mxd. Named 'drop_make_touchable' in original logic.
+{
+	ent->solid = SOLID_TRIGGER;
+	ent->touch = Touch_Item;
+
+	if (DEATHMATCH)
+	{
+		ent->think = G_FreeEdict;
+		ent->nextthink = level.time + 29.0f;
+	}
+	else
+	{
+		ent->think = NULL; //mxd. Avoid assert in EntityThink().
+	}
+}
+
+edict_t* Drop_Item(edict_t* ent, gitem_t* item) //TODO: return value never used.
+{
+	edict_t* dropped = G_Spawn();
+
+	//mxd. Rewrote to work without using item.world_model and item.world_model_flags.
+	PrecacheItem(item);
+
+	dropped->classname = item->classname;
+	dropped->item = item;
+	dropped->spawnflags = DROPPED_ITEM; //TODO: this is the only usage of DROPPED_ITEM flag...
+	dropped->clipmask = MASK_MONSTERSOLID;
+	dropped->flags = item->flags;
+
+	dropped->s.effects = EF_ALWAYS_ADD_EFFECTS;
+	dropped->s.renderfx = RF_GLOW;
+
+	dropped->solid = SOLID_BBOX;
+	dropped->movetype = PHYSICSTYPE_STEP;
+	dropped->owner = ent;
+
+	VectorCopy(ent->item->mins, dropped->mins);
+	VectorCopy(ent->item->maxs, dropped->maxs);
+	dropped->mins[2] = min(dropped->mins[2], -32.0f); //mxd. Ugh... Increase, so dropped item stays on the same height as items placed in editor...
+
+	dropped->think = DropItemMakeTouchable;
+	dropped->nextthink = level.time + 1.0f;
+
+	vec3_t forward;
+	
+	if (ent->client != NULL)
+	{
+		vec3_t right;
+		AngleVectors(ent->client->v_angle, forward, right, NULL);
+
+		const vec3_t offset = { 24.0f, 0.0f, -16.0f };
+		G_ProjectSource(ent->s.origin, offset, forward, right, dropped->s.origin);
+
+		trace_t trace;
+		gi.trace(ent->s.origin, dropped->mins, dropped->maxs, dropped->s.origin, ent, CONTENTS_SOLID, &trace);
+		VectorCopy(trace.endpos, dropped->s.origin);
+	}
+	else
+	{
+		AngleVectors(ent->s.angles, forward, NULL, NULL);
+		VectorCopy(ent->s.origin, dropped->s.origin);
+	}
+
+	//mxd. Don't spawn inside floor (can happen when dropped by rats)...
+	const float ent_mz = fabsf(ent->mins[2]);
+	const float dropped_mz = fabsf(dropped->mins[2]);
+	if (dropped_mz >= ent_mz)
+		dropped->s.origin[2] += dropped_mz - ent_mz + 1.0f;
+
+	//mxd. Randomize drop direction a bit.
+	const vec3_t offset = { flrand(-0.25f, 0.25f), flrand(-0.25f, 0.25f), 0.0f };
+	Vec3AddAssign(offset, forward);
+	Vec3Normalize(forward);
+
+	VectorScale(forward, flrand(30.0f, 50.0f), dropped->velocity); //mxd. 100 in original logic.
+	dropped->velocity[2] = flrand(160.0f, 200.0f); //mxd. 300 in original logic.
+
+	gi.linkentity(dropped);
+
+	//mxd. Spawn item model and effects.
+	SpawnItemEffect(dropped, dropped->item); //TODO: dropped ent position (or model/fx?) seems to be updated at ~10 FPS while moving...
+
+	return dropped;
+}
+
 static void ItemDropToFloor(edict_t* ent) //mxd. Named 'itemsdroptofloor' in original version.
 {
 	ent->movetype = PHYSICSTYPE_STATIC;
@@ -583,32 +619,6 @@ static void ItemDropToFloor(edict_t* ent) //mxd. Named 'itemsdroptofloor' in ori
 		SpawnItemEffect(ent, ent->item);
 }
 
-// Precaches all data needed for a given item.
-// This will be called for each item spawned in a level, and for each item in each client's inventory.
-static void PrecacheItem(const gitem_t* item)
-{
-	if (item == NULL)
-		return;
-
-	if (item->pickup_sound != NULL)
-		gi.soundindex(item->pickup_sound);
-
-	if (item->world_model != NULL)
-		gi.modelindex(item->world_model);
-
-	if (item->icon != NULL)
-		gi.imageindex(item->icon);
-
-	// Parse everything for its ammo.
-	if (item->ammo != NULL && item->ammo[0] != 0)
-	{
-		const gitem_t* ammo = P_FindItem(item->ammo);
-
-		if (ammo != item)
-			PrecacheItem(ammo);
-	}
-}
-
 // Sets the clipping size and plants the object on the floor.
 // Items can't be immediately dropped to the floor because they might be on an entity that hasn't spawned yet.
 void SpawnItem(edict_t* ent, gitem_t* item)
@@ -635,7 +645,7 @@ void SpawnItem(edict_t* ent, gitem_t* item)
 	if (DEATHMATCH)
 		ent->flags |= FL_RESPAWN;
 
-	ent->s.effects = (item->world_model_flags | EF_ALWAYS_ADD_EFFECTS);
+	ent->s.effects = EF_ALWAYS_ADD_EFFECTS;
 	ent->s.renderfx = RF_GLOW;
 
 	if (item->flags & IT_WEAPON)

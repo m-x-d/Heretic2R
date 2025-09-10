@@ -126,8 +126,6 @@ typedef struct gitem_s
 	void (*weaponthink)(struct edict_s* WeaponOwner, char* Format, ...);
 
 	char* pickup_sound;
-	char* world_model; //TODO: unused?
-	int world_model_flags;
 
 	vec3_t mins; // Bounding box.
 	vec3_t maxs; // Bounding box.

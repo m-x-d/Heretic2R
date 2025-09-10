@@ -422,8 +422,7 @@ static void AddServerEntities(const frame_t* frame)
 	PrepAddEffectsToView();
 	num_owned_inview = 0;
 
-	// Bonus items rotate at a fixed rate.
-	const float autorotate = anglemod((float)fxi.cl->time / 10.0f);
+	// Mace balls rotate at a fixed rate.
 	const float macerotate = anglemod((float)fxi.cl->time / 700.0f);
 
 	// Brush models can auto animate their frames.
@@ -556,13 +555,6 @@ static void AddServerEntities(const frame_t* frame)
 			// Mace balls auto-rotate.
 			ent->angles[0] = macerotate * 2.0f;
 			ent->angles[1] = macerotate;
-			ent->angles[2] = 0.0f;
-		}
-		else if (effects & EF_ROTATE)
-		{
-			// Some bonus items auto-rotate.
-			ent->angles[0] = 0.0f;
-			ent->angles[1] = autorotate;
 			ent->angles[2] = 0.0f;
 		}
 		else
