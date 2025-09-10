@@ -207,7 +207,7 @@ void SP_env_fire(edict_t* self)
 		self->gravity = 0.0f;
 		self->movetype = PHYSICSTYPE_FLY;
 
-		self->model = 0;
+		self->model = NULL;
 		self->solid = SOLID_NOT;
 		self->clipmask = MASK_MONSTERSOLID;
 	}
