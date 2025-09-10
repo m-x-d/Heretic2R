@@ -761,7 +761,7 @@ void FishStaticsInit(void)
 // The fish.
 // wakeup_target	- Monsters will fire this target the first time it wakes up (only once).
 // pain_target		- Monsters will fire this target the first time it gets hurt (only once).
-void SP_monster_fish(edict_t* self)
+void SP_monster_fish(edict_t* self) //TODO: perform default initialization via M_Start(), remove SV_CHEATS check.
 {
 	if (DEATHMATCH && !(SV_CHEATS & self_spawn))
 	{
