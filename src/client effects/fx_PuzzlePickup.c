@@ -55,7 +55,7 @@ static qboolean PuzzlePickupThink(struct client_entity_s* self, centity_t* owner
 	const int step = fxi.cl->time - self->nextThinkTime; //mxd
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
 
-	VectorCopy(owner->current.origin, self->r.origin);
+	VectorCopy(owner->origin, self->r.origin); //mxd. Use interpolated origin (to make items dropped by Drop_Item() fly smoothly).
 	self->r.origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
 	self->SpawnData += BOB_SPEED * lerp;
 

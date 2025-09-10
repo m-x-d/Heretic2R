@@ -36,7 +36,7 @@ static qboolean WeaponPickupThink(struct client_entity_s* self, centity_t* owner
 	self->LifeTime += step; //mxd
 
 	self->r.angles[YAW] += ANGLE_15 * lerp;
-	VectorCopy(owner->current.origin, self->r.origin);
+	VectorCopy(owner->origin, self->r.origin); //mxd. Use interpolated origin (to make items dropped by Drop_Item() fly smoothly).
 	self->r.origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
 	self->SpawnData += BOB_SPEED * lerp;
 

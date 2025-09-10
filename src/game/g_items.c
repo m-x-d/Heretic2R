@@ -578,7 +578,7 @@ edict_t* Drop_Item(edict_t* ent, gitem_t* item) //TODO: return value never used.
 	gi.linkentity(dropped);
 
 	//mxd. Spawn item model and effects.
-	SpawnItemEffect(dropped, dropped->item); //TODO: dropped ent position (or model/fx?) seems to be updated at ~10 FPS while moving...
+	SpawnItemEffect(dropped, dropped->item);
 
 	return dropped;
 }
