@@ -9,6 +9,7 @@
 #include "Vector.h"
 #include "Random.h"
 #include "g_items.h"
+#include "Utilities.h"
 
 #define BOB_HEIGHT			6.0f
 #define BOB_SPEED			ANGLE_10
@@ -202,11 +203,10 @@ static qboolean AmmoPickupThink(struct client_entity_s* self, centity_t* owner)
 void FXAmmoPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	byte tag;
-
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_PICKUP_AMMO].formatString, &tag);
 
 	flags &= ~CEF_OWNERS_ORIGIN;
-	flags |= CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED;
+	flags |= (CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED);
 	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 0); //mxd. next_think_time 50 in original logic. Set to 0, so self->nextThinkTime holds previous update time in AmmoPickupThink()...
 
 	ce->radius = 10.0f;
@@ -220,6 +220,7 @@ void FXAmmoPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	if (tag == ITEM_AMMO_MANA_COMBO_HALF || tag == ITEM_AMMO_MANA_DEFENSIVE_FULL || tag == ITEM_AMMO_MANA_OFFENSIVE_FULL)
 		ce->r.scale = 1.25f;
 
+	ce->SpawnData = GetPickupBobPhase(origin); //mxd
 	ce->Update = AmmoPickupThink;
 
 	AddEffect(owner, ce);

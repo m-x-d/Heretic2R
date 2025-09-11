@@ -9,6 +9,7 @@
 #include "Random.h"
 #include "Vector.h"
 #include "g_items.h"
+#include "Utilities.h"
 
 #define BOB_HEIGHT			6.0f
 #define BOB_SPEED			ANGLE_10
@@ -123,6 +124,8 @@ void FXWeaponPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	ce->r.flags = RF_GLOW; //mxd. Remove RF_TRANSLUCENT flag and 0.8 alpha (looks broken with those enabled).
 	ce->r.scale = ((tag == ITEM_WEAPON_FIREWALL) ? 1.0f : 0.5f);
 	ce->r.skinnum = ((tag == ITEM_WEAPON_PHOENIXBOW) ? 1 : 0);
+
+	ce->SpawnData = GetPickupBobPhase(origin); //mxd
 	ce->Update = WeaponPickupThink;
 
 	AddEffect(owner, ce);

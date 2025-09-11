@@ -36,3 +36,4 @@ extern qboolean RefPointsValid(const centity_t* owner);
 
 extern void InsertInCircularList(client_entity_t* self);
 extern void ClearCircularList(void); //mxd
+extern float GetPickupBobPhase(const vec3_t origin); //mxd

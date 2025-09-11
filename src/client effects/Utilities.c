@@ -548,3 +548,9 @@ void ClearCircularList(void) //mxd
 			break;
 	}
 }
+
+//mxd. Returns value based on pickup position (simplified version of undulate logic from R_EmitWaterPolys()).
+float GetPickupBobPhase(const vec3_t origin)
+{
+	return (origin[0] + origin[1]) * 0.0495f + (float)fxi.cl->time * 3.0f; // 0.0495 == 2.3 * 0.015.
+}

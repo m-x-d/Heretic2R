@@ -8,6 +8,7 @@
 #include "Vector.h"
 #include "Random.h"
 #include "g_items.h"
+#include "Utilities.h"
 
 #define BOB_HEIGHT					6.0f
 #define BOB_SPEED					ANGLE_10
@@ -94,6 +95,7 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	if (tag == ITEM_DEFENSE_TELEPORT)
 		ce->r.scale = 1.25f;
 
+	ce->SpawnData = GetPickupBobPhase(origin); //mxd
 	ce->Update = DefensePickupThink;
 
 	AddEffect(owner, ce);

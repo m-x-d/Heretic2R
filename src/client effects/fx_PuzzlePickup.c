@@ -7,6 +7,7 @@
 #include "Client Effects.h"
 #include "Vector.h"
 #include "items.h"
+#include "Utilities.h"
 
 #define BOB_HEIGHT		6.0f
 #define BOB_SPEED		ANGLE_10
@@ -86,6 +87,7 @@ void FXPuzzlePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		ce->r.skinnum = 1;
 
 	VectorDegreesToRadians(angles, ce->r.angles);
+	ce->SpawnData = GetPickupBobPhase(origin); //mxd
 	ce->Update = PuzzlePickupThink;
 
 	AddEffect(owner, ce);

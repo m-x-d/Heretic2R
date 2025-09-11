@@ -8,6 +8,7 @@
 #include "Particle.h"
 #include "Vector.h"
 #include "Random.h"
+#include "Utilities.h"
 
 #define BOB_HEIGHT			6.0f
 #define BOB_SPEED			ANGLE_10
@@ -93,6 +94,7 @@ void FXHealthPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	if (model_index == 0) // Bigger scale for Half Health.
 		ce->r.scale = 1.5f;
 
+	ce->SpawnData = GetPickupBobPhase(origin); //mxd
 	ce->Update = HealthPickupThink;
 
 	AddEffect(owner, ce);
