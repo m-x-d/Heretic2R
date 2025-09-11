@@ -109,7 +109,7 @@ void Sys_LoadGameDll(const char* dll_name, HINSTANCE* hinst, DWORD* checksum)
 		*checksum = 0;
 	}
 
-	Com_DPrintf("LoadLibrary (%s)\n", dll_path);
+	Com_DDPrintf(2, "LoadLibrary (%s)\n", dll_path); //mxd. Com_DPrintf() -> Com_DDPrintf(), to reduce console spam when developer 1.
 }
 
 void Sys_UnloadGameDll(const char* name, HINSTANCE* hinst)

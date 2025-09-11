@@ -185,7 +185,7 @@ int FS_FOpenFile(const char* filename, FILE** file)
 				{
 					// Found it!
 					file_from_pak = true;
-					Com_DPrintf("PackFile: %s : %s\n", pak->filename, filename);
+					Com_DDPrintf(2, "PackFile: %s : %s\n", pak->filename, filename); //mxd. Com_DPrintf() -> Com_DDPrintf(), to reduce console spam when developer 1.
 
 					// Open a new file on the pakfile
 					if (fopen_s(file, pak->filename, "rb") != 0) //mxd. fopen -> fopen_s
@@ -210,7 +210,7 @@ int FS_FOpenFile(const char* filename, FILE** file)
 			if (fopen_s(file, netpath, "rb") != 0) //mxd. fopen -> fopen_s
 				continue;
 
-			Com_DPrintf("FindFile: %s\n", netpath);
+			Com_DDPrintf(2, "FindFile: %s\n", netpath); //mxd. Com_DPrintf() -> Com_DDPrintf(), to reduce console spam when developer 1.
 
 			return FS_FileLength(*file);
 		}

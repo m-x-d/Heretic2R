@@ -145,11 +145,11 @@ void Com_ColourPrintf(const PalIdx_t colour, const char* fmt, ...)
 	con.current_color = TextPalette[P_WHITE];
 }
 
-// A Com_Printf that only shows up if the "developer" cvar is set
+// A Com_Printf that only shows up if the "developer" cvar is set.
 void Com_DPrintf(const char* fmt, ...)
 {
 	va_list argptr;
-	char msg[MAXPRINTMSG];
+	static char msg[MAXPRINTMSG]; //mxd. Make static.
 
 	// Don't confuse non-developers with techie stuff...
 	if (developer != NULL && (int)developer->value)
@@ -159,6 +159,26 @@ void Com_DPrintf(const char* fmt, ...)
 		va_end(argptr);
 
 		Com_ColourPrintf(P_YELLOW, "%s", msg); // Q2: Com_Printf
+	}
+}
+
+//mxd. A Com_Printf that only shows up if the "developer" cvar is >= given level.
+void Com_DDPrintf(const int level, const char* fmt, ...)
+{
+	static int level_colors[] = { P_WHITE, P_YELLOW, P_CYAN, P_PURPLE };
+	static int max_level = sizeof(level_colors) / sizeof(level_colors[0]);
+
+	va_list argptr;
+	static char msg[MAXPRINTMSG];
+
+	// Don't confuse non-developers with techie stuff...
+	if (developer != NULL && (int)developer->value >= level)
+	{
+		va_start(argptr, fmt);
+		vsprintf_s(msg, sizeof(msg), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+		va_end(argptr);
+
+		Com_ColourPrintf(level_colors[ClampI(level, 0, max_level)], "%s", msg); // Q2: Com_Printf
 	}
 }
 

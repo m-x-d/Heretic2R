@@ -655,6 +655,7 @@ extern void FS_CreatePath(char* path);
 extern void Com_BeginRedirect(int target, char* buffer, int buffersize, void (*flush)(int, char*));
 extern void Com_EndRedirect(void);
 Q2DLL_DECLSPEC extern void Com_DPrintf(const char* fmt, ...);
+extern void Com_DDPrintf(int level, const char* fmt, ...); //mxd
 H2R_NORETURN Q2DLL_DECLSPEC extern void Com_Error(int code, const char* fmt, ...);
 H2R_NORETURN extern void Com_Quit(void);
 extern int Com_ServerState(void);

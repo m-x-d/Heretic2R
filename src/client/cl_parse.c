@@ -969,7 +969,7 @@ void CL_ParseServerMessage(void)
 			case svc_stufftext:
 			{
 				const char* text = MSG_ReadString(&net_message);
-				Com_DPrintf("stufftext: %s\n", text);
+				Com_DDPrintf(2, "stufftext: %s\n", text); //mxd. Com_DPrintf() -> Com_DDPrintf(), to reduce console spam when developer 1.
 				Cbuf_AddText(text);
 			} break;
 

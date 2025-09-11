@@ -50,7 +50,7 @@ static void SV_CopyFile(char* src, char* dst) //mxd. CopyFile in Q2. Renamed to 
 	FILE* f1;
 	FILE* f2;
 
-	Com_DPrintf("CopyFile (%s, %s)\n", src, dst);
+	Com_DDPrintf(2, "CopyFile (%s, %s)\n", src, dst); //mxd. Com_DPrintf() -> Com_DDPrintf(), to reduce console spam when developer 1.
 
 	if (fopen_s(&f1, src, "rb") != 0) //mxd. fopen -> fopen_s
 		return;
