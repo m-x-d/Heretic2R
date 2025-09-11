@@ -208,9 +208,9 @@ void Con_CheckResize(void)
 {
 	static char tbuf[CON_TEXTSIZE]; //mxd. Made static.
 
-	const int width = (viddef.width / ui_char_size) - 2; //mxd. Adjust for UI scale.
+	const int width = (viddef.width / ui_char_size) - 1; //mxd. Adjust for UI scale; increase by 1, because we subtract by 1 in Con_Print().
 
-	if (width == con.linewidth)
+	if (width == con.linewidth && con.linewidth != -1) //mxd. Don't skip if not initialized yet.
 		return;
 
 	if (width < 1) // Video hasn't been initialized yet.
@@ -313,7 +313,7 @@ void Con_Print(const char* txt)
 				break;
 
 		// Word wrap
-		if (l != con.linewidth && con.x + l > con.linewidth)
+		if (l != con.linewidth && con.x + l >= con.linewidth) //mxd. '>' -> '>=', because last line char is always 0.
 			con.x = 0;
 
 		if (newline)
