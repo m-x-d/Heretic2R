@@ -145,7 +145,7 @@ void R_DrawSpriteModel(entity_t* e)
 	//mxd. #if 0-ed in Q2
 	if (e->frame < 0 || e->frame >= psprite->numframes)
 	{
-		ri.Con_Printf(PRINT_ALL, "R_DrawSpriteModel: sprite '%s' with invalid frame %i!\n", mdl->name, e->frame);
+		ri.Con_Printf(PRINT_DEVELOPER, "R_DrawSpriteModel: sprite '%s' with invalid frame %i!\n", mdl->name, e->frame);
 		e->frame = 0;
 	}
 
