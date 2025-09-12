@@ -529,11 +529,14 @@ static void S_StartSound(const vec3_t origin, const int ent_num, const int ent_c
 	static int s_beginofs = 0; //mxd. Made local static.
 
 	// YQ2: extra !s_active check: a hack to prevent temporary entities generating sounds when the sound backend is not active and the game is not paused.
-	if (!sound_started || !s_active || sfx == NULL || ent_num < 0 || ent_num >= MAX_EDICTS) //mxd. Add entnum sanity checks.
+	if (!sound_started || !s_active || sfx == NULL)
 		return;
 
 	if (sfx->name[0] == '*')
 	{
+		if (ent_num < 0 || ent_num >= MAX_EDICTS) //mxd. Add entnum sanity checks.
+			return;
+
 		sfx = S_RegisterSexedSound(&si.cl_entities[ent_num].current, sfx->name);
 
 		if (sfx == NULL) // YQ2: extra sanity check.
