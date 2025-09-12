@@ -697,7 +697,16 @@ void SP_obj_sign4(edict_t* self)
 #define SF_DRIP		1 //mxd
 #define SF_DARKSKIN	2 //mxd
 
-static void StalactiteInitDripper(edict_t* self, const float offset_z) //mxd. Added to reduce code duplication.
+static void VectorRotate(const vec3_t in, const float yaw_deg, vec3_t out) //mxd. There's already VectorYaw() out there (which should probably be renamed to GetVectorYaw())...
+{
+	const float angle = yaw_deg * ANGLE_TO_RAD;
+
+	out[0] = in[0] * cosf(angle) - in[1] * sinf(angle);
+	out[1] = in[0] * sinf(angle) + in[1] * cosf(angle);
+	out[2] = in[2];
+}
+
+static void StalactiteInitDripper(edict_t* self, const vec3_t tip) //mxd. Added to reduce code duplication.
 {
 	if (!(self->spawnflags & SF_DRIP))
 		return;
@@ -705,9 +714,11 @@ static void StalactiteInitDripper(edict_t* self, const float offset_z) //mxd. Ad
 	if (self->count == 0)
 		self->count = 20;
 
+	//mxd. Rotate, scale and move tip coords to world pos.
 	vec3_t origin;
-	VectorCopy(self->s.origin, origin);
-	origin[2] += offset_z;
+	VectorRotate(tip, self->s.angles[YAW], origin);
+	Vec3ScaleAssign(self->s.scale, origin);
+	Vec3AddAssign(self->s.origin, origin);
 
 	self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 2);
 }
@@ -719,9 +730,11 @@ static void StalactiteInitDripper(edict_t* self, const float offset_z) //mxd. Ad
 // DARKSKIN	- Use the dark skin.
 // Variables:
 // count - number of drips per minute.
-void SP_obj_stalactite1(edict_t* self)
+void SP_obj_stalactite1(edict_t* self) //mxd. Originally located in g_waterfx.c.
 {
-	StalactiteInitDripper(self, 200.0f); //mxd
+	static const vec3_t tip = { -7.0273f, -2.9505f, -99.938f }; //mxd. Vertex coord of stalagmite's tip.
+
+	StalactiteInitDripper(self, tip); //BUGFIX: mxd. original logic sets origin[2] to 200 (which is way above the model). 
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/stalactite/stalact1/tris.fm");
 	self->movetype = PHYSICSTYPE_NONE;
@@ -731,7 +744,7 @@ void SP_obj_stalactite1(edict_t* self)
 		self->s.skinnum = 1;
 
 	VectorSet(self->mins, -24.0f, -24.0f, -99.0f);
-	VectorSet(self->maxs, 24.0f, 24.0f, 99.0f);
+	VectorSet(self->maxs,  24.0f,  24.0f,  99.0f);
 
 	gi.linkentity(self);
 }
@@ -745,7 +758,9 @@ void SP_obj_stalactite1(edict_t* self)
 // count - number of drips per minute.
 void SP_obj_stalactite2(edict_t* self)
 {
-	StalactiteInitDripper(self, 128.0f); //mxd
+	static const vec3_t tip = { 1.9282f, 11.5995f, -64.439f }; //mxd. Vertex coord of stalagmite's tip.
+
+	StalactiteInitDripper(self, tip); //BUGFIX: mxd. original logic sets origin[2] to 128 (which is way above the model). 
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/stalactite/stalact2/tris.fm");
 	self->movetype = PHYSICSTYPE_NONE;
@@ -755,7 +770,7 @@ void SP_obj_stalactite2(edict_t* self)
 		self->s.skinnum = 1;
 
 	VectorSet(self->mins, -60.0f, -60.0f, -64.0f);
-	VectorSet(self->maxs, 60.0f, 60.0f, 64.0f);
+	VectorSet(self->maxs,  60.0f,  60.0f,  64.0f);
 
 	gi.linkentity(self);
 }
@@ -769,7 +784,9 @@ void SP_obj_stalactite2(edict_t* self)
 // count - number of drips per minute.
 void SP_obj_stalactite3(edict_t* self)
 {
-	StalactiteInitDripper(self, 200.0f); //mxd
+	static const vec3_t tip = { -0.5409f, 12.404f, -99.2525f }; //mxd. Vertex coord of stalagmite's tip.
+
+	StalactiteInitDripper(self, tip); //BUGFIX: mxd. original logic sets origin[2] to 200 (which is way above the model). 
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/stalactite/stalact3/tris.fm");
 	self->movetype = PHYSICSTYPE_NONE;
@@ -779,7 +796,7 @@ void SP_obj_stalactite3(edict_t* self)
 		self->s.skinnum = 1;
 
 	VectorSet(self->mins, -23.0f, -23.0f, -98.0f);
-	VectorSet(self->maxs, 23.0f, 23.0f, 98.0f);
+	VectorSet(self->maxs,  23.0f,  23.0f,  98.0f);
 
 	gi.linkentity(self);
 }

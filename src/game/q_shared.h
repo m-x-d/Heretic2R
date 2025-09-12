@@ -708,7 +708,7 @@ typedef struct entity_state_s
 	short frame;			// Model's current animation frame index.
 
 	vec3_t origin;			// Model's position and orientation in the world.
-	vec3_t angles;
+	vec3_t angles;			// Model's rotation (in degrees).
 	vec3_t old_origin;		// Used for lerping (and hijacked for other uses).
 
 	byte modelindex;		// Tells client which model do draw.
