@@ -15,8 +15,8 @@
 
 static void EnvWaterDripThink(edict_t* self) //mxd. Named 'waterdrip_go' in original logic.
 {
-	const byte b_frame = ((self->spawnflags & SF_YELLOW) ? 1 : 0);
-	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_DRIPPER, CEF_BROADCAST, self->s.origin, "bb", self->count, b_frame);
+	//const byte b_frame = ((self->spawnflags & SF_YELLOW) ? 1 : 0); //mxd
+	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_DRIPPER, CEF_BROADCAST, self->s.origin, "bb", self->count, 0); //mxd. Last arg was 0 or 1 (when SF_YELLOW) in original logic (but waterdrop.sp2 only has single frame...).
 	self->think = NULL;
 }
 
@@ -36,7 +36,7 @@ static void EnvWaterDripUse(edict_t* self, edict_t* other, edict_t* activator) /
 // QUAKED env_water_drip (1 .5 0) (-4 -4 0) (4 4 4) YELLOW
 // Spawns a drip of water which falls straight down.
 // Spawnflags:
-// YELLOW - Use a yellow drip. //TODO: This really ought to be sent over as a flag (like CEF_FLAG6), but its a persistent effect, so not critical.
+// YELLOW - Use a yellow drip. //TODO: doesn't work (waterdrop.sp2 has no sprite 1) --mxd //TODO: This really ought to be sent over as a flag (like CEF_FLAG6), but its a persistent effect, so not critical.
 // Variables:
 // count - Drips per minute (default 20).
 void SP_env_water_drip(edict_t* self)
@@ -154,7 +154,7 @@ static void SpawnDrippers(edict_t* self) //mxd. Added to reduce code duplication
 	{
 		vec3_t origin;
 		VectorAdd(self->s.origin, offsets[i], origin);
-		gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 2);
+		gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 0); //mxd. Last arg was 2 in original logic (but waterdrop.sp2 only has single frame...).
 	}
 }
 

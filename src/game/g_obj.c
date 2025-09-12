@@ -720,7 +720,7 @@ static void StalactiteInitDripper(edict_t* self, const vec3_t tip) //mxd. Added 
 	Vec3ScaleAssign(self->s.scale, origin);
 	Vec3AddAssign(self->s.origin, origin);
 
-	self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 2);
+	self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 0); //mxd. Last arg was 2 in original logic (but waterdrop.sp2 only has single frame...).
 }
 
 // QUAKED obj_stalactite1 (1 .5 0) (-24 -24 -99) (24 24 99) DRIP DARKSKIN

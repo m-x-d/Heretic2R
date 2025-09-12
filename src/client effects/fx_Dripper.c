@@ -117,8 +117,12 @@ static qboolean DripperParticleSpawner(client_entity_t* spawner, centity_t* owne
 
 	drip->r.model = &drip_models[2];
 	drip->r.scale = 0.1f;
-	drip->r.flags = RF_TRANSLUCENT | RF_ALPHA_TEXTURE;
-	drip->r.frame = spawner->r.frame;
+	drip->r.flags = RF_TRANSLUCENT; //mxd. Original logic also adds RF_ALPHA_TEXTURE flag, which is used only in conjunction with RF_TRANS_ADD flag in ref_gl1...
+	//drip->r.frame = spawner->r.frame; //mxd. waterdrop.sp2 has single frame...
+
+	//mxd. Add subtle fade-in effect.
+	drip->alpha = 0.1f;
+	drip->d_alpha = 6.0f;
 
 	drip->radius = 2.0f;
 	drip->SpawnData = spawner->SpawnData;
@@ -149,23 +153,23 @@ void FXDripper(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	byte drips_per_min;
 	byte frame;
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_DRIPPER].formatString, &drips_per_min, &frame);
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_DRIPPER].formatString, &drips_per_min, &frame); //TODO: 'frame' param is unused.
 
-	flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_VIEWSTATUSCHANGED;
-	client_entity_t* dripper = ClientEntity_new(type, flags, origin, NULL, 1000);
+	flags |= (CEF_NO_DRAW | CEF_NOMOVE | CEF_VIEWSTATUSCHANGED);
+	client_entity_t* spawner = ClientEntity_new(type, flags, origin, NULL, 1000);
 
-	dripper->r.frame = frame;
+	//spawner->r.frame = frame; //mxd. waterdrop.sp2 has single frame...
 
-	dripper->LifeTime = 60 * 1000 / drips_per_min;
-	dripper->Update = DripperParticleSpawner;
+	spawner->LifeTime = 60 * 1000 / drips_per_min;
+	spawner->Update = DripperParticleSpawner;
 
-	dripper->acceleration[2] = GetGravity();
-	dripper->radius = DRIP_RADIUS;
+	spawner->acceleration[2] = GetGravity();
+	spawner->radius = DRIP_RADIUS;
 
 	trace_t trace;
-	dripper->SpawnDelay = GetFallTime(origin, 0, dripper->acceleration[2], DRIP_RADIUS, DRIP_MAX_DURATION, &trace);
-	dripper->SpawnData = trace.endpos[2] + 4.0f;
-	dripper->SpawnInfo = trace.contents;
+	spawner->SpawnDelay = GetFallTime(origin, 0, spawner->acceleration[2], DRIP_RADIUS, DRIP_MAX_DURATION, &trace);
+	spawner->SpawnData = trace.endpos[2] + 4.0f;
+	spawner->SpawnInfo = trace.contents;
 
-	AddEffect(owner, dripper);
+	AddEffect(owner, spawner);
 }
