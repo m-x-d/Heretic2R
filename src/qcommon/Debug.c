@@ -161,3 +161,10 @@ Q2DLL_DECLSPEC void DBG_AddArrow(const vec3_t start, const vec3_t end, const pal
 	re.AddDebugArrow(start, end, color, lifetime);
 #endif
 }
+
+Q2DLL_DECLSPEC void DBG_AddMarker(const vec3_t center, const float size, const paletteRGBA_t color, const float lifetime)
+{
+#if _DEBUG
+	re.AddDebugMarker(center, size, color, lifetime);
+#endif
+}

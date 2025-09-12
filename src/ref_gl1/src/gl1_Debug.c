@@ -14,6 +14,7 @@ typedef enum
 	DPT_NONE,
 	DPT_LINE,
 	DPT_ARROW,
+	DPT_MARKER,
 	DPT_BOX,
 	DPT_BBOX,
 	DPT_ENTITY_BBOX,
@@ -179,6 +180,30 @@ void RI_AddDebugArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t 
 	}
 }
 
+void RI_AddDebugMarker(const vec3_t center, const float size, const paletteRGBA_t color, const float lifetime)
+{
+	// Find free slot...
+	DebugPrimitive_t* marker = InitDebugPrimitive(NULL, NULL, color, lifetime, DPT_MARKER);
+
+	if (marker != NULL)
+	{
+		const float hs = size * 0.5f;
+
+		VectorSet(marker->verts[0], center[0] + hs, center[1], center[2]);
+		VectorSet(marker->verts[1], center[0] - hs, center[1], center[2]);
+
+		VectorSet(marker->verts[2], center[0], center[1] + hs, center[2]);
+		VectorSet(marker->verts[3], center[0], center[1] - hs, center[2]);
+
+		VectorSet(marker->verts[4], center[0], center[1], center[2] + hs);
+		VectorSet(marker->verts[5], center[0], center[1], center[2] - hs);
+	}
+	else
+	{
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugMarker: failed to add marker at [%f %f %f]...", center[0], center[1], center[2]);
+	}
+}
+
 static void DrawDebugBox(const DebugPrimitive_t* box)
 {
 	glColor3ub(box->color.r, box->color.g, box->color.b);
@@ -237,6 +262,19 @@ static void DrawDebugArrow(const DebugPrimitive_t* arrow)
 	glEnd();
 }
 
+static void DrawDebugMarker(const DebugPrimitive_t* marker)
+{
+	glColor3ub(marker->color.r, marker->color.g, marker->color.b);
+
+	glBegin(GL_LINES);
+	for (int i = 0; i < 6; i += 2)
+	{
+		glVertex3fv(marker->verts[i + 0]);
+		glVertex3fv(marker->verts[i + 1]);
+	}
+	glEnd();
+}
+
 // Draw all debug primitives.
 void R_DrawDebugPrimitives(void)
 {
@@ -285,6 +323,10 @@ void R_DrawDebugPrimitives(void)
 
 			case DPT_ARROW:
 				DrawDebugArrow(p);
+				break;
+
+			case DPT_MARKER:
+				DrawDebugMarker(p);
 				break;
 
 			default:
