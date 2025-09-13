@@ -7,7 +7,6 @@
 #include "snd_ogg.h"
 #include "snd_local.h"
 #include "snd_main.h"
-#include "client.h"
 
 #define STB_VORBIS_NO_PUSHDATA_API
 #include <stb/stb_vorbis.h>
