@@ -408,6 +408,24 @@ static void Key_Console(int key)
 	if (key == K_HOME)
 	{
 		con.display = con.current - con.totallines + 10;
+
+		//mxd. If used before console text buffer is fully filled (shortly after starting the game or after using 'clear' ccmd), we'll end up displaying empty lines,
+		// so trek towards con.current until we encounter some text...
+		while (con.display < con.current)
+		{
+			const char* line = &con.text[(con.display % con.totallines) * con.linewidth];
+			if (*line != ' ')
+			{
+				// Add number of visible console lines - 3 (input line + engine name + some padding), so text starts at the top of console.
+				con.display = min(con.current, con.display + (con.vislines / ui_char_size) - 3);
+				if (con.display != con.current) // Take backscroll arrows into account.
+					con.display--;
+				break;
+			}
+
+			con.display++;
+		}
+
 		return;
 	}
 
