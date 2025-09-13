@@ -130,6 +130,7 @@ void Con_Clear_f(void)
 {
 	memset(con.text, ' ', CON_TEXTSIZE);
 	memset(con.color, 0xff, sizeof(con.color)); // H2
+	con.display = con.current; //mxd. Reset console scroll position.
 }
 
 // Save the console contents out to a file.
