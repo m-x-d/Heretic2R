@@ -554,3 +554,26 @@ float GetPickupBobPhase(const vec3_t origin)
 {
 	return (origin[0] + origin[1]) * 0.0495f + (float)fxi.cl->time * 3.0f; // 0.0495 == 2.3 * 0.015.
 }
+
+qboolean GetTruePlane(vec3_t origin, vec3_t direction, const float direction_scale, const float offset_scale) //mxd. 2 similar same-named functions (in fx_blood.c and fx_scorchmark.c) in original logic.
+{
+	vec3_t end;
+	VectorMA(origin, direction_scale, direction, end);
+
+	trace_t trace;
+	fxi.Trace(origin, vec3_origin, vec3_origin, end, MASK_DRIP, CEF_CLIP_TO_WORLD, &trace);
+
+	if (trace.fraction != 1.0f)
+	{
+		// Set the new endpos and plane (should be exact).
+		VectorCopy(trace.endpos, origin);
+		VectorCopy(trace.plane.normal, direction);
+
+		// Raise the decal slightly off the target wall.
+		VectorMA(origin, offset_scale, direction, origin);
+
+		return true;
+	}
+
+	return false;
+}

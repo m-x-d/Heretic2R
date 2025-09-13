@@ -205,34 +205,6 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 	}
 }
 
-// Find exact plane to decal the bloodmark to.
-static qboolean GetTruePlane(vec3_t origin, vec3_t direction) //TODO: unify with same-named function in fx_scorchmark.c?
-{
-	trace_t trace;
-	vec3_t end;
-	vec3_t mins;
-	vec3_t maxs;
-
-	VectorClear(mins);
-	VectorClear(maxs);
-
-	VectorMA(origin, 16.0f, direction, end);
-
-	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CEF_CLIP_TO_WORLD, &trace);
-
-	if (trace.fraction == 1.0f)
-		return false;
-
-	// Set the new endpos and plane (should be exact).
-	VectorCopy(trace.endpos, origin);
-	VectorCopy(trace.plane.normal, direction);
-
-	// Raise the decal slightly off the target wall.
-	VectorMA(origin, 0.25f, direction, origin);
-
-	return true;
-}
-
 static qboolean BloodSplatSplashUpdate(client_entity_t* self, centity_t* owner)
 {
 	if (self->SpawnInfo > 500)
@@ -347,7 +319,7 @@ void ThrowBlood(vec3_t origin, vec3_t tnormal, const qboolean dark, const qboole
 	VectorCopy(tnormal, normal);
 	VectorScale(normal, -1.0f, normal);
 
-	if (trueplane || GetTruePlane(origin, normal))
+	if (trueplane || GetTruePlane(origin, normal, 16.0f, 0.25f))
 	{
 		client_entity_t* bloodmark = ClientEntity_new(FX_BLOOD, CEF_NOMOVE, origin, tnormal, 1000);
 
