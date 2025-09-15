@@ -38,10 +38,8 @@ static qboolean DrawCrosshair(struct client_entity_s* crosshair_ent, centity_t* 
 
 void FXCrosshair(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-#define CROSSHAIR_THINKTIME	20
-
 	flags |= CEF_NO_DRAW;
-	client_entity_t* xh = ClientEntity_new(type, flags, origin, NULL, CROSSHAIR_THINKTIME);
+	client_entity_t* xh = ClientEntity_new(type, flags, origin, NULL, 0); //mxd. next_think_time:20 in original logic. Update on every renderframe instead.
 
 	xh->r.model = &crosshair_model;
 	xh->Update = DrawCrosshair;
