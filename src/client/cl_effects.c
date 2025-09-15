@@ -27,26 +27,31 @@ static int cl_effectpredict;
 
 static qboolean Get_Crosshair(vec3_t origin, byte* type)
 {
-	vec3_t start;
-	vec3_t end;
-	vec3_t angles;
-	vec3_t forward;
-	vec3_t right;
-	vec3_t mins;
-	vec3_t maxs;
-	trace_t trace;
+	enum WeaponItemIndex_e //mxd. Weapon gitem_t indices in itemlist[].
+	{
+		II_WEAPON_SWORDSTAFF = 1,
+		II_WEAPON_FLYINGFIST,
+		II_WEAPON_HELLSTAFF,
+		II_WEAPON_MAGICMISSILE,
+		II_WEAPON_REDRAINBOW,
+		II_WEAPON_FIREWALL,
+		II_WEAPON_PHOENIXBOW,
+		II_WEAPON_SPHEREOFANNIHILATION,
+		II_WEAPON_MACEBALLS
+	};
 
 	if (crosshair == NULL || !(int)crosshair->value || cl.time < 1001 || PlayerEntPtr == NULL || (int)cl_cinematicfreeze->value)
 		return false;
 
-	VectorClear(mins);
-	VectorClear(maxs);
-
+	vec3_t angles;
 	for (int i = 0; i < 3; i++)
 		angles[i] = cl.viewangles[i] + (float)cl.frame.playerstate.pmove.delta_angles[i] * SHORT_TO_ANGLE;
 
+	vec3_t forward;
+	vec3_t right;
 	AngleVectors(angles, forward, right, NULL);
 
+	vec3_t start;
 	VectorCopy(PlayerEntPtr->origin, start);
 	start[2] += cl.playerinfo.viewheight;
 
@@ -54,57 +59,60 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 
 	switch (weapon)
 	{
-		case ITEM_WEAPON_HELLSTAFF:
+		case II_WEAPON_FLYINGFIST:
 			start[2] += 20.0f;
 			VectorMA(start, 12.0f, right, start);
 			break;
 
-		case ITEM_WEAPON_MAGICMISSILE:
+		case II_WEAPON_HELLSTAFF:
 			start[2] += 14.0f;
 			VectorMA(start, 4.0f, right, start);
 			break;
 
-		case ITEM_WEAPON_REDRAINBOW:
+		case II_WEAPON_MAGICMISSILE:
 			start[2] += 18.0f;
 			for (int i = 0; i < 3; i++)
 				start[i] -= right[i] * 4.0f;
 			break;
 
-		case ITEM_WEAPON_SPHEREOFANNIHILATION:
-		case ITEM_WEAPON_MACEBALLS:
+		case II_WEAPON_REDRAINBOW:
+		case II_WEAPON_PHOENIXBOW:
 			start[2] += 22.0f;
 			VectorMA(start, 4.0f, right, start);
 			break;
 		
-		case 9: //TODO: either we are using incorrect enum for other cases, or this one is for non-existing weapon...
+		case II_WEAPON_MACEBALLS:
 			start[2] += 21.0f;
 			for (int i = 0; i < 3; i++)
 				start[i] -= right[i] * 2.0f;
 			break;
 
-		default:
+		default: // II_WEAPON_SWORDSTAFF, II_WEAPON_FIREWALL, II_WEAPON_SPHEREOFANNIHILATION
 			start[2] += 18.0f;
 			break;
 	}
 
 	float fwd_offset = 256.0f;
+
 	if (in_do_autoaim && cl.frame.playerstate.AutotargetEntityNum > 0 && 
-		weapon != 9 && weapon != ITEM_WEAPON_REDRAINBOW && weapon != ITEM_WEAPON_PHOENIXBOW)
+		weapon != II_WEAPON_MAGICMISSILE && weapon != II_WEAPON_FIREWALL && weapon != II_WEAPON_MACEBALLS)
 	{
 		const centity_t* target_ent = &cl_entities[cl.frame.playerstate.AutotargetEntityNum];
 		VectorSubtract(target_ent->origin, start, forward);
 		fwd_offset = VectorNormalize(forward);
 	}
 
+	vec3_t end;
 	VectorMA(start, fwd_offset, forward, end);
 
 	trace_ignore_player = true;
-	CL_Trace(start, mins, maxs, end, MASK_SHOT | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+	trace_t trace;
+	CL_Trace(start, vec3_origin, vec3_origin, end, MASK_SHOT | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
 	trace_ignore_player = false;
 
 	// Store results.
 	VectorCopy(trace.endpos, origin);
-	*type = (byte)Q_ftol(crosshair->value - 1);
+	*type = (byte)crosshair->value - 1;
 
 	return true;
 }
