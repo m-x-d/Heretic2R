@@ -570,9 +570,7 @@ void Qcommon_Init(const int argc, char** argv)
 	Cbuf_AddEarlyCommands(true);
 	Cbuf_Execute();
 
-	SndDll_Init(); // H2 // Called after FS_InitFilesystem() in original logic. Moved here, because we need snd_dll cvar loaded from config file --mxd.
-
-	// Init commands and vars
+	// Init commands and vars.
 	Cmd_AddCommand("z_stats", Z_Stats_f);
 	Cmd_AddCommand("error", Com_Error_f);
 

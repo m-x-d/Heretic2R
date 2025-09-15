@@ -613,6 +613,7 @@ void M_Init(void)
 	m_item_defaults = Cvar_Get("m_item_defaults", "Reset to Defaults", 0);
 
 	// Sound Settings menu.
+	m_item_sndbackend = Cvar_Get("m_item_sndbackend", "Sound Backend", 0); //mxd
 	m_item_effectsvol = Cvar_Get("m_item_effectsvol", "Effects Volume", 0);
 	m_item_musicvol = Cvar_Get("m_item_musicvol", "Music Volume", 0); //mxd
 	m_item_soundquality = Cvar_Get("m_item_soundquality", "Sound Quality", 0);

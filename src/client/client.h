@@ -406,7 +406,7 @@ typedef struct
 {
 	// If api_version is different, the dll cannot be used.
 	int api_version;
-	char* library_name; // To be displayed in menus.
+	char* title; // To be displayed in menus.
 
 	// Sound library function pointers.
 	void (*Init)(void);

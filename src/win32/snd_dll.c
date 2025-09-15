@@ -12,6 +12,10 @@
 
 snd_export_t se; //mxd
 
+//mxd. Compatible snd_xxx.dlls info. For use in menu_sound.c.
+sndlib_info_t sndlib_infos[MAX_SNDLIBS];
+int num_sndlib_infos = 0;
+
 cvar_t* snd_dll;
 static HINSTANCE sound_library;
 
@@ -46,7 +50,7 @@ static void NullSnd_RawSamples(int samples, uint rate, int width, int num_channe
 static void InitNullSound(void)
 {
 	se.api_version = SND_API_VERSION;
-	se.library_name = "Null Sound";
+	se.title = "Null Sound";
 
 	se.Init = NullSnd_Init;
 	se.Shutdown = NullSnd_Shutdown;
@@ -77,7 +81,70 @@ static void InitNullSound(void)
 
 #pragma endregion
 
-void SndDll_FreeLibrary(void)
+static qboolean SND_StoreSndlibInfo(const char* snd_path) //mxd
+{
+	// Try loading it...
+	const HINSTANCE sndlib = LoadLibrary(snd_path); //TODO: replace with YQ2 Sys_LoadLibrary()?
+	if (sndlib == NULL)
+		return false;
+
+	const GetSoundAPI_t GetSoundAPI = (void*)GetProcAddress(sndlib, "GetSoundAPI");
+	if (GetSoundAPI == NULL)
+	{
+		FreeLibrary(sndlib);
+		return false;
+	}
+
+	const snd_import_t snd_import = { 0 }; // Assume GetSoundAPI() doesn't use snd_import function pointers...
+	const snd_export_t snd_export = GetSoundAPI(snd_import);
+
+	if (snd_export.api_version != SND_API_VERSION || snd_export.title == NULL)
+	{
+		FreeLibrary(sndlib);
+		return false;
+	}
+
+	const char* start = strchr(snd_path, '_');
+	const char* end = strrchr(snd_path, '.');
+	const qboolean is_valid = (start != NULL && end != NULL);
+
+	if (is_valid)
+	{
+		// Seems valid. Store info...
+		sndlib_info_t* info = &sndlib_infos[num_sndlib_infos];
+
+		strcpy_s(info->title, sizeof(info->title), snd_export.title);
+		strncpy_s(info->id, sizeof(info->id), snd_path, end - snd_path - 1); // Strip ".dll" part...
+	}
+
+	FreeLibrary(sndlib);
+
+	return is_valid;
+}
+
+static void SND_InitSndlibInfos(void) //mxd
+{
+	num_sndlib_infos = 0;
+
+	// Find all compatible snd_xxx.dll libraries.
+	char mask[MAX_QPATH];
+	Com_sprintf(mask, sizeof(mask), "snd_*.dll");
+
+	const char* snd_path = Sys_FindFirst(mask, 0, 0);
+
+	while (snd_path != NULL && num_sndlib_infos < MAX_SNDLIBS)
+	{
+		const char* path = strchr(snd_path, '/') + 1; // Skip starting '/'...
+		if (SND_StoreSndlibInfo(path != NULL ? path : snd_path))
+			num_sndlib_infos++;
+
+		snd_path = Sys_FindNext(0, 0);
+	}
+
+	Sys_FindClose();
+}
+
+static void SndDll_FreeLibrary(void)
 {
 	if (sound_library != NULL)
 	{
@@ -95,13 +162,9 @@ void SndDll_FreeLibrary(void)
 	sound_library = NULL;
 }
 
-void SndDll_Init(void)
+static void SndDll_Init(void)
 {
-	if (sound_library != NULL)
-	{
-		se.Shutdown();
-		SndDll_FreeLibrary();
-	}
+	SND_Shutdown();
 
 	if (snd_dll == NULL)
 		snd_dll = Cvar_Get("snd_dll", DEFAULT_SOUND_LIBRARY_NAME, CVAR_ARCHIVE); //mxd. Make archiveable.
@@ -201,4 +264,22 @@ void SndDll_Init(void)
 
 	InitClientEffects();
 	Com_ColourPrintf(P_HEADER, "------------------------------------\n");
+}
+
+void SND_Init(void) //mxd
+{
+	if (num_sndlib_infos == 0)
+		SND_InitSndlibInfos();
+
+	SndDll_Init();
+	se.Init(); // Must be called after window is created. Also initializes music backend.
+}
+
+void SND_Shutdown(void) //mxd
+{
+	if (sound_library != NULL)
+	{
+		se.Shutdown(); // Also shuts down music backend.
+		SndDll_FreeLibrary();
+	}
 }

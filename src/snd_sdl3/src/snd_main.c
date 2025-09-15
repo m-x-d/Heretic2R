@@ -712,7 +712,7 @@ SNDLIB_DECLSPEC snd_export_t GetSoundAPI(const snd_import_t snd_import)
 	si = snd_import;
 
 	snd_export.api_version = SND_API_VERSION;
-	snd_export.library_name = SNDLIB_NAME;
+	snd_export.title = SNDLIB_NAME;
 
 	snd_export.Init = S_Init;
 	snd_export.Shutdown = S_Shutdown;

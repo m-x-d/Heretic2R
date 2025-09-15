@@ -333,7 +333,8 @@ void VID_CheckChanges(void) //TODO: check YQ2 logic.
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
 
-		se.StopAllSounds();
+		if (se.StopAllSounds != NULL) //mxd. Sound backend is now initialized after renderer backend, so this will be NULL on the first call...
+			se.StopAllSounds();
 
 		char ref_name[100];
 		Com_sprintf(ref_name, sizeof(ref_name), "ref_%s.dll", vid_ref->string);
@@ -347,7 +348,7 @@ void VID_CheckChanges(void) //TODO: check YQ2 logic.
 
 			vid_restart_required = true; // H2
 
-			// Drop the console if we fail to load a refresh
+			// Drop the console if we fail to load a refresh.
 			if (cls.key_dest != key_console)
 				Con_ToggleConsole_f();
 		}

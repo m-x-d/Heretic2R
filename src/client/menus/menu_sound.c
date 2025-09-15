@@ -11,17 +11,20 @@
 
 cvar_t* m_banner_sound;
 
+cvar_t* m_item_sndbackend; //mxd
 cvar_t* m_item_effectsvol;
 cvar_t* m_item_musicvol; //mxd
 cvar_t* m_item_soundquality;
 
 static menuframework_t s_sound_menu;
 
+static menulist_t s_sound_backend_list; //mxd
 static menuslider_t s_sound_sfxvolume_slider;
 static menuslider_t s_sound_musicvolume_slider; //mxd
 static menulist_t s_sound_quality_list;
 
-static char snd_dll_name[16];
+static char* snd_list_titles[MAX_SNDLIBS]; //mxd
+static int initial_sndlib_index; //mxd. snd_lib index when entering menu.
 
 // Q2 counterpart
 static void UpdateSoundVolumeFunc(void* self)
@@ -63,6 +66,7 @@ static void Sound_MenuInit(void) // H2
 {
 	static char* lowhigh_names[] = { m_text_low, m_text_high, 0 };
 
+	static char name_sndbackend[MAX_QPATH]; //mxd
 	static char name_effectsvol[MAX_QPATH];
 	static char name_musicvol[MAX_QPATH]; //mxd
 	static char name_soundquality[MAX_QPATH];
@@ -70,12 +74,35 @@ static void Sound_MenuInit(void) // H2
 	s_sound_menu.nitems = 0;
 
 	snd_dll = Cvar_Get("snd_dll", DEFAULT_SOUND_LIBRARY_NAME, CVAR_ARCHIVE); //mxd. Use DEFAULT_SOUND_LIBRARY_NAME instead of "", make archiveable.
-	strcpy_s(snd_dll_name, sizeof(snd_dll_name), snd_dll->string); //mxd. strcpy -> strcpy_s
+
+	//mxd. Sound backend library titles.
+	for (int i = 0; i < num_sndlib_infos; i++)
+	{
+		snd_list_titles[i] = sndlib_infos[i].title;
+
+		if (Q_stricmp(snd_dll->string, sndlib_infos[i].id) == 0)
+		{
+			initial_sndlib_index = i;
+			s_sound_backend_list.curvalue = i;
+		}
+	}
+
+	snd_list_titles[num_sndlib_infos] = NULL;
+
+	//mxd
+	Com_sprintf(name_sndbackend, sizeof(name_sndbackend), "\x02%s", m_item_sndbackend->string);
+	s_sound_backend_list.generic.type = MTYPE_SPINCONTROL;
+	s_sound_backend_list.generic.x = 0;
+	s_sound_backend_list.generic.y = 0;
+	s_sound_backend_list.generic.name = name_sndbackend;
+	s_sound_backend_list.generic.width = re.BF_Strlen(name_sndbackend);
+	s_sound_backend_list.curvalue = initial_sndlib_index;
+	s_sound_backend_list.itemnames = snd_list_titles;
 
 	Com_sprintf(name_effectsvol, sizeof(name_effectsvol), "\x02%s", m_item_effectsvol->string);
 	s_sound_sfxvolume_slider.generic.type = MTYPE_SLIDER;
 	s_sound_sfxvolume_slider.generic.x = 0;
-	s_sound_sfxvolume_slider.generic.y = 0; // H2: 60
+	s_sound_sfxvolume_slider.generic.y = 40; // H2: 60
 	s_sound_sfxvolume_slider.generic.name = name_effectsvol;
 	s_sound_sfxvolume_slider.generic.width = re.BF_Strlen(name_effectsvol);
 	s_sound_sfxvolume_slider.generic.callback = UpdateSoundVolumeFunc;
@@ -87,7 +114,7 @@ static void Sound_MenuInit(void) // H2
 	Com_sprintf(name_musicvol, sizeof(name_musicvol), "\x02%s", m_item_musicvol->string);
 	s_sound_musicvolume_slider.generic.type = MTYPE_SLIDER;
 	s_sound_musicvolume_slider.generic.x = 0;
-	s_sound_musicvolume_slider.generic.y = 40;
+	s_sound_musicvolume_slider.generic.y = 80;
 	s_sound_musicvolume_slider.generic.name = name_musicvol;
 	s_sound_musicvolume_slider.generic.width = re.BF_Strlen(name_musicvol);
 	s_sound_musicvolume_slider.generic.callback = UpdateMusicVolumeFunc;
@@ -99,7 +126,7 @@ static void Sound_MenuInit(void) // H2
 	Com_sprintf(name_soundquality, sizeof(name_soundquality), "\x02%s", m_item_soundquality->string);
 	s_sound_quality_list.generic.type = MTYPE_SPINCONTROL;
 	s_sound_quality_list.generic.x = 0;
-	s_sound_quality_list.generic.y = 80;
+	s_sound_quality_list.generic.y = 120;
 	s_sound_quality_list.generic.name = name_soundquality;
 	s_sound_quality_list.generic.width = re.BF_Strlen(name_soundquality);
 	s_sound_quality_list.generic.flags = QMF_SINGLELINE;
@@ -107,6 +134,7 @@ static void Sound_MenuInit(void) // H2
 	s_sound_quality_list.itemnames = lowhigh_names;
 	s_sound_quality_list.curvalue = (int)(Cvar_VariableValue("s_loadas8bit") == 0.0f);
 
+	Menu_AddItem(&s_sound_menu, &s_sound_backend_list); //mxd
 	Menu_AddItem(&s_sound_menu, &s_sound_sfxvolume_slider);
 	Menu_AddItem(&s_sound_menu, &s_sound_musicvolume_slider); //mxd
 	Menu_AddItem(&s_sound_menu, &s_sound_quality_list);
@@ -208,8 +236,12 @@ static char* Sound_HandleMenuKey(menuframework_t* menu, const int key) // H2
 		case K_AUX30:
 		case K_AUX31:
 		case K_AUX32:
-			if (Q_stricmp(snd_dll_name, snd_dll->string) != 0)
+			if (initial_sndlib_index != s_sound_backend_list.curvalue)
+			{
+				Cvar_Set("snd_dll", sndlib_infos[s_sound_backend_list.curvalue].id);
+				initial_sndlib_index = s_sound_backend_list.curvalue;
 				CL_Snd_Restart_f();
+			}
 			M_PopMenu();
 			return SND_MENU3; //mxd. Added close menu sound.
 

@@ -331,8 +331,7 @@ static void CL_Userinfo_f(void)
 // Restart the sound subsystem so it can pick up new parameters and flush all sounds.
 void CL_Snd_Restart_f(void)
 {
-	SndDll_Init();
-	se.Init();
+	SND_Init();
 	CL_RegisterSounds();
 }
 
@@ -1569,7 +1568,7 @@ void CL_Init(void)
 	// All archived variables will now be loaded.
 	Con_Init();
 	VID_Init();
-	se.Init(); // Sound must be initialized after window is created. Also initializes music backend --mxd.
+	SND_Init(); //mxd. Originally initialized in Qcommon_Init() before CL_Init() call.
 
 	V_Init();
 
@@ -1619,10 +1618,9 @@ void CL_Shutdown(void)
 	P_Freelib();
 	SMK_Shutdown();
 	CL_ClearGameMessages(); // H2
-	se.Shutdown(); //mxd. Also shuts down music backend.
 	IN_Shutdown(); // YQ2
 	VID_Shutdown();
-	SndDll_FreeLibrary();
+	SND_Shutdown(); //mxd
 	NET_Shutdown();
 	Z_FreeTags(0);
 }
