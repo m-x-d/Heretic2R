@@ -52,7 +52,7 @@ void SK_ClearJoints(const int joint_index)
 }
 
 //mxd. Similar to SetJointAngVel() in game/g_Skeletons.c.
-static qboolean SetJointAngVel(const int joint_index, const int angle_index, const float dest_angle, const float angular_velocity)
+static qboolean SetJointAngVel(const int joint_index, const int angle_index, const float dest_angle, const float angular_velocity) //TODO: return value unused.
 {
 	CL_SkeletalJoint_t* joint = &skeletal_joints[joint_index];
 

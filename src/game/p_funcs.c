@@ -682,6 +682,7 @@ void PlayerChickenDeath(edict_t* self)
 }
 
 // Set the player model's joint angles.
+//mxd. Similar to SK_SetJointAngles() in cl_skeletons.c.
 void G_SetJointAngles(const playerinfo_t* info)
 {
 	const edict_t* self = (edict_t*)info->self;

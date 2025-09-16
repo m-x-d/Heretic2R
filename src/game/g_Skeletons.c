@@ -122,7 +122,7 @@ float GetJointAngle(const int joint_index, const int angle_index)
 	return skeletalJoints[joint_index].angles[angle_index];
 }
 
-qboolean SetJointAngVel(const int joint_index, const int angle_index, const float dest_angle, const float angular_velocity)
+qboolean SetJointAngVel(const int joint_index, const int angle_index, const float dest_angle, const float angular_velocity) //TODO: return value unused.
 {
 	G_SkeletalJoint_t* joint = &skeletalJoints[joint_index];
 
