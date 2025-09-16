@@ -26,6 +26,7 @@ extern cvar_t* menus_active;
 extern cvar_t* m_item_defaults;
 extern cvar_t* m_item_driver;
 extern cvar_t* m_item_vidmode;
+extern cvar_t* m_item_target_fps; //mxd
 extern cvar_t* m_item_gamma;
 extern cvar_t* m_item_brightness;
 extern cvar_t* m_item_contrast;

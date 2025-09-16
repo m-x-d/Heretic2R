@@ -12,6 +12,7 @@ cvar_t* m_banner_video;
 
 cvar_t* m_item_driver; // "Renderer"
 cvar_t* m_item_vidmode; // "Video resolution"
+cvar_t* m_item_target_fps; //mxd. "Target FPS"
 cvar_t* m_item_gamma;
 cvar_t* m_item_brightness;
 cvar_t* m_item_contrast;
@@ -25,6 +26,7 @@ static menuframework_t s_video_menu;
 
 static menulist_t s_ref_list;
 static menulist_t s_mode_list;
+static menulist_t s_target_fps_list; //mxd
 static menuslider_t s_gamma_slider;
 static menuslider_t s_brightness_slider;
 static menuslider_t s_contrast_slider;
@@ -39,25 +41,31 @@ static int initial_vid_mode; // vid_mode when entering menu.
 
 #pragma region ========================== MENU ITEM CALLBACKS ==========================
 
-static void GammaCallback(void* self) // H2
+static void UpdateTargetFPSFunc(void* self) //mxd
+{
+	const menulist_t* list = (menulist_t*)self;
+	Cvar_SetValue("vid_maxfps", (float)(list->curvalue + 1) * 30.0f);
+}
+
+static void UpdateGammaFunc(void* self) // H2
 {
 	const menuslider_t* slider = (menuslider_t*)self;
 	Cvar_SetValue("vid_gamma", (16.0f - slider->curvalue) / 16.0f);
 }
 
-static void BrightnessCallback(void* self)
+static void UpdateBrightnessFunc(void* self)
 {
 	const menuslider_t* slider = (menuslider_t*)self;
 	Cvar_SetValue("vid_brightness", slider->curvalue / 16.0f);
 }
 
-static void ContrastCallback(void* self) // H2
+static void UpdateContrastFunc(void* self) // H2
 {
 	const menuslider_t* slider = (menuslider_t*)self;
 	Cvar_SetValue("vid_contrast", slider->curvalue / 16.0f);
 }
 
-static void DetailCallback(void* self) // H2
+static void UpdateDetailFunc(void* self) // H2
 {
 	const menuslider_t* slider = (menuslider_t*)self;
 	Cvar_SetValue("r_detail", slider->curvalue);
@@ -134,13 +142,15 @@ void VID_PreMenuInit(void)
 
 static void VID_MenuInit(void)
 {
+	static char* target_fps_names[] = { "30", "60", "90", "120", "240", 0 }; //mxd
+
 	static char name_driver[MAX_QPATH];
 	static char name_vidmode[MAX_QPATH];
+	static char name_target_fps[MAX_QPATH]; //mxd
 	static char name_gamma[MAX_QPATH];
 	static char name_brightness[MAX_QPATH];
 	static char name_contrast[MAX_QPATH];
 	static char name_detail[MAX_QPATH];
-	static char name_defaults[MAX_QPATH];
 
 	VID_PreMenuInit();
 
@@ -151,15 +161,9 @@ static void VID_MenuInit(void)
 	s_video_menu.nitems = 0;
 
 	Cvar_SetValue("r_detail", Clamp(r_detail->value, 0.0f, 3.0f));
+	Cvar_SetValue("vid_maxfps", Clamp(vid_maxfps->value, 30.0f, 240.0f)); //mxd
 
 	Com_sprintf(name_driver, sizeof(name_driver), "\x02%s", m_item_driver->string);
-	Com_sprintf(name_vidmode, sizeof(name_vidmode), "\x02%s", m_item_vidmode->string);
-	Com_sprintf(name_gamma, sizeof(name_gamma), "\x02%s", m_item_gamma->string);
-	Com_sprintf(name_brightness, sizeof(name_brightness), "\x02%s", m_item_brightness->string);
-	Com_sprintf(name_contrast, sizeof(name_contrast), "\x02%s", m_item_contrast->string);
-	Com_sprintf(name_detail, sizeof(name_detail), "\x02%s", m_item_detail->string);
-	Com_sprintf(name_defaults, sizeof(name_defaults), "\x02%s", m_item_defaults->string);
-
 	s_ref_list.generic.type = MTYPE_SPINCONTROL;
 	s_ref_list.generic.x = 0;
 	s_ref_list.generic.y = 0;
@@ -168,6 +172,7 @@ static void VID_MenuInit(void)
 	s_ref_list.curvalue = initial_reflib_index;
 	s_ref_list.itemnames = ref_list_titles;
 
+	Com_sprintf(name_vidmode, sizeof(name_vidmode), "\x02%s", m_item_vidmode->string);
 	s_mode_list.generic.type = MTYPE_SPINCONTROL;
 	s_mode_list.generic.x = 0;
 	s_mode_list.generic.y = 40;
@@ -176,52 +181,68 @@ static void VID_MenuInit(void)
 	s_mode_list.curvalue = initial_vid_mode;
 	s_mode_list.itemnames = vid_mode_titles;
 
+	Com_sprintf(name_target_fps, sizeof(name_target_fps), "\x02%s", m_item_target_fps->string);
+	s_target_fps_list.generic.type = MTYPE_SPINCONTROL;
+	s_target_fps_list.generic.x = 0;
+	s_target_fps_list.generic.y = 80;
+	s_target_fps_list.generic.name = name_target_fps;
+	s_target_fps_list.generic.width = re.BF_Strlen(name_target_fps);
+	s_target_fps_list.generic.flags = QMF_SINGLELINE;
+	s_target_fps_list.generic.callback = UpdateTargetFPSFunc;
+	s_target_fps_list.itemnames = target_fps_names;
+	s_target_fps_list.curvalue = (int)(vid_maxfps->value / 30.0f) - 1;
+
+	Com_sprintf(name_gamma, sizeof(name_gamma), "\x02%s", m_item_gamma->string);
 	s_gamma_slider.generic.type = MTYPE_SLIDER;
 	s_gamma_slider.generic.flags = QMF_SELECT_SOUND;
 	s_gamma_slider.generic.x = 0;
-	s_gamma_slider.generic.y = 80;
+	s_gamma_slider.generic.y = 100;
 	s_gamma_slider.generic.name = name_gamma;
 	s_gamma_slider.generic.width = re.BF_Strlen(name_gamma);
-	s_gamma_slider.generic.callback = GammaCallback;
+	s_gamma_slider.generic.callback = UpdateGammaFunc;
 	s_gamma_slider.minvalue = 0.0f;
 	s_gamma_slider.maxvalue = 16.0f;
 	s_gamma_slider.curvalue = 16.0f - vid_gamma->value * 16.0f;
 
+	Com_sprintf(name_brightness, sizeof(name_brightness), "\x02%s", m_item_brightness->string);
 	s_brightness_slider.generic.type = MTYPE_SLIDER;
 	s_brightness_slider.generic.flags = QMF_SELECT_SOUND;
 	s_brightness_slider.generic.x = 0;
-	s_brightness_slider.generic.y = 120;
+	s_brightness_slider.generic.y = 140;
 	s_brightness_slider.generic.name = name_brightness;
 	s_brightness_slider.generic.width = re.BF_Strlen(name_brightness);
-	s_brightness_slider.generic.callback = BrightnessCallback;
+	s_brightness_slider.generic.callback = UpdateBrightnessFunc;
 	s_brightness_slider.minvalue = 0.0f;
 	s_brightness_slider.maxvalue = 16.0f;
 	s_brightness_slider.curvalue = vid_brightness->value * 16.0f;
 
+	Com_sprintf(name_contrast, sizeof(name_contrast), "\x02%s", m_item_contrast->string);
 	s_contrast_slider.generic.type = MTYPE_SLIDER;
 	s_contrast_slider.generic.flags = QMF_SELECT_SOUND;
 	s_contrast_slider.generic.x = 0;
-	s_contrast_slider.generic.y = 160;
+	s_contrast_slider.generic.y = 180;
 	s_contrast_slider.generic.name = name_contrast;
 	s_contrast_slider.generic.width = re.BF_Strlen(name_contrast);
-	s_contrast_slider.generic.callback = ContrastCallback;
+	s_contrast_slider.generic.callback = UpdateContrastFunc;
 	s_contrast_slider.minvalue = 1.6f;
 	s_contrast_slider.maxvalue = 14.4f;
 	s_contrast_slider.curvalue = vid_contrast->value * 16.0f;
 
+	Com_sprintf(name_detail, sizeof(name_detail), "\x02%s", m_item_detail->string);
 	s_detail_slider.generic.type = MTYPE_SLIDER;
 	s_detail_slider.generic.flags = QMF_SELECT_SOUND; //mxd. QMF_SELECT_SOUND flag was missing in original version.
 	s_detail_slider.generic.x = 0;
-	s_detail_slider.generic.y = 200;
+	s_detail_slider.generic.y = 220;
 	s_detail_slider.generic.name = name_detail;
 	s_detail_slider.generic.width = re.BF_Strlen(name_detail);
-	s_detail_slider.generic.callback = DetailCallback;
+	s_detail_slider.generic.callback = UpdateDetailFunc;
 	s_detail_slider.minvalue = 0.0f;
 	s_detail_slider.maxvalue = 3.0f;
 	s_detail_slider.curvalue = r_detail->value; //mxd. Original version used Cvar_VariableValue("r_detail") here.
 
 	Menu_AddItem(&s_video_menu, &s_ref_list);
 	Menu_AddItem(&s_video_menu, &s_mode_list);
+	Menu_AddItem(&s_video_menu, &s_target_fps_list); //mxd
 	Menu_AddItem(&s_video_menu, &s_gamma_slider);
 	Menu_AddItem(&s_video_menu, &s_brightness_slider);
 	Menu_AddItem(&s_video_menu, &s_contrast_slider);

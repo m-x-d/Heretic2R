@@ -604,6 +604,7 @@ void M_Init(void)
 	// Video Settings menu.
 	m_item_driver = Cvar_Get("m_item_driver", "Renderer", 0);
 	m_item_vidmode = Cvar_Get("m_item_vidmode", "Video Resolution", 0);
+	m_item_target_fps = Cvar_Get("m_item_target_fps", "Target FPS", 0); //mxd
 	m_item_gamma = Cvar_Get("m_item_gamma", "Gamma", 0);
 	m_item_brightness = Cvar_Get("m_item_brightness", "Brightness", 0);
 	m_item_contrast = Cvar_Get("m_item_contrast", "Contrast", 0);
