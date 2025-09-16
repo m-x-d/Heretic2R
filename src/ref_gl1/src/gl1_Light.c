@@ -219,6 +219,7 @@ void R_LightPoint(const vec3_t p, vec3_t color)
 
 	// Add dynamic lights.
 	dlight_t* dl = &r_newrefdef.dlights[0];
+	vec3_t dl_color = { 0 }; //mxd
 	for (int lnum = 0; lnum < r_newrefdef.num_dlights; lnum++, dl++)
 	{
 		vec3_t dist;
@@ -227,10 +228,11 @@ void R_LightPoint(const vec3_t p, vec3_t color)
 
 		if (add > 0.0f)
 			for (int i = 0; i < 3; i++)
-				color[i] += (float)dl->color.c_array[i] / 255.0f * add;
+				dl_color[i] += (float)dl->color.c_array[i] / 255.0f * add;
 	}
 
-	VectorScale(color, gl_modulate->value, color);
+	Vec3ScaleAssign(gl_modulate->value, dl_color); //mxd. Original logic scales 'color' var here (which is already scaled by gl_modulate in R_RecursiveLightPoint()).
+	Vec3AddAssign(dl_color, color);
 }
 
 #pragma endregion
