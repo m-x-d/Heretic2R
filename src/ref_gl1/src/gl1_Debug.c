@@ -180,6 +180,18 @@ void RI_AddDebugArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t 
 	}
 }
 
+void RI_AddDebugDirection(const vec3_t start, const vec3_t angles_deg, const float size, const paletteRGBA_t color, const float lifetime)
+{
+	vec3_t angles;
+	VectorScale(angles_deg, ANGLE_TO_RAD, angles);
+
+	vec3_t end;
+	DirFromAngles(angles, end);
+	VectorMA(start, size, end, end);
+
+	RI_AddDebugArrow(start, end, color, lifetime);
+}
+
 void RI_AddDebugMarker(const vec3_t center, const float size, const paletteRGBA_t color, const float lifetime)
 {
 	// Find free slot...

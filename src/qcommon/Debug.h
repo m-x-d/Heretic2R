@@ -40,6 +40,7 @@ Q2DLL_DECLSPEC extern void DBG_AddEntityBbox(const edict_t* ent, paletteRGBA_t c
 
 Q2DLL_DECLSPEC extern void DBG_AddLine(const vec3_t start, const vec3_t end, paletteRGBA_t color, float lifetime);
 Q2DLL_DECLSPEC extern void DBG_AddArrow(const vec3_t start, const vec3_t end, paletteRGBA_t color, float lifetime);
+Q2DLL_DECLSPEC extern void DBG_AddDirection(const vec3_t start, const vec3_t angles_deg, float size, paletteRGBA_t color, float lifetime);
 Q2DLL_DECLSPEC extern void DBG_AddMarker(const vec3_t center, float size, paletteRGBA_t color, float lifetime);
 
 extern void DBG_DrawMessages(void);

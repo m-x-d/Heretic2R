@@ -251,6 +251,7 @@ typedef struct refexport_s
 
 	void (*AddDebugLine)(const vec3_t start, const vec3_t end, paletteRGBA_t color, float lifetime);
 	void (*AddDebugArrow)(const vec3_t start, const vec3_t end, paletteRGBA_t color, float lifetime);
+	void (*AddDebugDirection)(const vec3_t start, const vec3_t angles_deg, float size, paletteRGBA_t color, float lifetime);
 	void (*AddDebugMarker)(const vec3_t center, float size, paletteRGBA_t color, float lifetime);
 #endif
 } refexport_t;
