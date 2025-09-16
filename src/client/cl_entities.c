@@ -56,15 +56,15 @@ void CL_ClearSkeletalEntities(void) // H2
 
 		memset(ent, 0, sizeof(centity_t));
 
-		ent->baseline.skeletalType = -1;
-		ent->baseline.rootJoint = -1;
-		ent->baseline.swapFrame = -1;
-		ent->current.skeletalType = -1;
-		ent->current.rootJoint = -1;
-		ent->current.swapFrame = -1;
-		ent->prev.skeletalType = -1;
-		ent->prev.rootJoint = -1;
-		ent->prev.swapFrame = -1;
+		ent->baseline.skeletalType = SKEL_NULL;
+		ent->baseline.rootJoint = NULL_ROOT_JOINT;
+		ent->baseline.swapFrame = NO_SWAP_FRAME;
+		ent->current.skeletalType = SKEL_NULL;
+		ent->current.rootJoint = NULL_ROOT_JOINT;
+		ent->current.swapFrame = NO_SWAP_FRAME;
+		ent->prev.skeletalType = SKEL_NULL;
+		ent->prev.rootJoint = NULL_ROOT_JOINT;
+		ent->prev.swapFrame = NO_SWAP_FRAME;
 	}
 
 	memset(skeletal_joints, 0, sizeof(skeletal_joints));
@@ -370,12 +370,12 @@ static void CL_DeltaEntity(frame_t* frame, const int newnum, const entity_state_
 	{
 		fxe.RemoveClientEffects(ent);
 
-		if (ent->prev.rootJoint != -1)
+		if (ent->prev.rootJoint != NULL_ROOT_JOINT)
 		{
 			SK_ClearJoints(ent->prev.rootJoint);
-			ent->baseline.rootJoint = -1;
-			ent->current.rootJoint = -1;
-			ent->prev.rootJoint = -1;
+			ent->baseline.rootJoint = NULL_ROOT_JOINT;
+			ent->current.rootJoint = NULL_ROOT_JOINT;
+			ent->prev.rootJoint = NULL_ROOT_JOINT;
 		}
 
 		if (ent->referenceInfo != NULL)
@@ -536,12 +536,12 @@ static void CL_ParsePacketEntities(const frame_t* oldframe, frame_t* newframe)
 				ent->flags &= ~CF_INUSE;
 				fxe.RemoveClientEffects(ent);
 
-				if (ent->prev.rootJoint != -1)
+				if (ent->prev.rootJoint != NULL_ROOT_JOINT)
 				{
 					SK_ClearJoints(ent->prev.rootJoint);
-					ent->baseline.rootJoint = -1;
-					ent->current.rootJoint = -1;
-					ent->prev.rootJoint = -1;
+					ent->baseline.rootJoint = NULL_ROOT_JOINT;
+					ent->current.rootJoint = NULL_ROOT_JOINT;
+					ent->prev.rootJoint = NULL_ROOT_JOINT;
 				}
 
 				if (ent->referenceInfo != NULL)

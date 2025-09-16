@@ -8,6 +8,7 @@
 #include "cl_effects.h"
 #include "cl_messages.h"
 #include "cmodel.h"
+#include "Skeletons.h"
 #include "tokens.h"
 
 char* svc_strings[256] =
@@ -406,9 +407,9 @@ static void CL_ParseBaseline(void)
 	memset(&nullstate, 0, sizeof(nullstate));
 
 	total = 0; // H2
-	nullstate.skeletalType = -1; // H2
-	nullstate.rootJoint = -1; // H2
-	nullstate.swapFrame = -1; // H2
+	nullstate.skeletalType = SKEL_NULL; // H2
+	nullstate.rootJoint = NULL_ROOT_JOINT; // H2
+	nullstate.swapFrame = NO_SWAP_FRAME; // H2
 
 	const int newnum = CL_ParseEntityBits(bits, &total);
 	CL_ParseDelta(&nullstate, &cl_entities[newnum].baseline, newnum, bits);

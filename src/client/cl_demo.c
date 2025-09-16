@@ -7,6 +7,7 @@
 #include "client.h"
 #include "qcommon.h"
 #include "EffectFlags.h"
+#include "Skeletons.h"
 
 // record <demoname>
 // Begins recording a demo from the current position.
@@ -93,9 +94,9 @@ void CL_Record_f(void)
 	// Send baselines.
 	entity_state_t nullstate = { 0 };
 
-	nullstate.skeletalType = -1; // H2
-	nullstate.rootJoint = -1; // H2
-	nullstate.swapFrame = -1; // H2
+	nullstate.skeletalType = SKEL_NULL; // H2
+	nullstate.rootJoint = NULL_ROOT_JOINT; // H2
+	nullstate.swapFrame = NO_SWAP_FRAME; // H2
 
 	for (int i = 0; i < MAX_EDICTS; i++)
 	{
