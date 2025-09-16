@@ -514,7 +514,7 @@ typedef struct playerinfo_s
 
 	// Inputs & outputs.
 
-	client_persistant_t pers; // Data that must be maintatined over the duration of a level.
+	client_persistant_t pers; // Data that must be maintained over the duration of a level.
 	usercmd_t pcmd; // Last usercmd_t.
 
 	// Status of controller buttons.
@@ -565,7 +565,8 @@ typedef struct playerinfo_s
 	vec3_t origin;
 	vec3_t angles;
 	vec3_t velocity;
-	vec3_t mins,maxs;
+	vec3_t mins;
+	vec3_t maxs;
 	void* enemy;		// Not used on client.
 	void* target;		// Not used on client.
 	void* target_ent;	// Not used on client.
@@ -601,11 +602,12 @@ typedef struct playerinfo_s
 	// Torso angle twisting stuff which is derived entirely from various inputs to the animation system.
 	qboolean headjointonly;
 	vec3_t targetjointangles;
+
 	qboolean showscores; // Set layout stat.
 	qboolean showpuzzleinventory; // Set layout stat.
 	
 	// Internal state info.
-	int seqcmd[20];
+	int seqcmd[20]; // == ACMD_MAX
 	panimmove_t* uppermove;
 	panimmove_t* lowermove;
 	int uppermove_index;
