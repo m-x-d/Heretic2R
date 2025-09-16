@@ -1053,11 +1053,7 @@ void R_DrawWorld(void)
 		R_SelectTexture(GL_TEXTURE0);
 		R_TexEnv(GL_REPLACE);
 		R_SelectTexture(GL_TEXTURE1);
-
-		if ((int)gl_lightmap->value)
-			R_TexEnv(GL_REPLACE);
-		else
-			R_TexEnv(GL_MODULATE);
+		R_TexEnv((int)gl_lightmap->value ? GL_REPLACE : GL_MODULATE);
 
 		R_RecursiveWorldNode(&ent, r_worldmodel->nodes);
 
