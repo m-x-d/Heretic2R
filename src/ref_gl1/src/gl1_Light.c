@@ -254,7 +254,7 @@ static void R_AddDynamicLights(const msurface_t* surf)
 		const float frad = dl->intensity - fabsf(fdist);
 		// Rad is now the highest intensity on the plane.
 
-		float fminlight = DLIGHT_CUTOFF; // FIXME: make configurable?
+		float fminlight = DLIGHT_CUTOFF; //TODO: make configurable?
 		if (frad < fminlight)
 			continue;
 

@@ -55,7 +55,7 @@ typedef struct entity_s
 		// Info for fmodels and bmodels.
 		struct
 		{
-			float oldorigin[3];	
+			float oldorigin[3]; //TODO: set, but never used.
 			int oldframe;
 
 			float backlerp;	// 0.0 = current, 1.0 = old.
@@ -63,7 +63,7 @@ typedef struct entity_s
 			int skinnum;
 			struct image_s* skin;		// NULL for inline skin.
 			struct image_s** skins;		// Pointer to the list of clientinfo skins.
-			char skinname[MAX_QPATH];	// For specific path to skin.
+			char skinname[MAX_QPATH];	// For specific path to skin. //TODO: unused.
 
 			paletteRGB_t absLight;
 			byte padFor_3byte_absLight;
@@ -72,7 +72,7 @@ typedef struct entity_s
 			// Happily most client entities are sprites.
 			fmnodeinfo_t* fmnodeinfo;
 
-			int swapCluster;	// Cluster to swap on.
+			int swapCluster;	// Cluster to swap on. //TODO: always 0.
 
 			int swapFrame;		// Frame to swap clustered verts in for.
 			int oldSwapFrame;	// Previous frame to swap clustered verts in for.
