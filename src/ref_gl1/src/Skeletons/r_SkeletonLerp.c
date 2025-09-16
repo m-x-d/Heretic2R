@@ -40,10 +40,10 @@ static void LerpVerts(const int num_verts, fmtrivertx_t* verts, fmtrivertx_t* ol
 
 static void DoSkeletalRotations(const fmdl_t* fmdl, const entity_t* e) //mxd. Original logic uses 'fmodel' and 'currententity' global vars.
 {
-	if (e->rootJoint == -1)
+	if (e->rootJoint == NULL_ROOT_JOINT)
 		return;
 
-	if (e->swapFrame != -1)
+	if (e->swapFrame != NO_SWAP_FRAME)
 	{
 		RotateModelSegments(&swap_skeleton, 0, fmdl->rootCluster, e->rootJoint, s_lerped);
 
@@ -64,7 +64,7 @@ static void LerpStandardSkeleton(const fmdl_t* fmdl, entity_t* e) //mxd. Origina
 {
 	static vec3_t lerped[2048];
 
-	if (e->swapFrame != -1)
+	if (e->swapFrame != NO_SWAP_FRAME)
 	{
 		CreateSkeletonInPlace(fmdl->skeletalType, &swap_skeleton);
 		e->swapCluster = 0;
@@ -95,7 +95,7 @@ static void LerpStandardSkeleton(const fmdl_t* fmdl, entity_t* e) //mxd. Origina
 		LinearllyInterpolateJoints(&fmdl->skeletons[e->swapFrame], 0, &fmdl->skeletons[e->oldSwapFrame], 0, &swap_skeleton, 0, swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
 	}
 
-	if (e->rootJoint != -1 || e->swapFrame != -1)
+	if (e->rootJoint != NULL_ROOT_JOINT || e->swapFrame != NO_SWAP_FRAME)
 	{
 		CreateSkeletonInPlace(fmdl->skeletalType, &cur_skeleton);
 		LinearllyInterpolateJoints(&fmdl->skeletons[e->frame], 0, &fmdl->skeletons[e->oldframe], 0, &cur_skeleton, 0, cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
@@ -134,14 +134,14 @@ static void LerpReferences(const fmdl_t* fmdl, const entity_t* e) //mxd. Origina
 
 	const int num_refs = numReferences[fmdl->referenceType];
 
-	if (e->rootJoint != -1)
+	if (e->rootJoint != NULL_ROOT_JOINT)
 	{
 		HACK_Pitch_Adjust = true; //mxd. Interestingly, Loki version doesn't set/unset this here... //TODO: check Loki version of Matricies3FromDirAndUp()?
 
 		SetupJointRotations(&cur_skeleton, 0, e->rootJoint);
 		FinishJointRotations(&cur_skeleton, 0);
 
-		if (e->swapFrame != -1)
+		if (e->swapFrame != NO_SWAP_FRAME)
 		{
 			SetupJointRotations(&swap_skeleton, 0, e->rootJoint);
 			FinishJointRotations(&swap_skeleton, 0);
@@ -161,7 +161,7 @@ static void LerpReferences(const fmdl_t* fmdl, const entity_t* e) //mxd. Origina
 
 		if (fmdl->frames == NULL) //TODO: can't happen? There's fmodel->frames NULL-check in FrameLerp().
 		{
-			if (e->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < e->swapCluster)
+			if (e->swapFrame == NO_SWAP_FRAME || fmdl_referenceInfo->jointIDs[i] < e->swapCluster)
 			{
 				VectorCopy(s_lerped[fmdl->header.num_xyz + i * 3 + 0], cur_placement->origin);
 				VectorCopy(s_lerped[fmdl->header.num_xyz + i * 3 + 1], cur_placement->direction);
@@ -173,7 +173,7 @@ static void LerpReferences(const fmdl_t* fmdl, const entity_t* e) //mxd. Origina
 				ri.Com_Error(ERR_DROP, "LerpReferences: fmodel compressed frame lerp logic not implemented...");
 			}
 		}
-		else if (e->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < e->swapCluster)
+		else if (e->swapFrame == NO_SWAP_FRAME || fmdl_referenceInfo->jointIDs[i] < e->swapCluster)
 		{
 			const Placement_t* frame = &fmdl->refsForFrame[e->frame * num_refs + i];
 			const Placement_t* oldframe = &fmdl->refsForFrame[e->oldframe * num_refs + i];
@@ -266,9 +266,9 @@ void FrameLerp(const fmdl_t* fmdl, entity_t* e) //mxd. Original logic uses 'fmod
 	else
 		CompressedFrameLerp(e);
 
-	if (e->swapFrame != -1)
+	if (e->swapFrame != NO_SWAP_FRAME)
 		ClearSkeleton(&swap_skeleton, 0);
 
-	if (e->rootJoint != -1)
+	if (e->rootJoint != NULL_ROOT_JOINT)
 		ClearSkeleton(&cur_skeleton, 0);
 }

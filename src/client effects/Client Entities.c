@@ -93,7 +93,7 @@ client_entity_t* ClientEntity_new(const int type, const int flags, const vec3_t 
 	new_ent->startTime = fxi.cl->time;
 	new_ent->Update = RemoveSelfAI;
 	new_ent->r.rootJoint = NULL_ROOT_JOINT;
-	new_ent->r.swapFrame = -1;
+	new_ent->r.swapFrame = NO_SWAP_FRAME;
 
 	return new_ent;
 }

@@ -434,8 +434,8 @@ static qboolean R_CullFlexModel(const fmdl_t* fmdl, entity_t* e)
 	// Apply model scale.
 	if (e->cl_scale != 0.0f && e->cl_scale != 1.0f)
 	{
-		VectorScale(mins, e->cl_scale, mins);
-		VectorScale(maxs, e->cl_scale, maxs);
+		Vec3ScaleAssign(e->cl_scale, mins);
+		Vec3ScaleAssign(e->cl_scale, maxs);
 	}
 
 	// Compute a full bounding box.
@@ -559,7 +559,7 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 	}
 
 	if (!(int)r_frameswap->value)
-		e->swapFrame = -1;
+		e->swapFrame = NO_SWAP_FRAME;
 
 	FrameLerp(fmdl, e);
 
