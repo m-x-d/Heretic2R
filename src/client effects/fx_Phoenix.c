@@ -55,7 +55,7 @@ static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 	else if ((int)r_detail->value == DETAIL_NORMAL)
 		duration = 1700;
 	else
-		duration = 2000;
+		duration = 2000; //TODO: even longer duration for DETAIL_UBERHIGH?
 
 	// Here we want to shoot out flame to either side.
 	vec3_t angles;
@@ -235,7 +235,7 @@ static qboolean PhoenixExplosionBirdThink(client_entity_t* bird, centity_t* owne
 	else if ((int)r_detail->value == DETAIL_NORMAL)
 		duration = 210;
 	else
-		duration = 250;
+		duration = 250; //TODO: even longer duration for DETAIL_UBERHIGH?
 
 	// Spawn another trail bird.
 	vec3_t pos;
@@ -247,7 +247,7 @@ static qboolean PhoenixExplosionBirdThink(client_entity_t* bird, centity_t* owne
 	new_bird->radius = 128.0f;
 	new_bird->r.model = &phoenix_models[3]; // Phoenix sprite.
 	new_bird->r.frame = 1;
-	new_bird->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	new_bird->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 	new_bird->r.scale = bird->r.scale;
 	new_bird->alpha = bird->alpha;
 	new_bird->d_alpha = -4.0f * bird->alpha;
@@ -321,8 +321,8 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 
 	explosion->radius = 128.0f;
 	explosion->r.model = &phoenix_models[5]; // Outer explosion model.
-	explosion->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
-	explosion->flags |= CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA;
+	explosion->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
+	explosion->flags |= (CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA);
 	explosion->alpha = 0.1f;
 	explosion->r.scale = 0.1f;
 	explosion->d_alpha = 3.0f;
@@ -340,7 +340,8 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 
 	// Add some glowing blast particles.
 	vec3_t vel;
-	VectorScale(vel, EXPLODE_SPEED, vel);
+	VectorCopy(dir, vel);
+	Vec3ScaleAssign(EXPLODE_SPEED, vel);
 	const int count = GetScaledCount(EXPLODE_NUM_BITS, 0.3f);
 
 	for (int i = 0; i < count; i++)
@@ -348,7 +349,7 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), light_color, 2000);
 
 		VectorRandomSet(spark->velocity, EXPLODE_SPEED);
-		VectorAdd(spark->velocity, vel, spark->velocity);
+		Vec3AddAssign(vel, spark->velocity);
 		spark->acceleration[2] = EXPLODE_GRAVITY;
 		spark->scale = EXPLODE_SCALE;
 		spark->d_scale = flrand(-20.0f, -10.0f);
@@ -363,7 +364,7 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 
 	flash->radius = 128.0f;
 	flash->r.model = &phoenix_models[2]; // Halo sprite.
-	flash->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	flash->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 	flash->r.frame = 1;
 	flash->r.scale = 1.5f;
 	flash->d_alpha = -4.0f;
@@ -377,14 +378,14 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 	else if ((int)r_detail->value == DETAIL_NORMAL)
 		duration = 125;
 	else
-		duration = 100;
+		duration = 100; //TODO: even shorter update interval for DETAIL_UBERHIGH?
 
-	// ...and draw the phoenix rising from the explosion
+	// ...and draw the phoenix rising from the explosion.
 	client_entity_t* phoenix = ClientEntity_new(type, flags, origin, NULL, duration);
 
 	phoenix->radius = 128.0f;
 	phoenix->r.model = &phoenix_models[3]; // Phoenix sprite.
-	phoenix->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	phoenix->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 	phoenix->r.scale = 0.1f;
 	VectorScale(vel, 0.25f, phoenix->velocity);
 	phoenix->acceleration[2] = 64.0f;
