@@ -340,8 +340,7 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 
 	// Add some glowing blast particles.
 	vec3_t vel;
-	VectorCopy(dir, vel);
-	Vec3ScaleAssign(EXPLODE_SPEED, vel);
+	VectorScale(dir, EXPLODE_SPEED, vel);
 	const int count = GetScaledCount(EXPLODE_NUM_BITS, 0.3f);
 
 	for (int i = 0; i < count; i++)
