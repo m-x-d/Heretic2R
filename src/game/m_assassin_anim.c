@@ -31,7 +31,7 @@ static const animframe_t assassin_frames_daggerl[] =
 	{ FRAME_ataka13,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_ataka14,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }
 };
-const animmove_t assassin_move_daggerl = { 14, assassin_frames_daggerl, assassin_pause };
+const animmove_t assassin_move_daggerl = ANIMMOVE(assassin_frames_daggerl, assassin_pause);
 
 // Assassin daggerR - assassin attacking right hand.
 static const animframe_t assassin_frames_daggerr[] =
@@ -52,7 +52,7 @@ static const animframe_t assassin_frames_daggerr[] =
 	{ FRAME_atakb14,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakb15,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }
 };
-const animmove_t assassin_move_daggerr = { 15, assassin_frames_daggerr, assassin_pause };
+const animmove_t assassin_move_daggerr = ANIMMOVE(assassin_frames_daggerr, assassin_pause);
 
 // Assassin daggerB - assassin attacking left hand.
 static const animframe_t assassin_frames_daggerb[] =
@@ -72,7 +72,7 @@ static const animframe_t assassin_frames_daggerb[] =
 	{ FRAME_atakc13,	NULL, 0.0f, 0.0f, 0.0f, assassin_check_loop, 2.0f, NULL }, // Check for loop to other attack.
 	{ FRAME_atakc14,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 };
-const animmove_t assassin_move_daggerb = { 14, assassin_frames_daggerb, assassin_pause };
+const animmove_t assassin_move_daggerb = ANIMMOVE(assassin_frames_daggerb, assassin_pause);
 
 // Assassin daggerC - assassin attacking crouched.
 static const animframe_t assassin_frames_daggerc[] =
@@ -89,7 +89,7 @@ static const animframe_t assassin_frames_daggerc[] =
 	{ FRAME_lndatk10,	NULL, 0.0f, 0.0f, 0.0f, assassin_crouched_check_attack, 0.0f, NULL }, // Check for loop to other attack.
 	{ FRAME_lndatk11,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }
 };
-const animmove_t assassin_move_daggerc = { 11, assassin_frames_daggerc, assassin_pause };
+const animmove_t assassin_move_daggerc = ANIMMOVE(assassin_frames_daggerc, assassin_pause);
 
 // Assassin newdagger.
 static const animframe_t assassin_frames_newdagger[] =
@@ -110,7 +110,7 @@ static const animframe_t assassin_frames_newdagger[] =
 	{ FRAME_newattackA14,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackA15,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 };
-const animmove_t assassin_move_newdagger = { 15, assassin_frames_newdagger, assassin_pause };
+const animmove_t assassin_move_newdagger = ANIMMOVE(assassin_frames_newdagger, assassin_pause);
 
 // Assassin newdaggerB.
 static const animframe_t assassin_frames_newdaggerb[] =
@@ -133,7 +133,7 @@ static const animframe_t assassin_frames_newdaggerb[] =
 	{ FRAME_newattackB16,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB17,	NULL, 0.0f, 0.0f, 0.0f, assassin_check_loop, 4, NULL },
 };
-const animmove_t assassin_move_newdaggerb = { 17, assassin_frames_newdaggerb, assassin_pause };
+const animmove_t assassin_move_newdaggerb = ANIMMOVE(assassin_frames_newdaggerb, assassin_pause);
 
 #pragma endregion
 
@@ -146,28 +146,28 @@ static const animframe_t assassin_frames_crouch[] =
 	{ FRAME_jump15,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_stop },
 };
-const animmove_t assassin_move_crouch = { 3, assassin_frames_crouch, assassin_pause };
+const animmove_t assassin_move_crouch = ANIMMOVE(assassin_frames_crouch, assassin_pause);
 
 // Assassin uncrouch.
 static const animframe_t assassin_frames_uncrouch[] =
 {
 	{ FRAME_jump17,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_unset_crouched }
 };
-const animmove_t assassin_move_uncrouch = { 1, assassin_frames_uncrouch, assassin_pause };
+const animmove_t assassin_move_uncrouch = ANIMMOVE(assassin_frames_uncrouch, assassin_pause);
 
 // Assassin in air.
 static const animframe_t assassin_frames_evinair[] =
 {
 	{ FRAME_jump12,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL } // Hang here until land.
 };
-const animmove_t assassin_move_evinair = { 1, assassin_frames_evinair, NULL };
+const animmove_t assassin_move_evinair = ANIMMOVE(assassin_frames_evinair, NULL);
 
 // Assassin in air.
 static const animframe_t assassin_frames_inair[] =
 {
 	{ FRAME_jump12,	MG_InAirMove, 50, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL } // Hang here until land.
 };
-const animmove_t assassin_move_inair = { 1, assassin_frames_inair, NULL };
+const animmove_t assassin_move_inair = ANIMMOVE(assassin_frames_inair, NULL);
 
 // Assassin land.
 static const animframe_t assassin_frames_land[] =
@@ -178,7 +178,7 @@ static const animframe_t assassin_frames_land[] =
 	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_jump17,	NULL, 0.0f, 0.0f, 0.0f, assassin_crouched_check_attack, 2.0f, assassin_unset_crouched }
 };
-const animmove_t assassin_move_land = { 5, assassin_frames_land, assassin_pause };
+const animmove_t assassin_move_land = ANIMMOVE(assassin_frames_land, assassin_pause);
 
 // Assassin jump.
 static const animframe_t assassin_frames_evade_jump[] =
@@ -189,7 +189,7 @@ static const animframe_t assassin_frames_evade_jump[] =
 	{ FRAME_jump10,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump11,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t assassin_move_evade_jump = { 5, assassin_frames_evade_jump, assassin_evade_inair_go };
+const animmove_t assassin_move_evade_jump = ANIMMOVE(assassin_frames_evade_jump, assassin_evade_inair_go);
 
 // Assassin backflipping.
 static const animframe_t assassin_frames_evade_backflip[] =
@@ -202,7 +202,7 @@ static const animframe_t assassin_frames_evade_backflip[] =
 	{ FRAME_bkflp11,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_BFLAND, NULL },
 	{ FRAME_bkflp12,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_BFLAND, NULL },
 };
-const animmove_t assassin_move_evade_backflip = { 7, assassin_frames_evade_backflip, assassin_backflip_inair_go };
+const animmove_t assassin_move_evade_backflip = ANIMMOVE(assassin_frames_evade_backflip, assassin_backflip_inair_go);
 
 // Assassin front flipping.
 static const animframe_t assassin_frames_evade_frontflip[] =
@@ -214,7 +214,7 @@ static const animframe_t assassin_frames_evade_frontflip[] =
 	{ FRAME_fntflp10,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_FFLAND, NULL },
 	{ FRAME_fntflp11,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_FFLAND, NULL },
 };
-const animmove_t assassin_move_evade_frontflip = { 6, assassin_frames_evade_frontflip, assassin_fwdflip_inair_go };
+const animmove_t assassin_move_evade_frontflip = ANIMMOVE(assassin_frames_evade_frontflip, assassin_fwdflip_inair_go);
 
 // Assassin dodging right.
 static const animframe_t assassin_frames_dodge_right[] =
@@ -227,7 +227,7 @@ static const animframe_t assassin_frames_dodge_right[] =
 	{ FRAME_dgert9,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_dgert10,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL }
 };
-const animmove_t assassin_move_dodge_right = { 7, assassin_frames_dodge_right, assassin_pause };
+const animmove_t assassin_move_dodge_right = ANIMMOVE(assassin_frames_dodge_right, assassin_pause);
 
 // Assassin dodging left.
 static const animframe_t assassin_frames_dodge_left[] =
@@ -239,7 +239,7 @@ static const animframe_t assassin_frames_dodge_left[] =
 	{ FRAME_dgelft9,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_dgelft10,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL }
 };
-const animmove_t assassin_move_dodge_left = { 6, assassin_frames_dodge_left, assassin_pause };
+const animmove_t assassin_move_dodge_left = ANIMMOVE(assassin_frames_dodge_left, assassin_pause);
 
 #pragma endregion
 
@@ -263,7 +263,7 @@ static const animframe_t assassin_frames_deatha[] =
 	{ FRAME_deatha13,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_deatha14,	NULL, 0.0f, 0.0f, 0.0f, NULL, 1.0f, NULL }
 };
-const animmove_t assassin_move_deatha = { 14, assassin_frames_deatha, assassin_dead };
+const animmove_t assassin_move_deatha = ANIMMOVE(assassin_frames_deatha, assassin_dead);
 
 // Assassin DeathB.
 static const animframe_t assassin_frames_deathb[] =
@@ -284,7 +284,7 @@ static const animframe_t assassin_frames_deathb[] =
 	{ FRAME_deathb14,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_deathb15,	NULL, 0.0f, 0.0f, 0.0f, NULL, 1.0f, NULL }
 };
-const animmove_t assassin_move_deathb = { 15, assassin_frames_deathb, assassin_dead };
+const animmove_t assassin_move_deathb = ANIMMOVE(assassin_frames_deathb, assassin_dead);
 
 #pragma endregion
 
@@ -305,7 +305,7 @@ static const animframe_t assassin_frames_jump[] =
 	{ FRAME_jump10,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump11,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t assassin_move_jump = { 11, assassin_frames_jump, assassin_inair_go };
+const animmove_t assassin_move_jump = ANIMMOVE(assassin_frames_jump, assassin_inair_go);
 
 // Assassin forced jump.
 static const animframe_t assassin_frames_forcedjump[] =
@@ -322,7 +322,7 @@ static const animframe_t assassin_frames_forcedjump[] =
 	{ FRAME_jump10,	MG_InAirMove, 50.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump11,	MG_InAirMove, 50.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t assassin_move_forcedjump = { 11, assassin_frames_forcedjump, assassin_inair_go };
+const animmove_t assassin_move_forcedjump = ANIMMOVE(assassin_frames_forcedjump, assassin_inair_go);
 
 // Assassin forced jump.
 static const animframe_t assassin_frames_fjump[] =
@@ -339,7 +339,7 @@ static const animframe_t assassin_frames_fjump[] =
 	{ FRAME_jump10,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump11,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t assassin_move_fjump = { 11, assassin_frames_fjump, assassin_evade_inair_go };
+const animmove_t assassin_move_fjump = ANIMMOVE(assassin_frames_fjump, assassin_evade_inair_go);
 
 // Assassin backflipping.
 static const animframe_t assassin_frames_bfland[] =
@@ -348,14 +348,14 @@ static const animframe_t assassin_frames_bfland[] =
 	{ FRAME_bkflp15, NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp16, NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL }
 };
-const animmove_t assassin_move_bfland = { 3, assassin_frames_bfland, assassin_pause };
+const animmove_t assassin_move_bfland = ANIMMOVE(assassin_frames_bfland, assassin_pause);
 
 // Assassin backflipping.
 static const animframe_t assassin_frames_bfinair[] =
 {
 	{ FRAME_bkflp13, NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_BFLAND, NULL },
 };
-const animmove_t assassin_move_bfinair = { 1, assassin_frames_bfinair, NULL };
+const animmove_t assassin_move_bfinair = ANIMMOVE(assassin_frames_bfinair, NULL);
 
 // Assassin backflipping.
 static const animframe_t assassin_frames_backflip[] =
@@ -373,7 +373,7 @@ static const animframe_t assassin_frames_backflip[] =
 	{ FRAME_bkflp11,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_BFLAND, NULL },
 	{ FRAME_bkflp12,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_BFLAND, NULL },
 };
-const animmove_t assassin_move_backflip = { 12, assassin_frames_backflip, assassin_backflip_inair_go };
+const animmove_t assassin_move_backflip = ANIMMOVE(assassin_frames_backflip, assassin_backflip_inair_go);
 
 // Assassin backspring.
 static const animframe_t assassin_frames_backspring[] =
@@ -394,7 +394,7 @@ static const animframe_t assassin_frames_backspring[] =
 	{ FRAME_newbackspring14,	NULL, 0.0f, 0.0f, 0.0f, ai_charge2, -2.0f,  NULL },
 	{ FRAME_newbackspring15,	NULL, 0.0f, 0.0f, 0.0f, ai_charge2,  0.0f,  NULL },
 };
-const animmove_t assassin_move_backspring = { 15, assassin_frames_backspring, assassin_pause };
+const animmove_t assassin_move_backspring = ANIMMOVE(assassin_frames_backspring, assassin_pause);
 
 // Assassin front flipping.
 static const animframe_t assassin_frames_ffland[] =
@@ -405,14 +405,14 @@ static const animframe_t assassin_frames_ffland[] =
 	{ FRAME_fntflp15,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_fntflp16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 };
-const animmove_t assassin_move_ffland = { 5, assassin_frames_ffland, assassin_pause };
+const animmove_t assassin_move_ffland = ANIMMOVE(assassin_frames_ffland, assassin_pause);
 
 // Assassin front flipping.
 static const animframe_t assassin_frames_ffinair[] =
 {
 	{ FRAME_fntflp11, NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_FFLAND, NULL },
 };
-const animmove_t assassin_move_ffinair = { 1, assassin_frames_ffinair, NULL };
+const animmove_t assassin_move_ffinair = ANIMMOVE(assassin_frames_ffinair, NULL);
 
 // Assassin front flipping.
 static const animframe_t assassin_frames_frontflip[] =
@@ -428,7 +428,7 @@ static const animframe_t assassin_frames_frontflip[] =
 	{ FRAME_fntflp9,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_fntflp10,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t assassin_move_frontflip = { 10, assassin_frames_frontflip, assassin_fwdflip_inair_go };
+const animmove_t assassin_move_frontflip = ANIMMOVE(assassin_frames_frontflip, assassin_fwdflip_inair_go);
 
 // Assassin running.
 static const animframe_t assassin_frames_run[] =
@@ -445,7 +445,7 @@ static const animframe_t assassin_frames_run[] =
 	{ FRAME_run9,	NULL, 0.0f, 0.0f, 0.0f, assassin_run, 18.0f, assassin_pause },
 	{ FRAME_run10,	NULL, 0.0f, 0.0f, 0.0f, assassin_run, 26.0f, assassin_pause }
 };
-const animmove_t assassin_move_run = { 10, assassin_frames_run, assassin_pause };
+const animmove_t assassin_move_run = ANIMMOVE(assassin_frames_run, assassin_pause);
 
 // Assassin walking start.
 static const animframe_t assassin_frames_walk[] =
@@ -454,7 +454,7 @@ static const animframe_t assassin_frames_walk[] =
 	{ FRAME_newwalk2, NULL, 0.0f, 0.0f, 0.0f, ai_walk, 6.0f, NULL },
 	{ FRAME_newwalk3, NULL, 0.0f, 0.0f, 0.0f, ai_walk, 6.0f, NULL },
 };
-const animmove_t assassin_move_walk = { 3, assassin_frames_walk, assassin_walk_loop_go };
+const animmove_t assassin_move_walk = ANIMMOVE(assassin_frames_walk, assassin_walk_loop_go);
 
 // Assassin walking loop.
 static const animframe_t assassin_frames_walk_loop[] =
@@ -471,7 +471,7 @@ static const animframe_t assassin_frames_walk_loop[] =
 	{ FRAME_newwalk13,	NULL, 0.0f, 0.0f, 0.0f, assassin_ai_walk, 8.0f, NULL },
 	{ FRAME_newwalk14,	NULL, 0.0f, 0.0f, 0.0f, assassin_ai_walk, 8.0f, NULL },
 };
-const animmove_t assassin_move_walk_loop = { 11, assassin_frames_walk_loop, assassin_pause };
+const animmove_t assassin_move_walk_loop = ANIMMOVE(assassin_frames_walk_loop, assassin_pause);
 
 #pragma endregion
 
@@ -482,7 +482,7 @@ static const animframe_t assassin_frames_pain1[] =
 {
 	{ FRAME_painb1,	NULL, 0.0f, 0.0f, 0.0f, ai_move, -16.0f, NULL },
 };
-const animmove_t assassin_move_pain1 = { 1, assassin_frames_pain1, assassin_post_pain };
+const animmove_t assassin_move_pain1 = ANIMMOVE(assassin_frames_pain1, assassin_post_pain);
 
 // Assassin Pain - assassin gets hit.
 static const animframe_t assassin_frames_pain2[] =
@@ -493,7 +493,7 @@ static const animframe_t assassin_frames_pain2[] =
 	{ FRAME_painb4,	NULL, 0.0f, 0.0f, 0.0f, ai_move, -3.0f, NULL },
 	{ FRAME_painb5,	NULL, 0.0f, 0.0f, 0.0f, NULL,     0.0f, NULL }
 };
-const animmove_t assassin_move_pain2 = { 5, assassin_frames_pain2, assassin_post_pain };
+const animmove_t assassin_move_pain2 = ANIMMOVE(assassin_frames_pain2, assassin_post_pain);
 
 #pragma endregion
 
@@ -515,7 +515,7 @@ static const animframe_t assassin_frames_stand[] =
 	{ FRAME_newidle11,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newidle12,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 };
-const animmove_t assassin_move_stand = { 12, assassin_frames_stand, assassin_pause };
+const animmove_t assassin_move_stand = ANIMMOVE(assassin_frames_stand, assassin_pause);
 
 // Assassin chillin out.
 static const animframe_t assassin_frames_delay[] =
@@ -533,7 +533,7 @@ static const animframe_t assassin_frames_delay[] =
 	{ FRAME_newidle11,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_pause },
 	{ FRAME_newidle12,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_pause },
 };
-const animmove_t assassin_move_delay = { 12, assassin_frames_delay, assassin_pause };
+const animmove_t assassin_move_delay = ANIMMOVE(assassin_frames_delay, assassin_pause);
 
 // Assassin crouch start.
 static const animframe_t assassin_frames_crouch_trans[] =
@@ -544,7 +544,7 @@ static const animframe_t assassin_frames_crouch_trans[] =
 	{ FRAME_newcrchtrn4, NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_newcrchtrn5, NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 };
-const animmove_t assassin_move_crouch_trans = { 5, assassin_frames_crouch_trans, assassin_crouch_idle_decision };
+const animmove_t assassin_move_crouch_trans = ANIMMOVE(assassin_frames_crouch_trans, assassin_crouch_idle_decision);
 
 // Assassin crouch idle.
 static const animframe_t assassin_frames_crouch_idle[] =
@@ -562,7 +562,7 @@ static const animframe_t assassin_frames_crouch_idle[] =
 	{ FRAME_newcrouchidle11,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrouchidle12,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 };
-const animmove_t assassin_move_crouch_idle = { 12, assassin_frames_crouch_idle, assassin_crouch_idle_decision };
+const animmove_t assassin_move_crouch_idle = ANIMMOVE(assassin_frames_crouch_idle, assassin_crouch_idle_decision);
 
 // Assassin crouch - look left.
 static const animframe_t assassin_frames_crouch_look_right[] =
@@ -580,7 +580,7 @@ static const animframe_t assassin_frames_crouch_look_right[] =
 	{ FRAME_newcrchlkrit11,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrchlkrit12,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 };
-const animmove_t assassin_move_crouch_look_right = { 12, assassin_frames_crouch_look_right, assassin_crouch_idle_decision };
+const animmove_t assassin_move_crouch_look_right = ANIMMOVE(assassin_frames_crouch_look_right, assassin_crouch_idle_decision);
 
 // Assassin crouch idle - look left.
 static const animframe_t assassin_frames_crouch_look_right_idle[] =
@@ -598,7 +598,7 @@ static const animframe_t assassin_frames_crouch_look_right_idle[] =
 	{ FRAME_newcrhlkrtidle11,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrhlkrtidle12,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 };
-const animmove_t assassin_move_crouch_look_right_idle = { 12, assassin_frames_crouch_look_right_idle, assassin_crouch_idle_decision };
+const animmove_t assassin_move_crouch_look_right_idle = ANIMMOVE(assassin_frames_crouch_look_right_idle, assassin_crouch_idle_decision);
 
 // Assassin crouch idle - look left to right.
 static const animframe_t assassin_frames_crouch_look_l2r[] =
@@ -616,7 +616,7 @@ static const animframe_t assassin_frames_crouch_look_l2r[] =
 	{ FRAME_newcrchlklr11,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrchlklr12,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 };
-const animmove_t assassin_move_crouch_look_l2r = { 12, assassin_frames_crouch_look_l2r, assassin_crouch_idle_decision };
+const animmove_t assassin_move_crouch_look_l2r = ANIMMOVE(assassin_frames_crouch_look_l2r, assassin_crouch_idle_decision);
 
 // Assassin crouch - look left.
 static const animframe_t assassin_frames_crouch_look_left[] =
@@ -634,7 +634,7 @@ static const animframe_t assassin_frames_crouch_look_left[] =
 	{ FRAME_newcrchlklft11,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrchlklft12,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 };
-const animmove_t assassin_move_crouch_look_left = { 12, assassin_frames_crouch_look_left, assassin_crouch_idle_decision };
+const animmove_t assassin_move_crouch_look_left = ANIMMOVE(assassin_frames_crouch_look_left, assassin_crouch_idle_decision);
 
 // Assassin crouch - look left idle.
 static const animframe_t assassin_frames_crouch_look_left_idle[] =
@@ -652,7 +652,7 @@ static const animframe_t assassin_frames_crouch_look_left_idle[] =
 	{ FRAME_newlkleftidle11,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newlkleftidle12,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 };
-const animmove_t assassin_move_crouch_look_left_idle = { 12, assassin_frames_crouch_look_left_idle, assassin_crouch_idle_decision };
+const animmove_t assassin_move_crouch_look_left_idle = ANIMMOVE(assassin_frames_crouch_look_left_idle, assassin_crouch_idle_decision);
 
 // Assassin crouch - look right to left.
 static const animframe_t assassin_frames_crouch_look_r2l[] =
@@ -670,7 +670,7 @@ static const animframe_t assassin_frames_crouch_look_r2l[] =
 	{ FRAME_newcrchlklr2,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrchlklr1,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 };
-const animmove_t assassin_move_crouch_look_r2l = { 12, assassin_frames_crouch_look_r2l, assassin_crouch_idle_decision };
+const animmove_t assassin_move_crouch_look_r2l = ANIMMOVE(assassin_frames_crouch_look_r2l, assassin_crouch_idle_decision);
 
 // Assassin crouch - look right to center.
 static const animframe_t assassin_frames_crouch_look_r2c[] =
@@ -688,7 +688,7 @@ static const animframe_t assassin_frames_crouch_look_r2c[] =
 	{ FRAME_newcrchlkrit2,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrchlkrit1,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 };
-const animmove_t assassin_move_crouch_look_r2c = { 12, assassin_frames_crouch_look_r2c, assassin_crouch_idle_decision };
+const animmove_t assassin_move_crouch_look_r2c = ANIMMOVE(assassin_frames_crouch_look_r2c, assassin_crouch_idle_decision);
 
 // Assassin crouch - look left to center.
 static const animframe_t assassin_frames_crouch_look_l2c[] =
@@ -706,7 +706,7 @@ static const animframe_t assassin_frames_crouch_look_l2c[] =
 	{ FRAME_newcrchlklft2,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrchlklft1,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 };
-const animmove_t assassin_move_crouch_look_l2c = { 12, assassin_frames_crouch_look_l2c, assassin_crouch_idle_decision };
+const animmove_t assassin_move_crouch_look_l2c = ANIMMOVE(assassin_frames_crouch_look_l2c, assassin_crouch_idle_decision);
 
 // Assassin crouch end.
 static const animframe_t assassin_frames_crouch_end[] =
@@ -717,7 +717,7 @@ static const animframe_t assassin_frames_crouch_end[] =
 	{ FRAME_newcrchtrn2, NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_newcrchtrn1, NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 };
-const animmove_t assassin_move_crouch_end = { 5, assassin_frames_crouch_end, assassin_crouch_idle_decision };
+const animmove_t assassin_move_crouch_end = ANIMMOVE(assassin_frames_crouch_end, assassin_crouch_idle_decision);
 
 // Assassin crouch poke.
 static const animframe_t assassin_frames_crouch_poke[] =
@@ -747,7 +747,7 @@ static const animframe_t assassin_frames_crouch_poke[] =
 	{ FRAME_poke23,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_poke24,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 };
-const animmove_t assassin_move_crouch_poke = { 24, assassin_frames_crouch_poke, assassin_crouch_idle_decision };
+const animmove_t assassin_move_crouch_poke = ANIMMOVE(assassin_frames_crouch_poke, assassin_crouch_idle_decision);
 
 // Assassin teleport - throws smoke bomb, then gone.
 static const animframe_t assassin_frames_teleport[] =
@@ -762,7 +762,7 @@ static const animframe_t assassin_frames_teleport[] =
 	{ FRAME_ataka10,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_ready_teleport },
 	{ FRAME_ataka11,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 };
-const animmove_t assassin_move_teleport = { 9, assassin_frames_teleport, assassin_gone };
+const animmove_t assassin_move_teleport = ANIMMOVE(assassin_frames_teleport, assassin_gone);
 
 // Assassin clock.
 static const animframe_t assassin_frames_cloak[] =
@@ -771,7 +771,7 @@ static const animframe_t assassin_frames_cloak[] =
 	{ FRAME_jump15,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_init_cloak },
 };
-const animmove_t assassin_move_cloak = { 3, assassin_frames_cloak, assassin_uncrouch };
+const animmove_t assassin_move_cloak = ANIMMOVE(assassin_frames_cloak, assassin_uncrouch);
 
 #pragma endregion
 
@@ -788,7 +788,7 @@ static const animframe_t assassin_frames_c_idle1[] =
 	{ FRAME_ataka2, ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_ataka1, ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 };
-const animmove_t assassin_move_c_idle1 = { 7, assassin_frames_c_idle1, ai_c_cycleend };
+const animmove_t assassin_move_c_idle1 = ANIMMOVE(assassin_frames_c_idle1, ai_c_cycleend);
 
 // Assassin running.
 static const animframe_t assassin_frames_c_run1[] =
@@ -804,7 +804,7 @@ static const animframe_t assassin_frames_c_run1[] =
 	{ FRAME_run9,	ai_c_move, 18, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_run10,	ai_c_move, 26, 0.0f, 0.0f, NULL, 0.0f, NULL }
 };
-const animmove_t assassin_move_c_run1 = { 10, assassin_frames_c_run1, ai_c_cycleend };
+const animmove_t assassin_move_c_run1 = ANIMMOVE(assassin_frames_c_run1, ai_c_cycleend);
 
 // Assassin daggerL - assassin attacking left hand.
 static const animframe_t assassin_frames_c_attack1[] =
@@ -824,7 +824,7 @@ static const animframe_t assassin_frames_c_attack1[] =
 	{ FRAME_ataka13,	ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_ataka14,	ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL }
 };
-const animmove_t assassin_move_c_attack1 = { 14, assassin_frames_c_attack1, ai_c_cycleend };
+const animmove_t assassin_move_c_attack1 = ANIMMOVE(assassin_frames_c_attack1, ai_c_cycleend);
 
 // Assassin daggerR - assassin attacking right hand.
 static const animframe_t assassin_frames_c_attack2[] =
@@ -845,6 +845,6 @@ static const animframe_t assassin_frames_c_attack2[] =
 	{ FRAME_atakb14,	ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_atakb15,	ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL }
 };
-const animmove_t assassin_move_c_attack2 = { 15, assassin_frames_c_attack2, ai_c_cycleend };
+const animmove_t assassin_move_c_attack2 = ANIMMOVE(assassin_frames_c_attack2, ai_c_cycleend);
 
 #pragma endregion
