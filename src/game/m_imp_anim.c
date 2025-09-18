@@ -25,7 +25,7 @@ static const animframe_t imp_frames_die1[] =
 	{ FRAME_death13,	NULL, 0, 0, 0, NULL, 0, imp_fix_angles },
 	{ FRAME_death14,	NULL, 0, 0, 0, NULL, 0, imp_fix_angles },
 };
-const animmove_t imp_move_die1 = { 14, imp_frames_die1, imp_dead };
+const animmove_t imp_move_die1 = ANIMMOVE(imp_frames_die1, imp_dead);
 
 // Imp flying 1.
 static const animframe_t imp_frames_fly1[] =
@@ -51,7 +51,7 @@ static const animframe_t imp_frames_fly1[] =
 	{ FRAME_impfly18,	imp_ai_fly, 24, 0, 0, NULL, 15, imp_fly_move },
 	{ FRAME_impfly20,	imp_ai_fly, 26, 0, 0, NULL, 15, imp_fly_move },
 };
-const animmove_t imp_move_fly1 = { 20, imp_frames_fly1, imp_pause };
+const animmove_t imp_move_fly1 = ANIMMOVE(imp_frames_fly1, imp_pause);
 
 // Imp flying backwards 1.
 static const animframe_t imp_frames_flyback[] =
@@ -77,7 +77,7 @@ static const animframe_t imp_frames_flyback[] =
 	{ FRAME_impfly19,	imp_ai_fly, -26, 0, 27, NULL, 0, imp_fly_move },
 	{ FRAME_impfly20,	imp_ai_fly, -24, 0, 24, NULL, 0, imp_fly_move },
 };
-const animmove_t imp_move_flyback = { 20, imp_frames_flyback, imp_pause };
+const animmove_t imp_move_flyback = ANIMMOVE(imp_frames_flyback, imp_pause);
 
 // Imp hit from swoop.
 static const animframe_t imp_frames_dive_end[] =
@@ -98,7 +98,7 @@ static const animframe_t imp_frames_dive_end[] =
 	{ FRAME_swpend14,	imp_ai_fly, -64, 0, 64, NULL, 0, imp_fly_move },
 	{ FRAME_swpend15,	imp_ai_fly, -52, 0, 54, NULL, 0, imp_fly_move },
 };
-const animmove_t imp_move_dive_end = { 15, imp_frames_dive_end, imp_flyback };
+const animmove_t imp_move_dive_end = ANIMMOVE(imp_frames_dive_end, imp_flyback);
 
 // Imp hit from swoop.
 static const animframe_t imp_frames_dive_out[] =
@@ -119,7 +119,7 @@ static const animframe_t imp_frames_dive_out[] =
 	{ FRAME_swpout14,	imp_ai_fly, -64, 0, 64, NULL, 0, imp_fly_move },
 	{ FRAME_swpout15,	imp_ai_fly, -52, 0, 54, NULL, 0, imp_fly_move },
 };
-const animmove_t imp_move_dive_out = { 15, imp_frames_dive_out, imp_flyback };
+const animmove_t imp_move_dive_out = ANIMMOVE(imp_frames_dive_out, imp_flyback);
 
 // Imp hovering.
 static const animframe_t imp_frames_hover1[] =
@@ -145,7 +145,7 @@ static const animframe_t imp_frames_hover1[] =
 	{ FRAME_impfly19,	NULL, 0, 0, 0, imp_ai_hover,  2, NULL },
 	{ FRAME_impfly20,	NULL, 0, 0, 0, imp_ai_hover,  2, imp_check_dodge },
 };
-const animmove_t imp_move_hover1 = { 20, imp_frames_hover1, imp_hover_move };
+const animmove_t imp_move_hover1 = ANIMMOVE(imp_frames_hover1, imp_hover_move);
 
 // Imp tumble.
 static const animframe_t imp_frames_tumble[] =
@@ -171,7 +171,7 @@ static const animframe_t imp_frames_tumble[] =
 	{ FRAME_impfly19,	NULL, 0, 0, 0, imp_ai_hover,  2, imp_tumble_move },
 	{ FRAME_impfly20,	NULL, 0, 0, 0, imp_ai_hover,  2, imp_tumble_move },
 };
-const animmove_t imp_move_tumble = { 20, imp_frames_tumble, NULL };
+const animmove_t imp_move_tumble = ANIMMOVE(imp_frames_tumble, NULL);
 
 // Imp firing fireball.
 static const animframe_t imp_frames_fireball[] =
@@ -200,7 +200,7 @@ static const animframe_t imp_frames_fireball[] =
 	{ FRAME_impfir20,	NULL, 0, 0, 0, imp_ai_hover,  1, NULL },
 	{ FRAME_impfir21,	NULL, 0, 0, 0, imp_ai_hover, -1, NULL },
 };
-const animmove_t imp_move_fireball = { 21, imp_frames_fireball, imp_hover_move };
+const animmove_t imp_move_fireball = ANIMMOVE(imp_frames_fireball, imp_hover_move);
 
 // Imp diving and attacking.
 static const animframe_t imp_frames_dive_go[] =
@@ -226,7 +226,7 @@ static const animframe_t imp_frames_dive_go[] =
 	{ FRAME_swoop19,	NULL, 0, 0, 0, imp_hit,	0, imp_dive_move },
 	{ FRAME_swoop20,	NULL, 0, 0, 0, imp_hit,	0, imp_dive_move },
 };
-const animmove_t imp_move_dive_go = { 6, imp_frames_dive_go, imp_dive_loop };
+const animmove_t imp_move_dive_go = ANIMMOVE(imp_frames_dive_go, imp_dive_loop);
 
 // Imp diving loop.
 static const animframe_t imp_frames_dive_loop[] =
@@ -256,7 +256,7 @@ static const animframe_t imp_frames_dive_loop[] =
 	{ FRAME_swpcyc3,	NULL, 0, 0, 0, imp_hit, 0, imp_dive_move },
 	{ FRAME_swpcyc4,	NULL, 0, 0, 0, imp_hit, 1, imp_dive_move },
 };
-const animmove_t imp_move_dive_loop = { 24, imp_frames_dive_loop, NULL };
+const animmove_t imp_move_dive_loop = ANIMMOVE(imp_frames_dive_loop, NULL);
 
 // Imp pain.
 static const animframe_t imp_frames_pain1[] =
@@ -267,7 +267,7 @@ static const animframe_t imp_frames_pain1[] =
 	{ FRAME_death2,		NULL, 0, 0, 0, NULL, -2, imp_hover_move },
 	{ FRAME_death1,		NULL, 0, 0, 0, NULL, -2, imp_hover_move },
 };
-const animmove_t imp_move_pain1 = { 5, imp_frames_pain1, imp_pause };
+const animmove_t imp_move_pain1 = ANIMMOVE(imp_frames_pain1, imp_pause);
 
 // Imp perch.
 static const animframe_t imp_frames_perch[] =
@@ -297,7 +297,7 @@ static const animframe_t imp_frames_perch[] =
 	{ FRAME_impwat23,	NULL, 0, 0, 0, NULL, 0, imp_ai_perch },
 	{ FRAME_impwat24,	NULL, 0, 0, 0, NULL, 0, imp_ai_perch },
 };
-const animmove_t imp_move_perch = { 24, imp_frames_perch, NULL };
+const animmove_t imp_move_perch = ANIMMOVE(imp_frames_perch, NULL);
 
 // Imp take off.
 static const animframe_t imp_frames_takeoff[] =
@@ -326,7 +326,7 @@ static const animframe_t imp_frames_takeoff[] =
 	{ FRAME_impup22,	imp_ai_fly, -8, 0, 16, NULL, 0, NULL },
 	{ FRAME_impup23,	imp_ai_fly, -16,0, 32, NULL, 0, NULL },
 };
-const animmove_t imp_move_takeoff = { 23, imp_frames_takeoff, imp_pause };
+const animmove_t imp_move_takeoff = ANIMMOVE(imp_frames_takeoff, imp_pause);
 
 // Imp dive up.
 static const animframe_t imp_frames_dup[] =
@@ -342,7 +342,7 @@ static const animframe_t imp_frames_dup[] =
 	{ FRAME_swpend14,	imp_ai_fly, -64, 0, 64, NULL, 0, imp_fly_move },
 	{ FRAME_swpend15,	imp_ai_fly, -52, 0, 54, NULL, 0, imp_fly_move },
 };
-const animmove_t imp_move_dup = { 10, imp_frames_dup, imp_pause };
+const animmove_t imp_move_dup = ANIMMOVE(imp_frames_dup, imp_pause);
 
 // Imp dive down.
 static const animframe_t imp_frames_ddown[] =
@@ -363,4 +363,4 @@ static const animframe_t imp_frames_ddown[] =
 	{ FRAME_swpout12,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_swpout15,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t imp_move_ddown = { 15, imp_frames_ddown , imp_pause };
+const animmove_t imp_move_ddown = ANIMMOVE(imp_frames_ddown , imp_pause);
