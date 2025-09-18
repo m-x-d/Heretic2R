@@ -470,7 +470,7 @@ static void G_RunFrame(void)
 		if (!ent->inuse)
 			continue;
 
-		//mxd. Skip non-functional pvs_cull logic. Didn't cause performance problems in 1998, so can be skipped today sa well...
+		//mxd. Skip non-functional pvs_cull logic. Didn't cause performance problems in 1998, so can be skipped today as well...
 
 		level.current_entity = ent;
 
