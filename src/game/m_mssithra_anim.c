@@ -34,7 +34,7 @@ static const animframe_t mssithra_frames_idle1[] =
 	{ FRAME_idle20,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle21,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t mssithra_move_idle1 = { 21, mssithra_frames_idle1, mssithra_check_mood };
+const animmove_t mssithra_move_idle1 = ANIMMOVE(mssithra_frames_idle1, mssithra_check_mood);
 
 // Mutant Ssithra Walk - walking along.
 static const animframe_t mssithra_frames_walk1[] =
@@ -56,7 +56,7 @@ static const animframe_t mssithra_frames_walk1[] =
 	{ FRAME_walk15,	NULL, 0, 0, 0, ai_walk, 9,  NULL },
 	{ FRAME_walk16,	NULL, 0, 0, 0, ai_walk, 8,  NULL },
 };
-const animmove_t mssithra_move_walk1 = { 16, mssithra_frames_walk1, NULL };
+const animmove_t mssithra_move_walk1 = ANIMMOVE(mssithra_frames_walk1, NULL);
 
 // Mutant Ssithra Run.
 static const animframe_t mssithra_frames_run1[] =
@@ -78,7 +78,7 @@ static const animframe_t mssithra_frames_run1[] =
 	{ FRAME_walk15,	NULL, 0, 0, 0, MG_AI_Run, 9,  NULL },
 	{ FRAME_walk16,	NULL, 0, 0, 0, MG_AI_Run, 9,  NULL },
 };
-const animmove_t mssithra_move_run1 = { 16, mssithra_frames_run1, NULL };
+const animmove_t mssithra_move_run1 = ANIMMOVE(mssithra_frames_run1, NULL);
 
 // Mutant Ssithra Backpedal - looking around and standing.
 static const animframe_t mssithra_frames_backpedal1[] =
@@ -100,7 +100,7 @@ static const animframe_t mssithra_frames_backpedal1[] =
 	{ FRAME_walk2,	NULL, 0, 0, 0, ai_charge2, -9,  NULL },
 	{ FRAME_walk1,	NULL, 0, 0, 0, ai_charge2, -9,  NULL },
 };
-const animmove_t mssithra_move_backpedal1 = { 16, mssithra_frames_backpedal1, NULL };
+const animmove_t mssithra_move_backpedal1 = ANIMMOVE(mssithra_frames_backpedal1, NULL);
 
 // Mutant Ssithra Death.
 static const animframe_t mssithra_frames_death1[] =
@@ -151,7 +151,7 @@ static const animframe_t mssithra_frames_death1[] =
 	{ FRAME_death44,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_death45,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t mssithra_move_death1 = { 45, mssithra_frames_death1, mssithra_dead };
+const animmove_t mssithra_move_death1 = ANIMMOVE(mssithra_frames_death1, mssithra_dead);
 
 // Mutant Ssithra Claw Attack.
 static const animframe_t mssithra_frames_claw1[] =
@@ -167,7 +167,7 @@ static const animframe_t mssithra_frames_claw1[] =
 	{ FRAME_claw9,	NULL, 0, 0, 0, ai_charge2, 3,  NULL },
 	{ FRAME_claw10,	NULL, 0, 0, 0, ai_charge2, 3,  NULL },
 };
-const animmove_t mssithra_move_claw1 = { 7, mssithra_frames_claw1, mssithra_check_mood };
+const animmove_t mssithra_move_claw1 = ANIMMOVE(mssithra_frames_claw1, mssithra_check_mood); //mxd. numframes:7 in original logic. //TODO: check this!
 
 // Mutant Ssithra Jump.
 static const animframe_t mssithra_frames_jump1[] =
@@ -187,7 +187,7 @@ static const animframe_t mssithra_frames_jump1[] =
 	{ FRAME_jump13,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump14,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t mssithra_move_jump1 = { 14, mssithra_frames_jump1, mssithra_check_mood };
+const animmove_t mssithra_move_jump1 = ANIMMOVE(mssithra_frames_jump1, mssithra_check_mood);
 
 // Mutant Ssithra Forced Jump.
 static const animframe_t mssithra_frames_fjump[] =
@@ -207,7 +207,7 @@ static const animframe_t mssithra_frames_fjump[] =
 	{ FRAME_jump13,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump14,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t mssithra_move_fjump = { 14, mssithra_frames_fjump, mssithra_check_mood };
+const animmove_t mssithra_move_fjump = ANIMMOVE(mssithra_frames_fjump, mssithra_check_mood);
 
 // Mutant Ssithra Shoot A.
 static const animframe_t mssithra_frames_shoota1[] =
@@ -236,7 +236,7 @@ static const animframe_t mssithra_frames_shoota1[] =
 	{ FRAME_shoota22,	NULL, 0, 0, 0, ai_charge2, 0, mssithra_growl },
 	{ FRAME_shoota23,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t mssithra_move_shoota1 = { 23, mssithra_frames_shoota1, mssithra_check_mood };
+const animmove_t mssithra_move_shoota1 = ANIMMOVE(mssithra_frames_shoota1, mssithra_check_mood);
 
 // Mutant Ssithra Shoot B.
 static const animframe_t mssithra_frames_shootb1[] =
@@ -264,7 +264,7 @@ static const animframe_t mssithra_frames_shootb1[] =
 	{ FRAME_shootb21,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_shootb22,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t mssithra_move_shootb1 = { 22, mssithra_frames_shootb1, mssithra_check_mood };
+const animmove_t mssithra_move_shootb1 = ANIMMOVE(mssithra_frames_shootb1, mssithra_check_mood);
 
 // Mutant Ssithra Roar.
 static const animframe_t mssithra_frames_roar[] =
@@ -294,7 +294,7 @@ static const animframe_t mssithra_frames_roar[] =
 	{ FRAME_roar23,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_roar24,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t mssithra_move_roar = { 24, mssithra_frames_roar, mssithra_check_mood };
+const animmove_t mssithra_move_roar = ANIMMOVE(mssithra_frames_roar, mssithra_check_mood);
 
 // Mutant Ssithra Delay.
 static const animframe_t mssithra_frames_delay[] =
@@ -321,7 +321,7 @@ static const animframe_t mssithra_frames_delay[] =
 	{ FRAME_idle20,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_idle21,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t mssithra_move_delay = { 21, mssithra_frames_delay, NULL };
+const animmove_t mssithra_move_delay = ANIMMOVE(mssithra_frames_delay, NULL);
 
 // Mutant Ssithra Shoot Start.
 static const animframe_t mssithra_frames_shoot1_trans[] =
@@ -330,7 +330,7 @@ static const animframe_t mssithra_frames_shoot1_trans[] =
 	{ FRAME_newshot2,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newshot3,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t mssithra_move_shoot1_trans = { 3, mssithra_frames_shoot1_trans, mssithra_shoot_loop };
+const animmove_t mssithra_move_shoot1_trans = ANIMMOVE(mssithra_frames_shoot1_trans, mssithra_shoot_loop);
 
 // Mutant Ssithra Shoot Loop.
 static const animframe_t mssithra_frames_shoot1_loop[] =
@@ -342,7 +342,7 @@ static const animframe_t mssithra_frames_shoot1_loop[] =
 	{ FRAME_newshot8,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newshot9,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t mssithra_move_shoot1_loop = { 6, mssithra_frames_shoot1_loop, mssithra_check_shoot_loop };
+const animmove_t mssithra_move_shoot1_loop = ANIMMOVE(mssithra_frames_shoot1_loop, mssithra_check_shoot_loop);
 
 // Mutant Ssithra Shoot End.
 static const animframe_t mssithra_frames_shoot1_detrans[] =
@@ -351,4 +351,4 @@ static const animframe_t mssithra_frames_shoot1_detrans[] =
 	{ FRAME_newshot2,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newshot1,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t mssithra_move_shoot1_detrans = { 3, mssithra_frames_shoot1_detrans, mssithra_check_mood };
+const animmove_t mssithra_move_shoot1_detrans = ANIMMOVE(mssithra_frames_shoot1_detrans, mssithra_check_mood);
