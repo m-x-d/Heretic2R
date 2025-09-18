@@ -34,7 +34,7 @@ static const animframe_t seraph_frames_stand1[] =
 	{ FRAME_idle19,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle20,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t seraph_move_stand1 = { 20, seraph_frames_stand1, seraph_idle };
+const animmove_t seraph_move_stand1 = ANIMMOVE(seraph_frames_stand1, seraph_idle);
 
 // Seraph Stand 1 - standing, transitioning to looking right.
 static const animframe_t seraph_frames_stand1_tr[] =
@@ -59,7 +59,7 @@ static const animframe_t seraph_frames_stand1_tr[] =
 	{ FRAME_idle_htr18,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle_htr19,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t seraph_move_stand1_tr = { 19, seraph_frames_stand1_tr, seraph_idle };
+const animmove_t seraph_move_stand1_tr = ANIMMOVE(seraph_frames_stand1_tr, seraph_idle);
 
 // Seraph Stand 1 - standing, looking right.
 static const animframe_t seraph_frames_stand1_r[] =
@@ -84,7 +84,7 @@ static const animframe_t seraph_frames_stand1_r[] =
 	{ FRAME_idle_hrt18,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle_hrt19,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t seraph_move_stand1_r = { 19, seraph_frames_stand1_r, seraph_idle };
+const animmove_t seraph_move_stand1_r = ANIMMOVE(seraph_frames_stand1_r, seraph_idle);
 
 // Seraph Stand 1 - standing, transition to look back to center from looking right.
 static const animframe_t seraph_frames_stand1_trc[] =
@@ -109,7 +109,7 @@ static const animframe_t seraph_frames_stand1_trc[] =
 	{ FRAME_idle_hrc18,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle_hrc19,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t seraph_move_stand1_trc = { 19, seraph_frames_stand1_trc, seraph_idle };
+const animmove_t seraph_move_stand1_trc = ANIMMOVE(seraph_frames_stand1_trc, seraph_idle);
 
 // Seraph Stand 1 - standing, transitioning to looking left.
 static const animframe_t seraph_frames_stand1_tl[] =
@@ -134,7 +134,7 @@ static const animframe_t seraph_frames_stand1_tl[] =
 	{ FRAME_idle_htl18,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_idle_htl19,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_stand1_tl = { 19, seraph_frames_stand1_tl, seraph_idle };
+const animmove_t seraph_move_stand1_tl = ANIMMOVE(seraph_frames_stand1_tl, seraph_idle);
 
 // Seraph Stand 1 - standing, looking left.
 static const animframe_t seraph_frames_stand1_l[] =
@@ -159,7 +159,7 @@ static const animframe_t seraph_frames_stand1_l[] =
 	{ FRAME_idle_hl18,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_idle_hl19,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_stand1_l = { 19, seraph_frames_stand1_l, seraph_idle };
+const animmove_t seraph_move_stand1_l = ANIMMOVE(seraph_frames_stand1_l, seraph_idle);
 
 // Seraph Stand 1 - standing, transition to look back to center from looking left.
 static const animframe_t seraph_frames_stand1_tlc[] =
@@ -184,7 +184,7 @@ static const animframe_t seraph_frames_stand1_tlc[] =
 	{ FRAME_idle_hlc18,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_idle_hlc19,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_stand1_tlc = { 19, seraph_frames_stand1_tlc, seraph_idle };
+const animmove_t seraph_move_stand1_tlc = ANIMMOVE(seraph_frames_stand1_tlc, seraph_idle);
 
 // Seraph Walk 1.
 static const animframe_t seraph_frames_walk1[] =
@@ -206,7 +206,7 @@ static const animframe_t seraph_frames_walk1[] =
 	{ FRAME_walk15,	NULL, 0, 0, 0, ai_walk, 5, NULL },
 	{ FRAME_walk16,	NULL, 0, 0, 0, ai_walk, 6, NULL },
 };
-const animmove_t seraph_move_walk1 = { 16, seraph_frames_walk1, seraph_pause };
+const animmove_t seraph_move_walk1 = ANIMMOVE(seraph_frames_walk1, seraph_pause);
 
 // Seraph Walk 2.
 static const animframe_t seraph_frames_walk2[] =
@@ -228,7 +228,7 @@ static const animframe_t seraph_frames_walk2[] =
 	{ FRAME_walk15,	NULL, 0, 0, 0, seraph_ai_walk, 5, NULL },
 	{ FRAME_walk16,	NULL, 0, 0, 0, seraph_ai_walk, 6, NULL },
 };
-const animmove_t seraph_move_walk2 = { 16, seraph_frames_walk2, seraph_pause };
+const animmove_t seraph_move_walk2 = ANIMMOVE(seraph_frames_walk2, seraph_pause);
 
 // Seraph Whip 1 - full whip, beginning to end.
 static const animframe_t seraph_frames_whip1[] =
@@ -250,7 +250,7 @@ static const animframe_t seraph_frames_whip1[] =
 	{ FRAME_whip16,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_whip17,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_whip1 = { 16, seraph_frames_whip1, seraph_pause };
+const animmove_t seraph_move_whip1 = ANIMMOVE(seraph_frames_whip1, seraph_pause);
 
 // Seraph Whip 1 Loop - loopable whipping.
 static const animframe_t seraph_frames_whip1_loop[] =
@@ -262,7 +262,7 @@ static const animframe_t seraph_frames_whip1_loop[] =
 	{ FRAME_whip12,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_whip13,	seraph_strike, SERAPH_DMG_WHIP, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t seraph_move_whip1_loop = { 6, seraph_frames_whip1_loop, seraph_pause };
+const animmove_t seraph_move_whip1_loop = ANIMMOVE(seraph_frames_whip1_loop, seraph_pause);
 
 // Seraph Whip 1 End - loopable whipping end transition.
 static const animframe_t seraph_frames_whip1_end[] =
@@ -271,7 +271,7 @@ static const animframe_t seraph_frames_whip1_end[] =
 	{ FRAME_whip15,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_whip16,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_whip1_end = { 3, seraph_frames_whip1_end, seraph_pause };
+const animmove_t seraph_move_whip1_end = ANIMMOVE(seraph_frames_whip1_end, seraph_pause);
 
 // Seraph Point 1 - seraph pointing and yelling.
 static const animframe_t seraph_frames_point1[] =
@@ -298,7 +298,7 @@ static const animframe_t seraph_frames_point1[] =
 	{ FRAME_point20,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_point21,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_point1 = { 21, seraph_frames_point1, seraph_idle };
+const animmove_t seraph_move_point1 = ANIMMOVE(seraph_frames_point1, seraph_idle);
 
 // Seraph Run 1.
 static const animframe_t seraph_frames_run1[] =
@@ -312,7 +312,7 @@ static const animframe_t seraph_frames_run1[] =
 	{ FRAME_run7,	NULL, 0, 0, 0, MG_AI_Run, 16, NULL },
 	{ FRAME_run8,	NULL, 0, 0, 0, MG_AI_Run, 16, NULL },
 };
-const animmove_t seraph_move_run1 = { 8, seraph_frames_run1, seraph_pause };
+const animmove_t seraph_move_run1 = ANIMMOVE(seraph_frames_run1, seraph_pause);
 
 // Seraph Forward Jump.
 static const animframe_t seraph_frames_fjump[] =
@@ -326,7 +326,7 @@ static const animframe_t seraph_frames_fjump[] =
 	{ FRAME_run7,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_run8,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_fjump = { 8, seraph_frames_fjump, seraph_pause };
+const animmove_t seraph_move_fjump = ANIMMOVE(seraph_frames_fjump, seraph_pause);
 
 // Seraph Run 1 Whip.
 static const animframe_t seraph_frames_run1_whip[] =
@@ -340,7 +340,7 @@ static const animframe_t seraph_frames_run1_whip[] =
 	{ FRAME_run_whip7,	seraph_strike, SERAPH_DMG_WHIP_RUN, 0, 0, ai_charge, 16, NULL },
 	{ FRAME_run_whip8,	NULL, 0, 0, 0, ai_charge, 16, NULL },
 };
-const animmove_t seraph_move_run1_whip = { 8, seraph_frames_run1_whip, seraph_pause };
+const animmove_t seraph_move_run1_whip = ANIMMOVE(seraph_frames_run1_whip, seraph_pause);
 
 // Seraph Pain.
 static const animframe_t seraph_frames_pain[] =
@@ -351,7 +351,7 @@ static const animframe_t seraph_frames_pain[] =
 	{ FRAME_pain4,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pain5,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_pain = { 5, seraph_frames_pain, seraph_pause };
+const animmove_t seraph_move_pain = ANIMMOVE(seraph_frames_pain, seraph_pause);
 
 // Seraph Swipe.
 static const animframe_t seraph_frames_swipe[] =
@@ -362,7 +362,7 @@ static const animframe_t seraph_frames_swipe[] =
 	{ FRAME_swipe4,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_swipe5,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_swipe = { 4, seraph_frames_swipe, seraph_pause };
+const animmove_t seraph_move_swipe = ANIMMOVE(seraph_frames_swipe, seraph_pause); //mxd. numframes:4 in original logic.
 
 // Seraph Get 2 Work - yells at the ogle, slaps the ogle, then goes back to standing.
 static const animframe_t seraph_frames_get2work[] =
@@ -415,7 +415,7 @@ static const animframe_t seraph_frames_get2work[] =
 	{ FRAME_backup15,	NULL, 0, 0, 0, MG_AI_Run, -8, NULL },
 	{ FRAME_backup16,	NULL, 0, 0, 0, MG_AI_Run, -8, NULL },
 };
-const animmove_t seraph_move_get2work = { 47, seraph_frames_get2work, seraph_done_get2work };
+const animmove_t seraph_move_get2work = ANIMMOVE(seraph_frames_get2work, seraph_done_get2work);
 
 // Seraph Get 2 Work 2 - yells at the ogle, whips the ogle, then goes back to standing.
 static const animframe_t seraph_frames_get2work2[] =
@@ -479,7 +479,7 @@ static const animframe_t seraph_frames_get2work2[] =
 	{ FRAME_backup15,	NULL, 0, 0, 0, MG_AI_Run, -8, NULL },
 	{ FRAME_backup16,	NULL, 0, 0, 0, MG_AI_Run, -8, NULL },
 };
-const animmove_t seraph_move_get2work2 = { 57, seraph_frames_get2work2, seraph_done_get2work };
+const animmove_t seraph_move_get2work2 = ANIMMOVE(seraph_frames_get2work2, seraph_done_get2work); //mxd. numrames:57 in original logic.
 
 // Seraph Startle.
 static const animframe_t seraph_frames_startle[] =
@@ -500,7 +500,7 @@ static const animframe_t seraph_frames_startle[] =
 	{ FRAME_startle14,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_startle15,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_startle = { 15, seraph_frames_startle, seraph_done_startle };
+const animmove_t seraph_move_startle = ANIMMOVE(seraph_frames_startle, seraph_done_startle);
 
 // Seraph Ready 2 Idle - transition frame various frames to standing with arms folded.
 static const animframe_t seraph_frames_ready2idle[] =
@@ -517,7 +517,7 @@ static const animframe_t seraph_frames_ready2idle[] =
 	{ FRAME_rdy_idle10,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_rdy_idle11,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_ready2idle = { 11, seraph_frames_ready2idle, seraph_stand };
+const animmove_t seraph_move_ready2idle = ANIMMOVE(seraph_frames_ready2idle, seraph_stand);
 
 // Seraph Backup 1.
 static const animframe_t seraph_frames_backup[] =
@@ -539,7 +539,7 @@ static const animframe_t seraph_frames_backup[] =
 	{ FRAME_backup15,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_backup16,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_backup = { 16, seraph_frames_backup, seraph_pause };
+const animmove_t seraph_move_backup = ANIMMOVE(seraph_frames_backup, seraph_pause);
 
 // Seraph Backup 2.
 static const animframe_t seraph_frames_backup2[] =
@@ -561,7 +561,7 @@ static const animframe_t seraph_frames_backup2[] =
 	{ FRAME_backup15,	NULL, 0, 0, 0, seraph_back, 24, NULL },
 	{ FRAME_backup16,	NULL, 0, 0, 0, seraph_back, 20, NULL },
 };
-const animmove_t seraph_move_backup2 = { 16, seraph_frames_backup2, seraph_pause };
+const animmove_t seraph_move_backup2 = ANIMMOVE(seraph_frames_backup2, seraph_pause);
 
 // Seraph Death 1 - dying due to massive ogle overload.
 static const animframe_t seraph_frames_death1[] =
@@ -601,7 +601,7 @@ static const animframe_t seraph_frames_death1[] =
 	{ FRAME_odeath34,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_odeath34,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_move_death1 = { 34, seraph_frames_death1, seraph_dead };
+const animmove_t seraph_move_death1 = ANIMMOVE(seraph_frames_death1, seraph_dead);
 
 // Seraph Death 2 Start.
 static const animframe_t seraph_frames_death2_go[] =
@@ -611,14 +611,14 @@ static const animframe_t seraph_frames_death2_go[] =
 	{ FRAME_deathb3,	NULL, 0, 0, 0, NULL, 0, seraph_check_land },
 	{ FRAME_deathb4,	NULL, 0, 0, 0, NULL, 0, seraph_death_loop },
 };
-const animmove_t seraph_move_death2_go = { 4, seraph_frames_death2_go, NULL };
+const animmove_t seraph_move_death2_go = ANIMMOVE(seraph_frames_death2_go, NULL);
 
 // Seraph Death 2 Loop.
 static const animframe_t seraph_frames_death2_loop[] =
 {
 	{ FRAME_deathb5,	NULL, 0, 0, 0, NULL, 0, seraph_check_land },
 };
-const animmove_t seraph_move_death2_loop = { 1, seraph_frames_death2_loop, NULL };
+const animmove_t seraph_move_death2_loop = ANIMMOVE(seraph_frames_death2_loop, NULL);
 
 // Seraph Death 2 End.
 static const animframe_t seraph_frames_death2_end[] =
@@ -634,4 +634,4 @@ static const animframe_t seraph_frames_death2_end[] =
 	{ FRAME_deathb14,	NULL, 0, 0, 0, NULL, 0, seraph_check_land },
 	{ FRAME_deathb15,	NULL, 0, 0, 0, NULL, 0, M_EndDeath },
 };
-const animmove_t seraph_move_death2_end = { 10, seraph_frames_death2_end, NULL };
+const animmove_t seraph_move_death2_end = ANIMMOVE(seraph_frames_death2_end, NULL);
