@@ -11,9 +11,7 @@
 #include "mg_ai.h" //mxd
 #include "g_local.h"
 
-
 // Spreader attack 1 - the throw.
-
 static const animframe_t spreader_frames_attack1[] =
 {
 	{ FRAME_atacka1,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
@@ -33,7 +31,7 @@ static const animframe_t spreader_frames_attack1[] =
 	{ FRAME_atacka15,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atacka16,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t spreader_move_attack1 = { 16, spreader_frames_attack1, spreader_pause };
+const animmove_t spreader_move_attack1 = ANIMMOVE(spreader_frames_attack1, spreader_pause);
 
 // Spreader Attack 2 - the plague effect attack.
 // Using the move func for the spreader mist instead of the action func because the action func is already being used as a move func...
@@ -54,7 +52,7 @@ static const animframe_t spreader_frames_attack2[] =
 	{ FRAME_atackb13,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atackb14,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t spreader_move_attack2 = { 14, spreader_frames_attack2, spreader_pause };
+const animmove_t spreader_move_attack2 = ANIMMOVE(spreader_frames_attack2, spreader_pause);
 
 // Spreader Back Attack 1 - the spreader backpedals while shooting.
 static const animframe_t spreader_frames_backattack1[] =
@@ -73,7 +71,7 @@ static const animframe_t spreader_frames_backattack1[] =
 	{ FRAME_bkatck12,	spreader_mist, 14.2f,  10.06f, 16.0f, MG_AI_Run, -5, NULL },
 	{ FRAME_bkatck13,	spreader_mist, 14.47f, 10.38f, 16.0f, MG_AI_Run, -5, spreader_mist_stop_sound },
 };
-const animmove_t spreader_move_backattack1 = { 13, spreader_frames_backattack1, spreader_pause };
+const animmove_t spreader_move_backattack1 = ANIMMOVE(spreader_frames_backattack1, spreader_pause);
 
 // Spreader Backup 1 - the spreader backpedals.
 static const animframe_t spreader_frames_backup1[] =
@@ -92,21 +90,21 @@ static const animframe_t spreader_frames_backup1[] =
 	{ FRAME_backup12,	NULL, 0, 0, 0, MG_AI_Run, -5, NULL },
 	{ FRAME_backup13,	NULL, 0, 0, 0, MG_AI_Run, -5, NULL },
 };
-const animmove_t spreader_move_backup1 = { 13, spreader_frames_backup1, spreader_pause };
+const animmove_t spreader_move_backup1 = ANIMMOVE(spreader_frames_backup1, spreader_pause);
 
 // Spreader Death 1 Start - the spreader spreads no more (big death).
 static const animframe_t spreader_frames_death1_go[] =
 {
 	{ FRAME_death1,	NULL, 0, 0, 0, NULL, 0, spreader_flyback_move },
 };
-const animmove_t spreader_move_death1_go = { 1, spreader_frames_death1_go, spreader_flyback_loop };
+const animmove_t spreader_move_death1_go = ANIMMOVE(spreader_frames_death1_go, spreader_flyback_loop);
 
 // Spreader Death 1 Loop.
 static const animframe_t spreader_frames_death1_loop[] =
 {
 	{ FRAME_death2,	NULL, 0, 0, 0, NULL, 0, spreader_flyback_move },
 };
-const animmove_t spreader_move_death1_loop = { 1, spreader_frames_death1_loop, NULL };
+const animmove_t spreader_move_death1_loop = ANIMMOVE(spreader_frames_death1_loop, NULL);
 
 // Spreader Death 1 End.
 static const animframe_t spreader_frames_death1_end[] =
@@ -127,7 +125,7 @@ static const animframe_t spreader_frames_death1_end[] =
 	{ FRAME_death16,	NULL, 0, 0, 0, ai_move,  0, spreader_flyback_move },
 	{ FRAME_death17,	NULL, 0, 0, 0, ai_move,  0, spreader_dead },
 };
-const animmove_t spreader_move_death1_end = { 15, spreader_frames_death1_end, NULL };
+const animmove_t spreader_move_death1_end = ANIMMOVE(spreader_frames_death1_end, NULL);
 
 // Spreader Death 2 - the spreader spreads no more (little death).
 static const animframe_t spreader_frames_death2[] =
@@ -147,7 +145,7 @@ static const animframe_t spreader_frames_death2[] =
 	{ FRAME_deathb16,	NULL, 0, 0, 0, ai_move, 0, NULL },
 	{ FRAME_deathb17,	NULL, 0, 0, 0, ai_move, 0, spreader_dead },
 };
-const animmove_t spreader_move_death2 = { 14, spreader_frames_death2, NULL };
+const animmove_t spreader_move_death2 = ANIMMOVE(spreader_frames_death2, NULL);
 
 // Spreader Duck Attack 1 - spreader ducking, shoots, rises.
 static const animframe_t spreader_frames_dkatck1[] =
@@ -159,7 +157,7 @@ static const animframe_t spreader_frames_dkatck1[] =
 	{ FRAME_dkatck_5,	NULL, 0, 0, 0, ai_move, 0, NULL },
 	{ FRAME_dkatck_6,	NULL, 0, 0, 0, ai_move, 0, NULL },
 };
-const animmove_t spreader_move_dkatck1 = { 6, spreader_frames_dkatck1, spreader_pause };
+const animmove_t spreader_move_dkatck1 = ANIMMOVE(spreader_frames_dkatck1, spreader_pause);
 
 // Spreader Duck 1 - spreader ducks and rises.
 static const animframe_t spreader_frames_duck1[] =
@@ -172,7 +170,7 @@ static const animframe_t spreader_frames_duck1[] =
 	{ FRAME_duck6,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_duck7,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t spreader_move_duck1 = { 7, spreader_frames_duck1, spreader_pause };
+const animmove_t spreader_move_duck1 = ANIMMOVE(spreader_frames_duck1, spreader_pause);
 
 // Spreader Duck Down.
 static const animframe_t spreader_frames_duckdown[] =
@@ -182,7 +180,7 @@ static const animframe_t spreader_frames_duckdown[] =
 	{ FRAME_duck3,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_duck4,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t spreader_move_duckdown = { 4, spreader_frames_duckdown, spreader_duck_pause };
+const animmove_t spreader_move_duckdown = ANIMMOVE(spreader_frames_duckdown, spreader_duck_pause);
 
 // Spreader Duck Still 1 - the spreader ducking, still.
 static const animframe_t spreader_frames_duckstill[] =
@@ -200,7 +198,7 @@ static const animframe_t spreader_frames_duckstill[] =
 	{ FRAME_dkidle11,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dkidle12,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t spreader_move_duckstill = { 12, spreader_frames_duckstill, spreader_duck_pause };
+const animmove_t spreader_move_duckstill = ANIMMOVE(spreader_frames_duckstill, spreader_duck_pause);
 
 // Spreader Duck Up - the spreader rises from a ducking position.
 static const animframe_t spreader_frames_duckup[] =
@@ -210,7 +208,7 @@ static const animframe_t spreader_frames_duckup[] =
 	{ FRAME_duck6,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_duck7,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t spreader_move_duckup = { 4, spreader_frames_duckup, spreader_pause };
+const animmove_t spreader_move_duckup = ANIMMOVE(spreader_frames_duckup, spreader_pause);
 
 // Spreader Idle 1 - the spreader stands around.
 static const animframe_t spreader_frames_idle1[] =
@@ -227,7 +225,7 @@ static const animframe_t spreader_frames_idle1[] =
 	{ FRAME_idle10,	NULL, 0, 0, 0, NULL,		0, NULL },
 	{ FRAME_idle11,	NULL, 0, 0, 0, ai_stand,	0, NULL },
 };
-const animmove_t spreader_move_idle1 = { 11, spreader_frames_idle1, spreader_pause };
+const animmove_t spreader_move_idle1 = ANIMMOVE(spreader_frames_idle1, spreader_pause);
 
 // Spreader Pain 1 - spreader recoils from hit.
 static const animframe_t spreader_frames_pain1[] =
@@ -240,7 +238,7 @@ static const animframe_t spreader_frames_pain1[] =
 	{ FRAME_pain6,	NULL, 0, 0, 0, ai_move, 0, NULL },
 	{ FRAME_pain7,	NULL, 0, 0, 0, ai_move, 0, NULL },
 };
-const animmove_t spreader_move_pain1 = { 7, spreader_frames_pain1, spreader_pause };
+const animmove_t spreader_move_pain1 = ANIMMOVE(spreader_frames_pain1, spreader_pause);
 
 // Spreader Pivot Left 1 - spreader turns left.
 static const animframe_t spreader_frames_pvtlt1[] =
@@ -251,7 +249,7 @@ static const animframe_t spreader_frames_pvtlt1[] =
 	{ FRAME_pvtlt4,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_pvtlt5,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t spreader_move_pvtlt1 = { 5, spreader_frames_pvtlt1, spreader_pause };
+const animmove_t spreader_move_pvtlt1 = ANIMMOVE(spreader_frames_pvtlt1, spreader_pause);
 
 // Spreader Pivot Right 1 - spreader turns right.
 static const animframe_t spreader_frames_pvtrt1[] =
@@ -262,7 +260,7 @@ static const animframe_t spreader_frames_pvtrt1[] =
 	{ FRAME_pvtrt4,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_pvtrt5,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t spreader_move_pvtrt1 = { 5, spreader_frames_pvtrt1, spreader_pause };
+const animmove_t spreader_move_pvtrt1 = ANIMMOVE(spreader_frames_pvtrt1, spreader_pause);
 
 // Spreader Run 1 - the spreader runs.
 static const animframe_t spreader_frames_run1[] =
@@ -276,7 +274,7 @@ static const animframe_t spreader_frames_run1[] =
 	{ FRAME_run7,	NULL, 0, 0, 0, MG_AI_Run, 16, NULL },
 	{ FRAME_run8,	NULL, 0, 0, 0, MG_AI_Run, 18, NULL }, // Foot down.
 };
-const animmove_t spreader_move_run1 = { 8, spreader_frames_run1, spreader_pause };
+const animmove_t spreader_move_run1 = ANIMMOVE(spreader_frames_run1, spreader_pause);
 
 // Spreader Land.
 static const animframe_t spreader_frames_land[] =
@@ -289,14 +287,14 @@ static const animframe_t spreader_frames_land[] =
 	{ FRAME_jump22,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump23,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t spreader_move_land = { 7, spreader_frames_land, spreader_pause };
+const animmove_t spreader_move_land = ANIMMOVE(spreader_frames_land, spreader_pause);
 
 // Spreader In Air.
 static const animframe_t spreader_frames_inair[] =
 {
 	{ FRAME_jump16,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t spreader_move_inair = { 1, spreader_frames_inair, NULL };
+const animmove_t spreader_move_inair = ANIMMOVE(spreader_frames_inair, NULL);
 
 // Spreader Forward Jump.
 static const animframe_t spreader_frames_fjump[] =
@@ -317,7 +315,7 @@ static const animframe_t spreader_frames_fjump[] =
 	{ FRAME_jump14,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump15,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t spreader_move_fjump = { 15, spreader_frames_fjump, spreader_inair_go };
+const animmove_t spreader_move_fjump = ANIMMOVE(spreader_frames_fjump, spreader_inair_go);
 
 // Spreader Run Attack 1 - the spreader runs and shoots.
 static const animframe_t spreader_frames_rnatck1[] =
@@ -331,7 +329,7 @@ static const animframe_t spreader_frames_rnatck1[] =
 	{ FRAME_rnatck7,	spreader_mist_fast, 35.69f * 2.0f, 5.0f, 16.0f, MG_AI_Run, 16, spreader_pause },
 	{ FRAME_rnatck8,	spreader_mist_fast, 35.68f * 2.0f, 5.0f, 16.0f, MG_AI_Run, 18, spreader_pause },
 };
-const animmove_t spreader_move_rnatck1 = { 8, spreader_frames_rnatck1, spreader_pause };
+const animmove_t spreader_move_rnatck1 = ANIMMOVE(spreader_frames_rnatck1, spreader_pause);
 
 // Spreader Walk 1 - the spreader walks.
 static const animframe_t spreader_frames_walk1[] =
@@ -350,7 +348,7 @@ static const animframe_t spreader_frames_walk1[] =
 	{ FRAME_walk12,	NULL, 0, 0, 0, ai_walk, 8, NULL },
 	{ FRAME_walk13,	NULL, 0, 0, 0, ai_walk, 8, NULL },
 };
-const animmove_t spreader_move_walk1 = { 13, spreader_frames_walk1, spreader_pause };
+const animmove_t spreader_move_walk1 = ANIMMOVE(spreader_frames_walk1, spreader_pause);
 
 // Spreader Walk 2 - the spreader walks.
 static const animframe_t spreader_frames_walk2[] =
@@ -369,14 +367,14 @@ static const animframe_t spreader_frames_walk2[] =
 	{ FRAME_walk12,	NULL, 0, 0, 0, MG_AI_Run, 6, spreader_pause },
 	{ FRAME_walk13,	NULL, 0, 0, 0, MG_AI_Run, 6, spreader_pause },
 };
-const animmove_t spreader_move_walk2 = { 13, spreader_frames_walk2, spreader_pause };
+const animmove_t spreader_move_walk2 = ANIMMOVE(spreader_frames_walk2, spreader_pause);
 
 // Spreader Fly Loop.
 static const animframe_t spreader_frames_flyloop[] =
 {
 	{ FRAME_pain5,	NULL, 0, 0, 0, NULL, 0, spreader_fly },
 };
-const animmove_t spreader_move_flyloop = { 1, spreader_frames_flyloop, NULL };
+const animmove_t spreader_move_flyloop = ANIMMOVE(spreader_frames_flyloop, NULL);
 
 // Spreader Fly.
 static const animframe_t spreader_frames_fly[] =
@@ -386,14 +384,14 @@ static const animframe_t spreader_frames_fly[] =
 	{ FRAME_pain3,	NULL, 0, 0, 0, NULL, 0, spreader_fly },
 	{ FRAME_pain4,	NULL, 0, 0, 0, NULL, 0, spreader_fly },
 };
-const animmove_t spreader_move_fly = { 4, spreader_frames_fly, spreader_fly_loop };
+const animmove_t spreader_move_fly = ANIMMOVE(spreader_frames_fly, spreader_fly_loop);
 
 // Spreader Dead.
 static const animframe_t spreader_frames_dead[] =
 {
 	{ FRAME_deathb17,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
 };
-const animmove_t spreader_move_dead = { 1, spreader_frames_dead, NULL };
+const animmove_t spreader_move_dead = ANIMMOVE(spreader_frames_dead, NULL);
 
 // Spreader Die.
 static const animframe_t spreader_frames_fdie[] =
@@ -413,7 +411,7 @@ static const animframe_t spreader_frames_fdie[] =
 	{ FRAME_deathb16,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
 	{ FRAME_deathb17,	NULL, 0, 0, 0, NULL, 0, spreader_become_solid },
 };
-const animmove_t spreader_move_fdie = { 14, spreader_frames_fdie, spreader_deadloop_go };
+const animmove_t spreader_move_fdie = ANIMMOVE(spreader_frames_fdie, spreader_deadloop_go);
 
 // Spreader Delay.
 static const animframe_t spreader_frames_delay[] =
@@ -430,4 +428,4 @@ static const animframe_t spreader_frames_delay[] =
 	{ FRAME_idle10,	NULL, 0, 0, 0, NULL, 0, spreader_pause },
 	{ FRAME_idle11,	NULL, 0, 0, 0, NULL, 0, spreader_pause },
 };
-const animmove_t spreader_move_delay = { 11, spreader_frames_delay, spreader_pause };
+const animmove_t spreader_move_delay = ANIMMOVE(spreader_frames_delay, spreader_pause);
