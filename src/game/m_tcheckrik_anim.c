@@ -24,7 +24,7 @@ static const animframe_t insect_frames_back[] =
 	{ FRAME_backpeddle9,	NULL, 0, 0, 0, ai_charge, -10, NULL },
 	{ FRAME_backpeddle10,	NULL, 0, 0, 0, ai_charge, -6,  NULL },
 };
-const animmove_t insect_move_back = { 10, insect_frames_back, tcheckrik_pause };
+const animmove_t insect_move_back = ANIMMOVE(insect_frames_back, tcheckrik_pause);
 
 // Insect Death.
 static const animframe_t insect_frames_deathfr[] =
@@ -52,21 +52,21 @@ static const animframe_t insect_frames_deathfr[] =
 	{ FRAME_deathfr21,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathfr22,	NULL, 0, 0, 0, NULL, 0, tcheckrik_dead },
 };
-const animmove_t insect_move_deathfr = { 22, insect_frames_deathfr, NULL };
+const animmove_t insect_move_deathfr = ANIMMOVE(insect_frames_deathfr, NULL);
 
 // Insect Knockback Start.
 static const animframe_t insect_frames_knock1_go[] =
 {
 	{ FRAME_knock1,	NULL, 0, 0, 0, NULL, 0, tcheckrik_flyback_move },
 };
-const animmove_t insect_move_knock1_go = { 1, insect_frames_knock1_go, tcheckrik_flyback_loop };
+const animmove_t insect_move_knock1_go = ANIMMOVE(insect_frames_knock1_go, tcheckrik_flyback_loop);
 
 // Insect Knockback Loop.
 static const animframe_t insect_frames_knock1_loop[] =
 {
 	{ FRAME_knock2,	NULL, 0, 0, 0, NULL, 0, tcheckrik_flyback_move },
 };
-const animmove_t insect_move_knock1_loop = { 1, insect_frames_knock1_loop, NULL };
+const animmove_t insect_move_knock1_loop = ANIMMOVE(insect_frames_knock1_loop, NULL);
 
 // Insect Knockback End.
 static const animframe_t insect_frames_knock1_end[] =
@@ -86,7 +86,7 @@ static const animframe_t insect_frames_knock1_end[] =
 	{ FRAME_knock15,	NULL, 0, 0, 0, ai_move,  0, MG_SetNoBlocking },
 	{ FRAME_knock15,	NULL, 0, 0, 0, NULL,	 0, tcheckrik_wait_twitch },
 };
-const animmove_t insect_move_knock1_end = { 14, insect_frames_knock1_end, NULL };
+const animmove_t insect_move_knock1_end = ANIMMOVE(insect_frames_knock1_end, NULL);
 
 // Insect Twitch.
 static const animframe_t insect_frames_twitch[] =
@@ -98,7 +98,7 @@ static const animframe_t insect_frames_twitch[] =
 	{ FRAME_knock19,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_knock19,	NULL, 0, 0, 0, NULL, 0, tcheckrik_wait_twitch },
 };
-const animmove_t insect_move_twitch = { 5, insect_frames_twitch, NULL };
+const animmove_t insect_move_twitch = ANIMMOVE(insect_frames_twitch, NULL);
 
 // Insect Idle.
 static const animframe_t insect_frames_idle[] =
@@ -154,7 +154,7 @@ static const animframe_t insect_frames_idle[] =
 	{ FRAME_idle49,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle50,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t insect_move_idle = { 50, insect_frames_idle, tcheckrik_pause };
+const animmove_t insect_move_idle = ANIMMOVE(insect_frames_idle, tcheckrik_pause);
 
 // Insect Land.
 static const animframe_t insect_frames_land[] =
@@ -166,14 +166,14 @@ static const animframe_t insect_frames_land[] =
 	{ FRAME_jump15,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump16,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_land = { 6, insect_frames_land, tcheckrik_pause };
+const animmove_t insect_move_land = ANIMMOVE(insect_frames_land, tcheckrik_pause);
 
 // Insect In Air.
 static const animframe_t insect_frames_inair[] =
 {
 	{ FRAME_jump10,	MG_InAirMove, 50, 0, 0, MG_CheckLanded, ANIM_LAND, NULL }, // Hang here until land.
 };
-const animmove_t insect_move_inair = { 1, insect_frames_inair, NULL };
+const animmove_t insect_move_inair = ANIMMOVE(insect_frames_inair, NULL);
 
 // Insect Forced Jump.
 static const animframe_t insect_frames_forcedjump[] =
@@ -188,14 +188,14 @@ static const animframe_t insect_frames_forcedjump[] =
 	{ FRAME_jump8,	MG_InAirMove, 50, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump9,	MG_InAirMove, 50, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t insect_move_forcedjump = { 9, insect_frames_forcedjump, tcheckrik_inair_go };
+const animmove_t insect_move_forcedjump = ANIMMOVE(insect_frames_forcedjump, tcheckrik_inair_go);
 
 // Insect Forced In Air.
 static const animframe_t insect_frames_finair[] =
 {
 	{ FRAME_jump10,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL }, // Hang here until land.
 };
-const animmove_t insect_move_finair = { 1, insect_frames_finair, NULL };
+const animmove_t insect_move_finair = ANIMMOVE(insect_frames_finair, NULL);
 
 // Insect Forced Jump.
 static const animframe_t insect_frames_fjump[] =
@@ -210,7 +210,7 @@ static const animframe_t insect_frames_fjump[] =
 	{ FRAME_jump8,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump9,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t insect_move_fjump = { 9, insect_frames_fjump, tcheckrik_forced_inair_go };
+const animmove_t insect_move_fjump = ANIMMOVE(insect_frames_fjump, tcheckrik_forced_inair_go);
 
 // Insect Pain A.
 static const animframe_t insect_frames_paina[] =
@@ -223,7 +223,7 @@ static const animframe_t insect_frames_paina[] =
 	{ FRAME_paina6,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_paina7,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_paina = { 7, insect_frames_paina, tcheckrik_pause };
+const animmove_t insect_move_paina = ANIMMOVE(insect_frames_paina, tcheckrik_pause);
 
 // Insect Pain C.
 static const animframe_t insect_frames_painc[] =
@@ -235,7 +235,7 @@ static const animframe_t insect_frames_painc[] =
 	{ FRAME_paina5,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_paina6,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_painc = { 6, insect_frames_painc, tcheckrik_pause };
+const animmove_t insect_move_painc = ANIMMOVE(insect_frames_painc, tcheckrik_pause);
 
 // Insect Run.
 static const animframe_t insect_frames_run[] =
@@ -252,7 +252,7 @@ static const animframe_t insect_frames_run[] =
 	{ FRAME_Run10,	NULL, 0, 0, 0, MG_AI_Run, 14, tcheckrik_pause },
 	{ FRAME_Run10,	NULL, 0, 0, 0, MG_AI_Run, 14, tcheckrik_pause },
 };
-const animmove_t insect_move_run = { 11, insect_frames_run, tcheckrik_pause };
+const animmove_t insect_move_run = ANIMMOVE(insect_frames_run, tcheckrik_pause);
 
 // Insect Spear Attack.
 static const animframe_t insect_frames_spear[] =
@@ -269,7 +269,7 @@ static const animframe_t insect_frames_spear[] =
 	{ FRAME_SpearB10,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_SpearB11,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t insect_move_spear = { 11, insect_frames_spear, tcheckrik_pause };
+const animmove_t insect_move_spear = ANIMMOVE(insect_frames_spear, tcheckrik_pause);
 
 // Insect Sword Attack.
 static const animframe_t insect_frames_sword[] =
@@ -284,7 +284,7 @@ static const animframe_t insect_frames_sword[] =
 	{ FRAME_sword8,	NULL, 0, 0, 0, tcheckrik_check_loop, 1, NULL },
 	{ FRAME_sword9,	NULL, 0, 0, 0, ai_charge, 0, NULL }, // Check for loop.
 };
-const animmove_t insect_move_sword = { 9, insect_frames_sword, tcheckrik_pause };
+const animmove_t insect_move_sword = ANIMMOVE(insect_frames_sword, tcheckrik_pause);
 
 // Insect Spell Attack.
 static const animframe_t insect_frames_spell[] =
@@ -307,7 +307,7 @@ static const animframe_t insect_frames_spell[] =
 	{ FRAME_spell16,	NULL, 0, 0, 0, ai_charge, 0, NULL }, // Check for loop?
 	{ FRAME_spell17,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t insect_move_spell = { 17, insect_frames_spell, tcheckrik_pause };
+const animmove_t insect_move_spell = ANIMMOVE(insect_frames_spell, tcheckrik_pause);
 
 // Insect Spell 2 Attack.
 static const animframe_t insect_frames_spell2[] =
@@ -325,7 +325,7 @@ static const animframe_t insect_frames_spell2[] =
 	{ FRAME_spell16,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spell17,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t insect_move_spell2 = { 12, insect_frames_spell2, tcheckrik_pause };
+const animmove_t insect_move_spell2 = ANIMMOVE(insect_frames_spell2, tcheckrik_pause);
 
 // Insect Walk.
 static const animframe_t insect_frames_walk[] =
@@ -351,7 +351,7 @@ static const animframe_t insect_frames_walk[] =
 	{ FRAME_Walk19,	NULL, 0, 0, 0, ai_walk, 6, NULL },
 	{ FRAME_Walk20,	NULL, 0, 0, 0, ai_walk, 6, NULL },
 };
-const animmove_t insect_move_walk = { 20, insect_frames_walk, tcheckrik_pause };
+const animmove_t insect_move_walk = ANIMMOVE(insect_frames_walk, tcheckrik_pause);
 
 // Insect Delay - insect standing by, not thinking, just waiting for a door or plat or something.
 static const animframe_t insect_frames_delay[] =
@@ -407,7 +407,7 @@ static const animframe_t insect_frames_delay[] =
 	{ FRAME_idle49,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
 	{ FRAME_idle50,	NULL, 0, 0, 0, NULL, 0, tcheckrik_pause },
 };
-const animmove_t insect_delay = { 50, insect_frames_delay, tcheckrik_pause };
+const animmove_t insect_delay = ANIMMOVE(insect_frames_delay, tcheckrik_pause);
 
 // Insect Cinematic Action 1.
 static const animframe_t insect_frames_c_action1[] =
@@ -422,7 +422,7 @@ static const animframe_t insect_frames_c_action1[] =
 	{ FRAME_ts_lean2talk8,	ai_c_move, 4, 0, 0, NULL, 0, NULL },
 	{ FRAME_ts_lean2talk9,	ai_c_move, 4, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_action1 = { 9, insect_frames_c_action1, ai_c_cycleend };
+const animmove_t insect_move_c_action1 = ANIMMOVE(insect_frames_c_action1, ai_c_cycleend);
 
 // Insect Cinematic Action 2.
 static const animframe_t insect_frames_c_action2[] =
@@ -488,7 +488,7 @@ static const animframe_t insect_frames_c_action2[] =
 	{ FRAME_ts_listen59,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ts_listen60,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_action2 = { 60, insect_frames_c_action2, ai_c_cycleend };
+const animmove_t insect_move_c_action2 = ANIMMOVE(insect_frames_c_action2, ai_c_cycleend);
 
 // Insect Cinematic Action 3.
 static const animframe_t insect_frames_c_action3[] =
@@ -504,7 +504,7 @@ static const animframe_t insect_frames_c_action3[] =
 	{ FRAME_ts_spear9,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ts_spear10,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_action3 = { 10, insect_frames_c_action3, ai_c_cycleend };
+const animmove_t insect_move_c_action3 = ANIMMOVE(insect_frames_c_action3, ai_c_cycleend);
 
 // Insect Cinematic Action 4.
 static const animframe_t insect_frames_c_action4[] =
@@ -570,7 +570,7 @@ static const animframe_t insect_frames_c_action4[] =
 	{ FRAME_ts_talk59,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ts_talk60,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_action4 = { 60, insect_frames_c_action4, ai_c_cycleend };
+const animmove_t insect_move_c_action4 = ANIMMOVE(insect_frames_c_action4, ai_c_cycleend);
 
 // Insect Cinematic Idle 1.
 static const animframe_t insect_frames_c_idle1[] =
@@ -626,7 +626,7 @@ static const animframe_t insect_frames_c_idle1[] =
 	{ FRAME_idle49,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_idle50,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_idle1 = { 50, insect_frames_c_idle1, ai_c_cycleend };
+const animmove_t insect_move_c_idle1 = ANIMMOVE(insect_frames_c_idle1, ai_c_cycleend);
 
 // Insect Cinematic Idle 2.
 static const animframe_t insect_frames_c_idle2[] =
@@ -636,7 +636,7 @@ static const animframe_t insect_frames_c_idle2[] =
 	{ FRAME_ts_rdy2idle3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ts_rdy2idle4, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_idle2 = { 4, insect_frames_c_idle2, ai_c_cycleend };
+const animmove_t insect_move_c_idle2 = ANIMMOVE(insect_frames_c_idle2, ai_c_cycleend);
 
 // Insect Cinematic Idle 3.
 static const animframe_t insect_frames_c_idle3[] =
@@ -702,7 +702,7 @@ static const animframe_t insect_frames_c_idle3[] =
 	{ FRAME_ts_idle59,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ts_idle60,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_idle3 = { 60, insect_frames_c_idle3, ai_c_cycleend };
+const animmove_t insect_move_c_idle3 = ANIMMOVE(insect_frames_c_idle3, ai_c_cycleend);
 
 // Insect Cinematic Run.
 static const animframe_t insect_frames_c_run[] =
@@ -718,7 +718,7 @@ static const animframe_t insect_frames_c_run[] =
 	{ FRAME_Run9,	ai_c_move, 14, 0, 0, NULL, 0, NULL },
 	{ FRAME_Run10,	ai_c_move, 14, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_run = { 10, insect_frames_c_run, ai_c_cycleend };
+const animmove_t insect_move_c_run = ANIMMOVE(insect_frames_c_run, ai_c_cycleend);
 
 // Insect Cinematic Spear Attack.
 static const animframe_t insect_frames_c_attack1[] =
@@ -735,7 +735,7 @@ static const animframe_t insect_frames_c_attack1[] =
 	{ FRAME_SpearB10,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_SpearB11,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_attack1 = { 11, insect_frames_c_attack1, ai_c_cycleend };
+const animmove_t insect_move_c_attack1 = ANIMMOVE(insect_frames_c_attack1, ai_c_cycleend);
 
 // Insect Cinematic Spell Attack.
 static const animframe_t insect_frames_c_attack2[] =
@@ -758,7 +758,7 @@ static const animframe_t insect_frames_c_attack2[] =
 	{ FRAME_spell16,	ai_c_move, 0, 0, 0, NULL, 0, NULL }, // Check for loop?
 	{ FRAME_spell17,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_attack2 = { 17, insect_frames_c_attack2, ai_c_cycleend };
+const animmove_t insect_move_c_attack2 = ANIMMOVE(insect_frames_c_attack2, ai_c_cycleend);
 
 // Insect Cinematic Sword Attack.
 static const animframe_t insect_frames_c_attack3[] =
@@ -773,7 +773,7 @@ static const animframe_t insect_frames_c_attack3[] =
 	{ FRAME_sword8,	ai_c_move, 0, 0, 0, NULL, 1, NULL },
 	{ FRAME_sword9,	ai_c_move, 0, 0, 0, NULL, 0, NULL }, // Check for loop.
 };
-const animmove_t insect_move_c_attack3 = { 9, insect_frames_c_attack3, ai_c_cycleend };
+const animmove_t insect_move_c_attack3 = ANIMMOVE(insect_frames_c_attack3, ai_c_cycleend);
 
 // Insect Cinematic Backpedal.
 static const animframe_t insect_frames_c_backpedal[] =
@@ -789,7 +789,7 @@ static const animframe_t insect_frames_c_backpedal[] =
 	{ FRAME_backpeddle9,	ai_c_move, -10, 0, 0, NULL, 0, NULL },
 	{ FRAME_backpeddle10,	ai_c_move, -12, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_backpedal = { 10, insect_frames_c_backpedal, ai_c_cycleend };
+const animmove_t insect_move_c_backpedal = ANIMMOVE(insect_frames_c_backpedal, ai_c_cycleend);
 
 // Insect Cinematic Death.
 static const animframe_t insect_frames_c_death1[] =
@@ -818,7 +818,7 @@ static const animframe_t insect_frames_c_death1[] =
 	{ FRAME_deathfr21,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathfr22, tcheckrik_sound, CHAN_BODY, SND_THUD, ATTN_NORM, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_death1 = { 22, insect_frames_c_death1, tcheckrik_c_dead };
+const animmove_t insect_move_c_death1 = ANIMMOVE(insect_frames_c_death1, tcheckrik_c_dead);
 
 // Insect Cinematic Pain.
 static const animframe_t insect_frames_c_pain1[] =
@@ -831,7 +831,7 @@ static const animframe_t insect_frames_c_pain1[] =
 	{ FRAME_paina6,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_paina7,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_pain1 = { 7, insect_frames_c_pain1, ai_c_cycleend };
+const animmove_t insect_move_c_pain1 = ANIMMOVE(insect_frames_c_pain1, ai_c_cycleend);
 
 // Insect Cinematic Walk.
 static const animframe_t insect_frames_c_walk[] =
@@ -857,4 +857,4 @@ static const animframe_t insect_frames_c_walk[] =
 	{ FRAME_Walk19,	ai_c_move, 4, 0, 0, NULL, 0, NULL },
 	{ FRAME_Walk20,	ai_c_move, 4, 0, 0, NULL, 0, NULL },
 };
-const animmove_t insect_move_c_walk = { 20, insect_frames_c_walk, ai_c_cycleend };
+const animmove_t insect_move_c_walk = ANIMMOVE(insect_frames_c_walk, ai_c_cycleend);
