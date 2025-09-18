@@ -928,12 +928,10 @@ void harpy_dive_end_move(edict_t* self) //mxd. Named 'move_harpy_dive_end' in or
 		self->enemy->s.origin[2] + flrand(self->maxs[2], self->enemy->maxs[2])
 	};
 
-	vec3_t diff_xy;
-	VectorCopy(self->s.origin, diff_xy);
-	Vec3SubtractAssign(enemy_pos, diff_xy);
-	diff_xy[2] = 0.0f;
+	vec3_t dir;
+	VectorSubtract(enemy_pos, self->s.origin, dir);
 
-	self->ideal_yaw = VectorYaw(diff_xy);
+	self->ideal_yaw = VectorYaw(dir);
 	M_ChangeYaw(self);
 
 	self->velocity[2] *= 0.75f;
@@ -951,8 +949,6 @@ void harpy_dive_end_move(edict_t* self) //mxd. Named 'move_harpy_dive_end' in or
 		return;
 	}
 
-	vec3_t dir;
-	VectorSubtract(enemy_pos, self->s.origin, dir);
 	const float dist = VectorLength(dir);
 	VectorNormalize(dir);
 
