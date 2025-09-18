@@ -25,7 +25,7 @@ static const animframe_t chicken_frames_stand1[] =
 	{ FRAME_wait5,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_wait6,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t chicken_move_stand1 = { 6, chicken_frames_stand1, chicken_pause };
+const animmove_t chicken_move_stand1 = ANIMMOVE(chicken_frames_stand1, chicken_pause);
 
 // Chicken running.
 static const animframe_t chicken_frames_run[] =
@@ -37,7 +37,7 @@ static const animframe_t chicken_frames_run[] =
 	{ FRAME_run5,	NULL, 0, 0, 0, MG_AI_Run, ENEMY_RUN_SPEED, NULL },
 	{ FRAME_run6,	chicken_sound, CHAN_BODY, SND_CLAW, ATTN_NORM,  MG_AI_Run, ENEMY_RUN_SPEED, NULL },
 };
-const animmove_t chicken_move_run = { 6, chicken_frames_run, chicken_pause };
+const animmove_t chicken_move_run = ANIMMOVE(chicken_frames_run, chicken_pause);
 
 // Chicken walking.
 static const animframe_t chicken_frames_walk[] =
@@ -51,7 +51,7 @@ static const animframe_t chicken_frames_walk[] =
 	{ FRAME_walk7,	chicken_sound, CHAN_BODY, SND_CLAW, ATTN_NORM,  ai_walk, ENEMY_WALK_SPEED, chicken_check_unmorph },
 	{ FRAME_walk8,	NULL, 0, 0, 0, ai_walk, ENEMY_WALK_SPEED, NULL },
 };
-const animmove_t chicken_move_walk = { 8, chicken_frames_walk, chicken_pause };
+const animmove_t chicken_move_walk = ANIMMOVE(chicken_frames_walk, chicken_pause);
 
 // Chicken cluck.
 static const animframe_t chicken_frames_cluck[] =
@@ -76,7 +76,7 @@ static const animframe_t chicken_frames_cluck[] =
 	{ FRAME_cluck18,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_cluck19,	NULL, 0, 0, 0, ai_stand, 0, chicken_check_unmorph },
 };
-const animmove_t chicken_move_cluck = { 19, chicken_frames_cluck, chicken_eat_again };
+const animmove_t chicken_move_cluck = ANIMMOVE(chicken_frames_cluck, chicken_eat_again);
 
 // Chicken attacking.
 static const animframe_t chicken_frames_attack[] =
@@ -88,7 +88,7 @@ static const animframe_t chicken_frames_attack[] =
 	{ FRAME_attack5,	NULL, 0, 0, 0, ai_stand, 0, chicken_bite },
 	{ FRAME_attack6,	NULL, 0, 0, 0, ai_stand, 0, chicken_check_unmorph },
 };
-const animmove_t chicken_move_attack = { 6, chicken_frames_attack, chicken_pause };
+const animmove_t chicken_move_attack = ANIMMOVE(chicken_frames_attack, chicken_pause);
 
 // Chicken eating.
 static const animframe_t chicken_frames_eat[] =
@@ -123,7 +123,7 @@ static const animframe_t chicken_frames_eat[] =
 	{ FRAME_peck28,	NULL, 0, 0, 0, ai_stand, 0, chicken_check_unmorph },
 	{ FRAME_peck29,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t chicken_move_eat = { 29, chicken_frames_eat, chicken_eat_again };
+const animmove_t chicken_move_eat = ANIMMOVE(chicken_frames_eat, chicken_eat_again);
 
 // Chicken jumping.
 static const animframe_t chicken_frames_jump[] = //TODO: no 'chicken_check_unmorph' checks here. Probably intentional.
@@ -135,4 +135,4 @@ static const animframe_t chicken_frames_jump[] = //TODO: no 'chicken_check_unmor
 	{ FRAME_jump5,	NULL, 0, 0, 0, ai_walk, 8, NULL },
 	{ FRAME_jump6,	NULL, 0, 0, 0, ai_walk, 8, NULL },
 };
-const animmove_t chicken_move_jump = { 6, chicken_frames_jump, chicken_pause };
+const animmove_t chicken_move_jump = ANIMMOVE(chicken_frames_jump, chicken_pause);
