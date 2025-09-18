@@ -93,8 +93,6 @@ cvar_t* log_file_header;
 cvar_t* log_file_footer;
 cvar_t* log_file_line_header;
 
-static void G_RunFrame(void);
-
 static void ShutdownGame(void)
 {
 	gi.dprintf("==== ShutdownGame ====\n");
@@ -247,7 +245,7 @@ static void EndDMLevel(void)
 	}
 
 	// Search for a changelevel.
-	edict_t* ent = G_Find(NULL, FOFS(classname), "target_changelevel");
+	const edict_t* ent = G_Find(NULL, FOFS(classname), "target_changelevel");
 	if (ent != NULL)
 	{
 		BeginIntermission(ent);
