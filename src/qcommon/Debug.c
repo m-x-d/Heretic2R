@@ -12,6 +12,16 @@
 	#include <windows.h>
 #endif
 
+// Debug colors.
+Q2DLL_DECLSPEC paletteRGBA_t dc_white =		{ .r = 255,	.g = 255,	.b = 255,	.a = 255 };
+Q2DLL_DECLSPEC paletteRGBA_t dc_red =		{ .r = 255,	.g = 0,		.b = 0,		.a = 255 };
+Q2DLL_DECLSPEC paletteRGBA_t dc_green =		{ .r = 0,	.g = 255,	.b = 0,		.a = 255 };
+Q2DLL_DECLSPEC paletteRGBA_t dc_blue =		{ .r = 0,	.g = 85,	.b = 255,	.a = 255 };
+Q2DLL_DECLSPEC paletteRGBA_t dc_yellow =	{ .r = 255, .g = 255,	.b = 0,		.a = 255 };
+Q2DLL_DECLSPEC paletteRGBA_t dc_orange =	{ .r = 255, .g = 128,	.b = 0,		.a = 255 };
+Q2DLL_DECLSPEC paletteRGBA_t dc_cyan =		{ .r = 0,	.g = 255,	.b = 255,	.a = 255 };
+Q2DLL_DECLSPEC paletteRGBA_t dc_purple =	{ .r = 255,	.g = 0,		.b = 255,	.a = 255 };
+
 // Print to Visual Studio console.
 Q2DLL_DECLSPEC void DBG_IDEPrint(const char* fmt, ...)
 {

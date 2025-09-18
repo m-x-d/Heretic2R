@@ -28,6 +28,16 @@
 	#endif
 #endif
 
+// Debug colors.
+Q2DLL_DECLSPEC extern paletteRGBA_t dc_white;
+Q2DLL_DECLSPEC extern paletteRGBA_t dc_red;
+Q2DLL_DECLSPEC extern paletteRGBA_t dc_green;
+Q2DLL_DECLSPEC extern paletteRGBA_t dc_blue;
+Q2DLL_DECLSPEC extern paletteRGBA_t dc_yellow;
+Q2DLL_DECLSPEC extern paletteRGBA_t dc_orange;
+Q2DLL_DECLSPEC extern paletteRGBA_t dc_cyan;
+Q2DLL_DECLSPEC extern paletteRGBA_t dc_purple;
+
 Q2DLL_DECLSPEC extern char* pv(const vec3_t v); // vtos() from g_utils.c, basically...
 Q2DLL_DECLSPEC extern char* psv(const short* v);
 
