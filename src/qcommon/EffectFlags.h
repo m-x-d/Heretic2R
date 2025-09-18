@@ -11,7 +11,7 @@
 // (lights, particles, frame animations) and happen constantly on the given entity.
 // An entity that has effects will be sent to the client even if it has a zero index model.
 
-//#define	EF_ROTATE				0x00000001	// Rotate the entity's model (used for bonus items). //mxd. Unused.
+//#define EF_ROTATE				0x00000001	// Rotate the entity's model (used for bonus items). //mxd. Unused.
 //#define EF_CL_PHYS_ALWAYS_BOUNCE 0x00000002 //mxd. Unused.
 #define EF_JOINTED				0x00000004
 #define EF_SWAPFRAME			0x00000008
@@ -45,6 +45,8 @@
 #define EF_CHICKEN				0x00400000	// The flag that tells the system that the player is a chicken, and not corvus.
 #define EF_ANIM_ALL				0x00800000	// Automatically cycle through all frames at 2hz
 #define EF_ANIM_ALLFAST			0x01000000	// Automatically cycle through all frames at 10hz
+
+#define EF_FAST_MOVER			0x02000000 //mxd. Double max. interpolated move distance in AddServerEntities() (very special monster_harpy flag).
 
 // CEF_XXX
 // Flags specified when a client-effect is created; don't even think about expanding this beyond 1 byte!
