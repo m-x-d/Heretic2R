@@ -410,7 +410,7 @@ const animmove_t ssithra_move_namor1 = ANIMMOVE(ssithra_frames_namor1, ssithra_d
 static const animframe_t ssithra_frames_pain_a1[] =
 {
 	{ FRAME_pain_a1,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_pain_a2,	ULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_pain_a2,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
 const animmove_t ssithra_move_pain_a1 = ANIMMOVE(ssithra_frames_pain_a1, ssithra_pain_react);
 
