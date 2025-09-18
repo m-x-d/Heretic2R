@@ -941,11 +941,7 @@ void harpy_dive_end_move(edict_t* self) //mxd. Named 'move_harpy_dive_end' in or
 
 	if (self->groundentity != NULL || !HarpyCanMove(self, 128.0f))
 	{
-		if (self->groundentity == self->enemy)
-			SetAnim(self, ANIM_DIVE_END); //TODO: always overridden by SetAnim() call below!
-
-		SetAnim(self, ANIM_FLYBACK1);
-
+		SetAnim(self, (self->groundentity == self->enemy ? ANIM_DIVE_END : ANIM_FLYBACK1)); //mxd. ANIM_DIVE_END case ignored in original logic.
 		return;
 	}
 
@@ -964,7 +960,7 @@ void harpy_dive_end_move(edict_t* self) //mxd. Named 'move_harpy_dive_end' in or
 	VectorMA(self->velocity, forward_dist, forward, self->velocity);
 
 	// Are we about to hit the target?
-	if (dist < HARPY_COLLISION_DIST)
+	if (dist < max(HARPY_COLLISION_DIST, VectorLength(self->velocity) * 0.5f)) //mxd. 'dist < HARPY_COLLISION_DIST' in original logic. May never happen when swooping really fast...
 		SetAnim(self, ANIM_DIVE_END);
 	else
 		harpy_ai_glide(self, 0.0f, 0.0f, 0.0f);
