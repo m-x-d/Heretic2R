@@ -44,7 +44,7 @@ static const animframe_t seraph_guard_frames_stand[] =
 	{ FRAME_idle28,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle29,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t seraph_guard_move_stand = { 29, seraph_guard_frames_stand, seraph_guard_pause };
+const animmove_t seraph_guard_move_stand = ANIMMOVE(seraph_guard_frames_stand, seraph_guard_pause);
 
 // Seraph Guard Melee 1.
 static const animframe_t seraph_guard_frames_melee[] =
@@ -72,7 +72,7 @@ static const animframe_t seraph_guard_frames_melee[] =
 	{ FRAME_axea12,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_axea13,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t seraph_guard_move_melee = { 22,seraph_guard_frames_melee, seraph_guard_pause };
+const animmove_t seraph_guard_move_melee = ANIMMOVE(seraph_guard_frames_melee, seraph_guard_pause);
 
 // Seraph Guard Melee 2.
 static const animframe_t seraph_guard_frames_melee2[] =
@@ -90,7 +90,7 @@ static const animframe_t seraph_guard_frames_melee2[] =
 	{ FRAME_axeb5,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_axeb6,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_guard_move_melee2 = { 12, seraph_guard_frames_melee2, seraph_guard_pause };
+const animmove_t seraph_guard_move_melee2 = ANIMMOVE(seraph_guard_frames_melee2, seraph_guard_pause);
 
 // Seraph Guard Melee 3.
 static const animframe_t seraph_guard_frames_melee3[] =
@@ -112,7 +112,7 @@ static const animframe_t seraph_guard_frames_melee3[] =
 	{ FRAME_axec9,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_axec10,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_guard_move_melee3 = { 16, seraph_guard_frames_melee3, seraph_guard_pause };
+const animmove_t seraph_guard_move_melee3 = ANIMMOVE(seraph_guard_frames_melee3, seraph_guard_pause);
 
 // Seraph Guard Missile.
 static const animframe_t seraph_guard_frames_missile[] =
@@ -129,7 +129,7 @@ static const animframe_t seraph_guard_frames_missile[] =
 	{ FRAME_newshot10,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_newshot11,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_guard_move_missile = { 11, seraph_guard_frames_missile, seraph_guard_pause };
+const animmove_t seraph_guard_move_missile = ANIMMOVE(seraph_guard_frames_missile, seraph_guard_pause);
 
 // Seraph Guard Pain.
 static const animframe_t seraph_guard_frames_pain[] =
@@ -140,7 +140,7 @@ static const animframe_t seraph_guard_frames_pain[] =
 	{ FRAME_pain4,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pain5,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_guard_move_pain = { 5,seraph_guard_frames_pain, seraph_guard_pause };
+const animmove_t seraph_guard_move_pain = ANIMMOVE(seraph_guard_frames_pain, seraph_guard_pause);
 
 // Seraph Guard Run Melee.
 static const animframe_t seraph_guard_frames_runmelee[] =
@@ -154,7 +154,7 @@ static const animframe_t seraph_guard_frames_runmelee[] =
 	{ FRAME_runaxe2,	NULL, 0, 0, 0, ai_charge, 20, NULL },
 	{ FRAME_runaxe3,	NULL, 0, 0, 0, ai_charge, 20, NULL },
 };
-const animmove_t seraph_guard_move_runmelee = { 8,seraph_guard_frames_runmelee, seraph_guard_pause };
+const animmove_t seraph_guard_move_runmelee = ANIMMOVE(seraph_guard_frames_runmelee, seraph_guard_pause);
 
 // Seraph Guard Run.
 static const animframe_t seraph_guard_frames_run[] =
@@ -168,7 +168,7 @@ static const animframe_t seraph_guard_frames_run[] =
 	{ FRAME_run7,	NULL, 0, 0, 0, MG_AI_Run, 20, seraph_guard_pause },
 	{ FRAME_run8,	NULL, 0, 0, 0, MG_AI_Run, 20, seraph_guard_pause },
 };
-const animmove_t seraph_guard_move_run = { 8,seraph_guard_frames_run, seraph_guard_pause };
+const animmove_t seraph_guard_move_run = ANIMMOVE(seraph_guard_frames_run, seraph_guard_pause);
 
 // Seraph Guard Forward Jump.
 static const animframe_t seraph_guard_frames_fjump[] =
@@ -182,7 +182,7 @@ static const animframe_t seraph_guard_frames_fjump[] =
 	{ FRAME_run7,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_run8,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t seraph_guard_move_fjump = { 8,seraph_guard_frames_fjump, seraph_guard_pause };
+const animmove_t seraph_guard_move_fjump = ANIMMOVE(seraph_guard_frames_fjump, seraph_guard_pause);
 
 // Seraph Guard Walk.
 static const animframe_t seraph_guard_frames_walk[] =
@@ -204,7 +204,7 @@ static const animframe_t seraph_guard_frames_walk[] =
 	{ FRAME_walk15,	NULL, 0, 0, 0, ai_walk, 5, NULL },
 	{ FRAME_walk16,	NULL, 0, 0, 0, ai_walk, 6, NULL },
 };
-const animmove_t seraph_guard_move_walk = { 16,seraph_guard_frames_walk, seraph_guard_pause };
+const animmove_t seraph_guard_move_walk = ANIMMOVE(seraph_guard_frames_walk, seraph_guard_pause);
 
 // Seraph Guard Death 1.
 static const animframe_t seraph_guard_frames_death1[] =
@@ -234,7 +234,7 @@ static const animframe_t seraph_guard_frames_death1[] =
 	{ FRAME_deatha23,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deatha24,	NULL, 0, 0, 0, NULL, 0, seraph_guard_dead },
 };
-const animmove_t seraph_guard_move_death1 = { 24, seraph_guard_frames_death1, NULL };
+const animmove_t seraph_guard_move_death1 = ANIMMOVE(seraph_guard_frames_death1, NULL);
 
 // Seraph Guard Death 2 Start.
 static const animframe_t seraph_guard_frames_death2_go[] =
@@ -244,14 +244,14 @@ static const animframe_t seraph_guard_frames_death2_go[] =
 	{ FRAME_deathb3,	NULL, 0, 0, 0, NULL, 0, seraph_guard_check_land },
 	{ FRAME_deathb4,	NULL, 0, 0, 0, NULL, 0, seraph_guard_death_loop },
 };
-const animmove_t seraph_guard_move_death2_go = { 4, seraph_guard_frames_death2_go, NULL };
+const animmove_t seraph_guard_move_death2_go = ANIMMOVE(seraph_guard_frames_death2_go, NULL);
 
 // Seraph Guard Death 2 Loop.
 static const animframe_t seraph_guard_frames_death2_loop[] =
 {
 	{ FRAME_deathb5,	NULL, 0, 0, 0, NULL, 0, seraph_guard_check_land },
 };
-const animmove_t seraph_guard_move_death2_loop = { 1, seraph_guard_frames_death2_loop, NULL };
+const animmove_t seraph_guard_move_death2_loop = ANIMMOVE(seraph_guard_frames_death2_loop, NULL);
 
 // Seraph Guard Death 2 End.
 static const animframe_t seraph_guard_frames_death2_end[] =
@@ -267,7 +267,7 @@ static const animframe_t seraph_guard_frames_death2_end[] =
 	{ FRAME_deathb14,	NULL, 0, 0, 0, NULL, 0, seraph_guard_check_land },
 	{ FRAME_deathb15,	NULL, 0, 0, 0, NULL, 0, seraph_guard_dead },
 };
-const animmove_t seraph_guard_move_death2_end = { 10, seraph_guard_frames_death2_end, NULL };
+const animmove_t seraph_guard_move_death2_end = ANIMMOVE(seraph_guard_frames_death2_end, NULL);
 
 // Seraph Guard Backup.
 static const animframe_t seraph_guard_frames_backup[] =
@@ -289,7 +289,7 @@ static const animframe_t seraph_guard_frames_backup[] =
 	{ FRAME_backup15,	NULL, 0, 0, 0, seraph_guard_back, 24, NULL },
 	{ FRAME_backup16,	NULL, 0, 0, 0, seraph_guard_back, 20, NULL },
 };
-const animmove_t seraph_guard_move_backup = { 16, seraph_guard_frames_backup, seraph_guard_pause };
+const animmove_t seraph_guard_move_backup = ANIMMOVE(seraph_guard_frames_backup, seraph_guard_pause);
 
 // Seraph Guard Delay.
 static const animframe_t seraph_guard_frames_delay[] =
@@ -324,4 +324,4 @@ static const animframe_t seraph_guard_frames_delay[] =
 	{ FRAME_idle28,	NULL, 0, 0, 0, NULL, 0, seraph_guard_pause },
 	{ FRAME_idle29,	NULL, 0, 0, 0, NULL, 0, seraph_guard_pause },
 };
-const animmove_t seraph_guard_move_delay = { 29, seraph_guard_frames_delay, seraph_guard_pause };
+const animmove_t seraph_guard_move_delay = ANIMMOVE(seraph_guard_frames_delay, seraph_guard_pause);
