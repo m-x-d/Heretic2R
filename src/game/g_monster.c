@@ -355,7 +355,16 @@ void M_MoveFrame(edict_t* self)
 		if (self->monsterinfo.currframeindex == move->numframes - 1 && move->endfunc != NULL)
 		{
 			move->endfunc(self);
-			move = self->monsterinfo.currentmove; // Re-grab move, endfunc is very likely to change it.
+
+			// Re-grab move, endfunc is very likely to change it.
+			if (move != self->monsterinfo.currentmove)
+			{
+				move = self->monsterinfo.currentmove;
+
+				//mxd. If SetAnim() was called from endfunc(), we'll end up with currframeindex:0 and nextframeindex:0 during this and NEXT frame, so let's fix that...
+				if (self->monsterinfo.currframeindex == 0 && self->monsterinfo.nextframeindex == 0)
+					self->monsterinfo.nextframeindex = -1; // Advance currframeindex during next M_MoveFrame() call.
+			}
 
 			// Check for death.
 			if (self->svflags & SVF_DEADMONSTER)
