@@ -773,6 +773,9 @@ void harpy_ai_perch(edict_t* self) //mxd. Named 'harpy_ai_pirch' in original log
 
 void harpy_tumble_move(edict_t* self) //mxd. Named 'move_harpy_tumble' in original logic.
 {
+	if (self->monsterinfo.currframeindex == FRAME_hover1) //mxd
+		harpy_flap_noise(self);
+
 	self->movetype = PHYSICSTYPE_STEP;
 	self->gravity = 1.0f;
 
@@ -1044,6 +1047,9 @@ void harpy_check_dodge(edict_t* self)
 
 void harpy_hover_move(edict_t* self) //mxd. Named 'move_harpy_hover' in original logic.
 {
+	if (self->monsterinfo.currframeindex == FRAME_pain1) //mxd
+		harpy_flap_noise(self);
+
 	if (self->enemy == NULL && !FindTarget(self))
 		return;
 

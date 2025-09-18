@@ -97,7 +97,7 @@ static const animframe_t harpy_frames_hoverscream[] =
 	{ FRAME_hoverscream6, NULL, 0, 0, 0, harpy_ai_hover, -1, NULL },
 	{ FRAME_hoverscream7, NULL, 0, 0, 0, harpy_ai_hover,  1, NULL },
 	{ FRAME_hoverscream8, NULL, 0, 0, 0, harpy_ai_hover,  2, NULL },
-	{ FRAME_hoverscream9, NULL, 0, 0, 0, harpy_ai_hover,  2, NULL },
+	{ FRAME_hoverscream9, NULL, 0, 0, 0, harpy_ai_hover,  2, harpy_flap_noise }, //mxd. +harpy_flap_noise.
 	{ FRAME_hoverscream10,NULL, 0, 0, 0, harpy_ai_hover,  1, NULL },
 	{ FRAME_hoverscream11,NULL, 0, 0, 0, harpy_ai_hover, -1, NULL },
 	{ FRAME_hoverscream12,NULL, 0, 0, 0, harpy_ai_hover, -2, NULL },
@@ -160,7 +160,7 @@ static const animframe_t harpy_frames_dive_end[] =
 	{ FRAME_dive23, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive24, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive25, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_dive26, NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_dive26, NULL, 0, 0, 0, NULL, 0, harpy_flap_noise }, //mxd. +harpy_flap_noise
 	{ FRAME_dive27, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive28, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive29, NULL, 0, 0, 0, NULL, 0, NULL },
