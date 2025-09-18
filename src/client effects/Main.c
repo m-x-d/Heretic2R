@@ -502,10 +502,10 @@ static void AddServerEntities(const frame_t* frame)
 			vec3_t dist;
 			VectorSubtract(cent->current.origin, cent->prev.origin, dist);
 
-			if (DotProduct(dist, dist) <= cl_lerpdist2->value)
+			if (VectorLengthSquared(dist) <= cl_lerpdist2->value)
 				VectorMA(cent->prev.origin, 1.0f - ent->backlerp, dist, ent->origin);
 			else
-				VectorCopy(cent->current.origin, ent->origin);
+				VectorCopy(cent->current.origin, ent->origin); // Assume entity teleported.
 
 			VectorCopy(ent->origin, cent->origin);
 		}
