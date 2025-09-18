@@ -27,7 +27,7 @@ static const animframe_t plagueElf_frames_death1[] =
 	{ FRAME_death12,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_death13,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_death1 = { 13, plagueElf_frames_death1, M_EndDeath };
+const animmove_t plagueElf_move_death1 = ANIMMOVE(plagueElf_frames_death1, M_EndDeath);
 
 // Plague Elf Death 2.
 static const animframe_t plagueElf_frames_death2[] =
@@ -46,7 +46,7 @@ static const animframe_t plagueElf_frames_death2[] =
 	{ FRAME_deathb12,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathb13,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_death2 = { 14, plagueElf_frames_death2, M_EndDeath };
+const animmove_t plagueElf_move_death2 = ANIMMOVE(plagueElf_frames_death2, M_EndDeath); //mxd. numframes:14 in original logic.
 
 // Plague Elf Death 3.
 static const animframe_t plagueElf_frames_death3[] =
@@ -65,7 +65,7 @@ static const animframe_t plagueElf_frames_death3[] =
 	{ FRAME_deathc12,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathc13,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_death3 = { 14, plagueElf_frames_death3, M_EndDeath };
+const animmove_t plagueElf_move_death3 = ANIMMOVE(plagueElf_frames_death3, M_EndDeath); //mxd. numframes:14 in original logic.
 
 // Plague Elf Death 4.
 static const animframe_t plagueElf_frames_death4[] =
@@ -84,133 +84,133 @@ static const animframe_t plagueElf_frames_death4[] =
 	{ FRAME_deathd12,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathd13,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_death4 = { 14, plagueElf_frames_death4, M_EndDeath };
+const animmove_t plagueElf_move_death4 = ANIMMOVE(plagueElf_frames_death4, M_EndDeath); //mxd. numframes:14 in original logic.
 
 // Plague Elf Pain - plagueElf gets hit <<-- FIXME: this is not a real animation, this is recycling other anims.
 static const animframe_t plagueElf_frames_pain1[] =
 {
-	{ FRAME_painA1, NULL, 0, 0, 0, NULL, 0, plagueelf_squeal },
-	{ FRAME_painA2, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_painA3, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_painA4, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_painA5, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_painA6, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_painA7, NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_painA1,		NULL, 0, 0, 0, NULL, 0, plagueelf_squeal },
+	{ FRAME_painA2,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_painA3,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_painA4,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_painA5,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_painA6,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_painA7,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_pain1 = { 7, plagueElf_frames_pain1, plagueelf_pause };
+const animmove_t plagueElf_move_pain1 = ANIMMOVE(plagueElf_frames_pain1, plagueelf_pause);
 
 // Plague Elf Melee 1 - plagueElf attacking one hand forehand swing.
 static const animframe_t plagueElf_frames_melee1[] =
 {
-	{ FRAME_attckA1, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckA2, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckA3, NULL, 0, 0, 0, ai_charge, 0, plagueelf_attack },
-	{ FRAME_attckA4, NULL, 0, 0, 0, ai_charge, 0, plagueelf_strike },
-	{ FRAME_attckA5, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckA6, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckA7, NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckA1,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckA2,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckA3,	NULL, 0, 0, 0, ai_charge, 0, plagueelf_attack },
+	{ FRAME_attckA4,	NULL, 0, 0, 0, ai_charge, 0, plagueelf_strike },
+	{ FRAME_attckA5,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckA6,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckA7,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t plagueElf_move_melee1 = { 7, plagueElf_frames_melee1, plagueelf_pause };
+const animmove_t plagueElf_move_melee1 = ANIMMOVE(plagueElf_frames_melee1, plagueelf_pause);
 
 // Plague Elf Melee 2 - plagueElf attacking two handed chop.
 static const animframe_t plagueElf_frames_melee2[] =
 {
-	{ FRAME_attckB1, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckB2, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckB3, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckB4, NULL, 0, 0, 0, ai_charge, 0, plagueelf_attack },
-	{ FRAME_attckB5, NULL, 0, 0, 0, ai_charge, 0, plagueelf_strike },
-	{ FRAME_attckB6, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckB7, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckB8, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckB9, NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckB1,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckB2,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckB3,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckB4,	NULL, 0, 0, 0, ai_charge, 0, plagueelf_attack },
+	{ FRAME_attckB5,	NULL, 0, 0, 0, ai_charge, 0, plagueelf_strike },
+	{ FRAME_attckB6,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckB7,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckB8,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckB9,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t plagueElf_move_melee2 = { 9, plagueElf_frames_melee2, plagueelf_pause };
+const animmove_t plagueElf_move_melee2 = ANIMMOVE(plagueElf_frames_melee2, plagueelf_pause);
 
 // Plague Elf Missile.
 static const animframe_t plagueElf_frames_missile[] =
 {
-	{ FRAME_attckA1, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckA2, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckA3, NULL, 0, 0, 0, ai_charge, 0, plagueelf_attack },
-	{ FRAME_attckA4, NULL, 0, 0, 0, ai_charge, 0, plagueelf_spell },
-	{ FRAME_attckA5, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckA6, NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_attckA7, NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckA1,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckA2,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckA3,	NULL, 0, 0, 0, ai_charge, 0, plagueelf_attack },
+	{ FRAME_attckA4,	NULL, 0, 0, 0, ai_charge, 0, plagueelf_spell },
+	{ FRAME_attckA5,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckA6,	NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_attckA7,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t plagueElf_move_missile = { 7, plagueElf_frames_missile, plagueelf_pause };
+const animmove_t plagueElf_move_missile = ANIMMOVE(plagueElf_frames_missile, plagueelf_pause);
 
 // Plague Elf Running.
 static const animframe_t plagueElf_frames_run1[] =
 {
-	{ FRAME_runA1, NULL, 0, 0, 0, MG_AI_Run, 12, plagueelf_growl },
-	{ FRAME_runA2, NULL, 0, 0, 0, MG_AI_Run, 13, plagueelf_pause },
-	{ FRAME_runA3, NULL, 0, 0, 0, MG_AI_Run, 14, plagueelf_pause },
-	{ FRAME_runA4, NULL, 0, 0, 0, MG_AI_Run, 14, plagueelf_pause },
-	{ FRAME_runA5, NULL, 0, 0, 0, MG_AI_Run, 14, plagueelf_pause },
-	{ FRAME_runA6, NULL, 0, 0, 0, MG_AI_Run, 14, plagueelf_pause },
-	{ FRAME_runA7, NULL, 0, 0, 0, MG_AI_Run, 14, plagueelf_pause },
-	{ FRAME_runA8, NULL, 0, 0, 0, MG_AI_Run, 11, plagueelf_pause },
+	{ FRAME_runA1,		NULL, 0, 0, 0, MG_AI_Run, 12, plagueelf_growl },
+	{ FRAME_runA2,		NULL, 0, 0, 0, MG_AI_Run, 13, plagueelf_pause },
+	{ FRAME_runA3,		NULL, 0, 0, 0, MG_AI_Run, 14, plagueelf_pause },
+	{ FRAME_runA4,		NULL, 0, 0, 0, MG_AI_Run, 14, plagueelf_pause },
+	{ FRAME_runA5,		NULL, 0, 0, 0, MG_AI_Run, 14, plagueelf_pause },
+	{ FRAME_runA6,		NULL, 0, 0, 0, MG_AI_Run, 14, plagueelf_pause },
+	{ FRAME_runA7,		NULL, 0, 0, 0, MG_AI_Run, 14, plagueelf_pause },
+	{ FRAME_runA8,		NULL, 0, 0, 0, MG_AI_Run, 11, plagueelf_pause },
 };
-const animmove_t plagueElf_move_run1 = { 8, plagueElf_frames_run1, plagueelf_pause };
+const animmove_t plagueElf_move_run1 = ANIMMOVE(plagueElf_frames_run1, plagueelf_pause);
 
 // Plague Elf Running & Attack - plagueElf running n swinging.
 static const animframe_t plagueElf_frames_runatk1[] =
 {
-	{ FRAME_runatk1, NULL, 0, 0, 0, ai_charge, 10, NULL },
-	{ FRAME_runatk2, NULL, 0, 0, 0, ai_charge, 11, plagueelf_attack },
-	{ FRAME_runatk3, NULL, 0, 0, 0, ai_charge, 12, plagueelf_strike },
-	{ FRAME_runatk4, NULL, 0, 0, 0, ai_charge, 12, NULL },
-	{ FRAME_runatk5, NULL, 0, 0, 0, ai_charge, 12, NULL },
-	{ FRAME_runatk6, NULL, 0, 0, 0, ai_charge, 12, NULL },
-	{ FRAME_runatk7, NULL, 0, 0, 0, ai_charge, 12, NULL },
-	{ FRAME_runatk8, NULL, 0, 0, 0, ai_charge,  9, NULL },
+	{ FRAME_runatk1,	NULL, 0, 0, 0, ai_charge, 10, NULL },
+	{ FRAME_runatk2,	NULL, 0, 0, 0, ai_charge, 11, plagueelf_attack },
+	{ FRAME_runatk3,	NULL, 0, 0, 0, ai_charge, 12, plagueelf_strike },
+	{ FRAME_runatk4,	NULL, 0, 0, 0, ai_charge, 12, NULL },
+	{ FRAME_runatk5,	NULL, 0, 0, 0, ai_charge, 12, NULL },
+	{ FRAME_runatk6,	NULL, 0, 0, 0, ai_charge, 12, NULL },
+	{ FRAME_runatk7,	NULL, 0, 0, 0, ai_charge, 12, NULL },
+	{ FRAME_runatk8,	NULL, 0, 0, 0, ai_charge,  9, NULL },
 };
-const animmove_t plagueElf_move_runatk1 = { 8, plagueElf_frames_runatk1, plagueelf_pause };
+const animmove_t plagueElf_move_runatk1 = ANIMMOVE(plagueElf_frames_runatk1, plagueelf_pause);
 
 // Plague Elf Landing.
 static const animframe_t plagueElf_frames_land[] =
 {
-	{ FRAME_recover1, NULL, 0, 0, 0, NULL, 0, plagueelf_land },
-	{ FRAME_recover2, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_recover3, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_recover4, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_recover5, NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_recover1,	NULL, 0, 0, 0, NULL, 0, plagueelf_land },
+	{ FRAME_recover2,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_recover3,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_recover4,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_recover5,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_land = { 5, plagueElf_frames_land, plagueelf_pause };
+const animmove_t plagueElf_move_land = ANIMMOVE(plagueElf_frames_land, plagueelf_pause);
 
 // Plague Elf in air.
 static const animframe_t plagueElf_frames_inair[] =
 {
-	{ FRAME_jump20,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, 0 },
+	{ FRAME_jump20,		NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, 0 },
 };
-const animmove_t plagueElf_move_inair = { 1, plagueElf_frames_inair, NULL };
+const animmove_t plagueElf_move_inair = ANIMMOVE(plagueElf_frames_inair, NULL);
 
 // Plague Elf jump from buoy.
 static const animframe_t plagueElf_frames_fjump[] =
 {
-	{ FRAME_jump1,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_jump2,	NULL, 0, 0, 0, NULL, 0, plagueelf_growl },
-	{ FRAME_jump3,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_jump4,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_jump5,	NULL, 0, 0, 0, NULL, 0, plagueelf_apply_jump },
-	{ FRAME_jump6,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_jump7,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_jump8,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_jump9,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_jump10,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
-	{ FRAME_jump11,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
-	{ FRAME_jump12,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
-	{ FRAME_jump13,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
-	{ FRAME_jump14,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
-	{ FRAME_jump15,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
-	{ FRAME_jump16,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
-	{ FRAME_jump17,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
-	{ FRAME_jump18,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
-	{ FRAME_jump19,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
-	{ FRAME_jump20,	NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
+	{ FRAME_jump1,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump2,		NULL, 0, 0, 0, NULL, 0, plagueelf_growl },
+	{ FRAME_jump3,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump4,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump5,		NULL, 0, 0, 0, NULL, 0, plagueelf_apply_jump },
+	{ FRAME_jump6,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump7,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump8,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump9,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump10,		NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
+	{ FRAME_jump11,		NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
+	{ FRAME_jump12,		NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
+	{ FRAME_jump13,		NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
+	{ FRAME_jump14,		NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
+	{ FRAME_jump15,		NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
+	{ FRAME_jump16,		NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
+	{ FRAME_jump17,		NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
+	{ FRAME_jump18,		NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
+	{ FRAME_jump19,		NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
+	{ FRAME_jump20,		NULL, 0, 0, 0, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t plagueElf_move_fjump = { 20, plagueElf_frames_fjump, plagueelf_inair_go };
+const animmove_t plagueElf_move_fjump = ANIMMOVE(plagueElf_frames_fjump, plagueelf_inair_go);
 
 // Plague Elf Walking 1.
 static const animframe_t plagueElf_frames_walk1[] =
@@ -228,7 +228,7 @@ static const animframe_t plagueElf_frames_walk1[] =
 	{ FRAME_walkA11,	NULL, 0, 0, 0, ai_walk, 6, NULL },
 	{ FRAME_walkA12,	NULL, 0, 0, 0, ai_walk, 6, NULL },
 };
-const animmove_t plagueElf_move_walk1 = { 12, plagueElf_frames_walk1, plagueelf_pause };
+const animmove_t plagueElf_move_walk1 = ANIMMOVE(plagueElf_frames_walk1, plagueelf_pause);
 
 // Plague Elf Walking 2.
 static const animframe_t plagueElf_frames_walk2[] =
@@ -246,14 +246,14 @@ static const animframe_t plagueElf_frames_walk2[] =
 	{ FRAME_walkA11,	NULL, 0, 0, 0, ai_walk, 4, NULL },
 	{ FRAME_walkA12,	NULL, 0, 0, 0, ai_walk, 4, NULL },
 };
-const animmove_t plagueElf_move_walk2 = { 12, plagueElf_frames_walk2, plagueelf_pause };
+const animmove_t plagueElf_move_walk2 = ANIMMOVE(plagueElf_frames_walk2, plagueelf_pause);
 
 // Plague Elf Standing.
 static const animframe_t plagueElf_frames_stand1[] =
 {
-	{ FRAME_shake1, NULL, 0, 0, 0, ai_stand, 0, NULL },
+	{ FRAME_shake1,		NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t plagueElf_move_stand1 = { 1, plagueElf_frames_stand1, plagueelf_pause };
+const animmove_t plagueElf_move_stand1 = ANIMMOVE(plagueElf_frames_stand1, plagueelf_pause);
 
 // Plague Elf Shake - standing and having spasms.
 static const animframe_t plagueElf_frames_shakeA1[] =
@@ -284,50 +284,50 @@ static const animframe_t plagueElf_frames_shakeA1[] =
 	{ FRAME_shake24,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_shake25,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_shake1 = { 25, plagueElf_frames_shakeA1, plagueelf_pause };
+const animmove_t plagueElf_shake1 = ANIMMOVE(plagueElf_frames_shakeA1, plagueelf_pause);
 
 // Plague Elf Fist - beating the wall.
 static const animframe_t plagueElf_frames_fist1[] =
 {
-	{ FRAME_fist1, NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_fist2, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_fist3, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_fist4, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_fist5, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_fist6, NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_fist1,		NULL, 0, 0, 0, ai_stand, 0, NULL },
+	{ FRAME_fist2,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_fist3,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_fist4,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_fist5,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_fist6,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_fist1 = { 6, plagueElf_frames_fist1, plagueelf_pause };
+const animmove_t plagueElf_fist1 = ANIMMOVE(plagueElf_frames_fist1, plagueelf_pause);
 
 // Plague Elf Leaning - swooning against the wall.
 static const animframe_t plagueElf_frames_lean1[] =
 {
-	{ FRAME_lean1,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean2,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean3,	NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_lean4,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean5,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean6,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean7,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean8,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean9,	NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_lean10,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean11,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean12,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean13,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean14,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean15,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean16,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean17,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean18,	NULL, 0, 0, 0, ai_stand, 0, NULL },
-	{ FRAME_lean19,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean20,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean21,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean22,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean23,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean24,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean25,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean1,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean2,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean3,		NULL, 0, 0, 0, ai_stand, 0, NULL },
+	{ FRAME_lean4,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean5,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean6,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean7,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean8,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean9,		NULL, 0, 0, 0, ai_stand, 0, NULL },
+	{ FRAME_lean10,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean11,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean12,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean13,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean14,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean15,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean16,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean17,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean18,		NULL, 0, 0, 0, ai_stand, 0, NULL },
+	{ FRAME_lean19,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean20,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean21,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean22,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean23,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean24,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean25,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_lean1 = { 25, plagueElf_frames_lean1, plagueelf_pause };
+const animmove_t plagueElf_lean1 = ANIMMOVE(plagueElf_frames_lean1, plagueelf_pause);
 
 // Plague Elf Delay.
 static const animframe_t plagueElf_frames_delay[] =
@@ -358,23 +358,23 @@ static const animframe_t plagueElf_frames_delay[] =
 	{ FRAME_shake24,	NULL, 0, 0, 0, NULL, 0, plagueelf_pause },
 	{ FRAME_shake25,	NULL, 0, 0, 0, NULL, 0, plagueelf_pause },
 };
-const animmove_t plagueElf_delay = { 25, plagueElf_frames_delay, plagueelf_pause };
+const animmove_t plagueElf_delay = ANIMMOVE(plagueElf_frames_delay, plagueelf_pause);
 
 // Plague Elf Knockback Death Start.
 static const animframe_t plagueElf_frames_kdeath_go[] =
 {
-	{ FRAME_death1, NULL, 0, 0, 0, NULL, 0, plagueelf_death_squeal },
-	{ FRAME_death2, NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
-	{ FRAME_death3, NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_loop },
+	{ FRAME_death1,		NULL, 0, 0, 0, NULL, 0, plagueelf_death_squeal },
+	{ FRAME_death2,		NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
+	{ FRAME_death3,		NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_loop },
 };
-const animmove_t plagueElf_move_kdeath_go = { 3, plagueElf_frames_kdeath_go, NULL };
+const animmove_t plagueElf_move_kdeath_go = ANIMMOVE(plagueElf_frames_kdeath_go, NULL);
 
 // Plague Elf Knockback Death Loop.
 static const animframe_t plagueElf_frames_kdeath_loop[] =
 {
-	{ FRAME_death4, NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
+	{ FRAME_death4,		NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
 };
-const animmove_t plagueElf_move_kdeath_loop = { 1, plagueElf_frames_kdeath_loop, NULL };
+const animmove_t plagueElf_move_kdeath_loop = ANIMMOVE(plagueElf_frames_kdeath_loop, NULL);
 
 // Plague Elf Knockback Death End.
 static const animframe_t plagueElf_frames_kdeath_end[] =
@@ -389,7 +389,7 @@ static const animframe_t plagueElf_frames_kdeath_end[] =
 	{ FRAME_death12,	NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
 	{ FRAME_death13,	NULL, 0, 0, 0, NULL, 0, plagueelf_knockback_death_check_land },
 };
-const animmove_t plagueElf_move_kdeath_end = { 9, plagueElf_frames_kdeath_end, M_EndDeath };
+const animmove_t plagueElf_move_kdeath_end = ANIMMOVE(plagueElf_frames_kdeath_end, M_EndDeath);
 
 // Plague Elf Crazy A - running with hands in the air.
 static const animframe_t plagueElf_frames_crazy_A[] =
@@ -401,7 +401,7 @@ static const animframe_t plagueElf_frames_crazy_A[] =
 	{ FRAME_crazyA9,	NULL, 0, 0, 0, MG_AI_Run, 16, NULL },
 	{ FRAME_crazyA11,	NULL, 0, 0, 0, MG_AI_Run, 16, NULL },
 };
-const animmove_t plagueElf_crazy_A = { 6, plagueElf_frames_crazy_A, plagueelf_pause };
+const animmove_t plagueElf_crazy_A = ANIMMOVE(plagueElf_frames_crazy_A, plagueelf_pause);
 
 // Plague Elf Crazy B - running with hands in the air, looking down.
 static const animframe_t plagueElf_frames_crazy_B[] =
@@ -413,7 +413,7 @@ static const animframe_t plagueElf_frames_crazy_B[] =
 	{ FRAME_crazyB9,	NULL, 0, 0, 0, MG_AI_Run, 16, NULL },
 	{ FRAME_crazyB11,	NULL, 0, 0, 0, MG_AI_Run, 16, NULL },
 };
-const animmove_t plagueElf_crazy_B = { 6, plagueElf_frames_crazy_B, plagueelf_pause };
+const animmove_t plagueElf_crazy_B = ANIMMOVE(plagueElf_frames_crazy_B, plagueelf_pause);
 
 // Plague Elf Cursing - plague elf doing 'old man yells at cloud' impression.
 static const animframe_t plagueElf_frames_cursing[] =
@@ -435,7 +435,7 @@ static const animframe_t plagueElf_frames_cursing[] =
 	{ FRAME_cursing57,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_cursing61,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t plagueElf_cursing = { 16, plagueElf_frames_cursing, plagueelf_run_go };
+const animmove_t plagueElf_cursing = ANIMMOVE(plagueElf_frames_cursing, plagueelf_run_go);
 
 // Plague Elf Pointing.
 static const animframe_t plagueElf_frames_point[] =
@@ -464,7 +464,7 @@ static const animframe_t plagueElf_frames_point[] =
 	{ FRAME_point29,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_point30,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t plagueElf_point = { 23, plagueElf_frames_point, plagueelf_run_go };
+const animmove_t plagueElf_point = ANIMMOVE(plagueElf_frames_point, plagueelf_run_go);
 
 // Plague Elf Scared.
 static const animframe_t plagueElf_frames_scared[] =
@@ -509,7 +509,7 @@ static const animframe_t plagueElf_frames_scared[] =
 	{ FRAME_scared38,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_scared39,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_scared = { 39, plagueElf_frames_scared, plagueelf_pause };
+const animmove_t plagueElf_scared = ANIMMOVE(plagueElf_frames_scared, plagueelf_pause);
 
 // Cinematic Plague Elf Idle 1 - standing and having spasms.
 static const animframe_t plagueElf_frames_c_idle1[] =
@@ -540,50 +540,50 @@ static const animframe_t plagueElf_frames_c_idle1[] =
 	{ FRAME_shake24,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_shake25,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_idle1 = { 25, plagueElf_frames_c_idle1, ai_c_cycleend };
+const animmove_t plagueElf_move_c_idle1 = ANIMMOVE(plagueElf_frames_c_idle1, ai_c_cycleend);
 
 // Cinematic Plague Elf Idle 2 - swooning against the wall.
 static const animframe_t plagueElf_frames_c_idle2[] =
 {
-	{ FRAME_lean1,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean2,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean3,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean4,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean5,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean6,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean7,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean8,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean9,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean10,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean11,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean12,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean13,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean14,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean15,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean16,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean17,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean18,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean19,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean20,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean21,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean22,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean23,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean24,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_lean25,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean1,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean2,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean3,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean4,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean5,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean6,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean7,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean8,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean9,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean10,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean11,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean12,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean13,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean14,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean15,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean16,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean17,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean18,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean19,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean20,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean21,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean22,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean23,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean24,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_lean25,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_idle2 = { 25, plagueElf_frames_c_idle2, ai_c_cycleend };
+const animmove_t plagueElf_move_c_idle2 = ANIMMOVE(plagueElf_frames_c_idle2, ai_c_cycleend);
 
 // Cinematic Plague Elf Idle 3 - standing, shaking fist in the air.
 static const animframe_t plagueElf_frames_c_idle3[] =
 {
-	{ FRAME_fist1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_fist2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_fist3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_fist4, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_fist5, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_fist6, ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_fist1,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_fist2,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_fist3,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_fist4,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_fist5,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_fist6,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_idle3 = { 6, plagueElf_frames_c_idle3, ai_c_cycleend };
+const animmove_t plagueElf_move_c_idle3 = ANIMMOVE(plagueElf_frames_c_idle3, ai_c_cycleend);
 
 // Cinematic Plague Elf Walking.
 static const animframe_t plagueElf_frames_c_walk[] =
@@ -601,7 +601,7 @@ static const animframe_t plagueElf_frames_c_walk[] =
 	{ FRAME_walkA11,	ai_c_move, 4, 0, 0, NULL, 0, NULL },
 	{ FRAME_walkA12,	ai_c_move, 4, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_walk = { 12, plagueElf_frames_c_walk, ai_c_cycleend };
+const animmove_t plagueElf_move_c_walk = ANIMMOVE(plagueElf_frames_c_walk, ai_c_cycleend);
 
 // Cinematic Plague Elf Walking 2.
 static const animframe_t plagueElf_frames_c_walk2[] =
@@ -619,76 +619,76 @@ static const animframe_t plagueElf_frames_c_walk2[] =
 	{ FRAME_walkA11,	ai_c_move, 4, 0, 0, NULL, 0, NULL },
 	{ FRAME_walkA12,	ai_c_move, 4, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_walk2 = { 12, plagueElf_frames_c_walk2, ai_c_cycleend };
+const animmove_t plagueElf_move_c_walk2 = ANIMMOVE(plagueElf_frames_c_walk2, ai_c_cycleend);
 
 // Cinematic Plague Elf Running.
 static const animframe_t plagueElf_frames_c_run[] =
 {
-	{ FRAME_runA1, ai_c_move, 12, 0, 0, NULL, 0, NULL },
-	{ FRAME_runA2, ai_c_move, 13, 0, 0, NULL, 0, NULL },
-	{ FRAME_runA3, ai_c_move, 14, 0, 0, NULL, 0, NULL },
-	{ FRAME_runA4, ai_c_move, 14, 0, 0, NULL, 0, NULL },
-	{ FRAME_runA5, ai_c_move, 14, 0, 0, NULL, 0, NULL },
-	{ FRAME_runA6, ai_c_move, 14, 0, 0, NULL, 0, NULL },
-	{ FRAME_runA7, ai_c_move, 14, 0, 0, NULL, 0, NULL },
-	{ FRAME_runA8, ai_c_move, 11, 0, 0, NULL, 0, NULL },
+	{ FRAME_runA1,		ai_c_move, 12, 0, 0, NULL, 0, NULL },
+	{ FRAME_runA2,		ai_c_move, 13, 0, 0, NULL, 0, NULL },
+	{ FRAME_runA3,		ai_c_move, 14, 0, 0, NULL, 0, NULL },
+	{ FRAME_runA4,		ai_c_move, 14, 0, 0, NULL, 0, NULL },
+	{ FRAME_runA5,		ai_c_move, 14, 0, 0, NULL, 0, NULL },
+	{ FRAME_runA6,		ai_c_move, 14, 0, 0, NULL, 0, NULL },
+	{ FRAME_runA7,		ai_c_move, 14, 0, 0, NULL, 0, NULL },
+	{ FRAME_runA8,		ai_c_move, 11, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_run = { 8, plagueElf_frames_c_run, ai_c_cycleend };
+const animmove_t plagueElf_move_c_run = ANIMMOVE(plagueElf_frames_c_run, ai_c_cycleend);
 
 // Cinematic Plague Elf Attack 1 - running & swinging.
 static const animframe_t plagueElf_frames_c_attack1[] =
 {
-	{ FRAME_runatk1, ai_c_move, 10, 0, 0, NULL, 0, NULL },
-	{ FRAME_runatk2, ai_c_move, 11, 0, 0, NULL, 0, NULL },
-	{ FRAME_runatk3, ai_c_move, 12, 0, 0, NULL, 0, NULL },
-	{ FRAME_runatk4, ai_c_move, 12, 0, 0, NULL, 0, NULL },
-	{ FRAME_runatk5, ai_c_move, 12, 0, 0, NULL, 0, NULL },
-	{ FRAME_runatk6, ai_c_move, 12, 0, 0, NULL, 0, NULL },
-	{ FRAME_runatk7, ai_c_move, 12, 0, 0, NULL, 0, NULL },
-	{ FRAME_runatk8, ai_c_move,  9, 0, 0, NULL, 0, NULL },
+	{ FRAME_runatk1,	ai_c_move, 10, 0, 0, NULL, 0, NULL },
+	{ FRAME_runatk2,	ai_c_move, 11, 0, 0, NULL, 0, NULL },
+	{ FRAME_runatk3,	ai_c_move, 12, 0, 0, NULL, 0, NULL },
+	{ FRAME_runatk4,	ai_c_move, 12, 0, 0, NULL, 0, NULL },
+	{ FRAME_runatk5,	ai_c_move, 12, 0, 0, NULL, 0, NULL },
+	{ FRAME_runatk6,	ai_c_move, 12, 0, 0, NULL, 0, NULL },
+	{ FRAME_runatk7,	ai_c_move, 12, 0, 0, NULL, 0, NULL },
+	{ FRAME_runatk8,	ai_c_move,  9, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_attack1 = { 8, plagueElf_frames_c_attack1, ai_c_cycleend };
+const animmove_t plagueElf_move_c_attack1 = ANIMMOVE(plagueElf_frames_c_attack1, ai_c_cycleend);
 
 // Cinematic Plague Elf Attack 2 - one-handed forehand swing attack.
 static const animframe_t plagueElf_frames_c_attack2[] =
 {
-	{ FRAME_attckA1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckA2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckA3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckA4, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckA5, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckA6, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckA7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA1,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA2,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA3,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA4,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA5,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA6,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA7,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_attack2 = { 7, plagueElf_frames_c_attack2, ai_c_cycleend };
+const animmove_t plagueElf_move_c_attack2 = ANIMMOVE(plagueElf_frames_c_attack2, ai_c_cycleend);
 
 // Cinematic Plague Elf Attack 3 - two-handed chop attack.
 static const animframe_t plagueElf_frames_c_attack3[] =
 {
-	{ FRAME_attckB1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckB2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckB3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckB4, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckB5, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckB6, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckB7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckB8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckB9, ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckB1,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckB2,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckB3,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckB4,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckB5,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckB6,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckB7,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckB8,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckB9,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_attack3 = { 9, plagueElf_frames_c_attack3, ai_c_cycleend };
+const animmove_t plagueElf_move_c_attack3 = ANIMMOVE(plagueElf_frames_c_attack3, ai_c_cycleend);
 
 // Cinematic Plague Elf Attack 4.
 static const animframe_t plagueElf_c_frames_attack4[] =
 {
-	{ FRAME_attckA1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckA2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckA3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckA4, ai_c_move, 0, 0, 0, NULL, 0, plagueelf_cinematic_spell },
-	{ FRAME_attckA5, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckA6, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attckA7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA1,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA2,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA3,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA4,	ai_c_move, 0, 0, 0, NULL, 0, plagueelf_cinematic_spell },
+	{ FRAME_attckA5,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA6,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_attckA7,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_attack4 = { 7, plagueElf_c_frames_attack4,ai_c_cycleend };
+const animmove_t plagueElf_move_c_attack4 = ANIMMOVE(plagueElf_c_frames_attack4,ai_c_cycleend);
 
 // Cinematic Plague Elf Death 1 - the big death, flying backwards and flipping over.
 static const animframe_t plagueElf_frames_c_death1[] =
@@ -707,7 +707,7 @@ static const animframe_t plagueElf_frames_c_death1[] =
 	{ FRAME_death12,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_death13,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_death1 = { 13, plagueElf_frames_c_death1,  ai_c_cycleend };
+const animmove_t plagueElf_move_c_death1 = ANIMMOVE(plagueElf_frames_c_death1,  ai_c_cycleend);
 
 // Cinematic Plague Elf Death 2.
 static const animframe_t plagueElf_frames_c_death2[] =
@@ -726,7 +726,7 @@ static const animframe_t plagueElf_frames_c_death2[] =
 	{ FRAME_deathb12,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathb13,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_death2 = { 13, plagueElf_frames_c_death2, ai_c_cycleend };
+const animmove_t plagueElf_move_c_death2 = ANIMMOVE(plagueElf_frames_c_death2, ai_c_cycleend);
 
 // Cinematic Plague Elf Death 3.
 static const animframe_t plagueElf_frames_c_death3[] =
@@ -745,7 +745,7 @@ static const animframe_t plagueElf_frames_c_death3[] =
 	{ FRAME_deathc12,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathc13,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_death3 = { 13, plagueElf_frames_c_death3, ai_c_cycleend };
+const animmove_t plagueElf_move_c_death3 = ANIMMOVE(plagueElf_frames_c_death3, ai_c_cycleend);
 
 // Cinematic Plague Elf Death 4.
 static const animframe_t plagueElf_frames_c_death4[] =
@@ -764,13 +764,13 @@ static const animframe_t plagueElf_frames_c_death4[] =
 	{ FRAME_deathd12,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathd13,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_death4 = { 13, plagueElf_frames_c_death4,ai_c_cycleend };
+const animmove_t plagueElf_move_c_death4 = ANIMMOVE(plagueElf_frames_c_death4,ai_c_cycleend);
 
 // Cinematic Plague Elf Pain <<-- FIXME: this is not a real animation, this is recycling other anims.
 static const animframe_t plagueElf_frames_c_pain1[] =
 {
-	{ FRAME_death3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_death2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_death1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_death3,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_death2,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_death1,		ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t plagueElf_move_c_pain1 = { 3, plagueElf_frames_c_pain1, ai_c_cycleend };
+const animmove_t plagueElf_move_c_pain1 = ANIMMOVE(plagueElf_frames_c_pain1, ai_c_cycleend);
