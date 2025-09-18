@@ -1268,6 +1268,7 @@ void SP_monster_harpy(edict_t* self)
 	self->flags |= FL_FLY;
 	self->solid = SOLID_BBOX;
 	self->clipmask = MASK_MONSTERSOLID;
+	self->s.effects |= EF_FAST_MOVER; //mxd
 
 	VectorCopy(STDMinsForClass[self->classID], self->mins);
 	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
