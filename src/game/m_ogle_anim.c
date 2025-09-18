@@ -15,7 +15,7 @@ static const animframe_t ogle_frames_stand1[] =
 {
 	{ FRAME_walk1, NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t ogle_move_stand1 = { 1, ogle_frames_stand1, ogle_pause };
+const animmove_t ogle_move_stand1 = ANIMMOVE(ogle_frames_stand1, ogle_pause);
 
 // Ogle walking.
 static const animframe_t ogle_frames_walk1[] =
@@ -29,7 +29,7 @@ static const animframe_t ogle_frames_walk1[] =
 	{ FRAME_walk7, NULL, 0, 0, 0, MG_AI_Run, 2, NULL },
 	{ FRAME_walk8, NULL, 0, 0, 0, MG_AI_Run, 2, NULL },
 };
-const animmove_t ogle_move_walk1 = { 8, ogle_frames_walk1, ogle_pause };
+const animmove_t ogle_move_walk1 = ANIMMOVE(ogle_frames_walk1, ogle_pause);
 
 // Ogle push 1 - pushing a cart, right hand higher than left.
 static const animframe_t ogle_frames_push1[] =
@@ -43,7 +43,7 @@ static const animframe_t ogle_frames_push1[] =
 	{ FRAME_pusha7, NULL, 0, 0, 0, ogle_push, 4, NULL },
 	{ FRAME_pusha8, NULL, 0, 0, 0, ogle_push, 4, NULL },
 };
-const animmove_t ogle_move_push1 = { 8, ogle_frames_push1, NULL };
+const animmove_t ogle_move_push1 = ANIMMOVE(ogle_frames_push1, NULL);
 
 // Ogle push 2 - pushing a cart, both hands equal.
 static const animframe_t ogle_frames_push2[] =
@@ -57,7 +57,7 @@ static const animframe_t ogle_frames_push2[] =
 	{ FRAME_pushb7, NULL, 0, 0, 0, ogle_push, 4, NULL },
 	{ FRAME_pushb8, NULL, 0, 0, 0, ogle_push, 4, NULL },
 };
-const animmove_t ogle_move_push2 = { 8, ogle_frames_push2, NULL };
+const animmove_t ogle_move_push2 = ANIMMOVE(ogle_frames_push2, NULL);
 
 // Ogle push 3 - pushing a cart, left hand higher than right.
 static const animframe_t ogle_frames_push3[] =
@@ -71,7 +71,7 @@ static const animframe_t ogle_frames_push3[] =
 	{ FRAME_pushc7, NULL, 0, 0, 0, ogle_push, 4, NULL },
 	{ FRAME_pushc8, NULL, 0, 0, 0, ogle_push, 4, NULL },
 };
-const animmove_t ogle_move_push3 = { 8, ogle_frames_push3, NULL };
+const animmove_t ogle_move_push3 = ANIMMOVE(ogle_frames_push3, NULL);
 
 // Ogle work 1 - hammering with chisel quickly, straight.
 static const animframe_t ogle_frames_work1[] =
@@ -82,7 +82,7 @@ static const animframe_t ogle_frames_work1[] =
 	{ FRAME_hamupa5, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hamupa1, NULL, 0, 0, 0, NULL, 0, ogle_pick_dust },
 };
-const animmove_t ogle_move_work1 = { 5, ogle_frames_work1, ogle_pause };
+const animmove_t ogle_move_work1 = ANIMMOVE(ogle_frames_work1, ogle_pause);
 
 // Ogle work 2 - hammering with chisel slowly, straight.
 static const animframe_t ogle_frames_work2[] =
@@ -97,7 +97,7 @@ static const animframe_t ogle_frames_work2[] =
 	{ FRAME_hamupb9, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hamupb1, NULL, 0, 0, 0, NULL, 0, ogle_pick_dust },
 };
-const animmove_t ogle_move_work2 = { 9, ogle_frames_work2, ogle_pause };
+const animmove_t ogle_move_work2 = ANIMMOVE(ogle_frames_work2, ogle_pause);
 
 // Ogle work 3 - hammering with chisel, downward.
 static const animframe_t ogle_frames_work3[] =
@@ -112,7 +112,7 @@ static const animframe_t ogle_frames_work3[] =
 	{ FRAME_hamdwn9, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hamdwn1, NULL, 0, 0, 0, NULL, 0, ogle_pick_dust },
 };
-const animmove_t ogle_move_work3 = { 9, ogle_frames_work3, ogle_pause };
+const animmove_t ogle_move_work3 = ANIMMOVE(ogle_frames_work3, ogle_pause);
 
 // Ogle work 4 - picking with axe, straight.
 static const animframe_t ogle_frames_work4[] =
@@ -125,7 +125,7 @@ static const animframe_t ogle_frames_work4[] =
 	{ FRAME_pikxup7, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pikxup1, NULL, 0, 0, 0, NULL, 0, ogle_pick_dust },
 };
-const animmove_t ogle_move_work4 = { 7, ogle_frames_work4, ogle_pause };
+const animmove_t ogle_move_work4 = ANIMMOVE(ogle_frames_work4, ogle_pause);
 
 // Ogle work 5 - picking with axe, downward.
 static const animframe_t ogle_frames_work5[] =
@@ -138,7 +138,7 @@ static const animframe_t ogle_frames_work5[] =
 	{ FRAME_pikxdn7, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pikxdn1, NULL, 0, 0, 0, NULL, 0, ogle_pick_dust },
 };
-const animmove_t ogle_move_work5 = { 7, ogle_frames_work5, ogle_pause };
+const animmove_t ogle_move_work5 = ANIMMOVE(ogle_frames_work5, ogle_pause);
 
 // Ogle pain 1 - guarding head.
 static const animframe_t ogle_frames_pain1[] =
@@ -152,7 +152,7 @@ static const animframe_t ogle_frames_pain1[] =
 	{ FRAME_paina3, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_paina4, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_pain1 = { 8, ogle_frames_pain1, ogle_pause };
+const animmove_t ogle_move_pain1 = ANIMMOVE(ogle_frames_pain1, ogle_pause);
 
 // Ogle pain 2 - transition from rest1 back into work4.
 static const animframe_t ogle_frames_pain2[] =
@@ -170,7 +170,7 @@ static const animframe_t ogle_frames_pain2[] =
 	{ FRAME_rstapn7, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_rstapn8, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_pain2 = { 12, ogle_frames_pain2, ogle_pause };
+const animmove_t ogle_move_pain2 = ANIMMOVE(ogle_frames_pain2, ogle_pause);
 
 // Ogle pain 3 - transition from rest4 back into work4.
 static const animframe_t ogle_frames_pain3[] =
@@ -182,7 +182,7 @@ static const animframe_t ogle_frames_pain3[] =
 	{ FRAME_brkpn5, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_brkpn6, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_pain3 = { 6, ogle_frames_pain3, ogle_pause };
+const animmove_t ogle_move_pain3 = ANIMMOVE(ogle_frames_pain3, ogle_pause);
 
 // Ogle rest1_trans - transition from work4 to leaning back on pick.
 static const animframe_t ogle_frames_rest1_trans[] =
@@ -194,7 +194,7 @@ static const animframe_t ogle_frames_rest1_trans[] =
 	{ FRAME_rsta5, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_rsta6, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_rest1_trans = { 6, ogle_frames_rest1_trans, ogle_rest };
+const animmove_t ogle_move_rest1_trans = ANIMMOVE(ogle_frames_rest1_trans, ogle_rest);
 
 // Ogle rest1 - leaning back on pick, breathing.
 static const animframe_t ogle_frames_rest1[] =
@@ -208,7 +208,7 @@ static const animframe_t ogle_frames_rest1[] =
 	{ FRAME_rstaid7, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_rstaid8, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_rest1 = { 8, ogle_frames_rest1, ogle_rest };
+const animmove_t ogle_move_rest1 = ANIMMOVE(ogle_frames_rest1, ogle_rest);
 
 // Ogle rest1_wipe - wipes brow from picking, returns to rest.
 static const animframe_t ogle_frames_rest1_wipe[] =
@@ -225,7 +225,7 @@ static const animframe_t ogle_frames_rest1_wipe[] =
 	{ FRAME_rstawp10,NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_rstawp11,NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_rest1_wipe = { 11, ogle_frames_rest1_wipe, ogle_rest };
+const animmove_t ogle_move_rest1_wipe = ANIMMOVE(ogle_frames_rest1_wipe, ogle_rest);
 
 // Ogle rest2_wipe - wipes brow from picking, returns to work.
 static const animframe_t ogle_frames_rest2_wipe[] =
@@ -241,7 +241,7 @@ static const animframe_t ogle_frames_rest2_wipe[] =
 	{ FRAME_pkaxwp9, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pkaxwp10,NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_rest2_wipe = { 10, ogle_frames_rest2_wipe, ogle_rest };
+const animmove_t ogle_move_rest2_wipe = ANIMMOVE(ogle_frames_rest2_wipe, ogle_rest);
 
 // Ogle rest3_wipe - wipes brow from chisel, returns to work.
 static const animframe_t ogle_frames_rest3_wipe[] =
@@ -260,7 +260,7 @@ static const animframe_t ogle_frames_rest3_wipe[] =
 	{ FRAME_hamwp12,NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hamwp13,NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_rest3_wipe = { 13, ogle_frames_rest3_wipe, ogle_rest };
+const animmove_t ogle_move_rest3_wipe = ANIMMOVE(ogle_frames_rest3_wipe, ogle_rest);
 
 // Ogle rest4_trans - transition from work4 to resting pick on shoulder.
 static const animframe_t ogle_frames_rest4_trans[] =
@@ -273,7 +273,7 @@ static const animframe_t ogle_frames_rest4_trans[] =
 	{ FRAME_brka6, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_brka7, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_rest4_trans = { 7, ogle_frames_rest4_trans, ogle_rest };
+const animmove_t ogle_move_rest4_trans = ANIMMOVE(ogle_frames_rest4_trans, ogle_rest);
 
 // Ogle rest4_trans2 - transition from chisel to resting pick on shoulder.
 static const animframe_t ogle_frames_rest4_trans2[] =
@@ -285,7 +285,7 @@ static const animframe_t ogle_frames_rest4_trans2[] =
 	{ FRAME_brkb5, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_brkb6, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_rest4_trans2 = { 6, ogle_frames_rest4_trans2, ogle_rest };
+const animmove_t ogle_move_rest4_trans2 = ANIMMOVE(ogle_frames_rest4_trans2, ogle_rest);
 
 // Ogle rest4 - resting pick on shoulder, breathing.
 static const animframe_t ogle_frames_rest4[] =
@@ -299,7 +299,7 @@ static const animframe_t ogle_frames_rest4[] =
 	{ FRAME_brkidl7, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_brkidl8, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_rest4 = { 8, ogle_frames_rest4, ogle_rest };
+const animmove_t ogle_move_rest4 = ANIMMOVE(ogle_frames_rest4, ogle_rest);
 
 // Ogle celebrate1 - hands in the air, back field in motion.
 static const animframe_t ogle_frames_celebrate1[] =
@@ -311,7 +311,7 @@ static const animframe_t ogle_frames_celebrate1[] =
 	{ FRAME_cela5, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_cela6, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_celebrate1 = { 6, ogle_frames_celebrate1, ogle_celebrate };
+const animmove_t ogle_move_celebrate1 = ANIMMOVE(ogle_frames_celebrate1, ogle_celebrate);
 
 // Ogle celebrate2 - hands in the air, jumping up and down.
 static const animframe_t ogle_frames_celebrate2[] =
@@ -327,7 +327,7 @@ static const animframe_t ogle_frames_celebrate2[] =
 	{ FRAME_celb9,  NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_celb10, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_celebrate2 = { 10, ogle_frames_celebrate2, ogle_celebrate };
+const animmove_t ogle_move_celebrate2 = ANIMMOVE(ogle_frames_celebrate2, ogle_celebrate);
 
 // Ogle celebrate3_trans - transition from celebrate2.
 static const animframe_t ogle_frames_celebrate3_trans[] =
@@ -335,7 +335,7 @@ static const animframe_t ogle_frames_celebrate3_trans[] =
 	{ FRAME_celc1, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_celc2, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_celebrate3_trans = { 2, ogle_frames_celebrate3_trans, ogle_celebrate };
+const animmove_t ogle_move_celebrate3_trans = ANIMMOVE(ogle_frames_celebrate3_trans, ogle_celebrate);
 
 // Ogle celebrate3 - the infamous Butthead maneuver.
 static const animframe_t ogle_frames_celebrate3[] =
@@ -347,7 +347,7 @@ static const animframe_t ogle_frames_celebrate3[] =
 	{ FRAME_celc7, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_celc8, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_celebrate3 = { 6, ogle_frames_celebrate3, ogle_celebrate };
+const animmove_t ogle_move_celebrate3 = ANIMMOVE(ogle_frames_celebrate3, ogle_celebrate);
 
 // Ogle celebrate4_trans - transition from celebrate2.
 static const animframe_t ogle_frames_celebrate4_trans[] =
@@ -357,7 +357,7 @@ static const animframe_t ogle_frames_celebrate4_trans[] =
 	{ FRAME_celd3, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_celd4, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_celebrate4_trans = { 4, ogle_frames_celebrate4_trans, ogle_celebrate };
+const animmove_t ogle_move_celebrate4_trans = ANIMMOVE(ogle_frames_celebrate4_trans, ogle_celebrate);
 
 // Ogle celebrate4  - more buttheadisms.
 static const animframe_t ogle_frames_celebrate4[] =
@@ -369,7 +369,7 @@ static const animframe_t ogle_frames_celebrate4[] =
 	{ FRAME_celd9,  NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_celd10, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_celebrate4 = { 6, ogle_frames_celebrate4, ogle_celebrate };
+const animmove_t ogle_move_celebrate4 = ANIMMOVE(ogle_frames_celebrate4, ogle_celebrate);
 
 // Ogle celebrate5_trans - transition from celebrate2.
 static const animframe_t ogle_frames_celebrate5_trans[] =
@@ -377,7 +377,7 @@ static const animframe_t ogle_frames_celebrate5_trans[] =
 	{ FRAME_cele1, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_cele2, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_celebrate5_trans = { 2, ogle_frames_celebrate5_trans, ogle_celebrate };
+const animmove_t ogle_move_celebrate5_trans = ANIMMOVE(ogle_frames_celebrate5_trans, ogle_celebrate);
 
 // Ogle celebrate5 - butt wigglin'.
 static const animframe_t ogle_frames_celebrate5[] =
@@ -387,7 +387,7 @@ static const animframe_t ogle_frames_celebrate5[] =
 	{ FRAME_cele7, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_cele8, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_celebrate5 = { 4, ogle_frames_celebrate5, ogle_celebrate };
+const animmove_t ogle_move_celebrate5 = ANIMMOVE(ogle_frames_celebrate5, ogle_celebrate);
 
 // Ogle charge 1 - arm raised and ready for action.
 static const animframe_t ogle_frames_charge1[] =
@@ -401,7 +401,7 @@ static const animframe_t ogle_frames_charge1[] =
 	{ FRAME_charga7, NULL, 0, 0, 0, MG_AI_Run,  8, NULL },
 	{ FRAME_charga8, NULL, 0, 0, 0, MG_AI_Run, 10, NULL },
 };
-const animmove_t ogle_move_charge1 = { 8, ogle_frames_charge1, ogle_pause };
+const animmove_t ogle_move_charge1 = ANIMMOVE(ogle_frames_charge1, ogle_pause);
 
 // Ogle charge 2 - both arms are down.
 static const animframe_t ogle_frames_charge2[] =
@@ -415,7 +415,7 @@ static const animframe_t ogle_frames_charge2[] =
 	{ FRAME_chargb7, NULL, 0, 0, 0, MG_AI_Run,  8, NULL },
 	{ FRAME_chargb8, NULL, 0, 0, 0, MG_AI_Run, 10, NULL },
 };
-const animmove_t ogle_move_charge2 = { 8, ogle_frames_charge2, ogle_pause };
+const animmove_t ogle_move_charge2 = ANIMMOVE(ogle_frames_charge2, ogle_pause);
 
 // Ogle charge 3 - both arms in arm, raising them up and down.
 static const animframe_t ogle_frames_charge3[] =
@@ -429,7 +429,7 @@ static const animframe_t ogle_frames_charge3[] =
 	{ FRAME_chargc7, NULL, 0, 0, 0, MG_AI_Run,  8, NULL },
 	{ FRAME_chargc8, NULL, 0, 0, 0, MG_AI_Run, 10, NULL },
 };
-const animmove_t ogle_move_charge3 = { 8, ogle_frames_charge3, ogle_pause };
+const animmove_t ogle_move_charge3 = ANIMMOVE(ogle_frames_charge3, ogle_pause);
 
 // Ogle charge 4 - both arms in arm, moving them in unison left and right.
 static const animframe_t ogle_frames_charge4[] =
@@ -443,7 +443,7 @@ static const animframe_t ogle_frames_charge4[] =
 	{ FRAME_chargd7, NULL, 0, 0, 0, MG_AI_Run,  8, NULL },
 	{ FRAME_chargd8, NULL, 0, 0, 0, MG_AI_Run, 10, NULL },
 };
-const animmove_t ogle_move_charge4 = { 8, ogle_frames_charge4, ogle_pause };
+const animmove_t ogle_move_charge4 = ANIMMOVE(ogle_frames_charge4, ogle_pause);
 
 // Ogle charge 5 - both arms in arm, moving them in opposingly left and right.
 static const animframe_t ogle_frames_charge5[] =
@@ -457,7 +457,7 @@ static const animframe_t ogle_frames_charge5[] =
 	{ FRAME_charge7, NULL, 0, 0, 0, MG_AI_Run,  8, NULL },
 	{ FRAME_charge8, NULL, 0, 0, 0, MG_AI_Run, 10, NULL },
 };
-const animmove_t ogle_move_charge5 = { 8, ogle_frames_charge5, ogle_pause };
+const animmove_t ogle_move_charge5 = ANIMMOVE(ogle_frames_charge5, ogle_pause);
 
 // Ogle attack 1 - picking away at enemy.
 static const animframe_t ogle_frames_attack1[] =
@@ -470,7 +470,7 @@ static const animframe_t ogle_frames_attack1[] =
 	{ FRAME_pikxup7, NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_pikxup1, NULL, 0, 0, 0, ai_charge, 0, ogle_strike },
 };
-const animmove_t ogle_move_attack1 = { 7, ogle_frames_attack1, ogle_pause };
+const animmove_t ogle_move_attack1 = ANIMMOVE(ogle_frames_attack1, ogle_pause);
 
 // Ogle attack 2 - running attack.
 static const animframe_t ogle_frames_attack2[] =
@@ -484,7 +484,7 @@ static const animframe_t ogle_frames_attack2[] =
 	{ FRAME_rnatka8, NULL, 0, 0, 0, ai_charge, 11, NULL },
 	{ FRAME_rnatka1, NULL, 0, 0, 0, ai_charge, 12, ogle_strike },
 };
-const animmove_t ogle_move_attack2 = { 8, ogle_frames_attack2, ogle_pause };
+const animmove_t ogle_move_attack2 = ANIMMOVE(ogle_frames_attack2, ogle_pause);
 
 // Ogle attack 3 - running attack 2.
 static const animframe_t ogle_frames_attack3[] =
@@ -498,7 +498,7 @@ static const animframe_t ogle_frames_attack3[] =
 	{ FRAME_rnatkb8, NULL, 0, 0, 0, ai_charge, 11, NULL },
 	{ FRAME_rnatkb1, NULL, 0, 0, 0, ai_charge, 12, ogle_strike },
 };
-const animmove_t ogle_move_attack3 = { 8, ogle_frames_attack3, ogle_pause };
+const animmove_t ogle_move_attack3 = ANIMMOVE(ogle_frames_attack3, ogle_pause);
 
 // Ogle death 1.
 static const animframe_t ogle_frames_death1[] =
@@ -518,7 +518,7 @@ static const animframe_t ogle_frames_death1[] =
 	{ FRAME_deatha13,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deatha14,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_death1 = { 14, ogle_frames_death1, M_EndDeath };
+const animmove_t ogle_move_death1 = ANIMMOVE(ogle_frames_death1, M_EndDeath);
 
 // Ogle death 2.
 static const animframe_t ogle_frames_death2[] =
@@ -538,7 +538,7 @@ static const animframe_t ogle_frames_death2[] =
 	{ FRAME_deathb13,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathb14,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_move_death2 = { 14, ogle_frames_death2, M_EndDeath };
+const animmove_t ogle_move_death2 = ANIMMOVE(ogle_frames_death2, M_EndDeath);
 
 // Ogle cinematic action 1.
 static const animframe_t ogle_c_frames_action1[] =
@@ -549,7 +549,7 @@ static const animframe_t ogle_c_frames_action1[] =
 	{ FRAME_hamupa5, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hamupa1, ai_c_move, 0, 0, 0, NULL, 0, ogle_pick_dust },
 };
-const animmove_t ogle_c_move_action1 = { 5, ogle_c_frames_action1, ai_c_cycleend };
+const animmove_t ogle_c_move_action1 = ANIMMOVE(ogle_c_frames_action1, ai_c_cycleend);
 
 // Ogle cinematic action 2.
 static const animframe_t ogle_c_frames_action2[] =
@@ -564,7 +564,7 @@ static const animframe_t ogle_c_frames_action2[] =
 	{ FRAME_hamupb9, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hamupb1, ai_c_move, 0, 0, 0, NULL, 0, ogle_pick_dust },
 };
-const animmove_t ogle_c_move_action2 = { 9, ogle_c_frames_action2, ai_c_cycleend };
+const animmove_t ogle_c_move_action2 = ANIMMOVE(ogle_c_frames_action2, ai_c_cycleend);
 
 // Ogle cinematic action 3.
 static const animframe_t ogle_c_frames_action3[] =
@@ -579,7 +579,7 @@ static const animframe_t ogle_c_frames_action3[] =
 	{ FRAME_hamdwn9, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hamdwn1, ai_c_move, 0, 0, 0, NULL, 0, ogle_pick_dust },
 };
-const animmove_t ogle_c_move_action3 = { 9, ogle_c_frames_action3, ai_c_cycleend };
+const animmove_t ogle_c_move_action3 = ANIMMOVE(ogle_c_frames_action3, ai_c_cycleend);
 
 // Ogle cinematic action 4.
 static const animframe_t ogle_c_frames_action4[] =
@@ -592,7 +592,7 @@ static const animframe_t ogle_c_frames_action4[] =
 	{ FRAME_pikxup7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pikxup1, ai_c_move, 0, 0, 0, NULL, 0, ogle_pick_dust },
 };
-const animmove_t ogle_c_move_action4 = { 7, ogle_c_frames_action4, ai_c_cycleend };
+const animmove_t ogle_c_move_action4 = ANIMMOVE(ogle_c_frames_action4, ai_c_cycleend);
 
 // Ogle cinematic action 5.
 static const animframe_t ogle_c_frames_action5[] =
@@ -605,7 +605,7 @@ static const animframe_t ogle_c_frames_action5[] =
 	{ FRAME_pikxdn7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pikxdn1, ai_c_move, 0, 0, 0, NULL, 0, ogle_pick_dust },
 };
-const animmove_t ogle_c_move_action5 = { 7, ogle_c_frames_action5, ai_c_cycleend };
+const animmove_t ogle_c_move_action5 = ANIMMOVE(ogle_c_frames_action5, ai_c_cycleend);
 
 // Ogle cinematic action 6.
 static const animframe_t ogle_c_frames_action6[] =
@@ -617,7 +617,7 @@ static const animframe_t ogle_c_frames_action6[] =
 	{ FRAME_cela5, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_cela6, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_action6 = { 6, ogle_c_frames_action6, ai_c_cycleend };
+const animmove_t ogle_c_move_action6 = ANIMMOVE(ogle_c_frames_action6, ai_c_cycleend);
 
 // Ogle cinematic action 7.
 static const animframe_t ogle_c_frames_action7[] =
@@ -633,7 +633,7 @@ static const animframe_t ogle_c_frames_action7[] =
 	{ FRAME_celb9,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_celb10,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_action7 = { 10, ogle_c_frames_action7, ai_c_cycleend };
+const animmove_t ogle_c_move_action7 = ANIMMOVE(ogle_c_frames_action7, ai_c_cycleend);
 
 // Ogle cinematic action 8.
 static const animframe_t ogle_c_frames_action8[] =
@@ -645,7 +645,7 @@ static const animframe_t ogle_c_frames_action8[] =
 	{ FRAME_celc7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_celc8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_action8 = { 6, ogle_c_frames_action8, ai_c_cycleend };
+const animmove_t ogle_c_move_action8 = ANIMMOVE(ogle_c_frames_action8, ai_c_cycleend);
 
 // Ogle cinematic action 9.
 static const animframe_t ogle_c_frames_action9[] =
@@ -657,7 +657,7 @@ static const animframe_t ogle_c_frames_action9[] =
 	{ FRAME_celd9,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_celd10,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_action9 = { 6, ogle_c_frames_action9, ai_c_cycleend };
+const animmove_t ogle_c_move_action9 = ANIMMOVE(ogle_c_frames_action9, ai_c_cycleend);
 
 // Ogle cinematic action 10.
 static const animframe_t ogle_c_frames_action10[] =
@@ -667,7 +667,7 @@ static const animframe_t ogle_c_frames_action10[] =
 	{ FRAME_cele7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_cele8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_action10 = { 4, ogle_c_frames_action10, ai_c_cycleend };
+const animmove_t ogle_c_move_action10 = ANIMMOVE(ogle_c_frames_action10, ai_c_cycleend);
 
 // Ogle cinematic action 11.
 static const animframe_t ogle_c_frames_action11[] =
@@ -681,7 +681,7 @@ static const animframe_t ogle_c_frames_action11[] =
 	{ FRAME_charga7, ai_c_move,  8, 0, 0, NULL, 0, NULL },
 	{ FRAME_charga8, ai_c_move, 10, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_action11 = { 8, ogle_c_frames_action11, ai_c_cycleend };
+const animmove_t ogle_c_move_action11 = ANIMMOVE(ogle_c_frames_action11, ai_c_cycleend);
 
 // Ogle cinematic action 12.
 static const animframe_t ogle_c_frames_action12[] =
@@ -695,7 +695,7 @@ static const animframe_t ogle_c_frames_action12[] =
 	{ FRAME_chargb7, ai_c_move,  8, 0, 0, NULL, 0, NULL },
 	{ FRAME_chargb8, ai_c_move, 10, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_action12 = { 8, ogle_c_frames_action12, ai_c_cycleend };
+const animmove_t ogle_c_move_action12 = ANIMMOVE(ogle_c_frames_action12, ai_c_cycleend);
 
 // Ogle cinematic action 13.
 static const animframe_t ogle_c_frames_action13[] =
@@ -709,7 +709,7 @@ static const animframe_t ogle_c_frames_action13[] =
 	{ FRAME_chargc7, ai_c_move,  9, 0, 0, NULL, 0, NULL },
 	{ FRAME_chargc8, ai_c_move, 10, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_action13 = { 8, ogle_c_frames_action13, ai_c_cycleend };
+const animmove_t ogle_c_move_action13 = ANIMMOVE(ogle_c_frames_action13, ai_c_cycleend);
 
 // Ogle cinematic action 14.
 static const animframe_t ogle_c_frames_action14[] =
@@ -723,7 +723,7 @@ static const animframe_t ogle_c_frames_action14[] =
 	{ FRAME_chargd7, ai_c_move,  8, 0, 0, NULL, 0, NULL },
 	{ FRAME_chargd8, ai_c_move, 10, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_action14 = { 8, ogle_c_frames_action14, ai_c_cycleend };
+const animmove_t ogle_c_move_action14 = ANIMMOVE(ogle_c_frames_action14, ai_c_cycleend);
 
 // Ogle cinematic action 15.
 static const animframe_t ogle_c_frames_action15[] =
@@ -737,7 +737,7 @@ static const animframe_t ogle_c_frames_action15[] =
 	{ FRAME_charge7, ai_c_move,  8, 0, 0, NULL,	0, NULL },
 	{ FRAME_charge8, ai_c_move, 10, 0, 0, NULL,	0, NULL },
 };
-const animmove_t ogle_c_move_action15 = { 8, ogle_c_frames_action15, ai_c_cycleend };
+const animmove_t ogle_c_move_action15 = ANIMMOVE(ogle_c_frames_action15, ai_c_cycleend);
 
 // Ogle cinematic attack 1.
 static const animframe_t ogle_c_frames_attack1[] =
@@ -750,7 +750,7 @@ static const animframe_t ogle_c_frames_attack1[] =
 	{ FRAME_pikxup7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pikxup1, ai_c_move, 0, 0, 0, NULL, 0, ogle_strike },
 };
-const animmove_t ogle_c_move_attack1 = { 7, ogle_c_frames_attack1, ai_c_cycleend };
+const animmove_t ogle_c_move_attack1 = ANIMMOVE(ogle_c_frames_attack1, ai_c_cycleend);
 
 // Ogle cinematic attack 2.
 static const animframe_t ogle_c_frames_attack2[] =
@@ -764,7 +764,7 @@ static const animframe_t ogle_c_frames_attack2[] =
 	{ FRAME_rnatka8, ai_c_move, 11, 0, 0, NULL, 0, NULL },
 	{ FRAME_rnatka1, ai_c_move, 12, 0, 0, NULL, 0, ogle_strike },
 };
-const animmove_t ogle_c_move_attack2 = { 8, ogle_c_frames_attack2, ai_c_cycleend };
+const animmove_t ogle_c_move_attack2 = ANIMMOVE(ogle_c_frames_attack2, ai_c_cycleend);
 
 // Ogle cinematic attack 3.
 static const animframe_t ogle_c_frames_attack3[] =
@@ -778,7 +778,7 @@ static const animframe_t ogle_c_frames_attack3[] =
 	{ FRAME_rnatkb8, ai_c_move, 11, 0, 0, NULL, 0, NULL },
 	{ FRAME_rnatkb1, ai_c_move, 12, 0, 0, NULL, 0, ogle_strike },
 };
-const animmove_t ogle_c_move_attack3 = { 8, ogle_c_frames_attack3, ai_c_cycleend };
+const animmove_t ogle_c_move_attack3 = ANIMMOVE(ogle_c_frames_attack3, ai_c_cycleend);
 
 // Ogle cinematic death 1.
 static const animframe_t ogle_c_frames_death1[] =
@@ -798,7 +798,7 @@ static const animframe_t ogle_c_frames_death1[] =
 	{ FRAME_deatha13,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deatha14,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_death1 = { 14, ogle_c_frames_death1, ai_c_cycleend };
+const animmove_t ogle_c_move_death1 = ANIMMOVE(ogle_c_frames_death1, ai_c_cycleend);
 
 // Ogle cinematic death 2.
 static const animframe_t ogle_c_frames_death2[] =
@@ -818,7 +818,7 @@ static const animframe_t ogle_c_frames_death2[] =
 	{ FRAME_deathb13,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deathb14,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_death2 = { 14, ogle_c_frames_death2, ai_c_cycleend };
+const animmove_t ogle_c_move_death2 = ANIMMOVE(ogle_c_frames_death2, ai_c_cycleend);
 
 // Ogle cinematic idle 1.
 static const animframe_t ogle_c_frames_idle1[] =
@@ -826,7 +826,7 @@ static const animframe_t ogle_c_frames_idle1[] =
 	{ FRAME_walk1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_walk1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_idle1 = { 2, ogle_c_frames_idle1, ai_c_cycleend };
+const animmove_t ogle_c_move_idle1 = ANIMMOVE(ogle_c_frames_idle1, ai_c_cycleend);
 
 // Ogle cinematic idle 2.
 static const animframe_t ogle_c_frames_idle2[] =
@@ -840,7 +840,7 @@ static const animframe_t ogle_c_frames_idle2[] =
 	{ FRAME_rstaid7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_rstaid8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_idle2 = { 8, ogle_c_frames_idle2, ai_c_cycleend };
+const animmove_t ogle_c_move_idle2 = ANIMMOVE(ogle_c_frames_idle2, ai_c_cycleend);
 
 // Ogle cinematic idle 3.
 static const animframe_t ogle_c_frames_idle3[] =
@@ -857,7 +857,7 @@ static const animframe_t ogle_c_frames_idle3[] =
 	{ FRAME_rstawp10,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_rstawp11,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_idle3 = { 11, ogle_c_frames_idle3, ai_c_cycleend };
+const animmove_t ogle_c_move_idle3 = ANIMMOVE(ogle_c_frames_idle3, ai_c_cycleend);
 
 // Ogle cinematic idle 4.
 static const animframe_t ogle_c_frames_idle4[] =
@@ -873,7 +873,7 @@ static const animframe_t ogle_c_frames_idle4[] =
 	{ FRAME_pkaxwp9,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pkaxwp10,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_idle4 = { 10,ogle_c_frames_idle4, ai_c_cycleend };
+const animmove_t ogle_c_move_idle4 = ANIMMOVE(ogle_c_frames_idle4, ai_c_cycleend);
 
 // Ogle cinematic idle 5.
 static const animframe_t ogle_c_frames_idle5[] =
@@ -892,7 +892,7 @@ static const animframe_t ogle_c_frames_idle5[] =
 	{ FRAME_hamwp12,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hamwp13,	ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_idle5 = { 13, ogle_c_frames_idle5, ai_c_cycleend };
+const animmove_t ogle_c_move_idle5 = ANIMMOVE(ogle_c_frames_idle5, ai_c_cycleend);
 
 // Ogle cinematic idle 6.
 static const animframe_t ogle_c_frames_idle6[] =
@@ -906,7 +906,7 @@ static const animframe_t ogle_c_frames_idle6[] =
 	{ FRAME_brkidl7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_brkidl8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_idle6 = { 8, ogle_c_frames_idle6, ai_c_cycleend };
+const animmove_t ogle_c_move_idle6 = ANIMMOVE(ogle_c_frames_idle6, ai_c_cycleend);
 
 // Ogle cinematic pain 1.
 static const animframe_t ogle_c_frames_pain1[] =
@@ -916,7 +916,7 @@ static const animframe_t ogle_c_frames_pain1[] =
 	{ FRAME_paina3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_paina4, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_pain1 = { 4, ogle_c_frames_pain1, ai_c_cycleend };
+const animmove_t ogle_c_move_pain1 = ANIMMOVE(ogle_c_frames_pain1, ai_c_cycleend);
 
 // Ogle cinematic pain 2.
 static const animframe_t ogle_c_frames_pain2[] =
@@ -930,7 +930,7 @@ static const animframe_t ogle_c_frames_pain2[] =
 	{ FRAME_rstapn7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_rstapn8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_pain2 = { 8, ogle_c_frames_pain2, ai_c_cycleend };
+const animmove_t ogle_c_move_pain2 = ANIMMOVE(ogle_c_frames_pain2, ai_c_cycleend);
 
 // Ogle cinematic pain 3.
 static const animframe_t ogle_c_frames_pain3[] =
@@ -942,7 +942,7 @@ static const animframe_t ogle_c_frames_pain3[] =
 	{ FRAME_brkpn5, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_brkpn6, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_pain3 = { 6, ogle_c_frames_pain3, ai_c_cycleend };
+const animmove_t ogle_c_move_pain3 = ANIMMOVE(ogle_c_frames_pain3, ai_c_cycleend);
 
 // Ogle cinematic transition 1.
 static const animframe_t ogle_c_frames_trans1[] =
@@ -954,7 +954,7 @@ static const animframe_t ogle_c_frames_trans1[] =
 	{ FRAME_rsta5, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_rsta6, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_trans1 = { 6, ogle_c_frames_trans1, ai_c_cycleend };
+const animmove_t ogle_c_move_trans1 = ANIMMOVE(ogle_c_frames_trans1, ai_c_cycleend);
 
 // Ogle cinematic transition 2.
 static const animframe_t ogle_c_frames_trans2[] =
@@ -967,7 +967,7 @@ static const animframe_t ogle_c_frames_trans2[] =
 	{ FRAME_brka6, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_brka7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_trans2 = { 7, ogle_c_frames_trans2, ai_c_cycleend };
+const animmove_t ogle_c_move_trans2 = ANIMMOVE(ogle_c_frames_trans2, ai_c_cycleend);
 
 // Ogle cinematic transition 3.
 static const animframe_t ogle_c_frames_trans3[] =
@@ -979,7 +979,7 @@ static const animframe_t ogle_c_frames_trans3[] =
 	{ FRAME_brkb5, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_brkb6, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_trans3 = { 6, ogle_c_frames_trans3, ai_c_cycleend };
+const animmove_t ogle_c_move_trans3 = ANIMMOVE(ogle_c_frames_trans3, ai_c_cycleend);
 
 // Ogle cinematic transition 4.
 static const animframe_t ogle_c_frames_trans4[] =
@@ -987,7 +987,7 @@ static const animframe_t ogle_c_frames_trans4[] =
 	{ FRAME_celc1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_celc2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_trans4 = { 2, ogle_c_frames_trans4, ai_c_cycleend };
+const animmove_t ogle_c_move_trans4 = ANIMMOVE(ogle_c_frames_trans4, ai_c_cycleend);
 
 // Ogle cinematic transition 5.
 static const animframe_t ogle_c_frames_trans5[] =
@@ -997,7 +997,7 @@ static const animframe_t ogle_c_frames_trans5[] =
 	{ FRAME_celd3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_celd4, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_trans5 = { 4, ogle_c_frames_trans5, ai_c_cycleend };
+const animmove_t ogle_c_move_trans5 = ANIMMOVE(ogle_c_frames_trans5, ai_c_cycleend);
 
 // Ogle cinematic transition 6.
 static const animframe_t ogle_c_frames_trans6[] =
@@ -1005,7 +1005,7 @@ static const animframe_t ogle_c_frames_trans6[] =
 	{ FRAME_cele1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_cele2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_trans6 = { 2, ogle_c_frames_trans6, ai_c_cycleend };
+const animmove_t ogle_c_move_trans6 = ANIMMOVE(ogle_c_frames_trans6, ai_c_cycleend);
 
 // Ogle cinematic walk 1.
 static const animframe_t ogle_c_frames_walk1[] =
@@ -1019,7 +1019,7 @@ static const animframe_t ogle_c_frames_walk1[] =
 	{ FRAME_walk7, ai_c_move, 2, 0, 0, NULL, 0, NULL },
 	{ FRAME_walk8, ai_c_move, 2, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_walk1 = { 8, ogle_c_frames_walk1, ai_c_cycleend };
+const animmove_t ogle_c_move_walk1 = ANIMMOVE(ogle_c_frames_walk1, ai_c_cycleend);
 
 // Ogle cinematic walk 2.
 static const animframe_t ogle_c_frames_walk2[] =
@@ -1033,7 +1033,7 @@ static const animframe_t ogle_c_frames_walk2[] =
 	{ FRAME_pusha7, ai_c_move, 2, 0, 0, NULL, 0, NULL },
 	{ FRAME_pusha8, ai_c_move, 2, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_walk2 = { 8, ogle_c_frames_walk2, ai_c_cycleend };
+const animmove_t ogle_c_move_walk2 = ANIMMOVE(ogle_c_frames_walk2, ai_c_cycleend);
 
 // Ogle cinematic walk 3.
 static const animframe_t ogle_c_frames_walk3[] =
@@ -1047,7 +1047,7 @@ static const animframe_t ogle_c_frames_walk3[] =
 	{ FRAME_pushb7, ai_c_move, 2, 0, 0, NULL, 0, NULL },
 	{ FRAME_pushb8, ai_c_move, 2, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_walk3 = { 8, ogle_c_frames_walk3, ai_c_cycleend };
+const animmove_t ogle_c_move_walk3 = ANIMMOVE(ogle_c_frames_walk3, ai_c_cycleend);
 
 // Ogle cinematic walk 4.
 static const animframe_t ogle_c_frames_walk4[] =
@@ -1061,4 +1061,4 @@ static const animframe_t ogle_c_frames_walk4[] =
 	{ FRAME_pushc7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pushc8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ogle_c_move_walk4 = { 8, ogle_c_frames_walk4, ai_c_cycleend };
+const animmove_t ogle_c_move_walk4 = ANIMMOVE(ogle_c_frames_walk4, ai_c_cycleend);
