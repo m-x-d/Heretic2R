@@ -26,7 +26,7 @@ static const animframe_t rat_frames_death1[] =
 	{ FRAME_deathA13,	NULL, 0, 0, 0, ai_move, 0, NULL },
 	{ FRAME_deathA14,	NULL, 0, 0, 0, ai_move, 0, NULL },
 };
-const animmove_t rat_move_death1 = { 14, rat_frames_death1, M_EndDeath };
+const animmove_t rat_move_death1 = ANIMMOVE(rat_frames_death1, M_EndDeath);
 
 // Rat Death 2 - the little death, flipping over.
 static const animframe_t rat_frames_death2[] =
@@ -41,7 +41,7 @@ static const animframe_t rat_frames_death2[] =
 	{ FRAME_DeathB9,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_DeathB9,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t rat_move_death2 = { 9, rat_frames_death2, M_EndDeath };
+const animmove_t rat_move_death2 = ANIMMOVE(rat_frames_death2, M_EndDeath);
 
 // Rat Pain - backup and run away.
 static const animframe_t rat_frames_pain1[] =
@@ -53,7 +53,7 @@ static const animframe_t rat_frames_pain1[] =
 	{ FRAME_backup5,	NULL, 0, 0, 0, ai_move, -4, NULL },
 	{ FRAME_backup6,	NULL, 0, 0, 0, ai_move, -4, NULL },
 };
-const animmove_t rat_move_pain1 = { 6, rat_frames_pain1, rat_pause };
+const animmove_t rat_move_pain1 = ANIMMOVE(rat_frames_pain1, rat_pause);
 
 // Rat Melee 1 - rat attacking at feet.
 static const animframe_t rat_frames_melee1[] =
@@ -64,7 +64,7 @@ static const animframe_t rat_frames_melee1[] =
 	{ FRAME_eat4,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_eat5,	NULL, 0, 0, 0, ai_charge, 0, rat_bite },
 };
-const animmove_t rat_move_melee1 = { 5, rat_frames_melee1, rat_pause };
+const animmove_t rat_move_melee1 = ANIMMOVE(rat_frames_melee1, rat_pause);
 
 // Rat Melee 2 - rat attacking jumping in the air.
 static const animframe_t rat_frames_melee2[] =
@@ -81,7 +81,7 @@ static const animframe_t rat_frames_melee2[] =
 	{ FRAME_attack10,	NULL, 0, 0, 0, ai_move, 0, NULL },
 	{ FRAME_attack11,	NULL, 0, 0, 0, ai_move, 0, NULL },
 };
-const animmove_t rat_move_melee2 = { 11, rat_frames_melee2, rat_pause };
+const animmove_t rat_move_melee2 = ANIMMOVE(rat_frames_melee2, rat_pause);
 
 // Rat Melee 3 - rat attacking 2.
 static const animframe_t rat_frames_melee3[] =
@@ -100,7 +100,7 @@ static const animframe_t rat_frames_melee3[] =
 	{ FRAME_eat23,	NULL, 0, 0, 0, ai_move, 0, NULL },
 	{ FRAME_eat24,	NULL, 0, 0, 0, ai_move, 0, NULL },
 };
-const animmove_t rat_move_melee3 = { 13, rat_frames_melee3, rat_pause };
+const animmove_t rat_move_melee3 = ANIMMOVE(rat_frames_melee3, rat_pause);
 
 // Rat Running 1 - rat running.
 static const animframe_t rat_frames_run1[] =
@@ -111,7 +111,7 @@ static const animframe_t rat_frames_run1[] =
 	{ FRAME_run4,	NULL, 0, 0, 0, rat_ai_run, 10, NULL },
 	{ FRAME_run5,	NULL, 0, 0, 0, rat_ai_run, 10, NULL },
 };
-const animmove_t rat_move_run1 = { 5, rat_frames_run1, rat_run_order };
+const animmove_t rat_move_run1 = ANIMMOVE(rat_frames_run1, rat_run_order);
 
 // Rat Running 2 - rat running to the left.
 static const animframe_t rat_frames_run2[] =
@@ -121,7 +121,7 @@ static const animframe_t rat_frames_run2[] =
 	{ FRAME_run_lft3,	NULL, 0, 0, 0, rat_ai_run, 10, NULL },
 	{ FRAME_run_lft4,	NULL, 0, 0, 0, rat_ai_run, 10, NULL },
 };
-const animmove_t rat_move_run2 = { 4, rat_frames_run2, rat_run_order };
+const animmove_t rat_move_run2 = ANIMMOVE(rat_frames_run2, rat_run_order);
 
 // Rat Running 3 - rat running to the right.
 static const animframe_t rat_frames_run3[] =
@@ -131,7 +131,7 @@ static const animframe_t rat_frames_run3[] =
 	{ FRAME_run_rt3,	NULL, 0, 0, 0, rat_ai_run, 10, NULL },
 	{ FRAME_run_rt4,	NULL, 0, 0, 0, rat_ai_run, 10, rat_run_order },
 };
-const animmove_t rat_move_run3 = { 4, rat_frames_run3, NULL };
+const animmove_t rat_move_run3 = ANIMMOVE(rat_frames_run3, NULL);
 
 // Rat Walking.
 static const animframe_t rat_frames_walk1[] =
@@ -143,7 +143,7 @@ static const animframe_t rat_frames_walk1[] =
 	{ FRAME_walk5,	NULL, 0, 0, 0, ai_walk, 4, NULL },
 	{ FRAME_walk6,	NULL, 0, 0, 0, ai_walk, 4, NULL },
 };
-const animmove_t rat_move_walk1 = { 6, rat_frames_walk1, NULL };
+const animmove_t rat_move_walk1 = ANIMMOVE(rat_frames_walk1, NULL);
 
 // Rat Stand 1.
 static const animframe_t rat_frames_stand1[] =
@@ -157,9 +157,9 @@ static const animframe_t rat_frames_stand1[] =
 	{ FRAME_idle7,	NULL, 0, 0, 0, NULL,			0, NULL },
 	{ FRAME_idle8,	NULL, 0, 0, 0, NULL,			0, NULL },
 };
-const animmove_t rat_move_stand1 = { 8, rat_frames_stand1, rat_stand_order };
+const animmove_t rat_move_stand1 = ANIMMOVE(rat_frames_stand1, rat_stand_order);
 
-// Rat Stand 2 - rising up to sit on haunches
+// Rat Stand 2 - rising up to sit on haunches.
 static const animframe_t rat_frames_stand2[] =
 {
 	{ FRAME_haunch1,	NULL, 0, 0, 0, rat_ai_stand,	0, NULL },
@@ -173,7 +173,7 @@ static const animframe_t rat_frames_stand2[] =
 	{ FRAME_haunch9,	NULL, 0, 0, 0, NULL,			0, NULL },
 	{ FRAME_haunch10,	NULL, 0, 0, 0, NULL,			0, NULL },
 };
-const animmove_t rat_move_stand2 = { 10, rat_frames_stand2, rat_stand_order };
+const animmove_t rat_move_stand2 = ANIMMOVE(rat_frames_stand2, rat_stand_order);
 
 // Rat Stand 3 - sitting on haunches.
 static const animframe_t rat_frames_stand3[] =
@@ -186,7 +186,7 @@ static const animframe_t rat_frames_stand3[] =
 	{ FRAME_haunch17,	NULL, 0, 0, 0, NULL,			0, NULL },
 	{ FRAME_haunch18,	NULL, 0, 0, 0, NULL,			0, NULL },
 };
-const animmove_t rat_move_stand3 = { 7, rat_frames_stand3, rat_stand_order };
+const animmove_t rat_move_stand3 = ANIMMOVE(rat_frames_stand3, rat_stand_order);
 
 // Rat Stand 4 - sitting on haunches, looking left.
 static const animframe_t rat_frames_stand4[] =
@@ -197,7 +197,7 @@ static const animframe_t rat_frames_stand4[] =
 	{ FRAME_haunch23,	NULL, 0, 0, 0, rat_ai_stand,	0, NULL },
 	{ FRAME_haunch24,	NULL, 0, 0, 0, NULL,			0, NULL },
 };
-const animmove_t rat_move_stand4 = { 5, rat_frames_stand4, rat_stand_order };
+const animmove_t rat_move_stand4 = ANIMMOVE(rat_frames_stand4, rat_stand_order);
 
 // Rat Stand 5 - sitting on haunches, look right.
 static const animframe_t rat_frames_stand5[] =
@@ -208,7 +208,7 @@ static const animframe_t rat_frames_stand5[] =
 	{ FRAME_haunch29,	NULL, 0, 0, 0, rat_ai_stand,	0, NULL },
 	{ FRAME_haunch30,	NULL, 0, 0, 0, NULL,			0, NULL },
 };
-const animmove_t rat_move_stand5 = { 5, rat_frames_stand5, rat_stand_order };
+const animmove_t rat_move_stand5 = ANIMMOVE(rat_frames_stand5, rat_stand_order);
 
 // Rat Stand 6 - sitting on haunches, scratch left.
 static const animframe_t rat_frames_stand6[] =
@@ -219,7 +219,7 @@ static const animframe_t rat_frames_stand6[] =
 	{ FRAME_haunch35,	NULL, 0, 0, 0, rat_ai_stand,	0, NULL },
 	{ FRAME_haunch36,	NULL, 0, 0, 0, NULL,			0, NULL },
 };
-const animmove_t rat_move_stand6 = { 5, rat_frames_stand6, rat_stand_order };
+const animmove_t rat_move_stand6 = ANIMMOVE(rat_frames_stand6, rat_stand_order);
 
 // Rat Stand 7 - sitting on haunches, scratch right.
 static const animframe_t rat_frames_stand7[] =
@@ -230,7 +230,7 @@ static const animframe_t rat_frames_stand7[] =
 	{ FRAME_haunch41,	NULL, 0, 0, 0, rat_ai_stand,	0, NULL },
 	{ FRAME_haunch42,	NULL, 0, 0, 0, NULL,			0, NULL },
 };
-const animmove_t rat_move_stand7 = { 5, rat_frames_stand7, rat_stand_order };
+const animmove_t rat_move_stand7 = ANIMMOVE(rat_frames_stand7, rat_stand_order);
 
 // Rat Stand 8 - from haunches, dropping down to ground
 static const animframe_t rat_frames_stand8[] =
@@ -242,7 +242,7 @@ static const animframe_t rat_frames_stand8[] =
 	{ FRAME_haunch48,	NULL, 0, 0, 0, NULL,			0, NULL },
 	{ FRAME_haunch49,	NULL, 0, 0, 0, NULL,			0, NULL },
 };
-const animmove_t rat_move_stand8 = { 6, rat_frames_stand8, rat_stand_order }; //mxd. .numframes: 5 in original logic.
+const animmove_t rat_move_stand8 = ANIMMOVE(rat_frames_stand8, rat_stand_order); //mxd. numframes:5 in original logic.
 
 // Rat Watch 1 - hiss while on all fours.
 static const animframe_t rat_frames_watch1[] =
@@ -264,7 +264,7 @@ static const animframe_t rat_frames_watch1[] =
 	{ FRAME_hiss28,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hiss29,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t rat_move_watch1 = { 16, rat_frames_watch1, rat_eat_order };
+const animmove_t rat_move_watch1 = ANIMMOVE(rat_frames_watch1, rat_eat_order);
 
 // Rat Watch 2 - stand up and hiss then go back to all fours.
 static const animframe_t rat_frames_watch2[] =
@@ -283,7 +283,7 @@ static const animframe_t rat_frames_watch2[] =
 	{ FRAME_hiss12,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hiss13,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t rat_move_watch2 = { 13, rat_frames_watch2, rat_eat_order };
+const animmove_t rat_move_watch2 = ANIMMOVE(rat_frames_watch2, rat_eat_order);
 
 // Rat Eat 1 - bite down low.
 static const animframe_t rat_frames_eat1[] =
@@ -298,7 +298,7 @@ static const animframe_t rat_frames_eat1[] =
 	{ FRAME_eat8,	NULL, 0, 0, 0, NULL,		0, rat_chew },
 	{ FRAME_eat9,	NULL, 0, 0, 0, NULL,		0, NULL },
 };
-const animmove_t rat_move_eat1 = { 9, rat_frames_eat1, rat_eat_order };
+const animmove_t rat_move_eat1 = ANIMMOVE(rat_frames_eat1, rat_eat_order);
 
 // Rat Eat 2 - bite low and tear up.
 static const animframe_t rat_frames_eat2[] =
@@ -317,7 +317,7 @@ static const animframe_t rat_frames_eat2[] =
 	{ FRAME_eat23,	NULL, 0, 0, 0, NULL,		0, NULL },
 	{ FRAME_eat24,	NULL, 0, 0, 0, NULL,		0, NULL },
 };
-const animmove_t rat_move_eat2 = { 13, rat_frames_eat2, rat_eat_order };
+const animmove_t rat_move_eat2 = ANIMMOVE(rat_frames_eat2, rat_eat_order);
 
 // Rat Eat 3 - bite and pull back a little.
 static const animframe_t rat_frames_eat3[] =
@@ -327,4 +327,4 @@ static const animframe_t rat_frames_eat3[] =
 	{ FRAME_eat11,	NULL, 0, 0, 0, NULL,		0, rat_chew },
 	{ FRAME_eat12,	NULL, 0, 0, 0, NULL,		0, NULL },
 };
-const animmove_t rat_move_eat3 = { 4, rat_frames_eat3, rat_eat_order };
+const animmove_t rat_move_eat3 = ANIMMOVE(rat_frames_eat3, rat_eat_order);
