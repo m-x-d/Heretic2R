@@ -903,7 +903,7 @@ void gorgon_death2_throw(edict_t* self) //mxd. Originally defined in m_gorgon_an
 
 void gorgon_death2_slide(edict_t* self) //mxd. Originally defined in m_gorgon_anim.c.
 {
-	self->monsterinfo.currentmove = &gorgon_move_death2slide;
+	self->monsterinfo.currentmove = &gorgon_move_death2slide; //TODO: add to animations[], set via SetAnim() instead?
 	self->monsterinfo.nextframeindex = 0;
 }
 
