@@ -37,7 +37,7 @@ static const animframe_t elflord_frames_idle[] =
 	{ FRAME_idle23,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle24,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t elflord_move_idle = { 24, elflord_frames_idle, NULL };
+const animmove_t elflord_move_idle = ANIMMOVE(elflord_frames_idle, NULL);
 
 // Run.
 static const animframe_t elflord_frames_run[] =
@@ -54,7 +54,7 @@ static const animframe_t elflord_frames_run[] =
 	{ FRAME_ftforwd10,	NULL, 0, 0, 0, elflord_flymove, 7, NULL }, //mxd. Removed elflordRandomRushSound() thinkfunc.
 	{ FRAME_ftforwd11,	NULL, 0, 0, 0, elflord_flymove, 7, NULL },
 };
-const animmove_t elflord_move_run = { 11, elflord_frames_run, NULL };
+const animmove_t elflord_move_run = ANIMMOVE(elflord_frames_run, NULL);
 
 // Charge forward.
 static const animframe_t elflord_frames_charge[] =
@@ -71,7 +71,7 @@ static const animframe_t elflord_frames_charge[] =
 	{ FRAME_charge12,	NULL, 0, 0, 0, elflord_flymove, 12, NULL },
 	{ FRAME_charge13,	NULL, 0, 0, 0, elflord_flymove, 12, NULL },
 };
-const animmove_t elflord_move_charge = { 11, elflord_frames_charge, elflord_check_attack };
+const animmove_t elflord_move_charge = ANIMMOVE(elflord_frames_charge, elflord_check_attack);
 
 // Transition to charge.
 static const animframe_t elflord_frames_charge_trans[] =
@@ -79,7 +79,7 @@ static const animframe_t elflord_frames_charge_trans[] =
 	{ FRAME_charge1,	NULL, 0, 0, 0, elflord_flymove, 8, NULL },
 	{ FRAME_charge2,	NULL, 0, 0, 0, elflord_flymove, 8, NULL },
 };
-const animmove_t elflord_move_charge_trans = { 2, elflord_frames_charge_trans, elflord_charge };
+const animmove_t elflord_move_charge_trans = ANIMMOVE(elflord_frames_charge_trans, elflord_charge);
 
 // Float backwards.
 static const animframe_t elflord_frames_floatback[] =
@@ -96,7 +96,7 @@ static const animframe_t elflord_frames_floatback[] =
 	{ FRAME_ftback10,	NULL, 0, 0, 0, elflord_flymove, -2,  NULL },
 	{ FRAME_ftback11,	NULL, 0, 0, 0, elflord_flymove, -1,  NULL },
 };
-const animmove_t elflord_move_floatback = { 11, elflord_frames_floatback, elflord_check_attack };
+const animmove_t elflord_move_floatback = ANIMMOVE(elflord_frames_floatback, elflord_check_attack);
 
 // Dodge right.
 static const animframe_t elflord_frames_dodgeright[] =
@@ -109,7 +109,7 @@ static const animframe_t elflord_frames_dodgeright[] =
 	{ FRAME_dgrite6,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_dgrite7,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t elflord_move_dodgeright = { 7, elflord_frames_dodgeright, elflord_check_attack };
+const animmove_t elflord_move_dodgeright = ANIMMOVE(elflord_frames_dodgeright, elflord_check_attack);
 
 // Dodge left.
 static const animframe_t elflord_frames_dodgeleft[] =
@@ -122,7 +122,7 @@ static const animframe_t elflord_frames_dodgeleft[] =
 	{ FRAME_dgleft6,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_dgleft7,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t elflord_move_dodgeleft = { 7, elflord_frames_dodgeleft, elflord_check_attack };
+const animmove_t elflord_move_dodgeleft = ANIMMOVE(elflord_frames_dodgeleft, elflord_check_attack);
 
 // Attack 1 (lightning sphere) beginning.
 static const animframe_t elflord_frames_soa_begin[] =
@@ -148,21 +148,21 @@ static const animframe_t elflord_frames_soa_begin[] =
 	{ FRAME_attkb19,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attkb20,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_soa_begin = { 20, elflord_frames_soa_begin, elflord_check_attack };
+const animmove_t elflord_move_soa_begin = ANIMMOVE(elflord_frames_soa_begin, elflord_check_attack);
 
 // Attack 1 (lightning sphere) loop.
 static const animframe_t elflord_frames_soa_loop[] =
 {
 	{ FRAME_attka1,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_soa_loop = { 1, elflord_frames_soa_loop, elflord_soa_end };
+const animmove_t elflord_move_soa_loop = ANIMMOVE(elflord_frames_soa_loop, elflord_soa_end);
 
 // Attack 1 (lightning sphere) ending.
 static const animframe_t elflord_frames_soa_end[] =
 {
 	{ FRAME_attka1,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_soa_end = { 2, elflord_frames_soa_end, elflord_check_attack };
+const animmove_t elflord_move_soa_end = ANIMMOVE(elflord_frames_soa_end, elflord_check_attack); //mxd. numframes:2 in original logic.
 
 // Attack 2 (light surge).
 static const animframe_t elflord_frames_ls[] =
@@ -223,7 +223,7 @@ static const animframe_t elflord_frames_ls[] =
 	{ FRAME_attkb19,	NULL, 0, 0, 0, NULL, 0, elflord_end_beam },
 	{ FRAME_attkb20,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_ls = { 50, elflord_frames_ls, elflord_check_attack };
+const animmove_t elflord_move_ls = ANIMMOVE(elflord_frames_ls, elflord_check_attack);
 
 // Pain.
 static const animframe_t elflord_frames_pain[] =
@@ -236,7 +236,7 @@ static const animframe_t elflord_frames_pain[] =
 	{ FRAME_pain6,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pain7,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_pain = { 7, elflord_frames_pain, elflord_check_attack };
+const animmove_t elflord_move_pain = ANIMMOVE(elflord_frames_pain, elflord_check_attack);
 
 // Death beginning.
 static const animframe_t elflord_frames_death_btrans[] =
@@ -248,7 +248,7 @@ static const animframe_t elflord_frames_death_btrans[] =
 	{ FRAME_death5,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_death6,		NULL, 0, 0, 0, NULL, 0, elflord_finish_death },
 };
-const animmove_t elflord_move_death_btrans = { 6, elflord_frames_death_btrans, NULL };
+const animmove_t elflord_move_death_btrans = ANIMMOVE(elflord_frames_death_btrans, NULL);
 
 // Death loop.
 static const animframe_t elflord_frames_death_loop[] =
@@ -264,7 +264,7 @@ static const animframe_t elflord_frames_death_loop[] =
 	{ FRAME_death15,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_death16,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_death_loop = { 10, elflord_frames_death_loop, M_EndDeath };
+const animmove_t elflord_move_death_loop = ANIMMOVE(elflord_frames_death_loop, M_EndDeath);
 
 // Shield.
 static const animframe_t elflord_frames_shield[] =
@@ -293,7 +293,7 @@ static const animframe_t elflord_frames_shield[] =
 	{ FRAME_shield22,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_shield23,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_shield = { 23, elflord_frames_shield, elflord_check_attack };
+const animmove_t elflord_move_shield = ANIMMOVE(elflord_frames_shield, elflord_check_attack);
 
 // Attack.
 static const animframe_t elflord_frames_attack[] =
@@ -315,7 +315,7 @@ static const animframe_t elflord_frames_attack[] =
 	{ FRAME_newatk15,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newatk16,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t elflord_move_attack = { 16, elflord_frames_attack, elflord_check_attack };
+const animmove_t elflord_move_attack = ANIMMOVE(elflord_frames_attack, elflord_check_attack);
 
 #define ELFLORD_DECELERATE	0.8f
 
@@ -347,7 +347,7 @@ static const animframe_t elflord_frames_move[] =
 	{ FRAME_idle23,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_try_charge },
 	{ FRAME_idle24,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_try_charge },
 };
-const animmove_t elflord_move_move = { 24, elflord_frames_move, elflord_check_attack };
+const animmove_t elflord_move_move = ANIMMOVE(elflord_frames_move, elflord_check_attack);
 
 // Idle - sit and float.
 static const animframe_t elflord_frames_wait[] =
@@ -377,7 +377,7 @@ static const animframe_t elflord_frames_wait[] =
 	{ FRAME_idle23,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle24,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t elflord_move_wait = { 24, elflord_frames_wait, elflord_check_attack };
+const animmove_t elflord_move_wait = ANIMMOVE(elflord_frames_wait, elflord_check_attack);
 
 static const animframe_t elflord_frames_come_to_life[] =
 {
@@ -421,4 +421,4 @@ static const animframe_t elflord_frames_come_to_life[] =
 	{ FRAME_attka14,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attka15,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_come_to_life = { 35, elflord_frames_come_to_life, elflord_check_attack };
+const animmove_t elflord_move_come_to_life = ANIMMOVE(elflord_frames_come_to_life, elflord_check_attack);
