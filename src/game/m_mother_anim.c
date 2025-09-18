@@ -21,7 +21,7 @@ static const animframe_t mother_frames_pain[] =
 	{ FRAME_pain017, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pain019, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t mother_move_pain = { 10, mother_frames_pain, mother_pause };
+const animmove_t mother_move_pain = ANIMMOVE(mother_frames_pain, mother_pause);
 
 // Mother Stand.
 static const animframe_t mother_frames_stand[] =
@@ -88,4 +88,4 @@ static const animframe_t mother_frames_stand[] =
 	{ FRAME_poly059, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_poly060, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t mother_move_stand = { 61, mother_frames_stand, mother_pause };
+const animmove_t mother_move_stand = ANIMMOVE(mother_frames_stand, mother_pause);
