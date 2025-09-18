@@ -27,7 +27,7 @@ static const animframe_t morcalavin_frames_float[] =
 	{ FRAME_fltidl14,	NULL, 0, 0, 0, morcalavin_ai_hover, 57, NULL },
 	{ FRAME_fltidl15,	NULL, 0, 0, 0, morcalavin_ai_hover, 58, NULL },
 };
-const animmove_t morcalavin_move_float = { 15, morcalavin_frames_float, NULL };
+const animmove_t morcalavin_move_float = ANIMMOVE(morcalavin_frames_float, NULL);
 
 // Morcalavin Hurt Idle.
 static const animframe_t morcalavin_frames_hurtidle[] =
@@ -50,7 +50,7 @@ static const animframe_t morcalavin_frames_hurtidle[] =
 	{ FRAME_hrtidl16,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hrtidl17,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t morcalavin_move_hurtidle = { 17, morcalavin_frames_hurtidle, morcalavin_get_up };
+const animmove_t morcalavin_move_hurtidle = ANIMMOVE(morcalavin_frames_hurtidle, morcalavin_get_up);
 
 // Morcalavin Attack 1.
 static const animframe_t morcalavin_frames_attack1[] =
@@ -69,7 +69,7 @@ static const animframe_t morcalavin_frames_attack1[] =
 	{ FRAME_ataka12,	NULL,				0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_ataka13,	NULL,				0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t morcalavin_move_attack1 = { 13, morcalavin_frames_attack1, morcalavin_quake_pause };
+const animmove_t morcalavin_move_attack1 = ANIMMOVE(morcalavin_frames_attack1, morcalavin_quake_pause);
 
 // Morcalavin Attack 2.
 static const animframe_t morcalavin_frames_attack2[] =
@@ -97,7 +97,7 @@ static const animframe_t morcalavin_frames_attack2[] =
 	{ FRAME_atakb16,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_atakb17,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t morcalavin_move_attack2 = { 22, morcalavin_frames_attack2, morcalavin_fade_out };
+const animmove_t morcalavin_move_attack2 = ANIMMOVE(morcalavin_frames_attack2, morcalavin_fade_out);
 
 // Morcalavin Attack 2B.
 static const animframe_t morcalavin_frames_attack2b[] =
@@ -120,7 +120,7 @@ static const animframe_t morcalavin_frames_attack2b[] =
 	{ FRAME_atakb16,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_atakb17,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t morcalavin_move_attack2b = { 17, morcalavin_frames_attack2b, morcalavin_pause };
+const animmove_t morcalavin_move_attack2b = ANIMMOVE(morcalavin_frames_attack2b, morcalavin_pause);
 
 // Morcalavin Attack 3.
 static const animframe_t morcalavin_frames_attack3[] =
@@ -147,7 +147,7 @@ static const animframe_t morcalavin_frames_attack3[] =
 	{ FRAME_atakc20,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_atakc21,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t morcalavin_move_attack3 = { 21, morcalavin_frames_attack3, morcalavin_pause };
+const animmove_t morcalavin_move_attack3 = ANIMMOVE(morcalavin_frames_attack3, morcalavin_pause);
 
 // Morcalavin Attack 4.
 static const animframe_t morcalavin_frames_attack4[] =
@@ -190,7 +190,7 @@ static const animframe_t morcalavin_frames_attack4[] =
 	{ FRAME_defnsa20,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_defnsa21,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t morcalavin_move_attack4 = { 37, morcalavin_frames_attack4, morcalavin_pause };
+const animmove_t morcalavin_move_attack4 = ANIMMOVE(morcalavin_frames_attack4, morcalavin_pause);
 
 // Morcalavin Defence 1.
 static const animframe_t morcalavin_frames_def1[] =
@@ -218,7 +218,7 @@ static const animframe_t morcalavin_frames_def1[] =
 	{ FRAME_defnsa20,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_defnsa21,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t morcalavin_move_def1 = { 21, morcalavin_frames_def1, morcalavin_pause };
+const animmove_t morcalavin_move_def1 = ANIMMOVE(morcalavin_frames_def1, morcalavin_pause);
 
 // Morcalavin Defence 2.
 static const animframe_t morcalavin_frames_def2[] =
@@ -241,7 +241,7 @@ static const animframe_t morcalavin_frames_def2[] =
 	{ FRAME_defnsb16,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_defnsb17,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t morcalavin_move_def2 = { 17, morcalavin_frames_def2, morcalavin_pause };
+const animmove_t morcalavin_move_def2 = ANIMMOVE(morcalavin_frames_def2, morcalavin_pause);
 
 // Morcalavin Walk.
 static const animframe_t morcalavin_frames_walk[] =
@@ -259,7 +259,7 @@ static const animframe_t morcalavin_frames_walk[] =
 	{ FRAME_walk11,		NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
 	{ FRAME_walk12,		NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
 };
-const animmove_t morcalavin_move_walk = { 12, morcalavin_frames_walk, morcalavin_pause };
+const animmove_t morcalavin_move_walk = ANIMMOVE(morcalavin_frames_walk, morcalavin_pause);
 
 // Morcalavin Fly.
 static const animframe_t morcalavin_frames_fly[] =
@@ -280,7 +280,7 @@ static const animframe_t morcalavin_frames_fly[] =
 	{ FRAME_fltmve14,	NULL, 0, 0, 0, morcalavin_ai_run, 16, NULL },
 	{ FRAME_fltmve15,	NULL, 0, 0, 0, morcalavin_ai_run, 16, NULL },
 };
-const animmove_t morcalavin_move_fly = { 15, morcalavin_frames_fly, morcalavin_pause };
+const animmove_t morcalavin_move_fly = ANIMMOVE(morcalavin_frames_fly, morcalavin_pause);
 
 // Morcalavin Get Up.
 static const animframe_t morcalavin_frames_getup[] =
@@ -300,7 +300,7 @@ static const animframe_t morcalavin_frames_getup[] =
 	{ FRAME_getupa13,	NULL, 0, 0, 0, morcalavin_ai_hover, 90,  NULL },
 	{ FRAME_getupa14,	NULL, 0, 0, 0, morcalavin_ai_hover, 120, NULL },
 };
-const animmove_t morcalavin_move_getup = { 14, morcalavin_frames_getup, morcalavin_retort };
+const animmove_t morcalavin_move_getup = ANIMMOVE(morcalavin_frames_getup, morcalavin_retort);
 
 // Morcalavin Retort.
 static const animframe_t morcalavin_frames_retort[] =
@@ -340,7 +340,7 @@ static const animframe_t morcalavin_frames_retort[] =
 	{ FRAME_getupc15,	NULL, 0, 0, 0, morcalavin_ai_hover,   0, NULL },
 	{ FRAME_getupc16,	NULL, 0, 0, 0, morcalavin_ai_hover,   0, NULL },
 };
-const animmove_t morcalavin_move_retort = { 34, morcalavin_frames_retort, morcalavin_end_retort };
+const animmove_t morcalavin_move_retort = ANIMMOVE(morcalavin_frames_retort, morcalavin_end_retort);
 
 // Morcalavin Fall.
 static const animframe_t morcalavin_frames_fall[] =
@@ -367,7 +367,7 @@ static const animframe_t morcalavin_frames_fall[] =
 	{ FRAME_knkdwn20,	NULL, 0, 0, 0, ai_move, -8, NULL },
 	{ FRAME_knkdwn21,	NULL, 0, 0, 0, ai_move, -8, NULL },
 };
-const animmove_t morcalavin_move_fall = { 21, morcalavin_frames_fall, morcalavin_hurt_idle };
+const animmove_t morcalavin_move_fall = ANIMMOVE(morcalavin_frames_fall, morcalavin_hurt_idle);
 
 // Morcalavin Glide.
 static const animframe_t morcalavin_frames_glide[] =
@@ -388,7 +388,7 @@ static const animframe_t morcalavin_frames_glide[] =
 	{ FRAME_fltmve14,	NULL, 0, 0, 0, morcalavin_ai_run, 4, NULL },
 	{ FRAME_fltmve15,	NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
 };
-const animmove_t morcalavin_move_glide = { 15, morcalavin_frames_glide, morcalavin_pause };
+const animmove_t morcalavin_move_glide = ANIMMOVE(morcalavin_frames_glide, morcalavin_pause);
 
 // Morcalavin Tracking Attack 1.
 static const animframe_t morcalavin_frames_tracking_attack1[] =
@@ -411,7 +411,7 @@ static const animframe_t morcalavin_frames_tracking_attack1[] =
 	{ FRAME_defnsb16,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_defnsb17,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t morcalavin_move_tracking_attack1 = { 17, morcalavin_frames_tracking_attack1, morcalavin_pause };
+const animmove_t morcalavin_move_tracking_attack1 = ANIMMOVE(morcalavin_frames_tracking_attack1, morcalavin_pause);
 
 // Morcalavin Ground Attack.
 static const animframe_t morcalavin_frames_ground_attack[] =
@@ -434,4 +434,4 @@ static const animframe_t morcalavin_frames_ground_attack[] =
 	{ FRAME_atakb16,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_atakb17,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t morcalavin_move_ground_attack = { 17, morcalavin_frames_ground_attack, morcalavin_pause };
+const animmove_t morcalavin_move_ground_attack = ANIMMOVE(morcalavin_frames_ground_attack, morcalavin_pause);
