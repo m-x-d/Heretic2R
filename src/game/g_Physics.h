@@ -20,6 +20,5 @@
 
 extern void EntityPhysics(edict_t* self);
 extern void CheckEntityOn(edict_t* self);
-extern edict_t* TestEntityPosition(edict_t* self); //mxd
 extern void PhysicsCheckWaterTransition(edict_t* self); //mxd
 extern void DoImpactDamage(edict_t* self, trace_t* trace); //mxd

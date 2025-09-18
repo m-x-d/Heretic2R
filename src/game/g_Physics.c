@@ -863,7 +863,7 @@ static void SetGroundEntFromTrace(edict_t* self, const trace_t* trace)
 	VectorCopy(trace->plane.normal, self->groundNormal);
 }
 
-edict_t* TestEntityPosition(edict_t* self)
+static edict_t* TestEntityPosition(const edict_t* self)
 {
 	FormMove_t form_move;
 
