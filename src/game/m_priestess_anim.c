@@ -31,7 +31,7 @@ static const animframe_t priestess_frames_stand1[] =
 	{ FRAME_idle17,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_idle18,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t priestess_move_stand1 = { 18, priestess_frames_stand1, NULL };
+const animmove_t priestess_move_stand1 = ANIMMOVE(priestess_frames_stand1, NULL);
 
 // Priestess Attack 1 Start.
 static const animframe_t priestess_frames_attack1_go[] =
@@ -47,7 +47,7 @@ static const animframe_t priestess_frames_attack1_go[] =
 	{ FRAME_attackA15,	NULL,				0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attackA16,	NULL,				0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t priestess_move_attack1_go = { 10, priestess_frames_attack1_go, priestess_attack1_pause };
+const animmove_t priestess_move_attack1_go = ANIMMOVE(priestess_frames_attack1_go, priestess_attack1_pause);
 
 // Priestess Attack 1 Loop.
 static const animframe_t priestess_frames_attack1_loop[] =
@@ -59,7 +59,7 @@ static const animframe_t priestess_frames_attack1_loop[] =
 	{ FRAME_attackA11,	priestess_fire1,	0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attackA12,	NULL,				0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_attack1_loop = { 6, priestess_frames_attack1_loop, NULL };
+const animmove_t priestess_move_attack1_loop = ANIMMOVE(priestess_frames_attack1_loop, NULL);
 
 // Priestess Attack 1 End.
 static const animframe_t priestess_frames_attack1_end[] =
@@ -69,7 +69,7 @@ static const animframe_t priestess_frames_attack1_end[] =
 	{ FRAME_attackA15,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attackA16,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_attack1_end = { 4, priestess_frames_attack1_end, priestess_pause };
+const animmove_t priestess_move_attack1_end = ANIMMOVE(priestess_frames_attack1_end, priestess_pause);
 
 // Priestess Attack 2.
 static const animframe_t priestess_frames_attack2[] =
@@ -94,7 +94,7 @@ static const animframe_t priestess_frames_attack2[] =
 	{ FRAME_attackB18,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attackB19,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t priestess_move_attack2 = { 19, priestess_frames_attack2, priestess_pause };
+const animmove_t priestess_move_attack2 = ANIMMOVE(priestess_frames_attack2, priestess_pause);
 
 // Priestess Pounce Attack.
 static const animframe_t priestess_frames_pounce_attack[] =
@@ -109,7 +109,7 @@ static const animframe_t priestess_frames_pounce_attack[] =
 	{ FRAME_attackB16,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attackB17,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t priestess_move_pounce_attack = { 9, priestess_frames_pounce_attack, priestess_pounce_attack };
+const animmove_t priestess_move_pounce_attack = ANIMMOVE(priestess_frames_pounce_attack, priestess_pounce_attack);
 
 // Priestess Backup.
 static const animframe_t priestess_frames_backup[] =
@@ -127,7 +127,7 @@ static const animframe_t priestess_frames_backup[] =
 	{ FRAME_backup13,	NULL, 0, 0, 0, MG_AI_Run, -8, NULL },
 	{ FRAME_backup14,	NULL, 0, 0, 0, MG_AI_Run, -8, NULL },
 };
-const animmove_t priestess_move_backup = { 12, priestess_frames_backup, priestess_pause };
+const animmove_t priestess_move_backup = ANIMMOVE(priestess_frames_backup, priestess_pause);
 
 // Priestess Death.
 static const animframe_t priestess_frames_death[] =
@@ -203,7 +203,7 @@ static const animframe_t priestess_frames_death[] =
 	{ FRAME_death69,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_death70,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_death = { 70, priestess_frames_death, priestess_dead };
+const animmove_t priestess_move_death = ANIMMOVE(priestess_frames_death, priestess_dead);
 
 // Priestess Idle.
 static const animframe_t priestess_frames_idle[] =
@@ -227,7 +227,7 @@ static const animframe_t priestess_frames_idle[] =
 	{ FRAME_idle17,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_idle18,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_idle = { 18, priestess_frames_idle, NULL };
+const animmove_t priestess_move_idle = ANIMMOVE(priestess_frames_idle, NULL);
 
 // Priestess Jump.
 static const animframe_t priestess_frames_jump[] =
@@ -247,7 +247,7 @@ static const animframe_t priestess_frames_jump[] =
 	{ FRAME_jump13,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_jump14,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t priestess_move_jump = { 14, priestess_frames_jump, priestess_pause };
+const animmove_t priestess_move_jump = ANIMMOVE(priestess_frames_jump, priestess_pause);
 
 // Priestess Jump Forward.
 static const animframe_t priestess_frames_jump_forward[] =
@@ -267,7 +267,7 @@ static const animframe_t priestess_frames_jump_forward[] =
 	{ FRAME_jump13,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_jump14,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t priestess_move_jump_forward = { 14, priestess_frames_jump_forward, priestess_pause };
+const animmove_t priestess_move_jump_forward = ANIMMOVE(priestess_frames_jump_forward, priestess_pause);
 
 // Priestess Jump Back.
 static const animframe_t priestess_frames_jump_back[] =
@@ -287,7 +287,7 @@ static const animframe_t priestess_frames_jump_back[] =
 	{ FRAME_jump13,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_jump14,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t priestess_move_jump_back = { 14, priestess_frames_jump_back, priestess_pause };
+const animmove_t priestess_move_jump_back = ANIMMOVE(priestess_frames_jump_back, priestess_pause);
 
 // Priestess Jump Right.
 static const animframe_t priestess_frames_jump_right[] =
@@ -307,7 +307,7 @@ static const animframe_t priestess_frames_jump_right[] =
 	{ FRAME_jump13,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_jump14,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t priestess_move_jump_right = { 14, priestess_frames_jump_right, priestess_pause };
+const animmove_t priestess_move_jump_right = ANIMMOVE(priestess_frames_jump_right, priestess_pause);
 
 // Priestess Jump Left.
 static const animframe_t priestess_frames_jump_left[] =
@@ -327,7 +327,7 @@ static const animframe_t priestess_frames_jump_left[] =
 	{ FRAME_jump13,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_jump14,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t priestess_move_jump_left = { 14, priestess_frames_jump_left, priestess_pause };
+const animmove_t priestess_move_jump_left = ANIMMOVE(priestess_frames_jump_left, priestess_pause);
 
 // Priestess Jump Pounce.
 static const animframe_t priestess_frames_jump_pounce[] =
@@ -347,7 +347,7 @@ static const animframe_t priestess_frames_jump_pounce[] =
 	{ FRAME_jump13,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_jump14,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t priestess_move_jump_pounce = { 14, priestess_frames_jump_pounce, priestess_pounce_attack };
+const animmove_t priestess_move_jump_pounce = ANIMMOVE(priestess_frames_jump_pounce, priestess_pounce_attack);
 
 // Priestess Pain.
 static const animframe_t priestess_frames_pain[] =
@@ -359,7 +359,7 @@ static const animframe_t priestess_frames_pain[] =
 	{ FRAME_pain5,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pain6,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_pain = { 6, priestess_frames_pain, priestess_pause };
+const animmove_t priestess_move_pain = ANIMMOVE(priestess_frames_pain, priestess_pause);
 
 // Priestess Idle Pose.
 static const animframe_t priestess_frames_idle_pose[] =
@@ -374,7 +374,7 @@ static const animframe_t priestess_frames_idle_pose[] =
 	{ FRAME_poseidle8,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_poseidle9,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_idle_pose = { 9, priestess_frames_idle_pose, NULL };
+const animmove_t priestess_move_idle_pose = ANIMMOVE(priestess_frames_idle_pose, NULL);
 
 // Priestess Idle Pose to Ready Transition.
 static const animframe_t priestess_frames_pose_trans[] =
@@ -386,7 +386,7 @@ static const animframe_t priestess_frames_pose_trans[] =
 	{ FRAME_pose2ready5,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pose2ready6,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_pose_trans = { 6, priestess_frames_pose_trans, NULL };
+const animmove_t priestess_move_pose_trans = ANIMMOVE(priestess_frames_pose_trans, NULL);
 
 // Priestess Shield Start.
 static const animframe_t priestess_frames_shield_go[] =
@@ -407,7 +407,7 @@ static const animframe_t priestess_frames_shield_go[] =
 	{ FRAME_shield8,	NULL, 0, 0, 0, priestess_delta_alpha, -32, priestess_teleport_move },
 	{ FRAME_shield8,	NULL, 0, 0, 0, priestess_delta_alpha, -32, priestess_teleport_return },
 };
-const animmove_t priestess_move_shield_go = { 15, priestess_frames_shield_go, NULL };
+const animmove_t priestess_move_shield_go = ANIMMOVE(priestess_frames_shield_go, NULL);
 
 // Priestess Shield End.
 static const animframe_t priestess_frames_shield_end[] =
@@ -422,7 +422,7 @@ static const animframe_t priestess_frames_shield_end[] =
 	{ FRAME_shield1,	NULL, 0, 0, 0, priestess_delta_alpha, 32, priestess_stop_alpha },
 	{ FRAME_shield1,	NULL, 0, 0, 0, NULL,				   0, priestess_stop_alpha }, //TODO: why priestess_stop_alpha() is called twice?
 };
-const animmove_t priestess_move_shield_end = { 9, priestess_frames_shield_end, priestess_pause };
+const animmove_t priestess_move_shield_end = ANIMMOVE(priestess_frames_shield_end, priestess_pause);
 
 // Priestess Dodge Left.
 static const animframe_t priestess_frames_dodge_left[] =
@@ -439,7 +439,7 @@ static const animframe_t priestess_frames_dodge_left[] =
 	{ FRAME_sidestplft10,	priestess_move, 0,  -4, 0, NULL, 0, NULL },
 	{ FRAME_sidestplft11,	priestess_move, 0,   0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_dodge_left = { 11, priestess_frames_dodge_left, priestess_pause };
+const animmove_t priestess_move_dodge_left = ANIMMOVE(priestess_frames_dodge_left, priestess_pause);
 
 // Priestess Dodge Right.
 static const animframe_t priestess_frames_dodge_right[] =
@@ -456,7 +456,7 @@ static const animframe_t priestess_frames_dodge_right[] =
 	{ FRAME_sidestprt10,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_sidestprt11,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t priestess_move_dodge_right = { 11, priestess_frames_dodge_right, priestess_pause };
+const animmove_t priestess_move_dodge_right = ANIMMOVE(priestess_frames_dodge_right, priestess_pause);
 
 // Priestess Walk.
 static const animframe_t priestess_frames_walk[] =
@@ -478,7 +478,7 @@ static const animframe_t priestess_frames_walk[] =
 	{ FRAME_walk15,	NULL, 0, 0, 0, MG_AI_Run, 6, NULL },
 	{ FRAME_walk16,	NULL, 0, 0, 0, MG_AI_Run, 4, NULL },
 };
-const animmove_t priestess_move_walk = { 16, priestess_frames_walk, priestess_pause };
+const animmove_t priestess_move_walk = ANIMMOVE(priestess_frames_walk, priestess_pause);
 
 // Priestess Attack 3 Start.
 static const animframe_t priestess_frames_attack3_go[] =
@@ -496,14 +496,14 @@ static const animframe_t priestess_frames_attack3_go[] =
 	{ FRAME_attackc11,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_attackc12,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t priestess_move_attack3_go = { 12, priestess_frames_attack3_go, priestess_attack3_loop };
+const animmove_t priestess_move_attack3_go = ANIMMOVE(priestess_frames_attack3_go, priestess_attack3_loop);
 
 // Priestess Attack 3 Loop.
 static const animframe_t priestess_frames_attack3_loop[] =
 {
 	{ FRAME_attackc13,	NULL, 0, 0, 0, NULL, 0, priestess_attack3_loop_fire },
 };
-const animmove_t priestess_move_attack3_loop = { 1, priestess_frames_attack3_loop, NULL };
+const animmove_t priestess_move_attack3_loop = ANIMMOVE(priestess_frames_attack3_loop, NULL);
 
 // Priestess Attack 3 End.
 static const animframe_t priestess_frames_attack3_end[] =
@@ -512,7 +512,7 @@ static const animframe_t priestess_frames_attack3_end[] =
 	{ FRAME_attackc15,	NULL, 0, 0, 0, ai_charge, -8, NULL },
 	{ FRAME_attackc16,	NULL, 0, 0, 0, ai_charge, -2, NULL },
 };
-const animmove_t priestess_move_attack3_end = { 3, priestess_frames_attack3_end, priestess_pause };
+const animmove_t priestess_move_attack3_end = ANIMMOVE(priestess_frames_attack3_end, priestess_pause);
 
 // Priestess Jump Attack.
 static const animframe_t priestess_frames_jump_attack[] =
@@ -532,4 +532,4 @@ static const animframe_t priestess_frames_jump_attack[] =
 	{ FRAME_jumpatt13,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_jumpatt14,	NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
-const animmove_t priestess_move_jump_attack = { 14, priestess_frames_jump_attack, priestess_pause };
+const animmove_t priestess_move_jump_attack = ANIMMOVE(priestess_frames_jump_attack, priestess_pause);
