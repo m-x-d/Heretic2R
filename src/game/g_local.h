@@ -412,6 +412,8 @@ typedef struct
 	void (*const thinkfunc)(edict_t* self);
 } animframe_t;
 
+#define ANIMMOVE(arr, endfunc)	{ ARRAYSIZE(arr), arr, endfunc } //mxd. animmove_t initializer macro. Added, so we don't have to type numframes manually.
+
 typedef struct
 {
 	const int numframes;

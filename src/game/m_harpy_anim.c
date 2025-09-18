@@ -26,7 +26,7 @@ static const animframe_t harpy_frames_die1[] =
 	{ FRAME_death14,	NULL, 0, 0, 0, NULL, 0, harpy_fix_angles },
 	{ FRAME_death15,	NULL, 0, 0, 0, NULL, 0, harpy_fix_angles },
 };
-const animmove_t harpy_move_die1 = { 15,harpy_frames_die1, harpy_dead };
+const animmove_t harpy_move_die1 = ANIMMOVE(harpy_frames_die1, harpy_dead);
 
 // Harpy Fly 1.
 static const animframe_t harpy_frames_fly1[] =
@@ -44,7 +44,7 @@ static const animframe_t harpy_frames_fly1[] =
 	{ FRAME_fly11,	harpy_ai_fly, 48,  0, 0, NULL, 15, NULL },
 	{ FRAME_fly12,	harpy_ai_fly, 52,  0, 0, NULL, 15, NULL },
 };
-const animmove_t harpy_move_fly1 = { 12, harpy_frames_fly1, harpy_pause };
+const animmove_t harpy_move_fly1 = ANIMMOVE(harpy_frames_fly1, harpy_pause);
 
 // Harpy Fly Backwards 1.
 static const animframe_t harpy_frames_flyback1[] =
@@ -56,7 +56,7 @@ static const animframe_t harpy_frames_flyback1[] =
 	{ FRAME_flyback5, harpy_ai_fly, -42, 0, 32, NULL, 0, NULL },
 	{ FRAME_flyback6, harpy_ai_fly, -36, 0, 24, NULL, 0, NULL },
 };
-const animmove_t harpy_move_flyback1 = { 6, harpy_frames_flyback1, harpy_pause };
+const animmove_t harpy_move_flyback1 = ANIMMOVE(harpy_frames_flyback1, harpy_pause);
 
 // Harpy Hover 1.
 static const animframe_t harpy_frames_hover1[] =
@@ -70,7 +70,7 @@ static const animframe_t harpy_frames_hover1[] =
 	{ FRAME_hover7, NULL, 0, 0, 0, harpy_ai_hover,  1, NULL },
 	{ FRAME_hover8, NULL, 0, 0, 0, harpy_ai_hover,  2, NULL },
 };
-const animmove_t harpy_move_hover1 = { 8, harpy_frames_hover1, harpy_hover_move };
+const animmove_t harpy_move_hover1 = ANIMMOVE(harpy_frames_hover1, harpy_hover_move);
 
 // Harpy Tumble.
 static const animframe_t harpy_frames_tumble[] =
@@ -84,7 +84,7 @@ static const animframe_t harpy_frames_tumble[] =
 	{ FRAME_hover7, NULL, 0, 0, 0, NULL, 0, harpy_tumble_move },
 	{ FRAME_hover8, NULL, 0, 0, 0, NULL, 0, harpy_tumble_move },
 };
-const animmove_t harpy_move_tumble = { 8, harpy_frames_tumble, NULL };
+const animmove_t harpy_move_tumble = ANIMMOVE(harpy_frames_tumble, NULL);
 
 // Harpy hovering and screaming.
 static const animframe_t harpy_frames_hoverscream[] =
@@ -106,7 +106,7 @@ static const animframe_t harpy_frames_hoverscream[] =
 	{ FRAME_hoverscream15,NULL, 0, 0, 0, harpy_ai_hover,  1, NULL },
 	{ FRAME_hoverscream16,NULL, 0, 0, 0, harpy_ai_hover,  2, NULL },
 };
-const animmove_t harpy_move_hoverscream = { 16, harpy_frames_hoverscream, harpy_hover_move };
+const animmove_t harpy_move_hoverscream = ANIMMOVE(harpy_frames_hoverscream, harpy_hover_move);
 
 // Harpy diving start.
 static const animframe_t harpy_frames_dive_go[] =
@@ -118,7 +118,7 @@ static const animframe_t harpy_frames_dive_go[] =
 	{ FRAME_dive05, NULL, 0, 0, 0, NULL, 0, harpy_dive_move },
 	{ FRAME_dive06, NULL, 0, 0, 0, NULL, 0, harpy_dive_move },
 };
-const animmove_t harpy_move_dive_go = { 6, harpy_frames_dive_go, harpy_dive_loop };
+const animmove_t harpy_move_dive_go = ANIMMOVE(harpy_frames_dive_go, harpy_dive_loop);
 
 // Harpy diving loop.
 static const animframe_t harpy_frames_dive_loop[] =
@@ -130,7 +130,7 @@ static const animframe_t harpy_frames_dive_loop[] =
 	{ FRAME_dive11, NULL, 0, 0, 0, NULL, 0, harpy_dive_move },
 	{ FRAME_dive12, NULL, 0, 0, 0, NULL, 0, harpy_dive_move },
 };
-const animmove_t harpy_move_dive_loop = { 6, harpy_frames_dive_loop, NULL };
+const animmove_t harpy_move_dive_loop = ANIMMOVE(harpy_frames_dive_loop, NULL);
 
 // Harpy transition from dive.
 static const animframe_t harpy_frames_dive_trans[] =
@@ -141,14 +141,14 @@ static const animframe_t harpy_frames_dive_trans[] =
 	{ FRAME_dive16, NULL, 0, 0, 0, NULL, 0, harpy_dive_end_move },
 	{ FRAME_dive17, NULL, 0, 0, 0, NULL, 0, harpy_dive_end_move },
 };
-const animmove_t harpy_move_dive_trans = { 5, harpy_frames_dive_trans, harpy_hit_loop };
+const animmove_t harpy_move_dive_trans = ANIMMOVE(harpy_frames_dive_trans, harpy_hit_loop);
 
 // Harpy dive hit loop.
 static const animframe_t harpy_frames_dive_hit_loop[] =
 {
 	{ FRAME_dive18, NULL, 0, 0, 0, NULL, 0, harpy_dive_end_move },
 };
-const animmove_t harpy_move_dive_hit_loop = { 1, harpy_frames_dive_hit_loop, NULL };
+const animmove_t harpy_move_dive_hit_loop = ANIMMOVE(harpy_frames_dive_hit_loop, NULL);
 
 // Harpy dive end.
 static const animframe_t harpy_frames_dive_end[] =
@@ -166,7 +166,7 @@ static const animframe_t harpy_frames_dive_end[] =
 	{ FRAME_dive29, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive30, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t harpy_move_dive_end = { 11, harpy_frames_dive_end, harpy_flyback };
+const animmove_t harpy_move_dive_end = ANIMMOVE(harpy_frames_dive_end, harpy_flyback);
 
 // Harpy attacking up close/
 static const animframe_t harpy_frames_closeattack[] =
@@ -178,7 +178,7 @@ static const animframe_t harpy_frames_closeattack[] =
 	{ FRAME_dive25, NULL, 0, 0, 0, NULL, 6, NULL },
 	{ FRAME_dive27, NULL, 0, 0, 0, NULL, 6, NULL },
 };
-const animmove_t harpy_closeattack = { 6, harpy_frames_closeattack, harpy_pause };
+const animmove_t harpy_closeattack = ANIMMOVE(harpy_frames_closeattack, harpy_pause);
 
 // Harpy pain.
 static const animframe_t harpy_frames_pain1[] =
@@ -192,7 +192,7 @@ static const animframe_t harpy_frames_pain1[] =
 	{ FRAME_pain7, NULL, 0, 0, 0, NULL,  1, harpy_hover_move },
 	{ FRAME_pain8, NULL, 0, 0, 0, NULL,  2, harpy_hover_move },
 };
-const animmove_t harpy_move_pain1 = { 8, harpy_frames_pain1, harpy_pause };
+const animmove_t harpy_move_pain1 = ANIMMOVE(harpy_frames_pain1, harpy_pause);
 
 // Harpy glide.
 static const animframe_t harpy_frames_glide[] =
@@ -210,7 +210,7 @@ static const animframe_t harpy_frames_glide[] =
 	{ FRAME_glide11,	harpy_ai_glide, 64, 0, 0, NULL, 0, NULL },
 	{ FRAME_glide12,	harpy_ai_glide, 64, 0, 0, NULL, 0, NULL },
 };
-const animmove_t harpy_move_glide = { 12, harpy_frames_glide, NULL };
+const animmove_t harpy_move_glide = ANIMMOVE(harpy_frames_glide, NULL);
 
 // Harpy Perch 1 Idle.
 static const animframe_t harpy_frames_perch1_idle[] =
@@ -226,7 +226,7 @@ static const animframe_t harpy_frames_perch1_idle[] =
 	{ FRAME_perch9,		NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 	{ FRAME_perch10,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 };
-const animmove_t harpy_move_perch1_idle = { 10, harpy_frames_perch1_idle, NULL };
+const animmove_t harpy_move_perch1_idle = ANIMMOVE(harpy_frames_perch1_idle, NULL);
 
 // Harpy Perch 2 Idle.
 static const animframe_t harpy_frames_perch2_idle[] =
@@ -242,7 +242,7 @@ static const animframe_t harpy_frames_perch2_idle[] =
 	{ FRAME_perch19,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 	{ FRAME_perch20,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 };
-const animmove_t harpy_move_perch2_idle = { 10, harpy_frames_perch2_idle, NULL };
+const animmove_t harpy_move_perch2_idle = ANIMMOVE(harpy_frames_perch2_idle, NULL);
 
 // Harpy Perch 3 Idle.
 static const animframe_t harpy_frames_perch3_idle[] =
@@ -258,7 +258,7 @@ static const animframe_t harpy_frames_perch3_idle[] =
 	{ FRAME_perch29,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 	{ FRAME_perch30,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 };
-const animmove_t harpy_move_perch3_idle = { 10, harpy_frames_perch3_idle, NULL };
+const animmove_t harpy_move_perch3_idle = ANIMMOVE(harpy_frames_perch3_idle, NULL);
 
 // Harpy Perch 4 Idle.
 static const animframe_t harpy_frames_perch4_idle[] =
@@ -274,7 +274,7 @@ static const animframe_t harpy_frames_perch4_idle[] =
 	{ FRAME_perch39,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 	{ FRAME_perch40,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 };
-const animmove_t harpy_move_perch4_idle = { 10, harpy_frames_perch4_idle, NULL };
+const animmove_t harpy_move_perch4_idle = ANIMMOVE(harpy_frames_perch4_idle, NULL);
 
 // Harpy Perch 5 Idle.
 static const animframe_t harpy_frames_perch5_idle[] =
@@ -290,7 +290,7 @@ static const animframe_t harpy_frames_perch5_idle[] =
 	{ FRAME_perch49,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 	{ FRAME_perch50,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 };
-const animmove_t harpy_move_perch5_idle = { 10, harpy_frames_perch5_idle, NULL };
+const animmove_t harpy_move_perch5_idle = ANIMMOVE(harpy_frames_perch5_idle, NULL);
 
 // Harpy Perch 6 Idle.
 static const animframe_t harpy_frames_perch6_idle[] =
@@ -306,7 +306,7 @@ static const animframe_t harpy_frames_perch6_idle[] =
 	{ FRAME_perch59,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 	{ FRAME_perch60,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 };
-const animmove_t harpy_move_perch6_idle = { 10, harpy_frames_perch6_idle, NULL };
+const animmove_t harpy_move_perch6_idle = ANIMMOVE(harpy_frames_perch6_idle, NULL);
 
 // Harpy Perch 7 Idle.
 static const animframe_t harpy_frames_perch7_idle[] =
@@ -322,7 +322,7 @@ static const animframe_t harpy_frames_perch7_idle[] =
 	{ FRAME_perch69,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 	{ FRAME_perch70,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 };
-const animmove_t harpy_move_perch7_idle = { 10, harpy_frames_perch7_idle, NULL };
+const animmove_t harpy_move_perch7_idle = ANIMMOVE(harpy_frames_perch7_idle, NULL);
 
 // Harpy Perch 8 Idle.
 static const animframe_t harpy_frames_perch8_idle[] =
@@ -338,7 +338,7 @@ static const animframe_t harpy_frames_perch8_idle[] =
 	{ FRAME_perch79,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 	{ FRAME_perch80,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 };
-const animmove_t harpy_move_perch8_idle = { 10, harpy_frames_perch8_idle, NULL };
+const animmove_t harpy_move_perch8_idle = ANIMMOVE(harpy_frames_perch8_idle, NULL);
 
 // Harpy Perch 9 Idle.
 static const animframe_t harpy_frames_perch9_idle[] =
@@ -354,7 +354,7 @@ static const animframe_t harpy_frames_perch9_idle[] =
 	{ FRAME_perch89,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 	{ FRAME_perch90,	NULL, 0, 0, 0, NULL, 0, harpy_ai_perch },
 };
-const animmove_t harpy_move_perch9_idle = { 10, harpy_frames_perch9_idle, NULL };
+const animmove_t harpy_move_perch9_idle = ANIMMOVE(harpy_frames_perch9_idle, NULL);
 
 // Harpy Takeoff.
 static const animframe_t harpy_frames_takeoff[] =
@@ -368,7 +368,7 @@ static const animframe_t harpy_frames_takeoff[] =
 	{ FRAME_takeoff13,	harpy_ai_fly, -64, 0, 32, NULL, 0, NULL },
 	{ FRAME_takeoff15,	harpy_ai_fly, -32, 0, 32, NULL, 0, NULL },
 };
-const animmove_t harpy_move_takeoff = { 8, harpy_frames_takeoff, harpy_pause };
+const animmove_t harpy_move_takeoff = ANIMMOVE(harpy_frames_takeoff, harpy_pause);
 
 // Harpy Circle.
 static const animframe_t harpy_frames_circle[] =
@@ -386,7 +386,7 @@ static const animframe_t harpy_frames_circle[] =
 	{ FRAME_glide11,	harpy_ai_circle, 32, 0, 0, NULL, 0, NULL },
 	{ FRAME_glide12,	harpy_ai_circle, 32, 0, 0, NULL, 0, NULL },
 };
-const animmove_t harpy_move_circle = { 12, harpy_frames_circle, harpy_pause };
+const animmove_t harpy_move_circle = ANIMMOVE(harpy_frames_circle, harpy_pause);
 
 // Harpy Circle Flap.
 static const animframe_t harpy_frames_circle_flap[] =
@@ -404,4 +404,4 @@ static const animframe_t harpy_frames_circle_flap[] =
 	{ FRAME_fly11,		harpy_ai_circle, 36, 0, 0, NULL, 0, NULL },
 	{ FRAME_fly12,		harpy_ai_circle, 32, 0, 0, NULL, 0, NULL },
 };
-const animmove_t harpy_move_circle_flap = { 12, harpy_frames_circle_flap, harpy_pause };
+const animmove_t harpy_move_circle_flap = ANIMMOVE(harpy_frames_circle_flap, harpy_pause);
