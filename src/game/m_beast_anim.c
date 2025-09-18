@@ -21,7 +21,7 @@ static const animframe_t tbeast_frames_biteup2[] =
 	{ FRAME_atkc7, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_atkc8, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_biteup2 = { 8, tbeast_frames_biteup2, tbeast_pause };
+const animmove_t tbeast_move_biteup2 = ANIMMOVE(tbeast_frames_biteup2, tbeast_pause);
 
 // TB bite up.
 static const animframe_t tbeast_frames_biteup[] =
@@ -36,7 +36,7 @@ static const animframe_t tbeast_frames_biteup[] =
 	{ FRAME_atka8, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_atka9, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_biteup = { 9, tbeast_frames_biteup, tbeast_pause };
+const animmove_t tbeast_move_biteup = ANIMMOVE(tbeast_frames_biteup, tbeast_pause);
 
 // TB bite low.
 static const animframe_t tbeast_frames_bitelow[] =
@@ -53,7 +53,7 @@ static const animframe_t tbeast_frames_bitelow[] =
 	{ FRAME_atkb10,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_atkb11,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_bitelow = { 11, tbeast_frames_bitelow, tbeast_pause };
+const animmove_t tbeast_move_bitelow = ANIMMOVE(tbeast_frames_bitelow, tbeast_pause);
 
 // TB eating twitch?
 static const animframe_t tbeast_frames_eating_twitch[] =
@@ -67,7 +67,7 @@ static const animframe_t tbeast_frames_eating_twitch[] =
 	{ FRAME_eatingb7, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_eatingb8, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_eating_twitch = { 8, tbeast_frames_eating_twitch, tbeast_eat_order };
+const animmove_t tbeast_move_eating_twitch = ANIMMOVE(tbeast_frames_eating_twitch, tbeast_eat_order);
 
 // TB eating.
 static const animframe_t tbeast_frames_eating[] =
@@ -79,7 +79,7 @@ static const animframe_t tbeast_frames_eating[] =
 	{ FRAME_eatingc5, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_eatingc6, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_eating = { 6, tbeast_frames_eating, tbeast_eat_order };
+const animmove_t tbeast_move_eating = ANIMMOVE(tbeast_frames_eating, tbeast_eat_order);
 
 // TB bending down, eating.
 static const animframe_t tbeast_frames_eatdown[] =
@@ -98,7 +98,7 @@ static const animframe_t tbeast_frames_eatdown[] =
 	{ FRAME_eatran12,	NULL, 0, 0, 0, NULL, 0, tbeast_gibs },
 	{ FRAME_eatran13,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_eatdown = { 13, tbeast_frames_eatdown, tbeast_eat_order };
+const animmove_t tbeast_move_eatdown = ANIMMOVE(tbeast_frames_eatdown, tbeast_eat_order);
 
 // TB walking.
 static const animframe_t tbeast_frames_walk[] =
@@ -122,7 +122,7 @@ static const animframe_t tbeast_frames_walk[] =
 	{ FRAME_walk17,	NULL, 0, 0, 0, tbeast_run, 16, NULL },
 	{ FRAME_walk18,	NULL, 0, 0, 0, tbeast_run, 24, NULL },
 };
-const animmove_t tbeast_move_walk = { 18, tbeast_frames_walk, tbeast_walk_order };
+const animmove_t tbeast_move_walk = ANIMMOVE(tbeast_frames_walk, tbeast_walk_order);
 
 // TB turning left while walking.
 static const animframe_t tbeast_frames_walkleft[] =
@@ -146,7 +146,7 @@ static const animframe_t tbeast_frames_walkleft[] =
 	{ FRAME_wlklft17,	NULL, 0, 0, 0, tbeast_run, 16, tbeast_growl },
 	{ FRAME_wlklft18,	NULL, 0, 0, 0, tbeast_run, 24, NULL },
 };
-const animmove_t tbeast_move_walkleft = { 18, tbeast_frames_walkleft, tbeast_walk_order };
+const animmove_t tbeast_move_walkleft = ANIMMOVE(tbeast_frames_walkleft, tbeast_walk_order);
 
 // TB turning right while walking.
 static const animframe_t tbeast_frames_walkrt[] =
@@ -170,14 +170,14 @@ static const animframe_t tbeast_frames_walkrt[] =
 	{ FRAME_wlkrt17,	NULL, 0, 0, 0, tbeast_run, 16, NULL },
 	{ FRAME_wlkrt18,	NULL, 0, 0, 0, tbeast_run, 24, tbeast_snort },
 };
-const animmove_t tbeast_move_walkrt = { 18, tbeast_frames_walkrt, tbeast_walk_order };
+const animmove_t tbeast_move_walkrt = ANIMMOVE(tbeast_frames_walkrt, tbeast_walk_order);
 
 // TB while jumping.
 static const animframe_t tbeast_frames_inair[] =
 {
 	{ FRAME_jumpb16,	NULL, 0, 0, 0, NULL, 0, tbeast_check_landed },
 };
-const animmove_t tbeast_move_inair = { 1, tbeast_frames_inair, NULL };
+const animmove_t tbeast_move_inair = ANIMMOVE(tbeast_frames_inair, NULL);
 
 // TB land.
 static const animframe_t tbeast_frames_land[] =
@@ -190,7 +190,7 @@ static const animframe_t tbeast_frames_land[] =
 	{ FRAME_jumpb22,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jumpb23,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_land = { 7, tbeast_frames_land, tbeast_pause };
+const animmove_t tbeast_move_land = ANIMMOVE(tbeast_frames_land, tbeast_pause);
 
 // TB jump.
 static const animframe_t tbeast_frames_jump[] =
@@ -211,7 +211,7 @@ static const animframe_t tbeast_frames_jump[] =
 	{ FRAME_jumpb14,	NULL, 0, 0, 0, NULL, 0, tbeast_check_landed },
 	{ FRAME_jumpb15, 	NULL, 0, 0, 0, NULL, 0, tbeast_check_landed },
 };
-const animmove_t tbeast_move_jump = { 15, tbeast_frames_jump, tbeast_inair };
+const animmove_t tbeast_move_jump = ANIMMOVE(tbeast_frames_jump, tbeast_inair);
 
 // TB forced jump.
 static const animframe_t tbeast_frames_forced_jump[] =
@@ -232,7 +232,7 @@ static const animframe_t tbeast_frames_forced_jump[] =
 	{ FRAME_jumpb14,	NULL, 0, 0, 0, NULL, 0, tbeast_check_landed },
 	{ FRAME_jumpb15,	NULL, 0, 0, 0, NULL, 0, tbeast_check_landed },
 };
-const animmove_t tbeast_move_forced_jump = { 15, tbeast_frames_forced_jump, tbeast_inair };
+const animmove_t tbeast_move_forced_jump = ANIMMOVE(tbeast_frames_forced_jump, tbeast_inair);
 
 // TB standing.
 static const animframe_t tbeast_frames_stand[] =
@@ -252,7 +252,7 @@ static const animframe_t tbeast_frames_stand[] =
 	{ FRAME_wait13,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_wait14,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t tbeast_move_stand = { 14, tbeast_frames_stand, tbeast_stand_order };
+const animmove_t tbeast_move_stand = ANIMMOVE(tbeast_frames_stand, tbeast_stand_order);
 
 // TB waiting.
 static const animframe_t tbeast_frames_delay[] =
@@ -272,7 +272,7 @@ static const animframe_t tbeast_frames_delay[] =
 	{ FRAME_wait13,	NULL, 0, 0, 0, NULL, 0, tbeast_check_mood },
 	{ FRAME_wait14,	NULL, 0, 0, 0, NULL, 0, tbeast_check_mood },
 };
-const animmove_t tbeast_move_delay = { 14, tbeast_frames_delay, tbeast_pause };
+const animmove_t tbeast_move_delay = ANIMMOVE(tbeast_frames_delay, tbeast_pause);
 
 // TB dying.
 static const animframe_t tbeast_frames_die[] =
@@ -298,7 +298,7 @@ static const animframe_t tbeast_frames_die[] =
 	{ FRAME_death19,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_death20,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_die = { 20, tbeast_frames_die, tbeast_dead };
+const animmove_t tbeast_move_die = ANIMMOVE(tbeast_frames_die, tbeast_dead);
 
 // TB dying (normal).
 static const animframe_t tbeast_frames_die_norm[] =
@@ -335,7 +335,7 @@ static const animframe_t tbeast_frames_die_norm[] =
 	{ FRAME_deatha30,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_deatha31,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_die_norm = { 31, tbeast_frames_die_norm, tbeast_dead };
+const animmove_t tbeast_move_die_norm = ANIMMOVE(tbeast_frames_die_norm, tbeast_dead);
 
 // TB charging.
 static const animframe_t tbeast_frames_charge[] =
@@ -416,7 +416,7 @@ static const animframe_t tbeast_frames_charge[] =
 	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 24, tbeast_walk_order },
 };
-const animmove_t tbeast_move_charge = { 75, tbeast_frames_charge, tbeast_walk_order };
+const animmove_t tbeast_move_charge = ANIMMOVE(tbeast_frames_charge, tbeast_walk_order);
 
 // TB roar.
 static const animframe_t tbeast_frames_roar[] =
@@ -472,7 +472,7 @@ static const animframe_t tbeast_frames_roar[] =
 	{ FRAME_roar49,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_roar50,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_roar = { 50, tbeast_frames_roar, tbeast_pause };
+const animmove_t tbeast_move_roar = ANIMMOVE(tbeast_frames_roar, tbeast_pause);
 
 // TB walking attack.
 static const animframe_t tbeast_frames_walkatk[] =
@@ -496,7 +496,7 @@ static const animframe_t tbeast_frames_walkatk[] =
 	{ FRAME_wlkatk17,	NULL, 0, 0, 0, tbeast_run, 36, tbeast_growl },
 	{ FRAME_wlkatk18,	NULL, 0, 0, 0, tbeast_run, 36, NULL },
 };
-const animmove_t tbeast_move_walkatk = { 18, tbeast_frames_walkatk, tbeast_pause };
+const animmove_t tbeast_move_walkatk = ANIMMOVE(tbeast_frames_walkatk, tbeast_pause);
 
 // TB stunned.
 static const animframe_t tbeast_frames_stun[] =
@@ -531,7 +531,7 @@ static const animframe_t tbeast_frames_stun[] =
 	{ FRAME_stun18,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_stun19,	NULL, 0, 0, 0, NULL, 0, tbeast_snort },
 };
-const animmove_t tbeast_move_stun = { 28, tbeast_frames_stun, tbeast_pause };
+const animmove_t tbeast_move_stun = ANIMMOVE(tbeast_frames_stun, tbeast_pause);
 
 // TB bite way up success finish
 static const animframe_t tbeast_frames_biteup2_sfin[] =
@@ -541,7 +541,7 @@ static const animframe_t tbeast_frames_biteup2_sfin[] =
 	{ FRAME_atkc6, tbeast_shake_toy, 160, -12, 80,  NULL, 0, NULL },
 	{ FRAME_atkc7, tbeast_shake_toy, 152, -4,  72,  NULL, 0, NULL },
 };
-const animmove_t tbeast_move_biteup2_sfin = { 4, tbeast_frames_biteup2_sfin, tbeast_snatch_go };
+const animmove_t tbeast_move_biteup2_sfin = ANIMMOVE(tbeast_frames_biteup2_sfin, tbeast_snatch_go);
 
 // TB bite up success finish.
 static const animframe_t tbeast_frames_biteup_sfin[] =
@@ -551,7 +551,7 @@ static const animframe_t tbeast_frames_biteup_sfin[] =
 	{ FRAME_atka6, tbeast_shake_toy, 160, -12, 80,  NULL, 0, NULL },
 	{ FRAME_atka7, tbeast_shake_toy, 152, -4,  72,  NULL, 0, NULL },
 };
-const animmove_t tbeast_move_biteup_sfin = { 4, tbeast_frames_biteup_sfin, tbeast_snatch_go };
+const animmove_t tbeast_move_biteup_sfin = ANIMMOVE(tbeast_frames_biteup_sfin, tbeast_snatch_go);
 
 // TB bite low success finish.
 static const animframe_t tbeast_frames_bitelow_sfin[] =
@@ -563,7 +563,7 @@ static const animframe_t tbeast_frames_bitelow_sfin[] =
 	{ FRAME_atkb9,	tbeast_shake_toy, 176, 2,  60, NULL, 0, tbeast_anger_sound },
 	{ FRAME_atkb10,	tbeast_shake_toy, 178, 10, 64, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_bitelow_sfin = { 6, tbeast_frames_bitelow_sfin, tbeast_snatch_go };
+const animmove_t tbeast_move_bitelow_sfin = ANIMMOVE(tbeast_frames_bitelow_sfin, tbeast_snatch_go);
 
 // TB snatch throw & catch.
 static const animframe_t tbeast_frames_snatch[] =
@@ -597,14 +597,14 @@ static const animframe_t tbeast_frames_snatch[] =
 	{ FRAME_jumpb2,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jumpb3,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_snatch = { 29, tbeast_frames_snatch, tbeast_ready_catch };
+const animmove_t tbeast_move_snatch = ANIMMOVE(tbeast_frames_snatch, tbeast_ready_catch); //mxd. numframes:29 in original logic.
 
 // TB awaiting catch.
 static const animframe_t tbeast_frames_ready_catch[] =
 {
 	{ FRAME_jumpb4, 	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_ready_catch = { 1, tbeast_frames_ready_catch, tbeast_ready_catch };
+const animmove_t tbeast_move_ready_catch = ANIMMOVE(tbeast_frames_ready_catch, tbeast_ready_catch);
 
 // TB catching.
 static const animframe_t tbeast_frames_catch[] =
@@ -621,14 +621,14 @@ static const animframe_t tbeast_frames_catch[] =
 	{ FRAME_jumpb14,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jumpb15, 	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_catch = { 10, tbeast_frames_catch, tbeast_ginair };
+const animmove_t tbeast_move_catch = ANIMMOVE(tbeast_frames_catch, tbeast_ginair); //mxd. numframes:10 in original logic.
 
 // TB while jumping.
 static const animframe_t tbeast_frames_ginair[] =
 {
 	{ FRAME_jumpb16, 	NULL, 0, 0, 0, NULL, 0, tbeast_gcheck_landed },
 };
-const animmove_t tbeast_move_ginair = { 1, tbeast_frames_ginair, NULL };
+const animmove_t tbeast_move_ginair = ANIMMOVE(tbeast_frames_ginair, NULL);
 
 // TB landing.
 static const animframe_t tbeast_frames_gland[] =
@@ -641,7 +641,7 @@ static const animframe_t tbeast_frames_gland[] =
 	{ FRAME_jumpb22,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jumpb23,	NULL, 0, 0, 0, NULL, 0, tbeast_done_gore },
 };
-const animmove_t tbeast_move_gland = { 7, tbeast_frames_gland, tbeast_done_gore };
+const animmove_t tbeast_move_gland = ANIMMOVE(tbeast_frames_gland, tbeast_done_gore);
 
 // TB quick charge.
 static const animframe_t tbeast_frames_quick_charge[] =
@@ -697,4 +697,4 @@ static const animframe_t tbeast_frames_quick_charge[] =
 	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 24, tbeast_walk_order },
 };
-const animmove_t tbeast_move_quick_charge = { 50, tbeast_frames_quick_charge, tbeast_walk_order };
+const animmove_t tbeast_move_quick_charge = ANIMMOVE(tbeast_frames_quick_charge, tbeast_walk_order);
