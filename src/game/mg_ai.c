@@ -422,8 +422,8 @@ trace_t MG_MoveStep(edict_t* self, vec3_t move, const qboolean relink)
 	assert(self->monsterinfo.scale > 0.0f); //mxd. In original version below check is 'if (ent->monsterinfo.scale)', so...
 
 	// Scale movement by monster's scale. Scale here, not before since any function can call this.
-	if (self->monsterinfo.scale > 0.0f) //TODO: add ' && self->monsterinfo.scale != 1.0f'?
-		VectorScale(move, self->monsterinfo.scale, move);
+	if (self->monsterinfo.scale != 1.0f)
+		Vec3ScaleAssign(self->monsterinfo.scale, move);
 
 	// Swim and fly monsters. Flying monsters don't step up.
 	if (self->flags & (FL_SWIM | FL_FLY))

@@ -192,17 +192,15 @@ static qboolean SV_MoveStep_Walk(edict_t* ent, const vec3_t move, const qboolean
 // Called by monster program code.
 // The move will be adjusted for slopes and stairs, but if the move isn't possible, no move is done, false is returned,
 // and pr_global_struct->trace_normal is set to the normal of the blocking wall.
-// FIXME since we need to test end position contents here, can we avoid doing it again later in catagorize position?
+// FIXME since we need to test end position contents here, can we avoid doing it again later in categorize position?
 //TODO: modifies 'move' vector. Is that intentional?
 qboolean SV_movestep(edict_t* ent, vec3_t move, const qboolean relink)
 {
-	assert(ent->monsterinfo.scale >= 0.0f); //mxd. In original version below check is 'if (ent->monsterinfo.scale)', so...
-
 	// Scale here, not before!
-	if (ent->monsterinfo.scale > 0.0f) //TODO: add ' && ent->monsterinfo.scale != 1.0f'?
-		VectorScale(move, ent->monsterinfo.scale, move);
+	if (ent->monsterinfo.scale > 0.0f && ent->monsterinfo.scale != 1.0f) //TODO: check cases when ent->monsterinfo.scale == 0.
+		Vec3ScaleAssign(ent->monsterinfo.scale, move);
 
-	// // Swim and fly monsters. Flying monsters don't step up.
+	// Swim and fly monsters. Flying monsters don't step up.
 	if (ent->flags & (FL_SWIM | FL_FLY))
 	{
 		const trace_t tr = MG_MoveStep_SwimOrFly(ent, move, relink); //mxd. Reuse MG_MoveStep_SwimOrFly() logic.
