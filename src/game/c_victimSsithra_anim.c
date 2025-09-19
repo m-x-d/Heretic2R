@@ -31,7 +31,7 @@ static const animframe_t ssithra_frames_c_action1[] =
 	{ FRAME_rackpain19, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_rackpain20, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t victimSsithra_move_c_action1 = { 20, ssithra_frames_c_action1, ai_c_cycleend };
+const animmove_t victimSsithra_move_c_action1 = ANIMMOVE(ssithra_frames_c_action1, ai_c_cycleend);
 
 // Ssithra victim action 2.
 static const animframe_t ssithra_frames_c_action2[] =
@@ -60,7 +60,7 @@ static const animframe_t ssithra_frames_c_action2[] =
 	{ FRAME_release22, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_release23, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t victimSsithra_move_c_action2 = { 23, ssithra_frames_c_action2, ai_c_cycleend };
+const animmove_t victimSsithra_move_c_action2 = ANIMMOVE(ssithra_frames_c_action2, ai_c_cycleend);
 
 // Ssithra victim action 3.
 static const animframe_t ssithra_frames_c_action3[] =
@@ -99,7 +99,7 @@ static const animframe_t ssithra_frames_c_action3[] =
 	{ FRAME_recover32, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_recover33, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t victimSsithra_move_c_action3 = { 33, ssithra_frames_c_action3, ai_c_cycleend };
+const animmove_t victimSsithra_move_c_action3 = ANIMMOVE(ssithra_frames_c_action3, ai_c_cycleend);
 
 // Ssithra victim action 4.
 static const animframe_t ssithra_frames_c_action4[] =
@@ -261,10 +261,10 @@ static const animframe_t ssithra_frames_c_action4[] =
 	{ FRAME_tv_toolate141, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_tv_toolate142, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t victimSsithra_move_c_action4 = { 142, ssithra_frames_c_action4, ai_c_cycleend };
+const animmove_t victimSsithra_move_c_action4 = ANIMMOVE(ssithra_frames_c_action4, ai_c_cycleend);
 
 // Ssithra victim action 5.
-static const animframe_t ssithra_frames_c_action5[110] =
+static const animframe_t ssithra_frames_c_action5[] =
 {
 	{ FRAME_tv_itwillA1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_tv_itwillA2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -377,10 +377,10 @@ static const animframe_t ssithra_frames_c_action5[110] =
 	{ FRAME_tv_itwillA109, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_tv_itwillA110, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t victimSsithra_move_c_action5 = { 110, ssithra_frames_c_action5, ai_c_cycleend };
+const animmove_t victimSsithra_move_c_action5 = ANIMMOVE(ssithra_frames_c_action5, ai_c_cycleend);
 
 // Ssithra victim action 6.
-static const animframe_t ssithra_frames_c_action6[129] =
+static const animframe_t ssithra_frames_c_action6[] =
 {
 	{ FRAME_tv_itwillB1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_tv_itwillB2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -512,4 +512,4 @@ static const animframe_t ssithra_frames_c_action6[129] =
 	{ FRAME_tv_itwillB128, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_tv_itwillB129, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t victimSsithra_move_c_action6 = { 129, ssithra_frames_c_action6, ai_c_cycleend };
+const animmove_t victimSsithra_move_c_action6 = ANIMMOVE(ssithra_frames_c_action6, ai_c_cycleend);
