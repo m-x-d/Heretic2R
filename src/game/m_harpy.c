@@ -341,7 +341,7 @@ static void HarpyFlyMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ha
 	if (self->spawnflags & (MSF_PERCHING | MSF_SPECIAL1))
 		return;
 
-	if (irand(1, 10) > 3)
+	if (irand(1, 10) > 1) //mxd. 70% -> 90% chance to avoid screaming.
 	{
 		SetAnim(self, ANIM_HOVER1);
 	}
