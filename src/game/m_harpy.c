@@ -347,7 +347,7 @@ static void HarpyFlyMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ha
 	}
 	else
 	{
-		gi.sound(self, CHAN_BODY, sounds[SND_SCREAM], 1.0f, ATTN_NORM, 0.0f);
+		gi.sound(self, CHAN_VOICE, sounds[SND_SCREAM], 1.0f, ATTN_NORM, 0.0f); //mxd. CHAN_BODY in original logic. Changed, so this and wing flap sounds can overlap.
 		SetAnim(self, ANIM_HOVERSCREAM);
 	}
 }
@@ -589,13 +589,13 @@ void harpy_flap_fast_noise(edict_t* self)
 
 void harpy_dive_noise(edict_t* self)
 {
-	gi.sound(self, CHAN_BODY, sounds[SND_DIVE], 1.0f, ATTN_NORM, 0.0f);
+	gi.sound(self, CHAN_VOICE, sounds[SND_DIVE], 1.0f, ATTN_NORM, 0.0f); //mxd. CHAN_BODY in original logic. Changed, so this and wing flap sounds can overlap.
 }
 
 void harpy_ai_circle(edict_t* self, float forward_offset, float right_offset, float up_offset)
 {
 #define HARPY_CIRCLE_AMOUNT	4.0f
-#define HARPY_CIRCLE_SPEED  64.0f
+#define HARPY_CIRCLE_SPEED	64.0f
 
 	self->s.angles[ROLL] += flrand(-1.25f, 1.0f);
 	self->s.angles[ROLL] = Clamp(self->s.angles[ROLL], -45.0f, 0.0f);
