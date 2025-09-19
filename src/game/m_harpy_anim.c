@@ -168,18 +168,6 @@ static const animframe_t harpy_frames_dive_end[] =
 };
 const animmove_t harpy_move_dive_end = ANIMMOVE(harpy_frames_dive_end, harpy_flyback);
 
-// Harpy attacking up close/
-static const animframe_t harpy_frames_closeattack[] =
-{
-	{ FRAME_dive17, NULL, 0, 0, 0, NULL, 6, harpy_hit },
-	{ FRAME_dive19, NULL, 0, 0, 0, NULL, 6, NULL },
-	{ FRAME_dive21, NULL, 0, 0, 0, NULL, 6, NULL },
-	{ FRAME_dive23, NULL, 0, 0, 0, NULL, 6, NULL },
-	{ FRAME_dive25, NULL, 0, 0, 0, NULL, 6, NULL },
-	{ FRAME_dive27, NULL, 0, 0, 0, NULL, 6, NULL },
-};
-const animmove_t harpy_closeattack = ANIMMOVE(harpy_frames_closeattack, harpy_pause);
-
 // Harpy pain.
 static const animframe_t harpy_frames_pain1[] =
 {
@@ -195,7 +183,7 @@ static const animframe_t harpy_frames_pain1[] =
 const animmove_t harpy_move_pain1 = ANIMMOVE(harpy_frames_pain1, harpy_pause);
 
 // Harpy glide.
-static const animframe_t harpy_frames_glide[] =
+/*static const animframe_t harpy_frames_glide[] = //mxd. Unused.
 {
 	{ FRAME_glide1,		harpy_ai_glide, 64, 0, 0, NULL, 0, NULL },
 	{ FRAME_glide2,		harpy_ai_glide, 64, 0, 0, NULL, 0, NULL },
@@ -210,7 +198,7 @@ static const animframe_t harpy_frames_glide[] =
 	{ FRAME_glide11,	harpy_ai_glide, 64, 0, 0, NULL, 0, NULL },
 	{ FRAME_glide12,	harpy_ai_glide, 64, 0, 0, NULL, 0, NULL },
 };
-const animmove_t harpy_move_glide = ANIMMOVE(harpy_frames_glide, NULL);
+const animmove_t harpy_move_glide = ANIMMOVE(harpy_frames_glide, NULL);*/
 
 // Harpy Perch 1 Idle.
 static const animframe_t harpy_frames_perch1_idle[] =

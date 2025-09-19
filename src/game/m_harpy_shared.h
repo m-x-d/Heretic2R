@@ -19,7 +19,7 @@ typedef enum AnimID_e
 	ANIM_DIVE_LOOP,
 	ANIM_DIVE_END,
 	ANIM_PAIN1,
-	ANIM_GLIDE1, //TODO: unused.
+	//ANIM_GLIDE1, //mxd. Unused.
 	ANIM_DIVE_TRANS,
 	ANIM_HIT_LOOP,
 	ANIM_TUMBLE,
@@ -65,7 +65,7 @@ extern const animmove_t harpy_move_dive_go;
 extern const animmove_t harpy_move_dive_loop;
 extern const animmove_t harpy_move_dive_end;
 extern const animmove_t harpy_move_pain1;
-extern const animmove_t harpy_move_glide;
+//extern const animmove_t harpy_move_glide;
 extern const animmove_t harpy_move_dive_trans;
 extern const animmove_t harpy_move_dive_hit_loop;
 extern const animmove_t harpy_move_tumble;

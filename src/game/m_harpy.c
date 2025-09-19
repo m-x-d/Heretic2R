@@ -51,7 +51,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 	&harpy_move_dive_loop,
 	&harpy_move_dive_end,
 	&harpy_move_pain1,
-	&harpy_move_glide,
+	//&harpy_move_glide, //mxd. Unused.
 	&harpy_move_dive_trans,
 	&harpy_move_dive_hit_loop,
 	&harpy_move_tumble,
