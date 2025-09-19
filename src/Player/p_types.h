@@ -31,21 +31,13 @@ typedef struct
 	void (*endfunc)(playerinfo_t* playerinfo);
 } panimmove_t;
 
-typedef struct 
+typedef struct // Initialized in PlayerSeqData[] and PlayerChickenData[].
 {
 	panimmove_t* move;
 	short fly;
 	short lockmove;
 	int playerflags;
 } paceldata_t;
-
-typedef struct
-{
-	vec3_t boundbox[2];
-	int altmove;
-	float viewheight;
-	float waterheight;
-} pacelsizes_t;
 
 typedef struct
 {
@@ -63,6 +55,7 @@ enum weaponready_e
 	WEAPON_READY_SWORDSTAFF,
 	WEAPON_READY_HELLSTAFF,	
 	WEAPON_READY_BOW,
+
 	WEAPON_READY_MAX
 };
 
