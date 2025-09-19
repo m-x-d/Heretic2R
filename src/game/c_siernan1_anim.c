@@ -32,7 +32,7 @@ static const animframe_t siernan1_frames_c_action1[] =
 	{ FRAME_A20, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_A21, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action1 = { 21, siernan1_frames_c_action1, ai_c_cycleend };
+const animmove_t siernan1_move_c_action1 = ANIMMOVE(siernan1_frames_c_action1, ai_c_cycleend);
 
 // Siernan action 2.
 static const animframe_t siernan1_frames_c_action2[] =
@@ -58,7 +58,7 @@ static const animframe_t siernan1_frames_c_action2[] =
 	{ FRAME_B19, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_B20, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action2 = { 20, siernan1_frames_c_action2, ai_c_cycleend };
+const animmove_t siernan1_move_c_action2 = ANIMMOVE(siernan1_frames_c_action2, ai_c_cycleend);
 
 // Siernan action 3.
 static const animframe_t siernan1_frames_c_action3[] =
@@ -80,7 +80,7 @@ static const animframe_t siernan1_frames_c_action3[] =
 	{ FRAME_C15, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_C16, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action3 = { 16, siernan1_frames_c_action3, ai_c_cycleend };
+const animmove_t siernan1_move_c_action3 = ANIMMOVE(siernan1_frames_c_action3, ai_c_cycleend);
 
 // Siernan action 4.
 static const animframe_t siernan1_frames_c_action4[] =
@@ -97,7 +97,7 @@ static const animframe_t siernan1_frames_c_action4[] =
 	{ FRAME_D10, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_D11, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action4 = { 11, siernan1_frames_c_action4, ai_c_cycleend };
+const animmove_t siernan1_move_c_action4 = ANIMMOVE(siernan1_frames_c_action4, ai_c_cycleend);
 
 // Siernan action 5.
 static const animframe_t siernan1_frames_c_action5[] =
@@ -140,7 +140,7 @@ static const animframe_t siernan1_frames_c_action5[] =
 	{ FRAME_E36, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_E37, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action5 = { 37, siernan1_frames_c_action5, ai_c_cycleend };
+const animmove_t siernan1_move_c_action5 = ANIMMOVE(siernan1_frames_c_action5, ai_c_cycleend);
 
 // Siernan action 6.
 static const animframe_t siernan1_frames_c_action6[] =
@@ -283,7 +283,7 @@ static const animframe_t siernan1_frames_c_action6[] =
 	{ FRAME_uhave135, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_uhave136, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action6 = { 136, siernan1_frames_c_action6, ai_c_cycleend };
+const animmove_t siernan1_move_c_action6 = ANIMMOVE(siernan1_frames_c_action6, ai_c_cycleend);
 
 // Siernan action 7.
 static const animframe_t siernan1_frames_c_action7[] =
@@ -357,7 +357,7 @@ static const animframe_t siernan1_frames_c_action7[] =
 	{ FRAME_rember67, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_rember68, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action7 = { 68, siernan1_frames_c_action7, ai_c_cycleend };
+const animmove_t siernan1_move_c_action7 = ANIMMOVE(siernan1_frames_c_action7, ai_c_cycleend);
 
 // Siernan action 8.
 static const animframe_t siernan1_frames_c_action8[] =
@@ -444,7 +444,7 @@ static const animframe_t siernan1_frames_c_action8[] =
 	{ FRAME_noknow80, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_noknow81, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action8 = { 81, siernan1_frames_c_action8, ai_c_cycleend };
+const animmove_t siernan1_move_c_action8 = ANIMMOVE(siernan1_frames_c_action8, ai_c_cycleend);
 
 // Siernan action 9.
 static const animframe_t siernan1_frames_c_action9[] =
@@ -568,7 +568,7 @@ static const animframe_t siernan1_frames_c_action9[] =
 	{ FRAME_ifear116, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ifear117, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action9 = { 117, siernan1_frames_c_action9, ai_c_cycleend };
+const animmove_t siernan1_move_c_action9 = ANIMMOVE(siernan1_frames_c_action9, ai_c_cycleend);
 
 // Siernan action 10.
 static const animframe_t siernan1_frames_c_action10[] =
@@ -718,7 +718,7 @@ static const animframe_t siernan1_frames_c_action10[] =
 	{ FRAME_notin142, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_notin143, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action10 = { 143, siernan1_frames_c_action10, ai_c_cycleend };
+const animmove_t siernan1_move_c_action10 = ANIMMOVE(siernan1_frames_c_action10, ai_c_cycleend);
 
 // Siernan action 11.
 static const animframe_t siernan1_frames_c_action11[] =
@@ -824,7 +824,7 @@ static const animframe_t siernan1_frames_c_action11[] =
 	{ FRAME_yes99, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_yes100, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action11 = { 100, siernan1_frames_c_action11, ai_c_cycleend };
+const animmove_t siernan1_move_c_action11 = ANIMMOVE(siernan1_frames_c_action11, ai_c_cycleend);
 
 // Siernan action 12.
 static const animframe_t siernan1_frames_c_action12[] =
@@ -852,7 +852,7 @@ static const animframe_t siernan1_frames_c_action12[] =
 	{ FRAME_siping21, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_siping22, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action12 = { 22, siernan1_frames_c_action12, ai_c_cycleend };
+const animmove_t siernan1_move_c_action12 = ANIMMOVE(siernan1_frames_c_action12, ai_c_cycleend);
 
 // Siernan action 13.
 static const animframe_t siernan1_frames_c_action13[] =
@@ -867,7 +867,7 @@ static const animframe_t siernan1_frames_c_action13[] =
 	{ FRAME_accept8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_accept9, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_action13 = { 9, siernan1_frames_c_action13, ai_c_cycleend };
+const animmove_t siernan1_move_c_action13 = ANIMMOVE(siernan1_frames_c_action13, ai_c_cycleend);
 
 // Siernan idle 1.
 static const animframe_t siernan1_frames_c_idle1[] =
@@ -897,7 +897,7 @@ static const animframe_t siernan1_frames_c_idle1[] =
 	{ FRAME_Idle23, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_Idle24, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_idle1 = { 24, siernan1_frames_c_idle1, ai_c_cycleend };
+const animmove_t siernan1_move_c_idle1 = ANIMMOVE(siernan1_frames_c_idle1, ai_c_cycleend);
 
 // Siernan idle 2.
 static const animframe_t siernan1_frames_c_idle2[] =
@@ -905,7 +905,7 @@ static const animframe_t siernan1_frames_c_idle2[] =
 	{ FRAME_Idle24, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_Idle24, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_idle2 = { 2, siernan1_frames_c_idle2, ai_c_cycleend };
+const animmove_t siernan1_move_c_idle2 = ANIMMOVE(siernan1_frames_c_idle2, ai_c_cycleend);
 
 // Siernan idle 3.
 static const animframe_t siernan1_frames_c_idle3[] =
@@ -913,7 +913,7 @@ static const animframe_t siernan1_frames_c_idle3[] =
 	{ FRAME_accept1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_accept1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_idle3 = { 2, siernan1_frames_c_idle3, ai_c_cycleend };
+const animmove_t siernan1_move_c_idle3 = ANIMMOVE(siernan1_frames_c_idle3, ai_c_cycleend);
 
 // Siernan idle 4.
 static const animframe_t siernan1_frames_c_idle4[] =
@@ -921,7 +921,7 @@ static const animframe_t siernan1_frames_c_idle4[] =
 	{ FRAME_accept9, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_accept9, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_idle4 = { 2, siernan1_frames_c_idle4, ai_c_cycleend };
+const animmove_t siernan1_move_c_idle4 = ANIMMOVE(siernan1_frames_c_idle4, ai_c_cycleend);
 
 // Siernan idle 5.
 static const animframe_t siernan1_frames_c_idle5[] =
@@ -929,7 +929,7 @@ static const animframe_t siernan1_frames_c_idle5[] =
 	{ FRAME_siping22, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_siping22, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_idle5 = { 2, siernan1_frames_c_idle5, ai_c_cycleend };
+const animmove_t siernan1_move_c_idle5 = ANIMMOVE(siernan1_frames_c_idle5, ai_c_cycleend);
 
 // Siernan walk 1.
 static const animframe_t siernan1_frames_c_walk1[] =
@@ -947,7 +947,7 @@ static const animframe_t siernan1_frames_c_walk1[] =
 	{ FRAME_walk11, ai_c_move, 2, 0, 0, NULL, 0, NULL },
 	{ FRAME_walk12, ai_c_move, 2, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_walk1 = { 12, siernan1_frames_c_walk1, ai_c_cycleend };
+const animmove_t siernan1_move_c_walk1 = ANIMMOVE(siernan1_frames_c_walk1, ai_c_cycleend);
 
 // Siernan walkstart.
 static const animframe_t siernan1_frames_c_walkstart[] =
@@ -959,7 +959,7 @@ static const animframe_t siernan1_frames_c_walkstart[] =
 	{ FRAME_strtwalk5, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_strtwalk6, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_walkstart = { 6, siernan1_frames_c_walkstart, ai_c_cycleend };
+const animmove_t siernan1_move_c_walkstart = ANIMMOVE(siernan1_frames_c_walkstart, ai_c_cycleend);
 
 // Siernan walkstop.
 static const animframe_t siernan1_frames_c_walkstop1[] =
@@ -970,4 +970,4 @@ static const animframe_t siernan1_frames_c_walkstop1[] =
 	{ FRAME_stpwalk4, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_stpwalk5, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t siernan1_move_c_walkstop1 = { 5, siernan1_frames_c_walkstop1, ai_c_cycleend };
+const animmove_t siernan1_move_c_walkstop1 = ANIMMOVE(siernan1_frames_c_walkstop1, ai_c_cycleend);
