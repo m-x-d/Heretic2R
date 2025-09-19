@@ -48,7 +48,8 @@ typedef enum SoundID_e
 	SND_DEATH,
 	SND_PAIN1,
 	SND_PAIN2,
-	SND_ATTACK, //TODO: unused.
+	SND_ATTACK1, //mxd
+	SND_ATTACK2, //mxd
 	SND_GIB,
 	SND_IDLE1,
 	SND_IDLE2,

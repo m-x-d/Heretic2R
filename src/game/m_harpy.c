@@ -417,6 +417,9 @@ static void HarpyIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'harpy_bl
 		const int damage = irand(HARPY_DMG_MIN, HARPY_DMG_MAX);
 		T_Damage(trace->ent, self, self, dir, trace->ent->s.origin, trace->plane.normal, damage, damage * 2, 0, MOD_DIED);
 
+		//mxd. Add attack sound.
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_ATTACK1, SND_ATTACK2)], 1.0f, ATTN_NORM, 0.0f);
+
 		// 16% chance to knock down player.
 		if (trace->ent->health > 0 && trace->ent->client != NULL && irand(0, 5) == 0 && trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
 			P_KnockDownPlayer(&trace->ent->client->playerinfo);
@@ -1218,6 +1221,8 @@ void HarpyStaticsInit(void)
 	sounds[SND_PAIN1] = gi.soundindex("monsters/harpy/pain1.wav");
 	sounds[SND_PAIN2] = gi.soundindex("monsters/harpy/pain2.wav");
 	//sounds[SND_ATTACK] = gi.soundindex("monsters/harpy/attack.wav");
+	sounds[SND_ATTACK1] = gi.soundindex("monsters/beetle/meleehit1.wav"); //mxd. Reuse beetle attack sounds...
+	sounds[SND_ATTACK2] = gi.soundindex("monsters/beetle/meleehit2.wav"); //mxd. Reuse beetle attack sounds...
 	sounds[SND_IDLE1] = gi.soundindex("monsters/harpy/pain1.wav");
 	sounds[SND_IDLE2] = gi.soundindex("monsters/harpy/pain2.wav");
 
