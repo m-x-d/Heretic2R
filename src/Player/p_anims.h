@@ -44,7 +44,7 @@ enum seq_cmd_e
 	ACMDL_ROTATE_R,
 	ACMDL_QUICKTURN,
 
-	// NOTE: This is assumed to be 20 by the seqcmd array in playerinfo_t in p_types.h.
+	// NOTE: This is assumed to be 20 by the playerinfo_t.seqcmd[] in p_types.h.
 	// DO NOT CHANGE THIS without mirroring this change in playerinfo_t.
 	ACMD_MAX
 };
@@ -303,6 +303,7 @@ enum seq_anim_e //TODO: rename WSWORD to WSTAFF
 	ASEQ_CROUCH_WALK_R,
 	ASEQ_SSWIM_FAST_GO,
 	ASEQ_SSWIM_FAST,
+
 	ASEQ_MAX
 };
 

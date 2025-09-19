@@ -54,7 +54,7 @@ enum trailtype_e
 	TRAIL_MAX
 };
 
-extern char* SeqName[ASEQ_MAX];
+extern char* SeqNames[ASEQ_MAX];
 extern int PlayerAnimWeaponSwitchSeq[WEAPON_READY_MAX][WEAPON_READY_MAX];
 extern seqctrl_t SeqCtrl[ASEQ_MAX];
 extern PLAYER_API paceldata_t PlayerSeqData[ASEQ_MAX];

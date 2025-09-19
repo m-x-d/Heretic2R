@@ -19,7 +19,7 @@
 
 #pragma region ========================== Animation sequence names ==========================
 
-char* SeqName[ASEQ_MAX] = //TODO: unused.
+char* SeqNames[ASEQ_MAX] = //TODO: unused.
 {
 	"NONE",
 	"WSWORD_STD1",
@@ -41,7 +41,7 @@ char* SeqName[ASEQ_MAX] = //TODO: unused.
 	"WFIREBALL",
 	"WARRAY",
 	"WSPHERE_GO",
-	"WSPHERE_LOOP",
+	"WSPHERE_HOLD",
 	"WSPHERE_FIRE1",
 	"WSPHERE_FIRE2",
 	"WSPHERE_FIRE3",
@@ -85,9 +85,7 @@ char* SeqName[ASEQ_MAX] = //TODO: unused.
 	"PUSHLEVERLEFT",
 	"PUSHLEVERRIGHT",
 
-	// LOWER FRAMES.
-	"LOWER_BASE",
-
+	"LOWER_BASE",	// LOWER FRAMES.
 	"STAND",
 	"PIVOTL_GO",
 	"PIVOTL",
@@ -99,35 +97,23 @@ char* SeqName[ASEQ_MAX] = //TODO: unused.
 	"RUNF_GO",
 	"RUNF",
 	"RUNF_END",
-
-	// Walking forward.
 	"WALKF_GO",
 	"WALKF",
 	"WALKF_END",
-
-	// Creeping forward.
 	"CREEPF",
 	"CREEPF_END",
-
-	// Walking backwards.
 	"WALKB",
-
-	// Creeping backwards.
 	"CREEPB",
 	"CREEPB_END",
-
 	"CROUCH_GO",
 	"CROUCH",
 	"CROUCH_END",
-	"CROUCH_PIVOTL", // Crouch Pivot Left
-	"CROUCH_PIVOTR", // Crouch Pivot Right
-
+	"CROUCH_PIVOTL",
+	"CROUCH_PIVOTR",
 	"STRAFEL",
 	"STRAFEL_END",
-
 	"STRAFER",
 	"STRAFER_END",
-
 	"JUMPSTD_GO",
 	"JUMPFWD_SGO",
 	"JUMPFWD_WGO",
@@ -135,14 +121,14 @@ char* SeqName[ASEQ_MAX] = //TODO: unused.
 	"JUMPFWD",
 	"JUMPUP",
 	"JUMPUP_LOOP", //BUGFIX: no comma after value in original version.
-	"JUMPFLIPL",		// Jump Flip To Left Side.
-	"JUMPFLIPR",		// Jump Flip To Right Side.
-	"JUMPSPRINGBGO",	// Back handspring.
+	"JUMPFLIPL",
+	"JUMPFLIPR",
+	"JUMPSPRINGBGO",
 	"JUMPSPRINGB",
-	"JUMPFLIPB",		// Backflip.
-	"ROLLDIVEF_W",		// Roll to crouch, walk.
-	"ROLLDIVEF_R",		// Roll to crouch, running (faster).
-	"ROLL_FROM_FFLIP",	// Rolling out of a front flip.
+	"JUMPFLIPB",
+	"ROLLDIVEF_W",
+	"ROLLDIVEF_R",
+	"ROLL_FROM_FFLIP",
 	"POLEVAULT1_W",
 	"POLEVAULT1_R",
 	"POLEVAULT2",
@@ -174,7 +160,7 @@ char* SeqName[ASEQ_MAX] = //TODO: unused.
 	"WSWORD_SPINBLOCKED2",
 	"WSWORD_LOWERDOWNSTAB",
 	"WSWORD_LOWERPULLOUT",
-	"UP_HALFWALL",
+	"PULLUP_HALFWALL",
 	"TUMBLEON1",
 	"TUMBLEON2",
 	"LSTAIR4",
@@ -194,10 +180,10 @@ char* SeqName[ASEQ_MAX] = //TODO: unused.
 	"PAIN_B",
 	"IDLE_FLY1",
 	"IDLE_FLY2",
-	"FALL_LEFT",
-	"FALL_RIGHT",
-	"FALL_LEFT_END",
-	"FALL_RIGHT_END",
+	"FALLL",
+	"FALLR",
+	"FALLL_END",
+	"FALLR_END",
 	"DEATH_A",
 	"USWIMF_GO",
 	"USWIMF",
@@ -215,10 +201,10 @@ char* SeqName[ASEQ_MAX] = //TODO: unused.
 	"SLIDE_FORWARD",
 	"SLIDE_BACKWARD",
 	"SSWIM_RESURFACE",
-	"ROLL_LEFT",
-	"ROLL_RIGHT",
+	"ROLL_L",
+	"ROLL_R",
 	"USWIM_IDLE",
-	"ROLL_BACK",
+	"ROLL_B",
 	"CLIMB_ON",
 	"CLIMB_UP_START_R",
 	"CLIMB_UP_START_L",
@@ -233,86 +219,61 @@ char* SeqName[ASEQ_MAX] = //TODO: unused.
 	"CLIMB_HOLD_L",
 	"CLIMB_SETTLE_R",
 	"CLIMB_SETTLE_L",
-	"KNOCK_DOWN",
-	"KNOCK_DOWN_GETUP",
-	"KNOCK_DOWN_EVADE",
+	"KNOCKDOWN",
+	"KNOCKDOWN_GETUP",
+	"KNOCKDOWN_EVADE",
 	"SHRINE",
 	"TAKEPUZZLEPIECE",
-	"TAKEPUZZLEPIECEUNDERWATER",
+	"TAKEPUZZLEUNDERWATER",
 	"DROWN",
-	"FORWARD_FLIP_GO",
-	"FORWARD_FLIP_GO",
+	"FORWARD_FLIP_L_GO",
+	"FORWARD_FLIP_R_GO",
 	"FORWARD_FLIP_L",
 	"FORWARD_FLIP_R",
-
-	// Forward creep strafes.
-	"WALK_STRAFE_L",
-	"WALK_STRAFE_R",
-
-	// Forward walk strafes.
-	"WALK_STRAFE_L",
-	"WALK_STRAFE_R",
-
-	// Forward run strafes.
-	"RUN_STRAFE_L",
-	"RUN_STRAFE_R",
-
-	// Double jumps.
+	"CSTRAFE_LEFT",
+	"CSTRAFE_RIGHT",
+	"WSTRAFE_LEFT",
+	"WSTRAFE_RIGHT",
+	"RSTRAFE_LEFT",
+	"RSTRAFE_RIGHT",
 	"JUMPBACK_SGO",
 	"JUMPBACK_WGO",
 	"JUMPBACK_RGO",
 	"JUMPBACK",
-	"JUMPFLIP_BACK",
-
-	// Jump left.
+	"JUMPFLIPBACK",
 	"JUMPLEFT_SGO",
 	"JUMPLEFT_WGO",
 	"JUMPLEFT_RGO",
 	"JUMPLEFT",
-	"JUMPFLIP_LEFT",
-
-	// Jump right.
+	"JUMPFLIPLEFT",
 	"JUMPRIGHT_SGO",
 	"JUMPRIGHT_WGO",
 	"JUMPRIGHT_RGO",
 	"JUMPRIGHT",
-	"JUMPFLIP_RIGHT",
-
-	// Drown Idle.
-	"DROWNIDLE",
-
-	// Side dashes.
+	"JUMPFLIPRIGHT",
+	"DROWN_IDLE",
 	"DASH_LEFT_GO",
 	"DASH_LEFT",
 	"DASH_RIGHT_GO",
 	"DASH_RIGHT",
-
-	// Backwards creep strafes.
-	"CREEP_STRAFEB_LEFT",
-	"CREEP_STRAFEB_RIGHT",
-
-	// Backwards walk strafes.
-	"WALK_STRAFEB_LEFT",
-	"WALK_STRAFEB_RIGHT",
-
+	"CSTRAFEB_LEFT",
+	"CSTRAFEB_RIGHT",
+	"WSTRAFEB_LEFT",
+	"WSTRAFEB_RIGHT",
 	"OVERHANG",
-
 	"DEATH_B",
 	"DEATH_FLYFWD",
 	"DEATH_FLYBACK",
 	"DEATH_CHOKE",
-
 	"IDLE_LOOKBACK",
 	"IDLE_SCRATCH_ASS",
 	"IDLE_WIPE_BROW",
-
 	"CROUCH_WALK_F",
 	"CROUCH_WALK_B",
 	"CROUCH_WALK_L",
 	"CROUCH_WALK_R",
-
-	"QUICK_SWIM_GO",
-	"QUICK_SWIM",
+	"SSWIM_FAST_GO",
+	"SSWIM_FAST",
 };
 
 #pragma endregion
