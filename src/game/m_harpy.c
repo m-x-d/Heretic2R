@@ -865,7 +865,7 @@ void harpy_dead(edict_t* self)
 
 void harpy_dive_move(edict_t* self) //mxd. Named 'move_harpy_dive' in original logic.
 {
-	if (self->groundentity != NULL || !HarpyCanMove(self, 64.0f))
+	if (self->groundentity != NULL || !HarpyCanMove(self, 64.0f)) //TODO: doesn't seem to be ever triggered. Will be handled by HarpyIsBlocked() anyway?
 	{
 		SetAnim(self, (self->groundentity == self->enemy ? ANIM_DIVE_END : ANIM_FLYBACK1)); //mxd. ANIM_DIVE_END case ignored in original logic.
 		return;
@@ -916,7 +916,7 @@ void harpy_dive_end_move(edict_t* self) //mxd. Named 'move_harpy_dive_end' in or
 
 	const float forward_dist = min(HARPY_MAX_SWOOP_SPEED, self->monsterinfo.jump_time);
 
-	if (self->groundentity != NULL || !HarpyCanMove(self, 128.0f))
+	if (self->groundentity != NULL || !HarpyCanMove(self, 128.0f)) //TODO: doesn't seem to be ever triggered. Will be handled by HarpyIsBlocked() anyway?
 	{
 		SetAnim(self, (self->groundentity == self->enemy ? ANIM_DIVE_END : ANIM_FLYBACK1)); //mxd. ANIM_DIVE_END case ignored in original logic.
 		return;
@@ -1105,6 +1105,7 @@ void harpy_hover_move(edict_t* self) //mxd. Named 'move_harpy_hover' in original
 				if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
 					Vec3ScaleAssign(-1.0f, right);
 
+				//TODO: should probably check if this dir is blocked as well. Could also try dodging up/down/diagonally.
 				VectorCopy(right, dodge_dir);
 
 				//TODO: we found projectile to dodge. Shouldn't we either break here, or compare distances with previous match to find the closest one?
