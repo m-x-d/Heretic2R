@@ -837,28 +837,6 @@ void harpy_fix_angles(edict_t* self)
 	}
 }
 
-void harpy_hit(edict_t* self)
-{
-	trace_t trace;
-	edict_t* victim = M_CheckMeleeHit(self, VectorLength(self->velocity), &trace);
-
-	if (victim == NULL)
-		return;
-
-	if (victim == self)
-	{
-		SetAnim(self, ANIM_FLYBACK1);
-	}
-	else
-	{
-		vec3_t forward;
-		AngleVectors(self->s.angles, forward, NULL, NULL);
-
-		const int damage = irand(HARPY_DMG_MIN, HARPY_DMG_MAX);
-		T_Damage(victim, self, self, forward, self->enemy->s.origin, trace.plane.normal, damage, damage * 2, 0, MOD_DIED);
-	}
-}
-
 void harpy_pause(edict_t* self)
 {
 	if (M_ValidTarget(self, self->enemy))

@@ -156,7 +156,7 @@ static const animframe_t harpy_frames_dive_end[] =
 	{ FRAME_dive19, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive20, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive21, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_dive22, NULL, 0, 0, 0, NULL, 0, harpy_hit },
+	{ FRAME_dive22, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive23, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive24, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive25, NULL, 0, 0, 0, NULL, 0, NULL },

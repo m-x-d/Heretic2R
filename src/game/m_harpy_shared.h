@@ -99,7 +99,6 @@ extern void harpy_dive_loop(edict_t* self);
 extern void harpy_hit_loop(edict_t* self);
 extern void harpy_check_dodge(edict_t* self);
 extern void harpy_dead(edict_t* self);
-extern void harpy_hit(edict_t* self);
 extern void harpy_pause(edict_t* self);
 extern void harpy_flyback(edict_t* self);
 extern void harpy_fix_angles(edict_t* self);
