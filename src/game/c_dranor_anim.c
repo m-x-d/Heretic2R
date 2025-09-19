@@ -21,7 +21,7 @@ static const animframe_t dranor_frames_c_idle1[] =
 	{ FRAME_1idle9,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_1idle10, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_idle1 = { 10, dranor_frames_c_idle1, ai_c_cycleend };
+const animmove_t dranor_move_c_idle1 = ANIMMOVE(dranor_frames_c_idle1, ai_c_cycleend);
 
 // Dranor idle 2.
 static const animframe_t dranor_frames_c_idle2[] =
@@ -38,7 +38,7 @@ static const animframe_t dranor_frames_c_idle2[] =
 	{ FRAME_relax10, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_relax11, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_idle2 = { 11, dranor_frames_c_idle2, ai_c_cycleend };
+const animmove_t dranor_move_c_idle2 = ANIMMOVE(dranor_frames_c_idle2, ai_c_cycleend);
 
 // Dranor idle 3.
 static const animframe_t dranor_frames_c_idle3[] =
@@ -64,7 +64,7 @@ static const animframe_t dranor_frames_c_idle3[] =
 	{ FRAME_2idle19, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_2idle20, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_idle3 = { 20, dranor_frames_c_idle3, ai_c_cycleend };
+const animmove_t dranor_move_c_idle3 = ANIMMOVE(dranor_frames_c_idle3, ai_c_cycleend);
 
 // Dranor action 1.
 static const animframe_t dranor_frames_c_action1[] =
@@ -74,7 +74,7 @@ static const animframe_t dranor_frames_c_action1[] =
 	{ FRAME_go3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_go4, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_action1 = { 4, dranor_frames_c_action1, ai_c_cycleend };
+const animmove_t dranor_move_c_action1 = ANIMMOVE(dranor_frames_c_action1, ai_c_cycleend);
 
 // Dranor action 2.
 static const animframe_t dranor_frames_c_action2[] =
@@ -201,7 +201,7 @@ static const animframe_t dranor_frames_c_action2[] =
 	{ FRAME_go113, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_go114, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_action2 = { 110, dranor_frames_c_action2, ai_c_cycleend };
+const animmove_t dranor_move_c_action2 = ANIMMOVE(dranor_frames_c_action2, ai_c_cycleend);
 
 // Dranor action 3.
 static const animframe_t dranor_frames_c_action3[] =
@@ -264,7 +264,7 @@ static const animframe_t dranor_frames_c_action3[] =
 	{ FRAME_slayer51, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_slayer52, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_action3 = { 52, dranor_frames_c_action3, ai_c_cycleend };
+const animmove_t dranor_move_c_action3 = ANIMMOVE(dranor_frames_c_action3, ai_c_cycleend);
 
 // Dranor action 4.
 static const animframe_t dranor_frames_c_action4[] =
@@ -278,7 +278,7 @@ static const animframe_t dranor_frames_c_action4[] =
 	{ FRAME_1iwas7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_1iwas8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_action4 = { 8, dranor_frames_c_action4, ai_c_cycleend };
+const animmove_t dranor_move_c_action4 = ANIMMOVE(dranor_frames_c_action4, ai_c_cycleend);
 
 // Dranor action 5.
 static const animframe_t dranor_frames_c_action5[] =
@@ -366,7 +366,7 @@ static const animframe_t dranor_frames_c_action5[] =
 	{ FRAME_2iwas74, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 
 };
-const animmove_t dranor_move_c_action5 = { 74, dranor_frames_c_action5, ai_c_cycleend };
+const animmove_t dranor_move_c_action5 = ANIMMOVE(dranor_frames_c_action5, ai_c_cycleend);
 
 // Dranor action 6.
 static const animframe_t dranor_frames_c_action6[] =
@@ -380,7 +380,7 @@ static const animframe_t dranor_frames_c_action6[] =
 	{ FRAME_1iwas2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_1iwas1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_action6 = { 8, dranor_frames_c_action6, ai_c_cycleend };
+const animmove_t dranor_move_c_action6 = ANIMMOVE(dranor_frames_c_action6, ai_c_cycleend);
 
 // Dranor action 7.
 static const animframe_t dranor_frames_c_action7[] =
@@ -476,7 +476,7 @@ static const animframe_t dranor_frames_c_action7[] =
 	{ FRAME_1iwas2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_1iwas1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_action7 = { 74, dranor_frames_c_action7, ai_c_cycleend };
+const animmove_t dranor_move_c_action7 = ANIMMOVE(dranor_frames_c_action7, ai_c_cycleend); //mxd. numframes:74 in original logic.
 
 // Dranor action 8.
 static const animframe_t dranor_frames_c_action8[] =
@@ -560,7 +560,7 @@ static const animframe_t dranor_frames_c_action8[] =
 
 	{ FRAME_1butyou71, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_action8 = { 71, dranor_frames_c_action8, ai_c_cycleend };
+const animmove_t dranor_move_c_action8 = ANIMMOVE(dranor_frames_c_action8, ai_c_cycleend);
 
 // Dranor action 9.
 static const animframe_t dranor_frames_c_action9[] =
@@ -603,7 +603,7 @@ static const animframe_t dranor_frames_c_action9[] =
 	{ FRAME_2butyou33, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 
 };
-const animmove_t dranor_move_c_action9 = { 33, dranor_frames_c_action9, ai_c_cycleend };
+const animmove_t dranor_move_c_action9 = ANIMMOVE(dranor_frames_c_action9, ai_c_cycleend);
 
 // Dranor action 10.
 static const animframe_t dranor_frames_c_action10[] =
@@ -646,7 +646,7 @@ static const animframe_t dranor_frames_c_action10[] =
 	{ FRAME_2insert33, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 
 };
-const animmove_t dranor_move_c_action10 = { 33, dranor_frames_c_action10, ai_c_cycleend };
+const animmove_t dranor_move_c_action10 = ANIMMOVE(dranor_frames_c_action10, ai_c_cycleend);
 
 // Dranor action 11.
 static const animframe_t dranor_frames_c_action11[] =
@@ -660,14 +660,14 @@ static const animframe_t dranor_frames_c_action11[] =
 	{ FRAME_1insert7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_1insert8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_action11 = { 8, dranor_frames_c_action11, ai_c_cycleend };
+const animmove_t dranor_move_c_action11 = ANIMMOVE(dranor_frames_c_action11, ai_c_cycleend);
 
 // Dranor action 12.
 static const animframe_t dranor_frames_c_action12[] =
 {
 	{ FRAME_2insert33, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_action12 = { 1, dranor_frames_c_action12, ai_c_cycleend };
+const animmove_t dranor_move_c_action12 = ANIMMOVE(dranor_frames_c_action12, ai_c_cycleend);
 
 // Dranor death 1.
 static const animframe_t dranor_frames_c_death1[] =
@@ -693,4 +693,4 @@ static const animframe_t dranor_frames_c_death1[] =
 	{ FRAME_death19, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_death20, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t dranor_move_c_death1 = { 20, dranor_frames_c_death1, ai_c_cycleend };
+const animmove_t dranor_move_c_death1 = ANIMMOVE(dranor_frames_c_death1, ai_c_cycleend);
