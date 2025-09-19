@@ -15,6 +15,25 @@
 #include "m_player.h"
 #include "Vector.h"
 
+PLAYER_API void P_Init(void) //mxd. Originally defined in main.c.
+{
+	InitItems();
+}
+
+PLAYER_API void P_Shutdown(void) { } //mxd. Originally defined in main.c.
+
+PLAYER_API player_export_t GetPlayerAPI(void) //mxd. Originally defined in main.c.
+{
+	player_export_t pe;
+
+	pe.PlayerSeqData = PlayerSeqData;
+	pe.PlayerChickenData = PlayerChickenData;
+	pe.p_num_items = p_num_items;
+	pe.p_itemlist = p_itemlist;
+
+	return pe;
+}
+
 PLAYER_API void PlayerInit(playerinfo_t* info, const int complete_reset)
 {
 	if (complete_reset)

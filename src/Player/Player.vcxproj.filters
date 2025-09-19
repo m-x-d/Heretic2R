@@ -6,9 +6,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="p_actions.c">
       <Filter>src</Filter>
     </ClCompile>
