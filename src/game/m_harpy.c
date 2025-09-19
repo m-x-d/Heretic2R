@@ -354,7 +354,7 @@ static void HarpyFlyMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ha
 
 static void HarpyEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'harpy_evade' in original logic.
 {
-	if (self->curAnimID > ANIM_PERCH1 && self->curAnimID < ANIM_PERCH9)
+	if (self->curAnimID >= ANIM_PERCH1 && self->curAnimID <= ANIM_PERCH9) //mxd. '> ANIM_PERCH1 && < ANIM_PERCH9' in original logic.
 	{
 		self->mins[2] -= 4.0f;
 		SetAnim(self, ANIM_TAKEOFF);
