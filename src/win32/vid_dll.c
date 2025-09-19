@@ -11,6 +11,8 @@
 #include "clfx_dll.h"
 #include "glimp_sdl3.h" // YQ2
 
+#define FALLBACK_REFLIB	"gl1" //mxd. //TODO: change to "soft" if we ever have a software renderer.
+
 // Structure containing functions exported from refresh DLL.
 refexport_t re;
 
@@ -341,10 +343,10 @@ void VID_CheckChanges(void) //TODO: check YQ2 logic.
 
 		if (!VID_LoadRefresh(ref_name))
 		{
-			if (strcmp(vid_ref->string, "soft") == 0) // H2_1.07: "soft" -> "gl"
-				Com_Error(ERR_FATAL, "Couldn't fall back to software refresh!");
+			if (strcmp(vid_ref->string, FALLBACK_REFLIB) == 0) // H2: "soft"; H2_1.07: "gl".
+				Com_Error(ERR_FATAL, "Couldn't fall back to default refresh!");
 
-			Cvar_Set("vid_ref", "soft"); // H2_1.07: "soft" -> "gl"
+			Cvar_Set("vid_ref", FALLBACK_REFLIB); // H2: "soft"; H2_1.07: "gl".
 
 			vid_restart_required = true; // H2
 
@@ -366,7 +368,7 @@ void VID_Init(void)
 	vid_restart_required = true; // H2
 
 	// Create the video variables so we know how to start the graphics drivers.
-	vid_ref = Cvar_Get("vid_ref", "gl1", CVAR_ARCHIVE); // H2_1.07: "soft" -> "gl"
+	vid_ref = Cvar_Get("vid_ref", "gl1", CVAR_ARCHIVE); // H2: "soft"; H2_1.07: "gl".
 	vid_gamma = Cvar_Get("vid_gamma", "0.5", CVAR_ARCHIVE);
 	vid_brightness = Cvar_Get("vid_brightness", "0.5", CVAR_ARCHIVE); // H2
 	vid_contrast = Cvar_Get("vid_contrast", "0.5", CVAR_ARCHIVE); // H2
