@@ -14,28 +14,28 @@ static const animframe_t morcalavin_frames_c_idle1[] =
 	{ FRAME_talka1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_talka1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t morcalavin_move_c_idle1 = { 3, morcalavin_frames_c_idle1, ai_c_cycleend };
+const animmove_t morcalavin_move_c_idle1 = ANIMMOVE(morcalavin_frames_c_idle1, ai_c_cycleend);
 
 // Morcalavin idle 2.
 static const animframe_t morcalavin_frames_c_idle2[] =
 {
 	{ FRAME_talkb1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t morcalavin_move_c_idle2 = { 1, morcalavin_frames_c_idle2, ai_c_cycleend };
+const animmove_t morcalavin_move_c_idle2 = ANIMMOVE(morcalavin_frames_c_idle2, ai_c_cycleend);
 
 // Morcalavin idle 3.
 static const animframe_t morcalavin_frames_c_idle3[] =
 {
 	{ FRAME_talkc66, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t morcalavin_move_c_idle3 = { 1, morcalavin_frames_c_idle3, ai_c_cycleend };
+const animmove_t morcalavin_move_c_idle3 = ANIMMOVE(morcalavin_frames_c_idle3, ai_c_cycleend);
 
 // Morcalavin idle 4.
 static const animframe_t morcalavin_frames_c_idle4[] =
 {
 	{ FRAME_talkc1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t morcalavin_move_c_idle4 = { 1, morcalavin_frames_c_idle4, ai_c_cycleend };
+const animmove_t morcalavin_move_c_idle4 = ANIMMOVE(morcalavin_frames_c_idle4, ai_c_cycleend);
 
 // Morcalavin action 1.
 static const animframe_t morcalavin_frames_c_action1[] =
@@ -341,7 +341,7 @@ static const animframe_t morcalavin_frames_c_action1[] =
 	{ FRAME_talka299, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_talka300, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t morcalavin_move_c_action1 = { 300, morcalavin_frames_c_action1, ai_c_cycleend };
+const animmove_t morcalavin_move_c_action1 = ANIMMOVE(morcalavin_frames_c_action1, ai_c_cycleend);
 
 // Morcalavin action 2.
 static const animframe_t morcalavin_frames_c_action2[] =
@@ -448,7 +448,7 @@ static const animframe_t morcalavin_frames_c_action2[] =
 	{ FRAME_talkb100, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_talkb101, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t morcalavin_move_c_action2 = { 101, morcalavin_frames_c_action2, ai_c_cycleend };
+const animmove_t morcalavin_move_c_action2 = ANIMMOVE(morcalavin_frames_c_action2, ai_c_cycleend);
 
 // Morcalavin action 3.
 static const animframe_t morcalavin_frames_c_action3[] =
@@ -536,4 +536,4 @@ static const animframe_t morcalavin_frames_c_action3[] =
 	{ FRAME_talkc81, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_talkc82, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t morcalavin_move_c_action3 = { 82, morcalavin_frames_c_action3, ai_c_cycleend };
+const animmove_t morcalavin_move_c_action3 = ANIMMOVE(morcalavin_frames_c_action3, ai_c_cycleend);
