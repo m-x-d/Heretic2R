@@ -572,7 +572,7 @@ static qboolean PlayerIsCreeping(const playerinfo_t* info) //mxd. Named 'PlayerC
 		ASEQ_CROUCH_WALK_L, ASEQ_CROUCH_WALK_R
 	};
 
-	for (uint i = 0; i < ARRAYSIZE(creep_seq); i++)
+	for (uint i = 0; i < ARRAY_SIZE(creep_seq); i++)
 		if (info->upperseq == creep_seq[i] || info->lowerseq == creep_seq[i])
 			return true;
 

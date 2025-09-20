@@ -150,7 +150,7 @@ static void SpawnDrippers(edict_t* self) //mxd. Added to reduce code duplication
 	if (self->count == 0)
 		self->count = 20;
 
-	for (uint i = 0; i < ARRAYSIZE(offsets); i++)
+	for (uint i = 0; i < ARRAY_SIZE(offsets); i++)
 	{
 		vec3_t origin;
 		VectorAdd(self->s.origin, offsets[i], origin);

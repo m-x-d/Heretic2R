@@ -2507,7 +2507,7 @@ void SP_monster_plague_ssithra(edict_t* self)
 
 	if (!(self->spawnflags & MSF_SSITHRA_ALPHA))
 	{
-		for (uint i = 0; i < ARRAYSIZE(mesh_part_ids); i++)
+		for (uint i = 0; i < ARRAY_SIZE(mesh_part_ids); i++)
 		{
 			if (irand(0, 10) < 6)
 			{

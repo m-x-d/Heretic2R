@@ -38,7 +38,7 @@ static qboolean CheckFlood(const edict_t* ent)
 	int pos = ent->client->flood_whenhead - FLOOD_MSGS + 1;
 
 	if (pos < 0)
-		pos += ARRAYSIZE(ent->client->flood_when);
+		pos += ARRAY_SIZE(ent->client->flood_when);
 
 	if (ent->client->flood_when[pos] > 0.0f && (level.time - ent->client->flood_when[pos] < flood_persecond->value))
 	{
@@ -49,7 +49,7 @@ static qboolean CheckFlood(const edict_t* ent)
 	}
 
 	ent->client->flood_whenhead++;
-	ent->client->flood_whenhead %= ARRAYSIZE(ent->client->flood_when);
+	ent->client->flood_whenhead %= ARRAY_SIZE(ent->client->flood_when);
 	ent->client->flood_when[ent->client->flood_whenhead] = level.time;
 
 	return false;

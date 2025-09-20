@@ -22,6 +22,8 @@
 
 #define H2R_NORETURN	__declspec(noreturn) //mxd
 
+#define ARRAY_SIZE(a)	(sizeof((a))/sizeof((a)[0])) //mxd. Because it's strange to depend on windows header for this.
+
 //mxd. Player/monster step size. Used by pmove.c, m_move.c and mg_ai.c...
 #define STEP_SIZE			18.0f
 

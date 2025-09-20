@@ -478,7 +478,7 @@ static qboolean GkrokonThrowTorsoFront(edict_t* self, const float damage) //mxd.
 	vec3_t gore_spot = { 0 };
 	int throw_nodes = 0;
 
-	for (uint i = 0; i < ARRAYSIZE(mesh_ids); i++)
+	for (uint i = 0; i < ARRAY_SIZE(mesh_ids); i++)
 	{
 		const int mesh_id = mesh_ids[i];
 
