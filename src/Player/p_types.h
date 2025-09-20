@@ -24,11 +24,13 @@ typedef struct
 	void (*thinkfunc)(playerinfo_t* playerinfo);
 } panimframe_t;
 
+#define PANIMMOVE(arr, endfunc)	{ ARRAY_SIZE(arr), arr, endfunc } //mxd. panimmove_t initializer macro. Added, so we don't have to type numframes manually.
+
 typedef struct
 {
-	int numframes;
-	panimframe_t* frame;
-	void (*endfunc)(playerinfo_t* playerinfo);
+	const int numframes;
+	const panimframe_t* frame;
+	void (*const endfunc)(playerinfo_t* playerinfo);
 } panimmove_t;
 
 typedef struct // Initialized in PlayerSeqData[] and PlayerChickenData[].
