@@ -215,7 +215,7 @@ PLAYER_API void PlayerAnimLowerIdle(playerinfo_t* info)
 	}
 
 	// Not a time to be idling, yet.
-	if (info->leveltime - info->idletime <= 15.0f)
+	if (info->leveltime - info->idletime < 3.0f) //mxd. Lowered from 15.0f.
 		return;
 
 	if (info->lowerseq >= ASEQ_IDLE_READY_GO && info->lowerseq <= ASEQ_IDLE_LOOKR && info->lowerseq != ASEQ_IDLE_READY_END)
