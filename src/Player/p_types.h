@@ -598,21 +598,21 @@ typedef struct playerinfo_s
 
 	qboolean showscores; // Set layout stat.
 	qboolean showpuzzleinventory; // Set layout stat.
-	
+
 	// Internal state info.
 	int seqcmd[20]; // == ACMD_MAX
 	panimmove_t* uppermove;
 	panimmove_t* lowermove;
-	int uppermove_index;
-	int lowermove_index;
+	int uppermove_index; // Sent across network --mxd. //TODO: no longer used for anything.
+	int lowermove_index; // Sent across network --mxd. //TODO: no longer used for anything.
 	panimframe_t* upperframeptr;
 	panimframe_t* lowerframeptr;
 	int upperframe;
 	int lowerframe;
 	qboolean upperidle;
 	qboolean loweridle;
-	int upperseq;
-	int lowerseq;
+	int upperseq; // Sent across network --mxd.
+	int lowerseq; // Sent across network --mxd.
 	float idletime;
 	vec3_t grabloc;
 	float grabangle;

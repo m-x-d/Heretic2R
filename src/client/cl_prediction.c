@@ -292,8 +292,8 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 	else
 		player_anim = playerExport.PlayerSeqData;
 
-	cl.playerinfo.uppermove = player_anim[cl.frame.playerstate.uppermove_index].move;
-	cl.playerinfo.lowermove = player_anim[cl.frame.playerstate.lowermove_index].move;
+	cl.playerinfo.uppermove = player_anim[cl.frame.playerstate.upperseq].move; //mxd. Original logic uses 'cl.frame.playerstate.uppermove_index' here (???).
+	cl.playerinfo.lowermove = player_anim[cl.frame.playerstate.lowerseq].move; //mxd. Original logic uses 'cl.frame.playerstate.lowermove_index' here (???).
 	cl.playerinfo.upperframe = cl.frame.playerstate.upperframe;
 	cl.playerinfo.lowerframe = cl.frame.playerstate.lowerframe;
 	cl.playerinfo.upperframeptr = &cl.playerinfo.uppermove->frame[cl.frame.playerstate.upperframe];
