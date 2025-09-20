@@ -72,7 +72,7 @@ PLAYER_API void PlayerAnimSetLowerSeq(playerinfo_t* info, const int seq)
 
 	info->flags = (int)(seqdata->playerflags | (info->flags & PLAYER_FLAG_PERSMASK));
 
-	// Set / reset flag that says I am flying..
+	// Set / reset flag that says I am flying...
 	if (seqdata->fly)
 		info->edictflags |= FL_FLY;
 	else
@@ -107,7 +107,7 @@ PLAYER_API void PlayerBasicAnimReset(playerinfo_t* info)
 
 	PlayerSetHandFX(info, HANDFX_NONE, -1);
 
-	if (info->pers.weaponready == WEAPON_READY_NONE) // Just in case we die with WEAPON_READY_NONE
+	if (info->pers.weaponready == WEAPON_READY_NONE) // Just in case we die with WEAPON_READY_NONE.
 		info->pers.weaponready = WEAPON_READY_HANDS;
 
 	info->switchtoweapon = info->pers.weaponready;
@@ -321,10 +321,6 @@ PLAYER_API void PlayerAnimLowerUpdate(playerinfo_t* info)
 
 	// Grab the sequence ctrl struct.
 	const seqctrl_t* seqctrl = ((info->edictflags & FL_CHICKEN) ? &ChickenCtrl[info->lowerseq] : &SeqCtrl[info->lowerseq]);
-
-	// Check for noclip, just to make things more robust.
-	if (info->movetype == PHYSICSTYPE_NOCLIP && info->lowerseq != ASEQ_STAND)
-		PlayerAnimSetLowerSeq(info, ASEQ_STAND);
 
 	// First check the branch function. This evaluates "extra" command flags for a potential modification of the "simple" procedure.
 	int newseq = (seqctrl->branchfunc != NULL ? seqctrl->branchfunc(info) : ASEQ_NONE);

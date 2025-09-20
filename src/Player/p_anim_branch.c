@@ -87,14 +87,16 @@ static qboolean CheckCreep(const playerinfo_t* info, const int dir)
 
 static int CheckSlopedStand(const playerinfo_t* info) //TODO: it would be nice to use inverse kinematics for this...
 {
-	trace_t leftfoot;
-	trace_t rightfoot;
 	vec3_t lspotmax;
 	vec3_t lspotmin;
 	vec3_t rspotmax;
 	vec3_t rspotmin;
 	vec3_t forward;
 	vec3_t right;
+
+	//mxd. Check for noclip, just to make things more robust.
+	if (info->movetype == PHYSICSTYPE_NOCLIP)
+		return ASEQ_STAND;
 
 	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f };
 	AngleVectors(player_facing, forward, right, NULL);
@@ -117,10 +119,12 @@ static int CheckSlopedStand(const playerinfo_t* info) //TODO: it would be nice t
 	lspotmin[2] += info->mins[2] * 2.0f;
 	rspotmin[2] += info->mins[2] * 2.0f;
 
+	trace_t rightfoot;
 	P_Trace(info, rspotmax, footmins, footmaxs, rspotmin, &rightfoot); //mxd
 	if (rightfoot.fraction == 1.0f && !rightfoot.startsolid && !rightfoot.allsolid)
 		return ASEQ_LSTAIR16;
 
+	trace_t leftfoot;
 	P_Trace(info, lspotmax, footmins, footmaxs, lspotmin, &leftfoot); //mxd
 	if (leftfoot.fraction == 1.0f && !leftfoot.startsolid && !leftfoot.allsolid)
 		return ASEQ_RSTAIR16;
