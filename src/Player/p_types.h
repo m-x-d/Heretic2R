@@ -607,8 +607,8 @@ typedef struct playerinfo_s
 	panimmove_t* lowermove;
 	int uppermove_index; // Sent across network --mxd. //TODO: no longer used for anything.
 	int lowermove_index; // Sent across network --mxd. //TODO: no longer used for anything.
-	panimframe_t* upperframeptr;
-	panimframe_t* lowerframeptr;
+	const panimframe_t* upperframeptr;
+	const panimframe_t* lowerframeptr;
 	int upperframe;
 	int lowerframe;
 	qboolean upperidle;
