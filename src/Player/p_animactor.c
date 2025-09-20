@@ -158,10 +158,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 		// We don't want to do this again next frame.
 		info->flags &= ~PLAYER_FLAG_KNOCKDOWN;
 		PlayerInterruptAction(info);
-
-		// Don't do it if dying.
-		if (info->deadflag == DEAD_NO) // TODO: check not needed, already checked above?
-			PlayerAnimSetLowerSeq(info, ASEQ_KNOCKDOWN);
+		PlayerAnimSetLowerSeq(info, ASEQ_KNOCKDOWN);
 
 		return;
 	}
@@ -171,7 +168,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 		return;
 
 	// Handle a dive request.
-	if (info->flags & PLAYER_FLAG_DIVE && (info->seqcmd[ACMDL_FWD] || info->seqcmd[ACMDL_CROUCH]))
+	if ((info->flags & PLAYER_FLAG_DIVE) && (info->seqcmd[ACMDL_FWD] || info->seqcmd[ACMDL_CROUCH]))
 	{
 		info->flags &= ~PLAYER_FLAG_DIVE;
 		info->pm_w_flags |= WF_DIVING;
