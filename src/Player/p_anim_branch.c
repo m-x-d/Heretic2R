@@ -324,10 +324,6 @@ int BranchLwrStanding(playerinfo_t* info)
 		return ASEQ_WSWORD_LOWERDOWNSTAB;
 	}
 
-	// Check to update the idles.
-	if (info->lowerseq != ASEQ_STAND && info->lowerseq != ASEQ_IDLE_READY)
-		info->idletime = info->leveltime;
-
 	// Check for a fall.
 	if (info->groundentity == NULL && info->waterlevel < 2 && CheckFall(info))
 		return ASEQ_FALL;
@@ -1201,8 +1197,6 @@ static int BranchUprReadyHands(playerinfo_t* info)
 
 	if (info->seqcmd[ACMDU_ATTACK])
 	{
-		info->idletime = info->leveltime;
-
 		// Check Offensive mana. Fireballs have free mana, but if powered up, use the alternate animation sequence.
 		if (info->pers.weapon->tag == ITEM_WEAPON_FLYINGFIST || Weapon_CurrentShotsLeft(info) > 0)
 			return (info->powerup_timer > info->leveltime) ? info->pers.weapon->altanimseq : info->pers.weapon->playeranimseq;
@@ -1225,8 +1219,6 @@ static int BranchUprReadySwordStaff(playerinfo_t* info)
 	{
 		if (strcmp(info->pers.weapon->classname, "Weapon_SwordStaff") == 0) //TODO: check not needed?
 		{
-			info->idletime = info->leveltime;
-
 			// Make sure we're not about to do a spinning attack.
 			if (info->seqcmd[ACMDL_RUN_F] && info->groundentity != NULL)
 				return ASEQ_NONE;
@@ -1265,8 +1257,6 @@ static int BranchUprReadyHellStaff(playerinfo_t* info)
 
 	if (info->seqcmd[ACMDU_ATTACK] && Weapon_CurrentShotsLeft(info) > 0)
 	{
-		info->idletime = info->leveltime;
-
 		// If powered up, use the alternate animation sequence.
 		if (strcmp(info->pers.weapon->classname, "item_weapon_hellstaff") == 0) //TODO: check not needed?
 			return ((info->powerup_timer > info->leveltime) ? info->pers.weapon->altanimseq : info->pers.weapon->playeranimseq);
@@ -1287,8 +1277,6 @@ static int BranchUprReadyBow(playerinfo_t* info)
 
 	if (info->seqcmd[ACMDU_ATTACK] && Weapon_CurrentShotsLeft(info) > 0)
 	{
-		info->idletime = info->leveltime;
-
 		// If powered up, use the alternate animation sequence. //TODO: BranchUprReadyHellStaff and BranchUprReadySwordStaff do weapon->classname check before doing this. Why?
 		return ((info->powerup_timer > info->leveltime) ? info->pers.weapon->altanimseq : info->pers.weapon->playeranimseq);
 	}
@@ -1336,10 +1324,7 @@ int BranchUprReady(playerinfo_t* info)
 	}
 
 	if (info->pers.newweapon != NULL || info->switchtoweapon != info->pers.weaponready)
-	{
-		info->idletime = info->leveltime;
 		return PlayerAnimWeaponSwitch(info);
-	}
 
 	switch (info->pers.weaponready)
 	{
@@ -1355,7 +1340,7 @@ int BranchUprReady(playerinfo_t* info)
 		case WEAPON_READY_HANDS:
 			return BranchUprReadyHands(info);
 
-		default: // In case of WEAPON_READY_NONE
+		default: // In case of WEAPON_READY_NONE.
 			info->pers.weaponready = WEAPON_READY_HANDS;
 			return BranchUprReadyHands(info);
 	}
