@@ -90,7 +90,7 @@ static const animmove_t* animations[NUM_ANIMS] =
 
 static int sounds[NUM_SOUNDS];
 
-static const float plague_pelf_voice_times[] = //mxd. Named 'pelf_VoiceTimes' in original logic.
+static const float plague_elf_voice_times[] = //mxd. Named 'pelf_VoiceTimes' in original logic.
 {
 	0.0f, // FIRST_SIGHT_GROUP
 	1.0f, // VOICE_SIGHT_AFTER_HIM1
@@ -767,7 +767,7 @@ static void PlagueElfVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd
 			const int event_type = (self->monsterinfo.supporters < 2 ? SE_PAIR : SE_GROUP); //mxd
 			const int sound_id = PlagueElfChooseSightSound(event_type);
 
-			self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[sound_id];
+			self->monsterinfo.sound_finished = level.time + plague_elf_voice_times[sound_id];
 			gi.sound(self, CHAN_VOICE, sounds[sound_id], 1, ATTN_NORM, 0);
 
 			PlagueElfPollResponse(self, event_type, sound_id, self->monsterinfo.sound_finished - flrand(0.5f, 0.25f));
@@ -790,7 +790,7 @@ static void PlagueElfVoicePollMsgHandler(edict_t* self, G_Message_t* msg) //mxd.
 	ParseMsgParms(msg, "bbf", &sound_event, &sound_id, &time);
 
 	self->monsterinfo.sound_start = time;
-	self->monsterinfo.sound_finished = level.time + plague_pelf_voice_times[self->monsterinfo.sound_pending];
+	self->monsterinfo.sound_finished = level.time + plague_elf_voice_times[self->monsterinfo.sound_pending];
 
 	switch (sound_event)
 	{
