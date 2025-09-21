@@ -117,7 +117,7 @@ void FXShadow(centity_t* owner, const int type, const int flags, vec3_t origin)
 	float scale;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SHADOW].formatString, &scale);
 
-	if (r_detail->value < DETAIL_UBERHIGH)
+	if (R_DETAIL < DETAIL_UBERHIGH)
 		return;
 
 	// Create shadow under the player.
@@ -125,7 +125,7 @@ void FXShadow(centity_t* owner, const int type, const int flags, vec3_t origin)
 
 	self->radius = SHADOW_CHECK_DIST;
 	self->r.model = &shadow_model;
-	self->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_ALPHA_TEXTURE;
+	self->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_ALPHA_TEXTURE);
 	self->r.scale = scale;
 	self->nextThinkTime = INT_MAX;
 	self->AddToView = ShadowUpdate;

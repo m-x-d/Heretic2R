@@ -34,7 +34,7 @@ static qboolean MeteorBarrierTrailThink(struct client_entity_s* self, centity_t*
 		return false;
 
 	// No trails in low detail mode.
-	if ((int)r_detail->value == DETAIL_LOW)
+	if (R_DETAIL == DETAIL_LOW)
 		return true;
 
 	// Length of trail.
@@ -42,7 +42,7 @@ static qboolean MeteorBarrierTrailThink(struct client_entity_s* self, centity_t*
 	VectorSubtract(self->origin, self->r.origin, delta);
 
 	// Number of trails to render.
-	const float delta_scaler = (r_detail->value >= DETAIL_HIGH ? 1.0f : 1.5f);
+	const float delta_scaler = (R_DETAIL >= DETAIL_HIGH ? 1.0f : 1.5f);
 	const float length = VectorLength(delta) / (METEOR_DELTA_FORWARD * delta_scaler);
 
 	// Set start
@@ -108,7 +108,7 @@ void FXMeteorBarrier(centity_t* owner, const int type, const int flags, vec3_t o
 	trail->AddToView = MeteorAddToView;
 	trail->Update = MeteorBarrierTrailThink;
 
-	if (r_detail->value >= DETAIL_NORMAL)
+	if (R_DETAIL >= DETAIL_NORMAL)
 		trail->dlight = CE_DLight_new(meteor_dlight_color, 150.0f, 0.0f);
 
 	AddEffect(owner, trail);
@@ -124,7 +124,7 @@ void FXMeteorBarrierTravel(centity_t* owner, const int type, const int flags, ve
 	trail->AddToView = LinkedEntityUpdatePlacement;
 	trail->Update = MeteorBarrierTrailThink;
 
-	if (r_detail->value >= DETAIL_NORMAL)
+	if (R_DETAIL >= DETAIL_NORMAL)
 		trail->dlight = CE_DLight_new(meteor_dlight_color, 150.0f, 0.0f);
 
 	AddEffect(owner, trail);
@@ -149,7 +149,7 @@ void FXMeteorBarrierExplode(centity_t* owner, const int type, const int flags, v
 	client_entity_t* smoke_puff = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 500);
 	smoke_puff->radius = 10.0f;
 
-	if (r_detail->value > DETAIL_LOW)
+	if (R_DETAIL > DETAIL_LOW)
 		smoke_puff->dlight = CE_DLight_new(meteor_dlight_color, 150.0f, 0.0f);
 
 	AddEffect(NULL, smoke_puff);

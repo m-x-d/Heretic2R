@@ -39,12 +39,12 @@ void PreCacheSphere(void)
 static qboolean SphereOfAnnihilationSphereThink(struct client_entity_s* self, centity_t* owner)
 {
 	float detail_scale;
-	if ((int)r_detail->value == DETAIL_LOW)
+	if (R_DETAIL == DETAIL_LOW)
 		detail_scale = 0.7f;
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 		detail_scale = 0.85f;
 	else
-		detail_scale = 1.0f;
+		detail_scale = 1.0f; //TODO: separate case for DETAIL_UBERHIGH. Why is sphere scaled by detail level?..
 
 	self->r.scale = owner->current.scale * detail_scale;
 
@@ -54,7 +54,7 @@ static qboolean SphereOfAnnihilationSphereThink(struct client_entity_s* self, ce
 static qboolean SphereOfAnnihilationAuraThink(struct client_entity_s* self, centity_t* owner)
 {
 	// No aura trail on low level.
-	if ((int)r_detail->value == DETAIL_LOW)
+	if (R_DETAIL == DETAIL_LOW)
 		return true;
 
 	vec3_t trail_start;
@@ -78,7 +78,7 @@ static qboolean SphereOfAnnihilationAuraThink(struct client_entity_s* self, cent
 
 	VectorScale(trail_pos, FX_SPHERE_FLY_SPEED, trail_pos);
 
-	const int duration = (((int)r_detail->value > DETAIL_NORMAL) ? 500 : 400);
+	const int duration = ((R_DETAIL > DETAIL_NORMAL) ? 500 : 400);
 	const int flags = (int)(self->flags & ~(CEF_OWNERS_ORIGIN | CEF_NO_DRAW)); //mxd
 
 	for (int i = 0; i < 40 && trail_length > 0.0f; i++)
@@ -109,11 +109,11 @@ void FXSphereOfAnnihilation(centity_t* owner, const int type, const int flags, v
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_SPHERE].formatString, &caster_entnum);
 
 	// Create a fiery blue aura around the sphere.
-	const int caster_update = (((int)r_detail->value < DETAIL_NORMAL) ? 125 : 100); //mxd
+	const int caster_update = ((R_DETAIL < DETAIL_NORMAL) ? 125 : 100); //mxd
 	client_entity_t* aura_thinker = ClientEntity_new(type, flags, origin, NULL, caster_update);
 
 	aura_thinker->flags |= CEF_NO_DRAW;
-	if (r_detail->value > DETAIL_LOW)
+	if (R_DETAIL > DETAIL_LOW)
 	{
 		const paletteRGBA_t light_color = { .r = 0, .g = 0, .b = 255, .a = 255 };
 		aura_thinker->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
@@ -145,12 +145,12 @@ static qboolean SphereOfAnnihilationGlowballThink(struct client_entity_s* self, 
 		self->color.r++;
 
 	int duration;
-	if ((int)r_detail->value == DETAIL_LOW)
+	if (R_DETAIL == DETAIL_LOW)
 		duration = 300;
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 		duration = 400;
 	else
-		duration = 500;
+		duration = 500; //TODO: separate case for DETAIL_UBERHIGH.
 
 	if (self->color.r > 3)
 	{
@@ -289,7 +289,7 @@ void FXSphereOfAnnihilationGlowballs(centity_t* owner, const int type, const int
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_SPHEREGLOWBALLS].formatString, &caster_entnum);
 
 	// Create a spawner that will create the glowballs.
-	const int caster_update = (((int)r_detail->value >= DETAIL_NORMAL) ? 100 : 250); //mxd
+	const int caster_update = ((R_DETAIL >= DETAIL_NORMAL) ? 100 : 250); //mxd
 	client_entity_t* glowball_spawner = ClientEntity_new(type, flags | CEF_VIEWSTATUSCHANGED, origin, NULL, caster_update);
 
 	glowball_spawner->flags |= CEF_NO_DRAW;

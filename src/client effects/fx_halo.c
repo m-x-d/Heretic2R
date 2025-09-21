@@ -97,7 +97,7 @@ static qboolean HaloThink(struct client_entity_s* self, centity_t* owner)
 void FXHalo(centity_t* owner, int type, int flags, vec3_t origin)
 {
 	// No halo's for normal or low details. They are really expensive in traces.
-	if (r_detail->value <= DETAIL_NORMAL) //TODO: disable on DETAIL_LOW only?
+	if (R_DETAIL <= DETAIL_NORMAL)
 		return;
 
 	flags |= CEF_NO_DRAW | CEF_VIEWSTATUSCHANGED;

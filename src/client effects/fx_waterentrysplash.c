@@ -158,7 +158,7 @@ void DoWaterEntrySplash(const int type, const int flags, vec3_t origin, const by
 
 		AddEffect(NULL, entry_ripple);
 	}
-	else if (flags & CEF_FLAG7 && r_detail->value >= DETAIL_HIGH && dir[2] >= 0.99f) // Horizontal splash.
+	else if (flags & CEF_FLAG7 && R_DETAIL >= DETAIL_HIGH && dir[2] >= 0.99f) // Horizontal splash.
 	{
 		// Create an extra, centered water entry ripple.
 		client_entity_t* splash = ClientEntity_new(FX_WATER_ENTRYSPLASH, flags & (~CEF_OWNERS_ORIGIN), origin, dir, 1200);

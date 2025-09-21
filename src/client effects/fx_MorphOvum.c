@@ -52,9 +52,9 @@ static qboolean MorphMissileThink(client_entity_t* missile, centity_t* owner)
 	VectorClear(cur_pos);
 
 	int duration;
-	if ((int)r_detail->value >= DETAIL_HIGH)
+	if (R_DETAIL >= DETAIL_HIGH) //TODO: 800 on DETAIL_UBERHIGH.
 		duration = 700;
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 		duration = 600;
 	else
 		duration = 500;
@@ -163,7 +163,7 @@ void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, ve
 			fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/OvumFire.wav"), 1.0f, ATTN_NORM, 0.0f);
 	}
 
-	if (r_detail->value >= DETAIL_HIGH)
+	if (R_DETAIL >= DETAIL_HIGH)
 	{
 		client_entity_t* glow = ClientEntity_new(type, flags, origin, NULL, 800);
 
@@ -196,12 +196,12 @@ void FXMorphExplode(centity_t* owner, int type, const int flags, vec3_t origin)
 	VectorScale(dir, SMOKE_SPEED, dir);
 	const int count = GetScaledCount(40, 0.3f);
 
-	if ((int)r_detail->value >= DETAIL_HIGH)
+	if (R_DETAIL >= DETAIL_HIGH) //TODO: separate DETAIL_UBERHIGH.
 	{
 		max_scale = 10.0f;
 		duration = 600;
 	}
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 	{
 		max_scale = 8.0f;
 		duration = 500;

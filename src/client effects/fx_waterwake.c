@@ -53,12 +53,12 @@ void FXWaterWake(centity_t* owner, int type, const int flags, vec3_t origin)
 	vel = min(320.0f, vel);
 
 	int parts;
-	if ((int)r_detail->value == DETAIL_LOW)
+	if (R_DETAIL == DETAIL_LOW)
 		parts = 0;
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 		parts = (int)(vel / 64.0f);
 	else // DETAIL_HIGH+
-		parts = (int)(vel / 32.0f);
+		parts = (int)(vel / 32.0f); //TODO: separate case for DETAIL_UBERHIGH.
 
 	if (parts < 4)
 		return;

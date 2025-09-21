@@ -189,24 +189,13 @@ static qboolean FireWaveThink(client_entity_t* wall, centity_t* owner)
 {
 	float detail_scale;
 
-	switch ((int)r_detail->value)
+	switch (R_DETAIL)
 	{
-		case DETAIL_LOW:
-			detail_scale = 0.5f;
-			break;
-
-		case DETAIL_NORMAL:
 		default:
-			detail_scale = 0.7f;
-			break;
-
-		case DETAIL_HIGH:
-			detail_scale = 0.9f;
-			break;
-
-		case DETAIL_UBERHIGH:
-			detail_scale = 1.0f;
-			break;
+		case DETAIL_LOW:		detail_scale = 0.5f; break;
+		case DETAIL_NORMAL:		detail_scale = 0.7f; break;
+		case DETAIL_HIGH:		detail_scale = 0.9f; break;
+		case DETAIL_UBERHIGH:	detail_scale = 1.0f; break;
 	}
 
 	if (owner->current.effects & EF_ALTCLIENTFX)
@@ -438,24 +427,13 @@ void FXFireWaveWorm(centity_t* owner, int type, const int flags, vec3_t origin)
 {
 	float detail_scale;
 
-	switch ((int)r_detail->value)
+	switch (R_DETAIL)
 	{
-		case DETAIL_LOW:
-			detail_scale = 0.5f;
-			break;
-
-		case DETAIL_NORMAL:
 		default:
-			detail_scale = 0.7f;
-			break;
-
-		case DETAIL_HIGH:
-			detail_scale = 0.9f;
-			break;
-
-		case DETAIL_UBERHIGH:
-			detail_scale = 1.0f;
-			break;
+		case DETAIL_LOW:		detail_scale = 0.5f; break;
+		case DETAIL_NORMAL:		detail_scale = 0.7f; break;
+		case DETAIL_HIGH:		detail_scale = 0.9f; break;
+		case DETAIL_UBERHIGH:	detail_scale = 1.0f; break;
 	}
 
 	vec3_t dir;
@@ -566,24 +544,13 @@ static qboolean FireBurstThink(client_entity_t* wall, centity_t* owner)
 
 	float detail_scale;
 
-	switch ((int)r_detail->value)
+	switch (R_DETAIL)
 	{
-		case DETAIL_LOW:
-			detail_scale = 0.6f;
-			break;
-
-		case DETAIL_NORMAL:
 		default:
-			detail_scale = 0.75f;
-			break;
-
-		case DETAIL_HIGH:
-			detail_scale = 0.9f;
-			break;
-
-		case DETAIL_UBERHIGH:
-			detail_scale = 1.0f;
-			break;
+		case DETAIL_LOW:		detail_scale = 0.6f;  break;
+		case DETAIL_NORMAL:		detail_scale = 0.75f; break;
+		case DETAIL_HIGH:		detail_scale = 0.9f;  break;
+		case DETAIL_UBERHIGH:	detail_scale = 1.0f;  break;
 	}
 
 	if (wall->dlight->intensity < 250.0f)

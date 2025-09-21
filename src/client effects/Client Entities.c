@@ -218,7 +218,7 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 			if (dist > r_farclipdist->value)
 				continue;
 
-			if ((int)r_detail->value == DETAIL_LOW && dist < r_nearclipdist->value && current->p_root == NULL && current->dlight == NULL) // Not a particle thing and not a dlight thing.
+			if (R_DETAIL == DETAIL_LOW && dist < r_nearclipdist->value && current->p_root == NULL && current->dlight == NULL) // Not a particle thing and not a dlight thing.
 				continue;
 
 			dot = DotProduct(dir, view_dir);

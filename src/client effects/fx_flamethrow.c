@@ -45,7 +45,7 @@ qboolean FXFlamethrowerTrail(client_entity_t* self, centity_t* owner)
 		AddParticleToList(self, flame);
 	}
 
-	if (r_detail->value >= DETAIL_NORMAL)
+	if (R_DETAIL >= DETAIL_NORMAL)
 	{
 		// Spawn a dynamic light.
 		client_entity_t* light = ClientEntity_new(FX_FLAMETHROWER, CEF_NO_DRAW, self->origin, 0, 500);

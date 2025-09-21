@@ -385,11 +385,10 @@ void FXBlood(centity_t* owner, int type, const int flags, vec3_t origin)
 
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_BLOOD].formatString, &velocity, &amount);
 
-	// Lets add level of detail here to the amount we pump out.
-	const int detail = (int)r_detail->value;
-	if (detail == DETAIL_LOW)
+	// Let's add level of detail here to the amount we pump out.
+	if (R_DETAIL == DETAIL_LOW)
 		amount = (byte)((float)amount * 0.5f);
-	else if (detail == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 		amount = (byte)((float)amount * 0.75f);
 
 	amount = max(1, amount);

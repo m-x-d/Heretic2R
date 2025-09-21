@@ -125,7 +125,7 @@ static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
 			trail->origin[c] += flrand(-1.0f, 1.0f); //mxd. Original logic uses irand() here.
 
 		// Attach a dynamic light to the last one.
-		if (i == num_of_intervals - 1 && r_detail->value >= DETAIL_NORMAL)
+		if (i == num_of_intervals - 1 && R_DETAIL >= DETAIL_NORMAL)
 		{
 			const byte c = (byte)irand(8, 16);
 			const paletteRGBA_t color = { .r = (byte)irand(236, 255), .g = 64 + c, .b = 16 + c, .a = (byte)irand(80, 192) };
@@ -159,7 +159,7 @@ static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
 			COLOUR_SETA(smoke->r.color, c, c, c, 128);
 
 			// Attach a dynamic light to the last one.
-			if (i == num_of_intervals - 1 && r_detail->value >= DETAIL_NORMAL)
+			if (i == num_of_intervals - 1 && R_DETAIL >= DETAIL_NORMAL)
 			{
 				const byte c2 = (byte)irand(8, 16);
 				const paletteRGBA_t color = { .r = (byte)irand(236, 255), .g = 64 + c2, .b = 16 + c2, .a = (byte)irand(80, 192) };
@@ -250,7 +250,7 @@ static qboolean StaffLevel3Think(struct client_entity_s* self, centity_t* owner)
 			COLOUR_SETA(trail->r.color, c, c, irand(236, 255), irand(80, 192)); //mxd. Use macro.
 
 		// Attach a dynamic light to the last one.
-		if (i == num_of_intervals - 1 && r_detail->value >= DETAIL_NORMAL)
+		if (i == num_of_intervals - 1 && R_DETAIL >= DETAIL_NORMAL)
 			trail->dlight = CE_DLight_new(trail->r.color, 100.0f, -100.0f);
 
 		trail->AddToView = OffsetLinkedEntityUpdatePlacement;

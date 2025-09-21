@@ -101,7 +101,7 @@ void FXSpellHands(centity_t* owner, const int type, const int flags, vec3_t orig
 		refpoints |= (1 << CORVUS_LEFTHAND);
 
 	// Add a fiery trail effect to the player's hands / feet etc.
-	const int cast_speed = ((int)r_detail->value == DETAIL_LOW ? 75 : 50);
+	const int cast_speed = (R_DETAIL == DETAIL_LOW ? 75 : 50);
 
 	for (short p = 0; p < 16; p++)
 	{

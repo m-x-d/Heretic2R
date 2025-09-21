@@ -202,7 +202,7 @@
 #define DETAIL_HIGH		2
 #define DETAIL_UBERHIGH	3
 
-#define DETAIL_DEFAULT	"4.0" //mxd. 2.0 in original logic.
+#define DETAIL_DEFAULT	"3.0" //mxd. 2.0 in original logic.
 
 #define VIOLENCE_NONE	0
 #define VIOLENCE_BLOOD	1

@@ -21,6 +21,8 @@ extern cvar_t* r_nearclipdist;
 extern cvar_t* r_detail;
 extern cvar_t* clfx_gravity;
 
+#define R_DETAIL	((int)r_detail->value) //mxd
+
 extern qboolean ref_soft;
 extern int numprocessedparticles;
 extern int numrenderedparticles;

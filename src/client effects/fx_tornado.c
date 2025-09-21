@@ -114,12 +114,12 @@ static qboolean TornadoThink(struct client_entity_s* self, centity_t* owner)
 		ce->scale = scale;
 		ce->d_scale = (r_detail->value + 1.0f) * 2.0f;
 
-		if ((int)r_detail->value == DETAIL_LOW)
+		if (R_DETAIL == DETAIL_LOW)
 			ce->d_alpha = -220.0f;
-		else if ((int)r_detail->value == DETAIL_NORMAL)
+		else if (R_DETAIL == DETAIL_NORMAL)
 			ce->d_alpha = -200.0f;
 		else
-			ce->d_alpha = -180.0f;
+			ce->d_alpha = -180.0f; //TODO: separate case for DETAIL_UBERHIGH.
 
 		if (irand(0, 1))
 		{
@@ -146,22 +146,22 @@ static qboolean TornadoThink(struct client_entity_s* self, centity_t* owner)
 
 void FXTornado(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	int dur;
-	if ((int)r_detail->value == DETAIL_LOW)
-		dur = 150;
-	else if ((int)r_detail->value == DETAIL_NORMAL)
-		dur = 100;
+	int duration;
+	if (R_DETAIL == DETAIL_LOW)
+		duration = 150;
+	else if (R_DETAIL == DETAIL_NORMAL)
+		duration = 100;
 	else
-		dur = 60;
+		duration = 60; //TODO: separate case for DETAIL_UBERHIGH.
 
 	flags &= ~CEF_OWNERS_ORIGIN;
-	flags |= CEF_ADDITIVE_PARTS | CEF_CHECK_OWNER | CEF_DONT_LINK | CEF_NO_DRAW;
-	client_entity_t* base = ClientEntity_new(type, flags, origin, NULL, dur);
+	flags |= (CEF_ADDITIVE_PARTS | CEF_CHECK_OWNER | CEF_DONT_LINK | CEF_NO_DRAW);
+	client_entity_t* base = ClientEntity_new(type, flags, origin, NULL, duration);
 
 	base->radius = 50.0f;
 	base->Update = TornadoThink;
 
-	if (r_detail->value >= DETAIL_HIGH)
+	if (R_DETAIL >= DETAIL_HIGH)
 	{
 		const paletteRGBA_t color = { .c = 0xffff4444 };
 		base->dlight = CE_DLight_new(color, 170.0f, 0.0f);

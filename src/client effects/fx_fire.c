@@ -75,7 +75,7 @@ static qboolean FireThink(client_entity_t* spawner, centity_t* owner)
 
 	for (int i = 0; i < count; i++)
 	{
-		if (irand(0, 15) == 0 && r_detail->value >= DETAIL_NORMAL) // No steam in software, its around too long and doesn't do enough for us.
+		if (irand(0, 15) == 0 && R_DETAIL >= DETAIL_NORMAL) // No steam in software, it's around too long and doesn't do enough for us.
 		{
 			const byte white = (byte)irand(50, 100);
 			const paletteRGBA_t color = { .r = white, .g = white, .b = white, .a = (byte)irand(100, 150) };
@@ -159,7 +159,7 @@ static qboolean FireOnEntityThink(client_entity_t* spawner, centity_t* owner)
 	{
 		for (int i = 0; i < count; i++)
 		{
-			if (irand(0, 15) == 0 && r_detail->value >= DETAIL_NORMAL) // No steam in software, its around too long and doesn't do enough for us.
+			if (irand(0, 15) == 0 && R_DETAIL >= DETAIL_NORMAL) // No steam in software, it's around too long and doesn't do enough for us.
 			{
 				const byte white = (byte)irand(8, 16);
 				const paletteRGBA_t color = { .r = white, .g = white, .b = white, .a = 168 };

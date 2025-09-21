@@ -121,7 +121,7 @@ static void InsectStaff(centity_t* owner, const int type, const int flags, vec3_
 
 	trail->Update = InsectStaffTrailThink;
 
-	if (r_detail->value > DETAIL_NORMAL)
+	if (R_DETAIL > DETAIL_NORMAL)
 		trail->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
 
 	AddEffect(owner, trail);
@@ -190,8 +190,8 @@ static qboolean GlobeOfOuchinessAuraThink(struct client_entity_s* self, centity_
 	VectorScale(trail_dir, FX_GLOBE_FLY_SPEED, trail_dir);
 
 	const int flags = (int)(self->flags & ~(CEF_OWNERS_ORIGIN | CEF_NO_DRAW));
-	const float base_scale = (r_detail->value < DETAIL_NORMAL) ? FX_SOFT_GLOBE_AURA_SCALE : FX_GLOBE_AURA_SCALE; //mxd
-	const float delta_scale = (r_detail->value < DETAIL_NORMAL) ? -1.0f : -0.5f; //mxd
+	const float base_scale = ((R_DETAIL < DETAIL_NORMAL) ? FX_SOFT_GLOBE_AURA_SCALE : FX_GLOBE_AURA_SCALE); //mxd
+	const float delta_scale = ((R_DETAIL < DETAIL_NORMAL) ? -1.0f : -0.5f); //mxd
 
 	for (int i = 0; i < 41; i++)
 	{
@@ -223,7 +223,7 @@ static void InsectGlobe(centity_t* owner, const int type, const int flags, vec3_
 	const paletteRGBA_t light_color = { .r = 0,.g = 0,.b = 255,.a = 255 };
 
 	// Create a fiery blue aura around the globe.
-	const int caster_update = ((r_detail->value < DETAIL_NORMAL) ? 125 : 100);
+	const int caster_update = ((R_DETAIL < DETAIL_NORMAL) ? 125 : 100);
 	client_entity_t* aura_thinker = ClientEntity_new(type, flags, origin, NULL, caster_update);
 
 	aura_thinker->flags |= CEF_NO_DRAW;
@@ -344,7 +344,7 @@ static qboolean GlobeOfOuchinessGlowballSpawnerThink(struct client_entity_s* sel
 static void InsectGlow(centity_t* owner, const int type, const int flags, vec3_t origin, const short caster_entnum)
 {
 	// Create a spawner that will create the glowballs.
-	const int caster_update = ((r_detail->value < DETAIL_NORMAL) ? 250 : 100);
+	const int caster_update = ((R_DETAIL < DETAIL_NORMAL) ? 250 : 100);
 	client_entity_t* glowball_spawner = ClientEntity_new(type, flags, origin, NULL, caster_update);
 
 	glowball_spawner->flags |= CEF_NO_DRAW;
@@ -386,7 +386,7 @@ static void InsectSpear(centity_t* owner, const int type, const int flags, const
 	VectorCopy(vel, hellbolt->velocity);
 	hellbolt->AddToView = LinkedEntityUpdatePlacement;
 
-	if (r_detail->value > DETAIL_NORMAL)
+	if (R_DETAIL > DETAIL_NORMAL)
 		hellbolt->dlight = CE_DLight_new(light_color, 150.0f, -300.0f);
 
 	AddEffect(owner, hellbolt);
@@ -443,7 +443,7 @@ static void InsectSpear2(centity_t* owner, const int type, const vec3_t origin)
 	halo->radius = 10.0f;
 	VectorCopy(owner->current.origin, halo->startpos2);
 
-	if (r_detail->value > DETAIL_NORMAL)
+	if (R_DETAIL > DETAIL_NORMAL)
 		halo->dlight = CE_DLight_new(light_color, 150.0f, -300.0f);
 
 	halo->AddToView = LinkedEntityUpdatePlacement;

@@ -168,7 +168,7 @@ void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_LENSFLARE].formatString, &tint.r, &tint.g, &tint.b, &alpha);
 
 	// No lens flares in low detail.
-	if (r_detail->value <= DETAIL_NORMAL) //TODO: skip on DETAIL_LOW only (currently also skipped when DETAIL_NORMAL)?
+	if (R_DETAIL < DETAIL_NORMAL) //mxd. '<= DETAIL_NORMAL' in original logic.
 		return;
 
 	for (int i = 0; i < NUM_LENS_MODELS; i++)

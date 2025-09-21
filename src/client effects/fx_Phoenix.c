@@ -50,9 +50,9 @@ static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 {
 	int duration;
 
-	if ((int)r_detail->value == DETAIL_LOW)
+	if (R_DETAIL == DETAIL_LOW)
 		duration = 1400;
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 		duration = 1700;
 	else
 		duration = 2000; //TODO: even longer duration for DETAIL_UBERHIGH?
@@ -184,7 +184,7 @@ void FXPhoenixMissile(centity_t* owner, const int type, const int flags, vec3_t 
 	missile->color.c = 0xff00ffff;
 	missile->LifeTime = 1000;
 
-	if ((int)r_detail->value != DETAIL_LOW)
+	if (R_DETAIL > DETAIL_LOW)
 		missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
 
 	if (flags & CEF_FLAG6)
@@ -230,9 +230,9 @@ static qboolean PhoenixExplosionBirdThink(client_entity_t* bird, centity_t* owne
 		return false;
 
 	int duration;
-	if ((int)r_detail->value == DETAIL_LOW)
+	if (R_DETAIL == DETAIL_LOW)
 		duration = 175;
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 		duration = 210;
 	else
 		duration = 250; //TODO: even longer duration for DETAIL_UBERHIGH?
@@ -295,9 +295,9 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 
 	flags |= CEF_OWNERS_ORIGIN;
 
-	if (r_detail->value > DETAIL_LOW)
+	if (R_DETAIL > DETAIL_LOW)
 	{
-		const int count = ((r_detail->value > DETAIL_NORMAL) ? EXPLODE_NUM_SMALLBALLS : EXPLODE_NUM_SMALLBALLS - 1);
+		const int count = ((R_DETAIL > DETAIL_NORMAL) ? EXPLODE_NUM_SMALLBALLS : EXPLODE_NUM_SMALLBALLS - 1);
 
 		// Create three smaller explosion spheres.
 		for (int i = 0; i < count; i++)
@@ -372,9 +372,9 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 	AddEffect(NULL, flash);
 
 	int duration;
-	if ((int)r_detail->value == DETAIL_LOW)
+	if (R_DETAIL == DETAIL_LOW)
 		duration = 150;
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 		duration = 125;
 	else
 		duration = 100; //TODO: even shorter update interval for DETAIL_UBERHIGH?
@@ -491,7 +491,7 @@ static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, 
 		}
 	}
 
-	const float detail_scale = (((int)r_detail->value == DETAIL_LOW) ? 1.5f : 2.0f);
+	const float detail_scale = ((R_DETAIL == DETAIL_LOW) ? 1.5f : 2.0f);
 
 	// ...and draw the phoenix rising from the explosion.
 	client_entity_t* phoenix_outer = ClientEntity_new(type, flags, origin, NULL, 100);
@@ -529,12 +529,12 @@ static qboolean PhoenixMissilePowerThink(client_entity_t* missile, centity_t* ow
 {
 	int duration;
 
-	if ((int)r_detail->value == DETAIL_LOW)
+	if (R_DETAIL == DETAIL_LOW)
 		duration = 1400;
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 		duration = 1700;
 	else
-		duration = 2000;
+		duration = 2000; //TODO: DETAIL_UBERHIGH.
 
 	// Here we want to shoot out flame to either side.
 	vec3_t angles;

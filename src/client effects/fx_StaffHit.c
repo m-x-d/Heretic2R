@@ -25,7 +25,7 @@ void PreCacheStaffHit(void)
 //mxd. Separated from FXStaffStrike().
 static void StaffStrikeLevel2(const int flags, const vec3_t origin, const vec3_t direction)
 {
-	if (r_detail->value >= DETAIL_NORMAL)
+	if (R_DETAIL >= DETAIL_NORMAL)
 		fxi.Activate_Screen_Flash(0x30FFFFFF);
 
 	// Spawn a bright flash at the core of the explosion.

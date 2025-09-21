@@ -45,7 +45,7 @@ static qboolean FireHandsThink(struct client_entity_s* self, centity_t* owner)
 	vec3_t origin;
 	Matrix3MultByVec3(rotation, firestart, origin);
 
-	const int flame_duration = (r_detail->value < DETAIL_NORMAL ? 1500 : 2000);
+	const int flame_duration = (R_DETAIL < DETAIL_NORMAL ? 1500 : 2000);
 	client_particle_t* flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), self->color, flame_duration);
 
 	VectorRandomSet(flame->origin, HANDFIRE_RADIUS); //mxd
@@ -74,7 +74,7 @@ void FXFireHands(centity_t* owner, const int type, const int flags, vec3_t origi
 
 	VectorClear(origin);
 
-	const int flame_duration = (r_detail->value > DETAIL_NORMAL ? 50 : 75); //TODO: shouldn't the values be inverted?..
+	const int next_think_time = (R_DETAIL > DETAIL_NORMAL ? 50 : 75);
 
 	// Add a fiery trail effect to the player's hands / feet etc.
 	for (short i = 0; i < 16; i++)
@@ -82,7 +82,7 @@ void FXFireHands(centity_t* owner, const int type, const int flags, vec3_t origi
 		if (!(refpoints & (1 << i)))
 			continue;
 
-		client_entity_t* trail = ClientEntity_new(type, flags, origin, 0, flame_duration);
+		client_entity_t* trail = ClientEntity_new(type, flags, origin, 0, next_think_time);
 
 		trail->Update = FireHandsThink;
 		trail->flags |= CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ADDITIVE_PARTS;

@@ -19,20 +19,19 @@ void FXTPortSmoke(centity_t* owner, const int type, const int flags, vec3_t orig
 
 	AddEffect(NULL, smoke);
 
-	const int detail = (int)r_detail->value; //mxd
 	int num_puffs;
 	int duration; //mxd
 	float scale_min; //mxd
 	float scale_max; //mxd
 
-	if (detail >= DETAIL_HIGH)
+	if (R_DETAIL >= DETAIL_HIGH) //TODO: separate case for DETAIL_UBERHIGH.
 	{
 		num_puffs = irand(20, 30);
 		duration = 1600;
 		scale_min = 60.0f;
 		scale_max = 70.0f;
 	}
-	else if (detail == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 	{
 		num_puffs = irand(10, 20);
 		duration = 1500;

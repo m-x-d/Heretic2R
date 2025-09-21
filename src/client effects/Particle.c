@@ -64,7 +64,7 @@ int AddParticlesToView(client_entity_t* ce)
 	assert(ce->p_root);
 
 	int numparticles = 0;
-	const qboolean cull_particles = ((int)r_detail->value == DETAIL_LOW);
+	const qboolean cull_particles = (R_DETAIL == DETAIL_LOW);
 	const float maxdepth2 = r_farclipdist->value * r_farclipdist->value;
 	const float mindepth2 = r_nearclipdist->value * r_nearclipdist->value;
 

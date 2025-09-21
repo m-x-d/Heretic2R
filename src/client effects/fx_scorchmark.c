@@ -20,7 +20,7 @@ void PreCacheScorch(void)
 static void CreateScorchmark(vec3_t origin, vec3_t dir, const int type, const int flags)
 {
 	// No scorchmarks in low detail mode.
-	if ((int)r_detail->value == DETAIL_LOW)
+	if (R_DETAIL == DETAIL_LOW)
 		return;
 
 	if (GetTruePlane(origin, dir, 64.0f, 0.5f))
@@ -29,7 +29,7 @@ static void CreateScorchmark(vec3_t origin, vec3_t dir, const int type, const in
 
 		scorchmark->radius = 10.0f;
 		scorchmark->r.model = &scorch_model;
-		scorchmark->r.flags = RF_FIXED | RF_TRANSLUCENT;
+		scorchmark->r.flags = (RF_FIXED | RF_TRANSLUCENT);
 		scorchmark->r.scale = 0.6f;
 		scorchmark->Update = KeepSelfAI;
 

@@ -407,7 +407,7 @@ static void ImpFireball(centity_t* owner, const vec3_t origin, const vec3_t vel)
 	fx->Update = ImpFireballUpdate;
 	fx->AddToView = LinkedEntityUpdatePlacement;
 
-	if (r_detail->value > DETAIL_NORMAL)
+	if (R_DETAIL > DETAIL_NORMAL)
 	{
 		const paletteRGBA_t light_color = { .c = 0xff3333ff };
 		fx->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
@@ -833,7 +833,7 @@ static qboolean UnderwaterWakeUpdate(struct client_entity_s* self, centity_t* ow
 	for (int i = 0; i < num_particles; i++)
 	{
 		int particle_type = water_particles[irand(0, 5)];
-		if ((int)r_detail->value == DETAIL_LOW)
+		if (R_DETAIL == DETAIL_LOW)
 			particle_type |= PFL_SOFT_MASK;
 
 		client_particle_t* p = ClientParticle_new(particle_type, light_color, irand(1000, 1500));
@@ -1236,7 +1236,7 @@ static qboolean MSsithraExplosionThink(client_entity_t* self, centity_t* owner)
 
 	if (irand(0, 1))
 	{
-		if (r_detail->value < DETAIL_HIGH)
+		if (R_DETAIL < DETAIL_HIGH)
 			return true;
 
 		// Spawn an explosion of stone chunks.

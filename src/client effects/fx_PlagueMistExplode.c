@@ -28,13 +28,13 @@ static qboolean PlagueMistExplodeSpawn(client_entity_t* spawner, centity_t* owne
 	float mist_scale;
 	float mist_d_scale;
 
-	if ((int)r_detail->value >= DETAIL_HIGH)
+	if (R_DETAIL >= DETAIL_HIGH) //TODO: separate case for DETAIL_UBERHIGH.
 	{
 		duration = 1500;
 		mist_scale = 10.0f;
 		mist_d_scale = 6.0f;
 	}
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 	{
 		duration = 1250;
 		mist_scale = 9.0f;
@@ -70,12 +70,12 @@ void FXPlagueMistExplode(centity_t* owner, const int type, int flags, vec3_t ori
 	int mist_life;
 	int mist_think_time;
 
-	if ((int)r_detail->value >= DETAIL_HIGH)
+	if (R_DETAIL >= DETAIL_HIGH) //TODO: separate case for DETAIL_UBERHIGH.
 	{
 		mist_life = 50;
 		mist_think_time = 50;
 	}
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 	{
 		mist_life = 38;
 		mist_think_time = 60;

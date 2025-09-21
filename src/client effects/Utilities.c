@@ -308,7 +308,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	VectorMA(r->origin, self->radius * 0.5f, dir, surface_top);
 
 	const float hit_angle = DotProduct(dir, trace->plane.normal);
-	const qboolean do_splash_effect = (irand(DETAIL_LOW, DETAIL_UBERHIGH) <= (int)r_detail->value); //mxd. 'r_detail->value < DETAIL_UBERHIGH || irand(0, 1)' in original logic.
+	const qboolean do_splash_effect = (irand(DETAIL_LOW, DETAIL_UBERHIGH) <= R_DETAIL); //mxd. 'r_detail->value < DETAIL_UBERHIGH || irand(0, 1)' in original logic.
 
 	// When in water.
 	if (trace->contents & CONTENTS_WATER && !(self->SpawnInfo & SIF_INWATER))
@@ -459,9 +459,9 @@ int GetScaledCount(const int count, float refdepend) //TODO: remove 2-nd arg?
 	else
 		work = (float)count * fxi.cls->framemodifier;
 
-	if ((int)r_detail->value == DETAIL_NORMAL)
+	if (R_DETAIL == DETAIL_NORMAL)
 		work *= 0.75f;
-	else if ((int)r_detail->value == DETAIL_LOW)
+	else if (R_DETAIL == DETAIL_LOW)
 		work *= 0.5f;
 
 	return Q_ftol(max(work, 1.0f));
@@ -531,7 +531,7 @@ void ClearCircularList(void) //mxd
 {
 	memset(&circular_list[0], 0, sizeof(circular_list));
 
-	switch ((int)r_detail->value)
+	switch (R_DETAIL)
 	{
 		case DETAIL_LOW:
 			circular_list_size = 30;

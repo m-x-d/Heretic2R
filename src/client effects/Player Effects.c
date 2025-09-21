@@ -20,10 +20,10 @@ static qboolean PlayerFirstSeenInit(struct client_entity_s* self, centity_t* own
 	self->Update = KeepSelfAI;
 
 	// Spawn the shadow.
-	if (r_detail->value >= DETAIL_NORMAL)
+	if (R_DETAIL >= DETAIL_NORMAL)
 		FXPlayerShadow(owner, FX_SHADOW, CEF_OWNERS_ORIGIN, owner->origin);
 
-	if (r_detail->value > DETAIL_NORMAL)
+	if (R_DETAIL > DETAIL_NORMAL)
 		FXWaterParticles(owner, FX_WATER_PARTICLES, 0, owner->origin);
 
 	FXCrosshair(owner, FX_CROSSHAIR, 0, owner->origin);

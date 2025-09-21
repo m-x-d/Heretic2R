@@ -25,7 +25,7 @@ static void CreateFountainSplash(client_entity_t* owner, const float xspread, co
 	Matrix3MultByVec3(mat, work, offset);
 
 	const paletteRGBA_t color = { .c = 0x40ffffff };
-	const int duration = (r_detail->value >= DETAIL_NORMAL ? 500 : 350); //mxd
+	const int duration = (R_DETAIL >= DETAIL_NORMAL ? 500 : 350); //mxd
 	client_particle_t* mist = ClientParticle_new(PART_32x32_ALPHA_GLOBE, color, duration);
 
 	VectorCopy(offset, mist->origin);
@@ -129,7 +129,7 @@ static qboolean FountainParticleSpawner(client_entity_t* spawner, centity_t* own
 // Could send the 'v' as a 'ds' but we would lose some accuracy. As it is a persistent effect, it doesn't matter too much.
 void FXFountain(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	const int next_think_time = (r_detail->value >= DETAIL_HIGH ? 50 : 90); //mxd
+	const int next_think_time = (R_DETAIL >= DETAIL_HIGH ? 50 : 90); //mxd
 	client_entity_t* fountain = ClientEntity_new(type, flags, origin, NULL, next_think_time);
 
 	short drop;

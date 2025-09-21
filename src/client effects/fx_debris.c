@@ -169,7 +169,7 @@ static void DoFireTrail(client_entity_t* spawner)
 	const int material = (spawner->SpawnInfo & SIF_FLAG_MASK);
 	const qboolean is_flesh = (material == MAT_FLESH || material == MAT_INSECT || spawner->effectID == FX_BODYPART); //mxd
 	const float master_scale = spawner->r.scale * (is_flesh ? 3.33f : 1.0f);
-	const int flame_duration = (r_detail->value < DETAIL_NORMAL ? 700 : 1000);
+	const int flame_duration = (R_DETAIL < DETAIL_NORMAL ? 700 : 1000);
 	const int count = GetScaledCount(irand(2, 5), 0.3f);
 
 	for (int i = 0; i < count; i++)
@@ -334,20 +334,18 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	gib->Update = BodyPart_Update;
 	gib->updateTime = 50;
 
-	const int detail = (int)r_detail->value; //mxd
-
-	if (detail == DETAIL_LOW)
-		gib->LifeTime = fxi.cl->time + 1000;
-	else if (detail == DETAIL_NORMAL)
-		gib->LifeTime = fxi.cl->time + 3000;
-	else if (detail == DETAIL_HIGH) //mxd. Same as DETAIL_NORMAL in original logic.
-		gib->LifeTime = fxi.cl->time + 6000;
-	else // DETAIL_UBERHIGH
-		gib->LifeTime = fxi.cl->time + 10000;
+	switch (R_DETAIL)
+	{
+		default:
+		case DETAIL_LOW:		gib->LifeTime = fxi.cl->time + 1000;  break;
+		case DETAIL_NORMAL:		gib->LifeTime = fxi.cl->time + 3000;  break;
+		case DETAIL_HIGH:		gib->LifeTime = fxi.cl->time + 6000;  break; //mxd. Same as DETAIL_NORMAL in original logic.
+		case DETAIL_UBERHIGH:	gib->LifeTime = fxi.cl->time + 10000; break;
+	}
 
 	if ((flags & CEF_FLAG6) && !IsInWater(origin)) // On fire - add dynamic light.
 	{
-		if (!ref_soft && detail > DETAIL_NORMAL) //mxd. '== DETAIL_HIGH' in original logic (ignores DETAIL_UBERHIGH).
+		if (!ref_soft && R_DETAIL > DETAIL_NORMAL) //mxd. '== DETAIL_HIGH' in original logic (ignores DETAIL_UBERHIGH).
 		{
 			const paletteRGBA_t color = { .c = 0xe5007fff }; //TODO: randomize color a bit?
 
@@ -492,7 +490,7 @@ void FXDebris_SpawnChunks(int type, int flags, const vec3_t origin, const int nu
 	{
 		if (IsInWater(origin))
 			flags &= ~CEF_FLAG6; // In water - no flames, pal!
-		else if (!ref_soft && (int)r_detail->value == DETAIL_HIGH) //TODO: and uberhigh?
+		else if (!ref_soft && R_DETAIL >= DETAIL_HIGH) //mxd. '== DETAIL_HIGH' in original logic (ignores DETAIL_UBERHIGH).
 			flags |= CEF_FLAG7; // Do dynamic light and blood trail.
 	}
 
@@ -528,7 +526,7 @@ static void Debris_SpawnFleshChunks(int type, int flags, vec3_t origin, const in
 	{
 		if (IsInWater(origin))
 			flags &= ~CEF_FLAG6; // In water - no flames, pal!
-		else if (!ref_soft && (int)r_detail->value == DETAIL_HIGH) //TODO: and uberhigh?
+		else if (!ref_soft && R_DETAIL >= DETAIL_HIGH) //mxd. '== DETAIL_HIGH' in original logic (ignores DETAIL_UBERHIGH).
 			flags |= CEF_FLAG7; // Do dynamic light and blood trail.
 	}
 
@@ -560,7 +558,7 @@ void FXDebris(centity_t* owner, const int type, const int flags, vec3_t origin)
 	scale = sqrtf(scale) * 0.08f;
 
 	int num;
-	switch ((int)r_detail->value)
+	switch (R_DETAIL)
 	{
 		default:
 		case DETAIL_LOW:		num = ClampI(size, 1, 5);  break;
@@ -610,7 +608,7 @@ void FXFleshDebris(centity_t* owner, const int type, int flags, vec3_t origin)
 	Vec3ScaleAssign(mag, mins);
 
 	int num;
-	switch ((int)r_detail->value)
+	switch (R_DETAIL)
 	{
 		default:
 		case DETAIL_LOW:		num = ClampI(size, 1, 5);  break;

@@ -75,7 +75,7 @@ static void PESpellGo(centity_t* owner, const int type, const int flags, const v
 	VectorNormalize2(vel, dir);
 	AnglesFromDir(dir, missile->r.angles);
 
-	if (r_detail->value > DETAIL_NORMAL)
+	if (R_DETAIL > DETAIL_NORMAL)
 	{
 		const paletteRGBA_t light_color = { .c = 0xff20a0ff }; // Orange light.
 		missile->dlight = CE_DLight_new(light_color, 120.0f, 0.0f);
@@ -177,7 +177,7 @@ static void PESpell2Go(centity_t* owner, const int type, const int flags, const 
 	VectorNormalize2(vel, dir);
 	AnglesFromDir(dir, missile->r.angles);
 
-	if (r_detail->value > DETAIL_NORMAL)
+	if (R_DETAIL > DETAIL_NORMAL)
 	{
 		const paletteRGBA_t light_color = { .c = 0xffff0077 }; // Purple.
 		missile->dlight = CE_DLight_new(light_color, 120.0f, 0.0f);

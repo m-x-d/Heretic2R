@@ -326,7 +326,7 @@ static void DoWake(client_entity_t* self, const centity_t* owner, const int refp
 	for (int i = 0; i < num_parts; i++)
 	{
 		int type = wake_particle[irand(0, 5)];
-		if ((int)r_detail->value == DETAIL_LOW)
+		if (R_DETAIL == DETAIL_LOW)
 			type |= PFL_SOFT_MASK;
 
 		client_particle_t* p = ClientParticle_new(type, light_color, irand(1000, 2000));
@@ -362,7 +362,7 @@ static qboolean BubbleSpawner(client_entity_t* self, centity_t* owner)
 	MakeBubble(org, self);
 
 	// Create a wake of bubbles!
-	if (r_detail->value >= DETAIL_HIGH && RefPointsValid(owner))
+	if (R_DETAIL >= DETAIL_HIGH && RefPointsValid(owner))
 	{
 		DoWake(self, owner, CORVUS_RIGHTHAND);
 		DoWake(self, owner, CORVUS_LEFTHAND);
@@ -549,15 +549,8 @@ static qboolean FXFeetTrailThink(struct client_entity_s* self, centity_t* owner)
 		VectorSubtract(self->origin, origin, diff);
 		Vec3ScaleAssign(1.0f / (float)count, diff);
 
-		vec3_t curpos;
-		VectorClear(curpos);
-
-		int hand_flame_dur;
-		if (r_detail->value < DETAIL_NORMAL)
-			hand_flame_dur = 1500;
-		else
-			hand_flame_dur = 2000;
-
+		vec3_t cur_pos = { 0 };
+		const int hand_flame_dur = (R_DETAIL < DETAIL_NORMAL ? 1500 : 2000);
 		const paletteRGBA_t color = { .c = 0xffffff40 };
 
 		for (int i = 0; i < count; i++)
@@ -566,7 +559,7 @@ static qboolean FXFeetTrailThink(struct client_entity_s* self, centity_t* owner)
 
 			VectorRandomSet(flame->origin, FOOTTRAIL_RADIUS); //mxd
 			VectorAdd(flame->origin, self->origin, flame->origin);
-			VectorAdd(flame->origin, curpos, flame->origin);
+			VectorAdd(flame->origin, cur_pos, flame->origin);
 
 			flame->scale = FOOTTRAIL_SCALE;
 			VectorSet(flame->velocity, flrand(-5.0f, 5.0f), flrand(-5.0f, 5.0f), flrand(5.0f, 15.0f));
@@ -576,7 +569,7 @@ static qboolean FXFeetTrailThink(struct client_entity_s* self, centity_t* owner)
 			flame->duration = (int)((255.0f * 1000.0f) / -flame->d_alpha); // Time needed to reach zero alpha.
 
 			AddParticleToList(self, flame);
-			Vec3SubtractAssign(diff, curpos);
+			Vec3SubtractAssign(diff, cur_pos);
 		}
 	}
 
@@ -588,7 +581,7 @@ static qboolean FXFeetTrailThink(struct client_entity_s* self, centity_t* owner)
 void FXFeetTrail(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	const short refpoints = (1 << CORVUS_LEFTFOOT) | (1 << CORVUS_RIGHTFOOT);
-	const int flame_dur = (r_detail->value > DETAIL_NORMAL ? 50 : 75); //TODO: why is it longer on lower detail settings?
+	const int flame_dur = (R_DETAIL > DETAIL_NORMAL ? 50 : 75); //TODO: why is it longer on lower detail settings?
 
 	VectorClear(origin);
 

@@ -28,13 +28,13 @@ static qboolean PlagueMistParticleSpawner(client_entity_t* spawner, centity_t* o
 	if (count < 1)
 		return true;
 
-	if ((int)r_detail->value >= DETAIL_HIGH)
+	if (R_DETAIL >= DETAIL_HIGH) //TODO: separate case for DETAIL_UBERHIGH.
 	{
 		duration = 1500;
 		mist_scale = 12.0f;
 		mist_d_scale = 6.0f;
 	}
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 	{
 		duration = 1175;
 		mist_scale = 10.0f;
@@ -71,9 +71,9 @@ void FXPlagueMist(centity_t* owner, const int type, const int flags, vec3_t orig
 {
 	int mist_think_time;
 
-	if ((int)r_detail->value >= DETAIL_HIGH)
+	if (R_DETAIL >= DETAIL_HIGH) //TODO: separate case for DETAIL_UBERHIGH.
 		mist_think_time = 100;
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 		mist_think_time = 125;
 	else
 		mist_think_time = 150;

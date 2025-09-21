@@ -139,7 +139,7 @@ static qboolean MagicPortalThink(client_entity_t* self, centity_t* owner)
 	}
 
 	// Spawn a hit explosion of lines.
-	if ((int)r_detail->value >= DETAIL_HIGH) //mxd. DETAIL_UBERHIGH only in original version.
+	if (R_DETAIL >= DETAIL_HIGH) //mxd. DETAIL_UBERHIGH only in original version.
 	{
 		const int num_lines = GetScaledCount(16, 0.85f);
 

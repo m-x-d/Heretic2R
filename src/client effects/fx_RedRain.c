@@ -240,7 +240,7 @@ static qboolean RedRainThink(client_entity_t* rain, centity_t* owner)
 
 		AddEffect(NULL, drop);
 
-		if (duration > 20 && r_detail->value > DETAIL_LOW)
+		if (duration > 20 && R_DETAIL > DETAIL_LOW)
 		{
 			origin[2] += GetDistanceOverTime(RAIN_INITIAL_VELOCITY, -PARTICLE_GRAVITY, (float)duration * 0.001f);
 
@@ -331,12 +331,12 @@ void FXRedRainMissile(centity_t* owner, const int type, const int flags, vec3_t 
 {
 	int duration;
 
-	if ((int)r_detail->value == DETAIL_LOW)
+	if (R_DETAIL == DETAIL_LOW)
 		duration = 150;
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 		duration = 125;
 	else
-		duration = 100;
+		duration = 100; //TODO: separate case for DETAIL_UBERHIGH.
 
 	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, duration);
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_REDRAINMISSILE].formatString, missile->velocity);

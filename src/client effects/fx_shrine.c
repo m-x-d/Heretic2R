@@ -313,12 +313,12 @@ void FXShrineStaffEffect(centity_t* owner, const int type, const int flags, vec3
 	int line_count;
 	int particle_life;
 
-	if ((int)r_detail->value >= DETAIL_HIGH)
+	if (R_DETAIL >= DETAIL_HIGH) //TODO: separate case for DETAIL_UBERHIGH.
 	{
 		line_count = NUM_OF_STAFF_PARTS;
 		particle_life = 2400;
 	}
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 	{
 		line_count = NUM_OF_STAFF_PARTS - 2;
 		particle_life = 1900;

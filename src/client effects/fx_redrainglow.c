@@ -32,12 +32,12 @@ static qboolean RedRainGlowThink(struct client_entity_s* self, centity_t* owner)
 		return true;
 
 	// Reset update time to regular after game has been given enough time to generate lerp info.
-	if ((int)r_detail->value == DETAIL_LOW)
+	if (R_DETAIL == DETAIL_LOW)
 		self->updateTime = 200;
-	else if ((int)r_detail->value == DETAIL_NORMAL)
+	else if (R_DETAIL == DETAIL_NORMAL)
 		self->updateTime = 150;
 	else
-		self->updateTime = 100;
+		self->updateTime = 100; //TODO: separate case for DETAIL_UBERHIGH.
 
 	VectorCopy(owner->origin, self->r.origin);
 
@@ -124,7 +124,7 @@ void FXRedRainGlow(centity_t* owner, const int type, const int flags, vec3_t ori
 		glow->color.c = 0xff0000ff;
 	}
 
-	if ((int)r_detail->value > DETAIL_LOW)
+	if (R_DETAIL > DETAIL_LOW)
 		glow->dlight = CE_DLight_new(glow->color, 150.0f, 0.0f);
 
 	glow->AddToView = LinkedEntityUpdatePlacement;
