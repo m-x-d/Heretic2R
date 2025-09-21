@@ -235,14 +235,6 @@ static void FizzleEffect(const client_entity_t* self, vec3_t surface_top, vec3_t
 
 qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, trace_t* trace)
 {
-	vec3_t end;
-	vec3_t move;
-	vec3_t attempt;
-	vec3_t mins;
-	vec3_t maxs;
-	vec3_t dir;
-	vec3_t surface_top;
-
 	entity_t* r = &self->r;
 
 	if (Vec3IsZero(self->velocity) || Vec3IsZero(self->acceleration))
@@ -267,16 +259,20 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		d_time2 *= 0.05f;
 	}
 
+	vec3_t attempt;
 	for (int i = 0; i < 3; i++)
 		attempt[i] = self->velocity[i] * d_time + self->acceleration[i] * d_time2;
 
-	// May need an individual mins and maxs, probably want to put into an optional physics_info struct.
-	VectorSet(mins, -self->radius, -self->radius, -self->radius);
-	VectorSet(maxs, self->radius, self->radius, self->radius);
+	vec3_t end;
 	VectorAdd(r->origin, attempt, end);
+
+	// May need an individual mins and maxs, probably want to put into an optional physics_info struct.
+	const vec3_t mins = { -self->radius, -self->radius, -self->radius };
+	const vec3_t maxs = {  self->radius,  self->radius,  self->radius };
 
 	fxi.Trace(r->origin, mins, maxs, end, MASK_SHOT | MASK_WATER, self->flags, trace);
 
+	// Trace hit nothing. Can move full distance.
 	if (trace->fraction == 1.0f || trace->allsolid || trace->startsolid || Vec3IsZeroEpsilon(trace->plane.normal))
 	{
 		Vec3AddAssign(attempt, r->origin);
@@ -298,15 +294,17 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 
 	d_time *= trace->fraction;
 
+	vec3_t move;
 	VectorScale(attempt, d_time, move);
 	Vec3AddAssign(move, r->origin);
 
 	for (int i = 0; i < 3; i++)
 		self->velocity[i] += self->acceleration[i] * d_time;
 
-	VectorCopy(attempt, dir);
-	VectorNormalize(dir);
+	vec3_t dir;
+	VectorNormalize2(attempt, dir);
 
+	vec3_t surface_top;
 	VectorMA(r->origin, self->radius * 0.5f, dir, surface_top);
 
 	const float hit_angle = DotProduct(dir, trace->plane.normal);
@@ -383,7 +381,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		return false; // No need to update trace counter if not sending collision.
 	}
 
-	// When in slime
+	// When in slime.
 	if (trace->contents & CONTENTS_SLIME && !(self->SpawnInfo & SIF_INMUCK))
 	{
 		if (self->flags & CEF_FLAG6)
