@@ -15,6 +15,7 @@
 #include "snd_dll.h"
 #include "Vector.h"
 #include "FlexModel.h"
+#include "g_playstats.h" //mxd
 #include "Reference.h"
 
 //TODO: used only in CL_InitLocal(). Can be removed?
@@ -1228,7 +1229,7 @@ static void CL_InitLocal(void)
 
 	// H2:
 	shownames = Cvar_Get("shownames", "0", CVAR_ARCHIVE);
-	r_detail = Cvar_Get("r_detail", "3.0", CVAR_ARCHIVE); // H2_1.07: "2.0" -> "3".
+	r_detail = Cvar_Get("r_detail", DETAIL_DEFAULT, CVAR_ARCHIVE); // H2_1.07: "2.0" -> "3".
 	cl_showcaptions = Cvar_Get("cl_showcaptions", "1", 0);
 	cl_doautoaim = Cvar_Get("cl_doautoaim", "0.0", CVAR_ARCHIVE);
 	cl_camera_combat = Cvar_Get("cl_camera_combat", "0.0", 0);
