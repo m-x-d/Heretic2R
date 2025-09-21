@@ -554,9 +554,6 @@ void FXDebris(centity_t* owner, const int type, const int flags, vec3_t origin)
 
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_DEBRIS].formatString, &size, &material, mins, &mag);
 
-	vec3_t dir;
-	VectorSet(dir, 0.0f, 0.0f, 1.0f);
-
 	Vec3ScaleAssign(mag, mins);
 
 	float scale = (float)size * 10.0f;
@@ -574,7 +571,7 @@ void FXDebris(centity_t* owner, const int type, const int flags, vec3_t origin)
 
 	const float ke = 40000.0f + ((float)size * 400.0f);
 
-	FXDebris_SpawnChunks(type, flags, origin, num, material, dir, ke, mins, scale, false);
+	FXDebris_SpawnChunks(type, flags, origin, num, material, vec3_up, ke, mins, scale, false);
 }
 
 void FXFleshDebris(centity_t* owner, const int type, int flags, vec3_t origin)
