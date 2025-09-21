@@ -20,11 +20,6 @@ extern cvar_t* r_farclipdist;
 extern cvar_t* r_nearclipdist;
 extern cvar_t* r_detail;
 extern cvar_t* clfx_gravity;
-extern cvar_t* fxTest1;
-extern cvar_t* fxTest2;
-extern cvar_t* fxTest3;
-extern cvar_t* fxTest4;
-extern cvar_t* compass;
 
 extern qboolean ref_soft;
 extern int numprocessedparticles;
