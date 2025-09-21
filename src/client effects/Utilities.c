@@ -308,7 +308,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	VectorMA(r->origin, self->radius * 0.5f, dir, surface_top);
 
 	const float hit_angle = DotProduct(dir, trace->plane.normal);
-	const qboolean do_splash_effect = (r_detail->value < DETAIL_UBERHIGH || irand(0, 1)); //TODO: 'r_detail->value < DETAIL_UBERHIGH' check seems strange. Show 50% LESS often on uberhigh?..
+	const qboolean do_splash_effect = (irand(DETAIL_LOW, DETAIL_UBERHIGH) <= (int)r_detail->value); //mxd. 'r_detail->value < DETAIL_UBERHIGH || irand(0, 1)' in original logic.
 
 	// When in water.
 	if (trace->contents & CONTENTS_WATER && !(self->SpawnInfo & SIF_INWATER))
