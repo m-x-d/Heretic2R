@@ -94,6 +94,7 @@ typedef struct client_entity_s
 	{
 		int LifeTime;
 		int nextEventTime; // For user-timed stuff.
+		int bloodsplat_max_particles; //mxd
 	};
 
 	union
@@ -102,6 +103,7 @@ typedef struct client_entity_s
 		int SpawnDelay;
 		float elasticity;
 		float xscale;
+		int bloodsplat_cur_particles; //mxd
 	};
 
 	union
@@ -110,6 +112,7 @@ typedef struct client_entity_s
 		float SpawnData;
 		int lastThinkTime; // Last time updated.
 		float yscale;
+		struct client_entity_s* floor_bloodsplat; //mxd
 	};
 
 	union

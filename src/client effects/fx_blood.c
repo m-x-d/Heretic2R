@@ -5,7 +5,6 @@
 //
 
 #include "fx_blood.h" //mxd
-#include "fx_blood_local.h" //mxd
 #include "Client Effects.h"
 #include "Particle.h"
 #include "Vector.h"
@@ -22,12 +21,10 @@ void PreCacheSplat(void)
 	splat_models[1] = fxi.RegisterModel("sprites/fx/ysplat.sp2");
 }
 
-#define NUM_INSECT_BLOOD_PARTICLES	12
-
-static int insect_blood_particles[NUM_INSECT_BLOOD_PARTICLES] =
+static int insect_blood_particles[] =
 {
-	PART_4x4_GREEN,
-	PART_4x4_YELLOW,
+	//PART_4x4_GREEN, //mxd. Way too green...
+	//PART_4x4_YELLOW, //mxd. Way too yellow...
 	PART_8x8_GLOBBIT1,
 	PART_8x8_GLOBBIT2,
 	PART_16x16_MIST,
@@ -39,6 +36,8 @@ static int insect_blood_particles[NUM_INSECT_BLOOD_PARTICLES] =
 	PART_4x4_GREENBLOOD1,
 	PART_4x4_GREENBLOOD2
 };
+
+#define NUM_INSECT_BLOOD_PARTICLES	ARRAY_SIZE(insect_blood_particles) //mxd
 
 client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blood)
 {
@@ -205,14 +204,26 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 	}
 }
 
+// Floor blood splat update: spawn blood splat particles.
 static qboolean BloodSplatSplashUpdate(client_entity_t* self, centity_t* owner)
 {
-	if (self->SpawnInfo > 500)
-		return true;
+	//mxd. Show the splash.
+	if (self->flags & CEF_NO_DRAW)
+	{
+		self->flags &= ~CEF_NO_DRAW;
+		self->alpha = 0.1f; //mxd. Add subtle fade-in effect.
+		self->d_alpha = 2.5f;
+	}
 
 	client_particle_t* p = NULL;
+	const qboolean dark_blood = (self->flags & CEF_FLAG7); //mxd
 	const qboolean yellow_blood = (self->flags & CEF_FLAG8);
-	const paletteRGBA_t color = { .r = 180, .g = 140, .b = 110, .a = 160 };
+
+	paletteRGBA_t color;
+	if (dark_blood)
+		COLOUR_SETA(color, 90, 70, 55, 160);
+	else
+		COLOUR_SETA(color, 180, 140, 110, 160);
 
 	while (self->SpawnInfo > 0)
 	{
@@ -227,13 +238,14 @@ static qboolean BloodSplatSplashUpdate(client_entity_t* self, centity_t* owner)
 			p = ClientParticle_new(bpart, color, 800);
 		}
 
-		vec3_t vel;
 		p->acceleration[2] = GetGravity() * 0.2f;
-		VectorRandomCopy(self->endpos2, vel, 10.0f);
+
+		vec3_t vel;
+		VectorRandomCopy(self->direction, vel, 10.0f);
 		VectorScale(vel, flrand(2.0f, 5.0f), p->velocity);
+
 		p->d_alpha = 0.0f;
-		p->scale = flrand(0.4f, 0.8f);
-		VectorAdd(self->startpos2, self->startpos, p->origin);
+		p->scale = flrand(0.6f, 1.0f);
 		AddParticleToList(self, p);
 
 		self->SpawnInfo--;
@@ -242,131 +254,202 @@ static qboolean BloodSplatSplashUpdate(client_entity_t* self, centity_t* owner)
 	if (p != NULL) //mxd. Added sanity check.
 		fxi.S_StartSound(p->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), flrand(0.5f, 0.8f), ATTN_STATIC, 0.0f);
 
-	if (!irand(0, 2))
-		VectorSet(self->startpos, flrand(-1, 1), flrand(-1, 1), 0);
-
-	self->Update = BloodSplatDripUpdate;
-	self->updateTime = irand(400, 1600);
+	self->r.scale += 0.01f; //mxd. Grow a bit...
+	self->Update = NULL; //mxd. Await next BloodSplatDripUpdate() call...
 
 	return true;
 }
 
+// Ceiling blood splat update: spawn blood drops particles.
 static qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner)
 {
-	client_particle_t* p;
+#define BLOODDROPS_TIME	6000.0f //mxd. How long to spawn blood-drops.
 
 	if (!AttemptRemoveSelf(self, owner))
+	{
+		if (self->floor_bloodsplat != NULL)
+			self->floor_bloodsplat->Update = RemoveSelfAI;
+
 		return false;
+	}
 
+	if (self->bloodsplat_cur_particles < 1)
+		return true;
+
+	const qboolean dark_blood = (self->flags & CEF_FLAG7); //mxd
 	const qboolean yellow_blood = (self->flags & CEF_FLAG8);
-	const paletteRGBA_t color = { .r = 150, .g = 140, .b = 110, .a = 160 };
 
-	//TODO: make p duration based on self->radius?
-	const int drip_time = (int)(self->radius * 6.0f);
-	const float scale = flrand(0.2f, 0.4f);
-	const int num_drips = irand(7, 15);
+	paletteRGBA_t color;
+	if (dark_blood)
+		COLOUR_SETA(color, 75, 70, 55, 160);
+	else
+		COLOUR_SETA(color, 150, 140, 110, 160);
 
+	const float lifetime_scaler = 0.5f + ((float)self->bloodsplat_cur_particles / (float)self->bloodsplat_max_particles) * 0.5f; //mxd. Reduce particles count over time [1.0 -> 0.5].
+	const int num_drips = (int)((float)(irand(7, 15)) * lifetime_scaler);
+	const float scale = flrand(0.2f, 0.4f) * lifetime_scaler;
+
+	//mxd. Randomize position a bit.
+	const float p_scale = self->r.scale * 6.0f;
+	const float origin_offset[2] = { flrand(-p_scale, p_scale), flrand(-p_scale, p_scale) };
+
+	//mxd. Use the same sprite for the whole shape.
+	int duration = 0;
+	int bpart;
+
+	if (ref_soft)
+		bpart = ((yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : PART_4x4_BLOOD1) | PFL_SOFT_MASK);
+	else
+		bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2));
+
+	// Create drop-like shape out of multiple particles.
 	for (int i = 0; i < num_drips; i++)
 	{
-		if (ref_soft)
-		{
-			const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : PART_4x4_BLOOD1);
-			p = ClientParticle_new(bpart | PFL_SOFT_MASK, color, 1600);
-		}
-		else
-		{
-			const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2));
-			p = ClientParticle_new(bpart, color, 3200);
-		}
+		client_particle_t* p = ClientParticle_new(bpart, color, 0);
 
 		const float grav_mod = 0.4f + (float)i * 0.025f;
 		p->acceleration[2] = GetGravity() * grav_mod;
-		p->d_alpha = 0;
+		p->d_alpha = 0.0f; // Disable particle fade-out.
 		p->scale = scale + (float)i * 0.08f;
-		VectorCopy(self->startpos, p->origin);
+		p->origin[0] += origin_offset[0];
+		p->origin[1] += origin_offset[1];
 
-		AdvanceParticle(p, i * 7);
+		p->duration = (int)(self->radius * 18.0f * grav_mod);
+
+		if (duration == 0)
+			duration = p->duration;
+
+		AdvanceParticle(p, i * 4);
 		AddParticleToList(self, p);
-
-		if (drip_time >= MIN_UPDATE_TIME)
-		{
-			p->duration = (int)((float)drip_time * 3.0f * grav_mod);
-			self->SpawnInfo++;
-		}
 	}
 
-	if (self->SpawnInfo > 0 && drip_time >= MIN_UPDATE_TIME)
+	//mxd. Setup floor splash, don't show it yet (don't setup if previous splash hasn't happened yet).
+	if (self->floor_bloodsplat != NULL && self->floor_bloodsplat->SpawnInfo == 0 && duration > 0)
 	{
-		// Splash.
-		self->Update = BloodSplatSplashUpdate;
-		self->updateTime = drip_time;
+		self->floor_bloodsplat->SpawnInfo = num_drips; // Pass number of spawned particles.
+		self->floor_bloodsplat->Update = BloodSplatSplashUpdate;
+		self->floor_bloodsplat->updateTime = duration;
+		self->floor_bloodsplat->nextThinkTime = fxi.cl->time + duration;
 	}
-	else
-	{
-		if (!irand(0, 3))
-			VectorSet(self->startpos, flrand(-1.0f, 1.0f), flrand(-1.0f, 1.0f), 0);
 
-		self->updateTime = irand(400, 1600);
-	}
+	//mxd. Set next update time.
+	self->bloodsplat_cur_particles--;
+
+	const float frac = sinf(ANGLE_90 + ((float)self->bloodsplat_cur_particles / (float)self->bloodsplat_max_particles) * ANGLE_90);
+	const int next_time = (int)(BLOODDROPS_TIME * frac);
+
+	self->updateTime = next_time - self->updateTime;
+	self->nextThinkTime = fxi.cl->time + self->updateTime;
 
 	return true;
 }
 
-void ThrowBlood(vec3_t origin, vec3_t tnormal, const qboolean dark, const qboolean yellow, const qboolean trueplane)
+static client_entity_t* InitFloorSplat(const vec3_t origin, const vec3_t normal, const float scale, const qboolean dark, const qboolean yellow) //mxd
+{
+	client_entity_t* floor_splat = ClientEntity_new(FX_BLOOD, CEF_NOMOVE | CEF_NO_DRAW, origin, normal, 1100);
+
+	floor_splat->r.angles[ROLL] = flrand(0.0f, ANGLE_360);
+	floor_splat->r.model = &splat_models[yellow ? 1 : 0];
+	floor_splat->r.flags = (RF_FIXED | RF_ALPHA_TEXTURE);
+	floor_splat->r.frame = irand(0, 4);
+
+	const byte brightness = (byte)(dark ? irand(32, 72) : irand(72, 128));
+	COLOUR_SET(floor_splat->r.color, brightness, brightness, brightness); //mxd. Use macro.
+
+	floor_splat->radius = 10.0f;
+	floor_splat->r.scale = scale * flrand(0.2f, 0.45f);
+
+	if (dark)
+		floor_splat->flags |= CEF_FLAG7; //mxd
+
+	if (yellow)
+		floor_splat->flags |= CEF_FLAG8;
+
+	AddEffect(NULL, floor_splat);
+	InsertInCircularList(floor_splat);
+
+	return floor_splat;
+}
+
+void ThrowBlood(const vec3_t torigin, const vec3_t tnormal, const qboolean dark, const qboolean yellow, const qboolean trueplane) //mxd. Original logic modifies 'origin' when !trueplane.
 {
 	vec3_t normal;
-
 	VectorCopy(tnormal, normal);
-	VectorScale(normal, -1.0f, normal);
 
-	if (trueplane || GetTruePlane(origin, normal, 16.0f, 0.25f))
+	vec3_t origin;
+	VectorCopy(torigin, origin);
+
+	if (!trueplane)
 	{
-		client_entity_t* bloodmark = ClientEntity_new(FX_BLOOD, CEF_NOMOVE, origin, tnormal, 1000);
+		Vec3ScaleAssign(-1.0f, normal);
 
-		bloodmark->r.angles[ROLL] = flrand(0, ANGLE_360);
-		bloodmark->r.model = (yellow ? splat_models + 1 : splat_models);
-		bloodmark->r.flags = RF_FIXED | RF_ALPHA_TEXTURE;
-		bloodmark->r.frame = irand(0, 4);
+		if (!GetTruePlane(origin, normal, 16.0f, flrand(0.25f, 0.5f))) //mxd. Add offset_scale randomization (to reduce z-fighting among overlapping blood splats).
+			return;
+	}
 
-		const byte brightness = (byte)(dark ? irand(32, 72) : irand(72, 128));
-		COLOUR_SET(bloodmark->r.color, brightness, brightness, brightness); //mxd. Use macro.
+	client_entity_t* bsplat = ClientEntity_new(FX_BLOOD, CEF_NOMOVE, origin, normal, 1000);
 
-		bloodmark->radius = 10.0f;
-		bloodmark->r.scale = flrand(0.2f, 0.45f);
+	bsplat->r.angles[ROLL] = flrand(0.0f, ANGLE_360);
+	bsplat->r.model = &splat_models[yellow ? 1 : 0];
+	bsplat->r.flags = (RF_FIXED | RF_ALPHA_TEXTURE);
+	bsplat->r.frame = irand(0, 4);
+	bsplat->alpha = 0.1f; //mxd. Add subtle fade-in effect.
+	bsplat->d_alpha = 2.5f;
 
-		if (tnormal[2] <= -0.7f && !irand(0, 2) && bloodmark->r.frame != 2 && bloodmark->r.frame != 4)
+	const byte brightness = (byte)(dark ? irand(32, 72) : irand(72, 128));
+	COLOUR_SET(bsplat->r.color, brightness, brightness, brightness); //mxd. Use macro.
+
+	bsplat->radius = 10.0f;
+	bsplat->r.scale = flrand(0.2f, 0.45f);
+
+	bsplat->Update = AttemptRemoveSelf;
+
+	// When hit ceiling, init blood dripper fx.
+	if (normal[2] <= -0.7f && !irand(0, 2) && bsplat->r.frame != 2 && bsplat->r.frame != 4)
+	{
+		vec3_t end_pos;
+		VectorMA(origin, 256.0f, vec3_down, end_pos); //mxd. Original logic adds scaled normal instead (which is strange).
+
+		trace_t tr;
+		fxi.Trace(origin, vec3_origin, vec3_origin, end_pos, MASK_DRIP, CEF_CLIP_TO_WORLD, &tr);
+
+		if (tr.fraction < 1.0f && tr.fraction > 0.0625f) // Between 16 and 256.
 		{
-			trace_t tr;
-			vec3_t endpos;
+			bsplat->radius = tr.fraction * 256.0f;
 
-			VectorMA(origin, 256, tnormal, endpos);
-			fxi.Trace(origin, vec3_origin, vec3_origin, endpos, MASK_DRIP, CEF_CLIP_TO_WORLD, &tr);
-
-			if (tr.fraction < 1.0f && tr.fraction > 0.0625f && tr.plane.normal[2] >= 0.7f) // Between 16 and 256.
+			//mxd. Create matching floor splat. //TODO: different logic when FLOOR is LAVA.
+			if (tr.plane.normal[2] > 0.4f)
 			{
-				bloodmark->radius = tr.fraction * 256.0f;
-				VectorSubtract(tr.endpos, origin, bloodmark->startpos2);
-				VectorCopy(tr.plane.normal, bloodmark->endpos2);
+				vec3_t splat_pos;
+				VectorMA(tr.endpos, flrand(0.25f, 0.5f), tr.plane.normal, splat_pos); // Lift off the floor a bit.
 
-				ThrowBlood(tr.endpos, tr.plane.normal, dark, yellow, false);
+				bsplat->floor_bloodsplat = InitFloorSplat(splat_pos, tr.plane.normal, bsplat->r.scale, dark, yellow);
 			}
+		}
+		else if (tr.fraction == 1.0f)
+		{
+			bsplat->radius = 256.0f;
+		}
 
-			VectorClear(bloodmark->startpos);
-			bloodmark->LifeTime = 0;
+		//mxd. Setup total number of particles to spawn.
+		if (bsplat->radius > 10.0f)
+		{
+			bsplat->bloodsplat_max_particles = irand(7, 16);
+			bsplat->bloodsplat_cur_particles = bsplat->bloodsplat_max_particles;
+
+			if (dark)
+				bsplat->flags |= CEF_FLAG7; //mxd
 
 			if (yellow)
-				bloodmark->flags |= CEF_FLAG8;
+				bsplat->flags |= CEF_FLAG8;
 
-			bloodmark->Update = BloodSplatDripUpdate;
+			bsplat->Update = BloodSplatDripUpdate;
+			BloodSplatDripUpdate(bsplat, NULL); //mxd. Start dropping particles right away.
 		}
-		else
-		{
-			bloodmark->Update = AttemptRemoveSelf;
-		}
-
-		AddEffect(NULL, bloodmark);
-		InsertInCircularList(bloodmark);
 	}
+
+	AddEffect(NULL, bsplat);
+	InsertInCircularList(bsplat);
 }
 
 void FXBloodTrail(centity_t* owner, int type, const int flags, vec3_t origin)

@@ -335,9 +335,6 @@
     <ClInclude Include="fx_blood.h">
       <Filter>src\Effects</Filter>
     </ClInclude>
-    <ClInclude Include="fx_blood_local.h">
-      <Filter>src\Effects</Filter>
-    </ClInclude>
     <ClInclude Include="fx_debris.h">
       <Filter>src\Effects</Filter>
     </ClInclude>
