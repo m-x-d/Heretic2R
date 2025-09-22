@@ -163,7 +163,10 @@ extern "C"
 {
 #endif
 H2COMMON_API extern const vec3_t vec3_origin;
+H2COMMON_API extern const vec3_t vec3_left; //mxd
+H2COMMON_API extern const vec3_t vec3_right; //mxd
 H2COMMON_API extern const vec3_t vec3_up;
+H2COMMON_API extern const vec3_t vec3_down; //mxd
 #ifdef __cplusplus
 }
 #endif
@@ -545,7 +548,7 @@ typedef struct
 #define RF_ALPHA_TEXTURE	0x00020000		// Object has an alpha texture map.
 #define RF_NODEPTHTEST		0x00080000		// Turns off depth testing for sprites only.
 #define RF_IGNORE_REFS		0x00100000		// Don't update the ref points for a model.
-#define RF_NODRAW			0x00200000
+#define RF_NODRAW			0x00200000 //TODO: not implemented.
 #define RF_CULL_LARGE		0x00400000		// If set on a poly that is really close to the near clip plane and occupies
 											// a significant amount of screen real-estate, the poly will be culled. Used for particles in software.
 
