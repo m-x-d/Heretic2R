@@ -8,6 +8,7 @@
 #include "Vector.h"
 #include "Utilities.h"
 #include "g_playstats.h"
+#include "Random.h"
 
 static struct model_s* scorch_model;
 
@@ -23,7 +24,7 @@ static void CreateScorchmark(vec3_t origin, vec3_t dir, const int type, const in
 	if (R_DETAIL == DETAIL_LOW)
 		return;
 
-	if (GetTruePlane(origin, dir, 64.0f, 0.5f))
+	if (GetTruePlane(origin, dir, 64.0f, flrand(0.5f, 0.75f))) //mxd. Add offset_scale randomization (to reduce z-fighting among overlapping scorch marks).
 	{
 		client_entity_t* scorchmark = ClientEntity_new(type, flags, origin, dir, 1000);
 
