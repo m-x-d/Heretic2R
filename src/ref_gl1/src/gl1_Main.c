@@ -948,10 +948,8 @@ static void R_SetLightLevel(void)
 		R_LightPoint(r_newrefdef.clientmodelorg, shadelight); // H2: vieworg -> clientmodelorg
 
 		// Pick the greatest component, which should be the same as the mono value returned by software.
+		// Max. shadelight can exceed 1.0 when player is affected by dynamic lights --mxd.
 		r_lightlevel->value = max(shadelight[0], max(shadelight[1], shadelight[2])) * 150.0f / gl_modulate->value; //mxd. Undo gl_modulate scaler (to avoid affecting cmd.lightlevel).
-
-		//mxd. Add sanity check.
-		assert(r_lightlevel->value >= 0.0f && r_lightlevel->value <= 150.0f);
 	}
 }
 

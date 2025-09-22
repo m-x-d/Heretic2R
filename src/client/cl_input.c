@@ -882,7 +882,7 @@ static void CL_FinishMove(usercmd_t* cmd) // Called on packetframe.
 		cmd->buttons |= BUTTON_ANY;
 
 	// Send the ambient light level at the player's current position.
-	cmd->lightlevel = (byte)cl_lightlevel->value;
+	cmd->lightlevel = (byte)(Clamp(cl_lightlevel->value, 0.0f, 255.0f)); //mxd. Clamp to byte range (r_lightlevel can potentially exceed 255 when player is affected by multiple dynamic lights).
 }
 
 static void CL_FinalizeCmd(void) // YQ2. Called on packetframe.
