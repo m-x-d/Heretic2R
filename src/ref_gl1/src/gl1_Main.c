@@ -949,6 +949,9 @@ static void R_SetLightLevel(void)
 
 		// Pick the greatest component, which should be the same as the mono value returned by software.
 		r_lightlevel->value = max(shadelight[0], max(shadelight[1], shadelight[2])) * 150.0f / gl_modulate->value; //mxd. Undo gl_modulate scaler (to avoid affecting cmd.lightlevel).
+
+		//mxd. Add sanity check.
+		assert(r_lightlevel->value >= 0.0f && r_lightlevel->value <= 150.0f);
 	}
 }
 
