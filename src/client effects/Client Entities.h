@@ -122,8 +122,12 @@ typedef struct client_entity_s
 		float yaw;
 	};
 
-	// For spritelines
-	float d_scale2; // Delta Scale of the second line endpoint. Needs CEF_USE_SCALE2 flag.
+	// For spritelines.
+	union
+	{
+		float d_scale2; // Delta Scale of the second line endpoint. Needs CEF_USE_SCALE2 flag.
+		int last_bounce_time; //mxd. Last time debris bounced in Debris_Collision().
+	};
 
 	// Sprite line data.
 	union

@@ -628,8 +628,6 @@ void FXFleshDebris(centity_t* owner, const int type, int flags, vec3_t origin)
 
 static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 {
-	char* snd_name; //mxd
-
 	if (!(self->flags & CEF_CLIP_TO_WORLD))
 		return;
 
@@ -640,8 +638,10 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 	if (trace->startsolid || trace->allsolid || Vec3IsZeroEpsilon(trace->plane.normal) || trace->ent != (struct edict_s*)-1)
 		return;
 
-	if (trace->contents & CONTENTS_SOLID)
+	if ((trace->contents & CONTENTS_SOLID) && fxi.cl->time - self->last_bounce_time > 250) //mxd. Added last_bounce_time check.
 	{
+		self->last_bounce_time = fxi.cl->time; //mxd. Avoid making the TRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR sound when stuck...
+
 		// Hit a solid surface, make noise and leave any decals.
 		const int material = (self->SpawnInfo & SIF_FLAG_MASK); // Again, the SpawnInfo lower 2 bits are material types, >= 16 are flags - here we mask out those flags to get the actual materialtype.
 
@@ -651,16 +651,14 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 			case MAT_METAL:
 				if (self->effectID == FX_THROWWEAPON && irand(0, 2) == 0)
 				{
-					vec3_t dir;
-					VectorSet(dir, 0.0f, 0.0f, 1.0f);
-					GenericSparks(NULL, FX_SPARKS, 0, self->r.origin, dir);
+					GenericSparks(NULL, FX_SPARKS, 0, self->r.origin, vec3_up);
 
-					snd_name = (irand(0, 1) ? "misc/dropmetal1.wav" : "misc/dropmetal.wav");
+					const char* snd_name = (irand(0, 1) ? "misc/dropmetal1.wav" : "misc/dropmetal.wav");
 					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_NORM, 0.0f);
 				}
 				else
 				{
-					snd_name = va("misc/drophvmtl%i.wav", irand(1, 3));
+					const char* snd_name = va("misc/drophvmtl%i.wav", irand(1, 3));
 					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
 				}
 				// Need more hollow sounds for big metal.
@@ -669,7 +667,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 			case MAT_WOOD:
 				if (irand(0, 6) == 0)
 				{
-					snd_name = (irand(0, 1) ? "misc/dropwood1.wav" : "misc/dropwood.wav");
+					const char* snd_name = (irand(0, 1) ? "misc/dropwood1.wav" : "misc/dropwood.wav");
 					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
 				}
 				break;
@@ -679,7 +677,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 			case MAT_BROWNSTONE:
 				if (irand(0, 6) == 0)
 				{
-					snd_name = (irand(0, 2) ? va("misc/boulder%i.wav", irand(1, 2)) : "misc/dropthing.wav");
+					const char* snd_name = (irand(0, 2) ? va("misc/boulder%i.wav", irand(1, 2)) : "misc/dropthing.wav");
 					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
 				}
 				break;
@@ -695,7 +693,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 
 				if (self->effectID == FX_BODYPART || irand(0, 1))
 				{
-					snd_name = va("misc/fleshdrop%i.wav", irand(1, 3));
+					const char* snd_name = va("misc/fleshdrop%i.wav", irand(1, 3));
 					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
 
 					if (!(self->SpawnInfo & SIF_INWATER))
@@ -706,7 +704,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 			case MAT_GLASS:
 				if (irand(0, 2) == 0)
 				{
-					snd_name = va("misc/dropglass%i.wav", irand(1, 2));
+					const char* snd_name = va("misc/dropglass%i.wav", irand(1, 2));
 					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
 				}
 				break;
