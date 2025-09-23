@@ -358,11 +358,7 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 			if (current->d_alpha > 0.0f && current->alpha >= 1.0f)
 			{
 				current->alpha = 0.99f;
-
-				if (current->flags & CEF_PULSE_ALPHA)
-					current->d_alpha = -current->d_alpha; // If these effects are increasing alpha, reverse and decrease with the PULSE_ALPHA flag.
-				else
-					current->d_alpha = 0.0f;
+				current->d_alpha = ((current->flags & CEF_PULSE_ALPHA) ? -current->d_alpha : 0.0f); // If these effects are increasing alpha, reverse and decrease with the PULSE_ALPHA flag.
 			}
 		}
 
@@ -409,41 +405,37 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 					VectorScale(current->acceleration, d_time, dvel);	// acceleration * dt
 					VectorScale(current->acceleration, d_time2, d2vel);	// acceleration * dt ^ 2
 
-					VectorAdd(r->startpos, dpos, r->startpos);
-					VectorAdd(r->startpos, d2vel, r->startpos); // Calculate change in startpos.
-					VectorAdd(current->velocity, dvel, current->velocity); // Calculate change in velocity.
+					Vec3AddAssign(dpos, r->startpos);
+					Vec3AddAssign(d2vel, r->startpos); // Calculate change in startpos.
+					Vec3AddAssign(dvel, current->velocity); // Calculate change in velocity.
 
 					// First, if we don't have auto origin flagged, we want to apply the velocity & such to the origin.
 					if (!(current->flags & CEF_AUTO_ORIGIN))
 					{
-						VectorAdd(r->origin, dpos, r->origin);
-						VectorAdd(r->origin, d2vel, r->origin); // Calculate change in origin. Sync with startpos.
+						Vec3AddAssign(dpos, r->origin);
+						Vec3AddAssign(d2vel, r->origin); // Calculate change in origin. Sync with startpos.
 					}
 					// Else wait until the endpos is calculated, then update the origin.
 
 					// Now, check to see if the endpos should use the same information, or maintain its own velocity.
-					if (!(current->flags & CEF_USE_VELOCITY2))
-					{
-						VectorAdd(r->endpos, dpos, r->endpos);
-						VectorAdd(r->endpos, d2vel, r->endpos); // Calculate change in endpos.
-					}
-					else
+					if (current->flags & CEF_USE_VELOCITY2)
 					{
 						// Figure out totally separate changes.
 						VectorScale(current->velocity2, d_time, dpos);			// velocity2 * dt
 						VectorScale(current->acceleration2, d_time, dvel);		// acceleration2 * dt
 						VectorScale(current->acceleration2, d_time2, d2vel);	// acceleration2 * dt ^ 2
 
-						VectorAdd(r->endpos, dpos, r->endpos);
-						VectorAdd(r->endpos, d2vel, r->endpos); // Calculate change in endpos.
-						VectorAdd(current->velocity2, dvel, current->velocity2); // Calculate change in velocity2.
+						Vec3AddAssign(dvel, current->velocity2); // Calculate change in velocity2.
 					}
+
+					Vec3AddAssign(dpos, r->endpos);
+					Vec3AddAssign(d2vel, r->endpos); // Calculate change in endpos.
 
 					// Now, if the AUTOORIGIN flag was set, then we haven't updated the origin yet. Do it now.
 					if (current->flags & CEF_AUTO_ORIGIN)
 					{
 						VectorAdd(r->startpos, r->endpos, r->origin); // Get a midpoint by averaging out the startpos and endpos.
-						VectorScale(r->origin, 0.5f, r->origin);
+						Vec3ScaleAssign(0.5f, r->origin);
 					}
 				}
 			}
