@@ -222,9 +222,7 @@ void FXBodyPart(centity_t* owner, const int type, const int flags, vec3_t origin
 
 	const centity_t* realowner = &fxi.server_entities[owner_entnum];
 
-	float ke = (float)damage * 10000.0f;
-	ke = max(10000.0f, ke);
-
+	const float ke = (float)(max(1, damage) * 10000);
 	BodyPart_Spawn(realowner, body_part, origin, ke, frame, type, modelindex, flags, owner);
 }
 
