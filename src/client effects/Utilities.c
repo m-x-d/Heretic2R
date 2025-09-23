@@ -272,14 +272,13 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 
 	fxi.Trace(r->origin, mins, maxs, end, MASK_SHOT | MASK_WATER, self->flags, trace);
 
+	//mxd. Update velocity regardless of trace results.
+	VectorMA(self->velocity, d_time, self->acceleration, self->velocity);
+
 	// Trace hit nothing. Can move full distance.
 	if (trace->fraction == 1.0f || trace->allsolid || trace->startsolid || Vec3IsZeroEpsilon(trace->plane.normal))
 	{
-		Vec3AddAssign(attempt, r->origin);
-
-		for (int i = 0; i < 3; i++)
-			self->velocity[i] += self->acceleration[i] * d_time;
-
+		VectorCopy(end, r->origin);
 		return false;
 	}
 
@@ -292,14 +291,10 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		return false;
 	}
 
-	d_time *= trace->fraction;
-
+	// Move to collision point.
 	vec3_t move;
-	VectorScale(attempt, d_time, move);
+	VectorScale(attempt, d_time * trace->fraction, move);
 	Vec3AddAssign(move, r->origin);
-
-	for (int i = 0; i < 3; i++)
-		self->velocity[i] += self->acceleration[i] * d_time;
 
 	vec3_t dir;
 	VectorNormalize2(attempt, dir);
@@ -351,18 +346,14 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 
 			if (trace->fraction < 1.0f)
 			{
-				d_time *= trace->fraction;
-
-				VectorScale(attempt, d_time, move);
+				VectorScale(attempt, d_time * trace->fraction, move);
 				Vec3AddAssign(move, r->origin);
 			}
 			else
 			{
-				Vec3AddAssign(attempt, r->origin);
+				// Was blocked only by water surface. Move the rest of the way.
+				VectorCopy(end, r->origin); //mxd. Original logic adds 'attempt' to 'r->origin' here (but r->origin was already partially moved after MASK_SHOT | MASK_WATER trace!).
 			}
-
-			for (int i = 0; i < 3; i++)
-				self->velocity[i] += self->acceleration[i] * d_time;
 		}
 		else // Sit on surface.
 		{
@@ -392,13 +383,13 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 				FizzleEffect(self, surface_top, trace->plane.normal);
 		}
 
-		self->SpawnInfo |= SIF_INMUCK; // In muck, sink really really slowly.
+		self->SpawnInfo |= SIF_INMUCK; // In muck, sink really really slowly. //TODO: implement? Currently stays on surface.
 
 		// Spawn ripples, splash.
 		if (do_splash_effect)
 			DoWaterEntrySplash(FX_WATER_ENTRYSPLASH, 0, surface_top, 64, trace->plane.normal);
 
-		if (flrand(-0.75f, 0) < hit_angle)
+		if (flrand(-0.75f, 0.0f) < hit_angle)
 		{
 			// Splash sound.
 			if (do_splash_effect)
