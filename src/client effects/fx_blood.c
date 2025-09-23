@@ -373,6 +373,8 @@ static client_entity_t* InitFloorSplat(const vec3_t origin, const vec3_t normal,
 
 void ThrowBlood(const vec3_t torigin, const vec3_t tnormal, const qboolean dark, const qboolean yellow, const qboolean trueplane) //mxd. Original logic modifies 'origin' when !trueplane.
 {
+#define MIN_DRIPPER_NORMAL_Z	0.4f //mxd. Original logic uses GROUND_NORMAL instead.
+
 	vec3_t normal;
 	VectorCopy(tnormal, normal);
 
@@ -405,7 +407,7 @@ void ThrowBlood(const vec3_t torigin, const vec3_t tnormal, const qboolean dark,
 	bsplat->Update = AttemptRemoveSelf;
 
 	// When hit ceiling, init blood dripper fx.
-	if (normal[2] <= -0.7f && !irand(0, 2) && bsplat->r.frame != 2 && bsplat->r.frame != 4)
+	if (normal[2] <= -MIN_DRIPPER_NORMAL_Z && !irand(0, 2) && bsplat->r.frame != 2 && bsplat->r.frame != 4)
 	{
 		vec3_t end_pos;
 		VectorMA(origin, 256.0f, vec3_down, end_pos); //mxd. Original logic adds scaled normal instead (which is strange).
@@ -418,7 +420,7 @@ void ThrowBlood(const vec3_t torigin, const vec3_t tnormal, const qboolean dark,
 			bsplat->radius = tr.fraction * 256.0f;
 
 			//mxd. Create matching floor splat. //TODO: different logic when FLOOR is LAVA.
-			if (tr.plane.normal[2] > 0.4f)
+			if (tr.plane.normal[2] > MIN_DRIPPER_NORMAL_Z)
 			{
 				vec3_t splat_pos;
 				VectorMA(tr.endpos, flrand(0.25f, 0.5f), tr.plane.normal, splat_pos); // Lift off the floor a bit.
