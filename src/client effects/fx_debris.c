@@ -536,7 +536,7 @@ void FXDebris_SpawnChunks(int type, int flags, const vec3_t origin, const int nu
 	}
 }
 
-static void Debris_SpawnFleshChunks(int type, int flags, vec3_t origin, const int num, const int material, vec3_t dir, const float ke, vec3_t mins, const float scale, const qboolean altskin) //TODO: remove unused 'type' arg?
+static void Debris_SpawnFleshChunks(int type, int flags, const vec3_t origin, const int num, const int material, const vec3_t dir, const float ke, const vec3_t mins, const float scale, const qboolean altskin) //TODO: remove unused 'type' arg?
 {
 	if (flags & CEF_FLAG6) // On fire, check for highdetail, non-ref_soft.
 	{
@@ -591,10 +591,6 @@ void FXDebris(centity_t* owner, const int type, const int flags, vec3_t origin)
 void FXFleshDebris(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	byte material;
-	byte size;
-	vec3_t mins;
-	byte mag;
-
 	qboolean altskin = false;
 
 	if (flags & CEF_FLAG7)
@@ -616,10 +612,10 @@ void FXFleshDebris(centity_t* owner, const int type, int flags, vec3_t origin)
 		material = MAT_FLESH;
 	}
 
+	byte size;
+	vec3_t mins;
+	byte mag;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_FLESH_DEBRIS].formatString, &size, mins, &mag);
-
-	vec3_t dir;
-	VectorSet(dir, 0.0f, 0.0f, 1.0f);
 
 	Vec3ScaleAssign(mag, mins);
 
@@ -635,7 +631,7 @@ void FXFleshDebris(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	const float scale = (float)mag / 24.0f;
 
-	Debris_SpawnFleshChunks(type, flags, origin, num, material, dir, 80000.0f, mins, scale, altskin);
+	Debris_SpawnFleshChunks(type, flags, origin, num, material, vec3_up, 80000.0f, mins, scale, altskin);
 }
 
 #pragma endregion
