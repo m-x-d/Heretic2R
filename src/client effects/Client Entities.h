@@ -88,13 +88,21 @@ typedef struct client_entity_s
 	struct client_particle_s* p_root; // Root of particle list.
 	short refPoint; // Used for entities linked to one of another models.
 
-	// Anim stuff for CE spawners.
+	//mxd. Looks like we'll need some extra debris props...
+	int debris_last_bounce_time; // Last time debris bounced in Debris_Collision().
+	int debris_last_trail_update_time;
+
+	//mxd. Extra bloodsplat props...
+	int bloodsplat_max_particles;
+	int bloodsplat_cur_particles;
+	struct client_entity_s* floor_bloodsplat;
+
+	// Animation stuff for CE spawners.
 
 	union
 	{
 		int LifeTime;
 		int nextEventTime; // For user-timed stuff.
-		int bloodsplat_max_particles; //mxd
 	};
 
 	union
@@ -103,7 +111,6 @@ typedef struct client_entity_s
 		int SpawnDelay;
 		float elasticity;
 		float xscale;
-		int bloodsplat_cur_particles; //mxd
 	};
 
 	union
@@ -112,7 +119,6 @@ typedef struct client_entity_s
 		float SpawnData;
 		int lastThinkTime; // Last time updated.
 		float yscale;
-		struct client_entity_s* floor_bloodsplat; //mxd
 	};
 
 	union
@@ -123,11 +129,7 @@ typedef struct client_entity_s
 	};
 
 	// For spritelines.
-	union
-	{
-		float d_scale2; // Delta Scale of the second line endpoint. Needs CEF_USE_SCALE2 flag.
-		int last_bounce_time; //mxd. Last time debris bounced in Debris_Collision().
-	};
+	float d_scale2; // Delta Scale of the second line endpoint. Needs CEF_USE_SCALE2 flag.
 
 	// Sprite line data.
 	union

@@ -306,8 +306,7 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 		return;
 	}
 
-	const vec3_t dir = { 0.0f, 0.0f, 1.0f };
-	VectorRandomCopy(dir, gib->velocity, 0.5f);
+	VectorRandomCopy(vec3_up, gib->velocity, 0.5f);
 
 	if (ke == 0.0f)
 	{
@@ -413,7 +412,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 {
 	const int chunk_index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
 
-	client_entity_t* debris = ClientEntity_new(-1, 0, origin, NULL, 50);
+	client_entity_t* debris = ClientEntity_new(-1, 0, origin, NULL, 0); //mxd. next_think_time:50 in original logic (20 FPS). Update every frame instead.
 	debris->SpawnInfo = material;
 	debris->classID = CID_DEBRIS;
 	debris->msgHandler = CE_DefaultMsgHandler;
@@ -423,7 +422,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	debris->r.angles[0] = flrand(-ANGLE_180, ANGLE_180);
 	debris->r.angles[1] = flrand(-ANGLE_90, ANGLE_90);
 
-	debris->flags |= CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS;
+	debris->flags |= (CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS);
 	debris->radius = 5.0f;
 
 	VectorRandomCopy(dir, debris->velocity, 0.5f);
@@ -436,9 +435,10 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 
 	if (material == MAT_FLESH || material == MAT_INSECT) // Flesh need a different update for blood.
 	{
-		debris->Update = FleshDebris_Update;
 		if (altskin && chunk_index < 47) // Using multi-skinned pottery chunks.
-			debris->r.skinnum = 1; // Male
+			debris->r.skinnum = 1; // Male.
+
+		debris->Update = FleshDebris_Update;
 	}
 	else
 	{
@@ -636,9 +636,9 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 	if (trace->startsolid || trace->allsolid || Vec3IsZeroEpsilon(trace->plane.normal) || trace->ent != (struct edict_s*)-1)
 		return;
 
-	if ((trace->contents & CONTENTS_SOLID) && fxi.cl->time - self->last_bounce_time > 250) //mxd. Added last_bounce_time check.
+	if ((trace->contents & CONTENTS_SOLID) && fxi.cl->time - self->debris_last_bounce_time > 250) //mxd. Added debris_last_bounce_time check.
 	{
-		self->last_bounce_time = fxi.cl->time; //mxd. Avoid making the TRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR sound when stuck...
+		self->debris_last_bounce_time = fxi.cl->time; //mxd. Avoid making the TRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR sound when stuck...
 
 		// Hit a solid surface, make noise and leave any decals.
 		const int material = (self->SpawnInfo & SIF_FLAG_MASK); // Again, the SpawnInfo lower 2 bits are material types, >= 16 are flags - here we mask out those flags to get the actual materialtype.
@@ -777,23 +777,25 @@ qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner)
 
 static qboolean Debris_Update(struct client_entity_s* self, centity_t* owner)
 {
-	const int cur_time = fxi.cl->time;
-
-	if (cur_time > self->LifeTime)
+	if (fxi.cl->time > self->LifeTime)
 	{
 		self->d_alpha = flrand(-0.05f, -0.2f);
 		self->Update = FXDebris_Vanish;
+
+		return true;
 	}
-	else
+
+	const float d_time = (float)(fxi.cl->time - self->lastThinkTime) / 1000.0f;
+
+	self->r.angles[0] += ANGLE_360 * d_time;
+	self->r.angles[1] += ANGLE_360 * d_time;
+	self->lastThinkTime = fxi.cl->time;
+
+	//mxd. Update trails at 20 FPS...
+	if ((self->flags & CEF_FLAG6) && fxi.cl->time - self->debris_last_trail_update_time > 50) // On fire - do a fire trail.
 	{
-		const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
-
-		self->r.angles[0] += ANGLE_360 * d_time;
-		self->r.angles[1] += ANGLE_360 * d_time;
-		self->lastThinkTime = cur_time;
-
-		if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
-			DoFireTrail(self);
+		self->debris_last_trail_update_time = fxi.cl->time;
+		DoFireTrail(self);
 	}
 
 	return true;
@@ -801,33 +803,38 @@ static qboolean Debris_Update(struct client_entity_s* self, centity_t* owner)
 
 static qboolean FleshDebris_Update(struct client_entity_s* self, centity_t* owner)
 {
-	const int cur_time = fxi.cl->time;
-
-	if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
-	{
-		DoFireTrail(self);
-
-		if (self->flags & CEF_FLAG7)
-			DoBloodTrail(self, 2);
-	}
-	else
-	{
-		DoBloodTrail(self, 2);
-	}
-
-	if (cur_time > self->LifeTime)
+	if (fxi.cl->time > self->LifeTime)
 	{
 		self->d_alpha = flrand(-0.05f, -0.2f);
 		self->Update = FXDebris_Vanish;
-	}
-	else
-	{
-		const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
 
-		self->r.angles[0] += ANGLE_360 * d_time;
-		self->r.angles[1] += ANGLE_360 * d_time;
-		self->lastThinkTime = cur_time;
+		return true;
 	}
+
+	//mxd. Update trails at 20 FPS...
+	if (fxi.cl->time - self->debris_last_trail_update_time > 50)
+	{
+		self->debris_last_trail_update_time = fxi.cl->time;
+
+		if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
+		{
+			DoFireTrail(self);
+
+			if (self->flags & CEF_FLAG7)
+				DoBloodTrail(self, 2);
+		}
+		else
+		{
+			DoBloodTrail(self, 2);
+		}
+	}
+
+	// Update rotation.
+	const float d_time = (float)(fxi.cl->time - self->lastThinkTime) / 1000.0f;
+
+	self->r.angles[0] += ANGLE_360 * d_time;
+	self->r.angles[1] += ANGLE_360 * d_time;
+	self->lastThinkTime = fxi.cl->time;
 
 	return true;
 }
