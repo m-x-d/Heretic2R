@@ -380,7 +380,7 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 					trace_t* trace = &traces[trace_index]; //mxd
 					trace_index = (trace_index + 1) % (NUM_TRACES - 1);
 
-					if (Physics_MoveEnt(current, d_time, d_time2, trace))
+					if (Physics_MoveEnt(current, d_time, d_time2, trace, true))
 						cur_trace++; // Collided with something.
 				}
 				else

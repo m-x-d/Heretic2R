@@ -233,7 +233,7 @@ static void FizzleEffect(const client_entity_t* self, vec3_t surface_top, vec3_t
 	FireSparks(NULL, FX_SPARKS, 0, surface_top, normal);
 }
 
-qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, trace_t* trace)
+qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, trace_t* trace, qboolean update_velocity) //mxd. +update_velocity arg.
 {
 	entity_t* r = &self->r;
 
@@ -272,8 +272,9 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 
 	fxi.Trace(r->origin, mins, maxs, end, MASK_SHOT | MASK_WATER, self->flags, trace);
 
-	//mxd. Update velocity regardless of trace results.
-	VectorMA(self->velocity, d_time, self->acceleration, self->velocity);
+	//mxd. Update velocity regardless of trace results (but only when called from UpdateEffects()).
+	if (update_velocity)
+		VectorMA(self->velocity, d_time, self->acceleration, self->velocity);
 
 	// Trace hit nothing. Can move full distance.
 	if (trace->fraction == 1.0f || trace->allsolid || trace->startsolid || Vec3IsZeroEpsilon(trace->plane.normal))
