@@ -207,6 +207,20 @@ static qboolean IsInWater(const vec3_t origin)
 	return (trace.contents & MASK_WATER);
 }
 
+//mxd. Update rotation.
+static void Debris_UpdateAngles(client_entity_t* self)
+{
+	const float d_time = (float)(fxi.cl->time - self->lastThinkTime) / 1000.0f;
+
+	for (int i = 0; i < 2; i++)
+	{
+		self->r.angles[i] += self->debris_avelocity[i] * d_time; // Use debris_avelocity.
+		self->debris_avelocity[i] *= 1.0f - fxi.cls->rframetime * 0.5f; // Reduce rotation rate over time.
+	}
+
+	self->lastThinkTime = fxi.cl->time;
+}
+
 #pragma region ========================== Body Part spawn functions ==========================
 
 void FXBodyPart(centity_t* owner, const int type, const int flags, vec3_t origin)
@@ -356,7 +370,7 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	AddEffect(NULL, gib);
 }
 
-static qboolean BodyPartAttachedUpdate(struct client_entity_s* self, centity_t* owner)
+static qboolean BodyPartAttachedUpdate(client_entity_t* self, centity_t* owner)
 {
 	VectorCopy(owner->lerp_origin, self->r.origin);
 	VectorSet(self->r.angles,
@@ -373,7 +387,7 @@ static qboolean BodyPartAttachedUpdate(struct client_entity_s* self, centity_t* 
 	return true;
 }
 
-static qboolean BodyPart_Update(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXBodyPart_Update' in original logic.
+static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. Named 'FXBodyPart_Update' in original logic.
 {
 	const int cur_time = fxi.cl->time;
 	const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
@@ -421,6 +435,10 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	debris->r.scale = scale;
 	debris->r.angles[0] = flrand(-ANGLE_180, ANGLE_180);
 	debris->r.angles[1] = flrand(-ANGLE_90, ANGLE_90);
+
+	//mxd. Setup angular velocity.
+	debris->debris_avelocity[0] = ANGLE_360 + flrand(0.0f, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
+	debris->debris_avelocity[1] = ANGLE_360 + flrand(0.0f, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
 
 	debris->flags |= (CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS);
 	debris->radius = 5.0f;
@@ -775,7 +793,7 @@ qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-static qboolean Debris_Update(struct client_entity_s* self, centity_t* owner)
+static qboolean Debris_Update(client_entity_t* self, centity_t* owner)
 {
 	if (fxi.cl->time > self->LifeTime)
 	{
@@ -785,11 +803,7 @@ static qboolean Debris_Update(struct client_entity_s* self, centity_t* owner)
 		return true;
 	}
 
-	const float d_time = (float)(fxi.cl->time - self->lastThinkTime) / 1000.0f;
-
-	self->r.angles[0] += ANGLE_360 * d_time;
-	self->r.angles[1] += ANGLE_360 * d_time;
-	self->lastThinkTime = fxi.cl->time;
+	Debris_UpdateAngles(self); //mxd
 
 	//mxd. Update trails at 20 FPS...
 	if ((self->flags & CEF_FLAG6) && fxi.cl->time - self->debris_last_trail_update_time > 50) // On fire - do a fire trail.
@@ -801,7 +815,7 @@ static qboolean Debris_Update(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-static qboolean FleshDebris_Update(struct client_entity_s* self, centity_t* owner)
+static qboolean FleshDebris_Update(client_entity_t* self, centity_t* owner)
 {
 	if (fxi.cl->time > self->LifeTime)
 	{
@@ -810,6 +824,8 @@ static qboolean FleshDebris_Update(struct client_entity_s* self, centity_t* owne
 
 		return true;
 	}
+
+	Debris_UpdateAngles(self); //mxd
 
 	//mxd. Update trails at 20 FPS...
 	if (fxi.cl->time - self->debris_last_trail_update_time > 50)
@@ -828,13 +844,6 @@ static qboolean FleshDebris_Update(struct client_entity_s* self, centity_t* owne
 			DoBloodTrail(self, 2);
 		}
 	}
-
-	// Update rotation.
-	const float d_time = (float)(fxi.cl->time - self->lastThinkTime) / 1000.0f;
-
-	self->r.angles[0] += ANGLE_360 * d_time;
-	self->r.angles[1] += ANGLE_360 * d_time;
-	self->lastThinkTime = fxi.cl->time;
 
 	return true;
 }

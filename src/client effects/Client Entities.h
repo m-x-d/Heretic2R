@@ -91,6 +91,7 @@ typedef struct client_entity_s
 	//mxd. Looks like we'll need some extra debris props...
 	int debris_last_bounce_time; // Last time debris bounced in Debris_Collision().
 	int debris_last_trail_update_time;
+	float debris_avelocity[2]; // Angular velocity (only PITCH and YAW are used).
 
 	//mxd. Extra bloodsplat props...
 	int bloodsplat_max_particles;
