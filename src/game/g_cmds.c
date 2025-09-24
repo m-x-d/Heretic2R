@@ -869,7 +869,7 @@ static void Cmd_KillMonsters_f(edict_t* ent)
 {
 	gi.cprintf(ent, PRINT_HIGH, "Killing all non-boss level monsters\n");
 
-	for (edict_t* e = g_edicts; e < &g_edicts[globals.num_edicts]; e++)
+	for (edict_t* e = &g_edicts[0]; e < &g_edicts[globals.num_edicts]; e++)
 	{
 		if (e->inuse && !e->monsterinfo.c_mode && (e->svflags & SVF_MONSTER) && !(e->svflags & SVF_BOSS))
 		{
@@ -885,7 +885,7 @@ static void Cmd_CrazyMonsters_f(const edict_t* ent)
 	gi.cprintf(ent, PRINT_HIGH, "Berzerking all level monsters\n");
 	ANARCHY = true;
 
-	for (edict_t* e = g_edicts; e < &g_edicts[globals.num_edicts]; e++)
+	for (edict_t* e = &g_edicts[0]; e < &g_edicts[globals.num_edicts]; e++)
 	{
 		if (e->inuse && e->svflags & SVF_MONSTER)
 		{
@@ -904,7 +904,7 @@ static void Cmd_AngerMonsters_f(edict_t* ent)
 {
 	gi.cprintf(ent, PRINT_HIGH, "Angering all level monsters\n");
 
-	for (edict_t* e = g_edicts; e < &g_edicts[globals.num_edicts]; e++)
+	for (edict_t* e = &g_edicts[0]; e < &g_edicts[globals.num_edicts]; e++)
 	{
 		if (e->inuse && e->svflags & SVF_MONSTER)
 		{
