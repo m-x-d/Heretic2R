@@ -22,6 +22,8 @@
 
 #pragma region ========================== Debris base info ==========================
 
+#define DEBRIS_TRAIL_UPDATE_INTERVAL	50 //mxd. 1000 ms. / 50 = 20 FPS.
+
 typedef struct DebrisChunk
 {
 	char* modelName;
@@ -219,25 +221,28 @@ static qboolean BodyPartAttachedUpdate(client_entity_t* self, centity_t* owner)
 {
 	VectorCopy(owner->lerp_origin, self->r.origin);
 	VectorSet(self->r.angles,
-		owner->lerp_angles[PITCH] * -1.0f * ANGLE_TO_RAD,
-		owner->lerp_angles[YAW] * ANGLE_TO_RAD,
-		owner->lerp_angles[ROLL] * ANGLE_TO_RAD);
+		-owner->lerp_angles[0] * ANGLE_TO_RAD,
+		owner->lerp_angles[1] * ANGLE_TO_RAD,
+		owner->lerp_angles[1] * ANGLE_TO_RAD);
 
-	if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
-		DoBloodTrail(self, -1);
+	//mxd. Update trails at 20 FPS...
+	if (fxi.cl->time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL)
+	{
+		self->debris_last_trail_update_time = fxi.cl->time;
 
-	if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
-		DoFireTrail(self);
+		if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
+			DoBloodTrail(self, -1);
+
+		if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
+			DoFireTrail(self);
+	}
 
 	return true;
 }
 
 static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. Named 'FXBodyPart_Update' in original logic.
 {
-	const int cur_time = fxi.cl->time;
-	const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
-
-	if (cur_time > self->LifeTime)
+	if (fxi.cl->time > self->LifeTime)
 	{
 		self->d_alpha = flrand(-0.05f, -0.2f);
 		self->Update = FXDebris_Vanish;
@@ -245,16 +250,19 @@ static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. 
 		return true;
 	}
 
-	for (int i = 0; i < 3; i++)
-		self->r.angles[i] += d_time * ANGLE_360;
+	Debris_UpdateAngles(self); //mxd. Interestingly, original logic updates all 3 angle axes here.
 
-	self->lastThinkTime = cur_time;
+	//mxd. Update trails at 20 FPS...
+	if (fxi.cl->time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL)
+	{
+		self->debris_last_trail_update_time = fxi.cl->time;
 
-	if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
-		DoBloodTrail(self, 6);
+		if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
+			DoBloodTrail(self, 6);
 
-	if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
-		DoFireTrail(self);
+		if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
+			DoFireTrail(self);
+	}
 
 	return true;
 }
@@ -262,7 +270,7 @@ static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. 
 static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t origin, float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy) //mxd. Named 'FXBodyPart_Throw' in original logic.
 {
 	//FIXME: make sure parts have correct skins, even node 0!
-	client_entity_t* gib = ClientEntity_new(type, 0, origin, NULL, 17); //flags sent as 0
+	client_entity_t* gib = ClientEntity_new(type, 0, origin, NULL, 0); //flags sent as 0 //mxd. next_think_time:17 in original logic (was always re-assigned to 50 below).
 
 	int material;
 	if (type == FX_THROWWEAPON) // Not elastic enough for effect?
@@ -325,7 +333,6 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	{
 		gib->flags |= CEF_OWNERS_ORIGIN;
 		gib->Update = BodyPartAttachedUpdate;
-		gib->updateTime = 50;
 		AddEffect(harpy, gib);
 
 		return;
@@ -351,10 +358,13 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	gib->r.angles[0] = flrand(-ANGLE_180, ANGLE_180);
 	gib->r.angles[1] = flrand(-ANGLE_90, ANGLE_90);
 
+	//mxd. Setup angular velocity.
+	gib->debris_avelocity[0] = ANGLE_360 + flrand(0.0f, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
+	gib->debris_avelocity[1] = ANGLE_360 + flrand(0.0f, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
+
 	gib->elasticity = debris_elasticity[MAT_FLESH];
 
 	gib->Update = BodyPart_Update;
-	gib->updateTime = 50;
 
 	switch (R_DETAIL)
 	{
@@ -461,7 +471,7 @@ static qboolean Debris_Update(client_entity_t* self, centity_t* owner)
 	Debris_UpdateAngles(self); //mxd
 
 	//mxd. Update trails at 20 FPS...
-	if ((self->flags & CEF_FLAG6) && fxi.cl->time - self->debris_last_trail_update_time > 50) // On fire - do a fire trail.
+	if ((self->flags & CEF_FLAG6) && fxi.cl->time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL) // On fire - do a fire trail.
 	{
 		self->debris_last_trail_update_time = fxi.cl->time;
 		DoFireTrail(self);
@@ -483,7 +493,7 @@ static qboolean FleshDebris_Update(client_entity_t* self, centity_t* owner)
 	Debris_UpdateAngles(self); //mxd
 
 	//mxd. Update trails at 20 FPS...
-	if (fxi.cl->time - self->debris_last_trail_update_time > 50)
+	if (fxi.cl->time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL)
 	{
 		self->debris_last_trail_update_time = fxi.cl->time;
 
