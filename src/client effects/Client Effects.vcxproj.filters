@@ -338,9 +338,6 @@
     <ClInclude Include="fx_debris.h">
       <Filter>src\Effects</Filter>
     </ClInclude>
-    <ClInclude Include="fx_debris_local.h">
-      <Filter>src\Effects</Filter>
-    </ClInclude>
     <ClInclude Include="fx_dustpuff.h">
       <Filter>src\Effects</Filter>
     </ClInclude>

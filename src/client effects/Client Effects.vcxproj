@@ -117,7 +117,6 @@
     <ClInclude Include="Client Entities.h" />
     <ClInclude Include="fx_blood.h" />
     <ClInclude Include="fx_debris.h" />
-    <ClInclude Include="fx_debris_local.h" />
     <ClInclude Include="fx_dustpuff.h" />
     <ClInclude Include="fx_flamethrow.h" />
     <ClInclude Include="fx_HighPriestessProjectiles.h" />

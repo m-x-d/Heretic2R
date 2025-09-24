@@ -6,7 +6,6 @@
 
 #include "Client Effects.h"
 #include "fx_debris.h"
-#include "fx_debris_local.h" //mxd
 #include "fx_blood.h" //mxd
 #include "fx_sparks.h" //mxd
 #include "ce_DefaultMessageHandler.h"
@@ -145,16 +144,7 @@ static float debris_elasticity[NUM_MAT] =
 
 #pragma endregion
 
-void InitDebrisStatics(void)
-{
-	ce_class_statics[CID_DEBRIS].msgReceivers[MSG_COLLISION] = Debris_Collision;
-}
-
-void PreCacheDebris(void)
-{
-	for (uint i = 0; i < sizeof(debris_chunks) / sizeof(debris_chunks[0]); i++)
-		debris_chunks[i].model = fxi.RegisterModel(debris_chunks[i].modelName);
-}
+#pragma region ========================== Debris utility functions ==========================
 
 static void DoFireTrail(client_entity_t* spawner)
 {
@@ -221,31 +211,52 @@ static void Debris_UpdateAngles(client_entity_t* self)
 	self->lastThinkTime = fxi.cl->time;
 }
 
+#pragma endregion
+
 #pragma region ========================== Body Part spawn functions ==========================
 
-void FXBodyPart(centity_t* owner, const int type, const int flags, vec3_t origin)
+static qboolean BodyPartAttachedUpdate(client_entity_t* self, centity_t* owner)
 {
-	short frame;
-	short body_part;
-	byte damage;
-	byte modelindex;
-	byte owner_entnum;
+	VectorCopy(owner->lerp_origin, self->r.origin);
+	VectorSet(self->r.angles,
+		owner->lerp_angles[PITCH] * -1.0f * ANGLE_TO_RAD,
+		owner->lerp_angles[YAW] * ANGLE_TO_RAD,
+		owner->lerp_angles[ROLL] * ANGLE_TO_RAD);
 
-	// Increase count on owner so that can have multiple effects?
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_BODYPART].formatString, &frame, &body_part, &damage, &modelindex, &owner_entnum);
+	if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
+		DoBloodTrail(self, -1);
 
-	const centity_t* realowner = &fxi.server_entities[owner_entnum];
+	if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
+		DoFireTrail(self);
 
-	const float ke = (float)(max(1, damage) * 10000);
-	BodyPart_Spawn(realowner, body_part, origin, ke, frame, type, modelindex, flags, owner);
+	return true;
 }
 
-static void BodyPart_Spawn(const centity_t* owner, const int body_part, vec3_t origin, const float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy)
+static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. Named 'FXBodyPart_Update' in original logic.
 {
-	BodyPart_Throw(owner, body_part, origin, ke, frame, type, modelindex, flags, harpy);
+	const int cur_time = fxi.cl->time;
+	const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
 
-	if (ke > 0.0f && type != FX_THROWWEAPON)
-		DoBloodSplash(origin, 5, flags & CEF_FLAG8);
+	if (cur_time > self->LifeTime)
+	{
+		self->d_alpha = flrand(-0.05f, -0.2f);
+		self->Update = FXDebris_Vanish;
+
+		return true;
+	}
+
+	for (int i = 0; i < 3; i++)
+		self->r.angles[i] += d_time * ANGLE_360;
+
+	self->lastThinkTime = cur_time;
+
+	if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
+		DoBloodTrail(self, 6);
+
+	if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
+		DoFireTrail(self);
+
+	return true;
 }
 
 static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t origin, float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy) //mxd. Named 'FXBodyPart_Throw' in original logic.
@@ -370,29 +381,76 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	AddEffect(NULL, gib);
 }
 
-static qboolean BodyPartAttachedUpdate(client_entity_t* self, centity_t* owner)
+static void BodyPart_Spawn(const centity_t* owner, const int body_part, vec3_t origin, const float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy)
 {
-	VectorCopy(owner->lerp_origin, self->r.origin);
-	VectorSet(self->r.angles,
-		owner->lerp_angles[PITCH] * -1.0f * ANGLE_TO_RAD,
-		owner->lerp_angles[YAW] * ANGLE_TO_RAD,
-		owner->lerp_angles[ROLL] * ANGLE_TO_RAD);
+	BodyPart_Throw(owner, body_part, origin, ke, frame, type, modelindex, flags, harpy);
 
-	if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
-		DoBloodTrail(self, -1);
+	if (ke > 0.0f && type != FX_THROWWEAPON)
+		DoBloodSplash(origin, 5, flags & CEF_FLAG8);
+}
 
-	if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
-		DoFireTrail(self);
+void FXBodyPart(centity_t* owner, const int type, const int flags, vec3_t origin)
+{
+	short frame;
+	short body_part;
+	byte damage;
+	byte modelindex;
+	byte owner_entnum;
+
+	// Increase count on owner so that can have multiple effects?
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_BODYPART].formatString, &frame, &body_part, &damage, &modelindex, &owner_entnum);
+
+	const centity_t* realowner = &fxi.server_entities[owner_entnum];
+
+	const float ke = (float)(max(1, damage) * 10000);
+	BodyPart_Spawn(realowner, body_part, origin, ke, frame, type, modelindex, flags, owner);
+}
+
+#pragma endregion
+
+#pragma region ========================== Debris update ==========================
+
+qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner)
+{
+	if (self->SpawnInfo & SIF_INLAVA)
+		FXDarkSmoke(self->r.origin, flrand(0.2f, 0.5f), flrand(30.0f, 50.0f));
+
+	if (self->alpha < 0.1f || self->r.scale < 0.1f)
+	{
+		if (self->flags & CEF_FLAG6)
+		{
+			// Let the smoke die out.
+			self->alpha = 0.0f;
+			self->r.scale = 0.0f;
+			self->updateTime = 1000;
+			self->Update = RemoveSelfAI; //mxd. FXDebris_Remove() in original logic.
+
+			return true;
+		}
+
+		return false;
+	}
+
+	if (self->flags & CEF_FLAG6 && irand(0, 2) == 0) // On fire - do a fire trail.
+	{
+		if (flrand(0.0f, 0.3f) > self->alpha || flrand(0.0f, 0.3f) > self->r.scale) //BUGFIX: mxd. Original logic uses irand(0, 0.3) here.
+		{
+			self->dlight = NULL;
+			self->flags &= ~CEF_FLAG6;
+			self->d_alpha = -0.01f;
+		}
+		else
+		{
+			DoFireTrail(self); //FIXME: make them just smoke when still?
+		}
+	}
 
 	return true;
 }
 
-static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. Named 'FXBodyPart_Update' in original logic.
+static qboolean Debris_Update(client_entity_t* self, centity_t* owner)
 {
-	const int cur_time = fxi.cl->time;
-	const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
-
-	if (cur_time > self->LifeTime)
+	if (fxi.cl->time > self->LifeTime)
 	{
 		self->d_alpha = flrand(-0.05f, -0.2f);
 		self->Update = FXDebris_Vanish;
@@ -400,16 +458,47 @@ static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. 
 		return true;
 	}
 
-	for (int i = 0; i < 3; i++)
-		self->r.angles[i] += d_time * ANGLE_360;
+	Debris_UpdateAngles(self); //mxd
 
-	self->lastThinkTime = cur_time;
-
-	if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
-		DoBloodTrail(self, 6);
-
-	if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
+	//mxd. Update trails at 20 FPS...
+	if ((self->flags & CEF_FLAG6) && fxi.cl->time - self->debris_last_trail_update_time > 50) // On fire - do a fire trail.
+	{
+		self->debris_last_trail_update_time = fxi.cl->time;
 		DoFireTrail(self);
+	}
+
+	return true;
+}
+
+static qboolean FleshDebris_Update(client_entity_t* self, centity_t* owner)
+{
+	if (fxi.cl->time > self->LifeTime)
+	{
+		self->d_alpha = flrand(-0.05f, -0.2f);
+		self->Update = FXDebris_Vanish;
+
+		return true;
+	}
+
+	Debris_UpdateAngles(self); //mxd
+
+	//mxd. Update trails at 20 FPS...
+	if (fxi.cl->time - self->debris_last_trail_update_time > 50)
+	{
+		self->debris_last_trail_update_time = fxi.cl->time;
+
+		if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
+		{
+			DoFireTrail(self);
+
+			if (self->flags & CEF_FLAG7)
+				DoBloodTrail(self, 2);
+		}
+		else
+		{
+			DoBloodTrail(self, 2);
+		}
+	}
 
 	return true;
 }
@@ -749,99 +838,17 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 
 #pragma endregion
 
-#pragma region ========================== Debris update ==========================
+#pragma region ========================== Debris static init/precache ==========================
 
-qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner)
+void InitDebrisStatics(void)
 {
-	if (self->SpawnInfo & SIF_INLAVA)
-		FXDarkSmoke(self->r.origin, flrand(0.2f, 0.5f), flrand(30.0f, 50.0f));
-
-	if (self->alpha < 0.1f || self->r.scale < 0.1f)
-	{
-		if (self->flags & CEF_FLAG6)
-		{
-			// Let the smoke die out.
-			self->alpha = 0.0f;
-			self->r.scale = 0.0f;
-			self->updateTime = 1000;
-			self->Update = RemoveSelfAI; //mxd. FXDebris_Remove() in original logic.
-
-			return true;
-		}
-
-		return false;
-	}
-
-	if (self->flags & CEF_FLAG6 && irand(0, 2) == 0) // On fire - do a fire trail.
-	{
-		if (flrand(0.0f, 0.3f) > self->alpha || flrand(0.0f, 0.3f) > self->r.scale) //BUGFIX: mxd. Original logic uses irand(0, 0.3) here.
-		{
-			self->dlight = NULL;
-			self->flags &= ~CEF_FLAG6;
-			self->d_alpha = -0.01f;
-		}
-		else
-		{
-			DoFireTrail(self); //FIXME: make them just smoke when still?
-		}
-	}
-
-	return true;
+	ce_class_statics[CID_DEBRIS].msgReceivers[MSG_COLLISION] = Debris_Collision;
 }
 
-static qboolean Debris_Update(client_entity_t* self, centity_t* owner)
+void PreCacheDebris(void)
 {
-	if (fxi.cl->time > self->LifeTime)
-	{
-		self->d_alpha = flrand(-0.05f, -0.2f);
-		self->Update = FXDebris_Vanish;
-
-		return true;
-	}
-
-	Debris_UpdateAngles(self); //mxd
-
-	//mxd. Update trails at 20 FPS...
-	if ((self->flags & CEF_FLAG6) && fxi.cl->time - self->debris_last_trail_update_time > 50) // On fire - do a fire trail.
-	{
-		self->debris_last_trail_update_time = fxi.cl->time;
-		DoFireTrail(self);
-	}
-
-	return true;
-}
-
-static qboolean FleshDebris_Update(client_entity_t* self, centity_t* owner)
-{
-	if (fxi.cl->time > self->LifeTime)
-	{
-		self->d_alpha = flrand(-0.05f, -0.2f);
-		self->Update = FXDebris_Vanish;
-
-		return true;
-	}
-
-	Debris_UpdateAngles(self); //mxd
-
-	//mxd. Update trails at 20 FPS...
-	if (fxi.cl->time - self->debris_last_trail_update_time > 50)
-	{
-		self->debris_last_trail_update_time = fxi.cl->time;
-
-		if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
-		{
-			DoFireTrail(self);
-
-			if (self->flags & CEF_FLAG7)
-				DoBloodTrail(self, 2);
-		}
-		else
-		{
-			DoBloodTrail(self, 2);
-		}
-	}
-
-	return true;
+	for (uint i = 0; i < sizeof(debris_chunks) / sizeof(debris_chunks[0]); i++)
+		debris_chunks[i].model = fxi.RegisterModel(debris_chunks[i].modelName);
 }
 
 #pragma endregion
