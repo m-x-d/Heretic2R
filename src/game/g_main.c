@@ -107,7 +107,9 @@ static void ShutdownGame(void)
 		for (int i = 0; i < game.maxentities; i++, ent++)
 		{
 			SLList_Des(&ent->msgQ.msgs);
-			G_FreeEdict(ent);
+			//mxd. Original logic calls G_FreeEdict(ent) here, which is:
+			// 1. not needed (g_edicts will be cleared by gi.FreeTags(TAG_GAME) below);
+			// 2. will dprint warnings when trying to free edicts reserved for players and bodyqueue.
 		}
 
 		G_ReleaseResourceManagers();
