@@ -443,10 +443,7 @@ LAB_NotSolid:
 					prev_plane = cur_plane;
 				}
 
-				is_bouncing = false;
-
-				if (planes[cur_plane][2] > 0.0f && d >= -0.01f && fabsf(d) < 0.01f)
-					is_bouncing = true;
+				is_bouncing = (planes[cur_plane][2] > 0.0f && d >= -0.01f && fabsf(d) < 0.01f);
 
 				int j;
 				for (j = 0; j < numplanes; j++)
