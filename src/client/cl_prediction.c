@@ -684,7 +684,7 @@ void CL_PredictMovement(void)
 		cl.predictinfo.prevFrame = pred_prevFrame;
 		cl.predictinfo.prevSwapFrame = pred_prevSwapFrame;
 
-		if (cl.playerinfo.deadflag == 0)
+		if (cl.playerinfo.deadflag == DEAD_NO)
 		{
 			VectorCopy(pred_currAngles, cl.predictinfo.currAngles);
 			VectorCopy(pred_prevAngles, cl.predictinfo.prevAngles);
