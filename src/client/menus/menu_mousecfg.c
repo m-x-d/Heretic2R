@@ -47,16 +47,16 @@ static void MouseInvertFunc(void* self) // H2
 
 static void MouseCfg_SetValues(void) // H2
 {
-	Cvar_SetValue("mouse_sensitivity_x", Clamp(mouse_sensitivity_x->value, 1, 25));
-	Cvar_SetValue("mouse_sensitivity_y", Clamp(mouse_sensitivity_y->value, 1, 25));
+	Cvar_SetValue("mouse_sensitivity_x", Clamp(mouse_sensitivity_x->value, 1.0f, 25.0f));
+	Cvar_SetValue("mouse_sensitivity_y", Clamp(mouse_sensitivity_y->value, 1.0f, 25.0f));
 
 	s_options_mousespeedx_slider.curvalue = mouse_sensitivity_x->value * 4.0f;
 	s_options_mousespeedy_slider.curvalue = mouse_sensitivity_y->value * 4.0f;
 
 	s_mouseinvert_box.curvalue = (int)(m_pitch->value < 0.0f);
 
-	Cvar_SetValue("freelook", Clamp(freelook->value, 0, 1));
-	s_options_freelook_box.curvalue = Q_ftol(freelook->value);
+	Cvar_SetValue("freelook", Clamp(freelook->value, 0.0f, 1.0f));
+	s_options_freelook_box.curvalue = (int)freelook->value;
 }
 
 static void MouseCfg_MenuInit(void) // H2

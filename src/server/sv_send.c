@@ -379,13 +379,13 @@ void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, const i
 	MSG_WriteShort(&sv.multicast, soundindex);
 
 	if (flags & SND_VOLUME)
-		MSG_WriteByte(&sv.multicast, Q_ftol(volume * 255.0f));
+		MSG_WriteByte(&sv.multicast, (int)(volume * 255.0f));
 
 	if (flags & SND_ATTENUATION)
-		MSG_WriteByte(&sv.multicast, Q_ftol(attenuation)); // Q2: attenuation * 64
+		MSG_WriteByte(&sv.multicast, (int)attenuation); // Q2: attenuation * 64
 
 	if (flags & SND_OFFSET)
-		MSG_WriteByte(&sv.multicast, Q_ftol(timeofs * 1000.0f));
+		MSG_WriteByte(&sv.multicast, (int)(timeofs * 1000.0f));
 
 	if (flags & SND_ENT)
 	{
@@ -487,13 +487,13 @@ void SV_StartEventSound(const byte event_id, const float leveltime, const vec3_t
 	}
 
 	if (flags & SND_VOLUME)
-		MSG_WriteByte(&sv.multicast, Q_ftol(volume * 255.0f));
+		MSG_WriteByte(&sv.multicast, (int)(volume * 255.0f));
 
 	if (flags & SND_ATTENUATION)
-		MSG_WriteByte(&sv.multicast, Q_ftol(attenuation)); // Q2: attenuation * 64
+		MSG_WriteByte(&sv.multicast, (int)attenuation); // Q2: attenuation * 64
 
 	if (flags & SND_OFFSET)
-		MSG_WriteByte(&sv.multicast, Q_ftol(timeofs * 1000.0f));
+		MSG_WriteByte(&sv.multicast, (int)(timeofs * 1000.0f));
 
 	if (flags & SND_ENT)
 	{

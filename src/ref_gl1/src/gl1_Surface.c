@@ -304,8 +304,8 @@ static void R_BlendLightmaps(model_t* mdl) //mxd. Original logic uses 'currentmo
 		c_visible_lightmaps = 0;
 
 	// H2: set fog values.
-	const qboolean render_fog = Q_ftol(r_fog->value);
-	const int fog_mode = Q_ftol(r_fog_mode->value);
+	const qboolean render_fog = (int)r_fog->value;
+	const int fog_mode = (int)r_fog_mode->value;
 
 	if (render_fog) //mxd. Removed gl_fog_broken check.
 	{

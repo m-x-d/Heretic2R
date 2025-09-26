@@ -358,9 +358,9 @@ void R_BuildLightMap(const msurface_t* surf, byte* dest, int stride)
 	{
 		for (int j = 0; j < smax; j++, bl += 3, dest += 4)
 		{
-			int r = Q_ftol(bl[0]);
-			int g = Q_ftol(bl[1]);
-			int b = Q_ftol(bl[2]);
+			int r = (int)bl[0];
+			int g = (int)bl[1];
+			int b = (int)bl[2];
 
 			// Catch negative lights.
 			r = max(r, 0);

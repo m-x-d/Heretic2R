@@ -96,16 +96,16 @@ static void ConsoleFunc(void* self)
 static void Misc_SetValues(void) // H2
 {
 	Cvar_SetValue("cl_run", Clamp(cl_run->value, 0, 1));
-	s_options_alwaysrun_box.curvalue = Q_ftol(cl_run->value);
+	s_options_alwaysrun_box.curvalue = (int)cl_run->value;
 
 	Cvar_SetValue("lookspring", Clamp(lookspring->value, 0, 1));
-	s_options_lookspring_box.curvalue = Q_ftol(lookspring->value);
+	s_options_lookspring_box.curvalue = (int)lookspring->value;
 
 	Cvar_SetValue("crosshair", Clamp(crosshair->value, 0, 3));
-	s_options_crosshair_box.curvalue = Q_ftol(crosshair->value);
+	s_options_crosshair_box.curvalue = (int)crosshair->value;
 
 	Cvar_SetValue("cl_doautoaim", Clamp(cl_doautoaim->value, 0, 1));
-	s_options_autotarget_box.curvalue = Q_ftol(cl_doautoaim->value);
+	s_options_autotarget_box.curvalue = (int)cl_doautoaim->value;
 }
 
 static void Misc_MenuInit(void) // H2
@@ -240,7 +240,7 @@ static void Misc_MenuInit(void) // H2
 	s_options_violence_box.generic.width = re.BF_Strlen(name_violence);
 	s_options_violence_box.generic.flags = 0;
 	s_options_violence_box.generic.callback = ViolenceFunc;
-	s_options_violence_box.curvalue = Q_ftol(Cvar_VariableValue("blood_level"));
+	s_options_violence_box.curvalue = (int)(Cvar_VariableValue("blood_level"));
 	s_options_violence_box.itemnames = violence_refs;
 
 	Com_sprintf(name_console, sizeof(name_console), "\x02%s", m_item_console->string);

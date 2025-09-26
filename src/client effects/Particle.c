@@ -76,7 +76,7 @@ int AddParticlesToView(client_entity_t* ce)
 
 		const int d_msec = ParticleUpdateTime - current->startTime;
 		const float d_time = (float)d_msec * 0.001f;
-		int alpha = (int)current->color.a + Q_ftol(d_time * current->d_alpha);
+		int alpha = current->color.a + (int)(d_time * current->d_alpha);
 
 		// PULSE ALPHA means that once alpha is at max, reverse and head back down.
 		if (alpha > 255 && ((current->type & PFL_PULSE_ALPHA) || (ce->flags & CEF_PULSE_ALPHA)))
@@ -203,7 +203,7 @@ int UpdateParticles(client_entity_t* ce)
 	{
 		const int d_msec = ParticleUpdateTime - current->startTime;
 		const float d_time = (float)d_msec * 0.001f;
-		int alpha = (int)current->color.a + Q_ftol(d_time * current->d_alpha);
+		int alpha = current->color.a + (int)(d_time * current->d_alpha);
 
 		// PULSE ALPHA means that once alpha is at max, reverse and head back down.
 		if (alpha > 255 && ((ce->flags & CEF_PULSE_ALPHA) || (current->type & PFL_PULSE_ALPHA)))

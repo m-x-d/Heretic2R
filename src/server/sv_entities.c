@@ -502,9 +502,9 @@ static void SV_WritePlayerstateToClient(const client_frame_t* from, const client
 
 	if (GetB(flags, PS_REMOTE_VIEWORIGIN))
 	{
-		MSG_WriteShort(msg, Q_ftol(ps->remote_vieworigin[0]));
-		MSG_WriteShort(msg, Q_ftol(ps->remote_vieworigin[1]));
-		MSG_WriteShort(msg, Q_ftol(ps->remote_vieworigin[2]));
+		MSG_WriteShort(msg, (int)ps->remote_vieworigin[0]);
+		MSG_WriteShort(msg, (int)ps->remote_vieworigin[1]);
+		MSG_WriteShort(msg, (int)ps->remote_vieworigin[2]);
 	}
 
 	if (GetB(flags, PS_REMOTE_ID))
@@ -521,7 +521,7 @@ static void SV_WritePlayerstateToClient(const client_frame_t* from, const client
 	}
 
 	if (GetB(flags, PS_FOV))
-		MSG_WriteByte(msg, Q_ftol(ps->fov));
+		MSG_WriteByte(msg, (int)ps->fov);
 
 	if (GetB(flags, PS_RDFLAGS))
 		MSG_WriteByte(msg, ps->rdflags);
@@ -547,13 +547,13 @@ static void SV_WritePlayerstateToClient(const client_frame_t* from, const client
  
 	if (GetB(flags, PS_MINSMAXS))
 	{
-		MSG_WriteShort(msg, Q_ftol(ps->mins[0] * 8.0f));
-		MSG_WriteShort(msg, Q_ftol(ps->mins[1] * 8.0f));
-		MSG_WriteShort(msg, Q_ftol(ps->mins[2] * 8.0f));
+		MSG_WriteShort(msg, (int)(ps->mins[0] * 8.0f));
+		MSG_WriteShort(msg, (int)(ps->mins[1] * 8.0f));
+		MSG_WriteShort(msg, (int)(ps->mins[2] * 8.0f));
 
-		MSG_WriteShort(msg, Q_ftol(ps->maxs[0] * 8.0f));
-		MSG_WriteShort(msg, Q_ftol(ps->maxs[1] * 8.0f));
-		MSG_WriteShort(msg, Q_ftol(ps->maxs[2] * 8.0f));
+		MSG_WriteShort(msg, (int)(ps->maxs[0] * 8.0f));
+		MSG_WriteShort(msg, (int)(ps->maxs[1] * 8.0f));
+		MSG_WriteShort(msg, (int)(ps->maxs[2] * 8.0f));
 	}
 
 	if (GetB(flags, PS_INVENTORY))

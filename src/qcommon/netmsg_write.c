@@ -347,7 +347,7 @@ static void MSG_WriteJoints(sizebuf_t* sb, const int joint_index) // H2
 		if (joint->changed[i])
 		{
 			const float angle = ClampAngleRad(joint->destAngles[i]);
-			const int byteangle = ClampI(Q_ftol(angle * RAD_TO_BYTEANGLE + 128.0f), 0, 255);
+			const int byteangle = ClampI((int)(angle * RAD_TO_BYTEANGLE + 128.0f), 0, 255);
 			MSG_WriteByte(sb, byteangle);
 		}
 	}
@@ -575,7 +575,7 @@ void MSG_WriteDeltaEntity(const entity_state_t* from, entity_state_t* to, sizebu
 		MSG_WriteByte(msg, to->clientnum);
 
 	if (GetB(bits, U_SCALE))
-		MSG_WriteByte(msg, Q_ftol(to->scale * 100.0f));
+		MSG_WriteByte(msg, (int)(to->scale * 100.0f));
 
 	if (GetB(bits, U_EFFECTS8) && GetB(bits, U_EFFECTS16))
 		MSG_WriteLong(msg, to->effects);
@@ -780,7 +780,7 @@ void MSG_WriteDirMag(sizebuf_t* sb, const vec3_t dir) // H2
 	MSG_WriteByte(sb, best);
 
 	const float mag = Clamp(VectorLength(dir) * 0.1f, 1.0f, 255.0f);
-	MSG_WriteByte(sb, Q_ftol(mag));
+	MSG_WriteByte(sb, (int)mag);
 }
 
 void MSG_WriteYawPitch(sizebuf_t* sb, const vec3_t vector) // H2

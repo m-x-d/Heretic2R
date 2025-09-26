@@ -53,7 +53,7 @@ static qboolean MeteorBarrierTrailThink(struct client_entity_s* self, centity_t*
 	Vec3ScaleAssign(1.0f / length, delta);
 
 	// Work out number of bits.
-	int num_trails = Q_ftol(length);
+	int num_trails = (int)length;
 	num_trails = max(1, num_trails);
 	float alpha = METEOR_TRAIL_ALPHA;
 

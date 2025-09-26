@@ -445,7 +445,7 @@ static void P_WorldEffects(void)
 			VectorCopy(current_player->s.origin, origin);
 			origin[2] += current_player->client->playerinfo.waterheight;
 
-			const byte angle_byte = (byte)Q_ftol((angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
+			const byte angle_byte = (byte)((angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
 			gi.CreateEffect(NULL, FX_WATER_WAKE, 0, origin, "sbv", current_player->s.number, angle_byte, current_player->velocity);
 		}
 	}

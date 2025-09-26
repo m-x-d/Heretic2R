@@ -193,8 +193,8 @@ edict_t* MorphReflect(edict_t* self, edict_t* other, vec3_t vel)
 	G_LinkMissile(egg);
 
 	// Create new trails for the new missile.
-	const byte yaw = (byte)Q_ftol(egg->s.angles[YAW] / ANGLE_360 * 255.0f);
-	const byte pitch = (byte)Q_ftol(egg->s.angles[PITCH] / ANGLE_360 * 255.0f);
+	const byte yaw = (byte)(egg->s.angles[YAW] / ANGLE_360 * 255.0f);
+	const byte pitch = (byte)(egg->s.angles[PITCH] / ANGLE_360 * 255.0f);
 	gi.CreateEffect(&egg->s, FX_SPELL_MORPHMISSILE, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "bb", yaw, pitch);
 
 	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it.
@@ -236,7 +236,7 @@ void SpellCastMorph(edict_t* caster, const vec3_t start_pos, const vec3_t aim_an
 
 		// If we are the first effect, calculate our yaw.
 		if (i == 0)
-			yaw = (byte)Q_ftol(egg->s.angles[YAW] / 360.0f * 255.0f);
+			yaw = (byte)(egg->s.angles[YAW] / 360.0f * 255.0f);
 
 		morph_array[i] = egg->s.number; // Store the entity numbers for sending with the effect.
 		current_ang += ANGLE_INC; // Increment current angle to get circular radius of ovums.

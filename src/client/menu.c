@@ -888,7 +888,7 @@ static void Slider_Draw(menuslider_t* slider, const qboolean selected)
 #define SLIDER_RANGE	10
 
 	const float alpha = M_GetMenuAlpha();
-	const paletteRGBA_t color = { .r = 255, .g = 255, .b = 255, .a = (byte)Q_ftol(alpha * 255.0f) };
+	const paletteRGBA_t color = { .r = 255, .g = 255, .b = 255, .a = (byte)(alpha * 255.0f) };
 
 	// Draw slider name.
 	int x = M_GetMenuLabelX(slider->generic.width);
@@ -914,13 +914,13 @@ static void Slider_Draw(menuslider_t* slider, const qboolean selected)
 	re.DrawChar(x + ui_char_size * SLIDER_RANGE, y, ui_scale, 2, color);
 
 	// Draw slider value.
-	re.DrawChar(x + Q_ftol(slider->range * (float)ui_char_size * (SLIDER_RANGE - 1)), y, ui_scale, 3, color);
+	re.DrawChar(x + (int)(slider->range * (float)ui_char_size * (SLIDER_RANGE - 1)), y, ui_scale, 3, color);
 }
 
 static void Field_Draw(const menufield_t* field, const qboolean selected)
 {
 	const float alpha = M_GetMenuAlpha();
-	const paletteRGBA_t color = { .r = 255, .g = 255, .b = 255, .a = (byte)Q_ftol(alpha * 255.0f) };
+	const paletteRGBA_t color = { .r = 255, .g = 255, .b = 255, .a = (byte)(alpha * 255.0f) };
 
 	int y = field->generic.y + field->generic.parent->y;
 
@@ -1233,7 +1233,7 @@ void Menu_DrawObjectives(const char* message, const int max_line_length) // H2
 				default:
 				{
 					paletteRGBA_t color = TextPalette[color_index];
-					color.a = (byte)Q_ftol(cls.m_menualpha * 255);
+					color.a = (byte)(cls.m_menualpha * 255.0f);
 					re.DrawChar(x, y, ui_scale, *s, color);
 				} break;
 			}

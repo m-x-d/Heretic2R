@@ -876,13 +876,6 @@ _inline float Q_fabs(const float f)
 	return fabsf(f); //mxd. No longer the case when SSE is involved (https://stackoverflow.com/questions/44630015/how-would-fabsdouble-be-implemented-on-x86-is-it-an-expensive-operation)
 }
 
-//mxd. Avoid assembly...
-//TODO: use int instead of long, it's only used with int anyway?
-_inline long Q_ftol(const float f)
-{
-	return (int)f;
-}
-
 //mxd
 _inline int Q_atoi(const char* s)
 {

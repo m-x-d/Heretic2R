@@ -725,8 +725,8 @@ void SP_misc_magic_portal(edict_t* self)
 
 static void SoundAmbientThink(edict_t* self) //mxd. Named 'soundambient_think' in original logic.
 {
-	const byte b_attenuation = (byte)(Q_ftol(self->attenuation));
-	const byte b_volume = (byte)(Q_ftol(self->volume * 255.0f));
+	const byte b_attenuation = (byte)self->attenuation;
+	const byte b_volume = (byte)(self->volume * 255.0f);
 
 	self->s.sound_data = (b_volume & ENT_VOL_MASK) | b_attenuation;
 
@@ -816,7 +816,7 @@ static void SoundAmbientThink(edict_t* self) //mxd. Named 'soundambient_think' i
 		default:
 		{
 			const byte b_style = (byte)self->style;
-			const byte b_wait = (byte)(Q_ftol(self->wait));
+			const byte b_wait = (byte)self->wait;
 			gi.CreatePersistantEffect(&self->s, FX_SOUND, CEF_BROADCAST | CEF_OWNERS_ORIGIN, self->s.origin, "bbbb", b_style, b_attenuation, b_volume, b_wait);
 		} break;
 	}

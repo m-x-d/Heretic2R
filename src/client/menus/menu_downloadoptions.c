@@ -43,19 +43,19 @@ static void DownloadCallback(const void* self)
 static void DownloadOptions_SetValues(void) // H2
 {
 	Cvar_SetValue("allow_download", Clamp(allow_download->value, 0, 1));
-	s_allow_download_box.curvalue = Q_ftol(allow_download->value);
+	s_allow_download_box.curvalue = (int)allow_download->value;
 
 	Cvar_SetValue("allow_download_maps", Clamp(allow_download_maps->value, 0, 1));
-	s_allow_download_maps_box.curvalue = Q_ftol(allow_download_maps->value);
+	s_allow_download_maps_box.curvalue = (int)allow_download_maps->value;
 
 	Cvar_SetValue("allow_download_players", Clamp(allow_download_players->value, 0, 1));
-	s_allow_download_players_box.curvalue = Q_ftol(allow_download_players->value);
+	s_allow_download_players_box.curvalue = (int)allow_download_players->value;
 
 	Cvar_SetValue("allow_download_models", Clamp(allow_download_models->value, 0, 1));
-	s_allow_download_models_box.curvalue = Q_ftol(allow_download_models->value);
+	s_allow_download_models_box.curvalue = (int)allow_download_models->value;
 
 	Cvar_SetValue("allow_download_sounds", Clamp(allow_download_sounds->value, 0, 1));
-	s_allow_download_sounds_box.curvalue = Q_ftol(allow_download_sounds->value);
+	s_allow_download_sounds_box.curvalue = (int)allow_download_sounds->value;
 }
 
 static void DownloadOptions_MenuInit(void)

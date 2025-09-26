@@ -398,9 +398,9 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 
 		VectorCopy_Macro(pm.cmd.angles, old_cmd_angles);
 
-		pm.cmd.forwardmove = (short)Q_ftol(cl.playerinfo.fwdvel);
-		pm.cmd.sidemove = (short)Q_ftol(cl.playerinfo.sidevel);
-		pm.cmd.upmove = (short)Q_ftol(cl.playerinfo.upvel);
+		pm.cmd.forwardmove = (short)cl.playerinfo.fwdvel;
+		pm.cmd.sidemove = (short)cl.playerinfo.sidevel;
+		pm.cmd.upmove = (short)cl.playerinfo.upvel;
 
 		pm.knockbackfactor = Clamp(cl.playerinfo.knockbacktime - cl.playerinfo.leveltime, 0.0f, 1.0f);
 		pm.groundentity = (struct edict_s*)cl.playerinfo.groundentity;

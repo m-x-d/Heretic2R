@@ -599,7 +599,7 @@ void G_SetStats(const edict_t* ent)
 	ps->stats[STAT_FRAGS] = (short)pi->resp.score;
 
 	// Health.
-	ps->stats[STAT_HEALTH_ICON] = (short)gi.imageindex(health_icons[Q_ftol(level.time * 2.0f) & 1]);
+	ps->stats[STAT_HEALTH_ICON] = (short)gi.imageindex(health_icons[(int)(level.time * 2.0f) & 1]);
 	ps->stats[STAT_HEALTH] = (short)ent->health;
 
 	// Weapon / defense.

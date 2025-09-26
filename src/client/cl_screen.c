@@ -723,7 +723,7 @@ static void DrawBar(const int x, const int y, int width, const int height, const
 		if (*bg_name != 0)
 			re.DrawStretchPic(x, y - 3 * ui_scale, width * ui_scale, (height + 6) * ui_scale, bg_name, 1.0f, DSP_NONE);
 
-		const int offset = Q_ftol((float)height - (float)(height * scaler) * 0.01f);
+		const int offset = (int)((float)height - (float)(height * scaler) * 0.01f);
 		re.DrawStretchPic(x, y + offset * ui_scale, width * ui_scale, (height - offset) * ui_scale, bar_name, 1.0f, DSP_NONE);
 	}
 	else
@@ -731,7 +731,7 @@ static void DrawBar(const int x, const int y, int width, const int height, const
 		if (*bg_name != 0)
 			re.DrawStretchPic(x - 3 * ui_scale, y, (width + 6) * ui_scale, height * ui_scale, bg_name, 1.0f, DSP_NONE);
 
-		const int offset = Q_ftol((float)width - (float)(width * scaler) * 0.01f);
+		const int offset = (int)((float)width - (float)(width * scaler) * 0.01f);
 		re.DrawStretchPic(x, y, (width - offset) * ui_scale, height * ui_scale, bar_name, 1.0f, DSP_NONE);
 	}
 }

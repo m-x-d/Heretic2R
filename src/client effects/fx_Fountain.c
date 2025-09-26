@@ -44,7 +44,7 @@ static qboolean WaterfallBaseSpawner(client_entity_t* spawner, centity_t* owner)
 #define NUM_SPLASHES	0.005f
 
 	VectorCopy(owner->current.origin, spawner->r.origin);
-	const int count = GetScaledCount(Q_ftol(spawner->xscale * spawner->yscale * NUM_SPLASHES), 0.8f);
+	const int count = GetScaledCount((int)(spawner->xscale * spawner->yscale * NUM_SPLASHES), 0.8f);
 	for (int i = 0; i < count; i++)
 		CreateFountainSplash(spawner, spawner->xscale, spawner->yscale, spawner->yaw);
 

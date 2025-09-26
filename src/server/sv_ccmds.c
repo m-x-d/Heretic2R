@@ -677,7 +677,7 @@ static void SV_ListDMFlags_f(void) // H2
 {
 	char* state[16];
 
-	uint flags = Q_ftol(dmflags->value);
+	uint flags = (uint)dmflags->value;
 	for (int i = 0; i < 16; i++)
 	{
 		state[i] = ((flags & 1) ? "on " : "off");
@@ -722,7 +722,7 @@ static void SV_SetDMFlags_f(void) // H2
 			flags |= 1 << (flag_num - 1);
 	}
 
-	dmflags->value = (float)(Q_ftol(dmflags->value) | flags);
+	dmflags->value = (float)((uint)dmflags->value | flags);
 	SV_ListDMFlags_f();
 }
 
@@ -742,7 +742,7 @@ static void SV_UnsetDMFlags_f(void) // H2
 			flags |= 1 << (flag_num - 1);
 	}
 
-	dmflags->value = (float)(Q_ftol(dmflags->value) & ~flags);
+	dmflags->value = (float)((uint)dmflags->value & ~flags);
 	SV_ListDMFlags_f();
 }
 

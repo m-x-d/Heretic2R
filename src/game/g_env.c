@@ -71,9 +71,9 @@ static void SetupEnvSmokeEffect(edict_t* self) //mxd. Added to reduce code dupli
 	AngleVectors(self->s.angles, dir, NULL, NULL);
 
 	const byte scale = (byte)(self->s.scale * 32.0f);
-	const byte speed = (byte)Q_ftol(self->speed);
-	const byte wait = (byte)Q_ftol(self->wait);
-	const byte max_range = (byte)Q_ftol(self->maxrange);
+	const byte speed = (byte)self->speed;
+	const byte wait = (byte)self->wait;
+	const byte max_range = (byte)self->maxrange;
 
 	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_ENVSMOKE, CEF_BROADCAST, self->s.origin, "bdbbb", scale, dir, speed, wait, max_range);
 }

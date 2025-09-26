@@ -265,7 +265,7 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 		{
 			// Wacky all colors at minimum, but drawn at max instead for additive transparent sprites.
 			current->alpha = max(0.0f, current->alpha);
-			current->r.color.a = (byte)Q_ftol(current->alpha * 255.0f);
+			current->r.color.a = (byte)(current->alpha * 255.0f);
 
 			if (current->r.color.a > 0 && current->r.scale > 0.0f)
 			{

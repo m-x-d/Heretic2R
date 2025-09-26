@@ -21,7 +21,7 @@ void PreCacheSmoke(void)
 //mxd. Added to reduce code duplication.
 static void SpawnSmoke(const vec3_t origin, const float scale, const float range, const uint color)
 {
-	const int duration = Q_ftol(GetTimeToReachDistance(50.0f, 0.0f, range));
+	const int duration = (int)(GetTimeToReachDistance(50.0f, 0.0f, range));
 	client_entity_t* smoke = ClientEntity_new(-1, RF_TRANSLUCENT, origin, NULL, 500);
 
 	smoke->r.model = &smoke_model;

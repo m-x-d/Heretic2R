@@ -456,7 +456,7 @@ int GetScaledCount(const int count, float refdepend) //TODO: remove 2-nd arg?
 	else if (R_DETAIL == DETAIL_LOW)
 		work *= 0.5f;
 
-	return Q_ftol(max(work, 1.0f));
+	return (int)max(work, 1.0f);
 }
 
 void AdvanceParticle(client_particle_t* p, const int ms)

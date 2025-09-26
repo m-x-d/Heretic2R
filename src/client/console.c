@@ -86,7 +86,7 @@ void Con_ToggleConsole_f(void)
 		M_ForceMenuOff();
 		cls.key_dest = key_console;
 
-		if (Q_ftol(Cvar_VariableValue("maxclients")) == 1 && Com_ServerState())
+		if ((int)(Cvar_VariableValue("maxclients")) == 1 && Com_ServerState())
 			Cvar_Set("paused", "1");
 	}
 }
@@ -395,7 +395,7 @@ void Con_DrawNotify(void)
 		if (i < 0)
 			continue;
 
-		const int time = Q_ftol(con.times[i % NUM_CON_TIMES]);
+		const int time = (int)con.times[i % NUM_CON_TIMES];
 
 		if (time > 0 && cls.realtime - time <= (int)(con_notifytime->value * 1000))
 		{

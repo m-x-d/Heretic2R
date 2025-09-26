@@ -122,9 +122,9 @@ void SP_env_waterfall_base(edict_t* self)
 
 	gi.linkentity(self);
 
-	const short xrad = (short)Q_ftol(self->s.angles[0]);
-	const short yrad = (short)Q_ftol(self->s.angles[2]);
-	const byte yaw = (byte)Q_ftol((self->s.angles[1] * 256.0f) / 360.0f);
+	const short xrad = (short)self->s.angles[0];
+	const short yrad = (short)self->s.angles[2];
+	const byte yaw = (byte)(self->s.angles[1] * 256.0f / 360.0f);
 	gi.CreatePersistantEffect(&self->s, FX_WATERFALLBASE, CEF_BROADCAST, self->s.origin, "bbb", xrad, yrad, yaw);
 }
 
@@ -210,7 +210,7 @@ void SP_env_mist(edict_t* self)
 	VectorSet(self->mins, -5.0f, -5.0f, -5.0f);
 	VectorSet(self->maxs, 5.0f, 5.0f, 5.0f);
 
-	const byte b_scale = (byte)(Q_ftol(self->s.scale * 10.0f));
+	const byte b_scale = (byte)(self->s.scale * 10.0f);
 	gi.CreatePersistantEffect(&self->s, FX_MIST, CEF_BROADCAST, self->s.origin, "b", b_scale);
 	gi.linkentity(self);
 }

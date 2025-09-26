@@ -62,7 +62,7 @@ void CL_Record_f(void)
 	MSG_WriteLong(&buf, 0x10000 + cl.servercount);
 	MSG_WriteByte(&buf, 1); // Demos are always attract loops.
 	MSG_WriteString(&buf, cl.gamedir);
-	MSG_WriteByte(&buf, Q_ftol(game_downloadable_type->value)); // H2
+	MSG_WriteByte(&buf, (byte)game_downloadable_type->value); // H2
 	MSG_WriteString(&buf, fxe.client_string); // H2
 	MSG_WriteShort(&buf, cl.playernum);
 

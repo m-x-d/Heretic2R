@@ -865,7 +865,7 @@ static void M_Credits_MenuDraw(void)
 		}
 
 		const int x = (viddef.width - ui_char_size * (int)strlen(line)) / 2;
-		color.a = (byte)Q_ftol(cls.m_menualpha * 255);
+		color.a = (byte)(cls.m_menualpha * 255.0f);
 		DrawString(x, y, line, color, -1);
 	}
 

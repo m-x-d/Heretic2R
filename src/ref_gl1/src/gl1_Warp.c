@@ -13,8 +13,8 @@
 #define TURBSCALE		(256.0f / ANGLE_360) //mxd. Replaced (2 * M_PI) with ANGLE_360
 
 //mxd. Helper defines...
-#define TURBSIN_V0(v0, v1)	(Q_ftol((((v0) * 2.3f + (v1)) * 0.015f + r_newrefdef.time * 3.0f) * TURBSCALE) & 255)
-#define TURBSIN_V1(v0, v1)	(Q_ftol((((v1) * 2.3f + (v0)) * 0.015f + r_newrefdef.time * 6.0f) * TURBSCALE) & 255)
+#define TURBSIN_V0(v0, v1)	((int)((((v0) * 2.3f + (v1)) * 0.015f + r_newrefdef.time * 3.0f) * TURBSCALE) & 255)
+#define TURBSIN_V1(v0, v1)	((int)((((v1) * 2.3f + (v0)) * 0.015f + r_newrefdef.time * 6.0f) * TURBSCALE) & 255)
 
 #pragma region ========================== POLYGON GENERATION ==========================
 
@@ -38,11 +38,11 @@ void R_EmitWaterPolys(const msurface_t* fa, const qboolean undulate) // H2: extr
 			const float os = v[3];
 			const float ot = v[4];
 
-			float s = os + turbsin[Q_ftol((ot * 0.125f + r_newrefdef.time) * TURBSCALE) & 255];
+			float s = os + turbsin[(int)((ot * 0.125f + r_newrefdef.time) * TURBSCALE) & 255];
 			s += scroll;
 			s /= 64.0f;
 
-			float t = ot + turbsin[Q_ftol((os * 0.125f + r_newrefdef.time) * TURBSCALE) & 255];
+			float t = ot + turbsin[(int)((os * 0.125f + r_newrefdef.time) * TURBSCALE) & 255];
 			t /= 64.0f;
 
 			glTexCoord2f(s, t);

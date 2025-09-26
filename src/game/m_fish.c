@@ -320,7 +320,7 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 					AngleVectors(self->s.angles, dir, NULL, NULL);
 					Vec3ScaleAssign(200.0f, dir);
 
-					const byte b_angle = (byte)Q_ftol((self->s.angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
+					const byte b_angle = (byte)((self->s.angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
 
 					gi.CreateEffect(NULL, FX_WATER_WAKE, 0, trace.endpos, "sbv", self->s.number, b_angle, dir);
 				}

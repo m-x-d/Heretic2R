@@ -47,7 +47,7 @@ static void DMFlagCallback(void* self)
 {
 	uint bit = 0;
 	int remove_flag = 0;
-	uint flags = Q_ftol(Cvar_VariableValue("dmflags"));
+	uint flags = (uint)(Cvar_VariableValue("dmflags"));
 	const menulist_t* f = self;
 
 	if (f == &s_teamplay_box)
@@ -162,7 +162,7 @@ static void DMOptions_MenuInit(void)
 	static char name_friendlyfire[MAX_QPATH];
 	static char name_dismember[MAX_QPATH];
 
-	const int dm_flags = Q_ftol(Cvar_VariableValue("dmflags"));
+	const uint dm_flags = (uint)(Cvar_VariableValue("dmflags"));
 	s_dmoptions_menu.nitems = 0;
 
 	Com_sprintf(name_weaponsstay, sizeof(name_weaponsstay), "\x02%s", m_item_weaponsstay->string);

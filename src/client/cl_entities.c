@@ -1147,7 +1147,7 @@ static void CL_UpdateWallDistances(void) // H2
 	if (cl.wall_dist[0] <= 790.0f)
 		sound_preset += 2;
 
-	const int world_preset = Q_ftol(EAX_default->value);
+	const int world_preset = (int)EAX_default->value;
 
 	Cvar_SetValue("EAX_preset", (float)eax_presets[world_preset][sound_preset]);
 	cl.wall_check = (cl.wall_check + 1) % NUM_WALL_CHECKS;
