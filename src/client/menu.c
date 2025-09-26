@@ -1188,16 +1188,21 @@ static int SplitLines(char* dst, const int dst_size, const char* src, const int 
 	return num_lines;
 }
 
-static int GetLineLength(const char* text) // H2
+static int GetLineLength(const char* text, int* text_len) // H2
 {
-	int len = 0;
+	*text_len = 0;
+	int str_len = 0;
+	
 	while (*text != 0 && *text != '\n')
 	{
-		len++;
+		if (*text != '$' && *text != '%') //mxd. Don't count special chars.
+			*text_len += 1;
+
+		str_len++;
 		text++;
 	}
 
-	return len;
+	return str_len;
 }
 
 void Menu_DrawObjectives(const char* message, const int max_line_length) // H2
@@ -1211,12 +1216,13 @@ void Menu_DrawObjectives(const char* message, const int max_line_length) // H2
 
 	for (int i = 0; i < num_lines; i++, s++, y += ui_char_size)
 	{
-		const int len = GetLineLength(s);
+		int text_len; //mxd
+		const int str_len = GetLineLength(s, &text_len);
 		int x = M_GetMenuLabelX(0); // Get page center in DEF_WIDTH x DEF_HEIGHT screen size.
 		x = (x * ui_screen_width / DEF_WIDTH) + ui_screen_offset_x; // Convert to real screen size.
-		x -= len * ui_char_size / 2; // Factor in line length.
+		x -= text_len * ui_char_size / 2; // Factor in line length. Use text length without special markers --mxd.
 
-		for (int c = 0; c < len; c++, s++)
+		for (int c = 0; c < str_len; c++, s++)
 		{
 			switch (*s)
 			{
