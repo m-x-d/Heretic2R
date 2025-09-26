@@ -876,7 +876,7 @@ void M_GetSlopePitchRoll(edict_t* ent, vec3_t pass_slope) //mxd. Named 'pitch_ro
 	const float dot = DotProduct(new_fwd, old_fwd);
 
 	ent->s.angles[PITCH] = dot * pitch;
-	ent->s.angles[ROLL] = (1.0f - Q_fabs(dot)) * pitch * mod;
+	ent->s.angles[ROLL] = (1.0f - fabsf(dot)) * pitch * mod;
 }
 
 #pragma region ========================== Monster Helper Functions ==========================

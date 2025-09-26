@@ -154,8 +154,8 @@ static void AssassinDaggerTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 		gi.sound(self, CHAN_AUTO, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
 
 		float damage = flrand(ASSASSIN_MIN_DAMAGE, ASSASSIN_MAX_DAMAGE);
-		if (SKILL >= SKILL_HARD && Q_fabs(self->s.angles[PITCH]) < 45.0f) // Up to extra 10 pts damage if pointed correctly AND on hard skill.
-			damage += 45.0f / (45 - Q_fabs(self->s.angles[PITCH])) * 10;
+		if (SKILL >= SKILL_HARD && fabsf(self->s.angles[PITCH]) < 45.0f) // Up to extra 10 pts damage if pointed correctly AND on hard skill.
+			damage += 45.0f / (45.0f - fabsf(self->s.angles[PITCH])) * 10.0f;
 
 		T_Damage(other, self, self->owner, self->movedir, self->s.origin, normal, (int)damage, 0, 0, MOD_DIED);
 	}

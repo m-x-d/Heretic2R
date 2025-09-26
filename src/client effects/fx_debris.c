@@ -826,7 +826,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 	}
 
 	// Don't bounce if velocity is small.
-	if (trace->plane.normal[2] > GROUND_NORMAL && (Q_fabs(self->velocity[2]) < 100.0f || VectorLength(self->velocity) < 100.0f || trace->fraction < 0.075f))
+	if (trace->plane.normal[2] > GROUND_NORMAL && (fabsf(self->velocity[2]) < 100.0f || VectorLength(self->velocity) < 100.0f || trace->fraction < 0.075f))
 	{
 		// Set pitch so that chunks lie flat on ground.
 		self->r.angles[PITCH] = ANGLE_90;

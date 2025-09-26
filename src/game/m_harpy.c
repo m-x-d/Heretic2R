@@ -237,7 +237,7 @@ static qboolean HarpyCheckDirections(const edict_t* self, const vec3_t goal, con
 static qboolean HarpyCheckSwoop(const edict_t* self, const vec3_t goal_pos) //mxd. Named 'harpy_check_swoop' in original logic.
 {
 	// Find the difference in the target's height and the creature's height.
-	float z_diff = Q_fabs(self->enemy->s.origin[2] - self->s.origin[2]);
+	float z_diff = fabsf(self->enemy->s.origin[2] - self->s.origin[2]);
 
 	if (z_diff < HARPY_MIN_SWOOP_DIST)
 		return false;
@@ -639,7 +639,7 @@ void harpy_ai_glide(edict_t* self, float forward_offset, float right_offset, flo
 	const float yaw_delta = self->ideal_yaw - self->s.angles[YAW];
 
 	// If enough, roll the creature to simulate gliding.
-	if (Q_fabs(yaw_delta) > self->yaw_speed)
+	if (fabsf(yaw_delta) > self->yaw_speed)
 	{
 		const float roll = yaw_delta / 4.0f * Q_signf(dot);
 		self->s.angles[ROLL] += roll;
@@ -873,7 +873,7 @@ void harpy_dive_move(edict_t* self) //mxd. Named 'move_harpy_dive' in original l
 
 	// Find out the Z and Horizontal deltas to target.
 	const float enemy_z = self->enemy->s.origin[2] + flrand(self->maxs[2], self->enemy->maxs[2]);
-	const float z_dist = Q_fabs(self->s.origin[2] - enemy_z);
+	const float z_dist = fabsf(self->s.origin[2] - enemy_z);
 
 	if (z_dist > HARPY_MAX_DIVE_DIST)
 	{
@@ -1129,7 +1129,7 @@ void harpy_hover_move(edict_t* self) //mxd. Named 'move_harpy_hover' in original
 		}
 
 		// Find the difference in the target's height and the creature's height.
-		const float z_dist = Q_fabs(self->enemy->s.origin[2] - self->s.origin[2]);
+		const float z_dist = fabsf(self->enemy->s.origin[2] - self->s.origin[2]);
 
 		// We can't swoop because we're too low, so fly upwards if possible.
 		if (z_dist < HARPY_MIN_SWOOP_DIST)

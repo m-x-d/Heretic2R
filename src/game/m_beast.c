@@ -147,7 +147,7 @@ qboolean TBeastCheckJump(edict_t* self)
 				return true;
 			}
 
-			if (Q_fabs(z_diff) <= 32.0f)
+			if (fabsf(z_diff) <= 32.0f)
 			{
 				SetAnim(self, ANIM_BITEUP);
 				return true;
@@ -1183,7 +1183,7 @@ static void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in o
 
 	qboolean go_jump = false;
 
-	if (Q_fabs(self->s.angles[PITCH]) > 45.0f || Q_fabs(self->s.angles[ROLL]) > 45.0f)
+	if (fabsf(self->s.angles[PITCH]) > 45.0f || fabsf(self->s.angles[ROLL]) > 45.0f)
 	{
 		go_jump = true;
 	}
@@ -1192,7 +1192,7 @@ static void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in o
 		// Raise him up if on flat ground, lower is on slope - to keep feet on ground!
 		//FIXME - use checkbottom plane instead?
 		float mins_z = self->mins[2];
-		self->mins[2] = ((Q_fabs(self->s.angles[PITCH]) + Q_fabs(self->s.angles[ROLL])) * 0.5f) / 45.0f * 144.0f - 6.0f + TB_UP_OFFSET;
+		self->mins[2] = ((fabsf(self->s.angles[PITCH]) + fabsf(self->s.angles[ROLL])) * 0.5f) / 45.0f * 144.0f - 6.0f + TB_UP_OFFSET;
 		mins_z -= self->mins[2];
 
 		if (mins_z != 0.0f)

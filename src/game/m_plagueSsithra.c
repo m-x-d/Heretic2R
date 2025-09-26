@@ -1735,7 +1735,7 @@ void ssithra_check_bound(edict_t* self) //mxd. Named 'ssithraBoundCheck' in orig
 	gi.trace(start_pos, self->mins, self->maxs, end_pos, self, MASK_SOLID | MASK_WATER, &trace);
 
 	// If it's a step down or less, no jump.
-	if (Q_fabs(trace.endpos[2] - self->s.origin[2]) <= 18.0f)
+	if (fabsf(trace.endpos[2] - self->s.origin[2]) <= 18.0f)
 		return;
 
 	if (trace.fraction == 1.0f || trace.allsolid || trace.startsolid)
@@ -1799,7 +1799,7 @@ void ssithra_check_dive(edict_t* self) //mxd. Named 'ssithraDiveCheck' in origin
 
 	// Make sure the enemy isn't right here and accessible before diving in.
 	if (vhlen(target_origin, self->s.origin) < 96.0f && // Close enough?
-		Q_fabs((target_origin[2] + targ_mins[2]) - (self->s.origin[2] + self->mins[2])) < 18.0f && // Relatively same stepheight.
+		fabsf((target_origin[2] + targ_mins[2]) - (self->s.origin[2] + self->mins[2])) < 18.0f && // Relatively same stepheight.
 		!(gi.pointcontents(target_origin) & CONTENTS_WATER) && !(self->monsterinfo.aiflags & AI_FLEE))
 	{
 		return;
@@ -1960,7 +1960,7 @@ void ssithra_try_spawn_water_entry_splash(edict_t* self) //mxd. Named 'ssithraCh
 	if (self->ssithra_watersplash_spawned)
 		return;
 
-	if (Q_fabs(self->velocity[0]) + Q_fabs(self->velocity[1]) < 200.0f)
+	if (fabsf(self->velocity[0]) + fabsf(self->velocity[1]) < 200.0f)
 	{
 		vec3_t end_pos;
 		VectorCopy(self->s.origin, end_pos);
@@ -2007,7 +2007,7 @@ void ssithra_try_spawn_water_entry_splash(edict_t* self) //mxd. Named 'ssithraCh
 
 void ssithra_check_faced_out_of_water_jump(edict_t* self) //mxd. Named 'ssithraCheckFacedNamor' in original logic.
 {
-	if (!(self->spawnflags & MSF_FIXED) && Q_fabs(self->ideal_yaw - self->s.angles[YAW]) < self->yaw_speed)
+	if (!(self->spawnflags & MSF_FIXED) && fabsf(self->ideal_yaw - self->s.angles[YAW]) < self->yaw_speed)
 		SetAnim(self, ANIM_NAMOR);
 }
 

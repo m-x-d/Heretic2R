@@ -921,7 +921,7 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 
 	// If the player is going down, then check his intended speed over the next .1 sec.
 	// If the player is going up, then check his velocity over the LAST .1 sec.
-	float vertlength = Q_fabs(info->sv_gravity * 0.5f + Q_fabs(info->velocity[2])) * 0.1f;
+	float vertlength = fabsf(info->sv_gravity * 0.5f + fabsf(info->velocity[2])) * 0.1f;
 	vertlength = max(GRAB_HAND_VERTZONE, vertlength);
 
 	// Check right hand position.
@@ -1605,9 +1605,9 @@ void PlayerSwimMoveFunc(playerinfo_t* info, const float fwd, const float right, 
 	PlayerMoveFunc(info, fwd, right, up);
 
 	if (info->seqcmd[ACMDL_STRAFE_L])
-		info->sidevel -= (Q_fabs(fwd) / 1.25f);
+		info->sidevel -= (fabsf(fwd) / 1.25f);
 	else if (info->seqcmd[ACMDL_STRAFE_R])
-		info->sidevel += (Q_fabs(fwd) / 1.25f);
+		info->sidevel += (fabsf(fwd) / 1.25f);
 }
 
 void PlayerMoveUpperFunc(playerinfo_t* info, const float fwd, const float right, const float up)
@@ -1699,13 +1699,13 @@ void PlayerJumpNudge(playerinfo_t* info, const float fwd, const float right, con
 	const float fu = VectorLength(vel);
 
 	// If we're under the minimum, set the velocity to that minimum.
-	if (Q_fabs(ff) < Q_fabs(fwd))
+	if (fabsf(ff) < fabsf(fwd))
 		VectorMA(info->velocity, fwd, vf, info->velocity);
 
-	if (Q_fabs(fr) < Q_fabs(right))
+	if (fabsf(fr) < fabsf(right))
 		VectorMA(info->velocity, right, vr, info->velocity);
 
-	if (Q_fabs(fu) < Q_fabs(up))
+	if (fabsf(fu) < fabsf(up))
 		VectorMA(info->velocity, up, vu, info->velocity);
 
 	// Cause the player to use this velocity.
@@ -1785,9 +1785,9 @@ void PlayerPullupHeight(playerinfo_t* info, const float height, const float ends
 
 		if (trace.fraction < 1.0f)
 		{
-			const float x = Q_fabs(trace.plane.normal[0]);
-			const float y = Q_fabs(trace.plane.normal[1]);
-			const float diff = Q_fabs(x - y); // 0 to 1
+			const float x = fabsf(trace.plane.normal[0]);
+			const float y = fabsf(trace.plane.normal[1]);
+			const float diff = fabsf(x - y); // 0 to 1
 
 			VectorMA(trace.endpos, diff * 4.0f, trace.plane.normal, trace.endpos);
 			VectorCopy(trace.endpos, info->origin);

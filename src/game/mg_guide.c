@@ -38,7 +38,7 @@ qboolean MG_ReachedBuoy(const edict_t* self, const vec3_t p_spot)
 		VectorCopy(p_spot, spot);
 
 	const float center_z = (self->absmin[2] + self->absmax[2]) * 0.5f;
-	if (Q_fabs(spot[2] - center_z) > self->size[2])
+	if (fabsf(spot[2] - center_z) > self->size[2])
 		return false;
 
 	const float dist = vhlen(spot, self->s.origin);

@@ -86,10 +86,9 @@ static graphsamp_t values[256]; // Q2: 1024
 
 void SCR_DebugGraph(const float value, const uint color)
 {
-	paletteRGBA_t pc;
-	pc.c = color;
+	const paletteRGBA_t pc = { .c = color };
 
-	values[current & 255].value = Q_fabs(value);
+	values[current & 255].value = fabsf(value);
 	values[current & 255].color = pc;
 	current++;
 }

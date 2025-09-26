@@ -214,7 +214,7 @@ void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int da
 		// What about if off ledge or on steep slope - slide off?
 		M_GetSlopePitchRoll(target, NULL);
 
-		target->dead_size = Q_fabs(target->maxs[2] - target->mins[2]) * 0.5f;
+		target->dead_size = fabsf(target->maxs[2] - target->mins[2]) * 0.5f;
 		MG_PostDeathThink(target);
 
 		if (!(target->svflags & SVF_WAIT_NOTSOLID))

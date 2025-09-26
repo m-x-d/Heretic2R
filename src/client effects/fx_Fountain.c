@@ -140,7 +140,7 @@ void FXFountain(centity_t* owner, const int type, const int flags, vec3_t origin
 
 	fountain->SpawnData = (float)drop * 0.125f;
 	fountain->color = color_white; //mxd
-	fountain->radius = 128.0f + Q_fabs(fountain->SpawnData);
+	fountain->radius = 128.0f + fabsf(fountain->SpawnData);
 	fountain->Update = FountainParticleSpawner;
 	fountain->flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED;
 

@@ -652,7 +652,7 @@ static void CL_UpdateClientAngles(void)
 
 			cl.inputangles[YAW] += delta_yaw * 0.25f;
 
-			if (Q_fabs(cl.viewangles[YAW] - cl.inputangles[YAW]) >= 5.0f)
+			if (fabsf(cl.viewangles[YAW] - cl.inputangles[YAW]) >= 5.0f)
 				return;
 
 			cl.inputangles[YAW] = cl.viewangles[YAW];
@@ -666,7 +666,7 @@ static void CL_UpdateClientAngles(void)
 	{
 		cl.inputangles[YAW] += delta_yaw * 0.25f;
 
-		if (Q_fabs(cl.viewangles[YAW] - cl.inputangles[YAW]) < 5.0f)
+		if (fabsf(cl.viewangles[YAW] - cl.inputangles[YAW]) < 5.0f)
 		{
 			st_unknown6 = false;
 			cl.inputangles[YAW] = cl.viewangles[YAW];

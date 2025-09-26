@@ -224,7 +224,7 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 
 	// This is set if the effect should be attached to something.
 	const qboolean is_attached = (flags & CEF_FLAG6);
-	const float radius = (Q_fabs(grab_pos[2]) + Q_fabs(end_pos[2])) * 2.0f;
+	const float radius = (fabsf(grab_pos[2]) + fabsf(end_pos[2])) * 2.0f;
 
 	// Create the rope piece that hangs from the top to the end of the rope, while the player is NOT on it.
 	if (!is_attached)

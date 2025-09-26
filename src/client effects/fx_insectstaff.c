@@ -586,7 +586,7 @@ static qboolean InsectSwordTrailThink(struct client_entity_s* self, centity_t* o
 	vec3_t diff;
 	VectorSubtract(current_org, last_org, diff);
 
-	if (Q_fabs(diff[0] + diff[1] + diff[2]) < 0.1f)
+	if (fabsf(diff[0] + diff[1] + diff[2]) < 0.1f)
 		return true;
 
 	const int num_intervals = (int)(VectorLength(diff) * 0.5f);

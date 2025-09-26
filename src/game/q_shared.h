@@ -868,13 +868,6 @@ typedef struct
 extern int BoxOnPlaneSide(const vec3_t emins, const vec3_t emaxs, const cplane_t* plane);
 
 #pragma region ========================== Inlines ==========================
-//TODO: mxd. Remove
-
-// microsoft's fabs seems to be ungodly slow...
-_inline float Q_fabs(const float f)
-{
-	return fabsf(f); //mxd. No longer the case when SSE is involved (https://stackoverflow.com/questions/44630015/how-would-fabsdouble-be-implemented-on-x86-is-it-an-expensive-operation)
-}
 
 //mxd
 _inline int Q_atoi(const char* s)

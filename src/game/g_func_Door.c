@@ -194,11 +194,11 @@ static void FuncDoorCalcMoveSpeedThink(edict_t* self) //mxd. Named 'Think_CalcMo
 	}
 
 	// Find the smallest distance any member of the team will be moving.
-	float min_dist = Q_fabs(self->moveinfo.distance);
+	float min_dist = fabsf(self->moveinfo.distance);
 
 	for (const edict_t* ent = self->teamchain; ent != NULL; ent = ent->teamchain)
 	{
-		const float dist = Q_fabs(ent->moveinfo.distance);
+		const float dist = fabsf(ent->moveinfo.distance);
 		min_dist = min(dist, min_dist);
 	}
 
@@ -207,7 +207,7 @@ static void FuncDoorCalcMoveSpeedThink(edict_t* self) //mxd. Named 'Think_CalcMo
 	// Adjust speeds so they will all complete at the same time.
 	for (edict_t* ent = self; ent != NULL; ent = ent->teamchain)
 	{
-		const float new_speed = Q_fabs(ent->moveinfo.distance) / time;
+		const float new_speed = fabsf(ent->moveinfo.distance) / time;
 		const float ratio = new_speed / ent->moveinfo.speed;
 
 		if (ent->moveinfo.accel == ent->moveinfo.speed)
@@ -868,11 +868,11 @@ void SP_func_door_secret(edict_t* ent)
 
 	float width;
 	if (ent->spawnflags & SF_SECRET_1ST_DOWN)
-		width = Q_fabs(DotProduct(up, ent->size));
+		width = fabsf(DotProduct(up, ent->size));
 	else
-		width = Q_fabs(DotProduct(right, ent->size));
+		width = fabsf(DotProduct(right, ent->size));
 
-	float length = Q_fabs(DotProduct(forward, ent->size));
+	float length = fabsf(DotProduct(forward, ent->size));
 
 	if (ent->spawnflags & SF_SECRET_1ST_DOWN)
 	{

@@ -246,7 +246,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 					}
 				}
 
-				const float yaw_delta = Q_fabs(info->ideal_yaw - info->angles[YAW]);
+				const float yaw_delta = fabsf(info->ideal_yaw - info->angles[YAW]);
 				const int slide_seq = (yaw_delta > 90.0f && yaw_delta < 270.0f ? ASEQ_SLIDE_BACKWARD : ASEQ_SLIDE_FORWARD); //mxd
 
 				if (info->lowerseq != slide_seq)

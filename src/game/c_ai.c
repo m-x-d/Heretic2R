@@ -72,7 +72,7 @@ void ai_c_move(edict_t* self, const float forward, float right, float up)
 
 	// Is the distance desired to move in the next frame past what it should be?
 	float dist = forward;
-	if (Q_fabs(dist) > fabsf((float)self->monsterinfo.c_dist))
+	if (fabsf(dist) > fabsf((float)self->monsterinfo.c_dist))
 		dist = (float)self->monsterinfo.c_dist;
 
 	const float yaw = self->s.angles[YAW] * ANGLE_180 * 2.0f / 360.0f;

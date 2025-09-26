@@ -264,7 +264,7 @@ static void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_th
 
 	// Interpolate the yaw. //TODO: why yaw only?
 	const float delta_yaw = angles[YAW] - self->s.angles[YAW];
-	if (Q_fabs(delta_yaw) > 8.0f)
+	if (fabsf(delta_yaw) > 8.0f)
 		self->s.angles[YAW] -= 8.0f * Q_signf(delta_yaw);
 
 	if (irand(0, 100) == 0)
@@ -290,7 +290,7 @@ static void TutorialChickenRopeEndThink(edict_t* self) //mxd. Named 'rope_end_th
 	VectorCopy(self->s.origin, rope_top);
 
 	// Find the length of the end segment.
-	const float grab_len = Q_fabs(self->maxs[2] + self->mins[2]);
+	const float grab_len = fabsf(self->maxs[2] + self->mins[2]);
 
 	// Find the vector to the rope's point of rest.
 	vec3_t end_rest;
@@ -482,7 +482,7 @@ static void ObjRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think' in orig
 	VectorCopy(self->rope_grab->s.origin, rope_top);
 
 	// Find the length of the end segment.
-	const float grab_len = Q_fabs(self->maxs[2] + self->mins[2]) - (float)self->rope_grab->viewheight;
+	const float grab_len = fabsf(self->maxs[2] + self->mins[2]) - (float)self->rope_grab->viewheight;
 
 	// Find the vector to the rope's point of rest.
 	vec3_t end_rest;
@@ -525,7 +525,7 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 	VectorCopy(self->s.origin, rope_top);
 	rope_top[2] += self->maxs[2];
 
-	if (Q_fabs(grab->velocity[0]) < 0.13f && Q_fabs(grab->velocity[1]) < 0.13f)
+	if (fabsf(grab->velocity[0]) < 0.13f && fabsf(grab->velocity[1]) < 0.13f)
 	{
 		// The rope isn't moving enough to run all the math, so just make it sway a little.
 		vec3_t rope_rest;

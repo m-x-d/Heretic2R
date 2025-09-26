@@ -1632,7 +1632,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 	if (self->monsterinfo.idle_time == -1.0f)
 	{
 		// Have been told to just turn to ideal_yaw.
-		turn_amount = Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL));
+		turn_amount = fabsf(MG_ChangeWhichYaw(self, YAW_IDEAL));
 
 		// Keep turning towards ideal until facing it.
 		if (turn_amount < 1.0f)
@@ -1646,7 +1646,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 		if (AnglesEqual(self->s.angles[YAW], self->best_move_yaw, 5.0f) && MG_TryWalkMove(self, self->ideal_yaw, dist, false))
 		{
 			// Keep turning towards ideal until facing it.
-			if (Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL)) < 1.0f)
+			if (fabsf(MG_ChangeWhichYaw(self, YAW_IDEAL)) < 1.0f)
 			{
 				self->monsterinfo.idle_time = 0.0f;
 			}
@@ -1657,12 +1657,12 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 			}
 		}
 
-		turn_amount = Q_fabs(MG_ChangeWhichYaw(self, YAW_BEST_MOVE)); // Turn to temp yaw.
+		turn_amount = fabsf(MG_ChangeWhichYaw(self, YAW_BEST_MOVE)); // Turn to temp yaw.
 	}
 	else
 	{
 		// Using ideal_yaw.
-		turn_amount = Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL));
+		turn_amount = fabsf(MG_ChangeWhichYaw(self, YAW_IDEAL));
 	}
 
 	float dist_loss = turn_amount / self->yaw_speed * 0.8f;
@@ -1818,7 +1818,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 		const float save_yaw = self->s.angles[YAW];
 
 		// Haven't yawed yet, so this is okay.
-		turn_amount = Q_fabs(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
+		turn_amount = fabsf(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
 		dist_loss = turn_amount / self->yaw_speed * 0.8f;
 		float adj_dist = dist - (dist * dist_loss);
 
@@ -1836,7 +1836,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 			self->s.angles[YAW] = save_yaw; // Restore yaw.
 
 			// Try new dir.
-			turn_amount = Q_fabs(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
+			turn_amount = fabsf(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
 			dist_loss = turn_amount / self->yaw_speed * 0.8f;
 			adj_dist = dist - (dist * dist_loss);
 
@@ -1908,7 +1908,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 	if (self->monsterinfo.idle_time == -1.0f)
 	{
 		// Keep turning towards ideal until facing it.
-		if (Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL)) < 1.0f)
+		if (fabsf(MG_ChangeWhichYaw(self, YAW_IDEAL)) < 1.0f)
 			self->monsterinfo.idle_time = 0.0f;
 		else
 			return true;
@@ -1919,7 +1919,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 		if (AnglesEqual(self->s.angles[YAW], self->best_move_yaw, 5.0f) && MG_TryWalkMove(self, self->ideal_yaw, dist, false))
 		{
 			// Keep turning towards ideal until facing it.
-			if (Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL)) < 1.0f)
+			if (fabsf(MG_ChangeWhichYaw(self, YAW_IDEAL)) < 1.0f)
 			{
 				self->monsterinfo.idle_time = 0.0f;
 			}
@@ -2057,7 +2057,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 		const float save_yaw = self->s.angles[YAW]; // Remember yaw in case all these fail!
 
 		// Haven't yawed yet, so this is okay.
-		float turn_amount = Q_fabs(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
+		float turn_amount = fabsf(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
 		float dist_loss = turn_amount / self->yaw_speed * 0.8f;
 		float adj_dist = dist - (dist * dist_loss);
 
@@ -2075,7 +2075,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 			self->s.angles[YAW] = save_yaw; // Restore yaw.
 
 			// Try new dir.
-			turn_amount = Q_fabs(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
+			turn_amount = fabsf(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
 			dist_loss = turn_amount / self->yaw_speed * 0.8f;
 			adj_dist = dist - (dist * dist_loss);
 

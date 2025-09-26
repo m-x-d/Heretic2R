@@ -101,7 +101,7 @@ static void ImpAIGlide(edict_t* self) //mxd. Named 'imp_ai_glide' in original lo
 	const float yaw_delta = self->ideal_yaw - self->s.angles[YAW];
 
 	// If enough, roll the creature to simulate gliding.
-	if (Q_fabs(yaw_delta) > self->yaw_speed)
+	if (fabsf(yaw_delta) > self->yaw_speed)
 	{
 		const float roll = yaw_delta / 4.0f * Q_signf(dot);
 		self->s.angles[ROLL] += roll;
@@ -168,7 +168,7 @@ static qboolean ImpCheckDirections(const edict_t* self, const vec3_t goal, const
 static qboolean ImpCheckSwoop(const edict_t* self, const vec3_t goal_pos) //mxd. Named 'imp_check_swoop' in original logic.
 {
 	// Find the difference in the target's height and the creature's height.
-	float z_diff = Q_fabs(self->enemy->s.origin[2] - self->s.origin[2]);
+	float z_diff = fabsf(self->enemy->s.origin[2] - self->s.origin[2]);
 
 	if (z_diff < IMP_MIN_SWOOP_DIST)
 		return false;
@@ -515,7 +515,7 @@ void imp_dive_move(edict_t* self) //mxd. Named 'move_imp_dive' in original logic
 		return;
 	}
 
-	const float z_dist = Q_fabs(self->s.origin[2] - self->enemy->s.origin[2]);
+	const float z_dist = fabsf(self->s.origin[2] - self->enemy->s.origin[2]);
 
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
@@ -731,7 +731,7 @@ void imp_hover_move(edict_t* self) //mxd. Named 'move_imp_hover' in original log
 		}
 
 		// See if he's too close.
-		if (enemy_dist < Q_fabs(self->melee_range))
+		if (enemy_dist < fabsf(self->melee_range))
 		{
 			SetAnim(self, ANIM_FLYBACK1);
 		}
@@ -751,7 +751,7 @@ void imp_hover_move(edict_t* self) //mxd. Named 'move_imp_hover' in original log
 		}
 
 		// Find the difference in the target's height and the creature's height.
-		const float z_dist = Q_fabs(self->enemy->s.origin[2] - self->s.origin[2]);
+		const float z_dist = fabsf(self->enemy->s.origin[2] - self->s.origin[2]);
 
 		// We can't swoop because we're too low, so fly upwards if possible.
 		if (z_dist < IMP_MIN_SWOOP_DIST)

@@ -80,7 +80,7 @@ static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
 	const int ref_index = self->NoOfAnimFrames;
 	VectorSubtract(owner->referenceInfo->references[ref_index].placement.origin, owner->referenceInfo->oldReferences[ref_index].placement.origin, diff);
 
-	if (Q_fabs(diff[0] + diff[1] + diff[2]) < 0.1f)
+	if (fabsf(diff[0] + diff[1] + diff[2]) < 0.1f)
 		return true;
 
 	const int num_of_intervals = GetScaledCount((int)(VectorLength(diff) * 0.5f), 1.0f);
@@ -201,7 +201,7 @@ static qboolean StaffLevel3Think(struct client_entity_s* self, centity_t* owner)
 	const int ref_index = self->NoOfAnimFrames;
 	VectorSubtract(owner->referenceInfo->references[ref_index].placement.origin, owner->referenceInfo->oldReferences[ref_index].placement.origin, diff);
 
-	if (Q_fabs(diff[0] + diff[1] + diff[2]) < 0.1f)
+	if (fabsf(diff[0] + diff[1] + diff[2]) < 0.1f)
 		return true;
 
 	const int num_of_intervals = GetScaledCount((int)(VectorLength(diff) * 0.5f), 1.0f);
@@ -287,7 +287,7 @@ static qboolean StaffLevel1Think(struct client_entity_s* self, centity_t* owner)
 	const int ref_index = self->NoOfAnimFrames;
 	VectorSubtract(owner->referenceInfo->references[ref_index].placement.origin, owner->referenceInfo->oldReferences[ref_index].placement.origin, diff);
 
-	if (Q_fabs(diff[0] + diff[1] + diff[2]) < 0.1f)
+	if (fabsf(diff[0] + diff[1] + diff[2]) < 0.1f)
 		return true;
 
 	const int num_of_intervals = GetScaledCount((int)(VectorLength(diff) * 0.75f), 1.0f);

@@ -24,7 +24,7 @@ static qboolean DrawCrosshair(struct client_entity_s* crosshair_ent, centity_t* 
 		crosshair_ent->r.frame = (type > 2 ? 0 : type);
 		crosshair_ent->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
 
-		float alpha = 0.5f + Q_fabs(sinf((float)fxi.cl->time / 800.0f)) * 0.5f;
+		float alpha = 0.5f + fabsf(sinf((float)fxi.cl->time / 800.0f)) * 0.5f;
 		alpha = Clamp(alpha, 0.0f, 1.0f) * 0.5f;
 
 		crosshair_ent->alpha = alpha + 0.25f;

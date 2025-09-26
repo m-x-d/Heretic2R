@@ -553,7 +553,7 @@ static void MoveEntity_Slide(edict_t* self)
 				// dot <  0.05f: parallel to ground.
 				// dot >= 0.05f: pulling away from ground.
 				const float dot = DotProduct(dir, ground_normal);
-				slide = (Q_fabs(dot) < 0.05f); // Parallel to ground.
+				slide = (fabsf(dot) < 0.05f); // Parallel to ground.
 			}
 		}
 
@@ -749,7 +749,7 @@ static void MoveEntity_Slide(edict_t* self)
 				// dot < -0.01f: the trace will fail, try to restructure in order to skip it.
 				// dot <  0.01f: parallel to surface.
 				// dot >= 0.01f: pulling away from surface.
-				slide = (Q_fabs(dot) < 0.01f); // Parallel to surface.
+				slide = (fabsf(dot) < 0.01f); // Parallel to surface.
 			} // Otherwise, fall straight down, no surface friction needed.
 
 			int p;
