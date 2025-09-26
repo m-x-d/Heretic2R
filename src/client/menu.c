@@ -1193,9 +1193,7 @@ static int GetLineLength(const char* text) // H2
 	int len = 0;
 	while (*text != 0 && *text != '\n')
 	{
-		if (*text != '$' && *text != '%') //mxd. Don't count special chars.
-			len++;
-
+		len++;
 		text++;
 	}
 
@@ -1218,7 +1216,7 @@ void Menu_DrawObjectives(const char* message, const int max_line_length) // H2
 		x = (x * ui_screen_width / DEF_WIDTH) + ui_screen_offset_x; // Convert to real screen size.
 		x -= len * ui_char_size / 2; // Factor in line length.
 
-		for (int j = 0; j < len; j++, s++, x += ui_char_size)
+		for (int c = 0; c < len; c++, s++)
 		{
 			switch (*s)
 			{
@@ -1235,6 +1233,7 @@ void Menu_DrawObjectives(const char* message, const int max_line_length) // H2
 					paletteRGBA_t color = TextPalette[color_index];
 					color.a = (byte)(cls.m_menualpha * 255.0f);
 					re.DrawChar(x, y, ui_scale, *s, color);
+					x += ui_char_size;
 				} break;
 			}
 		}
