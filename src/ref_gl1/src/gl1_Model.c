@@ -705,7 +705,7 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 	// Inline models are grabbed only from worldmodel.
 	if (name[0] == '*')
 	{
-		const int index = (int)strtol(name + 1, NULL, 10); //mxd. atoi -> strtol
+		const int index = Q_atoi(name + 1); //mxd. atoi -> Q_atoi
 		if (index < 1 || r_worldmodel == NULL || index >= r_worldmodel->numsubmodels)
 			ri.Sys_Error(ERR_DROP, "Mod_ForName: bad inline model number");
 

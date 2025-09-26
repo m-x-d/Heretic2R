@@ -2065,7 +2065,7 @@ bool CScript::NewParameter(Variable* which)
 			break;
 
 		case TYPE_INT:
-			temp = new IntVar("parm", strtol(parm_value->GetStringValue(), nullptr, 10)); //mxd. atol -> strtol.
+			temp = new IntVar("parm", Q_atoi(parm_value->GetStringValue())); //mxd. atol -> Q_atoi.
 			break;
 
 		case TYPE_FLOAT:
