@@ -18,6 +18,13 @@
 #include "Random.h"
 #include "SurfaceProps.h"
 
+// H2_BUGFIX: mxd. Otherwise, in some cases targetjointangles calculated in CalcJointAngles() may overshoot joint destAngles read by MSG_ReadJoints()...
+static void SnapJointAnglesToNetworkPrecision(vec3_t angles)
+{
+	for (int i = 0; i < 3; i++)
+		angles[i] = (float)((int)(angles[i] * RAD_TO_BYTEANGLE)) / RAD_TO_BYTEANGLE;
+}
+
 static void CalcJointAngles(playerinfo_t* info)
 {
 	// Adjust the player model's joint angles.
@@ -35,7 +42,7 @@ static void CalcJointAngles(playerinfo_t* info)
 	{
 		vec3_t targetvector;
 		VectorCopy(info->enemystate->origin, targetvector);
-		VectorSubtract(targetvector, info->origin, targetvector);
+		Vec3SubtractAssign(info->origin, targetvector);
 		vectoangles(targetvector, info->targetjointangles);
 
 		// PITCH.
@@ -462,6 +469,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 	if (!(info->edictflags & FL_CHICKEN))
 	{
 		CalcJointAngles(info); // Calculate joint angle values.
+		SnapJointAnglesToNetworkPrecision(info->targetjointangles); //mxd
 		info->SetJointAngles(info); // Now set joints in motion.
 	}
 }
