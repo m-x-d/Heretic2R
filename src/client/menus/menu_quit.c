@@ -76,7 +76,7 @@ static void Quit_MenuDraw(void)
 
 static const char* Quit_MenuKey(const int key)
 {
-	if (cls.m_menustate != 2)
+	if (cls.m_menustate != MS_OPENED)
 		return NULL;
 
 	switch (key)

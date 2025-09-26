@@ -196,12 +196,12 @@ void M_PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) // H2
 
 		if (m_menudepth == 0)
 		{
-			cls.m_menustate = 5;
+			cls.m_menustate = MS_ZOOM_IN_START;
 			OnMainMenuOpened();
 		}
 		else
 		{
-			cls.m_menustate = 3;
+			cls.m_menustate = MS_FADE_OUT_START;
 		}
 
 		cls.key_dest = key_menu;
@@ -226,12 +226,12 @@ void M_PopMenu(void)
 		m_keyfunc = NULL;
 	}
 
-	cls.m_menustate = 3;
+	cls.m_menustate = MS_FADE_OUT_START;
 }
 
 char* Default_MenuKey(menuframework_t* menu, const int key)
 {
-	if (cls.m_menustate != 2)
+	if (cls.m_menustate != MS_OPENED)
 		return NULL;
 
 	if (menu != NULL)
@@ -344,7 +344,7 @@ char* Default_MenuKey(menuframework_t* menu, const int key)
 
 const char* Generic_MenuKey(const int key) // H2
 {
-	if (cls.m_menustate == 2 && key != 0)
+	if (cls.m_menustate == MS_OPENED && key != 0)
 		M_PopMenu();
 
 	return NULL;
@@ -481,7 +481,7 @@ void M_ForceMenuOff(void)
 	m_layers[0].draw = NULL;
 	m_keyfunc2 = NULL;
 	cls.key_dest = key_game;
-	cls.m_menustate = 0;
+	cls.m_menustate = MS_FADE_IN_START;
 	m_menudepth = 0;
 
 	Key_ClearStates();
@@ -1294,46 +1294,46 @@ void M_Draw(void)
 
 	switch (cls.m_menustate)
 	{
-		case 0: // MENU_START_OPENING?
+		case MS_FADE_IN_START:
 			m_entersound = false;
 			cls.startmenu = Sys_Milliseconds();
 			m_menu_side = ((m_menudepth & 1) == 0);
 			m_layers[0].draw = m_drawfunc;
 			m_keyfunc2 = m_keyfunc;
-			cls.m_menustate = 1;
+			cls.m_menustate = MS_FADE_IN_LOOP;
 			cls.m_menualpha = 0.0f;
 			cls.m_menuscale = 1.0f;
 			m_drawfunc();
 			break;
 
-		case 1: // MENU_OPENING?
+		case MS_FADE_IN_LOOP:
 			cls.m_menualpha = MenuAlpha(cls.startmenu);
 			m_layers[0].draw();
 			if (cls.m_menualpha == 1.0f || quick_menus->value > 1.0f)
-				cls.m_menustate = 2;
+				cls.m_menustate = MS_OPENED;
 			break;
 
-		case 2: // MENU_OPENED?
+		case MS_OPENED:
 			cls.m_menualpha = 1.0f;
 			m_layers[0].draw();
 			break;
 
-		case 3:
+		case MS_FADE_OUT_START:
 			cls.startmenu = Sys_Milliseconds();
-			cls.m_menustate = 4;
+			cls.m_menustate = MS_FADE_OUT_LOOP;
 			cls.m_menualpha = 1.0f;
 			m_layers[0].draw();
 			break;
 
-		case 4:
+		case MS_FADE_OUT_LOOP:
 			cls.m_menualpha = 1.0f - MenuAlpha(cls.startmenu);
 			m_layers[0].draw();
 
 			if (cls.m_menualpha == 0.0f || quick_menus->value > 1.0f)
-				cls.m_menustate = (m_menudepth > 0 ? 0 : 6);
+				cls.m_menustate = (m_menudepth > 0 ? MS_FADE_IN_START : MS_ZOOM_OUT_START);
 			break;
 
-		case 5:
+		case MS_ZOOM_IN_START:
 			cls.startmenuzoom = Sys_Milliseconds();
 			m_layers[0].draw = m_drawfunc;
 			m_menu_side = ((m_menudepth & 1) == 0);
@@ -1342,12 +1342,12 @@ void M_Draw(void)
 			cls.m_menualpha = 0.0f;
 
 			if ((int)quick_menus->value || cls.state == ca_disconnected)
-				cls.m_menustate = 0;
+				cls.m_menustate = MS_FADE_IN_START;
 			else
-				cls.m_menustate = 7;
+				cls.m_menustate = MS_ZOOM_IN_LOOP;
 			break;
 
-		case 6: // MENU_START_CLOSING?
+		case MS_ZOOM_OUT_START:
 			m_entersound = true;
 			cls.startmenuzoom = Sys_Milliseconds();
 			cls.m_menuscale = 1.0f;
@@ -1355,24 +1355,24 @@ void M_Draw(void)
 
 			if ((int)quick_menus->value || cls.state == ca_disconnected)
 			{
-				cls.m_menustate = 0;
+				cls.m_menustate = MS_FADE_IN_START;
 				M_ForceMenuOff();
 			}
 			else
 			{
-				cls.m_menustate = 8;
+				cls.m_menustate = MS_ZOOM_OUT_LOOP;
 			}
 			break;
 
-		case 7:
+		case MS_ZOOM_IN_LOOP:
 			cls.m_menuscale = MenuAlpha(cls.startmenuzoom);
 			m_layers[0].draw();
 
 			if (cls.m_menuscale == 1.0f)
-				cls.m_menustate = 0;
+				cls.m_menustate = MS_FADE_IN_START;
 			break;
 
-		case 8: // MENU_CLOSING?
+		case MS_ZOOM_OUT_LOOP:
 			cls.m_menuscale = 1.0f - MenuAlpha(cls.startmenuzoom);
 			m_layers[0].draw();
 
@@ -1381,7 +1381,7 @@ void M_Draw(void)
 			break;
 
 		default: //mxd. Added default case.
-			Sys_Error("Unexpected menu index %i", cls.m_menustate);
+			Sys_Error("Unexpected menu state %i!", cls.m_menustate);
 	}
 }
 

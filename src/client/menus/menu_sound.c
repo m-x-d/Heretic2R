@@ -165,7 +165,7 @@ static void Sound_MenuDraw(void) // H2
 
 static char* Sound_HandleMenuKey(menuframework_t* menu, const int key) // H2
 {
-	if (cls.m_menustate != 2)
+	if (cls.m_menustate != MS_OPENED)
 		return NULL;
 
 	//mxd. Removed null menu checks.

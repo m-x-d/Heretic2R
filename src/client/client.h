@@ -205,7 +205,7 @@ typedef enum
 	ca_active			// Game views should be displayed.
 } connstate_t;
 
-// Download type
+// Download type.
 typedef enum
 {
 	dl_none,
@@ -223,6 +223,20 @@ typedef enum
 	key_menu
 } keydest_t;
 
+//mxd. Menu animation state.
+typedef enum
+{
+	MS_FADE_IN_START,
+	MS_FADE_IN_LOOP,
+	MS_OPENED,
+	MS_FADE_OUT_START,
+	MS_FADE_OUT_LOOP,
+	MS_ZOOM_IN_START,
+	MS_ZOOM_OUT_START,
+	MS_ZOOM_IN_LOOP,
+	MS_ZOOM_OUT_LOOP
+} MenuState_t;
+
 // The client_static_t structure is persistent through an arbitrary number of server connections.
 typedef struct
 {
@@ -236,13 +250,13 @@ typedef struct
 
 	int startmenu;		// Time when the menu came up.
 	int startmenuzoom;	// Time since menu start.
-	int m_menustate; //TODO: convert to enum?
+	MenuState_t m_menustate; //mxd. int in original logic.
 	float m_menualpha;
 	float m_menuscale;
 
-	byte esc_cinematic; // Flag to show player wants to leave cinematic 
+	byte esc_cinematic; // Flag to show player wants to leave cinematic.
 
-	// Screen rendering information
+	// Screen rendering information.
 
 	qboolean disable_screen; // Showing loading plaque between levels or changing rendering dlls if time gets > 30 seconds ahead, break it. //mxd. float in original logic.
 	int disable_servercount; // When we receive a frame and cl.servercount > cls.disable_servercount, clear disable_screen.
@@ -264,7 +278,7 @@ typedef struct
 	int r_anumparticles;
 	particle_t r_aparticles[MAX_PARTICLES];
 
-	// Connection information
+	// Connection information.
 
 	char servername[MAX_OSPATH]; // Name of server from original connect.
 	float connect_time; // For connection retransmits.
@@ -297,12 +311,12 @@ Q2DLL_DECLSPEC extern client_static_t cls;
 
 #pragma region ========================== FX API IO ==========================
 
-#define FX_API_VERSION	3 // 1 in H2. //TODO: looks like client effects library uses API_VERSION form ref.h... Change to FX_API_VERSION after adding client effects code?
+#define FX_API_VERSION	3 //H2: 1
 
-// These are the data and functions exported by the client fx module
+// These are the data and functions exported by the client effects module.
 typedef struct
 {
-	// If api_version is different, the dll cannot be used
+	// If api_version is different, the dll cannot be used.
 	int api_version;
 
 	void (*Init)(void);
@@ -329,7 +343,7 @@ typedef struct
 
 extern client_fx_export_t fxe;
 
-// These are the data and functions imported by the client fx module
+// These are the data and functions imported by the client effects module.
 typedef struct
 {
 	client_state_t* cl;

@@ -869,14 +869,14 @@ static void M_Credits_MenuDraw(void)
 		DrawString(x, y, line, color, -1);
 	}
 
-	if (y < 0 && cls.m_menustate == 2)
+	if (cls.m_menustate == MS_OPENED && y < 0)
 		M_PopMenu();
 }
 
 //TODO: implement 'cheer' and 'celebrate' buttons.
 static const char* M_Credits_Key(const int key)
 {
-	if (cls.m_menustate == 2 && key == K_ESCAPE)
+	if (cls.m_menustate == MS_OPENED && key == K_ESCAPE)
 		M_PopMenu();
 
 	//TODO: scroll credits 2x faster when K_SPACE is pressed?

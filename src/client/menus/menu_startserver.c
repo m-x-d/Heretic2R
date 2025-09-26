@@ -319,7 +319,7 @@ static void StartServer_MenuDraw(void)
 
 static const char* StartServer_MenuKey(const int key)
 {
-	if (cls.m_menustate != 2)
+	if (cls.m_menustate != MS_OPENED)
 		return NULL;
 
 	return Default_MenuKey(&s_startserver_menu, key);

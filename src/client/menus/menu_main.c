@@ -57,7 +57,7 @@ static const char* M_Main_Key(const int key)
 {
 #define MAIN_ITEMS	6
 
-	if (cls.m_menustate != 2)
+	if (cls.m_menustate != MS_OPENED)
 		return NULL;
 
 	switch (key)

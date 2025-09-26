@@ -274,7 +274,7 @@ static void VID_MenuDraw(void)
 
 static const char* VID_MenuKey(const int key)
 {
-	if (cls.m_menustate != 2)
+	if (cls.m_menustate != MS_OPENED)
 		return NULL;
 
 	switch (key)
