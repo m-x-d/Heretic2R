@@ -797,13 +797,12 @@ void G_PlayerVaultKick(const playerinfo_t* info)
 	edict_t* self = (edict_t*)info->self;
 
 	// Ignore pitch.
-	vec3_t vf;
-	VectorSet(vf, 0.0f, self->s.angles[YAW], 0.0f);
-	AngleVectors(vf, vf, NULL, NULL);
+	vec3_t forward = { 0.0f, self->s.angles[YAW], 0.0f };
+	AngleVectors(forward, forward, NULL, NULL);
 
 	// Move ahead by a small amount.
 	vec3_t end_pos;
-	VectorMA(self->s.origin, VAULTKICK_DIST, vf, end_pos);
+	VectorMA(self->s.origin, VAULTKICK_DIST, forward, end_pos);
 
 	// Trace out to see if we've hit anything.
 	trace_t tr;
@@ -817,9 +816,9 @@ void G_PlayerVaultKick(const playerinfo_t* info)
 
 	//FIXME: Get a real sound.
 	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/plagueElf/hamhit.wav"), 1.0f, ATTN_NORM, 0.0f);
-	T_Damage(tr.ent, self, self, vf, tr.endpos, tr.plane.normal, (int)kick_vel, (int)(kick_vel * 2.0f), DAMAGE_NORMAL, MOD_KICKED);
+	T_Damage(tr.ent, self, self, forward, tr.endpos, tr.plane.normal, (int)kick_vel, (int)(kick_vel * 2.0f), DAMAGE_NORMAL, MOD_KICKED);
 
-	VectorMA(tr.ent->velocity, flrand(300.0f, 500.0f), vf, tr.ent->velocity); //mxd. Original logic uses irand() here.
+	VectorMA(tr.ent->velocity, flrand(300.0f, 500.0f), forward, tr.ent->velocity); //mxd. Original logic uses irand() here.
 	tr.ent->velocity[2] = 150.0f;
 
 	// Knock down player we kicked?

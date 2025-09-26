@@ -130,39 +130,37 @@ void PlayerActionCheckVaultKick(playerinfo_t* info)
 //mxd. Added to reduce code duplication.
 static qboolean CheckCreepMove(const playerinfo_t* info, const float creep_stepdist)
 {
-	vec3_t startpos;
-	vec3_t vf;
-	vec3_t ang;
-	vec3_t mins;
-	trace_t trace;
-
 	// Scan out and down from the player.
-	VectorCopy(info->origin, startpos);
 
 	// Ignore the pitch of the player, we only want the yaw.
-	VectorSet(ang, 0, info->angles[YAW], 0);
-	AngleVectors(ang, vf, NULL, NULL);
+	const vec3_t ang = { 0.0f, info->angles[YAW], 0.0f };
+
+	vec3_t forward;
+	AngleVectors(ang, forward, NULL, NULL);
 
 	// Trace ahead about one step.
-	VectorMA(info->origin, creep_stepdist, vf, startpos);
+	vec3_t start_pos;
+	VectorMA(info->origin, creep_stepdist, forward, start_pos);
 
 	// Account for stepheight.
+	vec3_t mins;
 	VectorCopy(info->mins, mins);
 	mins[2] += CREEP_MAXFALL;
 
 	// Trace forward to see if the path is clear.
-	P_Trace(info, info->origin, mins, info->maxs, startpos, &trace); //mxd
+	trace_t trace;
+	P_Trace(info, info->origin, mins, info->maxs, start_pos, &trace); //mxd
 
 	// If it is...
 	if (trace.fraction == 1.0f)
 	{
 		// Move the endpoint down the maximum amount.
 		vec3_t endpos;
-		VectorCopy(startpos, endpos);
+		VectorCopy(start_pos, endpos);
 		endpos[2] += info->mins[2] - CREEP_MAXFALL;
 
 		// Trace down.
-		P_Trace(info, startpos, mins, info->maxs, endpos, &trace); //mxd
+		P_Trace(info, start_pos, mins, info->maxs, endpos, &trace); //mxd
 
 		return (trace.fraction < 1.0f && !trace.startsolid && !trace.allsolid);
 	}
