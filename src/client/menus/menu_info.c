@@ -44,7 +44,7 @@ static void Info_MenuInit(void)
 	//TODO: better y-spacing?
 	Com_sprintf(name_worldmap, sizeof(name_worldmap), "\x02%s", m_banner_worldmap->string);
 	s_info_worldmap_action.generic.type = MTYPE_ACTION;
-	s_info_worldmap_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_info_worldmap_action.generic.flags = QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND; //mxd: +QMF_SELECT_SOUND.
 	s_info_worldmap_action.generic.x = 0;
 	s_info_worldmap_action.generic.y = 0;
 	s_info_worldmap_action.generic.name = name_worldmap;
@@ -53,7 +53,7 @@ static void Info_MenuInit(void)
 
 	Com_sprintf(name_citymap, sizeof(name_citymap), "\x02%s", m_banner_citymap->string);
 	s_info_citymap_action.generic.type = MTYPE_ACTION;
-	s_info_citymap_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_info_citymap_action.generic.flags = QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND; //mxd: +QMF_SELECT_SOUND.
 	s_info_citymap_action.generic.x = 0;
 	s_info_citymap_action.generic.y = 40;
 	s_info_citymap_action.generic.name = name_citymap;
@@ -62,7 +62,7 @@ static void Info_MenuInit(void)
 
 	Com_sprintf(name_objectives, sizeof(name_objectives), "\x02%s", m_banner_objectives->string);
 	s_info_objectives_action.generic.type = MTYPE_ACTION;
-	s_info_objectives_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_info_objectives_action.generic.flags = QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND; //mxd: +QMF_SELECT_SOUND.
 	s_info_objectives_action.generic.x = 0;
 	s_info_objectives_action.generic.y = 80;
 	s_info_objectives_action.generic.name = name_objectives;

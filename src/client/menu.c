@@ -141,13 +141,6 @@ static int m_menudepth;
 
 static void OnMainMenuOpened(void) // H2
 {
-	Com_sprintf(m_text_no, sizeof(m_text_no), "\x02%s", m_generic_no->string);
-	Com_sprintf(m_text_yes, sizeof(m_text_yes), "\x02%s", m_generic_yes->string);
-	Com_sprintf(m_text_off, sizeof(m_text_off), "\x02%s", m_generic_off->string);
-	Com_sprintf(m_text_on, sizeof(m_text_on), "\x02%s", m_generic_on->string);
-	Com_sprintf(m_text_low, sizeof(m_text_low), "\x02%s", m_generic_low->string);
-	Com_sprintf(m_text_high, sizeof(m_text_high), "\x02%s", m_generic_high->string);
-
 	Cvar_Set("menus_active", "1");
 
 	if (se.SetEaxEnvironment != NULL)
@@ -336,7 +329,10 @@ char* Default_MenuKey(menuframework_t* menu, const int key)
 const char* Generic_MenuKey(const int key) // H2
 {
 	if (cls.m_menustate == MS_OPENED && key != 0)
+	{
 		M_PopMenu();
+		return SND_MENU_CLOSE; //mxd
+	}
 
 	return NULL;
 }
@@ -714,6 +710,14 @@ void M_Init(void)
 
 	Cvar_Get("blood_level", "0", CVAR_ARCHIVE);
 	Cvar_Get("dm_no_bodies", "0", CVAR_ARCHIVE);
+
+	// Init generic menu item labels texts. Originally initialized in OnMainMenuOpened().
+	Com_sprintf(m_text_no, sizeof(m_text_no), "\x02%s", m_generic_no->string);
+	Com_sprintf(m_text_yes, sizeof(m_text_yes), "\x02%s", m_generic_yes->string);
+	Com_sprintf(m_text_off, sizeof(m_text_off), "\x02%s", m_generic_off->string);
+	Com_sprintf(m_text_on, sizeof(m_text_on), "\x02%s", m_generic_on->string);
+	Com_sprintf(m_text_low, sizeof(m_text_low), "\x02%s", m_generic_low->string);
+	Com_sprintf(m_text_high, sizeof(m_text_high), "\x02%s", m_generic_high->string);
 }
 
 float M_GetMenuAlpha(void) // H2

@@ -109,6 +109,7 @@ static void Options_MenuInit(void)
 
 	Com_sprintf(name_action_keys, sizeof(name_action_keys), "\x02%s", m_banner_action_keys->string);
 	s_action_keys_action.generic.type = MTYPE_ACTION;
+	s_action_keys_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_action_keys_action.generic.x = 0;
 	s_action_keys_action.generic.y = 0;
 	s_action_keys_action.generic.name = name_action_keys;
@@ -117,6 +118,7 @@ static void Options_MenuInit(void)
 
 	Com_sprintf(name_move_keys, sizeof(name_move_keys), "\x02%s", m_banner_move_keys->string);
 	s_move_keys_action.generic.type = MTYPE_ACTION;
+	s_move_keys_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_move_keys_action.generic.x = 0;
 	s_move_keys_action.generic.y = 20;
 	s_move_keys_action.generic.name = name_move_keys;
@@ -125,6 +127,7 @@ static void Options_MenuInit(void)
 
 	Com_sprintf(name_short_keys, sizeof(name_short_keys), "\x02%s", m_banner_short_keys->string);
 	s_short_keys_action.generic.type = MTYPE_ACTION;
+	s_short_keys_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_short_keys_action.generic.x = 0;
 	s_short_keys_action.generic.y = 40;
 	s_short_keys_action.generic.name = name_short_keys;
@@ -133,6 +136,7 @@ static void Options_MenuInit(void)
 
 	Com_sprintf(name_dt_keys, sizeof(name_dt_keys), "\x02%s", m_banner_dt_keys->string);
 	s_dt_keys_action.generic.type = MTYPE_ACTION;
+	s_dt_keys_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_dt_keys_action.generic.x = 0;
 	s_dt_keys_action.generic.y = 60;
 	s_dt_keys_action.generic.name = name_dt_keys;
@@ -141,6 +145,7 @@ static void Options_MenuInit(void)
 
 	Com_sprintf(name_mousecfg, sizeof(name_mousecfg), "\x02%s", m_banner_mousecfg->string);
 	s_mousecfg_action.generic.type = MTYPE_ACTION;
+	s_mousecfg_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_mousecfg_action.generic.x = 0;
 	s_mousecfg_action.generic.y = 80;
 	s_mousecfg_action.generic.name = name_mousecfg;
@@ -149,6 +154,7 @@ static void Options_MenuInit(void)
 
 	Com_sprintf(name_cameracfg, sizeof(name_cameracfg), "\x02%s", m_banner_cameracfg->string);
 	s_cameracfg_action.generic.type = MTYPE_ACTION;
+	s_cameracfg_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_cameracfg_action.generic.x = 0;
 	s_cameracfg_action.generic.y = 100;
 	s_cameracfg_action.generic.name = name_cameracfg;
@@ -157,6 +163,7 @@ static void Options_MenuInit(void)
 
 	Com_sprintf(name_misc, sizeof(name_misc), "\x02%s", m_banner_misc->string);
 	s_misc_action.generic.type = MTYPE_ACTION;
+	s_misc_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_misc_action.generic.x = 0;
 	s_misc_action.generic.y = 120;
 	s_misc_action.generic.name = name_misc;
@@ -165,6 +172,7 @@ static void Options_MenuInit(void)
 
 	Com_sprintf(name_loadcfg, sizeof(name_loadcfg), "\x02%s", m_banner_loadcfg->string);
 	s_loadcfg_action.generic.type = MTYPE_ACTION;
+	s_loadcfg_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_loadcfg_action.generic.x = 0;
 	s_loadcfg_action.generic.y = 180;
 	s_loadcfg_action.generic.name = name_loadcfg;
@@ -173,6 +181,7 @@ static void Options_MenuInit(void)
 
 	Com_sprintf(name_savecfg, sizeof(name_savecfg), "\x02%s", m_banner_savecfg->string);
 	s_savecfg_action.generic.type = MTYPE_ACTION;
+	s_savecfg_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_savecfg_action.generic.x = 0;
 	s_savecfg_action.generic.y = 200;
 	s_savecfg_action.generic.name = name_savecfg;
@@ -181,6 +190,7 @@ static void Options_MenuInit(void)
 
 	Com_sprintf(name_defaults, sizeof(name_defaults), "\x02%s", m_item_defaults->string);
 	s_defaults_action.generic.type = MTYPE_ACTION;
+	s_defaults_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_defaults_action.generic.x = 0;
 	s_defaults_action.generic.y = 220;
 	s_defaults_action.generic.name = name_defaults;

@@ -265,7 +265,7 @@ static qboolean StartServer_MenuInit(void)
 	s_startserver_dmoptions_action.generic.type = MTYPE_ACTION;
 	s_startserver_dmoptions_action.generic.name = name_dmopt;
 	s_startserver_dmoptions_action.generic.width = re.BF_Strlen(name_dmopt);
-	s_startserver_dmoptions_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_startserver_dmoptions_action.generic.flags = QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND; //mxd: +QMF_SELECT_SOUND.
 	s_startserver_dmoptions_action.generic.x = 24;
 	s_startserver_dmoptions_action.generic.y = 300;
 	s_startserver_dmoptions_action.generic.callback = DMOptionsFunc;

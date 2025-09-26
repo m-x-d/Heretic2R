@@ -6,7 +6,6 @@
 
 #include <windows.h>
 #include "client.h"
-#include "cl_strings.h"
 #include "menu_joinserver.h"
 #include "menu_addressbook.h"
 
@@ -79,7 +78,7 @@ void JoinServer_MenuInit(void)
 	s_joinserver_address_book_action.generic.type = MTYPE_ACTION;
 	s_joinserver_address_book_action.generic.name = name_address;
 	s_joinserver_address_book_action.generic.width = re.BF_Strlen(name_address);
-	s_joinserver_address_book_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_joinserver_address_book_action.generic.flags = QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND; //mxd: +QMF_SELECT_SOUND.
 	s_joinserver_address_book_action.generic.x = 0;
 	s_joinserver_address_book_action.generic.y = 0;
 	s_joinserver_address_book_action.generic.callback = AddressBookFunc;
@@ -88,7 +87,7 @@ void JoinServer_MenuInit(void)
 	s_joinserver_search_action.generic.type = MTYPE_ACTION;
 	s_joinserver_search_action.generic.name = name_refresh;
 	s_joinserver_search_action.generic.width = re.BF_Strlen(name_refresh);
-	s_joinserver_search_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_joinserver_search_action.generic.flags = QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND; //mxd: +QMF_SELECT_SOUND.
 	s_joinserver_search_action.generic.x = 0;
 	s_joinserver_search_action.generic.y = 20;
 	s_joinserver_search_action.generic.callback = SearchLocalGamesFunc;
