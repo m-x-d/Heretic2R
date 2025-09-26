@@ -7,7 +7,7 @@
 #pragma once
 
 // EF_XXX
-// Effects (held by 'entity_state_t'->effects) are things that are handled on the client side
+// Effects (held by entity_state_t.effects) are things that are handled on the client side.
 // (lights, particles, frame animations) and happen constantly on the given entity.
 // An entity that has effects will be sent to the client even if it has a zero index model.
 
@@ -27,7 +27,7 @@
 #define EF_CAMERA_ONLY			0x00000200	// Client-side camera LOS traces will clip against any entities that have this flag set, but other traces won't.
 
 #define EF_ALTCLIENTFX			0x00000400	// A message flag to send to the client effects, for user's purpose.
-#define EF_ALWAYS_ADD_EFFECTS	0x00000800	// Any effects attached to the entity will always be added to the view. This overrides EF_DISABLE_*_CFX
+#define EF_ALWAYS_ADD_EFFECTS	0x00000800	// Any effects attached to the entity will always be added to the view. This overrides EF_DISABLE_*_CFX.
 
 #define EF_ON_FIRE				0x00001000	// Tells that the entity is on fire.
 #define EF_TRAILS_ENABLED		0x00002000	// The hand/staff trails enabled. If removed, the trails remove themselves.
@@ -43,8 +43,8 @@
 #define EF_LIGHT_ENABLED		0x00200000	// Tells the client effects that corvus' personal torch is activated.
 
 #define EF_CHICKEN				0x00400000	// The flag that tells the system that the player is a chicken, and not corvus.
-#define EF_ANIM_ALL				0x00800000	// Automatically cycle through all frames at 2hz
-#define EF_ANIM_ALLFAST			0x01000000	// Automatically cycle through all frames at 10hz
+#define EF_ANIM_ALL				0x00800000	// Automatically cycle through all frames at 2hz.
+#define EF_ANIM_ALLFAST			0x01000000	// Automatically cycle through all frames at 10hz.
 
 #define EF_FAST_MOVER			0x02000000 //mxd. Double max. interpolated move distance in AddServerEntities() (very special monster_harpy flag).
 
@@ -52,7 +52,7 @@
 // Flags specified when a client-effect is created; don't even think about expanding this beyond 1 byte!
 // This is 'cos only the first byte is sent across the net (and only a flag is actually set).
 
-#define CEF_OWNERS_ORIGIN		0x00000001	// Use the owner's origin only, with no additional displacment.
+#define CEF_OWNERS_ORIGIN		0x00000001	// Use the owner's origin only, with no additional displacement.
 #define CEF_BROADCAST			0x00000002	// Sent to all clients.
 #define CEF_ENTNUM16			0x00000004	// Index is a short.
 #define CEF_MULTICAST			0x00000008	// Places the effect into the world buffer instead of the owner's buffer
@@ -75,7 +75,7 @@
 
 #define CEF_PULSE_ALPHA			0x00200000	// Particle/fx d_alpha: when hits 1.0 alpha, reverse and start fading out.
 #define CEF_ABSOLUTE_PARTS		0x00400000	// Particle origins represent absolute positions.
-#define CEF_ADDITIVE_PARTS		0x00800000	// Particles are additively transparent (temporary)
+#define CEF_ADDITIVE_PARTS		0x00800000	// Particles are additively transparent (temporary).
 
 #define CEF_DROPPED				0x01000000	// Entity was dropped from the view due to an excessive number of entities in the view.
 #define CEF_NOMOVE				0x02000000	// Velocity and acceleration are not applied to origin in update.
