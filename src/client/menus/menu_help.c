@@ -22,8 +22,11 @@ static void Help_MenuDraw(void) // H2
 		return;
 
 	const int line_length = viddef.width * 18 / DEF_WIDTH + 8;
+	const uint menu_side = m_menu_side; //mxd
 
 	// Draw left page.
+	m_menu_side = 0; //mxd. Always draw on left side.
+
 	const char* help_msg = CL_GetGameString(GM_HELP1);
 	const char* help_snd = CL_GetGameWav(GM_HELP1);
 
@@ -36,9 +39,9 @@ static void Help_MenuDraw(void) // H2
 	if (help_snd != NULL)
 		se.StartLocalSound(help_snd);
 
-	m_menu_side ^= 1;
-
 	// Draw right page.
+	m_menu_side = 1; //mxd. Always draw on right side.
+
 	help_msg = CL_GetGameString(GM_HELP2);
 	help_snd = CL_GetGameWav(GM_HELP2);
 
@@ -48,7 +51,8 @@ static void Help_MenuDraw(void) // H2
 	if (help_snd != NULL)
 		se.StartLocalSound(help_snd);
 
-	m_menu_side ^= 1;
+	//mxd. Restore menu_side state.
+	m_menu_side = menu_side;
 }
 
 void M_Menu_Help_f(void) // H2
