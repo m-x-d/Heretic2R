@@ -93,10 +93,10 @@ void SK_SetJointAngles(const playerinfo_t* playerinfo)
 	}
 	else
 	{
-		SetJointAngVel(self->current.rootJoint + CORVUS_UPPERBACK, PITCH, 0, ANGLE_45);
-		SetJointAngVel(self->current.rootJoint + CORVUS_LOWERBACK, PITCH, 0, ANGLE_45);
-		SetJointAngVel(self->current.rootJoint + CORVUS_UPPERBACK, ROLL,  0, ANGLE_45);
-		SetJointAngVel(self->current.rootJoint + CORVUS_LOWERBACK, ROLL,  0, ANGLE_45);
+		SetJointAngVel(self->current.rootJoint + CORVUS_UPPERBACK, PITCH, 0.0f, ANGLE_45);
+		SetJointAngVel(self->current.rootJoint + CORVUS_LOWERBACK, PITCH, 0.0f, ANGLE_45);
+		SetJointAngVel(self->current.rootJoint + CORVUS_UPPERBACK, ROLL,  0.0f, ANGLE_45);
+		SetJointAngVel(self->current.rootJoint + CORVUS_LOWERBACK, ROLL,  0.0f, ANGLE_45);
 	}
 }
 

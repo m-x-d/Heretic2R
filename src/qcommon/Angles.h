@@ -27,9 +27,9 @@
 #define ANGLE_135		2.35619449f
 #define ANGLE_144		2.513274123f
 #define ANGLE_180		3.141592653f
-#define	ANGLE_225		3.926990817f
+#define ANGLE_225		3.926990817f
 #define ANGLE_270		4.71238898f
-#define	ANGLE_315		5.497787144f
+#define ANGLE_315		5.497787144f
 #define ANGLE_360		6.283185307f
 
 // Angles in degrees
@@ -41,8 +41,8 @@
 #define DEGREE_270		(DEGREE_180 + DEGREE_90)
 #define DEGREE_360		(DEGREE_180 * 2.0f)
 
-#define	DEGREE_225		(DEGREE_180 + DEGREE_45)
-#define	DEGREE_315		(DEGREE_270 + DEGREE_45)
+#define DEGREE_225		(DEGREE_180 + DEGREE_45)
+#define DEGREE_315		(DEGREE_270 + DEGREE_45)
 
 #define DEGREE_30		(DEGREE_180 / 6.0f)
 #define DEGREE_60		(DEGREE_180 / 3.0f)
@@ -58,7 +58,7 @@
 #define ANGLE_TO_RAD	ANGLE_1
 #define RAD_TO_ANGLE	(180.0f / ANGLE_180)
 
-#define	SHORT_TO_ANGLE	(360.0f / 65536.0f)
+#define SHORT_TO_ANGLE	(360.0f / 65536.0f)
 
 //mxd. Used by skeletal joints logic.
 #define RAD_TO_BYTEANGLE (161.7014176816138f) //TODO: == 254 / ANGLE_90? Why 254?..

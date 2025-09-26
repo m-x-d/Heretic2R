@@ -688,21 +688,21 @@ void G_SetJointAngles(const playerinfo_t* info)
 	const edict_t* self = (edict_t*)info->self;
 
 	SetJointAngVel(self->s.rootJoint + CORVUS_HEAD, PITCH, info->targetjointangles[PITCH], ANGLE_45);
-	SetJointAngVel(self->s.rootJoint + CORVUS_HEAD, ROLL, info->targetjointangles[YAW], ANGLE_45);
+	SetJointAngVel(self->s.rootJoint + CORVUS_HEAD, ROLL,  info->targetjointangles[YAW],   ANGLE_45);
 
 	if (!info->headjointonly)
 	{
 		SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, PITCH, info->targetjointangles[PITCH], ANGLE_45);
 		SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, PITCH, info->targetjointangles[PITCH], ANGLE_45);
-		SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, ROLL, info->targetjointangles[YAW], ANGLE_45);
-		SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, ROLL, info->targetjointangles[YAW], ANGLE_45);
+		SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, ROLL,  info->targetjointangles[YAW],   ANGLE_45);
+		SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, ROLL,  info->targetjointangles[YAW],   ANGLE_45);
 	}
 	else
 	{
-		SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, PITCH, 0, ANGLE_45);
-		SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, PITCH, 0, ANGLE_45);
-		SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, ROLL, 0, ANGLE_45);
-		SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, ROLL, 0, ANGLE_45);
+		SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, PITCH, 0.0f, ANGLE_45);
+		SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, PITCH, 0.0f, ANGLE_45);
+		SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, ROLL,  0.0f, ANGLE_45);
+		SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, ROLL,  0.0f, ANGLE_45);
 	}
 }
 
@@ -711,13 +711,13 @@ void G_ResetJointAngles(const playerinfo_t* info)
 {
 	const edict_t* self = (edict_t*)info->self;
 
-	SetJointAngVel(self->s.rootJoint + CORVUS_HEAD, PITCH, 0, ANGLE_45);
-	SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, PITCH, 0, ANGLE_45);
-	SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, PITCH, 0, ANGLE_45);
+	SetJointAngVel(self->s.rootJoint + CORVUS_HEAD,      PITCH, 0.0f, ANGLE_45);
+	SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, PITCH, 0.0f, ANGLE_45);
+	SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, PITCH, 0.0f, ANGLE_45);
 
-	SetJointAngVel(self->s.rootJoint + CORVUS_HEAD, ROLL, 0, ANGLE_45);
-	SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, ROLL, 0, ANGLE_45);
-	SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, ROLL, 0, ANGLE_45);
+	SetJointAngVel(self->s.rootJoint + CORVUS_HEAD,      ROLL, 0.0f, ANGLE_45);
+	SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, ROLL, 0.0f, ANGLE_45);
+	SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, ROLL, 0.0f, ANGLE_45);
 }
 
 void G_PlayerActionChickenBite(const playerinfo_t* info)
