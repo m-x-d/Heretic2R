@@ -9,7 +9,7 @@
 #include "client.h"
 #include "glimp_sdl3.h"
 #include "qcommon.h"
-#include "menus/menu_misc.h"
+#include "vid_dll.h"
 
 #include <SDL3/SDL.h>
 

@@ -19,8 +19,6 @@
 #define SND_MENU3	"misc/menu3.wav"
 #define SND_MENU4	"misc/menu4.wav"
 
-extern cvar_t* vid_mode;
-
 extern cvar_t* menus_active;
 
 extern cvar_t* m_item_defaults;
