@@ -146,9 +146,11 @@ static void OnMainMenuOpened(void) // H2
 	if (se.SetEaxEnvironment != NULL)
 		se.SetEaxEnvironment(0);
 
-	//mxd. When not ingame, play menu music.
+	//mxd. When not ingame, play menu music, otherwise play menu open sound.
 	if (cls.state != ca_active)
 		se.MusicPlay(14, true);
+	else
+		se.StartLocalSound("Weapons/bowdraw2.wav");
 }
 
 // Similar to M_PushMenu() in Q2.
