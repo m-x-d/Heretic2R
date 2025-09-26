@@ -42,6 +42,7 @@ static void Quit_MenuInit(void) // H2
 
 	Com_sprintf(name_no, sizeof(name_no), "\x02%s", m_generic_no->string);
 	s_quit_no_action.generic.type = MTYPE_ACTION;
+	s_quit_no_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_quit_no_action.generic.x = 0;
 	s_quit_no_action.generic.y = 20;
 	s_quit_no_action.generic.name = name_no;
@@ -86,8 +87,8 @@ static const char* Quit_MenuKey(const int key)
 			if (Menu_SelectItem(&s_quit_menu))
 			{
 				const menulist_t* item = (menulist_t*)Menu_ItemAtCursor(&s_quit_menu);
-				if (item->generic.flags & QMF_SELECT_SOUND)
-					return SND_MENU_ENTER;
+				if (item->generic.flags & QMF_SELECT_SOUND) // "No" item.
+					return SND_MENU_CLOSE;
 			}
 			return NULL;
 
@@ -111,9 +112,9 @@ static const char* Quit_MenuKey(const int key)
 			Menu_AdjustCursor(&s_quit_menu, -1);
 			return SND_MENU_SELECT;
 
+		case K_TAB:
 		case K_DOWNARROW:
 		case K_KP_DOWNARROW:
-		case K_TAB:
 			s_quit_menu.cursor++;
 			Menu_AdjustCursor(&s_quit_menu, 1);
 			return SND_MENU_SELECT;

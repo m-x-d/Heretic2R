@@ -186,13 +186,11 @@ static char* Sound_HandleMenuKey(menuframework_t* menu, const int key) // H2
 
 		case K_LEFTARROW:
 		case K_KP_LEFTARROW:
-			Menu_SlideItem(menu, -1);
-			return SND_MENU_TOGGLE;
+			return (Menu_SlideItem(menu, -1) ? SND_MENU_TOGGLE : NULL);
 
 		case K_RIGHTARROW:
 		case K_KP_RIGHTARROW:
-			Menu_SlideItem(menu, 1);
-			return SND_MENU_TOGGLE;
+			return (Menu_SlideItem(menu, 1) ? SND_MENU_TOGGLE : NULL);
 
 		case K_ENTER:
 		case K_ESCAPE:

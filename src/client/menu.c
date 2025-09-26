@@ -8,6 +8,7 @@
 #include "client.h"
 #include "cl_messages.h"
 #include "vid_dll.h"
+#include "Vector.h"
 #include "menu.h"
 
 #include "menus/menu_actionkeys.h"
@@ -243,17 +244,6 @@ char* Default_MenuKey(menuframework_t* menu, const int key)
 
 	switch (key)
 	{
-		case K_TAB:
-		case K_DOWNARROW:
-		case K_KP_DOWNARROW:
-			if (menu != NULL)
-			{
-				menu->cursor++;
-				Menu_AdjustCursor(menu, 1);
-				return SND_MENU_SELECT;
-			}
-			break;
-
 		case K_ENTER:
 		case K_KP_ENTER:
 		case K_MOUSE1:
@@ -317,23 +307,24 @@ char* Default_MenuKey(menuframework_t* menu, const int key)
 			}
 			break;
 
-		case K_LEFTARROW:
-		case K_KP_LEFTARROW:
+		case K_TAB:
+		case K_DOWNARROW:
+		case K_KP_DOWNARROW:
 			if (menu != NULL)
 			{
-				Menu_SlideItem(menu, -1);
-				return SND_MENU_TOGGLE;
+				menu->cursor++;
+				Menu_AdjustCursor(menu, 1);
+				return SND_MENU_SELECT;
 			}
 			break;
 
+		case K_LEFTARROW:
+		case K_KP_LEFTARROW:
+			return (menu != NULL && Menu_SlideItem(menu, -1) ? SND_MENU_TOGGLE : NULL);
+
 		case K_RIGHTARROW:
 		case K_KP_RIGHTARROW:
-			if (menu != NULL)
-			{
-				Menu_SlideItem(menu, 1);
-				return SND_MENU_TOGGLE;
-			}
-			break;
+			return (menu != NULL && Menu_SlideItem(menu, 1) ? SND_MENU_TOGGLE : NULL);
 
 		default:
 			break;
@@ -797,18 +788,24 @@ qboolean Menu_SelectItem(const menuframework_t* menu)
 }
 
 // Q2 counterpart
-static void Slider_DoSlide(menuslider_t* slider, const int dir)
+static qboolean Slider_DoSlide(menuslider_t* slider, const int dir) //mxd. Return true when value was changed.
 {
+	const float oldvalue = slider->curvalue; //mxd
+
 	slider->curvalue += (float)dir;
 	slider->curvalue = Clamp(slider->curvalue, slider->minvalue, slider->maxvalue);
 
 	if (slider->generic.callback != NULL)
 		slider->generic.callback(slider);
+
+	return !FloatIsZeroEpsilon(slider->curvalue - oldvalue);
 }
 
 // Q2 counterpart
-static void SpinControl_DoSlide(menulist_t* spin_ctrl, const int dir)
+static qboolean SpinControl_DoSlide(menulist_t* spin_ctrl, const int dir) //mxd. Return true when value was changed.
 {
+	const int oldvalue = spin_ctrl->curvalue; //mxd
+
 	spin_ctrl->curvalue += dir;
 
 	if (spin_ctrl->curvalue < 0)
@@ -818,27 +815,27 @@ static void SpinControl_DoSlide(menulist_t* spin_ctrl, const int dir)
 
 	if (spin_ctrl->generic.callback != NULL)
 		spin_ctrl->generic.callback(spin_ctrl);
+
+	return (spin_ctrl->curvalue != oldvalue);
 }
 
-void Menu_SlideItem(const menuframework_t* menu, const int dir)
+qboolean Menu_SlideItem(const menuframework_t* menu, const int dir) //mxd. Return true when value was changed.
 {
 	menucommon_t* item = Menu_ItemAtCursor(menu);
 	if (item == NULL)
-		return;
+		return false;
 
 	switch (item->type)
 	{
 		case MTYPE_SLIDER:
-			Slider_DoSlide((menuslider_t*)item, dir);
-			break;
+			return Slider_DoSlide((menuslider_t*)item, dir);
 
 		case MTYPE_SPINCONTROL:
 		case MTYPE_PLAYER_SKIN: // H2
-			SpinControl_DoSlide((menulist_t*)item, dir);
-			break;
+			return SpinControl_DoSlide((menulist_t*)item, dir);
 
 		default:
-			break;
+			return false;
 	}
 }
 

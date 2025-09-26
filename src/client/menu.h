@@ -202,7 +202,7 @@ extern int M_GetMenuOffsetY(const menuframework_t* menu); // H2
 
 extern void Menu_AddItem(menuframework_t* menu, void* item);
 extern qboolean Menu_SelectItem(const menuframework_t* menu);
-extern void Menu_SlideItem(const menuframework_t* menu, int dir);
+extern qboolean Menu_SlideItem(const menuframework_t* menu, int dir);
 extern void Menu_AdjustCursor(menuframework_t* menu, int dir);
 extern void Menu_Center(menuframework_t* menu);
 extern void Menu_Draw(const menuframework_t* menu);
