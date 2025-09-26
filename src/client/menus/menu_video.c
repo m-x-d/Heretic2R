@@ -282,35 +282,35 @@ static const char* VID_MenuKey(const int key)
 		case K_ENTER:
 		case K_KP_ENTER:
 			ApplyChanges(false);
-			return SND_MENU1;
+			return SND_MENU_ENTER;
 
 		case K_ESCAPE:
 			ApplyChanges(true);
-			return SND_MENU3;
+			return SND_MENU_CLOSE;
 
 		case K_UPARROW:
 		case K_KP_UPARROW:
 			s_video_menu.cursor--;
 			Menu_AdjustCursor(&s_video_menu, -1);
-			return SND_MENU2;
+			return SND_MENU_SELECT;
 
 		case K_DOWNARROW:
 		case K_KP_DOWNARROW:
 			s_video_menu.cursor++;
 			Menu_AdjustCursor(&s_video_menu, 1);
-			return SND_MENU2;
+			return SND_MENU_SELECT;
 
 		case K_LEFTARROW:
 		case K_KP_LEFTARROW:
 			se.StopAllSounds_Sounding();
 			Menu_SlideItem(&s_video_menu, -1);
-			return SND_MENU4; //mxd. Add sound.
+			return SND_MENU_TOGGLE; //mxd. Add sound.
 
 		case K_RIGHTARROW:
 		case K_KP_RIGHTARROW:
 			se.StopAllSounds_Sounding();
 			Menu_SlideItem(&s_video_menu, 1);
-			return SND_MENU4; //mxd. Add sound.
+			return SND_MENU_TOGGLE; //mxd. Add sound.
 
 		default:
 			break;

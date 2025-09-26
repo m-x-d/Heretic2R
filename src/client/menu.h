@@ -14,10 +14,10 @@
 #define MAX_SAVEGAMES	8 // Q2: 15
 
 //mxd. Menu sounds.
-#define SND_MENU1	"misc/menu1.wav"
-#define SND_MENU2	"misc/menu2.wav"
-#define SND_MENU3	"misc/menu3.wav"
-#define SND_MENU4	"misc/menu4.wav"
+#define SND_MENU_ENTER	"misc/menu1.wav" // Go to child menu/activate selected item (Enter key).
+#define SND_MENU_SELECT	"misc/menu2.wav" // Select menu item (up/down keys).
+#define SND_MENU_CLOSE	"misc/menu3.wav" // Go to parent menu / close menu. (Esc key).
+#define SND_MENU_TOGGLE	"misc/menu4.wav" // Toggle selected item value (left/right keys).
 
 extern cvar_t* menus_active;
 

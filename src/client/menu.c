@@ -250,7 +250,7 @@ char* Default_MenuKey(menuframework_t* menu, const int key)
 			{
 				menu->cursor++;
 				Menu_AdjustCursor(menu, 1);
-				return SND_MENU2;
+				return SND_MENU_SELECT;
 			}
 			break;
 
@@ -299,13 +299,13 @@ char* Default_MenuKey(menuframework_t* menu, const int key)
 			{
 				const menucommon_t* item = Menu_ItemAtCursor(menu);
 				if (item->flags & QMF_SELECT_SOUND)
-					return SND_MENU1;
+					return SND_MENU_ENTER;
 			}
 			break;
 
 		case K_ESCAPE:
 			M_PopMenu();
-			return SND_MENU3;
+			return SND_MENU_CLOSE;
 
 		case K_UPARROW:
 		case K_KP_UPARROW:
@@ -313,7 +313,7 @@ char* Default_MenuKey(menuframework_t* menu, const int key)
 			{
 				menu->cursor--;
 				Menu_AdjustCursor(menu, -1);
-				return SND_MENU2;
+				return SND_MENU_SELECT;
 			}
 			break;
 
@@ -322,7 +322,7 @@ char* Default_MenuKey(menuframework_t* menu, const int key)
 			if (menu != NULL)
 			{
 				Menu_SlideItem(menu, -1);
-				return SND_MENU4;
+				return SND_MENU_TOGGLE;
 			}
 			break;
 
@@ -331,7 +331,7 @@ char* Default_MenuKey(menuframework_t* menu, const int key)
 			if (menu != NULL)
 			{
 				Menu_SlideItem(menu, 1);
-				return SND_MENU4;
+				return SND_MENU_TOGGLE;
 			}
 			break;
 

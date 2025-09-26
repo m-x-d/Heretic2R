@@ -98,23 +98,23 @@ static const char* M_Main_Key(const int key)
 					Sys_Error("Unexpected main menu index %i", m_main_cursor);
 					break;
 			}
-			return SND_MENU1;
+			return SND_MENU_ENTER;
 
 		case K_ESCAPE:
 			M_PopMenu();
-			return SND_MENU3;
+			return SND_MENU_CLOSE;
 
 		case K_UPARROW:
 		case K_KP_UPARROW:
 			if (--m_main_cursor < 0)
 				m_main_cursor = MAIN_ITEMS;
-			return SND_MENU2;
+			return SND_MENU_SELECT;
 
 		case K_DOWNARROW:
 		case K_KP_DOWNARROW:
 			if (++m_main_cursor > MAIN_ITEMS)
 				m_main_cursor = 0;
-			return SND_MENU2;
+			return SND_MENU_SELECT;
 
 		default:
 			return NULL;

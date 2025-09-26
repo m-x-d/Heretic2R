@@ -176,23 +176,23 @@ static char* Sound_HandleMenuKey(menuframework_t* menu, const int key) // H2
 		case K_KP_DOWNARROW:
 			menu->cursor++;
 			Menu_AdjustCursor(menu, 1);
-			return SND_MENU2;
+			return SND_MENU_SELECT;
 
 		case K_UPARROW:
 		case K_KP_UPARROW:
 			menu->cursor--;
 			Menu_AdjustCursor(menu, -1);
-			return SND_MENU2;
+			return SND_MENU_SELECT;
 
 		case K_LEFTARROW:
 		case K_KP_LEFTARROW:
 			Menu_SlideItem(menu, -1);
-			return SND_MENU4;
+			return SND_MENU_TOGGLE;
 
 		case K_RIGHTARROW:
 		case K_KP_RIGHTARROW:
 			Menu_SlideItem(menu, 1);
-			return SND_MENU4;
+			return SND_MENU_TOGGLE;
 
 		case K_ENTER:
 		case K_ESCAPE:
@@ -243,7 +243,7 @@ static char* Sound_HandleMenuKey(menuframework_t* menu, const int key) // H2
 				CL_Snd_Restart_f();
 			}
 			M_PopMenu();
-			return SND_MENU3; //mxd. Added close menu sound.
+			return SND_MENU_CLOSE; //mxd. Added close menu sound.
 
 		default:
 			break;

@@ -87,18 +87,18 @@ static const char* Quit_MenuKey(const int key)
 			{
 				const menulist_t* item = (menulist_t*)Menu_ItemAtCursor(&s_quit_menu);
 				if (item->generic.flags & QMF_SELECT_SOUND)
-					return SND_MENU1;
+					return SND_MENU_ENTER;
 			}
 			return NULL;
 
 		case K_ESCAPE:
 			M_PopMenu();
-			return SND_MENU3;
+			return SND_MENU_CLOSE;
 
 		case 'N':
 		case 'n':
 			M_PopMenu();
-			return NULL;
+			return SND_MENU_CLOSE; //mxd. Add sound.
 
 		case 'Y':
 		case 'y':
@@ -109,14 +109,14 @@ static const char* Quit_MenuKey(const int key)
 		case K_KP_UPARROW:
 			s_quit_menu.cursor--;
 			Menu_AdjustCursor(&s_quit_menu, -1);
-			return SND_MENU2;
+			return SND_MENU_SELECT;
 
 		case K_DOWNARROW:
 		case K_KP_DOWNARROW:
 		case K_TAB:
 			s_quit_menu.cursor++;
 			Menu_AdjustCursor(&s_quit_menu, 1);
-			return SND_MENU2;
+			return SND_MENU_SELECT;
 
 		default:
 			return NULL;
