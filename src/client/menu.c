@@ -903,8 +903,9 @@ static void Slider_Draw(menuslider_t* slider, const qboolean selected)
 	slider->range = Clamp(slider->range, 0.0f, 1.0f);
 
 	// Draw BG left.
-	x = M_GetMenuLabelX(CONCHAR_SIZE * SLIDER_RANGE); // Get x-coord in DEF_WIDTH x DEF_HEIGHT screen size.
-	x = (x * ui_screen_width / DEF_WIDTH) + ui_screen_offset_x; // Convert to real screen size.
+	x = (M_GetMenuLabelX(0) * ui_screen_width / DEF_WIDTH) + ui_screen_offset_x; //mxd. Convert page center to real screen size.
+	x -= (SLIDER_RANGE * ui_char_size) / 2; //mxd. Offset by slider size.
+
 	y = (y + CONCHAR_LINE_HEIGHT) * viddef.height / DEF_HEIGHT;
 	re.DrawChar(x - ui_char_size, y, ui_scale, 15, color);
 
@@ -935,8 +936,8 @@ static void Field_Draw(const menufield_t* field, const qboolean selected)
 		y += CONCHAR_LINE_HEIGHT * 2;
 	}
 
-	int x = M_GetMenuLabelX(field->visible_length * CONCHAR_SIZE); // Get x-coord in DEF_WIDTH x DEF_HEIGHT screen size.
-	x = (x * ui_screen_width / DEF_WIDTH) + ui_screen_offset_x; // Convert to real screen size.
+	int x = (M_GetMenuLabelX(0) * ui_screen_width / DEF_WIDTH) + ui_screen_offset_x; //mxd. Convert page center to real screen size.
+	x -= (field->visible_length * ui_char_size) / 2; //mxd. Offset by field size.
 	y = (y - CONCHAR_SIZE) * viddef.height / DEF_HEIGHT;
 
 	// Draw field BG corners.
