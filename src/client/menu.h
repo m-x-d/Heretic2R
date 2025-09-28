@@ -108,17 +108,16 @@ extern uint m_menu_side;
 
 typedef void (*m_drawfunc_t)(void); //mxd
 typedef const char* (*m_keyfunc_t)(int key); //mxd
+typedef struct menucommon_s menucommon_t; //mxd. Forward declaration for menuframework_t.
 
-typedef struct menuframework_s
+typedef struct
 {
 	int x;
 	int y;
 	int cursor;
 	int width;
 	int nitems;
-	struct menucommon_s* items[MAXMENUITEMS];
-	const char* statusbar;
-	void (*cursordraw)(struct menuframework_s* m);
+	menucommon_t* items[MAXMENUITEMS];
 } menuframework_t;
 
 enum menuitem_type_e
@@ -141,7 +140,7 @@ enum menuitem_flags_e
 	QMF_SELECT_SOUND	= 32
 };
 
-typedef struct
+typedef struct menucommon_s
 {
 	int type;
 	int x;
@@ -149,7 +148,6 @@ typedef struct
 	const char* name;
 	int width;
 	menuframework_t* parent;
-	int cursor_offset; //TODO: unused?
 	int localdata[4];
 	uint flags;
 	void (*callback)(void* self);
