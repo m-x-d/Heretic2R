@@ -172,12 +172,7 @@ static qboolean StartServer_MenuInit(void)
 	static char name_dmopt[MAX_QPATH];
 	static char name_begin[MAX_QPATH];
 
-	static char* dm_coop_names[] =
-	{
-		name_deathmatch,
-		name_coop,
-		0
-	};
+	static char* dm_coop_names[] = { name_deathmatch, name_coop, 0 };
 
 	if (LoadMapnames(Cvar_VariableValue("coop")) == 0)
 		return false;
@@ -241,12 +236,8 @@ static qboolean StartServer_MenuInit(void)
 	s_maxclients_field.generic.y = 200;
 	s_maxclients_field.length = 3;
 	s_maxclients_field.visible_length = 3;
-
-	if ((int)Cvar_VariableValue("maxclients") == 1)
-		strcpy_s(s_maxclients_field.buffer, sizeof(s_maxclients_field.buffer), "8"); //mxd. strcpy -> strcpy_s
-	else
-		strcpy_s(s_maxclients_field.buffer, sizeof(s_maxclients_field.buffer), Cvar_VariableString("maxclients")); //mxd. strcpy -> strcpy_s
-
+	const char* val = ((int)(Cvar_VariableValue("maxclients")) == 1 ? "8" : Cvar_VariableString("maxclients"));
+	strcpy_s(s_maxclients_field.buffer, sizeof(s_maxclients_field.buffer), val); //mxd. strcpy -> strcpy_s
 	s_maxclients_field.cursor = (int)strlen(s_maxclients_field.buffer);
 
 	Com_sprintf(name_hostname, sizeof(name_hostname), "\x02%s", m_item_hostname->string);
