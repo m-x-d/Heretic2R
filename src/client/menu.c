@@ -127,7 +127,8 @@ m_drawfunc_t m_drawfunc;
 m_keyfunc_t m_keyfunc;
 m_keyfunc_t m_keyfunc2; // H2 //TODO: better name
 
-#define MAX_MENU_DEPTH	8
+#define MAX_MENU_DEPTH		8
+#define MENU_TITLE_HEIGHT	32 //mxd
 
 typedef struct
 {
@@ -739,7 +740,7 @@ int M_GetMenuLabelX(const int text_width) // H2
 
 int M_GetMenuOffsetY(const menuframework_t* menu) // H2
 {
-	return menu->y - 24;
+	return menu->y - MENU_TITLE_HEIGHT; //mxd. 'y - 24' in original logic. Separate menu title a bit more from the menu items.
 }
 
 void Menu_AddItem(menuframework_t* menu, void* item)
@@ -747,7 +748,7 @@ void Menu_AddItem(menuframework_t* menu, void* item)
 	if (menu->nitems < MAXMENUITEMS)
 	{
 		menu->items[menu->nitems] = item;
-		((menucommon_t*)menu->items[menu->nitems])->parent = menu;
+		menu->items[menu->nitems]->parent = menu;
 		menu->nitems++;
 	}
 }
@@ -878,12 +879,12 @@ void Menu_Center(menuframework_t* menu)
 {
 	int width = 0;
 	for (int i = 0; i < menu->nitems; i++)
-		width = max(width, ((menucommon_t*)menu->items[i])->width);
+		width = max(width, menu->items[i]->width);
 
 	menu->width = width;
 
-	const int height = ((menucommon_t*)menu->items[menu->nitems - 1])->y + 10;
-	menu->y = (DEF_HEIGHT - height) / 2;
+	const int height = menu->items[menu->nitems - 1]->y + 22; //mxd. 10 (con char height + 2?) in original logic. Changed to font1 char height.
+	menu->y = (DEF_HEIGHT - height) / 2 + MENU_TITLE_HEIGHT; //mxd. Factor in menu title height.
 }
 
 static void Slider_Draw(menuslider_t* slider, const qboolean selected)
@@ -1094,7 +1095,7 @@ void Menu_Draw(const menuframework_t* menu)
 	// Draw contents.
 	for (int i = 0; i < menu->nitems; i++)
 	{
-		menucommon_t* item = (menucommon_t*)menu->items[i];
+		menucommon_t* item = menu->items[i];
 
 		switch (item->type)
 		{
@@ -1277,7 +1278,7 @@ void Menu_DrawBG(const char* bk_path, const float scale) //mxd
 menucommon_t* Menu_ItemAtCursor(const menuframework_t* menu)
 {
 	if (menu->cursor >= 0 && menu->cursor < menu->nitems)
-		return (menucommon_t*)menu->items[menu->cursor];
+		return menu->items[menu->cursor];
 
 	return NULL;
 }
