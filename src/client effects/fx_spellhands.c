@@ -14,11 +14,13 @@
 
 static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 {
+#define SH_PARTICLE_DURATION	400 //mxd
+
 	// If we've timed out, stop the effect (allow for fading). If we're not on a time limit, check the EF flag.
 	if ((self->LifeTime > 0 && self->LifeTime < fxi.cl->time) || (self->LifeTime <= 0 && !(owner->current.effects & EF_TRAILS_ENABLED)))
 	{
 		self->Update = RemoveSelfAI;
-		self->nextThinkTime = fxi.cl->time + 500; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+		self->updateTime = SH_PARTICLE_DURATION; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}
@@ -74,14 +76,15 @@ static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 		part_type = PART_16x16_SPARK_I;
 
 	// Now draw the trail.
+	const float scale = min(8.0f, 1.0f + self->AnimSpeed * 0.35f); //mxd
 	for (int i = 0; i < trail_length; i++)
 	{
-		client_particle_t* ce = ClientParticle_new(part_type, color_white, 400);
+		client_particle_t* ce = ClientParticle_new(part_type, color_white, SH_PARTICLE_DURATION);
 
 		VectorCopy(real_trail_start, ce->origin);
-		ce->scale = 8.0f;
+		ce->scale = scale;
 		ce->acceleration[2] = 0.0f;
-		VectorRandomSet(ce->velocity, 8.0f);
+		VectorRandomSet(ce->velocity, scale);
 
 		AddParticleToList(self, ce);
 
@@ -101,16 +104,25 @@ void FXSpellHands(centity_t* owner, const int type, const int flags, vec3_t orig
 		refpoints |= (1 << CORVUS_LEFTHAND);
 
 	// Add a fiery trail effect to the player's hands / feet etc.
-	const int cast_speed = (R_DETAIL == DETAIL_LOW ? 75 : 50);
+	int next_think_time;
+
+	switch (R_DETAIL) //mxd. DETAIL_LOW ? 75 : 50 in original logic.
+	{
+		default:
+		case DETAIL_LOW:		next_think_time = 75; break;
+		case DETAIL_NORMAL:		next_think_time = 50; break;
+		case DETAIL_HIGH:		next_think_time = 25; break;
+		case DETAIL_UBERHIGH:	next_think_time = 0; break; // Update each frame --mxd.
+	}
 
 	for (short p = 0; p < 16; p++)
 	{
 		if (!(refpoints & (1 << p)))
 			continue;
 
-		client_entity_t* trail = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, cast_speed);
+		client_entity_t* trail = ClientEntity_new(type, flags, origin, NULL, next_think_time);
 
-		trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
+		trail->flags |= (CEF_NO_DRAW | CEF_ADDITIVE_PARTS);
 		trail->SpawnInfo = (flags & (CEF_FLAG7 | CEF_FLAG8)) >> 6;
 		trail->LifeTime = ((lifetime > 0) ? fxi.cl->time + lifetime * 100 : -1);
 		trail->refPoint = p;
