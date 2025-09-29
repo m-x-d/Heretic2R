@@ -17,10 +17,18 @@
 #define BUBBLE_ACCELERATION		100.0f
 
 static struct model_s* bubble_model;
+static struct sfx_s* bubble_sounds[3]; //mxd
 
 void PreCacheBubbler(void)
 {
 	bubble_model = fxi.RegisterModel("sprites/fx/bubble.sp2");
+}
+
+void PreCacheBubblerSFX(void) //mxd
+{
+	bubble_sounds[0] = fxi.S_RegisterSound("ambient/waterdrop1.wav");
+	bubble_sounds[1] = fxi.S_RegisterSound("ambient/waterdrop2.wav");
+	bubble_sounds[2] = fxi.S_RegisterSound("ambient/waterdrop3.wav");
 }
 
 static qboolean BubbleThink(client_entity_t* bubble, centity_t* owner)
@@ -38,7 +46,7 @@ static qboolean BubbleThink(client_entity_t* bubble, centity_t* owner)
 	DoWaterSplash(bubble, color_white, BUBBLE_NUM_SPLASHES);
 	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, bubble->r.origin);
 
-	fxi.S_StartSound(bubble->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), 1.0f, ATTN_STATIC, 0.0f);
+	fxi.S_StartSound(bubble->r.origin, -1, CHAN_AUTO, bubble_sounds[irand(0, 2)], 1.0f, ATTN_STATIC, 0.0f);
 
 	return true;
 }

@@ -834,7 +834,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_BUBBLE
 		.SpawnCFX = FXBubble,
 		.PrecacheCFX = PreCacheBubbler,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheBubblerSFX,
 		.formatString = NULL
 	},
 
