@@ -24,6 +24,8 @@ enum cwatcher_model_index_e
 };
 
 static struct model_s* cwmodels[NUM_CW_MODELS];
+static struct sfx_s* cw_weld_sound; //mxd
+static struct sfx_s* cw_impact_sound; //mxd
 
 void PreCacheCWModels(void)
 {
@@ -32,6 +34,12 @@ void PreCacheCWModels(void)
 	cwmodels[CWM_BEAM_LINE] = fxi.RegisterModel("sprites/fx/bluestreak.sp2");
 	cwmodels[CWM_STAR_HALO] = fxi.RegisterModel("sprites/Spells/halo_ind.sp2");
 	cwmodels[CWM_STAR_TRAIL] = fxi.RegisterModel("sprites/Spells/indigostreak.sp2");
+}
+
+void PreCacheCWSFX(void) //mxd
+{
+	cw_weld_sound = fxi.S_RegisterSound("Monsters/elflord/weld.wav");
+	cw_impact_sound = fxi.S_RegisterSound("Monsters/elflord/impact.wav");
 }
 
 static qboolean CWBeamUpdate(struct client_entity_s* self, centity_t* owner)
@@ -73,7 +81,7 @@ static qboolean CWBeamUpdate(struct client_entity_s* self, centity_t* owner)
 
 	if (++self->LifeTime == 8)
 	{
-		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("Monsters/elflord/weld.wav"), 0.5f, ATTN_IDLE, 0.0f);
+		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, cw_weld_sound, 0.5f, ATTN_IDLE, 0.0f);
 		self->LifeTime = 0;
 	}
 
@@ -154,7 +162,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 
 		case CW_STAR_HIT: // A bright explosion.
 		{
-			fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("Monsters/elflord/impact.wav"), 0.5f, ATTN_IDLE, 0.0f);
+			fxi.S_StartSound(origin, -1, CHAN_AUTO, cw_impact_sound, 0.5f, ATTN_IDLE, 0.0f);
 
 			int count = GetScaledCount(4, 0.8f);
 			for (int i = 0; i < count; i++)

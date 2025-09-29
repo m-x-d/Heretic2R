@@ -960,7 +960,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_CWATCHER
 		.SpawnCFX = FXCWatcherEffects,
 		.PrecacheCFX = PreCacheCWModels,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheCWSFX, //mxd
 		.formatString = "bv"
 	},
 

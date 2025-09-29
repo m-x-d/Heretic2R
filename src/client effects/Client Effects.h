@@ -258,5 +258,6 @@ extern void PreCacheArmorHit(void);
 extern void PreCacheHitPuff(void);
 extern void PreCacheObjects(void);
 extern void PreCacheCWModels(void);
+extern void PreCacheCWSFX(void); //mxd
 extern void PreCacheTornado(void);
 extern void PreCacheTPortSmokeSFX(void); //mxd
