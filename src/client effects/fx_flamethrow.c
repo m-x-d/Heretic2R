@@ -24,12 +24,12 @@ void PreCacheFlamethrowerSFX(void) //mxd
 	flamethrower_sound = fxi.S_RegisterSound("misc/flamethrow.wav");
 }
 
-qboolean FXFlamethrowerTrail(client_entity_t* self, centity_t* owner)
+qboolean FXFlamethrowerTrail(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFlamethrower_trail' in original logic.
 {
 	if (self->LifeTime < fxi.cl->time)
 	{
 		self->Update = RemoveSelfAI;
-		self->nextThinkTime = fxi.cl->time + 2000; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+		self->updateTime = 2000; //BUGFIX: mxd. 'fxi.cl->time + 2000' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}
@@ -71,12 +71,12 @@ qboolean FXFlamethrowerTrail(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
-static qboolean FlamethrowerSteamTrail(client_entity_t* self, centity_t* owner)
+static qboolean FlamethrowerSteamTrail(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFlamethrower_steam_trail' in original logic.
 {
 	if (self->LifeTime < fxi.cl->time)
 	{
 		self->Update = RemoveSelfAI;
-		self->nextThinkTime = fxi.cl->time + 2000; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+		self->updateTime = 2000; //BUGFIX: mxd. 'fxi.cl->time + 2000' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}
