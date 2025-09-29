@@ -62,11 +62,13 @@ static qboolean StaffElementThink(struct client_entity_s* self, centity_t* owner
 
 static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
 {
+#define TRAIL_LVL2_LIFETIME	2000 //mxd
+
 	// If we've timed out, stop the effect (allow for fading).
 	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
 	{
 		self->Update = RemoveSelfAI;
-		self->nextThinkTime = fxi.cl->time + 500; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+		self->updateTime = TRAIL_LVL2_LIFETIME; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}
@@ -111,7 +113,7 @@ static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
 		vec3_t trail_org;
 		VectorMA(cur_pivot, STAFF_LENGTH, dir, trail_org);
 
-		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, 2000);
+		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, TRAIL_LVL2_LIFETIME);
 
 		trail->r.model = &staff_models[STAFF_TRAIL2];
 		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
@@ -183,11 +185,13 @@ static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
 
 static qboolean StaffLevel3Think(struct client_entity_s* self, centity_t* owner)
 {
+#define TRAIL_LVL3_LIFETIME	500 //mxd
+
 	// If we've timed out, stop the effect (allow for fading).
 	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
 	{
 		self->Update = RemoveSelfAI;
-		self->nextThinkTime = fxi.cl->time + 500; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+		self->updateTime = TRAIL_LVL3_LIFETIME; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}
@@ -234,7 +238,7 @@ static qboolean StaffLevel3Think(struct client_entity_s* self, centity_t* owner)
 		vec3_t trail_org;
 		VectorMA(cur_pivot, STAFF_LENGTH, dir, trail_org);
 
-		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, 500);
+		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, TRAIL_LVL3_LIFETIME);
 
 		trail->r.model = &staff_models[STAFF_TRAIL3];
 		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
@@ -267,11 +271,13 @@ static qboolean StaffLevel3Think(struct client_entity_s* self, centity_t* owner)
 
 static qboolean StaffLevel1Think(struct client_entity_s* self, centity_t* owner)
 {
+#define TRAIL_LVL1_LIFETIME	1500 //mxd
+
 	// If we've timed out, stop the effect (allow for fading).
 	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
 	{
 		self->Update = RemoveSelfAI;
-		self->nextThinkTime = fxi.cl->time + 500; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+		self->updateTime = TRAIL_LVL1_LIFETIME; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}
@@ -279,8 +285,6 @@ static qboolean StaffLevel1Think(struct client_entity_s* self, centity_t* owner)
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
 		return false; // Remove the effect in this case.
-
-	self->updateTime = MIN_UPDATE_TIME; //FIXME: with a next think time this effect does not look right.
 
 	// If this reference point hasn't changed since the last frame, return.
 	vec3_t diff;
@@ -321,7 +325,7 @@ static qboolean StaffLevel1Think(struct client_entity_s* self, centity_t* owner)
 		vec3_t trail_org;
 		VectorMA(cur_pivot, STAFF_LENGTH, dir, trail_org);
 
-		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, 1500);
+		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, TRAIL_LVL1_LIFETIME);
 
 		trail->r.model = &staff_models[STAFF_TRAIL]; // patball sprite.
 		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
@@ -353,7 +357,7 @@ void FXStaff(centity_t* owner, const int type, const int flags, vec3_t origin)
 		return;
 
 	// Add a fiery trail effect to the player's staff.
-	client_entity_t* trail = ClientEntity_new(type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 17);
+	client_entity_t* trail = ClientEntity_new(type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 0); //mxd. next_think_time:17 in original logic.
 
 	trail->flags |= CEF_NO_DRAW;
 	trail->NoOfAnimFrames = CORVUS_BLADE;
