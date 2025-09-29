@@ -157,7 +157,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 		return;
 
 	//mxd. Update idle time (originally done in BranchLwrStanding(), BranchUprReadyHands(), BranchUprReadySwordStaff(), BranchUprReadyHellStaff(), BranchUprReadyBow() and BranchUprReady()).
-	if (info->lowerseq != ASEQ_STAND && info->lowerseq != ASEQ_IDLE_READY && info->upperseq == ASEQ_NONE) //mxd. Add upperseq check.
+	if ((info->lowerseq != ASEQ_STAND && info->lowerseq != ASEQ_IDLE_READY) || info->upperseq != ASEQ_NONE) //mxd. Add upperseq check.
 		info->idletime = info->leveltime;
 
 	if ((info->flags & PLAYER_FLAG_KNOCKDOWN) && info->deadflag == DEAD_NO)
