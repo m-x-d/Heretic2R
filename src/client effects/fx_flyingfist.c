@@ -18,12 +18,24 @@
 #define FIST_POWER_BLAST_VEL	200.0f
 
 static struct model_s* fist_models[3];
+static struct sfx_s* fist_impact_sounds[2]; //mxd
 
 void PreCacheFist(void)
 {
 	fist_models[0] = fxi.RegisterModel("Sprites/Spells/flyingfist.sp2");
 	fist_models[1] = fxi.RegisterModel("Sprites/Spells/spellhands_red.sp2");
 	fist_models[2] = fxi.RegisterModel("models/spells/meteorbarrier/tris.fm");
+}
+
+void PreCacheFistSFX(void) //mxd
+{
+	fist_impact_sounds[0] = fxi.S_RegisterSound("weapons/FlyingFistImpact.wav");
+	fist_impact_sounds[1] = fxi.S_RegisterSound("weapons/FireballPowerImpact.wav");
+
+	//mxd. Precache weapon sounds as well. Not the best place to do this, but since weapons have no precace logic at all...
+	fxi.S_RegisterSound("weapons/FlyingFistCast.wav");
+	fxi.S_RegisterSound("weapons/FireballPowerCast.wav");
+	fxi.S_RegisterSound("weapons/FireballNoMana.wav");
 }
 
 static qboolean FlyingFistTrailThink(struct client_entity_s* self, centity_t* owner)
@@ -208,15 +220,14 @@ void FXFlyingFistExplode(centity_t* owner, const int type, const int flags, vec3
 			smoke_puff->acceleration[2] = flrand(-40.0f, -60.0f);
 		}
 
-		smoke_puff->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		smoke_puff->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		smoke_puff->r.frame = 0;
 		smoke_puff->d_alpha = -0.4f;
 		smoke_puff->radius = 20.0f;
 
 		if (is_last_puff)
 		{
-			const char* snd_name = (is_powered ? "weapons/FireballPowerImpact.wav" : "weapons/FlyingFistImpact.wav"); //mxd
-			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound(snd_name), volume, ATTN_NORM, 0.0f);
+			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fist_impact_sounds[is_powered ? 1 : 0], volume, ATTN_NORM, 0.0f);
 
 			smoke_puff->dlight = CE_DLight_new(light_color, light_radius, -50.0f);
 			VectorClear(smoke_puff->velocity);

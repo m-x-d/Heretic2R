@@ -33,6 +33,7 @@ typedef struct ClientEffect_s
 {
 	void (*SpawnCFX)(centity_t* owner, int type, int flags, vec3_t origin);
 	void (*PrecacheCFX)(void);
+	void (*PrecacheSFX)(void); //mxd. Sound effects precache logic.
 	char* formatString;
 } ClientEffect_t;
 
@@ -216,6 +217,7 @@ extern void PreCacheTorch(void);
 extern void PreCacheFlareup(void);
 extern void PreCacheRockchunks(void);
 extern void PreCacheFist(void);
+extern void PreCacheFistSFX(void); //mxd
 extern void PreCacheWall(void);
 extern void PreCacheFlare(void);
 extern void PreCacheArray(void);
