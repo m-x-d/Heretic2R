@@ -14,11 +14,19 @@
 #include "g_playstats.h"
 
 static struct model_s* splat_models[2];
+static struct sfx_s* splat_sounds[3]; //mxd
 
 void PreCacheSplat(void)
 {
 	splat_models[0] = fxi.RegisterModel("sprites/fx/bsplat.sp2");
 	splat_models[1] = fxi.RegisterModel("sprites/fx/ysplat.sp2");
+}
+
+void PreCacheSplatSFX(void) //mxd
+{
+	splat_sounds[0] = fxi.S_RegisterSound("ambient/waterdrop1.wav");
+	splat_sounds[1] = fxi.S_RegisterSound("ambient/waterdrop2.wav");
+	splat_sounds[2] = fxi.S_RegisterSound("ambient/waterdrop3.wav");
 }
 
 static int insect_blood_particles[] =
@@ -252,7 +260,7 @@ static qboolean BloodSplatSplashUpdate(client_entity_t* self, centity_t* owner)
 	}
 
 	if (p != NULL) //mxd. Added sanity check.
-		fxi.S_StartSound(p->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), flrand(0.5f, 0.8f), ATTN_STATIC, 0.0f);
+		fxi.S_StartSound(p->origin, -1, CHAN_AUTO, splat_sounds[irand(0, 2)], flrand(0.5f, 0.8f), ATTN_STATIC, 0.0f);
 
 	self->r.scale += 0.01f; //mxd. Grow a bit...
 	self->Update = NULL; //mxd. Await next BloodSplatDripUpdate() call...

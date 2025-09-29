@@ -245,6 +245,7 @@ extern void PreCacheLightning(void);
 extern void PreCacheHPStaff(void);
 extern void PreCacheTB(void);
 extern void PreCacheSplat(void);
+extern void PreCacheSplatSFX(void); //mxd
 extern void PrecacheSsithraArrow(void);
 extern void PrecachePESpell(void);
 extern void PreCachePortal(void);

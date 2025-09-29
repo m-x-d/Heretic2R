@@ -64,7 +64,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_BLOOD_TRAIL
 		.SpawnCFX = FXBloodTrail,
 		.PrecacheCFX = PreCacheSplat,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheSplatSFX, //mxd
 		.formatString = "d"
 	},
 
