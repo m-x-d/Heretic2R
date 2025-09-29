@@ -19,11 +19,17 @@
 #define HELLLASER_SPEED			32.0f
 
 static struct model_s* hell_models[2];
+static struct sfx_s* hell_hit_sound; //mxd
 
 void PreCacheHellstaff(void)
 {
 	hell_models[0] = fxi.RegisterModel("sprites/spells/hellstafproj.sp2");
 	hell_models[1] = fxi.RegisterModel("sprites/fx/helllaser.sp2");
+}
+
+void PreCacheHellstaffSFX(void) //mxd
+{
+	hell_hit_sound = fxi.S_RegisterSound("weapons/HellHit.wav");
 }
 
 void FXHellbolt(centity_t* owner, const int type, const int flags, vec3_t origin)
@@ -62,7 +68,7 @@ static void HellboltExplode(const vec3_t loc, const vec3_t vel)
 	blast->radius = 32.0f;
 	blast->dlight = CE_DLight_new(light_color, 150.0f, -200.0f);
 
-	fxi.S_StartSound(blast->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0.0f);
+	fxi.S_StartSound(blast->r.origin, -1, CHAN_WEAPON, hell_hit_sound, 1.0f, ATTN_NORM, 0.0f);
 	AddEffect(NULL, blast);
 
 	for (int i = 0; i < NUM_HELLBOLT_EXPLODES; i++)

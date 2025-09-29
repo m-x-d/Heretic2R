@@ -208,6 +208,7 @@ extern void PreCacheItemDefense(void);
 extern void PreCachePuzzleItems(void);
 extern void PreCacheItemAmmo(void);
 extern void PreCacheHellstaff(void);
+extern void PreCacheHellstaffSFX(void); //mxd
 extern void PreCacheMorph(void);
 extern void PreCachePhoenix(void);
 extern void PreCacheRedrain(void);

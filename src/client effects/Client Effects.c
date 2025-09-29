@@ -505,7 +505,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_WEAPON_HELLBOLT
 		.SpawnCFX = FXHellbolt,
 		.PrecacheCFX = PreCacheHellstaff,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheHellstaffSFX, //mxd
 		.formatString = "t"
 	},
 
