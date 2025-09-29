@@ -194,6 +194,7 @@ extern void FXClientScorchmark(vec3_t origin, vec3_t dir);
 extern void FXCrosshair(centity_t* owner, int type, int flags, vec3_t origin);
 
 extern void PreCacheDebris(void);
+extern void PreCacheDebrisSFX(void); //mxd
 extern void PreCacheHalos(void);
 extern void PreCacheMist(void);
 extern void PreCacheBluering(void);

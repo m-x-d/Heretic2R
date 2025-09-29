@@ -146,6 +146,39 @@ static float debris_elasticity[NUM_MAT] =
 
 #pragma endregion
 
+#pragma region ========================== Debris sounds ==========================
+
+enum DebrisSoundID_e //mxd
+{
+	SND_METAL1,
+	SND_METAL2,
+
+	SND_METAL_HEAVY1,
+	SND_METAL_HEAVY2,
+	SND_METAL_HEAVY3,
+
+	SND_WOOD1,
+	SND_WOOD2,
+
+	SND_STONE1,
+	SND_STONE2,
+
+	SND_DROP_THING,
+
+	SND_FLESH1,
+	SND_FLESH2,
+	SND_FLESH3,
+
+	SND_GLASS1,
+	SND_GLASS2,
+
+	NUM_SOUNDS
+};
+
+static struct sfx_s* debris_sounds[NUM_SOUNDS]; //mxd
+
+#pragma endregion
+
 #pragma region ========================== Debris utility functions ==========================
 
 static void DoFireTrail(client_entity_t* spawner)
@@ -763,24 +796,18 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 				if (self->effectID == FX_THROWWEAPON && irand(0, 2) == 0)
 				{
 					GenericSparks(NULL, FX_SPARKS, 0, self->r.origin, vec3_up);
-
-					const char* snd_name = (irand(0, 1) ? "misc/dropmetal1.wav" : "misc/dropmetal.wav");
-					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_NORM, 0.0f);
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, debris_sounds[irand(SND_METAL1, SND_METAL2)], 1.0f, ATTN_NORM, 0.0f);
 				}
 				else
 				{
-					const char* snd_name = va("misc/drophvmtl%i.wav", irand(1, 3));
-					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, debris_sounds[irand(SND_METAL_HEAVY1, SND_METAL_HEAVY3)], 1.0f, ATTN_STATIC, 0.0f);
 				}
 				// Need more hollow sounds for big metal.
 				break;
 
 			case MAT_WOOD:
 				if (irand(0, 6) == 0)
-				{
-					const char* snd_name = (irand(0, 1) ? "misc/dropwood1.wav" : "misc/dropwood.wav");
-					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
-				}
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, debris_sounds[irand(SND_WOOD1, SND_WOOD2)], 1.0f, ATTN_STATIC, 0.0f);
 				break;
 
 			case MAT_STONE:
@@ -788,8 +815,8 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 			case MAT_BROWNSTONE:
 				if (irand(0, 6) == 0)
 				{
-					const char* snd_name = (irand(0, 2) ? va("misc/boulder%i.wav", irand(1, 2)) : "misc/dropthing.wav");
-					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
+					struct sfx_s* sfx = (irand(0, 2) ? debris_sounds[irand(SND_STONE1, SND_STONE2)] : debris_sounds[SND_DROP_THING]);
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, sfx, 1.0f, ATTN_STATIC, 0.0f);
 				}
 				break;
 
@@ -804,8 +831,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 
 				if (self->effectID == FX_BODYPART || irand(0, 1))
 				{
-					const char* snd_name = va("misc/fleshdrop%i.wav", irand(1, 3));
-					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, debris_sounds[irand(SND_FLESH1, SND_FLESH3)], 1.0f, ATTN_STATIC, 0.0f);
 
 					if (!(self->SpawnInfo & SIF_INWATER))
 						ThrowBlood(self->r.origin, trace->plane.normal, dark, yellow, false);
@@ -814,10 +840,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 
 			case MAT_GLASS:
 				if (irand(0, 2) == 0)
-				{
-					const char* snd_name = va("misc/dropglass%i.wav", irand(1, 2));
-					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
-				}
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, debris_sounds[irand(SND_GLASS1, SND_GLASS2)], 1.0f, ATTN_STATIC, 0.0f);
 				break;
 
 			default:
@@ -859,6 +882,31 @@ void PreCacheDebris(void)
 {
 	for (uint i = 0; i < sizeof(debris_chunks) / sizeof(debris_chunks[0]); i++)
 		debris_chunks[i].model = fxi.RegisterModel(debris_chunks[i].modelName);
+}
+
+void PreCacheDebrisSFX(void) //mxd
+{
+	debris_sounds[SND_METAL1] = fxi.S_RegisterSound("misc/dropmetal1.wav");
+	debris_sounds[SND_METAL2] = fxi.S_RegisterSound("misc/dropmetal.wav");
+
+	debris_sounds[SND_METAL_HEAVY1] = fxi.S_RegisterSound("misc/drophvmtl1.wav");
+	debris_sounds[SND_METAL_HEAVY2] = fxi.S_RegisterSound("misc/drophvmtl2.wav");
+	debris_sounds[SND_METAL_HEAVY3] = fxi.S_RegisterSound("misc/drophvmtl3.wav");
+
+	debris_sounds[SND_WOOD1] = fxi.S_RegisterSound("misc/dropwood1.wav");
+	debris_sounds[SND_WOOD2] = fxi.S_RegisterSound("misc/dropwood.wav");
+
+	debris_sounds[SND_STONE1] = fxi.S_RegisterSound("misc/boulder1.wav");
+	debris_sounds[SND_STONE2] = fxi.S_RegisterSound("misc/boulder2.wav");
+
+	debris_sounds[SND_DROP_THING] = fxi.S_RegisterSound("misc/dropthing.wav");
+
+	debris_sounds[SND_FLESH1] = fxi.S_RegisterSound("misc/fleshdrop1.wav");
+	debris_sounds[SND_FLESH2] = fxi.S_RegisterSound("misc/fleshdrop2.wav");
+	debris_sounds[SND_FLESH3] = fxi.S_RegisterSound("misc/fleshdrop3.wav");
+
+	debris_sounds[SND_GLASS1] = fxi.S_RegisterSound("misc/dropglass1.wav");
+	debris_sounds[SND_GLASS2] = fxi.S_RegisterSound("misc/dropglass2.wav");
 }
 
 #pragma endregion

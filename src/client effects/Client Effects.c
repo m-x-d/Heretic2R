@@ -393,14 +393,14 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_DEBRIS
 		.SpawnCFX = FXDebris,
 		.PrecacheCFX = PreCacheDebris,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheDebrisSFX, //mxd
 		.formatString = "bbdb"
 	},
 
 	{ // FX_FLESH_DEBRIS
 		.SpawnCFX = FXFleshDebris,
 		.PrecacheCFX = PreCacheDebris,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheDebrisSFX, //mxd
 		.formatString = "bdb"
 	},
 
