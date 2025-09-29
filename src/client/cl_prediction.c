@@ -610,13 +610,9 @@ void CL_PredictMovement(void)
 	{
 		CL_PredictMovement_impl();
 
-		//mxd. Setup playerLerp interpolation? pred_playerLerp interpolates at 10 FPS.
-		if (vid_maxfps->value > cl_maxfps->value)
-			player_lerp_increment = (10.0f / vid_maxfps->value) * (cl_maxfps->value / vid_maxfps->value); //TODO: this expects vid_maxfps to be multiple of cl_maxfps...
-		else
-			player_lerp_increment = 0.0f;
-
-		pred_playerLerp -= player_lerp_increment;
+		//mxd. Setup playerLerp interpolation. pred_playerLerp interpolates at 10 FPS.
+		player_lerp_increment = 10.0f / vid_maxfps->value; //TODO: this expects vid_maxfps to be multiple of cl_maxfps...
+		pred_playerLerp += player_lerp_increment * 0.5f;
 		const float backlerp = 1.0f - pred_playerLerp;
 
 		for (int i = 0; i < 3; i++)
@@ -676,6 +672,7 @@ void CL_PredictMovement(void)
 	// Store prediction info. //mxd. Done in separate function in original logic.
 	VectorCopy(cl.predicted_origin, cl_entities[cl.playernum + 1].origin);
 	cl.predictinfo.playerLerp = pred_playerLerp;
+	cl.predictinfo.angleLerp = origin_lerp; //mxd
 
 	if (new_frame)
 	{

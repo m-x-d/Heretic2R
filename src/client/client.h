@@ -67,9 +67,9 @@ typedef struct
 } centity_t;
 
 // predictinfo_t
-// Repositiory for all elements of player rendering that need to be predicted.
-// When prediction is active, the values below are written by CL_DoPrediction()
-// and read by AddServerEntities() instead of using values derived from server sent data.
+// Repository for all elements of player rendering that need to be predicted.
+// When prediction is active, the values below are written by CL_PredictMovement()
+// and read by AddServerEntities() instead of using values derived from server-sent data.
 typedef struct
 {
 	int prevFrame;
@@ -87,6 +87,8 @@ typedef struct
 	int clientnum;
 
 	fmnodeinfo_t fmnodeinfo[MAX_FM_MESH_NODES];
+
+	float angleLerp; //mxd //TODO: extra property. Probably breaks compatibility with original logic.
 } predictinfo_t;
 
 typedef struct
@@ -176,7 +178,7 @@ typedef struct
 
 	char configstrings[MAX_CONFIGSTRINGS][MAX_QPATH];
 
-	// Locally derived information from server state
+	// Locally derived information from server state.
 
 	struct model_s* model_draw[MAX_MODELS];
 	struct cmodel_s* model_clip[MAX_MODELS];
@@ -187,7 +189,7 @@ typedef struct
 	clientinfo_t clientinfo[MAX_CLIENTS];
 	clientinfo_t baseclientinfo;
 
-	int lastanimtime;
+	int lastanimtime; //TODO: set, but never used.
 	int PIV;
 
 	playerinfo_t playerinfo;
