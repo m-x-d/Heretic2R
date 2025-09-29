@@ -10,6 +10,13 @@
 #include "Random.h"
 #include "g_playstats.h"
 
+static struct sfx_s* tport_smoke_sound; //mxd
+
+void PreCacheTPortSmokeSFX(void) //mxd
+{
+	tport_smoke_sound = fxi.S_RegisterSound("monsters/assassin/smoke.wav");
+}
+
 void FXTPortSmoke(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	client_entity_t* smoke = ClientEntity_new(type, (uint)(flags | CEF_NO_DRAW), origin, NULL, 1650);
@@ -46,7 +53,7 @@ void FXTPortSmoke(centity_t* owner, const int type, const int flags, vec3_t orig
 		scale_max = 45.0f;
 	}
 
-	fxi.S_StartSound(origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/assassin/smoke.wav"), 1.0f, ATTN_NORM, 0.0f);
+	fxi.S_StartSound(origin, -1, CHAN_WEAPON, tport_smoke_sound, 1.0f, ATTN_NORM, 0.0f);
 
 	for (int i = 0; i < num_puffs; i++)
 	{

@@ -255,3 +255,4 @@ extern void PreCacheHitPuff(void);
 extern void PreCacheObjects(void);
 extern void PreCacheCWModels(void);
 extern void PreCacheTornado(void);
+extern void PreCacheTPortSmokeSFX(void); //mxd

@@ -841,7 +841,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_TPORTSMOKE
 		.SpawnCFX = FXTPortSmoke,
 		.PrecacheCFX = NULL,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheTPortSmokeSFX, //mxd
 		.formatString = NULL
 	},
 
