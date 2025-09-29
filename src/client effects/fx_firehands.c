@@ -34,8 +34,6 @@ static qboolean FireHandsThink(struct client_entity_s* self, centity_t* owner)
 	if (!RefPointsValid(owner))
 		return false; // Remove the effect in this case.
 
-	VectorCopy(owner->origin, self->r.origin);
-
 	// Let's take the origin and transform it to the proper coordinate offset from the owner's origin.
 	vec3_t firestart;
 	VectorCopy(owner->referenceInfo->references[self->refPoint].placement.origin, firestart);
@@ -73,8 +71,6 @@ void FXFireHands(centity_t* owner, const int type, const int flags, vec3_t origi
 	if (flags & CEF_FLAG6)
 		refpoints |= (1 << CORVUS_RIGHTHAND);
 
-	VectorClear(origin);
-
 	// Add a fiery trail effect to the player's hands / feet etc.
 	int next_think_time;
 
@@ -95,7 +91,7 @@ void FXFireHands(centity_t* owner, const int type, const int flags, vec3_t origi
 
 		client_entity_t* trail = ClientEntity_new(type, flags, origin, 0, next_think_time);
 
-		trail->flags |= (CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ADDITIVE_PARTS);
+		trail->flags |= (CEF_NO_DRAW | CEF_ADDITIVE_PARTS);
 		trail->LifeTime = (lifetime > 0 ? fxi.cl->time + lifetime * 100 : -1);
 		trail->refPoint = p;
 		trail->color.c = 0xe5007fff; // Used to color flame particles in FireHandsThink() --mxd.
