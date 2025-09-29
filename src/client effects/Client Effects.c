@@ -435,7 +435,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_DRIPPER
 		.SpawnCFX = FXDripper,
 		.PrecacheCFX = PreCacheDripper,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheDripperSFX, //mxd
 		.formatString = "bb"
 	},
 

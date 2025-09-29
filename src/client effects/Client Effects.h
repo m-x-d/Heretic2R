@@ -200,6 +200,7 @@ extern void PreCacheMist(void);
 extern void PreCacheBluering(void);
 extern void PreCacheBlueringSFX(void); //mxd
 extern void PreCacheDripper(void);
+extern void PreCacheDripperSFX(void); //mxd
 extern void PreCacheBubbler(void);
 extern void PreCacheBubblerSFX(void); //mxd
 extern void PreCacheHealth(void);

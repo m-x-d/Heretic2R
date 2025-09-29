@@ -16,11 +16,45 @@
 
 static struct model_s* drip_models[3];
 
+enum DripSoundID_e //mxd
+{
+	SND_SOLIDDROP1,
+	SND_SOLIDDROP2,
+	SND_SOLIDDROP3,
+
+	SND_WATERDROP1,
+	SND_WATERDROP2,
+	SND_WATERDROP3,
+
+	SND_LAVADROP1,
+	SND_LAVADROP2,
+	SND_LAVADROP3,
+
+	NUM_SOUNDS
+};
+
+static struct sfx_s* drip_sounds[NUM_SOUNDS]; //mxd
+
 void PreCacheDripper(void)
 {
 	drip_models[0] = fxi.RegisterModel("sprites/fx/steamhalf.sp2");
 	drip_models[1] = fxi.RegisterModel("sprites/fx/steam.sp2");
 	drip_models[2] = fxi.RegisterModel("sprites/fx/waterdrop.sp2");
+}
+
+void PreCacheDripperSFX(void) //mxd
+{
+	drip_sounds[SND_SOLIDDROP1] = fxi.S_RegisterSound("ambient/soliddrop1.wav");
+	drip_sounds[SND_SOLIDDROP2] = fxi.S_RegisterSound("ambient/soliddrop2.wav");
+	drip_sounds[SND_SOLIDDROP3] = fxi.S_RegisterSound("ambient/soliddrop3.wav");
+
+	drip_sounds[SND_WATERDROP1] = fxi.S_RegisterSound("ambient/waterdrop1.wav");
+	drip_sounds[SND_WATERDROP2] = fxi.S_RegisterSound("ambient/waterdrop2.wav");
+	drip_sounds[SND_WATERDROP3] = fxi.S_RegisterSound("ambient/waterdrop3.wav");
+
+	drip_sounds[SND_LAVADROP1] = fxi.S_RegisterSound("ambient/lavadrop1.wav");
+	drip_sounds[SND_LAVADROP2] = fxi.S_RegisterSound("ambient/lavadrop2.wav");
+	drip_sounds[SND_LAVADROP3] = fxi.S_RegisterSound("ambient/lavadrop3.wav");
 }
 
 static qboolean DripThinkSolid(client_entity_t* drip, centity_t* owner)
@@ -42,7 +76,7 @@ static qboolean DripThinkSolid(client_entity_t* drip, centity_t* owner)
 
 	AddEffect(NULL, mist);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/soliddrop%i.wav", irand(1, 3))), 1.0f, ATTN_STATIC, 0.0f);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_SOLIDDROP1, SND_SOLIDDROP3)], 1.0f, ATTN_STATIC, 0.0f);
 
 	//FIXME: Returning false here doesn't work.
 	drip->Update = RemoveSelfAI;
@@ -70,7 +104,7 @@ static qboolean DripThinkWater(client_entity_t* drip, centity_t* owner)
 	DoWaterSplash(mist, color_white, DRIP_NUM_SPLASHES);
 	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, drip->r.origin);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), 1.0f, ATTN_STATIC, 0.0f);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_WATERDROP1, SND_WATERDROP3)], 1.0f, ATTN_STATIC, 0.0f);
 
 	//FIXME: Returning false here doesn't work.
 	drip->Update = RemoveSelfAI;
@@ -99,7 +133,7 @@ static qboolean DripThinkLava(client_entity_t* drip, centity_t* owner)
 
 	AddEffect(NULL, mist);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/lavadrop%i.wav", irand(1, 3))), 1.0f, ATTN_STATIC, 0.0f);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_LAVADROP1, SND_LAVADROP3)], 1.0f, ATTN_STATIC, 0.0f);
 
 	//FIXME: Returning false here doesn't work.
 	drip->Update = RemoveSelfAI;
