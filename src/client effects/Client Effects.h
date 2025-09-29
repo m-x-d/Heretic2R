@@ -257,6 +257,7 @@ extern void PreCacheCrosshair(void);
 extern void PreCacheStaffHit(void);
 extern void PreCacheArmorHit(void);
 extern void PreCacheHitPuff(void);
+extern void PreCacheHitPuffSFX(void); //mxd
 extern void PreCacheObjects(void);
 extern void PreCacheCWModels(void);
 extern void PreCacheCWSFX(void); //mxd

@@ -918,7 +918,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_LIGHTNING_HIT
 		.SpawnCFX = FXLightningHit,
 		.PrecacheCFX = PreCacheHitPuff,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheHitPuffSFX, //mxd
 		.formatString = "t"
 	},
 
