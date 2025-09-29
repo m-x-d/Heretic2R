@@ -799,7 +799,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_FLAMETHROWER
 		.SpawnCFX = FXFlamethrower,
 		.PrecacheCFX = NULL,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheFlamethrowerSFX, //mxd
 		.formatString = "df"
 	},
 

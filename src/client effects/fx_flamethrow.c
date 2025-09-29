@@ -15,6 +15,15 @@
 
 #define FLAME_COUNT		4
 
+static struct sfx_s* steamjet_sound;
+static struct sfx_s* flamethrower_sound;
+
+void PreCacheFlamethrowerSFX(void) //mxd
+{
+	steamjet_sound = fxi.S_RegisterSound("objects/steamjet.wav");
+	flamethrower_sound = fxi.S_RegisterSound("misc/flamethrow.wav");
+}
+
 qboolean FXFlamethrowerTrail(client_entity_t* self, centity_t* owner)
 {
 	if (self->LifeTime < fxi.cl->time)
@@ -127,13 +136,13 @@ void FXFlamethrower(centity_t* owner, const int type, const int flags, vec3_t or
 		if (flags & CEF_FLAG7)
 			glow->LifeTime = fxi.cl->time + 200;
 		else
-			fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("objects/steamjet.wav"), 1.0f, ATTN_NORM, 0.0f);
+			fxi.S_StartSound(origin, -1, CHAN_AUTO, steamjet_sound, 1.0f, ATTN_NORM, 0.0f);
 
 		glow->Update = FlamethrowerSteamTrail;
 	}
 	else
 	{
-		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/flamethrow.wav"), 1.0f, ATTN_NORM, 0.0f);
+		fxi.S_StartSound(origin, -1, CHAN_AUTO, flamethrower_sound, 1.0f, ATTN_NORM, 0.0f);
 		glow->Update = FXFlamethrowerTrail;
 	}
 

@@ -262,3 +262,4 @@ extern void PreCacheCWModels(void);
 extern void PreCacheCWSFX(void); //mxd
 extern void PreCacheTornado(void);
 extern void PreCacheTPortSmokeSFX(void); //mxd
+extern void PreCacheFlamethrowerSFX(void); //mxd
