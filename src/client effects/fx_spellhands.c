@@ -12,6 +12,8 @@
 #include "Vector.h"
 #include "g_playstats.h"
 
+#define SH_TRAIL_SCALE_INCREMENT	0.35f //mxd
+
 static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 {
 #define SH_PARTICLE_DURATION	400 //mxd
@@ -29,20 +31,22 @@ static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 	if (!RefPointsValid(owner))
 		return true;
 
-	// Calculate the end position of the trail.
+	//mxd. Skip first 4 frames (otherwise trail may look odd).
+	if (fxi.cl->time - self->startTime < MIN_UPDATE_TIME * 4)
+		return true;
+
+	// Calculate start and end positions of the trail.
+	vec3_t trail_start;
+	VectorCopy(owner->referenceInfo->oldReferences[self->refPoint].placement.origin, trail_start);
+
 	vec3_t trail_end;
 	VectorCopy(owner->referenceInfo->references[self->refPoint].placement.origin, trail_end);
 
-	// We now have trail start and trail end in.
-	vec3_t trail_start;
-	VectorCopy(self->origin, trail_start);
+	// If this reference point hasn't changed since the last frame, return.
+	vec3_t diff;
+	VectorSubtract(trail_end, trail_start, diff);
 
-	// Update where trail ends.
-	VectorCopy(trail_end, self->origin);
-
-	// Allow us adequate time to set up valid 'old' data because the reference points lag behind by a frame.
-	self->AnimSpeed += 1.0f;
-	if (self->AnimSpeed < 2.0f)
+	if (fabsf(diff[0] + diff[1] + diff[2]) < 0.1f)
 		return true;
 
 	// Create a rotation matrix.
@@ -76,20 +80,21 @@ static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 		part_type = PART_16x16_SPARK_I;
 
 	// Now draw the trail.
-	const float scale = min(8.0f, 1.0f + self->AnimSpeed * 0.35f); //mxd
 	for (int i = 0; i < trail_length; i++)
 	{
 		client_particle_t* ce = ClientParticle_new(part_type, color_white, SH_PARTICLE_DURATION);
 
 		VectorCopy(real_trail_start, ce->origin);
-		ce->scale = scale;
+		ce->scale = self->Scale; //mxd
 		ce->acceleration[2] = 0.0f;
-		VectorRandomSet(ce->velocity, scale);
+		VectorRandomSet(ce->velocity, self->Scale);
 
 		AddParticleToList(self, ce);
 
 		Vec3AddAssign(trail_delta, real_trail_start);
 	}
+
+	self->Scale += SH_TRAIL_SCALE_INCREMENT; //mxd
 
 	return true;
 }
@@ -126,7 +131,7 @@ void FXSpellHands(centity_t* owner, const int type, const int flags, vec3_t orig
 		trail->SpawnInfo = (flags & (CEF_FLAG7 | CEF_FLAG8)) >> 6;
 		trail->LifeTime = ((lifetime > 0) ? fxi.cl->time + lifetime * 100 : -1);
 		trail->refPoint = p;
-		trail->AnimSpeed = 0.0f; // Hack: used as a counter.
+		trail->Scale = 3.0f; //mxd
 		trail->AddToView = LinkedEntityUpdatePlacement;
 		trail->Update = SpellHandsThink;
 
