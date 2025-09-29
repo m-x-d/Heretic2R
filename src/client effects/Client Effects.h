@@ -197,6 +197,7 @@ extern void PreCacheDebris(void);
 extern void PreCacheHalos(void);
 extern void PreCacheMist(void);
 extern void PreCacheBluering(void);
+extern void PreCacheBlueringSFX(void); //mxd
 extern void PreCacheDripper(void);
 extern void PreCacheBubbler(void);
 extern void PreCacheHealth(void);

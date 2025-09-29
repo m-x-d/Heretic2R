@@ -141,7 +141,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_SPELL_BLUERING
 		.SpawnCFX = FXBlueRing,
 		.PrecacheCFX = PreCacheBluering,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheBlueringSFX, //mxd
 		.formatString = NULL
 	},
 

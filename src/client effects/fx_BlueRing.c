@@ -9,10 +9,19 @@
 #include "Utilities.h"
 
 static struct model_s* ring_model;
+static struct sfx_s* ring_sound; //mxd
 
 void PreCacheBluering(void)
 {
 	ring_model = fxi.RegisterModel("sprites/spells/bluering.sp2");
+}
+
+void PreCacheBlueringSFX(void) //mxd
+{
+	ring_sound = fxi.S_RegisterSound("weapons/Spell Blue Ring.wav");
+
+	// Also precache weapon sound...
+	fxi.S_RegisterSound("weapons/reflect.wav");
 }
 
 void FXBlueRing(centity_t* owner, const int type, const int flags, vec3_t origin)
@@ -47,5 +56,5 @@ void FXBlueRing(centity_t* owner, const int type, const int flags, vec3_t origin
 		cur_angle += ANGLE_360 / count;
 	}
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/Spell Blue Ring.wav"), 1.0f, ATTN_NORM, 0.0f);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, ring_sound, 1.0f, ATTN_NORM, 0.0f);
 }
