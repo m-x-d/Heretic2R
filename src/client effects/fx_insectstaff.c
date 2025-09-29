@@ -29,6 +29,8 @@ static struct model_s* sword_model;
 static struct model_s* globe_models[5];
 static struct model_s* spear_models[4];
 
+static struct sfx_s* insect_sound; //mxd
+
 void PreCacheIEffects(void)
 {
 	insect_model = fxi.RegisterModel("sprites/spells/spark_blue.sp2");
@@ -45,6 +47,11 @@ void PreCacheIEffects(void)
 	globe_models[2] = fxi.RegisterModel("Sprites/Spells/spark_blue.sp2");
 	globe_models[3] = fxi.RegisterModel("models/spells/sphere/tris.fm");
 	globe_models[4] = fxi.RegisterModel("sprites/fx/neon.sp2");
+}
+
+void PreCacheInsectStaffSFX(void) //mxd
+{
+	insect_sound = fxi.S_RegisterSound("weapons/HellHit.wav");
 }
 
 static qboolean InsectStaffTrailThink(struct client_entity_s* self, centity_t* owner)
@@ -492,7 +499,7 @@ static void InsectSpellMissileHit(const int type, const int flags, vec3_t origin
 
 		if (i == 0)
 		{
-			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0.0f);
+			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, insect_sound, 1.0f, ATTN_NORM, 0.0f);
 			smoke_puff->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
 			VectorClear(smoke_puff->velocity);
 		}
@@ -522,7 +529,7 @@ static void InsectSpellMissileHit2(const int type, const int flags, const vec3_t
 
 		if (i == 0)
 		{
-			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0.0f);
+			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, insect_sound, 1.0f, ATTN_NORM, 0.0f);
 			VectorClear(smoke_puff->velocity);
 		}
 

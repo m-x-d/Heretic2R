@@ -785,7 +785,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_I_EFFECTS
 		.SpawnCFX = FXInsectEffects,
 		.PrecacheCFX = PreCacheIEffects,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheInsectStaffSFX, //mxd
 		.formatString = "bv"
 	},
 

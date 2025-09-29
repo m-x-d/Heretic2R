@@ -242,6 +242,7 @@ extern void PreCacheRope(void);
 extern void PreCacheFXAnimate(void);
 extern void PreCacheHPMissile(void);
 extern void PreCacheIEffects(void);
+extern void PreCacheInsectStaffSFX(void); //mxd
 extern void PrecacheShadow(void);
 extern void PrecacheOgleHitPuff(void);
 extern void PreCacheMEffects(void);
