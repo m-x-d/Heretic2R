@@ -260,7 +260,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_WEAPON_REDRAIN
 		.SpawnCFX = FXRedRain,
 		.PrecacheCFX = NULL,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheRedrainSFX, //mxd
 		.formatString = NULL
 	},
 

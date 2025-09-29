@@ -29,6 +29,7 @@
 #define MSSITHRA_FX_ARROW_SPEED		750.0f
 
 static struct model_s* rain_models[5];
+static struct sfx_s* rain_sounds[2]; //mxd
 
 void PreCacheRedrain(void)
 {
@@ -37,6 +38,12 @@ void PreCacheRedrain(void)
 	rain_models[2] = fxi.RegisterModel("sprites/spells/rsteam.sp2");
 	rain_models[3] = fxi.RegisterModel("sprites/fx/redraindrop.sp2");
 	rain_models[4] = fxi.RegisterModel("sprites/spells/spark_green.sp2");
+}
+
+void PreCacheRedrainSFX(void) //mxd
+{
+	rain_sounds[0] = fxi.S_RegisterSound("weapons/RedRainHit.wav");
+	rain_sounds[1] = fxi.S_RegisterSound("weapons/RedRainPowerHit.wav");
 }
 
 // Thinker for the explosion, just fades the light.
@@ -158,8 +165,7 @@ static void RedRainExplosion(vec3_t impact_pos, vec3_t rain_pos, const int durat
 
 	AddEffect(NULL, flash);
 
-	const char* snd_name = (powerup ? "weapons/RedRainPowerHit.wav" : "weapons/RedRainHit.wav"); //mxd
-	fxi.S_StartSound(impact_pos, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_NORM, 0.0f);
+	fxi.S_StartSound(impact_pos, -1, CHAN_AUTO, rain_sounds[powerup ? 1 : 0], 1.0f, ATTN_NORM, 0.0f);
 }
 
 // This is a delayed effect which creates a splash out of red sparks.

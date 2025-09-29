@@ -209,6 +209,7 @@ extern void PreCacheHellstaff(void);
 extern void PreCacheMorph(void);
 extern void PreCachePhoenix(void);
 extern void PreCacheRedrain(void);
+extern void PreCacheRedrainSFX(void); //mxd
 extern void PreCacheRipples(void);
 extern void PreCacheSparks(void);
 extern void PreCacheMaceball(void);
