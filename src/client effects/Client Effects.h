@@ -235,6 +235,7 @@ extern void PreCacheShield(void);
 extern void PreCachePickup(void);
 extern void PreCacheScorch(void);
 extern void PreCacheSmoke(void);
+extern void PreCacheSmokeSFX(void); //mxd
 extern void PreCacheSphere(void);
 extern void PreCacheSpoo(void);
 extern void PreCacheStaff(void);

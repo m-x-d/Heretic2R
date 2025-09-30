@@ -603,7 +603,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_ENVSMOKE
 		.SpawnCFX = FXEnvSmoke,
 		.PrecacheCFX = PreCacheSmoke,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheSmokeSFX, //mxd
 		.formatString = "bdbbb"
 	},
 

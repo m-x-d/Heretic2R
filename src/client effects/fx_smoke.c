@@ -12,10 +12,16 @@
 #include "Utilities.h"
 
 static struct model_s* smoke_model;
+static struct sfx_s* smoke_sound; //mxd
 
 void PreCacheSmoke(void)
 {
 	smoke_model = fxi.RegisterModel("sprites/fx/steam.sp2");
+}
+
+void PreCacheSmokeSFX(void) //mxd
+{
+	smoke_sound = fxi.S_RegisterSound("misc/fout.wav");
 }
 
 //mxd. Added to reduce code duplication.
@@ -75,7 +81,7 @@ void FXEnvSmoke(centity_t* owner, const int type, int flags, vec3_t origin)
 	{
 		// Just a hiss and steam.
 		FXSmoke(origin, flrand(0.5f, 1.0f), flrand(32.0f, 64.0f));
-		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/fout.wav"), 1.0f, ATTN_NORM, 0.0f);
+		fxi.S_StartSound(origin, -1, CHAN_AUTO, smoke_sound, 1.0f, ATTN_NORM, 0.0f);
 
 		self->LifeTime = 33;
 		self->Update = EnvSmokeSpawner2;
