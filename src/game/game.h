@@ -247,8 +247,8 @@ typedef struct
 	void (*Sys_LoadGameDll)(const char* name, HINSTANCE* hinst, DWORD* chkSum);
 	void (*Sys_UnloadGameDll)(const char* name, HINSTANCE* hinst);
 
-	// Pointer to the server side persistant effects arrary
-	void (*ClearPersistantEffects) (void);
+	// Pointer to the server-side persistent effects array.
+	void (*ClearPersistantEffects)(void);
 	void* Persistant_Effects_Array;
 } game_import_t;
 
