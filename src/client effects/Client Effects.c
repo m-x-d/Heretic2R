@@ -910,8 +910,8 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 
 	{ // FX_PE_SPELL
 		.SpawnCFX = FXPESpell,
-		.PrecacheCFX = PrecachePESpell,
-		.PrecacheSFX = NULL,
+		.PrecacheCFX = PreCachePESpell,
+		.PrecacheSFX = PreCachePESpellSFX, //mxd
 		.formatString = "bv"
 	},
 

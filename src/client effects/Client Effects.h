@@ -256,7 +256,8 @@ extern void PreCacheTB(void);
 extern void PreCacheSplat(void);
 extern void PreCacheSplatSFX(void); //mxd
 extern void PrecacheSsithraArrow(void);
-extern void PrecachePESpell(void);
+extern void PreCachePESpell(void);
+extern void PreCachePESpellSFX(void);
 extern void PreCachePortal(void);
 extern void PreCacheCrosshair(void);
 extern void PreCacheStaffHit(void);

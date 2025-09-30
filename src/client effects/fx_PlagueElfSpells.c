@@ -16,13 +16,35 @@
 
 static struct model_s* spell_models[5];
 
-void PrecachePESpell(void)
+enum PESpellSoundID_e //mxd
+{
+	SND_SPELL1,
+	SND_SPELL1_HIT,
+	SND_SPELL2,
+	SND_SPELL2_HIT,
+	SND_SPELL3_HIT,
+
+	NUM_SOUNDS
+};
+
+static struct sfx_s* spell_sounds[NUM_SOUNDS];
+
+void PreCachePESpell(void) //mxd. Named 'PrecachePESpell' in original logic.
 {
 	spell_models[0] = fxi.RegisterModel("Sprites/Spells/flyingfist.sp2");
 	spell_models[1] = fxi.RegisterModel("Sprites/Spells/spellhands_red.sp2");
 	spell_models[2] = fxi.RegisterModel("Sprites/Spells/halo_ind.sp2");
 	spell_models[3] = fxi.RegisterModel("Sprites/Spells/spark_ind.sp2");
 	spell_models[4] = fxi.RegisterModel("Sprites/fx/core_b.sp2");
+}
+
+void PreCachePESpellSFX(void) //mxd
+{
+	spell_sounds[SND_SPELL1] =		fxi.S_RegisterSound("monsters/plagueelf/spell.wav");
+	spell_sounds[SND_SPELL1_HIT] =	fxi.S_RegisterSound("monsters/plagueelf/spellhit.wav");
+	spell_sounds[SND_SPELL2] =		fxi.S_RegisterSound("monsters/plagueelf/spell2.wav");
+	spell_sounds[SND_SPELL2_HIT] =	fxi.S_RegisterSound("monsters/plagueelf/spell2hit.wav");
+	spell_sounds[SND_SPELL3_HIT] =	fxi.S_RegisterSound("monsters/plagueelf/spell3hit.wav");
 }
 
 static qboolean PESpellTrailThink(struct client_entity_s* self, centity_t* owner)
@@ -85,7 +107,7 @@ static void PESpellGo(centity_t* owner, const int type, const int flags, const v
 
 	AddEffect(owner, missile);
 
-	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell.wav"), 1.0f, ATTN_NORM, 0.0f);
+	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, spell_sounds[SND_SPELL1], 1.0f, ATTN_NORM, 0.0f);
 }
 
 static void PESpellExplode(const int type, const int flags, vec3_t origin, vec3_t dir)
@@ -117,7 +139,7 @@ static void PESpellExplode(const int type, const int flags, vec3_t origin, vec3_
 
 		if (is_last_puff)
 		{
-			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spellhit.wav"), 1.0f, ATTN_NORM, 0.0f);
+			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, spell_sounds[SND_SPELL1_HIT], 1.0f, ATTN_NORM, 0.0f);
 
 			const paletteRGBA_t light_color = { .c = 0xff20a0ff }; // Orange light.
 			puff->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
@@ -187,7 +209,7 @@ static void PESpell2Go(centity_t* owner, const int type, const int flags, const 
 
 	AddEffect(owner, missile);
 
-	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell2.wav"), 1.0f, ATTN_NORM, 0.0f);
+	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, spell_sounds[SND_SPELL2], 1.0f, ATTN_NORM, 0.0f);
 }
 
 static void PESpell2Explode(const int type, const int flags, vec3_t origin, vec3_t dir)
@@ -218,7 +240,7 @@ static void PESpell2Explode(const int type, const int flags, vec3_t origin, vec3
 
 		if (is_last_puff)
 		{
-			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell2hit.wav"), 1.0f, ATTN_NORM, 0.0f);
+			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, spell_sounds[SND_SPELL2_HIT], 1.0f, ATTN_NORM, 0.0f);
 
 			const paletteRGBA_t light_color = { .c = 0xffff0077 }; // Purple light.
 			puff->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
@@ -257,7 +279,7 @@ static void PESpell3Explode(const int type, const int flags, vec3_t origin, vec3
 
 		if (is_last_puff)
 		{
-			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell3hit.wav"), 1.0f, ATTN_NORM, 0.0f);
+			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, spell_sounds[SND_SPELL3_HIT], 1.0f, ATTN_NORM, 0.0f);
 
 			const paletteRGBA_t light_color = { .c = 0xffff6611 }; // Cyan light.
 			puff->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
