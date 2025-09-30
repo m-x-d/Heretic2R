@@ -157,7 +157,7 @@ edict_t* FlyingFistReflect(edict_t* self, edict_t* other, const vec3_t vel)
 	// Create new trails for the new missile. //TODO: powered/wimpy flags are not carried over!
 	gi.CreateEffect(&flying_fist->s, FX_WEAPON_FLYINGFIST, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "t", flying_fist->velocity);
 
-	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
+	// Kill the existing missile, since it's a pain in the ass to modify it so the physics won't screw it. 
 	G_SetToFree(self);
 
 	// Do a nasty looking blast at the impact point.
@@ -198,20 +198,31 @@ void SpellCastFlyingFist(edict_t* caster, const vec3_t start_pos, const vec3_t a
 	if (wimpy)
 		flying_fist->flags |= FL_NO_KNOCKBACK; // Just using the no knockback flag to indicate a wussy weapon.
 
-	// Check ahead first to see if it's going to hit anything at this angle.
-	vec3_t forward;
-	AngleVectors(aim_angles, forward, NULL, NULL);
-
-	vec3_t end_pos;
-	VectorMA(flying_fist->s.origin, FLYING_FIST_SPEED, forward, end_pos);
-
-	trace_t trace;
-	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, caster, MASK_MONSTERSOLID, &trace);
-
-	if (trace.ent != NULL && OkToAutotarget(caster, trace.ent))
-		VectorScale(forward, FLYING_FIST_SPEED, flying_fist->velocity); // Already going to hit a valid target at this angle, so don't auto-target.
+	// Auto-target current enemy?
+	if (caster->enemy != NULL)
+	{
+		// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
+		GetAimVelocity(caster->enemy, flying_fist->s.origin, FLYING_FIST_SPEED, aim_angles, flying_fist->velocity);
+	}
 	else
-		GetAimVelocity(caster->enemy, flying_fist->s.origin, FLYING_FIST_SPEED, aim_angles, flying_fist->velocity); // Auto-target current enemy.
+	{
+		// Check ahead to see if it's going to hit anything at this angle.
+		vec3_t forward;
+		AngleVectors(aim_angles, forward, NULL, NULL);
+
+		//mxd. Replicate II_WEAPON_FLYINGFIST case from Get_Crosshair()...
+		vec3_t end;
+		const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 20.0f };
+		VectorMA(view_pos, FLYING_FIST_SPEED, forward, end);
+
+		trace_t trace;
+		gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_MONSTERSOLID, &trace);
+
+		vec3_t dir;
+		VectorSubtract(trace.endpos, flying_fist->s.origin, dir);
+		VectorNormalize(dir);
+		VectorScale(dir, FLYING_FIST_SPEED, flying_fist->velocity);
+	}
 
 	flying_fist->owner = caster;
 	flying_fist->enemy = caster->enemy;
@@ -221,13 +232,14 @@ void SpellCastFlyingFist(edict_t* caster, const vec3_t start_pos, const vec3_t a
 
 	G_LinkMissile(flying_fist);
 
-	// Make sure we don`t start in a solid.
-	gi.trace(caster->s.origin, vec3_origin, vec3_origin, flying_fist->s.origin, caster, MASK_PLAYERSOLID, &trace);
+	// Make sure we don't start in a solid.
+	trace_t back_trace;
+	gi.trace(caster->s.origin, vec3_origin, vec3_origin, flying_fist->s.origin, caster, MASK_PLAYERSOLID, &back_trace);
 
-	if (trace.startsolid || trace.fraction < 1.0f)
+	if (back_trace.startsolid || back_trace.fraction < 1.0f)
 	{
-		VectorCopy(trace.endpos, flying_fist->s.origin);
-		FlyingFistTouch(flying_fist, trace.ent, &trace.plane, trace.surface);
+		VectorCopy(back_trace.endpos, flying_fist->s.origin);
+		FlyingFistTouch(flying_fist, back_trace.ent, &back_trace.plane, back_trace.surface);
 
 		return;
 	}
