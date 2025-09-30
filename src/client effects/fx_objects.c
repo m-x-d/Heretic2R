@@ -17,12 +17,18 @@
 #define BARREL_EXPLODE_GRAVITY	(-320.0f)
 #define BARREL_EXPLODE_SCALE	14.0f
 
-static struct model_s* obj_models[2];
+static struct model_s* explosion_models[2];
+static struct sfx_s* explosion_sound; //mxd
 
-void PreCacheObjects(void)
+void PreCacheBarrelExplode(void) //mxd. Named 'PreCacheObjects' in original logic.
 {
-	obj_models[0] = fxi.RegisterModel("models/fx/explosion/outer/tris.fm");
-	obj_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
+	explosion_models[0] = fxi.RegisterModel("models/fx/explosion/outer/tris.fm");
+	explosion_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
+}
+
+void PreCacheBarrelExplodeSFX(void) //mxd
+{
+	explosion_sound = fxi.S_RegisterSound("weapons/PhoenixHit.wav");
 }
 
 // Create Effect FX_BARREL_EXPLODE
@@ -46,7 +52,7 @@ void FXBarrelExplode(centity_t* owner, const int type, const int flags, vec3_t o
 	client_entity_t* explosion = ClientEntity_new(type, flags, origin, NULL, 17);
 
 	explosion->radius = 128.0f;
-	explosion->r.model = &obj_models[0]; // Explosion model.
+	explosion->r.model = &explosion_models[0]; // Explosion model.
 	explosion->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
 	explosion->flags |= CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA;
 	explosion->alpha = 0.1f;
@@ -87,7 +93,7 @@ void FXBarrelExplode(centity_t* owner, const int type, const int flags, vec3_t o
 	client_entity_t* halo = ClientEntity_new(-1, flags, origin, NULL, 250);
 
 	halo->radius = 128.0f;
-	halo->r.model = &obj_models[1]; // Halo sprite.
+	halo->r.model = &explosion_models[1]; // Halo sprite.
 	halo->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
 	halo->r.frame = 1;
 	halo->r.scale = 2.0f;
@@ -96,5 +102,5 @@ void FXBarrelExplode(centity_t* owner, const int type, const int flags, vec3_t o
 
 	AddEffect(NULL, halo);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixHit.wav"), 1.0f, ATTN_NORM, 0.0f);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, explosion_sound, 1.0f, ATTN_NORM, 0.0f);
 }

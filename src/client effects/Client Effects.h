@@ -262,7 +262,8 @@ extern void PreCacheStaffHit(void);
 extern void PreCacheArmorHit(void);
 extern void PreCacheHitPuff(void);
 extern void PreCacheHitPuffSFX(void); //mxd
-extern void PreCacheObjects(void);
+extern void PreCacheBarrelExplode(void);
+extern void PreCacheBarrelExplodeSFX(void); //mxd
 extern void PreCacheCWModels(void);
 extern void PreCacheCWSFX(void); //mxd
 extern void PreCacheTornado(void);
