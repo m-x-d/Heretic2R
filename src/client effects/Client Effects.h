@@ -246,8 +246,8 @@ extern void PreCacheFXAnimate(void);
 extern void PreCacheHPMissile(void);
 extern void PreCacheIEffects(void);
 extern void PreCacheInsectStaffSFX(void); //mxd
-extern void PrecacheShadow(void);
-extern void PrecacheOgleHitPuff(void);
+extern void PreCacheShadow(void);
+extern void PreCacheOgleHitPuff(void);
 extern void PreCacheMEffects(void);
 extern void PreCacheLightning(void);
 extern void PreCachePowerLightningSFX(void); //mxd
@@ -255,7 +255,7 @@ extern void PreCacheHPStaff(void);
 extern void PreCacheTB(void);
 extern void PreCacheSplat(void);
 extern void PreCacheSplatSFX(void); //mxd
-extern void PrecacheSsithraArrow(void);
+extern void PreCacheSsithraArrow(void);
 extern void PreCachePESpell(void);
 extern void PreCachePESpellSFX(void);
 extern void PreCachePortal(void);

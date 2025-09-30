@@ -15,7 +15,7 @@
 
 static struct model_s* arrow_models[3];
 
-void PrecacheSsithraArrow(void)
+void PreCacheSsithraArrow(void) //mxd. Named 'PrecacheSsithraArrow' in original logic.
 {
 	arrow_models[0] = fxi.RegisterModel("sprites/fx/steam.sp2"); // Unpowered trail.
 	arrow_models[1] = fxi.RegisterModel("sprites/fx/fire.sp2"); // Powered trail.

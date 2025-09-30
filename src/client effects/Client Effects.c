@@ -406,7 +406,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 
 	{ // FX_SHADOW
 		.SpawnCFX = FXShadow,
-		.PrecacheCFX = PrecacheShadow,
+		.PrecacheCFX = PreCacheShadow,
 		.PrecacheSFX = NULL,
 		.formatString = "f"
 	},
@@ -770,7 +770,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 
 	{ // FX_OGLE_HITPUFF
 		.SpawnCFX = FXOgleHitPuff,
-		.PrecacheCFX = PrecacheOgleHitPuff,
+		.PrecacheCFX = PreCacheOgleHitPuff,
 		.PrecacheSFX = NULL,
 		.formatString = "v"
 	},
@@ -903,7 +903,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 
 	{ // FX_SSITHRA_ARROW
 		.SpawnCFX = FXSsithraArrow,
-		.PrecacheCFX = PrecacheSsithraArrow,
+		.PrecacheCFX = PreCacheSsithraArrow,
 		.PrecacheSFX = NULL,
 		.formatString = "bv"
 	},

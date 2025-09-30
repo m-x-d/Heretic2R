@@ -17,7 +17,7 @@
 
 static struct model_s* genfx_models[6];
 
-void PrecacheOgleHitPuff(void)
+void PreCacheOgleHitPuff(void) //mxd. Named 'PrecacheOgleHitPuff' in original logic.
 {
 	genfx_models[0] = fxi.RegisterModel("sprites/fx/steam_add.sp2");
 	genfx_models[1] = fxi.RegisterModel("models/debris/stone/schunk1/tris.fm");
