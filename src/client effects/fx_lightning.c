@@ -28,6 +28,7 @@
 #define LIGHTNING_RING_VELOCITY		320.0f
 
 static struct model_s* lightning_models[7];
+static struct sfx_s* lightning_sound; //mxd
 
 void PreCacheLightning(void)
 {
@@ -38,6 +39,11 @@ void PreCacheLightning(void)
 	lightning_models[LIGHTNING_TYPE_RED + LIGHTNING_JOINT_OFFSET] = fxi.RegisterModel("sprites/spells/spark_red.sp2");
 	lightning_models[LIGHTNING_TYPE_GREEN + LIGHTNING_JOINT_OFFSET] = fxi.RegisterModel("sprites/spells/spark_green.sp2");
 	lightning_models[6] = fxi.RegisterModel("sprites/fx/halo.sp2");
+}
+
+void PreCachePowerLightningSFX(void) //mxd
+{
+	lightning_sound = fxi.S_RegisterSound("weapons/LightningPower.wav");
 }
 
 static client_entity_t* MakeLightningPiece(const int type, const float width, const vec3_t start, const vec3_t end, const float radius)
@@ -374,5 +380,5 @@ void FXPowerLightning(centity_t* owner, int type, const int flags, vec3_t origin
 	fxi.Activate_Screen_Shake(4.0f, 500.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
 
 	if (flags & CEF_FLAG8) // "Play sound" flag.
-		fxi.S_StartSound(target, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/LightningPower.wav"), 1.0f, ATTN_NORM, 0.0f);
+		fxi.S_StartSound(target, -1, CHAN_WEAPON, lightning_sound, 1.0f, ATTN_NORM, 0.0f);
 }

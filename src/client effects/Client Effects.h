@@ -247,6 +247,7 @@ extern void PrecacheShadow(void);
 extern void PrecacheOgleHitPuff(void);
 extern void PreCacheMEffects(void);
 extern void PreCacheLightning(void);
+extern void PreCachePowerLightningSFX(void); //mxd
 extern void PreCacheHPStaff(void);
 extern void PreCacheTB(void);
 extern void PreCacheSplat(void);

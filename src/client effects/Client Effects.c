@@ -827,7 +827,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_POWER_LIGHTNING
 		.SpawnCFX = FXPowerLightning,
 		.PrecacheCFX = PreCacheLightning,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCachePowerLightningSFX, //mxd
 		.formatString = "vb"
 	},
 
