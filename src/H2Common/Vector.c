@@ -304,6 +304,16 @@ H2COMMON_API void VectorAverage(const vec3_t veca, const vec3_t vecb, vec3_t out
 	out[2] = (veca[2] + vecb[2]) * 0.5f;
 }
 
+// out = veca + frac * (vecb - veca);
+H2COMMON_API void VectorLerp(const vec3_t veca, const float frac, const vec3_t vecb, vec3_t out) //mxd
+{
+	assert(out != vec3_origin);
+
+	out[0] = veca[0] + frac * (vecb[0] - veca[0]);
+	out[1] = veca[1] + frac * (vecb[1] - veca[1]);
+	out[2] = veca[2] + frac * (vecb[2] - veca[2]);
+}
+
 H2COMMON_API void VectorGetOffsetOrigin(const vec3_t offset, const vec3_t origin, const float angle_deg, vec3_t out)
 {
 	matrix3_t m_yaw;
