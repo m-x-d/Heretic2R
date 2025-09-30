@@ -28,6 +28,7 @@ static int cl_effectpredict;
 static qboolean Get_Crosshair(vec3_t origin, byte* type)
 {
 #define CROSSHAIR_FORWARD_OFFSET	256.0f //mxd
+#define CROSSHAIR_ANIMATION_LENGTH	150 //mxd. In milliseconds.
 
 	enum WeaponItemIndex_e //mxd. Weapon gitem_t indices in itemlist[].
 	{
@@ -42,7 +43,20 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 		II_WEAPON_MACEBALLS
 	};
 
-	if (crosshair == NULL || !(int)crosshair->value || cl.time < 1001 || PlayerEntPtr == NULL || (int)cl_cinematicfreeze->value)
+	//mxd. Free aim <-> autoaim crosshair animation mode.
+	typedef enum
+	{
+		AAM_FREE,
+		AAM_AUTOAIM,
+		AAM_FREE_TO_AUTOAIM,
+		AAM_AUTOAIM_TO_FREE,
+	} AutoaimAnimationMode_t;
+
+	static AutoaimAnimationMode_t anim_mode;
+	static vec3_t old_origin;
+	static int anim_start_time;
+
+	if (cl.time < 1001 || !(int)crosshair->value || PlayerEntPtr == NULL || (int)cl_cinematicfreeze->value)
 		return false;
 
 	vec3_t angles;
@@ -102,6 +116,12 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 	{
 		const centity_t* target_ent = &cl_entities[cl.frame.playerstate.AutotargetEntityNum];
 		VectorCopy(target_ent->origin, end);
+
+		if (anim_mode != AAM_AUTOAIM && anim_mode != AAM_FREE_TO_AUTOAIM) //mxd
+		{
+			anim_mode = AAM_FREE_TO_AUTOAIM;
+			anim_start_time = cl.time;
+		}
 	}
 	else
 	{
@@ -109,6 +129,12 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 		//mxd. view_pos has to be above player's head, otherwise crosshair will be obscured by it...
 		const vec3_t view_pos = { PlayerEntPtr->origin[0], PlayerEntPtr->origin[1], start[2] }; 
 		VectorMA(view_pos, CROSSHAIR_FORWARD_OFFSET, forward, end);
+
+		if (anim_mode != AAM_FREE && anim_mode != AAM_AUTOAIM_TO_FREE) //mxd
+		{
+			anim_mode = AAM_AUTOAIM_TO_FREE;
+			anim_start_time = cl.time;
+		}
 	}
 
 	trace_ignore_player = true;
@@ -119,6 +145,22 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 	// Store results.
 	VectorCopy(trace.endpos, origin);
 	*type = (byte)crosshair->value - 1;
+
+	//mxd. Do free aim <-> autoaim crosshair animation.
+	if (anim_mode == AAM_FREE || anim_mode == AAM_AUTOAIM)
+	{
+		VectorCopy(origin, old_origin);
+	}
+	else if (cl.time - anim_start_time >= CROSSHAIR_ANIMATION_LENGTH)
+	{
+		anim_mode = (anim_mode == AAM_FREE_TO_AUTOAIM ? AAM_AUTOAIM : AAM_FREE);
+		VectorCopy(origin, old_origin);
+	}
+	else // AAM_FREE_TO_AUTOAIM, AAM_AUTOAIM_TO_FREE.
+	{
+		const float lerp = (float)(cl.time - anim_start_time) / CROSSHAIR_ANIMATION_LENGTH;
+		VectorLerp(old_origin, sinf(ANGLE_90 * lerp), origin, origin);
+	}
 
 	return true;
 }
