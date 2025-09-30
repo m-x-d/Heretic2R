@@ -351,7 +351,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_WEAPON_RIPPEREXPLODE
 		.SpawnCFX = FXRipperExplode,
 		.PrecacheCFX = NULL,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheRipperSFX, //mxd
 		.formatString = "vbssssssss"
 	},
 

@@ -27,6 +27,7 @@
 #define MACEBALL_EXPLOSION_VEL	128.0f
 
 static struct model_s* mace_models[7];
+static struct sfx_s* ripper_impact_sound; //mxd
 
 void PreCacheMaceball(void)
 {
@@ -37,6 +38,11 @@ void PreCacheMaceball(void)
 	mace_models[4] = fxi.RegisterModel("sprites/fx/ballstreak.sp2");
 	mace_models[5] = fxi.RegisterModel("sprites/spells/patball.sp2");
 	mace_models[6] = fxi.RegisterModel("sprites/spells/spark_green.sp2");
+}
+
+void PreCacheRipperSFX(void) //mxd
+{
+	ripper_impact_sound = fxi.S_RegisterSound("weapons/RipperImpact.wav");
 }
 
 #pragma region ========================== MACE BALL ==========================
@@ -283,7 +289,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 	halo->dlight = CE_DLight_new(color_white, 150.0f, -100.0f);
 	halo->lastThinkTime = fxi.cl->time + 750;
 
-	fxi.S_StartSound(halo->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/RipperImpact.wav"), 1.0f, ATTN_NORM, 0.0f);
+	fxi.S_StartSound(halo->r.origin, -1, CHAN_WEAPON, ripper_impact_sound, 1.0f, ATTN_NORM, 0.0f);
 
 	AddEffect(NULL, halo);
 
