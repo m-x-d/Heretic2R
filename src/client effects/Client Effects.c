@@ -575,7 +575,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_SOUND
 		.SpawnCFX = FXSound,
 		.PrecacheCFX = NULL,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheFXSoundSFX, //mxd
 		.formatString = "bbbb"
 	},
 
