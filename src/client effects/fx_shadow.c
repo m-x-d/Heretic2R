@@ -18,7 +18,7 @@
 
 static struct model_s* shadow_model;
 
-void PrecacheShadow(void)
+void PreCacheShadow(void) //mxd. Named 'PrecacheShadow' in original logic.
 {
 	shadow_model = fxi.RegisterModel("models/fx/shadow/tris.fm");
 }
