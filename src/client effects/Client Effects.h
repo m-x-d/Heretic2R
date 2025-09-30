@@ -241,6 +241,7 @@ extern void PreCacheSphere(void);
 extern void PreCacheSpoo(void);
 extern void PreCacheStaff(void);
 extern void PreCacheWaterSplash(void);
+extern void PreCacheWaterSplashSFX(void); //mxd
 extern void PreCacheWake(void);
 extern void PreCacheShrine(void);
 extern void PreCacheRope(void);

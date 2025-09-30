@@ -357,8 +357,8 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 
 	{ // FX_WATER_ENTRYSPLASH
 		.SpawnCFX = FXWaterEntrySplash,
-		.PrecacheCFX = NULL,
-		.PrecacheSFX = NULL,
+		.PrecacheCFX = PreCacheWaterSplash, //mxd
+		.PrecacheSFX = PreCacheWaterSplashSFX, //mxd
 		.formatString = "bd"
 	},
 

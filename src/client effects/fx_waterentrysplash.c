@@ -14,11 +14,18 @@
 #define WATER_SPLASH_RADIUS	20.0f
 
 static struct model_s* water_models[2];
+static struct sfx_s* water_sounds[2]; //mxd
 
 void PreCacheWaterSplash(void)
 {
 	water_models[0] = fxi.RegisterModel("sprites/fx/waterentryripple.sp2");
 	water_models[1] = fxi.RegisterModel("sprites/fx/wfall.sp2");
+}
+
+void PreCacheWaterSplashSFX(void) //mxd
+{
+	water_sounds[0] = fxi.S_RegisterSound("misc/splish2.wav");
+	water_sounds[1] = fxi.S_RegisterSound("misc/splish3.wav");
 }
 
 static qboolean WaterEntrySplashThinkerThink(struct client_entity_s* self, centity_t* owner)
@@ -71,7 +78,7 @@ void DoWaterEntrySplash(const int type, const int flags, vec3_t origin, const by
 
 	// They want a sound too?
 	if (flags & CEF_FLAG6)
-		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("misc/splish%i.wav", irand(2, 3))), 1.0f, ATTN_STATIC, 0.0f);
+		fxi.S_StartSound(origin, -1, CHAN_AUTO, water_sounds[irand(0, 1)], 1.0f, ATTN_STATIC, 0.0f);
 
 	// Create a water entry ripple THINKER that will create the actual water entry ripples.
 	client_entity_t* entry_ripple_thinker = ClientEntity_new(type, flags, origin, dir, 200);
