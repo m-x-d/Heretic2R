@@ -33,6 +33,7 @@
 #define SMOKETRAIL_ALPHA		0.5f
 
 static struct model_s* phoenix_models[6];
+static struct sfx_s* phoenix_explode_sounds[2]; //mxd
 
 void PreCachePhoenix(void)
 {
@@ -42,6 +43,12 @@ void PreCachePhoenix(void)
 	phoenix_models[3] = fxi.RegisterModel("sprites/spells/phoenix.sp2");
 	phoenix_models[4] = fxi.RegisterModel("models/fx/explosion/inner/tris.fm");
 	phoenix_models[5] = fxi.RegisterModel("models/fx/explosion/outer/tris.fm");
+}
+
+void PreCachePhoenixExplodeSFX(void) //mxd
+{
+	phoenix_explode_sounds[0] = fxi.S_RegisterSound("weapons/PhoenixHit.wav");
+	phoenix_explode_sounds[1] = fxi.S_RegisterSound("weapons/PhoenixPowerHit.wav");
 }
 
 #pragma region ========================== PHOENIX EXPLOSION ==========================
@@ -395,7 +402,7 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 
 	AddEffect(NULL, phoenix);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixHit.wav"), 1.0f, ATTN_NORM, 0.0f);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, phoenix_explode_sounds[0], 1.0f, ATTN_NORM, 0.0f);
 }
 
 #pragma endregion
@@ -522,7 +529,7 @@ static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, 
 
 	AddEffect(NULL, phoenix_inner);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixPowerHit.wav"), 1.0f, ATTN_NORM, 0.0f);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, phoenix_explode_sounds[1], 1.0f, ATTN_NORM, 0.0f);
 }
 
 static qboolean PhoenixMissilePowerThink(client_entity_t* missile, centity_t* owner)
