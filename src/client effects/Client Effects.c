@@ -78,7 +78,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_SPARKS
 		.SpawnCFX = FXGenericSparks,
 		.PrecacheCFX = PreCacheSparks,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheSparksSFX, //mxd
 		.formatString = "d"
 	},
 
@@ -1009,7 +1009,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_BLOCK_SPARKS
 		.SpawnCFX = FXGenericSparks,
 		.PrecacheCFX = PreCacheSparks,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheSparksSFX, //mxd
 		.formatString = "d"
 	},
 

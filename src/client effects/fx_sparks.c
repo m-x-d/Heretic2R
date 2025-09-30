@@ -13,10 +13,30 @@
 
 static struct model_s* spark_models[2];
 
+enum SparkSoundID_e //mxd
+{
+	SND_LAVADROP1,
+	SND_LAVADROP2,
+	SND_LAVADROP3,
+	SND_LAVABURN,
+
+	NUM_SOUNDS
+};
+
+static struct sfx_s* spark_sounds[NUM_SOUNDS]; //mxd
+
 void PreCacheSparks(void)
 {
 	spark_models[0] = fxi.RegisterModel("sprites/fx/bluestreak.sp2");
 	spark_models[1] = fxi.RegisterModel("sprites/fx/spark.sp2");
+}
+
+void PreCacheSparksSFX(void) //mxd
+{
+	spark_sounds[SND_LAVADROP1] = fxi.S_RegisterSound("ambient/lavadrop1.wav");
+	spark_sounds[SND_LAVADROP2] = fxi.S_RegisterSound("ambient/lavadrop2.wav");
+	spark_sounds[SND_LAVADROP3] = fxi.S_RegisterSound("ambient/lavadrop3.wav");
+	spark_sounds[SND_LAVABURN] = fxi.S_RegisterSound("misc/lavaburn.wav");
 }
 
 void GenericSparks(centity_t* owner, const int type, int flags, const vec3_t origin, const vec3_t dir)
@@ -154,13 +174,13 @@ void FireSparks(centity_t* owner, const int type, int flags, const vec3_t origin
 	if (flags & CEF_FLAG6)
 	{
 		// Sound.
-		const char* snd_name = (irand(0, 3) ? va("ambient/lavadrop%i.wav", irand(1, 3)) : "misc/lavaburn.wav"); //mxd
-		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_NORM, 0.0f);
+		struct sfx_s* sfx = (irand(0, 3) ? spark_sounds[irand(SND_LAVADROP1, SND_LAVADROP3)] : spark_sounds[SND_LAVABURN]); //mxd
+		fxi.S_StartSound(origin, -1, CHAN_AUTO, sfx, 1.0f, ATTN_NORM, 0.0f);
 	}
 
 	client_entity_t* effect = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, origin, NULL, 2000);
 
-	effect->flags |= CEF_NO_DRAW | CEF_NOMOVE;
+	effect->flags |= (CEF_NO_DRAW | CEF_NOMOVE);
 	effect->color.c = 0xe5007fff;
 
 	for (int i = 0; i < irand(7, 13); i++)
