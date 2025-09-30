@@ -23,6 +23,7 @@
 #define FEATHER_FLOAT_SLOW		(ANGLE_180 / (float)FEATHER_FLOAT_TIME)
 
 static struct model_s* morph_models[4];
+static struct sfx_s* morph_fire_sound; //mxd
 
 void PreCacheMorph(void)
 {
@@ -30,6 +31,11 @@ void PreCacheMorph(void)
 	morph_models[1] = fxi.RegisterModel("models/objects/eggs/chickenegg/tris.fm");
 	morph_models[2] = fxi.RegisterModel("models/objects/feathers/feather1/tris.fm");
 	morph_models[3] = fxi.RegisterModel("models/objects/feathers/feather2/tris.fm");
+}
+
+void PreCacheMorphSFX(void) //mxd
+{
+	morph_fire_sound = fxi.S_RegisterSound("weapons/OvumFire.wav");
 }
 
 static qboolean MorphMissileThink(client_entity_t* missile, centity_t* owner)
@@ -122,7 +128,7 @@ void FXMorphMissile(centity_t* owner, const int type, const int flags, vec3_t or
 
 	AddEffect(owner, missile);
 
-	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/OvumFire.wav"), 1.0f, ATTN_NORM, 0.0f);
+	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, morph_fire_sound, 1.0f, ATTN_NORM, 0.0f);
 }
 
 // Initial entry from server - create first object. This has the light on it, but no trail yet.
@@ -160,7 +166,7 @@ void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, ve
 		yaw_rad += MORPH_ANGLE_INC;
 
 		if (i == 0)
-			fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/OvumFire.wav"), 1.0f, ATTN_NORM, 0.0f);
+			fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, morph_fire_sound, 1.0f, ATTN_NORM, 0.0f);
 	}
 
 	if (R_DETAIL >= DETAIL_HIGH)

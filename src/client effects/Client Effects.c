@@ -309,7 +309,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_SPELL_MORPHMISSILE
 		.SpawnCFX = FXMorphMissile,
 		.PrecacheCFX = PreCacheMorph,
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheMorphSFX, //mxd
 		.formatString = "bb"
 	},
 
