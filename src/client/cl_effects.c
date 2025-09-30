@@ -27,6 +27,8 @@ static int cl_effectpredict;
 
 static qboolean Get_Crosshair(vec3_t origin, byte* type)
 {
+#define CROSSHAIR_FORWARD_OFFSET	256.0f //mxd
+
 	enum WeaponItemIndex_e //mxd. Weapon gitem_t indices in itemlist[].
 	{
 		II_WEAPON_SWORDSTAFF = 1,
@@ -92,18 +94,22 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 			break;
 	}
 
-	float fwd_offset = 256.0f;
+	vec3_t end;
 
+	// If we have AutotargetEntityNum, we've already traced to autotarget entity position and can hit it --mxd.
 	if (in_do_autoaim && cl.frame.playerstate.AutotargetEntityNum > 0 && 
 		weapon != II_WEAPON_MAGICMISSILE && weapon != II_WEAPON_FIREWALL && weapon != II_WEAPON_MACEBALLS)
 	{
 		const centity_t* target_ent = &cl_entities[cl.frame.playerstate.AutotargetEntityNum];
-		VectorSubtract(target_ent->origin, start, forward);
-		fwd_offset = VectorNormalize(forward);
+		VectorCopy(target_ent->origin, end);
 	}
-
-	vec3_t end;
-	VectorMA(start, fwd_offset, forward, end);
+	else
+	{
+		//mxd. Setup end pos from view_pos. This way projectiles fired by player will always hit end position, regardless of distance to it (has to be setup the same way in projectile firing logic).
+		//mxd. view_pos has to be above player's head, otherwise crosshair will be obscured by it...
+		const vec3_t view_pos = { PlayerEntPtr->origin[0], PlayerEntPtr->origin[1], start[2] }; 
+		VectorMA(view_pos, CROSSHAIR_FORWARD_OFFSET, forward, end);
+	}
 
 	trace_ignore_player = true;
 	trace_t trace;
