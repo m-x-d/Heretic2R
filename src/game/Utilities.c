@@ -271,19 +271,14 @@ edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t fi
 {
 	assert(near_dist >= 0.0f);
 
-	const float min_horiz_fov = -h_fov * 0.5f;
-	const float max_horiz_fov = -min_horiz_fov;
-
-	const float min_vert_fov = -v_fov * 0.5f;
-	const float max_vert_fov = -min_vert_fov;
+	const float horiz_fov = h_fov * 0.5f;
+	const float vert_fov =  v_fov * 0.5f;
 
 	const float base_yaw = NormalizeAngleDeg(finder_angles[YAW]) * ANGLE_TO_RAD;
 	const float base_pitch = NormalizeAngleDeg(finder_angles[PITCH]) * ANGLE_TO_RAD; //mxd
 
-	vec3_t finder_pos;
-	GetEdictCenter(finder, finder_pos); //mxd
-
 	float best_dist = far_dist;
+	float best_yaw = ANGLE_360; //mxd
 	edict_t* best = NULL;
 
 	const edict_t* end = &g_edicts[globals.num_edicts];
@@ -304,12 +299,12 @@ edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t fi
 
 		// Get direction to entity.
 		vec3_t dir;
-		VectorSubtract(end_pos, finder_pos, dir); //mxd. Original logic uses 'finder->s.origin' instead of 'finder_pos' here.
+		VectorSubtract(end_pos, los_start_pos, dir); //mxd. Original logic uses 'finder->s.origin' instead of 'los_start_pos' here.
 
-		// Check distance.
 		const float cur_dist = VectorNormalize(dir);
 
-		if (cur_dist < near_dist || cur_dist > best_dist)
+		// Check if within expected range.
+		if (cur_dist < near_dist || cur_dist > far_dist)
 			continue;
 
 		//mxd. Scale FOV by distance?
@@ -317,16 +312,20 @@ edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t fi
 
 		// Check if in horizontal FOV.
 		float cur_yaw = atan2f(dir[YAW], dir[PITCH]); // See AnglesFromDir() --mxd.
-		cur_yaw = AddNormalizedAngles(cur_yaw, -base_yaw);
+		cur_yaw = fabsf(AddNormalizedAngles(cur_yaw, -base_yaw)); //mxd. +fabsf().
 
-		if (cur_yaw < min_horiz_fov * fov_scaler || cur_yaw > max_horiz_fov * fov_scaler)
+		if (cur_yaw > horiz_fov * fov_scaler || cur_yaw > best_yaw) //mxd. Also check best_yaw.
+			continue;
+
+		// Check distance.
+		if (cur_dist > best_dist + 256.0f) //mxd. Allow targets further than current best when they are closer to finder_angles direction.
 			continue;
 
 		// Check if in vertical FOV.
 		float cur_pitch = asinf(dir[ROLL]); // See AnglesFromDir() --mxd.
-		cur_pitch = AddNormalizedAngles(cur_pitch, base_pitch); //H2_BUGFIX: mxd. Original logic doesn't do this.
+		cur_pitch = fabsf(AddNormalizedAngles(cur_pitch, base_pitch)); //H2_BUGFIX: mxd. Original logic doesn't do this.
 
-		if (cur_pitch < min_vert_fov * fov_scaler || cur_pitch > max_vert_fov * fov_scaler)
+		if (cur_pitch > vert_fov * fov_scaler)
 			continue;
 
 		// Check line of sight to the entity.
@@ -340,7 +339,8 @@ edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t fi
 			continue;
 
 		// Valid result.
-		best_dist = cur_dist;
+		best_yaw = cur_yaw; //mxd
+		best_dist = min(best_dist, cur_dist);
 		best = e;
 	}
 
