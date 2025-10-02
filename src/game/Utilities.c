@@ -266,30 +266,10 @@ qboolean OkToAutotarget(const edict_t* shooter, const edict_t* target) // mxd. N
 
 // I copied FindNearestActorInFrustum() and modified it so that it can take line-of-sight into account if specified (i.e. LOSStartPos is not NULL).
 // Additionally I relaxed the constraint that the horizontal search arc has to be [-180.0 <= hFOV <= +180.0], so that homing missiles
-// can see all around themselves when looking for a targetet 'lock'. -Marcus
-edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t finder_angles, const float near_dist, const float far_dist, const float h_fov, const float v_fov, const vec3_t los_start_pos, const vec3_t bb_min, const vec3_t bb_max)
+// can see all around themselves when looking for a targeted 'lock'. -Marcus
+edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t finder_angles, const float near_dist, const float far_dist, const float h_fov, const float v_fov, const qboolean scale_fov_by_dist, const vec3_t los_start_pos) //mxd. Remove 'bb_min' and 'bb_max' args (never used), add 'scale_fov_by_dist' arg.
 {
-	vec3_t bbmin;
-	vec3_t bbmax;
-
 	assert(near_dist >= 0.0f);
-
-	// Initialize bbox.
-	if (los_start_pos != NULL)
-	{
-		if (bb_min == NULL)
-			VectorClear(bbmin);
-		else
-			VectorCopy(bb_min, bbmin);
-
-		if (bb_max == NULL)
-			VectorClear(bbmax);
-		else
-			VectorCopy(bb_max, bbmax);
-	}
-
-	float best_dist = far_dist * far_dist;
-	const float near_dist_sq = near_dist * near_dist;
 
 	const float min_horiz_fov = -h_fov * 0.5f;
 	const float max_horiz_fov = -min_horiz_fov;
@@ -298,6 +278,12 @@ edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t fi
 	const float max_vert_fov = -min_vert_fov;
 
 	const float base_yaw = NormalizeAngleDeg(finder_angles[YAW]) * ANGLE_TO_RAD;
+	const float base_pitch = NormalizeAngleDeg(finder_angles[PITCH]) * ANGLE_TO_RAD; //mxd
+
+	vec3_t finder_pos;
+	GetEdictCenter(finder, finder_pos); //mxd
+
+	float best_dist = far_dist;
 	edict_t* best = NULL;
 
 	const edict_t* end = &g_edicts[globals.num_edicts];
@@ -316,48 +302,45 @@ edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t fi
 		vec3_t end_pos;
 		GetEdictCenter(e, end_pos);
 
-		// Ok, we can see the entity (or don't care whether we can or can't), so make the checks to
-		// see if it lies within the specified frustum parameters.
-
-		vec3_t dist_vec;
-		VectorSubtract(end_pos, finder->s.origin, dist_vec);
+		// Get direction to entity.
+		vec3_t dir;
+		VectorSubtract(end_pos, finder_pos, dir); //mxd. Original logic uses 'finder->s.origin' instead of 'finder_pos' here.
 
 		// Check distance.
-		const float cur_dist_xy_sq = dist_vec[1] * dist_vec[1] + dist_vec[0] * dist_vec[0];
-		const float cur_dist_sq = cur_dist_xy_sq + dist_vec[2] * dist_vec[2];
+		const float cur_dist = VectorNormalize(dir);
 
-		if (cur_dist_sq < near_dist_sq || cur_dist_sq > best_dist)
+		if (cur_dist < near_dist || cur_dist > best_dist)
 			continue;
 
+		//mxd. Scale FOV by distance?
+		const float fov_scaler = (scale_fov_by_dist ? Clamp(1.0f - (cur_dist / far_dist), 0.1f, 1.0f) : 1.0f);
+
 		// Check if in horizontal FOV.
-		float mag = sqrtf(cur_dist_xy_sq);
-		float cur_yaw = atan2f(dist_vec[1] / mag, dist_vec[0] / mag);
+		float cur_yaw = atan2f(dir[YAW], dir[PITCH]); // See AnglesFromDir() --mxd.
 		cur_yaw = AddNormalizedAngles(cur_yaw, -base_yaw);
 
-		if (cur_yaw < min_horiz_fov || cur_yaw > max_horiz_fov)
+		if (cur_yaw < min_horiz_fov * fov_scaler || cur_yaw > max_horiz_fov * fov_scaler)
 			continue;
 
 		// Check if in vertical FOV.
-		mag = sqrtf(dist_vec[1] * dist_vec[1] + dist_vec[2] * dist_vec[2]);
-		const float cur_pitch = asinf(dist_vec[2] / mag);
+		float cur_pitch = asinf(dir[ROLL]); // See AnglesFromDir() --mxd.
+		cur_pitch = AddNormalizedAngles(cur_pitch, base_pitch); //H2_BUGFIX: mxd. Original logic doesn't do this.
 
-		if (cur_pitch < min_vert_fov || cur_pitch > max_vert_fov)
+		if (cur_pitch < min_vert_fov * fov_scaler || cur_pitch > max_vert_fov * fov_scaler)
 			continue;
 
-		// If los_start_pos is not NULL, we need a line of sight to the entity (see above), else skip to the next entity.
-		if (los_start_pos != NULL)
-		{
-			if (!gi.inPVS(los_start_pos, end_pos)) // Cheaper than a trace.
-				continue;
+		// Check line of sight to the entity.
+		if (!gi.inPVS(los_start_pos, end_pos)) // Cheaper than a trace.
+			continue;
 
-			trace_t trace;
-			gi.trace(los_start_pos, bbmin, bbmax, end_pos, finder, CONTENTS_SOLID, &trace);
+		trace_t trace;
+		gi.trace(los_start_pos, vec3_origin, vec3_origin, end_pos, finder, CONTENTS_SOLID, &trace);
 
-			if (trace.startsolid || trace.fraction != 1.0f)
-				continue;
-		}
+		if (trace.startsolid || trace.fraction != 1.0f)
+			continue;
 
-		best_dist = cur_dist_sq;
+		// Valid result.
+		best_dist = cur_dist;
 		best = e;
 	}
 

@@ -2520,28 +2520,28 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 	// Save the light level that the player is standing on for monster sighting AI.
 	ent->light_level = ucmd->lightlevel;
 
-	// Handle autotargeting by looking for the nearest monster that:
-	// a) Lies in a 35 degree degree horizontal, 180 degree vertical cone from the player's facing.
-	// b) Lies within 0 to 500 meters of the player.
-	// c) Is visible (i.e. LOS exists from player to target).
-
-	// Get the origin of the LOS (from player to target) used in identifying potential targets.
-	vec3_t los_origin;
-	VectorCopy(ent->s.origin, los_origin);
-	los_origin[2] += (float)ent->viewheight;
-
-	// Handle autotaiming etc.
+	// Handle auto-aiming. //TODO: if have autotarget entity, try re-targeting it first, then look for new one?
+	qboolean have_autotarget = (client->ps.AutotargetEntityNum > 0); //mxd
 	ent->enemy = NULL;
 	client->ps.AutotargetEntityNum = 0;
 
 	if (client->playerinfo.autoaim)
 	{
-		// Autoaiming is active so look for an enemy to autotarget.
-		edict_t* target_ent = FindNearestVisibleActorInFrustum(ent, ent->client->aimangles, 0.0f, 500.0f, 35.0f * ANGLE_TO_RAD, 160.0f * ANGLE_TO_RAD, los_origin, NULL, NULL);
+		// Get the origin of the LOS (from player to target) used in identifying potential targets.
+		vec3_t los_origin;
+		VectorCopy(ent->s.origin, los_origin);
+		los_origin[2] += (float)ent->viewheight;
+
+		//mxd. Use increased FOVs when we already have autotarget. Fixes frequent switching between auto-targeting and not when enemy is moving near the edge of FOVs.
+		const float h_fov = (have_autotarget ? ANGLE_60 : ANGLE_35);
+		const float v_fov = (have_autotarget ? ANGLE_40 : ANGLE_30);
+
+		// Autoaiming is active so look for an enemy to auto-target. //mxd. far_dist:500, h_fov:35, v_fov:160 in original logic.
+		edict_t* target_ent = FindNearestVisibleActorInFrustum(ent, client->aimangles, 0.0f, 1024.0f, h_fov, v_fov, true, los_origin);
 
 		if (target_ent != NULL)
 		{
-			// An enemy was successfully autotargeted, so store away the pointer to our enemy.
+			// An enemy was successfully auto-targeted, so store away the pointer to our enemy.
 			ent->enemy = target_ent;
 			client->ps.AutotargetEntityNum = ent->enemy->s.number;
 		}

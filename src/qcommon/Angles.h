@@ -11,7 +11,7 @@
 #define YAW				1 // left / right
 #define ROLL			2 // fall over
 
-// Angles in radians
+// Angles in radians [https://www.rapidtables.com/convert/number/degrees-to-radians.html].
 #define ANGLE_0			0.0f
 #define ANGLE_1			0.017453292f
 #define ANGLE_5			0.087266462f
@@ -19,13 +19,17 @@
 #define ANGLE_15		0.261799387f
 #define ANGLE_20		0.392699081f
 #define ANGLE_30		0.523598775f
+#define ANGLE_35		0.610865238f //mxd
+#define ANGLE_40		0.6981317f //mxd
 #define ANGLE_45		0.785398163f
+#define ANGLE_50		0.872664626f //mxd
 #define ANGLE_60		1.047197551f
-#define ANGLE_72		1.256637061f
+#define ANGLE_72		1.256637061f //mxd. Unused.
+#define ANGLE_75		1.308996939f //mxd.
 #define ANGLE_90		1.570796327f
 #define ANGLE_120		2.094395102f
 #define ANGLE_135		2.35619449f
-#define ANGLE_144		2.513274123f
+#define ANGLE_144		2.513274123f //mxd. Unused.
 #define ANGLE_180		3.141592653f
 #define ANGLE_225		3.926990817f
 #define ANGLE_270		4.71238898f

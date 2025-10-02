@@ -164,11 +164,11 @@ void SpellCastMagicMissile(edict_t* caster, const vec3_t start_pos, const vec3_t
 		return;
 	}
 
-	// Handle autotargeting by looking for the nearest monster that:
-	// a) Lies in a 45 degree degree horizontal, 180 degree vertical cone from my facing.
+	// Handle auto-targeting by looking for the nearest monster that:
+	// a) Lies in a 30 degree degree horizontal, 180 degree vertical cone from my facing.
 	// b) Lies within 0 to 1000 meters of myself.
 	// c) Is visible (i.e. LOS exists from the missile to myself).
-	missile->enemy = FindNearestVisibleActorInFrustum(missile, aim_angles, 0.0f, 1000.0f, ANGLE_30, ANGLE_180, missile->s.origin, NULL, NULL);
+	missile->enemy = FindNearestVisibleActorInFrustum(missile, aim_angles, 0.0f, 1000.0f, ANGLE_30, ANGLE_180, false, missile->s.origin);
 
 	if (missile->enemy != NULL)
 	{

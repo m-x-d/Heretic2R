@@ -13,9 +13,7 @@
 extern float NormalizeAngleRad(float angle); //mxd
 extern float NormalizeAngleDeg(float angle); //mxd
 
-extern edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t finder_angles,
-	float near_dist, float far_dist, float h_fov, float v_fov, const vec3_t los_start_pos, const vec3_t bb_min, const vec3_t bb_max);
-
+extern edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t finder_angles,	float near_dist, float far_dist, float h_fov, float v_fov, qboolean scale_fov_by_dist, const vec3_t los_start_pos); //mxd. Remove 'bb_min' and 'bb_max' args (never used), add 'scale_fov_by_dist' arg.
 extern edict_t* FindSpellTargetInRadius(const edict_t* search_ent, float radius, const vec3_t search_pos, const vec3_t mins, const vec3_t maxs);
 
 extern void SetAnim(edict_t* self, int anim);
