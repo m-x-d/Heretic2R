@@ -130,7 +130,9 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 	}
 
 	vec3_t end;
-	const qboolean do_autoaim = (in_do_autoaim && weapon != II_WEAPON_MAGICMISSILE && weapon != II_WEAPON_FIREWALL && weapon != II_WEAPON_MACEBALLS); //mxd
+	const qboolean do_autoaim = (in_do_autoaim
+		&& weapon != II_WEAPON_SWORDSTAFF && weapon != II_WEAPON_MAGICMISSILE
+		&& weapon != II_WEAPON_FIREWALL && weapon != II_WEAPON_MACEBALLS); //mxd. +II_WEAPON_SWORDSTAFF.
 
 	// If we have AutotargetEntityNum, we've already traced to autotarget entity position and can hit it --mxd.
 	if (do_autoaim && cl.frame.playerstate.AutotargetEntityNum > 0)
