@@ -104,7 +104,7 @@ void DBG_DrawMessages(void)
 #if _DEBUG
 
 	int ox = 0;
-	int oy = (viddef.height - ui_char_size) / 2;
+	int oy = ui_line_height; // Leave 1 line for game messages.
 
 	for (int i = 0; i < NUM_DEBUG_MESSAGES; i++)
 	{
