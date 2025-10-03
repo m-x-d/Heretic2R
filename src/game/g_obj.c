@@ -2938,13 +2938,28 @@ void SP_obj_statue_sithraguard(edict_t* self) //TODO: rename to 'SP_obj_statue_s
 
 #pragma region ========================== obj_torture_ironmaiden ==========================
 
+//mxd
+static vec3_t ironmaiden_opened_mins = { -28.0f, -48.0f, -49.0f };
+static vec3_t ironmaiden_opened_maxs = {  28.0f,  48.0f,  49.0f };
+static vec3_t ironmaiden_closed_mins = { -18.0f, -18.0f, -49.0f };
+static vec3_t ironmaiden_closed_maxs = {  18.0f,  18.0f,  49.0f };
+
 static void ObjTortureIronmaidenOpen(edict_t* self) //mxd. Named 'ironmaiden_open' in original logic.
 {
-	if (self->s.frame == 9)
-		gi.sound(self, CHAN_BODY, gi.soundindex("items/ironmaiden.wav"), 1.0f, ATTN_NORM, 0.0f);
-
-	if (--self->s.frame >= 0)
+	//mxd. Switch bbox size. Not done in original logic.
+	if (self->s.frame == 10)
 	{
+		VectorCopy(ironmaiden_opened_mins, self->mins);
+		VectorCopy(ironmaiden_opened_maxs, self->maxs);
+		gi.linkentity(self);
+
+		//mxd. Originally called on frame 9. Originally used "items/ironmaiden.wav" sound.
+		gi.sound(self, CHAN_BODY, gi.soundindex("items/statuearm.wav"), 1.0f, ATTN_NORM, 0.0f);
+	}
+
+	if (self->s.frame > 0)
+	{
+		self->s.frame--;
 		self->nextthink = level.time + FRAMETIME;
 	}
 	else
@@ -2956,41 +2971,49 @@ static void ObjTortureIronmaidenOpen(edict_t* self) //mxd. Named 'ironmaiden_ope
 
 static void ObjTortureIronmaidenClose(edict_t* self) //mxd. Named 'ironmaiden_close' in original logic.
 {
-	if (++self->s.frame <= 10)
+	//mxd. Switch bbox size. Done in ObjTortureIronmaidenUse() in original logic.
+	if (self->s.frame == 0)
 	{
+		VectorCopy(ironmaiden_closed_mins, self->mins);
+		VectorCopy(ironmaiden_closed_maxs, self->maxs);
+		gi.linkentity(self); //mxd. Not called in original logic.
+
+		//mxd. Originally called in ObjTortureIronmaidenUse().
+		gi.sound(self, CHAN_BODY, gi.soundindex("items/ironmaiden.wav"), 1.0f, ATTN_NORM, 0.0f);
+	}
+
+	if (self->s.frame < 10)
+	{
+		self->s.frame = min(10, self->s.frame + 5); //mxd. Close 5x faster.
 		self->nextthink = level.time + FRAMETIME;
 	}
 	else
 	{
 		self->think = ObjTortureIronmaidenOpen;
-		self->nextthink = level.time + FRAMETIME * 30.0f; // Open up in 30 seconds.
+		self->nextthink = level.time + FRAMETIME * 30.0f; // Open up in 3 seconds.
 	}
 }
 
 static void ObjTortureIronmaidenUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'ironmaiden_use' in original logic.
 {
-	VectorSet(self->mins, -18.0f, -18.0f, -49.0f);
-	VectorSet(self->maxs, 18.0f, 18.0f, 49.0f);
-
 	self->touch = NULL;
 	self->think = ObjTortureIronmaidenClose;
 	self->nextthink = level.time + FRAMETIME;
-
-	gi.sound(self, CHAN_BODY, gi.soundindex("items/ironmaiden.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
+// Called only when in opened state.
 static void ObjTortureIronmaidenTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'ironmaiden_touch' in original logic.
 {
-	if (other->client == NULL || self->touch_debounce_time > level.time)
+	if (other->client == NULL || self->touch_debounce_time > level.time) //TODO: don't skip for non-players (remove other->client check)?
 		return;
 
-	self->touch_debounce_time = level.time + 5.0f;
+	self->touch_debounce_time = level.time + 3.0f; //mxd. +5.0 in original logic. Changed to match delay in ObjTortureIronmaidenClose().
 
-	vec3_t vf;
-	AngleVectors(self->s.angles, vf, NULL, NULL);
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
 
 	vec3_t source;
-	VectorMA(self->s.origin, 44.0f, vf, source);
+	VectorMA(self->s.origin, 48.0f, forward, source); //mxd. scale:44 in original logic.
 
 	trace_t trace;
 	gi.trace(self->s.origin, self->mins, self->maxs, source, self, MASK_PLAYERSOLID, &trace);
@@ -3005,8 +3028,8 @@ static void ObjTortureIronmaidenTouch(edict_t* self, edict_t* other, cplane_t* p
 // An iron maiden that closes when used.
 void SP_obj_torture_ironmaiden(edict_t* self)
 {
-	VectorSet(self->mins, -28.0f, -48.0f, -49.0f);
-	VectorSet(self->maxs, 28.0f, 48.0f, 49.0f);
+	VectorCopy(ironmaiden_opened_mins, self->mins);
+	VectorCopy(ironmaiden_opened_maxs, self->maxs);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/ironmaiden/tris.fm");
 	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
