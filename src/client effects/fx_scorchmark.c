@@ -17,7 +17,7 @@ void PreCacheScorch(void)
 	scorch_model = fxi.RegisterModel("sprites/fx/scorchmark.sp2");
 }
 
-//mxd. Added to reduce code duplication.
+//mxd. Added to reduce code duplication. Expects normalized 'dir'. Modifies 'origin' and 'dir'.
 static void CreateScorchmark(vec3_t origin, vec3_t dir, const int type, const int flags)
 {
 	// No scorchmarks in low detail mode.
