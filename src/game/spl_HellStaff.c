@@ -58,7 +58,7 @@ static void HellboltTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfa
 		fx_flags = CEF_FLAG6;
 
 	gi.CreateEffect(&self->s, FX_WEAPON_HELLBOLTEXPLODE, CEF_OWNERS_ORIGIN | fx_flags, NULL, "d", self->movedir);
-	G_SetToFree(self);
+	G_FreeEdict(self); //mxd. G_SetToFree() in original logic. Fixes client effect/dynamic light staying active for 100 ms. after this.
 }
 
 static void HellboltThink(edict_t* self)
