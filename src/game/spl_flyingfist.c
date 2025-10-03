@@ -146,7 +146,6 @@ edict_t* FlyingFistReflect(edict_t* self, edict_t* other, const vec3_t vel)
 	AnglesFromDir(flying_fist->movedir, flying_fist->s.angles);
 	flying_fist->owner = other;
 	flying_fist->health = self->health;
-	flying_fist->enemy = self->owner;
 	flying_fist->flags |= (self->flags & FL_NO_KNOCKBACK); //TODO: why is it reflected as wimpy? Why is the CEF_FLAG8 flag not applied?
 	flying_fist->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
 	flying_fist->reflected_time = self->reflected_time;
@@ -224,7 +223,6 @@ void SpellCastFlyingFist(edict_t* caster, const vec3_t start_pos, const vec3_t a
 	}
 
 	flying_fist->owner = caster;
-	flying_fist->enemy = caster->enemy;
 
 	// Remember velocity in case we have to reverse it.
 	VectorNormalize2(flying_fist->velocity, flying_fist->movedir);
