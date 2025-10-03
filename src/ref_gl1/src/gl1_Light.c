@@ -285,9 +285,9 @@ static void R_AddDynamicLights(const msurface_t* surf)
 
 				if (fdist < fminlight)
 				{
-					pfBL[0] += (frad - fdist) * ((float)dl->color.r / 255.0f); // H2: different color handling.
-					pfBL[1] += (frad - fdist) * ((float)dl->color.g / 255.0f);
-					pfBL[2] += (frad - fdist) * ((float)dl->color.b / 255.0f);
+					pfBL[0] += (frad - fdist) * ((float)dl->color.r * gl_modulate->value / 255.0f); // H2: different color handling. //mxd. Multiply by gl_modulate.
+					pfBL[1] += (frad - fdist) * ((float)dl->color.g * gl_modulate->value / 255.0f);
+					pfBL[2] += (frad - fdist) * ((float)dl->color.b * gl_modulate->value / 255.0f);
 				}
 			}
 		}
