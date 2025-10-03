@@ -545,8 +545,14 @@ float GetPickupBobPhase(const vec3_t origin)
 	return (origin[0] + origin[1]) * 0.0495f + (float)fxi.cl->time * 3.0f; // 0.0495 == 2.3 * 0.015.
 }
 
+// Assumes 'direction' to be normalized --mxd.
 qboolean GetTruePlane(vec3_t origin, vec3_t direction, const float direction_scale, const float offset_scale) //mxd. 2 similar same-named functions (in fx_blood.c and fx_scorchmark.c) in original logic.
 {
+#if _DEBUG
+	const float len = VectorLength(direction);
+	assert(len >= 1.0f - FLOAT_ZERO_EPSILON && len <= 1.0f + FLOAT_ZERO_EPSILON); //mxd. Make sure it's normalized...
+#endif
+
 	vec3_t end;
 	VectorMA(origin, direction_scale, direction, end);
 
