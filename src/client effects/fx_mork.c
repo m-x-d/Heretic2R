@@ -102,7 +102,7 @@ static qboolean MorkTrailThink2(struct client_entity_s* self, centity_t* owner)
 }
 
 //mxd. Added to reduce code duplication.
-static void AddGenericExplosion(const centity_t* owner, vec3_t dir, struct model_s* model)
+static void AddGenericExplosion(const centity_t* owner, vec3_t dir, struct model_s** model)
 {
 	Vec3ScaleAssign(32.0f, dir);
 
@@ -113,7 +113,7 @@ static void AddGenericExplosion(const centity_t* owner, vec3_t dir, struct model
 		const int next_think_time = (i == count - 1 ? 500 : 1000); //mxd
 		client_entity_t* spark = ClientEntity_new(FX_M_EFFECTS, 0, owner->origin, NULL, next_think_time);
 
-		spark->r.model = &model; // Blue spark sprite.
+		spark->r.model = model;
 		spark->r.scale = flrand(0.5f, 1.0f);
 		spark->d_scale = -2.0f;
 		spark->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
@@ -132,7 +132,7 @@ static void AddGenericExplosion(const centity_t* owner, vec3_t dir, struct model
 
 static void MorkMissileExplode(const centity_t* owner, vec3_t dir)
 {
-	AddGenericExplosion(owner, dir, mork_projectile_models[1]); //mxd. Blue spark sprite.
+	AddGenericExplosion(owner, dir, &mork_projectile_models[1]); //mxd. Blue spark sprite.
 }
 
 static client_entity_t* MorkMakeLightningPiece(const vec3_t start, const vec3_t end, const float radius, const int lifetime)
@@ -321,7 +321,7 @@ static void MorkBeam(centity_t* owner, const int type, const vec3_t origin, cons
 
 static void ImpFireBallExplode(const centity_t* owner, vec3_t dir)
 {
-	AddGenericExplosion(owner, dir, imp_models[1]); //mxd. Fire spark sprite.
+	AddGenericExplosion(owner, dir, &imp_models[1]); //mxd. Fire spark sprite.
 }
 
 static qboolean ImpFireballUpdate(struct client_entity_s* self, centity_t* owner)
