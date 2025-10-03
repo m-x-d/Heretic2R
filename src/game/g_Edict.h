@@ -409,6 +409,7 @@ struct edict_s
 	{
 		float last_buoy_time;
 		qboolean fish_is_turning; //mxd
+		int obj_lever_index; //mxd
 	};
 
 	union
@@ -416,6 +417,7 @@ struct edict_s
 		float last_move_time; // Only used by target_earthquake (poly/trigger).
 		float old_yaw; // Used by the Seraph to return to his exact position and angles.
 		float fish_speed_scaler; //mxd
+		int obj_lever_num_frames; //mxd
 	};
 
 	union

@@ -1811,31 +1811,41 @@ void SP_obj_flagonpole(edict_t* self)
 
 #pragma endregion
 
-#pragma region ========================== obj_lever1 ==========================
+#pragma region ========================== obj_lever1, obj_lever2, obj_lever3 ==========================
 
-static void ObjLever1DownThink(edict_t* self) //mxd. Named 'lever1downthink' in original logic.
+static void ObjLeverDownThink(edict_t* self) //mxd. Merged lever1downthink(), lever2downthink() and lever3downthink() from original logic.
 {
-	if (++self->s.frame <= 5)
-		self->nextthink = level.time + FRAMETIME;
-	else
-		self->think = NULL;
-}
-
-static void ObjLever1UpThink(edict_t* self) //mxd. Named 'lever1upthink' in original logic.
-{
-	if (--self->s.frame >= 0)
-		self->nextthink = level.time + FRAMETIME;
-	else
-		self->think = NULL;
-}
-
-static void ObjLever1Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'lever1_use' in original logic.
-{
-	if (self->s.frame == 0 || self->s.frame == 5) //mxd. Rewritten, so G_UseTargets() is only called when not playing animation.
+	if (self->s.frame < self->obj_lever_num_frames)
 	{
-		gi.sound(self, CHAN_BODY, gi.soundindex("objects/lever1.wav"), 1.0f, ATTN_NORM, 0.0f);
-		self->think = (self->s.frame == 0 ? ObjLever1DownThink : ObjLever1UpThink);
+		self->s.frame++;
 		self->nextthink = level.time + FRAMETIME;
+	}
+	else
+	{
+		self->think = NULL;
+	}
+}
+
+static void ObjLeverUpThink(edict_t* self) //mxd. Merged lever1upthink(), lever2upthink() and lever3upthink() from original logic.
+{
+	if (self->s.frame > 0)
+	{
+		self->s.frame--;
+		self->nextthink = level.time + FRAMETIME;
+	}
+	else
+	{
+		self->think = NULL;
+	}
+}
+
+static void ObjLeverUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Merged lever1_use(), lever2_use() and lever3_use() from original logic.
+{
+	if (self->s.frame == 0 || self->s.frame == self->obj_lever_num_frames) //mxd. Rewritten, so G_UseTargets() is only called when not playing animation.
+	{
+		gi.sound(self, CHAN_BODY, gi.soundindex(va("objects/lever%i.wav", self->obj_lever_index)), 1.0f, ATTN_NORM, 0.0f);
+		self->think = (self->s.frame == 0 ? ObjLeverDownThink : ObjLeverUpThink);
+		self->nextthink = level.time + FRAMETIME; //BUGFIX, kinda. mxd. Was set outside of frame checks in original logic.
 
 		G_UseTargets(self, activator);
 	}
@@ -1846,91 +1856,31 @@ static void ObjLever1Use(edict_t* self, edict_t* other, edict_t* activator) //mx
 void SP_obj_lever1(edict_t* self)
 {
 	VectorSet(self->mins, -6.0f, -14.0f, -17.0f);
-	VectorSet(self->maxs, 6.0f, 14.0f, 17.0f);
+	VectorSet(self->maxs,  6.0f,  14.0f,  17.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/levers/lever1/tris.fm");
 	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
-	self->use = ObjLever1Use;
+	self->obj_lever_index = 1; //mxd
+	self->obj_lever_num_frames = 5; //mxd
+	self->use = ObjLeverUse;
 
 	ObjectInit(self, 150, 125, MAT_WOOD, SOLID_BBOX);
-}
-
-#pragma endregion
-
-#pragma region ========================== obj_lever2 ==========================
-
-static void ObjLever2DownThink(edict_t* self) //mxd. Named 'lever2downthink' in original logic.
-{
-	if (++self->s.frame <= 4)
-		self->nextthink = level.time + FRAMETIME;
-	else
-		self->think = NULL;
-}
-
-static void ObjLever2UpThink(edict_t* self) //mxd. Named 'lever2upthink' in original logic.
-{
-	if (--self->s.frame >= 0)
-		self->nextthink = level.time + FRAMETIME;
-	else
-		self->think = NULL;
-}
-
-static void ObjLever2Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'lever2_use' in original logic.
-{
-	if (self->s.frame == 0 || self->s.frame == 4) //mxd. Rewritten, so G_UseTargets() is only called when not playing animation.
-	{
-		gi.sound(self, CHAN_BODY, gi.soundindex("objects/lever2.wav"), 1.0f, ATTN_NORM, 0.0f);
-		self->think = (self->s.frame == 0 ? ObjLever2DownThink : ObjLever2UpThink);
-		self->nextthink = level.time + FRAMETIME;
-
-		G_UseTargets(self, activator);
-	}
 }
 
 // QUAKED obj_lever2 (1 .5 0) (-14 -14 -9) (14 14 9)
 // A wooden wheel lever that is triggerable.
 void SP_obj_lever2(edict_t* self)
 {
-	VectorSet(self->mins, -14, -14, -9);
-	VectorSet(self->maxs, 14, 14, 9);
+	VectorSet(self->mins, -14.0f, -14.0f, -9.0f);
+	VectorSet(self->maxs,  14.0f,  14.0f,  9.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/levers/lever2/tris.fm");
 	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
-	self->use = ObjLever2Use;
+	self->obj_lever_index = 2; //mxd
+	self->obj_lever_num_frames = 4; //mxd. Model has 7 frames, but frame 0 orientation matches frame 7 orientation, making it hard to distinguish them...
+	self->use = ObjLeverUse;
 
 	ObjectInit(self, 150, 125, MAT_WOOD, SOLID_BBOX);
-}
-
-#pragma endregion
-
-#pragma region ========================== obj_lever3 ==========================
-
-static void ObjLever3DownThink(edict_t* self) //mxd. Named 'lever3downthink' in original logic.
-{
-	if (++self->s.frame <= 5)
-		self->nextthink = level.time + FRAMETIME;
-	else
-		self->think = NULL;
-}
-
-static void ObjLever3UpThink(edict_t* self) //mxd. Named 'lever3upthink' in original logic.
-{
-	if (--self->s.frame >= 0)
-		self->nextthink = level.time + FRAMETIME;
-	else
-		self->think = NULL;
-}
-
-static void ObjLever3Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'lever3_use' in original logic.
-{
-	if (self->s.frame == 0 || self->s.frame == 5) //mxd. Rewritten, so G_UseTargets() is only called when not playing animation.
-	{
-		gi.sound(self, CHAN_BODY, gi.soundindex("objects/lever3.wav"), 1.0f, ATTN_NORM, 0.0f);
-		self->think = (self->s.frame == 0 ? ObjLever3DownThink : ObjLever3UpThink);
-		self->nextthink = level.time + FRAMETIME; //BUGFIX, kinda. mxd. Was set outside of frame checks in original logic.
-
-		G_UseTargets(self, activator);
-	}
 }
 
 // QUAKED obj_lever3 (1 .5 0) (-4 -6 -16) (4 6 16)
@@ -1938,11 +1888,13 @@ static void ObjLever3Use(edict_t* self, edict_t* other, edict_t* activator) //mx
 void SP_obj_lever3(edict_t* self)
 {
 	VectorSet(self->mins, -6.0f, -4.0f, -16.0f);
-	VectorSet(self->maxs, 6.0f, 4.0f, 16.0f);
+	VectorSet(self->maxs,  6.0f,  4.0f,  16.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/levers/lever3/tris.fm");
 	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
-	self->use = ObjLever3Use;
+	self->obj_lever_index = 3; //mxd
+	self->obj_lever_num_frames = 5; //mxd
+	self->use = ObjLeverUse;
 
 	ObjectInit(self, 150, 125, MAT_WOOD, SOLID_BBOX);
 }
