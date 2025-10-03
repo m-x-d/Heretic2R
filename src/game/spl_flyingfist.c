@@ -108,8 +108,7 @@ static void FlyingFistTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 	}
 
 	// Attempt to apply a scorchmark decal to the thing I hit.
-	vec3_t plane_dir;
-	if (IsDecalApplicable(other, self->s.origin, surface, plane, plane_dir))
+	if (IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
 		fx_flags |= CEF_FLAG6;
 
 	gi.CreateEffect(NULL, FX_WEAPON_FLYINGFISTEXPLODE, fx_flags, self->s.origin, "d", self->movedir);
