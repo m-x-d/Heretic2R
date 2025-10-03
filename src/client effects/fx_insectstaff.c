@@ -267,7 +267,7 @@ static qboolean GlobeOfOuchinessGlowballThink(struct client_entity_s* self, cent
 		// Create a trailing spark.
 		client_entity_t* spark = ClientEntity_new(FX_I_EFFECTS, self->flags & ~CEF_OWNERS_ORIGIN, self->r.origin, NULL, 500);
 
-		spark->r.model = globe_models + 2;
+		spark->r.model = &globe_models[2];
 		spark->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 		spark->r.scale = FIST_SCALE + flrand(0.0f, 0.05f);
 		spark->d_alpha = flrand(-1.75f, -2.0f);
