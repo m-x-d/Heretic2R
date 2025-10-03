@@ -20,7 +20,7 @@
 // Radius of zero seems to prevent collision between bolts.
 #define HELLBOLT_RADIUS		0.0f
 
-static void HellboltTouch(edict_t* self, edict_t* other, const cplane_t* plane, const csurface_t* surface)
+static void HellboltTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	// Did we hit the sky? 
 	if (surface != NULL && (surface->flags & SURF_SKY))
@@ -278,11 +278,12 @@ static void FireHellLaser(edict_t* caster, const vec3_t loc, vec3_t aim_angles) 
 }
 
 // Unpowered version of this weapon - hellbolts.
-static void FireHellBolt(edict_t* caster, const vec3_t loc, const vec3_t aim_angles) //mxd. Split from SpellCastHellstaff().
+static void FireHellbolt(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles) //mxd. Split from SpellCastHellstaff().
 {
 	edict_t* hellbolt = G_Spawn();
 	CreateHellbolt(hellbolt);
-	VectorCopy(loc, hellbolt->s.origin);
+	hellbolt->reflect_debounce_time = MAX_REFLECT;
+	VectorCopy(start_pos, hellbolt->s.origin);
 
 	// Check ahead first to see if it's going to hit anything at this angle.
 	vec3_t forward;
@@ -292,34 +293,50 @@ static void FireHellBolt(edict_t* caster, const vec3_t loc, const vec3_t aim_ang
 	{
 		VectorScale(forward, HELLBOLT_SPEED, hellbolt->velocity);
 	}
+	else if (caster->enemy != NULL) // Auto-target current enemy?
+	{
+		// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
+		GetAimVelocity(caster->enemy, hellbolt->s.origin, HELLBOLT_SPEED, aim_angles, hellbolt->velocity);
+	}
 	else
 	{
-		vec3_t end_pos;
-		VectorMA(loc, HELLBOLT_SPEED, forward, end_pos);
+		//mxd. Replicate II_WEAPON_HELLSTAFF case from Get_Crosshair()...
+		vec3_t end;
+		const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 14.0f };
+		VectorMA(view_pos, HELLBOLT_SPEED, forward, end);
 
 		trace_t trace;
-		gi.trace(loc, vec3_origin, vec3_origin, end_pos, caster, MASK_MONSTERSOLID, &trace);
+		gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_MONSTERSOLID, &trace);
 
-		if (trace.ent != NULL && OkToAutotarget(caster, trace.ent))
-			VectorScale(forward, HELLBOLT_SPEED, hellbolt->velocity); // Already going to hit a valid target at this angle, so don't auto-target.
-		else
-			GetAimVelocity(caster->enemy, hellbolt->s.origin, HELLBOLT_SPEED, aim_angles, hellbolt->velocity); // Auto-target current enemy.
+		vec3_t dir;
+		VectorSubtract(trace.endpos, hellbolt->s.origin, dir);
+		VectorNormalize(dir);
+		VectorScale(dir, HELLBOLT_SPEED, hellbolt->velocity);
 	}
 
 	hellbolt->owner = caster;
+
+	// Remember velocity in case we have to reverse it.
 	VectorNormalize2(hellbolt->velocity, hellbolt->movedir);
-	hellbolt->reflect_debounce_time = MAX_REFLECT;
 
 	G_LinkMissile(hellbolt);
 	PlayHellstaffFiringSound(caster, "weapons/HellFire.wav"); //mxd
 
-	trace_t trace;
-	gi.trace(hellbolt->s.origin, vec3_origin, vec3_origin, hellbolt->s.origin, caster, MASK_PLAYERSOLID, &trace);
+	// Make sure we don't start in a solid.
+	trace_t back_trace;
+	gi.trace(caster->s.origin, vec3_origin, vec3_origin, hellbolt->s.origin, caster, MASK_PLAYERSOLID, &back_trace); //H2_BUGFIX: mxd. Both 'start' and 'end' use hellbolt->s.origin in original logic.
 
-	if (trace.startsolid)
-		HellboltTouch(hellbolt, trace.ent, &trace.plane, trace.surface);
-	else
-		gi.CreateEffect(&hellbolt->s, FX_WEAPON_HELLBOLT, CEF_OWNERS_ORIGIN, NULL, "t", hellbolt->velocity);
+	if (back_trace.startsolid)
+	{
+		VectorCopy(back_trace.endpos, hellbolt->s.origin); //mxd
+		HellboltTouch(hellbolt, back_trace.ent, &back_trace.plane, back_trace.surface);
+
+		return;
+	}
+
+	// Spawn effect after it has been determined it has not started in wall.
+	// This is so it won't try to remove it before it exists.
+	gi.CreateEffect(&hellbolt->s, FX_WEAPON_HELLBOLT, CEF_OWNERS_ORIGIN, NULL, "t", hellbolt->velocity);
 }
 
 void SpellCastHellstaff(edict_t* caster, const vec3_t start_pos, vec3_t aim_angles)
@@ -329,5 +346,5 @@ void SpellCastHellstaff(edict_t* caster, const vec3_t start_pos, vec3_t aim_angl
 	if (caster->client->playerinfo.powerup_timer > level.time)
 		FireHellLaser(caster, start_pos, aim_angles); //TODO: FireHellLaser() CAN modify aim_angles. Is that intentional?
 	else
-		FireHellBolt(caster, start_pos, aim_angles);
+		FireHellbolt(caster, start_pos, aim_angles);
 }
