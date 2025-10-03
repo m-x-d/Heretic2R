@@ -96,7 +96,7 @@ static void FlyingFistTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 		{
 			int damage = irand(FIREBALL_DAMAGE_MIN / dmg_div, FIREBALL_DAMAGE_MAX / dmg_div);
 
-			if (wimpy)	// Wimpy (no mana) shots do half damage.
+			if (wimpy) // Wimpy (no mana) shots do half damage.
 				damage /= 2;
 
 			T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, damage, damage, DAMAGE_SPELL, MOD_FIREBALL);
@@ -112,7 +112,7 @@ static void FlyingFistTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 		fx_flags |= CEF_FLAG6;
 
 	gi.CreateEffect(NULL, FX_WEAPON_FLYINGFISTEXPLODE, fx_flags, self->s.origin, "d", self->movedir);
-	G_SetToFree(self);
+	G_FreeEdict(self); //mxd. G_SetToFree() in original logic. Fixes client effect/dynamic light staying active for 100 ms. after this.
 }
 
 static void CreateFlyingFist(edict_t* flying_fist)
