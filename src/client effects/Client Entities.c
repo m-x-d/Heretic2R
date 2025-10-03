@@ -80,6 +80,9 @@ client_entity_t* ClientEntity_new(const int type, const int flags, const vec3_t 
 
 	new_ent->r.scale = 1.0f;
 	new_ent->r.color = color_white; //mxd
+	new_ent->r.rootJoint = NULL_ROOT_JOINT;
+	new_ent->r.swapFrame = NO_SWAP_FRAME;
+
 	new_ent->alpha = 1.0f;
 	new_ent->radius = 1.0f;
 	new_ent->effectID = type;
@@ -92,8 +95,6 @@ client_entity_t* ClientEntity_new(const int type, const int flags, const vec3_t 
 	new_ent->nextThinkTime = fxi.cl->time + next_think_time;
 	new_ent->startTime = fxi.cl->time;
 	new_ent->Update = RemoveSelfAI;
-	new_ent->r.rootJoint = NULL_ROOT_JOINT;
-	new_ent->r.swapFrame = NO_SWAP_FRAME;
 
 	return new_ent;
 }
