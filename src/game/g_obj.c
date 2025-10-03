@@ -2888,10 +2888,15 @@ void SP_obj_statue_tchecktrik_bust(edict_t* self)
 
 static void ObjStatueSsithraGuardThink(edict_t* self) //mxd. Named 'statue_sithraguard_think' in original logic.
 {
-	if (++self->s.frame <= 20)
+	if (self->s.frame < 20)
+	{
+		self->s.frame++;
 		self->nextthink = level.time + FRAMETIME;
+	}
 	else
+	{
 		self->think = NULL;
+	}
 }
 
 static void ObjStatueSsithraGuardUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'statue_sithraguard_use' in original logic.
