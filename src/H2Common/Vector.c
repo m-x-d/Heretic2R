@@ -206,7 +206,7 @@ H2COMMON_API void vectoangles(const vec3_t in, vec3_t out)
 	VectorNormalize2(in, v);
 	AnglesFromDir(v, out);
 
-	VectorScale(out, RAD_TO_ANGLE, out);
+	Vec3ScaleAssign(RAD_TO_ANGLE, out);
 }
 
 //mxd. Assumes "direction" is normalized
