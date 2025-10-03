@@ -13,8 +13,11 @@
 #include "q_sprite.h"
 #include "g_playstats.h"
 
-#define NUM_HELLBOLT_EXPLODES	8
-#define HELLBOLT_SPARK_VEL		64.0f
+#define HELLBOLT_IMPACT_SPARKS_MIN		8 //mxd
+#define HELLBOLT_IMPACT_SPARKS_MAX		12 //mxd
+#define HELLBOLT_IMPACT_SPARK_VEL_MIN	64.0f //mxd
+#define HELLBOLT_IMPACT_SPARK_VEL_MAX	96.0f //mxd
+
 #define HELLLASER_PARTS			9
 #define HELLLASER_SPEED			32.0f
 
@@ -71,12 +74,17 @@ static void HellboltExplode(const vec3_t loc, const vec3_t vel)
 	fxi.S_StartSound(blast->r.origin, -1, CHAN_WEAPON, hell_hit_sound, 1.0f, ATTN_NORM, 0.0f);
 	AddEffect(NULL, blast);
 
-	for (int i = 0; i < NUM_HELLBOLT_EXPLODES; i++)
+	const int num_particles = irand(HELLBOLT_IMPACT_SPARKS_MIN, HELLBOLT_IMPACT_SPARKS_MAX); //mxd
+	for (int i = 0; i < num_particles; i++)
 	{
 		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_R, light_color, 500);
 
-		VectorRandomCopy(vel, spark->velocity, HELLBOLT_SPARK_VEL);
-		VectorSet(spark->acceleration, 0.0f, 0.0f, GetGravity() * 0.3f);
+		//mxd. Scale here instead of FXHellboltExplode() (was done before calling FXClientScorchmark(), which could re-normalize 'dir'...).
+		VectorRandomCopy(vel, spark->velocity, 0.65f); // Original logic scales vel by 32, then randomizes it by 64 --mxd.
+		VectorNormalize(spark->velocity);
+		Vec3ScaleAssign(flrand(HELLBOLT_IMPACT_SPARK_VEL_MIN, HELLBOLT_IMPACT_SPARK_VEL_MAX), spark->velocity);
+
+		VectorSet(spark->acceleration, 0.0f, 0.0f, GetGravity() * flrand(0.15f, 0.3f)); //mxd. Randomize gravity scaler a bit.
 		spark->scale = flrand(12.0f, 16.0f);
 		spark->d_scale = -24.0f;
 		spark->d_alpha = flrand(-640.0f, -512.0f);
@@ -89,8 +97,6 @@ void FXHellboltExplode(centity_t* owner, int type, const int flags, vec3_t origi
 {
 	vec3_t dir;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_HELLBOLTEXPLODE].formatString, dir);
-
-	Vec3ScaleAssign(32.0f, dir);
 
 	if (flags & CEF_FLAG6)
 		FXClientScorchmark(origin, dir);
