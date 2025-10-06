@@ -5,6 +5,7 @@
 //
 
 #include "spl_blast.h" //mxd
+#include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
 #include "g_playstats.h"
 #include "m_beast.h"
@@ -78,6 +79,8 @@ void SpellCastBlast(edict_t* caster, const vec3_t start_pos, const vec3_t aim_an
 
 			T_Damage(trace.ent, caster, caster, forward, trace.endpos, forward, damage, damage, 0, MOD_MMISSILE);
 		}
+
+		AlertMonstersAt(trace.endpos, caster, 1.0f, 0); //mxd. Don't forget to annoy enemies.
 
 		vec3_t diff;
 		VectorSubtract(trace.endpos, start_pos, diff);
