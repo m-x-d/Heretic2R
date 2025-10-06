@@ -49,9 +49,10 @@ static void HellboltTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfa
 	{
 		// Back off the origin for the damage a bit.
 		// We are a point and this will help fix hitting base of a stair and not hurting a guy on next step up.
-		AlertMonsters(self, self->owner, 1.0f, false);
 		VectorMA(self->s.origin, -8.0f, self->movedir, self->s.origin);
 	}
+
+	AlertMonsters(self, self->owner, 1.0f, false); //mxd. Done in 'Back off the origin for the damage a bit' case in original logic. Why?..
 
 	int fx_flags = 0;
 	if (IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
