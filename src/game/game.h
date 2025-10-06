@@ -20,7 +20,7 @@
 #define SVF_DEADMONSTER			0x00000002	// Treat as CONTENTS_DEADMONSTER for collision.
 #define SVF_MONSTER				0x00000004	// Treat as CONTENTS_MONSTER for collision.
 //#define SVF_INUSE				0x00000008	// Used to replace the inuse field. //mxd. Unused
-#define SVF_ALWAYS_SEND			0x00000010	// Always send the ent to all the clients, regardless of of PVS or view culling.
+#define SVF_ALWAYS_SEND			0x00000010	// Always send the ent to all the clients, regardless of PVS or view culling.
 #define SVF_NO_AUTOTARGET		0x00000020	// This entity will not be chosen by FindNearestVisibleActorInFrustum.
 #define SVF_REFLECT				0x00000040	// Reflect shots. //TODO: checked in EntReflecting(), but never set?
 #define SVF_TAKE_NO_IMPACT_DMG	0x00000080	// Don't apply impact damage to this entity.
