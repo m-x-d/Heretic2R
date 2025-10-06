@@ -409,6 +409,8 @@ edict_t* G_Spawn(void)
 // Marks the edict as free.
 void G_FreeEdict(edict_t* self)
 {
+	assert(self->PersistantCFX == 0); //mxd
+
 	gi.unlinkentity(self); // Unlink from world.
 
 	if (self - g_edicts <= MAXCLIENTS + BODY_QUEUE_SIZE)
