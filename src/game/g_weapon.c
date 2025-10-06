@@ -624,24 +624,8 @@ void WeaponThink_Blast(edict_t* caster, char* format, ...)
 	if (trace.fraction < 1.0f)
 		VectorCopy(trace.endpos, start_pos);
 
-	//mxd. Replicate II_WEAPON_MAGICMISSILE case from Get_Crosshair()...
-	vec3_t end;
-	const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 18.0f };
-	VectorMA(view_pos, BLAST_DISTANCE, forward, end);
-
-	//mxd. Adjust aim angles to match crosshair logic...
-	gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_SHOT, &trace);
-
-	vec3_t dir;
-	VectorSubtract(trace.endpos, start_pos, dir);
-	VectorNormalize(dir);
-
-	vec3_t aim_angles;
-	vectoangles(dir, aim_angles);
-	aim_angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
-
 	// This weapon does not auto-target.
-	SpellCastBlast(caster, start_pos, aim_angles);
+	SpellCastBlast(caster, start_pos, caster->client->aimangles);
 
 	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
