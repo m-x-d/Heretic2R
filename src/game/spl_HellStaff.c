@@ -118,8 +118,8 @@ edict_t* HellboltReflect(edict_t* self, edict_t* other, const vec3_t vel)
 	return hellbolt;
 }
 
-//mxd. Added to reduce code duplication.
-static void HellboltTryApplyDamage(edict_t* caster, const vec3_t start_pos, vec3_t aim_angles, const vec3_t forward, const trace_t* trace)
+//mxd. Added to reduce code duplication. Modifies 'aim_angles' when reflected!
+static void HellLaserDamage(edict_t* caster, const vec3_t start_pos, vec3_t aim_angles, const vec3_t forward, const trace_t* trace)
 {
 	// Did we hit something that reflects?
 	if (EntReflecting(trace->ent, true, true))
@@ -140,8 +140,7 @@ static void HellboltTryApplyDamage(edict_t* caster, const vec3_t start_pos, vec3
 	else
 	{
 		const int damage = irand(HELLLASER_DAMAGE_MIN, HELLLASER_DAMAGE_MAX); //mxd
-		T_Damage(trace->ent, caster, caster, forward, trace->endpos, forward,
-			damage, 0, DAMAGE_SPELL, MOD_P_HELLSTAFF);
+		T_Damage(trace->ent, caster, caster, forward, trace->endpos, forward, damage, 0, DAMAGE_SPELL, MOD_P_HELLSTAFF);
 
 		gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER_BURN, CEF_FLAG6, trace->endpos, "t", forward);
 	}
@@ -170,111 +169,100 @@ static void PlayHellstaffFiringSound(edict_t* caster, const char* snd_name)
 }
 
 // Powered up version of this weapon - a laser.
-static void FireHellLaser(edict_t* caster, const vec3_t loc, vec3_t aim_angles) //mxd. Split from SpellCastHellstaff().
+static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles) //mxd. Split from SpellCastHellstaff().
 {
 #define HELLSTAFF_LASER_MAX_TARGETS		8
 
-	const vec3_t min = { -4.0f, -4.0f, -4.0f };
-	const vec3_t max = {  4.0f,  4.0f,  4.0f };
+	const vec3_t mins = { -4.0f, -4.0f, -4.0f };
+	const vec3_t maxs = {  4.0f,  4.0f,  4.0f };
 
-	// We must trace from the player's centerpoint to the casting location to assure we don't hit anything before the laser starts.
-	const edict_t* trace_buddy = caster;
+	//mxd. Setup aiming direction...
+	vec3_t end;
 
-	vec3_t start_pos;
-	VectorCopy(loc, start_pos);
+	//mxd. Replicate II_WEAPON_HELLSTAFF case from Get_Crosshair()...
+	const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 14.0f };
 
-	trace_t trace;
-	gi.trace(caster->s.origin, min, max, start_pos, caster, MASK_SHOT, &trace);
-
-	if (level.fighting_beast)
+	if (caster->enemy != NULL) //mxd. Auto-target current enemy?
 	{
-		edict_t* ent = TBeastCheckHit(caster->s.origin, trace.endpos);
+		VectorAverage(caster->enemy->mins, caster->enemy->maxs, end); // Get center of model.
+		Vec3AddAssign(caster->enemy->s.origin, end);
+	}
+	else
+	{
+		// Check ahead first to see if it's going to hit anything at this angle.
+		vec3_t fwd;
+		AngleVectors(aim_angles, fwd, NULL, NULL);
 
-		if (ent != NULL)
-			trace.ent = ent;
+		VectorScale(fwd, HELLLASER_DIST, end);
+		Vec3AddAssign(view_pos, end);
 	}
 
-	if (trace.fraction > 0.99f || !(trace.contents & MASK_SOLID))
+	//mxd. Aim beam at world hit location. Can't stop at monsters, because beam won't be stopped by them...
+	trace_t tr;
+	gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_SOLID, &tr); //TODO: damage trace will be also stopped by non-damageable entities.
+
+	vec3_t dir;
+	VectorSubtract(tr.endpos, start_pos, dir);
+	VectorNormalize(dir);
+
+	vec3_t cur_aim_angles; //mxd. Don't modify aim_angles.
+	vectoangles(dir, cur_aim_angles);
+	cur_aim_angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
+
+	vec3_t cur_start_pos;
+	VectorCopy(start_pos, cur_start_pos);
+
+	// Do the damage...
+	trace_t trace;
+	vec3_t forward;
+	float laser_dist = HELLLASER_DIST;
+	const edict_t* ignore_ent = caster;
+
+	for (int i = 0; i < HELLSTAFF_LASER_MAX_TARGETS && laser_dist > 0.0f; i++)
 	{
-		// It's okay to continue with the shot. If not, we should skip right to the impact.
-		// Now then, if we hit something on the way to the start location, damage him NOW!
-		if (trace.ent != NULL && trace.ent->takedamage != DAMAGE_NO)
+		AngleVectors(cur_aim_angles, forward, NULL, NULL);
+
+		vec3_t end_pos;
+		VectorMA(cur_start_pos, laser_dist, forward, end_pos);
+
+		gi.trace(cur_start_pos, mins, maxs, end_pos, ignore_ent, MASK_SHOT, &trace);
+
+		if (level.fighting_beast)
 		{
-			vec3_t forward;
-			AngleVectors(aim_angles, forward, NULL, NULL); //BUGFIX: mxd. Uninitialized in original version.
+			edict_t* ent = TBeastCheckHit(caster->s.origin, trace.endpos);
 
-			HellboltTryApplyDamage(caster, start_pos, aim_angles, forward, &trace); //mxd
+			if (ent != NULL)
+				trace.ent = ent;
+		}
 
-			trace_buddy = trace.ent;
-		} // Don't trace again since there really should only be one thing between the player and start_pos.
+		// If we hit anything that won't take damage, kill the beam.
+		if (trace.ent == NULL || trace.ent->takedamage == DAMAGE_NO || trace.fraction == 1.0f || (trace.contents & MASK_SOLID))
+			break;
 
-		// Set up for main laser damaging loop.
-		float laser_dist = HELLLASER_DIST;
-		int num_hit = 0; // Can hit no more than 8 guys...
+		if (trace.ent != caster)
+			HellLaserDamage(caster, cur_start_pos, cur_aim_angles, forward, &trace); //mxd. Modifies 'cur_aim_angles' when reflected!
 
-		do
-		{
-			vec3_t forward;
-			AngleVectors(aim_angles, forward, NULL, NULL);
+		vec3_t diff;
+		VectorSubtract(trace.endpos, cur_start_pos, diff);
+		laser_dist -= VectorLength(diff);
 
-			vec3_t end_pos;
-			VectorMA(start_pos, laser_dist, forward, end_pos);
-
-			gi.trace(start_pos, min, max, end_pos, trace_buddy, MASK_SHOT, &trace);
-
-			if (level.fighting_beast)
-			{
-				edict_t* ent = TBeastCheckHit(caster->s.origin, trace.endpos);
-
-				if (ent != NULL)
-					trace.ent = ent;
-			}
-
-			if (trace.fraction < 0.99f)
-			{
-				// If we hit anything that won't take damage, kill the beam.
-				if (trace.ent->takedamage == DAMAGE_NO)
-					break;
-
-				// This is possible if the trace_buddy is not the caster because a new one was on the way to start_pos.
-				if (trace.ent != caster)
-					HellboltTryApplyDamage(caster, start_pos, aim_angles, forward, &trace); //mxd
-
-				// This seems to alleviate the problem of a trace hitting the same ent multiple times...
-				vec3_t vect;
-				VectorSubtract(trace.endpos, start_pos, vect);
-				laser_dist -= VectorLength(vect);
-
-				VectorCopy(trace.endpos, start_pos);
-				VectorSubtract(end_pos, start_pos, vect);
-
-				if (VectorLength(vect) > 16.0f)
-					VectorMA(start_pos, 16.0f, forward, start_pos);
-
-				trace_buddy = trace.ent;
-				num_hit++;
-			}
-
-		} while (trace.fraction < 0.99f && !(trace.contents & MASK_SOLID) && num_hit < HELLSTAFF_LASER_MAX_TARGETS);
+		VectorCopy(trace.endpos, cur_start_pos);
+		ignore_ent = trace.ent;
 	}
 
 	PlayHellstaffFiringSound(caster, "weapons/HellLaserFire.wav"); //mxd
 
 	vec3_t diff;
-	VectorSubtract(trace.endpos, start_pos, diff);
+	VectorSubtract(trace.endpos, cur_start_pos, diff);
 	const byte b_len = (byte)(VectorLength(diff) / 8.0f);
 
-	vec3_t forward;
-	AngleVectors(aim_angles, forward, NULL, NULL); //BUGFIX: mxd. Potentially uninitialized in original version.
-
 	// Decide if we need a scorch mark or not.
-	vec3_t plane_dir;
-	int fx_flags = CEF_FLAG6; //mxd
-
-	if (IsDecalApplicable(trace.ent, caster->s.origin, trace.surface, &trace.plane, plane_dir))
+	int fx_flags = CEF_FLAG6; // Create HellLaserBurn fx --mxd.
+	if (IsDecalApplicable(trace.ent, caster->s.origin, trace.surface, &trace.plane, NULL))
 		fx_flags |= CEF_FLAG7;
 
-	gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, fx_flags, start_pos, "tb", forward, b_len);
+	// Draw last (when reflected) or the only segment of the line.
+	gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, fx_flags, cur_start_pos, "tb", forward, b_len);
 }
 
 // Unpowered version of this weapon - hellbolts.
@@ -335,12 +323,12 @@ static void FireHellbolt(edict_t* caster, const vec3_t start_pos, const vec3_t a
 	gi.CreateEffect(&hellbolt->s, FX_WEAPON_HELLBOLT, CEF_OWNERS_ORIGIN, NULL, "t", hellbolt->velocity);
 }
 
-void SpellCastHellstaff(edict_t* caster, const vec3_t start_pos, vec3_t aim_angles)
+void SpellCastHellstaff(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
 	assert(caster->client != NULL);
 
 	if (caster->client->playerinfo.powerup_timer > level.time)
-		FireHellLaser(caster, start_pos, aim_angles); //TODO: FireHellLaser() CAN modify aim_angles. Is that intentional?
+		FireHellLaser(caster, start_pos, aim_angles);
 	else
 		FireHellbolt(caster, start_pos, aim_angles);
 }
