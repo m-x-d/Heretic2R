@@ -213,6 +213,9 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 	vec3_t cur_start_pos;
 	VectorCopy(start_pos, cur_start_pos);
 
+	//mxd. Don't forget to annoy monsters.
+	AlertMonstersAt(tr.endpos, caster, 1.0f, 0);
+
 	// Do the damage...
 	trace_t trace;
 	vec3_t forward;
