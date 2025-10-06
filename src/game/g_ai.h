@@ -9,6 +9,7 @@
 #include "q_Typedef.h"
 
 extern void AlertMonsters(const edict_t* self, edict_t* enemy, float lifetime, qboolean ignore_shadows);
+extern void AlertMonstersAt(const vec3_t alert_origin, edict_t* enemy, float lifetime, int alert_svflags); //mxd
 extern void AI_SetSightClient(void);
 extern void AI_FoundTarget(edict_t* self, qboolean set_sight_ent);
 extern qboolean M_CheckAttack(edict_t* self);

@@ -1207,26 +1207,13 @@ static alertent_t* GetFirstEmptyAlertInList(void)
 	return NULL;
 }
 
-// Allots an alertent monsters will check during FindTarget to see if they should be alerted by it.
-// self				- Used for sv_flags info and positioning of the alert entity.
-// enemy			- Entity to make the monsters mad at if they're alerted.
-// lifetime			- How many seconds the alert exists for.
-// ignore_shadows	- This alert gives away enemy's position, even if he is in shadows
-//					  (I use this for staff hits on the floor and any other effect the player makes at his own location
-//					  (like shooting a weapon), not for projectiles impacting).
-void AlertMonsters(const edict_t* self, edict_t* enemy, float lifetime, const qboolean ignore_shadows)
+static alertent_t* GetEmptyAlert(void) //mxd. Added to reduce code duplication.
 {
-	if (DEATHMATCH) // Don't need this if no monsters...
-		return;
-
-	if (lifetime == 0.0f)
-		lifetime = 1.0f; // Stick around for 1 second.
-
 	alertent_t* alerter = level.alert_entity;
 	alertent_t* last_alert = NULL;
 
 	// Stick into the level's alerter chain.
-	if (alerter)
+	if (alerter != NULL)
 	{
 		// Go down the list and find an empty slot.	//FIXME: just store the entnum?
 		while (alerter->next_alert != NULL)
@@ -1246,7 +1233,7 @@ void AlertMonsters(const edict_t* self, edict_t* enemy, float lifetime, const qb
 	}
 
 	if (alerter == NULL)
-		return; // Out of alerts and can't find any empty slots.
+		return NULL; // Out of alerts and can't find any empty slots.
 
 	alerter->inuse = true; // I'm active, don't let my slot be used until I'm freed.
 	alerter->prev_alert = last_alert; // Point to the previous alerter, if any.
@@ -1255,18 +1242,66 @@ void AlertMonsters(const edict_t* self, edict_t* enemy, float lifetime, const qb
 	if (alerter->prev_alert != NULL)
 		alerter->prev_alert->next_alert = alerter;
 
-	VectorCopy(self->s.origin, alerter->origin); // Put me in the "self"'s spot.
-	alerter->enemy = enemy;
-	alerter->alert_svflags = self->svflags;
-
-	// Whatever happened would give away enemy's position, even in shadows.
-	if (ignore_shadows)
-		alerter->alert_svflags |= SVF_ALERT_NO_SHADE;
-
-	// Stick around until after this point in time.
-	alerter->lifetime = level.time + lifetime;
-
 	level.num_alert_ents++;
+
+	return alerter;
+}
+
+// Allots an alertent monsters will check during FindTarget to see if they should be alerted by it.
+// self				- Used for sv_flags info and positioning of the alert entity.
+// enemy			- Entity to make the monsters mad at if they're alerted.
+// lifetime			- How many seconds the alert exists for.
+// ignore_shadows	- This alert gives away enemy's position, even if he is in shadows
+//					  (I use this for staff hits on the floor and any other effect the player makes at his own location
+//					  (like shooting a weapon), not for projectiles impacting).
+void AlertMonsters(const edict_t* self, edict_t* enemy, float lifetime, const qboolean ignore_shadows)
+{
+	if (DEATHMATCH) // Don't need this if no monsters...
+		return;
+
+	alertent_t* alerter = GetEmptyAlert(); //mxd
+
+	if (alerter != NULL)
+	{
+		VectorCopy(self->s.origin, alerter->origin); // Put me in the "self"'s spot.
+		alerter->enemy = enemy;
+		alerter->alert_svflags = self->svflags;
+
+		// Whatever happened would give away enemy's position, even in shadows.
+		if (ignore_shadows)
+			alerter->alert_svflags |= SVF_ALERT_NO_SHADE;
+
+		// Stick around until after this point in time.
+		if (lifetime == 0.0f)
+			lifetime = 1.0f; // Stick around for at least 1 second.
+
+		alerter->lifetime = level.time + lifetime;
+	}
+}
+
+//mxd. AlertMonsters() variant for hitscan weapons...
+// Only relevant SVFlags are:
+//	- SVF_MONSTER (alert is created by monster);
+//	- SVF_ALERT_NO_SHADE (give away enemy's position, even in shadows).
+void AlertMonstersAt(const vec3_t alert_origin, edict_t* enemy, float lifetime, const int alert_svflags)
+{
+	if (DEATHMATCH) // Don't need this if no monsters...
+		return;
+
+	alertent_t* alerter = GetEmptyAlert(); //mxd
+
+	if (alerter != NULL)
+	{
+		VectorCopy(alert_origin, alerter->origin);
+		alerter->enemy = enemy;
+		alerter->alert_svflags = alert_svflags;
+
+		// Stick around until after this point in time.
+		if (lifetime == 0.0f)
+			lifetime = 1.0f; // Stick around for at least 1 second.
+
+		alerter->lifetime = level.time + lifetime;
+	}
 }
 
 void ai_spin(edict_t* self, const float amount)
