@@ -273,10 +273,6 @@ static void FireHellbolt(edict_t* caster, const vec3_t start_pos, const vec3_t a
 	hellbolt->reflect_debounce_time = MAX_REFLECT;
 	VectorCopy(start_pos, hellbolt->s.origin);
 
-	// Check ahead first to see if it's going to hit anything at this angle.
-	vec3_t forward;
-	AngleVectors(aim_angles, forward, NULL, NULL);
-
 	if (caster->enemy != NULL) // Auto-target current enemy?
 	{
 		// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
@@ -284,6 +280,10 @@ static void FireHellbolt(edict_t* caster, const vec3_t start_pos, const vec3_t a
 	}
 	else
 	{
+		// Check ahead first to see if it's going to hit anything at this angle.
+		vec3_t forward;
+		AngleVectors(aim_angles, forward, NULL, NULL);
+
 		//mxd. Replicate II_WEAPON_HELLSTAFF case from Get_Crosshair()...
 		vec3_t end;
 		const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 14.0f };
