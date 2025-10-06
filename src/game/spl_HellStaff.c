@@ -289,11 +289,7 @@ static void FireHellbolt(edict_t* caster, const vec3_t start_pos, const vec3_t a
 	vec3_t forward;
 	AngleVectors(aim_angles, forward, NULL, NULL);
 
-	if (caster->client->playerinfo.flags & PLAYER_FLAG_NO_LARM)
-	{
-		VectorScale(forward, HELLBOLT_SPEED, hellbolt->velocity);
-	}
-	else if (caster->enemy != NULL) // Auto-target current enemy?
+	if (caster->enemy != NULL) // Auto-target current enemy?
 	{
 		// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
 		GetAimVelocity(caster->enemy, hellbolt->s.origin, HELLBOLT_SPEED, aim_angles, hellbolt->velocity);
