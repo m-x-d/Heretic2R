@@ -605,17 +605,17 @@ void WeaponThink_Blast(edict_t* caster, char* format, ...)
 	assert(caster->client != NULL);
 
 	// Find the firing position first.
-	vec3_t fwd;
+	vec3_t forward;
 	vec3_t right;
-	AngleVectors(caster->client->aimangles, fwd, right, NULL);
+	AngleVectors(caster->client->aimangles, forward, right, NULL);
 
 	vec3_t start_pos;
-	VectorMA(caster->s.origin, 10.0f, fwd, start_pos);
+	VectorMA(caster->s.origin, 10.0f, forward, start_pos);
 	VectorMA(start_pos, -4.0f, right, start_pos);
 	start_pos[2] += (float)caster->viewheight;
 
 	// Trace from the player's origin to the casting location to assure not spawning in a wall.
-	trace_t	trace;
+	trace_t trace;
 	gi.trace(caster->s.origin, mins, maxs, start_pos, caster, MASK_SHOT, &trace);
 
 	if (trace.startsolid || trace.allsolid)
@@ -624,8 +624,24 @@ void WeaponThink_Blast(edict_t* caster, char* format, ...)
 	if (trace.fraction < 1.0f)
 		VectorCopy(trace.endpos, start_pos);
 
+	//mxd. Replicate II_WEAPON_MAGICMISSILE case from Get_Crosshair()...
+	vec3_t end;
+	const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 18.0f };
+	VectorMA(view_pos, BLAST_DISTANCE, forward, end);
+
+	//mxd. Adjust aim angles to match crosshair logic...
+	gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_SHOT, &trace);
+
+	vec3_t dir;
+	VectorSubtract(trace.endpos, start_pos, dir);
+	VectorNormalize(dir);
+
+	vec3_t aim_angles;
+	vectoangles(dir, aim_angles);
+	aim_angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
+
 	// This weapon does not auto-target.
-	SpellCastBlast(caster, start_pos, caster->client->aimangles);
+	SpellCastBlast(caster, start_pos, aim_angles);
 
 	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
