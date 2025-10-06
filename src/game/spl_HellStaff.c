@@ -57,7 +57,7 @@ static void HellboltTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfa
 	if (IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
 		fx_flags = CEF_FLAG6;
 
-	gi.CreateEffect(&self->s, FX_WEAPON_HELLBOLTEXPLODE, CEF_OWNERS_ORIGIN | fx_flags, NULL, "d", self->movedir);
+	gi.CreateEffect(NULL, FX_WEAPON_HELLBOLTEXPLODE, fx_flags, self->s.origin, "d", self->movedir); //mxd. Created with CEF_OWNERS_ORIGIN flag in original logic (won't work after G_SetToFree() -> G_FreeEdict() change).
 	G_FreeEdict(self); //mxd. G_SetToFree() in original logic. Fixes client effect/dynamic light staying active for 100 ms. after this.
 }
 
