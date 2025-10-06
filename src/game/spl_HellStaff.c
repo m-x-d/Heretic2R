@@ -132,7 +132,8 @@ static void HellLaserDamage(edict_t* caster, const vec3_t start_pos, vec3_t aim_
 		VectorSubtract(trace->endpos, start_pos, vect);
 		const byte b_len = (byte)(VectorLength(vect) / 8.0f);
 
-		gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, 0, start_pos, "tb", forward, b_len);
+		if (b_len > 0) //mxd. Avoid 0-length effects...
+			gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, 0, start_pos, "tb", forward, b_len);
 
 		// Re-constitute aimangle.
 		aim_angles[1] += flrand(160.0f, 200.0f);
@@ -177,6 +178,28 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 	const vec3_t mins = { -4.0f, -4.0f, -4.0f };
 	const vec3_t maxs = {  4.0f,  4.0f,  4.0f };
 
+	PlayHellstaffFiringSound(caster, "weapons/HellLaserFire.wav"); //mxd
+
+	// We must trace from the player's centerpoint to the casting location to assure we don't hit anything before the laser starts.
+	trace_t back_trace;
+	gi.trace(caster->s.origin, vec3_origin, vec3_origin, start_pos, caster, MASK_PLAYERSOLID, &back_trace);
+
+	if (back_trace.startsolid || back_trace.fraction < 1.0f)
+	{
+		if (back_trace.ent != NULL && back_trace.ent->takedamage != DAMAGE_NO)
+		{
+			vec3_t fwd;
+			AngleVectors(aim_angles, fwd, NULL, NULL);
+
+			vec3_t angles;
+			VectorCopy(aim_angles, angles);
+
+			HellLaserDamage(caster, back_trace.endpos, angles, fwd, &back_trace);
+		}
+
+		return;
+	}
+
 	//mxd. Setup aiming direction...
 	vec3_t end;
 
@@ -210,6 +233,13 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 	vectoangles(dir, cur_aim_angles);
 	cur_aim_angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
 
+	vec3_t forward;
+	AngleVectors(aim_angles, forward, NULL, NULL);
+
+	//mxd. Gradually fall back to initial aim_angles when adjusted aiming direction differs from desired (happens when start_pos and crosshair position are very close to the wall)...
+	const float dot = Clamp(DotProduct(dir, forward), 0.0f, 1.0f);
+	LerpAngles(aim_angles, dot, cur_aim_angles, cur_aim_angles);
+
 	vec3_t cur_start_pos;
 	VectorCopy(start_pos, cur_start_pos);
 
@@ -218,7 +248,6 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 
 	// Do the damage...
 	trace_t trace;
-	vec3_t forward;
 	float laser_dist = HELLLASER_DIST;
 	const edict_t* ignore_ent = caster;
 
@@ -254,19 +283,20 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 		ignore_ent = trace.ent;
 	}
 
-	PlayHellstaffFiringSound(caster, "weapons/HellLaserFire.wav"); //mxd
-
 	vec3_t diff;
 	VectorSubtract(trace.endpos, cur_start_pos, diff);
 	const byte b_len = (byte)(VectorLength(diff) / 8.0f);
 
-	// Decide if we need a scorch mark or not.
-	int fx_flags = CEF_FLAG6; // Create HellLaserBurn fx --mxd.
-	if (IsDecalApplicable(trace.ent, caster->s.origin, trace.surface, &trace.plane, NULL))
-		fx_flags |= CEF_FLAG7;
+	if (b_len > 0) //mxd. Avoid assert in GetTruePlane()...
+	{
+		// Decide if we need a scorch mark or not.
+		int fx_flags = CEF_FLAG6; // Create HellLaserBurn fx --mxd.
+		if (IsDecalApplicable(trace.ent, caster->s.origin, trace.surface, &trace.plane, NULL))
+			fx_flags |= CEF_FLAG7;
 
-	// Draw last (when reflected) or the only segment of the line.
-	gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, fx_flags, cur_start_pos, "tb", forward, b_len);
+		// Draw last (when reflected) or the only segment of the line.
+		gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, fx_flags, cur_start_pos, "tb", forward, b_len);
+	}
 }
 
 // Unpowered version of this weapon - hellbolts.
@@ -314,7 +344,7 @@ static void FireHellbolt(edict_t* caster, const vec3_t start_pos, const vec3_t a
 	trace_t back_trace;
 	gi.trace(caster->s.origin, vec3_origin, vec3_origin, hellbolt->s.origin, caster, MASK_PLAYERSOLID, &back_trace); //H2_BUGFIX: mxd. Both 'start' and 'end' use hellbolt->s.origin in original logic.
 
-	if (back_trace.startsolid)
+	if (back_trace.startsolid || back_trace.fraction < 1.0f)
 	{
 		VectorCopy(back_trace.endpos, hellbolt->s.origin); //mxd
 		HellboltTouch(hellbolt, back_trace.ent, &back_trace.plane, back_trace.surface);
