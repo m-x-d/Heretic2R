@@ -119,8 +119,6 @@ edict_t* MagicMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 	AnglesFromDir(missile->movedir, missile->s.angles);
 	missile->owner = other;
 	missile->think = MagicMissileThink;
-	missile->health = self->health;
-	missile->enemy = self->owner;
 	missile->flags |= (self->flags & FL_NO_KNOCKBACK);
 	missile->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
 	missile->reflected_time = self->reflected_time;
