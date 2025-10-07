@@ -476,8 +476,6 @@ void WeaponThink_Maceballs(edict_t* caster, char* format, ...)
 
 void WeaponThink_MagicMissileSpread(edict_t* caster, char* format, ...)
 {
-#define MISSILE_YAW			7.0f
-#define MISSILE_PITCH		2.0f
 #define MISSILE_SEPARATION	4.0f
 
 	vec3_t default_start_pos = { 8.0f, 0.0f, 5.0f };
@@ -485,34 +483,24 @@ void WeaponThink_MagicMissileSpread(edict_t* caster, char* format, ...)
 	// Get number of missiles to fire off and get the separation between missiles.
 	va_list marker;
 	va_start(marker, format);
-	const float missile_pos = (float)va_arg(marker, int);
+	const int missile_pos = va_arg(marker, int);
 	va_end(marker);
 
-	// Set up the Magic-missile's starting position and aiming angles then cast the spell.
-
 	// Push the start position forward for earlier shots.
-	default_start_pos[0] -= MISSILE_SEPARATION * missile_pos;
-	default_start_pos[1] += MISSILE_SEPARATION * missile_pos;
+	default_start_pos[0] -= MISSILE_SEPARATION * (float)missile_pos;
+	default_start_pos[1] += MISSILE_SEPARATION * (float)missile_pos;
 
 	vec3_t start_pos;
 	Weapon_CalcStartPos(origin_to_lower_joint, origin_to_upper_joint, default_start_pos, start_pos, caster);
 	start_pos[2] += (float)caster->viewheight - 14.0f;
 
-	vec3_t fire_angles;
-	VectorCopy(caster->client->aimangles, fire_angles);
-	fire_angles[YAW] += missile_pos * MISSILE_YAW;
-	fire_angles[PITCH] += missile_pos * MISSILE_PITCH;
+	SpellCastMagicMissile(caster, start_pos, caster->client->aimangles, missile_pos);
 
-	vec3_t fwd;
-	AngleVectors(fire_angles, fwd, NULL, NULL);
-	SpellCastMagicMissile(caster, start_pos, fire_angles, fwd);
-
-	if (missile_pos == -1.0f)
-		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/MagicMissileSpreadFire.wav"), 1.0f, ATTN_NORM, 0.0f);
-
-	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+	{
+		playerinfo_t* info = &caster->client->playerinfo; //mxd
 		info->pers.inventory.Items[info->weap_ammo_index]--; //TODO: why doesn't this use info->pers.weapon->quantity?
+	}
 }
 
 void WeaponThink_SphereOfAnnihilation(edict_t* caster, char* format, ...)

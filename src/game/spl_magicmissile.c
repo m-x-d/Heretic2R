@@ -139,26 +139,59 @@ edict_t* MagicMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return missile;
 }
 
-void SpellCastMagicMissile(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const vec3_t aim_dir)
+void SpellCastMagicMissile(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const int missile_id)
 {
+#define MISSILE_YAW			7.0f
+#define MISSILE_PITCH		2.0f
+
 	// Spawn the magic-missile.
 	edict_t* missile = G_Spawn();
-
-	VectorNormalize2(aim_dir, missile->movedir);
-	VectorAdd(start_pos, aim_dir, missile->s.origin);
-
 	CreateMagicMissile(missile);
-	missile->owner = caster;
 	missile->reflect_debounce_time = MAX_REFLECT;
+	missile->owner = caster;
+
+	vec3_t angles;
+	VectorCopy(aim_angles, angles);
+
+	//mxd. Replicate II_WEAPON_MAGICMISSILE case from Get_Crosshair()...
+	vec3_t forward;
+	AngleVectors(angles, forward, NULL, NULL);
+
+	vec3_t end;
+	const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 18.0f };
+	VectorMA(view_pos, MAGICMISSILE_SPEED, forward, end);
+
+	//mxd. Adjust aim angles to match crosshair logic...
+	trace_t tr;
+	gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_SHOT, &tr);
+
+	vec3_t dir;
+	VectorSubtract(tr.endpos, start_pos, dir);
+	VectorNormalize(dir);
+
+	vectoangles(dir, angles);
+	angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
+	angles[YAW] += (float)missile_id * MISSILE_YAW;
+	angles[PITCH] += (float)missile_id * MISSILE_PITCH;
+
+	vec3_t aim_dir;
+	AngleVectors(angles, aim_dir, NULL, NULL);
+
+	VectorCopy(aim_dir, missile->movedir);
+	VectorAdd(start_pos, aim_dir, missile->s.origin);
 
 	G_LinkMissile(missile);
 
-	trace_t trace;
-	gi.trace(caster->s.origin, missile->mins, missile->maxs, missile->s.origin, caster, MASK_PLAYERSOLID, &trace);
+	if (missile_id == -1)
+		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/MagicMissileSpreadFire.wav"), 1.0f, ATTN_NORM, 0.0f);
 
-	if (trace.startsolid)
+	// Make sure we don't start in a solid.
+	trace_t back_trace;
+	gi.trace(caster->s.origin, missile->mins, missile->maxs, missile->s.origin, caster, MASK_PLAYERSOLID, &back_trace);
+
+	if (back_trace.startsolid || back_trace.fraction < 1.0f) //mxd. +back_trace.fraction check.
 	{
-		MagicMissileTouch(missile, trace.ent, &trace.plane, trace.surface);
+		MagicMissileTouch(missile, back_trace.ent, &back_trace.plane, back_trace.surface);
 		return;
 	}
 
@@ -166,28 +199,26 @@ void SpellCastMagicMissile(edict_t* caster, const vec3_t start_pos, const vec3_t
 	// a) Lies in a 30 degree degree horizontal, 180 degree vertical cone from my facing.
 	// b) Lies within 0 to 1000 meters of myself.
 	// c) Is visible (i.e. LOS exists from the missile to myself).
-	missile->enemy = FindNearestVisibleActorInFrustum(missile, aim_angles, 0.0f, 1000.0f, ANGLE_30, ANGLE_180, false, missile->s.origin);
+	const edict_t* enemy = FindNearestVisibleActorInFrustum(missile, angles, 0.0f, 1000.0f, ANGLE_30, ANGLE_180, false, missile->s.origin);
 
-	if (missile->enemy != NULL)
+	if (enemy != NULL) // Auto-target current enemy?
 	{
 		vec3_t temp;
-		VectorCopy(missile->s.origin, temp);
-		VectorSubtract(missile->enemy->s.origin, temp, temp);
+		VectorSubtract(enemy->s.origin, missile->s.origin, temp);
 
 		for (int i = 0; i < 3; i++)
-			temp[i] += (missile->enemy->mins[i] + missile->enemy->maxs[i]) / 2.0f;
+			temp[i] += (enemy->mins[i] + enemy->maxs[i]) / 2.0f;
 
 		VectorNormalize(temp);
 		vectoangles(temp, missile->s.angles);
+		missile->s.angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
 
-		// The pitch is flipped in these?
-		missile->s.angles[PITCH] *= -1.0f;
 		VectorScale(temp, MAGICMISSILE_SPEED, missile->velocity);
 	}
 	else
 	{
+		VectorCopy(angles, missile->s.angles);
 		VectorScale(aim_dir, MAGICMISSILE_SPEED, missile->velocity);
-		VectorCopy(aim_angles, missile->s.angles);
 	}
 
 	const short s_yaw = ANGLE2SHORT(missile->s.angles[YAW]);
