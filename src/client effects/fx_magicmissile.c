@@ -134,7 +134,7 @@ void FXMagicMissile(centity_t* owner, const int type, const int flags, vec3_t or
 
 void FXMagicMissileExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	const paletteRGBA_t light_color = { .r = 0, .g = 128, .b = 128, .a = 255 };
+	const paletteRGBA_t light_color = { .r = 160, .g = 71, .b = 237, .a = 255 }; //mxd. {0, 128, 128, 255} in original logic. Changed to better match sprite. 
 
 	vec3_t dir;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_MAGICMISSILEEXPLODE].formatString, dir);
