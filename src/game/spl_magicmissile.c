@@ -15,8 +15,6 @@
 #include "Vector.h"
 #include "g_local.h"
 
-#define MISSILE_RADIUS	2.0f //mxd. ARROW_RADIUS in original version.
-
 static void MagicMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	if (surface != NULL && (surface->flags & SURF_SKY))
@@ -85,9 +83,11 @@ static void MagicMissileThink(edict_t* self)
 	self->think = NULL;
 }
 
-// Create guts of magic missile
+// Create guts of magic missile.
 static void CreateMagicMissile(edict_t* missile) //mxd. Named 'create_magic' in original version.
 {
+#define MISSILE_RADIUS	2.0f //mxd. ARROW_RADIUS in original version.
+
 	missile->s.effects = (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
 	missile->movetype = MOVETYPE_FLYMISSILE;
 	missile->classname = "Spell_MagicMissile";
