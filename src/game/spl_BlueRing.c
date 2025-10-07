@@ -99,9 +99,7 @@ static void RingThink(edict_t* self)
 	edict_t* ent = NULL;
 	while ((ent = FindRingRadius(ent, self->s.origin, RING_EFFECT_RADIUS * 0.25f * (float)(RING_THINKS - self->count), self)) != NULL)
 	{
-		qboolean hit = false;
-		edict_t* (*reflect)(edict_t*, edict_t*, vec3_t) = NULL;
-
+		// If ent has mass, push it away.
 		if (ent->mass > 0)
 		{
 			vec3_t vel;
@@ -125,7 +123,7 @@ static void RingThink(edict_t* self)
 			}
 
 			// Vel is just passing the direction of the knockback.
-			QPostMessage(ent, MSG_REPULSE, PRI_DIRECTIVE, "fff", vel[0], vel[1], vel[2] + 30.0f);
+			QPostMessage(ent, MSG_REPULSE, PRI_DIRECTIVE, "fff", vel[0], vel[1], vel[2] + 30.0f); //TODO: never handled!
 
 			if (ent->takedamage != DAMAGE_NO)
 			{
@@ -135,8 +133,15 @@ static void RingThink(edict_t* self)
 				const int knockback = ((ent->movetype != PHYSICSTYPE_NONE) ? (int)scale : 0); //mxd
 				T_Damage(ent, ent, self, vel, hit_loc, vec3_origin, 4, knockback, DAMAGE_RADIUS | DAMAGE_SPELL, MOD_ROR);
 			}
+
+			continue;
 		}
-		else if (strcmp(ent->classname, "Spell_RedRainArrow") == 0) //TODO: convert to defines? Or add/use ent->classID?
+
+		// If it's a projectile, reflect it.
+		qboolean hit = false;
+		edict_t* (*reflect)(edict_t*, edict_t*, vec3_t) = NULL;
+
+		if (strcmp(ent->classname, "Spell_RedRainArrow") == 0) //TODO: convert to defines? Or add/use ent->classID?
 		{
 			reflect = RedRainMissileReflect;
 		}
@@ -176,7 +181,7 @@ static void RingThink(edict_t* self)
 		{
 			reflect = GkrokonSpooReflect;
 		}
-		else if (strcmp(ent->classname, "imp fireball") == 0)
+		else if (strcmp(ent->classname, "imp fireball") == 0) //TODO: unused.
 		{
 			reflect = ImpFireballReflect;
 		}
@@ -198,6 +203,8 @@ static void RingThink(edict_t* self)
 
 			// Do a nasty looking blast at the impact point.
 			gi.CreateEffect(&ent->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", ent->velocity);
+
+			//TODO: actually reflect when projectile is not our own?..
 		}
 
 		if (reflect != NULL)
