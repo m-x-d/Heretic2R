@@ -68,14 +68,14 @@ static void MagicMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 	}
 
 	// Attempt to apply a scorchmark decal to the thing I hit.
-	int make_scorch = 0;
+	int fx_flags = 0;
 	if (IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
-		make_scorch = CEF_FLAG6;
+		fx_flags = CEF_FLAG6;
 
-	gi.CreateEffect(&self->s, FX_WEAPON_MAGICMISSILEEXPLODE, make_scorch | CEF_OWNERS_ORIGIN, self->s.origin, "d", self->movedir);
 	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/MagicMissileHit.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
 
-	G_SetToFree(self);
+	gi.CreateEffect(NULL, FX_WEAPON_MAGICMISSILEEXPLODE, fx_flags, self->s.origin, "d", self->movedir); //mxd. Created with CEF_OWNERS_ORIGIN flag in original logic (won't work after G_SetToFree() -> G_FreeEdict() change).
+	G_FreeEdict(self); //mxd. G_SetToFree() in original logic. Fixes client effect/dynamic light staying active for 100 ms. after this.
 }
 
 static void MagicMissileThink(edict_t* self)
