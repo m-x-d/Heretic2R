@@ -189,7 +189,7 @@ static qboolean RedRainSplashThink(client_entity_t* splash, centity_t* owner)
 }
 
 // The drops need to update as they're added to the view, because velocity doesn't update the sprite line's start and endpoint.
-static qboolean RedRainDropUpdate(client_entity_t* drop, centity_t* owner)
+static qboolean RedRainDropAddToView(client_entity_t* drop, centity_t* owner) //mxd. Named 'FXRedRainDropUpdate' in original logic.
 {
 	// Make sure that the top of the drop doesn't go higher that the spawn height.
 	drop->r.startpos[2] = min(drop->SpawnData, drop->r.origin[2] + RAIN_HEIGHT);
@@ -199,7 +199,7 @@ static qboolean RedRainDropUpdate(client_entity_t* drop, centity_t* owner)
 }
 
 // This constantly starts new drops up at the top. It also spawns a splash, which is set to go off at the appropriate fall time.
-static qboolean RedRainThink(client_entity_t* rain, centity_t* owner)
+static qboolean RedRainDropSpawnerUpdate(client_entity_t* rain, centity_t* owner) //mxd. Named 'FXRedRainThink' in original logic.
 {
 	if (rain->nextEventTime <= fxi.cl->time)
 		return false; // In case we lose the packet that tells us to remove.
@@ -217,7 +217,7 @@ static qboolean RedRainThink(client_entity_t* rain, centity_t* owner)
 	{
 		vec3_t origin;
 		VectorSet(origin, flrand(-radius, radius), flrand(-radius, radius), rain->SpawnData + flrand(-8.0f, 8.0f));
-		VectorAdd(rain->origin, origin, origin);
+		Vec3AddAssign(rain->origin, origin);
 
 		trace_t trace;
 		const int duration = GetFallTime(origin, RAIN_INITIAL_VELOCITY, -PARTICLE_GRAVITY, DROP_RADIUS, 3.0f, &trace);
@@ -227,7 +227,7 @@ static qboolean RedRainThink(client_entity_t* rain, centity_t* owner)
 		drop->radius = RAIN_HEIGHT;
 		drop->r.model = &rain_models[3]; // redraindrop sprite.
 		drop->r.frame = rain->SpawnInfo;
-		drop->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		drop->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		drop->r.spriteType = SPRITE_LINE;
 		drop->r.scale = width;
 		drop->alpha = 0.75f;
@@ -239,7 +239,7 @@ static qboolean RedRainThink(client_entity_t* rain, centity_t* owner)
 
 		drop->SpawnInfo = rain->SpawnInfo;
 		drop->SpawnData = origin[2]; // This allows the drop to remember its top position, so the top doesn't go higher than it.
-		drop->AddToView = RedRainDropUpdate;
+		drop->AddToView = RedRainDropAddToView;
 
 		AddEffect(NULL, drop);
 
@@ -285,7 +285,7 @@ void FXRedRain(centity_t* owner, const int type, int flags, vec3_t origin)
 	spawner->SpawnData = -ceiling;
 	spawner->SpawnInfo = (powerup ? 1 : 0);
 
-	spawner->Update = RedRainThink;
+	spawner->Update = RedRainDropSpawnerUpdate;
 
 	AddEffect(owner, spawner);
 
