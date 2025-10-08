@@ -23,7 +23,7 @@ static void RedRainRemove(edict_t* self)
 	G_SetToFree(self);
 }
 
-static void RedRainLighning(edict_t* self) //mxd. Split from RedRainThink().
+static void RedRainLightning(edict_t* self) //mxd. Split from RedRainThink().
 {
 	// Powerup value comes from the health in the edict.
 	const qboolean is_powered = (self->health > 0);
@@ -171,7 +171,7 @@ static void RedRainThink(edict_t* self)
 	{
 		// Check for lightning.
 		if (self->delay - level.time < RED_RAIN_LIGHTNING_DURATION && irand(0, RED_RAIN_LIGHTNING_CHANCE) == 0)
-			RedRainLighning(self);
+			RedRainLightning(self);
 
 		self->nextthink = level.time + self->wait;
 	}
