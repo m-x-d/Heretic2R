@@ -266,18 +266,16 @@ static qboolean RedRainThink(client_entity_t* rain, centity_t* owner)
 // This is from creating the effect FX_RED_RAIN.
 void FXRedRain(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	vec3_t ceil_origin;
-	VectorCopy(origin, ceil_origin);
-
 	const qboolean powerup = (flags & CEF_FLAG6); //mxd
 	const float radius = (powerup ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS); //mxd
 
-	float ceiling;
-	GetSolidDist(origin, radius * 0.5f, MAX_REDRAINHEIGHT, &ceiling);
+	const float ceiling = GetSolidDist(origin, radius * 0.5f, MAX_REDRAINHEIGHT);
+
+	vec3_t ceil_origin;
+	VectorCopy(origin, ceil_origin);
 	ceil_origin[2] += ceiling;
 
-	float floor;
-	GetSolidDist(origin, 1.0f, -MAX_FALL_DISTANCE, &floor);
+	const float floor = GetSolidDist(origin, 1.0f, -MAX_FALL_DISTANCE);
 
 	const int duration = ((int)RED_RAIN_DURATION + 1) * 1000; //mxd
 	flags = (int)(flags | CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED) & ~CEF_OWNERS_ORIGIN;

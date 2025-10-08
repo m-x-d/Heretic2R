@@ -133,31 +133,34 @@ void BecomeStatic(client_entity_t* self)
 #pragma region ========================== Physics functions ==========================
 
 // Returns whether solid world is there.
-// Sets dist to distance to solid or maxdist if no solid.
-// If maxdist < 0 returns distance to floor.
-// If maxdist > 0 returns distance to ceiling.
-int GetSolidDist(const vec3_t origin, const float radius, const float maxdist, float* dist)
+// Sets dist to distance to solid or max_dist if no solid.
+// If max_dist < 0 returns distance to floor.
+// If max_dist > 0 returns distance to ceiling.
+float GetSolidDist(const vec3_t origin, const float radius, const float max_dist) //mxd. 'int' return type in original logic, distance was returned via 'float* dist' arg.
 {
-	vec3_t mins;
-	vec3_t maxs;
 	vec3_t end;
-	trace_t trace;
-
-	VectorSet(mins, -radius, -radius, -1.0f);
-	VectorSet(maxs, radius, radius, 1.0f);
 	VectorCopy(origin, end);
-	end[2] += maxdist;
+	end[2] += max_dist;
 
+	const vec3_t mins = { -radius, -radius, -radius }; //mxd. Original logic sets mins[2] to -1.0.
+	const vec3_t maxs = {  radius,  radius,  radius }; //mxd. Original logic sets maxs[2] to 1.0.
+
+	trace_t trace;
 	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CEF_CLIP_TO_WORLD, &trace);
 
-	if (trace.fraction == 1.0f)
+	//mxd. Initial bbox stuck in a floor (or ceiling). Let's try to recover...
+	if (trace.startsolid)
 	{
-		*dist = maxdist;
-		return false;
+		fxi.Trace(origin, vec3_origin, vec3_origin, end, MASK_DRIP, CEF_CLIP_TO_WORLD, &trace);
+
+		// No dice. Origin stuck in a floor (or ceiling) too...
+		if (trace.startsolid) //TODO: we could move some distance in direction opposite to 'dist' and retry. Not sure if needed, though.
+			return 0.0f;
+
+		return trace.endpos[2] - origin[2] - radius;
 	}
 
-	*dist = trace.endpos[2] - origin[2];
-	return true;
+	return ((trace.fraction == 1.0f) ? max_dist : trace.endpos[2] - origin[2]);
 }
 
 // Gets time for a client_entity_t to fall to the ground.

@@ -78,24 +78,19 @@ static qboolean BubblerParticleSpawner(client_entity_t* spawner, centity_t* owne
 
 void FXBubbler(centity_t* owner, const int type, int flags, vec3_t origin)
 {
+	const float up = GetSolidDist(origin, 1.0f, 1000.0f);
+
 	vec3_t dest;
-
-	float up;
-	GetSolidDist(origin, 1.0f, 1000, &up);
-
 	VectorCopy(origin, dest);
 	dest[2] += up;
 
-	float down;
-	GetSolidDist(dest, 1.0f, -1000, &down);
-
-	up += down;
-	const float time = GetTimeToReachDistance(0, 100, fabsf(up));
+	const float down = GetSolidDist(dest, 1.0f, -1000.0f);
+	const float time = GetTimeToReachDistance(0.0f, 100.0f, fabsf(up + down));
 
 	char bubbles_per_min;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_BUBBLER].formatString, &bubbles_per_min);
 
-	flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED | CEF_CHECK_OWNER;
+	flags |= (CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED | CEF_CHECK_OWNER);
 	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 1000);
 
 	self->radius = BUBBLE_RADIUS;
@@ -109,18 +104,14 @@ void FXBubbler(centity_t* owner, const int type, int flags, vec3_t origin)
 
 void FXBubble(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	float up;
-	GetSolidDist(origin, 1.0f, 1000, &up);
+	const float up = GetSolidDist(origin, 1.0f, 1000.0f);
 
 	vec3_t dest;
 	VectorCopy(origin, dest);
 	dest[2] += up;
 
-	float down;
-	GetSolidDist(dest, 1.0f, -1000, &down);
-
-	up += down;
-	const int time = (int)(GetTimeToReachDistance(0, BUBBLE_ACCELERATION, fabsf(up)));
+	const float down = GetSolidDist(dest, 1.0f, -1000.0f);
+	const int time = (int)(GetTimeToReachDistance(0.0f, BUBBLE_ACCELERATION, fabsf(up + down)));
 
 	client_entity_t* bubble = ClientEntity_new(FX_BUBBLE, flags, origin, NULL, time);
 
