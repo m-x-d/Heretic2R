@@ -161,7 +161,7 @@ void ReinstateNonCinematicEntities(void) // mxd. Named 'reinstate_non_cinematic_
 				info->powerup_timer += level.time - info->cinematic_starttime;
 				player->s.effects |= EF_POWERUP_ENABLED;
 				info->effects |= EF_POWERUP_ENABLED;
-				gi.CreateEffect(&player->s, FX_TOME_OF_POWER, CEF_OWNERS_ORIGIN, NULL, "");
+				gi.CreateEffect(&player->s, FX_TOME_OF_POWER, CEF_OWNERS_ORIGIN, NULL, ""); //TODO: since we now have fx_tome fade-in animation, we'll need to pass some sort of "resume effect" or "skip fade-in animation" effect arg here...
 			}
 
 			if (info->cin_shield_timer > info->cinematic_starttime)
