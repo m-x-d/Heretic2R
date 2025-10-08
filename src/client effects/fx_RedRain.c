@@ -195,7 +195,7 @@ static qboolean RedRainDropUpdate(client_entity_t* drop, centity_t* owner)
 	drop->r.startpos[2] = min(drop->SpawnData, drop->r.origin[2] + RAIN_HEIGHT);
 	drop->r.endpos[2] = drop->r.origin[2] - RAIN_HEIGHT;
 
-	return false;
+	return true; //mxd. Returns 'false' in original logic.
 }
 
 // This constantly starts new drops up at the top. It also spawns a splash, which is set to go off at the appropriate fall time.
