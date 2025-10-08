@@ -879,17 +879,17 @@ static void CM_ClipBoxToBrush(const vec3_t mins, const vec3_t maxs, const vec3_t
 		const float d1 = DotProduct(p1, plane->normal) - dist;
 		const float d2 = DotProduct(p2, plane->normal) - dist;
 
-		if (d2 > 0)
+		if (d2 > 0.0f)
 			getout = true; // Endpoint is not in solid.
 
-		if (d1 > 0)
+		if (d1 > 0.0f)
 			startout = true;
 
 		// If completely in front of face, no intersection.
-		if (d1 > 0 && d2 >= d1)
+		if (d1 > 0.0f && d2 >= d1)
 			return;
 
-		if (d1 <= 0 && d2 <= 0)
+		if (d1 <= 0.0f && d2 <= 0.0f)
 			continue;
 
 		// Crosses face.
@@ -922,7 +922,7 @@ static void CM_ClipBoxToBrush(const vec3_t mins, const vec3_t maxs, const vec3_t
 	}
 	else if (enterfrac < leavefrac && enterfrac > -1.0f && enterfrac < trace->fraction)
 	{
-		trace->fraction = max(0, enterfrac);
+		trace->fraction = max(0.0f, enterfrac);
 		trace->plane = *clipplane;
 		trace->surface = leadside->surface; // H2
 		trace->contents = brush->contents;
