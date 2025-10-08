@@ -47,43 +47,43 @@ void PreCacheRedrainSFX(void) //mxd
 }
 
 // Thinker for the explosion, just fades the light.
-static qboolean RedRainDLightThink(client_entity_t* dlight, centity_t* owner)
+static qboolean RedRainDLightUpdate(client_entity_t* dlight, centity_t* owner) //mxd. Named 'FXRedRainDLightThink' in original logic.
 {
 	dlight->dlight->intensity -= 10.0f;
 	return dlight->dlight->intensity > 0.0f;
 }
 
-static qboolean RedRainExplosionThink(client_entity_t* explosion, centity_t* owner)
+static qboolean RedRainCloudThink(client_entity_t* self, centity_t* owner) //mxd. Named 'RedRainExplosionThink' in original logic.
 {
 	// The explosion bit should be drawn to orbit the rain generation spot.
-	explosion->updateTime = 100;
-	explosion->LifeTime -= 100;
+	self->updateTime = 100;
+	self->LifeTime -= 100;
 
-	if (explosion->LifeTime > 1000)
+	if (self->LifeTime > 1000)
 	{
 		// Vary intensity.
-		explosion->alpha = 1.0f - explosion->r.scale * 0.1f;
+		self->alpha = 1.0f - self->r.scale * 0.1f;
 	}
-	else if (explosion->LifeTime == 1000)
+	else if (self->LifeTime == 1000)
 	{
 		// Fade them out.
-		explosion->d_alpha = -0.5f;
-		explosion->d_scale = -2.0f;
+		self->d_alpha = -0.5f;
+		self->d_scale = -2.0f;
 	}
-	else if (explosion->LifeTime < 0)
+	else if (self->LifeTime < 0)
 	{
 		return false;
 	}
 
-	explosion->r.angles[YAW] += 20.0f;
+	self->r.angles[YAW] += 20.0f;
 
-	const float radius = ((explosion->SpawnInfo == 1) ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS); //mxd
+	const float radius = ((self->SpawnInfo == 1) ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS); //mxd
 
 	vec3_t dir;
-	AngleVectors(explosion->r.angles, dir, NULL, NULL);
+	AngleVectors(self->r.angles, dir, NULL, NULL);
 
 	vec3_t target_pos;
-	VectorMA(explosion->direction, radius * 1.5f, dir, target_pos);
+	VectorMA(self->direction, radius * 1.5f, dir, target_pos);
 
 	vec3_t random_vect;
 	VectorRandomSet(random_vect, radius);
@@ -91,23 +91,23 @@ static qboolean RedRainExplosionThink(client_entity_t* explosion, centity_t* own
 
 	// This is the velocity it would need to reach the position in one second.
 	vec3_t diff_pos;
-	VectorSubtract(target_pos, explosion->r.origin, diff_pos);
+	VectorSubtract(target_pos, self->r.origin, diff_pos);
 
 	// Average this velocity with the current one.
-	VectorAdd(explosion->velocity, diff_pos, diff_pos);
-	VectorScale(diff_pos, 0.5f, explosion->velocity);
+	VectorAdd(self->velocity, diff_pos, diff_pos);
+	VectorScale(diff_pos, 0.5f, self->velocity);
 
 	return true;
 }
 
-// This is similar to the FXRedRainMissileExplode, except that the explosion needs knowledge of the rainfall height.
-static void RedRainExplosion(vec3_t impact_pos, vec3_t rain_pos, const int duration, const qboolean powerup, centity_t* owner)
+// This is similar to the FXRedRainMissileExplode, except that the cloud needs knowledge of the rainfall height.
+static void SpawnRedRainClouds(vec3_t impact_pos, vec3_t rain_pos, const int duration, const qboolean powerup, centity_t* owner) //mxd. Named 'RedRainExplosion' in original logic.
 {
 	client_entity_t* dlight = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE, impact_pos, NULL, 100);
 
 	const paletteRGBA_t light_color = { .c = (powerup ? 0xff0080ff : 0xff0000ff) }; // Orange when powered up, red when not.
 	dlight->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
-	dlight->Update = RedRainDLightThink;
+	dlight->Update = RedRainDLightUpdate;
 
 	AddEffect(NULL, dlight);
 
@@ -122,35 +122,35 @@ static void RedRainExplosion(vec3_t impact_pos, vec3_t rain_pos, const int durat
 		vec3_t org;
 		VectorRandomCopy(impact_pos, org, RED_RAIN_RADIUS / 3.0f);
 
-		client_entity_t* explosion = ClientEntity_new(FX_WEAPON_REDRAIN, CEF_DONT_LINK, org, NULL, 100);
+		client_entity_t* cloud = ClientEntity_new(FX_WEAPON_REDRAIN, CEF_DONT_LINK, org, NULL, 100);
 
-		explosion->r.model = &rain_models[2]; // rsteam sprite (32x32).
-		explosion->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
-		explosion->alpha = 0.3f;
-		explosion->lastThinkTime = fxi.cl->time;
-		explosion->LifeTime = duration;
+		cloud->r.model = &rain_models[2]; // rsteam sprite (32x32).
+		cloud->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
+		cloud->alpha = 0.3f;
+		cloud->lastThinkTime = fxi.cl->time;
+		cloud->LifeTime = duration;
 
 		if (powerup)
 		{
-			explosion->SpawnInfo = 1;
-			explosion->r.frame = 1; // Green sprite.
-			explosion->r.scale = flrand(2.8f, 3.2f); //mxd. Randomize scale a bit.
+			cloud->SpawnInfo = 1;
+			cloud->r.frame = 1; // Green sprite.
+			cloud->r.scale = flrand(2.8f, 3.2f); //mxd. Randomize scale a bit.
 		}
 		else
 		{
-			explosion->r.frame = 0; // Red sprite.
-			explosion->r.scale = flrand(2.3f, 2.7f); //mxd. Randomize scale a bit.
+			cloud->r.frame = 0; // Red sprite.
+			cloud->r.scale = flrand(2.3f, 2.7f); //mxd. Randomize scale a bit.
 		}
 
-		explosion->radius = 16.0f * explosion->r.scale; //mxd. Multiply by r.scale, to prevent cloud sprites visually clipping into ceilings.
+		cloud->radius = 16.0f * cloud->r.scale; //mxd. Multiply by r.scale, to prevent cloud sprites visually clipping into ceilings.
 
-		VectorSet(explosion->velocity, flrand(-128.0f, 128.0f), flrand(-128.0f, 128.0f), flrand(-128.0f, 0.0f));
-		explosion->r.angles[YAW] = (float)i * degree_inc;
-		VectorCopy(rain_pos, explosion->direction);
+		VectorSet(cloud->velocity, flrand(-128.0f, 128.0f), flrand(-128.0f, 128.0f), flrand(-128.0f, 0.0f));
+		cloud->r.angles[YAW] = (float)i * degree_inc;
+		VectorCopy(rain_pos, cloud->direction);
 
-		explosion->Update = RedRainExplosionThink;
+		cloud->Update = RedRainCloudThink;
 
-		AddEffect(owner, explosion);
+		AddEffect(owner, cloud);
 	}
 
 	// Add a big red flash at impact of course.
@@ -296,7 +296,7 @@ void FXRedRain(centity_t* owner, const int type, int flags, vec3_t origin)
 	AddEffect(owner, spawner);
 
 	// Pass the explosion point as well as the rain generation point.
-	RedRainExplosion(origin, ceil_origin, duration, powerup, owner);
+	SpawnRedRainClouds(origin, ceil_origin, duration, powerup, owner);
 }
 
 // The red rain projectile's trail of red sparks.
