@@ -77,8 +77,8 @@ typedef struct client_entity_s
 	UpdateEffect_t Update; // Run every nextThinkTime. If it returns false the entity will be removed.
 
 	// Run every time the entity is added to the view.
-	// If it returns false, the entity will not be added to the view (it won't be removed though).
-	UpdateEffect_t AddToView; 
+	// If it returns false, the entity will not be added to the view (it won't be removed though). // Not implemented in original logic --mxd.
+	UpdateEffect_t AddToView;
 
 	// Light stuff.
 	struct CE_DLight_s* dlight;
@@ -104,6 +104,7 @@ typedef struct client_entity_s
 	{
 		int LifeTime;
 		int nextEventTime; // For user-timed stuff.
+		int tome_fadein_end_time; //mxd
 	};
 
 	union
@@ -112,6 +113,7 @@ typedef struct client_entity_s
 		int SpawnDelay;
 		float elasticity;
 		float xscale;
+		int tome_fadeout_end_time; //mxd
 	};
 
 	union

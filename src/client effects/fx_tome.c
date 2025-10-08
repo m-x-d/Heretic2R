@@ -10,15 +10,19 @@
 #include "Vector.h"
 #include "ce_dlight.h"
 
-#define TOME_RADIUS				5.0f
-#define TOME_SCALE				10.0f
-#define TOME_ACCEL				(-64.0f)
+#define TOME_RADIUS				6.3f //mxd. 5.0 in original logic. Updated to match model dimension.
+#define TOME_VRADIUS			7.9f //mxd
+#define TOME_SCALE				0.55f //mxd
 #define TOME_ORBIT_DIST			20.0f
 #define TOME_ORBIT_SCALE		0.0025f
 #define TOME_SPIN_FACTOR		0.004f
 
-#define TIME_TO_FADE_TOME		30
-#define TOME_INCOMING_ORBIT		(TOME_ORBIT_DIST / TIME_TO_FADE_TOME)
+#define TOME_SPARK_SCALE		10.0f //mxd. Named TOME_SCALE in original logic.
+#define TOME_SPARK_ACCEL		(-64.0f)
+#define TOME_NUM_SPARKS			4 //mxd
+
+#define TOME_FADEIN_ANIM_LENGTH		500.0f //mxd
+#define TOME_FADEOUT_ANIM_LENGTH	1000.0f //mxd
 
 static struct model_s* tome_model;
 
@@ -32,44 +36,64 @@ static qboolean TomeOfPowerAddToView(client_entity_t* tome, centity_t* owner)
 {
 	const float time = (float)fxi.cl->time; //mxd
 
-	VectorSet(tome->r.origin,
+	vec3_t pos =
+	{
 		cosf(time * TOME_ORBIT_SCALE) * TOME_ORBIT_DIST,
 		sinf(time * TOME_ORBIT_SCALE) * TOME_ORBIT_DIST,
-		15.0f + sinf(time * 0.0015f) * 12.0f);
-
-	VectorAdd(owner->origin, tome->r.origin, tome->r.origin);
-	VectorCopy(tome->r.origin, tome->origin);
+		15.0f + sinf(time * 0.0015f) * 10.0f
+	};
 
 	// Setup the last think time.
-	const float diff_time = time - tome->SpawnData;
-	tome->SpawnData = time;
+	const float diff_time = time - (float)tome->lastThinkTime;
+	tome->lastThinkTime = fxi.cl->time;
 
-	// Rotate the book.
-	tome->r.angles[YAW] += diff_time * TOME_SPIN_FACTOR;
+	//mxd. Update dynamic light.
+	tome->dlight->intensity = 150.0f + cosf(time * 0.01f) * 20.0f;
 
-	return true;
-}
+	//mxd. Book appear animation.
+	if (fxi.cl->time < tome->tome_fadein_end_time)
+	{
+		const float lerp = (float)(tome->tome_fadein_end_time - fxi.cl->time) / TOME_FADEIN_ANIM_LENGTH; // [1.0 .. 0.0]
+		const float scaler = 1.0f + (1.0f - cosf(lerp * ANGLE_90)) * 2.0f;
+		pos[0] *= scaler;
+		pos[1] *= scaler;
 
-// Update the position of the Tome of power relative to its owner.
-static qboolean TomeOfPowerFadeInAddToView(client_entity_t* tome, centity_t* owner)
-{
-	const float tome_orbit = (float)tome->SpawnInfo * TOME_INCOMING_ORBIT;
-	const float time = (float)fxi.cl->time; //mxd
+		// Rotate the book.
+		tome->r.angles[YAW] += diff_time * max(0.01f * lerp, TOME_SPIN_FACTOR);
 
-	VectorSet(tome->r.origin,
-		cosf(time * TOME_ORBIT_SCALE) * tome_orbit,
-		sinf(time * TOME_ORBIT_SCALE) * tome_orbit,
-		(15.0f + sinf(time * 0.0015f) * 12.0f) * (float)tome->SpawnInfo / TIME_TO_FADE_TOME);
+		// Scale-in the book.
+		if (tome->r.scale < TOME_SCALE)
+			tome->r.scale += diff_time * 0.002f;
 
-	VectorAdd(owner->origin, tome->r.origin, tome->r.origin);
-	VectorCopy(tome->r.origin, tome->origin);
+		tome->dlight->intensity *= 1.0f - lerp;
+	}
+	else if (fxi.cl->time < tome->tome_fadeout_end_time) //mxd. Book disappear animation.
+	{
+		const float lerp = 1.0f - (float)(tome->tome_fadeout_end_time - fxi.cl->time) / TOME_FADEOUT_ANIM_LENGTH; // [0.0 .. 1.0]
+		const float oz = 25.0f + (1.0f - cosf(lerp * ANGLE_90)) * 32.0f;
+		pos[2] = LerpAngle(pos[2], oz, lerp); // It's not an angle, but will work anyway, since the value is < 180... 
 
-	// Setup the last think time.
-	const float diff_time = time - tome->SpawnData;
-	tome->SpawnData = time;
+		// Rotate the book.
+		tome->r.angles[YAW] += diff_time * max(lerp * 0.02f, TOME_SPIN_FACTOR);
 
-	// Rotate the book
-	tome->r.angles[YAW] += diff_time * TOME_SPIN_FACTOR;
+		// Scale-out the book.
+		if (lerp > 0.75f)
+			tome->r.scale = max(0.001f, tome->r.scale - diff_time * 0.002f);
+
+		tome->dlight->intensity *= 1.0f - lerp;
+	}
+	else if (tome->tome_fadeout_end_time > 0 && fxi.cl->time >= tome->tome_fadeout_end_time) //mxd. Book disappeared, but TomeOfPowerThink() was not called yet...
+	{
+		tome->dlight->intensity = 0.0f;
+		return false;
+	}
+	else
+	{
+		// Rotate the book.
+		tome->r.angles[YAW] += diff_time * TOME_SPIN_FACTOR;
+	}
+
+	VectorAdd(owner->origin, pos, tome->r.origin);
 
 	return true;
 }
@@ -77,37 +101,51 @@ static qboolean TomeOfPowerFadeInAddToView(client_entity_t* tome, centity_t* own
 // Update the Tome of power, so that more sparkles zip out of it, and the light casts pulses.
 static qboolean TomeOfPowerThink(client_entity_t* tome, centity_t* owner)
 {
-	// Are we waiting for the shrine light to vanish?
-	if (tome->SpawnInfo > 0)
-	{
-		if (--tome->SpawnInfo == 0)
-			return false;
-	}
-	else // No, could either be no light, or light still active.
-	{
-		tome->dlight->intensity = 150.0f + cosf((float)fxi.cl->time * 0.01f) * 20.0f;
+	//mxd. Fade-out effect ended, remove entity.
+	if (tome->tome_fadeout_end_time > 0 && tome->tome_fadeout_end_time <= fxi.cl->time)
+		return false;
 
-		if (!(owner->current.effects & EF_POWERUP_ENABLED))
+	//mxd. Start fade-out effect?
+	if (!(owner->current.effects & EF_POWERUP_ENABLED) && tome->tome_fadeout_end_time == 0)
+		tome->tome_fadeout_end_time = fxi.cl->time + (int)TOME_FADEOUT_ANIM_LENGTH;
+
+	const float radius = TOME_RADIUS * tome->r.scale;
+	const float vradius = TOME_VRADIUS * tome->r.scale;
+	const vec3_t right = { sinf(tome->r.angles[YAW]), -cosf(tome->r.angles[YAW]), 0.0f };
+
+	vec3_t p1;
+	VectorScale(right,  radius, p1);
+
+	vec3_t p2;
+	VectorScale(right, -radius, p2);
+
+	//mxd. Disabled in original version.
+	for (int i = 0; i < TOME_NUM_SPARKS; i++)
+	{
+		const paletteRGBA_t color = //mxd. Randomize color a bit.
 		{
-			tome->AddToView = TomeOfPowerFadeInAddToView;
-			tome->SpawnInfo = TIME_TO_FADE_TOME;
-			tome->d_alpha = -0.18f;
-		}
-	}
+			.r = (byte)(tome->color.r + irand(-16, 16)),
+			.g = (byte)(tome->color.g + irand(-16, 16)),
+			.b = (byte)(tome->color.b + irand(-32, 0)),
+			.a = (byte)(tome->color.a + irand(-16, 16)),
+		};
 
-	//mxd. Disabled in original version. //TODO: make scale smaller and randomized, randomize color a bit? randomize particles count? Use several particle types?
-	for (int i = 0; i < 4; i++)
-	{
-		client_particle_t* spark = ClientParticle_new(PART_16x16_STAR, tome->color, 2000);
+		client_particle_t* spark = ClientParticle_new(PART_16x16_STAR, color, 1000);
 
-		VectorRandomSet(spark->origin, TOME_RADIUS);
-		VectorAdd(tome->origin, spark->origin, spark->origin);
-		spark->scale = TOME_SCALE;
+		//mxd. Spawn below tome model, distribute evenly, align with book frame.
+		vec3_t offset;
+		const float lerp = (float)i / (TOME_NUM_SPARKS - 1);
+		VectorLerp(p1, lerp, p2, offset);
+
+		spark->origin[0] = tome->r.origin[0] + offset[0];
+		spark->origin[1] = tome->r.origin[1] + offset[1];
+		spark->origin[2] = tome->r.origin[2] - vradius - 1.0f;
+
+		spark->scale = TOME_SPARK_SCALE * flrand(0.75f, 1.25f) * tome->r.scale; //mxd. Randomize scale a bit.
 		VectorSet(spark->velocity, flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f), flrand(-10.0f, 10.0f));
-		spark->acceleration[2] = TOME_ACCEL;
+		spark->acceleration[2] = TOME_SPARK_ACCEL + flrand(-8.0f, 8.0f); //mxd. Randomize acceleration a bit.
 		spark->d_scale = flrand(-20.0f, -15.0f);
 		spark->d_alpha = flrand(-500.0f, -400.0f);
-		spark->duration = 1000;
 
 		AddParticleToList(tome, spark);
 	}
@@ -122,11 +160,14 @@ void FXTomeOfPower(centity_t* owner, const int type, const int flags, vec3_t ori
 
 	tome->radius = 128.0f;
 	tome->r.model = &tome_model;
-	tome->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	tome->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS;
-	tome->r.scale = 0.55f;
-	tome->color.c = 0xe5ff2020;
-	tome->SpawnData = (float)fxi.cl->time;
+	tome->r.flags = RF_MINLIGHT; //mxd. RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA in original logic.
+	tome->flags |= (CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS);
+	tome->r.scale = 0.001f;
+	COLOUR_SETA(tome->color, 32, 32, 255, 229); //mxd. Use macro.
+
+	tome->lastThinkTime = fxi.cl->time;
+	tome->tome_fadein_end_time = fxi.cl->time + (int)TOME_FADEIN_ANIM_LENGTH; //mxd
+
 	tome->dlight = CE_DLight_new(tome->color, 150.0f, 0.0f);
 	tome->AddToView = TomeOfPowerAddToView;
 	tome->Update = TomeOfPowerThink;
