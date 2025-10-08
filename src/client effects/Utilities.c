@@ -166,12 +166,10 @@ float GetSolidDist(const vec3_t origin, const float radius, const float max_dist
 // Gets time for a client_entity_t to fall to the ground.
 int GetFallTime(vec3_t origin, const float velocity, const float acceleration, const float radius, const float maxtime, trace_t* trace)
 {
-	vec3_t mins;
-	vec3_t maxs;
-	vec3_t end;
+	const vec3_t mins = { -radius, -radius, -1.0f };
+	const vec3_t maxs = {  radius,  radius,  1.0f };
 
-	VectorSet(mins, -radius, -radius, -1.0f);
-	VectorSet(maxs, radius, radius, 1.0f);
+	vec3_t end;
 	VectorCopy(origin, end);
 	end[2] += (velocity * maxtime) + acceleration * (maxtime * maxtime) * 0.5f; // From s = ut + 0.5at^2
 
@@ -184,19 +182,14 @@ int GetFallTime(vec3_t origin, const float velocity, const float acceleration, c
 // Returns true, the plane normal of plane hit and the distance to the plane if a plane hit.
 int GetWaterNormal(const vec3_t origin, const float radius, const float maxdist, vec3_t normal, float* dist)
 {
-	vec3_t mins;
-	vec3_t maxs;
-	vec3_t start;
-	vec3_t end;
-	trace_t trace;
+	const vec3_t mins = { -radius, -radius, -1.0f };
+	const vec3_t maxs = {  radius,  radius,  1.0f };
 
-	VectorSet(mins, -radius, -radius, -1.0f);
-	VectorSet(maxs, radius, radius, 1.0f);
+	vec3_t end;
 	VectorCopy(origin, end);
-	VectorCopy(origin, start);
-	start[2] += maxdist;
 	end[2] -= maxdist;
 
+	trace_t trace;
 	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CEF_CLIP_TO_WORLD, &trace);
 
 	if (trace.fraction == 1.0f || (trace.contents & MASK_SOLID))
