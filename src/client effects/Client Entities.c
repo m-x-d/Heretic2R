@@ -200,6 +200,7 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 	{
 		float dot;
 		float dist;
+		qboolean add_to_view = true; //mxd
 
 		current->flags |= CEF_CULLED;
 
@@ -209,7 +210,7 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 		{
 			// Do this here since we do have an owner, and most probably we are tied to its origin, and we need that to do the proper culling routines.
 			if (owner != NULL && current->AddToView != NULL)
-				current->AddToView(current, owner);
+				add_to_view = current->AddToView(current, owner);
 
 			vec3_t dir;
 			VectorSubtract(current->r.origin, fxi.cl->refdef.vieworg, dir);
@@ -254,7 +255,7 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 
 		// We do this here because we don't have an owner - only do the update if we haven't already been culled.
 		if (owner == NULL && current->AddToView != NULL)
-			current->AddToView(current, owner);
+			add_to_view = current->AddToView(current, owner);
 
 		num_fx++;
 		current->flags &= ~CEF_CULLED;
@@ -262,7 +263,7 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 		if (current->p_root != NULL) // Add any particles.
 			numrenderedparticles += AddParticlesToView(current);
 
-		if (!(current->flags & (CEF_NO_DRAW | CEF_DISAPPEARED)))
+		if (add_to_view && !(current->flags & (CEF_NO_DRAW | CEF_DISAPPEARED))) //mxd. +add_to_view check.
 		{
 			// Wacky all colors at minimum, but drawn at max instead for additive transparent sprites.
 			current->alpha = max(0.0f, current->alpha);
