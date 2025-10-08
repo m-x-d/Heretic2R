@@ -304,8 +304,6 @@ static void GorgonPreThink(edict_t* self) //mxd. Named 'gorgon_prethink' in orig
 	}
 	else
 	{
-		gi.RemoveEffects(&self->s, FX_M_EFFECTS);
-
 		self->gravity = 1.0f;
 		self->svflags &= ~SVF_TAKE_NO_IMPACT_DMG;
 
@@ -314,6 +312,7 @@ static void GorgonPreThink(edict_t* self) //mxd. Named 'gorgon_prethink' in orig
 
 		if (self->gorgon_is_underwater)
 		{
+			gi.RemoveEffects(&self->s, FX_M_EFFECTS); // Remove FX_UNDER_WATER_WAKE effect. Done outside of gorgon_is_underwater check in original logic --mxd.
 			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, self->s.origin, "bd", 128 | 96, vec3_up);
 			self->gorgon_is_underwater = false;
 		}
