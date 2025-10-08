@@ -8,21 +8,12 @@
 #include <stdlib.h>
 #include "Motion.h"
 
-H2COMMON_API float GetTimeToReachDistance(const float vel, float accel, float dist)
+H2COMMON_API float GetTimeToReachDistance(const float vel, const float accel, const float dist)
 {
-	// 'accel' and 'dist' are expected to be positive values -- mxd.
-	accel = fabsf(accel);
-	dist = fabsf(dist);
-
 	if (accel == 0.0f)
-	{
-		if (vel != 0.0f)
-			return dist / vel * 1000.0f;
+		return ((vel != 0.0f) ? dist / vel * 1000.0f : 0.0f);
 
-		return 0.0f;
-	}
-
-	const float len = sqrtf(accel * dist + accel * dist + vel * vel); //mxd. sqrtf of a negative number is NaN.
+	const float len = sqrtf(fabsf(accel * dist + accel * dist + vel * vel)); //mxd. +fabsf. sqrtf of a negative number is NaN.
 	const float time1 = (len - vel)  * 1000.0f / accel;
 	const float time2 = (-vel - len) * 1000.0f / accel;
 
