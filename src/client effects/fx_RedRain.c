@@ -124,9 +124,8 @@ static void RedRainExplosion(vec3_t impact_pos, vec3_t rain_pos, const int durat
 
 		client_entity_t* explosion = ClientEntity_new(FX_WEAPON_REDRAIN, CEF_DONT_LINK, org, NULL, 100);
 
-		explosion->radius = 16.0f;
-		explosion->r.model = &rain_models[2]; // rsteam sprite.
-		explosion->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		explosion->r.model = &rain_models[2]; // rsteam sprite (32x32).
+		explosion->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		explosion->alpha = 0.3f;
 		explosion->lastThinkTime = fxi.cl->time;
 		explosion->LifeTime = duration;
@@ -135,13 +134,15 @@ static void RedRainExplosion(vec3_t impact_pos, vec3_t rain_pos, const int durat
 		{
 			explosion->SpawnInfo = 1;
 			explosion->r.frame = 1; // Green sprite.
-			explosion->r.scale = 3.0f;
+			explosion->r.scale = flrand(2.8f, 3.2f); //mxd. Randomize scale a bit.
 		}
 		else
 		{
 			explosion->r.frame = 0; // Red sprite.
-			explosion->r.scale = 2.5f;
+			explosion->r.scale = flrand(2.3f, 2.7f); //mxd. Randomize scale a bit.
 		}
+
+		explosion->radius = 16.0f * explosion->r.scale; //mxd. Multiply by r.scale, to prevent cloud sprites visually clipping into ceilings.
 
 		VectorSet(explosion->velocity, flrand(-128.0f, 128.0f), flrand(-128.0f, 128.0f), flrand(-128.0f, 0.0f));
 		explosion->r.angles[YAW] = (float)i * degree_inc;
@@ -276,7 +277,7 @@ void FXRedRain(centity_t* owner, const int type, int flags, vec3_t origin)
 	ceil_origin[2] += ceiling;
 
 	float floor;
-	GetSolidDist(origin, 1, -MAX_FALL_DISTANCE, &floor);
+	GetSolidDist(origin, 1.0f, -MAX_FALL_DISTANCE, &floor);
 
 	const int duration = ((int)RED_RAIN_DURATION + 1) * 1000; //mxd
 	flags = (int)(flags | CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED) & ~CEF_OWNERS_ORIGIN;
