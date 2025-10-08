@@ -53,10 +53,9 @@ static qboolean RedRainDLightUpdate(client_entity_t* dlight, centity_t* owner) /
 	return dlight->dlight->intensity > 0.0f;
 }
 
-static qboolean RedRainCloudThink(client_entity_t* self, centity_t* owner) //mxd. Named 'RedRainExplosionThink' in original logic.
+static qboolean RedRainCloudUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'RedRainExplosionThink' in original logic.
 {
-	// The explosion bit should be drawn to orbit the rain generation spot.
-	self->updateTime = 100;
+	// The cloud sprite should be drawn to orbit the rain generation spot.
 	self->LifeTime -= 100;
 
 	if (self->LifeTime > 1000)
@@ -87,7 +86,7 @@ static qboolean RedRainCloudThink(client_entity_t* self, centity_t* owner) //mxd
 
 	vec3_t random_vect;
 	VectorRandomSet(random_vect, radius);
-	VectorAdd(target_pos, random_vect, target_pos);
+	Vec3AddAssign(random_vect, target_pos);
 
 	// This is the velocity it would need to reach the position in one second.
 	vec3_t diff_pos;
@@ -124,10 +123,10 @@ static void SpawnRedRainClouds(vec3_t impact_pos, vec3_t rain_pos, const int dur
 
 		client_entity_t* cloud = ClientEntity_new(FX_WEAPON_REDRAIN, CEF_DONT_LINK, org, NULL, 100);
 
+		cloud->radius = 16.0f;
 		cloud->r.model = &rain_models[2]; // rsteam sprite (32x32).
 		cloud->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		cloud->alpha = 0.3f;
-		cloud->lastThinkTime = fxi.cl->time;
 		cloud->LifeTime = duration;
 
 		if (powerup)
@@ -142,13 +141,11 @@ static void SpawnRedRainClouds(vec3_t impact_pos, vec3_t rain_pos, const int dur
 			cloud->r.scale = flrand(2.3f, 2.7f); //mxd. Randomize scale a bit.
 		}
 
-		cloud->radius = 16.0f * cloud->r.scale; //mxd. Multiply by r.scale, to prevent cloud sprites visually clipping into ceilings.
-
 		VectorSet(cloud->velocity, flrand(-128.0f, 128.0f), flrand(-128.0f, 128.0f), flrand(-128.0f, 0.0f));
 		cloud->r.angles[YAW] = (float)i * degree_inc;
 		VectorCopy(rain_pos, cloud->direction);
 
-		cloud->Update = RedRainCloudThink;
+		cloud->Update = RedRainCloudUpdate;
 
 		AddEffect(owner, cloud);
 	}
@@ -157,8 +154,7 @@ static void SpawnRedRainClouds(vec3_t impact_pos, vec3_t rain_pos, const int dur
 	client_entity_t* flash = ClientEntity_new(-1, 0, impact_pos, NULL, 500);
 
 	flash->r.model = &rain_models[powerup ? 4 : 0]; // spark_green sprite when powered, spark_red when not.
-	flash->r.frame = 0;
-	flash->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	flash->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	flash->radius = 16.0f;
 	flash->r.scale = 8.0f;
 	flash->d_scale = -16.0f;
