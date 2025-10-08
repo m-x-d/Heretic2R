@@ -293,10 +293,10 @@ static void GorgonPreThink(edict_t* self) //mxd. Named 'gorgon_prethink' in orig
 		self->gravity = 0.0f;
 		self->svflags |= (SVF_TAKE_NO_IMPACT_DMG | SVF_DO_NO_IMPACT_DMG);
 
-		if (!self->gorgon_over_water_surface)
+		if (!self->gorgon_is_underwater)
 		{
 			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7, self->s.origin, "bd", 128 | 96, vec3_up);
-			self->gorgon_over_water_surface = true;
+			self->gorgon_is_underwater = true;
 		}
 
 		if (self->curAnimID == ANIM_INAIR)
@@ -312,10 +312,10 @@ static void GorgonPreThink(edict_t* self) //mxd. Named 'gorgon_prethink' in orig
 		if (self->s.scale > 0.5f)
 			self->svflags &= ~SVF_DO_NO_IMPACT_DMG;
 
-		if (self->gorgon_over_water_surface)
+		if (self->gorgon_is_underwater)
 		{
 			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, self->s.origin, "bd", 128 | 96, vec3_up);
-			self->gorgon_over_water_surface = false;
+			self->gorgon_is_underwater = false;
 		}
 
 		if (self->curAnimID == ANIM_SWIM || self->curAnimID == ANIM_SWIM_BITE_A || self->curAnimID == ANIM_SWIM_BITE_B)
@@ -1880,7 +1880,7 @@ void SP_monster_gorgon(edict_t* self)
 	self->yaw_speed = ((self->spawnflags & MSF_GORGON_SPEEDY) ? 30.0f : 15.0f);
 	self->gorgon_swerve_step = 0; // Used for slight turn during run.
 	self->gorgon_grabbed_toy_shake_mode = 0; //mxd. Initialize.
-	self->gorgon_over_water_surface = true; //mxd. Initialize. //TODO: check if spawned underwater & set to false?
+	self->gorgon_is_underwater = false; //mxd. Initialize. //TODO: check if spawned underwater & set to true?
 
 	self->movetype = PHYSICSTYPE_STEP;
 	VectorClear(self->knockbackvel);
