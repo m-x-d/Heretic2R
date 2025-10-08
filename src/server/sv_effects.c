@@ -125,7 +125,7 @@ void SV_CreateEffect(entity_state_t* ent, const int fx_type, int flags, const ve
 	if (ent != NULL)
 	{
 		clfx->freeBlock += sb.cursize;
-		clfx->numEffects++;
+		clfx->numEffects++; // Lasts single frame, cleared in SV_PrepWorldFrame() --mxd.
 
 		assert(clfx->numEffects < FX_BUF_MAX_EFFECTS); //mxd
 	}
@@ -144,8 +144,7 @@ void SV_CreateEffect(entity_state_t* ent, const int fx_type, int flags, const ve
 
 void SV_RemoveEffects(entity_state_t* ent, const int fx_type)
 {
-	if (ent->clientEffects.numEffects > 0) //mxd. Don't remove effects if we have none attached.
-		SV_CreateEffect(ent, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "s", fx_type);
+	SV_CreateEffect(ent, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "s", fx_type);
 }
 
 //mxd. Parsed by ParseEffects() in ClientEffects/Main.c
