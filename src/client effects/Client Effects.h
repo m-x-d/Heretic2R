@@ -223,6 +223,7 @@ extern void PreCacheMaceball(void);
 extern void PreCacheRipperSFX(void); //mxd
 extern void PreCacheTeleport(void);
 extern void PreCacheTome(void); //mxd
+extern void PreCacheTomeSFX(void); //mxd
 extern void PreCacheTorch(void);
 extern void PreCacheFlareup(void);
 extern void PreCacheRockchunks(void);

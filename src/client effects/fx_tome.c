@@ -18,23 +18,31 @@
 #define TOME_SPIN_FACTOR		0.004f
 
 #define TOME_SPARK_SCALE		10.0f //mxd. Named TOME_SCALE in original logic.
-#define TOME_SPARK_ACCEL		(-64.0f)
+#define TOME_SPARK_ACCELERATION	(-64.0f) //mxd. Named TOME_SPARK_ACCEL in original logic.
+#define TOME_SPARKS_SPAWN_RATE	100 //mxd
 #define TOME_NUM_SPARKS			4 //mxd
 
 #define TOME_FADEIN_ANIM_LENGTH		500.0f //mxd
 #define TOME_FADEOUT_ANIM_LENGTH	1000.0f //mxd
 
 static struct model_s* tome_model;
+static struct sfx_s* tome_expired_sound; //mxd
 
 void PreCacheTome(void)
 {
 	tome_model = fxi.RegisterModel("models/Spells/book/tris.fm");
 }
 
-// Update the position of the Tome of power relative to its owner.
-static qboolean TomeOfPowerAddToView(client_entity_t* tome, centity_t* owner)
+void PreCacheTomeSFX(void) //mxd
+{
+	tome_expired_sound = fxi.S_RegisterSound("monsters/mork/shieldgone.wav"); // Unused sound in original logic.
+}
+
+// Update the position of the Tome of Power relative to its owner.
+static void TomeOfPowerAnimate(client_entity_t* tome, const centity_t* owner)
 {
 	const float time = (float)fxi.cl->time; //mxd
+	const float step = time - (float)tome->nextThinkTime;
 
 	vec3_t pos =
 	{
@@ -42,10 +50,6 @@ static qboolean TomeOfPowerAddToView(client_entity_t* tome, centity_t* owner)
 		sinf(time * TOME_ORBIT_SCALE) * TOME_ORBIT_DIST,
 		15.0f + sinf(time * 0.0015f) * 10.0f
 	};
-
-	// Setup the last think time.
-	const float diff_time = time - (float)tome->lastThinkTime;
-	tome->lastThinkTime = fxi.cl->time;
 
 	//mxd. Update dynamic light.
 	tome->dlight->intensity = 150.0f + cosf(time * 0.01f) * 20.0f;
@@ -59,11 +63,11 @@ static qboolean TomeOfPowerAddToView(client_entity_t* tome, centity_t* owner)
 		pos[1] *= scaler;
 
 		// Rotate the book.
-		tome->r.angles[YAW] += diff_time * max(0.01f * lerp, TOME_SPIN_FACTOR);
+		tome->r.angles[YAW] += step * max(0.01f * lerp, TOME_SPIN_FACTOR);
 
 		// Scale-in the book.
 		if (tome->r.scale < TOME_SCALE)
-			tome->r.scale += diff_time * 0.002f;
+			tome->r.scale += step * 0.002f;
 
 		tome->dlight->intensity *= 1.0f - lerp;
 	}
@@ -74,52 +78,36 @@ static qboolean TomeOfPowerAddToView(client_entity_t* tome, centity_t* owner)
 		pos[2] = LerpAngle(pos[2], oz, lerp); // It's not an angle, but will work anyway, since the value is < 180... 
 
 		// Rotate the book.
-		tome->r.angles[YAW] += diff_time * max(lerp * 0.02f, TOME_SPIN_FACTOR);
+		tome->r.angles[YAW] += step * max(lerp * 0.02f, TOME_SPIN_FACTOR);
 
 		// Scale-out the book.
 		if (lerp > 0.75f)
-			tome->r.scale = max(0.001f, tome->r.scale - diff_time * 0.002f);
+			tome->r.scale = max(0.001f, tome->r.scale - step * 0.002f);
 
 		tome->dlight->intensity *= 1.0f - lerp;
-	}
-	else if (tome->tome_fadeout_end_time > 0 && fxi.cl->time >= tome->tome_fadeout_end_time) //mxd. Book disappeared, but TomeOfPowerThink() was not called yet...
-	{
-		tome->dlight->intensity = 0.0f;
-		return false;
 	}
 	else
 	{
 		// Rotate the book.
-		tome->r.angles[YAW] += diff_time * TOME_SPIN_FACTOR;
+		tome->r.angles[YAW] += step * TOME_SPIN_FACTOR;
 	}
 
 	VectorAdd(owner->origin, pos, tome->r.origin);
-
-	return true;
 }
 
-// Update the Tome of power, so that more sparkles zip out of it, and the light casts pulses.
-static qboolean TomeOfPowerThink(client_entity_t* tome, centity_t* owner)
+// Spawn Tome of Power sparks. Disabled in original logic --mxd.
+static void TomeOfPowerSpawnSparks(client_entity_t* tome)
 {
-	//mxd. Fade-out effect ended, remove entity.
-	if (tome->tome_fadeout_end_time > 0 && tome->tome_fadeout_end_time <= fxi.cl->time)
-		return false;
-
-	//mxd. Start fade-out effect?
-	if (!(owner->current.effects & EF_POWERUP_ENABLED) && tome->tome_fadeout_end_time == 0)
-		tome->tome_fadeout_end_time = fxi.cl->time + (int)TOME_FADEOUT_ANIM_LENGTH;
-
 	const float radius = TOME_RADIUS * tome->r.scale;
 	const float vradius = TOME_VRADIUS * tome->r.scale;
 	const vec3_t right = { sinf(tome->r.angles[YAW]), -cosf(tome->r.angles[YAW]), 0.0f };
 
 	vec3_t p1;
-	VectorScale(right,  radius, p1);
+	VectorScale(right, radius, p1);
 
 	vec3_t p2;
 	VectorScale(right, -radius, p2);
 
-	//mxd. Disabled in original version.
 	for (int i = 0; i < TOME_NUM_SPARKS; i++)
 	{
 		const paletteRGBA_t color = //mxd. Randomize color a bit.
@@ -143,11 +131,34 @@ static qboolean TomeOfPowerThink(client_entity_t* tome, centity_t* owner)
 
 		spark->scale = TOME_SPARK_SCALE * flrand(0.75f, 1.25f) * tome->r.scale; //mxd. Randomize scale a bit.
 		VectorSet(spark->velocity, flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f), flrand(-10.0f, 10.0f));
-		spark->acceleration[2] = TOME_SPARK_ACCEL + flrand(-8.0f, 8.0f); //mxd. Randomize acceleration a bit.
+		spark->acceleration[2] = TOME_SPARK_ACCELERATION + flrand(-8.0f, 8.0f); //mxd. Randomize acceleration a bit.
 		spark->d_scale = flrand(-20.0f, -15.0f);
 		spark->d_alpha = flrand(-500.0f, -400.0f);
 
 		AddParticleToList(tome, spark);
+	}
+}
+
+// Update the Tome of power, so that more sparkles zip out of it, and the light casts pulses.
+static qboolean TomeOfPowerThink(client_entity_t* tome, centity_t* owner)
+{
+	//mxd. Fade-out effect ended, remove entity.
+	if (tome->tome_fadeout_end_time > 0 && tome->tome_fadeout_end_time <= fxi.cl->time)
+		return false;
+
+	//mxd. Start fade-out effect?
+	if (!(owner->current.effects & EF_POWERUP_ENABLED) && tome->tome_fadeout_end_time == 0)
+	{
+		fxi.S_StartSound(tome->r.origin, -1, CHAN_ITEM, tome_expired_sound, 1.0f, ATTN_NORM, 0.0f); //mxd. Add expire sound.
+		tome->tome_fadeout_end_time = fxi.cl->time + (int)TOME_FADEOUT_ANIM_LENGTH;
+	}
+
+	TomeOfPowerAnimate(tome, owner);
+
+	if (tome->lastThinkTime < fxi.cl->time)
+	{
+		TomeOfPowerSpawnSparks(tome);
+		tome->lastThinkTime = fxi.cl->time + TOME_SPARKS_SPAWN_RATE;
 	}
 
 	return true;
@@ -156,11 +167,10 @@ static qboolean TomeOfPowerThink(client_entity_t* tome, centity_t* owner)
 // Original version of the tome of power. Casts a blue light etc.
 void FXTomeOfPower(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t* tome = ClientEntity_new(type, flags, origin, NULL, 100);
+	client_entity_t* tome = ClientEntity_new(type, flags, origin, NULL, 0); //mxd. next_think_time:100 in original logic.
 
 	tome->radius = 128.0f;
 	tome->r.model = &tome_model;
-	tome->r.flags = RF_MINLIGHT; //mxd. RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA in original logic.
 	tome->flags |= (CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS);
 	tome->r.scale = 0.001f;
 	COLOUR_SETA(tome->color, 32, 32, 255, 229); //mxd. Use macro.
@@ -169,7 +179,6 @@ void FXTomeOfPower(centity_t* owner, const int type, const int flags, vec3_t ori
 	tome->tome_fadein_end_time = fxi.cl->time + (int)TOME_FADEIN_ANIM_LENGTH; //mxd
 
 	tome->dlight = CE_DLight_new(tome->color, 150.0f, 0.0f);
-	tome->AddToView = TomeOfPowerAddToView;
 	tome->Update = TomeOfPowerThink;
 
 	AddEffect(owner, tome);

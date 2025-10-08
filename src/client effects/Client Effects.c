@@ -645,7 +645,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ // FX_TOME_OF_POWER
 		.SpawnCFX = FXTomeOfPower,
 		.PrecacheCFX = PreCacheTome, //mxd. Added separate precache function.
-		.PrecacheSFX = NULL,
+		.PrecacheSFX = PreCacheTomeSFX, //mxd
 		.formatString = NULL
 	}, 
 
