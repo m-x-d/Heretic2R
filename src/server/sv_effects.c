@@ -142,10 +142,10 @@ void SV_CreateEffect(entity_state_t* ent, const int fx_type, int flags, const ve
 	}
 }
 
-void SV_RemoveEffects(entity_state_t* ent, const int type)
+void SV_RemoveEffects(entity_state_t* ent, const int fx_type)
 {
 	if (ent->clientEffects.numEffects > 0) //mxd. Don't remove effects if we have none attached.
-		SV_CreateEffect(ent, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "s", type);
+		SV_CreateEffect(ent, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "s", fx_type);
 }
 
 //mxd. Parsed by ParseEffects() in ClientEffects/Main.c
@@ -253,12 +253,12 @@ void SV_CreateEffectEvent(const byte event_id, entity_state_t* ent, const int fx
 	}
 }
 
-void SV_RemoveEffectsEvent(const byte event_id, entity_state_t* ent, const int type)
+void SV_RemoveEffectsEvent(const byte event_id, entity_state_t* ent, const int fx_type)
 {
-	SV_CreateEffectEvent(event_id, ent, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "s", type);
+	SV_CreateEffectEvent(event_id, ent, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "s", fx_type);
 }
 
-int SV_CreatePersistantEffect(const entity_state_t* ent, const int type, int flags, const vec3_t origin, const char* format, ...)
+int SV_CreatePersistantEffect(const entity_state_t* ent, const int fx_type, int flags, const vec3_t origin, const char* format, ...)
 {
 	sizebuf_t sb;
 	
@@ -289,13 +289,13 @@ int SV_CreatePersistantEffect(const entity_state_t* ent, const int type, int fla
 	pfx->freeBlock = 0;
 	pfx->bufSize = ENTITY_FX_BUF_SIZE;
 	pfx->numEffects = 1;
-	pfx->fx_num = type;
+	pfx->fx_num = fx_type;
 	pfx->demo_send_mask = -1;
 	pfx->send_mask = 0;
 	SZ_Init(&sb, pfx->buf, sizeof(pfx->buf));
 
 	// Transmit effect.
-	MSG_WriteShort(&sb, type | EFFECT_FLAGS);
+	MSG_WriteShort(&sb, fx_type | EFFECT_FLAGS);
 
 	const int ent_num = (ent != NULL ? ent->number : 0);
 	if ((flags & (CEF_BROADCAST | CEF_MULTICAST)) && ent_num > 255)
@@ -328,9 +328,9 @@ int SV_CreatePersistantEffect(const entity_state_t* ent, const int type, int fla
 	return fx_index + 1; //mxd. 1-based, because fx type 0 is FX_REMOVE_EFFECTS?
 }
 
-qboolean SV_RemovePersistantEffect(const int toRemove, const int call_from)
+qboolean SV_RemovePersistantEffect(const int fx_type, const int call_from)
 {
-	static char* fx_types[] =
+	static const char* fx_types[] =
 	{
 		"REMOVE SHIELD",
 		"REMOVE TELEPORT PAD",
@@ -350,7 +350,7 @@ qboolean SV_RemovePersistantEffect(const int toRemove, const int call_from)
 		"REMOVE PORTAL",
 	};
 
-	const int fx_index = toRemove - 1;
+	const int fx_index = fx_type - 1;
 	if (fx_index < 0 || fx_index >= MAX_PERSISTANT_EFFECTS) //mxd. Added upper bound check.
 	{
 		Com_DPrintf("WARNING: Trying to remove a persistent effect of %i\n", fx_index);
