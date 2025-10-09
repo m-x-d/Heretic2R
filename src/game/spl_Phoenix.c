@@ -93,7 +93,7 @@ static void PhoenixMissileThink(edict_t* self)
 }
 
 // Create the guts of a phoenix arrow.
-static void CreatePhoenixArrow(edict_t* arrow)
+static void CreatePhoenixArrow(edict_t* arrow, const qboolean is_powered) //mxd. Named 'create_phoenix' in original logic. //mxd. +is_powered arg.
 {
 	arrow->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	arrow->svflags |= SVF_ALWAYS_SEND;
@@ -101,6 +101,7 @@ static void CreatePhoenixArrow(edict_t* arrow)
 	arrow->classname = "Spell_PhoenixArrow";
 	arrow->solid = SOLID_BBOX;
 	arrow->clipmask = MASK_SHOT;
+	arrow->health = (is_powered ? 1 : 0); // Health indicates a level of powerup.
 
 	VectorSet(arrow->mins, -ARROW_RADIUS, -ARROW_RADIUS, -ARROW_RADIUS);
 	VectorSet(arrow->maxs,  ARROW_RADIUS,  ARROW_RADIUS,  ARROW_RADIUS);
@@ -117,19 +118,23 @@ edict_t* PhoenixMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 	edict_t* arrow = G_Spawn();
 
 	// Copy everything across.
-	CreatePhoenixArrow(arrow);
+	const qboolean is_powered = (self->health > 0); //mxd
+	CreatePhoenixArrow(arrow, is_powered);
+
 	VectorCopy(vel, arrow->velocity);
 	VectorCopy(self->s.origin, arrow->s.origin);
 	arrow->owner = other;
-	arrow->enemy = self->owner;
-	arrow->health = self->health;
 	arrow->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
 	arrow->reflected_time = self->reflected_time;
 
 	G_LinkMissile(arrow);
 
 	// Create new trails for the new missile.
-	gi.CreateEffect(&arrow->s, FX_WEAPON_PHOENIXMISSILE, CEF_OWNERS_ORIGIN | (arrow->health << 5) | CEF_FLAG8, NULL, "t", arrow->velocity);
+	int fx_flags = CEF_OWNERS_ORIGIN | CEF_FLAG8; //mxd
+	if (is_powered)
+		fx_flags |= CEF_FLAG6;
+
+	gi.CreateEffect(&arrow->s, FX_WEAPON_PHOENIXMISSILE, fx_flags, NULL, "t", arrow->velocity);
 
 	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it.
 	G_SetToFree(self);
@@ -149,7 +154,8 @@ void SpellCastPhoenix(edict_t* caster, const vec3_t start_pos, const vec3_t aim_
 {
 	edict_t* arrow = G_Spawn();
 
-	CreatePhoenixArrow(arrow);
+	const qboolean is_powered = (caster->client->playerinfo.powerup_timer > level.time); //mxd
+	CreatePhoenixArrow(arrow, is_powered);
 	VectorCopy(start_pos, arrow->s.origin);
 
 	// Check ahead first to see if it's going to hit anything at this angle.
@@ -178,10 +184,8 @@ void SpellCastPhoenix(edict_t* caster, const vec3_t start_pos, const vec3_t aim_
 	arrow->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
 
 	// Play firing sound on the player.
-	const qboolean is_powered = (caster->client->playerinfo.powerup_timer > level.time); //mxd
 	const char* snd_name = (is_powered ? "weapons/PhoenixPowerFire.wav" : "weapons/PhoenixFire.wav"); //mxd
 	gi.sound(caster, CHAN_WEAPON, gi.soundindex(snd_name), 1.0f, ATTN_NORM, 0.0f);
-	arrow->health = is_powered;
 
 	// Remove the bow ready sound.
 	caster->s.sound = 0;
