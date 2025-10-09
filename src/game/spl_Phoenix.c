@@ -42,7 +42,9 @@ static void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	// I do this rather than do direct damage AND radius because that tends to do double damage to what is hit...
 	self->enemy = ((other != NULL && other->takedamage != DAMAGE_NO) ? other : NULL);
 
-	if (self->health == 1)
+	const qboolean is_powered = (self->health > 0); //mxd
+
+	if (is_powered)
 	{
 		// Must be powered up version. Storing in health is not so good, though...
 		// Powered up Phoenix will NOT damage the shooter. //TODO: doesn't work. Shouldn't 'ignore' arg be set for this to work?
@@ -62,16 +64,19 @@ static void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	AlertMonsters(self, self->owner, 3.0f, false);
 
 	// Attempt to apply a scorchmark decal to the thing I hit.
-	int scorch_flag = 0;
+	int fx_flags = CEF_BROADCAST;
 	vec3_t plane_dir;
 	if (IsDecalApplicable(other, self->s.origin, surface, plane, plane_dir))
-		scorch_flag = CEF_FLAG8;
+		fx_flags |= CEF_FLAG8;
 
 	VectorNormalize2(self->velocity, self->movedir);
 
 	// Start the explosion effect.
 	const vec3_t* dir = (Vec3NotZero(plane->normal) ? &plane->normal : &self->movedir); //BUGFIX: mxd. 'if (plane->normal)' in original version (always true).
-	gi.CreateEffect(&self->s, FX_WEAPON_PHOENIXEXPLODE, CEF_BROADCAST | (self->health << 5) | scorch_flag, self->s.origin, "td", *dir, self->movedir);
+
+	if (is_powered)
+		fx_flags |= CEF_FLAG6;
+	gi.CreateEffect(&self->s, FX_WEAPON_PHOENIXEXPLODE, fx_flags, self->s.origin, "td", *dir, self->movedir);
 
 	VectorClear(self->velocity);
 
@@ -182,16 +187,21 @@ void SpellCastPhoenix(edict_t* caster, const vec3_t start_pos, const vec3_t aim_
 	caster->s.sound = 0;
 
 	// Trace from the player's origin because then if we hit a wall, the effect won't be inside it...
-	gi.trace(caster->s.origin, arrow->mins, arrow->maxs, arrow->s.origin, caster, MASK_PLAYERSOLID, &trace);
+	trace_t back_trace;
+	gi.trace(caster->s.origin, arrow->mins, arrow->maxs, arrow->s.origin, caster, MASK_PLAYERSOLID, &back_trace);
 
-	if (trace.startsolid || trace.fraction < 0.99f)
+	if (back_trace.startsolid || back_trace.fraction < 0.99f)
 	{
-		const vec3_t* src = (trace.startsolid ? &caster->s.origin : &trace.endpos); //mxd
-		VectorCopy(*src, arrow->s.origin);
-		PhoenixMissileTouch(arrow, trace.ent, &trace.plane, trace.surface);
+		const vec3_t* pos = (back_trace.startsolid ? &caster->s.origin : &back_trace.endpos); //mxd
+		VectorCopy(*pos, arrow->s.origin);
+		PhoenixMissileTouch(arrow, back_trace.ent, &back_trace.plane, back_trace.surface);
 	}
 	else
 	{
-		gi.CreateEffect(&arrow->s, FX_WEAPON_PHOENIXMISSILE, CEF_OWNERS_ORIGIN | (arrow->health << 5), NULL, "t", arrow->velocity);
+		int fx_flags = CEF_OWNERS_ORIGIN; //mxd
+		if (is_powered)
+			fx_flags |= CEF_FLAG6;
+
+		gi.CreateEffect(&arrow->s, FX_WEAPON_PHOENIXMISSILE, fx_flags, NULL, "t", arrow->velocity);
 	}
 }
