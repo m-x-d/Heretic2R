@@ -108,6 +108,8 @@ static void FireBlastBlocked(edict_t* self, trace_t* trace)
 				// If this is successful, then we can make another fireblast moving in the new direction.
 				vec3_t new_ang;
 				vectoangles(surf_dir, new_ang);
+				new_ang[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
+
 				CreateFireBlast(self->s.origin, new_ang, self->owner, self->health - 1, level.time);
 			}
 		}
