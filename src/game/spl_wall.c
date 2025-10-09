@@ -83,34 +83,36 @@ static void FireBlastBlocked(edict_t* self, trace_t* trace)
 		}
 	}
 
-	float dot = 0.0f; //BUGFIX: mxd. Uninitialized in original version.
 	if (self->health > 0 && !(trace->contents & CONTENTS_WATER) && (trace->plane.normal[2] > FIREWALL_DOT_MIN || trace->plane.normal[2] < -FIREWALL_DOT_MIN))
-		dot = DotProduct(self->movedir, trace->plane.normal);
-
-	if (dot > -0.67f && dot < 0.0f)	// Slide on all but the most extreme angles.
 	{
-		vec3_t surf_vel;
-		VectorMA(self->movedir, -dot, trace->plane.normal, surf_vel); // Vel then holds the velocity negated by the impact.
+		const float dot = DotProduct(self->movedir, trace->plane.normal); // Potentially uninitialized in original logic --mxd.
+		const float min_dot = (self->health == MAX_FIREBLAST_BOUNCES ? -1.0f : -0.67f); //mxd. For the first collision, allow almost perpendicular bounce - fixes fireblast disappearing when cast almost directly downwards.
 
-		vec3_t surf_dir;
-		const float factor = VectorNormalize2(surf_vel, surf_dir); // Yes, there is the tiniest chance this could be a zero vect, 
-
-		if (factor > 0.0f)
+		if (dot > min_dot && dot < 0.0f) // Slide on all but the most extreme angles.
 		{
-			vec3_t test_pos;
-			VectorMA(self->s.origin, 16.0f, surf_dir, test_pos); // Test distance.
+			vec3_t surf_vel;
+			VectorMA(self->movedir, -dot, trace->plane.normal, surf_vel); // Vel then holds the velocity negated by the impact.
 
-			trace_t new_trace;
-			gi.trace(self->s.origin, self->mins, self->maxs, test_pos, self, MASK_SHOT, &new_trace);
+			vec3_t surf_dir;
+			const float factor = VectorNormalize2(surf_vel, surf_dir); // Yes, there is the tiniest chance this could be a zero vect, 
 
-			if (new_trace.fraction > 0.99f)
+			if (factor > 0.0f)
 			{
-				// If this is successful, then we can make another fireblast moving in the new direction.
-				vec3_t new_ang;
-				vectoangles(surf_dir, new_ang);
-				new_ang[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
+				vec3_t test_pos;
+				VectorMA(self->s.origin, 16.0f, surf_dir, test_pos); // Test distance.
 
-				CreateFireBlast(self->s.origin, new_ang, self->owner, self->health - 1, level.time);
+				trace_t new_trace;
+				gi.trace(self->s.origin, self->mins, self->maxs, test_pos, self, MASK_SHOT, &new_trace);
+
+				if (new_trace.fraction > 0.99f)
+				{
+					// If this is successful, then we can make another fireblast moving in the new direction.
+					vec3_t new_ang;
+					vectoangles(surf_dir, new_ang);
+					new_ang[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
+
+					CreateFireBlast(self->s.origin, new_ang, self->owner, self->health - 1, level.time);
+				}
 			}
 		}
 	}
