@@ -328,7 +328,6 @@ edict_t* RedRainMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 	VectorCopy(self->s.origin, arrow->s.origin);
 	VectorCopy(vel, arrow->velocity);
 	arrow->owner = other;
-	arrow->enemy = self->owner;
 	arrow->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
 	arrow->reflected_time = self->reflected_time;
 
