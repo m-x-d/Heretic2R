@@ -235,7 +235,7 @@ static void RedRainMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	damage_area->dmg = (is_powered ? POWER_RAIN_DAMAGE : RED_RAIN_DAMAGE); //mxd
 	const float radius = (is_powered ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS); //mxd
 
-	// Find the top of the damage area.  Check down in an area less than the max size.
+	// Find the top of the damage area. Check down in an area less than the max size.
 	VectorSet(damage_area->mins, -radius * 0.5f, -radius * 0.5f, -1.0f);
 	VectorSet(damage_area->maxs, radius * 0.5f, radius * 0.5f, 1.0f);
 
@@ -272,7 +272,10 @@ static void RedRainMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	gi.linkentity(damage_area);
 
 	// Start the red rain. Send along the health as a flag, to indicate if powered up.
-	gi.CreateEffect(&damage_area->s, FX_WEAPON_REDRAIN, CEF_BROADCAST | (self->health << 5), origin, "");
+	int flags = CEF_BROADCAST; //mxd
+	if (is_powered)
+		flags |= CEF_FLAG6;
+	gi.CreateEffect(&damage_area->s, FX_WEAPON_REDRAIN, flags, origin, "");
 
 	damage_area->s.sound = (byte)gi.soundindex("weapons/RedRainFall.wav");
 	damage_area->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
@@ -335,7 +338,10 @@ edict_t* RedRainMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 	G_LinkMissile(arrow);
 
 	// Create new trails for the new missile.
-	gi.CreateEffect(&arrow->s, FX_WEAPON_REDRAINMISSILE, CEF_OWNERS_ORIGIN | (arrow->health << 5) | CEF_FLAG8, NULL, "t", arrow->velocity);
+	int flags = CEF_OWNERS_ORIGIN | CEF_FLAG8; //mxd
+	if (is_powered)
+		flags |= CEF_FLAG6;
+	gi.CreateEffect(&arrow->s, FX_WEAPON_REDRAINMISSILE, flags, NULL, "t", arrow->velocity);
 
 	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it.
 	G_SetToFree(self);
