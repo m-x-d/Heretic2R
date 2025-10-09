@@ -517,18 +517,22 @@ void WeaponThink_SphereOfAnnihilation(edict_t* caster, char* format, ...)
 
 	SpellCastSphereOfAnnihilation(caster, NULL, caster->client->aimangles, fwd, release_flags_ptr);
 
-	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+	{
+		playerinfo_t* info = &caster->client->playerinfo; //mxd
 		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
+	}
 }
 
 void WeaponThink_Firewall(edict_t* caster, char* format, ...)
 {
 	SpellCastFireWall(caster, caster->s.origin, caster->client->aimangles);
 
-	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+	{
+		playerinfo_t* info = &caster->client->playerinfo; //mxd
 		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
+	}
 }
 
 void WeaponThink_RedRainBow(edict_t* caster, char* format, ...)
@@ -544,9 +548,11 @@ void WeaponThink_RedRainBow(edict_t* caster, char* format, ...)
 
 	SpellCastRedRain(caster, start_pos, caster->client->aimangles);
 
-	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+	{
+		playerinfo_t* info = &caster->client->playerinfo; //mxd
 		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
+	}
 }
 
 void WeaponThink_PhoenixBow(edict_t* caster, char* format, ...)
@@ -562,9 +568,11 @@ void WeaponThink_PhoenixBow(edict_t* caster, char* format, ...)
 
 	SpellCastPhoenix(caster, start_pos, caster->client->aimangles);
 
-	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+	{
+		playerinfo_t* info = &caster->client->playerinfo; //mxd
 		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
+	}
 }
 
 void WeaponThink_HellStaff(edict_t* caster, char* format, ...)
@@ -580,9 +588,11 @@ void WeaponThink_HellStaff(edict_t* caster, char* format, ...)
 
 	SpellCastHellstaff(caster, start_pos, caster->client->aimangles);
 
-	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+	{
+		playerinfo_t* info = &caster->client->playerinfo; //mxd
 		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
+	}
 }
 
 void WeaponThink_Blast(edict_t* caster, char* format, ...)
@@ -615,9 +625,11 @@ void WeaponThink_Blast(edict_t* caster, char* format, ...)
 	// This weapon does not auto-target.
 	SpellCastBlast(caster, start_pos, caster->client->aimangles);
 
-	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+	{
+		playerinfo_t* info = &caster->client->playerinfo; //mxd
 		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
+	}
 
 	gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/BlastFire.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
