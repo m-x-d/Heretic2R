@@ -17,6 +17,48 @@
 #define FIREWORM_LIFETIME		1.0f
 #define MAX_FIREWALL_BOUNCES	3 //mxd
 
+#pragma region ========================== Utility functions ==========================
+
+static qboolean GetReflectedWallAngle(const edict_t* self, const trace_t* trace, const int contentmask, vec3_t angles) //mxd. Added to reduce code duplication.
+{
+	if (self->health <= 0 || (trace->contents & CONTENTS_WATER) || fabsf(trace->plane.normal[2]) <= FIREWALL_DOT_MIN)
+		return false;
+
+	const float dot = DotProduct(self->movedir, trace->plane.normal); // Potentially uninitialized in original logic --mxd.
+	const float min_dot = (self->health == MAX_FIREWALL_BOUNCES ? -1.0f : -0.67f); //mxd. For the first collision, allow almost perpendicular bounce - fixes fireblast disappearing when cast almost directly downwards.
+
+	if (dot <= min_dot || dot >= 0.0f) // Slide on all but the most extreme angles.
+		return false;
+
+	vec3_t surf_vel;
+	VectorMA(self->movedir, -dot, trace->plane.normal, surf_vel); // Vel then holds the velocity negated by the impact.
+
+	vec3_t surf_dir;
+	const float factor = VectorNormalize2(surf_vel, surf_dir); // Yes, there is the tiniest chance this could be a zero vect, 
+
+	if (factor <= 0.0f)
+		return false;
+
+	vec3_t test_pos;
+	VectorMA(self->s.origin, 16.0f, surf_dir, test_pos); // Test distance.
+
+	trace_t new_trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, test_pos, self, contentmask, &new_trace);
+
+	if (new_trace.fraction > 0.99f)
+	{
+		// If this is successful, then we can make another fireblast moving in the new direction.
+		vectoangles(surf_dir, angles);
+		angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
+
+		return true;
+	}
+
+	return false;
+}
+
+#pragma endregion
+
 #pragma region ========================== FireBlast (unpowered) ==========================
 
 static edict_t* CreateFireBlast(const vec3_t start_pos, const vec3_t angles, edict_t* owner, const int health, const float timestamp)
@@ -83,39 +125,9 @@ static void FireBlastBlocked(edict_t* self, trace_t* trace)
 		}
 	}
 
-	if (self->health > 0 && !(trace->contents & CONTENTS_WATER) && (trace->plane.normal[2] > FIREWALL_DOT_MIN || trace->plane.normal[2] < -FIREWALL_DOT_MIN))
-	{
-		const float dot = DotProduct(self->movedir, trace->plane.normal); // Potentially uninitialized in original logic --mxd.
-		const float min_dot = (self->health == MAX_FIREWALL_BOUNCES ? -1.0f : -0.67f); //mxd. For the first collision, allow almost perpendicular bounce - fixes fireblast disappearing when cast almost directly downwards.
-
-		if (dot > min_dot && dot < 0.0f) // Slide on all but the most extreme angles.
-		{
-			vec3_t surf_vel;
-			VectorMA(self->movedir, -dot, trace->plane.normal, surf_vel); // Vel then holds the velocity negated by the impact.
-
-			vec3_t surf_dir;
-			const float factor = VectorNormalize2(surf_vel, surf_dir); // Yes, there is the tiniest chance this could be a zero vect, 
-
-			if (factor > 0.0f)
-			{
-				vec3_t test_pos;
-				VectorMA(self->s.origin, 16.0f, surf_dir, test_pos); // Test distance.
-
-				trace_t new_trace;
-				gi.trace(self->s.origin, self->mins, self->maxs, test_pos, self, MASK_SHOT, &new_trace);
-
-				if (new_trace.fraction > 0.99f)
-				{
-					// If this is successful, then we can make another fireblast moving in the new direction.
-					vec3_t new_ang;
-					vectoangles(surf_dir, new_ang);
-					new_ang[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
-
-					CreateFireBlast(self->s.origin, new_ang, self->owner, self->health - 1, level.time);
-				}
-			}
-		}
-	}
+	vec3_t reflected_angles;
+	if (GetReflectedWallAngle(self, trace, MASK_SHOT, reflected_angles)) //mxd
+		CreateFireBlast(self->s.origin, reflected_angles, self->owner, self->health - 1, level.time);
 
 	// Well, whatever happened, free the current blast.
 	VectorClear(self->velocity);
@@ -309,35 +321,9 @@ static void FireWallMissileBlocked(edict_t* self, trace_t* trace)
 		}
 	}
 
-	float dot = 0.0f; //BUGFIX: mxd. Uninitialized in original version.
-	if (self->health > 0 && !(trace->contents & CONTENTS_WATER) && (trace->plane.normal[2] > FIREWALL_DOT_MIN || trace->plane.normal[2] < -FIREWALL_DOT_MIN))
-		dot = DotProduct(self->movedir, trace->plane.normal);
-
-	if (dot > -0.67f && dot < 0.0f) // Slide on all but the most extreme angles.
-	{
-		vec3_t surf_vel;
-		VectorMA(self->movedir, -dot, trace->plane.normal, surf_vel); // Vel then holds the velocity negated by the impact.
-
-		vec3_t surf_dir;
-		const float factor = VectorNormalize2(surf_vel, surf_dir); // Yes, there is the tiniest chance this could be a zero vect, 
-
-		if (factor > 0.0f)
-		{
-			vec3_t test_pos;
-			VectorMA(self->s.origin, 16.0f, surf_dir, test_pos); // Test distance.
-
-			trace_t	new_trace;
-			gi.trace(self->s.origin, self->mins, self->maxs, test_pos, self, MASK_SOLID, &new_trace);
-
-			if (new_trace.fraction > 0.99f)
-			{
-				// If this is successful, then we can make another firewall moving in the new direction.
-				vec3_t new_ang;
-				vectoangles(surf_dir, new_ang);
-				CreateFireWall(self->s.origin, new_ang, self->owner, self->health - 1, level.time, 0.0f);
-			}
-		}
-	}
+	vec3_t reflected_angles;
+	if (GetReflectedWallAngle(self, trace, MASK_SOLID, reflected_angles)) //mxd
+		CreateFireWall(self->s.origin, reflected_angles, self->owner, self->health - 1, level.time, 0.0f);
 
 	// Well, whatever happened, free the current wall.
 	VectorClear(self->velocity);
