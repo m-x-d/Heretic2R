@@ -1,5 +1,5 @@
 //
-// spl_wall.c
+// spl_wall.c //TODO: rename to spl_FireWall.c?
 //
 // Copyright 1998 Raven Software
 //
@@ -13,12 +13,13 @@
 #include "Vector.h"
 #include "g_local.h"
 
-#define FIREWALL_DOT_MIN	0.25f
-#define FIREWORM_LIFETIME	1.0f
+#define FIREWALL_DOT_MIN		0.25f
+#define FIREWORM_LIFETIME		1.0f
+#define MAX_FIREBLAST_BOUNCES	3 //mxd
 
 #pragma region ========================== FireBlast (unpowered) ==========================
 
-static edict_t* CreateFireBlast(vec3_t start_pos, vec3_t angles, edict_t* owner, const int health, const float timestamp)
+static edict_t* CreateFireBlast(const vec3_t start_pos, const vec3_t angles, edict_t* owner, const int health, const float timestamp)
 {
 	edict_t* wall = G_Spawn();
 
@@ -160,13 +161,29 @@ static void FireBlastStartThink(edict_t* self)
 
 static void CastFireBlast(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 {
-	vec3_t fwd;
-	AngleVectors(aim_angles, fwd, NULL, NULL);
+	vec3_t angles;
+	VectorCopy(aim_angles, angles);
 
-	vec3_t new_pos;
-	VectorMA(start_pos, FIREBLAST_RADIUS * 0.5f, fwd, new_pos);
+	//mxd. Replicate II_WEAPON_FIREWALL case from Get_Crosshair()...
+	vec3_t forward;
+	AngleVectors(angles, forward, NULL, NULL);
 
-	edict_t* wall = CreateFireBlast(new_pos, aim_angles, caster, 3, level.time); // Bounce 3 times.
+	vec3_t end;
+	const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 18.0f };
+	VectorMA(view_pos, 1000.0f, forward, end);
+
+	//mxd. Adjust aim angles to match crosshair logic...
+	trace_t tr;
+	gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_SHOT, &tr);
+
+	vec3_t dir;
+	VectorSubtract(tr.endpos, start_pos, dir);
+	VectorNormalize(dir);
+
+	vectoangles(dir, angles);
+	angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
+
+	edict_t* wall = CreateFireBlast(start_pos, angles, caster, MAX_FIREBLAST_BOUNCES, level.time); // Bounce 3 times.
 
 	// Check to see if this is a legit spawn.
 	trace_t trace;
@@ -174,9 +191,7 @@ static void CastFireBlast(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 
 	if (trace.startsolid || trace.fraction < 0.99f)
 	{
-		if (trace.startsolid)
-			VectorCopy(caster->s.origin, wall->s.origin);
-		else
+		if (!trace.startsolid)
 			VectorCopy(trace.endpos, wall->s.origin);
 
 		FireBlastBlocked(wall, &trace);
@@ -418,20 +433,20 @@ static void CastFireWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 // The Firewall spell is cast.
 void SpellCastFireWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 {
+	int snd_index; //mxd
+
 	if (caster->client->playerinfo.powerup_timer <= level.time)
 	{
 		// Not powered up.
-		vec3_t cast_pos;
-		VectorCopy(start_pos, cast_pos);
-		cast_pos[2] += 16.0f; // Aim higher than powered up version.
-
-		CastFireBlast(caster, cast_pos, aim_angles);
-		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/FirewallCast.wav"), 1.0f, ATTN_NORM, 0.0f);
+		CastFireBlast(caster, start_pos, aim_angles); //mxd. Starts at start_pos[2] + 16 in original logic.
+		snd_index = gi.soundindex("weapons/FirewallCast.wav");
 	}
 	else
 	{
 		// Powered up, cast big wall o' doom.
 		CastFireWall(caster, start_pos, aim_angles);
-		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/FirewallPowerCast.wav"), 1.0f, ATTN_NORM, 0.0f);
+		snd_index = gi.soundindex("weapons/FirewallPowerCast.wav");
 	}
+
+	gi.sound(caster, CHAN_WEAPON, snd_index, 1.0f, ATTN_NORM, 0.0f);
 }
