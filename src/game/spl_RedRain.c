@@ -289,7 +289,7 @@ static void RedRainMissileThink(edict_t* self)
 }
 
 // Create the guts of the red rain arrow.
-static void CreateRedRainArrow(edict_t* arrow)
+static void CreateRedRainArrow(edict_t* arrow, const qboolean is_powered) // Named 'create_redarrow' in original logic. //mxd. +is_powered arg.
 {
 	arrow->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	arrow->svflags |= SVF_ALWAYS_SEND;
@@ -297,11 +297,12 @@ static void CreateRedRainArrow(edict_t* arrow)
 	arrow->classname = "Spell_RedRainArrow";
 	arrow->solid = SOLID_BBOX;
 	arrow->clipmask = MASK_SHOT;
+	arrow->health = (is_powered ? 1 : 0); // Health indicates a level of powerup.
 
 	VectorSet(arrow->mins, -ARROW_RADIUS, -ARROW_RADIUS, -ARROW_RADIUS);
 	VectorSet(arrow->maxs,  ARROW_RADIUS,  ARROW_RADIUS,  ARROW_RADIUS);
 
-	if (arrow->health == 1) // Powered arrow?
+	if (is_powered) // Powered arrow?
 		arrow->dmg = irand(POWER_RAIN_DMG_ARROW_MIN, POWER_RAIN_DMG_ARROW_MAX);
 	else
 		arrow->dmg = irand(RED_RAIN_DMG_ARROW_MIN, RED_RAIN_DMG_ARROW_MAX);
@@ -318,10 +319,11 @@ edict_t* RedRainMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 	edict_t* arrow = G_Spawn();
 
 	// Copy everything across.
-	CreateRedRainArrow(arrow);
+	const qboolean is_powered = (self->health > 0); //mxd
+	CreateRedRainArrow(arrow, is_powered);
+
 	VectorCopy(self->s.origin, arrow->s.origin);
 	VectorCopy(vel, arrow->velocity);
-	arrow->health = self->health;
 	arrow->owner = other;
 	arrow->enemy = self->owner;
 	arrow->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
@@ -349,11 +351,9 @@ void SpellCastRedRain(edict_t* caster, const vec3_t start_pos, const vec3_t aim_
 	caster->red_rain_count++;
 
 	edict_t* arrow = G_Spawn();
-	CreateRedRainArrow(arrow);
 
-	// Health indicates a level of powerup.
 	const qboolean is_powered = (caster->client->playerinfo.powerup_timer > level.time); //mxd
-	arrow->health = (is_powered ? 1 : 0); //mxd
+	CreateRedRainArrow(arrow, is_powered);
 
 	VectorCopy(start_pos, arrow->s.origin);
 
