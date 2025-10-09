@@ -156,27 +156,36 @@ void SpellCastPhoenix(edict_t* caster, const vec3_t start_pos, const vec3_t aim_
 
 	const qboolean is_powered = (caster->client->playerinfo.powerup_timer > level.time); //mxd
 	CreatePhoenixArrow(arrow, is_powered);
+	arrow->reflect_debounce_time = MAX_REFLECT;
 	VectorCopy(start_pos, arrow->s.origin);
 
 	// Check ahead first to see if it's going to hit anything at this angle.
-	vec3_t forward;
-	AngleVectors(aim_angles, forward, NULL, NULL);
-
-	vec3_t end_pos;
-	VectorMA(start_pos, PHOENIX_ARROW_SPEED, forward, end_pos);
-
-	trace_t trace;
-	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, caster, MASK_MONSTERSOLID, &trace);
-
-	if (trace.ent != NULL && OkToAutotarget(caster, trace.ent))
-		VectorScale(forward, PHOENIX_ARROW_SPEED, arrow->velocity); // Already going to hit a valid target at this angle - so don't auto-target.
+	if (caster->enemy != NULL) // Auto-target current enemy?
+	{
+		// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
+		GetAimVelocity(caster->enemy, arrow->s.origin, PHOENIX_ARROW_SPEED, aim_angles, arrow->velocity);
+	}
 	else
-		GetAimVelocity(caster->enemy, arrow->s.origin, PHOENIX_ARROW_SPEED, aim_angles, arrow->velocity); // Auto-target current enemy.
+	{
+		// Check ahead first to see if it's going to hit anything at this angle.
+		vec3_t forward;
+		AngleVectors(aim_angles, forward, NULL, NULL);
 
-	VectorCopy(aim_angles, arrow->s.angles);
-	arrow->reflect_debounce_time = MAX_REFLECT;
+		//mxd. Replicate II_WEAPON_PHOENIXBOW case from Get_Crosshair()...
+		vec3_t end;
+		const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 22.0f };
+		VectorMA(view_pos, PHOENIX_ARROW_SPEED, forward, end);
+
+		trace_t trace;
+		gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_MONSTERSOLID, &trace);
+
+		vec3_t dir;
+		VectorSubtract(trace.endpos, arrow->s.origin, dir);
+		VectorNormalize(dir);
+		VectorScale(dir, PHOENIX_ARROW_SPEED, arrow->velocity);
+	}
+
 	arrow->owner = caster;
-
 	G_LinkMissile(arrow);
 
 	// Play travel sound on the arrow itself.
