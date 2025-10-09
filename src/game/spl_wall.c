@@ -15,52 +15,52 @@
 
 #define FIREWALL_DOT_MIN		0.25f
 #define FIREWORM_LIFETIME		1.0f
-#define MAX_FIREBLAST_BOUNCES	3 //mxd
+#define MAX_FIREWALL_BOUNCES	3 //mxd
 
 #pragma region ========================== FireBlast (unpowered) ==========================
 
 static edict_t* CreateFireBlast(const vec3_t start_pos, const vec3_t angles, edict_t* owner, const int health, const float timestamp)
 {
-	edict_t* wall = G_Spawn();
+	edict_t* blast = G_Spawn();
 
-	VectorSet(wall->mins, -FIREBLAST_PROJ_RADIUS, -FIREBLAST_PROJ_RADIUS, -FIREBLAST_PROJ_RADIUS);
-	VectorSet(wall->maxs,  FIREBLAST_PROJ_RADIUS,  FIREBLAST_PROJ_RADIUS,  FIREBLAST_PROJ_RADIUS);
+	VectorSet(blast->mins, -FIREBLAST_PROJ_RADIUS, -FIREBLAST_PROJ_RADIUS, -FIREBLAST_PROJ_RADIUS);
+	VectorSet(blast->maxs,  FIREBLAST_PROJ_RADIUS,  FIREBLAST_PROJ_RADIUS,  FIREBLAST_PROJ_RADIUS);
 
-	VectorCopy(start_pos, wall->s.origin);
-	VectorCopy(angles, wall->s.angles);
-	AngleVectors(angles, wall->movedir, NULL, NULL);
-	VectorScale(wall->movedir, FIREBLAST_SPEED, wall->velocity);
+	VectorCopy(start_pos, blast->s.origin);
+	VectorCopy(angles, blast->s.angles);
+	AngleVectors(angles, blast->movedir, NULL, NULL);
+	VectorScale(blast->movedir, FIREBLAST_SPEED, blast->velocity);
 
-	wall->mass = 250;
-	wall->elasticity = ELASTICITY_NONE;
-	wall->friction = 0.0f;
-	wall->gravity = 0.0f;
+	blast->mass = 250;
+	blast->elasticity = ELASTICITY_NONE;
+	blast->friction = 0.0f;
+	blast->gravity = 0.0f;
 
-	wall->s.effects |= EF_ALWAYS_ADD_EFFECTS;
-	wall->svflags |= SVF_ALWAYS_SEND | SVF_DO_NO_IMPACT_DMG;
-	wall->movetype = PHYSICSTYPE_FLY;
-	wall->isBlocked = FireBlastBlocked;
+	blast->s.effects |= EF_ALWAYS_ADD_EFFECTS;
+	blast->svflags |= SVF_ALWAYS_SEND | SVF_DO_NO_IMPACT_DMG;
+	blast->movetype = PHYSICSTYPE_FLY;
+	blast->isBlocked = FireBlastBlocked;
 
-	wall->classname = "Spell_FireBlast";
-	wall->solid = SOLID_BBOX;
-	wall->clipmask = MASK_DRIP;
-	wall->owner = owner;
-	wall->dmg_radius = FIREBLAST_RADIUS;
-	wall->dmg = FIREBLAST_DAMAGE;
+	blast->classname = "Spell_FireBlast";
+	blast->solid = SOLID_BBOX;
+	blast->clipmask = MASK_DRIP;
+	blast->owner = owner;
+	blast->dmg_radius = FIREBLAST_RADIUS;
+	blast->dmg = FIREBLAST_DAMAGE;
 
-	wall->health = health; // Can bounce 3 times.
-	wall->fire_timestamp = timestamp; // This marks the wall with a more-or-less unique value so the wall doesn't damage twice.
+	blast->health = health; // Can bounce 3 times.
+	blast->fire_timestamp = timestamp; // This marks the wall with a more-or-less unique value so the wall doesn't damage twice.
 
-	wall->think = FireBlastStartThink;
-	wall->nextthink = level.time + FRAMETIME; //mxd. Use define.
+	blast->think = FireBlastStartThink;
+	blast->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
-	gi.linkentity(wall);
+	gi.linkentity(blast);
 
 	const short angle_yaw = ANGLE2SHORT(angles[YAW]);
 	const short angle_pitch = ANGLE2SHORT(angles[PITCH]);
-	gi.CreateEffect(&wall->s, FX_WEAPON_FIREBURST, CEF_OWNERS_ORIGIN, NULL, "ss", angle_yaw, angle_pitch);
+	gi.CreateEffect(&blast->s, FX_WEAPON_FIREBURST, CEF_OWNERS_ORIGIN, NULL, "ss", angle_yaw, angle_pitch);
 
-	return wall;
+	return blast;
 }
 
 // This called when missile touches anything (world or edict).
@@ -86,7 +86,7 @@ static void FireBlastBlocked(edict_t* self, trace_t* trace)
 	if (self->health > 0 && !(trace->contents & CONTENTS_WATER) && (trace->plane.normal[2] > FIREWALL_DOT_MIN || trace->plane.normal[2] < -FIREWALL_DOT_MIN))
 	{
 		const float dot = DotProduct(self->movedir, trace->plane.normal); // Potentially uninitialized in original logic --mxd.
-		const float min_dot = (self->health == MAX_FIREBLAST_BOUNCES ? -1.0f : -0.67f); //mxd. For the first collision, allow almost perpendicular bounce - fixes fireblast disappearing when cast almost directly downwards.
+		const float min_dot = (self->health == MAX_FIREWALL_BOUNCES ? -1.0f : -0.67f); //mxd. For the first collision, allow almost perpendicular bounce - fixes fireblast disappearing when cast almost directly downwards.
 
 		if (dot > min_dot && dot < 0.0f) // Slide on all but the most extreme angles.
 		{
@@ -187,22 +187,22 @@ static void CastFireBlast(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 	vectoangles(dir, angles);
 	angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
 
-	edict_t* wall = CreateFireBlast(start_pos, angles, caster, MAX_FIREBLAST_BOUNCES, level.time); // Bounce 3 times.
+	edict_t* blast = CreateFireBlast(start_pos, angles, caster, MAX_FIREWALL_BOUNCES, level.time); // Bounce 3 times.
 
 	// Check to see if this is a legit spawn.
 	trace_t trace;
-	gi.trace(caster->s.origin, wall->mins, wall->maxs, wall->s.origin, caster, MASK_SOLID, &trace);
+	gi.trace(caster->s.origin, blast->mins, blast->maxs, blast->s.origin, caster, MASK_SOLID, &trace);
 
 	if (trace.startsolid || trace.fraction < 0.99f)
 	{
 		if (!trace.startsolid)
-			VectorCopy(trace.endpos, wall->s.origin);
+			VectorCopy(trace.endpos, blast->s.origin);
 
-		FireBlastBlocked(wall, &trace);
+		FireBlastBlocked(blast, &trace);
 	}
 	else
 	{
-		FireBlastThink(wall);
+		FireBlastThink(blast);
 	}
 }
 
@@ -210,7 +210,7 @@ static void CastFireBlast(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 
 #pragma region ========================== FireWall (powered up) ==========================
 
-static edict_t* CreateFireWall(vec3_t start_pos, vec3_t angles, edict_t* owner, const int health, const float timestamp, const float side_speed)
+static edict_t* CreateFireWall(const vec3_t start_pos, const vec3_t angles, edict_t* owner, const int health, const float timestamp, const float side_speed)
 {
 	edict_t* wall = G_Spawn();
 
@@ -331,7 +331,7 @@ static void FireWallMissileBlocked(edict_t* self, trace_t* trace)
 
 			if (new_trace.fraction > 0.99f)
 			{
-				// If this is successful, then we can make another fireblast moving in the new direction.
+				// If this is successful, then we can make another firewall moving in the new direction.
 				vec3_t new_ang;
 				vectoangles(surf_dir, new_ang);
 				CreateFireWall(self->s.origin, new_ang, self->owner, self->health - 1, level.time, 0.0f);
@@ -339,7 +339,7 @@ static void FireWallMissileBlocked(edict_t* self, trace_t* trace)
 		}
 	}
 
-	// Well, whatever happened, free the current blast.
+	// Well, whatever happened, free the current wall.
 	VectorClear(self->velocity);
 
 	self->s.effects |= EF_ALTCLIENTFX; // Indicate to the wall that it's time to die.
@@ -395,7 +395,7 @@ static void FireWallMissileStartThink(edict_t* self)
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void CastFireWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
+static void CastFireWall(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
 	// Big wall is powered up.
 	vec3_t fwd;
@@ -410,7 +410,7 @@ static void CastFireWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 		vec3_t spawn_pos;
 		VectorMA(start_pos, radius, right, spawn_pos);
 
-		edict_t* wall = CreateFireWall(spawn_pos, aim_angles, caster, 3, level.time, radius);
+		edict_t* wall = CreateFireWall(spawn_pos, aim_angles, caster, MAX_FIREWALL_BOUNCES, level.time, radius);
 
 		// Check to see if this is a legit spawn.
 		trace_t trace;
