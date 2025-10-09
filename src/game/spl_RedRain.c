@@ -170,7 +170,7 @@ static void RedRainThink(edict_t* self)
 	else
 	{
 		// Check for lightning.
-		if (self->delay - level.time < RED_RAIN_LIGHTNING_DURATION && irand(0, RED_RAIN_LIGHTNING_CHANCE) == 0)
+		if (self->delay - level.time < RED_RAIN_LIGHTNING_DURATION && irand(0, RED_RAIN_LIGHTNING_CHANCE - 1) == 0) //mxd. irand(0, RED_RAIN_LIGHTNING_CHANCE) in original logic. Let's actually make it 1 in 6 chance...
 			RedRainLightning(self);
 
 		self->nextthink = level.time + self->wait;
