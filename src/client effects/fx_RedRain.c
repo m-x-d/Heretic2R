@@ -259,7 +259,7 @@ static qboolean RedRainDropSpawnerUpdate(client_entity_t* rain, centity_t* owner
 	return true;
 }
 
-// This is from creating the effect FX_RED_RAIN.
+// Create FX_RED_RAIN effect.
 void FXRedRain(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	const qboolean powerup = (flags & CEF_FLAG6); //mxd
@@ -328,6 +328,7 @@ static qboolean RedRainMissileThink(client_entity_t* missile, centity_t* owner)
 	return true;
 }
 
+// Create FX_WEAPON_REDRAINMISSILE effect.
 void FXRedRainMissile(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	int duration;
