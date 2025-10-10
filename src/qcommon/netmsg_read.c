@@ -264,7 +264,7 @@ void MSG_ReadShortYawPitch(sizebuf_t* sb, vec3_t dir)
 
 	angles[0] = (float)MSG_ReadShort(sb) / 8.0f;
 	angles[1] = (float)MSG_ReadShort(sb) / 8.0f;
-	angles[2] = 0;
+	angles[2] = 0.0f;
 
 	angles[YAW] *= ANGLE_TO_RAD;
 	angles[PITCH] *= ANGLE_TO_RAD;
@@ -273,18 +273,15 @@ void MSG_ReadShortYawPitch(sizebuf_t* sb, vec3_t dir)
 
 void MSG_ReadYawPitch(sizebuf_t* sb, vec3_t dir)
 {
-	vec3_t angles;
-
 	const int yb = MSG_ReadByte(sb);
 	const int pb = MSG_ReadByte(sb);
 
-	// Convert to signed degrees
-	const float yaw = ((float)yb * (360.0f / 255.0f)) - 180.0f;
+	// Convert to signed degrees.
+	const float yaw =   ((float)yb * (360.0f / 255.0f)) - 180.0f;
 	const float pitch = ((float)pb * (180.0f / 255.0f)) - 90.0f;
 
-	// Convert to radians
-	angles[YAW] = yaw * ANGLE_TO_RAD;
-	angles[PITCH] = pitch * ANGLE_TO_RAD;
+	// Convert to radians.
+	const vec3_t angles = { pitch * ANGLE_TO_RAD, yaw * ANGLE_TO_RAD, 0.0f };
 	DirFromAngles(angles, dir);
 }
 
