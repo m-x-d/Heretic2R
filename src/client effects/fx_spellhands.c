@@ -12,6 +12,7 @@
 #include "Vector.h"
 #include "g_playstats.h"
 
+#define SH_MAX_TRAIL_SCALE			8.0f //mxd
 #define SH_TRAIL_SCALE_INCREMENT	0.35f //mxd
 
 static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
@@ -94,7 +95,8 @@ static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 		Vec3AddAssign(trail_delta, real_trail_start);
 	}
 
-	self->Scale += SH_TRAIL_SCALE_INCREMENT; //mxd
+	if (self->Scale < SH_MAX_TRAIL_SCALE) //mxd
+		self->Scale += SH_TRAIL_SCALE_INCREMENT;
 
 	return true;
 }
