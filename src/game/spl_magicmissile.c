@@ -84,9 +84,11 @@ static void MagicMissileThink(edict_t* self)
 }
 
 // Create guts of magic missile.
-static void CreateMagicMissile(edict_t* missile) //mxd. Named 'create_magic' in original version.
+static edict_t* CreateMagicMissile(void) //mxd. Named 'create_magic' in original version.
 {
 #define MISSILE_RADIUS	2.0f //mxd. ARROW_RADIUS in original version.
+
+	edict_t* missile = G_Spawn();
 
 	missile->s.effects = (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
 	missile->movetype = MOVETYPE_FLYMISSILE;
@@ -103,16 +105,17 @@ static void CreateMagicMissile(edict_t* missile) //mxd. Named 'create_magic' in 
 
 	missile->touch = MagicMissileTouch;
 	missile->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+	return missile;
 }
 
 edict_t* MagicMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 {
 	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
 	// with the existing one, since we hit something. Hence, we create a new one totally.
-	edict_t* missile = G_Spawn();
+	edict_t* missile = CreateMagicMissile();
 
 	// Copy everything across.
-	CreateMagicMissile(missile);
 	VectorCopy(self->s.origin, missile->s.origin);
 	VectorCopy(vel, missile->velocity);
 	VectorNormalize2(vel, missile->movedir);
@@ -145,8 +148,8 @@ void SpellCastMagicMissile(edict_t* caster, const vec3_t start_pos, const vec3_t
 #define MISSILE_PITCH		2.0f
 
 	// Spawn the magic-missile.
-	edict_t* missile = G_Spawn();
-	CreateMagicMissile(missile);
+	edict_t* missile = CreateMagicMissile();
+
 	missile->reflect_debounce_time = MAX_REFLECT;
 	missile->owner = caster;
 
