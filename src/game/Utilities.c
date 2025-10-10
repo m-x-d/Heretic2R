@@ -552,14 +552,12 @@ void GetAimVelocity(const edict_t* enemy, const vec3_t org, const float speed, c
 	Vec3ScaleAssign(speed, out);
 }
 
-//mxd. Adjust aim_angles to aim at crosshair position calculated in GetCrosshair().
-void AdjustAimAngles(const edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const float projectle_speed, const float view_offset_z, vec3_t angles)
+//mxd. Calculate direction towards crosshair position calculated in GetCrosshair().
+void AdjustAimDirection(const edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const float projectle_speed, const float view_offset_z, vec3_t direction)
 {
-	VectorCopy(aim_angles, angles);
-
 	// Replicate relevant case from Get_Crosshair()...
 	vec3_t forward;
-	AngleVectors(angles, forward, NULL, NULL);
+	AngleVectors(aim_angles, forward, NULL, NULL);
 
 	vec3_t end;
 	const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + view_offset_z };
@@ -569,9 +567,23 @@ void AdjustAimAngles(const edict_t* caster, const vec3_t start_pos, const vec3_t
 	trace_t trace;
 	gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_SHOT, &trace);
 
+	VectorSubtract(trace.endpos, start_pos, direction);
+	VectorNormalize(direction);
+}
+
+//mxd. Calculate velocity towards crosshair position calculated in GetCrosshair().
+void AdjustAimVelocity(const edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const float projectle_speed, const float view_offset_z, vec3_t velocity)
+{
 	vec3_t dir;
-	VectorSubtract(trace.endpos, start_pos, dir);
-	VectorNormalize(dir);
+	AdjustAimDirection(caster, start_pos, aim_angles, projectle_speed, view_offset_z, dir);
+	VectorScale(dir, projectle_speed, velocity);
+}
+
+//mxd. Adjust aim_angles to aim at crosshair position calculated in GetCrosshair().
+void AdjustAimAngles(const edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const float projectle_speed, const float view_offset_z, vec3_t angles)
+{
+	vec3_t dir;
+	AdjustAimDirection(caster, start_pos, aim_angles, projectle_speed, view_offset_z, dir);
 
 	vectoangles(dir, angles);
 	angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...

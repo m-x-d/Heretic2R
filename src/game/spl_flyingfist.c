@@ -196,31 +196,11 @@ void SpellCastFlyingFist(edict_t* caster, const vec3_t start_pos, const vec3_t a
 	if (wimpy)
 		flying_fist->flags |= FL_NO_KNOCKBACK; // Just using the no knockback flag to indicate a wussy weapon.
 
-	// Auto-target current enemy?
+	// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
 	if (caster->enemy != NULL)
-	{
-		// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
 		GetAimVelocity(caster->enemy, flying_fist->s.origin, FLYING_FIST_SPEED, aim_angles, flying_fist->velocity);
-	}
 	else
-	{
-		// Check ahead to see if it's going to hit anything at this angle.
-		vec3_t forward;
-		AngleVectors(aim_angles, forward, NULL, NULL);
-
-		//mxd. Replicate II_WEAPON_FLYINGFIST case from Get_Crosshair()...
-		vec3_t end;
-		const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 20.0f };
-		VectorMA(view_pos, FLYING_FIST_SPEED, forward, end);
-
-		trace_t trace;
-		gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_MONSTERSOLID, &trace);
-
-		vec3_t dir;
-		VectorSubtract(trace.endpos, flying_fist->s.origin, dir);
-		VectorNormalize(dir);
-		VectorScale(dir, FLYING_FIST_SPEED, flying_fist->velocity);
-	}
+		AdjustAimVelocity(caster, start_pos, aim_angles, FLYING_FIST_SPEED, 20.0f, flying_fist->velocity); //mxd
 
 	flying_fist->owner = caster;
 
