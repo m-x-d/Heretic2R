@@ -24,26 +24,7 @@ void SpellCastBlast(edict_t* caster, const vec3_t start_pos, const vec3_t aim_an
 
 	// This weapon does not auto-target.
 	vec3_t angles;
-	VectorCopy(aim_angles, angles);
-
-	//mxd. Replicate II_WEAPON_MAGICMISSILE case from Get_Crosshair()...
-	vec3_t forward;
-	AngleVectors(angles, forward, NULL, NULL);
-
-	vec3_t end;
-	const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 18.0f };
-	VectorMA(view_pos, BLAST_DISTANCE, forward, end);
-
-	//mxd. Adjust aim angles to match crosshair logic...
-	trace_t tr;
-	gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_SHOT, &tr);
-
-	vec3_t dir;
-	VectorSubtract(tr.endpos, start_pos, dir);
-	VectorNormalize(dir);
-
-	vectoangles(dir, angles);
-	angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
+	AdjustAimAngles(caster, start_pos, aim_angles, BLAST_DISTANCE, 18.0f, angles); //mxd
 
 	// Compress the angles into two shorts.
 	const short s_yaw = ANGLE2SHORT(angles[YAW]);
@@ -54,6 +35,7 @@ void SpellCastBlast(edict_t* caster, const vec3_t start_pos, const vec3_t aim_an
 	for (int i = 0; i < BLAST_NUM_SHOTS; i++)
 	{
 		// Single shot traveling out.
+		vec3_t forward;
 		AngleVectors(angles, forward, NULL, NULL);
 
 		vec3_t end_pos;
