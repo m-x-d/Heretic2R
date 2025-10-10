@@ -70,8 +70,10 @@ static void HellboltThink(edict_t* self)
 }
 
 // Guts of creating a hell bolt.
-static void CreateHellbolt(edict_t* hellbolt)
+static edict_t* CreateHellbolt(void)
 {
+	edict_t* hellbolt = G_Spawn();
+
 	hellbolt->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	hellbolt->svflags |= SVF_ALWAYS_SEND;
 	hellbolt->movetype = MOVETYPE_FLYMISSILE;
@@ -86,16 +88,17 @@ static void CreateHellbolt(edict_t* hellbolt)
 	hellbolt->touch = HellboltTouch;
 	hellbolt->think = HellboltThink;
 	hellbolt->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+	return hellbolt;
 }
 
 edict_t* HellboltReflect(edict_t* self, edict_t* other, const vec3_t vel)
 {
 	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
 	// with the existing one, since we hit something. Hence, we create a new one totally.
-	edict_t* hellbolt = G_Spawn();
+	edict_t* hellbolt = CreateHellbolt();
 
 	// Copy everything across.
-	CreateHellbolt(hellbolt);
 	VectorCopy(self->s.origin, hellbolt->s.origin);
 	VectorCopy(vel, hellbolt->velocity);
 	VectorNormalize2(vel, hellbolt->movedir);
@@ -302,8 +305,8 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 // Unpowered version of this weapon - hellbolts.
 static void FireHellbolt(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles) //mxd. Split from SpellCastHellstaff().
 {
-	edict_t* hellbolt = G_Spawn();
-	CreateHellbolt(hellbolt);
+	edict_t* hellbolt = CreateHellbolt();
+
 	hellbolt->reflect_debounce_time = MAX_REFLECT;
 	VectorCopy(start_pos, hellbolt->s.origin);
 
