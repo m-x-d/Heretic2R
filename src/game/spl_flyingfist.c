@@ -115,8 +115,10 @@ static void FlyingFistTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 	G_FreeEdict(self); //mxd. G_SetToFree() in original logic. Fixes client effect/dynamic light staying active for 100 ms. after this.
 }
 
-static void CreateFlyingFist(edict_t* flying_fist)
+static edict_t* CreateFlyingFist(void)
 {
+	edict_t* flying_fist = G_Spawn();
+
 	flying_fist->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	flying_fist->svflags |= SVF_ALWAYS_SEND;
 	flying_fist->movetype = MOVETYPE_FLYMISSILE;
@@ -130,16 +132,17 @@ static void CreateFlyingFist(edict_t* flying_fist)
 	flying_fist->touch = FlyingFistTouch;
 	flying_fist->think = FlyingFistInitThink;
 	flying_fist->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+	return flying_fist;
 }
 
 edict_t* FlyingFistReflect(edict_t* self, edict_t* other, const vec3_t vel)
 {
 	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
 	// with the existing one, since we hit something. Hence, we create a new one totally.
-	edict_t* flying_fist = G_Spawn();
+	edict_t* flying_fist = CreateFlyingFist();
 
 	// Copy everything across.
-	CreateFlyingFist(flying_fist);
 	VectorCopy(self->s.origin, flying_fist->s.origin);
 	VectorCopy(vel, flying_fist->velocity);
 	VectorNormalize2(vel, flying_fist->movedir);
@@ -167,7 +170,7 @@ edict_t* FlyingFistReflect(edict_t* self, edict_t* other, const vec3_t vel)
 void SpellCastFlyingFist(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
 	// Spawn the flying-fist (fireball).
-	edict_t* flying_fist = G_Spawn();
+	edict_t* flying_fist = CreateFlyingFist();
 	const playerinfo_t* info = &caster->client->playerinfo;
 
 	const qboolean wimpy = (info->pers.inventory.Items[info->weap_ammo_index] < info->pers.weapon->quantity);
@@ -189,7 +192,6 @@ void SpellCastFlyingFist(edict_t* caster, const vec3_t start_pos, const vec3_t a
 		gi.sound(caster, CHAN_WEAPON, gi.soundindex(snd_name), 1.0f, ATTN_NORM, 0.0f);
 	}
 
-	CreateFlyingFist(flying_fist);
 	flying_fist->reflect_debounce_time = MAX_REFLECT;
 	VectorCopy(start_pos, flying_fist->s.origin);
 
