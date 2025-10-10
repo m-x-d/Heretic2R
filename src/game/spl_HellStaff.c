@@ -307,30 +307,11 @@ static void FireHellbolt(edict_t* caster, const vec3_t start_pos, const vec3_t a
 	hellbolt->reflect_debounce_time = MAX_REFLECT;
 	VectorCopy(start_pos, hellbolt->s.origin);
 
-	if (caster->enemy != NULL) // Auto-target current enemy?
-	{
-		// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
+	// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
+	if (caster->enemy != NULL)
 		GetAimVelocity(caster->enemy, hellbolt->s.origin, HELLBOLT_SPEED, aim_angles, hellbolt->velocity);
-	}
 	else
-	{
-		// Check ahead first to see if it's going to hit anything at this angle.
-		vec3_t forward;
-		AngleVectors(aim_angles, forward, NULL, NULL);
-
-		//mxd. Replicate II_WEAPON_HELLSTAFF case from Get_Crosshair()...
-		vec3_t end;
-		const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 14.0f };
-		VectorMA(view_pos, HELLBOLT_SPEED, forward, end);
-
-		trace_t trace;
-		gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_MONSTERSOLID, &trace);
-
-		vec3_t dir;
-		VectorSubtract(trace.endpos, hellbolt->s.origin, dir);
-		VectorNormalize(dir);
-		VectorScale(dir, HELLBOLT_SPEED, hellbolt->velocity);
-	}
+		AdjustAimVelocity(caster, start_pos, aim_angles, HELLBOLT_SPEED, 14.0f, hellbolt->velocity); //mxd
 
 	hellbolt->owner = caster;
 
