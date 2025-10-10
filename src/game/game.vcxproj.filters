@@ -40,9 +40,6 @@
     <Filter Include="src\Cinematics\Sithra victim">
       <UniqueIdentifier>{82ecc20a-6d70-45df-96e6-dfb9054dd1f6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Spells">
-      <UniqueIdentifier>{061d1229-de6f-4a32-ab5c-87c5428fc9e2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Monsters">
       <UniqueIdentifier>{9fd7546d-da20-4c9a-b096-1d33364a7364}</UniqueIdentifier>
     </Filter>
@@ -132,6 +129,12 @@
     </Filter>
     <Filter Include="src\Scripting\Events">
       <UniqueIdentifier>{7cebdf27-3edd-41b5-bc0c-44a4f18107a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\SpellsOffensive">
+      <UniqueIdentifier>{061d1229-de6f-4a32-ab5c-87c5428fc9e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\SpellsDefensive">
+      <UniqueIdentifier>{b270f553-93f7-4ba1-9ee9-210751ff3fd2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -307,55 +310,34 @@
       <Filter>src\Cinematics\Sithra victim</Filter>
     </ClCompile>
     <ClCompile Include="spl_blast.c">
-      <Filter>src\Spells</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_BlueRing.c">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClCompile>
     <ClCompile Include="spl_flyingfist.c">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClCompile>
     <ClCompile Include="spl_HellStaff.c">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClCompile>
     <ClCompile Include="spl_maceballs.c">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClCompile>
     <ClCompile Include="spl_magicmissile.c">
-      <Filter>src\Spells</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_meteorbarrier.c">
-      <Filter>src\Spells</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_morph.c">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClCompile>
     <ClCompile Include="spl_Phoenix.c">
-      <Filter>src\Spells</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_powerup.c">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClCompile>
     <ClCompile Include="spl_RedRain.c">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClCompile>
     <ClCompile Include="spl_ripper.c">
-      <Filter>src\Spells</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_shield.c">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClCompile>
     <ClCompile Include="spl_sphereofannihlation.c">
-      <Filter>src\Spells</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_teleport.c">
-      <Filter>src\Spells</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_tornado.c">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClCompile>
     <ClCompile Include="spl_wall.c">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClCompile>
     <ClCompile Include="g_monster.c">
       <Filter>src\Monsters</Filter>
@@ -671,6 +653,27 @@
     </ClCompile>
     <ClCompile Include="sc_Utility.cpp">
       <Filter>src\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="spl_BlueRing.c">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClCompile>
+    <ClCompile Include="spl_meteorbarrier.c">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClCompile>
+    <ClCompile Include="spl_morph.c">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClCompile>
+    <ClCompile Include="spl_powerup.c">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClCompile>
+    <ClCompile Include="spl_shield.c">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClCompile>
+    <ClCompile Include="spl_teleport.c">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClCompile>
+    <ClCompile Include="spl_tornado.c">
+      <Filter>src\SpellsDefensive</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1109,9 +1112,6 @@
     <ClInclude Include="..\qcommon\p_dll.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="spl_morph.h">
-      <Filter>src\Spells</Filter>
-    </ClInclude>
     <ClInclude Include="g_ai.h">
       <Filter>src\Monsters</Filter>
     </ClInclude>
@@ -1128,52 +1128,37 @@
       <Filter>src\Game objects</Filter>
     </ClInclude>
     <ClInclude Include="spl_flyingfist.h">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClInclude>
     <ClInclude Include="spl_magicmissile.h">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClInclude>
     <ClInclude Include="spl_sphereofannihlation.h">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClInclude>
     <ClInclude Include="spl_maceballs.h">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClInclude>
     <ClInclude Include="spl_wall.h">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClInclude>
     <ClInclude Include="spl_ripper.h">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClInclude>
     <ClInclude Include="spl_blast.h">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClInclude>
     <ClInclude Include="spl_RedRain.h">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClInclude>
     <ClInclude Include="spl_Phoenix.h">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClInclude>
     <ClInclude Include="spl_HellStaff.h">
-      <Filter>src\Spells</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_shield.h">
-      <Filter>src\Spells</Filter>
+      <Filter>src\SpellsOffensive</Filter>
     </ClInclude>
     <ClInclude Include="p_hud.h">
       <Filter>src\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_powerup.h">
-      <Filter>src\Spells</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_BlueRing.h">
-      <Filter>src\Spells</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_meteorbarrier.h">
-      <Filter>src\Spells</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_tornado.h">
-      <Filter>src\Spells</Filter>
     </ClInclude>
     <ClInclude Include="mg_ai.h">
       <Filter>src\Monsters</Filter>
@@ -1186,9 +1171,6 @@
     </ClInclude>
     <ClInclude Include="p_morph.h">
       <Filter>src\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_teleport.h">
-      <Filter>src\Spells</Filter>
     </ClInclude>
     <ClInclude Include="p_teleport.h">
       <Filter>src\Player</Filter>
@@ -1315,6 +1297,27 @@
     </ClInclude>
     <ClInclude Include="sc_Utility.h">
       <Filter>src\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_BlueRing.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_meteorbarrier.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_morph.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_powerup.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_shield.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_teleport.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_tornado.h">
+      <Filter>src\SpellsDefensive</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
