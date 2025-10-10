@@ -93,8 +93,10 @@ static void PhoenixMissileThink(edict_t* self)
 }
 
 // Create the guts of a phoenix arrow.
-static void CreatePhoenixArrow(edict_t* arrow, const qboolean is_powered) //mxd. Named 'create_phoenix' in original logic. //mxd. +is_powered arg.
+static edict_t* CreatePhoenixArrow(const qboolean is_powered) //mxd. Named 'create_phoenix' in original logic. //mxd. +is_powered arg.
 {
+	edict_t* arrow = G_Spawn();
+
 	arrow->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	arrow->svflags |= SVF_ALWAYS_SEND;
 	arrow->movetype = MOVETYPE_FLYMISSILE;
@@ -109,18 +111,18 @@ static void CreatePhoenixArrow(edict_t* arrow, const qboolean is_powered) //mxd.
 	arrow->touch = PhoenixMissileTouch;
 	arrow->think = PhoenixMissileThink;
 	arrow->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+	return arrow;
 }
 
 edict_t* PhoenixMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 {
 	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
 	// with the existing one, since we hit something. Hence, we create a new one totally.
-	edict_t* arrow = G_Spawn();
+	const qboolean is_powered = (self->health > 0); //mxd
+	edict_t* arrow = CreatePhoenixArrow(is_powered);
 
 	// Copy everything across.
-	const qboolean is_powered = (self->health > 0); //mxd
-	CreatePhoenixArrow(arrow, is_powered);
-
 	VectorCopy(vel, arrow->velocity);
 	VectorCopy(self->s.origin, arrow->s.origin);
 	arrow->owner = other;
@@ -152,10 +154,9 @@ edict_t* PhoenixMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 
 void SpellCastPhoenix(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
-	edict_t* arrow = G_Spawn();
-
 	const qboolean is_powered = (caster->client->playerinfo.powerup_timer > level.time); //mxd
-	CreatePhoenixArrow(arrow, is_powered);
+	edict_t* arrow = CreatePhoenixArrow(is_powered);
+
 	arrow->reflect_debounce_time = MAX_REFLECT;
 	VectorCopy(start_pos, arrow->s.origin);
 
