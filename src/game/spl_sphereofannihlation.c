@@ -121,15 +121,16 @@ static void SphereOfAnnihilationGrowThink(edict_t* self)
 	vec3_t forward;
 	vec3_t up;
 
-	const gclient_t* cl = self->owner->client; //mxd
+	const edict_t* caster = self->owner;
+	const gclient_t* cl = caster->client; //mxd
 
 	if (cl != NULL)
 		AngleVectors(cl->aimangles, forward, NULL, up);
 	else
-		AngleVectors(self->owner->s.angles, forward, NULL, up);
+		AngleVectors(caster->s.angles, forward, NULL, up);
 
 	// If we have released, or we are dead, or a chicken, release the sphere.
-	if (*self->sphere_charging_ptr && !(self->owner->dead_state & (DEAD_DYING | DEAD_DEAD))
+	if (*self->sphere_charging_ptr && !(caster->dead_state & (DEAD_DYING | DEAD_DEAD))
 		&& cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
 		if (self->count < SPHERE_MAX_CHARGES)
@@ -143,11 +144,11 @@ static void SphereOfAnnihilationGrowThink(edict_t* self)
 		}
 
 		// Detect if we have teleported, need to move with the player if that's so.
-		VectorCopy(self->owner->s.origin, self->s.origin);
+		VectorCopy(caster->s.origin, self->s.origin);
 
 		self->s.origin[0] += forward[0] * 20.0f;
 		self->s.origin[1] += forward[1] * 20.0f;
-		self->s.origin[2] += (float)self->owner->viewheight - 5.0f;
+		self->s.origin[2] += (float)caster->viewheight - 5.0f;
 
 		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
@@ -157,17 +158,21 @@ static void SphereOfAnnihilationGrowThink(edict_t* self)
 		self->svflags &= ~SVF_NOCLIENT;
 		self->s.effects &= ~EF_MARCUS_FLAG1;
 
-		// Check ahead first to see if it's going to hit anything at this angle.
-		vec3_t end_pos;
-		VectorMA(self->s.origin, SPHERE_FLY_SPEED, forward, end_pos);
-
-		trace_t trace;
-		gi.trace(self->s.origin, vec3_origin, vec3_origin, end_pos, self->owner, MASK_MONSTERSOLID, &trace);
-
-		if (trace.ent != NULL && OkToAutotarget(self->owner, trace.ent))
-			VectorScale(forward, SPHERE_FLY_SPEED, self->velocity); // Already going to hit a valid target at this angle - so don't auto-target.
-		else if (cl != NULL) //mxd. Added cl NULL check. //TODO: else what?
-			GetAimVelocity(self->owner->enemy, self->s.origin, SPHERE_FLY_SPEED, cl->aimangles, self->velocity); // Auto-target current enemy.
+		if (cl != NULL) // When casted by player.
+		{
+			// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
+			if (caster->enemy != NULL)
+				GetAimVelocity(caster->enemy, self->s.origin, SPHERE_FLY_SPEED, cl->aimangles, self->velocity);
+			else
+				AdjustAimVelocity(caster, self->s.origin, cl->aimangles, 1024.0f, 18.0f, self->velocity); //mxd
+		}
+		else // When casted by monster.
+		{
+			if (caster->enemy != NULL)
+				GetAimVelocity(caster->enemy, self->s.origin, SPHERE_FLY_SPEED, caster->s.angles, self->velocity);
+			else
+				VectorScale(forward, SPHERE_FLY_SPEED, self->velocity);
+		}
 
 		VectorNormalize2(self->velocity, self->movedir);
 
@@ -185,10 +190,11 @@ static void SphereOfAnnihilationGrowThink(edict_t* self)
 		self->s.sound = 0;
 		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/SphereFire.wav"), 1.0f, ATTN_NORM, 0.0f);
 
-		gi.trace(self->s.origin, vec3_origin, vec3_origin, self->s.origin, self->owner, MASK_PLAYERSOLID, &trace);
+		trace_t back_trace;
+		gi.trace(caster->s.origin, vec3_origin, vec3_origin, self->s.origin, caster, MASK_PLAYERSOLID, &back_trace); //mxd. Traced from self->s.origin to self->s.origin in original logic.
 
-		if (trace.startsolid)
-			SphereOfAnnihilationTouch(self, trace.ent, &trace.plane, trace.surface);
+		if (back_trace.startsolid)
+			SphereOfAnnihilationTouch(self, back_trace.ent, &back_trace.plane, back_trace.surface);
 	}
 }
 
