@@ -212,18 +212,15 @@ static void SpherePowerLaserThink(edict_t* self)
 	vec3_t aim_angles;
 	VectorCopy(self->s.angles, aim_angles);
 
-	vec3_t fwd;
-	AngleVectors(aim_angles, fwd, NULL, NULL);
-	VectorMA(start_pos, 12.0f, fwd, start_pos);
+	vec3_t shoot_dir;
+	AngleVectors(aim_angles, shoot_dir, NULL, NULL);
+	VectorMA(start_pos, 12.0f, shoot_dir, start_pos);
 
 	trace_t tr;
-	vec3_t shoot_dir;
 	int num_hit = 0; // Can't hit more than 8 guys...
 
 	do
 	{
-		AngleVectors(aim_angles, shoot_dir, NULL, NULL);
-
 		vec3_t end_pos;
 		VectorMA(start_pos, sphere_dist, shoot_dir, end_pos);
 
@@ -255,6 +252,7 @@ static void SpherePowerLaserThink(edict_t* self)
 				// Re-constitute aim_angles.
 				aim_angles[1] += flrand(160.0f, 200.0f);
 				aim_angles[0] += flrand(-20.0f, 20.0f);
+				AngleVectors(aim_angles, shoot_dir, NULL, NULL);
 
 				break;
 			}
