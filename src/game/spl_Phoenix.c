@@ -65,8 +65,7 @@ static void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 
 	// Attempt to apply a scorchmark decal to the thing I hit.
 	int fx_flags = CEF_BROADCAST;
-	vec3_t plane_dir;
-	if (IsDecalApplicable(other, self->s.origin, surface, plane, plane_dir))
+	if (IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
 		fx_flags |= CEF_FLAG8;
 
 	VectorNormalize2(self->velocity, self->movedir);
