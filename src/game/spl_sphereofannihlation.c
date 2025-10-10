@@ -327,7 +327,7 @@ static void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 		}
 		else
 		{
-			self->s.scale = SPHERE_MAX_SCALE + flrand(0, SPHERE_SCALE_PULSE); // If at max size, pulse like crazy!
+			self->s.scale = SPHERE_MAX_SCALE + flrand(0.0f, SPHERE_SCALE_PULSE); // If at max size, pulse like crazy!
 		}
 
 		// Detect if we have teleported, need to move with the player if that's so.
@@ -375,21 +375,24 @@ static void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 }
 
 // Guts of create sphere.
-static void CreateSphere(edict_t* sphere)
+static edict_t* CreateSphere(void)
 {
+	edict_t* sphere = G_Spawn();
+
 	sphere->svflags |= SVF_ALWAYS_SEND;
 	sphere->s.effects |= EF_ALWAYS_ADD_EFFECTS | EF_MARCUS_FLAG1;
 	sphere->classname = "Spell_SphereOfAnnihilation";
 	sphere->clipmask = MASK_SHOT;
 	sphere->movetype = MOVETYPE_FLYMISSILE;
 	sphere->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+	return sphere;
 }
 
-edict_t* SphereReflect(edict_t* self, edict_t* other, vec3_t vel)
+static edict_t* CreateReflectedSphere(edict_t* self, edict_t* other, const vec3_t vel) //mxd. Added to reduce code duplication.
 {
-	edict_t* sphere = G_Spawn();
+	edict_t* sphere = CreateSphere();
 
-	CreateSphere(sphere);
 	sphere->owner = other;
 	sphere->enemy = self->enemy;
 	sphere->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
@@ -400,9 +403,6 @@ edict_t* SphereReflect(edict_t* self, edict_t* other, vec3_t vel)
 	sphere->dmg = self->dmg;
 	sphere->dmg_radius = self->dmg_radius;
 	sphere->s.scale = self->s.scale;
-
-	sphere->touch = SphereOfAnnihilationTouch;
-	sphere->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	VectorCopy(vel, sphere->velocity);
 	VectorCopy(self->mins, sphere->mins);
@@ -420,6 +420,14 @@ edict_t* SphereReflect(edict_t* self, edict_t* other, vec3_t vel)
 
 	// Do a nasty looking blast at the impact point
 	gi.CreateEffect(&sphere->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", sphere->velocity);
+
+	return sphere;
+}
+
+edict_t* SphereReflect(edict_t* self, edict_t* other, vec3_t vel)
+{
+	edict_t* sphere = CreateReflectedSphere(self, other, vel);
+	sphere->touch = SphereOfAnnihilationTouch;
 
 	return sphere;
 }
@@ -512,40 +520,11 @@ static void SphereWatcherGrowThink(edict_t* self)
 
 static edict_t* SphereWatcherReflect(edict_t* self, edict_t* other, vec3_t vel)
 {
-	edict_t* sphere = G_Spawn();
-	CreateSphere(sphere);
-
-	sphere->owner = other;
-	sphere->enemy = self->enemy;
-	sphere->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
-	sphere->reflected_time = self->reflected_time;
-
-	sphere->count = self->count;
-	sphere->solid = self->solid;
-	sphere->dmg = self->dmg;
-	sphere->dmg_radius = self->dmg_radius;
-	sphere->s.scale = self->s.scale;
+	edict_t* sphere = CreateReflectedSphere(self, other, vel);
 
 	sphere->touch = SphereWatcherTouch;
 	sphere->think = SphereWatcherFlyThink;
 	sphere->nextthink = level.time + FRAMETIME; //mxd. Use define.
-
-	VectorCopy(vel, sphere->velocity);
-	VectorCopy(self->mins, sphere->mins);
-	VectorCopy(self->maxs, sphere->maxs);
-	VectorCopy(self->s.origin, sphere->s.origin);
-
-	G_LinkMissile(sphere);
-
-	// Create new trails for the new sphere.
-	gi.CreateEffect(&sphere->s, FX_WEAPON_SPHERE, CEF_OWNERS_ORIGIN, NULL, "s", sphere->owner->s.number);
-	gi.CreateEffect(&sphere->s, FX_WEAPON_SPHEREGLOWBALLS, CEF_OWNERS_ORIGIN, NULL, "s", -1);
-
-	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it.
-	G_SetToFree(self);
-
-	// Do a nasty looking blast at the impact point.
-	gi.CreateEffect(&sphere->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", sphere->velocity);
 
 	return sphere;
 }
@@ -596,8 +575,7 @@ static void SphereWatcherTouch(edict_t* self, edict_t* other, cplane_t* plane, c
 void SpellCastSphereOfAnnihilation(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const vec3_t aim_dir, qboolean* release_flags_ptr)
 {
 	// Spawn the sphere of annihilation as an invisible entity (i.e. modelindex = 0).
-	edict_t* sphere = G_Spawn();
-	CreateSphere(sphere);
+	edict_t* sphere = CreateSphere();
 
 	if (caster->client != NULL)
 	{
