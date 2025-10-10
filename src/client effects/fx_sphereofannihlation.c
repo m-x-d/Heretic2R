@@ -471,7 +471,7 @@ void FXSphereOfAnnihilationPower(centity_t* owner, const int type, const int fla
 	}
 }
 
-static qboolean SpherePlayerExplodeThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SpherePlayerExplodeUpdate(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXSpherePlayerExplodeThink' in original logic.
 {
 	if (fxi.cl->time > self->nextEventTime)
 	{
@@ -546,11 +546,12 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 	explosion->nextEventTime = fxi.cl->time + explosion->updateTime;
 	explosion->lastThinkTime = fxi.cl->time;
 	explosion->dlight = CE_DLight_new(color_white, explosion->radius / 0.7f, 0);
+
 	explosion->AddToView = SpherePlayerExplodeAddToView;
-	explosion->Update = SpherePlayerExplodeThink;
+	explosion->Update = SpherePlayerExplodeUpdate;
 
 	AddEffect(NULL, explosion);
-	SpherePlayerExplodeThink(explosion, NULL);
+	SpherePlayerExplodeUpdate(explosion, NULL);
 
 	// Add some glowing blast particles.
 	VectorScale(dir, FX_SPHERE_EXPLOSION_SMOKE_SPEED, dir);
