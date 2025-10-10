@@ -159,31 +159,11 @@ void SpellCastPhoenix(edict_t* caster, const vec3_t start_pos, const vec3_t aim_
 	arrow->reflect_debounce_time = MAX_REFLECT;
 	VectorCopy(start_pos, arrow->s.origin);
 
-	// Check ahead first to see if it's going to hit anything at this angle.
-	if (caster->enemy != NULL) // Auto-target current enemy?
-	{
-		// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
+	// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
+	if (caster->enemy != NULL)
 		GetAimVelocity(caster->enemy, arrow->s.origin, PHOENIX_ARROW_SPEED, aim_angles, arrow->velocity);
-	}
 	else
-	{
-		// Check ahead first to see if it's going to hit anything at this angle.
-		vec3_t forward;
-		AngleVectors(aim_angles, forward, NULL, NULL);
-
-		//mxd. Replicate II_WEAPON_PHOENIXBOW case from Get_Crosshair()...
-		vec3_t end;
-		const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 22.0f };
-		VectorMA(view_pos, PHOENIX_ARROW_SPEED, forward, end);
-
-		trace_t trace;
-		gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_MONSTERSOLID, &trace);
-
-		vec3_t dir;
-		VectorSubtract(trace.endpos, arrow->s.origin, dir);
-		VectorNormalize(dir);
-		VectorScale(dir, PHOENIX_ARROW_SPEED, arrow->velocity);
-	}
+		AdjustAimVelocity(caster, start_pos, aim_angles, PHOENIX_ARROW_SPEED, 22.0f, arrow->velocity); //mxd
 
 	arrow->owner = caster;
 	G_LinkMissile(arrow);
