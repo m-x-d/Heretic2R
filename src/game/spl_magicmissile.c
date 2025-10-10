@@ -151,26 +151,8 @@ void SpellCastMagicMissile(edict_t* caster, const vec3_t start_pos, const vec3_t
 	missile->owner = caster;
 
 	vec3_t angles;
-	VectorCopy(aim_angles, angles);
+	AdjustAimAngles(caster, start_pos, aim_angles, MAGICMISSILE_SPEED, 18.0f, angles); //mxd
 
-	//mxd. Replicate II_WEAPON_MAGICMISSILE case from Get_Crosshair()...
-	vec3_t forward;
-	AngleVectors(angles, forward, NULL, NULL);
-
-	vec3_t end;
-	const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 18.0f };
-	VectorMA(view_pos, MAGICMISSILE_SPEED, forward, end);
-
-	//mxd. Adjust aim angles to match crosshair logic...
-	trace_t tr;
-	gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_SHOT, &tr);
-
-	vec3_t dir;
-	VectorSubtract(tr.endpos, start_pos, dir);
-	VectorNormalize(dir);
-
-	vectoangles(dir, angles);
-	angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
 	angles[YAW] += (float)missile_id * MISSILE_YAW;
 	angles[PITCH] += (float)missile_id * MISSILE_PITCH;
 
