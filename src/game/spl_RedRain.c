@@ -292,8 +292,10 @@ static void RedRainMissileThink(edict_t* self)
 }
 
 // Create the guts of the red rain arrow.
-static void CreateRedRainArrow(edict_t* arrow, const qboolean is_powered) // Named 'create_redarrow' in original logic. //mxd. +is_powered arg.
+static edict_t* CreateRedRainArrow(const qboolean is_powered) // Named 'create_redarrow' in original logic. //mxd. +is_powered arg.
 {
+	edict_t* arrow = G_Spawn();
+
 	arrow->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	arrow->svflags |= SVF_ALWAYS_SEND;
 	arrow->movetype = MOVETYPE_FLYMISSILE;
@@ -313,18 +315,18 @@ static void CreateRedRainArrow(edict_t* arrow, const qboolean is_powered) // Nam
 	arrow->touch = RedRainMissileTouch;
 	arrow->think = RedRainMissileThink;
 	arrow->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+	return arrow;
 }
 
 edict_t* RedRainMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 {
 	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
 	// with the existing one, since we hit something. Hence, we create a new one totally.
-	edict_t* arrow = G_Spawn();
+	const qboolean is_powered = (self->health > 0); //mxd
+	edict_t* arrow = CreateRedRainArrow(is_powered);
 
 	// Copy everything across.
-	const qboolean is_powered = (self->health > 0); //mxd
-	CreateRedRainArrow(arrow, is_powered);
-
 	VectorCopy(self->s.origin, arrow->s.origin);
 	VectorCopy(vel, arrow->velocity);
 	arrow->owner = other;
@@ -356,10 +358,9 @@ void SpellCastRedRain(edict_t* caster, const vec3_t start_pos, const vec3_t aim_
 	caster->red_rain_count++;
 	gi.RemoveEffects(&caster->s, FX_WEAPON_REDRAINGLOW);
 
-	edict_t* arrow = G_Spawn();
-
 	const qboolean is_powered = (caster->client->playerinfo.powerup_timer > level.time); //mxd
-	CreateRedRainArrow(arrow, is_powered);
+	edict_t* arrow = CreateRedRainArrow(is_powered);
+
 	arrow->reflect_debounce_time = MAX_REFLECT;
 	VectorCopy(start_pos, arrow->s.origin);
 
