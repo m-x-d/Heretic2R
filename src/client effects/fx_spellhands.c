@@ -43,13 +43,6 @@ static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 	vec3_t trail_end;
 	VectorCopy(owner->referenceInfo->references[self->refPoint].placement.origin, trail_end);
 
-	// If this reference point hasn't changed since the last frame, return.
-	vec3_t diff;
-	VectorSubtract(trail_end, trail_start, diff);
-
-	if (fabsf(diff[0] + diff[1] + diff[2]) < 0.1f)
-		return true;
-
 	// Create a rotation matrix.
 	matrix3_t rotation;
 	Matrix3FromAngles(owner->lerp_angles, rotation);
@@ -66,10 +59,19 @@ static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 	VectorSubtract(real_trail_end, real_trail_start, trail_delta);
 
 	// Set the trail length.
-	const int trail_length = GetScaledCount(4, 0.75f);
+	int trail_length;
 
-	// Scale that difference by the number of particles we are going to draw.
-	Vec3ScaleAssign(1.0f / (float)trail_length, trail_delta);
+	if (VectorLength(trail_delta) < 0.1f)
+	{
+		trail_length = 1;
+	}
+	else
+	{
+		trail_length = GetScaledCount(4, 0.75f);
+
+		// Scale that difference by the number of particles we are going to draw.
+		Vec3ScaleAssign(1.0f / (float)trail_length, trail_delta);
+	}
 
 	// Decide which particle type to use.
 	int part_type;
