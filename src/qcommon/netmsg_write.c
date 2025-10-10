@@ -790,8 +790,8 @@ void MSG_WriteYawPitch(sizebuf_t* sb, const vec3_t vector) // H2
 		vec3_t angles;
 		vectoangles(vector, angles);
 
-		MSG_WriteByte(sb, (int)((angles[YAW]  + 180.0f) * (255.0f / 180.0f)));
-		MSG_WriteByte(sb, (int)((angles[PITCH] + 90.0f) * (255.0f / 360.0f)));
+		MSG_WriteByte(sb, (int)((angles[YAW]  + 180.0f) * (255.0f / 360.0f)));
+		MSG_WriteByte(sb, (int)((angles[PITCH] + 90.0f) * (255.0f / 180.0f)));
 	}
 	else
 	{
