@@ -19,6 +19,7 @@ extern edict_t* FindSpellTargetInRadius(const edict_t* search_ent, float radius,
 extern void SetAnim(edict_t* self, int anim);
 extern void PostKnockBack(edict_t* target, const vec3_t dir, float knockback, int flags);
 extern void GetAimVelocity(const edict_t* enemy, const vec3_t org, float speed, const vec3_t aim_angles, vec3_t out);
+extern void AdjustAimAngles(const edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, float projectle_speed, float view_offset_z, vec3_t angles); //mxd
 extern void CalculatePIV(const edict_t* player);
 
 extern qboolean OkToAutotarget(const edict_t* shooter, const edict_t* target);

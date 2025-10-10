@@ -175,31 +175,9 @@ static void FireBlastStartThink(edict_t* self)
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void CastFireBlast(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
+static void CastFireBlast(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
-	vec3_t angles;
-	VectorCopy(aim_angles, angles);
-
-	//mxd. Replicate II_WEAPON_FIREWALL case from Get_Crosshair()...
-	vec3_t forward;
-	AngleVectors(angles, forward, NULL, NULL);
-
-	vec3_t end;
-	const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 18.0f };
-	VectorMA(view_pos, 1000.0f, forward, end);
-
-	//mxd. Adjust aim angles to match crosshair logic...
-	trace_t tr;
-	gi.trace(view_pos, vec3_origin, vec3_origin, end, caster, MASK_SHOT, &tr);
-
-	vec3_t dir;
-	VectorSubtract(tr.endpos, start_pos, dir);
-	VectorNormalize(dir);
-
-	vectoangles(dir, angles);
-	angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...
-
-	edict_t* blast = CreateFireBlast(start_pos, angles, caster, MAX_FIREWALL_BOUNCES, level.time); // Bounce 3 times.
+	edict_t* blast = CreateFireBlast(start_pos, aim_angles, caster, MAX_FIREWALL_BOUNCES, level.time); // Bounce 3 times.
 
 	// Check to see if this is a legit spawn.
 	trace_t trace;
@@ -384,9 +362,9 @@ static void FireWallMissileStartThink(edict_t* self)
 static void CastFireWall(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
 	// Big wall is powered up.
-	vec3_t fwd;
+	vec3_t forward;
 	vec3_t right;
-	AngleVectors(aim_angles, fwd, right, NULL);
+	AngleVectors(aim_angles, forward, right, NULL);
 
 	// Spawn walls to the left and right.
 	for (int i = 0; i < 2; i++)
@@ -404,9 +382,7 @@ static void CastFireWall(edict_t* caster, const vec3_t start_pos, const vec3_t a
 
 		if (trace.startsolid || trace.fraction < 0.99f)
 		{
-			if (trace.startsolid)
-				VectorCopy(caster->s.origin, wall->s.origin);
-			else
+			if (!trace.startsolid)
 				VectorCopy(trace.endpos, wall->s.origin);
 
 			FireWallMissileBlocked(wall, &trace);
@@ -425,16 +401,19 @@ void SpellCastFireWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 {
 	int snd_index; //mxd
 
+	vec3_t angles;
+	AdjustAimAngles(caster, start_pos, aim_angles, 1000.0f, 18.0f, angles); //mxd
+
 	if (caster->client->playerinfo.powerup_timer <= level.time)
 	{
 		// Not powered up.
-		CastFireBlast(caster, start_pos, aim_angles); //mxd. Starts at start_pos[2] + 16 in original logic.
+		CastFireBlast(caster, start_pos, angles); //mxd. Starts at start_pos[2] + 16 in original logic.
 		snd_index = gi.soundindex("weapons/FirewallCast.wav");
 	}
 	else
 	{
 		// Powered up, cast big wall o' doom.
-		CastFireWall(caster, start_pos, aim_angles);
+		CastFireWall(caster, start_pos, angles);
 		snd_index = gi.soundindex("weapons/FirewallPowerCast.wav");
 	}
 
