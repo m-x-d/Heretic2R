@@ -200,9 +200,12 @@ void SpellCastRipper(edict_t* caster, const vec3_t start_pos, const vec3_t aim_a
 		return;
 	}
 
+	vec3_t angles;
+	AdjustAimAngles(caster, start_pos, aim_angles, RIPPER_MAX_DISTANCE, 21.0f, angles); //mxd
+
 	// Get the forward angle.
 	vec3_t forward;
-	AngleVectors(aim_angles, forward, NULL, NULL);
+	AngleVectors(angles, forward, NULL, NULL);
 
 	// Now trace from the starting point to the final destination.
 	vec3_t end_pos;
@@ -218,5 +221,5 @@ void SpellCastRipper(edict_t* caster, const vec3_t start_pos, const vec3_t aim_a
 			trace.ent = ent;
 	}
 
-	RipperImpact(caster, trace.ent, start_pos, trace.endpos, aim_angles);
+	RipperImpact(caster, trace.ent, start_pos, trace.endpos, angles);
 }
