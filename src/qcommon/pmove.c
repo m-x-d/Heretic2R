@@ -729,7 +729,7 @@ static void PM_AirAccelerate(float* fmove, float* smove) //mxd
 
 	if (*smove != 0.0f)
 	{
-		const float smove_scaler = (*fmove != 0.0f ? 3.0f : 1.5f);
+		const float smove_scaler = (*fmove != 0.0f ? 2.0f : 1.5f);
 		smove_lerp = min(1.0f, smove_lerp + pml.frametime * smove_scaler);
 		*smove *= 1.0f + sinf(-ANGLE_90 + ANGLE_90 * smove_lerp);
 	}
