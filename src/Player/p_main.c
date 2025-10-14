@@ -110,9 +110,9 @@ PLAYER_API void PlayerUpdateCmdFlags(playerinfo_t* info)
 	// Look for Inventory button being pressed.
 	info->showpuzzleinventory = (pcmd->buttons & BUTTON_INVENTORY);
 
-	info->fwdvel = 0;
-	info->sidevel = 0;
-	info->upvel = 0;
+	info->fwdvel = 0.0f;
+	info->sidevel = 0.0f;
+	info->upvel = 0.0f;
 }
 
 //TODO: unfinished logic. Player can't slide.

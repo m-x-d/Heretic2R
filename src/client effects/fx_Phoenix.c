@@ -5,7 +5,6 @@
 //
 
 #include "fx_Phoenix.h" //mxd
-#include "fx_PhoenixLocal.h" //mxd
 #include "Particle.h"
 #include "Random.h"
 #include "Vector.h"
