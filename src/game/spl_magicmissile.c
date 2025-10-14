@@ -154,7 +154,7 @@ void SpellCastMagicMissile(edict_t* caster, const vec3_t start_pos, const vec3_t
 	missile->owner = caster;
 
 	vec3_t angles;
-	AdjustAimAngles(caster, start_pos, aim_angles, MAGICMISSILE_SPEED, 18.0f, angles); //mxd
+	AdjustAimAngles(caster, start_pos, aim_angles, 18.0f, angles); //mxd
 
 	angles[YAW] += (float)missile_id * MISSILE_YAW;
 	angles[PITCH] += (float)missile_id * MISSILE_PITCH;

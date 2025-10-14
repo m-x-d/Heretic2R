@@ -24,7 +24,7 @@ void SpellCastBlast(edict_t* caster, const vec3_t start_pos, const vec3_t aim_an
 
 	// This weapon does not auto-target.
 	vec3_t angles;
-	AdjustAimAngles(caster, start_pos, aim_angles, BLAST_DISTANCE, 18.0f, angles); //mxd
+	AdjustAimAngles(caster, start_pos, aim_angles, 18.0f, angles); //mxd
 
 	// Compress the angles into two shorts.
 	const short s_yaw = ANGLE2SHORT(angles[YAW]);

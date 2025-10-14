@@ -201,7 +201,7 @@ void SpellCastRipper(edict_t* caster, const vec3_t start_pos, const vec3_t aim_a
 	}
 
 	vec3_t angles;
-	AdjustAimAngles(caster, start_pos, aim_angles, RIPPER_MAX_DISTANCE, 21.0f, angles); //mxd
+	AdjustAimAngles(caster, start_pos, aim_angles, 21.0f, angles); //mxd
 
 	// Get the forward angle.
 	vec3_t forward;

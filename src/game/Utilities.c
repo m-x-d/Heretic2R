@@ -553,7 +553,7 @@ void GetAimVelocity(const edict_t* enemy, const vec3_t org, const float speed, c
 }
 
 //mxd. Calculate direction towards crosshair position calculated in GetCrosshair().
-void AdjustAimDirection(const edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const float projectle_speed, const float view_offset_z, vec3_t direction)
+static void AdjustAimDirection(const edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const float view_offset_z, vec3_t direction)
 {
 	// Replicate relevant case from Get_Crosshair()...
 	vec3_t forward;
@@ -561,7 +561,7 @@ void AdjustAimDirection(const edict_t* caster, const vec3_t start_pos, const vec
 
 	vec3_t end;
 	const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + view_offset_z };
-	VectorMA(view_pos, projectle_speed, forward, end);
+	VectorMA(view_pos, 4096.0f, forward, end);
 
 	// Adjust aim angles to match crosshair logic...
 	trace_t trace;
@@ -575,15 +575,15 @@ void AdjustAimDirection(const edict_t* caster, const vec3_t start_pos, const vec
 void AdjustAimVelocity(const edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const float projectle_speed, const float view_offset_z, vec3_t velocity)
 {
 	vec3_t dir;
-	AdjustAimDirection(caster, start_pos, aim_angles, projectle_speed, view_offset_z, dir);
+	AdjustAimDirection(caster, start_pos, aim_angles, view_offset_z, dir);
 	VectorScale(dir, projectle_speed, velocity);
 }
 
 //mxd. Adjust aim_angles to aim at crosshair position calculated in GetCrosshair().
-void AdjustAimAngles(const edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const float projectle_speed, const float view_offset_z, vec3_t angles)
+void AdjustAimAngles(const edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const float view_offset_z, vec3_t angles)
 {
 	vec3_t dir;
-	AdjustAimDirection(caster, start_pos, aim_angles, projectle_speed, view_offset_z, dir);
+	AdjustAimDirection(caster, start_pos, aim_angles, view_offset_z, dir);
 
 	vectoangles(dir, angles);
 	angles[PITCH] *= -1.0f; //TODO: this pitch inconsistency needs fixing...

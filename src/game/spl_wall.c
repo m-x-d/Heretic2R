@@ -402,7 +402,7 @@ void SpellCastFireWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 	int snd_index; //mxd
 
 	vec3_t angles;
-	AdjustAimAngles(caster, start_pos, aim_angles, 1000.0f, 18.0f, angles); //mxd
+	AdjustAimAngles(caster, start_pos, aim_angles, 18.0f, angles); //mxd
 
 	if (caster->client->playerinfo.powerup_timer <= level.time)
 	{
