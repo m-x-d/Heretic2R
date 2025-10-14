@@ -122,7 +122,6 @@
     <ClInclude Include="fx_HighPriestessProjectiles.h" />
     <ClInclude Include="fx_mork.h" />
     <ClInclude Include="fx_Phoenix.h" />
-    <ClInclude Include="fx_PhoenixLocal.h" />
     <ClInclude Include="fx_smoke.h" />
     <ClInclude Include="fx_sparks.h" />
     <ClInclude Include="LightStyles.h" />

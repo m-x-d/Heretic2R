@@ -168,40 +168,6 @@ static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 	return true;
 }
 
-void FXPhoenixMissile(centity_t* owner, const int type, const int flags, vec3_t origin)
-{
-	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 25);
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_PHOENIXMISSILE].formatString, missile->velocity);
-
-	const float velocity = PHOENIX_ARROW_SPEED * ((flags & CEF_FLAG8) ? 0.5f : 1.0f);
-	Vec3ScaleAssign(velocity, missile->velocity);
-
-	vec3_t dir;
-	VectorCopy(missile->velocity, dir);
-	VectorNormalize(dir);
-	AnglesFromDir(dir, missile->r.angles);
-
-	missile->radius = 256.0f;
-	missile->r.model = &phoenix_models[1]; // Phoenix arrow model.
-	missile->flags |= CEF_ADDITIVE_PARTS;
-	missile->lastThinkTime = fxi.cl->time + (50 * 7); // Time to play last frame.
-	missile->NoOfAnimFrames = 7; // End on frame number 7.
-	missile->Scale = 1.0f; // Positive frame count.
-	missile->r.scale = 0.8f;
-	missile->color.c = 0xff00ffff;
-	missile->LifeTime = 1000;
-
-	if (R_DETAIL > DETAIL_LOW)
-		missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
-
-	if (flags & CEF_FLAG6)
-		missile->Update = PhoenixMissilePowerThink;
-	else
-		missile->Update = PhoenixMissileThink;
-
-	AddEffect(owner, missile);
-}
-
 static qboolean PhoenixExplosionSmallBallThink(client_entity_t* ball, centity_t* owner) //mxd. Moved above FXPhoenixExplosionBallThink.
 {
 	if (fxi.cl->time - ball->startTime > EXPLODE_TIME_MAX)
@@ -283,135 +249,9 @@ client_entity_t* CreatePhoenixSmallExplosion(const vec3_t ball_origin) //TODO: r
 	return sub_explosion;
 }
 
-void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin)
-{
-	vec3_t dir;
-	vec3_t scorch_dir;
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_PHOENIXEXPLODE].formatString, dir, scorch_dir);
-
-	// Make the scorch mark if we should.
-	if (flags & CEF_FLAG8)
-		FXClientScorchmark(origin, scorch_dir);
-
-	if (flags & CEF_FLAG6)
-	{
-		// Powered-up version.
-		PhoenixExplodePower(type, flags, origin, dir);
-		return;
-	}
-
-	flags |= CEF_OWNERS_ORIGIN;
-
-	if (R_DETAIL > DETAIL_LOW)
-	{
-		const int count = ((R_DETAIL > DETAIL_NORMAL) ? EXPLODE_NUM_SMALLBALLS : EXPLODE_NUM_SMALLBALLS - 1);
-
-		// Create three smaller explosion spheres.
-		for (int i = 0; i < count; i++)
-		{
-			const float ball_num = (float)i;
-			client_entity_t* sub_explosion = CreatePhoenixSmallExplosion(origin);
-
-			for (int c = 0; c < 3; c++)
-				sub_explosion->velocity[c] = flrand(-EXPLODE_BALL_SPEED, EXPLODE_BALL_SPEED) + (dir[c] * EXPLODE_BALL_SPEED);
-
-			sub_explosion->r.scale = 0.1f;
-			sub_explosion->d_scale = 3.0f + ball_num;
-			sub_explosion->d_alpha = -1.5f - ball_num * 0.5f;
-
-			AddEffect(NULL, sub_explosion);
-		}
-	}
-
-	// Create the main big explosion sphere.
-	client_entity_t* explosion = ClientEntity_new(type, flags, origin, NULL, 17);
-
-	explosion->radius = 128.0f;
-	explosion->r.model = &phoenix_models[5]; // Outer explosion model.
-	explosion->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
-	explosion->flags |= (CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA);
-	explosion->alpha = 0.1f;
-	explosion->r.scale = 0.1f;
-	explosion->d_alpha = 3.0f;
-	explosion->d_scale = 5.0f;
-	explosion->startTime = fxi.cl->time;
-	explosion->lastThinkTime = fxi.cl->time;
-	explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
-	explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
-
-	const paletteRGBA_t light_color = { .c = 0xff00ffff };
-	explosion->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
-	explosion->Update = PhoenixExplosionBallThink;
-
-	AddEffect(NULL, explosion);
-
-	// Add some glowing blast particles.
-	vec3_t vel;
-	VectorScale(dir, EXPLODE_SPEED, vel);
-	const int count = GetScaledCount(EXPLODE_NUM_BITS, 0.3f);
-
-	for (int i = 0; i < count; i++)
-	{
-		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), light_color, 2000);
-
-		VectorRandomSet(spark->velocity, EXPLODE_SPEED);
-		Vec3AddAssign(vel, spark->velocity);
-		spark->acceleration[2] = EXPLODE_GRAVITY;
-		spark->scale = EXPLODE_SCALE;
-		spark->d_scale = flrand(-20.0f, -10.0f);
-		spark->d_alpha = flrand(-400.0f, -320.0f);
-		spark->duration = (int)(255.0f * 2000.0f / -spark->d_alpha); // Time taken to reach zero alpha.
-
-		AddParticleToList(explosion, spark);
-	}
-
-	// ...and a big-ass flash
-	client_entity_t* flash = ClientEntity_new(-1, flags, origin, NULL, 250);
-
-	flash->radius = 128.0f;
-	flash->r.model = &phoenix_models[2]; // Halo sprite.
-	flash->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
-	flash->r.frame = 1;
-	flash->r.scale = 1.5f;
-	flash->d_alpha = -4.0f;
-	flash->d_scale = -4.0f;
-
-	AddEffect(NULL, flash);
-
-	int duration;
-	if (R_DETAIL == DETAIL_LOW)
-		duration = 150;
-	else if (R_DETAIL == DETAIL_NORMAL)
-		duration = 125;
-	else
-		duration = 100; //TODO: even shorter update interval for DETAIL_UBERHIGH?
-
-	// ...and draw the phoenix rising from the explosion.
-	client_entity_t* phoenix = ClientEntity_new(type, flags, origin, NULL, duration);
-
-	phoenix->radius = 128.0f;
-	phoenix->r.model = &phoenix_models[3]; // Phoenix sprite.
-	phoenix->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
-	phoenix->r.scale = 0.1f;
-	VectorScale(vel, 0.25f, phoenix->velocity);
-	phoenix->acceleration[2] = 64.0f;
-	phoenix->d_alpha = -1.0f;
-	phoenix->d_scale = 1.25f;
-	phoenix->LifeTime = 10;
-	phoenix->Update = PhoenixExplosionBirdThink;
-
-	AddEffect(NULL, phoenix);
-
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, phoenix_explode_sounds[0], 1.0f, ATTN_NORM, 0.0f);
-}
-
 #pragma endregion
 
 #pragma region ========================== POWERED PHOENIX EXPLOSION ==========================
-
-#define PHOENIXPOWER_NUMTRAILS			11
-#define PHOENIXPOWER_PARTS_PER_TRAIL	8
-#define PHOENIXPOWER_RADIUS				72.0f
 
 static qboolean PhoenixExplosionBirdPowerThink(client_entity_t* bird, centity_t* owner)
 {
@@ -421,7 +261,10 @@ static qboolean PhoenixExplosionBirdPowerThink(client_entity_t* bird, centity_t*
 
 static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, const vec3_t dir)
 {
-#define TRAIL_SCALER	(18.0f / 8.0f) //mxd
+#define PHOENIXPOWER_NUMTRAILS			11
+#define PHOENIXPOWER_PARTS_PER_TRAIL	8
+#define PHOENIXPOWER_RADIUS				72.0f
+#define PHOENIXPOWER_TRAIL_SCALER		(18.0f / 8.0f) //mxd
 
 	flags |= CEF_OWNERS_ORIGIN;
 
@@ -487,10 +330,10 @@ static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, 
 			// When burst in the air, alternate up and down.
 			const float side = (!hit_ground && !(c & 1) ? -1.0f : 1.0f); //mxd
 
-			spark->velocity[2] = particle_height * side * 15.0f * TRAIL_SCALER + flrand(0.0f, 15.0f);
+			spark->velocity[2] = particle_height * side * 15.0f * PHOENIXPOWER_TRAIL_SCALER + flrand(0.0f, 15.0f);
 
-			spark->scale = 32.0f - particle_height * TRAIL_SCALER / 3.0f;
-			spark->d_scale = -particle_height * TRAIL_SCALER;
+			spark->scale = 32.0f - particle_height * PHOENIXPOWER_TRAIL_SCALER / 3.0f;
+			spark->d_scale = -particle_height * PHOENIXPOWER_TRAIL_SCALER;
 			spark->d_alpha = flrand(-400.0f, -320.0f) / 1.3f;
 			spark->duration = (int)(255.0f * 2000.0f / -spark->d_alpha); // Time taken to reach zero alpha.
 
@@ -576,7 +419,7 @@ static qboolean PhoenixMissilePowerThink(client_entity_t* missile, centity_t* ow
 	smoke->d_scale = 2.0f; // Rate of change in scale.
 	smoke->d_alpha = -1.0f;
 
-	AddEffect(NULL, smoke);	// add the smoke as independent world smoke
+	AddEffect(NULL, smoke);	// Add the smoke as independent world smoke.
 
 	// Add fire to the tail. Attach it to the smoke because it doesn't get out of the fx radius so quickly.
 	const float trail_offset = FIRETRAIL_RADIUS / 3.0f; //mxd
@@ -617,3 +460,159 @@ static qboolean PhoenixMissilePowerThink(client_entity_t* missile, centity_t* ow
 }
 
 #pragma endregion
+
+void FXPhoenixMissile(centity_t* owner, const int type, const int flags, vec3_t origin)
+{
+	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 25);
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_PHOENIXMISSILE].formatString, missile->velocity);
+
+	const float velocity = PHOENIX_ARROW_SPEED * ((flags & CEF_FLAG8) ? 0.5f : 1.0f);
+	Vec3ScaleAssign(velocity, missile->velocity);
+
+	vec3_t dir;
+	VectorCopy(missile->velocity, dir);
+	VectorNormalize(dir);
+	AnglesFromDir(dir, missile->r.angles);
+
+	missile->radius = 256.0f;
+	missile->r.model = &phoenix_models[1]; // Phoenix arrow model.
+	missile->flags |= CEF_ADDITIVE_PARTS;
+	missile->lastThinkTime = fxi.cl->time + (50 * 7); // Time to play last frame.
+	missile->NoOfAnimFrames = 7; // End on frame number 7.
+	missile->Scale = 1.0f; // Positive frame count.
+	missile->r.scale = 0.8f;
+	missile->color.c = 0xff00ffff;
+	missile->LifeTime = 1000;
+
+	if (R_DETAIL > DETAIL_LOW)
+		missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
+
+	if (flags & CEF_FLAG6)
+		missile->Update = PhoenixMissilePowerThink;
+	else
+		missile->Update = PhoenixMissileThink;
+
+	AddEffect(owner, missile);
+}
+
+void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin)
+{
+	vec3_t dir;
+	vec3_t scorch_dir;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_PHOENIXEXPLODE].formatString, dir, scorch_dir);
+
+	// Make the scorch mark if we should.
+	if (flags & CEF_FLAG8)
+		FXClientScorchmark(origin, scorch_dir);
+
+	if (flags & CEF_FLAG6)
+	{
+		// Powered-up version.
+		PhoenixExplodePower(type, flags, origin, dir);
+		return;
+	}
+
+	flags |= CEF_OWNERS_ORIGIN;
+
+	if (R_DETAIL > DETAIL_LOW)
+	{
+		const int count = ((R_DETAIL > DETAIL_NORMAL) ? EXPLODE_NUM_SMALLBALLS : EXPLODE_NUM_SMALLBALLS - 1);
+
+		// Create three smaller explosion spheres.
+		for (int i = 0; i < count; i++)
+		{
+			const float ball_num = (float)i;
+			client_entity_t* sub_explosion = CreatePhoenixSmallExplosion(origin);
+
+			for (int c = 0; c < 3; c++)
+				sub_explosion->velocity[c] = flrand(-EXPLODE_BALL_SPEED, EXPLODE_BALL_SPEED) + (dir[c] * EXPLODE_BALL_SPEED);
+
+			sub_explosion->r.scale = 0.1f;
+			sub_explosion->d_scale = 3.0f + ball_num;
+			sub_explosion->d_alpha = -1.5f - ball_num * 0.5f;
+
+			AddEffect(NULL, sub_explosion);
+		}
+	}
+
+	// Create the main big explosion sphere.
+	client_entity_t* explosion = ClientEntity_new(type, flags, origin, NULL, 17);
+
+	explosion->radius = 128.0f;
+	explosion->r.model = &phoenix_models[5]; // Outer explosion model.
+	explosion->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
+	explosion->flags |= (CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA);
+	explosion->alpha = 0.1f;
+	explosion->r.scale = 0.1f;
+	explosion->d_alpha = 3.0f;
+	explosion->d_scale = 5.0f;
+	explosion->startTime = fxi.cl->time;
+	explosion->lastThinkTime = fxi.cl->time;
+	explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
+	explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
+
+	const paletteRGBA_t light_color = { .c = 0xff00ffff };
+	explosion->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
+	explosion->Update = PhoenixExplosionBallThink;
+
+	AddEffect(NULL, explosion);
+
+	// Add some glowing blast particles.
+	vec3_t vel;
+	VectorScale(dir, EXPLODE_SPEED, vel);
+	const int count = GetScaledCount(EXPLODE_NUM_BITS, 0.3f);
+
+	for (int i = 0; i < count; i++)
+	{
+		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), light_color, 2000);
+
+		VectorRandomSet(spark->velocity, EXPLODE_SPEED);
+		Vec3AddAssign(vel, spark->velocity);
+		spark->acceleration[2] = EXPLODE_GRAVITY;
+		spark->scale = EXPLODE_SCALE;
+		spark->d_scale = flrand(-20.0f, -10.0f);
+		spark->d_alpha = flrand(-400.0f, -320.0f);
+		spark->duration = (int)(255.0f * 2000.0f / -spark->d_alpha); // Time taken to reach zero alpha.
+
+		AddParticleToList(explosion, spark);
+	}
+
+	// ...and a big-ass flash.
+	client_entity_t* flash = ClientEntity_new(-1, flags, origin, NULL, 250);
+
+	flash->radius = 128.0f;
+	flash->r.model = &phoenix_models[2]; // Halo sprite.
+	flash->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
+	flash->r.frame = 1;
+	flash->r.scale = 1.5f;
+	flash->d_alpha = -4.0f;
+	flash->d_scale = -4.0f;
+
+	AddEffect(NULL, flash);
+
+	int duration;
+	if (R_DETAIL == DETAIL_LOW)
+		duration = 150;
+	else if (R_DETAIL == DETAIL_NORMAL)
+		duration = 125;
+	else
+		duration = 100; //TODO: even shorter update interval for DETAIL_UBERHIGH?
+
+	// ...and draw the phoenix rising from the explosion.
+	client_entity_t* phoenix = ClientEntity_new(type, flags, origin, NULL, duration);
+
+	phoenix->radius = 128.0f;
+	phoenix->r.model = &phoenix_models[3]; // Phoenix sprite.
+	phoenix->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
+	phoenix->r.scale = 0.1f;
+	VectorScale(vel, 0.25f, phoenix->velocity);
+	phoenix->acceleration[2] = 64.0f;
+	phoenix->d_alpha = -1.0f;
+	phoenix->d_scale = 1.25f;
+	phoenix->LifeTime = 10;
+	phoenix->Update = PhoenixExplosionBirdThink;
+
+	AddEffect(NULL, phoenix);
+
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, phoenix_explode_sounds[0], 1.0f, ATTN_NORM, 0.0f);
+}
