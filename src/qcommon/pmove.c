@@ -40,11 +40,11 @@ static pmove_t* pm;
 static pml_t pml;
 
 // Movement parameters.
-#define PM_STOPSPEED	100.0f
-#define PM_MAXSPEED		300.0f
-#define PM_ACCELERATE	10.0f
-#define PM_FRICTION		6.0f
-#define PM_WATERSPEED	400.0f
+#define PM_STOPSPEED		100.0f
+#define PM_MAXSPEED			300.0f
+#define PM_FRICTION			6.0f
+#define PM_WATERACCELERATE	10.0f
+#define PM_WATERSPEED		400.0f
 
 #define MIN_STEP_NORMAL	0.7f // Can't step up onto very steep slopes.
 #define MAX_CLIP_PLANES	5
@@ -708,13 +708,42 @@ static void PM_OnBboxSizeChanged(void) // H2 //mxd. Removed unused return value.
 	}
 }
 
+//mxd. Subtle acceleration/deceleration while walking on land.
+static void PM_AirAccelerate(float* fmove, float* smove) //mxd
+{
+	static float old_fmove;
+	static float fmove_lerp;
+	static float smove_lerp;
+
+	if (*fmove != 0.0f)
+	{
+		fmove_lerp = min(1.0f, fmove_lerp + pml.frametime);
+		*fmove *= 1.0f + sinf(-ANGLE_90 + ANGLE_90 * fmove_lerp);
+		old_fmove = *fmove;
+	}
+	else
+	{
+		fmove_lerp = max(0.0f, fmove_lerp - pml.frametime * 2.0f);
+		*fmove = old_fmove * (1.0f + sinf(-ANGLE_90 + ANGLE_90 * fmove_lerp));
+	}
+
+	if (*smove != 0.0f)
+	{
+		const float smove_scaler = (*fmove != 0.0f ? 3.0f : 1.5f);
+		smove_lerp = min(1.0f, smove_lerp + pml.frametime * smove_scaler);
+		*smove *= 1.0f + sinf(-ANGLE_90 + ANGLE_90 * smove_lerp);
+	}
+	else
+	{
+		smove_lerp = 0.0f;
+	}
+}
+
 static void PM_AirMove(void)
 {
-	vec3_t wishvel;
-
 	qboolean run_shrine = false; // H2
 	float fmove = pm->cmd.forwardmove;
-	const float smove = pm->cmd.sidemove;
+	float smove = pm->cmd.sidemove;
 
 	pml.gravity = pm->s.gravity; // H2
 
@@ -727,6 +756,9 @@ static void PM_AirMove(void)
 	VectorNormalize(pml.forward);
 	VectorNormalize(pml.right);
 
+	PM_AirAccelerate(&fmove, &smove); //mxd
+
+	vec3_t wishvel;
 	for (int i = 0; i < 2; i++)
 		wishvel[i] = pml.forward[i] * fmove + pml.right[i] * smove;
 	wishvel[2] = 0.0f;
@@ -787,7 +819,7 @@ static void PM_Friction(void)
 
 	// Scale the velocity.
 	const float newspeed = max(0.0f, speed - drop) / speed;
-	VectorScale(pml.velocity, newspeed, pml.velocity);
+	Vec3ScaleAssign(newspeed, pml.velocity);
 }
 
 //mxd. Simplified version of PM_WaterMove().
@@ -836,9 +868,9 @@ static void PM_LavaMove(void) // H2
 	PM_StepSlideMove();
 }
 
-// Q2 counterpart.
+// Q2 counterpart (PM_Accelerate()).
 // Handles user intended acceleration.
-static void PM_Accelerate(vec3_t wishdir, const float wishspeed, const float accel) //mxd. Used only by PM_WaterMove() in H2.
+static void PM_WaterAccelerate(vec3_t wishdir, const float wishspeed, const float accel) //mxd. Used only by PM_WaterMove() in H2.
 {
 	const float currentspeed = DotProduct(pml.velocity, wishdir);
 	const float addspeed = wishspeed - currentspeed;
@@ -879,7 +911,7 @@ static qboolean PM_WaterMove(const float scaler)
 	PM_AddCurrents(wishvel);
 
 	const float wishspeed = ClampVelocity(wishvel, wishdir, run_shrine, false);
-	PM_Accelerate(wishdir, wishspeed * scaler, PM_ACCELERATE);
+	PM_WaterAccelerate(wishdir, wishspeed * scaler, PM_WATERACCELERATE);
 
 	if (pm->groundentity == NULL)
 		return false;
