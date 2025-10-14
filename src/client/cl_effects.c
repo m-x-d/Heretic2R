@@ -33,6 +33,17 @@ static void UpdateAutoaimCrosshairAnimation(vec3_t origin, const qboolean do_aut
 	static vec3_t lerp_origin;
 	static int old_entity_num;
 	static int anim_end_time;
+	static int old_servercount;
+
+	// Reset when map changed or game loaded...
+	if (cl.servercount != old_servercount)
+	{
+		old_entity_num = 0;
+		anim_end_time = -1;
+		VectorCopy(origin, old_origin);
+
+		old_servercount = cl.servercount;
+	}
 
 	const int cur_entity_num = (do_autoaim ? cl.frame.playerstate.AutotargetEntityNum : 0);
 
