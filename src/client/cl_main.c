@@ -347,6 +347,7 @@ static void CL_Changing_f(void)
 		CL_Stop_f();
 
 	cls.state = ca_connected; // Not active anymore, but not disconnected.
+	anykeydown = 0; // YQ2. Reset this to 0 just in case it didn't get a chance to settle normally.
 	SCR_BeginLoadingPlaque();
 	Com_Printf("\nChanging map...\n");
 }
