@@ -47,10 +47,6 @@ static void RegisterModels(void) // H2
 // Call before entering a new level, or after changing dlls.
 void CL_PrepRefresh(void)
 {
-	char mapname[32];
-	char name[MAX_QPATH];
-	vec3_t axis;
-
 	if (cl.configstrings[CS_MODELS + 1][0] == 0)
 		return; // No map loaded.
 
@@ -60,67 +56,42 @@ void CL_PrepRefresh(void)
 	SCR_AddDirtyPoint(viddef.width - 1, viddef.height - 1);
 
 	SCR_UpdateProgressbar(0, 1); // H2
+
+	char mapname[32];
 	strcpy_s(mapname, sizeof(mapname), cl.configstrings[CS_MODELS + 1] + 5); // Skip "maps/". //mxd. strcpy -> strcpy_s
 	mapname[strlen(mapname) - 4] = 0; // Cut off ".bsp".
 
 	// Register models, pics, and skins.
 	Com_Printf("Map: %s\r", mapname);
 	re.BeginRegistration(mapname);
-	Com_Printf("                                     \r");
-	Com_Printf("pics\r");
 
+	Com_Printf("models\r");
 	SCR_UpdateProgressbar(0, 2); // H2
-	Com_Printf("                                     \r");
 	RegisterModels(); // H2
 
 	SCR_UpdateProgressbar(0, 3); // H2
 
 	for (int i = 1; i < MAX_MODELS && cl.configstrings[CS_MODELS + i][0] != 0; i++)
 	{
-		strcpy_s(name, sizeof(name), cl.configstrings[CS_MODELS + i]); //mxd. strcpy -> strcpy_s
-		name[37] = 0; // Never go beyond one line.
-
-		if (name[0] != '*')
-			Com_Printf("%s\r", name);
-
-		SCR_UpdateScreen();
-		IN_Update(); // H2. Pump message loop.
+		const char* name = cl.configstrings[CS_MODELS + i]; //YQ2. 'char name[MAX_QPATH]' in Q2/H2. 
 
 		cl.model_draw[i] = re.RegisterModel(cl.configstrings[CS_MODELS + i]);
-		if (name[0] == '*')
-			cl.model_clip[i] = CM_InlineModel(cl.configstrings[CS_MODELS + i]);
-		else
-			cl.model_clip[i] = NULL;
-
-		if (name[0] != '*')
-			Com_Printf("                                     \r");
+		cl.model_clip[i] = ((name[0] == '*') ? CM_InlineModel(cl.configstrings[CS_MODELS + i]) : NULL);
 	}
 
 	Com_Printf("images\r");
 	SCR_UpdateProgressbar(0, 4); // H2
 
 	for (int i = 1; i < MAX_IMAGES && cl.configstrings[CS_IMAGES + i][0]; i++)
-	{
 		cl.image_precache[i] = re.RegisterPic(cl.configstrings[CS_IMAGES + i]);
-		IN_Update(); // H2. Pump message loop.
-	}
 
+	Com_Printf("clients\r");
 	SCR_UpdateProgressbar(0, 5); // H2
-	Com_Printf("                                     \r");
 
 	for (int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if (!cl.configstrings[CS_PLAYERSKINS + i][0])
-			continue;
+		if (cl.configstrings[CS_PLAYERSKINS + i][0] != 0)
+			CL_ParseClientinfo(i);
 
-		Com_Printf("client %i\r", i);
-		SCR_UpdateScreen();
-		IN_Update(); // H2. Pump message loop.
-		CL_ParseClientinfo(i);
-		Com_Printf("                                     \r");
-	}
-
-	SCR_UpdateScreen();
 	CL_LoadClientinfo(&cl.baseclientinfo, "unnamed\\male/Corvus", MAX_PLAYER_MODELS);
 
 	// Set sky textures and speed.
@@ -128,6 +99,7 @@ void CL_PrepRefresh(void)
 	SCR_UpdateScreen();
 
 	const float rotate = (float)strtod(cl.configstrings[CS_SKYROTATE], NULL); //mxd. atof -> strtod
+	vec3_t axis;
 	sscanf_s(cl.configstrings[CS_SKYAXIS], "%f %f %f", &axis[0], &axis[1], &axis[2]); //mxd. sscanf -> sscanf_s
 	re.SetSky(cl.configstrings[CS_SKY], rotate, axis);
 	Com_Printf("                                     \r");
