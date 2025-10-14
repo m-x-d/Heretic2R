@@ -150,6 +150,13 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 	{
 		const centity_t* target_ent = &cl_entities[cl.frame.playerstate.AutotargetEntityNum];
 		VectorCopy(target_ent->origin, end);
+
+		// Reconstruct ent's bbox (replicate CL_ClipMoveToEntities() logic)...
+		const float zd = 8.0f * (float)((target_ent->current.solid >> 5) & 31);
+		const float zu = 8.0f * (float)((target_ent->current.solid >> 10) & 63) - 32;
+
+		// Aim at ent's vertical center (replicate GetAimVelocity() logic)...
+		end[2] += -zd * 0.5f + zu;
 	}
 	else
 	{
