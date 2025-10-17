@@ -428,7 +428,7 @@ void SV_InitGame(void)
 // Modifies levelstring!
 static void SetNextserver(char* levelstring)
 {
-	// If there is a + in the map, set nextserver to the remainder
+	// If there is a '+' in the map, set nextserver to the remainder.
 	char* ch = strstr(levelstring, "+");
 	if (ch != NULL)
 	{
@@ -438,10 +438,8 @@ static void SetNextserver(char* levelstring)
 		if (((int)Cvar_VariableValue("coop") || (int)Cvar_VariableValue("deathmatch")) && 
 			(strcmp(levelstring, "intro.smk") == 0 || strcmp(levelstring, "outro.smk") == 0))
 		{
-			const int len = (int)strlen(levelstring);
-			strcpy_s(levelstring, len - 10, levelstring + 10); // 10 == strlen("intro.smk")
-			levelstring[10] = 0;
-
+			// 'intro.smk+ssdocks' -> 'ssdocks'.
+			memmove(levelstring, levelstring + strlen(levelstring) + 1, strlen(ch + 1) + 1);
 			Cvar_Set("nextserver", "");
 		}
 		else
