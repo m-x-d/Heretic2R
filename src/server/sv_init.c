@@ -467,17 +467,17 @@ qboolean SV_ValidateMapFilename(const char* level)
 {
 	char mappath[MAX_QPATH];
 
-	// Check map file
+	// Check map file.
 	Com_sprintf(mappath, sizeof(mappath), "maps/%s.bsp", level);
 	if (FS_LoadFile(mappath, 0) != -1)
 		return true;
 
-	// Check demo file
+	// Check demo file.
 	Com_sprintf(mappath, sizeof(mappath), "demos/%s", level);
 	if (FS_LoadFile(mappath, 0) != -1)
 		return true;
 
-	// Check movie file
+	// Check movie file.
 	return (Q_stricmp(&level[strlen(level) - 4], ".smk") == 0);
 }
 
@@ -495,7 +495,7 @@ void SV_Map(const qboolean attractloop, const char* levelstring, const qboolean 
 	sv.attractloop = attractloop;
 
 	if (sv.state == ss_dead && !sv.loadgame)
-		SV_InitGame(); // The game is just starting
+		SV_InitGame(); // The game is just starting.
 
 	strcpy_s(level, sizeof(level), levelstring); //mxd. strcpy -> strcpy_s
 
@@ -513,26 +513,32 @@ void SV_Map(const qboolean attractloop, const char* levelstring, const qboolean 
 		spawnpoint[0] = 0;
 	}
 
-	// Skip the end-of-unit flag if necessary
-	if (level[0] == '*')
-		strcpy_s(level, sizeof(level), level + 1); //mxd. strcpy -> strcpy_s
+	// Skip the end-of-unit flag if necessary.
+	int len = (int)strlen(level);
 
-	// H2: validate map name
+	if (level[0] == '*')
+	{
+		memmove(level, level + 1, len); //mxd. strcpy -> memmove
+		len--;
+	}
+
+	// H2: validate map name.
 	if (!SV_ValidateMapFilename(level))
 		Com_Error(ERR_DROP, "Trying to load Map (%s) which doesn't exist.", level);
 
 	Com_DPrintf("Map validated ok.\n");
 
-	// Spawn server
-	SCR_BeginLoadingPlaque(); // For local system
+	// Spawn server.
+	SCR_BeginLoadingPlaque(); // For local system.
 	SV_BroadcastCommand("changing\n");
 
-	const int len = (int)strlen(level);
-	if (len > 4 && strcmp(level + len - 4, ".smk") == 0)
+	const char* ext = ((len <= 4) ? NULL : level + len - 4); //mxd
+
+	if (ext != NULL && strcmp(ext, ".smk") == 0)
 	{
 		SV_SpawnServer(level, spawnpoint, ss_cinematic, attractloop, loadgame);
 	}
-	else if (len > 4 && strcmp(level + len - 4, ".hd2") == 0)
+	else if (ext != NULL && strcmp(ext, ".hd2") == 0)
 	{
 		SV_SpawnServer(level, spawnpoint, ss_demo, attractloop, loadgame);
 	}
