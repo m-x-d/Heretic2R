@@ -726,6 +726,12 @@ void SV_Frame(const int usec) // YQ2: msec -> usec.
 	SV_CheckTimeouts();	// Check timeouts.
 	SV_ReadPackets();	// Get packets from clients.
 
+	// Send messages more often to new clients getting ready for spawning in.
+	// Speeds up the process of sending configstrings, entity deltas, etc.
+	const qboolean is_singleplayer = ((int)maxclients->value == 1); //mxd
+	if (is_singleplayer)
+		SV_SendPrepClientMessages(); // YQ2
+
 	// Move autonomous things around if enough time has passed.
 	if ((uint)svs.realtime < sv.time)
 	{
@@ -752,6 +758,10 @@ void SV_Frame(const int usec) // YQ2: msec -> usec.
 	SV_GiveMsec();		// Give the clients some timeslices.
 	SV_RunGameFrame();	// Let everything in the world think and move. 
 	SV_SendClientMessages(true); // Send messages back to the clients that had packets read this frame.
+
+	if (!is_singleplayer)
+		SV_SendPrepClientMessages(); // YQ2
+
 	Master_Heartbeat();	// Send a heartbeat to the master if needed.
 	SV_PrepWorldFrame(); // Clear teleport flags, etc. for next frame.
 }

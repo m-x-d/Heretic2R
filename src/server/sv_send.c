@@ -594,10 +594,22 @@ static qboolean SV_RateDrop(client_t* c)
 	return false;
 }
 
+// If the reliable message overflowed, drop the client.
+static void SV_SendDisconnect(client_t* c) // YQ2
+{
+	SZ_Clear(&c->netchan.message);
+	SZ_Clear(&c->datagram);
+
+	SV_BroadcastObituary(PRINT_HIGH, GM_OVERFLOW, c->edict->s.number, 0); // H2
+	Com_Printf("WARNING: reliable overflow for %s\n", c->name); // H2
+	SV_DropClient(c);
+
+	Netchan_Transmit(&c->netchan, 0, NULL);
+}
+
 void SV_SendClientMessages(const qboolean send_client_data)
 {
 	byte msgbuf[MAX_MSGLEN];
-
 	int msglen = 0;
 
 	// Read the next demo message if needed.
@@ -622,24 +634,22 @@ void SV_SendClientMessages(const qboolean send_client_data)
 		}
 	}
 
-	// Send a message to each connected client.
+	// Send a message to each spawned client.
 	int send_mask = 0; // H2
 
-	client_t* c = svs.clients;
+	client_t* c = &svs.clients[0];
 	for (int i = 0; i < (int)maxclients->value; i++, c++)
 	{
 		if (c->state == cs_free)
 			continue;
 
-		// If the reliable message overflowed, drop the client.
 		const qboolean overflowed = c->datagram.overflowed; // H2
+
+		// If the reliable message overflowed, drop the client.
 		if (c->netchan.message.overflowed)
 		{
-			SZ_Clear(&c->netchan.message);
-			SZ_Clear(&c->datagram);
-			SV_BroadcastObituary(PRINT_HIGH, GM_OVERFLOW, c->edict->s.number, 0); // H2
-			Com_Printf("WARNING: reliable overflow for %s\n", c->name); // H2
-			SV_DropClient(c);
+			SV_SendDisconnect(c); // YQ2
+			continue;
 		}
 
 		send_mask |= EDICT_MASK(c->edict); // H2
@@ -650,17 +660,14 @@ void SV_SendClientMessages(const qboolean send_client_data)
 		}
 		else if (c->state == cs_spawned)
 		{
-			// Don't overrun bandwidth
+			// Don't overrun bandwidth.
 			if (SV_RateDrop(c))
 				continue;
 
 			SV_SendClientDatagram(c, send_client_data); // H2: new 2-nd arg.
 		}
-		else if (c->netchan.message.cursize > 0 || curtime - c->netchan.last_sent > 1000)
-		{
-			// Just update reliable if needed.
-			Netchan_Transmit(&c->netchan, 0, NULL);
-		}
+
+		// Messages to non-spawned clients are sent by SV_SendPrepClientMessages() -- YQ2.
 
 		if (!overflowed) // H2
 		{
@@ -686,6 +693,30 @@ void SV_SendClientMessages(const qboolean send_client_data)
 			memset(effect, 0, sizeof(PerEffectsBuffer_t));
 			num_persistant_effects--;
 		}
+	}
+}
+
+void SV_SendPrepClientMessages(void) // YQ2
+{
+	if (sv.state == ss_cinematic || sv.state == ss_demo)
+		return;
+
+	// Send a message to each inactive client if needed.
+	client_t* c = &svs.clients[0];
+	for (int i = 0; i < (int)maxclients->value; i++, c++)
+	{
+		if (c->state == cs_free || c->state == cs_spawned)
+			continue;
+
+		if (c->netchan.message.overflowed)
+		{
+			SV_SendDisconnect(c);
+			continue;
+		}
+
+		// Just update reliable if needed.
+		if (c->netchan.message.cursize > 0 || curtime - c->netchan.last_sent > 1000)
+			Netchan_Transmit(&c->netchan, 0, NULL);
 	}
 }
 

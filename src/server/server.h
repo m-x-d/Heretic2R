@@ -222,6 +222,7 @@ extern void SV_Multicast(const vec3_t origin, multicast_t to);
 extern void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
 extern void SV_StartEventSound(byte event_id, float leveltime, const vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs); // H2
 extern void SV_SendClientMessages(qboolean send_client_data); // H2: + 'send_client_data' arg
+extern void SV_SendPrepClientMessages(void); // YQ2
 
 // sv_user.c
 extern void SV_Nextserver(void);

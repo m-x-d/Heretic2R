@@ -540,7 +540,13 @@ void SV_Map(const qboolean attractloop, const char* levelstring, const qboolean 
 	}
 	else
 	{
-		SV_SendClientMessages(false);
+		// For some reason calling send messages here causes a lengthy reconnect delay -- YQ2.
+		if ((int)maxclients->value > 1)
+		{
+			SV_SendClientMessages(false);
+			SV_SendPrepClientMessages(); // YQ2
+		}
+
 		SV_SpawnServer(level, spawnpoint, ss_game, attractloop, loadgame);
 		Cbuf_CopyToDefer();
 	}
