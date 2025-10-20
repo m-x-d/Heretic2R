@@ -160,7 +160,10 @@ static int R_RecursiveLightPoint(const mnode_t* node, const vec3_t start, const 
 	msurface_t* surf = &r_worldmodel->surfaces[node->firstsurface];
 	for (int i = 0; i < node->numsurfaces; i++, surf++)
 	{
-		if (surf->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
+		if (surf->samples == NULL)
+			continue; // No lightmap data. Was 'return 0' in original logic --mxd.
+
+		if (surf->flags & (SURF_DRAWTURB | SURF_DRAWSKY) || surf->texinfo->flags & SURF_NODRAW) //mxd. Also skip NODRAW surfaces.
 			continue; // No lightmaps.
 
 		const mtexinfo_t* tex = surf->texinfo;
@@ -176,9 +179,6 @@ static int R_RecursiveLightPoint(const mnode_t* node, const vec3_t start, const 
 
 		if (ds > surf->extents[0] || dt > surf->extents[1])
 			continue;
-
-		if (surf->samples == NULL)
-			return 0;
 
 		VectorClear(pointcolor);
 
