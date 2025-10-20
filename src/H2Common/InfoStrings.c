@@ -101,30 +101,28 @@ H2COMMON_API void Info_RemoveKey(char* s, const char* key)
 // Q2 counterpart. H2: Com_Printf replaced with com_printf reference
 H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* value)
 {
-	char newi[MAX_INFO_STRING];
-
 	if (key == NULL)
 		return;
 
-	if (strstr(key, "\\") || (value != NULL && strstr(value, "\\")))
+	if (strchr(key, '\\') != NULL || (value != NULL && strchr(value, '\\') != NULL)) //mxd. strstr() -> strchr().
 	{
 		(*com_printf)("Can't use keys or values with a \\\n");
 		return;
 	}
 
-	if (strstr(key, ";"))
+	if (strchr(key, ';') != NULL) //mxd. strstr() -> strchr().
 	{
 		(*com_printf)("Can't use keys with a semicolon\n");
 		return;
 	}
 
-	if (strstr(key, "\"") || (value != NULL && strstr(value, "\"")))
+	if (strchr(key, '\"') != NULL || (value != NULL && strchr(value, '\"') != NULL)) //mxd. strstr() -> strchr().
 	{
 		(*com_printf)("Can't use keys or values with a \"\n");
 		return;
 	}
 
-	if ((strlen(key) > MAX_INFO_KEY - 1) || (value != NULL && (strlen(value) > MAX_INFO_VALUE - 1)))
+	if (strlen(key) > MAX_INFO_KEY - 1 || (value != NULL && strlen(value) > MAX_INFO_VALUE - 1))
 	{
 		(*com_printf)("Keys and values must be < 64 characters.\n");
 		return;
@@ -135,6 +133,7 @@ H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* valu
 	if (value == NULL || value[0] == 0) //mxd. strlen(str) -> str[0] check.
 		return;
 
+	char newi[MAX_INFO_STRING];
 	Com_sprintf(newi, sizeof(newi), "\\%s\\%s", key, value);
 
 	if (strlen(newi) + strlen(s) >= MAX_INFO_STRING)
@@ -143,9 +142,9 @@ H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* valu
 		return;
 	}
 
-	// Only copy ascii values
+	// Only copy ascii values.
 	s += strlen(s);
-	const char* v = newi;
+	const char* v = &newi[0];
 
 	while (*v != 0)
 	{
