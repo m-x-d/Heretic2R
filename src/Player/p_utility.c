@@ -12,9 +12,15 @@
 void P_Trace(const playerinfo_t* info, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* trace)
 {
 	if (info->isclient)
-		info->CL_Trace(start, mins, maxs, end, MASK_PLAYERSOLID, CEF_CLIP_TO_WORLD, trace);
+	{
+		//H2_BUGFIX: mxd. CEF_CLIP_TO_WORLD in original logic.
+		// Fixes broken animations when failing to un-crouch while below a func_ brush or rotating in place while standing on a func_ brush.
+		info->CL_Trace(start, mins, maxs, end, MASK_PLAYERSOLID, CEF_CLIP_TO_ALL, trace);
+	}
 	else
+	{
 		info->G_Trace(start, mins, maxs, end, info->self, MASK_PLAYERSOLID, trace);
+	}
 }
 
 //mxd. 'origin', 'leveltime', 'entity', 'attenuation' and 'timeofs' args are always the same in Player.dll, so...
