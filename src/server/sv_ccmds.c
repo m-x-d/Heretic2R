@@ -781,7 +781,7 @@ static void SV_Savegame_f(void)
 	}
 
 	const char* dir = Cmd_Argv(1);
-	if (strstr(dir, "..") || strstr(dir, "/") || strstr(dir, "\\"))
+	if (!FS_IsValidDirName(dir)) //mxd. Use FS_IsValidDirName().
 	{
 		Com_Printf("Bad savedir.\n");
 		return; //mxd. Missing even in YQ2.
@@ -804,9 +804,6 @@ static void SV_Savegame_f(void)
 
 static void SV_Loadgame_f(void)
 {
-	char name[MAX_OSPATH];
-	FILE* f;
-
 	svs.have_current_save = false; // H2
 
 	if (Cmd_Argc() != 2)
@@ -817,16 +814,18 @@ static void SV_Loadgame_f(void)
 
 	Com_Printf("Loading game...\n");
 
-	char* dir = Cmd_Argv(1);
-	if (strstr(dir, "..") || strstr(dir, "/") || strstr(dir, "\\"))
+	const char* dir = Cmd_Argv(1);
+	if (!FS_IsValidDirName(dir)) //mxd. Use FS_IsValidDirName().
 	{
 		Com_Printf("Bad savedir.\n");
 		return; //mxd. Missing even in YQ2.
 	}
 
 	// Make sure the server.ssv file exists.
+	char name[MAX_OSPATH];
 	Com_sprintf(name, sizeof(name), "%s/save/%s/server.ssv", FS_Userdir(), dir); // H2: FS_Gamedir -> FS_Userdir.
 
+	FILE* f;
 	if (fopen_s(&f, name, "rb") != 0) //mxd. fopen -> fopen_s
 	{
 		Com_Printf("No such savegame: %s\n", name);

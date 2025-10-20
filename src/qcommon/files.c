@@ -382,11 +382,19 @@ char* FS_Gamedir(void)
 	return fs_gamedir;
 }
 
+qboolean FS_IsValidDirName(const char* dir) //mxd. Added to reduce code duplication...
+{
+	if (strstr(dir, "..") != NULL || strchr(dir, '/') != NULL || strchr(dir, '\\') != NULL || strchr(dir, ':') != NULL)
+		return false;
+
+	return true;
+}
+
 // Q2 counterpart
 // Sets the gamedir and path to a different directory.
 void FS_SetGamedir(const char* dir)
 {
-	if (strstr(dir, "..") != NULL || strchr(dir, '/') != NULL || strchr(dir, '\\') != NULL || strchr(dir, ':') != NULL) //mxd. strstr() -> strchr().
+	if (!FS_IsValidDirName(dir)) //mxd. Use FS_IsValidDirName().
 	{
 		Com_Printf("Gamedir should be a single filename, not a path\n");
 		return;

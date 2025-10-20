@@ -630,6 +630,7 @@ extern char* FS_GetPath(const char* name); // H2
 extern void FS_SetGamedir(const char* dir);
 extern char* FS_Gamedir(void);
 extern char* FS_Userdir(void);
+extern qboolean FS_IsValidDirName(const char* dir); //mxd
 extern char* FS_NextPath(const char* prevpath);
 extern void FS_ExecAutoexec(void);
 
