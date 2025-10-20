@@ -87,22 +87,20 @@ static qboolean CheckCreep(const playerinfo_t* info, const int dir)
 
 static int CheckSlopedStand(const playerinfo_t* info) //TODO: it would be nice to use inverse kinematics for this...
 {
-	vec3_t lspotmax;
-	vec3_t lspotmin;
-	vec3_t rspotmax;
-	vec3_t rspotmin;
-	vec3_t forward;
-	vec3_t right;
-
 	//mxd. Check for noclip, just to make things more robust.
 	if (info->movetype == PHYSICSTYPE_NOCLIP)
 		return ASEQ_STAND;
 
+	vec3_t forward;
+	vec3_t right;
 	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f };
 	AngleVectors(player_facing, forward, right, NULL);
 
 	// Get player origin.
+	vec3_t lspotmax;
 	VectorCopy(info->origin, lspotmax);
+
+	vec3_t rspotmax;
 	VectorCopy(info->origin, rspotmax);
 
 	// Magic number calc for foot placement.
@@ -112,12 +110,9 @@ static int CheckSlopedStand(const playerinfo_t* info) //TODO: it would be nice t
 	VectorMA(rspotmax, 10.5f, right, rspotmax);
 	VectorMA(rspotmax, -2.6f, forward, rspotmax);
 
-	VectorCopy(lspotmax, lspotmin);
-	VectorCopy(rspotmax, rspotmin);
-
 	// Go half player height below player.
-	lspotmin[2] += info->mins[2] * 2.0f;
-	rspotmin[2] += info->mins[2] * 2.0f;
+	const vec3_t lspotmin = { lspotmax[0], lspotmax[1], lspotmax[2] + info->mins[2] * 2.0f };
+	const vec3_t rspotmin = { rspotmax[0], rspotmax[1], rspotmax[2] + info->mins[2] * 2.0f };
 
 	trace_t rightfoot;
 	P_Trace(info, rspotmax, footmins, footmaxs, rspotmin, &rightfoot); //mxd
