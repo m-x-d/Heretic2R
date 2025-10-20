@@ -10,7 +10,7 @@
 // Q2 counterpart. Searches the string for the given key and returns the associated value, or an empty string.
 H2COMMON_API char* Info_ValueForKey(const char* s, const char* key)
 {
-	static char value[2][512]; // Use two buffers so compares work without stomping on each other
+	static char value[2][512]; // Use two buffers so compares work without stomping on each other.
 	static int valueindex;
 	char pkey[512];
 
@@ -25,7 +25,7 @@ H2COMMON_API char* Info_ValueForKey(const char* s, const char* key)
 
 		while (*s != '\\')
 		{
-			if (!*s)
+			if (*s == 0)
 				return "";
 
 			*o++ = *s++;
@@ -36,7 +36,7 @@ H2COMMON_API char* Info_ValueForKey(const char* s, const char* key)
 
 		o = value[valueindex];
 
-		while (*s != '\\' && *s)
+		while (*s != '\\' && *s != 0)
 			*o++ = *s++;
 
 		*o = 0;
@@ -44,7 +44,7 @@ H2COMMON_API char* Info_ValueForKey(const char* s, const char* key)
 		if (strcmp(key, pkey) == 0)
 			return value[valueindex];
 
-		if (!*s)
+		if (*s == 0)
 			return "";
 
 		s++;
