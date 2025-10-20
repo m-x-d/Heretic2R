@@ -426,12 +426,12 @@ void CL_LoadClientinfo(clientinfo_t* ci, const char* s, const int index)
 	char skin_filename[MAX_QPATH];
 
 	assert(index >= 0 && index <= MAX_PLAYER_MODELS); //mxd. Added sanity check.
-	
+
 	// Isolate the player's name.
 	strncpy_s(ci->name, sizeof(ci->name), s, sizeof(ci->name));
 	ci->name[sizeof(ci->name) - 1] = 0;
 
-	char* t = strstr(s, "\\");
+	char* t = strchr(s, '\\'); //mxd. strstr() -> strchr().
 	if (t != NULL)
 	{
 		ci->name[t - s] = 0;
@@ -473,9 +473,9 @@ void CL_LoadClientinfo(clientinfo_t* ci, const char* s, const int index)
 		strcpy_s(model_name, sizeof(model_name), s);
 
 		// Isolate the skin name.
-		t = strstr(model_name, "/");
+		t = strchr(model_name, '/'); //mxd. strstr() -> strchr().
 		if (t == NULL)
-			t = strstr(model_name, "\\");
+			t = strchr(model_name, '\\'); //mxd. strstr() -> strchr().
 
 		if (t != NULL)
 		{
