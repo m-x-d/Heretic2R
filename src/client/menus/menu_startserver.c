@@ -39,34 +39,31 @@ static int LoadMapnames(const qboolean is_coop)
 {
 	static char mapnames_buffer[NUM_MAPNAMES][MAX_QPATH];
 
-	char* buffer;
-	FILE* file;
-	char map_name[MAX_TOKEN_CHARS];
-	char map_title[MAX_TOKEN_CHARS];
-
-	const cvar_t* cv_maplist = (is_coop ? m_cooplist : m_dmlist);
-
 	for (int i = 0; i < NUM_MAPNAMES; i++)
 		mapnames[i] = mapnames_buffer[i];
 
+	char* buffer;
+	const cvar_t* cv_maplist = (is_coop ? m_cooplist : m_dmlist);
 	if (FS_LoadFile(va("%s.lst", cv_maplist->string), (void**)&buffer) == -1)
-	{
-		Com_Error(ERR_DROP, "*************************\n\t\t\t\t\t\t\t Could not open %s.lst\n\t\t\t\t\t\t\t *************************\n",
-			cv_maplist->string);
-	}
+		Com_Error(ERR_DROP, "*************************\n\t\t\t\t\t\t\t Could not open %s.lst\n\t\t\t\t\t\t\t *************************\n", cv_maplist->string);
 
 	int num_maps = 0;
-	char* s = buffer;
+	char* s = &buffer[0];
 
 	while (s != NULL)
 	{
+		char map_name[MAX_TOKEN_CHARS];
 		strcpy_s(map_name, sizeof(map_name), COM_Parse(&s)); //mxd. strcpy -> strcpy_s
+
+		char map_title[MAX_TOKEN_CHARS];
 		strcpy_s(map_title, sizeof(map_title), COM_Parse(&s)); //mxd. strcpy -> strcpy_s
 
-		if (!strlen(map_name) || !strlen(map_title))
+		if (strlen(map_name) == 0 || strlen(map_title) == 0)
 			continue;
 
+		FILE* file;
 		FS_FOpenFile(va("maps/%s.bsp", map_name), &file);
+
 		if (file != NULL)
 		{
 			FS_FCloseFile(file);
