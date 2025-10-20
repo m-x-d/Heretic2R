@@ -94,13 +94,14 @@ static int has_ext(const char *ext) {
             return 0;
         }
 
+        const unsigned int ext_len = strlen(ext); //mxd
         while(1) {
             loc = strstr(extensions, ext);
             if(loc == NULL) {
                 return 0;
             }
 
-            terminator = loc + strlen(ext);
+            terminator = loc + ext_len;
             if((loc == extensions || *(loc - 1) == ' ') &&
                 (*terminator == ' ' || *terminator == '\0')) {
                 return 1;
