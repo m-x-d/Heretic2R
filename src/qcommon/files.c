@@ -466,16 +466,19 @@ static void FS_Link_f(void)
 	}
 
 	// See if the link already exists.
+	const char* from = Cmd_Argv(1); //mxd
+	const char* to = Cmd_Argv(2); //mxd
+
 	filelink_t** prev = &fs_links;
 	for (filelink_t* l = fs_links; l != NULL; l = l->next)
 	{
-		if (strcmp(l->from, Cmd_Argv(1)) == 0)
+		if (strcmp(l->from, from) == 0)
 		{
 			Z_Free(l->to);
 
-			if (strlen(Cmd_Argv(2)) > 0)
+			if (*to != 0)
 			{
-				l->to = CopyString(Cmd_Argv(2));
+				l->to = CopyString(to);
 			}
 			else
 			{
@@ -492,12 +495,12 @@ static void FS_Link_f(void)
 	}
 
 	// Create a new link.
-	filelink_t* l = Z_Malloc(sizeof(*l));
-	l->next = fs_links;
+	filelink_t* l = Z_Malloc(sizeof(filelink_t));
+	l->next = &fs_links[0];
 	fs_links = l;
-	l->from = CopyString(Cmd_Argv(1));
+	l->from = CopyString(from);
 	l->fromlength = (int)strlen(l->from);
-	l->to = CopyString(Cmd_Argv(2));
+	l->to = CopyString(to);
 }
 
 // Q2 counterpart
