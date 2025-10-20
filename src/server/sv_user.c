@@ -296,6 +296,30 @@ static void SV_NextDownload_f(void)
 	}
 }
 
+static qboolean SV_IsValidDownloadPath(const char* path) //mxd
+{
+	if (!(int)allow_download->value) // No downloads allowed.
+		return false;
+
+	// Leading dot is no good. Leading slash bad as well, must be in subdir. No relative paths allowed. MUST be in a subdir.
+	if (*path == '.' || *path == '/' || strstr(path, "..") != NULL || strchr(path, '/') == NULL)
+		return false;
+
+	if (!(int)allow_download_players->value && strncmp(path, "players/", 8) == 0) //mxd. Fixed strncmp length.
+		return false;
+
+	if (!(int)allow_download_models->value && strncmp(path, "models/", 7) == 0) //mxd. Fixed strncmp length.
+		return false;
+
+	if (!(int)allow_download_sounds->value && strncmp(path, "sound/", 6) == 0) //mxd. Fixed strncmp length.
+		return false;
+
+	if (!(int)allow_download_maps->value && strncmp(path, "maps/", 5) == 0) //mxd. Fixed strncmp length.
+		return false;
+
+	return true;
+}
+
 // Q2 counterpart
 static void SV_BeginDownload_f(void)
 {
@@ -303,14 +327,7 @@ static void SV_BeginDownload_f(void)
 	const int offset = (Cmd_Argc() > 2 ? Q_atoi(Cmd_Argv(2)) : 0); // Downloaded offset.
 
 	// Validate download path.
-	if (strstr(name, "..") != NULL || !(int)allow_download->value
-		|| *name == '.' // Leading dot is no good.
-		|| *name == '/' // Leading slash bad as well, must be in subdir.
-		|| (strncmp(name, "players/", 8) == 0 && !(int)allow_download_players->value) //mxd. Fixed strncmp length.
-		|| (strncmp(name, "models/", 7) == 0 && !(int)allow_download_models->value) //mxd. Fixed strncmp length.
-		|| (strncmp(name, "sound/", 6) == 0 && !(int)allow_download_sounds->value)
-		|| (strncmp(name, "maps/", 5) == 0 && !(int)allow_download_maps->value) //mxd. Fixed strncmp length.
-		|| strstr(name, "/") == NULL) // MUST be in a subdirectory.
+	if (!SV_IsValidDownloadPath(name))
 	{
 		MSG_WriteByte(&sv_client->netchan.message, svc_download);
 		MSG_WriteShort(&sv_client->netchan.message, -1);
