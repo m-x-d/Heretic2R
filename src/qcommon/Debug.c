@@ -78,11 +78,15 @@ Q2DLL_DECLSPEC void DBG_HudPrint(const int slot, const char* label, const char* 
 {
 #if _DEBUG
 
-	va_list argptr;
-
 	if (slot < 0 || slot >= NUM_DEBUG_MESSAGES)
 	{
 		DBG_IDEPrint("DBG_HudPrint: invalid HUD slot %i!", slot);
+		return;
+	}
+
+	if (label == NULL || *label == 0)
+	{
+		DBG_IDEPrint("DBG_HudPrint: invalid label for slot %i!", slot);
 		return;
 	}
 
@@ -92,9 +96,18 @@ Q2DLL_DECLSPEC void DBG_HudPrint(const int slot, const char* label, const char* 
 	strcpy_s(msg->title, sizeof(msg->title), label);
 
 	// Message
-	va_start(argptr, fmt);
-	vsprintf_s(msg->message, sizeof(msg->message), fmt, argptr);
-	va_end(argptr);
+	if (fmt != NULL)
+	{
+		va_list argptr;
+
+		va_start(argptr, fmt);
+		vsprintf_s(msg->message, sizeof(msg->message), fmt, argptr);
+		va_end(argptr);
+	}
+	else
+	{
+		msg->message[0] = 0;
+	}
 
 #endif
 }
@@ -122,14 +135,15 @@ void DBG_DrawMessages(void)
 		const int t_len = (int)strlen(msg->title);
 		const int m_len = (int)strlen(msg->message);
 
-		if (t_len == 0 || m_len == 0)
+		if (t_len == 0 && m_len == 0)
 			continue;
 
 		// Title
 		DrawString(ox - t_len * ui_char_size, oy, msg->title, TextPalette[P_CYAN], -1);
 
 		// Message
-		DrawString(ox + ui_char_size, oy, msg->message, TextPalette[P_CYAN], -1);
+		if (m_len > 0)
+			DrawString(ox + ui_char_size, oy, msg->message, TextPalette[P_CYAN], -1);
 
 		oy += ui_line_height;
 	}
