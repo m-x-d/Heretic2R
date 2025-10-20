@@ -157,10 +157,10 @@ H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* valu
 }
 
 // Q2 counterpart
-// Some characters are illegal in info strings because they can mess up the server's parsing
+// Some characters are illegal in info strings because they can mess up the server's parsing.
 H2COMMON_API qboolean Info_Validate(const char* s)
 {
-	if (strstr(s, "\"") || strstr(s, ";"))
+	if (strchr(s, '\"') != NULL || strchr(s, ';') != NULL) //mxd. strstr() -> strchr().
 		return false;
 
 	return true;
