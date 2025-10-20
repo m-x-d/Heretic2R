@@ -1554,11 +1554,8 @@ static qboolean CanJump(const playerinfo_t* info)
 	if (info->groundentity != NULL)
 		return true;
 
-	vec3_t endpos;
-	VectorCopy(info->origin, endpos);
-	endpos[2] += (info->mins[2] - 2.0f);
-
 	trace_t trace;
+	const vec3_t endpos = { info->origin[0], info->origin[1], info->origin[2] + info->mins[2] - 2.0f };
 	P_Trace(info, info->origin, info->mins, info->maxs, endpos, &trace);
 
 	return trace.fraction < 0.2f;
