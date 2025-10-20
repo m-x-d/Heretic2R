@@ -93,9 +93,6 @@ static const char* Quit_MenuKey(const int key)
 			return NULL;
 
 		case K_ESCAPE:
-			M_PopMenu();
-			return SND_MENU_CLOSE;
-
 		case 'N':
 		case 'n':
 			M_PopMenu();
