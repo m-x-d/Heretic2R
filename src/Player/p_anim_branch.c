@@ -458,7 +458,7 @@ int BranchLwrStanding(playerinfo_t* info)
 	// Check for an autovault.
 	if (info->seqcmd[ACMDL_FWD] && info->upperidle && (info->flags & PLAYER_FLAG_COLLISION))
 	{
-		PlayerActionCheckVault(info, 0);
+		PlayerActionCheckVault(info);
 
 		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_PULLUP_HALFWALL)
 			return info->lowerseq;
@@ -513,7 +513,7 @@ int BranchLwrStandingRun(playerinfo_t* info)
 
 	if (info->seqcmd[ACMDL_FWD] && info->upperidle)
 	{
-		PlayerActionCheckVault(info, 0);
+		PlayerActionCheckVault(info);
 
 		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_PULLUP_HALFWALL)
 			return info->lowerseq;
@@ -594,7 +594,7 @@ int BranchLwrWalking(playerinfo_t* info)
 	// Check for an autovault (only occurs if upper half of body is idle!) [LOW PROBABILITY, IMMEDIATE CONCERN].
 	if (info->seqcmd[ACMDL_FWD] && info->upperidle && (info->flags & PLAYER_FLAG_COLLISION))
 	{
-		PlayerActionCheckVault(info, 0);
+		PlayerActionCheckVault(info);
 
 		if (curseq == ASEQ_VAULT_LOW || curseq == ASEQ_PULLUP_HALFWALL)
 			return curseq;
@@ -1093,7 +1093,7 @@ int BranchLwrSurfaceSwim(playerinfo_t* info)
 	{
 		// Try and use a puzzle piece.
 		PlayerActionUsePuzzle(info);
-		PlayerActionCheckVault(info, 0);
+		PlayerActionCheckVault(info);
 
 		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_PULLUP_HALFWALL)
 			return info->lowerseq;
@@ -1103,7 +1103,7 @@ int BranchLwrSurfaceSwim(playerinfo_t* info)
 
 	if (info->seqcmd[ACMDL_FWD])
 	{
-		PlayerActionCheckVault(info, 0);
+		PlayerActionCheckVault(info);
 
 		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_PULLUP_HALFWALL)
 			return  info->lowerseq;

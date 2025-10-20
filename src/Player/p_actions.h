@@ -56,7 +56,7 @@ extern void PlayerActionBowTrailEnd(playerinfo_t* info, float value);
 extern void PlayerActionStartStaffGlow(const playerinfo_t* info, float value);
 extern void PlayerActionEndStaffGlow(const playerinfo_t* info, float value);
 
-extern qboolean PlayerActionCheckVault(playerinfo_t* info, float value);
+extern qboolean PlayerActionCheckVault(playerinfo_t* info);
 extern void PlayerActionSwimIdleSound(const playerinfo_t* info, float value);
 extern void PlayerActionSwimSound(const playerinfo_t* info, float value);
 extern void PlayerActionClimbWallSound(const playerinfo_t* info, float value);

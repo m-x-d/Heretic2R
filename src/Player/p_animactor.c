@@ -268,7 +268,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 				case ASEQ_FORWARD_FLIP_L:
 				case ASEQ_FORWARD_FLIP_R:
 					// Check for an autovault.
-					if (info->upperidle && info->waterlevel < 2 && !PlayerActionCheckVault(info, 0))
+					if (info->upperidle && info->waterlevel < 2 && !PlayerActionCheckVault(info))
 					{
 						if (info->seqcmd[ACMDL_BACK])
 						{
@@ -296,7 +296,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 				case ASEQ_SSWIM_FAST:
 					// Check for an autovault.
 					if (info->upperidle && info->waterlevel < 2)
-						PlayerActionCheckVault(info, 0);
+						PlayerActionCheckVault(info);
 					break;
 
 				default:

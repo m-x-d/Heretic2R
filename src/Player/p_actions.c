@@ -1327,7 +1327,7 @@ qboolean PlayerActionCheckPushPull(playerinfo_t* info)
 	return true;
 }
 
-qboolean PlayerActionCheckVault(playerinfo_t* info, float value)
+qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value' arg.
 {
 #define VAULT_HAND_WIDTH	4
 #define VAULT_HAND_HEIGHT	32
@@ -1937,7 +1937,7 @@ void PlayerActionCheckCreep(playerinfo_t* info)
 	// Check for an autovault (only occurs if upper half of body is idle!).
 	if ((info->flags & PLAYER_FLAG_COLLISION) && info->upperidle && info->seqcmd[ACMDL_FWD])
 	{
-		PlayerActionCheckVault(info, 0);
+		PlayerActionCheckVault(info);
 
 		if (curseq == ASEQ_VAULT_LOW || curseq == ASEQ_PULLUP_HALFWALL)
 		{
@@ -2237,7 +2237,7 @@ void PlayerActionCheckWalk(playerinfo_t* info)
 	// Check for an autovault (only occurs if upper half of body is idle!).
 	if ((info->flags & PLAYER_FLAG_COLLISION) && info->upperidle && info->seqcmd[ACMDL_FWD])
 	{
-		PlayerActionCheckVault(info, 0.0f);
+		PlayerActionCheckVault(info);
 
 		if (curseq == ASEQ_VAULT_LOW || curseq == ASEQ_PULLUP_HALFWALL)
 		{
@@ -2581,7 +2581,7 @@ void PlayerActionCheckRun(playerinfo_t* info)
 	// Check for an autovault (only occurs if upper half of body is idle!).
 	if (info->seqcmd[ACMDL_FWD] && info->upperidle && (info->flags & PLAYER_FLAG_COLLISION))
 	{
-		PlayerActionCheckVault(info, 0.0f);
+		PlayerActionCheckVault(info);
 
 		if (curseq == ASEQ_VAULT_LOW || curseq == ASEQ_PULLUP_HALFWALL)
 		{
