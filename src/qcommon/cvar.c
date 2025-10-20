@@ -12,7 +12,7 @@ qboolean userinfo_modified;
 // Q2 counterpart
 static qboolean Cvar_InfoValidate(const char* s)
 {
-	if (strstr(s, "\\") || strstr(s, "\"") || strstr(s, ";"))
+	if (strchr(s, '\\') != NULL || strchr(s, '\"') != NULL || strchr(s, ';') != NULL) //mxd. strstr() -> strchr().
 		return false;
 
 	return true;
