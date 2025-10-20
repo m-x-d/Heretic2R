@@ -429,7 +429,7 @@ void SV_InitGame(void)
 static void SetNextserver(char* levelstring)
 {
 	// If there is a '+' in the map, set nextserver to the remainder.
-	char* ch = strstr(levelstring, "+");
+	char* ch = strchr(levelstring, '+'); //mxd. strstr() -> strchr().
 	if (ch != NULL)
 	{
 		*ch = 0;
@@ -450,7 +450,7 @@ static void SetNextserver(char* levelstring)
 		return;
 	}
 
-	ch = strstr(levelstring, "@");
+	ch = strchr(levelstring, '@'); //mxd. strstr() -> strchr().
 	if (ch != NULL)
 	{
 		*ch = 0;
@@ -502,7 +502,7 @@ void SV_Map(const qboolean attractloop, const char* levelstring, const qboolean 
 	SetNextserver(level); // H2
 
 	// If there is a '$', use the remainder as a spawnpoint.
-	char* ch = strstr(level, "$");
+	char* ch = strchr(level, '$'); //mxd. strstr() -> strchr().
 	if (ch != NULL)
 	{
 		*ch = 0;
