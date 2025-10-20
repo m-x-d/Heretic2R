@@ -64,7 +64,7 @@ char* ED_NewString(const char* string)
 
 	for (int i = 0; i < len; i++)
 	{
-		if (string[i] == '\\' && i < len - 1)
+		if (i < len - 1 && string[i] == '\\')
 		{
 			i++;
 
