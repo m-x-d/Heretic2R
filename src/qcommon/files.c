@@ -386,7 +386,7 @@ char* FS_Gamedir(void)
 // Sets the gamedir and path to a different directory.
 void FS_SetGamedir(const char* dir)
 {
-	if (strstr(dir, "..") || strstr(dir, "/") || strstr(dir, "\\") || strstr(dir, ":"))
+	if (strstr(dir, "..") != NULL || strchr(dir, '/') != NULL || strchr(dir, '\\') != NULL || strchr(dir, ':') != NULL) //mxd. strstr() -> strchr().
 	{
 		Com_Printf("Gamedir should be a single filename, not a path\n");
 		return;
