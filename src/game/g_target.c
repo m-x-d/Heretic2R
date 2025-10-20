@@ -112,7 +112,7 @@ void TargetChangelevelUse(edict_t* self, edict_t* other, edict_t* activator) //m
 	}
 
 	// If going to a new unit, clear cross-level triggers.
-	if (strstr(self->map, "*"))
+	if (strchr(self->map, '*') != NULL) //mxd. strstr() -> strchr().
 		game.serverflags &= ~CROSSLEVEL_TRIGGER_SF_MASK;
 
 	gi.dprintf("***\n*** Unit complete. ***\n***\n");
