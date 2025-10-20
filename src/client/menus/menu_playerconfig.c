@@ -83,25 +83,28 @@ static void ScanPlayerSkins(playermodelinfo_s* info) // H2
 	static char skin_names_array[MAX_PLAYER_SKINS][MAX_OSPATH];
 
 	char path[MAX_OSPATH];
-	char skin_name[MAX_OSPATH];
-	char skin_path[MAX_OSPATH];
-	char skin_icon_path[MAX_OSPATH];
-	int icon_w;
-	int icon_h;
-	int skin_w;
-	int skin_h;
-
 	Com_sprintf(path, sizeof(path), "%s/%s/*_i.m8", info->directory, info->psex);
 	const char* skin_file = Sys_FindFirst(path, 0, 0);
+	const uint dir_len = strlen(info->directory); //mxd
 
 	while (skin_file != NULL && s_num_player_skins < MAX_PLAYER_SKINS)
 	{
-		strcpy_s(skin_name, sizeof(skin_name), &skin_file[strlen(info->directory) + 1]); //mxd. strcpy -> strcpy_s
+		char skin_name[MAX_OSPATH];
+		strcpy_s(skin_name, sizeof(skin_name), &skin_file[dir_len + 1]); //mxd. strcpy -> strcpy_s
 		skin_name[strlen(skin_name) - 5] = 0; // Drop the '_i.m8' part.
+
+		char skin_path[MAX_OSPATH];
 		Com_sprintf(skin_path, sizeof(skin_path), "%s/%s.m8", playerdir->string, skin_name);
+
+		char skin_icon_path[MAX_OSPATH];
 		Com_sprintf(skin_icon_path, sizeof(skin_icon_path), "%s/%s_i.m8", playerdir->string, skin_name);
 
+		int skin_w;
+		int skin_h;
 		re.DrawGetPicSize(&skin_w, &skin_h, skin_path);
+
+		int icon_w;
+		int icon_h;
 		re.DrawGetPicSize(&icon_w, &icon_h, skin_icon_path);
 
 		if (skin_w == 256 && skin_h == 256 && icon_w > 0 && icon_h > 0)
