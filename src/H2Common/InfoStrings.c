@@ -57,7 +57,7 @@ H2COMMON_API void Info_RemoveKey(char* s, const char* key)
 	char pkey[512];
 	char value[512];
 
-	if (strstr(key, "\\"))
+	if (strchr(key, '\\') != NULL) //mxd. strstr() -> strchr().
 		return;
 
 	while (true)
@@ -67,11 +67,11 @@ H2COMMON_API void Info_RemoveKey(char* s, const char* key)
 		if (*s == '\\')
 			s++;
 
-		char* o = pkey;
+		char* o = &pkey[0];
 
 		while (*s != '\\')
 		{
-			if (!*s)
+			if (*s == 0)
 				return;
 
 			*o++ = *s++;
@@ -80,9 +80,9 @@ H2COMMON_API void Info_RemoveKey(char* s, const char* key)
 		*o = 0;
 		s++;
 
-		o = value;
+		o = &value[0];
 
-		while (*s != '\\' && *s)
+		while (*s != '\\' && *s != 0)
 			*o++ = *s++;
 
 		*o = 0;
@@ -93,7 +93,7 @@ H2COMMON_API void Info_RemoveKey(char* s, const char* key)
 			return;
 		}
 
-		if (!*s)
+		if (*s == 0)
 			return;
 	}
 }
