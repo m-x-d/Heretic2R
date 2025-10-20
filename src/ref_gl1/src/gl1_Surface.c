@@ -1086,10 +1086,6 @@ void R_DrawWorld(void)
 	//mxd. Skip H2 gl_drawmode logic.
 	R_DrawSkyBox();
 	R_DrawTriangleOutlines();
-
-#ifdef _DEBUG
-	R_DrawDebugPrimitives(); //mxd.
-#endif
 }
 
 // Q2 counterpart

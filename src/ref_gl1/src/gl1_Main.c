@@ -912,6 +912,10 @@ static void R_RenderView(const refdef_t* fd)
 	R_DrawParticles(r_newrefdef.anum_particles, r_newrefdef.aparticles, true);
 	glDepthMask(GL_TRUE);
 
+#ifdef _DEBUG
+	R_DrawDebugPrimitives(); //mxd
+#endif
+
 	// Changed in H2: R_Flash() call replaced with R_PolyBlend() call (or optimization?).
 	R_PolyBlend();
 
