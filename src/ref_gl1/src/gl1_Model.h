@@ -33,8 +33,10 @@ typedef struct
 #define SIDE_BACK			1
 #define SIDE_ON				2
 
+//TODO: differentiate from texinfo SURF_ flags.
 #define SURF_PLANEBACK		2
 #define SURF_DRAWSKY		4
+#define SURF_SKIPDRAW		8 //mxd. Because SURF_NODRAW is already used...
 #define SURF_DRAWTURB		16
 
 // Q2 counterpart

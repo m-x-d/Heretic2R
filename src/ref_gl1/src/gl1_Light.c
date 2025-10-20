@@ -163,7 +163,7 @@ static int R_RecursiveLightPoint(const mnode_t* node, const vec3_t start, const 
 		if (surf->samples == NULL)
 			continue; // No lightmap data. Was 'return 0' in original logic --mxd.
 
-		if (surf->flags & (SURF_DRAWTURB | SURF_DRAWSKY) || surf->texinfo->flags & SURF_NODRAW) //mxd. Also skip NODRAW surfaces.
+		if (surf->flags & (SURF_DRAWTURB | SURF_DRAWSKY | SURF_SKIPDRAW)) //mxd. Also skip SURF_NODRAW surfaces.
 			continue; // No lightmaps.
 
 		const mtexinfo_t* tex = surf->texinfo;

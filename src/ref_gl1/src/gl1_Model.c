@@ -428,7 +428,7 @@ static void Mod_LoadFaces(model_t* loadmodel, const byte* mod_base, const lump_t
 
 		CalcSurfaceExtents(loadmodel, out);
 
-		// Lighting info
+		// Lighting info.
 		for (int i = 0; i < MAXLIGHTMAPS; i++)
 			out->styles[i] = in->styles[i];
 
@@ -438,7 +438,7 @@ static void Mod_LoadFaces(model_t* loadmodel, const byte* mod_base, const lump_t
 		else
 			out->samples = loadmodel->lightdata + lightofs;
 
-		// Set the drawing flags
+		// Set the drawing flags.
 		if (out->texinfo->flags & SURF_WARP)
 		{
 			out->flags |= SURF_DRAWTURB;
@@ -455,6 +455,12 @@ static void Mod_LoadFaces(model_t* loadmodel, const byte* mod_base, const lump_t
 			// Cut up polygon for warps.
 			R_SubdivideSurface(loadmodel, out);
 		}
+
+		if (out->texinfo->flags & SURF_SKY) //mxd. Missing in original logic (Q2 ref_gl bug).
+			out->flags |= SURF_DRAWSKY;
+
+		if (out->texinfo->flags & SURF_NODRAW) //mxd. Missing in original logic.
+			out->flags |= SURF_SKIPDRAW;
 
 		// Create lightmaps and polygons.
 		if (!(out->texinfo->flags & SURF_FULLBRIGHT)) //mxd. SURF_FULLBRIGHT define.
