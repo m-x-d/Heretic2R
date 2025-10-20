@@ -124,6 +124,62 @@ void R_PushDlights(void)
 	}
 }
 
+static void R_SetPointColor(const msurface_t* surf, const int ds, const int dt, vec3_t color) //mxd. KMQ2 interpolated lighting logic.
+{
+	VectorClear(color);
+
+	int r00 = 0;
+	int g00 = 0;
+	int b00 = 0;
+	int r01 = 0;
+	int g01 = 0;
+	int b01 = 0;
+	int r10 = 0;
+	int g10 = 0;
+	int b10 = 0;
+	int r11 = 0;
+	int g11 = 0;
+	int b11 = 0;
+
+	const int dsfrac = ds & 15;
+	const int dtfrac = dt & 15;
+	const int light_smax = (surf->extents[0] >> 4) + 1;
+	const int light_tmax = (surf->extents[1] >> 4) + 1;
+	const int line3 = light_smax * 3;
+	const byte* lightmap = surf->samples + ((dt >> 4) * light_smax + (ds >> 4)) * 3;
+
+	for (int maps = 0; maps < MAXLIGHTMAPS && surf->styles[maps] != 255; maps++)
+	{
+		vec3_t scale;
+		for (int c = 0; c < 3; c++)
+			scale[c] = r_newrefdef.lightstyles[surf->styles[maps]].rgb[c];
+
+		r00 += (int)((float)lightmap[0] * scale[0]);
+		g00 += (int)((float)lightmap[1] * scale[1]);
+		b00 += (int)((float)lightmap[2] * scale[2]);
+
+		r01 += (int)((float)lightmap[3] * scale[0]);
+		g01 += (int)((float)lightmap[4] * scale[1]);
+		b01 += (int)((float)lightmap[5] * scale[2]);
+
+		r10 += (int)((float)lightmap[line3 + 0] * scale[0]);
+		g10 += (int)((float)lightmap[line3 + 1] * scale[1]);
+		b10 += (int)((float)lightmap[line3 + 2] * scale[2]);
+
+		r11 += (int)((float)lightmap[line3 + 3] * scale[0]);
+		g11 += (int)((float)lightmap[line3 + 4] * scale[1]);
+		b11 += (int)((float)lightmap[line3 + 5] * scale[2]);
+
+		lightmap += light_smax * light_tmax * 3;
+	}
+
+	color[0] += (float)(((((((r11 - r10) * dsfrac >> 4) + r10) - (((r01 - r00) * dsfrac >> 4) + r00)) * dtfrac) >> 4) + (((r01 - r00) * dsfrac >> 4) + r00)) / 255.0f;
+	color[1] += (float)(((((((g11 - g10) * dsfrac >> 4) + g10) - (((g01 - g00) * dsfrac >> 4) + g00)) * dtfrac) >> 4) + (((g01 - g00) * dsfrac >> 4) + g00)) / 255.0f;
+	color[2] += (float)(((((((b11 - b10) * dsfrac >> 4) + b10) - (((b01 - b00) * dsfrac >> 4) + b00)) * dtfrac) >> 4) + (((b01 - b00) * dsfrac >> 4) + b00)) / 255.0f;
+
+	Vec3ScaleAssign(gl_modulate->value, color);
+}
+
 static int R_RecursiveLightPoint(const mnode_t* node, const vec3_t start, const vec3_t end)
 {
 	// Didn't hit anything.
@@ -180,19 +236,7 @@ static int R_RecursiveLightPoint(const mnode_t* node, const vec3_t start, const 
 		if (ds > surf->extents[0] || dt > surf->extents[1])
 			continue;
 
-		VectorClear(pointcolor);
-
-		const byte* lightmap = surf->samples + ((dt >> 4) * ((surf->extents[0] >> 4) + 1) + (ds >> 4)) * 3;
-		for (int maps = 0; maps < MAXLIGHTMAPS && surf->styles[maps] != 255; maps++)
-		{
-			for (int c = 0; c < 3; c++)
-			{
-				const float scale = gl_modulate->value * r_newrefdef.lightstyles[surf->styles[maps]].rgb[c];
-				pointcolor[c] += (float)lightmap[c] * scale / 255.0f;
-			}
-
-			lightmap += ((surf->extents[0] >> 4) + 1) * ((surf->extents[1] >> 4) + 1) * 3;
-		}
+		R_SetPointColor(surf, ds, dt, pointcolor); //mxd
 
 		return 1;
 	}
