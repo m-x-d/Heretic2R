@@ -238,7 +238,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 					if (info->upperidle && info->seqcmd[ACMDL_BACK])
 					{
 						// Otherwise do a backflip.
-						info->upvel += 225;
+						info->upvel += 225.0f;
 						PlayerAnimSetLowerSeq(info, ASEQ_JUMPFLIPB);
 						P_Sound(info, SND_PRED_ID38, CHAN_VOICE, "*offwall.wav", 0.75f); //mxd
 
@@ -273,7 +273,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 						if (info->seqcmd[ACMDL_BACK])
 						{
 							// Otherwise do a backflip.
-							info->upvel += 225;
+							info->upvel += 225.0f;
 							PlayerAnimSetLowerSeq(info, ASEQ_JUMPFLIPB);
 							P_Sound(info, SND_PRED_ID39, CHAN_VOICE, "*offwall.wav", 0.75f); //mxd
 						}
