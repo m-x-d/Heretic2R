@@ -312,7 +312,7 @@ typedef struct
 // .bsp by QuakeEd to say that traces with CONTENTS_CAMERABLOCK as the mask will ignore any brushes with this flag.
 #define CONTENTS_CAMERANOBLOCK	0x40000000
 
-// Only do the trace against the world, not entities within it. Not stored in the .bsp and passed only as an argument to trace fucntions.
+// Only do the trace against the world, not entities within it. Not stored in the .bsp and passed only as an argument to trace functions.
 #define CONTENTS_WORLD_ONLY		0x80000000
 
 #pragma endregion
