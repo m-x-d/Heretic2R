@@ -822,6 +822,9 @@ int BranchLwrRunningStrafe(playerinfo_t* info)
 
 		if (info->buttons & BUTTON_RUN)
 		{
+			if (info->seqcmd[ACMDL_JUMP]) //mxd
+				return ASEQ_JUMPLEFT_RGO;
+
 			if (info->lowerseq == ASEQ_DASH_LEFT || info->lowerseq == ASEQ_DASH_LEFT_GO)
 				return ASEQ_NONE;
 
@@ -838,6 +841,9 @@ int BranchLwrRunningStrafe(playerinfo_t* info)
 
 		if (info->buttons & BUTTON_RUN)
 		{
+			if (info->seqcmd[ACMDL_JUMP]) //mxd
+				return ASEQ_JUMPRIGHT_RGO;
+
 			if (info->lowerseq == ASEQ_DASH_RIGHT || info->lowerseq == ASEQ_DASH_RIGHT_GO)
 				return ASEQ_NONE;
 
