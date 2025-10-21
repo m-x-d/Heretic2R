@@ -545,13 +545,13 @@ static void SV_TraceBounds(const vec3_t start, const vec3_t mins, const vec3_t m
 	{
 		if (end[i] > start[i])
 		{
-			boxmins[i] = start[i] + mins[i] - 1;
-			boxmaxs[i] = end[i] + maxs[i] + 1;
+			boxmins[i] = start[i] + mins[i] - 1.0f;
+			boxmaxs[i] = end[i] + maxs[i] + 1.0f;
 		}
 		else
 		{
-			boxmins[i] = end[i] + mins[i] - 1;
-			boxmaxs[i] = start[i] + maxs[i] + 1;
+			boxmins[i] = end[i] + mins[i] - 1.0f;
+			boxmaxs[i] = start[i] + maxs[i] + 1.0f;
 		}
 	}
 }
@@ -826,7 +826,7 @@ int SV_GetContentsAtPoint(const vec3_t point) // H2
 
 qboolean SV_CheckDistances(const vec3_t origin, const float dist) // H2
 {
-	client_t* cl = svs.clients;
+	client_t* cl = &svs.clients[0];
 	for (int i = 0; i < (int)maxclients->value; i++, cl++)
 	{
 		if (cl->state != cs_spawned)
