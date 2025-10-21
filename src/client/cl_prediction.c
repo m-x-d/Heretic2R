@@ -504,12 +504,16 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 		cmd_time_delta += (cl.cmd_time[frame] - cl.cmd_time[oldframe]);
 
 		//mxd. 'cmd_time_delta > 100' in original logic.
-		//mxd. In H2 cl.cmd_time seems to always increase by 34 ms. In H2R it increases by either 33 or 34 ms. (because of more precise YQ2 timing logic?).
-		//mxd. So, in our logic 'cmd_time_delta' CAN land at exactly 100 ms., which resulted in skipping the below logic for current packetframe...
-		if (cmd_time_delta >= 100)
+		//mxd. In H2 cl.cmd_time seems to always increase by at least 34 ms. In H2R it increases by either 33 or 34 ms. (because of more precise YQ2 timing logic?).
+		//mxd. So, in our logic 'cmd_time_delta' CAN land at 99 or 100 ms., which resulted in skipping the below logic for current packetframe...
+		if (cmd_time_delta > 98)
 		{
-			const int steps = cmd_time_delta / 100;
-			cmd_time_delta %= 100;
+			const int steps = max(1, cmd_time_delta / 100); //mxd. We expect at least 1 step...
+
+			if (cmd_time_delta > 100) //mxd. Because 99 % 100 == 99...
+				cmd_time_delta %= 100;
+			else
+				cmd_time_delta = 0;
 
 			pm.cmd.forwardmove = cl.cmds[frame].forwardmove;
 			pm.cmd.sidemove = cl.cmds[frame].sidemove;
