@@ -841,15 +841,17 @@ static void CL_FinishMove(usercmd_t* cmd) // Called on packetframe.
 	in_action.state &= ~KS_IMPULSE_DOWN;
 
 	// Run.
-	const qboolean speed_state = ((in_speed.state & (KS_DOWN | KS_IMPULSE_DOWN)) != 0);
-	const qboolean run = (int)cl_run->value;
-	if ((speed_state || run) && ((speed_state && !run) || speed_state == (cmd->forwardmove < -10)))
+	//mxd. BUTTON_RUN logic is intentionally flipped when moving backwards (walk back when running (there's no 'run backwards' animation), backflip when walking)...
+	if (((in_speed.state & (KS_DOWN | KS_IMPULSE_DOWN)) != (int)cl_run->value) ^ (cmd->forwardmove < 0))
 		cmd->buttons |= BUTTON_RUN;
 	in_speed.state &= ~KS_IMPULSE_DOWN;
 
-	// Crouch.
+	// Creep.
 	if (in_creep.state & (KS_DOWN | KS_IMPULSE_DOWN))
+	{
+		cmd->buttons &= ~BUTTON_RUN; //mxd. No creep-running allowed (breaks creep forward-strafing...).
 		cmd->buttons |= BUTTON_CREEP;
+	}
 	in_creep.state &= ~KS_IMPULSE_DOWN;
 
 	// Autoaim.
