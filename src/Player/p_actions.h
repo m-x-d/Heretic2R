@@ -74,12 +74,11 @@ extern void PlayerActionBowReadySound(const playerinfo_t* info, float value);
 extern void PlayerActionTakePuzzle(playerinfo_t* info, float value);
 
 extern qboolean PlayerActionCheckPuzzleGrab(playerinfo_t* info);
-extern qboolean PlayerActionCheckPushPull(playerinfo_t* info);
-extern qboolean PlayerActionCheckPushButton(playerinfo_t* info);
-extern qboolean PlayerActionCheckPushLever(playerinfo_t* info);
+extern qboolean PlayerActionCheckPushButton(const playerinfo_t* info);
+extern qboolean PlayerActionCheckPushLever(const playerinfo_t* info);
 extern qboolean PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org);
 
-extern qboolean PlayerActionUsePuzzle(playerinfo_t* info);
+extern qboolean PlayerActionUsePuzzle(const playerinfo_t* info);
 
 extern void PlayerMoveFunc(playerinfo_t* info, float fwd, float right, float up);
 extern void PlayerClimbingMoveFunc(playerinfo_t* info, float height, float var2, float var3);
@@ -92,7 +91,6 @@ extern void PlayerPullupHeight(playerinfo_t* info, float height, float endseq, f
 
 extern void PlayerActionJump(playerinfo_t* info, float value);
 extern void PlayerActionJumpBack(playerinfo_t* info, float value);
-extern void PlayerActionPushAway(playerinfo_t* info, float value);
 extern void PlayerActionShrineEffect(playerinfo_t* info, float value);
 
 extern void PlayerActionCheckRunUnStrafe(playerinfo_t* info);

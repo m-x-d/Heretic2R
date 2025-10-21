@@ -21,6 +21,18 @@
 #include "p_utility.h" //mxd
 #include "q_shared.h"
 
+#define GRAB_HAND_HEIGHT	41
+#define GRAB_HAND_WIDTH		8
+#define GRAB_HAND_HORZONE	22
+#define GRAB_HAND_VERTZONE	15
+
+typedef enum //mxd
+{
+	GT_NONE,
+	GT_GRAB,
+	GT_SWING
+} grabtype_e;
+
 static const vec3_t handmins = { -2.0f, -2.0f, 0.0f };
 static const vec3_t handmaxs = {  2.0f,  2.0f, 2.0f };
 
@@ -180,14 +192,14 @@ static qboolean PlayerActionCheckCreepMoveBack(const playerinfo_t *info)
 
 void PlayerActionSetCrouchHeight(playerinfo_t* info)
 {
-	info->maxs[2] = 4;
+	info->maxs[2] = 4.0f;
 }
 
 void PlayerActionCheckUncrouchToFinishSeq(playerinfo_t* info)
 {
 	if (CheckUncrouch(info))
 	{
-		info->maxs[2] = 25;
+		info->maxs[2] = 25.0f;
 		return; // Ok to finish sequence.
 	}
 
@@ -237,7 +249,7 @@ void PlayerActionCheckBowRefire(playerinfo_t* info)
 {
 	const int num_shots = Weapon_CurrentShotsLeft(info); //mxd
 
-	if (info->seqcmd[ACMDU_ATTACK] && num_shots > 0 && !(info->edictflags & FL_CHICKEN)) // Not a chicken
+	if (info->seqcmd[ACMDU_ATTACK] && num_shots > 0 && !(info->edictflags & FL_CHICKEN)) // Not a chicken.
 	{
 		// Shooting is one reason to end the bow refire waiting.
 		if (info->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW)
@@ -847,18 +859,6 @@ void PlayerActionSwim(const playerinfo_t* info, const float value)
 	P_CreateEffect(info, EFFECT_PRED_ID9, NULL, FX_WATER_ENTRYSPLASH, 0, origin, "bd", 32, dir);
 }
 
-#define GRAB_HAND_HEIGHT	41
-#define GRAB_HAND_WIDTH		8
-#define GRAB_HAND_HORZONE	22
-#define GRAB_HAND_VERTZONE	15
-
-typedef enum //mxd
-{
-	GT_NONE,
-	GT_GRAB,
-	GT_SWING
-} grabtype_e;
-
 static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 {
 	trace_t grabtrace;
@@ -1089,7 +1089,7 @@ void PlayerActionBowReadySound(const playerinfo_t* info, float value)
 	P_Sound(info, SND_PRED_ID20, CHAN_WEAPON, "weapons/bowdraw2.wav", 1.0f);
 }
 
-qboolean PlayerActionUsePuzzle(playerinfo_t* info)
+qboolean PlayerActionUsePuzzle(const playerinfo_t* info)
 {
 	if (!info->isclient)
 		return info->G_PlayerActionUsePuzzle(info);
@@ -1267,66 +1267,6 @@ qboolean PlayerActionCheckJumpGrab(playerinfo_t* info, float value)
 	return true;
 }
 
-qboolean PlayerActionCheckPushPull(playerinfo_t* info)
-{
-#define PUSH_HAND_WIDTH		16
-#define PUSH_HAND_HORZONE	48
-
-	trace_t grabtrace;
-	vec3_t endpoint;
-
-	assert(info); //mxd. Moved above info->isclient check.
-
-	if (info->isclient) // Client does nothing.
-		return false;
-
-	vec3_t forward;
-	vec3_t right;
-	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f};
-	AngleVectors(player_facing, forward, right, NULL);
-
-	// Check right hand.
-	vec3_t righthand;
-	VectorMA(info->origin, PUSH_HAND_WIDTH, right, righthand);
-	VectorMA(righthand, PUSH_HAND_HORZONE, forward, endpoint);
-
-	info->G_Trace(righthand, handmins, handmaxs, endpoint, info->self, MASK_PLAYERSOLID, &grabtrace);
-
-	if (grabtrace.fraction == 1.0f || grabtrace.ent == NULL)
-		return false;
-
-	if (!info->G_PlayerActionCheckPushPull_Ent((void*)grabtrace.ent))
-		return false;
-
-	const void* holdent = (void*)grabtrace.ent;
-
-	// Check left hand.
-	vec3_t lefthand;
-	VectorMA(info->origin, -PUSH_HAND_WIDTH, right, lefthand);
-	VectorMA(lefthand, PUSH_HAND_HORZONE, forward, endpoint);
-
-	info->G_Trace(lefthand, handmins, handmaxs, endpoint, info->self, MASK_PLAYERSOLID, &grabtrace);
-
-	VectorCopy(grabtrace.endpos, lefthand);
-
-	// Left hand is not near to pushable object.
-	if (grabtrace.fraction == 1.0f || grabtrace.ent != holdent)
-		return false;
-
-	// Parallel to each other?
-	vec3_t planedir;
-	vectoangles(grabtrace.plane.normal, planedir);
-	const float yaw = anglemod(planedir[YAW] - info->angles[YAW]) - 180.0f;
-
-	// Bad angle. No pushing allowed.
-	if (yaw > 30.0f || yaw < -30.0f)
-		return false;
-
-	info->target_ent = grabtrace.ent;
-
-	return true;
-}
-
 qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value' arg.
 {
 #define VAULT_HAND_WIDTH	4
@@ -1495,33 +1435,6 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 	}
 
 	return true;
-}
-
-// NOTE: Currently we only push away the width of the player.
-// This will cause problems for non-orthogonal grabbing surfaces.
-void PlayerActionPushAway(playerinfo_t* info, float value) //TODO: unused!
-{
-#define PLAYER_BLOCKING_DIST 17
-
-	// We're letting go from a grab position.
-	trace_t trace;
-	vec3_t endpos;
-	vec3_t pushdir;
-
-	// Check in front of the player for the wall position.
-	AngleVectors(info->angles, pushdir, NULL, NULL);
-	VectorMA(info->origin, PLAYER_BLOCKING_DIST, pushdir, endpos);
-
-	P_Trace(info, info->origin, NULL, NULL, endpos, &trace); //mxd
-
-	// Now push in the opposite direction for a new location.
-	VectorMA(trace.endpos, -PLAYER_BLOCKING_DIST, pushdir, endpos);
-
-	// Try placing the entity in the new location.
-	P_Trace(info, endpos, info->mins, info->maxs, endpos, &trace); //mxd
-
-	//TODO: but what if tracing failed (trace.startsolid || trace.allsolid)?
-	VectorCopy(trace.endpos, info->origin);
 }
 
 qboolean PlayerActionCheckRopeGrab(playerinfo_t* info, const float stomp_org)
@@ -1790,7 +1703,7 @@ void PlayerPullupHeight(playerinfo_t* info, const float height, const float ends
 	}
 }
 
-qboolean PlayerActionCheckPushButton(playerinfo_t* info)
+qboolean PlayerActionCheckPushButton(const playerinfo_t* info)
 {
 	if (!info->isclient)
 		return info->G_PlayerActionCheckPushButton(info);
@@ -1804,7 +1717,7 @@ void PlayerActionPushButton(playerinfo_t* info, float value)
 		info->G_PlayerActionPushButton(info);
 }
 
-qboolean PlayerActionCheckPushLever(playerinfo_t* info)
+qboolean PlayerActionCheckPushLever(const playerinfo_t* info)
 {
 	if (!info->isclient)
 		return info->G_PlayerActionCheckPushLever(info);
@@ -1886,7 +1799,7 @@ PLAYER_API void KnockDownPlayer(playerinfo_t* info)
 {
 	assert(info);
 
-	// Chicken cannot be knocked down
+	// Chicken cannot be knocked down.
 	if (!(info->flags & (EF_CHICKEN | PLAYER_FLAG_KNOCKDOWN)))
 		info->flags |= PLAYER_FLAG_KNOCKDOWN;
 }
