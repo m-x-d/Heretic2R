@@ -60,7 +60,7 @@ void PlayerChickenJump(playerinfo_t* info)
 		P_Trace(info, info->origin, info->mins, info->maxs, endpos, &trace); //mxd
 
 		if (info->groundentity != NULL || trace.fraction < 0.2f)
-			info->upvel = 200;
+			info->upvel = 200.0f;
 	}
 
 	PlayerAnimSetLowerSeq(info, ASEQ_FALL);
