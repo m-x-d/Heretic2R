@@ -4868,11 +4868,11 @@ panimmove_t	player_move_shrine = PANIMMOVE(player_frames_shrine, PlayerAnimLower
 
 #pragma endregion
 
-#pragma region ========================== PLAYER STRAFING ANIMATIONS ==========================
+#pragma region ========================== PLAYER FORWARD/BACK-STRAFING ANIMATIONS ==========================
 
 //NOTE: If you alter the walking, running, or creeping animations, those MUST be directly mirrored in these structures!
 
-// Strafe-walk left.
+// Strafe-walk forward-left.
 static panimframe_t player_frames_walk_strafe_left[] =
 {
 	{ FRAME_Lstrafe1, PlayerMoveFunc, 160 * PHYS_SCALER, -150, 0, PlayerActionFootstep, STEP_WALK, PlayerActionCheckWalkUnStrafe },
@@ -4886,7 +4886,7 @@ static panimframe_t player_frames_walk_strafe_left[] =
 };
 panimmove_t player_move_walk_strafe_left = PANIMMOVE(player_frames_walk_strafe_left, PlayerAnimLowerUpdate);
 
-// Strafe-walk right.
+// Strafe-walk forward-right.
 static panimframe_t player_frames_walk_strafe_right[] =
 {
 	{ FRAME_Rstrafe1, PlayerMoveFunc, 160 * PHYS_SCALER, 150, 0, PlayerActionFootstep, STEP_WALK, PlayerActionCheckWalkUnStrafe },
@@ -4900,7 +4900,7 @@ static panimframe_t player_frames_walk_strafe_right[] =
 };
 panimmove_t player_move_walk_strafe_right = PANIMMOVE(player_frames_walk_strafe_right, PlayerAnimLowerUpdate);
 
-// Strafe-run left.
+// Strafe-run forward-left.
 static panimframe_t player_frames_run_strafe_left[] =
 {
 	{ FRAME_Lsprint1, PlayerMoveFunc, 340 * PHYS_SCALER, -340 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_RUN, PlayerActionCheckRunUnStrafe },
@@ -4912,7 +4912,7 @@ static panimframe_t player_frames_run_strafe_left[] =
 };
 panimmove_t player_move_run_strafe_left = PANIMMOVE(player_frames_run_strafe_left, PlayerAnimLowerUpdate);
 
-// Strafe-run right.
+// Strafe-run forward-right.
 static panimframe_t player_frames_run_strafe_right[] =
 {
 	{ FRAME_Rsprint1, PlayerMoveFunc, 340 * PHYS_SCALER, 340 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_RUN, PlayerActionCheckRunUnStrafe },
