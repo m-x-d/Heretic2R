@@ -570,7 +570,7 @@ void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 	if (maxs == NULL)
 		maxs = vec3_origin;
 
-	// Clip to world
+	// Clip to world.
 	CM_BoxTrace(start, end, mins, maxs, 0, (contentmask & ~CONTENTS_WORLD_ONLY), tr);
 
 	tr->architecture = true; // H2
@@ -591,17 +591,17 @@ void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 
 		VectorCopy(mins, clip.mins2);
 		VectorCopy(maxs, clip.maxs2);
-	
+
 		// Create the bounding box of the entire move.
 		SV_TraceBounds(start, clip.mins2, clip.maxs2, end, clip.boxmins, clip.boxmaxs);
 
-		// Clip to other solid entities.
+		// Clip to other solid entities (including brush entities).
 		SV_ClipMoveToEntities(&clip);
 	}
 }
 
 //mxd. Very similar to SV_ClipMoveToEntities().
-static void SV_FindCosestEntity(moveclip_t* clip) // H2
+static void SV_FindCosestEntity(const moveclip_t* clip) // H2
 {
 	edict_t* touchlist[MAX_EDICTS];
 	trace_t trace;
@@ -616,9 +616,6 @@ static void SV_FindCosestEntity(moveclip_t* clip) // H2
 		if (touch->solid == SOLID_NOT || touch == clip->passedict)
 			continue;
 
-		if (clip->trace->allsolid)
-			return;
-
 		// Don't clip against own missiles or owner.
 		if (clip->passedict != NULL)
 		{
@@ -629,15 +626,12 @@ static void SV_FindCosestEntity(moveclip_t* clip) // H2
 				continue;
 		}
 
-		if (!(clip->contentmask & CONTENTS_DEADMONSTER) && touch->svflags & SVF_DEADMONSTER)
+		if (!(clip->contentmask & CONTENTS_DEADMONSTER) && (touch->svflags & SVF_DEADMONSTER))
 			continue;
 
 		// Might intersect, so do an exact clip.
 		const int headnode = SV_HullForEntity(touch);
-		const float* angles = touch->s.angles;
-
-		if (touch->solid != SOLID_BSP)
-			angles = vec3_origin; // Boxes don't rotate.
+		const float* angles = ((touch->solid == SOLID_BSP) ? touch->s.angles : vec3_origin); // Boxes don't rotate.
 
 		if (touch->svflags & SVF_MONSTER)
 			CM_TransformedBoxTrace(clip->start, clip->end, clip->mins2, clip->maxs2, headnode, clip->contentmask, touch->s.origin, angles, &trace);
@@ -653,6 +647,9 @@ static void SV_FindCosestEntity(moveclip_t* clip) // H2
 			memcpy(clip->trace, &trace, sizeof(trace));
 			if (startsolid)
 				clip->trace->startsolid = true;
+
+			if (clip->trace->allsolid)
+				return;
 		}
 	}
 }
