@@ -487,11 +487,9 @@ int SV_PointContents(const vec3_t p)
 	return contents;
 }
 
-static void SV_ClipMoveToEntities(moveclip_t* clip)
+static void SV_ClipMoveToEntities(const moveclip_t* clip)
 {
 	edict_t* touchlist[MAX_EDICTS];
-	trace_t trace;
-
 	const int num = SV_AreaEdicts(clip->boxmins, clip->boxmaxs, touchlist, MAX_EDICTS, AREA_SOLID);
 
 	// Be careful, it is possible to have an entity in this list removed before we get to it (killtriggered).
@@ -502,9 +500,6 @@ static void SV_ClipMoveToEntities(moveclip_t* clip)
 		if (touch->solid == SOLID_NOT || touch == clip->passedict)
 			continue;
 
-		if (clip->trace->allsolid)
-			return;
-
 		// Don't clip against own missiles or owner.
 		if (clip->passedict != NULL && (clip->passedict == touch->owner || clip->passedict->owner == touch))
 			continue;
@@ -514,11 +509,9 @@ static void SV_ClipMoveToEntities(moveclip_t* clip)
 
 		// Might intersect, so do an exact clip.
 		const int headnode = SV_HullForEntity(touch);
-		const float* angles = touch->s.angles;
+		const float* angles = ((touch->solid == SOLID_BSP) ? touch->s.angles : vec3_origin); // Boxes don't rotate.
 
-		if (touch->solid != SOLID_BSP)
-			angles = vec3_origin; // Boxes don't rotate.
-
+		trace_t trace;
 		if (touch->svflags & SVF_MONSTER)
 			CM_TransformedBoxTrace(clip->start, clip->end, clip->mins2, clip->maxs2, headnode, clip->contentmask, touch->s.origin, angles, &trace);
 		else
@@ -534,6 +527,9 @@ static void SV_ClipMoveToEntities(moveclip_t* clip)
 			memcpy(clip->trace, &trace, sizeof(trace_t));
 			if (startsolid)
 				clip->trace->startsolid = true;
+
+			if (clip->trace->allsolid)
+				return;
 		}
 	}
 }
