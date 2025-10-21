@@ -71,8 +71,8 @@ static qboolean CheckCollision(const float aimangle)
 	vec3_t end;
 	trace_t tr;
 
-	end[0] = pml.origin[0] + cosf(aimangle) * 2;
-	end[1] = pml.origin[1] + sinf(aimangle) * 2;
+	end[0] = pml.origin[0] + cosf(aimangle) * 2.0f;
+	end[1] = pml.origin[1] + sinf(aimangle) * 2.0f;
 	end[2] = pml.origin[2];
 
 	pm->trace(pml.origin, pm->mins, pm->maxs, end, &tr);
