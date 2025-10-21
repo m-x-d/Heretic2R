@@ -520,7 +520,7 @@ static void SV_ClipMoveToEntities(const moveclip_t* clip)
 		if (trace.startsolid || trace.allsolid || trace.fraction < clip->trace->fraction)
 		{
 			trace.ent = touch;
-			trace.architecture = false; // H2
+			trace.architecture = (touch->solid == SOLID_BSP); // H2 //mxd. false in original logic. Changed, so climbing/vaulting logic works on func_nnn brush ents.
 
 			// H2: copy to clip->trace.
 			const qboolean startsolid = clip->trace->startsolid;

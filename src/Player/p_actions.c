@@ -1773,7 +1773,8 @@ void PlayerPullupHeight(playerinfo_t* info, const float height, const float ends
 		// Try to move to the correct distance away from the wall.
 		P_Trace(info, trace.endpos, info->mins, info->maxs, end_pos, &trace); //mxd
 
-		if (trace.fraction < 1.0f)
+		//mxd. Add 'trace.fraction > 0.0f' and trace.plane.normal checks. Both will be zero when brush entity (func_wall, func_plat etc.) was hit...
+		if (trace.fraction > 0.0f && trace.fraction < 1.0f && Vec3NotZero(trace.plane.normal))
 		{
 			const float x = fabsf(trace.plane.normal[0]);
 			const float y = fabsf(trace.plane.normal[1]);
