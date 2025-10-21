@@ -1499,7 +1499,7 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 
 // NOTE: Currently we only push away the width of the player.
 // This will cause problems for non-orthogonal grabbing surfaces.
-void PlayerActionPushAway(playerinfo_t* info, float value)
+void PlayerActionPushAway(playerinfo_t* info, float value) //TODO: unused!
 {
 #define PLAYER_BLOCKING_DIST 17
 
@@ -1726,18 +1726,16 @@ void PlayerMoveALittle(playerinfo_t* info, const float fwd, float right, float u
 
 void PlayerPullupHeight(playerinfo_t* info, const float height, const float endseq, float nopushdown)
 {
-	trace_t trace;
-	vec3_t endpoint;
-
 	assert(info);
 
 	if (endseq > 0.0f)
 	{
 		// End Sequence.
-		VectorCopy(info->grabloc, endpoint);
-		endpoint[2] -= info->mins[2] + 2.0f;
+		const vec3_t end_pos = { info->grabloc[0], info->grabloc[1], info->grabloc[2] - (info->mins[2] + 2.0f) };
 
-		P_Trace(info, info->origin, info->mins, info->maxs, endpoint, &trace); //mxd
+		// Trace towards grabloc.
+		trace_t trace;
+		P_Trace(info, info->origin, info->mins, info->maxs, end_pos, &trace); //mxd
 		VectorCopy(trace.endpos, info->origin);
 
 		if (info->seqcmd[ACMDL_WALK_F])
@@ -1751,15 +1749,11 @@ void PlayerPullupHeight(playerinfo_t* info, const float height, const float ends
 	}
 	else if (info->grabloc[2] - height > info->origin[2])
 	{
-		VectorCopy(info->origin, endpoint);
-		endpoint[2] = info->grabloc[2] - height;
+		vec3_t end_pos = { info->origin[0], info->origin[1], info->grabloc[2] - height };
 
-		vec3_t playermin;
-		vec3_t playermax;
-		VectorCopy(info->mins, playermin);
-		VectorCopy(info->maxs, playermax);
-
-		P_Trace(info, info->origin, playermin, playermax, endpoint, &trace); //mxd
+		// Trace upwards.
+		trace_t trace;
+		P_Trace(info, info->origin, info->mins, info->maxs, end_pos, &trace); //mxd
 
 		if (trace.fraction < 1.0f)
 		{
@@ -1768,29 +1762,29 @@ void PlayerPullupHeight(playerinfo_t* info, const float height, const float ends
 			return;
 		}
 
-		vec3_t savepos;
-		VectorCopy(trace.endpos, savepos);
+		vec3_t save_pos;
+		VectorCopy(end_pos, save_pos);
 
-		vec3_t vf;
-		AngleVectors(info->angles, vf, NULL, NULL);
-		VectorMA(trace.endpos, 32.0f, vf, endpoint);
+		// Trace towards the wall.
+		vec3_t forward;
+		AngleVectors(info->angles, forward, NULL, NULL);
+		VectorMA(trace.endpos, 32.0f, forward, end_pos);
 
-		// Move to the correct distance away from the wall.
-		P_Trace(info, trace.endpos, playermin, playermax, endpoint, &trace); //mxd
+		// Try to move to the correct distance away from the wall.
+		P_Trace(info, trace.endpos, info->mins, info->maxs, end_pos, &trace); //mxd
 
 		if (trace.fraction < 1.0f)
 		{
 			const float x = fabsf(trace.plane.normal[0]);
 			const float y = fabsf(trace.plane.normal[1]);
-			const float diff = fabsf(x - y); // 0 to 1
+			const float diff = fabsf(x - y); // [0.0 .. 1.0]
 
-			VectorMA(trace.endpos, diff * 4.0f, trace.plane.normal, trace.endpos);
-			VectorCopy(trace.endpos, info->origin);
+			VectorMA(trace.endpos, diff * 4.0f, trace.plane.normal, info->origin);
 		}
 		else
 		{
-			// Restore the old origin.
-			VectorCopy(savepos, info->origin);
+			// Just move upwards.
+			VectorCopy(save_pos, info->origin);
 		}
 	}
 }
