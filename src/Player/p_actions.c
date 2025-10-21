@@ -735,7 +735,7 @@ void PlayerActionBowTrailEnd(playerinfo_t* info, float value)
 	info->effects &= ~EF_TRAILS_ENABLED;
 }
 
-void PlayerActionFootstep(const playerinfo_t* info, const float value)
+void PlayerActionFootstep(playerinfo_t* info, const float value)
 {
 	char walk_sound[128];
 	int basestep;
@@ -761,6 +761,8 @@ void PlayerActionFootstep(const playerinfo_t* info, const float value)
 	if (basestep == 0)
 		return;
 
+	float volume = 0.75f; //mxd
+
 	if (info->waterlevel > 0)
 	{
 		const char* snd_name = (basestep == STEP_RUN ? "waterrun" : "waterwalk");
@@ -778,25 +780,31 @@ void PlayerActionFootstep(const playerinfo_t* info, const float value)
 
 		switch (basestep)
 		{
-			case STEP_CREEP: // Creep
+			case STEP_SHUFFLE:
 				strcat_s(walk_sound, sizeof(walk_sound), va("shuffle%i.wav", irand(1, 2)));
+				volume = 0.35f; //mxd. Shuffle quieter!
 				break;
 
-			case STEP_WALK: // Walk
+			case STEP_CREEP: //mxd
+				strcat_s(walk_sound, sizeof(walk_sound), va("walk%i.wav", irand(1, 2)));
+				volume = 0.15f;
+				break;
+
+			case STEP_WALK:
 				strcat_s(walk_sound, sizeof(walk_sound), va("walk%i.wav", irand(1, 2)));
 				break;
 
-			case STEP_RUN: // Run
+			case STEP_RUN:
 				strcat_s(walk_sound, sizeof(walk_sound), va("run%i.wav", irand(1, 2)));
 				break;
 
-			case STEP_ROLL: // Roll
+			case STEP_ROLL:
 				strcat_s(walk_sound, sizeof(walk_sound), "roll.wav");
 				break;
 		}
 	}
 
-	P_Sound(info, SND_PRED_ID14, channel, walk_sound, 0.75f); //mxd
+	P_Sound(info, SND_PRED_ID14, channel, walk_sound, volume); //mxd
 }
 
 void PlayerActionSwimIdleSound(const playerinfo_t* info, float value)

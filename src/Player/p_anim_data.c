@@ -2431,13 +2431,13 @@ panimmove_t player_move_staffblockedright = PANIMMOVE(player_frames_staffblocked
 static panimframe_t player_frames_creepforward[] =
 {
 	{ FRAME_creep1,  PlayerMoveFunc, 89 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreep },
-	{ FRAME_creep2,  PlayerMoveFunc, 58 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreep },
+	{ FRAME_creep2,  PlayerMoveFunc, 58 * PHYS_SCALER, 0, 0, PlayerActionFootstep, STEP_CREEP, PlayerActionCheckCreep },
 	{ FRAME_creep3,  PlayerMoveFunc, 63 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreep },
 	{ FRAME_creep4,  PlayerMoveFunc, 66 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreep },
 	{ FRAME_creep5,  PlayerMoveFunc, 69 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreep },
 	{ FRAME_creep6,  PlayerMoveFunc, 75 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreep },
 	{ FRAME_creep7,  PlayerMoveFunc, 90 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreep },
-	{ FRAME_creep8,  PlayerMoveFunc, 67 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreep },
+	{ FRAME_creep8,  PlayerMoveFunc, 67 * PHYS_SCALER, 0, 0, PlayerActionFootstep, STEP_CREEP, PlayerActionCheckCreep },
 	{ FRAME_creep9,  PlayerMoveFunc, 60 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreep },
 	{ FRAME_creep10, PlayerMoveFunc, 62 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreep },
 	{ FRAME_creep11, PlayerMoveFunc, 70 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreep },
@@ -2455,13 +2455,13 @@ panimmove_t player_move_creepforward_end = PANIMMOVE(player_frames_creepforward_
 static panimframe_t player_frames_creepb_strafe_left[] =
 {
 	{ FRAME_Lcrepbck1,  PlayerMoveFunc, -63 * PHYS_SCALER, -63 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
-	{ FRAME_Lcrepbck2,  PlayerMoveFunc, -58 * PHYS_SCALER, -58 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
+	{ FRAME_Lcrepbck2,  PlayerMoveFunc, -58 * PHYS_SCALER, -58 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_CREEP, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Lcrepbck3,  PlayerMoveFunc, -89 * PHYS_SCALER, -89 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Lcrepbck4,  PlayerMoveFunc, -66 * PHYS_SCALER, -66 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Lcrepbck5,  PlayerMoveFunc, -70 * PHYS_SCALER, -70 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Lcrepbck6,  PlayerMoveFunc, -62 * PHYS_SCALER, -62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Lcrepbck7,  PlayerMoveFunc, -62 * PHYS_SCALER, -62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
-	{ FRAME_Lcrepbck8,  PlayerMoveFunc, -62 * PHYS_SCALER, -62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
+	{ FRAME_Lcrepbck8,  PlayerMoveFunc, -62 * PHYS_SCALER, -62 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_CREEP, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Lcrepbck9,  PlayerMoveFunc, -62 * PHYS_SCALER, -62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Lcrepbck10, PlayerMoveFunc, -62 * PHYS_SCALER, -62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Lcrepbck11, PlayerMoveFunc, -62 * PHYS_SCALER, -62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
@@ -2473,13 +2473,13 @@ panimmove_t player_move_creepb_strafe_left = PANIMMOVE(player_frames_creepb_stra
 static panimframe_t player_frames_creepb_strafe_right[] =
 {
 	{ FRAME_Rcrepbck1,  PlayerMoveFunc, -63 * PHYS_SCALER, 63 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
-	{ FRAME_Rcrepbck2,  PlayerMoveFunc, -58 * PHYS_SCALER, 58 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
+	{ FRAME_Rcrepbck2,  PlayerMoveFunc, -58 * PHYS_SCALER, 58 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_CREEP, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Rcrepbck3,  PlayerMoveFunc, -89 * PHYS_SCALER, 89 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Rcrepbck4,  PlayerMoveFunc, -66 * PHYS_SCALER, 66 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Rcrepbck5,  PlayerMoveFunc, -70 * PHYS_SCALER, 70 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Rcrepbck6,  PlayerMoveFunc, -62 * PHYS_SCALER, 62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Rcrepbck7,  PlayerMoveFunc, -62 * PHYS_SCALER, 62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
-	{ FRAME_Rcrepbck8,  PlayerMoveFunc, -62 * PHYS_SCALER, 62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
+	{ FRAME_Rcrepbck8,  PlayerMoveFunc, -62 * PHYS_SCALER, 62 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_CREEP, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Rcrepbck9,  PlayerMoveFunc, -62 * PHYS_SCALER, 62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Rcrepbck10, PlayerMoveFunc, -62 * PHYS_SCALER, 62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
 	{ FRAME_Rcrepbck11, PlayerMoveFunc, -62 * PHYS_SCALER, 62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepBackUnStrafe },
@@ -2487,17 +2487,17 @@ static panimframe_t player_frames_creepb_strafe_right[] =
 };
 panimmove_t player_move_creepb_strafe_right = PANIMMOVE(player_frames_creepb_strafe_right, PlayerAnimLowerUpdate);
 
-// Creep left.
+// Creep forward-left.
 static panimframe_t player_frames_creep_strafe_left[] =
 {
 	{ FRAME_creepL1,  PlayerMoveFunc, 89 * PHYS_SCALER, -89 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
-	{ FRAME_creepL2,  PlayerMoveFunc, 58 * PHYS_SCALER, -58 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
+	{ FRAME_creepL2,  PlayerMoveFunc, 58 * PHYS_SCALER, -58 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_CREEP, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepL3,  PlayerMoveFunc, 63 * PHYS_SCALER, -63 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepL4,  PlayerMoveFunc, 66 * PHYS_SCALER, -66 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepL5,  PlayerMoveFunc, 69 * PHYS_SCALER, -69 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepL6,  PlayerMoveFunc, 75 * PHYS_SCALER, -75 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepL7,  PlayerMoveFunc, 90 * PHYS_SCALER, -90 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
-	{ FRAME_creepL8,  PlayerMoveFunc, 67 * PHYS_SCALER, -67 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
+	{ FRAME_creepL8,  PlayerMoveFunc, 67 * PHYS_SCALER, -67 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_CREEP, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepL9,  PlayerMoveFunc, 60 * PHYS_SCALER, -60 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepL10, PlayerMoveFunc, 62 * PHYS_SCALER, -62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepL11, PlayerMoveFunc, 70 * PHYS_SCALER, -70 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
@@ -2505,17 +2505,17 @@ static panimframe_t player_frames_creep_strafe_left[] =
 };
 panimmove_t player_move_creep_strafe_left = PANIMMOVE(player_frames_creep_strafe_left, PlayerAnimLowerUpdate);
 
-// Creep right.
+// Creep forward-right.
 static panimframe_t player_frames_creep_strafe_right[] =
 {
 	{ FRAME_creepR1,  PlayerMoveFunc, 89 * PHYS_SCALER, 89 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
-	{ FRAME_creepR2,  PlayerMoveFunc, 58 * PHYS_SCALER, 58 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
+	{ FRAME_creepR2,  PlayerMoveFunc, 58 * PHYS_SCALER, 58 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_CREEP, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepR3,  PlayerMoveFunc, 63 * PHYS_SCALER, 63 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepR4,  PlayerMoveFunc, 66 * PHYS_SCALER, 66 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepR5,  PlayerMoveFunc, 69 * PHYS_SCALER, 69 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepR6,  PlayerMoveFunc, 75 * PHYS_SCALER, 75 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepR7,  PlayerMoveFunc, 90 * PHYS_SCALER, 90 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
-	{ FRAME_creepR8,  PlayerMoveFunc, 67 * PHYS_SCALER, 67 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
+	{ FRAME_creepR8,  PlayerMoveFunc, 67 * PHYS_SCALER, 67 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_CREEP, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepR9,  PlayerMoveFunc, 60 * PHYS_SCALER, 60 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepR10, PlayerMoveFunc, 62 * PHYS_SCALER, 62 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
 	{ FRAME_creepR11, PlayerMoveFunc, 70 * PHYS_SCALER, 70 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckCreepUnStrafe },
@@ -2637,13 +2637,13 @@ panimmove_t player_move_runstop = PANIMMOVE(player_frames_runstop, PlayerAnimLow
 static panimframe_t player_frames_creepback[] =
 {
 	{ FRAME_crepbak1,  PlayerMoveFunc, -63 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreepBack },
-	{ FRAME_crepbak2,  PlayerMoveFunc, -58 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreepBack },
+	{ FRAME_crepbak2,  PlayerMoveFunc, -58 * PHYS_SCALER, 0, 0, PlayerActionFootstep, STEP_CREEP, PlayerActionCheckCreepBack },
 	{ FRAME_crepbak3,  PlayerMoveFunc, -89 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreepBack },
 	{ FRAME_crepbak4,  PlayerMoveFunc, -66 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreepBack },
 	{ FRAME_crepbak5,  PlayerMoveFunc, -70 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreepBack },
 	{ FRAME_crepbak6,  PlayerMoveFunc, -62 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreepBack },
 	{ FRAME_crepbak7,  PlayerMoveFunc, -62 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreepBack },
-	{ FRAME_crepbak8,  PlayerMoveFunc, -62 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreepBack },
+	{ FRAME_crepbak8,  PlayerMoveFunc, -62 * PHYS_SCALER, 0, 0, PlayerActionFootstep, STEP_CREEP, PlayerActionCheckCreepBack },
 	{ FRAME_crepbak9,  PlayerMoveFunc, -62 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreepBack },
 	{ FRAME_crepbak10, PlayerMoveFunc, -62 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreepBack },
 	{ FRAME_crepbak11, PlayerMoveFunc, -62 * PHYS_SCALER, 0, 0, NULL, 0, PlayerActionCheckCreepBack },
@@ -3614,7 +3614,7 @@ panimmove_t player_move_jumpflipback = PANIMMOVE(player_frames_flipback, PlayerA
 static panimframe_t player_frames_pivotleftgo[] =
 {
 	{ FRAME_Lpivot1, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_Lpivot2, NULL, 0, 0, 0, PlayerActionFootstep, STEP_CREEP, NULL },
+	{ FRAME_Lpivot2, NULL, 0, 0, 0, PlayerActionFootstep, STEP_SHUFFLE, NULL }, //mxd. STEP_CREEP in original logic.
 };
 panimmove_t player_move_pivotleftgo = PANIMMOVE(player_frames_pivotleftgo, PlayerAnimLowerUpdate);
 
@@ -3622,21 +3622,21 @@ panimmove_t player_move_pivotleftgo = PANIMMOVE(player_frames_pivotleftgo, Playe
 static panimframe_t player_frames_pivotleft[] =
 {
 	{ FRAME_Lpivot3, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_Lpivot4, NULL, 0, 0, 0, PlayerActionFootstep, STEP_CREEP2, NULL },
+	{ FRAME_Lpivot4, NULL, 0, 0, 0, PlayerActionFootstep, STEP_SHUFFLE2, NULL }, //mxd. STEP_CREEP2 in original logic.
 };
 panimmove_t player_move_pivotleft = PANIMMOVE(player_frames_pivotleft, PlayerAnimLowerUpdate);
 
 // Transition from pivot to standing.
 static panimframe_t player_frames_pivotleftend[] =
 {
-	{ FRAME_Lpivot4, NULL, 0, 0, 0, PlayerActionFootstep, STEP_CREEP, NULL },
+	{ FRAME_Lpivot4, NULL, 0, 0, 0, PlayerActionFootstep, STEP_SHUFFLE, NULL }, //mxd. STEP_CREEP in original logic.
 };
 panimmove_t player_move_pivotleftend = PANIMMOVE(player_frames_pivotleftend, PlayerAnimLowerUpdate);
 
 // Start of pivot right.
 static panimframe_t player_frames_pivotrightgo[] =
 {
-	{ FRAME_Lpivot4, NULL, 0, 0, 0, PlayerActionFootstep, STEP_CREEP, NULL },
+	{ FRAME_Lpivot4, NULL, 0, 0, 0, PlayerActionFootstep, STEP_SHUFFLE, NULL }, //mxd. STEP_CREEP in original logic.
 	{ FRAME_Lpivot3, NULL, 0, 0, 0, NULL, 0, NULL },
 };
 panimmove_t player_move_pivotrightgo = PANIMMOVE(player_frames_pivotrightgo, PlayerAnimLowerUpdate);
@@ -3644,7 +3644,7 @@ panimmove_t player_move_pivotrightgo = PANIMMOVE(player_frames_pivotrightgo, Pla
 // Cycle of pivot right.
 static panimframe_t player_frames_pivotright[] =
 {
-	{ FRAME_Lpivot2, NULL, 0, 0, 0, PlayerActionFootstep, STEP_CREEP2, NULL },
+	{ FRAME_Lpivot2, NULL, 0, 0, 0, PlayerActionFootstep, STEP_SHUFFLE2, NULL }, //mxd. STEP_CREEP2 in original logic.
 	{ FRAME_Lpivot1, NULL, 0, 0, 0, NULL, 0, NULL },
 };
 panimmove_t player_move_pivotright = PANIMMOVE(player_frames_pivotright, PlayerAnimLowerUpdate);

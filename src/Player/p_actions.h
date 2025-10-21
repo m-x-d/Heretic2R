@@ -62,7 +62,7 @@ extern void PlayerActionSwimSound(const playerinfo_t* info, float value);
 extern void PlayerActionClimbWallSound(const playerinfo_t* info, float value);
 extern void PlayerActionClimbFinishSound(const playerinfo_t* info, float value);
 
-extern void PlayerActionFootstep(const playerinfo_t* info, float value);
+extern void PlayerActionFootstep(playerinfo_t* info, float value);
 extern void PlayerActionSwim(const playerinfo_t* info, float value);
 extern void PlayerActionCheckGrab(playerinfo_t* info, float value);
 extern void PlayerActionCheckFallingGrab(playerinfo_t* info, float value);

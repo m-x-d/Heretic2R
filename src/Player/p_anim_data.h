@@ -27,18 +27,18 @@ enum weaponloc_e
 enum footsteptype_e
 {
 	STEP_NONE,
+	STEP_SHUFFLE, //mxd
 	STEP_CREEP,
 	STEP_WALK,
 	STEP_RUN,
 	STEP_ROLL,
 
 	STEP_OFFSET,
+	STEP_SHUFFLE2, //mxd
 	STEP_CREEP2,
 	STEP_WALK2,
 	STEP_RUN2,
 	STEP_ROLL2,
-
-	STEP_MAX
 };
 
 enum trailtype_e
