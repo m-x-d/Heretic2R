@@ -66,7 +66,6 @@ extern void PlayerActionFootstep(playerinfo_t* info, float value);
 extern void PlayerActionSwim(const playerinfo_t* info, float value);
 extern void PlayerActionCheckGrab(playerinfo_t* info, float value);
 extern void PlayerActionCheckFallingGrab(playerinfo_t* info, float value);
-extern qboolean PlayerActionCheckJumpGrab(playerinfo_t* info, float value);
 extern void PlayerActionPushButton(playerinfo_t* info, float value);
 extern void PlayerActionPushLever(playerinfo_t* info, float value);
 extern void PlayerActionVaultSound(const playerinfo_t* info, float value);

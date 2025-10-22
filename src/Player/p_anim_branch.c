@@ -451,18 +451,10 @@ int BranchLwrStanding(playerinfo_t* info)
 			return ASEQ_CLIMB_ON;
 		}
 
-		if (info->upperidle && PlayerActionCheckJumpGrab(info, 0))
-			return ASEQ_JUMPSTD_GO;
+		//mxd. Don't check for jump grab.
 	}
 
-	// Check for an autovault.
-	if (info->seqcmd[ACMDL_FWD] && info->upperidle && (info->flags & PLAYER_FLAG_COLLISION))
-	{
-		PlayerActionCheckVault(info);
-
-		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_PULLUP_HALFWALL)
-			return info->lowerseq;
-	}
+	//mxd. Don't check for an autovault - handled by AnimUpdateFrame().
 
 	// Check for a quickturn.
 	if (info->seqcmd[ACMDL_QUICKTURN])
@@ -591,17 +583,7 @@ int BranchLwrWalking(playerinfo_t* info)
 	if (info->groundentity == NULL && info->waterlevel < 2 && !in_slime_or_lava && CheckFall(info))
 		return ASEQ_FALLWALK_GO;
 
-	// Check for an autovault (only occurs if upper half of body is idle!) [LOW PROBABILITY, IMMEDIATE CONCERN].
-	if (info->seqcmd[ACMDL_FWD] && info->upperidle && (info->flags & PLAYER_FLAG_COLLISION))
-	{
-		PlayerActionCheckVault(info);
-
-		if (curseq == ASEQ_VAULT_LOW || curseq == ASEQ_PULLUP_HALFWALL)
-			return curseq;
-
-		if (info->seqcmd[ACMDL_ACTION] && PlayerActionCheckJumpGrab(info, 0))
-			return ASEQ_JUMPSTD_GO;
-	}
+	//mxd. Don't check for an autovault - handled by AnimUpdateFrame().
 
 	// Check for a jump [LOW PROBABILITY].
 	if (info->seqcmd[ACMDL_JUMP] && !in_slime_or_lava)
@@ -737,9 +719,7 @@ int BranchLwrWalking(playerinfo_t* info)
 		// Try and use a puzzle piece.
 		PlayerActionUsePuzzle(info);
 
-		// Check for an auto-jump vault.
-		if (info->upperidle && (info->flags & PLAYER_FLAG_COLLISION) && PlayerActionCheckJumpGrab(info, 0))
-			return ASEQ_JUMPSTD_GO;
+		//mxd. Don't check for an auto-jump vault.
 	}
 
 	// Check for a quickturn [LOW PROBABILITY].
@@ -867,9 +847,7 @@ int BranchLwrRunningStrafe(playerinfo_t* info)
 			return ASEQ_CLIMB_ON; // On a rope.
 		}
 
-		// Check for a jump grab.
-		if (info->upperidle && (info->flags & PLAYER_FLAG_COLLISION) && PlayerActionCheckJumpGrab(info, 0))
-			return ASEQ_JUMPSTD_GO;
+		//mxd. Don't check for jump grab.
 	}
 
 	return (info->seqcmd[ACMDL_FWD] ? ASEQ_RUNF_GO : ASEQ_STAND); // We're just trying to go forward / We've let go of the important buttons.
@@ -895,8 +873,7 @@ int BranchLwrShortstep(playerinfo_t* info)
 			return ASEQ_CLIMB_ON;
 		}
 
-		if (info->upperidle && (info->flags & PLAYER_FLAG_COLLISION) && PlayerActionCheckJumpGrab(info, 0))
-			return ASEQ_JUMPSTD_GO;
+		//mxd. Don't check for jump grab.
 	}
 
 	if (info->seqcmd[ACMDL_JUMP] && !in_slime_or_lava)
