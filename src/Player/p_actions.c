@@ -1588,7 +1588,7 @@ void PlayerJumpMoveForce(playerinfo_t* info, float fwd, const float right, const
 	}
 	else if (right != 0.0f)
 	{
-		VectorMA(info->velocity, right, rightv, info->velocity);
+		VectorScale(rightv, right, info->velocity);
 	}
 
 	info->velocity[2] += up; // 'up' is always 0... --mxd.
