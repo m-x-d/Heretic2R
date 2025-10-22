@@ -52,6 +52,8 @@ enum seq_cmd_e
 enum seq_anim_e //TODO: rename WSWORD to WSTAFF
 {
 	ASEQ_NONE,
+
+	// Upper animation sequences.
 	ASEQ_WSWORD_STD1,
 	ASEQ_WSWORD_STD2,
 	ASEQ_WSWORD_STEP2,
@@ -114,7 +116,10 @@ enum seq_anim_e //TODO: rename WSWORD to WSTAFF
 	ASEQ_PUSHBUTTON_GO,
 	ASEQ_PUSHLEVERLEFT,
 	ASEQ_PUSHLEVERRIGHT,
+
+	// Lower animation sequences.
 	ASEQ_LOWER_BASE,
+
 	ASEQ_STAND,
 	ASEQ_PIVOTL_GO,
 	ASEQ_PIVOTL,
