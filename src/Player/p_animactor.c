@@ -474,7 +474,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 	}
 }
 
-PLAYER_API void PlayerFallingDamage(playerinfo_t* info)
+PLAYER_API void PlayerFallingDamage(playerinfo_t* info) // Called by CL_PredictMovement_impl() and ClientEndServerFrame() --mxd.
 {
 	float delta = info->velocity[2] - info->oldvelocity[2]; // Falling -200 to standstill 0 gives a delta of 200.
 
@@ -497,10 +497,12 @@ PLAYER_API void PlayerFallingDamage(playerinfo_t* info)
 	if (info->waterlevel == 3)
 		return;
 
-	if ((info->flags & PLAYER_FLAG_FALLING) && info->waterlevel <= 2)
+	//mxd. PLAYER_FLAG_FALLING is set when SWITCHING TO jump sequence (e.g. ASEQ_JUMP[NNN]_GO), so we can get here before jump velocity is applied (and groundentity is cleared).
+	//mxd. So, skip logic when not falling down (delta > 0) to avoid interrupting/switching current animation...
+	if ((info->flags & PLAYER_FLAG_FALLING) && info->waterlevel <= 2 && delta > 0.0f)
 		PlayerIntLand(info, delta);
 
-	delta *= delta * 0.0001f; // It's now positive no matter what.
+	delta = fabsf(delta) + FLOAT_ZERO_EPSILON; // It's now positive no matter what.
 
 	if (info->waterlevel == 2)
 		delta *= 0.25f;
