@@ -935,7 +935,7 @@ void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage,
 		self->client->playerinfo.flags |= PLAYER_FLAG_RELEASEROPE;
 		self->client->playerinfo.flags &= ~PLAYER_FLAG_ONROPE;
 
-		self->client->playerinfo.flags |= PLAYER_FLAG_FALLBREAK | PLAYER_FLAG_FALLING;
+		self->client->playerinfo.flags |= (PLAYER_FLAG_FALLBREAK | PLAYER_FLAG_FALLING);
 	}
 
 	// Get rid of the player's persistent effect.
