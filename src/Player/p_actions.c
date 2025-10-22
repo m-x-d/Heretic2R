@@ -1547,42 +1547,51 @@ void PlayerMoveForce(playerinfo_t* info, const float fwd, const float right, con
 	info->velocity[2] += up;
 }
 
+// For things like jumps and the like, where the velocity is demanded, not a suggestion.
 void PlayerJumpMoveForce(playerinfo_t* info, float fwd, const float right, const float up)
 {
-	// For things like jumps and the like, where the velocity is demanded, not a suggestion.
+	//INFO: Same as PlayerMoveForce, but uses where the player is looking (torso).
 	vec3_t fwdv;
 	vec3_t rightv;
-	vec3_t angles;
-
-	//INFO: Same as PlayerMoveForce, but uses where the player is looking (torso).
-	VectorCopy(info->aimangles, angles);
-	angles[PITCH] = 0.0f;
-
+	const vec3_t angles = { 0.0f, info->aimangles[1], info->aimangles[2] };
 	AngleVectors(angles, fwdv, rightv, NULL);
 
-	// Speedup powerup active?
-	if (info->effects & EF_SPEED_ACTIVE)
-		fwd *= RUN_MULT;
-
-	VectorScale(fwdv, fwd, info->velocity);
-
-	// Check to see if we should bother.
-	if (right != 0.0f)
-		VectorMA(info->velocity, right, rightv, info->velocity);
-
-	// If the player is strafing, move the player in that direction (diagonal jump).
+	// We'll have either 'fwd' or 'right', not both --mxd.
 	if (fwd != 0.0f)
 	{
-		const float scale = ((info->buttons & BUTTON_RUN) ? 260.0f : 140.0f);
+		// Speedup powerup active?
+		if (info->effects & EF_SPEED_ACTIVE)
+			fwd *= RUN_MULT;
 
-		// DON'T do this during a normal side jump.
+		vec3_t dir;
+
+		// If the player is strafing, move the player in that direction (diagonal jump). Don't do this during a normal side jump.
+		//H2_BUGFIX: mxd. Original logic ADDS right vector to the fwd vector, resulting in very long strafe-jumps.
 		if (info->seqcmd[ACMDL_STRAFE_R] && !info->seqcmd[ACMDL_STRAFE_L])
-			VectorMA(info->velocity, scale, rightv, info->velocity);
+		{
+			Vec3ScaleAssign(Q_signf(fwd), rightv); // Needs to be flipped when moving backwards --mxd.
+			VectorAdd(fwdv, rightv, dir);
+			VectorNormalize(dir);
+		}
 		else if (info->seqcmd[ACMDL_STRAFE_L] && !info->seqcmd[ACMDL_STRAFE_R])
-			VectorMA(info->velocity, -scale, rightv, info->velocity);
+		{
+			Vec3ScaleAssign(Q_signf(fwd), rightv); // Needs to be flipped when moving backwards --mxd.
+			VectorSubtract(fwdv, rightv, dir);
+			VectorNormalize(dir);
+		}
+		else
+		{
+			VectorCopy(fwdv, dir);
+		}
+
+		VectorScale(dir, fwd, info->velocity);
+	}
+	else if (right != 0.0f)
+	{
+		VectorMA(info->velocity, right, rightv, info->velocity);
 	}
 
-	info->velocity[2] += up;
+	info->velocity[2] += up; // 'up' is always 0... --mxd.
 }
 
 void PlayerJumpNudge(playerinfo_t* info, const float fwd, const float right, const float up)
