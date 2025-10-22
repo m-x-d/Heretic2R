@@ -1321,11 +1321,8 @@ static void CL_UpdateCameraOrientation(float viewheight, const qboolean interpol
 			VectorCopy(end, prev_end);
 
 			const float lerp = (float)camera_timer / (float)MAX_CAMERA_TIMER;
-			for (int i = 0; i < 3; i++)
-			{
-				start[i] = prev_prev_start[i] + (prev_start[i] - prev_prev_start[i]) * lerp;
-				end[i] = prev_prev_end[i] + (prev_end[i] - prev_prev_end[i]) * lerp;
-			}
+			VectorLerp(prev_prev_start, lerp, prev_start, start);
+			VectorLerp(prev_prev_end, lerp, prev_end, end);
 		}
 	}
 	else
@@ -1354,8 +1351,7 @@ static void CL_UpdateCameraOrientation(float viewheight, const qboolean interpol
 		CL_Trace(end_2, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
 
 		if (!trace.startsolid && trace.fraction != 1.0f)
-			for (int i = 0; i < 3; i++)
-				end_2[i] = end[i] + (trace.endpos[i] - end[i]) * 0.9f;
+			VectorLerp(end, 0.9f, trace.endpos, end_2);
 	}
 
 	vec3_t end_3;
@@ -1367,11 +1363,9 @@ static void CL_UpdateCameraOrientation(float viewheight, const qboolean interpol
 	{
 		float damp_factor = fabsf(look_angles[PITCH]);
 		damp_factor = min(1.0f, damp_factor / 89.0f);
-
 		damp_factor = (1.0f - cl_camera_dampfactor->value) * damp_factor * damp_factor * damp_factor + cl_camera_dampfactor->value;
 
-		for (int i = 0; i < 3; i++)
-			end_2[i] = old_vieworg[i] + (end_2[i] - old_vieworg[i]) * damp_factor;
+		VectorLerp(old_vieworg, damp_factor, end_2, end_2);
 	}
 
 	CL_Trace(end, mins, maxs, end_2, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
