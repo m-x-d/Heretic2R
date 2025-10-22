@@ -393,7 +393,7 @@ seqctrl_t SeqCtrl[ASEQ_MAX] =
 	{ ACMDL_CROUCH,		ASEQ_CROUCH_PIVOTR,			ASEQ_CROUCH_END,		BranchLwrCrouching },		// ASEQ_CROUCH_PIVOTR
 	{ ACMDL_STRAFE_L,	ASEQ_STRAFEL,				ASEQ_STRAFEL_END,		BranchLwrStanding },		// ASEQ_STRAFEL
 	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrStanding },		// ASEQ_STRAFEL_END
-	{ ACMDL_STRAFE_R,	ASEQ_STRAFER,				ASEQ_STRAFER_END,		BranchLwrStanding },		// ASEQ_STRAFER1
+	{ ACMDL_STRAFE_R,	ASEQ_STRAFER,				ASEQ_STRAFER_END,		BranchLwrStanding },		// ASEQ_STRAFER
 	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrStanding },		// ASEQ_STRAFER_END
 	{ ACMD_NONE,		ASEQ_JUMPUP,				ASEQ_JUMPUP,			BranchLwrJumping },			// ASEQ_JUMPSTD_GO
 	{ ACMD_NONE,		ASEQ_JUMPFWD,				ASEQ_JUMPFWD,			NULL },						// ASEQ_JUMPFWD_SGO
@@ -534,9 +534,9 @@ seqctrl_t SeqCtrl[ASEQ_MAX] =
 	{ ACMD_NONE,		ASEQ_FALL,					ASEQ_FALL,				NULL },						// ASEQ_JUMPRIGHTFLIP
 	{ ACMD_NONE,		ASEQ_DROWN_IDLE,			ASEQ_DROWN_IDLE,		NULL },						// ASEQ_DROWN_IDLE
 	{ ACMDL_STRAFE_L,	ASEQ_DASH_LEFT,				ASEQ_STAND,				NULL },						// ASEQ_DASH_LEFT_GO
-	{ ACMDL_STRAFE_L,	ASEQ_DASH_LEFT,				ASEQ_STAND,				BranchLwrStanding },		// ASEQ_DASH_LEFT
+	{ ACMDL_STRAFE_L,	ASEQ_DASH_LEFT,				ASEQ_STAND,				BranchLwrRunning },			// ASEQ_DASH_LEFT //mxd. BranchLwrStanding in original logic. Fixes jumping from stand-still position during side-dash.
 	{ ACMDL_STRAFE_R,	ASEQ_DASH_RIGHT,			ASEQ_STAND,				NULL },						// ASEQ_DASH_RIGHT_GO
-	{ ACMDL_STRAFE_R,	ASEQ_DASH_RIGHT,			ASEQ_STAND,				BranchLwrStanding },		// ASEQ_DASH_RIGHT
+	{ ACMDL_STRAFE_R,	ASEQ_DASH_RIGHT,			ASEQ_STAND,				BranchLwrRunning },			// ASEQ_DASH_RIGHT //mxd. BranchLwrStanding in original logic. Fixes jumping from stand-still position during side-dash.
 	{ ACMDL_BACK,		ASEQ_CSTRAFEB_LEFT,			ASEQ_STAND,				BranchLwrShortstep },		// ASEQ_CSTRAFEB_LEFT
 	{ ACMDL_BACK,		ASEQ_CSTRAFEB_RIGHT,		ASEQ_STAND,				BranchLwrShortstep },		// ASEQ_CSTRAFEB_RIGHT
 	{ ACMDL_BACK,		ASEQ_WSTRAFEB_LEFT, 		ASEQ_STAND,				BranchLwrWalking },			// ASEQ_WSTRAFEB_LEFT
