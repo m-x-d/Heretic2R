@@ -150,7 +150,7 @@ PLAYER_API void TurnOffPlayerEffects(playerinfo_t* info)
 	info->pers.handfxtype = HANDFX_NONE;
 }
 
-PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
+PLAYER_API void AnimUpdateFrame(playerinfo_t* info) // Called by CL_PredictMovement_impl() and ClientEndServerFrame() --mxd.
 {
 	// Check for death.
 	if (info->deadflag == DEAD_DEAD)
@@ -210,7 +210,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 	}
 	else if (!(info->flags & PLAYER_FLAG_ONROPE) && !(info->flags & PLAYER_FLAG_RELEASEROPE) &&
 		info->targetEnt != NULL && info->groundentity == NULL && self->monsterinfo.jump_time < info->leveltime &&
-		PlayerActionCheckRopeGrab(info, 0) && info->deadflag == DEAD_NO) // Climb a rope?
+		PlayerActionCheckRopeGrab(info, 0.0f) && info->deadflag == DEAD_NO) // Climb a rope?
 	{
 		self->monsterinfo.jump_time = info->leveltime + 4.0f;
 		info->flags |= PLAYER_FLAG_ONROPE;
@@ -579,7 +579,7 @@ PLAYER_API void PlayerIntLand(playerinfo_t* info, const float landspeed) //mxd. 
 		}
 	}
 	else if (info->lowerseq == ASEQ_FORWARD_FLIP_L || info->lowerseq == ASEQ_FORWARD_FLIP_R ||
-		info->upperseq == ASEQ_FORWARD_FLIP_L || info->upperseq == ASEQ_FORWARD_FLIP_R)
+			 info->upperseq == ASEQ_FORWARD_FLIP_L || info->upperseq == ASEQ_FORWARD_FLIP_R)
 	{
 		PlayerInterruptAction(info);
 
@@ -650,7 +650,7 @@ PLAYER_API void PlayerIntLand(playerinfo_t* info, const float landspeed) //mxd. 
 		{
 			PlayerAnimSetLowerSeq(info, ASEQ_STAND);
 			info->fwdvel = 150.0f;
-			strcat_s(land_sound, sizeof(land_sound), "shuffle1.wav"); //mxd. strcat -> strcat_s.
+			strcat_s(land_sound, sizeof(land_sound), va("shuffle%i.wav", irand(1, 2))); //mxd. strcat -> strcat_s, use both shuffle sounds.
 		}
 		else if (landspeed < 300.0f)
 		{
