@@ -1960,7 +1960,7 @@ void PlayerActionCheckCreep(playerinfo_t* info)
 	if (info->seqcmd[ACMDL_ACTION])
 	{
 		// Climb a rope?
-		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0))
+		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0.0f))
 		{
 			info->flags |= PLAYER_FLAG_ONROPE;
 			P_Sound(info, SND_PRED_ID26, CHAN_VOICE, "player/ropegrab.wav", 0.75f);
@@ -2281,6 +2281,7 @@ void PlayerActionCheckWalk(playerinfo_t* info)
 			info->flags |= PLAYER_FLAG_ONROPE;
 			P_Sound(info, SND_PRED_ID27, CHAN_VOICE, "player/ropegrab.wav", 0.75f); //mxd
 			PlayerAnimSetLowerSeq(info, ASEQ_CLIMB_ON); // We're on the rope.
+
 			return;
 		}
 

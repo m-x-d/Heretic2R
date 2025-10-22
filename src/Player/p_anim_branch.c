@@ -439,13 +439,13 @@ int BranchLwrStanding(playerinfo_t* info)
 			return ASEQ_PUSHBUTTON_GO;
 		}
 
-		if (PlayerActionCheckPuzzleGrab(info)) // Are you near a puzzle piece? Then try to take it
+		if (PlayerActionCheckPuzzleGrab(info)) // Are you near a puzzle piece? Then try to take it.
 			return ASEQ_TAKEPUZZLEPIECE;
 
-		if (PlayerActionUsePuzzle(info)) // Trying to use a puzzle piece
-			return ASEQ_NONE; // Need anim to use puzzle piece
+		if (PlayerActionUsePuzzle(info)) // Trying to use a puzzle piece.
+			return ASEQ_NONE; // Need anim to use puzzle piece.
 
-		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0)) // Climb a rope?
+		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0.0f)) // Climb a rope?
 		{
 			P_Sound(info, SND_PRED_ID32, CHAN_VOICE, "player/ropegrab.wav", 0.75f); //mxd
 			return ASEQ_CLIMB_ON;
@@ -726,7 +726,7 @@ int BranchLwrWalking(playerinfo_t* info)
 	// Look for the action key being pressed [LOW PROBABILITY].
 	if (info->seqcmd[ACMDL_ACTION])
 	{
-		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0)) // Climb a rope?
+		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0.0f)) // Climb a rope?
 		{
 			info->flags |= PLAYER_FLAG_ONROPE;
 			P_Sound(info, SND_PRED_ID33, CHAN_VOICE, "player/ropegrab.wav", 0.75f); //mxd
@@ -859,7 +859,7 @@ int BranchLwrRunningStrafe(playerinfo_t* info)
 	// Look for the action key being pressed [LOW PROBABILITY].
 	if (info->seqcmd[ACMDL_ACTION])
 	{
-		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0)) // Climb a rope?
+		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0.0f)) // Climb a rope?
 		{
 			info->flags |= PLAYER_FLAG_ONROPE;
 			P_Sound(info, SND_PRED_ID34, CHAN_VOICE, "player/ropegrab.wav", 0.75f); //mxd
@@ -887,7 +887,7 @@ int BranchLwrShortstep(playerinfo_t* info)
 
 	if (info->seqcmd[ACMDL_ACTION])
 	{
-		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0)) // Climb a rope?
+		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0.0f)) // Climb a rope?
 		{
 			info->flags |= PLAYER_FLAG_ONROPE;
 			P_Sound(info, SND_PRED_ID36, CHAN_VOICE, "player/ropegrab.wav", 0.75f); //mxd
@@ -1012,7 +1012,7 @@ int BranchLwrJumping(playerinfo_t* info)
 
 	if (info->seqcmd[ACMDL_ACTION])
 	{
-		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0)) // Climb a rope?
+		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0.0f)) // Climb a rope?
 		{
 			info->flags |= PLAYER_FLAG_ONROPE;
 			return ASEQ_CLIMB_ON;
