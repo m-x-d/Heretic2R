@@ -278,7 +278,7 @@ PLAYER_API void PlayerAnimLowerIdle(playerinfo_t* info)
 	}
 }
 
-PLAYER_API void PlayerAnimUpperUpdate(playerinfo_t* info)
+PLAYER_API void PlayerAnimUpperUpdate(playerinfo_t* info) // Exported function never called --mxd.
 {
 	// Init some values.
 	info->upperidle = false;
@@ -314,7 +314,7 @@ PLAYER_API void PlayerAnimUpperUpdate(playerinfo_t* info)
 	PlayerAnimSetUpperSeq(info, newseq);
 }
 
-PLAYER_API void PlayerAnimLowerUpdate(playerinfo_t* info)
+PLAYER_API void PlayerAnimLowerUpdate(playerinfo_t* info) // Exported function never called --mxd.
 {
 	// Init some values.
 	info->loweridle = false;
