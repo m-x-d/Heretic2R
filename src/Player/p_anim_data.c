@@ -4980,10 +4980,11 @@ static panimframe_t player_frames_dash_left[] =
 	{ FRAME_fastleft2, PlayerMoveFunc, 0, -200 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckBranchRunningStrafe },
 	{ FRAME_fastleft3, PlayerMoveFunc, 0, -200 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckBranchRunningStrafe },
 	{ FRAME_fastleft4, PlayerMoveFunc, 0, -200 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckBranchRunningStrafe },
-	{ FRAME_fastleft5, PlayerMoveFunc, 0, -200 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_RUN, PlayerActionCheckBranchRunningStrafe },
+	{ FRAME_fastleft5, PlayerMoveFunc, 0, -200 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_RUN2, PlayerActionCheckBranchRunningStrafe },
 	{ FRAME_fastleft6, PlayerMoveFunc, 0, -200 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckBranchRunningStrafe },
 	{ FRAME_fastleft7, PlayerMoveFunc, 0, -200 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckBranchRunningStrafe },
 	{ FRAME_fastleft8, PlayerMoveFunc, 0, -200 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckBranchRunningStrafe },
+	{ FRAME_fastleft1, PlayerMoveFunc, 0, -200 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_RUN, PlayerActionCheckBranchRunningStrafe }, //mxd. Added to make it loop properly...
 };
 panimmove_t player_move_dash_left = PANIMMOVE(player_frames_dash_left, PlayerAnimLowerUpdate);
 
@@ -5000,10 +5001,11 @@ static panimframe_t player_frames_dash_right[] =
 	{ FRAME_fastrite2, PlayerMoveFunc, 0, 200 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckBranchRunningStrafe },
 	{ FRAME_fastrite3, PlayerMoveFunc, 0, 200 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckBranchRunningStrafe },
 	{ FRAME_fastrite4, PlayerMoveFunc, 0, 200 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckBranchRunningStrafe },
-	{ FRAME_fastrite5, PlayerMoveFunc, 0, 200 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_RUN, PlayerActionCheckBranchRunningStrafe },
+	{ FRAME_fastrite5, PlayerMoveFunc, 0, 200 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_RUN2, PlayerActionCheckBranchRunningStrafe },
 	{ FRAME_fastrite6, PlayerMoveFunc, 0, 200 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckBranchRunningStrafe },
 	{ FRAME_fastrite7, PlayerMoveFunc, 0, 200 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckBranchRunningStrafe },
 	{ FRAME_fastrite8, PlayerMoveFunc, 0, 200 * PHYS_SCALER, 0, NULL, 0, PlayerActionCheckBranchRunningStrafe },
+	{ FRAME_fastrite1, PlayerMoveFunc, 0, 200 * PHYS_SCALER, 0, PlayerActionFootstep, STEP_RUN, PlayerActionCheckBranchRunningStrafe }, //mxd. Added to make it loop properly...
 };
 panimmove_t player_move_dash_right = PANIMMOVE(player_frames_dash_right, PlayerAnimLowerUpdate);
 
