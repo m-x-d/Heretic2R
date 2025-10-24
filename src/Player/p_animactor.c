@@ -525,6 +525,15 @@ PLAYER_API void PlayerFallingDamage(playerinfo_t* info) // Called by CL_PredictM
 
 PLAYER_API void PlayerIntLand(playerinfo_t* info, const float landspeed) //mxd. Defined in p_ctrl.c in original version.
 {
+	info->flags &= ~PLAYER_FLAG_FALLING;
+
+	// Don't do dust in the water!
+	if (info->waterlevel == 0)
+		P_CreateEffect(info, EFFECT_PRED_ID15, info->self, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, info->origin, ""); //mxd
+
+	if (info->edictflags & FL_CHICKEN) //mxd. Chicken has no falling sounds...
+		return;
+
 	qboolean hardfall = false;
 
 	// Initialise the appropriate landing sound.
@@ -537,11 +546,7 @@ PLAYER_API void PlayerIntLand(playerinfo_t* info, const float landspeed) //mxd. 
 	if (material != NULL)
 		strcat_s(land_sound, sizeof(land_sound), material); //mxd. strcat -> strcat_s.
 
-	if (info->edictflags & FL_CHICKEN)
-	{
-		info->flags &= ~PLAYER_FLAG_FALLING;
-	}
-	else if (info->advancedstaff && info->seqcmd[ACMDU_ATTACK] && (info->upperseq == ASEQ_WSWORD_DOWNSTAB || info->upperseq == ASEQ_WSWORD_STABHOLD))
+	if (info->advancedstaff && info->seqcmd[ACMDU_ATTACK] && (info->upperseq == ASEQ_WSWORD_DOWNSTAB || info->upperseq == ASEQ_WSWORD_STABHOLD))
 	{
 		PlayerInterruptAction(info);
 
@@ -688,10 +693,4 @@ PLAYER_API void PlayerIntLand(playerinfo_t* info, const float landspeed) //mxd. 
 	// Play grunt sound?
 	if (hardfall)
 		P_Sound(info, SND_PRED_ID52, CHAN_FOOTSTEP, "*fall.wav", 1.0f); //mxd
-
-	info->flags &= ~PLAYER_FLAG_FALLING;
-
-	// Don't do dust in the water!
-	if (info->waterlevel == 0)
-		P_CreateEffect(info, EFFECT_PRED_ID15, info->self, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, info->origin, ""); //mxd
 }
