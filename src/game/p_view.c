@@ -638,7 +638,7 @@ void ClientEndServerFrame(edict_t* ent)
 		gi.unicast(ent, false);
 	}
 
-	//  Reflect remote camera views(s) in the client's playerstate.
+	// Reflect remote camera views(s) in the client's playerstate.
 	if (current_client->RemoteCameraLockCount > 0)
 		current_client->ps.remote_id = current_client->RemoteCameraNumber;
 	else
@@ -661,7 +661,6 @@ void ClientEndServerFrame(edict_t* ent)
 	}
 
 	current_client->ps.NoOfItems = (byte)items_count;
-
 
 	// Reflect changes to the client's origin and velocity due to the current player animation, in the client's playerstate.
 	for (int i = 0; i < 3; i++)
