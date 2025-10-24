@@ -1354,7 +1354,7 @@ void ClientRespawn(edict_t* self) //TODO: rename to Respawn().
 	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_IN, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
 
 	// Hold in place briefly.
-	self->client->ps.pmove.pm_time = 50;
+	self->client->ps.pmove.pm_time = 50; // Q2: 14 //TODO: does nothing on its own. Should also set PMF_TIME_TELEPORT flag. Or not needed at all?..
 }
 
 #pragma endregion
