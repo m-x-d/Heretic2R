@@ -1330,7 +1330,7 @@ void Pmove(pmove_t* pmove, const qboolean server)
 	// Drop timing counter.
 	if (pm->s.pm_time > 0)
 	{
-		const byte msec = max(1, pm->cmd.msec >> 3);
+		const byte msec = max(1, pm->cmd.msec >> 3); // Actually msec / 8 --mxd.
 
 		if (msec >= pm->s.pm_time)
 		{
@@ -1343,7 +1343,7 @@ void Pmove(pmove_t* pmove, const qboolean server)
 		}
 	}
 
-	if (!(pm->s.pm_flags & (PMF_TIME_TELEPORT | PMF_LOCKANIM))) // Teleport pause stays exactly in place. //mxd. +PMF_LOCKANIM.
+	if (!(pm->s.pm_flags & PMF_TIME_TELEPORT)) // Teleport pause stays exactly in place.
 	{
 		PM_CheckJump();
 

@@ -474,7 +474,7 @@ static void CL_UpdateClientAngles(void)
 	static qboolean st_unknown5;
 	static qboolean st_unknown6;
 
-	const qboolean do_lookaround = ((in_lookaround.state & KS_DOWN) || (pred_pm_flags & PMF_LOCKANIM)); //mxd. Don't rotate model when anim-locked.
+	const qboolean do_lookaround = ((in_lookaround.state & KS_DOWN) != 0);
 
 	// Look around key pressed?
 	if (do_lookaround)
@@ -569,7 +569,7 @@ static void CL_UpdateClientAngles(void)
 
 		if (!do_lookaround)
 		{
-			if (!(pred_pm_flags & PMF_LOCKTURN))
+			if (!(pred_pm_flags & (PMF_LOCKTURN | PMF_TIME_TELEPORT))) //mxd. Also don't rotate model during morph/teleport sequences.
 			{
 				cl.inputangles[YAW] += cl.delta_inputangles[YAW];
 				cl.viewangles[YAW] += cl.delta_inputangles[YAW];

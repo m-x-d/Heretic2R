@@ -23,7 +23,7 @@ void SpellCastTeleport(edict_t* caster)
 
 	// Set the player as teleporting.
 	caster->client->playerinfo.flags |= PLAYER_FLAG_TELEPORT;
-	caster->client->playerinfo.pm_flags |= (PMF_LOCKMOVE | PMF_LOCKANIM); //mxd. Sets 'caster->client->ps.pmove.pm_flags' in original logic (not transferred to client); +PMF_LOCKANIM;
+	caster->client->playerinfo.pm_flags |= (PMF_LOCKMOVE | PMF_TIME_TELEPORT); //mxd. Sets 'caster->client->ps.pmove.pm_flags' in original logic (not transferred to client); +PMF_TIME_TELEPORT;
 
 	// Figure out a destination point.
 	vec3_t dest_pos;
@@ -40,7 +40,7 @@ void SpellCastTeleport(edict_t* caster)
 
 	// Clear the velocity and hold them in place briefly.
 	VectorClear(caster->velocity);
-	caster->client->ps.pmove.pm_time = 50;
+	caster->client->ps.pmove.pm_time = TELE_PM_DURATION; //mxd. 50 in original logic.
 
 	caster->flags |= FL_LOCKMOVE; // Make the player still.
 	caster->s.color.c = 0xffffffff; // Allow the player to fade out.

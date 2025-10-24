@@ -33,7 +33,7 @@ void CleanUpPlayerMorph(edict_t* self) //mxd. Named 'CleanUpMorph' in original v
 	self->client->playerinfo.edictflags &= ~FL_LOCKMOVE;
 	self->client->playerinfo.renderfx &= ~RF_TRANSLUCENT;
 	self->client->playerinfo.flags &= ~PLAYER_FLAG_MORPHING;
-	self->client->playerinfo.pm_flags &= ~(PMF_LOCKMOVE | PMF_LOCKANIM); //mxd
+	self->client->playerinfo.pm_flags &= ~PMF_LOCKMOVE; //mxd
 	self->client->shrine_framenum = level.time - 1.0f;
 
 	self->s.color.a = 255;
@@ -109,7 +109,7 @@ static void MorphChickenToPlayerStart(edict_t* self) //mxd. Named 'MorphChickenT
 		return;
 
 	self->client->playerinfo.flags |= PLAYER_FLAG_MORPHING; // Set the player as morphing.
-	self->client->ps.pmove.pm_flags |= (PMF_LOCKMOVE | PMF_LOCKANIM); //mxd. Actually make player stand still...
+	self->client->ps.pmove.pm_flags |= (PMF_LOCKMOVE | PMF_TIME_TELEPORT); //mxd. Actually make player stand still...
 
 	self->client->tele_count = TELE_TIME_OUT; // Time taken over de-materialization.
 	self->client->shrine_framenum = level.time + 10.0f; // Make us invulnerable for a couple of seconds.
@@ -118,7 +118,7 @@ static void MorphChickenToPlayerStart(edict_t* self) //mxd. Named 'MorphChickenT
 
 	// Clear the velocity and hold them in place briefly.
 	VectorClear(self->velocity);
-	self->client->ps.pmove.pm_time = 50;
+	self->client->ps.pmove.pm_time = TELE_PM_DURATION; //mxd. 50 in original logic.
 
 	// Allow the player to fade out.
 	self->s.color.c = 0xffffffff;
@@ -258,7 +258,7 @@ void MorphPlayerToChickenStart(edict_t* self) //mxd. Named 'MorphPlayerToChicken
 	PlayerKillShrineFX(self);
 
 	self->client->playerinfo.flags |= PLAYER_FLAG_MORPHING; // Set the player as morphing.
-	self->client->ps.pmove.pm_flags |= (PMF_LOCKMOVE | PMF_LOCKANIM); //mxd. Actually make player stand still...
+	self->client->ps.pmove.pm_flags |= (PMF_LOCKMOVE | PMF_TIME_TELEPORT); //mxd. Actually make player stand still...
 
 	self->client->tele_count = TELE_TIME_OUT; // Time taken over de-materialization.
 	self->client->shrine_framenum = level.time + 10.0f; // Make us invulnerable for a couple of seconds.
@@ -267,7 +267,7 @@ void MorphPlayerToChickenStart(edict_t* self) //mxd. Named 'MorphPlayerToChicken
 
 	// Clear the velocity and hold them in place briefly.
 	VectorClear(self->velocity);
-	self->client->ps.pmove.pm_time = 50;
+	self->client->ps.pmove.pm_time = TELE_PM_DURATION; //mxd. 50 in original logic.
 
 	// Allow the player to fade out.
 	self->s.color.c = 0xffffffff;

@@ -14,6 +14,8 @@
 #define TELE_TIME_OUT	5						// Number of server frames we take to do the fades.
 #define TELE_FADE_OUT	(255 / TELE_TIME_OUT)	// Amount to fade the player by each fade.
 
+#define TELE_PM_DURATION	137 //mxd. Teleport/morph duration in pm_time units... ~= 1100 / 8 //TODO: why does this take 1100 ms. instead of expected 900 (TELE_TIME + TELE_TIME_OUT * 100)?..
+
 #define DEATHMATCH_RANDOM	2
 
 void CleanUpPlayerTeleport(edict_t* self);

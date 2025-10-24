@@ -62,7 +62,7 @@ void CleanUpPlayerTeleport(edict_t* self) //mxd. Named 'CleanUpTeleport' in orig
 	self->client->tele_count = 0;
 	self->flags &= ~FL_LOCKMOVE;
 	self->client->playerinfo.flags &= ~PLAYER_FLAG_TELEPORT;
-	self->client->playerinfo.pm_flags &= ~(PMF_LOCKMOVE | PMF_LOCKANIM); //mxd. Set on 'self->client->ps.pmove.pm_flags' in original logic (not transferred to client logic); -PMF_LOCKANIM.
+	self->client->playerinfo.pm_flags &= ~PMF_LOCKMOVE; //mxd. Set on 'self->client->ps.pmove.pm_flags' in original logic (not transferred to client logic);
 	self->s.color.a = 255;
 	self->client->shrine_framenum = level.time - 1.0f;
 }
@@ -92,7 +92,7 @@ void teleporter_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t
 		edict_t* dest = NULL;
 
 		// Do we have multiple destinations?
-		if (self->style)
+		if (self->style > 0)
 		{
 			const int rand_targ = irand(1, self->style);
 
@@ -126,16 +126,16 @@ void teleporter_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t
 
 	// Set the player as teleporting.
 	other->client->playerinfo.flags |= PLAYER_FLAG_TELEPORT;
-	other->client->ps.pmove.pm_flags |= (PMF_LOCKMOVE | PMF_LOCKANIM); //mxd. +PMF_LOCKANIM.
+	other->client->ps.pmove.pm_flags |= (PMF_LOCKMOVE | PMF_TIME_TELEPORT); //mxd. +PMF_TIME_TELEPORT.
 
 	other->client->tele_count = TELE_TIME_OUT; // Time taken over de-materialization.
 	other->client->tele_type = 0; // Tell us how we triggered the teleport.
 	other->client->old_solid = other->solid; // Save out what kind of solid ability we are.
-	other->client->shrine_framenum = level.time + 10.0f; // Make us invunerable for a couple of seconds.
+	other->client->shrine_framenum = level.time + 10.0f; // Make us invulnerable for a couple of seconds.
 
 	// Clear the velocity and hold them in place briefly.
 	VectorClear(other->velocity);
-	other->client->ps.pmove.pm_time = 50;
+	other->client->ps.pmove.pm_time = TELE_PM_DURATION; //mxd. 50 in original logic.
 
 	other->flags |= FL_LOCKMOVE; // Make the player still.
 	other->s.color.c = 0xffffffff; // Allow the player to fade out.
