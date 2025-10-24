@@ -539,7 +539,9 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 				P_PlayerFallingDamage(&cl.playerinfo);
 				P_PlayerUpdateCmdFlags(&cl.playerinfo);
 				P_PlayerUpdate(&cl.playerinfo);
-				P_AnimUpdateFrame(&cl.playerinfo);
+
+				if (!(cl.playerinfo.pm_flags & PMF_LOCKANIM)) //mxd. Skip client-side update during morph/teleport sequences.
+					P_AnimUpdateFrame(&cl.playerinfo);
 
 				cl.playerinfo.leveltime += 0.1f;
 

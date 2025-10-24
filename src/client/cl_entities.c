@@ -1512,7 +1512,7 @@ static void CL_CalcViewValues(void)
 
 			VectorCopy(cl.predicted_angles, look_angles);
 		}
-		else if (in_lookaround.state & KS_DOWN)
+		else if ((in_lookaround.state & KS_DOWN) || (ps->pmove.pm_flags & PMF_LOCKANIM)) //mxd. +PMF_LOCKANIM check.
 		{
 			for (int i = 0; i < 3; i++)
 				look_angles[i] = cl.lookangles[i] + (float)ps->pmove.delta_angles[i] * SHORT_TO_ANGLE;

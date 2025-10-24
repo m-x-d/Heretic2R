@@ -33,6 +33,7 @@ void CleanUpPlayerMorph(edict_t* self) //mxd. Named 'CleanUpMorph' in original v
 	self->client->playerinfo.edictflags &= ~FL_LOCKMOVE;
 	self->client->playerinfo.renderfx &= ~RF_TRANSLUCENT;
 	self->client->playerinfo.flags &= ~PLAYER_FLAG_MORPHING;
+	self->client->playerinfo.pm_flags &= ~(PMF_LOCKMOVE | PMF_LOCKANIM); //mxd
 	self->client->shrine_framenum = level.time - 1.0f;
 
 	self->s.color.a = 255;
@@ -57,7 +58,7 @@ void MorphChickenToPlayerEnd(edict_t* self) //mxd. Named 'reset_morph_to_elf' in
 	self->s.scale = 1.0f;
 
 	// Set the model back to Corvus.
-	self->model = "models/player/corvette/tris.fm"; //TODO: there's no such model!
+	self->model = "players/male/tris.fm"; //mxd. "models/player/corvette/tris.fm" in original logic. //TODO: unused by player model logic?
 	self->pain = PlayerPain;
 	self->die = PlayerDie;
 	self->flags &= ~FL_NO_KNOCKBACK;
@@ -68,7 +69,6 @@ void MorphChickenToPlayerEnd(edict_t* self) //mxd. Named 'reset_morph_to_elf' in
 	self->client->playerinfo.skinnum = 0;
 	self->client->playerinfo.clientnum = self - g_edicts - 1;
 	self->s.modelindex = 255; // Will use the skin-specified model.
-	self->client->playerinfo.frame = 0;
 
 	// Turn our skeleton back on.
 	self->s.skeletalType = SKEL_CORVUS;
@@ -88,11 +88,9 @@ void MorphChickenToPlayerEnd(edict_t* self) //mxd. Named 'reset_morph_to_elf' in
 
 	// Reset our animations.
 	P_PlayerBasicAnimReset(&self->client->playerinfo);
-	self->client->playerinfo.upperframe = 43; //mxd. FRAME_asscrtch24 ?..
-	self->client->playerinfo.lowerframe = 43;
+	self->client->playerinfo.frame = 1; //mxd. FRAME_180turn1 from m_player.h (can't include because of define overlaps with m_chicken_anim.h...).
 
 	P_PlayerUpdateModelAttributes(&self->client->playerinfo);
-	P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_NONE);
 	P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_IDLE_WIPE_BROW);
 
 	// Draw the teleport splash at the destination.
@@ -110,7 +108,9 @@ static void MorphChickenToPlayerStart(edict_t* self) //mxd. Named 'MorphChickenT
 	if (self->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING))
 		return;
 
-	self->client->playerinfo.flags |= PLAYER_FLAG_MORPHING; // Set the player as teleporting.
+	self->client->playerinfo.flags |= PLAYER_FLAG_MORPHING; // Set the player as morphing.
+	self->client->ps.pmove.pm_flags |= (PMF_LOCKMOVE | PMF_LOCKANIM); //mxd. Actually make player stand still...
+
 	self->client->tele_count = TELE_TIME_OUT; // Time taken over de-materialization.
 	self->client->shrine_framenum = level.time + 10.0f; // Make us invulnerable for a couple of seconds.
 	self->client->tele_type = 1; // Tell us how we triggered the teleport.
@@ -160,6 +160,7 @@ void MorphPlayerToChickenEnd(edict_t* self) //mxd. Named 'Perform_Morph' in orig
 	// Change out our model.
 	self->model = "models/monsters/chicken2/tris.fm";
 	self->s.modelindex = (byte)gi.modelindex("models/monsters/chicken2/tris.fm");
+	self->client->playerinfo.frame = FRAME_wait1; //mxd. Set fade-in frame...
 
 	self->client->playerinfo.effects &= ~(EF_JOINTED | EF_SWAPFRAME);
 	self->client->playerinfo.effects |= EF_CHICKEN;
@@ -256,7 +257,9 @@ void MorphPlayerToChickenStart(edict_t* self) //mxd. Named 'MorphPlayerToChicken
 	// Remove any shrine effects he has.
 	PlayerKillShrineFX(self);
 
-	self->client->playerinfo.flags |= PLAYER_FLAG_MORPHING; // Set the player as teleporting.
+	self->client->playerinfo.flags |= PLAYER_FLAG_MORPHING; // Set the player as morphing.
+	self->client->ps.pmove.pm_flags |= (PMF_LOCKMOVE | PMF_LOCKANIM); //mxd. Actually make player stand still...
+
 	self->client->tele_count = TELE_TIME_OUT; // Time taken over de-materialization.
 	self->client->shrine_framenum = level.time + 10.0f; // Make us invulnerable for a couple of seconds.
 	self->client->tele_type = 1; // Tell us how we triggered the teleport.

@@ -62,7 +62,7 @@ void CleanUpPlayerTeleport(edict_t* self) //mxd. Named 'CleanUpTeleport' in orig
 	self->client->tele_count = 0;
 	self->flags &= ~FL_LOCKMOVE;
 	self->client->playerinfo.flags &= ~PLAYER_FLAG_TELEPORT;
-	self->client->ps.pmove.pm_flags &= ~PMF_LOCKMOVE;
+	self->client->playerinfo.pm_flags &= ~(PMF_LOCKMOVE | PMF_LOCKANIM); //mxd. Set on 'self->client->ps.pmove.pm_flags' in original logic (not transferred to client logic); -PMF_LOCKANIM.
 	self->s.color.a = 255;
 	self->client->shrine_framenum = level.time - 1.0f;
 }
@@ -126,7 +126,7 @@ void teleporter_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t
 
 	// Set the player as teleporting.
 	other->client->playerinfo.flags |= PLAYER_FLAG_TELEPORT;
-	other->client->ps.pmove.pm_flags |= PMF_LOCKMOVE;
+	other->client->ps.pmove.pm_flags |= (PMF_LOCKMOVE | PMF_LOCKANIM); //mxd. +PMF_LOCKANIM.
 
 	other->client->tele_count = TELE_TIME_OUT; // Time taken over de-materialization.
 	other->client->tele_type = 0; // Tell us how we triggered the teleport.

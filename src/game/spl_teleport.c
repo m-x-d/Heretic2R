@@ -23,7 +23,7 @@ void SpellCastTeleport(edict_t* caster)
 
 	// Set the player as teleporting.
 	caster->client->playerinfo.flags |= PLAYER_FLAG_TELEPORT;
-	caster->client->ps.pmove.pm_flags |= PMF_LOCKMOVE;
+	caster->client->playerinfo.pm_flags |= (PMF_LOCKMOVE | PMF_LOCKANIM); //mxd. Sets 'caster->client->ps.pmove.pm_flags' in original logic (not transferred to client); +PMF_LOCKANIM;
 
 	// Figure out a destination point.
 	vec3_t dest_pos;
@@ -36,7 +36,7 @@ void SpellCastTeleport(edict_t* caster)
 	caster->client->tele_count = TELE_TIME_OUT; // Time taken over de-materialization.
 	caster->client->tele_type = 1; // Tell us how we triggered the teleport.
 	caster->client->old_solid = caster->solid; // Save out what kind of solid ability we are.
-	caster->client->shrine_framenum = level.time + 10.0f; // Make us invunerable for a couple of seconds.
+	caster->client->shrine_framenum = level.time + 10.0f; // Make us invulnerable for a couple of seconds.
 
 	// Clear the velocity and hold them in place briefly.
 	VectorClear(caster->velocity);

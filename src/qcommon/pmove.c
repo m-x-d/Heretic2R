@@ -1343,7 +1343,7 @@ void Pmove(pmove_t* pmove, const qboolean server)
 		}
 	}
 
-	if (!(pm->s.pm_flags & PMF_TIME_TELEPORT)) // Teleport pause stays exactly in place.
+	if (!(pm->s.pm_flags & (PMF_TIME_TELEPORT | PMF_LOCKANIM))) // Teleport pause stays exactly in place. //mxd. +PMF_LOCKANIM.
 	{
 		PM_CheckJump();
 

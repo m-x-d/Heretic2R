@@ -408,12 +408,12 @@ typedef enum
 	PM_INTERMISSION,	// An existing remote camera view is already underway.
 } pmtype_t;
 
-// pmove->pm_flags.
+// pmove->pm_flags (a byte!).
 #define PMF_STANDSTILL		0x0001
 #define PMF_ON_GROUND		0x0004
 #define PMF_TIME_LAND		0x0008	// pm_time is time before re-jump.
-#define PMF_TIME_TELEPORT	0x0010	// pm_time is non-moving time.
-#define PMF_NO_PREDICTION	0x0020	// Temporarily disables prediction. //TODO: unused.
+#define PMF_TIME_TELEPORT	0x0010	// pm_time is non-moving time. //TODO: never set.
+#define PMF_LOCKANIM		0x0020	//mxd. Enabled during whole teleport/morph sequences.
 #define PMF_LOCKMOVE		0x0040
 #define PMF_LOCKTURN		0x0080
 

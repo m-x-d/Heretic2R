@@ -474,7 +474,7 @@ static void CL_UpdateClientAngles(void)
 	static qboolean st_unknown5;
 	static qboolean st_unknown6;
 
-	const qboolean do_lookaround = ((in_lookaround.state & KS_DOWN) != 0);
+	const qboolean do_lookaround = ((in_lookaround.state & KS_DOWN) || (pred_pm_flags & PMF_LOCKANIM)); //mxd. Don't rotate model when anim-locked.
 
 	// Look around key pressed?
 	if (do_lookaround)
@@ -556,7 +556,7 @@ static void CL_UpdateClientAngles(void)
 	// When on land.
 	st_unknown1 = true;
 
-	// When not frozen in place.
+	// When not standing in place.
 	if (!(pred_pm_flags & PMF_STANDSTILL))
 	{
 		st_unknown5 = true;
