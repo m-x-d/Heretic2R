@@ -227,7 +227,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info) // Called by CL_PredictMovem
 	{
 		if (info->flags & PLAYER_FLAG_SLIDE)
 		{
-			// Make sure the player doesn't try to slide underwater
+			// Make sure the player doesn't try to slide underwater.
 			if (info->waterlevel < 2)
 			{
 				// See if the player is in a jump.
@@ -390,7 +390,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info) // Called by CL_PredictMovem
 	if (info->upperidle)
 		PlayerAnimUpperIdle(info);
 
-	if (info->upperseq > 0)
+	if (info->upperseq != ASEQ_NONE)
 	{
 		move = info->uppermove;
 		assert(move);
@@ -408,7 +408,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info) // Called by CL_PredictMovem
 				return;
 		}
 
-		if (info->upperseq > 0)
+		if (info->upperseq != ASEQ_NONE)
 		{
 			if (info->upperframeptr < move->frame || info->upperframeptr >= move->frame + move->numframes)
 			{
