@@ -283,12 +283,12 @@ char* SeqNames[ASEQ_MAX] = //TODO: unused.
 int PlayerAnimWeaponSwitchSeq[WEAPON_READY_MAX][WEAPON_READY_MAX] =
 {
 	// NONE			// HANDS		// STAFFSTUB	// SWORD		// HELLSTAFF	// BOW
-	{ ASEQ_NONE,	ASEQ_HAND2HAND,	ASEQ_NONE,		ASEQ_HAND2SWD,	ASEQ_HAND2HELL,	ASEQ_HAND2BOW },
-	{ ASEQ_NONE,	ASEQ_HAND2HAND,	ASEQ_NONE,		ASEQ_HAND2SWD,	ASEQ_HAND2HELL,	ASEQ_HAND2BOW },
-	{ ASEQ_NONE,	ASEQ_SWD2HAND,	ASEQ_NONE,		ASEQ_NONE,		ASEQ_SWD2HELL,	ASEQ_SWD2BOW },
-	{ ASEQ_NONE,	ASEQ_SWD2HAND,	ASEQ_NONE,		ASEQ_NONE,		ASEQ_SWD2HELL,	ASEQ_SWD2BOW },
-	{ ASEQ_NONE,	ASEQ_HELL2HAND,	ASEQ_NONE,		ASEQ_HELL2SWD,	ASEQ_NONE,		ASEQ_HELL2BOW },
-	{ ASEQ_NONE,	ASEQ_BOW2HAND,	ASEQ_NONE,		ASEQ_BOW2SWD,	ASEQ_BOW2HELL,	ASEQ_BOW2BOW },
+	{ ASEQ_NONE,	ASEQ_HAND2HAND,	ASEQ_NONE,		ASEQ_HAND2SWD,	ASEQ_HAND2HELL,	ASEQ_HAND2BOW },	// NONE
+	{ ASEQ_NONE,	ASEQ_HAND2HAND,	ASEQ_NONE,		ASEQ_HAND2SWD,	ASEQ_HAND2HELL,	ASEQ_HAND2BOW },	// HANDS
+	{ ASEQ_NONE,	ASEQ_SWD2HAND,	ASEQ_NONE,		ASEQ_NONE,		ASEQ_SWD2HELL,	ASEQ_SWD2BOW },		// STAFFSTUB
+	{ ASEQ_NONE,	ASEQ_SWD2HAND,	ASEQ_NONE,		ASEQ_NONE,		ASEQ_SWD2HELL,	ASEQ_SWD2BOW },		// SWORDSTAFF
+	{ ASEQ_NONE,	ASEQ_HELL2HAND,	ASEQ_NONE,		ASEQ_HELL2SWD,	ASEQ_NONE,		ASEQ_HELL2BOW },	// HELLSTAFF
+	{ ASEQ_NONE,	ASEQ_BOW2HAND,	ASEQ_NONE,		ASEQ_BOW2SWD,	ASEQ_BOW2HELL,	ASEQ_BOW2BOW },		// BOW
 };
 
 seqctrl_t SeqCtrl[ASEQ_MAX] =
@@ -1447,9 +1447,9 @@ PLAYER_API paceldata_t PlayerChickenData[ASEQ_MAX] =
 	{ &chickenp_move_strafer,	0,	0,	PLAYER_FLAG_FALLBREAK },										// ASEQ_STRAFER
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLBREAK },										// ASEQ_STRAFER_END
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_TURNLOCK },											// ASEQ_JUMPSTD_GO
-	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING | PLAYER_FLAG_TURNLOCK},					// ASEQ_JUMPFWD_SGO
-	{ &chickenp_move_wjump,		0,	0,	PLAYER_FLAG_FALLING | PLAYER_FLAG_TURNLOCK},					// ASEQ_JUMPFWD_WGO
-	{ &chickenp_move_rjump,		0,	0,	PLAYER_FLAG_FALLING | PLAYER_FLAG_TURNLOCK},					// ASEQ_JUMPFWD_RGO
+	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING | PLAYER_FLAG_TURNLOCK },					// ASEQ_JUMPFWD_SGO
+	{ &chickenp_move_wjump,		0,	0,	PLAYER_FLAG_FALLING | PLAYER_FLAG_TURNLOCK },					// ASEQ_JUMPFWD_WGO
+	{ &chickenp_move_rjump,		0,	0,	PLAYER_FLAG_FALLING | PLAYER_FLAG_TURNLOCK },					// ASEQ_JUMPFWD_RGO
 	{ &chickenp_move_jump_flap,	0,	0,	PLAYER_FLAG_FALLING },											// ASEQ_JUMPFWD
 	{ &chickenp_move_jump,		0,	0,	PLAYER_FLAG_FALLING },											// ASEQ_JUMPUP
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING },											// ASEQ_JUMPUP_LOOP
@@ -1466,7 +1466,7 @@ PLAYER_API paceldata_t PlayerChickenData[ASEQ_MAX] =
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING },											// ASEQ_POLEVAULT2
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_NONE },												// ASEQ_LANDLIGHT
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_NONE },												// ASEQ_LANDHEAVY
-	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING | PLAYER_FLAG_TURNLOCK},					// ASEQ_FALLWALK_GO
+	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING | PLAYER_FLAG_TURNLOCK },					// ASEQ_FALLWALK_GO
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING },											// ASEQ_FALLRUN_GO
 	{ &chickenp_move_jump_loop,	0,	0,	PLAYER_FLAG_FALLING },											// ASEQ_FALL
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING },											// ASEQ_FALLARMSUP
@@ -1530,8 +1530,8 @@ PLAYER_API paceldata_t PlayerChickenData[ASEQ_MAX] =
 	{ &chickenp_move_dummy,		1,	0,	PLAYER_FLAG_SURFSWIM },											// ASEQ_USWIMR
 	{ &chickenp_move_dummy,		1,	0,	PLAYER_FLAG_SURFSWIM },											// ASEQ_USWIML_END
 	{ &chickenp_move_dummy,		1,	0,	PLAYER_FLAG_SURFSWIM },											// ASEQ_USWIMR_END
-	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING | PLAYER_FLAG_TURNLOCK},					// ASEQ_SLIDE_FORWARD
-	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING | PLAYER_FLAG_TURNLOCK},					// ASEQ_SLIDE_BACKWARD
+	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING | PLAYER_FLAG_TURNLOCK },					// ASEQ_SLIDE_FORWARD
+	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING | PLAYER_FLAG_TURNLOCK },					// ASEQ_SLIDE_BACKWARD
 	{ &chickenp_move_dummy,		1,	0,	PLAYER_FLAG_SURFSWIM },											// ASEQ_SSWIM_RESURFACE
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLBREAK },										// ASEQ_ROLL_L
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLBREAK },										// ASEQ_ROLL_R
@@ -1557,7 +1557,7 @@ PLAYER_API paceldata_t PlayerChickenData[ASEQ_MAX] =
 	{ &chickenp_move_dummy,		0,	1,	PLAYER_FLAG_TURNLOCK },											// ASEQ_SHRINE
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_TURNLOCK },											// ASEQ_TAKEPUZZLEPIECE
 	{ &chickenp_move_dummy,		1,	0,	PLAYER_FLAG_SURFSWIM },											// ASEQ_TAKEPUZZLEUNDERWATER
-	{ &chickenp_move_dummy,		1,	1,	PLAYER_FLAG_SURFSWIM | PLAYER_FLAG_TURNLOCK},					// ASEQ_DROWN
+	{ &chickenp_move_dummy,		1,	1,	PLAYER_FLAG_SURFSWIM | PLAYER_FLAG_TURNLOCK },					// ASEQ_DROWN
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING },											// ASEQ_FORWARD_FLIP_L_GO
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING },											// ASEQ_FORWARD_FLIP_R_GO
 	{ &chickenp_move_dummy,		0,	0,	PLAYER_FLAG_FALLING },											// ASEQ_FORWARD_FLIP_L
