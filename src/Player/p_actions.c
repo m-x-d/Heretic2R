@@ -2323,6 +2323,12 @@ void PlayerActionCheckRun(playerinfo_t* info)
 	const qboolean is_running = (info->buttons & BUTTON_RUN); //mxd
 	const int curseq = info->lowerseq;
 
+	if (info->groundentity == NULL && info->waterlevel < 2 && !(info->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)) && CheckFall(info)) //mxd
+	{
+		PlayerAnimSetLowerSeq(info, ASEQ_FALLWALK_GO); //mxd. ASEQ_FALLRUN_GO is unfinished...
+		return;
+	}
+
 	// Check for an upper sequence interruption due to a staff attack.
 	if (info->seqcmd[ACMDU_ATTACK] && info->seqcmd[ACMDL_RUN_F] && info->pers.weaponready == WEAPON_READY_SWORDSTAFF &&
 		!(info->flags & PLAYER_FLAG_NO_RARM) && !(info->edictflags & FL_CHICKEN))
@@ -2457,14 +2463,14 @@ void PlayerActionCheckRun(playerinfo_t* info)
 		return;
 	}
 
-	// If we're pressing forward, and nothing else is happening, then we're walking forward.
+	// If we're pressing forward, and nothing else is happening, then we're running forward.
 	if (info->seqcmd[ACMDL_RUN_F] && curseq != ASEQ_RUNF && !info->seqcmd[ACMDL_STRAFE_L] && !info->seqcmd[ACMDL_STRAFE_R])
 	{
 		PlayerAnimSetLowerSeq(info, ASEQ_RUNF);
 		return;
 	}
 
-	// If we're pressing backward, and nothing else is happening, then we're walking backward.
+	// If we're pressing backward, and nothing else is happening, then we're running backward.
 	if (info->seqcmd[ACMDL_BACK])
 	{
 		if (info->seqcmd[ACMDL_RUN_B])
