@@ -595,7 +595,7 @@ int BranchLwrWalking(playerinfo_t* info)
 				if (info->pers.weaponready == WEAPON_READY_SWORDSTAFF && !(info->flags & PLAYER_FLAG_NO_RARM))
 					return ASEQ_POLEVAULT1_W;
 
-				return ASEQ_JUMPFWD_WGO;
+				return ASEQ_JUMPFWD_RGO; //mxd. ASEQ_JUMPFWD_WGO in original logic.
 			}
 
 			if (info->seqcmd[ACMDL_BACK])
