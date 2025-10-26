@@ -768,8 +768,7 @@ static void PM_AirMove(void)
 	if (pml.knockbackfactor > 0.0f) // H2
 		pml.max_velocity *= (1.0f - pml.knockbackfactor);
 
-	for (int i = 0; i < 3; i++)
-		wishvel[i] += pml.velocity[i] * pml.knockbackfactor;
+	VectorMA(wishvel, pml.knockbackfactor, pml.velocity, wishvel);
 
 	vec3_t unused;
 	const float maxspeed = ClampVelocity(wishvel, unused, run_shrine, pm->high_max);
