@@ -1558,6 +1558,16 @@ void PlayerPullupHeight(playerinfo_t* info, const float height, const float ends
 	}
 }
 
+void PlayerFallDecelerate(playerinfo_t* info, float var1, float var2, float var3) //mxd
+{
+	if (info->velocity[2] < 0.0f)
+	{
+		const float z_scaler = 1.0f - min(1.0f, fabsf(info->velocity[2]) / 1200.0f);
+		info->velocity[0] *= z_scaler;
+		info->velocity[1] *= z_scaler;
+	}
+}
+
 qboolean PlayerActionCheckPushButton(const playerinfo_t* info)
 {
 	if (!info->isclient)

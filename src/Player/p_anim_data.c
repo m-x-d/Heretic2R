@@ -2960,45 +2960,45 @@ panimmove_t player_move_jumprightflip = PANIMMOVE(player_frames_jumprightflip, P
 // Falling with arms up.
 static panimframe_t player_frames_fall[] =
 {
-	{ FRAME_falling1,  NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling2,  NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling3,  NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling4,  NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling5,  NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling6,  NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling7,  NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling8,  NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling9,  NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling10, NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling11, NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling12, NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling13, NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling14, NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_falling15, NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling1,  PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling2,  PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling3,  PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling4,  PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling5,  PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling6,  PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling7,  PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling8,  PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling9,  PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling10, PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling11, PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling12, PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling13, PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling14, PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_falling15, PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
 };
 panimmove_t player_move_fall = PANIMMOVE(player_frames_fall, PlayerAnimLowerUpdate);
 
 // Falling with arms above head.
 panimframe_t player_frames_fallarmsup[] =
 {
-	{ FRAME_grab5, NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_grab5, PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
 };
 panimmove_t player_move_fallarmsup = PANIMMOVE(player_frames_fallarmsup, PlayerAnimLowerUpdate);
 
 // Transition from walking to falling.
 static panimframe_t player_frames_fallwalkstart[] =
 {
-	{ FRAME_drop1, NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_drop2, NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_drop3, NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
-	{ FRAME_drop4, NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_drop1, PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_drop2, PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_drop3, PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_drop4, PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
 };
 panimmove_t player_move_fallwalkstart = PANIMMOVE(player_frames_fallwalkstart, PlayerAnimLowerUpdate);
 
 // One frame used while falling with arms down.
 static panimframe_t player_frames_fallwalkloop[] =
 {
-	{ FRAME_drop4, NULL, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
+	{ FRAME_drop4, PlayerFallDecelerate, 0, 0, 0, PlayerActionCheckFallingGrab, 0, NULL },
 };
 panimmove_t player_move_fallwalkloop = PANIMMOVE(player_frames_fallwalkloop, NULL);
 

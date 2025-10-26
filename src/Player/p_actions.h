@@ -87,6 +87,7 @@ extern void PlayerJumpMoveForce(playerinfo_t* info, float fwd, float right, floa
 extern void PlayerJumpNudge(playerinfo_t* info, float fwd, float right, float up);
 extern void PlayerMoveALittle(playerinfo_t* info, float fwd, float right, float up);
 extern void PlayerPullupHeight(playerinfo_t* info, float height, float endseq, float nopushdown);
+extern void PlayerFallDecelerate(playerinfo_t* info, float var1, float var2, float var3); //mxd
 
 extern void PlayerActionJump(playerinfo_t* info, float value);
 extern void PlayerActionJumpBack(playerinfo_t* info, float value);
