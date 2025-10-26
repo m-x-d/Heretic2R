@@ -305,7 +305,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info) // Called by CL_PredictMovem
 		}
 	}
 
-	// If we are a chicken, don't do this.
+	// Handle a jump request. If we are a chicken, don't do this.
 	if (info->seqcmd[ACMDL_JUMP] && !(info->edictflags & FL_CHICKEN) && !(info->watertype & CONTENTS_SLIME))
 	{
 		switch (info->lowerseq)
@@ -313,12 +313,25 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info) // Called by CL_PredictMovem
 			case ASEQ_RUNF_GO:
 			case ASEQ_RUNF:
 			case ASEQ_RUNF_END:
+			case ASEQ_WALKB:			//mxd. Walk back (player backflips instead when walking).
+			case ASEQ_DASH_LEFT_GO:		//mxd. Dash left start.
+			case ASEQ_DASH_LEFT:		//mxd. Dash left.
+			case ASEQ_DASH_RIGHT_GO:	//mxd. Dash right start.
+			case ASEQ_DASH_RIGHT:		//mxd. Dash right.
+			case ASEQ_RSTRAFE_LEFT:		//mxd. Run forward-left.
+			case ASEQ_RSTRAFE_RIGHT:	//mxd. Run forward-right.
 				PlayerAnimSetLowerSeq(info, BranchLwrRunning(info));
 				break;
 
 			case ASEQ_WALKF_GO:
 			case ASEQ_WALKF:
 			case ASEQ_WALKF_END:
+			case ASEQ_STRAFEL:			//mxd. Strafe left.
+			case ASEQ_STRAFER:			//mxd. Strafe right.
+			case ASEQ_WSTRAFE_LEFT:		//mxd. Strafe forward-left.
+			case ASEQ_WSTRAFE_RIGHT:	//mxd. Strafe forward-right.
+			case ASEQ_WSTRAFEB_LEFT:	//mxd. Strafe back-left (also used in running sequence...).
+			case ASEQ_WSTRAFEB_RIGHT:	//mxd. Strafe back-right (also used in running sequence...).
 				PlayerAnimSetLowerSeq(info, BranchLwrWalking(info));
 				break;
 
@@ -497,9 +510,7 @@ PLAYER_API void PlayerFallingDamage(playerinfo_t* info) // Called by CL_PredictM
 	if (info->waterlevel == 3)
 		return;
 
-	//mxd. PLAYER_FLAG_FALLING is set when SWITCHING TO jump sequence (e.g. ASEQ_JUMP[NNN]_GO), so we can get here before jump velocity is applied (and groundentity is cleared).
-	//mxd. So, skip logic when not falling down to avoid interrupting/switching current animation...
-	if ((info->flags & PLAYER_FLAG_FALLING) && info->waterlevel <= 2 && delta > 0.0f)
+	if ((info->flags & PLAYER_FLAG_FALLING) && info->waterlevel <= 2)
 		PlayerIntLand(info, delta);
 
 	delta *= delta * 0.0001f; // It's now positive no matter what.
