@@ -117,7 +117,7 @@ PLAYER_API void PlayerBasicAnimReset(playerinfo_t* info)
 	if (!(info->edictflags & FL_CHICKEN))
 		info->ResetJointAngles(info);
 
-	memset(info->seqcmd, 0, ACMD_MAX * sizeof(int));
+	memset(info->seqcmd, 0, sizeof(info->seqcmd));
 }
 
 PLAYER_API void PlayerAnimReset(playerinfo_t* info)
@@ -147,7 +147,7 @@ PLAYER_API void PlayerAnimReset(playerinfo_t* info)
 	if (!(info->edictflags & FL_CHICKEN))
 		info->ResetJointAngles(info);
 
-	memset(info->seqcmd, 0, ACMD_MAX * sizeof(int));
+	memset(info->seqcmd, 0, sizeof(info->seqcmd));
 }
 
 int PlayerAnimWeaponSwitch(playerinfo_t* info)
