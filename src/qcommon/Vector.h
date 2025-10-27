@@ -19,6 +19,12 @@ extern "C"
 
 #define FLOAT_ZERO_EPSILON 0.0005f
 
+//mxd. Vector copy "constructor" macro.
+#define VEC3_INIT(v)			{ (v)[0], (v)[1], (v)[2] }
+
+//mxd. Vector copy add "constructor" macro.
+#define VEC3_INITA(v, x, y, z)	{ (v)[0] + (x), (v)[1] + (y), (v)[2] + (z) }
+
 H2COMMON_API extern void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees);
 H2COMMON_API extern void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal);
 H2COMMON_API extern void PerpendicularVector(vec3_t dst, const vec3_t src);
