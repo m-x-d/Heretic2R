@@ -29,17 +29,12 @@ static qboolean DustThink(client_entity_t* dust, centity_t* owner)
 
 	dust->updateTime = irand(dust->LifeTime * 17, dust->LifeTime * 50);
 
-	vec3_t hold_origin;
-	VectorCopy(dust->r.origin, hold_origin);
-	hold_origin[0] += flrand(0.0f, dust->startpos[0]);
-	hold_origin[1] += flrand(0.0f, dust->startpos[1]);
-
 	// Spawn a bit of smoke.
+	const vec3_t hold_origin = VEC3_INITA(dust->r.origin, flrand(0.0f, dust->startpos[0]), flrand(0.0f, dust->startpos[1]), 0.0f);
 	FXSmoke(hold_origin, 3.0f, 25.0f);
 
 	// Spawn a rock chunk.
-	vec3_t dir = { 0.0f, 0.0f, -1.0f };
-	client_entity_t* rock = FXDebris_Throw(hold_origin, MAT_STONE, dir, 20000.0f, flrand(0.75f, 2.4f), 0, false);
+	client_entity_t* rock = FXDebris_Throw(hold_origin, MAT_STONE, vec3_down, 20000.0f, flrand(0.75f, 2.4f), 0, false);
 
 	// Create a cloud of dust when rock hits ground.
 	trace_t trace;
