@@ -316,6 +316,7 @@ int BranchLwrStanding(playerinfo_t* info)
 	if (info->advancedstaff && info->seqcmd[ACMDL_ACTION] && info->seqcmd[ACMDU_ATTACK] &&
 		info->pers.weaponready == WEAPON_READY_SWORDSTAFF && BranchCheckDismemberAction(info, ITEM_WEAPON_SWORDSTAFF))
 	{
+		PlayerAnimSetUpperSeq(info, ASEQ_NONE); //mxd. We don't want to play the rest of staff attack animation after finishing special move (happened when Use button was pressed while holding Attack button during regular staff attack).
 		return ASEQ_WSWORD_LOWERDOWNSTAB;
 	}
 
