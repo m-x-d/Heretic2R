@@ -13,7 +13,7 @@
 static void DustPuff(client_entity_t* owner, const float scale)
 {
 	const paletteRGBA_t color = { .c = 0x80c0c0c0 };
-	client_particle_t* puff = ClientParticle_new(PART_32x32_STEAM, color, 500);
+	client_particle_t* puff = ClientParticle_new(PART_32x32_STEAM | PFL_LM_COLOR, color, 500); //mxd. +PFL_LM_COLOR.
 
 	VectorSet(puff->velocity, flrand(-50.0f, 50.0f), flrand(-50.0f, 50.0f), flrand(0.0f, 25.0f));
 	VectorScale(puff->velocity, -1.23f, puff->acceleration);
