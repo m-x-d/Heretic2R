@@ -1648,6 +1648,18 @@ void PlayerMoveAdd(playerinfo_t* info)
 
 void PlayerActionDrownFloatUp(playerinfo_t* info) { } //TODO: remove?
 
+//mxd. Spawn dust puff at staff bottom coords.
+void PlayerActionPolevaultStaffFX(playerinfo_t* info)
+{
+	static vec3_t staff_end = { -30.6225f, -2.4906f, -37.5072f }; // Center of staff bottom at FRAME_vault3 in model coords.
+
+	const float a_cos = cosf(info->angles[YAW] * ANGLE_TO_RAD);
+	const float a_sin = sinf(info->angles[YAW] * ANGLE_TO_RAD);
+	const vec3_t pos = { a_cos * staff_end[0] - a_sin * staff_end[1], a_cos * staff_end[1] + a_sin * staff_end[0], staff_end[2] };
+
+	P_CreateEffect(info, EFFECT_PRED_ID10, info->self, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, pos, ""); //mxd
+}
+
 void PlayerActionCheckRopeMove(playerinfo_t* info, float foo)
 {
 	if (!info->isclient)

@@ -3114,7 +3114,7 @@ panimmove_t player_move_polevault1run = PANIMMOVE(player_frames_polevault1run, P
 // Pole vault animation.
 static panimframe_t player_frames_polevault2[] =
 {
-	{ FRAME_vault3,  PlayerMoveForce, 300, 0, 0, PlayerActionJump, 250, NULL },
+	{ FRAME_vault3,  PlayerMoveForce, 300, 0, 0, PlayerActionJump, 250, PlayerActionPolevaultStaffFX }, //mxd. +PlayerActionPolevaultStaffFX.
 	{ FRAME_vault4,  PlayerJumpNudge, 64,  0, 0, NULL, 0, NULL },
 	{ FRAME_vault5,  PlayerJumpNudge, 64,  0, 0, NULL, 0, PlayerActionCheckVaultKick },
 	{ FRAME_vault6,  PlayerJumpNudge, 64,  0, 0, NULL, 0, PlayerActionCheckVaultKick },

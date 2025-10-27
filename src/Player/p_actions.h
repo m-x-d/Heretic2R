@@ -101,6 +101,7 @@ extern void PlayerActionTurn180(playerinfo_t* info);
 extern void PlayerActionSetQTEndTime(playerinfo_t* info, float QTEndTime);
 extern void PlayerActionCheckVaultKick(playerinfo_t* info);
 extern void PlayerActionDrownFloatUp(playerinfo_t* info);
+extern void PlayerActionPolevaultStaffFX(playerinfo_t* info); //mxd
 
 extern void PlayerActionCheckBowRefire(playerinfo_t* info);
 extern void PlayerActionCheckRopeMove(playerinfo_t* info, float foo);
