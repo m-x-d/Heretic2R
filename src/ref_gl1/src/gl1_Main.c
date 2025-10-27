@@ -17,6 +17,7 @@
 #include "gl1_Sprite.h"
 #include "gl1_Surface.h"
 #include "gl1_Local.h"
+#include "ParticleFlags.h" //mxd
 #include "Reference.h"
 #include "turbsin.h"
 #include "Vector.h"
@@ -284,7 +285,13 @@ static void R_DrawParticles(const int num_particles, const particle_t* particles
 		vec3_t p_right;
 		VectorScale(vright, p->scale, p_right);
 
-		paletteRGBA_t c = p->color;
+		paletteRGBA_t c;
+
+		if (p->type & PFL_LM_COLOR) //mxd
+			c = R_GetSpriteShadelight(p->origin, p->color.a);
+		else
+			c = p->color;
+
 		if (alpha_particle)
 		{
 			c.r = c.r * c.a / 255;
@@ -292,7 +299,7 @@ static void R_DrawParticles(const int num_particles, const particle_t* particles
 			c.b = c.b * c.a / 255;
 		}
 
-		const byte p_type = p->type & 127; // Strip particle flags.
+		const byte p_type = (p->type & PFL_FLAG_MASK); // Strip particle flags.
 
 		glColor4ubv(c.c_array);
 

@@ -121,6 +121,25 @@ void R_RotateForEntity(const entity_t* e)
 	glRotatef(-e->angles[2] * RAD_TO_ANGLE, 1.0f, 0.0f, 0.0f);
 }
 
+paletteRGBA_t R_GetSpriteShadelight(const vec3_t origin, const byte alpha) //mxd
+{
+	static const vec3_t light_add = { 0.1f, 0.1f, 0.1f };
+
+	vec3_t c;
+	R_LightPoint(origin, c);
+	Vec3AddAssign(light_add, c); // Make it slightly brighter than lightmap color.
+	Vec3ScaleAssign(255.0f, c);
+
+	// Make sure light color is valid...
+	const float len = VectorLength(c);
+	if (len > 255.0f)
+		Vec3ScaleAssign(255.0f / len, c);
+
+	const paletteRGBA_t color = { .r = (byte)c[0], .g = (byte)c[1], .b = (byte)c[2], alpha };
+
+	return color;
+}
+
 void R_HandleTransparency(const entity_t* e) // H2: HandleTrans().
 {
 	if (e->flags & RF_TRANS_ADD)
@@ -159,7 +178,17 @@ void R_HandleTransparency(const entity_t* e) // H2: HandleTrans().
 
 		// H2_1.07: qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR) when RF_TRANS_GHOST flag is set.
 		if (!(e->flags & RF_TRANS_GHOST))
-			glColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
+		{
+			if (e->flags & RF_LM_COLOR) //mxd
+			{
+				const paletteRGBA_t c = R_GetSpriteShadelight(e->origin, e->color.a);
+				glColor4ub(c.r, c.g, c.b, e->color.a);
+			}
+			else
+			{
+				glColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
+			}
+		}
 	}
 
 	glEnable(GL_BLEND);

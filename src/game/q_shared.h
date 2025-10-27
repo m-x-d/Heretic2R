@@ -534,7 +534,7 @@ typedef struct
 #define RF_DEPTHHACK		0x00000010		// For view weapon Z crunching.
 #define RF_TRANSLUCENT		0x00000020
 #define RF_FRAMELERP		0x00000040 //TODO: set, but never used. Frame interpolation is always on.
-#define RF_CUSTOMSKIN		0x00000080		// Skin is an index in image_precache.
+#define RF_CUSTOMSKIN		0x00000080		// Skin is an index in image_precache. //TODO: unused.
 #define RF_GLOW				0x00000100		// Pulse lighting for bonus items.
 #define RF_SCALE_XYZ		0x00000200
 #define RF_SCALE_XY			0x00000400
@@ -547,6 +547,7 @@ typedef struct
 #define RF_TRANS_ADD_ALPHA	0x00008000		// Adds emulation of alpha for additive transparent objects using tint.
 #define RF_TRANS_GHOST		0x00010000		// Like subtractive translucency.
 #define RF_ALPHA_TEXTURE	0x00020000		// Object has an alpha texture map.
+#define RF_LM_COLOR			0x00040000		//mxd. Use lightmap color instead of entity color (sprites without RF_TRANS_ADD or RF_TRANS_GHOST flags only).
 #define RF_NODEPTHTEST		0x00080000		// Turns off depth testing for sprites only.
 #define RF_IGNORE_REFS		0x00100000		// Don't update the ref points for a model.
 #define RF_NODRAW			0x00200000 //TODO: not implemented.

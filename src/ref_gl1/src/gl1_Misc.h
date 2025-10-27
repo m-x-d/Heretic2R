@@ -16,6 +16,7 @@ extern void R_DrawNullModel(const entity_t* e);
 
 extern void R_TransformVector(const vec3_t v, vec3_t out);
 extern void R_RotateForEntity(const entity_t* e);
+extern paletteRGBA_t R_GetSpriteShadelight(const vec3_t origin, byte alpha); //mxd
 
 extern void R_HandleTransparency(const entity_t* e);
 extern void R_CleanupTransparency(const entity_t* e);

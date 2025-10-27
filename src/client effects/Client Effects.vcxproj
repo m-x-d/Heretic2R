@@ -107,6 +107,7 @@
     <ClInclude Include="..\qcommon\items.h" />
     <ClInclude Include="..\qcommon\LevelMaps.h" />
     <ClInclude Include="..\qcommon\Message.h" />
+    <ClInclude Include="..\qcommon\ParticleFlags.h" />
     <ClInclude Include="..\qcommon\turbsin.h" />
     <ClInclude Include="..\qcommon\Vector.h" />
     <ClInclude Include="Ambient Effects.h" />

@@ -362,5 +362,8 @@
     <ClInclude Include="..\qcommon\FX.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\ParticleFlags.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
