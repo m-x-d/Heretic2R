@@ -72,12 +72,12 @@ client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blo
 					if (ref_soft)
 					{
 						const int bpart = (yellow_blood ? PART_4x4_GREENBLOOD1 : PART_4x4_BLOOD1);
-						drop = ClientParticle_new(bpart | PFL_SOFT_MASK, color_red, 650);
+						drop = ClientParticle_new(bpart | PFL_SOFT_MASK | PFL_LM_COLOR, color_red, 650); //mxd. +PFL_LM_COLOR.
 					}
 					else
 					{
 						const int bpart = (yellow_blood ? irand(PART_4x4_GREENBLOOD1, PART_4x4_GREENBLOOD2) : irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2));
-						drop = ClientParticle_new(bpart, color_white, 800);
+						drop = ClientParticle_new(bpart | PFL_LM_COLOR, color_white, 800); //mxd. +PFL_LM_COLOR.
 					}
 
 					VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
@@ -96,12 +96,12 @@ client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blo
 					if (ref_soft)
 					{
 						const int bpart = (yellow_blood ? PART_8x8_GLOBBIT1 : PART_8x8_BLOOD);
-						drop = ClientParticle_new(bpart | PFL_SOFT_MASK, color_red, 650);
+						drop = ClientParticle_new(bpart | PFL_SOFT_MASK | PFL_LM_COLOR, color_red, 650); //mxd. +PFL_LM_COLOR.
 					}
 					else
 					{
 						const int bpart = (yellow_blood ? irand(PART_8x8_GLOBBIT1, PART_8x8_GLOBBIT2) : PART_8x8_BLOOD);
-						drop = ClientParticle_new(bpart, color_white, 800);
+						drop = ClientParticle_new(bpart | PFL_LM_COLOR, color_white, 800); //mxd. +PFL_LM_COLOR.
 					}
 
 					VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
@@ -119,7 +119,7 @@ client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blo
 				for (int j = 0; j < 2; j++)
 				{
 					const int bpart = (yellow_blood ? PART_16x16_GREENBLOOD : PART_16x16_BLOOD);
-					drop = ClientParticle_new(bpart, color_white, 1000);
+					drop = ClientParticle_new(bpart | PFL_LM_COLOR, color_white, 1000); //mxd. +PFL_LM_COLOR.
 					VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed, speed * 2.0f));
 					drop->scale = 1.0f;
 					drop->acceleration[2] = gravity * 0.5f;
@@ -133,7 +133,7 @@ client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blo
 			case 3: // A big splash.
 			{
 				const int bpart = (yellow_blood ? PART_32x32_GREENBLOOD : PART_32x32_BLOOD);
-				drop = ClientParticle_new(bpart, color_white, 500);
+				drop = ClientParticle_new(bpart | PFL_LM_COLOR, color_white, 500); //mxd. +PFL_LM_COLOR.
 				VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(0, speed));
 				drop->scale = 4.0f;
 				drop->acceleration[2] = 0.0f;
@@ -173,12 +173,12 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 					if (ref_soft)
 					{
 						const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : PART_4x4_BLOOD1); //mxd
-						drop = ClientParticle_new(bpart | PFL_SOFT_MASK, color_red, 800);
+						drop = ClientParticle_new(bpart | PFL_SOFT_MASK | PFL_LM_COLOR, color_red, 800); //mxd. +PFL_LM_COLOR.
 					}
 					else
 					{
 						const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2)); //mxd
-						drop = ClientParticle_new(bpart, color_white, 800);
+						drop = ClientParticle_new(bpart | PFL_LM_COLOR, color_white, 800); //mxd. +PFL_LM_COLOR.
 					}
 
 					VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
@@ -196,7 +196,7 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 			case 1: // Some larger globs.
 			{
 				const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : PART_8x8_BLOOD); //mxd
-				drop = ClientParticle_new(bpart, color_white, 800);
+				drop = ClientParticle_new(bpart | PFL_LM_COLOR, color_white, 800); //mxd. +PFL_LM_COLOR.
 				VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
 				VectorMA(drop->velocity, 0.5f, spawner->velocity, drop->velocity);
 				VectorRandomSet(drop->origin, range); //mxd
@@ -238,12 +238,12 @@ static qboolean BloodSplatSplashUpdate(client_entity_t* self, centity_t* owner)
 		if (ref_soft)
 		{
 			const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : PART_4x4_BLOOD1);
-			p = ClientParticle_new(bpart | PFL_SOFT_MASK, color, 800);
+			p = ClientParticle_new(bpart | PFL_SOFT_MASK | PFL_LM_COLOR, color, 800); //mxd. +PFL_LM_COLOR.
 		}
 		else
 		{
 			const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2));
-			p = ClientParticle_new(bpart, color, 800);
+			p = ClientParticle_new(bpart | PFL_LM_COLOR, color, 800); //mxd. +PFL_LM_COLOR.
 		}
 
 		p->acceleration[2] = GetGravity() * 0.2f;
@@ -313,7 +313,7 @@ static qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner)
 	// Create drop-like shape out of multiple particles.
 	for (int i = 0; i < num_drips; i++)
 	{
-		client_particle_t* p = ClientParticle_new(bpart, color, 0);
+		client_particle_t* p = ClientParticle_new(bpart | PFL_LM_COLOR, color, 0); //mxd. +PFL_LM_COLOR.
 
 		const float grav_mod = 0.4f + (float)i * 0.025f;
 		p->acceleration[2] = GetGravity() * grav_mod;
@@ -358,7 +358,7 @@ static client_entity_t* InitFloorSplat(const vec3_t origin, const vec3_t normal,
 
 	floor_splat->r.angles[ROLL] = flrand(0.0f, ANGLE_360);
 	floor_splat->r.model = &splat_models[yellow ? 1 : 0];
-	floor_splat->r.flags = (RF_FIXED | RF_ALPHA_TEXTURE);
+	floor_splat->r.flags = (RF_FIXED | RF_ALPHA_TEXTURE | RF_LM_COLOR); //mxd. +RF_LM_COLOR.
 	floor_splat->r.frame = irand(0, 4);
 
 	const byte brightness = (byte)(dark ? irand(32, 72) : irand(72, 128));
@@ -401,7 +401,7 @@ void ThrowBlood(const vec3_t torigin, const vec3_t tnormal, const qboolean dark,
 
 	bsplat->r.angles[ROLL] = flrand(0.0f, ANGLE_360);
 	bsplat->r.model = &splat_models[yellow ? 1 : 0];
-	bsplat->r.flags = (RF_FIXED | RF_ALPHA_TEXTURE);
+	bsplat->r.flags = (RF_FIXED | RF_ALPHA_TEXTURE | RF_LM_COLOR); //mxd. +RF_LM_COLOR.
 	bsplat->r.frame = irand(0, 4);
 	bsplat->alpha = 0.1f; //mxd. Add subtle fade-in effect.
 	bsplat->d_alpha = 2.5f;
@@ -521,7 +521,7 @@ static qboolean LinkedBloodThink(client_entity_t* spawner, centity_t* owner)
 	for (int i = 0; i < NUM_BLOOD_PARTS; i++)
 	{
 		const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2));
-		client_particle_t* p = ClientParticle_new(bpart, spawner->color, 800);
+		client_particle_t* p = ClientParticle_new(bpart | PFL_LM_COLOR, spawner->color, 800); //mxd. +PFL_LM_COLOR.
 		VectorCopy(vel, p->velocity);
 		p->acceleration[2] = GetGravity();
 		p->d_alpha = 0.0f;
@@ -544,11 +544,11 @@ void FXLinkedBlood(centity_t* owner, const int type, const int flags, vec3_t ori
 	client_entity_t* spawner = ClientEntity_new(type, flags, origin, NULL, (int)(fxi.cls->rframetime * 2000.0f));
 
 	spawner->LifeTime = life;
+	spawner->SpawnInfo = refpointidx;
 	spawner->flags |= CEF_NO_DRAW;
 	spawner->color = color_white; //mxd
-	spawner->Update = LinkedBloodThink;
-	spawner->SpawnInfo = refpointidx;
 	spawner->AddToView = OffsetLinkedEntityUpdatePlacement;
+	spawner->Update = LinkedBloodThink;
 
 	AddEffect(owner, spawner);
 }
