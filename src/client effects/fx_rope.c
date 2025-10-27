@@ -234,6 +234,7 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 		rope->radius = radius;
 		rope->r.model = &rope_models[model_type];
 		rope->r.spriteType = SPRITE_LINE;
+		rope->r.flags = RF_LM_COLOR; //mxd
 		rope->r.scale = 3.0f;
 		rope->lastThinkTime = fxi.cl->time;
 		
@@ -259,6 +260,7 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 		rope_top->radius = radius;
 		rope_top->r.model = &rope_models[model_type];
 		rope_top->r.spriteType = SPRITE_LINE;
+		rope_top->r.flags = RF_LM_COLOR; //mxd
 		rope_top->r.scale = 3.0f;
 		rope_top->SpawnInfo = fxi.cl->time + 1000;
 		rope_top->LifeTime = grab_id;
@@ -282,6 +284,7 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 		rope_mid->radius = radius;
 		rope_mid->r.model = &rope_models[model_type];
 		rope_mid->r.spriteType = SPRITE_LINE;
+		rope_mid->r.flags = RF_LM_COLOR; //mxd
 		rope_mid->r.scale = 3.0f;
 		rope_mid->r.tile = 1.0f;
 		rope_mid->LifeTime = grab_id;
@@ -301,6 +304,7 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 			rope_bottom->radius = radius;
 			rope_bottom->r.model = &rope_models[model_type];
 			rope_bottom->r.spriteType = SPRITE_LINE;
+			rope_bottom->r.flags = RF_LM_COLOR; //mxd
 			rope_bottom->r.scale = 3.0f;
 			rope_bottom->lastThinkTime = fxi.cl->time;
 
