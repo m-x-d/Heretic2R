@@ -18,15 +18,13 @@ static void CreateFountainSplash(client_entity_t* owner, const float xspread, co
 	matrix3_t mat;
 	CreateYawMatrix(mat, angle);
 
-	vec3_t work;
-	VectorSet(work, flrand(-xspread, xspread), flrand(-yspread, yspread), 0.0f);
-
 	vec3_t offset;
+	const vec3_t work = { flrand(-xspread, xspread), flrand(-yspread, yspread), 0.0f };
 	Matrix3MultByVec3(mat, work, offset);
 
 	const paletteRGBA_t color = { .c = 0x40ffffff };
 	const int duration = (R_DETAIL >= DETAIL_NORMAL ? 500 : 350); //mxd
-	client_particle_t* mist = ClientParticle_new(PART_32x32_ALPHA_GLOBE, color, duration);
+	client_particle_t* mist = ClientParticle_new(PART_32x32_ALPHA_GLOBE | PFL_LM_COLOR, color, duration);
 
 	VectorCopy(offset, mist->origin);
 
@@ -39,7 +37,7 @@ static void CreateFountainSplash(client_entity_t* owner, const float xspread, co
 	AddParticleToList(owner, mist);
 }
 
-static qboolean WaterfallBaseSpawner(client_entity_t* spawner, centity_t* owner)
+static qboolean WaterfallBaseUpdate(client_entity_t* spawner, centity_t* owner) //mxd. Named 'FXWaterfallBaseSpawner' in original logic.
 {
 #define NUM_SPLASHES	0.005f
 
@@ -56,31 +54,30 @@ void FXWaterfallBase(centity_t* owner, const int type, int flags, vec3_t origin)
 	byte xscale;
 	byte yscale;
 	byte yaw;
-
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WATERFALLBASE].formatString, &xscale, &yscale, &yaw);
 
-	flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_VIEWSTATUSCHANGED;
+	flags |= (CEF_NO_DRAW | CEF_NOMOVE | CEF_VIEWSTATUSCHANGED);
 	client_entity_t* wfb = ClientEntity_new(type, flags, origin, NULL, 100);
 
 	wfb->xscale = xscale;
 	wfb->yscale = yscale;
 	wfb->yaw = (float)yaw * ANGLE_360 / 256.0f;
 	wfb->radius = wfb->xscale + wfb->yscale;
-	wfb->Update = WaterfallBaseSpawner;
+	wfb->Update = WaterfallBaseUpdate;
 
 	AddEffect(owner, wfb);
 }
 
-static qboolean WaterDropEnd(client_entity_t* waterdrop, centity_t* owner)
+static qboolean WaterDropEnd(client_entity_t* waterdrop, centity_t* owner) //mxd. Named 'FXWaterDropEnd' in original logic.
 {
 	CreateFountainSplash(waterdrop, 10.0f, 10.0f, 0.0f);
-	waterdrop->Update = RemoveSelfAI;
 	waterdrop->nextThinkTime = fxi.cl->time + 500;
+	waterdrop->Update = RemoveSelfAI;
 
 	return true;
 }
 
-static qboolean FountainParticleSpawner(client_entity_t* spawner, centity_t* owner)
+static qboolean FountainUpdate(client_entity_t* spawner, centity_t* owner) //mxd. Named 'FXFountainParticleSpawner' in original logic.
 {
 #define NUM_FOUNTAIN_PARTICLES	20
 
@@ -100,12 +97,12 @@ static qboolean FountainParticleSpawner(client_entity_t* spawner, centity_t* own
 		const float dist = spawner->SpawnData - origin[2];
 		time = (int)(GetTimeToReachDistance(velocity[2], fabsf(accel), fabsf(dist))); //BUGFIX: mxd. GetTimeToReachDistance() expects positive acceleration and distance...
 
-		drop = ClientParticle_new((int)(PART_32x32_WFALL | PFL_NEARCULL), spawner->color, time);
+		drop = ClientParticle_new((int)(PART_32x32_WFALL | PFL_NEARCULL | PFL_LM_COLOR), spawner->color, time);
 
 		VectorCopy(origin, drop->origin);
 		VectorCopy(velocity, drop->velocity);
 		drop->acceleration[2] = accel;
-		drop->scale = 8.0f;
+		drop->scale = flrand(7.0f, 9.0f); //mxd. Randomize a bit. 8.0f in original logic.
 		drop->d_scale = 16.0f;
 		drop->d_alpha *= 0.8f;
 		drop->startTime += irand(-50, 0); //mxd. flrand in original version.
@@ -118,8 +115,9 @@ static qboolean FountainParticleSpawner(client_entity_t* spawner, centity_t* own
 		GetPositionOverTime(spawner->r.origin, velocity, drop->acceleration, (float)time * 0.001f, origin);
 
 		client_entity_t* splash = ClientEntity_new(-1, 0, origin, NULL, time);
+		splash->flags |= (CEF_NOMOVE | CEF_NO_DRAW);
 		splash->Update = WaterDropEnd;
-		splash->flags = CEF_NOMOVE | CEF_NO_DRAW;
+
 		AddEffect(NULL, splash);
 	}
 
@@ -136,13 +134,13 @@ void FXFountain(centity_t* owner, const int type, const int flags, vec3_t origin
 	byte frame;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_FOUNTAIN].formatString, &fountain->direction, &drop, &frame);
 
-	fountain->r.frame = frame;
+	fountain->r.frame = frame; //TODO: unused.
 
 	fountain->SpawnData = (float)drop * 0.125f;
 	fountain->color = color_white; //mxd
 	fountain->radius = 128.0f + fabsf(fountain->SpawnData);
-	fountain->Update = FountainParticleSpawner;
-	fountain->flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED;
+	fountain->Update = FountainUpdate;
+	fountain->flags |= (CEF_NO_DRAW | CEF_NOMOVE | CEF_VIEWSTATUSCHANGED);
 
 	AddEffect(owner, fountain);
 }
