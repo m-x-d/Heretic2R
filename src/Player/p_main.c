@@ -115,48 +115,10 @@ PLAYER_API void PlayerUpdateCmdFlags(playerinfo_t* info)
 	info->upvel = 0.0f;
 }
 
-//TODO: unfinished logic. Player can't slide.
-static int PlayerCheckSlide(const playerinfo_t* info)
-{
-	/*trace_t trace;
-	vec3_t vf;
-	vec3_t vr;
-	vec3_t vu;
-	vec3_t startpos;
-	vec3_t endpos;
-	vec3_t mins;
-	vec3_t maxs;
-	float dot;
-
-	VectorCopy(info->origin, startpos);
-	VectorCopy(info->origin, endpos);
-	endpos[2] -= 32.0f;
-
-	VectorSet(mins, -4.0f, -4.0f, -4.0f);
-	VectorSet(maxs,  4.0f,  4.0f,  4.0f);
-
-	AngleVectors(info->angles, vf, vr, vu);
-	P_Trace(info, startpos, mins, maxs, endpos, &trace); //mxd
-
-	if (trace.fraction < 1.0f)
-	{
-		dot = DotProduct(vf, trace.plane.normal);
-	}*/
-
-	return ASEQ_NONE;
-}
-
 PLAYER_API void PlayerUpdate(playerinfo_t* info)
 {
 	if (info->deadflag == DEAD_DEAD || info->deadflag == DEAD_DYING)
 		return;
-
-	if (info->groundentity == NULL)
-	{
-		const int slideseq = PlayerCheckSlide(info);
-		if (slideseq != ASEQ_NONE)
-			PlayerAnimSetLowerSeq(info, slideseq);
-	}
 
 	vec3_t endpos;
 	VectorCopy(info->origin, endpos);
