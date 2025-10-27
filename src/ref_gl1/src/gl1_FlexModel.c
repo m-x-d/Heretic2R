@@ -719,7 +719,7 @@ void R_DrawFlexModel(entity_t* e)
 	{
 		VectorSet(shadelight, (float)e->absLight.r / 255.0f, (float)e->absLight.g / 255.0f, (float)e->absLight.b / 255.0f);
 	}
-	else
+	else if (!(e->flags & RF_GLOW)) //mxd. Skip when result is going to be ignored.
 	{
 		R_LightPoint(e->origin, shadelight); //mxd. Skip RF_WEAPONMODEL logic (never set in H2), skip gl_monolightmap logic.
 	}
