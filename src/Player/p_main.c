@@ -57,11 +57,11 @@ PLAYER_API void PlayerUpdateCmdFlags(playerinfo_t* info)
 	// Look for the attack button being pressed.
 	info->seqcmd[ACMDU_ATTACK] = (pcmd->buttons & BUTTON_ATTACK);
 
-	// Look for the action button being pressed.
-	info->seqcmd[ACMDL_ACTION] = (pcmd->buttons & BUTTON_ACTION);
-
 	//mxd. Look for the defend button being pressed.
 	info->seqcmd[ACMDU_DEFSPELL] = (pcmd->buttons & BUTTON_DEFEND);
+
+	// Look for the action button being pressed.
+	info->seqcmd[ACMDL_ACTION] = (pcmd->buttons & BUTTON_ACTION);
 
 	// Look for the quickturn button being pressed.
 	info->seqcmd[ACMDL_QUICKTURN] = (pcmd->buttons & BUTTON_QUICKTURN);

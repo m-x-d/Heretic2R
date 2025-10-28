@@ -564,7 +564,7 @@ typedef struct playerinfo_s
 	vec3_t maxs;
 	void* enemy;		// Not used on client.
 	void* target;		// Not used on client.
-	void* target_ent;	// Not used on client.
+	void* target_ent;	// Not used on client. //TODO: used only by (unfinished) item moving logic...
 	void* targetEnt;	// FIXME - always 0 on client, but checked by client.
 	float nextthink;	// Not used on client.
 	float viewheight;
