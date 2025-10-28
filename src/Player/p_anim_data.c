@@ -486,20 +486,20 @@ seqctrl_t SeqCtrl[ASEQ_MAX] =
 	{ ACMDL_STRAFE_R,	ASEQ_ROLL_R,				ASEQ_CROUCH,			BranchLwrCrouching },		// ASEQ_ROLL_R
 	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrUnderwaterSwim },	// ASEQ_USWIM_IDLE
 	{ ACMDL_BACK,		ASEQ_ROLL_B,				ASEQ_CROUCH,			BranchLwrCrouching },		// ASEQ_ROLL_B
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_ON
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_UP_START_R
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_UP_START_L
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_UP_R
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_UP_L
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_DOWN_START_R
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_DOWN_START_L
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_DOWN_R
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_DOWN_L
+	{ ACMD_NONE,		ASEQ_CLIMB_HOLD_L,			ASEQ_CLIMB_HOLD_L,		BranchLwrClimbing },		// ASEQ_CLIMB_ON			//mxd. Sequence broken in original logic.
+	{ ACMDL_FWD,		ASEQ_CLIMB_UP_L,			ASEQ_CLIMB_SETTLE_L,	BranchLwrClimbing },		// ASEQ_CLIMB_UP_START_R	//mxd. Sequence broken in original logic.
+	{ ACMDL_FWD,		ASEQ_CLIMB_UP_R,			ASEQ_CLIMB_SETTLE_R,	BranchLwrClimbing },		// ASEQ_CLIMB_UP_START_L	//mxd. Sequence broken in original logic.
+	{ ACMDL_FWD,		ASEQ_CLIMB_UP_L,			ASEQ_CLIMB_SETTLE_L,	BranchLwrClimbing },		// ASEQ_CLIMB_UP_R			//mxd. Sequence broken in original logic.
+	{ ACMDL_FWD,		ASEQ_CLIMB_UP_R,			ASEQ_CLIMB_SETTLE_R,	BranchLwrClimbing },		// ASEQ_CLIMB_UP_L			//mxd. Sequence broken in original logic.
+	{ ACMDL_BACK,		ASEQ_CLIMB_DOWN_L,			ASEQ_CLIMB_SETTLE_L,	BranchLwrClimbing },		// ASEQ_CLIMB_DOWN_START_R	//mxd. Sequence broken in original logic.
+	{ ACMDL_BACK,		ASEQ_CLIMB_DOWN_R,			ASEQ_CLIMB_SETTLE_R,	BranchLwrClimbing },		// ASEQ_CLIMB_DOWN_START_L	//mxd. Sequence broken in original logic.
+	{ ACMDL_BACK,		ASEQ_CLIMB_DOWN_L,			ASEQ_CLIMB_SETTLE_L,	BranchLwrClimbing },		// ASEQ_CLIMB_DOWN_R		//mxd. Sequence broken in original logic.
+	{ ACMDL_BACK,		ASEQ_CLIMB_DOWN_R,			ASEQ_CLIMB_SETTLE_R,	BranchLwrClimbing },		// ASEQ_CLIMB_DOWN_L		//mxd. Sequence broken in original logic.
 	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrStanding },		// ASEQ_CLIMB_OFF
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_HOLD_R
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_HOLD_L
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_SETTLE_R
-	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrClimbing },		// ASEQ_CLIMB_SETTLE_L
+	{ ACMD_NONE,		ASEQ_CLIMB_HOLD_R,			ASEQ_CLIMB_HOLD_R,		BranchLwrClimbing },		// ASEQ_CLIMB_HOLD_R		//mxd. Sequence broken in original logic.
+	{ ACMD_NONE,		ASEQ_CLIMB_HOLD_L,			ASEQ_CLIMB_HOLD_L,		BranchLwrClimbing },		// ASEQ_CLIMB_HOLD_L		//mxd. Sequence broken in original logic.
+	{ ACMD_NONE,		ASEQ_CLIMB_HOLD_R,			ASEQ_CLIMB_HOLD_R,		BranchLwrClimbing },		// ASEQ_CLIMB_SETTLE_R		//mxd. Sequence broken in original logic.
+	{ ACMD_NONE,		ASEQ_CLIMB_HOLD_L,			ASEQ_CLIMB_HOLD_L,		BranchLwrClimbing },		// ASEQ_CLIMB_SETTLE_L		//mxd. Sequence broken in original logic.
 	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrKnockDown },		// ASEQ_KNOCK_DOWN
 	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrStanding },		// ASEQ_KNOCK_DOWN_GETUP
 	{ ACMD_NONE,		ASEQ_STAND,					ASEQ_STAND,				BranchLwrStanding },		// ASEQ_KNOCK_DOWN_EVADE
