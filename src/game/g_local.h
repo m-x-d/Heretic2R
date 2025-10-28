@@ -451,6 +451,7 @@ typedef struct
 	{
 		float flee_finished; // When a monster is done fleeing.
 		qboolean morcalavin_quake_finished; //mxd
+		float rope_right_debounce_time; //mxd
 	};
 	
 	float chase_finished;	// When the monster can look for secondary monsters.
@@ -461,6 +462,7 @@ typedef struct
 	{
 		float search_time;
 		float priestess_attack_delay; //mxd
+		float rope_left_debounce_time; //mxd
 	};
 	
 	float misc_debounce_time;
@@ -484,6 +486,7 @@ typedef struct
 		float jump_time;
 		float morcalavin_teleport_attack_time; //mxd
 		float ogle_sing_time; //mxd
+		float rope_forward_debounce_time; //mxd
 	};
 
 	int morcalavin_battle_phase; //mxd. Named 'stepState' in original logic.

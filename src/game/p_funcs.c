@@ -94,34 +94,38 @@ void G_PlayerActionCheckRopeMove(playerinfo_t* info)
 
 int G_BranchLwrClimbing(playerinfo_t* info)
 {
+#define ROPE_MOVE_DEBOUNCE_DELAY	2.0f //mxd
+
 	assert(info != NULL);
+
 	edict_t* player = info->self; //mxd
+	edict_t* rope = player->targetEnt->rope_grab; //mxd
+	monsterinfo_t* rope_info = &rope->monsterinfo; //mxd
+	const edict_t* rope_end = player->targetEnt->rope_end; //mxd
 
 	// Process attack command.
-	if (info->seqcmd[ACMDU_ATTACK])
+	if (info->seqcmd[ACMDU_ATTACK]) // Swing forwards.
 	{
-		if (player->targetEnt->rope_grab->monsterinfo.jump_time < level.time)
+		if (rope_info->rope_forward_debounce_time < level.time)
 		{
-			player->targetEnt->rope_grab->monsterinfo.jump_time = level.time + 2.0f;
+			rope_info->rope_forward_debounce_time = level.time + ROPE_MOVE_DEBOUNCE_DELAY;
 
 			vec3_t forward;
 			AngleVectors(info->angles, forward, NULL, NULL);
-			VectorMA(forward, 400.0f, forward, forward);
-			VectorAdd(player->targetEnt->rope_grab->velocity, forward, player->targetEnt->rope_grab->velocity);
+			VectorMA(rope->velocity, 400.0f, forward, rope->velocity);
 		}
 	}
 
 	// Process strafe commands.
-	if (info->seqcmd[ACMDL_STRAFE_L])
+	if (info->seqcmd[ACMDL_STRAFE_L]) // Swing left.
 	{
-		if (player->targetEnt->rope_grab->monsterinfo.search_time < level.time)
+		if (rope_info->rope_left_debounce_time < level.time)
 		{
-			player->targetEnt->rope_grab->monsterinfo.search_time = level.time + 2.0f;
+			rope_info->rope_left_debounce_time = level.time + ROPE_MOVE_DEBOUNCE_DELAY;
 
 			vec3_t right;
 			AngleVectors(info->angles, NULL, right, NULL);
-			VectorScale(right, -64.0f, right);
-			VectorAdd(player->targetEnt->rope_grab->velocity, right, player->targetEnt->rope_grab->velocity);
+			VectorMA(rope->velocity, -64.0f, right, rope->velocity);
 
 			switch (info->lowerseq)
 			{
@@ -138,16 +142,15 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 			}
 		}
 	}
-	else if (info->seqcmd[ACMDL_STRAFE_R])
+	else if (info->seqcmd[ACMDL_STRAFE_R]) // Swing right.
 	{
-		if (player->targetEnt->rope_grab->monsterinfo.flee_finished < level.time)
+		if (rope_info->rope_right_debounce_time < level.time)
 		{
-			player->targetEnt->rope_grab->monsterinfo.flee_finished = level.time + 2.0f;
+			rope_info->rope_right_debounce_time = level.time + ROPE_MOVE_DEBOUNCE_DELAY;
 
 			vec3_t right;
 			AngleVectors(info->angles, NULL, right, NULL);
-			VectorScale(right, 64.0f, right);
-			VectorAdd(player->targetEnt->rope_grab->velocity, right, player->targetEnt->rope_grab->velocity);
+			VectorMA(rope->velocity, 64.0f, right, rope->velocity);
 
 			switch (info->lowerseq)
 			{
@@ -166,24 +169,16 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 	}
 
 	// Process movement commands.
-	if (info->seqcmd[ACMDL_FWD])
+	if (info->seqcmd[ACMDL_FWD]) // Climb upwards.
 	{
-		vec3_t end_point;
-		VectorCopy(info->origin, end_point);
-		end_point[2] += 32.0f;
-
-		vec3_t player_min;
-		vec3_t player_max;
-		VectorCopy(info->mins, player_min);
-		VectorCopy(info->maxs, player_max);
-
 		trace_t trace;
-		info->G_Trace(info->origin, player_min, player_max, end_point, info->self, MASK_PLAYERSOLID, &trace);
+		const vec3_t end_point = VEC3_INITA(info->origin, 0.0f, 0.0f, 32.0f);
+		info->G_Trace(info->origin, info->mins, info->maxs, end_point, info->self, MASK_PLAYERSOLID, &trace);
 
 		if (trace.fraction < 1.0f)
 		{
 			// We bumped into something.
-			player->targetEnt->rope_grab->viewheight = (int)player->targetEnt->rope_grab->accel;
+			rope->viewheight = (int)rope->accel;
 
 			switch (info->lowerseq)
 			{
@@ -248,24 +243,16 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 			}
 		}
 	}
-	else if (info->seqcmd[ACMDL_BACK])
+	else if (info->seqcmd[ACMDL_BACK]) // Climb downwards.
 	{
-		vec3_t end_point;
-		VectorCopy(info->origin, end_point);
-		end_point[2] -= 32.0f;
-
-		vec3_t player_min;
-		vec3_t player_max;
-		VectorCopy(info->mins, player_min);
-		VectorCopy(info->maxs, player_max);
-
 		trace_t trace;
-		info->G_Trace(info->origin, player_min, player_max, end_point, info->self, MASK_PLAYERSOLID, &trace);
+		const vec3_t end_point = VEC3_INITA(info->origin, 0.0f, 0.0f, -32.0f);
+		info->G_Trace(info->origin, info->mins, info->maxs, end_point, info->self, MASK_PLAYERSOLID, &trace);
 
-		if (trace.fraction < 1.0f || trace.endpos[2] < player->targetEnt->rope_end->s.origin[2])
+		if (trace.fraction < 1.0f || trace.endpos[2] < rope_end->s.origin[2])
 		{
 			// We bumped into something or have come to the end of the rope.
-			player->targetEnt->rope_grab->viewheight = (int)player->targetEnt->rope_grab->accel;
+			rope->viewheight = (int)rope->accel;
 
 			switch (info->lowerseq)
 			{
@@ -331,16 +318,16 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 			}
 		}
 	}
-	else if (info->seqcmd[ACMDL_JUMP])
+	else if (info->seqcmd[ACMDL_JUMP]) // Jump off the rope.
 	{
 		info->flags &= ~PLAYER_FLAG_ONROPE;
-		VectorCopy(player->targetEnt->rope_grab->velocity, info->velocity);
-		info->velocity[2] = 150.0f;
 		info->flags |= PLAYER_FLAG_USE_ENT_POS;
+		VectorCopy(rope->velocity, info->velocity);
+		info->velocity[2] = 150.0f;
 
-		player->monsterinfo.jump_time = info->leveltime + 2.0f;
+		player->monsterinfo.jump_time = info->leveltime + ROPE_MOVE_DEBOUNCE_DELAY;
 
-		player->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
+		rope->s.effects &= ~EF_ALTCLIENTFX;
 		player->targetEnt->enemy = NULL;
 		player->targetEnt = NULL;
 
@@ -348,7 +335,7 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 
 		return ASEQ_JUMPFWD;
 	}
-	else
+	else // Pick idle animation.
 	{
 		switch (info->lowerseq)
 		{
