@@ -474,7 +474,7 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 		else
 			cl.playerinfo.flags &= ~PLAYER_FLAG_BOWDRAWN;
 
-		cl.playerinfo.flags &= ~(PLAYER_FLAG_COLLISION | PLAYER_FLAG_SLIDE);
+		cl.playerinfo.flags &= ~(PLAYER_FLAG_COLLISION | PLAYER_FLAG_SLIDE | PLAYER_FLAG_ONROPE); //mxd. -PLAYER_FLAG_ONROPE.
 
 		if (pm.s.c_flags & PC_COLLISION)
 			cl.playerinfo.flags |= PLAYER_FLAG_COLLISION;
@@ -494,6 +494,9 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 		{
 			cl.playerinfo.flags |= PLAYER_FLAG_DIVE;
 		}
+
+		if (pm.s.pm_flags & PMF_ON_ROPE) //mxd. Set PLAYER_FLAG_ONROPE on client-side.
+			cl.playerinfo.flags |= PLAYER_FLAG_ONROPE;
 
 		cl.playerinfo.oldbuttons = cl.playerinfo.buttons;
 		cl.playerinfo.buttons = pm.cmd.buttons;

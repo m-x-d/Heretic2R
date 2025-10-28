@@ -84,13 +84,19 @@ PLAYER_API void PlayerAnimSetLowerSeq(playerinfo_t* info, const int seq)
 	else
 		info->pm_flags &= ~PMF_STANDSTILL;
 
-	// Set / reset flag that says I am movelocked.
 	if (!info->isclient)
 	{
+		// Set/reset flag that says I am movelocked.
 		if (seqdata->lockmove)
 			info->pm_flags |= PMF_LOCKMOVE;
 		else
 			info->pm_flags &= ~PMF_LOCKMOVE;
+
+		//mxd. Set/reset flag that says I am roping.
+		if (info->flags & PLAYER_FLAG_ONROPE)
+			info->pm_flags |= PMF_ON_ROPE;
+		else
+			info->pm_flags &= ~PMF_ON_ROPE;
 	}
 }
 

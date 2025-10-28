@@ -398,7 +398,7 @@ typedef struct trace_s
 	struct edict_s* ent;// Not set by CM_*() functions.
 } trace_t;
 
-typedef enum 
+typedef enum
 {
 	PM_NORMAL,			// Can accelerate and turn, clips.
 	PM_SPECTATOR,		// Can accelerate and turn, no clip.
@@ -410,6 +410,7 @@ typedef enum
 
 // pmove->pm_flags (a byte!).
 #define PMF_STANDSTILL		0x0001
+#define PMF_ON_ROPE			0x0002 //mxd
 #define PMF_ON_GROUND		0x0004
 #define PMF_TIME_LAND		0x0008	// pm_time is time before re-jump.
 #define PMF_TIME_TELEPORT	0x0010	// pm_time is non-moving time. // Never set in original logic --mxd.
