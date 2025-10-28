@@ -26,12 +26,12 @@ entity_state_t* G_GetEntityStatePtr(edict_t* entity)
 	return &entity->s;
 }
 
-static void PlayerClimbSound(playerinfo_t* info, char* name)
+static void PlayerClimbSound(const playerinfo_t* info, const char* snd_name)
 {
 	if (info->isclient)
-		info->CL_Sound(SND_PRED_ID53, info->origin, CHAN_VOICE, name, 0.75f, ATTN_NORM, 0.0f);
+		info->CL_Sound(SND_PRED_ID53, info->origin, CHAN_VOICE, snd_name, 0.75f, ATTN_NORM, 0.0f);
 	else
-		info->G_Sound(SND_PRED_ID53, info->leveltime, info->self, CHAN_VOICE, info->G_SoundIndex(name), 0.75f, ATTN_NORM, 0.0f);
+		info->G_Sound(SND_PRED_ID53, info->leveltime, info->self, CHAN_VOICE, info->G_SoundIndex(snd_name), 0.75f, ATTN_NORM, 0.0f);
 }
 
 void G_PlayerActionCheckRopeMove(playerinfo_t* info)
@@ -44,7 +44,7 @@ void G_PlayerActionCheckRopeMove(playerinfo_t* info)
 		VectorCopy(player->targetEnt->rope_grab->velocity, info->velocity);
 		const float threshold = VectorLengthSquared(info->velocity);
 
-		if (threshold < 300 * 300)
+		if (threshold < 300.0f * 300.0f)
 		{
 			vec3_t fwd;
 			AngleVectors(info->aimangles, fwd, NULL, NULL);
@@ -70,6 +70,7 @@ void G_PlayerActionCheckRopeMove(playerinfo_t* info)
 		return;
 	}
 
+	//TODO: overlaps with G_BranchLwrClimbing ACMDL_STRAFE_L / ACMDL_STRAFE_R handling.
 	if (info->seqcmd[ACMDL_STRAFE_L] || info->seqcmd[ACMDL_STRAFE_R])
 	{
 		vec3_t right;
@@ -102,8 +103,9 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 	edict_t* rope = player->targetEnt->rope_grab; //mxd
 	monsterinfo_t* rope_info = &rope->monsterinfo; //mxd
 	const edict_t* rope_end = player->targetEnt->rope_end; //mxd
+	qboolean rope_sound_played = false; //mxd
 
-	// Process attack command.
+	// Process attack/defend commands.
 	if (info->seqcmd[ACMDU_ATTACK]) // Swing forwards.
 	{
 		if (rope_info->rope_forward_debounce_time < level.time)
@@ -113,6 +115,25 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 			vec3_t forward;
 			AngleVectors(info->angles, forward, NULL, NULL);
 			VectorMA(rope->velocity, 400.0f, forward, rope->velocity);
+
+			//mxd. Make ropey noises.
+			PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+			rope_sound_played = true;
+		}
+	}
+	else if (info->seqcmd[ACMDU_DEFSPELL]) //mxd. Swing backwards.
+	{
+		if (rope_info->rope_backward_debounce_time < level.time)
+		{
+			rope_info->rope_backward_debounce_time = level.time + ROPE_MOVE_DEBOUNCE_DELAY;
+
+			vec3_t forward;
+			AngleVectors(info->angles, forward, NULL, NULL);
+			VectorMA(rope->velocity, -200.0f, forward, rope->velocity);
+
+			//mxd. Make ropey noises.
+			PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+			rope_sound_played = true;
 		}
 	}
 
@@ -131,13 +152,15 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 			{
 				case ASEQ_CLIMB_HOLD_R:
 				case ASEQ_CLIMB_SETTLE_R:
-					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+					if (!rope_sound_played)
+						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 					return ASEQ_CLIMB_HOLD_R;
 
 				case ASEQ_CLIMB_ON:
 				case ASEQ_CLIMB_HOLD_L:
 				case ASEQ_CLIMB_SETTLE_L:
-					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+					if (!rope_sound_played)
+						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 					return ASEQ_CLIMB_HOLD_L;
 			}
 		}
@@ -156,13 +179,15 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 			{
 				case ASEQ_CLIMB_HOLD_R:
 				case ASEQ_CLIMB_SETTLE_R:
-					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+					if (!rope_sound_played)
+						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 					return ASEQ_CLIMB_HOLD_R;
 
 				case ASEQ_CLIMB_ON:
 				case ASEQ_CLIMB_HOLD_L:
 				case ASEQ_CLIMB_SETTLE_L:
-					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+					if (!rope_sound_played)
+						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 					return ASEQ_CLIMB_HOLD_L;
 			}
 		}
@@ -195,14 +220,16 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 				case ASEQ_CLIMB_DOWN_R:
 				case ASEQ_CLIMB_UP_START_L:
 				case ASEQ_CLIMB_DOWN_START_L:
-					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+					if (!rope_sound_played)
+						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 					return ASEQ_CLIMB_SETTLE_R;
 
 				case ASEQ_CLIMB_UP_R:
 				case ASEQ_CLIMB_DOWN_L:
 				case ASEQ_CLIMB_UP_START_R:
 				case ASEQ_CLIMB_DOWN_START_R:
-					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+					if (!rope_sound_played)
+						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 					return ASEQ_CLIMB_SETTLE_L;
 			}
 		}
@@ -214,13 +241,13 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 			{
 				case ASEQ_CLIMB_UP_R:
 				case ASEQ_CLIMB_UP_START_R:
-					if (chance < 3)
+					if (!rope_sound_played && chance < 3)
 						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
 					return ASEQ_CLIMB_UP_L;
 
 				case ASEQ_CLIMB_UP_L:
 				case ASEQ_CLIMB_UP_START_L:
-					if (chance < 3)
+					if (!rope_sound_played && chance < 3)
 						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
 					return ASEQ_CLIMB_UP_R;
 
@@ -229,7 +256,7 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 				case ASEQ_CLIMB_HOLD_L:
 				case ASEQ_CLIMB_SETTLE_L:
 				case ASEQ_CLIMB_DOWN_START_L:
-					if (chance < 3)
+					if (!rope_sound_played && chance < 3)
 						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
 					return ASEQ_CLIMB_UP_START_L;
 
@@ -237,7 +264,7 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 				case ASEQ_CLIMB_HOLD_R:
 				case ASEQ_CLIMB_SETTLE_R:
 				case ASEQ_CLIMB_DOWN_START_R:
-					if (chance < 3)
+					if (!rope_sound_played && chance < 3)
 						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
 					return ASEQ_CLIMB_UP_START_R;
 			}
@@ -270,14 +297,16 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 				case ASEQ_CLIMB_DOWN_R:
 				case ASEQ_CLIMB_UP_START_L:
 				case ASEQ_CLIMB_DOWN_START_L:
-					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+					if (!rope_sound_played)
+						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 					return ASEQ_CLIMB_SETTLE_R;
 
 				case ASEQ_CLIMB_UP_R:
 				case ASEQ_CLIMB_DOWN_L:
 				case ASEQ_CLIMB_UP_START_R:
 				case ASEQ_CLIMB_DOWN_START_R:
-					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+					if (!rope_sound_played)
+						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 					return ASEQ_CLIMB_SETTLE_L;
 			}
 		}
@@ -289,13 +318,13 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 			{
 				case ASEQ_CLIMB_DOWN_R:
 				case ASEQ_CLIMB_DOWN_START_R:
-					if (chance < 3)
+					if (!rope_sound_played && chance < 3)
 						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
 					return ASEQ_CLIMB_DOWN_L;
 
 				case ASEQ_CLIMB_DOWN_L:
 				case ASEQ_CLIMB_DOWN_START_L:
-					if (chance < 3)
+					if (!rope_sound_played && chance < 3)
 						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
 					return ASEQ_CLIMB_DOWN_R;
 
@@ -304,7 +333,7 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 				case ASEQ_CLIMB_HOLD_R:
 				case ASEQ_CLIMB_SETTLE_L:
 				case ASEQ_CLIMB_UP_START_L:
-					if (chance < 3)
+					if (!rope_sound_played && chance < 3)
 						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
 					return ASEQ_CLIMB_DOWN_START_L;
 
@@ -312,7 +341,7 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 				case ASEQ_CLIMB_UP_R:
 				case ASEQ_CLIMB_SETTLE_R:
 				case ASEQ_CLIMB_UP_START_R:
-					if (chance < 3)
+					if (!rope_sound_played && chance < 3)
 						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
 					return ASEQ_CLIMB_DOWN_START_R;
 			}
@@ -352,14 +381,16 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 			case ASEQ_CLIMB_DOWN_R:
 			case ASEQ_CLIMB_UP_START_L:
 			case ASEQ_CLIMB_DOWN_START_L:
-				PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+				if (!rope_sound_played)
+					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 				return ASEQ_CLIMB_SETTLE_R;
 
 			case ASEQ_CLIMB_UP_R:
 			case ASEQ_CLIMB_DOWN_L:
 			case ASEQ_CLIMB_UP_START_R:
 			case ASEQ_CLIMB_DOWN_START_R:
-				PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+				if (!rope_sound_played)
+					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 				return ASEQ_CLIMB_SETTLE_L;
 		}
 	}

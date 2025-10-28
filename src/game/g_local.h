@@ -453,8 +453,12 @@ typedef struct
 		qboolean morcalavin_quake_finished; //mxd
 		float rope_right_debounce_time; //mxd
 	};
-	
-	float chase_finished;	// When the monster can look for secondary monsters.
+
+	union
+	{
+		float chase_finished;	// When the monster can look for secondary monsters.
+		float rope_backward_debounce_time; //mxd
+	};
 
 	vec3_t saved_goal;
 

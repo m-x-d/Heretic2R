@@ -60,6 +60,9 @@ PLAYER_API void PlayerUpdateCmdFlags(playerinfo_t* info)
 	// Look for the action button being pressed.
 	info->seqcmd[ACMDL_ACTION] = (pcmd->buttons & BUTTON_ACTION);
 
+	//mxd. Look for the defend button being pressed.
+	info->seqcmd[ACMDU_DEFSPELL] = (pcmd->buttons & BUTTON_DEFEND);
+
 	// Look for the quickturn button being pressed.
 	info->seqcmd[ACMDL_QUICKTURN] = (pcmd->buttons & BUTTON_QUICKTURN);
 
@@ -149,7 +152,7 @@ PLAYER_API void PlayerUpdate(playerinfo_t* info)
 	if (info->remember_buttons & BUTTON_DEFEND)
 	{
 		// Not a chicken, so... //TODO: but there are no chicken checks in sight?
-		if (!info->isclient && info->pers.defence != NULL)
+		if (!info->isclient && info->pers.defence != NULL && !(info->flags & PLAYER_FLAG_ONROPE)) //mxd. +PLAYER_FLAG_ONROPE check.
 		{
 			if (Defence_CurrentShotsLeft(info, 0) > 0)
 				info->PlayerActionSpellDefensive(info);
