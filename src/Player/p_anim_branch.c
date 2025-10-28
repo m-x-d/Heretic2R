@@ -1157,6 +1157,8 @@ int BranchLwrUnderwaterSwim(playerinfo_t* info)
 
 int BranchLwrClimbing(playerinfo_t* info)
 {
+	info->upperidle = false; //mxd. Avoid triggering weapon firing/switching logic in AnimUpdateFrame() while on rope... //TODO: find less hacky way to do this? PLAYER_FLAG_ONROPE is server-side only..
+
 	return (info->isclient ? ASEQ_NONE : info->G_BranchLwrClimbing(info));
 }
 
