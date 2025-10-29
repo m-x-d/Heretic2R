@@ -516,15 +516,12 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 	edict_t* grab = self->rope_grab;
 
 	// Setup the top of the rope entity (the rope's attach point).
-	vec3_t rope_top;
-	VectorCopy(self->s.origin, rope_top);
-	rope_top[2] += self->maxs[2];
+	const vec3_t rope_top = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2]);
 
 	if (fabsf(grab->velocity[0]) < 0.13f && fabsf(grab->velocity[1]) < 0.13f)
 	{
 		// The rope isn't moving enough to run all the math, so just make it sway a little.
-		vec3_t rope_rest;
-		VectorCopy(self->s.origin, rope_rest);
+		vec3_t rope_rest = VEC3_INIT(self->s.origin);
 
 		rope_rest[0] += sinf(level.time * 2.0f) * 1.25f;
 		rope_rest[1] += cosf(level.time * 2.0f) * 1.75f;
@@ -537,9 +534,7 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 		VectorSubtract(rope_rest, rope_top, v_rope);
 		VectorNormalize(v_rope);
 
-		vec3_t grab_end;
-		VectorMA(rope_top, grab->rope_player_z, v_rope, grab_end);
-		VectorCopy(grab_end, grab->s.origin);
+		VectorMA(rope_top, grab->rope_player_z, v_rope, grab->s.origin);
 
 		ObjRopeThink(self);
 
@@ -555,9 +550,7 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 	const float grab_len = VectorLength(v_grab);
 
 	// Find the vector to the rope's point of rest.
-	vec3_t rope_rest;
-	VectorCopy(self->s.origin, rope_rest);
-	rope_rest[2] -= grab_len;
+	const vec3_t rope_rest = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -grab_len);
 
 	// Find the vector towards the middle, and that distance (disregarding height).
 	vec3_t v_rope;
@@ -566,18 +559,16 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 	const float dist = vhlen(rope_rest, grab->s.origin);
 
 	//NOTE: There's a fine line between a real pendulum motion here that comes to rest,
-	// and a chaotic one that builds too much and runs amock... So don't monkey with the values in here... ok?  --jweier
+	// and a chaotic one that builds too much and runs amok... So don't monkey with the values in here... ok?  --jweier
 
 	// Subtract away from the rope's velocity based on that distance.
-	VectorScale(v_rope, -dist, v_rope);
-	VectorSubtract(grab->velocity, v_rope, grab->velocity);
-	VectorScale(grab->velocity, 0.95f, grab->velocity);
+	Vec3ScaleAssign(-dist, v_rope);
+	Vec3SubtractAssign(v_rope, grab->velocity);
+	Vec3ScaleAssign(0.95f, grab->velocity);
 
 	// Move the rope based on the new velocity.
-	vec3_t v_dir;
-	VectorCopy(grab->velocity, v_dir);
-
 	vec3_t v_dest;
+	vec3_t v_dir = VEC3_INIT(grab->velocity);
 	const float mag = VectorNormalize(v_dir);
 	VectorMA(grab->s.origin, FRAMETIME * mag, v_dir, v_dest);
 
