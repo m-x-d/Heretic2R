@@ -33,7 +33,7 @@ static void PlayerClimbSound(const playerinfo_t* info, const char* snd_name)
 	info->G_Sound(SND_PRED_ID53, info->leveltime, info->self, CHAN_VOICE, info->G_SoundIndex(snd_name), 0.75f, ATTN_NORM, 0.0f);
 }
 
-void G_PlayerActionCheckRopeMove(playerinfo_t* info)
+void G_PlayerActionCheckRopeMove(playerinfo_t* info) // Called from PlayerActionCheckRopeMove() --mxd.
 {
 	edict_t* player = info->self; //mxd
 
@@ -45,13 +45,13 @@ void G_PlayerActionCheckRopeMove(playerinfo_t* info)
 
 		if (threshold < 300.0f * 300.0f)
 		{
-			vec3_t fwd;
-			AngleVectors(info->aimangles, fwd, NULL, NULL);
-			VectorMA(info->velocity, 200.0f, fwd, info->velocity);
+			vec3_t forward;
+			AngleVectors(info->aimangles, forward, NULL, NULL);
+			VectorMA(info->velocity, 200.0f, forward, info->velocity);
 		}
 		else
 		{
-			VectorScale(info->velocity, 0.75f, info->velocity);
+			Vec3ScaleAssign(0.75f, info->velocity);
 		}
 
 		info->velocity[2] = 250.0f;
