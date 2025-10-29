@@ -482,7 +482,7 @@ static void ObjRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think' in orig
 	VectorCopy(self->rope_grab->s.origin, rope_top);
 
 	// Find the length of the end segment.
-	const float grab_len = fabsf(self->maxs[2] + self->mins[2]) - (float)self->rope_grab->viewheight;
+	const float grab_len = fabsf(self->maxs[2] + self->mins[2]) - self->rope_grab->rope_player_z;
 
 	// Find the vector to the rope's point of rest.
 	vec3_t end_rest;
@@ -543,7 +543,7 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 		VectorNormalize(v_rope);
 
 		vec3_t grab_end;
-		VectorMA(rope_top, (float)grab->viewheight, v_rope, grab_end);
+		VectorMA(rope_top, grab->rope_player_z, v_rope, grab_end);
 		VectorCopy(grab_end, grab->s.origin);
 
 		ObjRopeThink(self);
@@ -591,7 +591,7 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 	VectorNormalize(v_rope);
 
 	vec3_t grab_end;
-	VectorMA(rope_top, (float)grab->viewheight, v_rope, grab_end);
+	VectorMA(rope_top, grab->rope_player_z, v_rope, grab_end);
 
 	// You're done.
 	VectorCopy(grab_end, grab->s.origin);
@@ -618,7 +618,7 @@ static void ObjRopeTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfac
 			return;
 
 		self->enemy = other;
-		self->viewheight = (int)other->s.origin[2];
+		self->rope_player_z = other->s.origin[2];
 		other->targetEnt = self;
 	}
 }

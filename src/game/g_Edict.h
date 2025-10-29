@@ -178,7 +178,12 @@ struct edict_s
 	float ideal_pitch;	// Used by monsters and player. //TODO: used, but never set?
 	float yawOffset;	// Used in CreateMove_Step //TODO: used, but never set?
 
-	float accel; // Used mostly in g_func.c.
+	union
+	{
+		float accel; // Used mostly in g_func.c.
+		float rope_old_player_z; //mxd
+	};
+	
 	float decel; // Used mostly in g_func.c.
 
 	float timestamp; // Used by a couple of objects.
@@ -214,8 +219,13 @@ struct edict_s
 		char* map;
 		char* morph_classname; //mxd. Used by Morph spell.
 	};
-	
-	int viewheight; // Height above origin where eyesight is determined used by anything which can "see", player and monsters.
+
+	union
+	{
+		int viewheight; // Height above origin where eyesight is determined used by anything which can "see", player and monsters.
+		float rope_player_z; //mxd
+	};
+
 	float reflected_time; // Used by objects to tell if they've been repulsed by something.
 
 	damage_t takedamage; //mxd. int in original logic.

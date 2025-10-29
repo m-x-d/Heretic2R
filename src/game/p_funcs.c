@@ -92,7 +92,7 @@ void G_PlayerActionCheckRopeMove(playerinfo_t* info) // Called from PlayerAction
 	}
 }
 
-int G_BranchLwrClimbing(playerinfo_t* info)
+int G_BranchLwrClimbing(playerinfo_t* info) // Called from BranchLwrClimbing() --mxd.
 {
 #define ROPE_MOVE_DEBOUNCE_DELAY	2.0f //mxd
 
@@ -202,7 +202,7 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 		if (trace.fraction < 1.0f)
 		{
 			// We bumped into something.
-			rope->viewheight = (int)rope->accel;
+			rope->rope_player_z = rope->rope_old_player_z;
 
 			switch (info->lowerseq)
 			{
@@ -278,11 +278,10 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 		if (trace.fraction < 1.0f || trace.endpos[2] < rope_end->s.origin[2])
 		{
 			// We bumped into something or have come to the end of the rope.
-			rope->viewheight = (int)rope->accel;
+			rope->rope_player_z = rope->rope_old_player_z;
 
 			switch (info->lowerseq)
 			{
-
 				case ASEQ_CLIMB_HOLD_R:
 				case ASEQ_CLIMB_SETTLE_R:
 					return ASEQ_CLIMB_HOLD_R;
@@ -397,7 +396,7 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) //TODO: remove 'stomp_org' arg?
+qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) // Called from PlayerActionCheckRopeGrab() --mxd. //TODO: remove 'stomp_org' arg?
 {
 	assert(info != NULL);
 
@@ -434,12 +433,12 @@ qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) //TODO
 	// Player is getting on the rope for the first time.
 	if (!(info->flags & PLAYER_FLAG_ONROPE))
 	{
-		VectorCopy(info->velocity, rope->rope_grab->velocity);
-		VectorScale(rope->rope_grab->velocity, 2.0f, rope->rope_grab->velocity);
+		VectorScale(info->velocity, 2.0f, rope->rope_grab->velocity);
 		VectorClear(info->velocity);
+
 		VectorCopy(info->origin, rope->rope_grab->s.origin);
 		VectorSubtract(info->origin, rope_top, vec);
-		rope->rope_grab->viewheight = (int)(VectorLength(vec));
+		rope->rope_grab->rope_player_z = VectorLength(vec);
 	}
 	else
 	{
@@ -455,21 +454,18 @@ qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) //TODO
 	return true;
 }
 
-void G_PlayerClimbingMoveFunc(playerinfo_t* info, const float height, float var2, float var3) //TODO: remove unused var2 and var3 args?
+void G_PlayerClimbingMoveFunc(playerinfo_t* info, const float height, float var2, float var3) // Called from PlayerClimbingMoveFunc() --mxd.
 {
-	if (info->isclient) // Ignore client-side playerinfo_t.
-		return;
-
 	// Pull Corvus into the rope.
-	G_PlayerActionCheckRopeGrab(info, 1);
+	G_PlayerActionCheckRopeGrab(info, 1.0f);
 
 	if (info->targetEnt != NULL)
 	{
-		const edict_t* rope = info->targetEnt; //mxd
+		edict_t* rope = ((edict_t*)info->targetEnt)->rope_grab; //mxd
 
 		// Update the rope's information about the player's position.
-		rope->rope_grab->accel = (float)rope->rope_grab->viewheight;
-		rope->rope_grab->viewheight -= (int)height;
+		rope->rope_old_player_z = rope->rope_player_z;
+		rope->rope_player_z -= height;
 	}
 }
 
