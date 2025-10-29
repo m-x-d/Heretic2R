@@ -478,16 +478,13 @@ static void ObjRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think' in orig
 	edict_t* grab = self->rope_end;
 
 	// Setup the top of the rope entity (the rope's attach point).
-	vec3_t rope_top;
-	VectorCopy(self->rope_grab->s.origin, rope_top);
+	const vec3_t rope_top = VEC3_INIT(self->rope_grab->s.origin);
 
 	// Find the length of the end segment.
 	const float grab_len = fabsf(self->maxs[2] + self->mins[2]) - self->rope_grab->rope_player_z;
 
 	// Find the vector to the rope's point of rest.
-	vec3_t end_rest;
-	VectorCopy(rope_top, end_rest);
-	end_rest[2] -= grab_len;
+	const vec3_t end_rest = VEC3_INITA(rope_top, 0.0f, 0.0f, -grab_len);
 
 	// Find the vector towards the middle, and that distance (disregarding height).
 	vec3_t end_vec;
@@ -496,15 +493,13 @@ static void ObjRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think' in orig
 	const float end_len = vhlen(end_rest, grab->s.origin);
 
 	// Subtract away from the rope's velocity based on that distance.
-	VectorScale(end_vec, -end_len, end_vec);
-	VectorSubtract(grab->velocity, end_vec, grab->velocity);
-	VectorScale(grab->velocity, 0.95f, grab->velocity);
+	Vec3ScaleAssign(-end_len, end_vec);
+	Vec3SubtractAssign(end_vec, grab->velocity);
+	Vec3ScaleAssign(0.95f, grab->velocity);
 
 	// Move the rope based on the new velocity.
-	vec3_t end_vel;
-	VectorCopy(grab->velocity, end_vel);
-
 	vec3_t end_dest;
+	vec3_t end_vel = VEC3_INIT(grab->velocity);
 	const float mag = VectorNormalize(end_vel);
 	VectorMA(grab->s.origin, FRAMETIME * mag, end_vel, end_dest);
 
