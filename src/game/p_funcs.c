@@ -488,13 +488,13 @@ qboolean G_PlayerActionCheckPuzzleGrab(playerinfo_t* info)
 	vec3_t end_point;
 	VectorMA(info->origin, 32.0f, forward, end_point);
 
-	trace_t tr;
-	gi.trace(info->origin, info->mins, info->maxs, end_point, (edict_t*)info->self, MASK_PLAYERSOLID, &tr);
+	trace_t trace;
+	gi.trace(info->origin, info->mins, info->maxs, end_point, (edict_t*)info->self, MASK_PLAYERSOLID, &trace);
 
-	if (tr.fraction == 1.0f || tr.ent == NULL || tr.ent->item == NULL || tr.ent->item->flags != IT_PUZZLE)
+	if (trace.fraction == 1.0f || trace.ent == NULL || trace.ent->item == NULL || trace.ent->item->flags != IT_PUZZLE)
 		return false;
 
-	info->targetEnt = tr.ent;
+	info->targetEnt = trace.ent;
 
 	return true;
 }
