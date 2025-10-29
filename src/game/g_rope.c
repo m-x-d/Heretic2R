@@ -361,8 +361,8 @@ static void TutorialChickenSpawn(edict_t* self) //mxd. Named 'spawn_hanging_chic
 
 	self->rope_end = end_ent;
 
-	self->bloodType = RM_ROPE;
-	end_ent->bloodType = RM_ROPE;
+	self->rope_type = RM_ROPE;
+	end_ent->rope_type = RM_ROPE;
 
 	gi.CreatePersistantEffect(&self->s, FX_ROPE, CEF_BROADCAST, self->s.origin, "ssbvvv", end_id, end_id, RM_ROPE, end_ent->s.origin, end_ent->s.origin, end_ent->s.origin);
 
@@ -436,7 +436,7 @@ static void ObjRopeThink(edict_t* self) //mxd. Named 'rope_think' in original lo
 					"ssbvvv",
 					self->rope_grab->s.number,	// ID for the grab entity.
 					self->rope_end->s.number,	// ID for the end entity.
-					self->bloodType,			// Model type.
+					self->rope_type,			// Model type.
 					rope_top,					// Top of the rope.
 					self->rope_grab->s.origin,	// Grab's current origin (???).
 					self->rope_end->s.origin);	// End's current origin	(???).
@@ -704,9 +704,9 @@ void SP_obj_rope(edict_t* self)
 	else
 		model_type = RM_ROPE;
 
-	self->bloodType = model_type;
-	grab_ent->bloodType = model_type;
-	end_ent->bloodType = model_type;
+	self->rope_type = model_type;
+	grab_ent->rope_type = model_type;
+	end_ent->rope_type = model_type;
 
 	ObjRopeSwayThink(self);
 

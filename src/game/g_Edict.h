@@ -197,11 +197,11 @@ struct edict_s
 		qboolean is_insect_tracking_projectile; //mxd
 	};
 
-	int max_health;	// Used by anything that can be destroyed.
+	int max_health; // Used by anything that can be destroyed.
 
 	union
 	{
-		int bloodType; // Type of stuff to spawn off when hit. //TODO: never used for intended purpose!
+		int rope_type; //mxd. Named 'bloodType' in original logic.
 		int spreadermist_dflags; //mxd
 	};
 
