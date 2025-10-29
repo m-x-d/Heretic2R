@@ -364,7 +364,7 @@ PLAYER_API void PlayerAnimSetVault(playerinfo_t* info, const int seq)
 
 PLAYER_API void PlayerPlayPain(const playerinfo_t* info, const int type)
 {
-	// Chicken plays no pain sound.
+	// Chicken plays no pain sound (because it has 1 HP). //TODO: what about super-chicken? There are pain sounds for it.
 	if (info->edictflags & FL_CHICKEN)
 		return;
 
