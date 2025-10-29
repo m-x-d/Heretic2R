@@ -404,12 +404,8 @@ qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) //TODO
 	const edict_t* rope = (edict_t*)info->targetEnt;
 
 	// Get the position of the rope's end.
-	vec3_t rope_end;
-	VectorCopy(rope->rope_end->s.origin, rope_end);
-
-	vec3_t rope_top;
-	VectorCopy(rope->s.origin, rope_top);
-	rope_top[2] += rope->maxs[2];
+	const vec3_t rope_end = VEC3_INIT(rope->rope_end->s.origin);
+	const vec3_t rope_top = VEC3_INITA(rope->s.origin, 0.0f, 0.0f, rope->maxs[2]);
 
 	// If we're above the rope then we can't grab it.
 	if (info->origin[2] > rope_top[2])
@@ -422,7 +418,7 @@ qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) //TODO
 	VectorSubtract(rope_end, rope_top, vec);
 	float dist = VectorNormalize(vec);
 
-	// Player is below the rope's length
+	// Player is below the rope's length.
 	if (len > dist)
 		return false;
 
