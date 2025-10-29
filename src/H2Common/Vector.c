@@ -381,7 +381,7 @@ H2COMMON_API void VectorAdd(const vec3_t veca, const vec3_t vecb, vec3_t out)
 	out[2] = veca[2] + vecb[2];
 }
 
-// Returns length of XY component
+// Returns length of XY component.
 H2COMMON_API float vhlen(const vec3_t v1, const vec3_t v2)
 {
 	const float dx = v1[0] - v2[0];
@@ -513,7 +513,7 @@ H2COMMON_API void VectorNegate(const vec3_t in, vec3_t out)
 	out[2] = -in[2];
 }
 
-// out = in * scale
+// out = in * scale;
 H2COMMON_API void VectorScale(const vec3_t in, const float scale, vec3_t out)
 {
 	assert(out != vec3_origin);
@@ -585,6 +585,7 @@ H2COMMON_API void Vec3MultAssign(const vec3_t value, vec3_t multBy)
 	multBy[2] *= value[2];
 }
 
+// scaleBy *= value;
 H2COMMON_API void Vec3ScaleAssign(const float value, vec3_t scaleBy)
 {
 	assert(scaleBy != vec3_origin);
