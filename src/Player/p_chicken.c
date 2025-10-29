@@ -78,11 +78,11 @@ static void FlapSetup(playerinfo_t* info, const byte event_id)
 
 	info->flags |= PLAYER_FLAG_USE_ENT_POS;
 
-	vec3_t vf;
-	AngleVectors(info->angles, vf, NULL, NULL);
-	vf[2] = 0;
+	vec3_t forward;
+	AngleVectors(info->angles, forward, NULL, NULL);
+	forward[2] = 0.0f;
 
-	VectorScale(vf, CHICKEN_GLIDE_FORWARD, info->velocity);
+	VectorScale(forward, CHICKEN_GLIDE_FORWARD, info->velocity);
 	info->velocity[2] += CHICKEN_GLIDE_UPWARDS;
 
 	P_CreateEffect(info, event_id, info->self, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, ""); //mxd
