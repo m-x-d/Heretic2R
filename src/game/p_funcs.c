@@ -26,12 +26,11 @@ entity_state_t* G_GetEntityStatePtr(edict_t* entity)
 	return &entity->s;
 }
 
+#pragma region ========================== Player rope climbing logic ==========================
+
 static void PlayerClimbSound(const playerinfo_t* info, const char* snd_name)
 {
-	if (info->isclient)
-		info->CL_Sound(SND_PRED_ID53, info->origin, CHAN_VOICE, snd_name, 0.75f, ATTN_NORM, 0.0f);
-	else
-		info->G_Sound(SND_PRED_ID53, info->leveltime, info->self, CHAN_VOICE, info->G_SoundIndex(snd_name), 0.75f, ATTN_NORM, 0.0f);
+	info->G_Sound(SND_PRED_ID53, info->leveltime, info->self, CHAN_VOICE, info->G_SoundIndex(snd_name), 0.75f, ATTN_NORM, 0.0f);
 }
 
 void G_PlayerActionCheckRopeMove(playerinfo_t* info)
@@ -477,6 +476,8 @@ void G_PlayerClimbingMoveFunc(playerinfo_t* info, const float height, float var2
 		rope->rope_grab->viewheight -= (int)height;
 	}
 }
+
+#pragma endregion
 
 qboolean G_PlayerActionCheckPuzzleGrab(playerinfo_t* info)
 {
