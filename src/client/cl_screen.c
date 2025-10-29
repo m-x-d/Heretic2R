@@ -139,10 +139,10 @@ static void SCR_CalcVrect(void)
 	const int size = (int)scr_viewsize->value;
 
 	scr_vrect.width = viddef.width * size / 100;
-	scr_vrect.width &= ~7;
+	scr_vrect.width &= ~1; // Reduce to make even --mxd. //mxd. ~7 (reduce to make power of 8) in original logic. Fixes unrendered areas when window width is not power of 8 (like 1366x768).
 
 	scr_vrect.height = viddef.height * size / 100;
-	scr_vrect.height &= ~1;
+	scr_vrect.height &= ~1; // Reduce to make even --mxd.
 
 	scr_vrect.x = (viddef.width - scr_vrect.width) / 2;
 	scr_vrect.y = (viddef.height - scr_vrect.height) / 2;
