@@ -4700,20 +4700,22 @@ static panimframe_t player_frames_climb_up_start_l[] =
 panimmove_t	player_move_climb_up_start_l = PANIMMOVE(player_frames_climb_up_start_l, PlayerAnimLowerUpdate);
 
 // Staring out from the idle position into climb down (right hand up).
+//mxd. Original logic uses FRAME_Rclmbstrt3 - FRAME_Rclmbstrt1 frames here. Swapped, because we are playing them in reverse, so LEFT animation sequence starts with RIGHT hand up.
 static panimframe_t player_frames_climb_down_start_r[] =
-{
-	{ FRAME_Rclmbstrt3, PlayerClimbingMoveFunc, -2, 0, 0, PlayerActionCheckRopeMove, 0, NULL },
-	{ FRAME_Rclmbstrt2, PlayerClimbingMoveFunc, -4, 0, 0, PlayerActionCheckRopeMove, 0, NULL },
-	{ FRAME_Rclmbstrt1, PlayerClimbingMoveFunc, -8, 0, 0, PlayerActionCheckRopeMove, 0, NULL },
-};
-panimmove_t	player_move_climb_down_start_r = PANIMMOVE(player_frames_climb_down_start_r, PlayerAnimLowerUpdate);
-
-// Staring out from the idle position into climb down (left hand up).
-static panimframe_t player_frames_climb_down_start_l[] =
 {
 	{ FRAME_Lclmbstrt3, PlayerClimbingMoveFunc, -2, 0, 0, PlayerActionCheckRopeMove, 0, NULL },
 	{ FRAME_Lclmbstrt2, PlayerClimbingMoveFunc, -4, 0, 0, PlayerActionCheckRopeMove, 0, NULL },
 	{ FRAME_Lclmbstrt1, PlayerClimbingMoveFunc, -8, 0, 0, PlayerActionCheckRopeMove, 0, NULL },
+};
+panimmove_t	player_move_climb_down_start_r = PANIMMOVE(player_frames_climb_down_start_r, PlayerAnimLowerUpdate);
+
+// Staring out from the idle position into climb down (left hand up).
+//mxd. Original logic uses FRAME_Lclmbstrt3 - FRAME_Lclmbstrt1 frames here. Swapped, because we are playing them in reverse, so RIGHT animation sequence starts with LEFT hand up.
+static panimframe_t player_frames_climb_down_start_l[] =
+{
+	{ FRAME_Rclmbstrt3, PlayerClimbingMoveFunc, -2, 0, 0, PlayerActionCheckRopeMove, 0, NULL },
+	{ FRAME_Rclmbstrt2, PlayerClimbingMoveFunc, -4, 0, 0, PlayerActionCheckRopeMove, 0, NULL },
+	{ FRAME_Rclmbstrt1, PlayerClimbingMoveFunc, -8, 0, 0, PlayerActionCheckRopeMove, 0, NULL },
 };
 panimmove_t	player_move_climb_down_start_l = PANIMMOVE(player_frames_climb_down_start_l, PlayerAnimLowerUpdate);
 
@@ -4738,22 +4740,24 @@ static panimframe_t player_frames_climb_up_l[] =
 panimmove_t	player_move_climb_up_l = PANIMMOVE(player_frames_climb_up_l, PlayerAnimLowerUpdate);
 
 // Climb down loop (right hand up).
+//mxd. Original logic uses FRAME_Rclimb4 - FRAME_Rclimb1 frames here. Swapped, because we are playing them in reverse, so LEFT animation sequence starts with RIGHT hand up.
 static panimframe_t player_frames_climb_down_r[] =
-{
-	{ FRAME_Rclimb4, PlayerClimbingMoveFunc, -6,  0, 0, PlayerActionCheckRopeMove, 0, NULL },
-	{ FRAME_Rclimb3, PlayerClimbingMoveFunc, -12, 0, 0, PlayerActionCheckRopeMove, 0, NULL },
-	{ FRAME_Rclimb2, PlayerClimbingMoveFunc, -4,  0, 0, PlayerActionCheckRopeMove, 0, NULL },
-	{ FRAME_Rclimb1, PlayerClimbingMoveFunc, -2,  0, 0, PlayerActionCheckRopeMove, 0, NULL },
-};
-panimmove_t	player_move_climb_down_r = PANIMMOVE(player_frames_climb_down_r, PlayerAnimLowerUpdate);
-
-// Climb down loop (left hand up).
-static panimframe_t player_frames_climb_down_l[] =
 {
 	{ FRAME_Lclimb4, PlayerClimbingMoveFunc, -6,  0, 0, PlayerActionCheckRopeMove, 0, NULL },
 	{ FRAME_Lclimb3, PlayerClimbingMoveFunc, -12, 0, 0, PlayerActionCheckRopeMove, 0, NULL },
 	{ FRAME_Lclimb2, PlayerClimbingMoveFunc, -4,  0, 0, PlayerActionCheckRopeMove, 0, NULL },
 	{ FRAME_Lclimb1, PlayerClimbingMoveFunc, -2,  0, 0, PlayerActionCheckRopeMove, 0, NULL },
+};
+panimmove_t	player_move_climb_down_r = PANIMMOVE(player_frames_climb_down_r, PlayerAnimLowerUpdate);
+
+// Climb down loop (left hand up).
+//mxd. Original logic uses FRAME_Lclimb4 - FRAME_Lclimb1 frames here. Swapped, because we are playing them in reverse, so RIGHT animation sequence starts with LEFT hand up.
+static panimframe_t player_frames_climb_down_l[] =
+{
+	{ FRAME_Rclimb4, PlayerClimbingMoveFunc, -6,  0, 0, PlayerActionCheckRopeMove, 0, NULL },
+	{ FRAME_Rclimb3, PlayerClimbingMoveFunc, -12, 0, 0, PlayerActionCheckRopeMove, 0, NULL },
+	{ FRAME_Rclimb2, PlayerClimbingMoveFunc, -4,  0, 0, PlayerActionCheckRopeMove, 0, NULL },
+	{ FRAME_Rclimb1, PlayerClimbingMoveFunc, -2,  0, 0, PlayerActionCheckRopeMove, 0, NULL },
 };
 panimmove_t	player_move_climb_down_l = PANIMMOVE(player_frames_climb_down_l, PlayerAnimLowerUpdate);
 

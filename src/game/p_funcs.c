@@ -216,16 +216,16 @@ int G_BranchLwrClimbing(playerinfo_t* info) // Called from BranchLwrClimbing() -
 					return ASEQ_CLIMB_HOLD_L;
 
 				case ASEQ_CLIMB_UP_L:
-				case ASEQ_CLIMB_DOWN_R:
 				case ASEQ_CLIMB_UP_START_L:
+				case ASEQ_CLIMB_DOWN_L: //mxd. ASEQ_CLIMB_DOWN_R in original logic.
 				case ASEQ_CLIMB_DOWN_START_L:
 					if (!rope_sound_played)
 						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 					return ASEQ_CLIMB_SETTLE_R;
 
 				case ASEQ_CLIMB_UP_R:
-				case ASEQ_CLIMB_DOWN_L:
 				case ASEQ_CLIMB_UP_START_R:
+				case ASEQ_CLIMB_DOWN_R: //mxd. ASEQ_CLIMB_DOWN_L in original logic.
 				case ASEQ_CLIMB_DOWN_START_R:
 					if (!rope_sound_played)
 						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
@@ -252,17 +252,17 @@ int G_BranchLwrClimbing(playerinfo_t* info) // Called from BranchLwrClimbing() -
 
 				case ASEQ_CLIMB_ON:
 				case ASEQ_CLIMB_DOWN_L:
+				case ASEQ_CLIMB_DOWN_START_L:
 				case ASEQ_CLIMB_HOLD_L:
 				case ASEQ_CLIMB_SETTLE_L:
-				case ASEQ_CLIMB_DOWN_START_L:
 					if (!rope_sound_played && chance < 3)
 						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
 					return ASEQ_CLIMB_UP_START_L;
 
 				case ASEQ_CLIMB_DOWN_R:
+				case ASEQ_CLIMB_DOWN_START_R:
 				case ASEQ_CLIMB_HOLD_R:
 				case ASEQ_CLIMB_SETTLE_R:
-				case ASEQ_CLIMB_DOWN_START_R:
 					if (!rope_sound_played && chance < 3)
 						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
 					return ASEQ_CLIMB_UP_START_R;
@@ -292,16 +292,16 @@ int G_BranchLwrClimbing(playerinfo_t* info) // Called from BranchLwrClimbing() -
 					return ASEQ_CLIMB_HOLD_L;
 
 				case ASEQ_CLIMB_UP_L:
-				case ASEQ_CLIMB_DOWN_R:
 				case ASEQ_CLIMB_UP_START_L:
+				case ASEQ_CLIMB_DOWN_L: //mxd. ASEQ_CLIMB_DOWN_R in original logic.
 				case ASEQ_CLIMB_DOWN_START_L:
 					if (!rope_sound_played)
 						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 					return ASEQ_CLIMB_SETTLE_R;
 
 				case ASEQ_CLIMB_UP_R:
-				case ASEQ_CLIMB_DOWN_L:
 				case ASEQ_CLIMB_UP_START_R:
+				case ASEQ_CLIMB_DOWN_R: //mxd. ASEQ_CLIMB_DOWN_L in original logic.
 				case ASEQ_CLIMB_DOWN_START_R:
 					if (!rope_sound_played)
 						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
@@ -328,17 +328,17 @@ int G_BranchLwrClimbing(playerinfo_t* info) // Called from BranchLwrClimbing() -
 
 				case ASEQ_CLIMB_ON:
 				case ASEQ_CLIMB_UP_L:
-				case ASEQ_CLIMB_HOLD_R:
-				case ASEQ_CLIMB_SETTLE_L:
 				case ASEQ_CLIMB_UP_START_L:
+				case ASEQ_CLIMB_HOLD_L: //mxd. ASEQ_CLIMB_HOLD_R in original logic.
+				case ASEQ_CLIMB_SETTLE_L:
 					if (!rope_sound_played && chance < 3)
 						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
 					return ASEQ_CLIMB_DOWN_START_L;
 
-				case ASEQ_CLIMB_HOLD_L:
 				case ASEQ_CLIMB_UP_R:
-				case ASEQ_CLIMB_SETTLE_R:
 				case ASEQ_CLIMB_UP_START_R:
+				case ASEQ_CLIMB_HOLD_R: //mxd. ASEQ_CLIMB_HOLD_L in original logic.
+				case ASEQ_CLIMB_SETTLE_R:
 					if (!rope_sound_played && chance < 3)
 						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
 					return ASEQ_CLIMB_DOWN_START_R;
@@ -376,16 +376,16 @@ int G_BranchLwrClimbing(playerinfo_t* info) // Called from BranchLwrClimbing() -
 				return ASEQ_CLIMB_HOLD_L;
 
 			case ASEQ_CLIMB_UP_L:
-			case ASEQ_CLIMB_DOWN_R:
 			case ASEQ_CLIMB_UP_START_L:
+			case ASEQ_CLIMB_DOWN_L: //mxd. ASEQ_CLIMB_DOWN_R in original logic.
 			case ASEQ_CLIMB_DOWN_START_L:
 				if (!rope_sound_played)
 					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 				return ASEQ_CLIMB_SETTLE_R;
 
 			case ASEQ_CLIMB_UP_R:
-			case ASEQ_CLIMB_DOWN_L:
 			case ASEQ_CLIMB_UP_START_R:
+			case ASEQ_CLIMB_DOWN_R: //mxd. ASEQ_CLIMB_DOWN_L in original logic.
 			case ASEQ_CLIMB_DOWN_START_R:
 				if (!rope_sound_played)
 					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
