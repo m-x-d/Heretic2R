@@ -19,11 +19,20 @@ extern "C"
 
 #define FLOAT_ZERO_EPSILON 0.0005f
 
+//mxd. Empty vector "constructor" macro.
+#define VEC3_ZERO				{ 0.0f, 0.0f, 0.0f }
+
+//mxd. Vector "constructor" macro.
+#define VEC3_SET(x, y, z)		{ (x), (y), (z) }
+
 //mxd. Vector copy "constructor" macro.
 #define VEC3_INIT(v)			{ (v)[0], (v)[1], (v)[2] }
 
 //mxd. Vector copy add "constructor" macro.
 #define VEC3_INITA(v, x, y, z)	{ (v)[0] + (x), (v)[1] + (y), (v)[2] + (z) }
+
+//mxd. Vector copy scale "constructor" macro.
+#define VEC3_INITS(v, s)	{ (v)[0] * (s), (v)[1] * (s), (v)[2] * (s) }
 
 H2COMMON_API extern void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees);
 H2COMMON_API extern void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal);
@@ -37,10 +46,11 @@ H2COMMON_API extern void AnglesFromDir(const vec3_t direction, vec3_t angles);
 H2COMMON_API extern void AnglesFromDirI(const vec3_t direction, vec3_t angles);
 H2COMMON_API extern void vectoangles(const vec3_t in, vec3_t out);
 H2COMMON_API extern void AnglesFromDirAndUp(vec3_t direction, vec3_t up, vec3_t angles);
-H2COMMON_API extern qboolean VectorCompare(const vec3_t v1, const vec3_t v2); //mxd. Return type: int -> qboolean
-H2COMMON_API extern float VectorNormalize(vec3_t v); // Returns vector length
-H2COMMON_API extern float Vec3Normalize(vec3_t v);	//mxd. Just calls VectorNormalize() //TODO: remove?
+H2COMMON_API extern qboolean VectorCompare(const vec3_t v1, const vec3_t v2); //mxd. Return type: int -> qboolean.
+H2COMMON_API extern float VectorNormalize(vec3_t v); // Returns vector length.
+H2COMMON_API extern float Vec3Normalize(vec3_t v); //mxd. Just calls VectorNormalize() //TODO: remove?
 H2COMMON_API extern float VectorNormalize2(const vec3_t v, vec3_t out);
+H2COMMON_API extern void VectorClamp(vec3_t v, float max_length); //mxd
 H2COMMON_API extern void VectorMA(const vec3_t veca, float scale, const vec3_t vecb, vec3_t out);
 H2COMMON_API extern void VectorAverage(const vec3_t veca, const vec3_t vecb, vec3_t out);
 H2COMMON_API extern void VectorLerp(const vec3_t veca, float frac, const vec3_t vecb, vec3_t out); //mxd

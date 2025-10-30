@@ -284,6 +284,17 @@ H2COMMON_API float VectorNormalize2(const vec3_t v, vec3_t out)
 	return length;
 }
 
+H2COMMON_API void VectorClamp(vec3_t v, const float max_length) //mxd
+{
+	if (Vec3IsZeroEpsilon(v) || FloatIsZeroEpsilon(max_length))
+		return;
+
+	const float length = VectorLength(v);
+
+	if (length > max_length)
+		Vec3ScaleAssign(max_length / length, v);
+}
+
 // out = veca + vecb * scale;
 H2COMMON_API void VectorMA(const vec3_t veca, const float scale, const vec3_t vecb, vec3_t out)
 {
