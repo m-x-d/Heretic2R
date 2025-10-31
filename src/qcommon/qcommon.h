@@ -622,6 +622,7 @@ extern void Pmove(pmove_t* pmove, qboolean server);
 
 #pragma region ========================== FILESYSTEM ==========================
 
+extern cvar_t* fs_configsdir; //mxd
 extern cvar_t * fs_gamedirvar; //mxd
 extern qboolean file_from_pak; //mxd
 
@@ -643,6 +644,7 @@ Q2DLL_DECLSPEC extern int FS_LoadFile(const char* path, void** buffer);
 // Properly handles partial reads.
 extern void FS_Read(void* buffer, int len, FILE* file);
 extern int FS_FileLength(FILE* f); //mxd. Made public.
+extern qboolean FS_CopyFile(const char* src, const char* dst); //mxd
 
 Q2DLL_DECLSPEC extern void FS_FreeFile(void* buffer);
 extern void FS_CreatePath(char* path);

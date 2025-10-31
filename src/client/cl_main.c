@@ -683,8 +683,8 @@ static void CL_Rcon_f(void)
 
 char* CL_GetConfigPath(void) //mxd
 {
-	static char cfg_name[MAX_QPATH];
-	Com_sprintf(cfg_name, sizeof(cfg_name), "%s/config/%s.cfg", FS_Gamedir(), player_name->string);
+	static char cfg_name[MAX_OSPATH];
+	Com_sprintf(cfg_name, sizeof(cfg_name), "%s/%s.cfg", fs_configsdir->string, player_name->string);
 
 	return cfg_name;
 }

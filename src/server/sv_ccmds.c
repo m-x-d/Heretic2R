@@ -43,37 +43,6 @@ void SV_WipeSavegame(const char* savename)
 	Sys_FindClose();
 }
 
-// Q2 counterpart
-static void SV_CopyFile(char* src, char* dst) //mxd. CopyFile in Q2. Renamed to avoid collision with CopyFile defined in winbase.h (cause H2 game.h includes <windows.h>)
-{
-	static byte buffer[65536]; //mxd. Made static
-	FILE* f1;
-	FILE* f2;
-
-	Com_DDPrintf(2, "CopyFile (%s, %s)\n", src, dst); //mxd. Com_DPrintf() -> Com_DDPrintf(), to reduce console spam when developer 1.
-
-	if (fopen_s(&f1, src, "rb") != 0) //mxd. fopen -> fopen_s
-		return;
-
-	if (fopen_s(&f2, dst, "wb") != 0) //mxd. fopen -> fopen_s
-	{
-		fclose(f1);
-		return;
-	}
-
-	while (true)
-	{
-		const uint len = fread(buffer, 1, sizeof(buffer), f1);
-		if (len == 0)
-			break;
-
-		fwrite(buffer, 1, len, f2);
-	}
-
-	fclose(f1);
-	fclose(f2);
-}
-
 static void SV_CopySaveGame(const char* src, const char* dst)
 {
 	char name[MAX_OSPATH];
@@ -85,11 +54,11 @@ static void SV_CopySaveGame(const char* src, const char* dst)
 	Com_sprintf(name, sizeof(name), "%s/save/%s/server.ssv", FS_Userdir(), src); // H2: FS_Gamedir() -> FS_Userdir()
 	Com_sprintf(name2, sizeof(name2), "%s/save/%s/server.ssv", FS_Userdir(), dst); // H2: FS_Gamedir() -> FS_Userdir()
 	FS_CreatePath(name2);
-	SV_CopyFile(name, name2);
+	FS_CopyFile(name, name2);
 
 	Com_sprintf(name, sizeof(name), "%s/save/%s/game.ssv", FS_Userdir(), src); // H2: FS_Gamedir() -> FS_Userdir()
 	Com_sprintf(name2, sizeof(name2), "%s/save/%s/game.ssv", FS_Userdir(), dst); // H2: FS_Gamedir() -> FS_Userdir()
-	SV_CopyFile(name, name2);
+	FS_CopyFile(name, name2);
 
 	// Get savedir length.
 	Com_sprintf(name, sizeof(name), "%s/save/%s/", FS_Userdir(), src); // H2: FS_Gamedir() -> FS_Userdir()
@@ -104,14 +73,14 @@ static void SV_CopySaveGame(const char* src, const char* dst)
 		strcpy_s(name + len, sizeof(name) - len, found + len); //mxd. strcpy -> strcpy_s
 
 		Com_sprintf(name2, sizeof(name2), "%s/save/%s/%s", FS_Userdir(), dst, found + len); // H2: FS_Gamedir() -> FS_Userdir()
-		SV_CopyFile(name, name2);
+		FS_CopyFile(name, name2);
 
 		// Change sav to sv2.
 		int ext_pos = (int)strlen(name) - 3;
 		strcpy_s(name + ext_pos, sizeof(name) - ext_pos, "sv2"); //mxd. strcpy -> strcpy_s
 		ext_pos = (int)strlen(name2) - 3;
 		strcpy_s(name2 + ext_pos, sizeof(name2) - ext_pos, "sv2"); //mxd. strcpy -> strcpy_s
-		SV_CopyFile(name, name2);
+		FS_CopyFile(name, name2);
 
 		found = Sys_FindNext(0, 0);
 	}

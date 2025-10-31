@@ -9,7 +9,7 @@
 
 cvar_t* m_banner_loadcfg;
 
-#define NUM_CONFIG_ITEMS	8
+#define NUM_CONFIG_ITEMS	16 //H2: 8
 
 static menuframework_t s_loadcfg_menu;
 static menuaction_t loadcfg_items[NUM_CONFIG_ITEMS];
@@ -19,14 +19,14 @@ static char cfg_filenames[NUM_CONFIG_ITEMS][MAX_QPATH];
 static void LoadCfgFunc(void* self) // H2
 {
 	const menuaction_t* item = self;
-	Cbuf_AddText(va("exec config/%s.cfg\n", cfg_filenames[item->generic.localdata[0]]));
+	Cbuf_AddText(va("exec %s/%s.cfg\n", fs_configsdir->string, cfg_filenames[item->generic.localdata[0]])); //mxd. Use fs_configsdir.
 	M_PopMenu();
 }
 
 static int LoadConfigFilenames(void) // H2
 {
 	char mask[MAX_OSPATH];
-	Com_sprintf(mask, sizeof(mask), "%s/config/*.cfg", FS_GetPath("config/*.cfg"));
+	Com_sprintf(mask, sizeof(mask), "%s/*.cfg", fs_configsdir->string); //mxd. Use fs_configsdir.
 	const int len = (int)strlen(mask);
 
 	const char* cfg_filename = Sys_FindFirst(mask, 0, 0);

@@ -24,6 +24,7 @@
 static char fs_gamedir[MAX_OSPATH];
 static cvar_t* fs_basedir;
 static cvar_t* fs_userdir; // H2
+cvar_t* fs_configsdir; //mxd
 cvar_t* fs_gamedirvar;
 
 typedef struct
@@ -269,6 +270,39 @@ int FS_LoadFile(const char* path, void** buffer)
 	fclose(file);
 
 	return len;
+}
+
+// Q2 counterpart
+qboolean FS_CopyFile(const char* src, const char* dst) //mxd. CopyFile() in Q2 (defined in sv_ccmds.c). Renamed to avoid collision with CopyFile defined in winbase.h (cause H2 game.h includes <windows.h>). Added return type.
+{
+	static byte buffer[65536]; //mxd. Made static
+	FILE* f1;
+	FILE* f2;
+
+	Com_DDPrintf(2, "FS_CopyFile (%s, %s)\n", src, dst); //mxd. Com_DPrintf() -> Com_DDPrintf(), to reduce console spam when developer 1.
+
+	if (fopen_s(&f1, src, "rb") != 0) //mxd. fopen -> fopen_s
+		return false;
+
+	if (fopen_s(&f2, dst, "wb") != 0) //mxd. fopen -> fopen_s
+	{
+		fclose(f1);
+		return false;
+	}
+
+	while (true)
+	{
+		const uint len = fread(buffer, 1, sizeof(buffer), f1);
+		if (len == 0)
+			break;
+
+		fwrite(buffer, 1, len, f2);
+	}
+
+	fclose(f1);
+	fclose(f2);
+
+	return true;
 }
 
 // Q2 counterpart
@@ -545,6 +579,34 @@ char* FS_NextPath(const char* prevpath)
 	return NULL;
 }
 
+//mxd. Copy base\config\*.cfg to "x:\Users\[User]\Saved Games\Heretic2R\configs".
+static void CopyConfigs(const char* src_dir, const char* dst_dir)
+{
+	if (Q_stricmp(src_dir, dst_dir) == 0) // Don't copy stuff over itself...
+		return;
+
+	char mask[MAX_OSPATH];
+	Com_sprintf(mask, sizeof(mask), "%s/*.cfg", src_dir);
+
+	const char* src_filename = Sys_FindFirst(mask, 0, 0);
+
+	while (src_filename != NULL)
+	{
+		char dst_filename[MAX_OSPATH];
+		Com_sprintf(dst_filename, sizeof(dst_filename), "%s%s", dst_dir, strrchr(src_filename, '/'));
+
+		if (!Sys_IsFile(dst_filename)) // Skip if already exists.
+		{
+			FS_CreatePath(dst_filename);
+			FS_CopyFile(src_filename, dst_filename);
+		}
+
+		src_filename = Sys_FindNext(0, 0);
+	}
+
+	Sys_FindClose();
+}
+
 void FS_InitFilesystem(void)
 {
 	Cmd_AddCommand("path", FS_Path_f);
@@ -597,6 +659,8 @@ void FS_InitFilesystem(void)
 
 	// H2: set user directory.
 	arg_index = COM_CheckParm("-userdir");
+	qboolean use_modern_userdir = false; //mxd
+
 	if (arg_index > 0)
 	{
 		fs_userdir = Cvar_Get("userdir", COM_Argv(arg_index + 1), CVAR_LATCH | CVAR_SERVERINFO);
@@ -613,7 +677,8 @@ void FS_InitFilesystem(void)
 		{
 			sprintf_s(buffer, sizeof(buffer), "%ls/Heretic2R", ws_path); //TODO: this won't work when username contains non-ASCII chars...
 			CoTaskMemFree(ws_path);
-			Sys_Mkdir(buffer);
+
+			use_modern_userdir = true;
 		}
 		else // Fall back to original logic...
 		{
@@ -629,5 +694,22 @@ void FS_InitFilesystem(void)
 			Com_sprintf(userdir, sizeof(userdir), "%s/user_%s", buffer, gamedir);
 
 		fs_userdir = Cvar_Get("userdir", userdir, 0); // "C:\Games\Heretic2/user"
+	}
+
+	//mxd. Copy configs from [gamedir]/config to Heretic2R\[user]\configs?
+	char vanilla_cfg_path[MAX_OSPATH];
+	sprintf_s(vanilla_cfg_path, sizeof(vanilla_cfg_path), "%s/config", FS_GetPath("config"));
+
+	if (use_modern_userdir)
+	{
+		char cfg_path[MAX_OSPATH];
+		sprintf_s(cfg_path, sizeof(cfg_path), "%s/configs", fs_userdir->string);
+
+		fs_configsdir = Cvar_Get("configsdir", cfg_path, CVAR_NOSET);
+		CopyConfigs(vanilla_cfg_path, cfg_path);
+	}
+	else
+	{
+		fs_configsdir = Cvar_Get("configsdir", vanilla_cfg_path, CVAR_NOSET);
 	}
 }
