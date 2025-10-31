@@ -412,27 +412,23 @@ static void TutorialChickenSpawn(edict_t* self) //mxd. Named 'spawn_hanging_chic
 static void ObjRopeThink(edict_t* self) //mxd. Named 'rope_think' in original logic.
 {
 	//FIXME!!! Do a trace down rope to make sure the rope does not clip through stuff!
-	if (self->enemy == NULL)
+	if (self->rope_user == NULL)
 		return;
 
 	// See if the player has chosen this rope as the one to grab.
-	if (self->enemy->targetEnt == self)
+	if (self->rope_user->rope == self)
 	{
 		// If he's already grabbed it...
-		if ((self->enemy->client->playerinfo.flags & PLAYER_FLAG_ONROPE) && !(self->enemy->client->playerinfo.flags & PLAYER_FLAG_RELEASEROPE))
+		if ((self->rope_user->client->playerinfo.flags & PLAYER_FLAG_ONROPE) && !(self->rope_user->client->playerinfo.flags & PLAYER_FLAG_RELEASEROPE))
 		{
-			if (self->count == 0)
+			if (!self->rope_fx_created)
 			{
-				self->count = 1;
-
-				vec3_t rope_top;
-				VectorCopy(self->s.origin, rope_top);
-				rope_top[2] += self->maxs[2];
-
 				// Create the new rope that's attached to the player.
+				self->rope_fx_created = true;
 				self->rope_grab->s.effects |= EF_ALTCLIENTFX;
+				const vec3_t rope_top = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2]);
 
-				gi.CreateEffect(&self->enemy->s, FX_ROPE, CEF_BROADCAST | CEF_OWNERS_ORIGIN | CEF_FLAG6, rope_top,
+				gi.CreateEffect(&self->rope_user->s, FX_ROPE, CEF_BROADCAST | CEF_OWNERS_ORIGIN | CEF_FLAG6, rope_top,
 					"ssbvvv",
 					self->rope_grab->s.number,	// ID for the grab entity.
 					self->rope_end->s.number,	// ID for the end entity.
@@ -443,33 +439,33 @@ static void ObjRopeThink(edict_t* self) //mxd. Named 'rope_think' in original lo
 			}
 
 			trace_t trace;
-			gi.trace(self->rope_grab->s.origin, vec3_origin, vec3_origin, self->s.origin, self->enemy, MASK_SOLID, &trace);
+			gi.trace(self->rope_grab->s.origin, vec3_origin, vec3_origin, self->s.origin, self->rope_user, MASK_SOLID, &trace);
 
 			if (trace.fraction == 1.0f && !trace.startsolid && !trace.allsolid)
-				gi.trace(self->enemy->s.origin, self->enemy->mins, self->enemy->maxs, self->rope_grab->s.origin, self->enemy, MASK_PLAYERSOLID, &trace);
+				gi.trace(self->rope_user->s.origin, self->rope_user->mins, self->rope_user->maxs, self->rope_grab->s.origin, self->rope_user, MASK_PLAYERSOLID, &trace);
 
 			// If the rope's movement is clear, move the player and the rope.
 			if (trace.fraction == 1.0f && !trace.startsolid && !trace.allsolid)
 			{
-				VectorCopy(self->rope_grab->s.origin, self->enemy->s.origin);
+				VectorCopy(self->rope_grab->s.origin, self->rope_user->s.origin);
 			}
 			else
 			{
 				// Otherwise stop the player and the rope from entering a solid brush.
 				VectorScale(self->rope_grab->velocity, -0.5f, self->rope_grab->velocity);
-				VectorCopy(self->enemy->s.origin, self->rope_grab->s.origin);
+				VectorCopy(self->rope_user->s.origin, self->rope_grab->s.origin);
 			}
 		}
 		else
 		{
-			self->count = 0;
+			self->rope_fx_created = false;
 			self->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
 		}
 	}
 	else
 	{
 		// This grabber is invalid, clear it.
-		self->enemy = NULL;
+		self->rope_user = NULL;
 	}
 }
 
@@ -537,8 +533,6 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 		VectorMA(rope_top, grab->rope_player_z, v_rope, grab->s.origin);
 
 		ObjRopeThink(self);
-
-		self->think = ObjRopeSwayThink;
 		self->nextthink = level.time + FRAMETIME;
 
 		return;
@@ -587,7 +581,6 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 	ObjRopeEndThink(self);
 	ObjRopeThink(self);
 
-	self->think = ObjRopeSwayThink;
 	self->nextthink = level.time + FRAMETIME;
 }
 
@@ -596,16 +589,16 @@ static void ObjRopeTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfac
 	if (Q_stricmp(other->classname, "player") == 0) //mxd. stricmp -> Q_stricmp
 	{
 		// If the player is already on a rope, forget him as a valid grabber
-		if (other->targetEnt != NULL && (other->client->playerinfo.flags & PLAYER_FLAG_ONROPE))
+		if (other->rope != NULL && (other->client->playerinfo.flags & PLAYER_FLAG_ONROPE))
 			return;
 
 		// If we've got a player on the rope, and this guy isn't it, then don't let him grab.
-		if (self->enemy != NULL && self->enemy != other)
+		if (self->rope_user != NULL && self->rope_user != other)
 			return;
 
-		self->enemy = other;
+		self->rope_user = other;
 		self->rope_player_z = other->s.origin[2];
-		other->targetEnt = self;
+		other->rope = self;
 	}
 }
 

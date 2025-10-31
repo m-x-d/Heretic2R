@@ -928,8 +928,8 @@ void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage,
 	if (self->client->playerinfo.flags & PLAYER_FLAG_ONROPE)
 	{
 		// Turn off the rope graphic immediately.
-		self->targetEnt->count = 0;
-		self->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
+		self->rope->rope_fx_created = false;
+		self->rope->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
 
 		self->monsterinfo.rope_jump_debounce_time = level.time + 10.0f;
 		self->client->playerinfo.flags |= PLAYER_FLAG_RELEASEROPE;
@@ -2187,10 +2187,10 @@ void ClientDisconnect(edict_t* ent)
 	// If we're on a rope, unhook the rope graphic from the disconnecting player.
 	if (ent->client->playerinfo.flags & PLAYER_FLAG_ONROPE)
 	{
-		ent->targetEnt->count = 0;
-		ent->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
-		ent->targetEnt->enemy = NULL;
-		ent->targetEnt = NULL;
+		ent->rope->rope_fx_created = false;
+		ent->rope->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
+		ent->rope->rope_user = NULL;
+		ent->rope = NULL;
 	}
 
 	gi.unlinkentity(ent);
@@ -2260,7 +2260,7 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 
 	// If we are not currently on a rope, then clear out any ropes as valid for a check.
 	if (!(client->playerinfo.flags & PLAYER_FLAG_ONROPE))
-		ent->targetEnt = NULL;
+		ent->rope = NULL;
 
 	// If we are turn-locked, then set the PMF_LOCKTURN flag that informs the client of this (the client-side camera needs to know).
 	if ((client->playerinfo.flags & PLAYER_FLAG_TURNLOCK) && client->ps.pmove.pm_type == PM_NORMAL)

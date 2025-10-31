@@ -107,6 +107,7 @@ struct edict_s
 		edict_t* teamchain;
 		edict_t* targetEnt;
 		edict_t* rope_grab; // Used to by the rope to hold the part of the rope which the player is holding.
+		edict_t* rope; //mxd. Used to by the player to hold the rope which the player is holding.
 		edict_t* elflord_beam; //mxd
 		edict_t* morcalavin_barrier; //mxd
 		edict_t* ogle_overlord; //mxd
@@ -269,13 +270,20 @@ struct edict_s
 		qboolean insect_staff_bolt_powered; //mxd
 		int insect_tracking_projectile_track_chance; //mxd
 		int insect_globe_grow_counter; //mxd
+		qboolean rope_fx_created; //mxd
 	};
 
-	qboolean targeted; // Used by Ogle to denote a targeted action queued up. //mxd. int in original logic.
-	int lastbuoy; // Used to save a buoy in checking.
+	qboolean targeted;	// Used by Ogle to denote a targeted action queued up. //mxd. int in original logic.
+	int lastbuoy;		// Used to save a buoy in checking.
 
 	edict_t* chain;		// Used by items and player in the body queue.
-	edict_t* enemy;		// Used by monsters, player, and a poly or two.
+
+	union
+	{
+		edict_t* enemy;	// Used by monsters, player, and a poly or two.
+		edict_t* rope_user; //mxd. Player attached to this rope.
+	};
+
 	edict_t* oldenemy;	// Used by monsters.
 
 	union

@@ -192,10 +192,10 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info) // Called by CL_PredictMovem
 		if (info->flags & PLAYER_FLAG_ONROPE)
 		{
 			// Turn off the rope graphic immediately.
-			self->targetEnt->count = 0;
-			self->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
-			self->targetEnt->enemy = NULL;
-			self->targetEnt = NULL;
+			self->rope->rope_fx_created = false;
+			self->rope->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
+			self->rope->rope_user = NULL;
+			self->rope = NULL;
 
 			self->monsterinfo.rope_jump_debounce_time = info->leveltime + ROPE_JUMP_DEBOUNCE_DELAY;
 			info->flags &= ~(PLAYER_FLAG_RELEASEROPE | PLAYER_FLAG_ONROPE);
