@@ -57,6 +57,20 @@ void Sys_Mkdir(const char* path)
 	_mkdir(path);
 }
 
+qboolean Sys_IsDir(const char* path) // YQ2
+{
+	const DWORD f_attr = GetFileAttributes(path);
+	return (f_attr != INVALID_FILE_ATTRIBUTES && (f_attr & FILE_ATTRIBUTE_DIRECTORY));
+}
+
+qboolean Sys_IsFile(const char* path) // YQ2
+{
+	const DWORD f_attr = GetFileAttributes(path);
+
+	// I guess the assumption that if it's not a file or device then it's a directory is good enough for us?
+	return (f_attr != INVALID_FILE_ATTRIBUTES && !(f_attr & (FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_DEVICE)));
+}
+
 // Q2 counterpart
 static qboolean CompareAttributes(const uint found, const uint musthave, const uint canthave)
 {
