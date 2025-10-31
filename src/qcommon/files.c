@@ -17,7 +17,6 @@
 // The game directory can never be changed while quake is executing.
 // This is a precaution against having a malicious server instruct clients to write files over areas they shouldn't.
 
-#include <shlobj.h> //mxd
 #include "qcommon.h"
 #include "qfiles.h"
 
@@ -666,13 +665,9 @@ void FS_InitFilesystem(void)
 		char userdir[MAX_OSPATH];
 
 		//mxd. Change userdir location from "c:/Games/Heretic2/user" to "c:\Users\[User]\Saved Games\Heretic2R/user".
-		PWSTR ws_path = NULL;
-
-		if (SHGetKnownFolderPath(&FOLDERID_SavedGames, KF_FLAG_CREATE, NULL, &ws_path) == S_OK && ws_path != NULL)
+		if (Sys_GetOSUserDir(buffer, sizeof(buffer)))
 		{
-			sprintf_s(buffer, sizeof(buffer), "%ls/Heretic2R", ws_path); //TODO: this won't work when username contains non-ASCII chars...
-			CoTaskMemFree(ws_path);
-
+			strcat_s(buffer, sizeof(buffer), "/Heretic2R");
 			use_modern_userdir = true;
 		}
 		else // Fall back to original logic...

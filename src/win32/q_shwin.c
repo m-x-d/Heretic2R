@@ -6,6 +6,7 @@
 
 #include <windows.h>
 #include <io.h>
+#include <shlobj.h> //mxd
 #include "qcommon.h"
 
 int curtime;
@@ -143,12 +144,29 @@ void Sys_FindClose(void)
 {
 	if (findhandle != -1)
 		_findclose(findhandle);
-	
+
 	findhandle = 0;
 }
 
-void Sys_GetWorkingDir(char* buffer, const size_t len) // YQ2
+qboolean Sys_GetWorkingDir(char* buffer, const size_t len) // YQ2
 {
-	if (!GetCurrentDirectory(len, buffer))
+	if (GetCurrentDirectory(len, buffer))
+		return true;
+
+	buffer[0] = '\0';
+	return false;
+}
+
+//mxd. Get OS-specific path to create Heretic2R userdir in (like 'c:\Users\[user]\Saved Games').
+qboolean Sys_GetOSUserDir(char* buffer, const size_t len)
+{
+	PWSTR ws_path = NULL;
+
+	if (SHGetKnownFolderPath(&FOLDERID_SavedGames, KF_FLAG_CREATE, NULL, &ws_path) == S_OK)
+		sprintf_s(buffer, len, "%ls", ws_path); //TODO: this won't work when username contains non-ASCII chars...
+	else
 		buffer[0] = '\0';
+
+	CoTaskMemFree(ws_path);
+	return (buffer[0] != 0);
 }
