@@ -1,10 +1,9 @@
 //
-// menu_joinserver.h
+// menu_joinserver.c
 //
 // Copyright 1998 Raven Software
 //
 
-#include <windows.h>
 #include "client.h"
 #include "menu_joinserver.h"
 #include "menu_addressbook.h"
