@@ -499,7 +499,7 @@ int G_BranchLwrClimbing(playerinfo_t* info) // Called from BranchLwrClimbing() -
 
 qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) // Called from PlayerActionCheckRopeGrab() --mxd. //TODO: remove 'stomp_org' arg?
 {
-	edict_t* rope = (edict_t*)info->targetEnt;
+	const edict_t* rope = (edict_t*)info->targetEnt;
 
 	// Get the position of the rope's end.
 	const vec3_t rope_end = VEC3_INIT(rope->rope_end->s.origin);
@@ -528,6 +528,20 @@ qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) // Cal
 
 	if (dist >= check_dist)
 		return false;
+
+	//mxd. When chicken, disturb the rope, but don't grab it.
+	if (info->edictflags & FL_CHICKEN)
+	{
+		VectorScale(info->velocity, 0.5f, rope->rope_grab->velocity);
+
+		VectorSubtract(info->origin, rope_top, vec);
+		rope->rope_grab->rope_player_z = VectorLength(vec);
+
+		edict_t* self = info->self;
+		self->monsterinfo.rope_jump_debounce_time = info->leveltime + ROPE_JUMP_DEBOUNCE_DELAY;
+
+		return false;
+	}
 
 	// Player is getting on the rope for the first time.
 	if (!(info->flags & PLAYER_FLAG_ONROPE))
