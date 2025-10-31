@@ -23,9 +23,9 @@ void PlayerChickenStepSound(const playerinfo_t* info, float value)
 // This should never be called, if it is, a sequence has been selected that cannot be addressed by the chicken.
 void PlayerChickenAssert(playerinfo_t* info)
 {
+	assert(0);
 	PlayerAnimSetLowerSeq(info, ASEQ_STAND);
 	PlayerAnimSetUpperSeq(info, ASEQ_NONE);
-	assert(0);
 }
 
 void PlayerChickenBite(playerinfo_t* info)
