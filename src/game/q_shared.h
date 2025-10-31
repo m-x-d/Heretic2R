@@ -180,6 +180,7 @@ extern void Sys_Nanosleep(int nanosec); // YQ2
 extern void Sys_Mkdir(const char* path);
 extern qboolean Sys_IsDir(const char* path); // YQ2
 extern qboolean Sys_IsFile(const char* path); // YQ2
+extern void Sys_GetWorkingDir(char* buffer, size_t len); // YQ2
 
 // Directory searching.
 #define SFF_ARCH	0x01

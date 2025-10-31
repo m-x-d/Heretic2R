@@ -620,7 +620,7 @@ void FS_InitFilesystem(void)
 		Cvar_SetValue("pakfirst", 0.0f);
 
 	// basedir <path>
-	// Allows the game to run from outside the data tree
+	// Allows the game to run from outside the data tree.
 	arg_index = COM_CheckParm("-basedir"); // H2
 	if (arg_index > 0)
 	{
@@ -628,26 +628,21 @@ void FS_InitFilesystem(void)
 	}
 	else
 	{
-		char workdir[256];
-
-		_getcwd(workdir, sizeof(workdir));
-		const uint len = strlen(workdir);
-
-		if (workdir[len - 1] == '\\')
-			workdir[len - 1] = 0;
+		char workdir[MAX_OSPATH];
+		Sys_GetWorkingDir(workdir, sizeof(workdir)); //mxd. _getcwd() -> Sys_GetWorkingDir().
 
 		fs_basedir = Cvar_Get("basedir", workdir, CVAR_NOSET); // "C:\Games\Heretic2"
 	}
 
-	//mxd. Skip fs_cddir / "-cddir" command line arg logic
+	//mxd. Skip fs_cddir / "-cddir" command line arg logic.
 
-	// Start up with 'base' by default
+	// Start up with 'base' by default.
 	FS_AddGameDirectory(va("%s/"BASEDIRNAME, fs_basedir->string));
 
-	// Any set gamedirs will be freed up to here
+	// Any set gamedirs will be freed up to here.
 	fs_base_searchpaths = fs_searchpaths;
 
-	// Check for game override
+	// Check for game override.
 	arg_index = COM_CheckParm("-game"); // H2
 	if (arg_index > 0)
 		fs_gamedirvar = Cvar_Get("game", COM_Argv(arg_index + 1), CVAR_LATCH | CVAR_SERVERINFO);

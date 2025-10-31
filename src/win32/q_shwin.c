@@ -146,3 +146,9 @@ void Sys_FindClose(void)
 	
 	findhandle = 0;
 }
+
+void Sys_GetWorkingDir(char* buffer, const size_t len) // YQ2
+{
+	if (!GetCurrentDirectory(len, buffer))
+		buffer[0] = '\0';
+}
