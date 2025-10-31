@@ -16,9 +16,8 @@ typedef struct ResourceManager_s
 	uint nodeSize;
 	struct ResMngr_Block_s* blockList;
 	char** free;
-#ifndef NDEBUG
-	//TODO: mxd. Disabled, so it works with original binaries when built in Debug mode...
-	//uint numResourcesAllocated;
+#if _DEBUG
+	uint numResourcesAllocated;
 #endif
 } ResourceManager_t;
 

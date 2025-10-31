@@ -4,9 +4,10 @@
 // Copyright 1998 Raven Software
 //
 
-#include <assert.h>
-#include <stdio.h>
-#include <windows.h>
+#if _DEBUG
+	#include <windows.h>
+#endif
+
 #include "ResourceManager.h"
 #include "q_shared.h"
 
@@ -37,14 +38,14 @@ static void ResMngr_CreateBlock(ResourceManager_t* resource)
 
 	for (uint i = 0; i < resource->resPerBlock - 1; i++)
 	{
-		// Set current->next to point to next node
+		// Set current->next to point to next node.
 		*current = (char*)current + resource->nodeSize;
 
-		// Set current node to current->next
+		// Set current node to current->next.
 		current = (char**)(*current);
 	}
 
-	//mxd. No current->next for the last block
+	//mxd. No current->next for the last block.
 	*current = NULL;
 }
 
@@ -55,25 +56,23 @@ H2COMMON_API void ResMngr_Con(ResourceManager_t* resource, const uint init_resSi
 	resource->nodeSize = resource->resSize + sizeof(*resource->free);
 	resource->blockList = NULL;
 
-#ifndef NDEBUG
-	//TODO: mxd. Disabled, so it works with original binaries when built in Debug mode...
-	//resource->numResourcesAllocated = 0;
+#if _DEBUG
+	resource->numResourcesAllocated = 0;
 #endif
 
 	ResMngr_CreateBlock(resource);
 }
 
-// ResourceManager destructor
+// ResourceManager destructor.
 H2COMMON_API void ResMngr_Des(ResourceManager_t* resource)
 {
-#ifndef NDEBUG
-	//TODO: mxd. Disabled, so it works with original binaries when built in Debug mode...
-	/*if (resource->numResourcesAllocated)
+#if _DEBUG
+	if (resource->numResourcesAllocated > 0)
 	{
-		char mess[100];
-		Com_sprintf(mess, sizeof(mess), "Potential memory leak %d bytes unfreed\n", resource->resSize * resource->numResourcesAllocated); //mxd. sprintf -> Com_sprintf
-		OutputDebugString(mess);
-	}*/
+		char msg[100];
+		Com_sprintf(msg, sizeof(msg), "Potential memory leak: %d bytes unfreed\n", resource->resSize * resource->numResourcesAllocated); //mxd. sprintf -> Com_sprintf.
+		OutputDebugString(msg);
+	}
 #endif
 
 	while (resource->blockList)
@@ -89,26 +88,25 @@ H2COMMON_API void* ResMngr_AllocateResource(ResourceManager_t* resource, const u
 {
 	assert(size == resource->resSize);
 
-#ifndef NDEBUG
-	//TODO: mxd. Disabled, so it works with original binaries when built in Debug mode...
-	//++resource->numResourcesAllocated;
+#if _DEBUG
+	resource->numResourcesAllocated++;
 #endif
 
 	// Constructor not called; possibly due to a static object containing a static ResourceManagerFastLarge
-	// member being constructed before its own static members
+	// member being constructed before its own static members.
 	assert(resource->free);	
 
 	char** toPop = resource->free;
 
-	// Set unallocated to the next node and check for NULL (end of list)
+	// Set unallocated to the next node and check for NULL (end of list).
 	resource->free = (char**)(*resource->free);
 	if (resource->free == NULL)
-		ResMngr_CreateBlock(resource); // If at end, create new block
+		ResMngr_CreateBlock(resource); // If at end, create new block.
 
-	// Set next to NULL
+	// Set next to NULL.
 	*toPop = NULL;
 
-	// Return the resource for the node
+	// Return the resource for the node.
 	return toPop + 1;
 }
 
@@ -116,20 +114,19 @@ H2COMMON_API void ResMngr_DeallocateResource(ResourceManager_t* resource, void* 
 {
 	assert(size == resource->resSize);
 
-#ifndef NDEBUG
-	//TODO: mxd. Disabled, so it works with original binaries when built in Debug mode...
-	//assert(resource->numResourcesAllocated);
-	//--resource->numResourcesAllocated;
+#if _DEBUG
+	assert(resource->numResourcesAllocated > 0);
+	resource->numResourcesAllocated--;
 #endif
 
 	char** toPush = (char**)toDeallocate - 1;
 
-	// See same assert at top of AllocateResource
+	// See same assert at top of AllocateResource.
 	assert(resource->free);	
 
-	// Set toPop->next to current unallocated front
+	// Set toPop->next to current unallocated front.
 	*toPush = (char*)resource->free;
 
-	// Set unallocated to the node removed from allocated
+	// Set unallocated to the node removed from allocated.
 	resource->free = toPush;
 }
