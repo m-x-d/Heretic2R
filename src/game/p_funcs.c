@@ -17,6 +17,7 @@
 #include "g_weapon.h"
 #include "spl_shield.h" //mxd
 #include "FX.h"
+#include "q_Physics.h" //mxd
 #include "Random.h"
 #include "Vector.h"
 #include "g_local.h"
@@ -26,344 +27,330 @@ entity_state_t* G_GetEntityStatePtr(edict_t* entity)
 	return &entity->s;
 }
 
-#pragma region ========================== Player rope climbing logic ==========================
+#pragma region ========================== Player rope movement logic ==========================
 
 static void PlayerClimbSound(const playerinfo_t* info, const char* snd_name)
 {
-	info->G_Sound(SND_PRED_ID53, info->leveltime, info->self, CHAN_VOICE, info->G_SoundIndex(snd_name), 0.75f, ATTN_NORM, 0.0f);
+#define ROPE_SOUND_DEBOUNCE_DELAY 1.0f
+
+	const edict_t* player = info->self;
+	edict_t* rope = player->targetEnt->rope_grab;
+	monsterinfo_t* rope_info = &rope->monsterinfo;
+
+	if (rope_info->rope_sound_debounce_time < level.time)
+	{
+		rope_info->rope_sound_debounce_time = level.time + ROPE_SOUND_DEBOUNCE_DELAY;
+		info->G_Sound(SND_PRED_ID53, info->leveltime, info->self, CHAN_VOICE, info->G_SoundIndex(snd_name), 0.75f, ATTN_NORM, 0.0f);
+	}
+}
+
+static void PlayerActionDoRopeJump(playerinfo_t* info, const vec3_t velocity) //mxd
+{
+	edict_t* player = info->self;
+
+	info->flags &= ~PLAYER_FLAG_ONROPE;
+	info->flags |= PLAYER_FLAG_USE_ENT_POS;
+
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(info->angles, forward, right, NULL); // Use player's horizontal forwards direction.
+
+	// Pick jump animation.
+	int lowerseq = ASEQ_NONE;
+
+	const vec3_t vel_xy = VEC3_SET(velocity[0], velocity[1], 0.0f);
+	const float right_dot = DotProduct(vel_xy, right);
+
+	if (right_dot > 0.5f)
+		lowerseq = ASEQ_JUMPRIGHT;
+	else if (right_dot < -0.5f)
+		lowerseq = ASEQ_JUMPLEFT;
+
+	if (lowerseq == ASEQ_NONE)
+	{
+		if (DotProduct(vel_xy, forward) <= -0.5f)
+			lowerseq = ASEQ_JUMPBACK;
+		else
+			lowerseq = ASEQ_JUMPFWD;
+	}
+
+	Vec3AddAssign(velocity, info->velocity);
+	PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav")); // Play BEFORE releasing rope ptr.
+
+	player->monsterinfo.rope_jump_debounce_time = info->leveltime + ROPE_JUMP_DEBOUNCE_DELAY;
+	player->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
+	player->targetEnt->enemy = NULL;
+	player->targetEnt = NULL;
+
+	P_PlayerAnimSetUpperSeq(info, ASEQ_NONE);
+	P_PlayerAnimSetLowerSeq(info, lowerseq);
+}
+
+static void PlayerActionReleaseRope(playerinfo_t* info, const float vel_scale, const float vel_z, const qboolean ignore_rope_vel) //mxd. Assumes that ACMDL_ACTION is pressed.
+{
+	vec3_t velocity;
+
+	if (ignore_rope_vel)
+	{
+		VectorClear(velocity);
+	}
+	else
+	{
+		const edict_t* player = info->self;
+		VectorScale(player->targetEnt->rope_grab->velocity, 0.5f, velocity);
+	}
+
+	vec3_t forward;
+	AngleVectors(info->angles, forward, NULL, NULL); // Use player's horizontal forwards direction.
+	VectorMA(velocity, vel_scale, forward, velocity);
+	velocity[2] = vel_z;
+
+	PlayerActionDoRopeJump(info, velocity);
+}
+
+static void PlayerActionRopeJumpCommand(playerinfo_t* info) //mxd. Assumes that ACMDL_JUMP is pressed.
+{
+#define MAX_ROPE_JUMP_VELOCITY	300.0f
+
+	vec3_t jump_dir = VEC3_ZERO;
+	float fwd_vel = 0.0f;
+	float side_vel = 0.0f;
+
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(info->aimangles, forward, right, NULL);
+
+	if (info->seqcmd[ACMDL_FWD])
+	{
+		Vec3AddAssign(forward, jump_dir);
+		fwd_vel = 200.0f;
+	}
+	else if (info->seqcmd[ACMDL_BACK])
+	{
+		Vec3SubtractAssign(forward, jump_dir);
+		fwd_vel = 100.0f;
+	}
+
+	if (info->seqcmd[ACMDL_STRAFE_L])
+	{
+		Vec3SubtractAssign(right, jump_dir);
+		side_vel = 64.0f;
+	}
+	else if (info->seqcmd[ACMDL_STRAFE_R])
+	{
+		Vec3AddAssign(right, jump_dir);
+		side_vel = 64.0f;
+	}
+
+	const edict_t* player = info->self;
+	const edict_t* rope = player->targetEnt->rope_grab;
+	const float velocity = max(fwd_vel, side_vel);
+
+	// Jump in this direction.
+	if (velocity > 0.0f)
+	{
+		vec3_t jump_vel;
+		VectorNormalize(jump_dir);
+		VectorMA(rope->velocity, velocity, jump_dir, jump_vel);
+
+		VectorClamp(jump_vel, MAX_ROPE_JUMP_VELOCITY);
+		jump_vel[2] = 250.0f;
+
+		PlayerActionDoRopeJump(info, jump_vel);
+	}
+}
+
+static void PlayerActionRopeCrouchCommand(playerinfo_t* info) //mxd. Assumes that ACMDL_CROUCH is pressed.
+{
+	const edict_t* player = info->self;
+	const edict_t* rope_end = player->targetEnt->rope_end;
+
+	trace_t trace;
+	const vec3_t end_point = VEC3_INITA(info->origin, 0.0f, 0.0f, -38.0f);
+	info->G_Trace(info->origin, info->mins, info->maxs, end_point, info->self, MASK_PLAYERSOLID, &trace);
+
+	// Check climb down result (actual climbing is done in G_PlayerClimbingMoveFunc): release rope when rope ended, or we bumped into something.
+	if (trace.fraction < 1.0f || trace.endpos[2] < rope_end->s.origin[2])
+		PlayerActionReleaseRope(info, 0.0f, 16.0f, true);
+}
+
+static void PlayerActionRopeSwingCommand(const playerinfo_t* info) //mxd. Assumes that ACMDL_FWD, ACMDL_BACK, ACMDL_STRAFE_L or ACMDL_STRAFE_R is/are pressed.
+{
+	const edict_t* player = info->self;
+	edict_t* rope = player->targetEnt->rope_grab;
+	monsterinfo_t* rope_info = &rope->monsterinfo;
+
+	// Already swinging...
+	if (rope_info->rope_player_current_swing_speed > 1.0f)
+		return;
+
+	// Calculate swing direction and speed.
+	vec3_t swing_dir = VEC3_ZERO;
+	float fwd_vel = 0.0f;
+	float side_vel = 0.0f;
+
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(info->angles, forward, right, NULL); // Use player's horizontal forwards direction.
+
+	if (info->seqcmd[ACMDL_FWD])
+	{
+		Vec3AddAssign(forward, swing_dir);
+		fwd_vel = 250.0f;
+	}
+	else if (info->seqcmd[ACMDL_BACK])
+	{
+		Vec3SubtractAssign(forward, swing_dir);
+		fwd_vel = 200.0f;
+	}
+
+	if (info->seqcmd[ACMDL_STRAFE_L])
+	{
+		Vec3SubtractAssign(right, swing_dir);
+		side_vel = 200.0f;
+	}
+	else if (info->seqcmd[ACMDL_STRAFE_R])
+	{
+		Vec3AddAssign(right, swing_dir);
+		side_vel = 200.0f;
+	}
+
+	// Store for G_PlayerActionCheckRopeMove()...
+	const float velocity = max(fwd_vel, side_vel);
+	rope_info->rope_player_initial_swing_speed = velocity;
+	rope_info->rope_player_current_swing_speed = velocity;
+
+	VectorNormalize(swing_dir);
+	VectorCopy(swing_dir, rope_info->rope_player_swing_direction);
+
+	// Make ropey noises.
+	PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+}
+
+static void ApplyPlayerRopeSwingVelocity(const playerinfo_t* info) //mxd
+{
+	const edict_t* player = info->self;
+
+	// Apply rope swinging velocity...
+	edict_t* rope = player->targetEnt->rope_grab;
+	monsterinfo_t* rope_info = &rope->monsterinfo;
+
+	// No rope swinging required.
+	if (rope_info->rope_player_current_swing_speed < 0.1f || rope_info->rope_player_initial_swing_speed < 0.1f)
+		return;
+
+	const float lerp = rope_info->rope_player_current_swing_speed / rope_info->rope_player_initial_swing_speed; // [1.0 .. 0.0]
+	const float cur_speed = sinf(lerp * ANGLE_315 - ANGLE_180) * rope_info->rope_player_initial_swing_speed; // [135 .. -180]
+
+	if (cur_speed > 0.0f)
+	{
+		vec3_t dir = VEC3_SET(rope->velocity[0], rope->velocity[1], 0.0f);
+		VectorNormalize(dir);
+
+		trace_t trace;
+		vec3_t end_point;
+		VectorMA(info->origin, 16.0f, dir, end_point);
+		info->G_Trace(info->origin, info->mins, info->maxs, end_point, info->self, MASK_PLAYERSOLID, &trace);
+
+		// If we hit something, cease the swing and bounce away.
+		if (trace.fraction < 1.0f && !Vec3IsZeroEpsilon(trace.plane.normal))
+		{
+			const float tmp_z = rope->velocity[2];
+			ReflectVelocity(rope->velocity, trace.plane.normal, rope->velocity, 0.75f);
+			rope->velocity[2] = tmp_z * 0.5f;
+
+			info->G_Sound(SND_PRED_ID4, info->leveltime, info->self, CHAN_VOICE, info->G_SoundIndex("*offwall.wav"), 0.75f, ATTN_NORM, 0.0f);
+			rope_info->rope_player_current_swing_speed = 0.0f;
+
+			return;
+		}
+
+		// Apply swing velocity. Reduce swing amount when close to rope top.
+		const float dist = player->targetEnt->s.origin[2] - info->origin[2] - 16.0f;
+		const float dist_scaler = min(dist, 128.0f) / 128.0f;
+
+		VectorMA(rope->velocity, cur_speed * dist_scaler, rope_info->rope_player_swing_direction, rope->velocity);
+	}
+
+	if (lerp < 0.3f)
+		rope_info->rope_player_current_swing_speed = 0.0f;
+	else
+		rope_info->rope_player_current_swing_speed *= 0.9f;
 }
 
 void G_PlayerActionCheckRopeMove(playerinfo_t* info) // Called from PlayerActionCheckRopeMove() --mxd.
 {
-	edict_t* player = info->self; //mxd
+	if (info->seqcmd[ACMDL_ACTION]) // Release the rope.
+		PlayerActionReleaseRope(info, -64.0f, 64.0f, false);
+	else if (info->seqcmd[ACMDL_JUMP]) // Jump from the rope / climb up.
+		PlayerActionRopeJumpCommand(info);
+	else if (info->seqcmd[ACMDL_CROUCH]) // Drop from the rope / climb down.
+		PlayerActionRopeCrouchCommand(info);
+	else if (info->seqcmd[ACMDL_FWD] || info->seqcmd[ACMDL_BACK] || info->seqcmd[ACMDL_STRAFE_L] || info->seqcmd[ACMDL_STRAFE_R]) // Swing on the rope.
+		PlayerActionRopeSwingCommand(info);
 
-	if (info->seqcmd[ACMDL_JUMP])
+	const edict_t* player = info->self;
+	if (player->targetEnt != NULL) // If NULL, we jumped from the rope.
+		ApplyPlayerRopeSwingVelocity(info);
+}
+
+#pragma endregion
+
+#pragma region ========================== Player rope animation logic ==========================
+
+static int PlayerActionRopeClimbUpAnimation(const playerinfo_t* info) //mxd
+{
+	const edict_t* player = info->self;
+	edict_t* rope = player->targetEnt->rope_grab;
+
+	trace_t trace;
+	const vec3_t end_point = VEC3_INITA(info->origin, 0.0f, 0.0f, 16.0f);
+	info->G_Trace(info->origin, info->mins, info->maxs, end_point, info->self, MASK_PLAYERSOLID, &trace);
+
+	vec3_t rope_top_dist;
+	VectorSubtract(player->targetEnt->s.origin, info->origin, rope_top_dist);
+
+	if (trace.fraction == 1.0f && VectorLength(rope_top_dist) > info->maxs[2] + 32.0f)
 	{
-		info->flags &= ~PLAYER_FLAG_ONROPE;
-		VectorCopy(player->targetEnt->rope_grab->velocity, info->velocity);
-		const float threshold = VectorLengthSquared(info->velocity);
-
-		if (threshold < 300.0f * 300.0f)
-		{
-			vec3_t forward;
-			AngleVectors(info->aimangles, forward, NULL, NULL);
-			VectorMA(info->velocity, 200.0f, forward, info->velocity);
-		}
-		else
-		{
-			Vec3ScaleAssign(0.75f, info->velocity);
-		}
-
-		info->velocity[2] = 250.0f;
-		info->flags |= PLAYER_FLAG_USE_ENT_POS;
-
-		player->monsterinfo.jump_time = info->leveltime + 2.0f;
-
-		player->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
-		player->targetEnt->enemy = NULL;
-		player->targetEnt = NULL;
-
-		P_PlayerAnimSetUpperSeq(info, ASEQ_NONE);
-		P_PlayerAnimSetLowerSeq(info, ASEQ_JUMPFWD);
-
-		return;
-	}
-
-	//TODO: overlaps with G_BranchLwrClimbing ACMDL_STRAFE_L / ACMDL_STRAFE_R handling.
-	if (info->seqcmd[ACMDL_STRAFE_L] || info->seqcmd[ACMDL_STRAFE_R])
-	{
-		vec3_t right;
-		AngleVectors(info->angles, NULL, right, NULL);
-
-		const float scale = 32.0f * (info->seqcmd[ACMDL_STRAFE_L] ? -1.0f : 1.0f); //mxd
-		VectorScale(right, scale, right);
-		VectorAdd(player->targetEnt->rope_grab->velocity, right, player->targetEnt->rope_grab->velocity);
+		Vec3ScaleAssign(0.9f, rope->velocity); // Settle down the rope when climbing... 
+		const int chance = irand(1, 4);
 
 		switch (info->lowerseq)
 		{
+			case ASEQ_CLIMB_UP_R:
+			case ASEQ_CLIMB_UP_START_R:
+				if (chance < 3)
+					PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
+				return ASEQ_CLIMB_UP_L;
+
+			case ASEQ_CLIMB_UP_L:
+			case ASEQ_CLIMB_UP_START_L:
+				if (chance < 3)
+					PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
+				return ASEQ_CLIMB_UP_R;
+
 			case ASEQ_CLIMB_ON:
+			case ASEQ_CLIMB_DOWN_L:
+			case ASEQ_CLIMB_DOWN_START_L:
 			case ASEQ_CLIMB_HOLD_L:
 			case ASEQ_CLIMB_SETTLE_L:
+				if (chance < 3)
+					PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
+				return ASEQ_CLIMB_UP_START_L;
+
+			case ASEQ_CLIMB_DOWN_R:
+			case ASEQ_CLIMB_DOWN_START_R:
 			case ASEQ_CLIMB_HOLD_R:
 			case ASEQ_CLIMB_SETTLE_R:
-				PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
-				break;
+				if (chance < 3)
+					PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
+				return ASEQ_CLIMB_UP_START_R;
 		}
 	}
-}
-
-int G_BranchLwrClimbing(playerinfo_t* info) // Called from BranchLwrClimbing() --mxd.
-{
-#define ROPE_MOVE_DEBOUNCE_DELAY	2.0f //mxd
-
-	assert(info != NULL);
-
-	edict_t* player = info->self; //mxd
-	edict_t* rope = player->targetEnt->rope_grab; //mxd
-	monsterinfo_t* rope_info = &rope->monsterinfo; //mxd
-	const edict_t* rope_end = player->targetEnt->rope_end; //mxd
-	qboolean rope_sound_played = false; //mxd
-
-	// Process attack/defend commands.
-	if (info->seqcmd[ACMDU_ATTACK]) // Swing forwards.
+	else // We bumped into something.
 	{
-		if (rope_info->rope_forward_debounce_time < level.time)
-		{
-			rope_info->rope_forward_debounce_time = level.time + ROPE_MOVE_DEBOUNCE_DELAY;
+		rope->rope_player_z = rope->rope_old_player_z;
 
-			vec3_t forward;
-			AngleVectors(info->angles, forward, NULL, NULL);
-			VectorMA(rope->velocity, 400.0f, forward, rope->velocity);
-
-			//mxd. Make ropey noises.
-			PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
-			rope_sound_played = true;
-		}
-	}
-	else if (info->seqcmd[ACMDU_DEFSPELL]) //mxd. Swing backwards.
-	{
-		if (rope_info->rope_backward_debounce_time < level.time)
-		{
-			rope_info->rope_backward_debounce_time = level.time + ROPE_MOVE_DEBOUNCE_DELAY;
-
-			vec3_t forward;
-			AngleVectors(info->angles, forward, NULL, NULL);
-			VectorMA(rope->velocity, -200.0f, forward, rope->velocity);
-
-			//mxd. Make ropey noises.
-			PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
-			rope_sound_played = true;
-		}
-	}
-
-	// Process strafe commands.
-	if (info->seqcmd[ACMDL_STRAFE_L]) // Swing left.
-	{
-		if (rope_info->rope_left_debounce_time < level.time)
-		{
-			rope_info->rope_left_debounce_time = level.time + ROPE_MOVE_DEBOUNCE_DELAY;
-
-			vec3_t right;
-			AngleVectors(info->angles, NULL, right, NULL);
-			VectorMA(rope->velocity, -64.0f, right, rope->velocity);
-
-			switch (info->lowerseq)
-			{
-				case ASEQ_CLIMB_HOLD_R:
-				case ASEQ_CLIMB_SETTLE_R:
-					if (!rope_sound_played)
-						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
-					return ASEQ_CLIMB_HOLD_R;
-
-				case ASEQ_CLIMB_ON:
-				case ASEQ_CLIMB_HOLD_L:
-				case ASEQ_CLIMB_SETTLE_L:
-					if (!rope_sound_played)
-						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
-					return ASEQ_CLIMB_HOLD_L;
-			}
-		}
-	}
-	else if (info->seqcmd[ACMDL_STRAFE_R]) // Swing right.
-	{
-		if (rope_info->rope_right_debounce_time < level.time)
-		{
-			rope_info->rope_right_debounce_time = level.time + ROPE_MOVE_DEBOUNCE_DELAY;
-
-			vec3_t right;
-			AngleVectors(info->angles, NULL, right, NULL);
-			VectorMA(rope->velocity, 64.0f, right, rope->velocity);
-
-			switch (info->lowerseq)
-			{
-				case ASEQ_CLIMB_HOLD_R:
-				case ASEQ_CLIMB_SETTLE_R:
-					if (!rope_sound_played)
-						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
-					return ASEQ_CLIMB_HOLD_R;
-
-				case ASEQ_CLIMB_ON:
-				case ASEQ_CLIMB_HOLD_L:
-				case ASEQ_CLIMB_SETTLE_L:
-					if (!rope_sound_played)
-						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
-					return ASEQ_CLIMB_HOLD_L;
-			}
-		}
-	}
-
-	// Process movement commands.
-	if (info->seqcmd[ACMDL_FWD]) // Climb upwards.
-	{
-		trace_t trace;
-		const vec3_t end_point = VEC3_INITA(info->origin, 0.0f, 0.0f, 32.0f);
-		info->G_Trace(info->origin, info->mins, info->maxs, end_point, info->self, MASK_PLAYERSOLID, &trace);
-
-		if (trace.fraction < 1.0f)
-		{
-			// We bumped into something.
-			rope->rope_player_z = rope->rope_old_player_z;
-
-			switch (info->lowerseq)
-			{
-				case ASEQ_CLIMB_HOLD_R:
-				case ASEQ_CLIMB_SETTLE_R:
-					return ASEQ_CLIMB_HOLD_R;
-
-				case ASEQ_CLIMB_ON:
-				case ASEQ_CLIMB_HOLD_L:
-				case ASEQ_CLIMB_SETTLE_L:
-					return ASEQ_CLIMB_HOLD_L;
-
-				case ASEQ_CLIMB_UP_L:
-				case ASEQ_CLIMB_UP_START_L:
-				case ASEQ_CLIMB_DOWN_L: //mxd. ASEQ_CLIMB_DOWN_R in original logic.
-				case ASEQ_CLIMB_DOWN_START_L:
-					if (!rope_sound_played)
-						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
-					return ASEQ_CLIMB_SETTLE_R;
-
-				case ASEQ_CLIMB_UP_R:
-				case ASEQ_CLIMB_UP_START_R:
-				case ASEQ_CLIMB_DOWN_R: //mxd. ASEQ_CLIMB_DOWN_L in original logic.
-				case ASEQ_CLIMB_DOWN_START_R:
-					if (!rope_sound_played)
-						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
-					return ASEQ_CLIMB_SETTLE_L;
-			}
-		}
-		else
-		{
-			const int chance = irand(1, 4);
-
-			switch (info->lowerseq)
-			{
-				case ASEQ_CLIMB_UP_R:
-				case ASEQ_CLIMB_UP_START_R:
-					if (!rope_sound_played && chance < 3)
-						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
-					return ASEQ_CLIMB_UP_L;
-
-				case ASEQ_CLIMB_UP_L:
-				case ASEQ_CLIMB_UP_START_L:
-					if (!rope_sound_played && chance < 3)
-						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
-					return ASEQ_CLIMB_UP_R;
-
-				case ASEQ_CLIMB_ON:
-				case ASEQ_CLIMB_DOWN_L:
-				case ASEQ_CLIMB_DOWN_START_L:
-				case ASEQ_CLIMB_HOLD_L:
-				case ASEQ_CLIMB_SETTLE_L:
-					if (!rope_sound_played && chance < 3)
-						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
-					return ASEQ_CLIMB_UP_START_L;
-
-				case ASEQ_CLIMB_DOWN_R:
-				case ASEQ_CLIMB_DOWN_START_R:
-				case ASEQ_CLIMB_HOLD_R:
-				case ASEQ_CLIMB_SETTLE_R:
-					if (!rope_sound_played && chance < 3)
-						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
-					return ASEQ_CLIMB_UP_START_R;
-			}
-		}
-	}
-	else if (info->seqcmd[ACMDL_BACK]) // Climb downwards.
-	{
-		trace_t trace;
-		const vec3_t end_point = VEC3_INITA(info->origin, 0.0f, 0.0f, -32.0f);
-		info->G_Trace(info->origin, info->mins, info->maxs, end_point, info->self, MASK_PLAYERSOLID, &trace);
-
-		if (trace.fraction < 1.0f || trace.endpos[2] < rope_end->s.origin[2])
-		{
-			// We bumped into something or have come to the end of the rope.
-			rope->rope_player_z = rope->rope_old_player_z;
-
-			switch (info->lowerseq)
-			{
-				case ASEQ_CLIMB_HOLD_R:
-				case ASEQ_CLIMB_SETTLE_R:
-					return ASEQ_CLIMB_HOLD_R;
-
-				case ASEQ_CLIMB_ON:
-				case ASEQ_CLIMB_HOLD_L:
-				case ASEQ_CLIMB_SETTLE_L:
-					return ASEQ_CLIMB_HOLD_L;
-
-				case ASEQ_CLIMB_UP_L:
-				case ASEQ_CLIMB_UP_START_L:
-				case ASEQ_CLIMB_DOWN_L: //mxd. ASEQ_CLIMB_DOWN_R in original logic.
-				case ASEQ_CLIMB_DOWN_START_L:
-					if (!rope_sound_played)
-						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
-					return ASEQ_CLIMB_SETTLE_R;
-
-				case ASEQ_CLIMB_UP_R:
-				case ASEQ_CLIMB_UP_START_R:
-				case ASEQ_CLIMB_DOWN_R: //mxd. ASEQ_CLIMB_DOWN_L in original logic.
-				case ASEQ_CLIMB_DOWN_START_R:
-					if (!rope_sound_played)
-						PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
-					return ASEQ_CLIMB_SETTLE_L;
-			}
-		}
-		else
-		{
-			const int chance = irand(1, 4);
-
-			switch (info->lowerseq)
-			{
-				case ASEQ_CLIMB_DOWN_R:
-				case ASEQ_CLIMB_DOWN_START_R:
-					if (!rope_sound_played && chance < 3)
-						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
-					return ASEQ_CLIMB_DOWN_L;
-
-				case ASEQ_CLIMB_DOWN_L:
-				case ASEQ_CLIMB_DOWN_START_L:
-					if (!rope_sound_played && chance < 3)
-						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
-					return ASEQ_CLIMB_DOWN_R;
-
-				case ASEQ_CLIMB_ON:
-				case ASEQ_CLIMB_UP_L:
-				case ASEQ_CLIMB_UP_START_L:
-				case ASEQ_CLIMB_HOLD_L: //mxd. ASEQ_CLIMB_HOLD_R in original logic.
-				case ASEQ_CLIMB_SETTLE_L:
-					if (!rope_sound_played && chance < 3)
-						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
-					return ASEQ_CLIMB_DOWN_START_L;
-
-				case ASEQ_CLIMB_UP_R:
-				case ASEQ_CLIMB_UP_START_R:
-				case ASEQ_CLIMB_HOLD_R: //mxd. ASEQ_CLIMB_HOLD_L in original logic.
-				case ASEQ_CLIMB_SETTLE_R:
-					if (!rope_sound_played && chance < 3)
-						PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
-					return ASEQ_CLIMB_DOWN_START_R;
-			}
-		}
-	}
-	else if (info->seqcmd[ACMDL_JUMP]) // Jump off the rope.
-	{
-		info->flags &= ~PLAYER_FLAG_ONROPE;
-		info->flags |= PLAYER_FLAG_USE_ENT_POS;
-		VectorCopy(rope->velocity, info->velocity);
-		info->velocity[2] = 150.0f;
-
-		player->monsterinfo.jump_time = info->leveltime + ROPE_MOVE_DEBOUNCE_DELAY;
-
-		rope->s.effects &= ~EF_ALTCLIENTFX;
-		player->targetEnt->enemy = NULL;
-		player->targetEnt = NULL;
-
-		P_PlayerAnimSetUpperSeq(info, ASEQ_NONE);
-
-		return ASEQ_JUMPFWD;
-	}
-	else // Pick idle animation.
-	{
 		switch (info->lowerseq)
 		{
 			case ASEQ_CLIMB_HOLD_R:
@@ -379,16 +366,14 @@ int G_BranchLwrClimbing(playerinfo_t* info) // Called from BranchLwrClimbing() -
 			case ASEQ_CLIMB_UP_START_L:
 			case ASEQ_CLIMB_DOWN_L: //mxd. ASEQ_CLIMB_DOWN_R in original logic.
 			case ASEQ_CLIMB_DOWN_START_L:
-				if (!rope_sound_played)
-					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+				PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 				return ASEQ_CLIMB_SETTLE_R;
 
 			case ASEQ_CLIMB_UP_R:
 			case ASEQ_CLIMB_UP_START_R:
 			case ASEQ_CLIMB_DOWN_R: //mxd. ASEQ_CLIMB_DOWN_L in original logic.
 			case ASEQ_CLIMB_DOWN_START_R:
-				if (!rope_sound_played)
-					PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+				PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
 				return ASEQ_CLIMB_SETTLE_L;
 		}
 	}
@@ -396,11 +381,125 @@ int G_BranchLwrClimbing(playerinfo_t* info) // Called from BranchLwrClimbing() -
 	return ASEQ_NONE;
 }
 
-qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) // Called from PlayerActionCheckRopeGrab() --mxd. //TODO: remove 'stomp_org' arg?
+static int PlayerActionRopeClimbDownAnimation(const playerinfo_t* info) //mxd
+{
+	const edict_t* player = info->self;
+	edict_t* rope = player->targetEnt->rope_grab;
+
+	Vec3ScaleAssign(0.9f, rope->velocity); // Settle down the rope when climbing... 
+	const int chance = irand(1, 4);
+
+	switch (info->lowerseq)
+	{
+		case ASEQ_CLIMB_DOWN_R:
+		case ASEQ_CLIMB_DOWN_START_R:
+			if (chance < 3)
+				PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
+			return ASEQ_CLIMB_DOWN_L;
+
+		case ASEQ_CLIMB_DOWN_L:
+		case ASEQ_CLIMB_DOWN_START_L:
+			if (chance < 3)
+				PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
+			return ASEQ_CLIMB_DOWN_R;
+
+		case ASEQ_CLIMB_ON:
+		case ASEQ_CLIMB_UP_L:
+		case ASEQ_CLIMB_UP_START_L:
+		case ASEQ_CLIMB_HOLD_L: //mxd. ASEQ_CLIMB_HOLD_R in original logic.
+		case ASEQ_CLIMB_SETTLE_L:
+			if (chance < 3)
+				PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
+			return ASEQ_CLIMB_DOWN_START_L;
+
+		case ASEQ_CLIMB_UP_R:
+		case ASEQ_CLIMB_UP_START_R:
+		case ASEQ_CLIMB_HOLD_R: //mxd. ASEQ_CLIMB_HOLD_L in original logic.
+		case ASEQ_CLIMB_SETTLE_R:
+			if (chance < 3)
+				PlayerClimbSound(info, va("player/ropeclimb%i.wav", chance));
+			return ASEQ_CLIMB_DOWN_START_R;
+
+		default:
+			return ASEQ_NONE;
+	}
+}
+
+static int PlayerActionRopeSwingAnimation(const playerinfo_t* info) //mxd
+{
+	switch (info->lowerseq)
+	{
+		case ASEQ_CLIMB_HOLD_R:
+		case ASEQ_CLIMB_SETTLE_R:
+			PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+			return ASEQ_CLIMB_HOLD_R;
+
+		case ASEQ_CLIMB_ON:
+		case ASEQ_CLIMB_HOLD_L:
+		case ASEQ_CLIMB_SETTLE_L:
+			PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+			return ASEQ_CLIMB_HOLD_L;
+
+		default:
+			return ASEQ_NONE;
+	}
+}
+
+static int PlayerActionRopeIdleAnimation(const playerinfo_t* info) //mxd
+{
+	switch (info->lowerseq)
+	{
+		case ASEQ_CLIMB_HOLD_R:
+		case ASEQ_CLIMB_SETTLE_R:
+			return ASEQ_CLIMB_HOLD_R;
+
+		case ASEQ_CLIMB_ON:
+		case ASEQ_CLIMB_HOLD_L:
+		case ASEQ_CLIMB_SETTLE_L:
+			return ASEQ_CLIMB_HOLD_L;
+
+		case ASEQ_CLIMB_UP_L:
+		case ASEQ_CLIMB_UP_START_L:
+		case ASEQ_CLIMB_DOWN_L: //mxd. ASEQ_CLIMB_DOWN_R in original logic.
+		case ASEQ_CLIMB_DOWN_START_L:
+			PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+			return ASEQ_CLIMB_SETTLE_R;
+
+		case ASEQ_CLIMB_UP_R:
+		case ASEQ_CLIMB_UP_START_R:
+		case ASEQ_CLIMB_DOWN_R: //mxd. ASEQ_CLIMB_DOWN_L in original logic.
+		case ASEQ_CLIMB_DOWN_START_R:
+			PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+			return ASEQ_CLIMB_SETTLE_L;
+
+		default:
+			return ASEQ_NONE;
+	}
+}
+
+int G_BranchLwrClimbing(playerinfo_t* info) // Called from BranchLwrClimbing() --mxd.
 {
 	assert(info != NULL);
 
-	const edict_t* rope = (edict_t*)info->targetEnt;
+	if (info->seqcmd[ACMDL_FWD] || info->seqcmd[ACMDL_BACK] || info->seqcmd[ACMDL_STRAFE_L] || info->seqcmd[ACMDL_STRAFE_R]) // Process movement commands.
+		return PlayerActionRopeSwingAnimation(info);
+
+	if (info->seqcmd[ACMDL_JUMP]) // Climb up.
+		return PlayerActionRopeClimbUpAnimation(info);
+
+	if (info->seqcmd[ACMDL_CROUCH]) // Climb down.
+		return PlayerActionRopeClimbDownAnimation(info);
+
+	return PlayerActionRopeIdleAnimation(info);
+}
+
+#pragma endregion
+
+#pragma region ========================== Player rope action functions ==========================
+
+qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) // Called from PlayerActionCheckRopeGrab() --mxd. //TODO: remove 'stomp_org' arg?
+{
+	edict_t* rope = (edict_t*)info->targetEnt;
 
 	// Get the position of the rope's end.
 	const vec3_t rope_end = VEC3_INIT(rope->rope_end->s.origin);
@@ -439,6 +538,10 @@ qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) // Cal
 		VectorCopy(info->origin, rope->rope_grab->s.origin);
 		VectorSubtract(info->origin, rope_top, vec);
 		rope->rope_grab->rope_player_z = VectorLength(vec);
+
+		monsterinfo_t* rope_info = &rope->rope_grab->monsterinfo; //mxd
+		rope_info->rope_player_initial_swing_speed = 0.0f;
+		rope_info->rope_player_current_swing_speed = 0.0f;
 	}
 	else
 	{

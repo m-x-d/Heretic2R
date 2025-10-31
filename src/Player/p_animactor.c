@@ -197,7 +197,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info) // Called by CL_PredictMovem
 			self->targetEnt->enemy = NULL;
 			self->targetEnt = NULL;
 
-			self->monsterinfo.jump_time = info->leveltime + 2.0f;
+			self->monsterinfo.rope_jump_debounce_time = info->leveltime + ROPE_JUMP_DEBOUNCE_DELAY;
 			info->flags &= ~(PLAYER_FLAG_RELEASEROPE | PLAYER_FLAG_ONROPE);
 
 			if (!(info->edictflags & FL_CHICKEN))
@@ -209,10 +209,10 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info) // Called by CL_PredictMovem
 		}
 	}
 	else if (!(info->flags & PLAYER_FLAG_ONROPE) && !(info->flags & PLAYER_FLAG_RELEASEROPE) &&
-		info->targetEnt != NULL && info->groundentity == NULL && self->monsterinfo.jump_time < info->leveltime &&
+		info->targetEnt != NULL && info->groundentity == NULL && self->monsterinfo.rope_jump_debounce_time < info->leveltime &&
 		PlayerActionCheckRopeGrab(info, 0.0f) && info->deadflag == DEAD_NO) // Climb a rope?
 	{
-		self->monsterinfo.jump_time = info->leveltime + 4.0f;
+		self->monsterinfo.rope_jump_debounce_time = info->leveltime + ROPE_JUMP_DEBOUNCE_DELAY * 2.0f;
 		info->flags |= PLAYER_FLAG_ONROPE;
 
 		P_Sound(info, SND_PRED_ID37, CHAN_VOICE, "player/ropegrab.wav", 0.75f); //mxd

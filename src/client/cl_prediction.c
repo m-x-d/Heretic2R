@@ -652,7 +652,10 @@ void CL_PredictMovement(void)
 
 	const int dist = abs(delta[0]) + abs(delta[1]) + abs(delta[2]);
 
-	if (dist > MIN_TELEPORT_DISTANCE) //BUGFIX: mxd. Original logic compares distance, not distance * 8. //TODO: original logic uses '>=' check here, but not in similar case in CL_CheckPredictionError(). Also a bug?
+	//BUGFIX: mxd. Original logic compares distance, not distance * 8.
+	//TODO: original logic uses '>=' check here, but not in similar case in CL_CheckPredictionError(). Also a bug?
+	//mxd. Add PLAYER_FLAG_ONROPE check. We CAN move more than 80 world units when swinging...
+	if (dist > MIN_TELEPORT_DISTANCE && !(cl.playerinfo.flags & PLAYER_FLAG_ONROPE)) 
 	{
 		// Assume ETHEREAL TRAVEL.
 		VectorCopy(cl.playerinfo.origin, cl.predicted_origin);

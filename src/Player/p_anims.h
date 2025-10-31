@@ -21,12 +21,16 @@ extern PLAYER_API void PlayerPlayPain(const playerinfo_t *info, int type);
 
 extern int PlayerAnimWeaponSwitch(playerinfo_t *info);
 
-enum seq_cmd_e 
+enum seq_cmd_e
 {
 	ACMD_NONE,
+
+	// Upper animation sequence commands.
 	ACMDU_ATTACK,
-	ACMDU_SWITCHWPN,
-	ACMDU_DEFSPELL,
+	ACMDU_SWITCHWPN, //TODO: unused, seqcmd[ACMDU_SWITCHWPN] never set.
+	ACMDU_DEFSPELL, //TODO: unused, seqcmd[ACMDU_DEFSPELL] never set.
+
+	// Lower animation sequence commands.
 	ACMDL_ACTION,
 	ACMDL_JUMP,
 	ACMDL_CROUCH,

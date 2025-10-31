@@ -11,7 +11,8 @@
 #include "Message.h"
 #include "FX.h" //mxd
 
-#define MAX_BUOY_BRANCHES	3
+#define MAX_BUOY_BRANCHES			3
+#define ROPE_JUMP_DEBOUNCE_DELAY	2.0f //mxd
 
 #ifdef __cplusplus
 	class CScript;

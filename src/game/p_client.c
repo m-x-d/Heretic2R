@@ -931,7 +931,7 @@ void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage,
 		self->targetEnt->count = 0;
 		self->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
 
-		self->monsterinfo.jump_time = level.time + 10;
+		self->monsterinfo.rope_jump_debounce_time = level.time + 10.0f;
 		self->client->playerinfo.flags |= PLAYER_FLAG_RELEASEROPE;
 		self->client->playerinfo.flags &= ~PLAYER_FLAG_ONROPE;
 
@@ -1026,7 +1026,7 @@ void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage,
 
 				// Won't get sent to client if modelindex is 0 unless SVF_ALWAYS_SEND flag is set.
 				self->svflags |= SVF_ALWAYS_SEND;
-				self->s.effects |= EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS;
+				self->s.effects |= (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
 			}
 			else if ((self->client->playerinfo.flags & PLAYER_FLAG_SURFSWIM) || self->waterlevel > 1)
 			{

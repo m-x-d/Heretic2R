@@ -306,7 +306,7 @@ enum
 	SND_PRED_ID1,
 	SND_PRED_ID2,
 	SND_PRED_ID3,
-	SND_PRED_ID4,	// Unused.
+	SND_PRED_ID4,	//mxd. Unused in original logic.
 	SND_PRED_ID5,
 	SND_PRED_ID6,
 	SND_PRED_ID7,

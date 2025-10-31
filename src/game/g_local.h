@@ -451,22 +451,26 @@ typedef struct
 	{
 		float flee_finished; // When a monster is done fleeing.
 		qboolean morcalavin_quake_finished; //mxd
-		float rope_right_debounce_time; //mxd
+		float rope_player_current_swing_speed; //mxd
 	};
 
 	union
 	{
 		float chase_finished;	// When the monster can look for secondary monsters.
-		float rope_backward_debounce_time; //mxd
+		float rope_player_initial_swing_speed; //mxd
 	};
 
-	vec3_t saved_goal;
+	union
+	{
+		vec3_t saved_goal;
+		vec3_t rope_player_swing_direction; //mxd
+	};
 
 	union
 	{
 		float search_time;
 		float priestess_attack_delay; //mxd
-		float rope_left_debounce_time; //mxd
+		float rope_sound_debounce_time; //mxd
 	};
 	
 	float misc_debounce_time;
@@ -490,15 +494,12 @@ typedef struct
 		float jump_time;
 		float morcalavin_teleport_attack_time; //mxd
 		float ogle_sing_time; //mxd
-		float rope_forward_debounce_time; //mxd
+		float rope_jump_debounce_time; // Delay after jumping from rope before trying to grab another rope -- mxd.
 	};
 
 	int morcalavin_battle_phase; //mxd. Named 'stepState' in original logic.
-
-	int ogleflags; // Ogles have special spawnflags stored in here at spawntime.
-
-	int supporters; // Number of supporting monsters (with common type) in the area when awoken.
-
+	int ogleflags;			// Ogles have special spawnflags stored in here at spawntime.
+	int supporters;			// Number of supporting monsters (with common type) in the area when awoken.
 	float sound_finished;	// Amount of time until the monster will be finishing talking (used for voices).
 
 	union
