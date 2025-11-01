@@ -180,18 +180,14 @@ static void PlayerActionRopeSwingCommand(const playerinfo_t* info) //mxd. Assume
 	edict_t* rope = player->targetEnt->rope_grab;
 	monsterinfo_t* rope_info = &rope->monsterinfo;
 
-	// Already swinging...
-	if (rope_info->rope_player_current_swing_speed > 1.0f)
-		return;
-
 	// Calculate swing direction and speed.
-	vec3_t swing_dir = VEC3_ZERO;
-	float fwd_vel = 0.0f;
-	float side_vel = 0.0f;
-
 	vec3_t forward;
 	vec3_t right;
 	AngleVectors(info->angles, forward, right, NULL); // Use player's horizontal forwards direction.
+
+	vec3_t swing_dir = VEC3_ZERO;
+	float fwd_vel = 0.0f;
+	float side_vel = 0.0f;
 
 	if (info->seqcmd[ACMDL_FWD])
 	{
@@ -215,16 +211,25 @@ static void PlayerActionRopeSwingCommand(const playerinfo_t* info) //mxd. Assume
 		side_vel = 200.0f;
 	}
 
-	// Store for G_PlayerActionCheckRopeMove()...
-	const float velocity = max(fwd_vel, side_vel);
-	rope_info->rope_player_initial_swing_speed = velocity;
-	rope_info->rope_player_current_swing_speed = velocity;
-
 	VectorNormalize(swing_dir);
-	VectorCopy(swing_dir, rope_info->rope_player_swing_direction);
 
-	// Make ropey noises.
-	PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+	// If already swinging, adjust current swing direction.
+	if (rope_info->rope_player_current_swing_speed > 1.0f)
+	{
+		if (DotProduct(swing_dir, rope_info->rope_player_swing_direction) > 0.0f) // Otherwise swing_dir differs too much...
+			VectorLerp(rope_info->rope_player_swing_direction, 0.5f, swing_dir, rope_info->rope_player_swing_direction);
+	}
+	else // Store for G_PlayerActionCheckRopeMove().
+	{
+		const float velocity = max(fwd_vel, side_vel);
+		rope_info->rope_player_initial_swing_speed = velocity;
+		rope_info->rope_player_current_swing_speed = velocity;
+
+		VectorCopy(swing_dir, rope_info->rope_player_swing_direction);
+
+		// Make ropey noises.
+		PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+	}
 }
 
 static void ApplyPlayerRopeSwingVelocity(const playerinfo_t* info) //mxd
