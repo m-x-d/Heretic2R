@@ -226,7 +226,7 @@ extern void SV_SendPrepClientMessages(void); // YQ2
 
 // sv_user.c
 extern void SV_Nextserver(void);
-extern void SV_ExecuteClientMessage(client_t* cl);
+extern void SV_ExecuteClientMessage(client_t* client);
 
 // sv_world.c
 extern void SV_ClearWorld(void);

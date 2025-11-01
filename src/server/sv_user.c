@@ -437,7 +437,7 @@ static void SV_ClientThink(client_t* client, usercmd_t* cmd)
 }
 
 // The current net_message is parsed for the given client.
-void SV_ExecuteClientMessage(client_t* cl)
+void SV_ExecuteClientMessage(client_t* client)
 {
 #define MAX_STRINGCMDS	8
 
@@ -446,8 +446,8 @@ void SV_ExecuteClientMessage(client_t* cl)
 	usercmd_t oldcmd;
 	usercmd_t newcmd;
 
-	sv_client = cl;
-	sv_player = cl->edict;
+	sv_client = client;
+	sv_player = client->edict;
 
 	// Only allow one move command.
 	qboolean move_issued = false;
@@ -458,7 +458,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 		if (net_message.readcount > net_message.cursize)
 		{
 			Com_Printf("SV_ReadClientMessage: badread\n");
-			SV_DropClient(cl);
+			SV_DropClient(client);
 
 			return;
 		}
@@ -482,12 +482,12 @@ void SV_ExecuteClientMessage(client_t* cl)
 				const int checksum = MSG_ReadByte(&net_message);
 				const int lastframe = MSG_ReadLong(&net_message);
 
-				if (lastframe != cl->lastframe)
+				if (lastframe != client->lastframe)
 				{
-					cl->lastframe = lastframe;
+					client->lastframe = lastframe;
 
 					if (lastframe > 0)
-						cl->frame_latency[lastframe & (LATENCY_COUNTS - 1)] = svs.realtime - cl->frames[lastframe & UPDATE_MASK].senttime;
+						client->frame_latency[lastframe & (LATENCY_COUNTS - 1)] = svs.realtime - client->frames[lastframe & UPDATE_MASK].senttime;
 				}
 
 				memset(&nullcmd, 0, sizeof(nullcmd));
@@ -495,10 +495,10 @@ void SV_ExecuteClientMessage(client_t* cl)
 				MSG_ReadDeltaUsercmd(&net_message, &oldest, &oldcmd);
 				MSG_ReadDeltaUsercmd(&net_message, &oldcmd, &newcmd);
 
-				if (cl->state != cs_spawned)
+				if (client->state != cs_spawned)
 				{
-					cl->lastframe = -1;
-					SV_RemoveEdictFromPersistantEffectsArray(cl->edict); // H2
+					client->lastframe = -1;
+					SV_RemoveEdictFromPersistantEffectsArray(client->edict); // H2
 
 					break;
 				}
@@ -506,42 +506,42 @@ void SV_ExecuteClientMessage(client_t* cl)
 				// If the checksum fails, ignore the rest of the packet.
 				const byte* base = net_message.data + checksum_index + 1;
 				const int length = net_message.readcount - checksum_index - 1;
-				const int sequence = cl->netchan.incoming_sequence;
+				const int sequence = client->netchan.incoming_sequence;
 				const byte calculatedChecksum = COM_BlockSequenceCheckByte(base, length, sequence);
 				if (calculatedChecksum != checksum)
 				{
-					Com_DPrintf("Failed command checksum for %s\n", cl->name); // H2: less verbose message
+					Com_DPrintf("Failed command checksum for %s\n", client->name); // H2: less verbose message
 					return;
 				}
 
 				// H2: extra sv_freezeworldset check
 				if (!(int)sv_paused->value && !(int)sv_freezeworldset->value)
 				{
-					int net_drop = cl->netchan.dropped;
+					int net_drop = client->netchan.dropped;
 					if (net_drop < 20)
 					{
 						while (net_drop > 2)
 						{
-							SV_ClientThink(cl, &cl->lastcmd);
+							SV_ClientThink(client, &client->lastcmd);
 							net_drop--;
 						}
 
 						if (net_drop > 1)
-							SV_ClientThink(cl, &oldest);
+							SV_ClientThink(client, &oldest);
 
 						if (net_drop > 0)
-							SV_ClientThink(cl, &oldcmd);
+							SV_ClientThink(client, &oldcmd);
 					}
 
-					SV_ClientThink(cl, &newcmd);
+					SV_ClientThink(client, &newcmd);
 				}
 
-				cl->lastcmd = newcmd;
+				client->lastcmd = newcmd;
 			} break;
 
 			case clc_userinfo:
-				strncpy_s(cl->userinfo, sizeof(cl->userinfo), MSG_ReadString(&net_message), sizeof(cl->userinfo) - 1); //mxd. strncpy -> strncpy_s
-				SV_UserinfoChanged(cl);
+				strncpy_s(client->userinfo, sizeof(client->userinfo), MSG_ReadString(&net_message), sizeof(client->userinfo) - 1); //mxd. strncpy -> strncpy_s
+				SV_UserinfoChanged(client);
 				break;
 
 			case clc_stringcmd:
@@ -552,20 +552,20 @@ void SV_ExecuteClientMessage(client_t* cl)
 				if (++stringCmdCount < MAX_STRINGCMDS)
 					SV_ExecuteUserCommand(s);
 
-				if (cl->state == cs_zombie)
+				if (client->state == cs_zombie)
 					return; // Disconnect command.
 			} break;
 
 			case clc_startdemo: // H2
-				if (cl->state == cs_zombie)
+				if (client->state == cs_zombie)
 					return; // Disconnect command.
 
-				SV_RemoveDemoEdictFromPersistantEffectsArray(cl);
+				SV_RemoveDemoEdictFromPersistantEffectsArray(client);
 				break;
 
 			default:
 				Com_Printf("SV_ReadClientMessage: unknown command char\n");
-				SV_DropClient(cl);
+				SV_DropClient(client);
 				return;
 		}
 	}
