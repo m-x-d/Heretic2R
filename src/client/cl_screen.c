@@ -1048,15 +1048,34 @@ static void SCR_DrawFramecounter(void) //mxd
 //mxd. Draw fade-in effect during program initialization for smoother user experience.
 static void SCR_DrawInitialFadeIn(void)
 {
-	if (cls.realtime < 400)
-	{
-		// Draw fill.
-		const float alpha = (cls.realtime < 200 ? 1.0f : 1.0f - (float)(cls.realtime - 200) / 200.0f);
-		paletteRGBA_t color = TextPalette[P_BLACK];
-		color.a = (byte)(alpha * 255.0f);
+#define INITIAL_FADE_IN_DELAY	200
 
-		re.DrawFill(0, 0, viddef.width, viddef.height, color);
+	static qboolean draw_fade = true;
+	static int fade_end_time = INT_MAX;
+
+	if (!draw_fade)
+		return;
+
+	// Disable fade when we are loading something, showing cinematic or fade-in animation ended.
+	if (scr_progressbar_width > 0 || cl.cinematictime > 0 || fade_end_time <= cls.realtime)
+	{
+		draw_fade = false;
+		return;
 	}
+
+	paletteRGBA_t color = TextPalette[P_BLACK];
+
+	// Menu fade-in.
+	if (cls.key_dest == key_menu)
+	{
+		if (fade_end_time == INT_MAX)
+			fade_end_time = cls.realtime + INITIAL_FADE_IN_DELAY;
+
+		const float alpha = (float)(fade_end_time - cls.realtime) / (float)INITIAL_FADE_IN_DELAY; // [1.0f .. 0.0f]
+		color.a = (byte)(alpha * 255.0f);
+	}
+
+	re.DrawFill(0, 0, viddef.width, viddef.height, color);
 }
 
 // This is called every frame, and can also be called explicitly to flush text to the screen.
