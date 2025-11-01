@@ -33,14 +33,13 @@ void PhysicsCheckWaterTransition(edict_t* self)
 	self->watertype = gi.pointcontents(self->s.origin);
 	const qboolean isinwater = (self->watertype & MASK_WATER);
 
-	if (wasinwater == isinwater)
-		return;
-
 	trace_t trace;
 	if (!wasinwater && isinwater)
 		gi.trace(self->s.old_origin, vec3_origin, vec3_origin, self->s.origin, self, MASK_WATER, &trace);
 	else if (wasinwater && !isinwater)
 		gi.trace(self->s.origin, vec3_origin, vec3_origin, self->s.old_origin, self, MASK_WATER, &trace);
+	else // wasinwater == isinwater.
+		return;
 
 	if (trace.fraction == 1.0f)
 		return;
