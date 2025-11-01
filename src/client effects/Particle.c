@@ -70,8 +70,9 @@ int AddParticlesToView(client_entity_t* ce)
 
 	for (prev = &ce->p_root, current = ce->p_root; current != NULL; current = current->next)
 	{
-#ifdef _DEBUG
+#if _DEBUG
 		const int ptype = (current->type & PFL_FLAG_MASK);
+		assert(ptype < NUM_PARTICLE_TYPES);
 #endif
 
 		const int d_msec = ParticleUpdateTime - current->startTime;
@@ -80,10 +81,7 @@ int AddParticlesToView(client_entity_t* ce)
 
 		// PULSE ALPHA means that once alpha is at max, reverse and head back down.
 		if (alpha > 255 && ((current->type & PFL_PULSE_ALPHA) || (ce->flags & CEF_PULSE_ALPHA)))
-		{
-			// A weird thing to do, but necessary because the alpha is based off a dtime from the CREATION of the particle.
-			alpha = 255 - (alpha - 255);
-		}
+			alpha = 255 - (alpha - 255); // A weird thing to do, but necessary because the alpha is based off a dtime from the CREATION of the particle.
 
 		// Add to additive particle list.
 		if ((ce->flags & CEF_ADDITIVE_PARTS) || (current->type & PFL_ADDITIVE))
@@ -102,8 +100,6 @@ int AddParticlesToView(client_entity_t* ce)
 			r = &fxi.cls->r_particles[fxi.cls->r_numparticles];
 			part_info = 2;
 		}
-
-		assert(ptype < NUM_PARTICLE_TYPES);
 
 		r->type = current->type;
 		r->color.c = current->color.c;
