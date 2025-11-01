@@ -8,7 +8,7 @@
 
 #include "q_shared.h"
 
-#define MAX_POLY_VERTS 6
+#define MAX_POLY_VERTS 6 //TODO: unused.
 
 typedef struct Poly_s
 {
@@ -22,6 +22,6 @@ typedef struct Surface_s
 {
 	cplane_t* plane;
 	vec3_t normal;
-	vec3_t point; // Point of intersection with line segment used to find the surface
+	vec3_t point; // Point of intersection with line segment used to find the surface.
 	Poly_t poly;
 } Surface_t;
