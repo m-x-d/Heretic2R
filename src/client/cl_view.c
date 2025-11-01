@@ -115,7 +115,7 @@ void CL_PrepRefresh(void)
 	cl.force_refdef = true; // Make sure we have a valid refdef.
 
 	IN_Update(); // H2. Pump message loop.
-	cls.key_dest = 0; // H2
+	cls.key_dest = key_game; // H2
 
 	// Start the cd track.
 	se.MusicPlay(Q_atoi(cl.configstrings[CS_CDTRACK]), true); //mxd. CDAudio_Play() in original logic.
