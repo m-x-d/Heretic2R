@@ -57,7 +57,7 @@ static void PF_cprintf(const edict_t* ent, const int level, const char* fmt, ...
 {
 	char msg[1024];
 	va_list argptr;
-	int n;
+	int n = 1; //mxd. Initialize to avoid compiler warning.
 
 	if (ent != NULL)
 	{
@@ -80,7 +80,7 @@ static void PF_clprintf(const edict_t* ent, const edict_t* from, const int color
 {
 	char msg[1024];
 	va_list argptr;
-	int n;
+	int n = 1; //mxd. Initialize to avoid compiler warning.
 
 	if (ent != NULL)
 	{
