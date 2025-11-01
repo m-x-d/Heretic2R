@@ -409,7 +409,7 @@ static void TutorialChickenSpawn(edict_t* self) //mxd. Named 'spawn_hanging_chic
 
 #pragma region ========================== obj_rope ==========================
 
-static void ObjRopeThink(edict_t* self) //mxd. Named 'rope_think' in original logic.
+static void ObjRopeUpdateUser(edict_t* self) //mxd. Named 'rope_think' in original logic.
 {
 	//FIXME!!! Do a trace down rope to make sure the rope does not clip through stuff!
 	if (self->rope_user == NULL)
@@ -452,7 +452,7 @@ static void ObjRopeThink(edict_t* self) //mxd. Named 'rope_think' in original lo
 			else
 			{
 				// Otherwise stop the player and the rope from entering a solid brush.
-				VectorScale(self->rope_grab->velocity, -0.5f, self->rope_grab->velocity);
+				Vec3ScaleAssign(-0.5f, self->rope_grab->velocity);
 				VectorCopy(self->rope_user->s.origin, self->rope_grab->s.origin);
 			}
 		}
@@ -469,7 +469,7 @@ static void ObjRopeThink(edict_t* self) //mxd. Named 'rope_think' in original lo
 	}
 }
 
-static void ObjRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think' in original logic.
+static void ObjRopeUpdateRopeEnd(edict_t* self) //mxd. Named 'rope_end_think' in original logic.
 {
 	edict_t* grab = self->rope_end;
 
@@ -507,7 +507,7 @@ static void ObjRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think' in orig
 	VectorMA(rope_top, grab_len, end_vel, grab->s.origin);
 }
 
-static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original logic.
+static void ObjRopeThink(edict_t* self) //mxd. Named 'rope_sway' in original logic.
 {
 	edict_t* grab = self->rope_grab;
 
@@ -532,7 +532,7 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 
 		VectorMA(rope_top, grab->rope_player_z, v_rope, grab->s.origin);
 
-		ObjRopeThink(self);
+		ObjRopeUpdateUser(self);
 		self->nextthink = level.time + FRAMETIME;
 
 		return;
@@ -578,17 +578,18 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 	VectorCopy(grab_end, self->pos1);
 
 	// Make the end of the rope come to the end.
-	ObjRopeEndThink(self);
-	ObjRopeThink(self);
+	ObjRopeUpdateRopeEnd(self);
+	ObjRopeUpdateUser(self);
 
 	self->nextthink = level.time + FRAMETIME;
 }
 
 static void ObjRopeTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'rope_touch' in original logic.
 {
-	if (Q_stricmp(other->classname, "player") == 0) //mxd. stricmp -> Q_stricmp
+	//TODO: make rope sway when touched by other entities (will need to update ObjRopeThink (and fx_rope?) logic to sway based on velocity only, without valid rope_grab/rope_player_z).
+	if (other->client != NULL) //mxd. stricmp(other->classname, "player") -> other->client check.
 	{
-		// If the player is already on a rope, forget him as a valid grabber
+		// If the player is already on a rope, forget him as a valid grabber.
 		if (other->rope != NULL && (other->client->playerinfo.flags & PLAYER_FLAG_ONROPE))
 			return;
 
@@ -607,7 +608,6 @@ static void ObjRopeTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfac
 // Place the top of the entity at the top of the rope, and drag the bottom of the box to the end of the rope.
 // THE ENTITY MUST HAVE AN ORIGIN BRUSH.
 // Spawnflags:
-// ROPE		- Default.
 // VINE		- Use a vine model.
 // CHAIN	- Use a chain model.
 // TENDRIL	- Use a tendril model.
@@ -687,12 +687,12 @@ void SP_obj_rope(edict_t* self)
 	grab_ent->rope_type = model_type;
 	end_ent->rope_type = model_type;
 
-	ObjRopeSwayThink(self);
+	ObjRopeThink(self);
 
 	gi.CreatePersistantEffect(&self->s, FX_ROPE, CEF_BROADCAST, self->s.origin, "ssbvvv", grab_id, end_id, model_type, self->s.origin, grab_ent->s.origin, end_ent->s.origin);
 
-	self->think = ObjRopeSwayThink;
-	self->nextthink = level.time + 1.0f;
+	self->think = ObjRopeThink;
+	self->nextthink = level.time + FRAMETIME;
 
 	gi.linkentity(self);
 }
