@@ -229,7 +229,7 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 	// Create the rope piece that hangs from the top to the end of the rope, while the player is NOT on it.
 	if (!is_attached)
 	{
-		client_entity_t* rope = ClientEntity_new(FX_ROPE, 0, origin, NULL, 17);
+		client_entity_t* rope = ClientEntity_new(FX_ROPE, 0, origin, NULL, 0); //mxd. next_think_time 17 in original logic. Set to 0 to update each frame.
 
 		rope->radius = radius;
 		rope->r.model = &rope_models[model_type];
