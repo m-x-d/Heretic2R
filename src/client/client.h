@@ -562,7 +562,6 @@ extern cvar_t* cl_camera_fpoffs;
 extern cvar_t* cl_camera_freeze;
 extern cvar_t* cl_camera_under_surface;
 extern cvar_t* cl_camera_viewdist;
-extern cvar_t* cl_camera_viewmin;
 extern cvar_t* cl_camera_viewmax;
 
 extern cvar_t* cl_camera_fpmode; // First person mode

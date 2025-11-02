@@ -86,7 +86,6 @@ cvar_t* cl_camera_fpoffs;
 cvar_t* cl_camera_freeze;
 cvar_t* cl_camera_under_surface;
 cvar_t* cl_camera_viewdist;
-cvar_t* cl_camera_viewmin;
 cvar_t* cl_camera_viewmax;
 cvar_t* cl_camera_fpmode;
 cvar_t* cl_camera_fptrans;
@@ -1138,7 +1137,7 @@ static void CL_InitLocal(void)
 	adr7 = Cvar_Get("adr7", "", CVAR_ARCHIVE);
 	adr8 = Cvar_Get("adr8", "", CVAR_ARCHIVE);
 
-	// Register our variables
+	// Register our variables.
 	cl_stereo_separation = Cvar_Get("cl_stereo_separation", "0.4", CVAR_ARCHIVE);
 	cl_stereo = Cvar_Get("cl_stereo", "0", 0);
 	cl_add_blend = Cvar_Get("cl_blend", "1", 0);
@@ -1192,7 +1191,6 @@ static void CL_InitLocal(void)
 	cl_camera_freeze = Cvar_Get("cl_camera_freeze", "0.0", 0);
 	cl_camera_under_surface = Cvar_Get("cl_camera_under_surface", "0.0", 0);
 	cl_camera_viewdist = Cvar_Get("cl_camera_viewdist", "126.0", 0);
-	cl_camera_viewmin = Cvar_Get("cl_camera_viewmin", "70.0", 0);
 	cl_camera_viewmax = Cvar_Get("cl_camera_viewmax", "200.0", 0);
 	cl_camera_fpmode = Cvar_Get("cl_camera_fpmode", "0", CVAR_ARCHIVE);
 	cl_camera_fptrans = Cvar_Get("cl_camera_fptrans", "0.3", CVAR_ARCHIVE); // H2_1.07: "0.3" -> "0".
@@ -1224,7 +1222,7 @@ static void CL_InitLocal(void)
 	colour_game = Cvar_Get("colour_game", "17", CVAR_ARCHIVE); // H2_1.07: "17" -> "20".
 	game_downloadable_type = Cvar_Get("game_downloadable_type", "0", 0);
 
-	// Register our commands
+	// Register our commands.
 	Cmd_AddCommand("cmd", CL_ForwardToServer_f);
 	Cmd_AddCommand("pause", CL_Pause_f);
 
@@ -1250,7 +1248,7 @@ static void CL_InitLocal(void)
 	Cmd_AddCommand("precache", CL_Precache_f);
 	//Cmd_AddCommand("config", CL_Config_f); //mxd. Skip GameSpy config logic.
 
-	// Forward to server commands
+	// Forward to server commands.
 	Cmd_AddCommand("kill", NULL);
 	Cmd_AddCommand("use", NULL);
 	Cmd_AddCommand("say", NULL);
