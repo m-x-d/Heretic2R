@@ -9,7 +9,7 @@
 
 cvar_t* m_banner_address;
 
-#define NUM_ADDRESSBOOK_ENTRIES	8 // 9 in Q2
+#define NUM_ADDRESSBOOK_ENTRIES	9 // H2: 8
 
 static menuframework_t s_addressbook_menu;
 static menufield_t s_addressbook_fields[NUM_ADDRESSBOOK_ENTRIES];
