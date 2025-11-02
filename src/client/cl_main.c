@@ -18,17 +18,6 @@
 #include "g_playstats.h" //mxd
 #include "Reference.h"
 
-//TODO: used only in CL_InitLocal(). Can be removed?
-static cvar_t* adr0;
-static cvar_t* adr1;
-static cvar_t* adr2;
-static cvar_t* adr3;
-static cvar_t* adr4;
-static cvar_t* adr5;
-static cvar_t* adr6;
-static cvar_t* adr7;
-static cvar_t* adr8;
-
 cvar_t* cl_stereo_separation;
 cvar_t* cl_stereo;
 
@@ -1127,15 +1116,16 @@ static void CL_InitLocal(void)
 	CL_InitInput();
 	ClearIgnoredPlayersList();
 
-	adr0 = Cvar_Get("adr0", "", CVAR_ARCHIVE);
-	adr1 = Cvar_Get("adr1", "", CVAR_ARCHIVE);
-	adr2 = Cvar_Get("adr2", "", CVAR_ARCHIVE);
-	adr3 = Cvar_Get("adr3", "", CVAR_ARCHIVE);
-	adr4 = Cvar_Get("adr4", "", CVAR_ARCHIVE);
-	adr5 = Cvar_Get("adr5", "", CVAR_ARCHIVE);
-	adr6 = Cvar_Get("adr6", "", CVAR_ARCHIVE);
-	adr7 = Cvar_Get("adr7", "", CVAR_ARCHIVE);
-	adr8 = Cvar_Get("adr8", "", CVAR_ARCHIVE);
+	// Used in AddressBook_MenuInit() --mxd.
+	Cvar_Get("adr0", "", CVAR_ARCHIVE);
+	Cvar_Get("adr1", "", CVAR_ARCHIVE);
+	Cvar_Get("adr2", "", CVAR_ARCHIVE);
+	Cvar_Get("adr3", "", CVAR_ARCHIVE);
+	Cvar_Get("adr4", "", CVAR_ARCHIVE);
+	Cvar_Get("adr5", "", CVAR_ARCHIVE);
+	Cvar_Get("adr6", "", CVAR_ARCHIVE);
+	Cvar_Get("adr7", "", CVAR_ARCHIVE);
+	Cvar_Get("adr8", "", CVAR_ARCHIVE);
 
 	// Register our variables.
 	cl_stereo_separation = Cvar_Get("cl_stereo_separation", "0.4", CVAR_ARCHIVE);
