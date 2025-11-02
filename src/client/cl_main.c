@@ -39,8 +39,6 @@ cvar_t* cl_noskins;
 cvar_t* cl_autoskins;
 static cvar_t* cl_timeout;
 cvar_t* cl_predict;
-cvar_t* cl_predict_local; // H2
-cvar_t* cl_predict_remote; // H2
 cvar_t* cl_maxfps;
 
 cvar_t* cl_add_particles;
@@ -459,7 +457,7 @@ H2R_NORETURN void CL_Quit_f(void)
 }
 
 // Q2 counterpart
-// Called after an ERR_DROP was thrown
+// Called after an ERR_DROP was thrown.
 void CL_Drop(void)
 {
 	if (cls.state == ca_uninitialized || cls.state == ca_disconnected)
@@ -467,9 +465,9 @@ void CL_Drop(void)
 
 	CL_Disconnect();
 
-	// Drop loading plaque unless this is the initial game start
+	// Drop loading plaque unless this is the initial game start.
 	if (cls.disable_servercount != -1)
-		SCR_EndLoadingPlaque(); // Get rid of loading plaque
+		SCR_EndLoadingPlaque(); // Get rid of loading plaque.
 }
 
 // Q2 counterpart
@@ -510,26 +508,6 @@ static void CL_CheckForResend(void)
 		return;
 	}
 
-	// H2. Update predict cvars.
-	if (cls.state >= ca_connected)
-	{
-		if (strcmp(cls.servername, "localhost") == 0)
-		{
-			if (cl_predict->value != cl_predict_local->value)
-			{
-				Cvar_SetValue("cl_predict", cl_predict->value);
-				cl_predict_local->value = cl_predict->value;
-				Cvar_SetValue("cl_predict_local", cl_predict_local->value);
-			}
-		}
-		else if (cl_predict->value != cl_predict_remote->value)
-		{
-			Cvar_SetValue("cl_predict", cl_predict->value);
-			cl_predict_remote->value = cl_predict->value;
-			Cvar_SetValue("cl_predict_remote", cl_predict_remote->value);
-		}
-	}
-
 	// Resend if we haven't gotten a reply yet.
 	if (cls.state != ca_connecting || (float)cls.realtime - cls.connect_time < 3000.0f)
 		return;
@@ -545,25 +523,7 @@ static void CL_CheckForResend(void)
 	if (adr.port == 0)
 		adr.port = BigShort(PORT_SERVER);
 
-	// H2. Update cl_predict.
-	if (strcmp(cls.servername, "localhost") == 0)
-	{
-		if (cl_predict->value != cl_predict_local->value)
-		{
-			cl_predict->value = cl_predict_local->value;
-			Cvar_SetValue("cl_predict", cl_predict->value);
-		}
-	}
-	else
-	{
-		if (cl_predict->value != cl_predict_remote->value)
-		{
-			cl_predict->value = cl_predict_remote->value;
-			Cvar_SetValue("cl_predict", cl_predict->value);
-		}
-	}
-
-	cls.connect_time = (float)cls.realtime; // For retransmit requests
+	cls.connect_time = (float)cls.realtime; // For retransmit requests.
 
 	Com_Printf("Connecting to %s...\n", cls.servername);
 	Netchan_OutOfBandPrint(NS_CLIENT, &adr, "getchallenge\n");
@@ -1188,9 +1148,7 @@ static void CL_InitLocal(void)
 	cl_add_entities = Cvar_Get("cl_entities", "1", 0);
 	cl_noskins = Cvar_Get("cl_noskins", "0", 0);
 	cl_autoskins = Cvar_Get("cl_autoskins", "0", 0);
-	cl_predict = Cvar_Get("cl_predict", "0", 0);
-	cl_predict_local = Cvar_Get("cl_predict_local", "0", 0); // H2
-	cl_predict_remote = Cvar_Get("cl_predict_remote", "1", 0); // H2
+	cl_predict = Cvar_Get("cl_predict", "1", 0); // H2: 0
 	cl_maxfps = Cvar_Get("cl_maxfps", "30", 0); // H2_1.07: "30" -> "60".
 
 	cl_frametime = Cvar_Get("cl_frametime", "0.0", 0);
