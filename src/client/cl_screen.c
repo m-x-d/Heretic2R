@@ -1048,7 +1048,7 @@ static void SCR_DrawFramecounter(void) //mxd
 //mxd. Draw fade-in effect during program initialization for smoother user experience.
 static void SCR_DrawInitialFadeIn(void)
 {
-#define INITIAL_FADE_IN_DELAY	200
+#define INITIAL_FADE_IN_DELAY	300
 
 	static qboolean draw_fade = true;
 	static int fade_end_time = INT_MAX;
@@ -1071,8 +1071,9 @@ static void SCR_DrawInitialFadeIn(void)
 		if (fade_end_time == INT_MAX)
 			fade_end_time = cls.realtime + INITIAL_FADE_IN_DELAY;
 
-		const float alpha = (float)(fade_end_time - cls.realtime) / (float)INITIAL_FADE_IN_DELAY; // [1.0f .. 0.0f]
-		color.a = (byte)(alpha * 255.0f);
+		const float lerp = 1.0f - (float)(fade_end_time - cls.realtime) / (float)INITIAL_FADE_IN_DELAY; // [0.0f .. 1.0f]
+		color.a = (byte)((1.0f - sinf(lerp * ANGLE_90)) * 255.0f);
+		color.a = max(1, color.a);
 	}
 
 	re.DrawFill(0, 0, viddef.width, viddef.height, color);
