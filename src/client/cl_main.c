@@ -41,7 +41,6 @@ static cvar_t* cl_timeout;
 cvar_t* cl_predict;
 cvar_t* cl_predict_local; // H2
 cvar_t* cl_predict_remote; // H2
-static cvar_t* cl_predict_lag; // H2
 cvar_t* cl_maxfps;
 
 cvar_t* cl_add_particles;
@@ -1192,7 +1191,6 @@ static void CL_InitLocal(void)
 	cl_predict = Cvar_Get("cl_predict", "0", 0);
 	cl_predict_local = Cvar_Get("cl_predict_local", "0", 0); // H2
 	cl_predict_remote = Cvar_Get("cl_predict_remote", "1", 0); // H2
-	cl_predict_lag = Cvar_Get("cl_predict_lag", "0.0", 0); // H2
 	cl_maxfps = Cvar_Get("cl_maxfps", "30", 0); // H2_1.07: "30" -> "60".
 
 	cl_frametime = Cvar_Get("cl_frametime", "0.0", 0);
