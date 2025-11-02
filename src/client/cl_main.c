@@ -37,7 +37,6 @@ static cvar_t* rcon_address;
 
 cvar_t* cl_noskins;
 cvar_t* cl_autoskins;
-cvar_t* cl_footsteps;
 static cvar_t* cl_timeout;
 cvar_t* cl_predict;
 cvar_t* cl_predict_local; // H2
@@ -1188,7 +1187,6 @@ static void CL_InitLocal(void)
 	cl_add_lights = Cvar_Get("cl_lights", "1", 0);
 	cl_add_particles = Cvar_Get("cl_particles", "1", 0);
 	cl_add_entities = Cvar_Get("cl_entities", "1", 0);
-	cl_footsteps = Cvar_Get("cl_footsteps", "1", 0);
 	cl_noskins = Cvar_Get("cl_noskins", "0", 0);
 	cl_autoskins = Cvar_Get("cl_autoskins", "0", 0);
 	cl_predict = Cvar_Get("cl_predict", "0", 0);
@@ -1208,7 +1206,7 @@ static void CL_InitLocal(void)
 	lookstrafe = Cvar_Get("lookstrafe", "0", CVAR_ARCHIVE);
 	mouse_sensitivity_x = Cvar_Get("mouse_sensitivity_x", "4", CVAR_ARCHIVE);
 	mouse_sensitivity_y = Cvar_Get("mouse_sensitivity_y", "4", CVAR_ARCHIVE);
-	doubletap_speed = Cvar_Get("doubletap_speed", "100", CVAR_ARCHIVE);
+	doubletap_speed = Cvar_Get("doubletap_speed", "100", CVAR_ARCHIVE); // H2
 
 	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
 	m_yaw = Cvar_Get("m_yaw", "0.022", 0);

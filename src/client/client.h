@@ -522,8 +522,6 @@ extern cvar_t* cl_predict;
 extern cvar_t* cl_predict_local;
 extern cvar_t* cl_predict_remote;
 
-extern cvar_t* cl_footsteps;
-
 extern cvar_t* cl_noskins;
 extern cvar_t* cl_autoskins;
 
