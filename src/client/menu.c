@@ -647,7 +647,6 @@ void M_Init(void)
 
 	// Camera cfg menu.
 	m_item_cameradamp = Cvar_Get("m_item_cameradamp", "Camera Stiffness", 0);
-	m_item_cameracombat = Cvar_Get("m_item_cameracombat", "Combat Camera", 0);
 
 	// Keys menu.
 	m_item_helpscreen = Cvar_Get("m_item_helpscreen", "Help Screen", 0);

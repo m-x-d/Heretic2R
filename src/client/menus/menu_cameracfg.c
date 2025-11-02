@@ -8,23 +8,14 @@
 #include "menu_cameracfg.h"
 
 cvar_t* m_banner_cameracfg;
-
 cvar_t* m_item_cameradamp;
-cvar_t* m_item_cameracombat;
 
 static menuframework_t s_cameracfg_menu;
-
 static menuslider_t s_options_cameradamp_slider;
-static menulist_t s_options_cameracombat_box;
 
 static void CameraDampFactorFunc(void* self) // H2
 {
 	Cvar_SetValue("cl_camera_dampfactor", s_options_cameradamp_slider.curvalue * 0.01f);
-}
-
-static void CameraCombatFunc(void* self) // H2
-{
-	Cvar_SetValue("cl_camera_combat", (float)s_options_cameracombat_box.curvalue);
 }
 
 static void CameraCfg_SetValues(void) // H2
@@ -36,7 +27,6 @@ static void CameraCfg_SetValues(void) // H2
 static void CameraCfg_MenuInit(void) // H2
 {
 	static char name_cameradamp[MAX_QPATH];
-	static char name_cameracombat[MAX_QPATH];
 
 	s_cameracfg_menu.nitems = 0;
 
@@ -49,17 +39,6 @@ static void CameraCfg_MenuInit(void) // H2
 	s_options_cameradamp_slider.generic.callback = CameraDampFactorFunc;
 	s_options_cameradamp_slider.minvalue = 0.0f;
 	s_options_cameradamp_slider.maxvalue = 100.0f;
-
-	//TODO: not added to the menu! Add or remove logic?
-	Com_sprintf(name_cameracombat, sizeof(name_cameracombat), "\x02%s", m_item_cameracombat->string);
-	s_options_cameracombat_box.generic.type = MTYPE_SPINCONTROL;
-	s_options_cameracombat_box.generic.x = 0;
-	s_options_cameracombat_box.generic.y = 40;
-	s_options_cameracombat_box.generic.name = name_cameracombat;
-	s_options_cameracombat_box.generic.width = re.BF_Strlen(name_cameracombat);
-	s_options_cameracombat_box.generic.flags = QMF_SINGLELINE;
-	s_options_cameracombat_box.generic.callback = CameraCombatFunc;
-	s_options_cameracombat_box.itemnames = yes_no_names;
 
 	CameraCfg_SetValues();
 

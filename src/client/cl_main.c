@@ -80,7 +80,6 @@ cvar_t* r_detail;
 cvar_t* cl_showcaptions;
 cvar_t* cl_doautoaim;
 
-cvar_t* cl_camera_combat;
 cvar_t* cl_camera_clipdamp;
 cvar_t* cl_camera_dampfactor;
 cvar_t* cl_camera_fpoffs;
@@ -1187,7 +1186,6 @@ static void CL_InitLocal(void)
 	r_detail = Cvar_Get("r_detail", DETAIL_DEFAULT, CVAR_ARCHIVE); // H2_1.07: "2.0" -> "3".
 	cl_showcaptions = Cvar_Get("cl_showcaptions", "1", 0);
 	cl_doautoaim = Cvar_Get("cl_doautoaim", "0.0", CVAR_ARCHIVE);
-	cl_camera_combat = Cvar_Get("cl_camera_combat", "0.0", 0);
 	cl_camera_clipdamp = Cvar_Get("cl_camera_clipdamp", "1.0", 0);
 	cl_camera_dampfactor = Cvar_Get("cl_camera_dampfactor", "1.0", CVAR_ARCHIVE); // H2_1.07: "0.2" -> "1.0".
 	cl_camera_fpoffs = Cvar_Get("cl_camera_fpoffs", "0.0", 0);

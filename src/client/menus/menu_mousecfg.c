@@ -25,9 +25,6 @@ static menulist_t s_mouseinvert_box;
 static void FreeLookFunc(void* self)
 {
 	Cvar_SetValue("freelook", (float)s_options_freelook_box.curvalue);
-
-	if (Cvar_VariableValue("freelook") != 0.0f) // H2
-		Cvar_SetValue("cl_camera_combat", 0);
 }
 
 static void MouseSpeedXFunc(void* self) // H2

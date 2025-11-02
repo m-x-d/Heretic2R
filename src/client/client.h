@@ -557,7 +557,6 @@ extern cvar_t* cl_freezeworld;
 extern cvar_t* cl_timedemo;
 
 extern cvar_t* cl_camera_clipdamp;
-extern cvar_t* cl_camera_combat;
 extern cvar_t* cl_camera_dampfactor;
 extern cvar_t* cl_camera_fpoffs;
 extern cvar_t* cl_camera_freeze;
