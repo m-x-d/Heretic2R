@@ -1761,7 +1761,7 @@ void CScript::FinishWait(edict_t* which, const bool execute) //mxd. Second var n
 		Execute(which, nullptr);
 }
 
-[[noreturn]] void CScript::Error(const char* format, ...)
+[[noreturn]] void CScript::Error(const char* format, ...) const
 {
 	va_list argptr;
 	char text[1024];
@@ -1780,12 +1780,12 @@ void CScript::StartDebug()
 	DebugLine("   DEBUG at %d\n", position);
 }
 
-void CScript::EndDebug()
+void CScript::EndDebug() const
 {
 	DebugLine("-------------------------------\n");
 }
 
-void CScript::DebugLine(const char* format, ...)
+void CScript::DebugLine(const char* format, ...) const
 {
 	va_list argptr;
 	char text[1024];

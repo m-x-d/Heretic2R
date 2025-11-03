@@ -94,7 +94,7 @@ FieldDef::FieldDef(FILE* f, CScript* script)
 	}
 }
 
-void FieldDef::Write(FILE* f, const CScript* script)
+void FieldDef::Write(FILE* f, const CScript* script) const
 {
 	constexpr int index = RLID_FIELDDEF;
 	fwrite(&index, 1, sizeof(index), f);

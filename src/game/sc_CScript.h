@@ -103,9 +103,9 @@ class CScript
 	void AddSignaler(edict_t* edict, Variable* var, SignalT signal_type);
 	void FinishWait(edict_t* which, bool execute);
 
-	[[noreturn]] void Error(const char* format, ...);
+	[[noreturn]] void Error(const char* format, ...) const;
 	void StartDebug();
-	void EndDebug();
+	void EndDebug() const;
 
 	Variable* FindLocal(const char* var_name);
 	bool NewLocal(Variable* which);
@@ -158,8 +158,8 @@ public:
 	void ClearTimeWait();
 	void CheckSignalers(edict_t* which, SignalT signal_type);
 	bool CheckWait();
-	
-	void DebugLine(const char* format, ...);
+
+	void DebugLine(const char* format, ...) const;
 
 	void Think();
 	ScriptConditionT Execute(edict_t* new_other, edict_t* new_activator);

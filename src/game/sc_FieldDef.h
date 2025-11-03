@@ -23,7 +23,7 @@ public:
 	explicit FieldDef(CScript* script);
 	FieldDef(FILE* f, CScript* script);
 
-	void Write(FILE* f, const CScript* script);
+	void Write(FILE* f, const CScript* script) const;
 	Variable* GetValue(Variable* var) const;
 	int GetIntValue(Variable* var) const;
 	float GetFloatValue(Variable* var) const;
