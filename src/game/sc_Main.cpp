@@ -112,7 +112,7 @@ static void script_use(edict_t* ent, edict_t* other, edict_t* activator)
 // Use parm1 through parm16 to send parameters to the script.
 extern "C" void SP_script_runner(edict_t* ent)
 {
-	char script_path[MAX_PATH];
+	char script_path[MAX_OSPATH]; //mxd. MAX_PATH in original logic.
 	sprintf_s(script_path, "ds/%s.os", st.script); //mxd. sprintf -> sprintf_s.
 
 	ent->Script = new CScript(script_path, ent);

@@ -625,7 +625,7 @@ extern cvar_t* flood_killdelay;
 #define SV_FREEZEMONSTERS	((int)sv_freezemonsters->value)
 #define SV_CHEATS			((int)sv_cheats->value)
 
-extern int self_spawn;
+extern qboolean self_spawn; //mxd. int -> qboolean.
 #define world (&g_edicts[0])
 
 #define DROPPED_ITEM		0x00008000

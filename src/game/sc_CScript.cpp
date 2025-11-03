@@ -1797,7 +1797,7 @@ void CScript::DebugLine(const char* format, ...)
 	Com_Printf("%s", text);
 
 #ifdef _DEBUG
-	OutputDebugString(text);
+	DBG_IDEPrint("%s", text); //mxd. OutputDebugString() in original logic. Changed to avoid <windows.h>.
 #endif
 }
 

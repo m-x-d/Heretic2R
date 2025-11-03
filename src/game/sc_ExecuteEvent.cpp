@@ -31,10 +31,10 @@ void ExecuteEvent::Write(FILE* f, CScript* script, int id)
 bool ExecuteEvent::Process(CScript* script)
 {
 	if (level.time < time)
-		return FALSE;
+		return false;
 
 	if (script->CheckWait())
 		script->Execute(other, activator);
 
-	return TRUE;
+	return true;
 }

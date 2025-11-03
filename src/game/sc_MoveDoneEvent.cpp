@@ -28,10 +28,10 @@ void MoveDoneEvent::Write(FILE* f, CScript* script, int id)
 bool MoveDoneEvent::Process(CScript* script)
 {
 	if (level.time < time)
-		return FALSE;
+		return false;
 
 	script->Move_Done(ent);
 	script_signaler(ent, SIGNAL_MOVE); //mxd. Inline move_signaler().
 
-	return TRUE;
+	return true;
 }

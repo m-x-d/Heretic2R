@@ -42,7 +42,15 @@ Q2DLL_DECLSPEC extern paletteRGBA_t dc_purple;
 Q2DLL_DECLSPEC extern char* pv(const vec3_t v); // vtos() from g_utils.c, basically...
 Q2DLL_DECLSPEC extern char* psv(const short* v);
 
+#ifdef __cplusplus //mxd. Needed, so code in game/ds.cpp could build...
+extern "C"
+{
+#endif
 Q2DLL_DECLSPEC extern void DBG_IDEPrint(const char* fmt, ...);
+#ifdef __cplusplus
+}
+#endif
+
 Q2DLL_DECLSPEC extern void DBG_HudPrint(int slot, const char* label, const char* fmt, ...);
 
 Q2DLL_DECLSPEC extern void DBG_AddBox(const vec3_t center, float size, paletteRGBA_t color, float lifetime);

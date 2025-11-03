@@ -630,7 +630,7 @@ static void ChooseCDTrackTouch(edict_t* self, edict_t* other, cplane_t* plane, c
 void SP_choose_CDTrack(edict_t* self)
 {
 	self->msgHandler = DefaultMsgHandler;
-	self->spawnflags = ((self->spawnflags & SF_NO_LOOP) ? FALSE : TRUE);
+	self->spawnflags = ((self->spawnflags & SF_NO_LOOP) ? false : true);
 
 	if (self->wait == 0.0f)
 		self->wait = 0.2f;

@@ -6,10 +6,6 @@
 
 #pragma once
 
-#define WIN32_LEAN_AND_MEAN
-#define VC_EXTRALEAN
-
-#include <windows.h>
 #include "q_ClientServer.h"
 
 #define GAME_API_VERSION	3
@@ -244,8 +240,8 @@ typedef struct
 	char* (*FS_Userdir)(void);
 	void (*FS_CreatePath)(char* path);
 
-	void (*Sys_LoadGameDll)(const char* name, HINSTANCE* hinst, DWORD* chkSum);
-	void (*Sys_UnloadGameDll)(const char* name, HINSTANCE* hinst);
+	void (*Sys_LoadGameDll)(const char* name, void* hinst, void* chkSum); //mxd. Changed from 'HINSTANCE* hinst, DWORD* chkSum' to avoid <windows.h>...
+	void (*Sys_UnloadGameDll)(const char* name, void* hinst); //mxd. Changed from 'HINSTANCE* hinst' to avoid <windows.h>...
 
 	// Pointer to the server-side persistent effects array.
 	void (*ClearPersistantEffects)(void);

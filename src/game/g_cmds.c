@@ -21,7 +21,7 @@
 #include "Vector.h"
 #include "g_local.h"
 
-int self_spawn = FALSE; // True when spawned manually using 'spawn' ccmd.
+qboolean self_spawn; // True when spawned manually using 'spawn' ccmd.
 
 // Flood protection.
 static qboolean CheckFlood(const edict_t* ent)
@@ -842,7 +842,7 @@ static void Cmd_SpawnEntity_f(const edict_t* ent)
 
 	gi.cprintf(ent, PRINT_HIGH, "Spawning %s\n", gi.argv(1));
 
-	self_spawn = TRUE;
+	self_spawn = true;
 
 	edict_t* new_ent = G_Spawn();
 	new_ent->classname = ED_NewString(gi.argv(1));
@@ -855,7 +855,7 @@ static void Cmd_SpawnEntity_f(const edict_t* ent)
 	VectorCopy(ent->s.angles, new_ent->s.angles);
 	ED_CallSpawn(new_ent);
 
-	self_spawn = FALSE;
+	self_spawn = false;
 }
 
 // Toggle the Inventory Console

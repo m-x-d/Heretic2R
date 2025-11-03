@@ -35,5 +35,5 @@ void Event::Write(FILE* f, CScript* script, const int id)
 
 bool Event::Process(CScript* script)
 {
-	return FALSE;
+	return false;
 }

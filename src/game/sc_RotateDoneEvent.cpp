@@ -28,10 +28,10 @@ void RotateDoneEvent::Write(FILE* f, CScript* script, int id)
 bool RotateDoneEvent::Process(CScript* script)
 {
 	if (level.time < time)
-		return FALSE;
+		return false;
 
 	script->Rotate_Done(ent);
 	script_signaler(ent, SIGNAL_ROTATE); //mxd. Inline rotate_signaler().
 
-	return TRUE;
+	return true;
 }

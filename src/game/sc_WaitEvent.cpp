@@ -25,12 +25,12 @@ void WaitEvent::Write(FILE* f, CScript* script, int id)
 bool WaitEvent::Process(CScript* script)
 {
 	if (level.time < time)
-		return FALSE;
+		return false;
 
 	script->ClearTimeWait();
 
 	if (script->CheckWait())
 		script->Execute(nullptr, nullptr);
 
-	return TRUE;
+	return true;
 }
