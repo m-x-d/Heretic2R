@@ -12,6 +12,13 @@
 
 #pragma region ========================== SAVEGAME FILES ==========================
 
+typedef enum SavegameType_e //mxd
+{
+	SGT_DEFAULT,
+	SGT_AUTOSAVE,
+	SGT_QUICKSAVE
+} SavegameType_t;
+
 // Delete save/<XXX>/
 //mxd. Same as Q2 version, except FS_Gamedir() -> FS_Userdir() change.
 void SV_WipeSavegame(const char* savename)
@@ -159,8 +166,11 @@ void SV_ReadLevelFile(void)
 	ge->ReadLevel(name);
 }
 
-static void SV_WriteServerFile(const qboolean autosave)
+static void SV_WriteServerFile(const SavegameType_t save_type) //mxd. qboolean autosave -> SavegameType_t.
 {
+#define SAVE_ENTERING	"Entering" //mxd
+#define SAVE_QUICK		"Quicksave" //mxd
+
 	FILE* f;
 	struct tm newtime;
 	time_t aclock;
@@ -179,7 +189,15 @@ static void SV_WriteServerFile(const qboolean autosave)
 	// Write the comment field.
 	memset(comment, 0, sizeof(comment));
 
-	if (!autosave)
+	if (save_type == SGT_AUTOSAVE)
+	{
+		Com_sprintf(comment, sizeof(comment), SAVE_ENTERING"\n%s", sv.configstrings[CS_NAME]);
+	}
+	else if (save_type == SGT_QUICKSAVE) //mxd
+	{
+		Com_sprintf(comment, sizeof(comment), SAVE_QUICK"\n%s", sv.configstrings[CS_NAME]);
+	}
+	else
 	{
 		time(&aclock);
 		localtime_s(&newtime, &aclock); //mxd. localtime -> localtime_s
@@ -188,10 +206,6 @@ static void SV_WriteServerFile(const qboolean autosave)
 			newtime.tm_hour, newtime.tm_min / 10, newtime.tm_min % 10, newtime.tm_mon + 1, newtime.tm_mday);
 
 		strncat_s(comment, sizeof(comment), sv.configstrings[CS_NAME], sizeof(comment) - 1 - strlen(comment));
-	}
-	else
-	{
-		Com_sprintf(comment, sizeof(comment), "ENTERING\n%s", sv.configstrings[CS_NAME]);
 	}
 
 	// Write the mapcmd.
@@ -224,7 +238,7 @@ static void SV_WriteServerFile(const qboolean autosave)
 
 	// Write game state.
 	Com_sprintf(name, sizeof(name), "%s/save/current/game.ssv", FS_Userdir()); // Q2: FS_Gamedir
-	ge->WriteGame(name, autosave);
+	ge->WriteGame(name, save_type == SGT_AUTOSAVE);
 }
 
 static void SV_ReadServerFile(void)
@@ -525,7 +539,7 @@ static void SV_GameMap_f(void)
 	}
 
 	if (sv.state == ss_game) // H2
-		SV_WriteServerFile(true);
+		SV_WriteServerFile(SGT_AUTOSAVE);
 
 	// Start up the next map.
 	SV_Map(false, Cmd_Argv(1), svs.have_current_save);
@@ -536,7 +550,7 @@ static void SV_GameMap_f(void)
 	// Copy off the level to the autosave slot.
 	if (!(int)dedicated->value && sv.state == ss_game) // H2: extra sv.state check.
 	{
-		SV_WriteServerFile(true);
+		SV_WriteServerFile(SGT_AUTOSAVE);
 		SV_CopySaveGame("current", "save0");
 	}
 
@@ -763,7 +777,8 @@ static void SV_Savegame_f(void)
 	SV_WriteLevelFile();
 
 	// Save server state.
-	SV_WriteServerFile(false);
+	const SavegameType_t save_type = (strcmp(dir, "quick") == 0 ? SGT_QUICKSAVE : SGT_DEFAULT); //mxd
+	SV_WriteServerFile(save_type);
 
 	// Copy it off.
 	SV_CopySaveGame("current", dir);

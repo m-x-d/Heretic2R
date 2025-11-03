@@ -10,4 +10,4 @@
 
 extern cvar_t* m_banner_save;
 
-void M_Menu_Savegame_f(void);
+extern void M_Menu_Savegame_f(void);

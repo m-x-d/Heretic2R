@@ -11,7 +11,7 @@
 #define MENU_EMPTY		"<*****>"
 
 #define MAXMENUITEMS	32 // Q2: 64
-#define MAX_SAVEGAMES	8 // Q2: 15
+#define MAX_SAVEGAMES	16 // H2: 8, Q2: 15
 
 //mxd. Menu sounds.
 #define SND_MENU_ENTER	"misc/menu1.wav" // Go to child menu/activate selected item (Enter key).
@@ -188,6 +188,15 @@ typedef struct
 {
 	menucommon_t generic;
 } menuinputkey_t;
+
+typedef struct //mxd
+{
+	menucommon_t generic;
+	char save_name[64];	// "Quicksave mapname", "Entering mapname", "11:11 01/31 mapname".
+	char save_dir[64];	// "quick", "save0", "save1" etc.
+	qboolean load_only;	// When true, show only in Load Game menu.
+	qboolean is_valid;	// When false, save_dir does not exist. 
+} menu_saveload_action_t;
 
 extern void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key);
 extern void M_PopMenu(void);

@@ -132,7 +132,6 @@
     <ClInclude Include="..\client\menus\menu_playerconfig.h" />
     <ClInclude Include="..\client\menus\menu_quit.h" />
     <ClInclude Include="..\client\menus\menu_savegame.h" />
-    <ClInclude Include="..\client\menus\menu_saveload.h" />
     <ClInclude Include="..\client\menus\menu_shortkeys.h" />
     <ClInclude Include="..\client\menus\menu_sound.h" />
     <ClInclude Include="..\client\menus\menu_startserver.h" />

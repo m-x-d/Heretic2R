@@ -6,34 +6,34 @@
 
 #include "client.h"
 #include "server.h"
-#include "menu_saveload.h"
 #include "menu_loadgame.h"
 
 cvar_t* m_banner_load;
 
-menuframework_t s_loadgame_menu;
-static menuaction_t s_loadgame_actions[MAX_SAVEGAMES];
+static menuframework_t s_loadgame_menu;
+static menu_saveload_action_t s_loadgame_actions[MAX_SAVEGAMES];
 
-char m_savestrings[MAX_SAVEGAMES][64];
-static qboolean m_savevalid[MAX_SAVEGAMES];
-
-static void CheckSavegameDir(char* savedir)
+static void CheckSavegameDir(char* save_dir)
 {
 	char search_path[MAX_OSPATH];
 	FILE* f;
 
 	qboolean is_valid = true;
-	Com_sprintf(search_path, sizeof(search_path), "%s/save/%s/*.*", FS_Userdir(), savedir);
+	Com_sprintf(search_path, sizeof(search_path), "%s/save/%s/*.*", FS_Userdir(), save_dir);
 
 	const char* file_path = Sys_FindFirst(search_path, 0, 0);
 	while (file_path != NULL)
 	{
 		if (fopen_s(&f, file_path, "rb") == 0) //mxd. fopen -> fopen_s
 		{
-			if (FS_FileLength(f) == 0)
-				is_valid = false;
-
+			const int len = FS_FileLength(f);
 			fclose(f);
+
+			if (len == 0)
+			{
+				is_valid = false;
+				break;
+			}
 		}
 
 		file_path = Sys_FindNext(0, 0);
@@ -43,66 +43,79 @@ static void CheckSavegameDir(char* savedir)
 
 	if (!is_valid)
 	{
-		Com_Printf("Folder %s contains invalid files.... deleting\n", savedir);
-		SV_WipeSavegame(savedir);
+		Com_Printf("Folder %s contains invalid files... deleting\n", save_dir);
+		SV_WipeSavegame(save_dir);
 	}
 }
 
-void Create_Savestrings(void)
+void InitSaveLoadActions(menu_saveload_action_t* items, const int num_items)
 {
-	char file_name[MAX_OSPATH];
-	FILE* f;
+	menu_saveload_action_t* item = &items[0];
 
-	for (int i = 0; i < MAX_SAVEGAMES; i++)
+	for (int i = 0; i < num_items; i++, item++) // quick (QUICKSAVE), save0 (ENTERING), save1, save2...
 	{
-		if (i > 0) // H2
-			CheckSavegameDir(va("save%i", i));
-
-		Com_sprintf(file_name, sizeof(file_name), "%s/save/save%i/server.ssv", FS_Userdir(), i);
-
-		if (fopen_s(&f, file_name, "rb") == 0) //mxd. fopen -> fopen_s
+		if (i == 0) // QUICKSAVE.
 		{
-			FS_Read(m_savestrings[i], sizeof(m_savestrings[i]), f);
-			fclose(f);
-			m_savevalid[i] = true;
+			sprintf_s(item->save_dir, sizeof(item->save_dir), "quick");
+			item->load_only = true;
 		}
 		else
 		{
-			strcpy_s(m_savestrings[i], sizeof(m_savestrings[i]), MENU_EMPTY); //mxd. strcpy -> strcpy_s
-			m_savevalid[i] = false;
+			sprintf_s(item->save_dir, sizeof(item->save_dir), "save%i", i - 1);
+			item->load_only = (i == 1); // save0 is ENTERING save.
+		}
+
+		CheckSavegameDir(item->save_dir); //TODO: vanilla logic skips ENTERING save check. Why?
+
+		char file_name[MAX_OSPATH];
+		Com_sprintf(file_name, sizeof(file_name), "%s/save/%s/server.ssv", FS_Userdir(), item->save_dir);
+
+		FILE* f;
+		if (fopen_s(&f, file_name, "rb") == 0) //mxd. fopen -> fopen_s
+		{
+			FS_Read(item->save_name, sizeof(item->save_name), f);
+			fclose(f);
+			item->is_valid = true;
+		}
+		else
+		{
+			strcpy_s(item->save_name, sizeof(item->save_name), MENU_EMPTY); //mxd. strcpy -> strcpy_s
+			item->is_valid = false;
 		}
 	}
 }
 
 static void LoadGameCallback(void* self)
 {
-	const menuaction_t* action = (menuaction_t*)self;
-	const int save_index = action->generic.localdata[0];
+	const menu_saveload_action_t* action = (menu_saveload_action_t*)self;
 
-	if (m_savevalid[save_index])
-		Cbuf_AddText(va("load save%i\n", save_index));
-
+	Cbuf_AddText(va("load %s\n", action->save_dir));
 	M_ForceMenuOff();
 }
 
 static void LoadGame_MenuInit(void)
 {
 	s_loadgame_menu.nitems = 0;
-	Create_Savestrings();
+	InitSaveLoadActions(s_loadgame_actions, ARRAY_SIZE(s_loadgame_actions));
 
 	int y = 0;
-	for (int i = 0; i < MAX_SAVEGAMES; i++, y += 20)
+	menu_saveload_action_t* item = &s_loadgame_actions[0];
+	for (int i = 0; i < MAX_SAVEGAMES; i++, item++)
 	{
-		s_loadgame_actions[i].generic.name = m_savestrings[i];
-		s_loadgame_actions[i].generic.type = MTYPE_ACTION;
-		s_loadgame_actions[i].generic.x = 0;
-		s_loadgame_actions[i].generic.y = y;
-		s_loadgame_actions[i].generic.width = re.BF_Strlen(m_savestrings[i]);
-		s_loadgame_actions[i].generic.flags = QMF_LEFT_JUSTIFY | QMF_MULTILINE | QMF_SELECT_SOUND;
-		s_loadgame_actions[i].generic.localdata[0] = i;
-		s_loadgame_actions[i].generic.callback = LoadGameCallback;
-		
-		Menu_AddItem(&s_loadgame_menu, &s_loadgame_actions[i]);
+		//mxd. Skip empty slots.
+		if (!item->is_valid)
+			continue;
+
+		item->generic.name = item->save_name;
+		item->generic.type = MTYPE_ACTION;
+		item->generic.x = 0;
+		item->generic.y = y;
+		item->generic.width = re.BF_Strlen(item->save_name);
+		item->generic.flags = (QMF_LEFT_JUSTIFY | QMF_MULTILINE | QMF_SELECT_SOUND);
+		item->generic.callback = LoadGameCallback;
+
+		Menu_AddItem(&s_loadgame_menu, item);
+		y += 20;
 	}
 
 	Menu_Center(&s_loadgame_menu);
@@ -133,9 +146,6 @@ static void LoadGame_MenuDraw(void)
 // Q2 counterpart
 static const char* LoadGame_MenuKey(const int key)
 {
-	if (key == K_ESCAPE || key == K_ENTER)
-		s_savegame_menu.cursor = max(0, s_loadgame_menu.cursor - 1);
-
 	return Default_MenuKey(&s_loadgame_menu, key);
 }
 
