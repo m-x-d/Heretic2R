@@ -136,6 +136,7 @@ keyname_t keynames[] =
 	{ "MWheelUp",	K_MWHEELUP },
 	{ "MWheelDown",	K_MWHEELDOWN },
 
+	{ "CapsLock",	K_CAPSLOCK }, //mxd
 	{ "Pause",		K_PAUSE },
 
 	{ "Semicolon",	';' }, // Because a raw semicolon separates commands.
