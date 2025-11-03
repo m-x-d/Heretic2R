@@ -564,7 +564,12 @@ void Qcommon_Init(const int argc, char** argv)
 
 	FS_InitFilesystem();
 
-	Cbuf_AddText("exec default.cfg\n");
+	//mxd. If available, use port-specific config.
+	if (FS_GetPath("default_h2r.cfg") != NULL)
+		Cbuf_AddText("exec default_h2r.cfg\n"); 
+	else
+		Cbuf_AddText("exec default.cfg\n");
+
 	Cbuf_AddText("exec config.cfg\n");
 
 	Cbuf_AddEarlyCommands(true);
