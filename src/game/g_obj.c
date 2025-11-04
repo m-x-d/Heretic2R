@@ -655,12 +655,12 @@ void SP_obj_dying_elf(edict_t* self)
 // Variables:
 // style:
 //		0 - Sign with a dragon.
-//		1 - Sign with two steins.
+//		1 - Sign with two steins. //TODO: skin does not exist!
 //		2 - Sign with a fish.
 void SP_obj_sign1(edict_t* self)
 {
 	VectorSet(self->mins, -29.0f, -4.0f, -16.0f);
-	VectorSet(self->maxs, 29.0f, 4.0f, 16.0f);
+	VectorSet(self->maxs,  29.0f,  4.0f,  16.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/signs/sign1/tris.fm");
 	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
