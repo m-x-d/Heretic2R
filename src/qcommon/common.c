@@ -432,13 +432,13 @@ typedef struct zhead_s
 	struct zhead_s* prev;
 	struct zhead_s* next;
 	short magic;
-	short tag; // For group free
+	short tag; // For group free.
 	int size;
 } zhead_t;
 
-zhead_t z_chain;
-int z_count;
-int z_bytes;
+static zhead_t z_chain;
+static int z_count;
+static int z_bytes;
 
 // Q2 counterpart
 void Z_Free(void* ptr)
