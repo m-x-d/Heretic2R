@@ -271,11 +271,15 @@ typedef struct
 
 #pragma region ========================== Contents flags ==========================
 
+// Contents flags are separate bits.
+// A given brush can contribute multiple content bits.
+// Multiple brushes can be in a single leaf.
+
 // Lower bits are stronger, and will eat weaker brushes completely.
-#define CONTENTS_EMPTY			0x00000000	// Nothing.
-#define CONTENTS_SOLID			0x00000001	// An eye is never valid in a solid.
-#define CONTENTS_WINDOW			0x00000002	// Translucent, but not watery.
-#define CONTENTS_ILLUSIONARY	0x00000004  // Was CONTENTS_AUX.
+#define CONTENTS_EMPTY			0x00000000 // Nothing.
+#define CONTENTS_SOLID			0x00000001 // An eye is never valid in a solid.
+#define CONTENTS_WINDOW			0x00000002 // Translucent, but not watery.
+#define CONTENTS_ILLUSIONARY	0x00000004 // Was CONTENTS_AUX.
 #define CONTENTS_LAVA			0x00000008
 #define CONTENTS_SLIME			0x00000010
 #define CONTENTS_WATER			0x00000020

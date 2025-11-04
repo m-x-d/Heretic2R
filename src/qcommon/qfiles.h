@@ -247,43 +247,6 @@ typedef struct
 	int type; // PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
 } dplane_t;
 
-// Contents flags are separate bits.
-// A given brush can contribute multiple content bits.
-// Multiple brushes can be in a single leaf.
-
-// These definitions also need to be in q_shared.h!
-
-// Contents flags. Lower bits are stronger, and will eat weaker brushes completely.
-
-#define CONTENTS_SOLID			0x00000001	// An eye is never valid in a solid.
-#define CONTENTS_WINDOW			0x00000002	// Translucent, but not watery.
-#define CONTENTS_AUX			0x00000004
-#define CONTENTS_LAVA			0x00000008
-#define CONTENTS_SLIME			0x00000010
-#define CONTENTS_WATER			0x00000020
-#define CONTENTS_MIST			0x00000040
-#define LAST_VISIBLE_CONTENTS	CONTENTS_MIST
-
-// Remaining contents are non-visible, and don't eat brushes.
-#define CONTENTS_AREAPORTAL		0x00008000
-#define CONTENTS_PLAYERCLIP		0x00010000
-#define CONTENTS_MONSTERCLIP	0x00020000
-
-// Currents can be added to any other contents, and may be mixed.
-#define CONTENTS_CURRENT_0		0x00040000
-#define CONTENTS_CURRENT_90		0x00080000
-#define CONTENTS_CURRENT_180	0x00100000
-#define CONTENTS_CURRENT_270	0x00200000
-#define CONTENTS_CURRENT_UP		0x00400000
-#define CONTENTS_CURRENT_DOWN	0x00800000
-#define CONTENTS_ORIGIN			0x01000000	// Removed before bsping an entity.
-#define CONTENTS_MONSTER		0x02000000	// Should never be on a brush, only in game.
-#define CONTENTS_DEADMONSTER	0x04000000
-#define CONTENTS_DETAIL			0x08000000	// Brushes to be added after vis leaves.
-#define CONTENTS_TRANSLUCENT	0x10000000	// Auto set if any surface has transparency.
-#define CONTENTS_LADDER			0x20000000
-#define CONTENTS_CAMERANOBLOCK	0x40000000	// Camera LOS ignores any brushes with this flag.
-
 typedef struct
 {
 	int planenum;
