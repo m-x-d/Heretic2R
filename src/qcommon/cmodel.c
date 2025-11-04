@@ -1436,9 +1436,9 @@ static void FloodArea_r(carea_t* area, const int floodnum, const int floodvalid)
 }
 
 // Q2 counterpart
-void FloodAreaConnections(void)
+static void FloodAreaConnections(void)
 {
-	static int floodvalid; //mxd. Made local static
+	static int floodvalid; //mxd. Made local static.
 
 	// All current floods are now invalid.
 	floodvalid++;
