@@ -507,34 +507,25 @@ static void M_CheckInGround(edict_t* self) //mxd. Named 'MG_CheckInGround' in or
 	}
 
 	// Check down against world - does not check against entities! Does not check up against ceiling (why would they put one close to a ceiling?).
-	vec3_t top;
-	VectorCopy(self->s.origin, top);
-	top[2] += self->maxs[2] - 1.0f;
+	const vec3_t top =    VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2] - 1.0f);
+	const vec3_t bottom = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2]);
 
-	vec3_t bottom;
-	VectorCopy(self->s.origin, bottom);
-	bottom[2] += self->mins[2];
-
-	vec3_t mins;
-	vec3_t maxs;
-	VectorSet(mins, self->mins[0], self->mins[1], 0.0f);
-	VectorSet(maxs, self->maxs[0], self->maxs[1], 1.0f);
+	const vec3_t mins = { self->mins[0], self->mins[1], 0.0f };
+	const vec3_t maxs = { self->maxs[0], self->maxs[1], 1.0f };
 
 	trace_t trace;
 	gi.trace(top, mins, maxs, bottom, self, MASK_SOLID, &trace);
 
 	if (trace.allsolid || trace.startsolid) // Monster in solid, can't be fixed.
 	{
-		gi.dprintf("top of %s at %s in solid architecture (%s)!\n", self->classname, vtos(self->s.origin), trace.ent->classname);
+		gi.dprintf("Top of %s at %s in solid architecture (%s)!\n", self->classname, vtos(self->s.origin), trace.ent->classname);
 	}
 	else if (trace.fraction < 1.0f)
 	{
-		// Buoy is in the ground.
-		vec3_t new_org;
-		VectorCopy(trace.endpos, new_org);
-		new_org[2] -= self->mins[2];
+		// Monster is in the ground.
+		const vec3_t new_org = VEC3_INITA(trace.endpos, 0.0f, 0.0f, -self->mins[2]);
 
-		if ((int)trace.endpos[2] != (int)self->s.origin[2])
+		if ((int)new_org[2] != (int)self->s.origin[2]) //mxd. Original logic compares trace.endpos[2] with origin[2].
 			gi.dprintf("%s at %s was in ground (%s), moved to %s!\n", self->classname, vtos(self->s.origin), trace.ent->classname, vtos(new_org));
 
 		VectorCopy(new_org, self->s.origin);
