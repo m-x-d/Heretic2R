@@ -2,4 +2,6 @@
 // such as names of functions and macros.
 // For more information see https://go.microsoft.com/fwlink/?linkid=865984
 #define H2COMMON_API
+#define H2R_NORETURN
 #define GAME_DECLSPEC
+#define Q2DLL_DECLSPEC
