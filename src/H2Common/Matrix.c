@@ -90,8 +90,7 @@ H2COMMON_API void Matrix3MultByMatrix3(const matrix3_t a, const matrix3_t b, mat
 
 H2COMMON_API void Matrix3MultByVec3(const matrix3_t a, const vec3_t b, vec3_t out)
 {
-	vec3_t c;
-	VectorCopy(b, c); //BUGFIX: mxd. Grab a copy, so passing the same vec3_t as 'b' and 'out' args works as expected (used like that in Weapon_CalcStartPos() in original logic).
+	const vec3_t c = VEC3_INIT(b); //BUGFIX: mxd. Grab a copy, so passing the same vec3_t as 'b' and 'out' args works as expected (used like that in Weapon_CalcStartPos() in original logic).
 
 	out[0] = a[0][0] * c[0] + a[1][0] * c[1] + a[2][0] * c[2];
 	out[1] = a[0][1] * c[0] + a[1][1] * c[1] + a[2][1] * c[2];
