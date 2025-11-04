@@ -90,7 +90,7 @@ void Com_Printf(const char* fmt, ...)
 	Com_ColourPrintf(P_WHITE, "%s", msg); // Changed in H2
 }
 
-//mxd. Similar to Q2's Com_Printf
+//mxd. Similar to Q2's Com_Printf.
 void Com_ColourPrintf(const PalIdx_t colour, const char* fmt, ...)
 {
 	if (hideconprint == NULL || !(int)hideconprint->value)
@@ -104,7 +104,7 @@ void Com_ColourPrintf(const PalIdx_t colour, const char* fmt, ...)
 
 		con.current_color = TextPalette[colour];
 
-		if (rd_target)
+		if (rd_target != 0)
 		{
 			if ((int)(strlen(msg) + strlen(rd_buffer)) > rd_buffersize - 1)
 			{
@@ -116,19 +116,19 @@ void Com_ColourPrintf(const PalIdx_t colour, const char* fmt, ...)
 		}
 		else
 		{
-			// Print to console
+			// Print to console.
 			Con_Print(msg);
 
-			// Also echo to debugging console
+			// Also echo to debugging console.
 			Sys_ConsoleOutput(msg);
 
 			// Write to logfile?
-			if (logfile_active && (int)logfile_active->value)
+			if (logfile_active != NULL && (int)logfile_active->value)
 			{
 				if (logfile == NULL)
 				{
-					char name[MAX_QPATH];
-					Com_sprintf(name, sizeof(name), "%s/qconsole.log", FS_Userdir()); // Q2: FS_Gamedir()
+					char name[MAX_OSPATH]; // Q2: MAX_QPATH.
+					Com_sprintf(name, sizeof(name), "%s/console_log.txt", FS_Userdir()); // Q2: FS_Gamedir()
 					// MISSING: fopen(name, "a"); case
 					fopen_s(&logfile, name, "w"); //mxd. fopen -> fopen_s
 				}
@@ -137,7 +137,7 @@ void Com_ColourPrintf(const PalIdx_t colour, const char* fmt, ...)
 					fprintf(logfile, "%s", msg);
 
 				if (logfile_active->value > 1.0f)
-					fflush(logfile); // Force it to save every time
+					fflush(logfile); // Force it to save every time.
 			}
 		}
 	}
