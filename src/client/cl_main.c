@@ -1565,4 +1565,5 @@ void CL_Shutdown(void)
 	SND_Shutdown(); //mxd
 	NET_Shutdown();
 	Z_FreeTags(0);
+	Com_CloseLogFile(); //mxd. Close last.
 }

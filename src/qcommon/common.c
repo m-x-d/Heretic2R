@@ -182,6 +182,15 @@ void Com_DDPrintf(const int level, const char* fmt, ...)
 	}
 }
 
+void Com_CloseLogFile(void) //mxd
+{
+	if (logfile != NULL)
+	{
+		fclose(logfile);
+		logfile = NULL;
+	}
+}
+
 // Both client and server can use this, and it will do the appropriate things.
 H2R_NORETURN void Com_Error(const int code, const char* fmt, ...)
 {
@@ -190,7 +199,7 @@ H2R_NORETURN void Com_Error(const int code, const char* fmt, ...)
 	static qboolean recursive;
 
 	if (recursive)
-		Sys_Error("recursive error after: %s", msg);
+		Sys_Error("Recursive error after: %s", msg);
 
 	recursive = true;
 
@@ -214,14 +223,8 @@ H2R_NORETURN void Com_Error(const int code, const char* fmt, ...)
 
 		default:
 			SV_Shutdown(va("Server fatal crashed: %s\n", msg), false);
-			CL_Shutdown();
+			//CL_Shutdown(); //mxd. Will be called in Sys_Error().
 			break;
-	}
-
-	if (logfile != NULL)
-	{
-		fclose(logfile);
-		logfile = NULL;
 	}
 
 	Sys_Error("%s", msg);
@@ -231,14 +234,7 @@ H2R_NORETURN void Com_Error(const int code, const char* fmt, ...)
 H2R_NORETURN void Com_Quit(void)
 {
 	SV_Shutdown("Server quit\n", false);
-	// Missing: CL_Shutdown ();
-
-	if (logfile != NULL)
-	{
-		fclose(logfile);
-		logfile = NULL;
-	}
-
+	// Missing: CL_Shutdown();
 	Sys_Quit();
 }
 
@@ -633,7 +629,7 @@ void Qcommon_Init(const int argc, char** argv)
 		SCR_EndLoadingPlaque();
 	}
 
-	Com_ColourPrintf(P_HEADER, "\n==== "GAME_FULLNAME" initialized ====\n\n"); // Q2: Com_Printf //mxd. Use define.
+	Com_ColourPrintf(P_HEADER, "==== "GAME_FULLNAME" initialized ====\n\n"); // Q2: Com_Printf //mxd. Use define.
 }
 
 void Qcommon_Frame(int usec) //mxd. msec -> usec.
