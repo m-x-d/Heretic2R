@@ -127,12 +127,12 @@ static void LinkBuoyInfo(edict_t* self) //mxd. Named 'info_buoy_link' in origina
 
 		if (ent == NULL)
 		{
-			gi.dprintf("info_buoy_link: %s(%s) failed to find target buoy %s\n", self->targetname, vtos(self->s.origin), self->target);
+			gi.dprintf("info_buoy_link: %s (%s) failed to find target buoy %s\n", self->targetname, vtos(self->s.origin), self->target);
 			self->ai_mood_flags |= SF_BROKEN; //TODO: set only when BUOY_DEBUG is enabled in original version. Is this still required without the cvar?
 		}
 		else if (ent == self)
 		{
-			gi.dprintf("info_buoy_link: %s(%s) target(%s) is self!\n", self->targetname, vtos(self->s.origin), self->target);
+			gi.dprintf("info_buoy_link: %s (%s) target (%s) is self!\n", self->targetname, vtos(self->s.origin), self->target);
 			self->ai_mood_flags |= SF_BROKEN;
 		}
 		else
@@ -151,7 +151,7 @@ static void LinkBuoyInfo(edict_t* self) //mxd. Named 'info_buoy_link' in origina
 	{
 		if (self->target != NULL && Q_stricmp(self->target2, self->target) == 0) //mxd. stricmp -> Q_stricmp.
 		{
-			gi.dprintf("info_buoy_link2: %s(%s) has target2 same as target %s\n", self->targetname, vtos(self->s.origin), self->target2);
+			gi.dprintf("info_buoy_link2: %s (%s) has target2 same as target %s\n", self->targetname, vtos(self->s.origin), self->target2);
 			self->ai_mood_flags |= SF_BROKEN; //TODO: set only when BUOY_DEBUG is enabled in original version. Is this still required without the cvar?
 		}
 		else
@@ -161,12 +161,12 @@ static void LinkBuoyInfo(edict_t* self) //mxd. Named 'info_buoy_link' in origina
 
 			if (ent == NULL)
 			{
-				gi.dprintf("info_buoy_link2: %s(%s) failed to find target2 buoy %s\n", self->targetname, vtos(self->s.origin), self->target2);
+				gi.dprintf("info_buoy_link2: %s (%s) failed to find target2 buoy %s\n", self->targetname, vtos(self->s.origin), self->target2);
 				self->ai_mood_flags |= SF_BROKEN; //TODO: set only when BUOY_DEBUG is enabled in original version. Is this still required without the cvar?
 			}
 			else if (ent == self)
 			{
-				gi.dprintf("info_buoy_link2: %s(%s) target2(%s) is self!!!\n", self->targetname, vtos(self->s.origin), self->target2);
+				gi.dprintf("info_buoy_link2: %s (%s) target2 (%s) is self!!!\n", self->targetname, vtos(self->s.origin), self->target2);
 				self->ai_mood_flags |= SF_BROKEN;
 			}
 			else
@@ -200,7 +200,7 @@ static void LinkBuoyInfo(edict_t* self) //mxd. Named 'info_buoy_link' in origina
 			}
 			else
 			{
-				gi.dprintf("Buoy %s(%s) could not find jumptarget buoy %s\n", self->targetname, vtos(self->s.origin), self->jumptarget);
+				gi.dprintf("Buoy %s (%s) could not find jumptarget buoy %s\n", self->targetname, vtos(self->s.origin), self->jumptarget);
 				self->ai_mood_flags |= SF_BROKEN; //TODO: set only when BUOY_DEBUG is enabled in original version. Is this still required without the cvar?
 			}
 		}
@@ -218,9 +218,9 @@ static void LinkBuoyInfo(edict_t* self) //mxd. Named 'info_buoy_link' in origina
 		// See if any buoys are loners.
 		for (int i = 0; i < level.active_buoys; i++)
 			if (level.buoy_list[i].nextbuoy[0] == 0 && level.buoy_list[i].nextbuoy[1] == 0 && level.buoy_list[i].nextbuoy[2] == 0)
-				gi.dprintf("G.D.E. WARNING: buoy %s(%s) has no connections\n", level.buoy_list[i].targetname, vtos(level.buoy_list[i].origin));
+				gi.dprintf("WARNING: buoy %s (%s) has no connections\n", level.buoy_list[i].targetname, vtos(level.buoy_list[i].origin));
 
-		Com_Printf("%d buoys processed by BUOYAH! Navigation System(tm) (%d bad : %d fixed)\n", level.active_buoys, level.fucked_buoys, level.fixed_buoys);
+		gi.dprintf("%d buoys processed by BUOYAH! Navigation System(tm) (%d bad : %d fixed)\n", level.active_buoys, level.fucked_buoys, level.fixed_buoys); //mxd. Com_Printf() in original logic.
 	}
 
 	G_SetToFree(self);
@@ -292,7 +292,7 @@ void SP_info_buoy(edict_t* self)
 	// Make sure it's not in the ground at all.
 	if (gi.pointcontents(self->s.origin) & CONTENTS_SOLID)
 	{
-		gi.dprintf("Buoy %s(%s) in ground!!!\n", self->targetname, vtos(self->s.origin));
+		gi.dprintf("Buoy %s (%s) in ground!\n", self->targetname, vtos(self->s.origin));
 		self->ai_mood_flags |= SF_BROKEN;
 	}
 	else
@@ -311,7 +311,7 @@ void SP_info_buoy(edict_t* self)
 
 		if (trace.allsolid || trace.startsolid) // Bouy in solid, can't be fixed.
 		{
-			gi.dprintf("Buoy %s(%s) in solid(%s)!\n", self->targetname, vtos(self->s.origin), trace.ent->classname);
+			gi.dprintf("Buoy %s (%s) in solid (%s)!\n", self->targetname, vtos(self->s.origin), trace.ent->classname);
 			self->ai_mood_flags |= SF_BROKEN;
 		}
 		else if (trace.fraction < 1.0f)
