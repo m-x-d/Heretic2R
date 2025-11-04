@@ -23,9 +23,9 @@ extern paletteRGBA_t game_message_color;
 extern qboolean game_message_show_at_top;
 extern float game_message_dispay_time;
 
-char* CL_GetGameString(int i);
-char* CL_GetGameWav(int i);
-char* CL_GetLevelString(int i);
-char* CL_GetLevelWav(int i);
-void CL_LoadStrings(void);
-void CL_ClearGameMessages(void);
+extern char* CL_GetGameString(int i);
+extern char* CL_GetGameWav(int i);
+extern char* CL_GetLevelString(int i);
+extern char* CL_GetLevelWav(int i);
+extern void CL_LoadStrings(void);
+extern void CL_ClearGameMessages(void);
