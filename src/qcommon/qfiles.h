@@ -1,5 +1,5 @@
 //
-// qfiles.h -- quake file formats. This file must be identical in the quake and utils directories
+// qfiles.h -- Heretic II file formats. This file must be identical in the Heretic II and utils directories.
 //
 // Copyright 1998 Raven Software
 //
@@ -13,7 +13,7 @@
 
 #pragma region ========================== .PAK ==========================
 
-// The .pak files are just a linear collapse of a directory tree
+// The .pak files are just a linear collapse of a directory tree.
 #define IDPAKHEADER		(('K' << 24) + ('C' << 16) + ('A' << 8) + 'P')
 
 typedef struct
@@ -45,7 +45,7 @@ typedef struct bookframe_s
 	int y;
 	int w;
 	int h;
-	char name[MAX_FRAMENAME]; // Name of gfx file
+	char name[MAX_FRAMENAME]; // Name of the gfx file.
 } bookframe_t;
 
 typedef struct bookheader_s
@@ -67,16 +67,16 @@ typedef struct book_s
 
 #pragma region ========================== .SP2 sprite file format ==========================
 
-#define IDSPRITEHEADER	(('2' << 24) + ('S' << 16) + ('D' << 8) + 'I') // little-endian "IDS2"
+#define IDSPRITEHEADER	(('2' << 24) + ('S' << 16) + ('D' << 8) + 'I') // Little-endian "IDS2".
 #define SPRITE_VERSION	2
 
 typedef struct
 {
 	int width;
 	int height;
-	int origin_x; // Raster coordinates inside pic
+	int origin_x; // Raster coordinates inside pic.
 	int origin_y;
-	char name[MAX_FRAMENAME]; // Name of .sp2 file
+	char name[MAX_FRAMENAME]; // Name of the .sp2 file.
 } dsprframe_t;
 
 typedef struct
@@ -84,7 +84,7 @@ typedef struct
 	int ident;
 	int version;
 	int numframes;
-	dsprframe_t frames[1]; // Variable sized (up to MAX_FRAMES)
+	dsprframe_t frames[1]; // Variable sized (up to MAX_FRAMES).
 } dsprite_t;
 
 #pragma endregion
@@ -101,8 +101,8 @@ typedef struct miptex_s
 	char name[32];
 	uint width[MIPLEVELS];
 	uint height[MIPLEVELS];
-	uint offsets[MIPLEVELS];	// Four mip maps stored
-	char animname[32];			// Next frame in animation chain
+	uint offsets[MIPLEVELS];	// Four mip maps stored.
+	char animname[32];			// Next frame in animation chain.
 	paletteRGB_t palette[PAL_SIZE];
 	int flags;
 	int contents;
@@ -119,21 +119,21 @@ typedef struct miptex32_s
 {
 	int version;
 	char name[128];
-	char altname[128];		// Texture substitution
-	char animname[128];		// Next frame in animation chain
-	char damagename[128];	// Image that should be shown when damaged
+	char altname[128];		// Texture substitution. //TODO: unused.
+	char animname[128];		// Next frame in animation chain. //TODO: unused.
+	char damagename[128];	// Image that should be shown when damaged. //TODO: unused.
 	uint width[MIPLEVELS];
 	uint height[MIPLEVELS];
 	uint offsets[MIPLEVELS];
-	int flags;
-	int contents;
-	int value;
-	float scale_x;
-	float scale_y;
-	int mip_scale;
+	int flags; //TODO: unused.
+	int contents; //TODO: unused.
+	int num_frames; //mxd. Named 'value' in original logic.
+	float scale_x; //TODO: unused.
+	float scale_y; //TODO: unused.
+	int mip_scale; //TODO: unused.
 
-	// Detail texturing info
-	char dt_name[128];		// Detailed texture name
+	// Detail texturing info. //TODO: none of these are unused.
+	char dt_name[128];		// Detailed texture name.
 	float dt_scale_x;
 	float dt_scale_y;
 	float dt_u;
@@ -152,8 +152,8 @@ typedef struct miptex32_s
 #define IDBSPHEADER	(('P' << 24) + ('S' << 16) + ('B' << 8) + 'I') // Little-endian "IBSP"
 #define BSPVERSION	38
 
-// Upper design bounds
-// leaffaces, leafbrushes, planes, and verts are still bounded by 16 bit short limits
+// Upper design bounds.
+// leaffaces, leafbrushes, planes, and verts are still bounded by 16 bit short limits.
 #define MAX_MAP_MODELS		1024
 #define MAX_MAP_BRUSHES		10240	//mxd. 8192 in Q2
 #define MAX_MAP_ENTITIES	2048
@@ -176,7 +176,7 @@ typedef struct miptex32_s
 #define MAX_MAP_LIGHTING	0x200000
 #define MAX_MAP_VISIBILITY	0x180000
 
-// Key / value pair sizes
+// Key / value pair sizes.
 #define MAX_KEY		32
 #define MAX_VALUE	1024
 
@@ -218,9 +218,9 @@ typedef struct
 {
 	float mins[3];
 	float maxs[3];
-	float origin[3]; // For sounds or lights
+	float origin[3]; // For sounds or lights.
 	int headnode;
-	int firstface; // Submodels just draw faces without walking the bsp tree
+	int firstface; // Submodels just draw faces without walking the bsp tree.
 	int numfaces;
 } dmodel_t;
 
@@ -229,47 +229,47 @@ typedef struct
 	float point[3];
 } dvertex_t;
 
-// 0-2 are axial planes
+// 0-2 are axial planes.
 #define PLANE_X			0
 #define PLANE_Y			1
 #define PLANE_Z			2
 
-// 3-5 are non-axial planes snapped to the nearest
+// 3-5 are non-axial planes snapped to the nearest.
 #define PLANE_ANYX		3
 #define PLANE_ANYY		4
 #define PLANE_ANYZ		5
 
-// planes (x&~1) and (x&~1)+1 are allways opposites
+// Planes (x&~1) and (x&~1)+1 are always opposites.
 typedef struct
 {
 	float normal[3];
 	float dist;
-	int type; // PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
+	int type; // PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate.
 } dplane_t;
 
 typedef struct
 {
 	int planenum;
-	int children[2];	// Negative numbers are -(leafs+1), not nodes
-	short mins[3];		// For frustum culling
+	int children[2];	// Negative numbers are -(leafs+1), not nodes.
+	short mins[3];		// For frustum culling.
 	short maxs[3];
 	ushort firstface;
-	ushort numfaces;	// Counting both sides
+	ushort numfaces;	// Counting both sides.
 } dnode_t;
 
 typedef struct texinfo_s
 {
 	float vecs[2][4];	// [s/t][xyz offset]
-	int flags;			// Miptex flags + overrides
-	int value;			// Light emission, etc
-	char texture[32];	// Texture name (textures/*.wal)
-	int nexttexinfo;	// For animations, -1 = end of chain
+	int flags;			// Miptex flags + overrides.
+	int value;			// Light emission, etc.
+	char texture[32];	// Texture name (textures/*.wal).
+	int nexttexinfo;	// For animations, -1 = end of chain.
 } texinfo_t;
 
 // Note that edge 0 is never used, because negative edge nums are used for counterclockwise use of the edge in a face.
 typedef struct
 {
-	ushort v[2]; // Vertex numbers
+	ushort v[2]; // Vertex numbers.
 } dedge_t;
 
 #define MAXLIGHTMAPS	4
@@ -279,23 +279,23 @@ typedef struct
 	ushort planenum;
 	short side;
 
-	int firstedge; // We must support > 64k edges
+	int firstedge; // We must support > 64k edges.
 	short numedges;	
 	short texinfo;
 
-	// Lighting info
+	// Lighting info.
 	byte styles[MAXLIGHTMAPS];
-	int lightofs; // Start of [numstyles*surfsize] samples
+	int lightofs; // Start of [numstyles*surfsize] samples.
 } dface_t;
 
 typedef struct
 {
-	int contents; // OR of all brushes (not needed?)
+	int contents; // OR of all brushes (not needed?).
 
 	short cluster;
 	short area;
 
-	short mins[3]; // For frustum culling
+	short mins[3]; // For frustum culling.
 	short maxs[3];
 
 	ushort firstleafface;
@@ -307,7 +307,7 @@ typedef struct
 
 typedef struct
 {
-	ushort planenum; // Facing out of the leaf
+	ushort planenum; // Facing out of the leaf.
 	short texinfo;
 } dbrushside_t;
 

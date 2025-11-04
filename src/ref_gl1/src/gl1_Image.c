@@ -473,7 +473,7 @@ static image_t* R_LoadM32(const char* name, const imagetype_t type) // H2: GL_Lo
 	image->palette = NULL;
 	image->has_alpha = 1;
 	image->texnum = TEXNUM_IMAGES + (image - gltextures);
-	image->num_frames = (byte)mt->value;
+	image->num_frames = (byte)mt->num_frames;
 
 	R_BindImage(image);
 	R_UploadM32(mt, image);
