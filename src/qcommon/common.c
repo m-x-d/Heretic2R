@@ -26,7 +26,6 @@ jmp_buf abortframe; // An ERR_DROP occured, exit the entire frame.
 
 FILE* log_stats_file;
 
-cvar_t* host_speeds; //TODO: unused. Remove?
 cvar_t* log_stats;
 cvar_t* developer;
 static cvar_t* timescale;
@@ -575,7 +574,6 @@ void Qcommon_Init(const int argc, char** argv)
 	Cmd_AddCommand("z_stats", Z_Stats_f);
 	Cmd_AddCommand("error", Com_Error_f);
 
-	host_speeds = Cvar_Get("host_speeds", "0", 0);
 	log_stats = Cvar_Get("log_stats", "0", 0);
 	developer = Cvar_Get("developer", "0", 0);
 	timescale = Cvar_Get("timescale", "1", 0);

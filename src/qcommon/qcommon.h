@@ -670,7 +670,6 @@ extern byte COM_BlockSequenceCheckByte(const byte* base, int length, int sequenc
 
 extern cvar_t* developer;
 extern cvar_t* dedicated;
-extern cvar_t* host_speeds;
 extern cvar_t* log_stats;
 extern cvar_t* player_dll;
 
