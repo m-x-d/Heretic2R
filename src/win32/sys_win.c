@@ -214,7 +214,7 @@ void Sys_ConsoleOutput(const char* string)
 	DWORD dummy;
 	char text[256];
 
-	if (!dedicated || !(int)dedicated->value)
+	if (dedicated == NULL || !(int)dedicated->value)
 		return;
 
 	if (console_textlen > 0)
