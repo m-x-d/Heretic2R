@@ -21,6 +21,7 @@
 #include "p_view.h" //mxd
 #include "sc_Main.h" //mxd
 #include "FX.h"
+#include "g_items.h" //mxd
 #include "Random.h"
 #include "Utilities.h"
 #include "Vector.h"
@@ -93,6 +94,167 @@ cvar_t* log_file_header;
 cvar_t* log_file_footer;
 cvar_t* log_file_line_header;
 
+#define MAX_MESSAGESTRINGS	1000
+
+trig_message_t message_text[MAX_MESSAGESTRINGS];
+static char* message_buf; //mxd. Made local.
+
+static int LoadTextFile(char* name, char** addr)
+{
+	char* buffer;
+	const int length = gi.FS_LoadFile(name, (void**)&buffer);
+
+	if (length <= 0)
+		Sys_Error("LoadTextFile: unable to load '%s'", name);
+
+	*addr = (char*)gi.TagMalloc(length + 1, 0);
+	memcpy(*addr, buffer, length);
+	*(*addr + length) = 0;
+	gi.FS_FreeFile(buffer);
+
+	return length + 1;
+}
+
+static void LoadStrings(void)
+{
+	const int length = LoadTextFile("levelmsg.txt", &message_buf);
+
+	char* start_ptr = &message_buf[0];
+	char* p = NULL;
+
+	for (int i = 1; p < message_buf + length; i++)
+	{
+		if (i > MAX_MESSAGESTRINGS)
+		{
+			Com_Printf("Too many strings in levelmsg.txt (max %i)!\n", MAX_MESSAGESTRINGS);
+			return;
+		}
+
+		// Read in string up to return.
+		char* return_ptr = strchr(start_ptr, '\r');
+
+		if (return_ptr == NULL) // At end of file.
+			break;
+
+		*return_ptr = 0;
+
+		// Search string for #
+		p = strchr(start_ptr, '#');	// Search for '#', which signifies a wav file.
+
+		if (p != NULL && p < return_ptr)
+		{
+			*p = 0;
+			message_text[i].wav = ++p; // Save stuff after '#'.
+		}
+
+		// Save stuff before #
+		message_text[i].string = start_ptr;
+
+		do
+		{
+			p = strchr(start_ptr, '@'); // Replace '@' markers with newlines.
+			if (p != NULL)
+				*p = '\n';
+		} while (p != NULL);
+
+		return_ptr += 2; // Skip '\r\n'.
+		start_ptr = return_ptr; // Advance to next string.
+	}
+}
+
+// This will be called when the dll is first loaded, which only happens when a new game is begun.
+void InitGame(void)
+{
+	gi.dprintf("==== InitGame ====\n");
+
+	G_InitResourceManagers();
+
+	//FIXME: sv_ prefix is wrong for these.
+	sv_maxvelocity = gi.cvar("sv_maxvelocity", MAX_VELOCITY_STRING, 0);
+	sv_gravity = gi.cvar("sv_gravity", GRAVITY_STRING, 0); //mxd. Needs to be inited here, otherwise SetupPlayerinfo() will crash. Inited again in SP_worldspawn().
+	//sv_friction = gi.cvar("sv_friction", FRICTION_STRING, 0); //mxd. Inited again in SP_worldspawn().
+
+	// Noset vars.
+	dedicated = gi.cvar("dedicated", "0", CVAR_NOSET);
+
+	// Latched vars.
+	sv_cheats = gi.cvar("cheats", "0", CVAR_SERVERINFO | CVAR_LATCH);
+	gi.cvar("gamename", GAMEVERSION, CVAR_SERVERINFO | CVAR_LATCH);
+	gi.cvar("gamedate", __DATE__, CVAR_SERVERINFO | CVAR_LATCH);
+
+	maxclients = gi.cvar("maxclients", "4", CVAR_SERVERINFO | CVAR_LATCH);
+	deathmatch = gi.cvar("deathmatch", "0", CVAR_LATCH);
+	coop = gi.cvar("coop", "0", CVAR_LATCH);
+
+	skill = gi.cvar("skill", "1", CVAR_LATCH);
+	maxentities = gi.cvar("maxentities", G_MAX_ENTITIES, CVAR_LATCH);
+
+	sv_nomonsters = gi.cvar("nomonsters", "0", CVAR_SERVERINFO | CVAR_LATCH);
+	sv_freezemonsters = gi.cvar("freezemonsters", "0", 0);
+
+	// Change anytime vars.
+	dmflags = gi.cvar("dmflags", "0", CVAR_SERVERINFO);
+	advancedstaff = gi.cvar("advancedstaff", "1", CVAR_SERVERINFO);
+
+	fraglimit = gi.cvar("fraglimit", "0", CVAR_SERVERINFO);
+	timelimit = gi.cvar("timelimit", "0", CVAR_SERVERINFO);
+	password = gi.cvar("password", "", CVAR_USERINFO);
+	filterban = gi.cvar("filterban", "1", 0);
+
+	allowillegalskins = gi.cvar("allowillegalskins", "0", CVAR_ARCHIVE);
+
+	deactivate_buoys = gi.cvar("deactivate_buoys", "0", 0);
+	anarchy = gi.cvar("anarchy", "0", 0);
+	impact_damage = gi.cvar("impact_damage", "1", 0);
+	cheating_monsters = gi.cvar("cheating_monsters", "1", 0);
+	singing_ogles = gi.cvar("singing_ogles", "0", 0);
+	no_runshrine = gi.cvar("no_runshrine", "0", 0);
+	no_tornado = gi.cvar("no_tornado", "0", 0);
+	no_teleport = gi.cvar("no_teleport", "0", 0);
+	no_phoenix = gi.cvar("no_phoenix", "0", 0);
+	no_irondoom = gi.cvar("no_irondoom", "0", 0);
+	no_morph = gi.cvar("no_morph", "0", 0);
+	no_shield = gi.cvar("no_shield", "0", 0);
+
+	flood_msgs = gi.cvar("flood_msgs", "4", 0);
+	flood_persecond = gi.cvar("flood_persecond", "4", 0);
+	flood_waitdelay = gi.cvar("flood_waitdelay", "10", 0);
+	flood_killdelay = gi.cvar("flood_killdelay", "10", 0);
+	sv_maplist = gi.cvar("sv_maplist", "", 0);
+
+	player_dll = Cvar_Get("player_dll", DEFAULT_PLAYER_LIB, 0);
+
+	sv_cinematicfreeze = gi.cvar("sv_cinematicfreeze", "0", 0);
+	sv_jumpcinematic = gi.cvar("sv_jumpcinematic", "0", 0);
+	log_file_name = gi.cvar("log_file_name", "", CVAR_ARCHIVE);
+	log_file_footer = gi.cvar("log_file_footer", "", CVAR_ARCHIVE);
+	log_file_header = gi.cvar("log_file_header", "", CVAR_ARCHIVE);
+	log_file_line_header = gi.cvar("log_file_line_header", "", CVAR_ARCHIVE);
+
+	blood_level = gi.cvar("blood_level", VIOLENCE_DEFAULT_STR, CVAR_ARCHIVE);
+	dm_no_bodies = gi.cvar("dm_no_bodies", "0", CVAR_ARCHIVE);
+
+	gi.cvar("flash_screen", "1", 0);
+
+	P_Load(player_dll->string);
+
+	// Initialise the inventory items.
+	G_InitItems(); // Server-side only elements.
+
+	// Initialize all entities for this game.
+	game.maxentities = (int)maxentities->value;
+	g_edicts = gi.TagMalloc(game.maxentities * (int)sizeof(g_edicts[0]), TAG_GAME);
+	globals.edicts = g_edicts;
+	globals.max_edicts = game.maxentities;
+
+	// Initialize all clients for this game.
+	game.maxclients = MAXCLIENTS;
+	game.clients = gi.TagMalloc(game.maxclients * (int)sizeof(game.clients[0]), TAG_GAME);
+	globals.num_edicts = game.maxclients + 1;
+
+	LoadStrings();
+}
+
 static void ShutdownGame(void)
 {
 	gi.dprintf("==== ShutdownGame ====\n");
@@ -116,7 +278,7 @@ static void ShutdownGame(void)
 		game.entitiesSpawned = false;
 	}
 
-	FreeLevelMessagesBuffer(); //mxd
+	gi.FS_FreeFile(message_buf); //mxd
 
 	gi.FreeTags(TAG_LEVEL);
 	gi.FreeTags(TAG_GAME);
