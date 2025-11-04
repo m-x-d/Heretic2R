@@ -292,36 +292,32 @@ void SP_info_buoy(edict_t* self)
 	// Make sure it's not in the ground at all.
 	if (gi.pointcontents(self->s.origin) & CONTENTS_SOLID)
 	{
-		gi.dprintf("Buoy %s (%s) in ground!\n", self->targetname, vtos(self->s.origin));
+		gi.dprintf("Buoy %s at %s in ground!\n", self->targetname, vtos(self->s.origin));
 		self->ai_mood_flags |= SF_BROKEN;
 	}
 	else
 	{
 		// Check down against world. Does not check against entities! Does not check up against ceiling (why would they put one close to a ceiling???).
-		vec3_t top;
-		VectorCopy(self->s.origin, top);
-		top[2] += 23.0f; //BUGFIX: mxd. Increments 'bottom' in original version.
-
-		vec3_t bottom;
-		VectorCopy(self->s.origin, bottom);
-		bottom[2] -= 24.0f;
+		const vec3_t top =    VEC3_INITA(self->s.origin, 0.0f, 0.0f,  23.0f); //BUGFIX: mxd. Increments 'bottom' in original version.
+		const vec3_t bottom = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -24.0f);
 
 		trace_t trace;
 		gi.trace(top, mins, maxs, bottom, self, MASK_SOLID, &trace);
 
-		if (trace.allsolid || trace.startsolid) // Bouy in solid, can't be fixed.
+		if (trace.allsolid || trace.startsolid) // Buoy in solid, can't be fixed.
 		{
-			gi.dprintf("Buoy %s (%s) in solid (%s)!\n", self->targetname, vtos(self->s.origin), trace.ent->classname);
+			gi.dprintf("Buoy %s at %s in solid architecture (%s)!\n", self->targetname, vtos(self->s.origin), trace.ent->classname);
 			self->ai_mood_flags |= SF_BROKEN;
 		}
 		else if (trace.fraction < 1.0f)
 		{
 			// Buoy is in the ground.
-			VectorCopy(trace.endpos, bottom);
-			bottom[2] += 24.0f;
+			const vec3_t new_org = VEC3_INITA(trace.endpos, 0.0f, 0.0f, 24.0f);
 
-			gi.dprintf("Buoy %s was in ground(%s), moved it from %s to %s...\n", self->targetname, trace.ent->classname, vtos(self->s.origin), vtos(bottom));
-			VectorCopy(bottom, self->s.origin);
+			if ((int)new_org[2] != (int)self->s.origin[2]) //mxd
+				gi.dprintf("Buoy %s at %s was in ground (%s), moved to %s!\n", self->targetname, vtos(self->s.origin), trace.ent->classname, vtos(new_org));
+
+			VectorCopy(new_org, self->s.origin);
 
 			self->ai_mood_flags |= SF_BROKEN;
 			level.fixed_buoys++;
@@ -330,7 +326,6 @@ void SP_info_buoy(edict_t* self)
 
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_NOT;
-	self->clipmask = 0;
 	self->classname = "info_buoy";
 	self->think = LinkBuoyInfo;
 	self->nextthink = level.time + FRAMETIME;
