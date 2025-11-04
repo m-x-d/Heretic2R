@@ -21,7 +21,7 @@ H2COMMON_API char* Info_ValueForKey(const char* s, const char* key)
 
 	while (true)
 	{
-		char* o = pkey;
+		char* o = &pkey[0];
 
 		while (*s != '\\')
 		{
@@ -89,7 +89,7 @@ H2COMMON_API void Info_RemoveKey(char* s, const char* key)
 
 		if (strcmp(key, pkey) == 0)
 		{
-			memmove(start, s, strlen(s) + 1); // Remove this part //mxd. strcpy -> memmove
+			memmove(start, s, strlen(s) + 1); // Remove this part //mxd. strcpy -> memmove.
 			return;
 		}
 
@@ -98,7 +98,7 @@ H2COMMON_API void Info_RemoveKey(char* s, const char* key)
 	}
 }
 
-// Q2 counterpart. H2: Com_Printf replaced with com_printf reference
+// Q2 counterpart. H2: Com_Printf replaced with com_printf reference.
 H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* value)
 {
 	if (key == NULL)
@@ -148,7 +148,7 @@ H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* valu
 
 	while (*v != 0)
 	{
-		const char c = *v++; //mxd. int c -> char c
+		const char c = *v++; //mxd. int c -> char c.
 		if (c >= ' ')
 			*s++ = c;
 	}
