@@ -407,7 +407,7 @@ static void SV_DebugGraph(const float value, const byte r, const byte g, const b
 	SCR_DebugGraph(value, color.c);
 }
 
-// Init the game subsystem for a new map
+// Init the game subsystem for a new map.
 void SV_InitGameProgs(void)
 {
 #define FX_BUF_SIZE			16 //mxd. == sizeof(EffectsBuffer_t)
@@ -416,11 +416,11 @@ void SV_InitGameProgs(void)
 	game_import_t import;
 	game_export_t* (*GetGameAPI)(game_import_t* gi);
 	
-	// Unload anything we have now
+	// Unload anything we have now.
 	if (ge != NULL)
 		SV_ShutdownGameProgs();
 
-	// Load a new game dll
+	// Load a new game dll.
 	import.multicast = SV_Multicast;
 	import.unicast = PF_Unicast;
 	import.bprintf = SV_BroadcastPrintf;
@@ -514,13 +514,19 @@ void SV_InitGameProgs(void)
 	Sys_LoadGameDll("gamex86", &game_library, &checksum);
 
 	GetGameAPI = (void*)GetProcAddress(game_library, "GetGameAPI");
-	if (GetGameAPI == NULL)
-		Sys_Error("Failed to obtain 'Gamex86' API");
+	if (GetGameAPI == NULL) // H2
+		Com_Error(ERR_DROP, "Failed to obtain 'Gamex86' API"); //mxd. Sys_Error() in original logic.
 
 	ge = (*GetGameAPI)(&import);
+
+	if (ge == NULL) // Present in Q2, missing in H2 --mxd.
+		Com_Error(ERR_DROP, "Failed to load game DLL");
+
 	if (ge->apiversion != GAME_API_VERSION)
 	{
-		SV_ShutdownGameProgs();
+		Sys_UnloadGameDll("gamex86", &game_library); //mxd. Original logic calls SV_ShutdownGameProgs() instead (which calls ge->Shutdown() on un-initialized game library).
+		ge = NULL;
+
 		Com_Error(ERR_DROP, "Game is version %i, not %i", ge->apiversion, GAME_API_VERSION);
 	}
 
