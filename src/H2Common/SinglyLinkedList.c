@@ -13,7 +13,7 @@ typedef struct SinglyLinkedListNode_s
 	struct SinglyLinkedListNode_s* next;
 } SinglyLinkedListNode_t;
 
-extern ResourceManager_t res_mgr;
+ResourceManager_t res_mgr;
 
 H2COMMON_API void SLList_DefaultCon(SinglyLinkedList_t* this_ptr)
 {

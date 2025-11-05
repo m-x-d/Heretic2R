@@ -8,7 +8,7 @@
 #include "ResourceManager.h"
 #include "SinglyLinkedList.h"
 
-ResourceManager_t res_mgr;
+extern ResourceManager_t res_mgr;
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
