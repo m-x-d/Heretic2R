@@ -424,7 +424,6 @@ void ReadGame(char* filename)
 	globals.edicts = g_edicts;
 
 	fread(&game, sizeof(game), 1, f);
-	game.entitiesSpawned = false; //mxd. ConstructEntities() was definitely NOT called yet!
 	game.clients = gi.TagMalloc(game.maxclients * (int)sizeof(game.clients[0]), TAG_GAME);
 
 	for (int i = 0; i < game.maxclients; i++)

@@ -237,8 +237,6 @@ static void G_FindTeams(void)
 
 void ConstructEntities(void)
 {
-	assert(!game.entitiesSpawned); //mxd
-
 	// Create message queues for entities.
 	edict_t* ent = &g_edicts[0];
 	for (int i = 0; i < (int)maxentities->value; i++, ent++)
