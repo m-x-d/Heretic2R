@@ -515,7 +515,7 @@ void PostKnockBack(edict_t* target, const vec3_t dir, const float knockback, con
 {
 	vec3_t vel;
 	CalculateKnockBack(dir, knockback, flags, (float)target->mass, vel);
-	QPostMessage(target, G_MSG_KNOCKEDBACK, PRI_PHYSICS, "fffi", vel[0], vel[1], vel[2], flags);
+	G_PostMessage(target, G_MSG_KNOCKEDBACK, PRI_PHYSICS, "fffi", vel[0], vel[1], vel[2], flags);
 }
 
 // Gets aiming vector to enemy or uses default aimangles.

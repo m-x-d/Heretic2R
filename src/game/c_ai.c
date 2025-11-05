@@ -24,7 +24,7 @@ void ReadCinematicMessage(edict_t* self, G_Message_t* msg) //mxd. Named 'ai_c_re
 {
 	int turning;
 	int repeat;
-	ParseMsgParms(msg, "iiige", &self->monsterinfo.c_dist, &turning, &repeat, &self->monsterinfo.c_callback, &self->monsterinfo.c_ent);
+	G_ParseMsgParms(msg, "iiige", &self->monsterinfo.c_dist, &turning, &repeat, &self->monsterinfo.c_callback, &self->monsterinfo.c_ent);
 
 	self->monsterinfo.c_repeat = repeat;
 	self->ideal_yaw = anglemod(self->s.angles[YAW] + (float)turning);
@@ -60,7 +60,7 @@ void ai_c_cycleend(edict_t* self)
 
 	// Well then just sit there if you aren't already.
 	if (!(self->monsterinfo.c_anim_flag & C_ANIM_IDLE))
-		QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
+		G_PostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 }
 
 void ai_c_move(edict_t* self, const float forward, float right, float up)
@@ -229,7 +229,7 @@ void CinematicCharacterInit(edict_t* self, const int class_id) //mxd. Named 'c_c
 	MG_InitMoods(self);
 
 	self->monsterinfo.c_mode = true;
-	QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
+	G_PostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 }
 
 void CinematicGibMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ai_c_gib' in original logic.

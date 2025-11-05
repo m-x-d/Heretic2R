@@ -100,7 +100,7 @@ static void RatRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_
 {
 	if (!M_ValidTarget(self, self->enemy))
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -138,7 +138,7 @@ static void RatMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ra
 {
 	if (!M_ValidTarget(self, self->enemy))
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -333,27 +333,27 @@ void rat_pain_init(edict_t* self)
 
 void rat_run_order(edict_t* self) //mxd. Named 'rat_runorder' in original logic.
 {
-	QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 }
 
 void rat_stand_order(edict_t* self) //mxd. Named 'rat_standorder' in original logic.
 {
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
 void rat_eat_order(edict_t* self) //mxd. Named 'rat_eatorder' in original logic.
 {
-	QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
 
 void rat_pause(edict_t* self)
 {
 	if (!M_ValidTarget(self, self->enemy))
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	else if (M_DistanceToTarget(self, self->enemy) > 60.0f || (self->monsterinfo.aiflags & AI_FLEE)) // Far enough to run after.
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 	else // Close enough to attack.
-		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 }
 
 void rat_jump(edict_t* self) //mxd. Named 'ratjump' in original logic.
@@ -410,9 +410,9 @@ void rat_ai_eat(edict_t* self, float distance)
 		return;
 
 	if (M_DistanceToTarget(self, self->enemy) < RAT_IGNORE_DISTANCE)
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 	else
-		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
 
 void rat_ai_run(edict_t* self, float distance)
@@ -544,14 +544,14 @@ void SP_monster_rat(edict_t* self)
 
 	if (self->spawnflags & MSF_EATING)
 	{
-		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 
 		if (self->wakeup_distance == 0.0f)
 			self->wakeup_distance = 300.0f;
 	}
 	else
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 }
 
@@ -610,13 +610,13 @@ void SP_monster_rat_giant(edict_t* self)
 	if (self->spawnflags & MSF_EATING)
 	{
 		self->monsterinfo.aiflags |= AI_EATING; //TODO: not set in SP_monster_rat(). Which is correct?..
-		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 
 		if (self->wakeup_distance == 0.0f)
 			self->wakeup_distance = 300.0f;
 	}
 	else
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 }

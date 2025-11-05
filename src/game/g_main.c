@@ -166,7 +166,7 @@ void InitGame(void)
 {
 	gi.dprintf("==== InitGame ====\n");
 
-	InitMsgMngr(); //mxd. Inline G_InitResourceManagers().
+	G_InitMsgMngr(); //mxd. Inline G_InitResourceManagers().
 
 	//FIXME: sv_ prefix is wrong for these.
 	sv_maxvelocity = gi.cvar("sv_maxvelocity", MAX_VELOCITY_STRING, 0);
@@ -262,7 +262,7 @@ static void ShutdownGame(void)
 
 	if (game.entitiesSpawned)
 	{
-		ClearMessageQueues();
+		G_ClearMessageQueues();
 
 		edict_t* ent = &g_edicts[0];
 		for (int i = 0; i < game.maxentities; i++, ent++)
@@ -273,7 +273,7 @@ static void ShutdownGame(void)
 			// 2. will dprint warnings when trying to free edicts reserved for players and bodyqueue.
 		}
 
-		ReleaseMsgMngr(); //mxd. Inline G_ReleaseResourceManagers().
+		G_ReleaseMsgMngr(); //mxd. Inline G_ReleaseResourceManagers().
 		game.entitiesSpawned = false;
 	}
 
@@ -462,7 +462,7 @@ static void ExitLevel(void)
 	level.intermissiontime = 0;
 
 	ClientEndServerFrames();
-	ClearMessageQueues();
+	G_ClearMessageQueues();
 }
 
 void CheckContinuousAutomaticEffects(edict_t* self)
@@ -638,7 +638,7 @@ static void G_RunFrame(void)
 		level.current_entity = ent;
 
 		if (ent->msgHandler != NULL) // Eventually this check won't be needed.
-			ProcessMessages(ent);
+			G_ProcessMessages(ent);
 
 		if (ent->flags & FL_SUSPENDED)
 			continue;

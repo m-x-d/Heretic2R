@@ -283,7 +283,7 @@ static void PriestessPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	int	temp;
 	int damage;
 	int force_pain;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	if (self->curAnimID == ANIM_ATTACK3_GO || self->curAnimID == ANIM_ATTACK3_LOOP || self->curAnimID == ANIM_SHIELD_GO)
 		return;
@@ -931,7 +931,7 @@ void priestess_pause(edict_t* self)
 {
 	if (!M_ValidTarget(self, self->enemy))
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -1098,7 +1098,7 @@ void SP_monster_high_priestess(edict_t* self)
 	// Setup her reference points.
 	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_HP_STAFF, CEF_OWNERS_ORIGIN | CEF_BROADCAST, vec3_origin, "bs", HP_STAFF_INIT, self->s.number);
 
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
 	self->post_think = PriestessPostThink;
 	self->next_post_think = level.time + FRAMETIME; //mxd. Use define.

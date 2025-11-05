@@ -323,7 +323,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 			if (do_splash_effect)
 				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("misc/splish%i.wav", irand(2, 3))), 1.0f, ATTN_STATIC, 0.0f);
 
-			QPostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
+			CE_PostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
 
 			return true;
 		}
@@ -392,7 +392,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 			if (do_splash_effect)
 				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("player/waterrun%i.wav", irand(1, 2))), 1.0f, ATTN_STATIC, 0.0f);
 
-			QPostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
+			CE_PostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
 
 			return true;
 		}
@@ -430,7 +430,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		return false;
 	}
 
-	QPostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
+	CE_PostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
 
 	// Works just like a recursive call.
 	return true;

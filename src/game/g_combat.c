@@ -238,7 +238,7 @@ void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int da
 		else if ((target->classID == CID_NONE || classStatics[target->classID].msgReceivers[MSG_PAIN] == NULL) && target->die != NULL)
 			target->die(target, inflictor, attacker, damage, vec3_origin);
 		else
-			QPostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, damage);
+			G_PostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, damage);
 
 		return;
 	}
@@ -264,7 +264,7 @@ void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int da
 		if ((target->classID == CID_NONE || classStatics[target->classID].msgReceivers[MSG_PAIN] == NULL) && target->die != NULL)
 			target->die(target, inflictor, attacker, damage, vec3_origin);
 		else
-			QPostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, damage);
+			G_PostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, damage);
 	}
 
 	if (Vec3IsZero(target->velocity)) //mxd. BUGFIX, sorta: '&& damage != 12345' in original logic. '12345' value is never used anywhere else.
@@ -833,7 +833,7 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 				if (target->client != NULL)
 					PlayerDismember(target, attacker, dismemeber_dmg, hl);
 				else
-					QPostMessage(target, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", dismemeber_dmg, hl);
+					G_PostMessage(target, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", dismemeber_dmg, hl);
 			}
 		}
 
@@ -857,7 +857,7 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 					else if (BLOOD_LEVEL > VIOLENCE_BLOOD)
 					{
 						hl |= hl_MeleeHit; // Force dismember.
-						QPostMessage(target, MSG_DEATH_PAIN, PRI_DIRECTIVE, "ii", dmg_take, hl);
+						G_PostMessage(target, MSG_DEATH_PAIN, PRI_DIRECTIVE, "ii", dmg_take, hl);
 					}
 				}
 
@@ -903,9 +903,9 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 			const qboolean force_pain = (target->enemy == NULL); //mxd
 
 			if (target->classID == CID_ASSASSIN)
-				QPostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", inflictor, attacker, force_pain, dmg_take, hl);
+				G_PostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", inflictor, attacker, force_pain, dmg_take, hl);
 			else
-				QPostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", target, attacker, force_pain, dmg_take, hl);
+				G_PostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", target, attacker, force_pain, dmg_take, hl);
 
 			// In Nightmare skill-level, monsters don't go into pain frames often.
 			if (SKILL >= 3)
@@ -915,7 +915,7 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 	else if (client != NULL)
 	{
 		if (!(target->flags & FL_GODMODE) && dmg_take > 0)
-			QPostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", target, attacker, knockback, dmg_take, hl);
+			G_PostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", target, attacker, knockback, dmg_take, hl);
 	}
 	else if (dmg_take > 0 && target->pain != NULL)
 	{
@@ -928,7 +928,7 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 		}
 		else
 		{
-			QPostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", target, attacker, knockback, dmg_take, hl);
+			G_PostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", target, attacker, knockback, dmg_take, hl);
 		}
 	}
 

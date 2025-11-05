@@ -176,7 +176,7 @@ static void SeraphGuardDropWeapon(edict_t* self) //mxd. Named 'seraph_guard_drop
 
 static void SeraphGuardCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'seraph_guard_check_mood' in original logic.
 {
-	ParseMsgParms(msg, "i", &self->ai_mood);
+	G_ParseMsgParms(msg, "i", &self->ai_mood);
 	seraph_guard_pause(self);
 }
 
@@ -185,7 +185,7 @@ static void SeraphGuardPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	int temp;
 	int force_damage;
 	int damage;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_damage, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp, &temp, &force_damage, &damage, &temp);
 
 	// Weighted random based on health compared to the maximum it was at.
 	if (force_damage || (irand(0, self->max_health + 50) > self->health && irand(0, 2) != 0))
@@ -209,7 +209,7 @@ static void SeraphGuardMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 	if (!M_ValidTarget(self, self->enemy))
 	{
 		// If our enemy is dead, we need to stand.
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -255,7 +255,7 @@ static void SeraphGuardMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd.
 	if (!M_ValidTarget(self, self->enemy))
 	{
 		// If our enemy is dead, we need to stand.
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -290,7 +290,7 @@ static void SeraphGuardDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 	edict_t* inflictor;
 	edict_t* attacker;
 	float damage;
-	ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
+	G_ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
 
 	M_StartDeath(self, ANIM_DEATH1);
 
@@ -327,7 +327,7 @@ static void SeraphGuardRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	if (!M_ValidTarget(self, self->enemy))
 	{
 		// If our enemy is dead, we need to stand.
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -622,7 +622,7 @@ void seraph_guard_check_poke(edict_t* self) //mxd. Named 'seraph_guard_checkpoke
 	// Really, this is a given, but it could fail...
 	if (!M_ValidTarget(self, self->enemy))
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -785,19 +785,19 @@ void seraph_guard_pause(edict_t* self)
 	switch (self->ai_mood)
 	{
 	case AI_MOOD_ATTACK:
-			QPostMessage(self, ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE), PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE), PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_PURSUE:
 		case AI_MOOD_NAVIGATE:
 		case AI_MOOD_WALK:
 		case AI_MOOD_FLEE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_STAND:
 			if (self->enemy == NULL) //TODO: else what?
-				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_DELAY:
@@ -1051,7 +1051,7 @@ void SP_monster_seraph_guard(edict_t* self)
 		self->s.fmnodeinfo[MESH__PITHEAD].flags |= FMNI_NO_DRAW;
 
 		MG_InitMoods(self);
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
 		self->melee_range *= self->s.scale;
 	}

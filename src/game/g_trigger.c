@@ -538,7 +538,7 @@ static void TriggerDeactivateActivated(edict_t* self, edict_t* activator) //mxd.
 	edict_t* target = NULL;
 	while ((target = G_Find(target, FOFS(targetname), self->target)) != NULL)
 		if (target->msgHandler != NULL)
-			QPostMessage(target, G_MSG_SUSPEND, PRI_ORDER, "f", self->time);
+			G_PostMessage(target, G_MSG_SUSPEND, PRI_ORDER, "f", self->time);
 }
 
 // QUAKED trigger_Deactivate (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED ANY
@@ -570,7 +570,7 @@ static void TriggerActivateActivated(edict_t* self, edict_t* activator) //mxd. N
 	edict_t* target = NULL;
 	while ((target = G_Find(target, FOFS(targetname), self->target)) != NULL)
 		if (target->msgHandler != NULL)
-			QPostMessage(target, G_MSG_UNSUSPEND, PRI_ORDER, "f", self->time);
+			G_PostMessage(target, G_MSG_UNSUSPEND, PRI_ORDER, "f", self->time);
 }
 
 // QUAKED trigger_Activate (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED ANY

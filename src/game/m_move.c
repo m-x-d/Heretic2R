@@ -100,7 +100,7 @@ static qboolean SV_MoveStep_Walk(edict_t* ent, const vec3_t move, const qboolean
 
 	if (trace.allsolid)
 	{
-		QPostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
+		G_PostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
 		return false;
 	}
 
@@ -112,7 +112,7 @@ static qboolean SV_MoveStep_Walk(edict_t* ent, const vec3_t move, const qboolean
 
 		if (trace.allsolid || trace.startsolid)
 		{
-			QPostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
+			G_PostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
 			return false;
 		}
 	}
@@ -145,7 +145,7 @@ static qboolean SV_MoveStep_Walk(edict_t* ent, const vec3_t move, const qboolean
 			return true;
 		}
 
-		QPostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
+		G_PostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
 		return false; // Walked off an edge.
 	}
 
@@ -168,7 +168,7 @@ static qboolean SV_MoveStep_Walk(edict_t* ent, const vec3_t move, const qboolean
 
 		// Let's not make that move after all.
 		VectorCopy(initial_org, ent->s.origin);
-		QPostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
+		G_PostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
 
 		return false;
 	}

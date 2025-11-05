@@ -552,7 +552,7 @@ static void OglePainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'og
 	qboolean force_pain;
 	int damage;
 	int temp;
-	ParseMsgParms(msg, "eeiii", &target, &attacker, &force_pain, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &target, &attacker, &force_pain, &damage, &temp);
 
 	self->mood_think = OgleMoodThink;
 
@@ -578,7 +578,7 @@ static void OgleDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'o
 	edict_t* inflictor;
 	edict_t* attacker;
 	float damage;
-	ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
+	G_ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
 
 	M_StartDeath(self, ANIM_DEATH1);
 	OgleDropTools(self);
@@ -701,7 +701,7 @@ static void OgleRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ogl
 		return;
 	}
 
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
 #pragma endregion
@@ -1053,22 +1053,22 @@ void ogle_pause(edict_t* self)
 	switch (self->ai_mood)
 	{
 		case AI_MOOD_ATTACK:
-			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_FLEE:
 		case AI_MOOD_PURSUE:
 		case AI_MOOD_NAVIGATE:
 			if (self->enemy != NULL)
-				QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_WALK:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_REST:

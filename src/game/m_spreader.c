@@ -180,7 +180,7 @@ static void SpreaderTakeOff(edict_t* self) //mxd. Named 'spreaderTakeOff' in ori
 
 static void SpreaderCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'spreader_check_mood' in original logic.
 {
-	ParseMsgParms(msg, "i", &self->ai_mood);
+	G_ParseMsgParms(msg, "i", &self->ai_mood);
 	spreader_pause(self);
 }
 
@@ -189,7 +189,7 @@ static void SpreaderPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	int temp;
 	int damage;
 	qboolean force_pain;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	// Weighted random based on health compared to the maximum it was at.
 	if (force_pain || (irand(0, self->max_health + 50) > self->health && irand(0, 2) != 0)) //mxd. flrand() in original logic.
@@ -209,7 +209,7 @@ static void SpreaderRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	if (!M_ValidTarget(self, self->enemy))
 	{
 		// If our enemy is dead, we need to stand.
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -340,7 +340,7 @@ static void SpreaderEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	edict_t* projectile;
 	HitLocation_t hl;
 	float eta;
-	ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
+	G_ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
 
 	if (irand(0, 1) == 0 || self->curAnimID == ANIM_DUCKDOWN || self->curAnimID == ANIM_DUCKUP || self->curAnimID == ANIM_DUCKSTILL)
 		return;
@@ -393,7 +393,7 @@ static void SpreaderDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		edict_t* inflictor;
 		edict_t* attacker;
 		float damage;
-		ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
+		G_ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
 	}
 
 	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW; //mxd. Hide grenade. Original logic calls spreader_hidegrenade() here, which also plays SND_THROW.
@@ -865,18 +865,18 @@ void spreader_pause(edict_t* self)
 	switch (self->ai_mood)
 	{
 		case AI_MOOD_ATTACK:
-			QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_NAVIGATE:
 		case AI_MOOD_PURSUE:
 		case AI_MOOD_FLEE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_STAND:
 			if (self->enemy == NULL) //TODO: else what?
-				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_DELAY:
@@ -885,7 +885,7 @@ void spreader_pause(edict_t* self)
 
 		case AI_MOOD_WANDER:
 		case AI_MOOD_WALK:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_JUMP:
@@ -893,7 +893,7 @@ void spreader_pause(edict_t* self)
 			break;
 
 		case AI_MOOD_BACKUP:
-			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
 			break;
 
 		default:
@@ -1126,5 +1126,5 @@ void SP_monster_spreader(edict_t* self)
 
 	//FIXME: what else should he spawn doing?
 	const G_MsgID_t msg_id = ((self->spawnflags & MSF_WANDER) ? MSG_WALK : MSG_STAND); //mxd
-	QPostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
 }

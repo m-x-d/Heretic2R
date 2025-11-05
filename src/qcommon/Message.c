@@ -6,7 +6,7 @@
 
 #include "Message.h"
 
-void QueueMessage(MsgQueue_t* this_ptr, void* msg)
+void MSG_Queue(MsgQueue_t* this_ptr, void* msg) //mxd. Named 'QueueMessage' in original logic.
 {
 	GenericUnion4_t temp;
 
@@ -14,7 +14,7 @@ void QueueMessage(MsgQueue_t* this_ptr, void* msg)
 	SLList_Push(&this_ptr->msgs, temp);
 }
 
-size_t SetParms(SinglyLinkedList_t* this_ptr, const char* format, va_list marker)
+size_t MSG_SetParms(SinglyLinkedList_t* this_ptr, const char* format, va_list marker) //mxd. Named 'SetParms' in original logic.
 {
 	qboolean append = false;
 	GenericUnion4_t parm;
@@ -85,21 +85,21 @@ size_t SetParms(SinglyLinkedList_t* this_ptr, const char* format, va_list marker
 	return bytesParsed;
 }
 
-int GetParms(SinglyLinkedList_t* this_ptr, const char* format, va_list marker)
+int MSG_GetParms(SinglyLinkedList_t* this_ptr, const char* format, va_list marker) //mxd. Named 'GetParms' in original logic.
 {
 	int count = 0;
 
 	assert(format);
 
 	if (format == NULL)
-		Sys_Error("GetParms: null format string");
+		Sys_Error("MSG_GetParms: null format string");
 
 	SLList_Front(this_ptr);
 
 	assert(!SLList_AtEnd(this_ptr));
 
 	if (SLList_AtEnd(this_ptr))
-		Sys_Error("Getthis: empty parameter list");
+		Sys_Error("MSG_GetParms: empty parameter list");
 
 	while (format[count] != 0)
 	{

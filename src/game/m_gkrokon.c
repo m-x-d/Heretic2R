@@ -214,7 +214,7 @@ static void GkrokonFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 
 static void GkrokonCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_check_mood' in original logic.
 {
-	ParseMsgParms(msg, "i", &self->ai_mood);
+	G_ParseMsgParms(msg, "i", &self->ai_mood);
 	gkrokon_pause(self);
 }
 
@@ -255,7 +255,7 @@ static void GkrokonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	}
 
 	// If our enemy is dead, we need to stand.
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
 static void GkrokonStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_stand' in original logic.
@@ -267,7 +267,7 @@ static void GkrokonMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 {
 	if (self->enemy == NULL)
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -338,7 +338,7 @@ static void GkrokonMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	}
 
 	if (irand(0, 10) < 6)
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 	else
 		GkrokonFallbackMsgHandler(self, msg); //mxd. Use function.
 }
@@ -348,7 +348,7 @@ static void GkrokonPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	int	temp;
 	int damage;
 	int	force_damage;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_damage, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp, &temp, &force_damage, &damage, &temp);
 
 	// Weighted random based on health compared to maximum health.
 	if (force_damage || (irand(0, self->max_health + 50) > self->health && irand(0, 2) > 0)) //mxd. flrand() in original logic.
@@ -375,7 +375,7 @@ static void GkrokonDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	edict_t* inflictor;
 	edict_t* attacker;
 	float damage;
-	ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
+	G_ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
 
 	M_StartDeath(self, ANIM_DIE1);
 
@@ -720,26 +720,26 @@ void gkrokon_pause(edict_t* self) //mxd. Named 'GkrokonPause' in original logic.
 	switch (self->ai_mood)
 	{
 		case AI_MOOD_ATTACK:
-			QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_PURSUE:
 		case AI_MOOD_NAVIGATE:
 		case AI_MOOD_FLEE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_WALK:
 		case AI_MOOD_WANDER:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_BACKUP:
-			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_JUMP:
@@ -750,11 +750,11 @@ void gkrokon_pause(edict_t* self) //mxd. Named 'GkrokonPause' in original logic.
 			break;
 
 		case AI_MOOD_EAT:
-			QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 			break;
 
 		default:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 	}
 }
@@ -889,10 +889,10 @@ void SP_Monster_Gkrokon(edict_t* self)
 	if (self->spawnflags & MSF_EATING)
 	{
 		self->monsterinfo.aiflags |= AI_EATING;
-		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 	}
 	else
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 }

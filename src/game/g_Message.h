@@ -164,13 +164,13 @@ extern void G_Message_Delete(G_Message_t* msg);
 extern "C"
 {
 #endif
-	extern void QPostMessage(struct edict_s* to, G_MsgID_t id, G_MsgPriority_t priority, const char* format, ...);
+	extern void G_PostMessage(struct edict_s* to, G_MsgID_t id, G_MsgPriority_t priority, const char* format, ...);
 #ifdef __cplusplus
 }
 #endif
 
-extern int ParseMsgParms(G_Message_t* msg, char* format, ...);
-extern void ProcessMessages(struct edict_s* self);
-extern void ClearMessageQueues(void); //mxd
-extern void InitMsgMngr(void); //mxd
-extern void ReleaseMsgMngr(void); //mxd
+extern int G_ParseMsgParms(G_Message_t* msg, char* format, ...);
+extern void G_ProcessMessages(struct edict_s* self);
+extern void G_ClearMessageQueues(void); //mxd
+extern void G_InitMsgMngr(void); //mxd
+extern void G_ReleaseMsgMngr(void); //mxd

@@ -164,7 +164,7 @@ void HarpyTakeHead(edict_t* self, edict_t* victim, const int bodypart_node_id, c
 	self->velocity[2] = 20.0f; //FIXME: fix angles?
 	self->enemy = NULL;
 
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL); //FIXME: go into a circle?
+	G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL); //FIXME: go into a circle?
 }
 
 #pragma endregion
@@ -320,7 +320,7 @@ static void HarpyPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'h
 	int temp;
 	int damage;
 	qboolean force_pain;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	if (self->curAnimID >= ANIM_PERCH1 && self->curAnimID <= ANIM_PERCH9)
 	{
@@ -407,7 +407,7 @@ static void HarpyIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'harpy_bl
 				}
 				else
 				{
-					QPostMessage(trace->ent, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", 9999999, hl_Head | hl_MeleeHit);
+					G_PostMessage(trace->ent, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", 9999999, hl_Head | hl_MeleeHit);
 				}
 
 				return;
@@ -841,7 +841,7 @@ void harpy_pause(edict_t* self)
 {
 	if (M_ValidTarget(self, self->enemy))
 	{
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 	}
 	else if (self->curAnimID == ANIM_CIRCLING)
 	{
@@ -1273,7 +1273,7 @@ void SP_monster_harpy(edict_t* self)
 	}
 	else
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 
 	if (irand(0, 1) != 0)

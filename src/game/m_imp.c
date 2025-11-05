@@ -238,7 +238,7 @@ static void ImpPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp
 	int temp;
 	int damage;
 	qboolean force_pain;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	if (self->curAnimID == ANIM_PERCH)
 	{
@@ -493,7 +493,7 @@ void imp_hit(edict_t* self, float stop_swoop)
 void imp_pause(edict_t* self)
 {
 	if (M_ValidTarget(self, self->enemy))
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 }
 
 // End of animation func for death animation.
@@ -1058,7 +1058,7 @@ void SP_monster_imp(edict_t* self)
 	if (self->spawnflags & MSF_PERCHING)
 		SetAnim(self, ANIM_PERCH);
 	else
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
 	if (self->melee_range == 0.0f)
 		self->melee_range = (float)AttackRangesForClass[self->classID * 4 + 0];

@@ -72,7 +72,7 @@ static void PathCornerTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 	if (self->wait > 0.0f)
 	{
 		other->monsterinfo.pausetime = level.time + self->wait;
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 	else if (other->goalentity != NULL)
 	{
@@ -83,7 +83,7 @@ static void PathCornerTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 	else
 	{
 		other->monsterinfo.pausetime = level.time + 100000000.0f;
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 }
 
@@ -147,7 +147,7 @@ static void PointCombatTouch(edict_t* self, edict_t* other, cplane_t* plane, csu
 	else if ((self->spawnflags & SF_HOLD) && !(other->flags & (FL_SWIM | FL_FLY)))
 	{
 		other->spawnflags |= MSF_FIXED; // Stay here forever for now.
-		QPostMessage(other, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(other, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 
 	if (other->movetarget == self)

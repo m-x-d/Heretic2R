@@ -13,6 +13,6 @@ typedef struct MsgQueue_s
 	SinglyLinkedList_t msgs;
 } MsgQueue_t;
 
-extern size_t SetParms(SinglyLinkedList_t *this_ptr, const char *format, va_list marker);
-extern int GetParms(SinglyLinkedList_t *this_ptr, const char *format, va_list marker);
-extern void QueueMessage(MsgQueue_t *this_ptr, void *msg);
+extern size_t MSG_SetParms(SinglyLinkedList_t *this_ptr, const char *format, va_list marker);
+extern int MSG_GetParms(SinglyLinkedList_t *this_ptr, const char *format, va_list marker);
+extern void MSG_Queue(MsgQueue_t *this_ptr, void *msg);

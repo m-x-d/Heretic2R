@@ -27,7 +27,7 @@
 void DefaultObjectDieHandler(edict_t* self, G_Message_t* msg) //mxd. Originally defined in g_misc.c
 {
 	edict_t* inflictor;
-	ParseMsgParms(msg, "ee", &inflictor, &inflictor);
+	G_ParseMsgParms(msg, "ee", &inflictor, &inflictor);
 
 	G_UseTargets(self, inflictor);
 

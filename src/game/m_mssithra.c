@@ -102,20 +102,20 @@ static qboolean MssithraCheckMood(edict_t* self) //mxd. Named 'mssithraCheckMood
 	switch (self->ai_mood)
 	{
 		case AI_MOOD_ATTACK:
-			QPostMessage(self, ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE), PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE), PRI_DIRECTIVE, NULL);
 			return true;
 
 		case AI_MOOD_PURSUE:
 		case AI_MOOD_NAVIGATE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			return true;
 
 		case AI_MOOD_WALK:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			return true;
 
 		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			return true;
 	}
 
@@ -140,7 +140,7 @@ static void MssithraPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	int temp;
 	int damage;
 	qboolean force_pain;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	if (!force_pain || irand(0, 10) < 5 || self->groundentity == NULL || self->pain_debounce_time > level.time || self->curAnimID == ANIM_CLAW1)
 		return;
@@ -176,7 +176,7 @@ static void MssithraMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 {
 	if (!M_ValidTarget(self, self->enemy))
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -197,7 +197,7 @@ static void MssithraMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	//NEWSTUFF: jump closer to claw, loop shooting anims.
 	if (!M_ValidTarget(self, self->enemy))
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -576,7 +576,7 @@ void SP_monster_mssithra(edict_t* self)
 
 	// Setup my mood function.
 	MG_InitMoods(self);
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
 	// Turn the goofy bolts off!
 	self->s.fmnodeinfo[MESH__BOLTS].flags |= FMNI_NO_DRAW; //TODO: enable during firing animation?

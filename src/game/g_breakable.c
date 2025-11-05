@@ -27,19 +27,19 @@ void KillBrush(edict_t* target, edict_t* inflictor, edict_t* attacker, const int
 		do
 		{
 			edict_t* other = target->enemy;
-			QPostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, damage);
+			G_PostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, damage);
 			target = other;
 		} while (target != start);
 	}
 	else
 	{
-		QPostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, damage);
+		G_PostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, damage);
 	}
 }
 
 static void KillBrushUse(edict_t* target, edict_t* inflictor, edict_t* attacker)
 {
-	QPostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, 0);
+	G_PostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, 0);
 }
 
 void BBrushStaticsInit(void)

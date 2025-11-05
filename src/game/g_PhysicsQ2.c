@@ -23,7 +23,7 @@ static qboolean SV_RunThink(edict_t* ent)
 	assert(ent->inuse);
 
 	if (ent->msgHandler != NULL)
-		ProcessMessages(ent);
+		G_ProcessMessages(ent);
 
 	assert(ent->inuse);
 

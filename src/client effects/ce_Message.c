@@ -12,21 +12,21 @@
 
 static ResourceManager_t ce_messages_manager;
 
-void InitMsgMngr(void)
+void CE_InitMsgMngr(void) //mxd. Named 'InitMsgMngr' in original logic.
 {
 #define MESSAGE_BLOCK_SIZE	256
 
 	ResMngr_Con(&ce_messages_manager, sizeof(CE_Message_t), MESSAGE_BLOCK_SIZE);
 }
 
-void ReleaseMsgMngr(void)
+void CE_ReleaseMsgMngr(void) //mxd. Named 'ReleaseMsgMngr' in original logic.
 {
 	ResMngr_Des(&ce_messages_manager);
 }
 
-void QPostMessage(client_entity_t* to, const CE_MsgID_t ID, char* format, ...)
+void CE_PostMessage(client_entity_t* to, const CE_MsgID_t id, char* format, ...) //mxd. Named 'QPostMessage' in original logic.
 {
-	assert(to->msgHandler); //mxd. Changed from check to assert.
+	assert(to->msgHandler != NULL); //mxd. Changed from check to assert.
 
 	CE_Message_t* msg = ResMngr_AllocateResource(&ce_messages_manager, sizeof(CE_Message_t));
 	SinglyLinkedList_t* parms = &msg->parms;
@@ -34,40 +34,39 @@ void QPostMessage(client_entity_t* to, const CE_MsgID_t ID, char* format, ...)
 	SLList_DefaultCon(parms);
 	SLList_PushEmpty(parms); // Should make a constructor fo CE_Message_t.
 
-	msg->ID = ID;
+	msg->ID = id;
 
 	if (format != NULL)
 	{
 		va_list marker;
-
 		va_start(marker, format);
-		SetParms(parms, format, marker);
+		MSG_SetParms(parms, format, marker);
 		va_end(marker);
 	}
 
-	QueueMessage(&to->msgQ, msg);
+	MSG_Queue(&to->msgQ, msg);
 }
 
-int ParseMsgParms(CE_Message_t* this, char* format, ...)
+int CE_ParseMsgParms(CE_Message_t* msg, char* format, ...) //mxd. Named 'ParseMsgParms' in original logic.
 {
-	assert(this);
+	assert(msg != NULL);
 
-	SinglyLinkedList_t* parms = &this->parms;
+	SinglyLinkedList_t* parms = &msg->parms;
 	SLList_Front(parms);
 
 	va_list marker;
 	va_start(marker, format);
-	const int args_filled = GetParms(parms, format, marker);
+	const int args_filled = MSG_GetParms(parms, format, marker);
 	va_end(marker);
 
 	return args_filled;
 }
 
-void ProcessMessages(client_entity_t* this)
+void CE_ProcessMessages(client_entity_t* self) //mxd. Named 'ProcessMessages' in original logic.
 {
-	assert(this->msgHandler);
+	assert(self->msgHandler != NULL);
 
-	SinglyLinkedList_t* msgs = &this->msgQ.msgs;
+	SinglyLinkedList_t* msgs = &self->msgQ.msgs;
 
 	while (!SLList_IsEmpty(msgs))
 	{
@@ -77,15 +76,16 @@ void ProcessMessages(client_entity_t* this)
 		if (!SLList_AtLast(parms) && !SLList_AtEnd(parms))
 			SLList_Chop(parms);
 
-		this->msgHandler((struct client_entity_s*)this, msg);
+		self->msgHandler(self, msg);
+
 		SLList_Des(parms);
 		ResMngr_DeallocateResource(&ce_messages_manager, msg, sizeof(CE_Message_t));
 	}
 }
 
-void ClearMessageQueue(client_entity_t* this)
+void CE_ClearMessageQueue(client_entity_t* self) //mxd. Named 'ClearMessageQueue' in original logic.
 {
-	SinglyLinkedList_t* msgs = &this->msgQ.msgs;
+	SinglyLinkedList_t* msgs = &self->msgQ.msgs;
 
 	while (!SLList_IsEmpty(msgs))
 	{

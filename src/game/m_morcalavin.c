@@ -1229,17 +1229,17 @@ void morcalavin_pause(edict_t* self)
 		case AI_MOOD_ATTACK:
 		{
 			const int msg_id = ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE); //mxd
-			QPostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
 		} break;
 
 		case AI_MOOD_PURSUE:
 		case AI_MOOD_NAVIGATE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_DELAY:
 		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_WANDER:
@@ -1464,7 +1464,7 @@ void SP_monster_morcalavin(edict_t* self)
 	}
 
 	MG_InitMoods(self);
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
 	self->s.color.c = 0xffffffff;
 	self->s.renderfx |= RF_GLOW;

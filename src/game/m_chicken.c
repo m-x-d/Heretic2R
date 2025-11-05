@@ -207,9 +207,9 @@ void chicken_pause(edict_t* self)
 			VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
 
 			if (VectorLength(diff) > 60.0f || (self->monsterinfo.aiflags & AI_FLEE)) // Far enough to run after.
-				QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			else // Close enough to attack.
-				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 		}
 
 		return;
@@ -218,7 +218,7 @@ void chicken_pause(edict_t* self)
 	// If we can attack, then we do that, no question.
 	if (self->ai_mood == AI_MOOD_ATTACK)
 	{
-		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -228,14 +228,14 @@ void chicken_pause(edict_t* self)
 	// A chance to cluck.
 	if (random_action == 0)
 	{
-		QPostMessage(self, MSG_WATCH, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_WATCH, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
 	// A chance to peck.
 	if (random_action == 1)
 	{
-		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -243,15 +243,15 @@ void chicken_pause(edict_t* self)
 	switch (self->ai_mood)
 	{
 		case AI_MOOD_PURSUE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_NAVIGATE:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_JUMP:
@@ -261,7 +261,7 @@ void chicken_pause(edict_t* self)
 			break;
 
 		case AI_MOOD_EAT:
-			QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 			break;
 
 		default:
@@ -275,7 +275,7 @@ void chicken_eat_again(edict_t* self)
 {
 	// One in three chance we will peck again :) //TODO: 2 in 3 chances, actually. Should change?
 	if (irand(0, 2) != 0)
-		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 	else
 		chicken_pause(self);
 }
@@ -364,7 +364,7 @@ void SP_monster_chicken(edict_t* self)
 	self->monsterinfo.otherenemyname = "obj_barrel"; //TODO: why?
 
 	MG_InitMoods(self);
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
 	gi.linkentity(self);
 }

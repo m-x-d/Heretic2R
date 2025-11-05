@@ -326,7 +326,7 @@ void M_MoveFrame(edict_t* self)
 	// There is a voice sound waiting to play.
 	if (self->monsterinfo.sound_pending != 0 && self->monsterinfo.sound_start <= level.time)
 	{
-		QPostMessage(self, MSG_VOICE_PUPPET, PRI_DIRECTIVE, "i", self->monsterinfo.sound_pending);
+		G_PostMessage(self, MSG_VOICE_PUPPET, PRI_DIRECTIVE, "i", self->monsterinfo.sound_pending);
 		self->monsterinfo.sound_pending = 0;
 	}
 
@@ -713,9 +713,9 @@ static void M_MonsterStartGo(edict_t* self) //mxd. Named 'monster_start_go' in o
 				self->monsterinfo.pausetime = FLT_MAX; //mxd. 100000000.0f in original logic.
 
 				if (!self->monsterinfo.c_mode) // Not in cinematic mode.
-					QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+					G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 				else
-					QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
+					G_PostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 			}
 			else if (strcmp(self->movetarget->classname, "path_corner") == 0)
 			{
@@ -726,7 +726,7 @@ static void M_MonsterStartGo(edict_t* self) //mxd. Named 'monster_start_go' in o
 					self->ideal_yaw = VectorYaw(diff);
 					self->s.angles[YAW] = self->ideal_yaw;
 
-					QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+					G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 					self->monsterinfo.pausetime = 0.0f;
 				}
 				else
@@ -736,9 +736,9 @@ static void M_MonsterStartGo(edict_t* self) //mxd. Named 'monster_start_go' in o
 					self->monsterinfo.pausetime = FLT_MAX; //mxd. 100000000.0f in original logic.
 
 					if (!self->monsterinfo.c_mode) // Not in cinematic mode.
-						QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+						G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 					else
-						QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
+						G_PostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 				}
 
 				self->target = NULL;
@@ -750,9 +750,9 @@ static void M_MonsterStartGo(edict_t* self) //mxd. Named 'monster_start_go' in o
 				self->monsterinfo.pausetime = FLT_MAX; //mxd. 100000000.0f in original logic.
 
 				if (!self->monsterinfo.c_mode) // Not in cinematic mode.
-					QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+					G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 				else
-					QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
+					G_PostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 			}
 		}
 		else
@@ -760,11 +760,11 @@ static void M_MonsterStartGo(edict_t* self) //mxd. Named 'monster_start_go' in o
 			self->monsterinfo.pausetime = FLT_MAX; //mxd. 100000000.0f in original logic.
 
 			if (self->monsterinfo.aiflags & AI_EATING)
-				QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 			else if (!self->monsterinfo.c_mode) // Not in cinematic mode.
-				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			else
-				QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
+				G_PostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 		}
 	}
 
@@ -1315,7 +1315,7 @@ void M_jump(edict_t* self, G_Message_t* msg) //TODO: used only by Rat. Move to m
 		self->mood_nextthink = level.time + 0.5f;
 
 		// As an alternative, call self->forced_jump(self);
-		QPostMessage(self, MSG_CHECK_MOOD, PRI_DIRECTIVE, "i", AI_MOOD_JUMP);
+		G_PostMessage(self, MSG_CHECK_MOOD, PRI_DIRECTIVE, "i", AI_MOOD_JUMP);
 	}
 	else
 	{
@@ -1330,7 +1330,7 @@ void DismemberMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'MG_parse
 	{
 		int damage;
 		HitLocation_t hl;
-		ParseMsgParms(msg, "ii", &damage, &hl);
+		G_ParseMsgParms(msg, "ii", &damage, &hl);
 
 		self->monsterinfo.dismember(self, damage, hl);
 	}

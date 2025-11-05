@@ -253,7 +253,7 @@ void G_UseTargets(edict_t* ent, edict_t* activator)
 		edict_t* killtarget = NULL;
 		while ((killtarget = G_Find(killtarget, FOFS(targetname), ent->killtarget)) != NULL)
 		{
-			QPostMessage(killtarget, MSG_DEATH, PRI_DIRECTIVE, "eeei", killtarget, ent, activator, 100000); //TODO: activator can be NULL (e.g. func_door with DOOR_MOVE_LOOP enabled).
+			G_PostMessage(killtarget, MSG_DEATH, PRI_DIRECTIVE, "eeei", killtarget, ent, activator, 100000); //TODO: activator can be NULL (e.g. func_door with DOOR_MOVE_LOOP enabled).
 
 			if (!ent->inuse)
 			{

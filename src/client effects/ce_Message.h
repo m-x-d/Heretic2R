@@ -23,10 +23,10 @@ typedef struct Message_s
 typedef void (*CE_MessageHandler_t)(struct client_entity_s* self, CE_Message_t* msg);
 typedef void (*CE_MsgReceiver_t)(struct client_entity_s* self, CE_Message_t* msg);
 
-extern void InitMsgMngr(void);
-extern void ReleaseMsgMngr(void);
+extern void CE_InitMsgMngr(void);
+extern void CE_ReleaseMsgMngr(void);
 
-extern void QPostMessage(struct client_entity_s* to, CE_MsgID_t ID, char* format, ...);
-extern int ParseMsgParms(CE_Message_t* this, char* format, ...);
-extern void ProcessMessages(struct client_entity_s* this);
-extern void ClearMessageQueue(struct client_entity_s* this);
+extern void CE_PostMessage(struct client_entity_s* to, CE_MsgID_t id, char* format, ...);
+extern int CE_ParseMsgParms(CE_Message_t* msg, char* format, ...);
+extern void CE_ProcessMessages(struct client_entity_s* self);
+extern void CE_ClearMessageQueue(struct client_entity_s* self);

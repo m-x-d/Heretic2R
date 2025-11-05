@@ -75,7 +75,7 @@ static void Init(void)
 	InitParticleMngr();
 	InitFMNodeInfoMngr();
 	InitEntityMngr();
-	InitMsgMngr();
+	CE_InitMsgMngr();
 	InitDLightMngr();
 
 	for (int i = 0; i < NUM_CLASSIDS; i++)
@@ -106,7 +106,7 @@ static void ShutDown(void)
 	ReleaseEntityMngr();
 	ReleaseFMNodeInfoMngr();
 	ReleaseDLightMngr();
-	ReleaseMsgMngr();
+	CE_ReleaseMsgMngr();
 }
 
 static void AddEffects(const qboolean freeze)

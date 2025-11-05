@@ -34,7 +34,7 @@ static void MotherPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	int temp;
 	int damage;
 	qboolean force_pain;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	if (self->pain_debounce_time < level.time)
 	{
@@ -70,7 +70,7 @@ void mother_growl(edict_t* self)
 
 void mother_pause(edict_t* self)
 {
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
 #pragma endregion

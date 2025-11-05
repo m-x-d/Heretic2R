@@ -776,7 +776,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 		return;
 
 	trace_t* trace;
-	ParseMsgParms(msg, "g", &trace);
+	CE_ParseMsgParms(msg, "g", &trace);
 
 	// Invalid trace or didn't hit the world?
 	if (trace->startsolid || trace->allsolid || Vec3IsZeroEpsilon(trace->plane.normal) || trace->ent != (struct edict_s*)-1)

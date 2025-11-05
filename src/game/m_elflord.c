@@ -628,7 +628,7 @@ void SP_monster_elflord(edict_t* self)
 	self->pre_think = ElfLordPreThink;
 	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
 
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
 	gi.linkentity(self);
 }

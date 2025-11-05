@@ -99,7 +99,7 @@ client_entity_t* ClientEntity_new(const int type, const int flags, const vec3_t 
 	return new_ent;
 }
 
-static void ClientEntity_delete(client_entity_t* to_delete, const centity_t* owner)
+static void ClientEntity_delete(client_entity_t* to_delete, const centity_t* owner) //TODO: remove 'owner' arg (unused). 
 {
 	if (to_delete->p_root != NULL)
 		RemoveParticleList(&to_delete->p_root);
@@ -113,7 +113,7 @@ static void ClientEntity_delete(client_entity_t* to_delete, const centity_t* own
 	if (to_delete->r.spriteType == SPRITE_VARIABLE && to_delete->r.verts_p != NULL)
 		free(to_delete->r.verts_p);
 
-	ClearMessageQueue(to_delete);
+	CE_ClearMessageQueue(to_delete);
 	SLList_Des(&to_delete->msgQ.msgs);
 	ResMngr_DeallocateResource(&entity_manager, to_delete, sizeof(*to_delete));
 }
@@ -320,7 +320,7 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 		num_fx++;
 
 		if (current->msgHandler != NULL)
-			ProcessMessages(current);
+			CE_ProcessMessages(current);
 
 		if (current->Update != NULL && current->nextThinkTime <= fxi.cl->time)
 		{

@@ -666,7 +666,7 @@ void assassin_attack(edict_t* self, const float flags) //mxd. Named 'assassindag
 {
 	if (self->enemy == NULL || self->enemy->health < 0)
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -792,27 +792,27 @@ void assassin_pause(edict_t* self)
 				VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
 
 				const int anim_id = ((VectorLength(diff) > 80.0f || (self->monsterinfo.aiflags & AI_FLEE)) ? MSG_RUN : MSG_MELEE);
-				QPostMessage(self, anim_id, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, anim_id, PRI_DIRECTIVE, NULL);
 			}
 		} break;
 
 		case AI_MOOD_ATTACK:
 		{
 			const int anim_id = ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE); //mxd
-			QPostMessage(self, anim_id, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, anim_id, PRI_DIRECTIVE, NULL);
 		} break;
 
 		case AI_MOOD_PURSUE:
 		case AI_MOOD_NAVIGATE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_WALK:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_DELAY:
@@ -823,7 +823,7 @@ void assassin_pause(edict_t* self)
 			if (self->spawnflags & MSF_FIXED)
 				SetAnim(self, ANIM_DELAY);
 			else
-				QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_JUMP:
@@ -1710,7 +1710,7 @@ static void AssassinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	}
 	else
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 }
 
@@ -1725,7 +1725,7 @@ static void AssassinMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	}
 	else
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 }
 
@@ -1751,7 +1751,7 @@ static void AssassinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	}
 	else
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 }
 
@@ -1765,7 +1765,7 @@ static void AssassinPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	qboolean force_pain;
 	int damage;
 	int temp;
-	ParseMsgParms(msg, "eeiii", &inflictor, &attacker, &force_pain, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &inflictor, &attacker, &force_pain, &damage, &temp);
 
 	if (inflictor == attacker || Q_stricmp(inflictor->classname, "Spell_RedRain") == 0 || Q_stricmp(inflictor->classname, "Spell_Hellbolt") == 0) //mxd. stricmp -> Q_stricmp
 	{
@@ -1872,7 +1872,7 @@ static void AssassinDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 	//FIXME: make part fly dir the vector from hit loc to sever loc. Remember - turn on caps!
 	int damage;
 	HitLocation_t hl;
-	ParseMsgParms(msg, "ii", &damage, &hl);
+	G_ParseMsgParms(msg, "ii", &damage, &hl);
 
 	AssassinDismember(self, damage, hl);
 }
@@ -1907,7 +1907,7 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	edict_t* projectile;
 	HitLocation_t hl;
 	float eta;
-	ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
+	G_ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
 
 	self->evade_debounce_time = level.time + min(eta, 2.0f);
 
@@ -2000,7 +2000,7 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 
 static void AssassinCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_check_mood' in original logic.
 {
-	ParseMsgParms(msg, "i", &self->ai_mood);
+	G_ParseMsgParms(msg, "i", &self->ai_mood);
 	assassin_pause(self);
 }
 
@@ -2254,12 +2254,12 @@ void SP_monster_assassin(edict_t* self)
 
 	if (self->spawnflags & MSF_WANDER)
 	{
-		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 	}
 	else if (self->spawnflags & MSF_ASS_CINEMATIC)
 	{
 		self->monsterinfo.c_mode = true;
-		QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
+		G_PostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 	}
 	else
 	{
@@ -2269,7 +2269,7 @@ void SP_monster_assassin(edict_t* self)
 		self->pre_think = AssassinCloakPreThink;
 		self->next_pre_think = level.time + FRAMETIME;
 
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 
 	self->svflags |= SVF_WAIT_NOTSOLID;

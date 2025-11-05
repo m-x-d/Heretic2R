@@ -41,7 +41,7 @@ static void TornadoThink(edict_t* self)
 		vel[2] += 200.0f;
 
 		// Vel is just passing the direction of the knockback.
-		QPostMessage(ent, MSG_REPULSE, PRI_DIRECTIVE, "fff", vel[0], vel[1], vel[2]);
+		G_PostMessage(ent, MSG_REPULSE, PRI_DIRECTIVE, "fff", vel[0], vel[1], vel[2]);
 
 		// Double the damage if this tornado is powered up.
 		if (ent->takedamage != DAMAGE_NO)

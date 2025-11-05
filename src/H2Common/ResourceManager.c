@@ -124,7 +124,7 @@ H2COMMON_API void ResMngr_DeallocateResource(ResourceManager_t* resource, void* 
 	// See same assert at top of AllocateResource.
 	assert(resource->free);	
 
-	// Set toPop->next to current unallocated front.
+	// Set toPush->next to current unallocated front.
 	*toPush = (char*)resource->free;
 
 	// Set unallocated to the node removed from allocated.

@@ -61,7 +61,7 @@ void DefaultMsgHandler(edict_t* self, G_Message_t* msg)
 	{
 		edict_t* target;
 		edict_t* activator;
-		ParseMsgParms(msg, "ee", &target, &activator);
+		G_ParseMsgParms(msg, "ee", &target, &activator);
 
 		if (target->pain_target != NULL)
 		{
@@ -86,7 +86,7 @@ void DefaultMsgHandler(edict_t* self, G_Message_t* msg)
 void DefaultReceiver_Repulse(edict_t* self, G_Message_t* msg)
 {
 	vec3_t vel;
-	ParseMsgParms(msg, "fff", &vel[0], &vel[1], &vel[2]);
+	G_ParseMsgParms(msg, "fff", &vel[0], &vel[1], &vel[2]);
 }
 
 void DefaultReceiver_SetAnim(edict_t* self, G_Message_t* msg)
@@ -94,7 +94,7 @@ void DefaultReceiver_SetAnim(edict_t* self, G_Message_t* msg)
 	if (msg->priority >= PRI_DIRECTIVE)
 	{
 		int id;
-		ParseMsgParms(msg, "i", &id);
+		G_ParseMsgParms(msg, "i", &id);
 		SetAnim(self, id);
 	}
 }

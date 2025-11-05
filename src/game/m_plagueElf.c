@@ -446,7 +446,7 @@ static void PlagueElfPollResponse(const edict_t* self, const int sound_event, co
 		}
 
 		// This is the elf to respond, so post the message.
-		QPostMessage(last_valid, MSG_VOICE_POLL, PRI_DIRECTIVE, "bbf", sound_event, sound_id, time);
+		G_PostMessage(last_valid, MSG_VOICE_POLL, PRI_DIRECTIVE, "bbf", sound_event, sound_id, time);
 	}
 }
 
@@ -578,7 +578,7 @@ static void PlagueElfDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	edict_t* inflictor;
 	edict_t* attacker;
 	float damage;
-	ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
+	G_ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
 
 	// Big enough death to be thrown back.
 	if (self->monsterinfo.aiflags & AI_DONT_THINK)
@@ -648,7 +648,7 @@ static void PlagueElfMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	if (!M_ValidTarget(self, self->enemy))
 	{
 		// If our enemy is dead, we need to stand.
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -682,7 +682,7 @@ static void PlagueElfPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	int temp;
 	int damage;
 	qboolean force_pain;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	PlagueElfPhaseInInit(self);
 
@@ -706,7 +706,7 @@ static void PlagueElfJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 
 static void PlagueElfCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'pelf_check_mood' in original logic.
 {
-	ParseMsgParms(msg, "i", &self->ai_mood);
+	G_ParseMsgParms(msg, "i", &self->ai_mood);
 	plagueelf_pause(self);
 }
 
@@ -718,7 +718,7 @@ static void PlagueElfRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	if (M_ValidTarget(self, self->enemy))
 		SetAnim(self, ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN1));
 	else // If our enemy is dead, we need to stand.
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
 static void PlagueElfStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'plagueElf_stand' in original logic.
@@ -749,7 +749,7 @@ static void PlagueElfVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd
 
 	edict_t* enemy = NULL;
 	byte sight_type;
-	ParseMsgParms(msg, "be", &sight_type, &enemy);
+	G_ParseMsgParms(msg, "be", &sight_type, &enemy);
 
 	// Find out how many elves are around (save this if we want it later).
 	self->monsterinfo.supporters = M_FindSupport(self, PLAGUEELF_SUPPORT_RADIUS);
@@ -787,7 +787,7 @@ static void PlagueElfVoicePollMsgHandler(edict_t* self, G_Message_t* msg) //mxd.
 	int sound_event;
 	int sound_id;
 	float time;
-	ParseMsgParms(msg, "bbf", &sound_event, &sound_id, &time);
+	G_ParseMsgParms(msg, "bbf", &sound_event, &sound_id, &time);
 
 	self->monsterinfo.sound_start = time;
 	self->monsterinfo.sound_finished = level.time + plague_elf_voice_times[self->monsterinfo.sound_pending];
@@ -824,7 +824,7 @@ static void PlagueElfVoicePollMsgHandler(edict_t* self, G_Message_t* msg) //mxd.
 static void PlagueElfVoicePuppetMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'pelf_EchoSound' in original logic.
 {
 	int sound;
-	ParseMsgParms(msg, "i", &sound);
+	G_ParseMsgParms(msg, "i", &sound);
 
 	gi.sound(self, CHAN_VOICE, sounds[sound], 1.0f, ATTN_NORM, 0.0f);
 }
@@ -1339,7 +1339,7 @@ void plagueelf_spell(edict_t* self) //mxd. Named 'plagueElf_spell' in original l
 	if (!M_ValidTarget(self, self->enemy))
 	{
 		// If our enemy is dead, we need to stand.
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -1495,24 +1495,24 @@ void plagueelf_pause(edict_t* self) //mxd. Named 'plagueElf_pause' in original l
 	{
 		case AI_MOOD_ATTACK:
 			if (self->ai_mood_flags & AI_MOOD_FLAG_MISSILE)
-				QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
 			else
-				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_PURSUE:
 			if (self->ai_mood_flags & AI_MOOD_FLAG_DUMB_FLEE)
 				SetAnim(self, ANIM_SCARED);
 			else
-				QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_NAVIGATE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_WALK:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_FLEE:
@@ -1537,7 +1537,7 @@ void plagueelf_pause(edict_t* self) //mxd. Named 'plagueElf_pause' in original l
 			break;
 
 		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_DELAY:
@@ -1549,7 +1549,7 @@ void plagueelf_pause(edict_t* self) //mxd. Named 'plagueElf_pause' in original l
 			break;
 
 		case AI_MOOD_BACKUP:
-			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_JUMP:
@@ -1771,17 +1771,17 @@ void SP_monster_plagueElf(edict_t* self)
 
 	if (self->spawnflags & MSF_WANDER)
 	{
-		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 	}
 	else if (self->spawnflags & MSF_PELF_CINEMATIC)
 	{
 		self->svflags |= SVF_FLOAT;
 		self->monsterinfo.c_mode = true;
-		QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
+		G_PostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 	}
 	else
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 
 	// Setup missile plague elf.

@@ -112,7 +112,7 @@ static qboolean GorgonCanAttack(edict_t* self) //mxd. Named 'gorgon_check_attack
 	if (dist < 200.0f)
 	{
 		self->show_hostile = level.time + 1.0f; // Wake up other monsters.
-		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 
 		return true;
 	}
@@ -624,7 +624,7 @@ static void GorgonPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	int temp;
 	int damage;
 	qboolean force_pain;
-	ParseMsgParms(msg, "eeiii", &temp_ent, &temp_ent, &force_pain, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp_ent, &temp_ent, &force_pain, &damage, &temp);
 
 	if (!force_pain && (irand(0, 2) == 0 || self->groundentity == NULL || self->pain_debounce_time > level.time))
 		return;
@@ -689,7 +689,7 @@ static void GorgonDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 
 static void GorgonCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_check_mood' in original logic.
 {
-	ParseMsgParms(msg, "i", &self->ai_mood);
+	G_ParseMsgParms(msg, "i", &self->ai_mood);
 	gorgon_check_mood(self);
 }
 
@@ -715,7 +715,7 @@ static void GorgonEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	edict_t* projectile;
 	HitLocation_t hl;
 	float eta;
-	ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
+	G_ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
 
 	if (eta < 0.3f)
 		return; // Needs at least 0.3 seconds to respond.
@@ -806,7 +806,7 @@ void gorgon_roar(edict_t* self) //mxd. Named 'gorgonRoar' in original logic.
 				e->monsterinfo.roared = true;
 				e->enemy = self->enemy;
 				AI_FoundTarget(e, false);
-				QPostMessage(e, MSG_VOICE_POLL, PRI_DIRECTIVE, "");
+				G_PostMessage(e, MSG_VOICE_POLL, PRI_DIRECTIVE, "");
 			}
 		}
 	}
@@ -1207,7 +1207,7 @@ void gorgon_throw_toy(edict_t* self)
 	VectorRandomCopy(vec3_origin, self->enemy->avelocity, 300.0f);
 
 	if (Q_stricmp(self->enemy->classname, "player") != 0) //TODO: strange way to check for non-players. Should check self->targetEnt->client instead?..
-		QPostMessage(self->enemy, MSG_DEATH, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self->enemy, MSG_DEATH, PRI_DIRECTIVE, NULL);
 
 	//TODO: play throw sound?
 }
@@ -1424,8 +1424,8 @@ void gorgon_anger_sound(edict_t* self)
 
 	if (self->enemy != NULL)
 	{
-		QPostMessage(self->enemy, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", self->enemy->health / 2, irand(1, 13)); // Do I need last three if not sending them?
-		QPostMessage(self->enemy, MSG_PAIN, PRI_DIRECTIVE, "eeiii", self, self, true, GORGON_DMG_MAX, 0); //BUGFIX. mxd. Original logic sends 'ii' args here. //TODO: check damage amount. Original logic doesn't specify any...
+		G_PostMessage(self->enemy, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", self->enemy->health / 2, irand(1, 13)); // Do I need last three if not sending them?
+		G_PostMessage(self->enemy, MSG_PAIN, PRI_DIRECTIVE, "eeiii", self, self, true, GORGON_DMG_MAX, 0); //BUGFIX. mxd. Original logic sends 'ii' args here. //TODO: check damage amount. Original logic doesn't specify any...
 	}
 }
 
@@ -1442,7 +1442,7 @@ void gorgon_done_gore(edict_t* self)
 	if (self->oldenemy != NULL && self->oldenemy->health > 0)
 	{
 		self->enemy = self->oldenemy;
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 	}
 	else
 	{
@@ -1710,19 +1710,19 @@ void gorgon_check_mood(edict_t* self) //mxd. Named 'gorgonCheckMood' in original
 	switch (self->ai_mood)
 	{
 		case AI_MOOD_ATTACK: // Melee and missile handlers are the same.
-			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_PURSUE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_WALK:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_DELAY:
@@ -1920,14 +1920,14 @@ void SP_monster_gorgon(edict_t* self)
 	if (self->spawnflags & MSF_EATING)
 	{
 		self->monsterinfo.aiflags |= AI_EATING;
-		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 
 		if (self->wakeup_distance == 0.0f)
 			self->wakeup_distance = 300.0f;
 	}
 	else
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 
 	MG_InitMoods(self);

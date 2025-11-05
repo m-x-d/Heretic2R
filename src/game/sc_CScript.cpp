@@ -1515,7 +1515,7 @@ void CScript::HandleAnimate()
 			signaler_added = true; //mxd
 		}
 
-		QPostMessage(ent, static_cast<G_MsgID_e>(msg_animtype[action_val]), PRI_DIRECTIVE, "iiige", static_cast<int>(moving_val[0]), static_cast<int>(turning_val[0]), repeat_val, signaler_routine, activator);
+		G_PostMessage(ent, static_cast<G_MsgID_e>(msg_animtype[action_val]), PRI_DIRECTIVE, "iiige", static_cast<int>(moving_val[0]), static_cast<int>(turning_val[0]), repeat_val, signaler_routine, activator);
 	}
 
 	// Cleanup

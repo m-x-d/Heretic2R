@@ -235,14 +235,14 @@ static void TcheckrikFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 	if (M_ValidTarget(self, self->enemy))
 		SetAnim(self, (self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_BACK); // Not male?
 	else
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
 static void TcheckrikMeleeMsgHandler(edict_t* self, G_Message_t* msg)//mxd. Named 'insect_melee' in original logic.
 {
 	if (!M_ValidTarget(self, self->enemy))
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -253,7 +253,7 @@ static void TcheckrikMeleeMsgHandler(edict_t* self, G_Message_t* msg)//mxd. Name
 		{
 			self->monsterinfo.aiflags |= AI_FLEE;
 			self->monsterinfo.flee_finished = level.time + 3.0f;
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 
 			return;
 		}
@@ -273,7 +273,7 @@ static void TcheckrikMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 {
 	if (!M_ValidTarget(self, self->enemy))
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -284,7 +284,7 @@ static void TcheckrikMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 		{
 			self->monsterinfo.aiflags |= AI_FLEE;
 			self->monsterinfo.flee_finished = level.time + 3.0f;
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 
 			return;
 		}
@@ -302,7 +302,7 @@ static void TcheckrikPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	int temp;
 	int damage;
 	int force_damage;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_damage, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp, &temp, &force_damage, &damage, &temp);
 
 	if (!force_damage && irand(0, self->health) > damage) //mxd. flrand() in original logic.
 		return;
@@ -326,7 +326,7 @@ static void TcheckrikPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 
 static void TcheckrikCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'insect_check_mood' in original logic.
 {
-	ParseMsgParms(msg, "i", &self->ai_mood);
+	G_ParseMsgParms(msg, "i", &self->ai_mood);
 	tcheckrik_pause(self);
 }
 
@@ -334,7 +334,7 @@ static void TcheckrikRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 {
 	if (!M_ValidTarget(self, self->enemy))
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -1125,9 +1125,9 @@ void tcheckrik_pause(edict_t* self) //mxd. Named 'insect_pause' in original logi
 			VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
 
 			if (VectorLength(diff) > 80.0f || (self->monsterinfo.aiflags & AI_FLEE)) // Far enough to run after.
-				QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			else // Close enough to attack.
-				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+				G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 		}
 
 		return;
@@ -1153,17 +1153,17 @@ void tcheckrik_pause(edict_t* self) //mxd. Named 'insect_pause' in original logi
 	switch (self->ai_mood)
 	{
 		case AI_MOOD_ATTACK:
-			QPostMessage(self, ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE), PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE), PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_PURSUE:
 		case AI_MOOD_NAVIGATE:
 		case AI_MOOD_FLEE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_DELAY:
@@ -1172,11 +1172,11 @@ void tcheckrik_pause(edict_t* self) //mxd. Named 'insect_pause' in original logi
 
 		case AI_MOOD_WANDER:
 		case AI_MOOD_WALK:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_BACKUP:
-			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_JUMP:
@@ -1412,16 +1412,16 @@ void SP_monster_tcheckrik_male(edict_t* self)
 
 	if (self->spawnflags & MSF_WANDER)
 	{
-		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 	}
 	else if (self->spawnflags & MSF_INSECT_CINEMATIC)
 	{
 		self->monsterinfo.c_mode = true;
-		QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
+		G_PostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 	}
 	else
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 
 	gi.CreateEffect(&self->s, FX_I_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_I_RREFS, vec3_origin);
@@ -1523,7 +1523,7 @@ void SP_monster_tcheckrik_female(edict_t* self)
 	if (irand(0, 2) == 0)
 		self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
 
-	QPostMessage(self, ((self->spawnflags & MSF_WANDER) ? MSG_WALK : MSG_STAND), PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, ((self->spawnflags & MSF_WANDER) ? MSG_WALK : MSG_STAND), PRI_DIRECTIVE, NULL);
 	self->monsterinfo.aiflags |= AI_NO_MELEE;
 	self->svflags |= SVF_WAIT_NOTSOLID;
 

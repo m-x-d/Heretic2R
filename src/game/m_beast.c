@@ -346,12 +346,12 @@ static qboolean TBeastCheckMood(edict_t* self) //mxd. Named 'tbeastCheckMood' in
 		case AI_MOOD_ATTACK:
 		{
 			const int msg_id = ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE); //mxd
-			QPostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
 		} break;
 
 		case AI_MOOD_PURSUE:
 			self->tbeast_toy_materialtype = 0;
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_NAVIGATE:
@@ -361,15 +361,15 @@ static qboolean TBeastCheckMood(edict_t* self) //mxd. Named 'tbeastCheckMood' in
 		case AI_MOOD_STAND:
 		{
 			const int msg_id = ((self->monsterinfo.aiflags & AI_EATING) ? MSG_EAT : MSG_STAND); //mxd
-			QPostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
 		} break;
 
 		case AI_MOOD_DELAY:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_EAT:
-			QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+			G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 			break;
 	}
 
@@ -926,7 +926,7 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 				{
 					self->oldenemy = self->enemy;
 					self->enemy = other;
-					QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+					G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 
 					break;
 				}
@@ -1269,7 +1269,7 @@ static void TBeastStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	if (dist < 200.0f)
 	{
 		self->show_hostile = level.time + 1.0f; // Wake up other monsters.
-		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 
 		return;
 	}
@@ -1359,7 +1359,7 @@ static void TBeastMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 {
 	if (!M_ValidTarget(self, self->enemy))
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -1432,7 +1432,7 @@ static void TBeastPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	qboolean force_pain;
 	int damage;
 	int	temp;
-	ParseMsgParms(msg, "eeiii", &temp_ent, &temp_ent, &force_pain, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp_ent, &temp_ent, &force_pain, &damage, &temp);
 
 	if (damage >= irand(100, 200))
 	{
@@ -1495,13 +1495,13 @@ void tbeast_charge(edict_t* self, float force)
 void tbeast_stand_order(edict_t* self) //mxd. Named 'tbeast_standorder' in original logic.
 {
 	if (!TBeastCheckMood(self))
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
 void tbeast_walk_order(edict_t* self) //mxd. Named 'tbeast_walkorder' in original logic.
 {
 	if (!TBeastCheckMood(self))
-		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 }
 
 void tbeast_footstep(edict_t* self)
@@ -1646,9 +1646,9 @@ void tbeast_pause(edict_t* self)
 	}
 
 	if (dist > 120.0f) // Far enough to run after.
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 	else // Close enough to Attack or Hop.
-		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 }
 
 void tbeast_bite(edict_t* self, float forward_offset, float right_offset, float up_offset) //mxd. Named 'tbeastbite' in original logic.
@@ -1762,7 +1762,7 @@ void tbeast_roar_short(edict_t* self)
 void tbeast_eat_order(edict_t* self) //mxd. Named 'tbeast_eatorder' in original logic.
 {
 	if (!TBeastCheckMood(self))
-		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
 
 void tbeast_apply_jump(edict_t* self)
@@ -1775,7 +1775,7 @@ void tbeast_run(edict_t* self, float dist) //mxd. Named 'tbeast_run_think' in or
 {
 	if (!M_ValidTarget(self, self->enemy))
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
@@ -1837,7 +1837,7 @@ void tbeast_throw_toy(edict_t* self)
 	VectorRandomCopy(vec3_origin, self->targetEnt->avelocity, 300.0f);
 
 	if (Q_stricmp(self->targetEnt->classname, "player") != 0) //TODO: strange way to check for non-players. Should check self->targetEnt->client instead?..
-		QPostMessage(self->targetEnt, MSG_DEATH, PRI_DIRECTIVE, NULL);
+		G_PostMessage(self->targetEnt, MSG_DEATH, PRI_DIRECTIVE, NULL);
 
 	if (self->targetEnt->client != NULL)
 		gi.sound(self->targetEnt, CHAN_VOICE, sounds[SND_CORVUS_DIE], 1.0f, ATTN_NORM, 0.0f);
@@ -2069,8 +2069,8 @@ void tbeast_anger_sound(edict_t* self)
 
 		if (self->targetEnt->client == NULL)
 		{
-			QPostMessage(self->targetEnt, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", self->targetEnt->health / 2, irand(1, 13)); // Do I need last three if not sending them?
-			QPostMessage(self->targetEnt, MSG_PAIN, PRI_DIRECTIVE, "eeiii", self, self, true, 200, 0);
+			G_PostMessage(self->targetEnt, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", self->targetEnt->health / 2, irand(1, 13)); // Do I need last three if not sending them?
+			G_PostMessage(self->targetEnt, MSG_PAIN, PRI_DIRECTIVE, "eeiii", self, self, true, 200, 0);
 		}
 	}
 }
@@ -2257,7 +2257,7 @@ void SP_monster_trial_beast(edict_t* self)
 		self->wakeup_distance = 3000.0f;
 
 	MG_InitMoods(self);
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
 	self->dmg = false; // Not in charge mode initially.
 	self->svflags |= (SVF_BOSS | SVF_NO_AUTOTARGET);

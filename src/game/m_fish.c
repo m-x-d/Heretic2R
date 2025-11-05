@@ -239,7 +239,7 @@ static void FishPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fi
 	int temp;
 	int damage;
 	qboolean force_pain;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
+	G_ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	if (!force_pain && irand(0, 3) == 0) //mxd. flrand() in original logic.
 		return;

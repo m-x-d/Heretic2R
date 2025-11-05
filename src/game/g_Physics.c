@@ -150,11 +150,11 @@ static void Physics_StepMove(edict_t* self)
 	if (!BoundVelocity(self->velocity))
 	{
 		if (has_velocity)
-			QPostMessage(self, G_MSG_RESTSTATE, PRI_PHYSICS, "i", has_velocity); // Stopped moving.
+			G_PostMessage(self, G_MSG_RESTSTATE, PRI_PHYSICS, "i", has_velocity); // Stopped moving.
 	}
 	else if (!has_velocity)
 	{
-		QPostMessage(self, G_MSG_RESTSTATE, PRI_PHYSICS, "i", has_velocity); // Started moving.
+		G_PostMessage(self, G_MSG_RESTSTATE, PRI_PHYSICS, "i", has_velocity); // Started moving.
 	}
 
 	PhysicsCheckWaterTransition(self);
