@@ -92,6 +92,7 @@ client_entity_t* ClientEntity_new(const int type, const int flags, const vec3_t 
 	new_ent->flags = flags | CEF_CULLED;
 
 	new_ent->updateTime = next_think_time;
+	new_ent->framelerp_scale = 1.0f / (float)next_think_time; //mxd. Setup frame interpolation.
 	new_ent->nextThinkTime = fxi.cl->time + next_think_time;
 	new_ent->startTime = fxi.cl->time;
 	new_ent->Update = RemoveSelfAI;
@@ -271,6 +272,9 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 
 			if (current->r.color.a > 0 && current->r.scale > 0.0f)
 			{
+				if (current->flags & CEF_FRAME_LERP) //mxd
+					current->r.backlerp = 1.0f - (float)(fxi.cl->time - current->framelerp_time) * current->framelerp_scale;
+
 				if (!AddEntityToView(&current->r))
 					current->flags |= CEF_DROPPED;
 			}

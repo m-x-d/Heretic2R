@@ -88,6 +88,10 @@ typedef struct client_entity_s
 	struct client_particle_s* p_root; // Root of particle list.
 	short refPoint; // Used for entities linked to one of another models.
 
+	//mxd. Frame interpolation stuff (CEF_FRAME_LERP).
+	float framelerp_scale;
+	int framelerp_time;
+
 	//mxd. Looks like we'll need some extra debris props...
 	int debris_last_bounce_time; // Last time debris bounced in Debris_Collision().
 	int debris_last_trail_update_time;

@@ -68,6 +68,7 @@
 
 // Client-effect Flags relevant only in the Client Effects DLL.
 
+#define CEF_FRAME_LERP			0x00010000	//mxd. Enable frame interpolation for this client entity. When set, client_entity_t->r.oldframe must be updated appropriately.
 #define CEF_VIEWSTATUSCHANGED	0x00020000	// If this flag is set, do not think when the CEF_CULLED flag is set.
 #define CEF_USE_VELOCITY2		0x00040000	// Sprite lines. Read and apply the velocity2 and acceleration2 fields of the line.
 #define CEF_USE_SCALE2			0x00080000	// Sprite lines. Read and apply the scale2 value to the endpoint.
