@@ -273,7 +273,10 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 			if (current->r.color.a > 0 && current->r.scale > 0.0f)
 			{
 				if (current->flags & CEF_FRAME_LERP) //mxd
-					current->r.backlerp = 1.0f - (float)(fxi.cl->time - current->framelerp_time) * current->framelerp_scale;
+				{
+					const float backlerp = 1.0f - (float)(fxi.cl->time - current->framelerp_time) * current->framelerp_scale;
+					current->r.backlerp = max(0.0f, backlerp); // Otherwise it will advance towards negative infinity when the game is paused.
+				}
 
 				if (!AddEntityToView(&current->r))
 					current->flags |= CEF_DROPPED;
