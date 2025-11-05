@@ -84,7 +84,6 @@
     <ClCompile Include="g_obj.c" />
     <ClCompile Include="g_PhysicsQ2.c" />
     <ClCompile Include="g_Physics.c" />
-    <ClCompile Include="g_ResourceManagers.c" />
     <ClCompile Include="g_rope.c" />
     <ClCompile Include="g_save.c" />
     <ClCompile Include="g_shrine.c" />
@@ -275,7 +274,6 @@
     <ClInclude Include="g_Physics.h" />
     <ClInclude Include="g_PhysicsLocal.h" />
     <ClInclude Include="g_playstats.h" />
-    <ClInclude Include="g_ResourceManagers.h" />
     <ClInclude Include="g_rope.h" />
     <ClInclude Include="g_save.h" />
     <ClInclude Include="g_Shrine.h" />

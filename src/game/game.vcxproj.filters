@@ -171,9 +171,6 @@
     <ClCompile Include="g_Physics.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="g_ResourceManagers.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="g_save.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -1020,9 +1017,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="g_save.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_ResourceManagers.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="g_main.h">

@@ -11,7 +11,6 @@
 #include "g_cmds.h" //mxd
 #include "g_Physics.h"
 #include "g_playstats.h"
-#include "g_ResourceManagers.h" //mxd
 #include "g_save.h" //mxd
 #include "g_Skeletons.h"
 #include "g_spawnf.h" //mxd
@@ -167,7 +166,7 @@ void InitGame(void)
 {
 	gi.dprintf("==== InitGame ====\n");
 
-	G_InitResourceManagers();
+	InitMsgMngr(); //mxd. Inline G_InitResourceManagers().
 
 	//FIXME: sv_ prefix is wrong for these.
 	sv_maxvelocity = gi.cvar("sv_maxvelocity", MAX_VELOCITY_STRING, 0);
@@ -274,7 +273,7 @@ static void ShutdownGame(void)
 			// 2. will dprint warnings when trying to free edicts reserved for players and bodyqueue.
 		}
 
-		G_ReleaseResourceManagers();
+		ReleaseMsgMngr(); //mxd. Inline G_ReleaseResourceManagers().
 		game.entitiesSpawned = false;
 	}
 
