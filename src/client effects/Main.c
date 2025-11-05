@@ -433,11 +433,11 @@ static void AddServerEntities(const frame_t* frame)
 	int num_ents_to_add = frame->num_entities;
 	if (num_ents_to_add > MAX_SERVER_ENTITIES)
 	{
-		Com_Printf("Overflow:  Too many (%d : %d) server entities to add to view\n", num_ents_to_add, MAX_SERVER_ENTITIES);
+		Com_Printf("Overflow: too many (%d : %d) server entities to add to view\n", num_ents_to_add, MAX_SERVER_ENTITIES);
 		num_ents_to_add = MAX_SERVER_ENTITIES;
 	}
 
-	entity_t* ent = sv_ents;
+	entity_t* ent = &sv_ents[0];
 	for (int pnum = 0; pnum < num_ents_to_add; pnum++)
 	{
 		entity_state_t* s1 = &fxi.parse_entities[(frame->parse_entities + pnum) & (MAX_PARSE_ENTITIES - 1)];
