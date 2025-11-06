@@ -762,8 +762,8 @@ static void CL_ParseStartSoundPacket(void)
 	float volume;
 	float ofs;
 	float* pos;
-	int event_id;
-	float leveltime;
+	int event_id = 0;
+	float leveltime = 0.0f;
 
 	const int flags = MSG_ReadByte(&net_message);
 	const int soundindex = MSG_ReadShort(&net_message); // Q2: MSG_ReadByte
@@ -773,11 +773,6 @@ static void CL_ParseStartSoundPacket(void)
 	{
 		event_id = MSG_ReadByte(&net_message);
 		leveltime = MSG_ReadFloat(&net_message);
-	}
-	else
-	{
-		event_id = 0;
-		leveltime = 0.0f;
 	}
 
 	if (flags & SND_VOLUME)
@@ -798,17 +793,17 @@ static void CL_ParseStartSoundPacket(void)
 	if (flags & SND_ENT)
 	{
 		// Entity-relative.
-		channel = MSG_ReadShort(&net_message);
-		ent = channel >> 3;
+		const int val = MSG_ReadShort(&net_message);
+		ent = val >> 3;
 
-		if (ent > MAX_EDICTS)
-			Com_Error(ERR_DROP, "CL_ParseStartSoundPacket: ent = %i", ent);
+		if (ent < 0 || ent >= MAX_EDICTS) //mxd. Add lower-bound check, fix upper-bound check (ent > MAX_EDICTS in original logic).
+			Com_Error(ERR_DROP, "CL_ParseStartSoundPacket: invalid entity index %i!", ent);
 
-		channel &= 7;
+		channel = val & 7;
 	}
 	else
 	{
-		channel = 0;
+		channel = CHAN_AUTO;
 		ent = 0;
 	}
 
