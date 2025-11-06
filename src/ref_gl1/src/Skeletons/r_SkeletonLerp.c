@@ -237,7 +237,7 @@ static void StandardFrameLerp(const fmdl_t* fmdl, entity_t* e) //mxd. Original l
 
 	LerpVerts(fmdl->header.num_xyz, sfl_cur_skel.verts, sfl_cur_skel.old_verts, s_lerped, cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
 
-	if (fmdl->skeletalType != -1)
+	if (fmdl->skeletalType != SKEL_NULL)
 		LerpStandardSkeleton(fmdl, e);
 
 	if (fmdl_referenceInfo != NULL && !(e->flags & RF_IGNORE_REFS))
@@ -256,10 +256,10 @@ void FrameLerp(const fmdl_t* fmdl, entity_t* e) //mxd. Original logic uses 'fmod
 	cur_skeleton.rootJoint = fmdl_cur_skeleton_joints;
 	cur_skeleton.rootNode = fmdl_cur_skeleton_nodes;
 
-	if (fmdl->skeletalType != -1)
+	if (fmdl->skeletalType != SKEL_NULL)
 		fmdl_cur_skeletal_cluster = &SkeletalClusters[fmdl->rootCluster + e->swapCluster];
 
-	fmdl_referenceInfo = ((fmdl->referenceType == -1) ? NULL : e->referenceInfo);
+	fmdl_referenceInfo = ((fmdl->referenceType == REF_NULL) ? NULL : e->referenceInfo);
 
 	if (fmdl->frames != NULL)
 		StandardFrameLerp(fmdl, e);

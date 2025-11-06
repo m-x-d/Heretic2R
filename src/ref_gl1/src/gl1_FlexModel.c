@@ -333,8 +333,8 @@ void Mod_LoadFlexModel(model_t* mod, void* buffer, int length)
 
 	// Stored in mod->extradata.
 	fmdl_t* fmdl = Hunk_Alloc(sizeof(fmdl_t));
-	fmdl->skeletalType = -1;
-	fmdl->referenceType = -1;
+	fmdl->skeletalType = SKEL_NULL;
+	fmdl->referenceType = REF_NULL;
 
 	byte* in = buffer;
 
