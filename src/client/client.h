@@ -687,7 +687,7 @@ extern void CL_Record_f(void);
 
 extern char* svc_strings[256];
 extern char client_string[128]; //mxd
-extern float sound_event_id_time_array[127]; //mxd
+extern float sound_event_id_time_array[SND_PRED_MAX]; //mxd
 
 extern void CL_ParseServerMessage(void);
 extern void CL_LoadClientinfo(clientinfo_t* ci, const char* s, int index);
