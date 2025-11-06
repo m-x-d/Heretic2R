@@ -57,6 +57,11 @@ H2COMMON_API float anglemod_old(const float a)
 	return a + 360.0f * (int)(-a / 360.0f) + 360.0f; //mxd. Q2 logic: 360 * (1 + (int)(-a / 360));
 }
 
+H2COMMON_API float LerpFloat(const float f1, const float f2, const float frac) //mxd
+{
+	return f1 + frac * (f2 - f1);
+}
+
 //mxd. Inverse of Q2 logic!
 H2COMMON_API float LerpAngle(const float a1, float a2, const float frac)
 {
@@ -66,7 +71,7 @@ H2COMMON_API float LerpAngle(const float a1, float a2, const float frac)
 	if (a2 - a1 < -180.0f)
 		a2 += 360.0f;
 
-	return a1 + frac * (a2 - a1);
+	return LerpFloat(a1, a2, frac);
 }
 
 //mxd. Angles are expected to be in degrees.
