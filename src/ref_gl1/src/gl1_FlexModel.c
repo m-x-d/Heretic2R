@@ -533,11 +533,9 @@ static void R_InterpolateVertexNormals(const int num_xyz, const float lerp, cons
 	const fmtrivertx_t* v = &verts[0];
 	const fmtrivertx_t* ov = &old_verts[0];
 	vec3_t* n = &normals[0];
-	const float lerp_inv = 1.0f - lerp; //mxd
 
 	for (int i = 0; i < num_xyz; i++, v++, ov++, n++)
-		for (int j = 0; j < 3; j++)
-			(*n)[j] = lerp * bytedirs[ov->lightnormalindex][j] + lerp_inv * bytedirs[v->lightnormalindex][j];
+		VectorLerp(bytedirs[v->lightnormalindex], lerp, bytedirs[ov->lightnormalindex], *n);
 }
 
 static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelight) //mxd. Original logic uses 'fmodel', 'currententity', 'framelerp' and 'shadelight' global vars.
@@ -668,7 +666,7 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 					}
 					else
 					{
-						//mxd. Interpolate shadelight scaler.
+						//mxd. Interpolate light scaler.
 						const float cl = shadedots[sfl_cur_skel.verts[index_xyz].lightnormalindex];
 						const float ol = shadedots[sfl_cur_skel.old_verts[index_xyz].lightnormalindex];
 
