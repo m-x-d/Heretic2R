@@ -164,26 +164,21 @@ void R_DrawSpriteModel(entity_t* e)
 	if (e->flags & RF_NODEPTHTEST)
 		glDisable(GL_DEPTH_TEST);
 
-	float* up;
-	float* right;
+	vec3_t up;
+	vec3_t right;
 
 	if (e->flags & RF_FIXED)
 	{
 		vec3_t dir;
-		vec3_t fixed_up;
-		DirAndUpFromAngles(e->angles, dir, fixed_up); //mxd. Original logic uses 'currententity' global var instead.
+		DirAndUpFromAngles(e->angles, dir, up); //mxd. Original logic uses 'currententity' global var instead.
 
-		vec3_t fixed_right;
-		CrossProduct(fixed_up, dir, fixed_right);
-		VectorNormalize(fixed_right);
-
-		up = fixed_up;
-		right = fixed_right;
+		CrossProduct(up, dir, right);
+		VectorNormalize(right);
 	}
 	else
 	{
-		up = vup;
-		right = vright;
+		VectorCopy(vup, up);
+		VectorCopy(vright, right);
 	}
 
 	switch (e->spriteType)
