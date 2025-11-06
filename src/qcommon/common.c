@@ -513,7 +513,7 @@ byte COM_BlockSequenceCheckByte(const byte* base, int length, const int sequence
 {
 	byte chkb[64];
 
-	const byte* p = (byte*)bytedirs + (sequence % sizeof(bytedirs));
+	const byte* p = (byte*)bytedirs + (sequence % (sizeof(bytedirs) - 4)); //mxd. Subtract 4 to avoid bytedirs[] overflow.
 
 	length = min(60, length);
 	memcpy(chkb, base, length);
