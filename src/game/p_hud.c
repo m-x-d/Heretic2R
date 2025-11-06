@@ -693,7 +693,7 @@ void G_SetStats(const edict_t* ent)
 
 	int count = STAT_PUZZLE_ITEM1;
 	gitem_t* item = playerExport.p_itemlist;
-	for (int i = 0; i < MAX_ITEMS; i++, item++)
+	for (int i = 0; i < playerExport.p_num_items; i++, item++) //H2_BUGFIX: mxd. 'i < MAX_ITEMS' in original logic.
 	{
 		if ((item->flags & IT_PUZZLE) && pers->inventory.Items[i] > 0)
 		{
