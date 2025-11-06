@@ -663,9 +663,17 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 				{
 					float l;
 					if (fmdl->frames == NULL)
+					{
 						l = shadedots[fmdl->lightnormalindex[index_xyz]];
+					}
 					else
-						l = shadedots[sfl_cur_skel.verts[index_xyz].lightnormalindex];
+					{
+						//mxd. Interpolate shadelight scaler.
+						const float cl = shadedots[sfl_cur_skel.verts[index_xyz].lightnormalindex];
+						const float ol = shadedots[sfl_cur_skel.old_verts[index_xyz].lightnormalindex];
+
+						l = LerpFloat(cl, ol, e->backlerp);
+					}
 
 					glColor4f(l * shadelight[0], l * shadelight[1], l * shadelight[2], alpha);
 				}
