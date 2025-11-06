@@ -8,6 +8,7 @@
 #include "cmodel.h"
 #include "sv_effects.h"
 #include "cl_strings.h"
+#include "p_types.h" //mxd. For SND_PRED_NULL.
 #include "Vector.h"
 
 uint net_transmit_size; // H2
@@ -455,7 +456,7 @@ void SV_StartEventSound(const byte event_id, const float leveltime, const vec3_t
 	if (timeofs != 0.0f)
 		flags |= SND_OFFSET;
 
-	if (event_id != 0) // H2
+	if (event_id != (byte)SND_PRED_NULL) // H2 //H2_BUGFIX: 'event_id != 0' in original logic.
 		flags |= SND_PRED_INFO;
 
 	// Use the entity origin unless it is a bmodel or explicitly specified.
