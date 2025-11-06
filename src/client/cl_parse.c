@@ -807,9 +807,10 @@ static void CL_ParseStartSoundPacket(void)
 		ent = 0;
 	}
 
+	vec3_t pos_v;
+
 	if (flags & SND_POS) // Positioned in space.
 	{
-		vec3_t pos_v;
 		MSG_ReadPos(&net_message, pos_v);
 		pos = pos_v;
 	}
