@@ -75,7 +75,7 @@ static void TomeOfPowerAnimate(client_entity_t* tome, const centity_t* owner)
 	{
 		const float lerp = 1.0f - (float)(tome->tome_fadeout_end_time - fxi.cl->time) / TOME_FADEOUT_ANIM_LENGTH; // [0.0 .. 1.0]
 		const float oz = 25.0f + (1.0f - cosf(lerp * ANGLE_90)) * 32.0f;
-		pos[2] = LerpAngle(pos[2], oz, lerp); // It's not an angle, but will work anyway, since the value is < 180... 
+		pos[2] = LerpFloat(pos[2], oz, lerp);
 
 		// Rotate the book.
 		tome->r.angles[YAW] += step * max(lerp * 0.02f, TOME_SPIN_FACTOR);
