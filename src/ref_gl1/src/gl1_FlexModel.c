@@ -538,6 +538,16 @@ static void R_InterpolateVertexNormals(const int num_xyz, const float lerp, cons
 		VectorLerp(bytedirs[v->lightnormalindex], lerp, bytedirs[ov->lightnormalindex], *n);
 }
 
+static void R_EnableReflection(void) //mxd. Added to reduce code duplication.
+{
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+
+	R_BindImage(r_reflecttexture);
+}
+
 static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelight) //mxd. Original logic uses 'fmodel', 'currententity', 'framelerp' and 'shadelight' global vars.
 {
 	static vec3_t normals_array[MAX_FM_VERTS]; //mxd. Made static.
@@ -566,12 +576,7 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 		if (fmdl->frames != NULL)
 			R_InterpolateVertexNormals(fmdl->header.num_xyz, e->backlerp, sfl_cur_skel.verts, sfl_cur_skel.old_verts, normals_array);
 
-		glEnable(GL_TEXTURE_GEN_S);
-		glEnable(GL_TEXTURE_GEN_T);
-		glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-		glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-
-		R_BindImage(r_reflecttexture);
+		R_EnableReflection();
 	}
 
 	fmnodeinfo_t* nodeinfo = &e->fmnodeinfo[0];
@@ -593,39 +598,32 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 				glColor4ub(nodeinfo->color.r, nodeinfo->color.g, nodeinfo->color.b, nodeinfo->color.a);
 			}
 
-			if (draw_reflection || !(nodeinfo->flags & FMNI_USE_REFLECT))
+			if ((nodeinfo->flags & FMNI_USE_REFLECT) && !draw_reflection)
 			{
-				if (nodeinfo->flags & FMNI_USE_SKIN)
-				{
-					use_skin = true;
-					R_BindImage(R_GetSkinFromNode(e, i));
-				}
-			}
-			else
-			{
-				glEnable(GL_TEXTURE_GEN_S);
-				glEnable(GL_TEXTURE_GEN_T);
-				glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-				glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-
 				use_skin = true;
 				use_reflect = true;
-				R_BindImage(r_reflecttexture);
+
+				R_EnableReflection();
+			}
+			else if (nodeinfo->flags & FMNI_USE_SKIN)
+			{
+				use_skin = true;
+				R_BindImage(R_GetSkinFromNode(e, i));
 			}
 		}
 
-		int* order = fmdl->glcmds + fmdl->mesh_nodes[i].start_glcmds;
+		int* order = &fmdl->glcmds[fmdl->mesh_nodes[i].start_glcmds];
 
 		while (true)
 		{
 			// Get the vertex count and primitive type.
-			int count = *order++;
-			if (count == 0)
+			int num_vers = *order++;
+			if (num_vers == 0)
 				break; // Done.
 
-			if (count < 0)
+			if (num_vers < 0)
 			{
-				count = -count;
+				num_vers = -num_vers;
 				glBegin(GL_TRIANGLE_FAN);
 			}
 			else
@@ -633,7 +631,7 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 				glBegin(GL_TRIANGLE_STRIP);
 			}
 
-			do
+			for (int c = 0; c < num_vers; c++)
 			{
 				const int index_xyz = order[2];
 
@@ -677,7 +675,7 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 				}
 
 				glVertex3fv(s_lerped[index_xyz]);
-			} while (--count);
+			}
 
 			glEnd();
 		}
