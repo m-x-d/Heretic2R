@@ -305,7 +305,7 @@ qboolean PF_inPVS(const vec3_t p1, const vec3_t p2)
 	cluster = CM_LeafCluster(leafnum);
 	const int area2 = CM_LeafArea(leafnum);
 
-	if (mask != NULL && !(mask[cluster >> 3] & (1 << (cluster & 7))))
+	if (cluster == -1 || !(mask[cluster >> 3] & (1 << (cluster & 7)))) //mxd. Remove mask NULL check (never NULL), add cluster sanity check.
 		return false; // More than one bounce away.
 
 	return CM_AreasConnected(area1, area2); // A door blocks sight?
@@ -324,9 +324,9 @@ static qboolean PF_inPHS(const vec3_t p1, const vec3_t p2)
 	cluster = CM_LeafCluster(leafnum);
 	const int area2 = CM_LeafArea(leafnum);
 
-	if (mask != NULL && !(mask[cluster >> 3] & (1 << (cluster & 7))))
+	if (cluster == -1 || !(mask[cluster >> 3] & (1 << (cluster & 7)))) //mxd. Remove mask NULL check (never NULL), add cluster sanity check.
 		return false; // More than one bounce away.
-	
+
 	return CM_AreasConnected(area1, area2); // A door blocks sight?
 }
 
