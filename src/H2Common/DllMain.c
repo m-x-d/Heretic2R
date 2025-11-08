@@ -8,18 +8,18 @@
 #include "ResourceManager.h"
 #include "SinglyLinkedList.h"
 
-extern ResourceManager_t res_mgr;
+extern ResourceManager_t sllist_nodes_mgr;
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
 	switch (fdwReason)
 	{
 		case DLL_PROCESS_ATTACH:
-			ResMngr_Con(&res_mgr, SLL_NODE_SIZE, SLL_NODE_BLOCK_SIZE);
+			ResMngr_Con(&sllist_nodes_mgr, SLL_NODE_SIZE, SLL_NODE_BLOCK_SIZE);
 			break;
 
 		case DLL_PROCESS_DETACH:
-			ResMngr_Des(&res_mgr);
+			ResMngr_Des(&sllist_nodes_mgr);
 			break;
 
 		default:
