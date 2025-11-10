@@ -176,7 +176,6 @@ static void SV_WriteServerFile(const SavegameType_t save_type) //mxd. qboolean a
 	time_t aclock;
 	char comment[64]; // Q2: [32]
 	char name[MAX_OSPATH];
-	char string[128];
 
 	Com_sprintf(name, sizeof(name), "%s/save/current/server.ssv", FS_Userdir()); // Q2: FS_Gamedir
 
@@ -215,23 +214,26 @@ static void SV_WriteServerFile(const SavegameType_t save_type) //mxd. qboolean a
 	// Write all CVAR_LATCH cvars. These will be things like coop, skill, deathmatch, etc.
 	for (const cvar_t* var = cvar_vars; var != NULL; var = var->next)
 	{
+		char var_name[128]; //mxd. Use separate var to better match original logic (MAX_OSPATH is 128 in vanilla Q2/H2).
+		char var_string[128];
+
 		if (!(var->flags & CVAR_LATCH))
 			continue;
 
-		if (strlen(var->name) >= sizeof(name) - 1 || strlen(var->string) >= sizeof(string) - 1)
+		if (strlen(var->name) >= sizeof(var_name) - 1 || strlen(var->string) >= sizeof(var_string) - 1)
 		{
 			Com_Printf("Cvar too long: %s = %s\n", var->name, var->string);
 			continue;
 		}
 
-		memset(name, 0, sizeof(name));
-		memset(string, 0, sizeof(string));
+		memset(var_name, 0, sizeof(var_name));
+		memset(var_string, 0, sizeof(var_string));
 
-		strcpy_s(name, sizeof(name), var->name); //mxd. strcpy -> strcpy_s
-		strcpy_s(string, sizeof(string), var->string); //mxd. strcpy -> strcpy_s
+		strcpy_s(var_name, sizeof(var_name), var->name); //mxd. strcpy -> strcpy_s
+		strcpy_s(var_string, sizeof(var_string), var->string); //mxd. strcpy -> strcpy_s
 
-		fwrite(name, 1u, sizeof(name), f);
-		fwrite(string, 1u, sizeof(string), f);
+		fwrite(var_name, 1, sizeof(var_name), f);
+		fwrite(var_string, 1, sizeof(var_string), f);
 	}
 
 	fclose(f);
@@ -260,12 +262,13 @@ static void SV_ReadServerFile(void)
 	FS_Read(mapcmd, sizeof(mapcmd), f);
 
 	// Read all CVAR_LATCH cvars. These will be things like coop, skill, deathmatch, etc.
-	while (fread(name, 1, sizeof(name), f))
+	char var_name[128]; //mxd. Use separate var to better match original logic (MAX_OSPATH is 128 in vanilla Q2/H2).
+	while (fread(var_name, 1, sizeof(var_name), f))
 	{
-		char value[128];
-		FS_Read(value, sizeof(value), f);
-		Com_DPrintf("Set %s = %s\n", name, value);
-		Cvar_ForceSet(name, value);
+		char var_string[128];
+		FS_Read(var_string, sizeof(var_string), f);
+		Com_DPrintf("Set %s = %s\n", var_name, var_string);
+		Cvar_ForceSet(var_name, var_string);
 	}
 
 	fclose(f);
