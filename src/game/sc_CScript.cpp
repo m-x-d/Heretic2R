@@ -593,7 +593,7 @@ Variable* CScript::HandleSpawn()
 
 		const char* name_value = var_name->GetStringValue();
 
-		for (const field_t* f = fields; f->name != nullptr; f++)
+		for (const field_t* f = &fields[0]; f->name != nullptr; f++)
 		{
 			if (Q_stricmp(f->name, name_value) != 0)
 				continue;

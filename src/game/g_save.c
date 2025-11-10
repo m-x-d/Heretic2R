@@ -329,14 +329,14 @@ static void WriteClient(FILE* f, gclient_t* client)
 	gclient_t temp = *client;
 
 	// Change the pointers to lengths or indexes.
-	for (const field_t* field = clientfields; field->name != NULL; field++)
+	for (const field_t* field = &clientfields[0]; field->name != NULL; field++)
 		ConvertField(field, (byte*)&temp);
 
 	// Write the block.
 	fwrite(&temp, sizeof(temp), 1, f);
 
 	// Now write any allocated data following the edict.
-	for (const field_t* field = clientfields; field->name != NULL; field++)
+	for (const field_t* field = &clientfields[0]; field->name != NULL; field++)
 		WriteField(f, field, (byte*)client);
 }
 
@@ -345,7 +345,7 @@ static void ReadClient(FILE* f, gclient_t* client)
 {
 	fread(client, sizeof(*client), 1, f);
 
-	for (const field_t* field = clientfields; field->name != NULL; field++)
+	for (const field_t* field = &clientfields[0]; field->name != NULL; field++)
 		ReadField(f, field, (byte*)client);
 }
 
@@ -445,14 +445,14 @@ static void WriteEdict(FILE* f, edict_t* ent)
 	edict_t temp = *ent;
 
 	// Change the pointers to lengths or indexes.
-	for (const field_t* field = savefields; field->name != NULL; field++)
+	for (const field_t* field = &savefields[0]; field->name != NULL; field++)
 		ConvertField(field, (byte*)&temp);
 
 	// Write the block.
 	fwrite(&temp, sizeof(temp), 1, f);
 
 	// Now write any allocated data following the edict.
-	for (const field_t* field = savefields; field->name != NULL; field++)
+	for (const field_t* field = &savefields[0]; field->name != NULL; field++)
 		WriteField(f, field, (byte*)ent);
 }
 
@@ -470,7 +470,7 @@ static void ReadEdict(FILE* f, edict_t* ent)
 	ent->msgQ.msgs = msgs;
 	ent->last_alert = NULL;
 
-	for (const field_t* field = savefields; field->name != NULL; field++)
+	for (const field_t* field = &savefields[0]; field->name != NULL; field++)
 		ReadField(f, field, (byte*)ent);
 }
 
@@ -497,22 +497,22 @@ static void WriteLevelLocals(FILE* f)
 	temp = level;
 
 	// Change the pointers to lengths or indexes.
-	for (const field_t* field = levelfields; field->name != NULL; field++)
+	for (const field_t* field = &levelfields[0]; field->name != NULL; field++)
 		ConvertField(field, (byte*)&temp);
 
 	for (int i = 0; i < level.active_buoys; i++)
-		for (const field_t* field = bouyfields; field->name != NULL; field++)
+		for (const field_t* field = &bouyfields[0]; field->name != NULL; field++)
 			ConvertField(field, (byte*)&temp.buoy_list[i]);
 
 	// Write the block.
 	fwrite(&temp, sizeof(temp), 1, f);
 
 	// Now write any allocated data following the edict.
-	for (const field_t* field = levelfields; field->name != NULL; field++)
+	for (const field_t* field = &levelfields[0]; field->name != NULL; field++)
 		WriteField(f, field, (byte*)&level);
 
 	for (int i = 0; i < level.active_buoys; i++)
-		for (const field_t* field = bouyfields; field->name != NULL; field++)
+		for (const field_t* field = &bouyfields[0]; field->name != NULL; field++)
 			WriteField(f, field, (byte*)&level.buoy_list[i]);
 }
 
@@ -522,11 +522,11 @@ static void ReadLevelLocals(FILE* f)
 	fread(&level, sizeof(level), 1, f);
 
 	// Change the pointers to lengths or indexes.
-	for (const field_t* field = levelfields; field->name != NULL; field++)
+	for (const field_t* field = &levelfields[0]; field->name != NULL; field++)
 		ReadField(f, field, (byte*)&level);
 
 	for (int i = 0; i < level.active_buoys; i++)
-		for (const field_t* field = bouyfields; field->name != NULL; field++)
+		for (const field_t* field = &bouyfields[0]; field->name != NULL; field++)
 			ReadField(f, field, (byte*)&level.buoy_list[i]);
 
 	// Set those console vars we should.
