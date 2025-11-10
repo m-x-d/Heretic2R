@@ -1374,9 +1374,9 @@ void SpawnInitialPlayerEffects(edict_t* ent)
 // so it needs to be mirrored out to the game.client structure(s) before all the edicts are wiped.
 void SaveClientData(void)
 {
-	for (int i = 1; i <= game.maxclients; i++)
+	for (int i = 0; i < game.maxclients; i++)
 	{
-		const edict_t* client = &g_edicts[i];
+		const edict_t* client = &g_edicts[i + 1];
 
 		if (!client->inuse)
 			continue;
