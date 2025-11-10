@@ -353,6 +353,8 @@ static void ReadClient(FILE* f, gclient_t* client)
 
 #pragma region ========================== GAME IO ==========================
 
+#define H2R_SAVE_VERSION	"H2RSG1" //mxd
+
 // This will be called whenever the game goes to a new level and when the user explicitly saves the game.
 // Game information include cross-level data, like multi-level triggers, and all client states.
 // A single player death will automatically restore from the last save position.
@@ -367,9 +369,8 @@ void WriteGame(char* filename, const qboolean autosave)
 		return;
 	}
 
-	char str[16] = { 0 };
-	strcpy_s(str, sizeof(str), __DATE__); //mxd. strcpy -> strcpy_s
-	fwrite(str, sizeof(str), 1, f);
+	const char save_ver[16] = H2R_SAVE_VERSION; //mxd. Use save version instead of build date.
+	fwrite(save_ver, sizeof(save_ver), 1, f);
 
 	game.autosaved = autosave;
 	fwrite(&game, sizeof(game), 1, f);
@@ -407,13 +408,13 @@ void ReadGame(char* filename)
 		return;
 	}
 
-	char str[16];
-	fread(str, sizeof(str), 1, f);
+	char save_ver[16];
+	fread(save_ver, sizeof(save_ver), 1, f);
 
-	if (strcmp(str, __DATE__) != 0)
+	if (strcmp(save_ver, H2R_SAVE_VERSION) != 0) //mxd. Use save version instead of build date.
 	{
 		fclose(f);
-		gi.error("Savegame from an older version (expected '%s', got '%s').\n", __DATE__, str);
+		gi.error("Savegame from an older version (expected '%s', got '%s').\n", H2R_SAVE_VERSION, save_ver);
 
 		return;
 	}
@@ -569,9 +570,7 @@ void WriteLevel(char* filename)
 	const int ed_size = sizeof(edict_t);
 	fwrite(&ed_size, sizeof(ed_size), 1, f);
 
-	// Write out a function pointer for checking.
-	void* base = (void*)InitGame;
-	fwrite(&base, sizeof(base), 1, f);
+	//mxd. Skip writing InitGame pointer offset. Requires fixed .dll base address to work.
 
 	// Write out level_locals_t.
 	WriteLevelLocals(f);
@@ -646,16 +645,7 @@ void ReadLevel(char* filename)
 		return;
 	}
 
-	void* base;
-	fread(&base, sizeof(base), 1, f);
-
-	if (base != (void*)InitGame)
-	{
-		fclose(f);
-		gi.error("ReadLevel: function pointers have moved - file was saved on different version.");
-
-		return;
-	}
+	//mxd. Skip writing InitGame pointer offset. Requires fixed .dll base address to work.
 
 	// Load the level locals.
 	ReadLevelLocals(f);
