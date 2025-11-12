@@ -156,6 +156,7 @@ static field_t savefields[] =
 
 	//mxd. edict function pointers... Names ares set mainly for debugging purposes.
 	{ "isBlocking", FOFS(isBlocking),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "msgHandler", FOFS(msgHandler),				F_FUNCTION,	FFL_NONE, NULL },
 	{ "think", FOFS(think),							F_FUNCTION,	FFL_NONE, NULL },
 	{ "ai", FOFS(ai),								F_FUNCTION,	FFL_NONE, NULL },
 	{ "bounced", FOFS(bounced),						F_FUNCTION,	FFL_NONE, NULL },
@@ -548,7 +549,7 @@ static void WriteClient(FILE* f, gclient_t* client)
 	fwrite(&temp, sizeof(temp), 1, f);
 
 	// Now write any allocated data following the edict.
-	for (field_t* field = &clientfields[0]; field->name != NULL; field++)
+	for (const field_t* field = &clientfields[0]; field->name != NULL; field++)
 		WriteField(f, field, (byte*)client);
 }
 
@@ -557,7 +558,7 @@ static void ReadClient(FILE* f, gclient_t* client)
 {
 	fread(client, sizeof(*client), 1, f);
 
-	for (field_t* field = &clientfields[0]; field->name != NULL; field++)
+	for (const field_t* field = &clientfields[0]; field->name != NULL; field++)
 		ReadField(f, field, (byte*)client);
 }
 
@@ -858,7 +859,7 @@ void ReadLevel(char* filename)
 		return;
 	}
 
-	//mxd. Skip writing InitGame pointer offset. Requires fixed .dll base address to work.
+	//mxd. Skip reading/checking InitGame pointer offset. Requires fixed .dll base address to work.
 
 	// Load the level locals.
 	ReadLevelLocals(f);

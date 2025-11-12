@@ -57,6 +57,7 @@
 #include "m_tcheckrik_moves.h"
 #include "p_teleport.h"
 #include "g_debris.h"
+#include "g_DefaultMessageHandler.h"
 #include "g_env.h"
 #include "g_field.h"
 #include "g_flamethrower.h"
@@ -628,6 +629,11 @@ func_map_t funcs_list[] =
 	{ "FireWallMissileStartThink",			(byte*)FireWallMissileStartThink },
 	{ "FireWallMissileThink",				(byte*)FireWallMissileThink },
 	{ "FireWallMissileWormThink",			(byte*)FireWallMissileWormThink },
+
+	// Message handlers.
+	{ "DefaultMsgHandler",					(byte*)DefaultMsgHandler },
+	{ "DyingMsgHandler",					(byte*)DyingMsgHandler },
+	{ "DeadMsgHandler",						(byte*)DeadMsgHandler },
 
 	// Terminator field.
 	{ NULL, NULL }
