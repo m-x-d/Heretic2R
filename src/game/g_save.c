@@ -680,15 +680,12 @@ static void WriteEdict(FILE* f, edict_t* ent)
 // All pointer variables (except function pointers) must be handled specially.
 static void ReadEdict(FILE* f, edict_t* ent)
 {
-	byte* fx_buf = ent->s.clientEffects.buf; // Buffer needs to be stored to be cleared by the engine.
-	const SinglyLinkedList_t msgs = ent->msgQ.msgs;
-	void* script = ent->Script;
-
 	fread(ent, sizeof(*ent), 1, f);
 
-	ent->Script = script;
-	ent->s.clientEffects.buf = fx_buf;
-	ent->msgQ.msgs = msgs;
+	//mxd. Clear these (most likely point to invalid data).
+	memset(&ent->msgQ.msgs, 0, sizeof(ent->msgQ.msgs));
+	ent->s.clientEffects.buf = NULL;
+	ent->Script = NULL;
 	ent->last_alert = NULL;
 
 	for (const field_t* field = &savefields[0]; field->name != NULL; field++)
@@ -892,7 +889,6 @@ void ReadLevel(char* filename)
 		ReadEdict(f, ent);
 
 		// Let the server rebuild world links for this ent.
-		ent->last_alert = NULL;
 		memset(&ent->area, 0, sizeof(ent->area));
 
 		//NOTE: missiles must be linked in specially. G_LinkMissile links as a SOLID_NOT, even though the entity is SOLID_BBOX.
