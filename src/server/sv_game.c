@@ -524,10 +524,11 @@ void SV_InitGameProgs(void)
 
 	if (ge->apiversion != GAME_API_VERSION)
 	{
+		const int api_version = ge->apiversion; //mxd
 		Sys_UnloadGameDll("gamex86", &game_library); //mxd. Original logic calls SV_ShutdownGameProgs() instead (which calls ge->Shutdown() on un-initialized game library).
 		ge = NULL;
 
-		Com_Error(ERR_DROP, "Game is version %i, not %i", ge->apiversion, GAME_API_VERSION);
+		Com_Error(ERR_DROP, "Unsupported Gamex86 version (expected %i, got %i)!", api_version, GAME_API_VERSION);
 	}
 
 	ResMngr_Con(&sv_FXBufMngr, ENTITY_FX_BUF_SIZE, ENTITY_FX_BUF_BLOCK_SIZE);
