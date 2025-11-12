@@ -396,9 +396,9 @@ typedef struct
 
 	int (*GetEffect)(centity_t* ent, int flags, const char* format, ...);
 
-	void* (*TagMalloc)(int size, int tag);
-	void (*TagFree)(void* block);
-	void (*FreeTags)(int tag);
+	void* (*TagMalloc)(int size, int tag); //TODO: unused
+	void (*TagFree)(void* block); //TODO: unused
+	void (*FreeTags)(int tag); //TODO: unused
 
 	void (*Trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int brushmask, int flags, trace_t* t);
 	qboolean (*InCameraPVS)(vec3_t point);

@@ -8,16 +8,6 @@
 #include "Vector.h"
 #include "Random.h"
 
-#define TAG_LEVEL	766 // Tags get cleared at each new level.
-
-typedef struct sound_think_info_s
-{
-	int style;
-	int attenuation; //mxd. float in original version.
-	float volume;
-	float wait;
-} sound_think_info_t;
-
 enum FXSoundID_e //mxd
 {
 	SND_SEAGULLS1,
@@ -172,8 +162,6 @@ static qboolean SoundThink(struct client_entity_s* self, centity_t* owner)
 {
 	static cvar_t* cinematicfreeze = NULL; //mxd
 
-	const sound_think_info_t* soundinfo = (sound_think_info_t*)self->extra;
-
 	// Flag if we are not doing a sound.
 	struct sfx_s* sfx = NULL;
 
@@ -184,7 +172,7 @@ static qboolean SoundThink(struct client_entity_s* self, centity_t* owner)
 	if ((int)cinematicfreeze->value == 0)
 	{
 		// These are peripheral ambient noises.
-		switch (soundinfo->style)
+		switch (self->snd_info.style)
 		{
 			//mxd. In original logic, in all cases when multiple sounds are used, the last sound has 2x chance to be picked.
 			// Original programmer assumed that irand() never rolls max?
@@ -210,7 +198,7 @@ static qboolean SoundThink(struct client_entity_s* self, centity_t* owner)
 			case AS_CAVECREAK:	sfx = fx_sounds[irand(SND_CAVECREAK1, SND_CAVECREAK3)]; break; //BUGFIX: mxd. Original logic uses "cavecreak1" in all 3 cases.
 
 			default:
-				Com_DPrintf("ERROR: invalid ambient sound type %d at %s\n", soundinfo->style, pv(self->origin));
+				Com_DPrintf("ERROR: invalid ambient sound type %d at %s\n", self->snd_info.style, pv(self->origin));
 				break;
 		}
 	}
@@ -218,11 +206,11 @@ static qboolean SoundThink(struct client_entity_s* self, centity_t* owner)
 	// If we have a sound to do, lets do it.
 	if (sfx != NULL)
 	{
-		const int attenuation = (Vec3IsZero(self->origin) ? ATTN_NONE : soundinfo->attenuation); //mxd
-		fxi.S_StartSound(self->origin, owner->current.number, CHAN_WEAPON, sfx, soundinfo->volume, attenuation, 0.0f);
+		const int attenuation = (Vec3IsZero(self->origin) ? ATTN_NONE : self->snd_info.attenuation); //mxd
+		fxi.S_StartSound(self->origin, owner->current.number, CHAN_WEAPON, sfx, self->snd_info.volume, attenuation, 0.0f);
 	}
 
-	self->updateTime = (int)(soundinfo->wait * flrand(0.5f, 1.5f));
+	self->updateTime = (int)(self->snd_info.wait * flrand(0.5f, 1.5f));
 	self->updateTime = max(MIN_UPDATE_TIME, self->updateTime);
 
 	return true; // Keep everything around so we can shut them down when needed.
@@ -239,14 +227,11 @@ void FXSound(centity_t* owner, const int type, const int flags, vec3_t origin)
 	client_entity_t* self = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_NOMOVE), origin, NULL, 20);
 
 	self->flags &= ~CEF_OWNERS_ORIGIN;
-	self->extra = fxi.TagMalloc(sizeof(sound_think_info_t), TAG_LEVEL);
+	self->snd_info.style = style; //mxd. Avoid TagMalloc (causes 'use-after-free' address sanitizer error after loading game/changing level).
+	self->snd_info.attenuation = attenuation;
+	self->snd_info.volume = (float)volume / 255.0f;
+	self->snd_info.wait = (float)wait * 1000.0f;
 	self->Update = SoundThink;
-
-	sound_think_info_t* info = self->extra;
-	info->style = style;
-	info->attenuation = attenuation;
-	info->volume = (float)volume / 255.0f;
-	info->wait = (float)wait * 1000.0f;
 
 	AddEffect(owner, self);
 }

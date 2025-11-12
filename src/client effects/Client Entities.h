@@ -24,6 +24,14 @@ typedef struct CE_ClassStatics_s
 
 typedef qboolean(*UpdateEffect_t)(struct client_entity_s* this, centity_t* owner);
 
+typedef struct sound_think_info_s //mxd. Defined in fx_sound.c in original logic.
+{
+	int style;
+	int attenuation; //mxd. float in original version.
+	float volume;
+	float wait;
+} sound_think_info_t;
+
 typedef struct client_entity_s
 {
 	MsgQueue_t msgQ;
@@ -154,6 +162,9 @@ typedef struct client_entity_s
 			vec3_t velocity2;
 			vec3_t acceleration2;
 		};
+
+		//mxd. For FX_SOUND (16 bytes)...
+		sound_think_info_t snd_info;
 	};
 
 	void* extra; // Extra whatever.
