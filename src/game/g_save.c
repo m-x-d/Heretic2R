@@ -329,7 +329,10 @@ static void ConvertField(field_t* field, byte* base) //mxd. Named 'WriteField1' 
 
 				if (field->extra.func_info == NULL)
 				{
-					gi.error("ConvertField: %s func at %p not in the list, can't save game", field->name, *(byte**)p);
+					const edict_t* ent = (edict_t*)base;
+					const char* classname = ((ent->classname != NULL && *ent->classname != 0) ? ent->classname : "NO_CLASSNAME");
+					gi.error("ConvertField: %s.%s func not in the list, can't save game!", classname, field->name);
+
 					return;
 				}
 
@@ -352,7 +355,10 @@ static void ConvertField(field_t* field, byte* base) //mxd. Named 'WriteField1' 
 
 				if (field->extra.amove_info == NULL)
 				{
-					gi.error("ConvertField: animmove_t at %p not in the list, can't save game", *(animmove_t**)p);
+					const edict_t* ent = (edict_t*)base;
+					const char* classname = ((ent->classname != NULL && *ent->classname != 0) ? ent->classname : "NO_CLASSNAME");
+					gi.error("ConvertField: %s animmove_t not in the list, can't save game!", classname);
+
 					return;
 				}
 
