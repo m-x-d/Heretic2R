@@ -25,9 +25,12 @@ H2COMMON_API void SLList_DefaultCon(SinglyLinkedList_t* this_ptr)
 	this_ptr->current = node;
 }
 
-// List destructor
+// List destructor.
 H2COMMON_API void SLList_Des(SinglyLinkedList_t* this_ptr)
 {
+	if (this_ptr->rearSentinel == NULL) //mxd. List was already destroyed...
+		return;
+
 	SinglyLinkedListNode_t* node = this_ptr->front;
 	while (node != this_ptr->rearSentinel)
 	{
