@@ -352,7 +352,7 @@ static void CL_ParseServerData(void)
 
 	// Wipe the client_state_t struct.
 	CL_ClearState();
-	cls.state = 3;
+	cls.state = ca_connected;
 
 	// Parse protocol version number.
 	cls.serverProtocol = MSG_ReadLong(&net_message);
