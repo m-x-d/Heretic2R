@@ -14,10 +14,10 @@
 #include "Vector.h"
 #include "g_local.h"
 
-#define TORN_EFFECT_RADIUS		100.0f
-#define TORN_KNOCKBACK_SCALE	200.0f
-#define TORN_KNOCKBACK_BASE		250.0f
-#define TORN_MASS_FACTOR		200.0f
+#define TORNADO_EFFECT_RADIUS	100.0f //mxd. Named 'TORN_EFFECT_RADIUS' in original logic.
+#define TORNADO_KNOCKBACK_SCALE	200.0f //mxd. Named 'TORN_KNOCKBACK_SCALE' in original logic.
+#define TORNADO_KNOCKBACK_BASE	250.0f //mxd. Named 'TORN_KNOCKBACK_BASE' in original logic.
+#define TORNADO_MASS_FACTOR		200.0f //mxd. Named 'TORN_MASS_FACTOR' in original logic.
 
 // Do the think for the tornado ring.
 void TornadoThink(edict_t* self)
@@ -25,7 +25,7 @@ void TornadoThink(edict_t* self)
 	edict_t* ent = NULL;
 
 	// Stolen wholesale from the ring of repulsion...
-	while ((ent = FindRingRadius(ent, self->s.origin, TORN_EFFECT_RADIUS, self)) != NULL)
+	while ((ent = FindRingRadius(ent, self->s.origin, TORNADO_EFFECT_RADIUS, self)) != NULL)
 	{
 		if (ent->mass == 0 || ent == self->owner)
 			continue;
@@ -33,7 +33,7 @@ void TornadoThink(edict_t* self)
 		vec3_t vel;
 		VectorSubtract(ent->s.origin, self->s.origin, vel);
 
-		float scale = (TORN_EFFECT_RADIUS - VectorLength(vel)) * (TORN_KNOCKBACK_SCALE / TORN_EFFECT_RADIUS) * sqrtf(TORN_MASS_FACTOR / (float)ent->mass) + TORN_KNOCKBACK_BASE;
+		float scale = (TORNADO_EFFECT_RADIUS - VectorLength(vel)) * (TORNADO_KNOCKBACK_SCALE / TORNADO_EFFECT_RADIUS) * sqrtf(TORNADO_MASS_FACTOR / (float)ent->mass) + TORNADO_KNOCKBACK_BASE;
 		scale *= 20.0f; // Just for yucks.
 
 		VectorNormalize(vel);
@@ -93,11 +93,11 @@ void TornadoThink(edict_t* self)
 }
 
 // Time's up, create the tornado effect.
-void CreateTornado(edict_t* tornado)
+void TornadoCreateThink(edict_t* tornado) //mxd. Named 'create_tornado' in original logic.
 {
 	tornado->classname = "Spell_Tornado";
 	tornado->timestamp = level.time;
-	tornado->count = (int)(level.time + SPIN_DUR);
+	tornado->count = (int)(level.time + TORNADO_SPIN_DURATION);
 	tornado->gravity = 0.0f;
 	tornado->alert_time = level.time + flrand(0.6f, 1.2f);
 	tornado->jump_time = level.time + flrand(0.2f, 1.0f);
@@ -121,8 +121,8 @@ void SpellCastDropTornado(edict_t* caster, const vec3_t start_pos)
 
 	tornado->movetype = PHYSICSTYPE_NONE;
 	tornado->classname = "Spell_Tornado_time";
-	tornado->think = CreateTornado;
-	tornado->nextthink = level.time + TORN_DUR;
+	tornado->think = TornadoCreateThink;
+	tornado->nextthink = level.time + TORNADO_DURATION;
 	tornado->takedamage = DAMAGE_NO;
 	tornado->owner = caster;
 
@@ -138,9 +138,7 @@ void SpellCastDropTornado(edict_t* caster, const vec3_t start_pos)
 
 	gi.linkentity(tornado);
 
-	vec3_t end;
-	VectorCopy(tornado->s.origin, end);
-	end[2] -= 256.0f;
+	const vec3_t end = VEC3_INITA(tornado->s.origin, 0.0f, 0.0f, -256.0f);
 
 	trace_t trace;
 	gi.trace(tornado->s.origin, NULL, NULL, end, tornado, MASK_SOLID, &trace);

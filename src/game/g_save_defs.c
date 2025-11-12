@@ -617,7 +617,7 @@ func_map_t funcs_list[] =
 	{ "SphereWatcherTouch",					(byte*)SphereWatcherTouch },
 
 	// spl_tornado.c:
-	{ "CreateTornado",						(byte*)CreateTornado },
+	{ "TornadoCreateThink",					(byte*)TornadoCreateThink },
 	{ "TornadoThink",						(byte*)TornadoThink },
 
 	// spl_wall.c:
@@ -637,7 +637,6 @@ func_map_t funcs_list[] =
 
 #pragma region ================================ MMOVES LIST ================================
 
-// 896 mmoves:
 animmove_map_t mmoves_list[] =
 {
 	// c_corvus1_anim.c:
