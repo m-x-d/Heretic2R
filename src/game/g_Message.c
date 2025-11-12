@@ -122,10 +122,6 @@ static void G_ClearMessageQueue(edict_t* self) //mxd. Named 'ClearMessageQueue' 
 {
 	SinglyLinkedList_t* msgs = &self->msgQ.msgs;
 
-	// If either of these fire - do a rebuild all, otherwise it will try to free random memory and lead to an unstable system.
-	assert(msgs->front != NULL);
-	assert(msgs->rearSentinel != NULL);
-
 	while (!SLList_IsEmpty(msgs))
 	{
 		G_Message_t* msg = SLList_Pop(msgs).t_void_p;
