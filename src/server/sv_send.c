@@ -201,10 +201,10 @@ void SV_Multicast(const vec3_t origin, const multicast_t to)
 			cluster = CM_LeafCluster(leafnum);
 			const int area2 = CM_LeafArea(leafnum);
 
-			if (!CM_AreasConnected(area1, area2))
+			if (cluster == -1 || !(mask[cluster >> 3] & (1 << (cluster & 7)))) //mxd. Remove second 'mask != NULL' check, add cluster sanity check.
 				continue;
 
-			if (!(mask[cluster >> 3] & (1 << (cluster & 7)))) //mxd. Removed second 'mask != NULL' check
+			if (!CM_AreasConnected(area1, area2))
 				continue;
 		}
 
