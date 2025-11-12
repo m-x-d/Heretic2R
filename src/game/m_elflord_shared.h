@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "g_local.h" //mxd
+#include "g_Edict.h"
 
 typedef enum AnimID_e
 {
@@ -48,26 +48,6 @@ typedef enum SoundID_e
 
 	NUM_SOUNDS
 } SoundID_t;
-
-extern const animmove_t elflord_move_idle;
-extern const animmove_t elflord_move_run;
-extern const animmove_t elflord_move_charge;
-extern const animmove_t elflord_move_charge_trans;
-extern const animmove_t elflord_move_floatback;
-extern const animmove_t elflord_move_dodgeright;
-extern const animmove_t elflord_move_dodgeleft;
-extern const animmove_t elflord_move_soa_begin;
-extern const animmove_t elflord_move_soa_loop;
-extern const animmove_t elflord_move_soa_end;
-extern const animmove_t elflord_move_ls;
-extern const animmove_t elflord_move_pain;
-extern const animmove_t elflord_move_death_btrans;
-extern const animmove_t elflord_move_death_loop;
-extern const animmove_t elflord_move_shield;
-extern const animmove_t elflord_move_attack;
-extern const animmove_t elflord_move_move;
-extern const animmove_t elflord_move_wait;
-extern const animmove_t elflord_move_come_to_life;
 
 extern void elflord_decelerate(edict_t* self, float scaler);
 extern void elflord_flymove(edict_t* self, float dist);

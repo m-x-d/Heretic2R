@@ -6,6 +6,7 @@
 
 #include "m_elflord.h"
 #include "m_elflord_anim.h" //mxd
+#include "m_elflord_moves.h" //mxd
 #include "m_elflord_shared.h"
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
@@ -268,7 +269,7 @@ static void ElfLordSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 
 #pragma region ========================== Edict callbacks ==========================
 
-static void ElfLordProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named 'elflord_projectile_blocked' in original logic.
+void ElfLordProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named 'elflord_projectile_blocked' in original logic.
 {
 	if (trace->ent != NULL) //mxd. Done below Q_stricmp()/owner checks in original logic.
 	{
@@ -291,7 +292,7 @@ static void ElfLordProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void ElfLordPreThink(edict_t* self) //mxd. Named 'elflord_PreThink' in original logic.
+void ElfLordPreThink(edict_t* self) //mxd. Named 'elflord_PreThink' in original logic.
 {
 	if (self->enemy != NULL && self->elflord_charge_meter >= self->max_health)
 		M_ShowLifeMeter(self->health, self->max_health);

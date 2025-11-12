@@ -7,6 +7,7 @@
 #include "m_tcheckrik.h"
 #include "m_tcheckrik_shared.h"
 #include "m_tcheckrik_anim.h"
+#include "m_tcheckrik_moves.h"
 #include "m_tcheckrik_spells.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_debris.h" //mxd
@@ -706,7 +707,7 @@ static void TcheckrikThrowLeg(edict_t* self, const float damage, const int mesh_
 	}
 }
 
-static void TcheckrikDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'insect_dismember' in original logic.
+void TcheckrikDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'insect_dismember' in original logic.
 {
 	int throw_nodes = 0;
 	qboolean dismember_ok = false;

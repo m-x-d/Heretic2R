@@ -20,7 +20,7 @@
 #define MORPH_TIME		20.0f //mxd
 
 // Fade in the chicken - for MONSTERS only.
-static void MonsterMorphFadeIn(edict_t* self) //mxd. Named 'MorphFadeIn' in original version.
+void MonsterMorphFadeIn(edict_t* self) //mxd. Named 'MorphFadeIn' in original version.
 {
 	self->s.color.a += MORPH_TELE_FADE;
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
@@ -30,7 +30,7 @@ static void MonsterMorphFadeIn(edict_t* self) //mxd. Named 'MorphFadeIn' in orig
 }
 
 // Fade out the chicken model till its gone - for MONSTERS only.
-static void MonsterMorphFadeOut(edict_t* self) //mxd. Named 'MorphFadeOut' in original version.
+void MonsterMorphFadeOut(edict_t* self) //mxd. Named 'MorphFadeOut' in original version.
 {
 	self->s.color.a -= MORPH_TELE_FADE;
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
@@ -72,7 +72,7 @@ static void MonsterMorphFadeOut(edict_t* self) //mxd. Named 'MorphFadeOut' in or
 }
 
 // This called when missile touches anything (world or edict).
-static void MorphMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+void MorphMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	// Has the target got reflection turned on?
 	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
@@ -148,7 +148,7 @@ static void MorphMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 	G_SetToFree(self);
 }
 
-static void MorphMissileThink(edict_t* self)
+void MorphMissileThink(edict_t* self)
 {
 	self->svflags |= SVF_NOCLIENT; // No messages to client after it has received velocity.
 	self->think = NULL; // Not required to think anymore.

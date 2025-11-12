@@ -23,7 +23,7 @@
 #define MACEBALL_SCALE_INCREMENT	0.03f
 #define MACEBALL_SEARCH_RADIUS		500.0f
 
-static void MaceballThink(edict_t* self)
+void MaceballThink(edict_t* self)
 {
 	if (self->s.scale < MACEBALL_SCALE)
 		self->s.scale = min(MACEBALL_SCALE, self->s.scale + MACEBALL_SCALE_INCREMENT);
@@ -87,7 +87,7 @@ static void GetCollisionPoint(const vec3_t velocity, const vec3_t origin, const 
 	VectorMA(origin, size, box_normals[max_axis], point);
 }
 
-static void MaceballBounce(edict_t* self, trace_t* trace)
+void MaceballBounce(edict_t* self, trace_t* trace)
 {
 	// Did we hit something we can destroy?
 	if (trace->ent != NULL && trace->ent->takedamage != DAMAGE_NO && trace->ent->health > 0)

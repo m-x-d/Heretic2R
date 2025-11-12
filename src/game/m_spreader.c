@@ -7,6 +7,7 @@
 #include "m_spreader.h"
 #include "m_spreader_shared.h"
 #include "m_spreader_anim.h"
+#include "m_spreader_moves.h"
 #include "m_spreadermist.h"
 #include "g_DefaultMessageHandler.h"
 #include "g_debris.h" //mxd
@@ -553,7 +554,7 @@ static void SpreaderThrowLeg(edict_t* self, const int mesh_part) //mxd. Added to
 	}
 }
 
-static void SpreaderDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'spreader_dismember' in original logic.
+void SpreaderDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'spreader_dismember' in original logic.
 {
 	qboolean dismember_ok = false;
 
@@ -622,7 +623,7 @@ static void SpreaderDismember(edict_t* self, int damage, HitLocation_t hl) //mxd
 		self->monsterinfo.aiflags |= AI_NO_MISSILE;
 }
 
-static void SpreaderStopWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreader_stop' in original logic.
+void SpreaderStopWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreader_stop' in original logic.
 {
 	// Apparently being on ground no longer causes you to lose avelocity so I do it manually.
 	VectorClear(self->avelocity);
@@ -632,7 +633,7 @@ static void SpreaderStopWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named 
 	self->bounced = NULL;
 }
 
-static void SpreaderIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreader_isblocked' in original logic.
+void SpreaderIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreader_isblocked' in original logic.
 {
 	if (trace->surface != NULL && (trace->surface->flags & SURF_SKY))
 	{
@@ -683,7 +684,7 @@ static void SpreaderIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'sprea
 	self->friction = 0.8f;
 }
 
-static void SpreaderSplatWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreaderSplat' in original logic.
+void SpreaderSplatWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreaderSplat' in original logic.
 {
 	if (trace->ent != NULL && trace->ent->takedamage != DAMAGE_NO)
 	{
@@ -717,7 +718,7 @@ static void SpreaderSplatWhenBlocked(edict_t* self, trace_t* trace) //mxd. Named
 	self->nextthink = level.time + FRAMETIME; //mxd. '0.01' in original logic.
 }
 
-static void SpreaderDropDownThink(edict_t* self) //mxd. Named 'spreaderDropDown' in original logic.
+void SpreaderDropDownThink(edict_t* self) //mxd. Named 'spreaderDropDown' in original logic.
 {
 	self->movetype = PHYSICSTYPE_NOCLIP;
 	self->solid = SOLID_NOT;

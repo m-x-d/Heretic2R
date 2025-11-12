@@ -166,8 +166,5 @@ void G_RunEntity(edict_t* ent)
 	assert(ent->inuse);
 	assert(ent->movetype == MOVETYPE_FLYMISSILE);
 
-	if (ent->prethink != NULL)
-		ent->prethink(ent);
-
 	SV_Physics_Toss(ent);
 }

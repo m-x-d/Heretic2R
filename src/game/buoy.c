@@ -110,7 +110,7 @@ static void AssignJumpBuoy(edict_t* self, const edict_t* ent) //mxd. Named 'assi
 }
 
 // Link the buoys after all entities have been spawned.
-static void LinkBuoyInfo(edict_t* self) //mxd. Named 'info_buoy_link' in original version.
+void LinkBuoyInfo(edict_t* self) //mxd. Named 'info_buoy_link' in original version.
 {
 	if ((self->spawnflags & BUOY_ACTIVATE) && self->pathtarget == NULL)
 	{

@@ -82,7 +82,7 @@ edict_t* FindRingRadius(edict_t* from, const vec3_t org, const float rad, const 
 	return NULL;
 }
 
-static void RingThink(edict_t* self)
+void RingThink(edict_t* self)
 {
 #define RING_THINKS	4 // This is 0.4 seconds.
 

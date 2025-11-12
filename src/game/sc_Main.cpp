@@ -102,7 +102,7 @@ extern "C" void LoadScripts(FILE* f, const qboolean do_globals)
 	}
 }
 
-static void script_use(edict_t* ent, edict_t* other, edict_t* activator)
+extern "C" void ScriptUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd. Named 'ScriptUse' in original logic.
 {
 	ent->Script->AddEvent(new ExecuteEvent(level.time, other, activator));
 }
@@ -129,5 +129,5 @@ extern "C" void SP_script_runner(edict_t* ent)
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->solid = SOLID_NOT;
 	ent->svflags |= SVF_NOCLIENT;
-	ent->use = script_use;
+	ent->use = ScriptUse;
 }

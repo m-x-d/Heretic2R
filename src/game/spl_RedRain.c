@@ -17,7 +17,7 @@
 #define ARROW_RADIUS	2.0f
 #define ARROW_BACKUP	(45.0f - ARROW_RADIUS)
 
-static void RedRainRemove(edict_t* self)
+void RedRainRemove(edict_t* self)
 {
 	gi.RemoveEffects(&self->s, FX_REMOVE_EFFECTS);
 	G_SetToFree(self);
@@ -137,7 +137,7 @@ static void RedRainLightning(edict_t* self) //mxd. Split from RedRainThink().
 	}
 }
 
-static void RedRainThink(edict_t* self)
+void RedRainThink(edict_t* self)
 {
 	const int base_damage = (DEATHMATCH ? self->dmg / 4 : self->dmg); //mxd
 
@@ -177,7 +177,7 @@ static void RedRainThink(edict_t* self)
 	}
 }
 
-static void RedRainMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+void RedRainMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	// Has the target got reflection turned on?
 	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
@@ -285,7 +285,7 @@ static void RedRainMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	G_SetToFree(self);
 }
 
-static void RedRainMissileThink(edict_t* self)
+void RedRainMissileThink(edict_t* self)
 {
 	self->svflags |= SVF_NOCLIENT;
 	self->think = NULL;

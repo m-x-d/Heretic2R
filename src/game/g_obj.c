@@ -107,7 +107,7 @@ void BboxYawAndScale(edict_t* self)
 	self->maxs[2] *= scale;
 }
 
-static void PushableObjectTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'objpush_touch' in original logic.
+void PushableObjectTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'objpush_touch' in original logic.
 {
 	// FIXME: make player push?
 	if (other->groundentity == NULL || other->groundentity == self)
@@ -197,7 +197,7 @@ void SP_obj_banneronpole(edict_t* self)
 
 #pragma region ========================== obj_barrel ==========================
 
-static void ObjBarrelExplodeThink(edict_t* self) //mxd. Named 'barrel_explode_think' in original logic.
+void ObjBarrelExplodeThink(edict_t* self) //mxd. Named 'barrel_explode_think' in original logic.
 {
 	vec3_t origin;
 	VectorCopy(self->s.origin, origin);
@@ -216,7 +216,7 @@ static void ObjBarrelExplodeThink(edict_t* self) //mxd. Named 'barrel_explode_th
 	G_SetToFree(self);
 }
 
-static void ObjBarrelDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'barrel_explode_think' in original logic.
+void ObjBarrelDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'barrel_explode_think' in original logic.
 {
 	self->think = ObjBarrelExplodeThink;
 	self->nextthink = level.time + FRAMETIME;
@@ -328,7 +328,7 @@ void SP_obj_chair3(edict_t* self)
 
 #pragma region ========================== obj_chest1, obj_chest2, obj_chest3 ==========================
 
-static void ObjChest1AnimThink(edict_t* self) //mxd. Named 'chest1_anim' in original logic.
+void ObjChest1AnimThink(edict_t* self) //mxd. Named 'chest1_anim' in original logic.
 {
 	if (self->s.frame < 10)
 	{
@@ -341,7 +341,7 @@ static void ObjChest1AnimThink(edict_t* self) //mxd. Named 'chest1_anim' in orig
 	}
 }
 
-static void ObjChest1Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'chest1_use' in original logic.
+void ObjChest1Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'chest1_use' in original logic.
 {
 	gi.sound(self, CHAN_VOICE, gi.soundindex("objects/chest.wav"), 1.0f, ATTN_NORM, 0.0f);
 	self->think = ObjChest1AnimThink;
@@ -398,7 +398,7 @@ void SP_obj_chest3(edict_t* self)
 
 #pragma region ========================== obj_cog1 ==========================
 
-static void ObjCog1AnimThink(edict_t* self) //mxd. Named 'cog1_anim' in original logic.
+void ObjCog1AnimThink(edict_t* self) //mxd. Named 'cog1_anim' in original logic.
 {
 	if (++self->s.frame > 11)
 		self->s.frame = 1;
@@ -414,7 +414,7 @@ static void ObjCog1AnimThink(edict_t* self) //mxd. Named 'cog1_anim' in original
 	}
 }
 
-static void ObjCog1Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'cog1_use' in original logic.
+void ObjCog1Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'cog1_use' in original logic.
 {
 	gi.sound(self, CHAN_VOICE, gi.soundindex("items/cogsturn.wav"), 1.0f, ATTN_NORM, 0.0f);
 
@@ -542,7 +542,7 @@ void SP_obj_corpse2(edict_t* self)
 
 #pragma region ========================== obj_dying_elf ==========================
 
-static void ObjDyingElfIdle(edict_t* self) //mxd. Named 'dying_elf_idle' in original logic.
+void ObjDyingElfIdle(edict_t* self) //mxd. Named 'dying_elf_idle' in original logic.
 {
 	if (++self->s.frame > FRAME_fetal26)
 		self->s.frame = FRAME_fetal1;
@@ -553,7 +553,7 @@ static void ObjDyingElfIdle(edict_t* self) //mxd. Named 'dying_elf_idle' in orig
 	self->nextthink = level.time + FRAMETIME;
 }
 
-static void ObjDyingElfReachAnim(edict_t* self) //mxd. Named 'dying_elf_reach_anim' in original logic.
+void ObjDyingElfReachAnim(edict_t* self) //mxd. Named 'dying_elf_reach_anim' in original logic.
 {
 	if (self->touch_debounce_time < level.time) // First time through reach anim.
 	{
@@ -575,7 +575,7 @@ static void ObjDyingElfReachAnim(edict_t* self) //mxd. Named 'dying_elf_reach_an
 	self->nextthink = level.time + FRAMETIME;
 }
 
-static void ObjDyingElfTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'dying_elf_touch' in original logic.
+void ObjDyingElfTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'dying_elf_touch' in original logic.
 {
 	if (self->touch_debounce_time < level.time) // First time through reach anim.
 	{
@@ -595,7 +595,7 @@ static void ObjDyingElfTouch(edict_t* self, edict_t* other, cplane_t* plane, csu
 	}
 }
 
-static void ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'dying_elf_pain' in original logic.
+void ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'dying_elf_pain' in original logic.
 {
 	self->enemy = other;
 	self->think = ObjDyingElfReachAnim;
@@ -605,7 +605,7 @@ static void ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damag
 		PlagueElfDyingSound(self, DYING_ELF_PAIN_VOICE);
 }
 
-static void ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'dying_elf_die' in original logic.
+void ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'dying_elf_die' in original logic.
 {
 	gi.sound(self, CHAN_VOICE, gi.soundindex(va("monsters/plagueElf/death%i.wav", irand(1, 3))), 1.0f, ATTN_NORM, 0.0f);
 	BecomeDebris(self);
@@ -1110,7 +1110,7 @@ void SP_obj_statue_duckbill2(edict_t* self)
 #define GLOBE_ENABLED	1.0f //mxd
 #define GLOBE_DISABLED	0.0f //mxd
 
-static void ObjSeasonglobeBottomThink(edict_t* self) //mxd. Named 'globebottom_turn' in original logic.
+void ObjSeasonglobeBottomThink(edict_t* self) //mxd. Named 'globebottom_turn' in original logic.
 {
 	M_ChangeYaw(self);
 
@@ -1133,7 +1133,7 @@ static void ObjSeasonglobeBottomThink(edict_t* self) //mxd. Named 'globebottom_t
 	}
 }
 
-static void ObjSeasonglobeTopThink(edict_t* self) //mxd. Named 'globetop_turn' in original logic.
+void ObjSeasonglobeTopThink(edict_t* self) //mxd. Named 'globetop_turn' in original logic.
 {
 	M_ChangeYaw(self);
 
@@ -1164,7 +1164,7 @@ static void ObjSeasonglobeTopThink(edict_t* self) //mxd. Named 'globetop_turn' i
 	}
 }
 
-static void ObjSeasonglobeBottomUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'globebottom_use' in original logic.
+void ObjSeasonglobeBottomUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'globebottom_use' in original logic.
 {
 	if (self->monsterinfo.idle_time == GLOBE_ENABLED)
 		return;
@@ -1178,7 +1178,7 @@ static void ObjSeasonglobeBottomUse(edict_t* self, edict_t* other, edict_t* acti
 	self->nextthink = level.time + FRAMETIME;
 }
 
-static void ObjSeasonglobeTopUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'globetop_use' in original logic.
+void ObjSeasonglobeTopUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'globetop_use' in original logic.
 {
 	if (self->monsterinfo.idle_time == GLOBE_ENABLED)
 		return;
@@ -1813,7 +1813,7 @@ void SP_obj_flagonpole(edict_t* self)
 
 #pragma region ========================== obj_lever1, obj_lever2, obj_lever3 ==========================
 
-static void ObjLeverDownThink(edict_t* self) //mxd. Merged lever1downthink(), lever2downthink() and lever3downthink() from original logic.
+void ObjLeverDownThink(edict_t* self) //mxd. Merged lever1downthink(), lever2downthink() and lever3downthink() from original logic.
 {
 	if (self->s.frame < self->obj_lever_num_frames)
 	{
@@ -1826,7 +1826,7 @@ static void ObjLeverDownThink(edict_t* self) //mxd. Merged lever1downthink(), le
 	}
 }
 
-static void ObjLeverUpThink(edict_t* self) //mxd. Merged lever1upthink(), lever2upthink() and lever3upthink() from original logic.
+void ObjLeverUpThink(edict_t* self) //mxd. Merged lever1upthink(), lever2upthink() and lever3upthink() from original logic.
 {
 	if (self->s.frame > 0)
 	{
@@ -1839,7 +1839,7 @@ static void ObjLeverUpThink(edict_t* self) //mxd. Merged lever1upthink(), lever2
 	}
 }
 
-static void ObjLeverUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Merged lever1_use(), lever2_use() and lever3_use() from original logic.
+void ObjLeverUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Merged lever1_use(), lever2_use() and lever3_use() from original logic.
 {
 	if (self->s.frame == 0 || self->s.frame == self->obj_lever_num_frames) //mxd. Rewritten, so G_UseTargets() is only called when not playing animation.
 	{
@@ -1940,7 +1940,7 @@ void SP_obj_bush2(edict_t* self)
 #pragma region ========================== obj_cactus, obj_cactus3, obj_cactus4 ==========================
 
 // Cactus will hurt player.
-static void ObjCactusTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'cactus_touch' in original logic.
+void ObjCactusTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'cactus_touch' in original logic.
 {
 	if (other->client != NULL && self->touch_debounce_time <= level.time)
 	{
@@ -1985,7 +1985,7 @@ void SP_obj_cactus3(edict_t* self)
 	self->touch = ObjCactusTouch;
 }
 
-static void ObjCactus4CloseThink(edict_t* self) //mxd. Named 'cactus_close' in original logic.
+void ObjCactus4CloseThink(edict_t* self) //mxd. Named 'cactus_close' in original logic.
 {
 	//mxd. Rewritten logic to remove think callback on animation finish.
 	if (--self->s.frame >= 0)
@@ -1994,7 +1994,7 @@ static void ObjCactus4CloseThink(edict_t* self) //mxd. Named 'cactus_close' in o
 		self->think = NULL;
 }
 
-static void ObjCactus4OpenThink(edict_t* self) //mxd. Named 'cactus_open' in original logic.
+void ObjCactus4OpenThink(edict_t* self) //mxd. Named 'cactus_open' in original logic.
 {
 	//mxd. Rewritten logic to remove think callback on animation finish.
 	self->s.frame = min(16, self->s.frame + 4);
@@ -2005,7 +2005,7 @@ static void ObjCactus4OpenThink(edict_t* self) //mxd. Named 'cactus_open' in ori
 		self->think = NULL;
 }
 
-static void ObjCactus4Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'cactus4_use' in original logic.
+void ObjCactus4Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'cactus4_use' in original logic.
 {
 	if (self->s.frame == 0 || self->s.frame == 16)
 	{
@@ -2450,7 +2450,7 @@ void SP_obj_rocks2(edict_t* self)
 
 #pragma region ========================== obj_hivepriestessssymbol ==========================
 
-static void ObjHivePriestessSymbolThink(edict_t* self) //mxd. Named 'symbolthink' in original logic.
+void ObjHivePriestessSymbolThink(edict_t* self) //mxd. Named 'symbolthink' in original logic.
 {
 	M_DropToFloor(self); // Clears self->think callback!
 
@@ -2465,7 +2465,7 @@ static void ObjHivePriestessSymbolThink(edict_t* self) //mxd. Named 'symbolthink
 	}
 }
 
-static void ObjHivePriestessSymbolUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'hivepriestesssymbol_use' in original logic.
+void ObjHivePriestessSymbolUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'hivepriestesssymbol_use' in original logic.
 {
 	self->s.modelindex = (byte)gi.modelindex("models/items/puzzles/hiveidol/tris.fm");
 	self->solid = SOLID_BBOX;
@@ -2628,7 +2628,7 @@ void SP_obj_venusflytrap(edict_t* self)
 
 #define SF_NOGEM	16 //mxd
 
-static void ObjStatueTecheckrikTombUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tomb_use' in original logic.
+void ObjStatueTecheckrikTombUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tomb_use' in original logic.
 {
 	self->s.frame = (short)(!self->s.frame); // Flip between 2 frames of animation. //TODO: would be nice to disable frame interpolation on this (would require implementing new FX_ flag)...
 }
@@ -2648,7 +2648,7 @@ void SP_obj_statue_techeckriktomb(edict_t* self)
 	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-static void ObjStatueTecheckrikUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tcheckrik_use' in original logic.
+void ObjStatueTecheckrikUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tcheckrik_use' in original logic.
 {
 	//BUGFIX: mxd. Fixed incorrect frame set when triggering obj_statue_techeckrikright multiple times, or even the first time if SF_NOGEM spawnflag was not set.
 	if (self->s.frame == 1 || self->s.frame == 3)
@@ -2693,7 +2693,7 @@ void SP_obj_statue_techeckrikleft(edict_t* self)
 
 #pragma region ========================== obj_spellbook ==========================
 
-static void ObjSpellbookAnimThink(edict_t* self) //mxd. Named 'spellbook_anim' in original logic.
+void ObjSpellbookAnimThink(edict_t* self) //mxd. Named 'spellbook_anim' in original logic.
 {
 	if (--self->s.frame >= 0)
 	{
@@ -2706,7 +2706,7 @@ static void ObjSpellbookAnimThink(edict_t* self) //mxd. Named 'spellbook_anim' i
 	}
 }
 
-static void ObjSpellbookUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'spellbook_use' in original logic.
+void ObjSpellbookUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'spellbook_use' in original logic.
 {
 	self->think = ObjSpellbookAnimThink;
 	self->nextthink = level.time + FRAMETIME;
@@ -2859,7 +2859,7 @@ void SP_obj_torture_wallring(edict_t* self)
 
 #pragma region ========================== obj_statue_tchecktrik_bust ==========================
 
-static void ObjStatueTchecktrikBustUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'statue_tchecktrik_bust_use' in original logic.
+void ObjStatueTchecktrikBustUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'statue_tchecktrik_bust_use' in original logic.
 {
 	self->s.frame = (short)(!self->s.frame); // Flip between 2 frames of animation. //TODO: would be nice to disable frame interpolation on this (would require implementing new FX_ flag)...
 }
@@ -2886,7 +2886,7 @@ void SP_obj_statue_tchecktrik_bust(edict_t* self)
 
 #pragma region ========================== obj_statue_sithraguard ==========================
 
-static void ObjStatueSsithraGuardThink(edict_t* self) //mxd. Named 'statue_sithraguard_think' in original logic.
+void ObjStatueSsithraGuardThink(edict_t* self) //mxd. Named 'statue_sithraguard_think' in original logic.
 {
 	if (self->s.frame < 20)
 	{
@@ -2899,7 +2899,7 @@ static void ObjStatueSsithraGuardThink(edict_t* self) //mxd. Named 'statue_sithr
 	}
 }
 
-static void ObjStatueSsithraGuardUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'statue_sithraguard_use' in original logic.
+void ObjStatueSsithraGuardUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'statue_sithraguard_use' in original logic.
 {
 	if (self->s.frame > 0) //mxd. Add retrigger safeguard.
 		return;
@@ -2949,7 +2949,7 @@ static vec3_t ironmaiden_opened_maxs = {  28.0f,  48.0f,  49.0f };
 static vec3_t ironmaiden_closed_mins = { -18.0f, -18.0f, -49.0f };
 static vec3_t ironmaiden_closed_maxs = {  18.0f,  18.0f,  49.0f };
 
-static void ObjTortureIronmaidenOpen(edict_t* self) //mxd. Named 'ironmaiden_open' in original logic.
+void ObjTortureIronmaidenOpen(edict_t* self) //mxd. Named 'ironmaiden_open' in original logic.
 {
 	//mxd. Switch bbox size. Not done in original logic.
 	if (self->s.frame == 10)
@@ -2974,7 +2974,7 @@ static void ObjTortureIronmaidenOpen(edict_t* self) //mxd. Named 'ironmaiden_ope
 	}
 }
 
-static void ObjTortureIronmaidenClose(edict_t* self) //mxd. Named 'ironmaiden_close' in original logic.
+void ObjTortureIronmaidenClose(edict_t* self) //mxd. Named 'ironmaiden_close' in original logic.
 {
 	//mxd. Switch bbox size. Done in ObjTortureIronmaidenUse() in original logic.
 	if (self->s.frame == 0)
@@ -2999,7 +2999,7 @@ static void ObjTortureIronmaidenClose(edict_t* self) //mxd. Named 'ironmaiden_cl
 	}
 }
 
-static void ObjTortureIronmaidenUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'ironmaiden_use' in original logic.
+void ObjTortureIronmaidenUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'ironmaiden_use' in original logic.
 {
 	self->touch = NULL;
 	self->think = ObjTortureIronmaidenClose;
@@ -3007,7 +3007,7 @@ static void ObjTortureIronmaidenUse(edict_t* self, edict_t* other, edict_t* acti
 }
 
 // Called only when in opened state.
-static void ObjTortureIronmaidenTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'ironmaiden_touch' in original logic.
+void ObjTortureIronmaidenTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'ironmaiden_touch' in original logic.
 {
 	if (other->client == NULL || self->touch_debounce_time > level.time) //TODO: don't skip for non-players (remove other->client check)?
 		return;
@@ -3093,7 +3093,7 @@ void SP_obj_statue_saraphbust(edict_t* self)
 
 #pragma region ========================== obj_biotank ==========================
 
-static void ObjBiotankContentsAnimThink(edict_t* self) //mxd. Named 'fish_anim' in original logic.
+void ObjBiotankContentsAnimThink(edict_t* self) //mxd. Named 'fish_anim' in original logic.
 {
 #define FISHBOB_HEIGHT	0.1f
 #define FISHBOB_SPEED	ANGLE_10
@@ -3107,7 +3107,7 @@ static void ObjBiotankContentsAnimThink(edict_t* self) //mxd. Named 'fish_anim' 
 	self->nextthink = level.time + FRAMETIME;
 }
 
-static void ObjBiotankTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'biotank_touch' in original logic.
+void ObjBiotankTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'biotank_touch' in original logic.
 {
 	self->target_ent->ideal_yaw = anglemod(other->s.angles[YAW] + 180.0f);
 }
@@ -3412,7 +3412,7 @@ void SP_obj_lab_tray(edict_t* self)
 
 #pragma region ========================== obj_hanging_ogle ==========================
 
-static void ObjHangingOgleMoanThink(edict_t* self) //mxd. Named 'ogle_moan' in original logic.
+void ObjHangingOgleMoanThink(edict_t* self) //mxd. Named 'ogle_moan' in original logic.
 {
 	gi.sound(self, CHAN_VOICE, gi.soundindex(va("monsters/ogle/oglemoan%i.wav", irand(1, 2))), 1.0f, ATTN_IDLE, 0.0f);
 	self->nextthink = level.time + flrand(3.0f, 10.0f); //mxd. irand() in original logic.
@@ -3565,7 +3565,7 @@ void SP_obj_web(edict_t* self) //TODO: has 20 unused frames of idle animation.
 
 #define LARVA_FAST_TWITCH 16
 
-static void ObjLarvaAnimThink(edict_t* self) //mxd. Named 'larva_anim' in original logic.
+void ObjLarvaAnimThink(edict_t* self) //mxd. Named 'larva_anim' in original logic.
 {
 	if (self->s.frame < self->count)
 		self->s.frame += (short)((self->spawnflags & LARVA_FAST_TWITCH) ? 2 : 1); //mxd. Some squirm faster.
@@ -3575,7 +3575,7 @@ static void ObjLarvaAnimThink(edict_t* self) //mxd. Named 'larva_anim' in origin
 	self->nextthink = level.time + FRAMETIME;
 }
 
-static void ObjLarvaTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'larva_touch' in original logic.
+void ObjLarvaTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'larva_touch' in original logic.
 {
 	if (other->client != NULL)
 		T_Damage(self, other, other, vec3_origin, self->s.origin, vec3_origin, 10, 0, DAMAGE_AVOID_ARMOR, MOD_DIED);

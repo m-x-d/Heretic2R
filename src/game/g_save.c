@@ -5,12 +5,12 @@
 //
 
 #include "g_save.h" //mxd
+#include "g_save_defs.h" //mxd
 #include "g_main.h" //mxd
 #include "g_playstats.h"
 #include "p_client.h" //mxd
 #include "p_dll.h" //mxd
 #include "p_view.h" //mxd
-#include "q_Physics.h"
 #include "sc_Main.h" //mxd
 #include "FX.h"
 #include "Message.h"
@@ -19,179 +19,255 @@
 
 #pragma region ========================== SAVE FIELDS ==========================
 
+#define SAVE_FUNCNAME_MAX_LENGTH	64 //mxd
+
 const field_t fields[] =
 {
-	{ "classname",		FOFS(classname),	F_LSTRING,	FFL_NONE },
-	{ "origin",			FOFS(s.origin),		F_VECTOR,	FFL_NONE },
-	{ "model",			FOFS(model),		F_LSTRING,	FFL_NONE },
-	{ "spawnflags",		FOFS(spawnflags),	F_INT,		FFL_NONE },
-	{ "speed",			FOFS(speed),		F_FLOAT,	FFL_NONE },
-	{ "accel",			FOFS(accel),		F_FLOAT,	FFL_NONE },
-	{ "decel",			FOFS(decel),		F_FLOAT,	FFL_NONE },
-	{ "target",			FOFS(target),		F_LSTRING,	FFL_NONE },
-	{ "targetname",		FOFS(targetname),	F_LSTRING,	FFL_NONE },
-	{ "scripttarget",	FOFS(scripttarget),	F_LSTRING,	FFL_NONE },
-	{ "pathtarget",		FOFS(pathtarget),	F_LSTRING,	FFL_NONE },
-	{ "jumptarget",		FOFS(jumptarget),	F_LSTRING,	FFL_NONE },
-	{ "deathtarget",	FOFS(deathtarget),	F_LSTRING,	FFL_NONE },
-	{ "killtarget",		FOFS(killtarget),	F_LSTRING,	FFL_NONE },
-	{ "combattarget",	FOFS(combattarget),	F_LSTRING,	FFL_NONE },
-	{ "message",		FOFS(message),		F_LSTRING,	FFL_NONE },
-	{ "text_msg",		FOFS(text_msg),		F_LSTRING,	FFL_NONE },
-	{ "team",			FOFS(team),			F_LSTRING,	FFL_NONE },
-	{ "wait",			FOFS(wait),			F_FLOAT,	FFL_NONE },
-	{ "delay",			FOFS(delay),		F_FLOAT,	FFL_NONE },
-	{ "time",			FOFS(time),			F_FLOAT,	FFL_NONE },
-	{ "random",			FOFS(random),		F_FLOAT,	FFL_NONE },
-	{ "style",			FOFS(style),		F_INT,		FFL_NONE },
-	{ "count",			FOFS(count),		F_INT,		FFL_NONE },
-	{ "health",			FOFS(health),		F_INT,		FFL_NONE },
-	{ "skinnum",		FOFS(s.skinnum),	F_INT,		FFL_NONE },
-	{ "sounds",			FOFS(sounds),		F_INT,		FFL_NONE },
-	{ "light",			0,					F_IGNORE,	FFL_NONE },
-	{ "dmg",			FOFS(dmg),			F_INT,		FFL_NONE },
-	{ "angles",			FOFS(s.angles),		F_VECTOR,	FFL_NONE },
-	{ "angle",			FOFS(s.angles),		F_ANGLEHACK,FFL_NONE },
-	{ "mass",			FOFS(mass),			F_INT,		FFL_NONE },
-	{ "volume",			FOFS(volume),		F_FLOAT,	FFL_NONE },
-	{ "attenuation",	FOFS(attenuation),	F_FLOAT,	FFL_NONE },
-	{ "map",			FOFS(map),			F_LSTRING,	FFL_NONE },
-	{ "materialtype",	FOFS(materialtype),	F_INT,		FFL_NONE },
-	{ "scale",			FOFS(s.scale),		F_FLOAT,	FFL_NONE },
-	{ "color",			FOFS(s.color),		F_RGBA,		FFL_NONE },
-	{ "absLight",		FOFS(s.absLight),	F_RGB,		FFL_NONE },
-	{ "frame",			FOFS(s.frame),		F_INT,		FFL_NONE },
-	{ "mintel",			FOFS(mintel),		F_INT,		FFL_NONE },
-	{ "melee_range",	FOFS(melee_range),	F_FLOAT,	FFL_NONE },
-	{ "missile_range",			FOFS(missile_range),			F_FLOAT,	FFL_NONE },
-	{ "min_missile_range",		FOFS(min_missile_range),		F_FLOAT,	FFL_NONE },
-	{ "bypass_missile_chance",	FOFS(bypass_missile_chance),	F_INT,		FFL_NONE },
-	{ "jump_chance",			FOFS(jump_chance),				F_INT,		FFL_NONE },
-	{ "wakeup_distance",		FOFS(wakeup_distance),			F_FLOAT,	FFL_NONE },
-	{ "c_mode",			FOFS(monsterinfo.c_mode),	F_INT,		FFL_NONE }, //BUGFIX, kinda: 'F_INT, F_INT' in original logic.
-	{ "homebuoy",		FOFS(homebuoy),				F_LSTRING,	FFL_NONE },
-	{ "wakeup_target",	FOFS(wakeup_target),		F_LSTRING,	FFL_NONE },
-	{ "pain_target",	FOFS(pain_target),			F_LSTRING,	FFL_NONE },
+	{ "classname",		FOFS(classname),	F_LSTRING,	FFL_NONE, NULL },
+	{ "origin",			FOFS(s.origin),		F_VECTOR,	FFL_NONE, NULL },
+	{ "model",			FOFS(model),		F_LSTRING,	FFL_NONE, NULL },
+	{ "spawnflags",		FOFS(spawnflags),	F_INT,		FFL_NONE, NULL },
+	{ "speed",			FOFS(speed),		F_FLOAT,	FFL_NONE, NULL },
+	{ "accel",			FOFS(accel),		F_FLOAT,	FFL_NONE, NULL },
+	{ "decel",			FOFS(decel),		F_FLOAT,	FFL_NONE, NULL },
+	{ "target",			FOFS(target),		F_LSTRING,	FFL_NONE, NULL },
+	{ "targetname",		FOFS(targetname),	F_LSTRING,	FFL_NONE, NULL },
+	{ "scripttarget",	FOFS(scripttarget),	F_LSTRING,	FFL_NONE, NULL },
+	{ "pathtarget",		FOFS(pathtarget),	F_LSTRING,	FFL_NONE, NULL },
+	{ "jumptarget",		FOFS(jumptarget),	F_LSTRING,	FFL_NONE, NULL },
+	{ "deathtarget",	FOFS(deathtarget),	F_LSTRING,	FFL_NONE, NULL },
+	{ "killtarget",		FOFS(killtarget),	F_LSTRING,	FFL_NONE, NULL },
+	{ "combattarget",	FOFS(combattarget),	F_LSTRING,	FFL_NONE, NULL },
+	{ "message",		FOFS(message),		F_LSTRING,	FFL_NONE, NULL },
+	{ "text_msg",		FOFS(text_msg),		F_LSTRING,	FFL_NONE, NULL },
+	{ "team",			FOFS(team),			F_LSTRING,	FFL_NONE, NULL },
+	{ "wait",			FOFS(wait),			F_FLOAT,	FFL_NONE, NULL },
+	{ "delay",			FOFS(delay),		F_FLOAT,	FFL_NONE, NULL },
+	{ "time",			FOFS(time),			F_FLOAT,	FFL_NONE, NULL },
+	{ "random",			FOFS(random),		F_FLOAT,	FFL_NONE, NULL },
+	{ "style",			FOFS(style),		F_INT,		FFL_NONE, NULL },
+	{ "count",			FOFS(count),		F_INT,		FFL_NONE, NULL },
+	{ "health",			FOFS(health),		F_INT,		FFL_NONE, NULL },
+	{ "skinnum",		FOFS(s.skinnum),	F_INT,		FFL_NONE, NULL },
+	{ "sounds",			FOFS(sounds),		F_INT,		FFL_NONE, NULL },
+	{ "light",			0,					F_IGNORE,	FFL_NONE, NULL },
+	{ "dmg",			FOFS(dmg),			F_INT,		FFL_NONE, NULL },
+	{ "angles",			FOFS(s.angles),		F_VECTOR,	FFL_NONE, NULL },
+	{ "angle",			FOFS(s.angles),		F_ANGLEHACK,FFL_NONE, NULL },
+	{ "mass",			FOFS(mass),			F_INT,		FFL_NONE, NULL },
+	{ "volume",			FOFS(volume),		F_FLOAT,	FFL_NONE, NULL },
+	{ "attenuation",	FOFS(attenuation),	F_FLOAT,	FFL_NONE, NULL },
+	{ "map",			FOFS(map),			F_LSTRING,	FFL_NONE, NULL },
+	{ "materialtype",	FOFS(materialtype),	F_INT,		FFL_NONE, NULL },
+	{ "scale",			FOFS(s.scale),		F_FLOAT,	FFL_NONE, NULL },
+	{ "color",			FOFS(s.color),		F_RGBA,		FFL_NONE, NULL },
+	{ "absLight",		FOFS(s.absLight),	F_RGB,		FFL_NONE, NULL },
+	{ "frame",			FOFS(s.frame),		F_INT,		FFL_NONE, NULL },
+	{ "mintel",			FOFS(mintel),		F_INT,		FFL_NONE, NULL },
+	{ "melee_range",	FOFS(melee_range),	F_FLOAT,	FFL_NONE, NULL },
+	{ "missile_range",			FOFS(missile_range),			F_FLOAT,	FFL_NONE, NULL },
+	{ "min_missile_range",		FOFS(min_missile_range),		F_FLOAT,	FFL_NONE, NULL },
+	{ "bypass_missile_chance",	FOFS(bypass_missile_chance),	F_INT,		FFL_NONE, NULL },
+	{ "jump_chance",			FOFS(jump_chance),				F_INT,		FFL_NONE, NULL },
+	{ "wakeup_distance",		FOFS(wakeup_distance),			F_FLOAT,	FFL_NONE, NULL },
+	{ "c_mode",			FOFS(monsterinfo.c_mode),	F_INT,		FFL_NONE, NULL }, //BUGFIX, kinda: 'F_INT, F_INT' in original logic.
+	{ "homebuoy",		FOFS(homebuoy),				F_LSTRING,	FFL_NONE, NULL },
+	{ "wakeup_target",	FOFS(wakeup_target),		F_LSTRING,	FFL_NONE, NULL },
+	{ "pain_target",	FOFS(pain_target),			F_LSTRING,	FFL_NONE, NULL },
 
 	// Temporary spawn vars - only valid when the spawn function is called.
-	{ "lip",			STOFS(lip),				F_INT,		FFL_SPAWNTEMP },
-	{ "distance",		STOFS(distance),		F_INT,		FFL_SPAWNTEMP },
-	{ "height",			STOFS(height),			F_INT,		FFL_SPAWNTEMP },
-	{ "noise",			STOFS(noise),			F_LSTRING,	FFL_SPAWNTEMP },
-	{ "pausetime",		STOFS(pausetime),		F_FLOAT,	FFL_SPAWNTEMP },
-	{ "item",			STOFS(item),			F_LSTRING,	FFL_SPAWNTEMP },
-	{ "gravity",		STOFS(gravity),			F_LSTRING,	FFL_SPAWNTEMP },
-	{ "sky",			STOFS(sky),				F_LSTRING,	FFL_SPAWNTEMP },
-	{ "skyrotate",		STOFS(skyrotate),		F_FLOAT,	FFL_SPAWNTEMP },
-	{ "skyaxis",		STOFS(skyaxis),			F_VECTOR,	FFL_SPAWNTEMP },
-	{ "minyaw",			STOFS(minyaw),			F_FLOAT,	FFL_SPAWNTEMP },
-	{ "maxyaw",			STOFS(maxyaw),			F_FLOAT,	FFL_SPAWNTEMP },
-	{ "minpitch",		STOFS(minpitch),		F_FLOAT,	FFL_SPAWNTEMP },
-	{ "maxpitch",		STOFS(maxpitch),		F_FLOAT,	FFL_SPAWNTEMP },
-	{ "nextmap",		STOFS(nextmap),			F_LSTRING,	FFL_SPAWNTEMP },
-	{ "rotate",			STOFS(rotate),			F_INT,		FFL_SPAWNTEMP },
-	{ "target2",		FOFS(target2),			F_LSTRING,	FFL_NONE },
-	{ "pathtargetname",	FOFS(pathtargetname),	F_LSTRING,	FFL_NONE },
-	{ "zangle",			STOFS(zangle),			F_FLOAT,	FFL_SPAWNTEMP },
-	{ "file",			STOFS(file),			F_LSTRING,	FFL_SPAWNTEMP },
-	{ "radius",			STOFS(radius),			F_INT,		FFL_SPAWNTEMP },
-	{ "offensive",		STOFS(offensive),		F_INT,		FFL_SPAWNTEMP },
-	{ "defensive",		STOFS(defensive),		F_INT,		FFL_SPAWNTEMP },
-	{ "spawnflags2",	STOFS(spawnflags2),		F_INT,		FFL_SPAWNTEMP },
-	{ "cooptimeout",	STOFS(cooptimeout),		F_INT,		FFL_SPAWNTEMP },
+	{ "lip",			STOFS(lip),				F_INT,		FFL_SPAWNTEMP, NULL },
+	{ "distance",		STOFS(distance),		F_INT,		FFL_SPAWNTEMP, NULL },
+	{ "height",			STOFS(height),			F_INT,		FFL_SPAWNTEMP, NULL },
+	{ "noise",			STOFS(noise),			F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "pausetime",		STOFS(pausetime),		F_FLOAT,	FFL_SPAWNTEMP, NULL },
+	{ "item",			STOFS(item),			F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "gravity",		STOFS(gravity),			F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "sky",			STOFS(sky),				F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "skyrotate",		STOFS(skyrotate),		F_FLOAT,	FFL_SPAWNTEMP, NULL },
+	{ "skyaxis",		STOFS(skyaxis),			F_VECTOR,	FFL_SPAWNTEMP, NULL },
+	{ "minyaw",			STOFS(minyaw),			F_FLOAT,	FFL_SPAWNTEMP, NULL },
+	{ "maxyaw",			STOFS(maxyaw),			F_FLOAT,	FFL_SPAWNTEMP, NULL },
+	{ "minpitch",		STOFS(minpitch),		F_FLOAT,	FFL_SPAWNTEMP, NULL },
+	{ "maxpitch",		STOFS(maxpitch),		F_FLOAT,	FFL_SPAWNTEMP, NULL },
+	{ "nextmap",		STOFS(nextmap),			F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "rotate",			STOFS(rotate),			F_INT,		FFL_SPAWNTEMP, NULL },
+	{ "target2",		FOFS(target2),			F_LSTRING,	FFL_NONE, NULL },
+	{ "pathtargetname",	FOFS(pathtargetname),	F_LSTRING,	FFL_NONE, NULL },
+	{ "zangle",			STOFS(zangle),			F_FLOAT,	FFL_SPAWNTEMP, NULL },
+	{ "file",			STOFS(file),			F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "radius",			STOFS(radius),			F_INT,		FFL_SPAWNTEMP, NULL },
+	{ "offensive",		STOFS(offensive),		F_INT,		FFL_SPAWNTEMP, NULL },
+	{ "defensive",		STOFS(defensive),		F_INT,		FFL_SPAWNTEMP, NULL },
+	{ "spawnflags2",	STOFS(spawnflags2),		F_INT,		FFL_SPAWNTEMP, NULL },
+	{ "cooptimeout",	STOFS(cooptimeout),		F_INT,		FFL_SPAWNTEMP, NULL },
 
-	{ "script",			STOFS(script),			F_LSTRING,	FFL_SPAWNTEMP },
-	{ "parm1",			STOFS(parms[0]),		F_LSTRING,	FFL_SPAWNTEMP },
-	{ "parm2",			STOFS(parms[1]),		F_LSTRING,	FFL_SPAWNTEMP },
-	{ "parm3",			STOFS(parms[2]),		F_LSTRING,	FFL_SPAWNTEMP },
-	{ "parm4",			STOFS(parms[3]),		F_LSTRING,	FFL_SPAWNTEMP },
-	{ "parm5",			STOFS(parms[4]),		F_LSTRING,	FFL_SPAWNTEMP },
-	{ "parm6",			STOFS(parms[5]),		F_LSTRING,	FFL_SPAWNTEMP },
-	{ "parm7",			STOFS(parms[6]),		F_LSTRING,	FFL_SPAWNTEMP },
-	{ "parm8",			STOFS(parms[7]),		F_LSTRING,	FFL_SPAWNTEMP },
-	{ "parm9",			STOFS(parms[8]),		F_LSTRING,	FFL_SPAWNTEMP },
-	{ "parm10",			STOFS(parms[9]),		F_LSTRING,	FFL_SPAWNTEMP },
+	{ "script",			STOFS(script),			F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "parm1",			STOFS(parms[0]),		F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "parm2",			STOFS(parms[1]),		F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "parm3",			STOFS(parms[2]),		F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "parm4",			STOFS(parms[3]),		F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "parm5",			STOFS(parms[4]),		F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "parm6",			STOFS(parms[5]),		F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "parm7",			STOFS(parms[6]),		F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "parm8",			STOFS(parms[7]),		F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "parm9",			STOFS(parms[8]),		F_LSTRING,	FFL_SPAWNTEMP, NULL },
+	{ "parm10",			STOFS(parms[9]),		F_LSTRING,	FFL_SPAWNTEMP, NULL },
 
-	{ NULL, 0, F_INT, FFL_NONE } //BUGFIX: mxd. Added terminator field.
+	{ NULL, 0, F_INT, FFL_NONE, NULL } //BUGFIX: mxd. Added terminator field.
 };
 
 // -------- Just for savegames ----------
 // All pointer fields should be listed here, or savegames won't work properly (they will crash and burn).
 // This wasn't just tacked on to the fields array, because these don't need names, we wouldn't want map fields
 // using some of these, and if one were accidentally present twice, it would double swizzle (fuck) the pointer.
-static const field_t savefields[] =
+static field_t savefields[] =
 {
-	{ "", FOFS(classname),			F_LSTRING,	FFL_NONE },
-	{ "", FOFS(target),				F_LSTRING,	FFL_NONE },
-	{ "", FOFS(target2),			F_LSTRING,	FFL_NONE },
-	{ "", FOFS(targetname),			F_LSTRING,	FFL_NONE },
-	{ "", FOFS(scripttarget),		F_LSTRING,	FFL_NONE },
-	{ "", FOFS(killtarget),			F_LSTRING,	FFL_NONE },
-	{ "", FOFS(team),				F_LSTRING,	FFL_NONE },
-	{ "", FOFS(pathtarget),			F_LSTRING,	FFL_NONE },
-	{ "", FOFS(deathtarget),		F_LSTRING,	FFL_NONE },
-	{ "", FOFS(combattarget),		F_LSTRING,	FFL_NONE },
-	{ "", FOFS(model),				F_LSTRING,	FFL_NONE },
-	{ "", FOFS(map),				F_LSTRING,	FFL_NONE },
-	{ "", FOFS(message),			F_LSTRING,	FFL_NONE },
-	{ "", FOFS(client),				F_CLIENT,	FFL_NONE },
-	{ "", FOFS(item),				F_ITEM,		FFL_NONE },
-	{ "", FOFS(goalentity),			F_EDICT,	FFL_NONE },
-	{ "", FOFS(movetarget),			F_EDICT,	FFL_NONE },
-	{ "", FOFS(enemy),				F_EDICT,	FFL_NONE },
-	{ "", FOFS(oldenemy),			F_EDICT,	FFL_NONE },
-	{ "", FOFS(activator),			F_EDICT,	FFL_NONE },
-	{ "", FOFS(groundentity),		F_EDICT,	FFL_NONE },
-	{ "", FOFS(teamchain),			F_EDICT,	FFL_NONE },
-	{ "", FOFS(teammaster),			F_EDICT,	FFL_NONE },
-	{ "", FOFS(owner),				F_EDICT,	FFL_NONE },
-	{ "", FOFS(mynoise),			F_EDICT,	FFL_NONE },
-	{ "", FOFS(mynoise2),			F_EDICT,	FFL_NONE },
-	{ "", FOFS(target_ent),			F_EDICT,	FFL_NONE },
-	{ "", FOFS(chain),				F_EDICT,	FFL_NONE },
-	{ "", FOFS(blockingEntity),		F_EDICT,	FFL_NONE },
-	{ "", FOFS(last_buoyed_enemy),	F_EDICT,	FFL_NONE },
-	{ "", FOFS(placeholder),		F_EDICT,	FFL_NONE },
-	{ "", FOFS(fire_damage_enemy),	F_EDICT,	FFL_NONE },
+	{ "", FOFS(classname),			F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(target),				F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(target2),			F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(targetname),			F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(scripttarget),		F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(killtarget),			F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(team),				F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(pathtarget),			F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(deathtarget),		F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(combattarget),		F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(model),				F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(map),				F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(message),			F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(client),				F_CLIENT,	FFL_NONE, NULL },
+	{ "", FOFS(item),				F_ITEM,		FFL_NONE, NULL },
+	{ "", FOFS(goalentity),			F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(movetarget),			F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(enemy),				F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(oldenemy),			F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(activator),			F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(groundentity),		F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(teamchain),			F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(teammaster),			F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(owner),				F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(target_ent),			F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(chain),				F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(blockingEntity),		F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(last_buoyed_enemy),	F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(placeholder),		F_EDICT,	FFL_NONE, NULL },
+	{ "", FOFS(fire_damage_enemy),	F_EDICT,	FFL_NONE, NULL },
 
-	{ NULL, 0, F_INT, FFL_NONE }
+	//mxd. edict function pointers... Names ares set mainly for debugging purposes.
+	{ "isBlocking", FOFS(isBlocking),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "think", FOFS(think),							F_FUNCTION,	FFL_NONE, NULL },
+	{ "ai", FOFS(ai),								F_FUNCTION,	FFL_NONE, NULL },
+	{ "bounced", FOFS(bounced),						F_FUNCTION,	FFL_NONE, NULL },
+	{ "isBlocked", FOFS(isBlocked),					F_FUNCTION,	FFL_NONE, NULL },
+	{ "touch", FOFS(touch),							F_FUNCTION,	FFL_NONE, NULL },
+	{ "use", FOFS(use),								F_FUNCTION,	FFL_NONE, NULL },
+	{ "TriggerActivated", FOFS(TriggerActivated),	F_FUNCTION,	FFL_NONE, NULL },
+	{ "blocked", FOFS(blocked),						F_FUNCTION,	FFL_NONE, NULL },
+	{ "pain", FOFS(pain),							F_FUNCTION,	FFL_NONE, NULL },
+	{ "die", FOFS(die),								F_FUNCTION,	FFL_NONE, NULL },
+	{ "oldthink", FOFS(oldthink),					F_FUNCTION,	FFL_NONE, NULL },
+	{ "oldtouch", FOFS(oldtouch),					F_FUNCTION,	FFL_NONE, NULL },
+	{ "cant_attack_think", FOFS(cant_attack_think),	F_FUNCTION,	FFL_NONE, NULL },
+	{ "mood_think", FOFS(mood_think),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "pre_think", FOFS(pre_think),					F_FUNCTION,	FFL_NONE, NULL },
+	{ "post_think", FOFS(post_think),				F_FUNCTION,	FFL_NONE, NULL },
+
+	//mxd. edict.monsterinfo function pointers... Names ares set mainly for debugging purposes.
+	{ "monsterinfo.idle", FOFS(monsterinfo.idle),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.search", FOFS(monsterinfo.search),			F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.dodge", FOFS(monsterinfo.dodge),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.attack", FOFS(monsterinfo.attack),			F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.sight", FOFS(monsterinfo.sight),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.dismember", FOFS(monsterinfo.dismember),		F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.alert", FOFS(monsterinfo.alert),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.checkattack", FOFS(monsterinfo.checkattack),	F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.c_callback", FOFS(monsterinfo.c_callback),	F_FUNCTION,	FFL_NONE, NULL },
+
+	//mxd. edict.moveinfo function pointers...
+	{ "moveinfo.endfunc", FOFS(moveinfo.endfunc),	F_FUNCTION,	FFL_NONE, NULL },
+	
+	//mxd. mmove pointer...
+	{ "", FOFS(monsterinfo.currentmove),			F_ANIMMOVE,	FFL_NONE, NULL },
+
+	{ NULL, 0, F_INT, FFL_NONE, NULL }
 };
 
-static const field_t levelfields[] =
+static field_t levelfields[] =
 {
-	{ "", LLOFS(changemap),		F_LSTRING,	FFL_NONE },
-	{ "", LLOFS(sight_client),	F_EDICT,	FFL_NONE },
-	{ "", LLOFS(sight_entity),	F_EDICT,	FFL_NONE },
+	{ "", LLOFS(changemap),		F_LSTRING,	FFL_NONE, NULL },
+	{ "", LLOFS(sight_client),	F_EDICT,	FFL_NONE, NULL },
+	{ "", LLOFS(sight_entity),	F_EDICT,	FFL_NONE, NULL },
 
-	{ NULL, 0, F_INT, FFL_NONE }
+	{ NULL, 0, F_INT, FFL_NONE, NULL }
 };
 
-static const field_t bouyfields[] =
+static field_t bouyfields[] =
 {
-	{ "", BYOFS(pathtarget),	F_LSTRING,	FFL_NONE },
-	{ "", BYOFS(target),		F_LSTRING,	FFL_NONE },
-	{ "", BYOFS(targetname),	F_LSTRING,	FFL_NONE },
-	{ "", BYOFS(jump_target),	F_LSTRING,	FFL_NONE },
+	{ "", BYOFS(pathtarget),	F_LSTRING,	FFL_NONE, NULL },
+	{ "", BYOFS(target),		F_LSTRING,	FFL_NONE, NULL },
+	{ "", BYOFS(targetname),	F_LSTRING,	FFL_NONE, NULL },
+	{ "", BYOFS(jump_target),	F_LSTRING,	FFL_NONE, NULL },
 
-	{ NULL, 0, F_INT, FFL_NONE }
+	{ NULL, 0, F_INT, FFL_NONE, NULL }
 };
 
-static const field_t clientfields[] =
+static field_t clientfields[] =
 {
-	{ "", CLOFS(playerinfo.pers.weapon),		F_ITEM,	FFL_NONE },
-	{ "", CLOFS(playerinfo.pers.lastweapon),	F_ITEM,	FFL_NONE },
-	{ "", CLOFS(playerinfo.pers.defence),		F_ITEM,	FFL_NONE },
-	{ "", CLOFS(playerinfo.pers.lastdefence),	F_ITEM,	FFL_NONE },
-	{ "", CLOFS(playerinfo.pers.newweapon),		F_ITEM,	FFL_NONE },
+	{ "", CLOFS(playerinfo.pers.weapon),		F_ITEM,	FFL_NONE, NULL },
+	{ "", CLOFS(playerinfo.pers.lastweapon),	F_ITEM,	FFL_NONE, NULL },
+	{ "", CLOFS(playerinfo.pers.defence),		F_ITEM,	FFL_NONE, NULL },
+	{ "", CLOFS(playerinfo.pers.lastdefence),	F_ITEM,	FFL_NONE, NULL },
+	{ "", CLOFS(playerinfo.pers.newweapon),		F_ITEM,	FFL_NONE, NULL },
 
-	{ NULL, 0, F_INT, FFL_NONE }
+	{ NULL, 0, F_INT, FFL_NONE, NULL }
 };
 
 #pragma endregion
 
 #pragma region ========================== FIELDS IO ==========================
 
-static void ConvertField(const field_t* field, byte* base) //mxd. Named 'WriteField1' in original logic.
+// Helper function to get the human-readable function definition by an address.
+static func_map_t* GetFunctionByAddress(const byte* address) // YQ2
+{
+	for (int i = 0; funcs_list[i].name != NULL; i++)
+		if (funcs_list[i].address == address)
+			return &funcs_list[i];
+
+	return NULL;
+}
+
+// Helper function to get the pointer to a function by its human-readable name.
+static byte* GetFunctionByName(const char* name) // YQ2
+{
+	for (int i = 0; funcs_list[i].name != NULL; i++)
+		if (strcmp(name, funcs_list[i].name) == 0)
+			return funcs_list[i].address;
+
+	return NULL;
+}
+
+// Helper function to get the human-readable definition of an animmove_t struct by a pointer.
+static animmove_map_t* GetAnimMoveByAddress(const animmove_t* address) // YQ2
+{
+	for (int i = 0; mmoves_list[i].name != NULL; i++)
+		if (mmoves_list[i].address == address)
+			return &mmoves_list[i];
+
+	return NULL;
+}
+
+// Helper function to get the pointer to an animmove_t struct by a human-readable definition.
+static const animmove_t* GetAnimMoveByName(const char* name) // YQ2
+{
+	for (int i = 0; mmoves_list[i].name != NULL; i++)
+		if (strcmp(name, mmoves_list[i].name) == 0)
+			return mmoves_list[i].address;
+
+	return NULL;
+}
+
+static void ConvertField(field_t* field, byte* base) //mxd. Named 'WriteField1' in original logic.
 {
 	int len;
 	int index;
@@ -240,8 +316,54 @@ static void ConvertField(const field_t* field, byte* base) //mxd. Named 'WriteFi
 			*(int*)p = index;
 			break;
 
+		case F_FUNCTION: // YQ2
+			if (*(byte**)p == NULL)
+			{
+				len = 0;
+				field->extra.func_info = NULL;
+			}
+			else
+			{
+				field->extra.func_info = GetFunctionByAddress(*(byte**)p);
+
+				if (field->extra.func_info == NULL)
+				{
+					gi.error("ConvertField: %s func at %p not in the list, can't save game", field->name, *(byte**)p);
+					return;
+				}
+
+				len = (int)strlen(field->extra.func_info->name) + 1;
+				assert(len <= SAVE_FUNCNAME_MAX_LENGTH);
+			}
+
+			*(int*)p = len;
+			break;
+
+		case F_ANIMMOVE: // YQ2
+			if (*(byte**)p == NULL)
+			{
+				len = 0;
+				field->extra.amove_info = NULL;
+			}
+			else
+			{
+				field->extra.amove_info = GetAnimMoveByAddress(*(animmove_t**)p);
+
+				if (field->extra.amove_info == NULL)
+				{
+					gi.error("ConvertField: animmove_t at %p not in the list, can't save game", *(animmove_t**)p);
+					return;
+				}
+
+				len = (int)strlen(field->extra.amove_info->name) + 1;
+				assert(len <= SAVE_FUNCNAME_MAX_LENGTH);
+			}
+
+			*(int*)p = len;
+			break;
+
 		default:
-			gi.error("WriteEdict: unknown field type");
+			gi.error("ConvertField: unknown field type %i", field->type);
 			break;
 	}
 }
@@ -250,10 +372,41 @@ static void WriteField(FILE* f, const field_t* field, byte* base) //mxd. Named '
 {
 	void* p = &base[field->ofs];
 
-	if ((field->type == F_LSTRING || field->type == F_GSTRING) && *(char**)p != NULL)
+	switch (field->type)
 	{
-		const int len = (int)strlen(*(char**)p) + 1;
-		fwrite(*(char**)p, len, 1, f);
+		case F_LSTRING:
+		case F_GSTRING:
+			if (*(char**)p != NULL)
+			{
+				const int len = (int)strlen(*(char**)p) + 1;
+				fwrite(*(char**)p, len, 1, f);
+			}
+			break;
+
+		case F_FUNCTION: // YQ2
+			if (*(byte**)p != NULL)
+			{
+				const func_map_t* func = field->extra.func_info;
+				assert(func != NULL);
+
+				const int len = (int)strlen(func->name) + 1;
+				fwrite(func->name, len, 1, f);
+			}
+			break;
+
+		case F_ANIMMOVE: // YQ2
+			if (*(byte**)p != NULL)
+			{
+				const animmove_map_t* amove = field->extra.amove_info;
+				assert(amove != NULL);
+
+				const int len = (int)strlen(amove->name) + 1;
+				fwrite(amove->name, len, 1, f);
+			}
+			break;
+
+		default:
+			break;
 	}
 }
 
@@ -261,6 +414,7 @@ static void ReadField(FILE* f, const field_t* field, byte* base)
 {
 	int len;
 	int index;
+	char func_name[SAVE_FUNCNAME_MAX_LENGTH];
 
 	void* p = &base[field->ofs];
 
@@ -312,8 +466,66 @@ static void ReadField(FILE* f, const field_t* field, byte* base)
 				*(gitem_t**)p = &playerExport.p_itemlist[index];
 			break;
 
+		case F_FUNCTION:
+			len = *(int*)p;
+
+			if (len == 0)
+			{
+				*(byte**)p = NULL;
+			}
+			else
+			{
+				if (len > SAVE_FUNCNAME_MAX_LENGTH)
+				{
+					gi.error("ReadField: %s func name is longer than buffer (%i > %i)!", field->name, len, SAVE_FUNCNAME_MAX_LENGTH);
+					return;
+				}
+
+				if (fread(func_name, len, 1, f) != 1)
+				{
+					gi.error("ReadField: can't get %s func name!", field->name);
+					return;
+				}
+
+				func_name[SAVE_FUNCNAME_MAX_LENGTH - 1] = 0;
+				*(byte**)p = GetFunctionByName(func_name);
+
+				if (*(byte**)p == NULL)
+					gi.error("ReadField: %s func %s not found in table, can't load game!", field->name, func_name);
+			}
+			break;
+
+		case F_ANIMMOVE:
+			len = *(int*)p;
+
+			if (len == 0)
+			{
+				*(byte**)p = NULL;
+			}
+			else
+			{
+				if (len > SAVE_FUNCNAME_MAX_LENGTH)
+				{
+					gi.error("ReadField: animmove_t name is longer than buffer (%i > %i)!", len, SAVE_FUNCNAME_MAX_LENGTH);
+					return;
+				}
+
+				if (fread(func_name, len, 1, f) != 1)
+				{
+					gi.error("ReadField: can't get animmove_t name!");
+					return;
+				}
+
+				func_name[SAVE_FUNCNAME_MAX_LENGTH - 1] = 0;
+				*(const animmove_t**)p = GetAnimMoveByName(func_name);
+
+				if (*(animmove_t**)p == NULL)
+					gi.error("ReadField: animmove_t %s not found in table, can't load game!", func_name);
+			}
+			break;
+
 		default:
-			gi.error("ReadEdict: unknown field type");
+			gi.error("ReadField: unknown field type");
 			break;
 	}
 }
@@ -329,14 +541,14 @@ static void WriteClient(FILE* f, gclient_t* client)
 	gclient_t temp = *client;
 
 	// Change the pointers to lengths or indexes.
-	for (const field_t* field = &clientfields[0]; field->name != NULL; field++)
+	for (field_t* field = &clientfields[0]; field->name != NULL; field++)
 		ConvertField(field, (byte*)&temp);
 
 	// Write the block.
 	fwrite(&temp, sizeof(temp), 1, f);
 
 	// Now write any allocated data following the edict.
-	for (const field_t* field = &clientfields[0]; field->name != NULL; field++)
+	for (field_t* field = &clientfields[0]; field->name != NULL; field++)
 		WriteField(f, field, (byte*)client);
 }
 
@@ -345,7 +557,7 @@ static void ReadClient(FILE* f, gclient_t* client)
 {
 	fread(client, sizeof(*client), 1, f);
 
-	for (const field_t* field = &clientfields[0]; field->name != NULL; field++)
+	for (field_t* field = &clientfields[0]; field->name != NULL; field++)
 		ReadField(f, field, (byte*)client);
 }
 
@@ -410,6 +622,7 @@ void ReadGame(char* filename)
 
 	char save_ver[16];
 	fread(save_ver, sizeof(save_ver), 1, f);
+	save_ver[ARRAY_SIZE(save_ver) - 1] = 0;
 
 	if (strcmp(save_ver, H2R_SAVE_VERSION) != 0) //mxd. Use save version instead of build date.
 	{
@@ -446,7 +659,7 @@ static void WriteEdict(FILE* f, edict_t* ent)
 	edict_t temp = *ent;
 
 	// Change the pointers to lengths or indexes.
-	for (const field_t* field = &savefields[0]; field->name != NULL; field++)
+	for (field_t* field = &savefields[0]; field->name != NULL; field++)
 		ConvertField(field, (byte*)&temp);
 
 	// Write the block.
@@ -498,11 +711,11 @@ static void WriteLevelLocals(FILE* f)
 	temp = level;
 
 	// Change the pointers to lengths or indexes.
-	for (const field_t* field = &levelfields[0]; field->name != NULL; field++)
+	for (field_t* field = &levelfields[0]; field->name != NULL; field++)
 		ConvertField(field, (byte*)&temp);
 
 	for (int i = 0; i < level.active_buoys; i++)
-		for (const field_t* field = &bouyfields[0]; field->name != NULL; field++)
+		for (field_t* field = &bouyfields[0]; field->name != NULL; field++)
 			ConvertField(field, (byte*)&temp.buoy_list[i]);
 
 	// Write the block.

@@ -8,5 +8,9 @@
 
 #include "g_Edict.h"
 
-void SP_monster_seraph_overlord(edict_t* self);
-void SeraphOverlordStaticsInit(void);
+extern void SP_monster_seraph_overlord(edict_t* self);
+extern void SeraphOverlordStaticsInit(void);
+
+//mxd. Required by save system...
+extern qboolean SeraphAlert(edict_t* self, alertent_t* alerter, edict_t* enemy);
+extern void SeraphDismember(edict_t* self, int damage, HitLocation_t hl);

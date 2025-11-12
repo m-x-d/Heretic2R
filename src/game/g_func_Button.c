@@ -13,13 +13,13 @@
 
 #define SF_TOUCH	1 //mxd
 
-static void FuncButtonDone(edict_t* self) //mxd. Named 'button_done' in original logic.
+void FuncButtonDone(edict_t* self) //mxd. Named 'button_done' in original logic.
 {
 	self->moveinfo.state = STATE_BOTTOM;
 	self->s.frame = 0;
 }
 
-static void FuncButtonReturn(edict_t* self) //mxd. Named 'button_return' in original logic.
+void FuncButtonReturn(edict_t* self) //mxd. Named 'button_return' in original logic.
 {
 	self->moveinfo.state = STATE_DOWN;
 	MoveCalc(self, self->moveinfo.start_origin, FuncButtonDone);
@@ -29,7 +29,7 @@ static void FuncButtonReturn(edict_t* self) //mxd. Named 'button_return' in orig
 		self->takedamage = DAMAGE_YES;
 }
 
-static void FuncButtonWait(edict_t* self) //mxd. Named 'button_wait' in original logic.
+void FuncButtonWait(edict_t* self) //mxd. Named 'button_wait' in original logic.
 {
 	self->moveinfo.state = STATE_TOP;
 	G_UseTargets(self, self->activator);
@@ -54,13 +54,13 @@ static void FuncButtonMove(edict_t* self) //mxd. Named 'button_fire' in original
 	MoveCalc(self, self->moveinfo.end_origin, FuncButtonWait);
 }
 
-static void FuncButtonUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'button_use' in original logic.
+void FuncButtonUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'button_use' in original logic.
 {
 	self->activator = activator;
 	FuncButtonMove(self);
 }
 
-static void FuncButtonTouch(edict_t* self, trace_t* trace) //mxd. Named 'button_touch' in original logic.
+void FuncButtonTouch(edict_t* self, trace_t* trace) //mxd. Named 'button_touch' in original logic.
 {
 	edict_t* other = trace->ent;
 

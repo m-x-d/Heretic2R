@@ -172,5 +172,45 @@ extern void SP_obj_web(edict_t* self);
 extern void SP_obj_larva(edict_t* self);
 extern void SP_obj_bloodsplat(edict_t* self);
 
-//mxd. Local forward declarations for g_obj.c:
-static void ObjTortureIronmaidenTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf); //TODO: move to header.
+//mxd. Required by save system...
+extern void ObjBarrelDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point);
+extern void ObjBarrelExplodeThink(edict_t* self);
+extern void ObjBiotankContentsAnimThink(edict_t* self);
+extern void ObjBiotankTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
+extern void ObjCactus4CloseThink(edict_t* self);
+extern void ObjCactus4OpenThink(edict_t* self);
+extern void ObjCactus4Use(edict_t* self, edict_t* other, edict_t* activator);
+extern void ObjCactusTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
+extern void ObjChest1AnimThink(edict_t* self);
+extern void ObjChest1Use(edict_t* self, edict_t* other, edict_t* activator);
+extern void ObjCog1AnimThink(edict_t* self);
+extern void ObjCog1Use(edict_t* self, edict_t* other, edict_t* activator);
+extern void ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point);
+extern void ObjDyingElfIdle(edict_t* self);
+extern void ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damage);
+extern void ObjDyingElfReachAnim(edict_t* self);
+extern void ObjDyingElfTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
+extern void ObjHangingOgleMoanThink(edict_t* self);
+extern void ObjHivePriestessSymbolThink(edict_t* self);
+extern void ObjHivePriestessSymbolUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void ObjLarvaAnimThink(edict_t* self);
+extern void ObjLarvaTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
+extern void ObjLeverDownThink(edict_t* self);
+extern void ObjLeverUpThink(edict_t* self);
+extern void ObjLeverUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void ObjSeasonglobeBottomThink(edict_t* self);
+extern void ObjSeasonglobeBottomUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void ObjSeasonglobeTopThink(edict_t* self);
+extern void ObjSeasonglobeTopUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void ObjSpellbookAnimThink(edict_t* self);
+extern void ObjSpellbookUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void ObjStatueSsithraGuardThink(edict_t* self);
+extern void ObjStatueSsithraGuardUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void ObjStatueTchecktrikBustUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void ObjStatueTecheckrikTombUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void ObjStatueTecheckrikUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void ObjTortureIronmaidenClose(edict_t* self);
+extern void ObjTortureIronmaidenOpen(edict_t* self);
+extern void ObjTortureIronmaidenTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
+extern void ObjTortureIronmaidenUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void PushableObjectTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);

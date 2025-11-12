@@ -6,6 +6,7 @@
 
 #include "c_dranor_anim.h"
 #include "c_ai.h"
+#include "g_local.h"
 
 // Dranor idle 1.
 static const animframe_t dranor_frames_c_idle1[] =

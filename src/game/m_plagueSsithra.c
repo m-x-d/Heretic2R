@@ -8,6 +8,7 @@
 #include "m_plaguesSithra.h"
 #include "m_plaguesSithra_shared.h"
 #include "m_plaguesSithra_anim.h"
+#include "m_plaguesSithra_moves.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_obj.h" //mxd
@@ -774,7 +775,7 @@ static void SsithraForwardJump(edict_t* self) //mxd. Named 'ssithraJumpEvade' in
 	SetAnim(self, ANIM_FJUMP);
 }
 
-static qboolean SsithraAlert(edict_t* self, alertent_t* alerter, edict_t* enemy) //mxd. Named 'ssithraAlerted' in original logic.
+qboolean SsithraAlert(edict_t* self, alertent_t* alerter, edict_t* enemy) //mxd. Named 'ssithraAlerted' in original logic.
 {
 	// Not looking around, not a sound-alert.
 	if (self->alert_time < level.time && !(alerter->alert_svflags & SVF_ALERT_NO_SHADE) && SKILL < SKILL_VERYHARD && !(self->monsterinfo.aiflags & AI_NIGHTVISION) && enemy->light_level < irand(6, 77))
@@ -1193,7 +1194,7 @@ static void SsithraVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void SsithraBlocked(edict_t* self, trace_t* trace) //mxd. Named 'ssithra_blocked' in original logic.
+void SsithraBlocked(edict_t* self, trace_t* trace) //mxd. Named 'ssithra_blocked' in original logic.
 {
 	if (trace->ent == NULL || trace->ent->movetype == PHYSICSTYPE_NONE || trace->ent->movetype == PHYSICSTYPE_PUSH)
 		return;
@@ -1215,7 +1216,7 @@ static void SsithraBlocked(edict_t* self, trace_t* trace) //mxd. Named 'ssithra_
 		ssithra_jump(self, 150.0f, 200.0f, 0.0f);
 }
 
-static void SsithraSlideFallThink(edict_t* self) //mxd. Named 'ssithraSlideFall' in original logic.
+void SsithraSlideFallThink(edict_t* self) //mxd. Named 'ssithraSlideFall' in original logic.
 {
 	if (self->mins[2] < 0.0f)
 	{
@@ -1239,7 +1240,7 @@ static void SsithraSlideFallThink(edict_t* self) //mxd. Named 'ssithraSlideFall'
 	}
 }
 
-static void SsithraSlideOffThink(edict_t* self) //mxd. Named 'ssithraSlideOff' in original logic.
+void SsithraSlideOffThink(edict_t* self) //mxd. Named 'ssithraSlideOff' in original logic.
 {
 	vec3_t right;
 	AngleVectors(self->s.angles, NULL, right, NULL);
@@ -1421,7 +1422,7 @@ static void SsithraThrowLeg(edict_t* self, const float damage, int* throw_nodes,
 	}
 }
 
-static void SsithraDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'ssithra_dismember' in original logic.
+void SsithraDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'ssithra_dismember' in original logic.
 {
 	//FIXME: make part fly dir the vector from hit loc to sever loc.
 	qboolean dismember_ok = false;
@@ -1535,7 +1536,7 @@ static void SsithraDismember(edict_t* self, int damage, HitLocation_t hl) //mxd.
 	}
 }
 
-static void SsithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'ssithraArrowTouch' in original logic.
+void SsithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'ssithraArrowTouch' in original logic.
 {
 	if (surface != NULL && (surface->flags & SURF_SKY))
 	{
@@ -1572,7 +1573,7 @@ static void SsithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 	G_FreeEdict(self);
 }
 
-static void SsithraArrowExplodeThink(edict_t* self) //mxd. Named 'ssithraArrowExplode' in original logic.
+void SsithraArrowExplodeThink(edict_t* self) //mxd. Named 'ssithraArrowExplode' in original logic.
 {
 	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MSSITHRA_EXPLODE, self->movedir);
 
@@ -1582,7 +1583,7 @@ static void SsithraArrowExplodeThink(edict_t* self) //mxd. Named 'ssithraArrowEx
 	G_FreeEdict(self);
 }
 
-static void SsithraDuckArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'ssithraDuckArrowTouch' in original logic.
+void SsithraDuckArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'ssithraDuckArrowTouch' in original logic.
 {
 	if (surface != NULL && (surface->flags & SURF_SKY))
 	{

@@ -188,7 +188,7 @@ void G_PlayerActionShrineEffect(const playerinfo_t* playerinfo)
 }
 
 // Wait till we can use this shrine again.
-static void DelayThink(edict_t* self)
+void ShrineDelayThink(edict_t* self) //mxd. Named 'DelayThink' in original logic.
 {
 	// Handle changing shrine types in deathmatch.
 	if (DEATHMATCH)
@@ -241,7 +241,7 @@ static void UpdateShrineNode(edict_t* self) //mxd. Named 'deal_with_shrine_node'
 		delay->svflags |= SVF_NOCLIENT;
 		delay->movetype = PHYSICSTYPE_NONE;
 		delay->solid = SOLID_NOT;
-		delay->think = DelayThink;
+		delay->think = ShrineDelayThink;
 		delay->owner = self;
 		delay->oldtouch = self->touch;
 		delay->classname = delay_text; //TODO: is this ever used?..
@@ -342,7 +342,7 @@ static void ShrineHealCore(edict_t* other) //mxd. Named 'shrine_heal_core' in or
 }
 
 // Fire off a heal effect and give us some health.
-static void ShrineHealTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_heal_touch' in original version.
+void ShrineHealTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_heal_touch' in original version.
 {
 	// If we aren't a player, forget it.
 	if (other->client == NULL)
@@ -426,7 +426,7 @@ static void ShrineArmorSilverCore(edict_t* other) //mxd. Named 'shrine_armor_sil
 }
 
 // Fire off an effect and give us some armor.
-static void ShrineArmorSilverTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_armor_silver_touch' in original version.
+void ShrineArmorSilverTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_armor_silver_touch' in original version.
 {
 	// If we aren't a player, forget it.
 	if (other->client == NULL)
@@ -508,7 +508,7 @@ static void ShrineArmorGoldCore(edict_t* other) //mxd. Named 'shrine_armor_gold_
 }
 
 // Fire off an effect and give us some armor.
-static void ShrineArmorGoldTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_armor_gold_touch' in original version.
+void ShrineArmorGoldTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_armor_gold_touch' in original version.
 {
 	//  If we aren't a player, forget it.
 	if (other->client == NULL)
@@ -601,7 +601,7 @@ static void ShrineStaffCore(edict_t* other) //mxd. Named 'shrine_staff_core' in 
 }
 
 // Fire off an effect and give us a staff powerup.
-static void ShrineStaffTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_staff_touch' in original version.
+void ShrineStaffTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_staff_touch' in original version.
 {
 	// If we aren't a player, forget it.
 	if (other->client == NULL)
@@ -673,7 +673,7 @@ static void ShrineLungsCore(edict_t* other) //mxd. Named 'shrine_lung_core' in o
 }
 
 // Fire off an effect and give us lung power.
-static void ShrineLungsTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_lung_touch' in original version.
+void ShrineLungsTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_lung_touch' in original version.
 {
 	// If we aren't a player, forget it.
 	if (other->client == NULL)
@@ -757,7 +757,7 @@ static void ShrineLightCore(edict_t* other) //mxd. Named 'shrine_light_core' in 
 }
 
 // Fire off an effect and give us some light.
-static void ShrineLightTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_light_touch' in original version.
+void ShrineLightTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_light_touch' in original version.
 {
 	// If we aren't a player, forget it.
 	if (other->client == NULL)
@@ -830,7 +830,7 @@ static void ShrineManaCore(edict_t* other) //mxd. Named 'shrine_mana_core' in or
 }
 
 // We hit the mana shrine pad, give us some manna, do the animation.
-static void ShrineManaTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_mana_touch' in original version.
+void ShrineManaTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_mana_touch' in original version.
 {
 	// If we aren't a player, forget it.
 	if (other->client == NULL)
@@ -907,7 +907,7 @@ static void ShrineGhostCore(edict_t* other) //mxd. Named 'shrine_ghost_core' in 
 }
 
 // Fire off an effect and give us a ghosting for a while powerup.
-static void ShrineGhostTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_ghost_touch' in original version.
+void ShrineGhostTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_ghost_touch' in original version.
 {
 	// If we aren't a player, forget it.
 	if (other->client == NULL)
@@ -984,7 +984,7 @@ static void ShrineReflectCore(edict_t* other) //mxd. Named 'shrine_reflect_core'
 }
 
 // Fire off an effect and give us a reflecting for a while powerup.
-static void ShrineReflectTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_reflect_touch' in original version.
+void ShrineReflectTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_reflect_touch' in original version.
 {
 	// If we aren't a player, forget it.
 	if (other->client == NULL)
@@ -1068,7 +1068,7 @@ static void ShrinePowerupCore(edict_t* other) //mxd. Named 'shrine_powerup_core'
 	ShrineRestorePlayer(other);
 }
 
-static void ShrinePowerupTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_powerup_touch' in original version.
+void ShrinePowerupTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_powerup_touch' in original version.
 {
 	// If we aren't a player, forget it.
 	if (other->client == NULL)
@@ -1149,7 +1149,7 @@ static void ShrineSpeedCore(edict_t* other) //mxd. Named 'shrine_speed_core' in 
 	ShrineRestorePlayer(other);
 }
 
-static void ShrineSpeedTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_speed_touch' in original version.
+void ShrineSpeedTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_speed_touch' in original version.
 {
 	// If we aren't a player, forget it.
 	if (other->client == NULL)
@@ -1198,7 +1198,7 @@ void SP_shrine_speed_trigger(edict_t* ent) //mxd. Named 'shrine_speed' in origin
 #pragma region ========================== RANDOM SHRINE ==========================
 
 // Fire off an effect and give us a powerup for a while powerup.
-static void ShrineRandomTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_random_touch' in original version.
+void ShrineRandomTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_random_touch' in original version.
 {
 	// If we aren't a player, forget it!
 	if (other->client == NULL)

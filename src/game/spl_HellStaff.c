@@ -20,7 +20,7 @@
 // Radius of zero seems to prevent collision between bolts.
 #define HELLBOLT_RADIUS		0.0f
 
-static void HellboltTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+void HellboltTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	// Did we hit the sky? 
 	if (surface != NULL && (surface->flags & SURF_SKY))
@@ -62,7 +62,7 @@ static void HellboltTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfa
 	G_FreeEdict(self); //mxd. G_SetToFree() in original logic. Fixes client effect/dynamic light staying active for 100 ms. after this.
 }
 
-static void HellboltThink(edict_t* self)
+void HellboltThink(edict_t* self)
 {
 	// Prevent any further transmission of this entity to clients.
 	self->svflags |= SVF_NOCLIENT;

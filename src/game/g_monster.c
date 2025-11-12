@@ -419,7 +419,7 @@ void M_Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'mons
 	AI_FoundTarget(self, true);
 }
 
-static void M_TriggeredSpawnThink(edict_t* self) //mxd. Named 'monster_triggered_spawn' in original logic.
+void M_TriggeredSpawnThink(edict_t* self) //mxd. Named 'monster_triggered_spawn' in original logic.
 {
 	self->s.origin[2] += 1.0f;
 	KillBox(self);
@@ -452,7 +452,7 @@ static void M_TriggeredSpawnThink(edict_t* self) //mxd. Named 'monster_triggered
 	}
 }
 
-static void M_TriggeredSpawnUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'monster_triggered_spawn_use' in original logic.
+void M_TriggeredSpawnUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'monster_triggered_spawn_use' in original logic.
 {
 	// We have a one frame delay here so we don't telefrag the guy who activated us.
 	self->spawnflags &= ~MSF_ASLEEP;
@@ -798,7 +798,7 @@ qboolean M_WalkmonsterStart(edict_t* self) //mxd. Named 'walkmonster_start' in o
 	return M_Start(self);
 }
 
-static void M_FlymonsterStartGo(edict_t* self) //mxd. Named 'flymonster_start_go' in original logic.
+void M_FlymonsterStartGo(edict_t* self) //mxd. Named 'flymonster_start_go' in original logic.
 {
 	if (!M_walkmove(self, 0.0f, 0.0f))
 		gi.dprintf("%s in solid at %s\n", self->classname, vtos(self->s.origin));
@@ -1341,7 +1341,7 @@ void DismemberMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'MG_parse
 }
 
 // Generic monster reaction to being alerted.
-static qboolean GenericMonsterAlerted(edict_t* self, alertent_t* alerter, edict_t* enemy) // I don't understand why I get a warning here...
+qboolean GenericMonsterAlerted(edict_t* self, alertent_t* alerter, edict_t* enemy) // I don't understand why I get a warning here...
 {
 	// Not already alerted?
 	if (self->alert_time < level.time && SKILL < SKILL_VERYHARD && !(alerter->alert_svflags & SVF_ALERT_NO_SHADE) && !(self->monsterinfo.aiflags & AI_NIGHTVISION))
@@ -1432,7 +1432,7 @@ void M_ShowLifeMeter(const int value, const int max_value) //mxd. Removed unused
 	}
 }
 
-static void M_DeadBobThink(edict_t* self) //mxd. Named 'fish_deadbob' (in m_fish.c) in original logic.
+void M_DeadBobThink(edict_t* self) //mxd. Named 'fish_deadbob' (in m_fish.c) in original logic.
 {
 	if (self->velocity[2] > 0.0f)
 	{

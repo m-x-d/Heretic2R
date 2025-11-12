@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "g_local.h"
-
 #pragma region ========================== Model definitions ==========================
 
 #define FRAME_poly000         	0
@@ -53,8 +51,6 @@ typedef enum AnimID_e
 {
 	ANIM_C_IDLE1,
 	ANIM_C_IDLE2,
+
 	NUM_ANIMS
 } AnimID_t;
-
-extern const animmove_t tome_move_c_idle1;
-extern const animmove_t tome_move_c_idle2;

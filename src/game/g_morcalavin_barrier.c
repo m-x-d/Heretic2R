@@ -11,7 +11,7 @@
 #include "Vector.h"
 #include "g_local.h"
 
-static void MorcalavinBarrierThink(edict_t* self) //mxd. Named 'morcalavin_barrier_think' in original logic.
+void MorcalavinBarrierThink(edict_t* self) //mxd. Named 'morcalavin_barrier_think' in original logic.
 {
 	// If we haven't found an owner yet, find one.
 	if (self->owner == NULL)
@@ -48,7 +48,7 @@ static void MorcalavinBarrierThink(edict_t* self) //mxd. Named 'morcalavin_barri
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void MorcalavinBarrierTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'morcalavin_barrier_touch' in original logic.
+void MorcalavinBarrierTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'morcalavin_barrier_touch' in original logic.
 {
 	if (strcmp(other->classname, "player") != 0 || !self->morcalavin_barrier_enabled) //TODO: check other->client instead?
 		return;
@@ -74,7 +74,7 @@ static void MorcalavinBarrierTouch(edict_t* self, edict_t* other, cplane_t* plan
 	}
 }
 
-static void MorcalavinBarrierUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'morcalavin_barrier_use' in original logic.
+void MorcalavinBarrierUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'morcalavin_barrier_use' in original logic.
 {
 	self->svflags &= ~SVF_NOCLIENT; // Become visible again.
 	self->use = NULL; // Never do this again.

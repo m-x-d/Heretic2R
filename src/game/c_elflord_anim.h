@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "g_local.h"
-
 #pragma region ========================== Model definitions ==========================
 
 #define FRAME_death1          	0
@@ -517,12 +515,6 @@ typedef enum AnimID_e
 	ANIM_C_IDLE1,
 	ANIM_C_IDLE2,
 	ANIM_C_GIB1,
+
 	NUM_ANIMS
 } AnimID_t;
-
-extern const animmove_t elflord_move_c_action1;
-extern const animmove_t elflord_move_c_action2;
-extern const animmove_t elflord_move_c_death1;
-extern const animmove_t elflord_move_c_death2;
-extern const animmove_t elflord_move_c_idle1;
-extern const animmove_t elflord_move_c_idle2;

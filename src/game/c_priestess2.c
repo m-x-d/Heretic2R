@@ -6,6 +6,7 @@
 
 #include "c_priestess2.h"
 #include "c_priestess2_anim.h"
+#include "c_priestess2_moves.h"
 #include "c_ai.h"
 #include "Utilities.h"
 #include "Vector.h"

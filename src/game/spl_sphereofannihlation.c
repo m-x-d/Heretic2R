@@ -38,7 +38,7 @@
 #define SPHERE_WATCHER_EXPLOSION_RADIUS_MIN	50.0f
 #define SPHERE_WATCHER_EXPLOSION_RADIUS_MAX	200.0f
 
-static void SphereExplodeThink(edict_t* self)
+void SphereExplodeThink(edict_t* self)
 {
 	edict_t* ent = NULL;
 
@@ -60,7 +60,7 @@ static void SphereExplodeThink(edict_t* self)
 		G_SetToFree(self);
 }
 
-static void SphereOfAnnihilationTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+void SphereOfAnnihilationTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	// Has the target got reflection turned on?
 	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
@@ -116,7 +116,7 @@ static void SphereOfAnnihilationTouch(edict_t* self, edict_t* other, cplane_t* p
 	SphereExplodeThink(explosion);
 }
 
-static void SphereOfAnnihilationGrowThink(edict_t* self)
+void SphereOfAnnihilationGrowThink(edict_t* self)
 {
 	vec3_t forward;
 	vec3_t up;
@@ -198,7 +198,7 @@ static void SphereOfAnnihilationGrowThink(edict_t* self)
 	}
 }
 
-static void SpherePowerLaserThink(edict_t* self)
+void SpherePowerLaserThink(edict_t* self)
 {
 	static const vec3_t min = { -16.0f, -16.0f, -16.0f }; //mxd. Made static.
 	static const vec3_t max = {  16.0f,  16.0f,  16.0f }; //mxd. Made static.
@@ -302,12 +302,12 @@ static void SpherePowerLaserThink(edict_t* self)
 		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void SpherePowerLaserTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+void SpherePowerLaserTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	G_SetToFree(self);
 }
 
-static void SphereOfAnnihilationGrowThinkPower(edict_t* self)
+void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 {
 	vec3_t forward;
 	vec3_t right;
@@ -435,7 +435,7 @@ edict_t* SphereReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return sphere;
 }
 
-static void SphereWatcherFlyThink(edict_t* self)
+void SphereWatcherFlyThink(edict_t* self)
 {
 	if (++self->count > 20)
 		G_SetToFree(self); // End the circling...
@@ -443,7 +443,7 @@ static void SphereWatcherFlyThink(edict_t* self)
 		self->nextthink = level.time + 0.2f;
 }
 
-static void SphereWatcherGrowThink(edict_t* self)
+void SphereWatcherGrowThink(edict_t* self)
 {
 	vec3_t forward;
 	vec3_t up;
@@ -532,7 +532,7 @@ static edict_t* SphereWatcherReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return sphere;
 }
 
-static void SphereWatcherTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+void SphereWatcherTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	// Has the target got reflection turned on?
 	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))

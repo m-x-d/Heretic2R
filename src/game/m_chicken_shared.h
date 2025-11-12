@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "g_local.h" //mxd
+#include "g_Edict.h"
 
 typedef enum AnimID_e
 {
@@ -54,37 +54,8 @@ typedef enum SoundID_e
 	NUM_SOUNDS
 } SoundID_t;
 
-extern const animmove_t chicken_move_stand1;
-extern const animmove_t chicken_move_walk;
-extern const animmove_t chicken_move_run;
-extern const animmove_t chicken_move_cluck;
-extern const animmove_t chicken_move_attack;
-extern const animmove_t chicken_move_eat;
-extern const animmove_t chicken_move_jump;
-
-// Dummy animmoves to catch sequence leaks.
-extern const animmove_t chickenp_move_dummy;
-
-extern const animmove_t chickenp_move_stand;
-extern const animmove_t chickenp_move_stand1;
-extern const animmove_t chickenp_move_stand2;
-extern const animmove_t chickenp_move_walk;
-extern const animmove_t chickenp_move_run;
-extern const animmove_t chickenp_move_back;
-extern const animmove_t chickenp_move_runb;
-extern const animmove_t chickenp_move_bite;
-extern const animmove_t chickenp_move_strafel;
-extern const animmove_t chickenp_move_strafer;
-extern const animmove_t chickenp_move_jump;
-extern const animmove_t chickenp_move_wjump;
-extern const animmove_t chickenp_move_wjumpb;
-extern const animmove_t chickenp_move_rjump;
-extern const animmove_t chickenp_move_rjumpb;
-extern const animmove_t chickenp_move_jump_loop;
-extern const animmove_t chickenp_move_attack;
-
-void chicken_pause(edict_t* self);
-void chicken_check_unmorph(edict_t* self);
-void chicken_eat_again(edict_t* self);
-void chicken_bite(edict_t* self);
-void chicken_sound(edict_t* self, float channel, float sound_index, float attenuation);
+extern void chicken_pause(edict_t* self);
+extern void chicken_check_unmorph(edict_t* self);
+extern void chicken_eat_again(edict_t* self);
+extern void chicken_bite(edict_t* self);
+extern void chicken_sound(edict_t* self, float channel, float sound_index, float attenuation);

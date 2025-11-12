@@ -6,6 +6,7 @@
 
 #include "c_tome_anim.h"
 #include "c_ai.h"
+#include "g_local.h"
 
 // Tome of Power idle 1.
 static const animframe_t tome_frames_c_idle1[] =

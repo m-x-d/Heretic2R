@@ -17,7 +17,7 @@
 #define SF_TRAIN_HAS_ORIGIN		8 //mxd
 #define SF_TRAIN_NO_CLIP		16 //mxd
 
-static void FuncTrainAnim(edict_t* self) //mxd. Named 'train_anim' in original logic.
+void FuncTrainAnim(edict_t* self) //mxd. Named 'train_anim' in original logic.
 {
 	if (self->s.frame == 0 && self->moveinfo.sound_middle > 0) // Start sound if there is one.
 		gi.sound(self, CHAN_VOICE, self->moveinfo.sound_middle, 1.0f, ATTN_NORM, 0.0f);
@@ -34,7 +34,7 @@ static void FuncTrainAnim(edict_t* self) //mxd. Named 'train_anim' in original l
 	}
 }
 
-static void FuncTrainAnimBackwards(edict_t* self) //mxd. Named 'train_animbackwards' in original logic.
+void FuncTrainAnimBackwards(edict_t* self) //mxd. Named 'train_animbackwards' in original logic.
 {
 	if (self->s.frame + 1 == self->count && self->moveinfo.sound_middle > 0) // Start sound if there is one.
 		gi.sound(self, CHAN_VOICE, self->moveinfo.sound_middle, 1.0f, ATTN_NORM, 0.0f);
@@ -51,7 +51,7 @@ static void FuncTrainAnimBackwards(edict_t* self) //mxd. Named 'train_animbackwa
 	}
 }
 
-static void FuncTrainBlocked(edict_t* self, edict_t* other) //mxd. Named 'train_blocked' in original logic.
+void FuncTrainBlocked(edict_t* self, edict_t* other) //mxd. Named 'train_blocked' in original logic.
 {
 	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_BOSS))
 	{
@@ -69,7 +69,7 @@ static void FuncTrainBlocked(edict_t* self, edict_t* other) //mxd. Named 'train_
 	}
 }
 
-static void FuncTrainWait(edict_t* self) //mxd. Named 'train_wait' in original logic.
+void FuncTrainWait(edict_t* self) //mxd. Named 'train_wait' in original logic.
 {
 	if (self->target_ent->moveinfo.sound_middle > 0)
 		gi.sound(self->target_ent, CHAN_VOICE, self->target_ent->moveinfo.sound_middle, 1.0f, ATTN_NORM, 0.0f);
@@ -123,7 +123,7 @@ static void FuncTrainWait(edict_t* self) //mxd. Named 'train_wait' in original l
 	}
 }
 
-static void FuncTrainNext(edict_t* self) //mxd. Named 'train_next' in original logic.
+void FuncTrainNext(edict_t* self) //mxd. Named 'train_next' in original logic.
 {
 	for (int i = 0; i < 2; i++)
 	{
@@ -204,11 +204,11 @@ void FuncTrainResume(edict_t* self) //mxd. Named 'train_next' in original logic.
 	self->spawnflags |= SF_TRAIN_START_ON;
 }
 
-static void FuncTrainFind(edict_t* self) //mxd. Named 'func_train_find' in original logic.
+void FuncTrainFind(edict_t* self) //mxd. Named 'func_train_find' in original logic.
 {
 	if (self->target == NULL)
 	{
-		gi.dprintf("train_find: no target\n");
+		gi.dprintf("FuncTrainFind: no target\n");
 		self->think = NULL;
 
 		return;
@@ -218,7 +218,7 @@ static void FuncTrainFind(edict_t* self) //mxd. Named 'func_train_find' in origi
 
 	if (ent == NULL)
 	{
-		gi.dprintf("train_find: target %s not found\n", self->target);
+		gi.dprintf("FuncTrainFind: target %s not found\n", self->target);
 		self->think = NULL;
 
 		return;
@@ -249,7 +249,7 @@ static void FuncTrainFind(edict_t* self) //mxd. Named 'func_train_find' in origi
 	}
 }
 
-static void FuncTrainUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'train_use' in original logic.
+void FuncTrainUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'train_use' in original logic.
 {
 	self->activator = activator;
 

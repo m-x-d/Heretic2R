@@ -1169,7 +1169,7 @@ void MG_AI_Charge(edict_t* self, const float dist) //mxd. Named 'mg_ai_charge' i
 		MG_CheckEvade(self); // Check if going to be hit and evade.
 }
 
-static void BodyPhaseOutPostThink(edict_t* self) //mxd. Named 'body_phase_out' in original logic.
+void BodyPhaseOutPostThink(edict_t* self) //mxd. Named 'body_phase_out' in original logic.
 {
 #define PHASE_OUT_STEP	30 //mxd
 

@@ -6,6 +6,7 @@
 
 #include "c_corvus2_anim.h"
 #include "c_ai.h"
+#include "g_local.h"
 
 // Corvus standing.
 static const animframe_t corvus2_frames_c_idle1[] =

@@ -53,6 +53,12 @@ extern void M_ShowLifeMeter(int value, int max_value);
 extern int M_FindSupport(const edict_t* self, int range);
 extern void M_DeadFloatThink(edict_t* self); //mxd
 
+//mxd. Required by save system...
+extern void M_DeadBobThink(edict_t* self);
+extern void M_FlymonsterStartGo(edict_t* self);
+extern void M_TriggeredSpawnThink(edict_t* self);
+extern void M_TriggeredSpawnUse(edict_t* self, edict_t* other, edict_t* activator);
+extern qboolean GenericMonsterAlerted(edict_t* self, alertent_t* alerter, edict_t* enemy);
+
 //mxd. Local forward declarations for g_monster.c:
-static qboolean GenericMonsterAlerted(edict_t* self, alertent_t* alerter, edict_t* enemy);
 static void M_MonsterStartGo(edict_t* self);

@@ -319,9 +319,6 @@ GAME_DECLSPEC game_export_t* GetGameAPI(const game_import_t* import)
 
 	globals.edict_size = sizeof(edict_t);
 
-	//mxd. Original dlls compatibility check...
-	assert(globals.edict_size == 1680);
-
 	memset(&game, 0, sizeof(game));
 
 	return &globals;

@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "g_local.h"
-
 #pragma region ========================== Model definitions ==========================
 
 #define FRAME_breath1         	0
@@ -241,23 +239,3 @@ typedef enum AnimID_e
 
 	NUM_ANIMS
 } AnimID_t;
-
-extern const animmove_t corvus_move_c_action1;
-extern const animmove_t corvus_move_c_action2;
-extern const animmove_t corvus_move_c_action3;
-extern const animmove_t corvus_move_c_action4;
-extern const animmove_t corvus_move_c_idle1;
-extern const animmove_t corvus_move_c_idle2;
-extern const animmove_t corvus_move_c_strafeleft;
-extern const animmove_t corvus_move_c_straferight;
-extern const animmove_t corvus_move_c_walkstart;
-extern const animmove_t corvus_move_c_walk1;
-extern const animmove_t corvus_move_c_walk2;
-extern const animmove_t corvus_move_c_walkstop1;
-extern const animmove_t corvus_move_c_walkstop2;
-extern const animmove_t corvus_move_c_pivotleftgo;
-extern const animmove_t corvus_move_c_pivotleft;
-extern const animmove_t corvus_move_c_pivotleftstop;
-extern const animmove_t corvus_move_c_pivotrightgo;
-extern const animmove_t corvus_move_c_pivotright;
-extern const animmove_t corvus_move_c_pivotrightstop;

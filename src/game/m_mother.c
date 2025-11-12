@@ -7,6 +7,7 @@
 #include "m_mother.h"
 #include "m_mother_shared.h"
 #include "m_mother_anim.h"
+#include "m_mother_moves.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "m_stats.h"

@@ -6,6 +6,7 @@
 
 #include "c_corvus7.h"
 #include "c_corvus7_anim.h"
+#include "c_corvus7_moves.h"
 #include "c_ai.h"
 #include "Utilities.h"
 

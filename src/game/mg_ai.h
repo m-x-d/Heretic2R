@@ -33,3 +33,6 @@ extern qboolean MG_IsInforntPos(const edict_t* self, const vec3_t pos);
 
 extern void MG_AI_Run(edict_t* self, float dist);
 extern void MG_AI_Charge(edict_t* self, float dist);
+
+//mxd. Required by save system...
+extern void BodyPhaseOutPostThink(edict_t* self);

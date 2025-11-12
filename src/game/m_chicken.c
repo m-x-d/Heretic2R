@@ -6,6 +6,7 @@
 
 #include "m_chicken.h"
 #include "m_chicken_anim.h"
+#include "m_chicken_moves.h"
 #include "m_chicken_shared.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
@@ -39,7 +40,7 @@ static int sounds[NUM_SOUNDS];
 #pragma region ========================== Utility functions ==========================
 
 // Fade the original monster back in again.
-static void MorphOriginalIn(edict_t* self)
+void MorphOriginalIn(edict_t* self)
 {
 	self->s.color.a += MORPH_TELE_FADE;
 	self->nextthink = level.time + FRAMETIME;
@@ -49,7 +50,7 @@ static void MorphOriginalIn(edict_t* self)
 }
 
 // Fade out the existing model till its gone.
-static void MorphChickenOut(edict_t* self)
+void MorphChickenOut(edict_t* self)
 {
 	self->s.color.a -= MORPH_TELE_FADE;
 	self->nextthink = level.time + FRAMETIME;

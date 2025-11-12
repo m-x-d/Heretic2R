@@ -27,6 +27,10 @@ extern void SP_light_buglight(edict_t* self);
 extern void LightStaticsInit(void);
 extern void SpawnFlame(edict_t* self, const vec3_t origin);
 
-//mxd. Local forward declarations for g_light.c:
-static void TorchUse(edict_t* self, edict_t* other, edict_t* activator);
-static void TorchStart(edict_t* self);
+//mxd. Required by save system...
+extern void EnvFireMoveThink(edict_t* self);
+extern void EnvFireUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void FlameDamagerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
+extern void LightUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void TorchUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void TorchStart(edict_t* self);

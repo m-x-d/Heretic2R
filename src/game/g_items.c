@@ -22,12 +22,12 @@
 
 #pragma region ========================== RESPAWN LOGIC ==========================
 
-static void RespawnedThink(edict_t* ent) //TODO: can't we just clear ent->think in place instead of doing this?
+void RespawnedThink(edict_t* ent) //TODO: can't we just clear ent->think in place instead of doing this?
 {
 	ent->think = NULL;
 }
 
-static void DoRespawn(edict_t* ent)
+void DoRespawn(edict_t* ent)
 {
 	// For team, respawn random member of the team (?)
 	if (ent->team != NULL)
@@ -60,7 +60,7 @@ static void DoRespawn(edict_t* ent)
 	ent->nextthink = level.time + FRAMETIME;
 }
 
-static void PreRespawnThink(edict_t* ent)
+void PreRespawnThink(edict_t* ent)
 {
 	float delay = ent->delay;
 
@@ -465,7 +465,7 @@ static void SpawnItemEffect(edict_t* ent, const gitem_t* item)
 		ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_PICKUP_HEALTH, CEF_BROADCAST, ent->s.origin, "");
 }
 
-static void Touch_Item(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf)
+void Touch_Item(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf)
 {
 	// Only alive players can touch items.
 	if (strcmp(other->classname, "player") != 0 || other->health <= 0)
@@ -498,7 +498,7 @@ static void Touch_Item(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t
 	}
 }
 
-static void DropItemMakeTouchable(edict_t* ent) //mxd. Named 'drop_make_touchable' in original logic.
+void DropItemMakeTouchable(edict_t* ent) //mxd. Named 'drop_make_touchable' in original logic.
 {
 	ent->solid = SOLID_TRIGGER;
 	ent->touch = Touch_Item;
@@ -583,7 +583,7 @@ edict_t* Drop_Item(edict_t* ent, gitem_t* item) //TODO: return value never used.
 	return dropped;
 }
 
-static void ItemDropToFloor(edict_t* ent) //mxd. Named 'itemsdroptofloor' in original version.
+void ItemDropToFloor(edict_t* ent) //mxd. Named 'itemsdroptofloor' in original version.
 {
 	ent->movetype = PHYSICSTYPE_STATIC;
 	ent->solid = SOLID_TRIGGER;

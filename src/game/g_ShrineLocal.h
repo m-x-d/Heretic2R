@@ -17,7 +17,3 @@ static void PlayerShrineGhostEffect(edict_t* self);
 static void PlayerShrineReflectEffect(edict_t* self);
 static void PlayerShrinePowerupEffect(edict_t* self);
 static void PlayerShrineSpeedEffect(edict_t* self);
-
-static void ShrineArmorSilverTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
-static void ShrineArmorGoldTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
-static void ShrineRandomTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);

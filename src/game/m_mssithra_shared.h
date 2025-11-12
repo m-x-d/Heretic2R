@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "g_local.h"
+#include "g_Edict.h"
 
 typedef enum AnimID_e
 {
@@ -47,23 +47,6 @@ typedef enum SoundID_e
 
 	NUM_SOUNDS
 } SoundID_t;
-
-extern const animmove_t mssithra_move_idle1;
-extern const animmove_t mssithra_move_walk1;
-extern const animmove_t mssithra_move_backpedal1;
-extern const animmove_t mssithra_move_death1;
-extern const animmove_t mssithra_move_claw1;
-extern const animmove_t mssithra_move_jump1;
-extern const animmove_t mssithra_move_fjump;
-extern const animmove_t mssithra_move_shoota1;
-extern const animmove_t mssithra_move_shootb1;
-extern const animmove_t mssithra_move_roar;
-extern const animmove_t mssithra_move_run1;
-extern const animmove_t mssithra_move_delay;
-
-extern const animmove_t mssithra_move_shoot1_trans;
-extern const animmove_t mssithra_move_shoot1_loop;
-extern const animmove_t mssithra_move_shoot1_detrans;
 
 extern void mssithra_swipe(edict_t* self);
 extern void mssithra_arrow(edict_t* self);

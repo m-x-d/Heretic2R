@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "g_local.h"
+#include "g_Edict.h"
 
 typedef enum AnimID_e
 {
@@ -65,35 +65,6 @@ typedef enum SoundID_e
 
 	NUM_SOUNDS
 } SoundID_t;
-
-extern const animmove_t seraph_move_walk1;
-extern const animmove_t seraph_move_walk2;
-extern const animmove_t seraph_move_whip1;
-extern const animmove_t seraph_move_whip1_loop;
-extern const animmove_t seraph_move_whip1_end;
-extern const animmove_t seraph_move_stand1;
-extern const animmove_t seraph_move_stand1_tr;
-extern const animmove_t seraph_move_stand1_r;
-extern const animmove_t seraph_move_stand1_trc;
-extern const animmove_t seraph_move_stand1_tl;
-extern const animmove_t seraph_move_stand1_l;
-extern const animmove_t seraph_move_stand1_tlc;
-extern const animmove_t seraph_move_point1;
-extern const animmove_t seraph_move_run1;
-extern const animmove_t seraph_move_fjump;
-extern const animmove_t seraph_move_run1_whip;
-extern const animmove_t seraph_move_pain;
-extern const animmove_t seraph_move_swipe;
-extern const animmove_t seraph_move_get2work;
-extern const animmove_t seraph_move_get2work2;
-extern const animmove_t seraph_move_startle;
-extern const animmove_t seraph_move_ready2idle;
-extern const animmove_t seraph_move_backup;
-extern const animmove_t seraph_move_death1;
-extern const animmove_t seraph_move_death2_go;
-extern const animmove_t seraph_move_death2_loop;
-extern const animmove_t seraph_move_death2_end;
-extern const animmove_t seraph_move_backup2;
 
 extern void seraph_done_startle(edict_t* self);
 extern void seraph_done_get2work(edict_t* self);

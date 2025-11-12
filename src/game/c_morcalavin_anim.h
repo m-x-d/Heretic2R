@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "g_local.h"
-
 #pragma region ========================== Model definitions ==========================
 
 #define FRAME_talka1          	0
@@ -521,13 +519,6 @@ typedef enum AnimID_e
 	ANIM_C_IDLE2,
 	ANIM_C_IDLE3,
 	ANIM_C_IDLE4,
+
 	NUM_ANIMS
 } AnimID_t;
-
-extern const animmove_t morcalavin_move_c_action1;
-extern const animmove_t morcalavin_move_c_action2;
-extern const animmove_t morcalavin_move_c_action3;
-extern const animmove_t morcalavin_move_c_idle1;
-extern const animmove_t morcalavin_move_c_idle2;
-extern const animmove_t morcalavin_move_c_idle3;
-extern const animmove_t morcalavin_move_c_idle4;

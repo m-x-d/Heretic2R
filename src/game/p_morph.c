@@ -142,7 +142,7 @@ static void MorphChickenToPlayerStart(edict_t* self) //mxd. Named 'MorphChickenT
 #pragma region ========================== Corvus -> Chicken morph ==========================
 
 // Watch the chicken to see if we should become the elf again. For PLAYER only.
-static void ChickenPlayerThink(edict_t* self) //mxd. Named 'watch_chicken' in original version.
+void ChickenPlayerThink(edict_t* self) //mxd. Named 'watch_chicken' in original version.
 {
 	// Are we done yet?
 	if (self->morph_timer <= (int)level.time)

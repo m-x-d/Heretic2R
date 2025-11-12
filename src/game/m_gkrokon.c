@@ -7,6 +7,7 @@
 #include "m_gkrokon.h"
 #include "m_gkrokon_shared.h"
 #include "m_gkrokon_anim.h"
+#include "m_gkrokon_moves.h"
 #include "decals.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
@@ -59,7 +60,7 @@ static int sounds[NUM_SOUNDS];
 
 #pragma region ========================== Spoo functions ==========================
 
-static void GkrokonSpooTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+void GkrokonSpooTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	if (surface != NULL && (surface->flags & SURF_SKY))
 	{
@@ -103,7 +104,7 @@ static void GkrokonSpooTouch(edict_t* self, edict_t* other, cplane_t* plane, csu
 	G_SetToFree(self);
 }
 
-static void GkrokonSpooIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'GkrokonSpooTouch2' in original logic.
+void GkrokonSpooIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'GkrokonSpooTouch2' in original logic.
 {
 	GkrokonSpooTouch(self, trace->ent, &trace->plane, trace->surface);
 }
@@ -575,7 +576,7 @@ static void GkrokonThrowLeg(edict_t* self, const float damage, const int mesh_pa
 	}
 }
 
-static void GkrokonDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'beetle_dismember' in original logic.
+void GkrokonDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'beetle_dismember' in original logic.
 {
 	qboolean dismember_ok = false;
 

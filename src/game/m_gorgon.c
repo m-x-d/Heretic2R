@@ -7,6 +7,7 @@
 #include "m_gorgon.h"
 #include "m_gorgon_shared.h"
 #include "m_gorgon_anim.h"
+#include "m_gorgon_moves.h"
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
 #include "g_debris.h" //mxd
@@ -272,7 +273,7 @@ static qboolean GorgonStartSlipAnimation(edict_t* self, const qboolean from_pain
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void GorgonRoarResponsePreThink(edict_t* self) //mxd. Named 'gorgon_roar_response_go' in original logic.
+void GorgonRoarResponsePreThink(edict_t* self) //mxd. Named 'gorgon_roar_response_go' in original logic.
 {
 	self->pre_think = NULL;
 	self->next_pre_think = -1.0f;
@@ -285,7 +286,7 @@ static void GorgonRoarResponsePreThink(edict_t* self) //mxd. Named 'gorgon_roar_
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define. //TODO: no think callbacks assigned. Not needed? 
 }
 
-static void GorgonPreThink(edict_t* self) //mxd. Named 'gorgon_prethink' in original logic.
+void GorgonPreThink(edict_t* self) //mxd. Named 'gorgon_prethink' in original logic.
 {
 	// Also make wake on surface of water?
 	if (self->flags & FL_INWATER)

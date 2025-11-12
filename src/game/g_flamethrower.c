@@ -17,7 +17,7 @@
 #define FLAMETHROWER_ON		(-2.0f) //mxd
 #define FLAMETHROWER_OFF	(-1.0f) //mxd
 
-static void FlamethrowerThink(edict_t* self) //mxd. Named 'flamethrower_trigger' in original logic.
+void FlamethrowerThink(edict_t* self) //mxd. Named 'flamethrower_trigger' in original logic.
 {
 	vec3_t dir;
 	AngleVectors(self->s.angles, dir, NULL, NULL);
@@ -38,7 +38,7 @@ static void FlamethrowerThink(edict_t* self) //mxd. Named 'flamethrower_trigger'
 	}
 }
 
-static void FlamethrowerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'flamethrower_use' in original logic.
+void FlamethrowerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'flamethrower_use' in original logic.
 {
 	if (self->monsterinfo.attack_finished >= level.time)
 		return;
@@ -51,7 +51,7 @@ static void FlamethrowerUse(edict_t* self, edict_t* other, edict_t* activator) /
 	FlamethrowerThink(self);
 }
 
-static void FlamethrowerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'flamethrower_touch' in original logic.
+void FlamethrowerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'flamethrower_touch' in original logic.
 {
 	// Not toggled on, so don't damage.
 	if (self->wait == FLAMETHROWER_OFF)

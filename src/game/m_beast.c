@@ -8,6 +8,7 @@
 #include "m_beast.h"
 #include "m_beast_shared.h"
 #include "m_beast_anim.h"
+#include "m_beast_moves.h"
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 #include "g_debris.h" //mxd
@@ -1034,7 +1035,7 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 #pragma region ========================== Callback functions ==========================
 
 // Assigned to 'isBlocked' and 'bounce' callbacks.
-static void TBeastBlocked(edict_t* self, trace_t* trace) //mxd. Named 'tbeast_blocked' in original logic.
+void TBeastBlocked(edict_t* self, trace_t* trace) //mxd. Named 'tbeast_blocked' in original logic.
 {
 	// fake_touch does all the actual damage, this is just a check for the charge stuff.
 	if (self->curAnimID == ANIM_CHARGE || (self->curAnimID == ANIM_QUICK_CHARGE && self->s.frame >= FRAME_charge1 && self->s.frame <= FRAME_charge10))
@@ -1118,7 +1119,7 @@ static void TBeastBlocked(edict_t* self, trace_t* trace) //mxd. Named 'tbeast_bl
 	}
 }
 
-static void TBeastDieUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tbeast_go_die' in original logic.
+void TBeastDieUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tbeast_go_die' in original logic.
 {
 	M_ShowLifeMeter(0, 0);
 
@@ -1143,7 +1144,7 @@ static void TBeastDieUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 	G_UseTargets(self, activator);
 }
 
-static void TBeastUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tbeast_go_charge' in original logic.
+void TBeastUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tbeast_go_charge' in original logic.
 {
 	self->enemy = activator; // Are we certain activator is client?
 	//FIXME: do a FoundTarget(self, false);?
@@ -1152,12 +1153,12 @@ static void TBeastUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. 
 	self->use = TBeastDieUse;
 }
 
-static void TBeastTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'tbeast_touch' in original logic.
+void TBeastTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'tbeast_touch' in original logic.
 {
 	TBeastFakeTouch(self);
 }
 
-static void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in original logic.
+void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in original logic.
 {
 #define TBEAST_SBAR_SIZE	3500
 

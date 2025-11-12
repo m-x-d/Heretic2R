@@ -7,6 +7,7 @@
 #include "m_ogle.h"
 #include "m_ogle_shared.h"
 #include "m_ogle_anim.h"
+#include "m_ogle_moves.h"
 #include "c_ai.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
@@ -708,7 +709,7 @@ static void OgleRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ogl
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void OgleMoodThink(edict_t* self) //mxd. Named 'ogle_mood_think' in original logic.
+void OgleMoodThink(edict_t* self) //mxd. Named 'ogle_mood_think' in original logic.
 {
 	if (self->enemy == NULL)
 	{
@@ -763,7 +764,7 @@ static void OgleMoodThink(edict_t* self) //mxd. Named 'ogle_mood_think' in origi
 }
 
 // The ogle's been yelled at or struck by the overlord, get back to work!
-static void OgleUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'ogle_use' in original logic.
+void OgleUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'ogle_use' in original logic.
 {
 	switch (self->curAnimID)
 	{
@@ -784,7 +785,7 @@ static void OgleUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Na
 }
 
 // When the ogle is spawned, he checks around to figure out who his tormentor is.
-static void OgleInitOverlordThink(edict_t* self) //mxd. Named 'ogle_init_overlord' in original logic.
+void OgleInitOverlordThink(edict_t* self) //mxd. Named 'ogle_init_overlord' in original logic.
 {
 	// Restore what we lost from monsterstart().
 	self->use = OgleUse;
@@ -968,7 +969,7 @@ static void OgleThrowArmLowerRight(edict_t* self, const float damage, const qboo
 	}
 }
 
-static void OgleDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'ogle_dismember' in original logic.
+void OgleDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'ogle_dismember' in original logic.
 {
 	qboolean dismember_ok = false;
 
@@ -1023,7 +1024,7 @@ static void OgleDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Na
 	}
 }
 
-static void OgleStartPushUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'ogle_start_push' in original logic.
+void OgleStartPushUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'ogle_start_push' in original logic.
 {
 	SetAnim(self, irand(ANIM_PUSH1, ANIM_PUSH3));
 }

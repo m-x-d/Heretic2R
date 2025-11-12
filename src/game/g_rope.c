@@ -118,7 +118,7 @@ static void TutorialChickenHandleAttackSequence(edict_t* self, const edict_t* at
 	}
 }
 
-static void TutorialChickenUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'sir_nate_of_the_embarassingly_shortshanks_use' in original logic.
+void TutorialChickenUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'sir_nate_of_the_embarassingly_shortshanks_use' in original logic.
 {
 	if (activator->client != NULL)
 	{
@@ -130,7 +130,7 @@ static void TutorialChickenUse(edict_t* self, edict_t* other, edict_t* activator
 	}
 }
 
-static void TutorialChickenPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'hanging_chicken_pain' in original logic.
+void TutorialChickenPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'hanging_chicken_pain' in original logic.
 {
 	self->health = NATE_HEALTH;
 	self->svflags &= ~SVF_ONFIRE;
@@ -152,7 +152,7 @@ static void TutorialChickenPain(edict_t* self, edict_t* other, float kick, int d
 	gi.sound(self, CHAN_AUTO, gi.soundindex(va("monsters/chicken/pain%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f);
 }
 
-static void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_think' in original logic.
+void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_think' in original logic.
 {
 	vec3_t vel_xy;
 	VectorCopy(self->targetEnt->velocity, vel_xy);
@@ -276,7 +276,7 @@ static void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_th
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void TutorialChickenRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think2' in original logic.
+void TutorialChickenRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think2' in original logic.
 {
 	edict_t* grab = self->rope_end;
 
@@ -507,7 +507,7 @@ static void ObjRopeUpdateRopeEnd(edict_t* self) //mxd. Named 'rope_end_think' in
 	VectorMA(rope_top, grab_len, end_vel, grab->s.origin);
 }
 
-static void ObjRopeThink(edict_t* self) //mxd. Named 'rope_sway' in original logic.
+void ObjRopeThink(edict_t* self) //mxd. Named 'rope_sway' in original logic.
 {
 	edict_t* grab = self->rope_grab;
 
@@ -584,7 +584,7 @@ static void ObjRopeThink(edict_t* self) //mxd. Named 'rope_sway' in original log
 	self->nextthink = level.time + FRAMETIME;
 }
 
-static void ObjRopeTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'rope_touch' in original logic.
+void ObjRopeTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'rope_touch' in original logic.
 {
 	//TODO: make rope sway when touched by other entities (will need to update ObjRopeThink (and fx_rope?) logic to sway based on velocity only, without valid rope_grab/rope_player_z).
 	if (other->client != NULL) //mxd. stricmp(other->classname, "player") -> other->client check.

@@ -6,6 +6,7 @@
 
 #include "c_victimssithra_anim.h"
 #include "c_ai.h"
+#include "g_local.h"
 
 // Ssithra victim action 1.
 static const animframe_t ssithra_frames_c_action1[] =

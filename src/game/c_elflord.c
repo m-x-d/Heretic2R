@@ -6,6 +6,7 @@
 
 #include "c_elflord.h"
 #include "c_elflord_anim.h"
+#include "c_elflord_moves.h"
 #include "c_ai.h"
 #include "g_debris.h" //mxd
 #include "FX.h"

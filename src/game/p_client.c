@@ -65,7 +65,7 @@ void PlayerPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Na
 {
 }
 
-static void BleederThink(edict_t* self)
+void BleederThink(edict_t* self)
 {
 	if (self->owner == NULL || self->owner->client == NULL || self->owner->s.modelindex == 0 || self->owner->health <= 0 ||
 		!(self->owner->client->playerinfo.flags & PLAYER_FLAG_BLEED))
@@ -1222,7 +1222,7 @@ void InitBodyQue(void)
 	}
 }
 
-static void PlayerBodyDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'player_body_die' in original logic.
+void PlayerBodyDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'player_body_die' in original logic.
 {
 	gi.sound(self, CHAN_BODY, gi.soundindex("misc/fleshbreak.wav"), 1.0f, ATTN_NORM, 0.0f);
 

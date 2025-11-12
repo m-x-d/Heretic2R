@@ -6,6 +6,7 @@
 
 #include "c_priestess2_anim.h"
 #include "c_ai.h"
+#include "g_local.h"
 
 // High priestess action 1.
 static const animframe_t priestess2_frames_c_action1[] =

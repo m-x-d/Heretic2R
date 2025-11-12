@@ -15,7 +15,7 @@
 #include "Vector.h"
 #include "g_local.h"
 
-static void MagicMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+void MagicMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	if (surface != NULL && (surface->flags & SURF_SKY))
 	{
@@ -76,7 +76,7 @@ static void MagicMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 	G_FreeEdict(self); //mxd. G_SetToFree() in original logic. Fixes client effect/dynamic light staying active for 100 ms. after this.
 }
 
-static void MagicMissileThink(edict_t* self)
+void MagicMissileThink(edict_t* self)
 {
 	// Prevent any further transmission of this entity to clients.
 	self->svflags |= SVF_NOCLIENT;

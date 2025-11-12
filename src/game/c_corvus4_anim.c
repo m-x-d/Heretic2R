@@ -6,6 +6,7 @@
 
 #include "c_corvus4_anim.h"
 #include "c_ai.h"
+#include "g_local.h"
 
 // Corvus action 1.
 static const animframe_t corvus4_frames_c_action1[] =

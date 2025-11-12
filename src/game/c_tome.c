@@ -6,6 +6,7 @@
 
 #include "c_tome.h"
 #include "c_tome_anim.h"
+#include "c_tome_moves.h"
 #include "c_ai.h"
 #include "Utilities.h"
 #include "Vector.h"

@@ -22,5 +22,8 @@ extern qboolean MG_CheckClearPathToEnemy(edict_t* self); //mxd
 extern qboolean MG_MonsterAttemptTeleport(edict_t* self, const vec3_t destination, qboolean ignore_los); //mxd
 extern qboolean MG_MakeConnection(edict_t* self, const buoy_t* first_buoy, qboolean skip_jump); //mxd
 
+//mxd. Required by save system...
+extern void MG_GenericMoodSet(edict_t* self);
+
 //mxd. Local forward declarations for mg_guide.c:
 static qboolean MG_CheckClearPathToSpot(edict_t* self, const vec3_t spot);

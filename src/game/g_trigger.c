@@ -46,7 +46,7 @@ void TriggerStaticsInit(void)
 #pragma region ========================== Utility functions ==========================
 
 // The wait time has passed, so set back up for another activation.
-static void TriggerMultipleWaitThink(edict_t* self) //mxd. Named 'multi_wait' in original logic.
+void TriggerMultipleWaitThink(edict_t* self) //mxd. Named 'multi_wait' in original logic.
 {
 	self->think = NULL;
 
@@ -98,7 +98,7 @@ static qboolean TriggerMultipleShouldTouch(const edict_t* self, const edict_t* o
 	return false;
 }
 
-static void TriggerMultipleTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_Multi' in original logic.
+void TriggerMultipleTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_Multi' in original logic.
 {
 	if (!TriggerMultipleShouldTouch(self, other))
 		return;
@@ -122,7 +122,7 @@ void TriggerMultipleUse(edict_t* self, edict_t* other, edict_t* activator) //mxd
 	TriggerActivated(self);
 }
 
-static void TriggerEnable(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_enable' in original logic.
+void TriggerEnable(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_enable' in original logic.
 {
 	self->solid = SOLID_TRIGGER;
 	self->use = TriggerMultipleUse;
@@ -228,7 +228,7 @@ void SP_trigger_Once(edict_t* self)
 
 #pragma region ========================== trigger_relay ==========================
 
-static void TriggerRelayUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_relay_use' in original logic.
+void TriggerRelayUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_relay_use' in original logic.
 {
 	G_UseTargets(self, activator);
 }
@@ -247,7 +247,7 @@ void SP_trigger_Relay(edict_t* self)
 #define SF_NO_TEXT	1 //mxd
 #define SF_NO_TAKE	2 //mxd
 
-static void TriggerPuzzleUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_key_use' in original logic.
+void TriggerPuzzleUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_key_use' in original logic.
 {
 	if (self->item == NULL || activator->client == NULL)
 		return;
@@ -351,7 +351,7 @@ void SP_trigger_puzzle(edict_t* self)
 
 #define SF_NOMESSAGE	1
 
-static void TriggerCounterUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_counter_use' in original logic.
+void TriggerCounterUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_counter_use' in original logic.
 {
 	if (self->count == 0)
 		return;
@@ -401,7 +401,7 @@ void SP_trigger_Always(edict_t* self)
 
 #pragma region ========================== trigger_playerusepuzzle ==========================
 
-static void TriggerPlayerUsePuzzleActivated(edict_t* self, edict_t* activator) //mxd. Named 'trigger_playerusepuzzle' in original logic.
+void TriggerPlayerUsePuzzleActivated(edict_t* self, edict_t* activator) //mxd. Named 'trigger_playerusepuzzle' in original logic.
 {
 	if (self->spawnflags & SF_PUZZLE_SHOW_NO_INVENTORY)
 	{
@@ -438,7 +438,7 @@ void SP_trigger_PlayerUsePuzzle(edict_t* self)
 
 #pragma region ========================== trigger_playerpushbutton ==========================
 
-static void TriggerPlayerPushButtonTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'trigger_playerpushbutton' in original logic.
+void TriggerPlayerPushButtonTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'trigger_playerpushbutton' in original logic.
 {
 	if (strcmp(other->classname, "player") == 0)
 		other->target = self->target;
@@ -462,7 +462,7 @@ void SP_trigger_PlayerPushButton(edict_t* self)
 
 #pragma region ========================== trigger_elevator ==========================
 
-static void TriggerElevatorUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_elevator_use' in original logic.
+void TriggerElevatorUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_elevator_use' in original logic.
 {
 	if (self->movetarget->nextthink > 0.0f) // Elevator busy...
 		return;
@@ -485,7 +485,7 @@ static void TriggerElevatorUse(edict_t* self, edict_t* other, edict_t* activator
 	FuncTrainResume(self->movetarget);
 }
 
-static void TriggerElevatorInitThink(edict_t* self) //mxd. Named 'trigger_elevator_init' in original logic.
+void TriggerElevatorInitThink(edict_t* self) //mxd. Named 'trigger_elevator_init' in original logic.
 {
 	if (self->target == NULL)
 	{
@@ -530,7 +530,7 @@ void SP_trigger_Elevator(edict_t* self)
 
 #pragma region ========================== trigger_deactivate ==========================
 
-static void TriggerDeactivateActivated(edict_t* self, edict_t* activator) //mxd. Named 'SuspendTrigger_Activated' in original logic.
+void TriggerDeactivateActivated(edict_t* self, edict_t* activator) //mxd. Named 'SuspendTrigger_Activated' in original logic.
 {
 	assert(self->target);
 
@@ -562,7 +562,7 @@ void SP_trigger_Deactivate(edict_t* self)
 
 #pragma region ========================== trigger_activate ==========================
 
-static void TriggerActivateActivated(edict_t* self, edict_t* activator) //mxd. Named 'ActivateTrigger_Activated' in original logic.
+void TriggerActivateActivated(edict_t* self, edict_t* activator) //mxd. Named 'ActivateTrigger_Activated' in original logic.
 {
 	assert(self->target);
 
@@ -608,13 +608,13 @@ static void ChooseCDTrackPlayTrack(const int track, const int loop) //mxd. Named
 	}
 }
 
-static void ChooseCDTrackUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'choose_CDTrack_use' in original logic.
+void ChooseCDTrackUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'choose_CDTrack_use' in original logic.
 {
 	ChooseCDTrackPlayTrack(self->style, self->spawnflags);
 	G_SetToFree(self); // Kill this trigger. //TODO: don't kill this trigger? Advertised as repeatable in entity description.
 }
 
-static void ChooseCDTrackTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'choose_CDTrack_touch' in original logic.
+void ChooseCDTrackTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'choose_CDTrack_touch' in original logic.
 {
 	// If we aren't a player, forget it.
 	if (other->client != NULL)
@@ -650,13 +650,13 @@ void SP_choose_CDTrack(edict_t* self)
 
 #pragma region ========================== trigger_quit_to_menu ==========================
 
-static void TriggerQuitToMenuTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'trigger_quit_to_menu_touch' in original logic.
+void TriggerQuitToMenuTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'trigger_quit_to_menu_touch' in original logic.
 {
 	if (other->client != NULL)
 		gi.AddCommandString("menu_main\n");
 }
 
-static void TriggerQuitToMenuUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_quit_to_menu_use' in original logic.
+void TriggerQuitToMenuUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_quit_to_menu_use' in original logic.
 {
 	if (activator->client != NULL)
 		gi.AddCommandString("menu_main\n");
@@ -685,7 +685,7 @@ void SP_trigger_quit_to_menu(edict_t* self)
 
 #pragma region ========================== trigger_mappercentage ==========================
 
-static void TriggerMappercentageUse(edict_t* self, edict_t* other) //mxd. Named 'mappercentage_use' in original logic.
+void TriggerMappercentageUse(edict_t* self, edict_t* other) //mxd. Named 'mappercentage_use' in original logic.
 {
 	if (other->client != NULL) // Only players use these.
 	{
@@ -715,7 +715,7 @@ void SP_trigger_mappercentage(edict_t* self)
 
 #pragma region ========================== trigger_lightning ==========================
 
-static void TriggerLightningActivated(edict_t* self, edict_t* other) //mxd. Named 'lightning_use' in original logic.
+void TriggerLightningActivated(edict_t* self, edict_t* other) //mxd. Named 'lightning_use' in original logic.
 {
 	byte b_width = (byte)self->style;
 	if (b_width == 0)
@@ -739,7 +739,7 @@ static void TriggerLightningActivated(edict_t* self, edict_t* other) //mxd. Name
 	}
 }
 
-static void TriggerLightningUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'lightning_go' in original logic.
+void TriggerLightningUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'lightning_go' in original logic.
 {
 	TriggerLightningActivated(self, other);
 }
@@ -773,7 +773,7 @@ void SP_trigger_lightning(edict_t* self)
 
 #pragma region ========================== trigger_quake ==========================
 
-static void KillSoundThink(edict_t* self) //mxd. Named 'quake_quiet' in original logic.
+void KillSoundThink(edict_t* self) //mxd. Named 'quake_quiet' in original logic.
 {
 	gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_end, 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
 
@@ -781,7 +781,7 @@ static void KillSoundThink(edict_t* self) //mxd. Named 'quake_quiet' in original
 	self->nextthink = level.time + FRAMETIME;
 }
 
-static void TriggerQuakeActivated(edict_t* self, edict_t* other) //mxd. Named 'quake_use' in original logic.
+void TriggerQuakeActivated(edict_t* self, edict_t* other) //mxd. Named 'quake_use' in original logic.
 {
 	if (self->touch_debounce_time > level.time)
 		return;
@@ -850,7 +850,7 @@ void SP_trigger_quake(edict_t* self)
 
 #pragma region ========================== trigger_mission_give ==========================
 
-static void TriggerMissionGiveUse(edict_t* self, edict_t* other) //mxd. Named 'mission_give_use' in original logic.
+void TriggerMissionGiveUse(edict_t* self, edict_t* other) //mxd. Named 'mission_give_use' in original logic.
 {
 	const short num = (short)Q_atoi(self->message);
 
@@ -904,7 +904,7 @@ void SP_trigger_mission_give(edict_t* self)
 #define SF_MISSION_TAKE1	16
 #define SF_MISSION_TAKE2	32
 
-static void TriggerMissionTakeUse(edict_t* self, edict_t* other) //mxd. Named 'mission_take_use' in original logic.
+void TriggerMissionTakeUse(edict_t* self, edict_t* other) //mxd. Named 'mission_take_use' in original logic.
 {
 	for (int i = 1; i <= game.maxclients; i++)
 	{
@@ -950,7 +950,7 @@ void SP_trigger_mission_take(edict_t* self)
 
 #pragma region ========================== trigger_farclip ==========================
 
-static void TriggerFarclipTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'ClipDistance_touch' in original logic.
+void TriggerFarclipTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'ClipDistance_touch' in original logic.
 {
 	// If we aren't a player, forget it.
 	if (other->client == NULL || self->pain_debounce_time >= level.time)
@@ -984,13 +984,13 @@ void SP_trigger_farclip(edict_t* self)
 
 #pragma region ========================== trigger_endgame ==========================
 
-static void TriggerEndgameThink(edict_t* self) //mxd. Named 'trigger_endgame_think' in original logic.
+void TriggerEndgameThink(edict_t* self) //mxd. Named 'trigger_endgame_think' in original logic.
 {
 	gi.AddCommandString("newcoopgame\n");
 	G_SetToFree(self);
 }
 
-static void TriggerEndgameUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'Use_endgame' in original logic.
+void TriggerEndgameUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'Use_endgame' in original logic.
 {
 	if (DEATHMATCH || self->count) // Not valid on DM play / Already used.
 		return;
@@ -1017,7 +1017,7 @@ static void TriggerEndgameUse(edict_t* self, edict_t* other, edict_t* activator)
 	}
 }
 
-static void TriggerEndgameTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_endgame' in original logic.
+void TriggerEndgameTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_endgame' in original logic.
 {
 	if (other->client != NULL) // If we aren't a player, forget it.
 		TriggerEndgameUse(self, other, other); //mxd
@@ -1038,7 +1038,7 @@ void SP_trigger_endgame(edict_t* self)
 
 #pragma region ========================== trigger_playerpushlever ==========================
 
-static void TriggerPlayerPushLeverActivated(edict_t* self, edict_t* other) //mxd. Named 'trigger_playerpushlever' in original logic.
+void TriggerPlayerPushLeverActivated(edict_t* self, edict_t* other) //mxd. Named 'trigger_playerpushlever' in original logic.
 {
 	if (strcmp(other->classname, "player") == 0)
 		other->target = self->target;

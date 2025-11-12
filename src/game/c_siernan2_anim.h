@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "g_local.h"
-
 #pragma region ========================== Model definitions ==========================
 
 #define FRAME_Minions1        	0
@@ -157,9 +155,6 @@ typedef enum AnimID_e
 	ANIM_C_ACTION1,
 	ANIM_C_ACTION2,
 	ANIM_C_IDLE1,
+
 	NUM_ANIMS
 } AnimID_t;
-
-extern const animmove_t siernan2_move_c_action1;
-extern const animmove_t siernan2_move_c_action2;
-extern const animmove_t siernan2_move_c_idle1;

@@ -11,5 +11,9 @@
 extern void SP_monster_spreader(edict_t* self);
 extern void SpreaderStaticsInit(void);
 
-// Local forward declarations for m_spreader.c.
-static void SpreaderIsBlocked(edict_t* self, trace_t* trace);
+//mxd. Required by save system...
+extern void SpreaderDismember(edict_t* self, int damage, HitLocation_t hl);
+extern void SpreaderDropDownThink(edict_t* self);
+extern void SpreaderIsBlocked(edict_t* self, trace_t* trace);
+extern void SpreaderSplatWhenBlocked(edict_t* self, trace_t* trace);
+extern void SpreaderStopWhenBlocked(edict_t* self, trace_t* trace);

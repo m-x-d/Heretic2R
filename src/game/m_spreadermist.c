@@ -115,7 +115,7 @@ static void SpreaderMistInit(edict_t* self, float x, float y, float z, float vel
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamageEntThink' in original logic.
+void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamageEntThink' in original logic.
 {
 	if (self->spreadermist_expire_time < level.time)
 	{
@@ -148,12 +148,12 @@ static void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamag
 	self->nextthink = level.time + self->wait;
 }
 
-static void SpreaderGrenadeDieThink(edict_t* self) //mxd. Named 'spreader_grenade_die' in original logic.
+void SpreaderGrenadeDieThink(edict_t* self) //mxd. Named 'spreader_grenade_die' in original logic. //TODO: replace with G_FreeEdict()?
 {
 	G_FreeEdict(self);
 }
 
-static void SpreaderGrenadeThink(edict_t* self) //mxd. Named 'spreader_grenade_think' in original logic.
+void SpreaderGrenadeThink(edict_t* self) //mxd. Named 'spreader_grenade_think' in original logic.
 {
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_NOT;
@@ -181,7 +181,7 @@ static void SpreaderGrenadeThink(edict_t* self) //mxd. Named 'spreader_grenade_t
 	self->nextthink = level.time + FRAMETIME;
 }
 
-static void SpreaderGrenadeBounced(edict_t* self, trace_t* trace) //mxd. Named 'spreader_grenade_bounce' in original logic.
+void SpreaderGrenadeBounced(edict_t* self, trace_t* trace) //mxd. Named 'spreader_grenade_bounce' in original logic.
 {
 	if (trace->plane.normal[2] <= 0.1f)
 		return;

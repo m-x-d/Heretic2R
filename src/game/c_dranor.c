@@ -6,15 +6,10 @@
 
 #include "c_Dranor.h"
 #include "c_dranor_anim.h"
+#include "c_dranor_moves.h"
 #include "c_ai.h"
 #include "Vector.h"
 #include "Utilities.h"
-
-typedef enum SoundID_e
-{
-	SND_PAIN1,
-	NUM_SOUNDS
-} SoundID_t;
 
 // Dranor cinematic actions.
 static const animmove_t* animations[NUM_ANIMS] =

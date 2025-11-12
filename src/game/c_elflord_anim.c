@@ -7,6 +7,7 @@
 #include "c_elflord_anim.h"
 #include "c_elflord.h"
 #include "c_ai.h"
+#include "g_local.h"
 
 // Elf lord death 1.
 static const animframe_t elflord_frames_c_death1[] =

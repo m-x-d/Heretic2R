@@ -47,7 +47,7 @@ static void TorchInit(edict_t* self)
 	}
 }
 
-static void FlameDamagerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'fire_touch' in original logic.
+void FlameDamagerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'fire_touch' in original logic.
 {
 	if (other->client != NULL && self->touch_debounce_time <= level.time)
 	{
@@ -91,7 +91,7 @@ void SpawnFlame(edict_t* self, const vec3_t origin)
 
 #define SF_LIGHT_START_OFF	1
 
-static void LightUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'light_use' in original logic.
+void LightUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'light_use' in original logic.
 {
 	if (self->spawnflags & SF_LIGHT_START_OFF)
 	{
@@ -133,7 +133,7 @@ void SP_light(edict_t* self)
 #define SF_ENV_FIRE_MOVEABLE	16
 #define SF_ENV_FIRE_LIGHT_ON	32 //mxd
 
-static void EnvFireUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fire_use' in original logic.
+void EnvFireUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fire_use' in original logic.
 {
 	if (self->spawnflags & SF_ENV_FIRE_OFF)
 	{
@@ -165,7 +165,7 @@ static void EnvFireUse(edict_t* self, edict_t* other, edict_t* activator) //mxd.
 	}
 }
 
-static void EnvFireMoveThink(edict_t* self) //mxd. Named 'firemove_think' in original logic.
+void EnvFireMoveThink(edict_t* self) //mxd. Named 'firemove_think' in original logic.
 {
 	const byte b_scale = (byte)(self->s.scale * 8.0f);
 	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_FIRE_ON_ENTITY, CEF_BROADCAST | CEF_OWNERS_ORIGIN, self->s.origin, "bbb", b_scale, 0, 1);
@@ -253,7 +253,7 @@ void SP_env_fire(edict_t* self)
 #define SF_TORCH_STARTOFF	8
 #define SF_TORCH_NOHALO		16
 
-static void TorchUse(edict_t* self, edict_t* other, edict_t* activator)
+void TorchUse(edict_t* self, edict_t* other, edict_t* activator)
 {
 	if (self->spawnflags & SF_TORCH_STARTOFF)
 	{
@@ -267,7 +267,7 @@ static void TorchUse(edict_t* self, edict_t* other, edict_t* activator)
 	}
 }
 
-static void TorchStart(edict_t* self)
+void TorchStart(edict_t* self)
 {
 	const char* str = ((self->spawnflags & SF_TORCH_STARTOFF) ? "a" : "m"); //mxd
 	gi.configstring(CS_LIGHTS + self->style, str);

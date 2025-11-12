@@ -6,6 +6,7 @@
 
 #include "c_corvus1_anim.h"
 #include "c_ai.h"
+#include "g_local.h"
 
 // Corvus grabs wheel.
 static const animframe_t corvus_frames_c_action1[] =

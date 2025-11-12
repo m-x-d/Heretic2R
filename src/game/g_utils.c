@@ -4,13 +4,14 @@
 // Copyright 1998 Raven Software
 //
 
-#include "g_local.h"
+#include "g_utils.h" //mxd
 #include "g_combat.h" //mxd
 #include "g_Physics.h"
 #include "g_Skeletons.h"
 #include "FX.h"
 #include "Random.h"
 #include "Vector.h"
+#include "g_local.h"
 
 void G_ProjectSource(const vec3_t point, const vec3_t distance, const vec3_t forward, const vec3_t right, vec3_t result)
 {
@@ -195,7 +196,7 @@ edict_t* G_PickTarget(const char* targetname)
 	return NULL;
 }
 
-static void DelayThink(edict_t* ent) //mxd. Named 'Think_Delay' in original version.
+void DelayThink(edict_t* ent) //mxd. Named 'Think_Delay' in original version.
 {
 	G_UseTargets(ent, ent->activator);
 	G_FreeEdict(ent);

@@ -6,15 +6,10 @@
 
 #include "c_victimSsithra.h"
 #include "c_victimSsithra_anim.h"
+#include "c_victimSsithra_moves.h"
 #include "c_ai.h"
 #include "Utilities.h"
 #include "Vector.h"
-
-typedef enum SoundID_e
-{
-	SND_PAIN1,
-	NUM_SOUNDS
-} SoundID_t;
 
 // Ssithra victim cinematic actions.
 static const animmove_t* animations[NUM_ANIMS] =

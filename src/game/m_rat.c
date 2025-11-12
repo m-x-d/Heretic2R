@@ -7,6 +7,7 @@
 #include "m_rat.h"
 #include "m_rat_shared.h"
 #include "m_rat_anim.h"
+#include "m_rat_moves.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "m_stats.h"
@@ -197,13 +198,13 @@ static void RatEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'rat_
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void RatUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'rat_use' in original logic.
+void RatUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'rat_use' in original logic.
 {
 	self->enemy = activator;
 	AI_FoundTarget(self, true);
 }
 
-static void RatTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'rat_touch' in original logic.
+void RatTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'rat_touch' in original logic.
 {
 	// M_Touch is overridden because the player can just step over rats.
 	if (!(other->svflags & SVF_MONSTER) && other->client == NULL)

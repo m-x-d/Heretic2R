@@ -7,6 +7,7 @@
 #include "m_harpy.h"
 #include "m_harpy_shared.h"
 #include "m_harpy_anim.h"
+#include "m_harpy_moves.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
@@ -78,12 +79,12 @@ static const vec3_t dead_harpy_maxs = {  16.0f,  16.0f, 12.0f }; //mxd
 
 #pragma region ========================== Head grabbing functions =========================
 
-static void HarpyHeadDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'head_die' in original logic.
+void HarpyHeadDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'head_die' in original logic.
 {
 	BecomeDebris(self);
 }
 
-static void HarpyHeadThink(edict_t* self) //mxd. Named 'harpy_head_think' in original logic.
+void HarpyHeadThink(edict_t* self) //mxd. Named 'harpy_head_think' in original logic.
 {
 	if (self->owner == NULL || self->owner->health <= 0)
 	{
@@ -370,7 +371,7 @@ static void HarpyWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void HarpyIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'harpy_blocked' in original logic.
+void HarpyIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'harpy_blocked' in original logic.
 {
 	if (self->enemy == NULL && (self->spawnflags & MSF_SPECIAL1))
 	{
@@ -438,7 +439,7 @@ static void HarpyIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'harpy_bl
 	}
 }
 
-static void HarpyDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'harpy_dismember' in original logic.
+void HarpyDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'harpy_dismember' in original logic.
 {
 	static const int bones_per_node_for_hitloc[hl_harpy_max] = //mxd. Made local static.
 	{

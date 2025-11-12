@@ -6,6 +6,7 @@
 
 #include "c_siernan1.h"
 #include "c_siernan1_anim.h"
+#include "c_siernan1_moves.h"
 #include "c_ai.h"
 #include "Utilities.h"
 #include "Vector.h"

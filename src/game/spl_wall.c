@@ -106,7 +106,7 @@ static edict_t* CreateFireBlast(const vec3_t start_pos, const vec3_t angles, edi
 }
 
 // This called when missile touches anything (world or edict).
-static void FireBlastBlocked(edict_t* self, trace_t* trace)
+void FireBlastBlocked(edict_t* self, trace_t* trace)
 {
 	assert(trace != NULL);
 
@@ -137,7 +137,7 @@ static void FireBlastBlocked(edict_t* self, trace_t* trace)
 }
 
 // Check in the area and try to damage anything in the immediate area.
-static void FireBlastThink(edict_t* self)
+void FireBlastThink(edict_t* self)
 {
 	// Set up the checking volume.
 	vec3_t min = { -self->dmg_radius, -self->dmg_radius, -FIREBLAST_VRADIUS };
@@ -166,7 +166,7 @@ static void FireBlastThink(edict_t* self)
 	self->dmg = max(FIREBLAST_DAMAGE_MIN, self->dmg - 3);
 }
 
-static void FireBlastStartThink(edict_t* self)
+void FireBlastStartThink(edict_t* self)
 {
 	self->svflags |= SVF_NOCLIENT; // Allow transmission to client.
 
@@ -263,14 +263,14 @@ static edict_t* CreateFireWall(const vec3_t start_pos, const vec3_t angles, edic
 	return wall;
 }
 
-static void FireWallMissileWormThink(edict_t* self)
+void FireWallMissileWormThink(edict_t* self)
 {
 	T_DamageRadius(self, self->owner, self->owner, 64.0f, FIREWAVE_WORM_DAMAGE, FIREWAVE_WORM_DAMAGE, DAMAGE_FIRE, MOD_FIREWALL);
 	G_SetToFree(self);
 }
 
 // This called when missile touches anything (world or edict).
-static void FireWallMissileBlocked(edict_t* self, trace_t* trace)
+void FireWallMissileBlocked(edict_t* self, trace_t* trace)
 {
 	assert(trace != NULL);
 
@@ -311,7 +311,7 @@ static void FireWallMissileBlocked(edict_t* self, trace_t* trace)
 }
 
 // Check in the area and try to damage anything in the immediate area.
-static void FireWallMissileThink(edict_t* self)
+void FireWallMissileThink(edict_t* self)
 {
 	// Set up the checking volume
 	vec3_t min = { -self->dmg_radius, -self->dmg_radius, -FIREWAVE_DOWN };
@@ -350,7 +350,7 @@ static void FireWallMissileThink(edict_t* self)
 	self->dmg = max(FIREWAVE_DAMAGE_MIN, self->dmg - 3);
 }
 
-static void FireWallMissileStartThink(edict_t* self)
+void FireWallMissileStartThink(edict_t* self)
 {
 	self->svflags |= SVF_NOCLIENT; // Allow transmission to client.
 

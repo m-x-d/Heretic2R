@@ -16,11 +16,10 @@
 #include "FX.h"
 #include "Random.h"
 #include "Vector.h"
-#include "g_local.h"
 
 #pragma region ========================== func_areaportal ==========================
 
-static void FuncAreaportalUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd. Named 'Use_Areaportal' in original logic.
+void FuncAreaportalUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd. Named 'Use_Areaportal' in original logic.
 {
 	ent->count ^= 1; // Toggle state.
 	gi.SetAreaPortalState(ent->style, ent->count);
@@ -39,7 +38,7 @@ void SP_func_areaportal(edict_t* ent)
 
 #pragma region ========================== path_corner ==========================
 
-static void PathCornerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'path_corner_touch' in original logic.
+void PathCornerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'path_corner_touch' in original logic.
 {
 	if (other->movetarget != self || other->enemy != NULL)
 		return;
@@ -126,7 +125,7 @@ void SP_path_corner(edict_t* self)
 
 #define SF_HOLD	1 //mxd
 
-static void PointCombatTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'point_combat_touch' in original logic.
+void PointCombatTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'point_combat_touch' in original logic.
 {
 	if (other->movetarget != self)
 		return; // Wasn't purposely heading for me.
@@ -226,7 +225,7 @@ void SP_info_notnull(edict_t* self)
 #define SF_ANIMATED			8 //mxd
 #define SF_ANIMATED_FAST	16 //mxd
 
-static void FuncWallUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'func_wall_use' in original logic.
+void FuncWallUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'func_wall_use' in original logic.
 {
 	if (self->solid == SOLID_NOT)
 	{
@@ -301,20 +300,20 @@ void SP_func_wall(edict_t* self)
 
 #pragma region ========================== func_object ==========================
 
-static void FuncObjectTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'func_object_touch' in original logic.
+void FuncObjectTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'func_object_touch' in original logic.
 {
 	// Only squash thing we fall on top of.
 	if (plane != NULL && plane->normal[2] == 1.0f && other->takedamage != DAMAGE_NO)
 		T_Damage(other, self, self, vec3_origin, self->s.origin, vec3_origin, self->dmg, 1, DAMAGE_AVOID_ARMOR, MOD_DIED);
 }
 
-static void FuncObjectRelease(edict_t* self) //mxd. Named 'func_object_release' in original logic.
+void FuncObjectRelease(edict_t* self) //mxd. Named 'func_object_release' in original logic.
 {
 	self->movetype = PHYSICSTYPE_STEP;
 	self->touch = FuncObjectTouch;
 }
 
-static void FuncObjectUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'func_object_use' in original logic.
+void FuncObjectUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'func_object_use' in original logic.
 {
 	self->solid = SOLID_BSP;
 	self->svflags &= ~SVF_NOCLIENT;
@@ -375,7 +374,7 @@ void SP_func_object(edict_t* self)
 
 #define SF_NOFLASH	1 //mxd
 
-static void ItemSpitterUse(edict_t* self, edict_t* owner, edict_t* attacker) //mxd. Named 'ItemSpitterSpit' in original logic.
+void ItemSpitterUse(edict_t* self, edict_t* owner, edict_t* attacker) //mxd. Named 'ItemSpitterSpit' in original logic.
 {
 	if (self->target == NULL || self->style == 0)
 		return;
@@ -449,7 +448,7 @@ void SP_item_spitter(edict_t* self)
 #pragma region ========================== misc_update_spawner ==========================
 
 // Update the spawner so that we will re-materialize in a different position.
-static void MiscUpdateSpawnerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'respawner_touch' in original version,
+void MiscUpdateSpawnerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'respawner_touch' in original version,
 {
 	// If we aren't a player, forget it.
 	if (other->client == NULL)
@@ -631,7 +630,7 @@ void SP_misc_teleporter_dest(edict_t* ent)
 
 #pragma region ========================== misc_magic_portal ==========================
 
-static void MiscMagicPortalTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'misc_magic_portal_touch' in original logic.
+void MiscMagicPortalTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'misc_magic_portal_touch' in original logic.
 {
 	if (level.time < self->touch_debounce_time || other->client == NULL) // Not a player.
 		return;
@@ -645,7 +644,7 @@ static void MiscMagicPortalTouch(edict_t* self, edict_t* other, cplane_t* plane,
 	self->touch_debounce_time = level.time + 4.0f;
 }
 
-static void MiscMagicPortalUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'misc_magic_portal_use' in original logic.
+void MiscMagicPortalUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'misc_magic_portal_use' in original logic.
 {
 	if (level.time < self->impact_debounce_time)
 		return;
@@ -723,7 +722,7 @@ void SP_misc_magic_portal(edict_t* self)
 #define SF_NON_LOCAL	1 //mxd
 #define SF_START_OFF	2 //mxd
 
-static void SoundAmbientThink(edict_t* self) //mxd. Named 'soundambient_think' in original logic.
+void SoundAmbientThink(edict_t* self) //mxd. Named 'soundambient_think' in original logic.
 {
 	const byte b_attenuation = (byte)self->attenuation;
 	const byte b_volume = (byte)(self->volume * 255.0f);
@@ -825,7 +824,7 @@ static void SoundAmbientThink(edict_t* self) //mxd. Named 'soundambient_think' i
 	self->think = NULL;
 }
 
-static void SoundAmbientUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'sound_ambient_use' in original logic.
+void SoundAmbientUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'sound_ambient_use' in original logic.
 {
 	if (self->count != 0) // This is just a flag to show it's on.
 	{
@@ -1210,7 +1209,7 @@ static void MiscRemoteCameraUpdateVieworigin(const edict_t* self) //mxd. Added t
 	}
 }
 
-static void MiscRemoteCameraThink(edict_t* self) //mxd. Named 'misc_remote_camera_think' in original logic.
+void MiscRemoteCameraThink(edict_t* self) //mxd. Named 'misc_remote_camera_think' in original logic.
 {
 	// Attempt to find my owner entity (i.e. what I'm fixed to). If nothing is found, then my position will remain unchanged.
 	if (self->pathtarget != NULL)
@@ -1258,7 +1257,7 @@ static void MiscRemoteCameraThink(edict_t* self) //mxd. Named 'misc_remote_camer
 	}
 }
 
-static void MiscRemoteCameraUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'Use_misc_remote_camera' in original logic.
+void MiscRemoteCameraUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'Use_misc_remote_camera' in original logic.
 {
 	// If I am already active, just return, else flag that I am active.
 	if (self->count != 0)
@@ -1393,7 +1392,7 @@ void SP_misc_remote_camera(edict_t* self)
 
 #define SF_FIREBALL	1 //mxd
 
-static void MiscFireSparkerThink(edict_t* self) //mxd. Named 'fire_spark_think' in original logic.
+void MiscFireSparkerThink(edict_t* self) //mxd. Named 'fire_spark_think' in original logic.
 {
 	if (self->delay > 0.0f && self->delay < level.time)
 	{
@@ -1406,7 +1405,7 @@ static void MiscFireSparkerThink(edict_t* self) //mxd. Named 'fire_spark_think' 
 	}
 }
 
-static void MiscFireSparkerRemove(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fire_spark_gone' in original logic.
+void MiscFireSparkerRemove(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fire_spark_gone' in original logic.
 {
 	self->use = NULL;
 	gi.RemoveEffects(&self->s, FX_SPARKS);
@@ -1414,7 +1413,7 @@ static void MiscFireSparkerRemove(edict_t* self, edict_t* other, edict_t* activa
 	G_FreeEdict(self);
 }
 
-static void MiscFireSparkerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fire_spark_use' in original logic.
+void MiscFireSparkerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fire_spark_use' in original logic.
 {
 	gi.CreateEffect(&self->s, FX_SPARKS, CEF_FLAG6 | CEF_FLAG7 | CEF_FLAG8, self->s.origin, "d", vec3_up);
 
@@ -1446,7 +1445,7 @@ void SP_misc_fire_sparker(edict_t* self)
 
 #pragma region ========================== misc_flag ==========================
 
-static void MiscFlagThink(edict_t* self) //mxd. Named 'flag_think' in original logic.
+void MiscFlagThink(edict_t* self) //mxd. Named 'flag_think' in original logic.
 {
 	if (++self->s.frame > 10)
 		self->s.frame = 0;

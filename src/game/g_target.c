@@ -15,7 +15,7 @@
 
 #pragma region ========================== target_temp_entity ==========================
 
-static void TargetTempEntityUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd. Named 'Use_Target_Tent' in original logic.
+void TargetTempEntityUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd. Named 'Use_Target_Tent' in original logic.
 {
 	if (ent->style <= FX_REMOVE_EFFECTS || ent->style >= NUM_FX) //mxd. Added sanity check.
 	{
@@ -40,7 +40,7 @@ void SP_target_temp_entity(edict_t* ent) //mxd. Unused in original logic.
 
 #pragma region ========================== target_explosion ==========================
 
-static void TargetExplosionExplodeThink(edict_t* self) //mxd. Named 'target_explosion_explode' in original logic.
+void TargetExplosionExplodeThink(edict_t* self) //mxd. Named 'target_explosion_explode' in original logic.
 {
 	gi.CreateEffect(NULL, FX_EXPLOSION1, 0, self->s.origin, NULL); //TODO: sfx is kinda lame... Use whatever obj_barrel uses.
 
@@ -58,7 +58,7 @@ static void TargetExplosionExplodeThink(edict_t* self) //mxd. Named 'target_expl
 	self->think = NULL; //BUGFIX: mxd. Avoid triggering assert in EntityThink() when self->delay > 0...
 }
 
-static void TargetExplosionUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'use_target_explosion' in original logic.
+void TargetExplosionUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'use_target_explosion' in original logic.
 {
 	self->activator = activator;
 
@@ -146,7 +146,7 @@ void SP_target_changelevel(edict_t* ent)
 
 #pragma region ========================== target_crosslevel_trigger ==========================
 
-static void TargetCrosslevelTriggerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_crosslevel_trigger_use' in original logic.
+void TargetCrosslevelTriggerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_crosslevel_trigger_use' in original logic.
 {
 	game.serverflags |= self->spawnflags;
 	G_FreeEdict(self);
@@ -165,7 +165,7 @@ void SP_target_crosslevel_trigger(edict_t* self)
 
 #pragma region ========================== target_crosslevel_target ==========================
 
-static void TargetCrosslevelTargetThink(edict_t* self) //mxd. Named 'target_crosslevel_target_think' in original logic.
+void TargetCrosslevelTargetThink(edict_t* self) //mxd. Named 'target_crosslevel_target_think' in original logic.
 {
 	if ((self->spawnflags & (game.serverflags & CROSSLEVEL_TRIGGER_SF_MASK)) == self->spawnflags)
 	{
@@ -198,7 +198,7 @@ void SP_target_crosslevel_target(edict_t* self)
 
 #define SF_TOGGLE 1 //mxd
 
-static void TargetLightrampThink(edict_t* self) //mxd. Named 'target_lightramp_think' in original logic.
+void TargetLightrampThink(edict_t* self) //mxd. Named 'target_lightramp_think' in original logic.
 {
 	char style[2];
 
@@ -224,7 +224,7 @@ static void TargetLightrampThink(edict_t* self) //mxd. Named 'target_lightramp_t
 	}
 }
 
-static void TargetLightrampUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'target_lightramp_use' in original logic.
+void TargetLightrampUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'target_lightramp_use' in original logic.
 {
 	self->timestamp = level.time;
 	self->think = TargetLightrampThink;
@@ -291,7 +291,7 @@ void SP_target_lightramp(edict_t* self)
 
 #pragma region ========================== target_earthquake ==========================
 
-static void TargetEarthquakeThink(edict_t* self) //mxd. Named 'target_earthquake_think' in original logic.
+void TargetEarthquakeThink(edict_t* self) //mxd. Named 'target_earthquake_think' in original logic.
 {
 	if ((int)sv_jumpcinematic->value) // Don't do this if jumping a cinematic
 	{
@@ -322,7 +322,7 @@ static void TargetEarthquakeThink(edict_t* self) //mxd. Named 'target_earthquake
 		self->think = NULL; //BUGFIX: mxd. Avoid triggering assert in EntityThink()...
 }
 
-static void TargetEarthquakeUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'target_earthquake_use' in original logic.
+void TargetEarthquakeUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'target_earthquake_use' in original logic.
 {
 	if ((int)sv_jumpcinematic->value) // Don't do this if jumping a cinematic.
 		return;

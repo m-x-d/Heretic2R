@@ -7,6 +7,7 @@
 #include "m_seraph_guard.h"
 #include "m_seraph_guard_shared.h"
 #include "m_seraph_guard_anim.h"
+#include "m_seraph_guard_moves.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_playstats.h"
@@ -386,7 +387,7 @@ static void SeraphGuardVoiceSightMsgHandler(edict_t* self, G_Message_t* msg) //m
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void SeraphGuardProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named 'guard_beam_blocked' in original logic.
+void SeraphGuardProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named 'guard_beam_blocked' in original logic.
 {
 	//TODO: re-implement projectile reflecting logic?
 
@@ -404,7 +405,7 @@ static void SeraphGuardProjectileBlocked(edict_t* self, trace_t* trace) //mxd. N
 	G_SetToFree(self);
 }
 
-static void SeraphGuardProjectileThink(edict_t* self) //mxd. Named 'guard_beam_think' in original logic. //TODO: is this needed?..
+void SeraphGuardProjectileThink(edict_t* self) //mxd. Named 'guard_beam_think' in original logic. //TODO: is this needed?..
 {
 	self->think = NULL;
 	self->nextthink = -1.0f;
@@ -533,7 +534,7 @@ static void SeraphGuardThrowLeg(edict_t* self, const int mesh_part) //mxd. Added
 	}
 }
 
-static void SeraphGuardDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'seraph_guard_dismember' in original logic.
+void SeraphGuardDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'seraph_guard_dismember' in original logic.
 {
 	qboolean dismember_ok = false;
 

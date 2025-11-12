@@ -6,6 +6,7 @@
 
 #include "c_morcalavin_anim.h"
 #include "c_ai.h"
+#include "g_local.h"
 
 // Morcalavin idle 1.
 static const animframe_t morcalavin_frames_c_idle1[] =

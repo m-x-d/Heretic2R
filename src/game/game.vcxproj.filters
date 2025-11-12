@@ -672,6 +672,9 @@
     <ClCompile Include="spl_tornado.c">
       <Filter>src\SpellsDefensive</Filter>
     </ClCompile>
+    <ClCompile Include="g_save_defs.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="decals.h">
@@ -1312,6 +1315,132 @@
     </ClInclude>
     <ClInclude Include="spl_tornado.h">
       <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="g_save_defs.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="g_utils.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="c_corvus1_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="c_corvus2_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="c_corvus3_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="c_corvus4_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="c_corvus5_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="c_corvus6_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="c_corvus7_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="c_corvus8_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="c_corvus9_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="c_dranor_moves.h">
+      <Filter>src\Cinematics\Dranor</Filter>
+    </ClInclude>
+    <ClInclude Include="c_elflord_moves.h">
+      <Filter>src\Cinematics\ElfLord</Filter>
+    </ClInclude>
+    <ClInclude Include="c_morcalavin_moves.h">
+      <Filter>src\Cinematics\Morcalavin</Filter>
+    </ClInclude>
+    <ClInclude Include="c_priestess_moves.h">
+      <Filter>src\Cinematics\Priestess</Filter>
+    </ClInclude>
+    <ClInclude Include="c_priestess2_moves.h">
+      <Filter>src\Cinematics\Priestess2</Filter>
+    </ClInclude>
+    <ClInclude Include="c_siernan1_moves.h">
+      <Filter>src\Cinematics\Siernan</Filter>
+    </ClInclude>
+    <ClInclude Include="c_siernan2_moves.h">
+      <Filter>src\Cinematics\Siernan2</Filter>
+    </ClInclude>
+    <ClInclude Include="c_victimSsithra_moves.h">
+      <Filter>src\Cinematics\Sithra victim</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ssithrascout_moves.h">
+      <Filter>src\Cinematics\Ssithra scout</Filter>
+    </ClInclude>
+    <ClInclude Include="c_tome_moves.h">
+      <Filter>src\Cinematics\Tome</Filter>
+    </ClInclude>
+    <ClInclude Include="m_assassin_moves.h">
+      <Filter>src\Monsters\Assassin</Filter>
+    </ClInclude>
+    <ClInclude Include="m_chicken_moves.h">
+      <Filter>src\Monsters\Chicken</Filter>
+    </ClInclude>
+    <ClInclude Include="m_elflord_moves.h">
+      <Filter>src\Monsters\Elf Lord</Filter>
+    </ClInclude>
+    <ClInclude Include="m_fish_moves.h">
+      <Filter>src\Monsters\Fish</Filter>
+    </ClInclude>
+    <ClInclude Include="m_gkrokon_moves.h">
+      <Filter>src\Monsters\Gkrokon</Filter>
+    </ClInclude>
+    <ClInclude Include="m_gorgon_moves.h">
+      <Filter>src\Monsters\Gorgon</Filter>
+    </ClInclude>
+    <ClInclude Include="m_harpy_moves.h">
+      <Filter>src\Monsters\Harpy</Filter>
+    </ClInclude>
+    <ClInclude Include="m_imp_moves.h">
+      <Filter>src\Monsters\Imp</Filter>
+    </ClInclude>
+    <ClInclude Include="m_morcalavin_moves.h">
+      <Filter>src\Monsters\Morcalavin</Filter>
+    </ClInclude>
+    <ClInclude Include="m_mssithra_moves.h">
+      <Filter>src\Monsters\Mutant Ssithra</Filter>
+    </ClInclude>
+    <ClInclude Include="m_ogle_moves.h">
+      <Filter>src\Monsters\Ogle</Filter>
+    </ClInclude>
+    <ClInclude Include="m_plagueElf_moves.h">
+      <Filter>src\Monsters\Plague Elf</Filter>
+    </ClInclude>
+    <ClInclude Include="m_beast_moves.h">
+      <Filter>src\Monsters\Trial Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="m_mother_moves.h">
+      <Filter>src\Monsters\TcheckrikMother</Filter>
+    </ClInclude>
+    <ClInclude Include="m_tcheckrik_moves.h">
+      <Filter>src\Monsters\Tcheckrik</Filter>
+    </ClInclude>
+    <ClInclude Include="m_spreader_moves.h">
+      <Filter>src\Monsters\Spreader</Filter>
+    </ClInclude>
+    <ClInclude Include="m_seraph_guard_moves.h">
+      <Filter>src\Monsters\SeraphGuard</Filter>
+    </ClInclude>
+    <ClInclude Include="m_seraph_moves.h">
+      <Filter>src\Monsters\Seraph</Filter>
+    </ClInclude>
+    <ClInclude Include="m_rat_moves.h">
+      <Filter>src\Monsters\Rat</Filter>
+    </ClInclude>
+    <ClInclude Include="m_priestess_moves.h">
+      <Filter>src\Monsters\Priestess</Filter>
+    </ClInclude>
+    <ClInclude Include="m_plagueSsithra_moves.h">
+      <Filter>src\Monsters\Plague Ssithra</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

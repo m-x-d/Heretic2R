@@ -6,6 +6,7 @@
 
 #include "c_morcalavin.h"
 #include "c_morcalavin_anim.h"
+#include "c_morcalavin_moves.h"
 #include "c_ai.h"
 #include "Utilities.h"
 #include "Vector.h"

@@ -5,8 +5,9 @@
 //
 
 #include "m_fish.h"
-#include "m_fish_shared.h"
 #include "m_fish_anim.h"
+#include "m_fish_moves.h"
+#include "m_fish_shared.h"
 #include "m_stats.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
@@ -259,7 +260,7 @@ static void FishPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fi
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic.
+void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic.
 {
 	// Determine if we are too far from the camera to warrant animating or AI.
 	if (!gi.CheckDistances(self->s.origin, FISH_ACTIVATE_DISTANCE)) //mxd. Merged fish_check_distance() logic.
@@ -370,7 +371,7 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 }
 
 // The fish hit something.
-static void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fish_blocked' in original logic.
+void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fish_blocked' in original logic.
 {
 	// Dead fish don't rebound off stuff.
 	if (self->dead_state == DEAD_DEAD)

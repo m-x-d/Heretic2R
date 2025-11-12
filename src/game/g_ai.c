@@ -832,7 +832,7 @@ static qboolean FacingIdeal(const edict_t* self)
 	return (delta <= 45.0f || delta >= 315.0f);
 }
 
-qboolean M_CheckAttack(edict_t* self) //TODO: move to g_monster.c, make static.
+qboolean M_CheckAttack(edict_t* self) //TODO: move to g_monster.c?
 {
 	if (self->enemy->health > 0)
 	{

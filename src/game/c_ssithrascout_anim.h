@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "g_local.h"
-
 #pragma region ========================== Model definitions ==========================
 
 #define FRAME_ss_breath1      	0
@@ -639,20 +637,12 @@ typedef enum AnimID_e
 	ANIM_C_IDLE1,
 	ANIM_C_IDLE2,
 	ANIM_C_IDLE3,
+
 	NUM_ANIMS
 } AnimID_t;
 
-extern const animmove_t scout_move_c_action1;
-extern const animmove_t scout_move_c_action2;
-extern const animmove_t scout_move_c_action3;
-extern const animmove_t scout_move_c_action4;
-extern const animmove_t scout_move_c_action5;
-extern const animmove_t scout_move_c_action6;
-extern const animmove_t scout_move_c_action7;
-extern const animmove_t scout_move_c_action8;
-extern const animmove_t scout_move_c_action9;
-extern const animmove_t scout_move_c_action10;
-extern const animmove_t scout_move_c_death1;
-extern const animmove_t scout_move_c_idle1;
-extern const animmove_t scout_move_c_idle2;
-extern const animmove_t scout_move_c_idle3;
+typedef enum C_SsithraScoutSoundID_e
+{
+	SND_PAIN1,
+	NUM_SOUNDS
+} C_SsithraScoutSoundID_t;

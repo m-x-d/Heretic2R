@@ -10,5 +10,10 @@
 
 extern void SP_func_plat(edict_t* ent);
 
-//mxd. Local forward declarations for g_func_Plat.c:
-static void FuncPlatGoDown(edict_t* ent);
+//mxd. Required by save system...
+extern void FuncPlatBlocked(edict_t* self, edict_t* other);
+extern void FuncPlatCenterTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf);
+extern void FuncPlatUse(edict_t* ent, edict_t* other, edict_t* activator);
+extern void FuncPlatGoDown(edict_t* ent);
+extern void FuncPlatHitBottom(edict_t* ent);
+extern void FuncPlatHitTop(edict_t* ent);

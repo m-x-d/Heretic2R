@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "g_local.h" //mxd
+#include "g_Edict.h" //mxd
 
 typedef enum AnimID_e
 {
@@ -43,22 +43,6 @@ typedef enum SoundID_e
 
 	NUM_SOUNDS
 } SoundID_t;
-
-extern const animmove_t imp_move_die1;
-extern const animmove_t imp_move_fly1;
-extern const animmove_t imp_move_flyback;
-extern const animmove_t imp_move_hover1;
-extern const animmove_t imp_move_fireball;
-extern const animmove_t imp_move_dive_go;
-extern const animmove_t imp_move_dive_loop;
-extern const animmove_t imp_move_dive_end;
-extern const animmove_t imp_move_dive_out;
-extern const animmove_t imp_move_pain1;
-extern const animmove_t imp_move_tumble;
-extern const animmove_t imp_move_takeoff;
-extern const animmove_t imp_move_perch;
-extern const animmove_t imp_move_dup;
-extern const animmove_t imp_move_ddown;
 
 extern void imp_ai_fly(edict_t* self, float forward_offset, float right_offset, float up_offset);
 extern void imp_ai_perch(edict_t* self);

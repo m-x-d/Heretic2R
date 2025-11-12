@@ -6,6 +6,7 @@
 
 #include "m_imp.h"
 #include "m_imp_shared.h"
+#include "m_imp_moves.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
@@ -277,7 +278,7 @@ static void ImpWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'im
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void ImpIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'imp_blocked' in original logic.
+void ImpIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'imp_blocked' in original logic.
 {
 	if (self->health <= 0 || trace->ent == NULL)
 		return;
@@ -815,7 +816,7 @@ static void ImpFireballFizzle(edict_t* self) //mxd. Named 'FireFizzle' in origin
 	G_SetToFree(self);
 }
 
-static void ImpFireballBlocked(edict_t* self, trace_t* trace) //mxd. Named 'fireball_blocked' in original logic.
+void ImpFireballBlocked(edict_t* self, trace_t* trace) //mxd. Named 'fireball_blocked' in original logic.
 {
 	if (trace->surface != NULL && (trace->surface->flags & SURF_SKY))
 	{

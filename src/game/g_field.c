@@ -31,7 +31,7 @@ static void InitField(edict_t* self)
 
 #pragma region ========================== trigger_fogdensity ==========================
 
-static void FogDensityTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'FogDensity_touch' in original logic.
+void FogDensityTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'FogDensity_touch' in original logic.
 {
 	// Only players can know about fog density changes
 	if (other->client != NULL)
@@ -57,7 +57,7 @@ void SP_trigger_fogdensity(edict_t* self)
 
 #define SF_FORCE_ONCE	1
 
-static void TriggerPushTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'push_touch' in original logic.
+void TriggerPushTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'push_touch' in original logic.
 {
 	if (other->health > 0)
 	{
@@ -83,7 +83,7 @@ static void TriggerPushTouch(edict_t* self, edict_t* other, cplane_t* plane, csu
 		G_FreeEdict(self);
 }
 
-static void TriggerPushActivated(edict_t* self, edict_t* activator) //mxd. Named 'push_touch_trigger' in original logic.
+void TriggerPushActivated(edict_t* self, edict_t* activator) //mxd. Named 'push_touch_trigger' in original logic.
 {
 	TriggerPushTouch(self, activator, NULL, NULL);
 }
@@ -143,7 +143,7 @@ void SP_trigger_push(edict_t* self)
 #define SF_NO_PROTECTION	8 //mxd
 #define SF_SLOW				16 //mxd
 
-static void TriggerDamageUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'DamageField_Use' in original logic.
+void TriggerDamageUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'DamageField_Use' in original logic.
 {
 	self->solid = ((self->solid == SOLID_NOT) ? SOLID_TRIGGER : SOLID_NOT);
 
@@ -151,7 +151,7 @@ static void TriggerDamageUse(edict_t* self, edict_t* other, edict_t* activator) 
 		self->use = NULL;
 }
 
-static void TriggerDamageTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'DamageField_Touch' in original logic.
+void TriggerDamageTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'DamageField_Touch' in original logic.
 {
 	if (other->takedamage == DAMAGE_NO || self->timestamp > level.time)
 		return;
@@ -228,7 +228,7 @@ void SP_trigger_damage(edict_t* self)
 
 #pragma region ========================== trigger_gravity ==========================
 
-static void TriggerGravityTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'GravityField_Touch' in original logic.
+void TriggerGravityTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'GravityField_Touch' in original logic.
 {
 	other->gravity = self->gravity;
 	G_UseTargets(self, self);
@@ -257,7 +257,7 @@ void SP_trigger_gravity(edict_t* self)
 
 #pragma region ========================== trigger_monsterjump ==========================
 
-static void TriggerMonsterJumpTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'MonsterJumpField_Touch' in original logic.
+void TriggerMonsterJumpTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'MonsterJumpField_Touch' in original logic.
 {
 	if ((other->flags & (FL_FLY | FL_SWIM)) || (other->svflags & SVF_DEADMONSTER) || !(other->svflags & SVF_MONSTER))
 		return;
@@ -368,13 +368,13 @@ static void TriggerGotoBuoyExecute(const edict_t* self, edict_t* monster, edict_
 	}
 }
 
-static void TriggerGotoBuoyTouchThink(edict_t* self) //mxd. Named 'trigger_goto_buoy_touch_go' in original logic.
+void TriggerGotoBuoyTouchThink(edict_t* self) //mxd. Named 'trigger_goto_buoy_touch_go' in original logic.
 {
 	if (self->enemy != NULL && self->enemy->health > 0 && (self->enemy->svflags & SVF_MONSTER) && (self->enemy->monsterinfo.aiflags & AI_USING_BUOYS))
 		TriggerGotoBuoyExecute(self, self->enemy, self->activator);
 }
 
-static void TriggerGotoBuoyTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'trigger_goto_buoy_touch' in original logic.
+void TriggerGotoBuoyTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'trigger_goto_buoy_touch' in original logic.
 {
 	if (level.time < self->air_finished || other->health <= 0 || !(other->svflags & SVF_MONSTER) || !(other->monsterinfo.aiflags & AI_USING_BUOYS))
 		return;
@@ -403,7 +403,7 @@ static void TriggerGotoBuoyTouch(edict_t* self, edict_t* other, cplane_t* plane,
 	}
 }
 
-static void TriggerGotoBuoyUseThink(edict_t* self) //mxd. Named 'trigger_goto_buoy_use_go' in original logic.
+void TriggerGotoBuoyUseThink(edict_t* self) //mxd. Named 'trigger_goto_buoy_use_go' in original logic.
 {
 	edict_t* monster = NULL;
 	monster = G_Find(monster, FOFS(targetname), self->target);
@@ -414,7 +414,7 @@ static void TriggerGotoBuoyUseThink(edict_t* self) //mxd. Named 'trigger_goto_bu
 		gi.dprintf("ERROR: trigger_goto_buoy can't find it's target monster %s\n", self->pathtarget);
 }
 
-static void TriggerGotoBuoyUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_goto_buoy_use' in original logic.
+void TriggerGotoBuoyUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_goto_buoy_use' in original logic.
 {
 	if (level.time < self->air_finished)
 		return;

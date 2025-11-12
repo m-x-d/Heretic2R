@@ -11,7 +11,7 @@
 
 #pragma region ========================== env_dust, env_muck ==========================
 
-static void EnvDustUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'env_dust_use' in original logic.
+void EnvDustUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'env_dust_use' in original logic.
 {
 	gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_middle, 2.0f, ATTN_NORM, 0.0f); //TODO: why volume is 2.0?
 
@@ -78,7 +78,7 @@ static void SetupEnvSmokeEffect(edict_t* self) //mxd. Added to reduce code dupli
 	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_ENVSMOKE, CEF_BROADCAST, self->s.origin, "bdbbb", scale, dir, speed, wait, max_range);
 }
 
-static void EnvSmokeUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'smoke_use' in original logic.
+void EnvSmokeUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'smoke_use' in original logic.
 {
 	if (self->spawnflags & SF_START_OFF)
 	{

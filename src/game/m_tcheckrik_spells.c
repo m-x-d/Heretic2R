@@ -18,9 +18,7 @@
 
 #pragma region ========================== Insect staff bolt spell ==========================
 
-static void InsectStaffBoltInit(edict_t* bolt); //TODO: remove.
-
-static void InsectStaffBoltThink(edict_t* self) //mxd. Named 'InsectStaffThink' in original logic.
+void InsectStaffBoltThink(edict_t* self) //mxd. Named 'InsectStaffThink' in original logic.
 {
 	vec3_t forward;
 
@@ -50,7 +48,7 @@ static void InsectStaffBoltThink(edict_t* self) //mxd. Named 'InsectStaffThink' 
 	self->think = NULL;
 }
 
-static void InsectStaffBoltTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'InsectStaffTouch' in original logic.
+void InsectStaffBoltTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'InsectStaffTouch' in original logic.
 {
 	if (surface != NULL && (surface->flags & SURF_SKY))
 	{
@@ -161,7 +159,7 @@ void SpellCastInsectStaff(edict_t* caster, const vec3_t start_pos, const vec3_t 
 
 #pragma region ========================== Insect globe of ouchiness spell ==========================
 
-static void InsectGlobeOfOuchinessGrowThink(edict_t* self) //mxd. Named 'GlobeOfOuchinessGrowThink' in original logic.
+void InsectGlobeOfOuchinessGrowThink(edict_t* self) //mxd. Named 'GlobeOfOuchinessGrowThink' in original logic.
 {
 	if (self->owner->s.effects & EF_DISABLE_EXTRA_FX)
 	{
@@ -244,8 +242,6 @@ void SpellCastGlobeOfOuchiness(edict_t* caster, const vec3_t start_pos, const ve
 
 #pragma region ========================== Insect spear projectile spell ==========================
 
-static void InsectSpearProjectileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface);
-
 // Guts of creating a spear projectile.
 static void InsectSpearProjectileInit(edict_t* proj) //mxd. Named 'create_spearproj' in original logic.
 {
@@ -310,7 +306,7 @@ edict_t* SpearProjReflect(edict_t* self, edict_t* other, vec3_t vel) //TODO: ren
 	return proj;
 }
 
-static void InsectSpearProjectileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'SpearProjTouch' in original logic.
+void InsectSpearProjectileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'SpearProjTouch' in original logic.
 {
 	// Did we hit the sky ? 
 	if (surface != NULL && (surface->flags & SURF_SKY))
@@ -404,7 +400,7 @@ static void InsectTrackingSpearProjectileHomeIn(edict_t* self) //mxd. Named 'pro
 }
 
 // This function will make a projectile wander from it's course in a random manner.
-static void InsectTrackingSpearProjectileThink(edict_t* self) //mxd. Named 'yellowjacket_proj_think' in original logic.
+void InsectTrackingSpearProjectileThink(edict_t* self) //mxd. Named 'yellowjacket_proj_think' in original logic.
 {
 	// No enemy, stop tracking.
 	if (self->enemy == NULL)

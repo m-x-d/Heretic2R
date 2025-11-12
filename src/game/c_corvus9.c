@@ -6,10 +6,11 @@
 
 #include "c_corvus9.h"
 #include "c_corvus9_anim.h"
+#include "c_corvus9_moves.h"
 #include "c_ai.h"
 #include "Utilities.h"
 
-// Corvus8 cinematic actions.
+// Corvus9 cinematic actions.
 static const animmove_t* animations[NUM_ANIMS] =
 {
 	&corvus9_move_c_action1,

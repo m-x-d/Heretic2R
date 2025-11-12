@@ -9,13 +9,13 @@
 
 #define SF_START_ON	1 //mxd
 
-static void FuncTimerThink(edict_t* self) //mxd. Named 'func_timer_think' in original logic.
+void FuncTimerThink(edict_t* self) //mxd. Named 'func_timer_think' in original logic.
 {
 	G_UseTargets(self, self->activator);
 	self->nextthink = level.time + self->wait + flrand(-self->random, self->random);
 }
 
-static void FuncTimerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'func_timer_use' in original logic.
+void FuncTimerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'func_timer_use' in original logic.
 {
 	self->activator = activator;
 

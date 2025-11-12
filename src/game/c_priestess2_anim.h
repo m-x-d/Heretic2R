@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "g_local.h"
-
 #pragma region ========================== Model definitions ==========================
 
 #define FRAME_hpod1           	0
@@ -499,14 +497,6 @@ typedef enum AnimID_e
 	ANIM_C_ACTION6,
 	ANIM_C_ACTION7,
 	ANIM_C_IDLE1,
+
 	NUM_ANIMS
 } AnimID_t;
-
-extern const animmove_t priestess2_move_c_action1;
-extern const animmove_t priestess2_move_c_action2;
-extern const animmove_t priestess2_move_c_action3;
-extern const animmove_t priestess2_move_c_action4;
-extern const animmove_t priestess2_move_c_action5;
-extern const animmove_t priestess2_move_c_action6;
-extern const animmove_t priestess2_move_c_action7;
-extern const animmove_t priestess2_move_c_idle1;

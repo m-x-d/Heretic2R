@@ -9,6 +9,7 @@
 #include "m_assassin_local.h" //mxd
 #include "m_assassin_shared.h" //mxd
 #include "m_assassin_anim.h"
+#include "m_assassin_moves.h"
 #include "c_ai.h"
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
@@ -120,7 +121,7 @@ edict_t* AssassinDaggerReflect(edict_t* self, edict_t* other, const vec3_t vel) 
 	return dagger;
 }
 
-static void AssassinDaggerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'assassinDaggerTouch' in original logic.
+void AssassinDaggerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'assassinDaggerTouch' in original logic.
 {
 	if (other == self->owner || other->owner == self->owner)
 		return;
@@ -288,7 +289,7 @@ static qboolean AssassinCheckDeCloak(const edict_t* self) //mxd. Named 'assassin
 	return (irand(0, 10 + SKILL * 2 + chance) <= 0);
 }
 
-static void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThink' in original logic.
+void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThink' in original logic.
 {
 	self->next_pre_think = level.time + FRAMETIME;
 
@@ -443,7 +444,7 @@ static void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThin
 		MG_CheckEvade(self);
 }
 
-static void AssassinCloakFadePreThink(edict_t* self) //mxd. Named 'assassinCloak' in original logic.
+void AssassinCloakFadePreThink(edict_t* self) //mxd. Named 'assassinCloak' in original logic.
 {
 #define FADE_INCREMENT	15 //mxd
 
@@ -463,7 +464,7 @@ static void AssassinCloakFadePreThink(edict_t* self) //mxd. Named 'assassinCloak
 		MG_CheckEvade(self);
 }
 
-static void AssassinDeCloakFadePreThink(edict_t* self) //mxd. Named 'assassinDeCloak' in original logic.
+void AssassinDeCloakFadePreThink(edict_t* self) //mxd. Named 'assassinDeCloak' in original logic.
 {
 	if (!(self->s.renderfx & RF_ALPHA_TEXTURE))
 		return;
@@ -1437,7 +1438,7 @@ static void AssassinThrowLowerLeg(edict_t* self, const float damage, const int m
 	}
 }
 
-static void AssassinDismember(edict_t* self, const int damage, HitLocation_t hl) //mxd. Named 'assassin_dismember' in original logic.
+void AssassinDismember(edict_t* self, const int damage, HitLocation_t hl) //mxd. Named 'assassin_dismember' in original logic.
 {
 	qboolean dismember_ok = false;
 
@@ -2047,7 +2048,7 @@ static void AssassinCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) /
 #pragma region ========================== Edict callbacks ==========================
 
 // Assigned to 'isBlocked' and 'bounce' callbacks.
-static void AssassinBlocked(edict_t* self, trace_t* trace) //mxd. Named 'assassin_Touch' in original logic.
+void AssassinBlocked(edict_t* self, trace_t* trace) //mxd. Named 'assassin_Touch' in original logic.
 {
 	if (self->health <= 0 || trace == NULL)
 		return;
@@ -2085,7 +2086,7 @@ static void AssassinBlocked(edict_t* self, trace_t* trace) //mxd. Named 'assassi
 	//FIXME: else backflip off walls! Too late to implement.
 }
 
-static void AssassinCheckDefenseThink(edict_t* self, float enemy_dist, qboolean enemy_vis, qboolean enemy_infront) //mxd. Named 'assassinCheckDefense' in original logic.
+void AssassinCheckDefenseThink(edict_t* self, float enemy_dist, qboolean enemy_vis, qboolean enemy_infront) //mxd. Named 'assassinCheckDefense' in original logic.
 {
 	if (!enemy_infront && enemy_vis && enemy_dist < self->melee_range)
 	{

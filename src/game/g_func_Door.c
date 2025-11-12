@@ -27,7 +27,7 @@ static void FuncDoorUseAreaportals(const edict_t* self, const qboolean open) //m
 			gi.SetAreaPortalState(target->style, open);
 }
 
-static void FuncDoorHitTop(edict_t* self) //mxd. Named 'door_hit_top' in original logic.
+void FuncDoorHitTop(edict_t* self) //mxd. Named 'door_hit_top' in original logic.
 {
 	FuncPlayMoveEndSound(self); //mxd
 	self->moveinfo.state = STATE_TOP;
@@ -47,7 +47,7 @@ static void FuncDoorHitTop(edict_t* self) //mxd. Named 'door_hit_top' in origina
 	}
 }
 
-static void FuncDoorHitBottom(edict_t* self) //mxd. Named 'door_hit_bottom' in original logic.
+void FuncDoorHitBottom(edict_t* self) //mxd. Named 'door_hit_bottom' in original logic.
 {
 	FuncPlayMoveEndSound(self); //mxd
 	self->moveinfo.state = STATE_BOTTOM;
@@ -58,7 +58,7 @@ static void FuncDoorHitBottom(edict_t* self) //mxd. Named 'door_hit_bottom' in o
 		FuncDoorUseAreaportals(self, false);
 }
 
-static void FuncDoorGoDown(edict_t* self) //mxd. Named 'door_go_down' in original logic.
+void FuncDoorGoDown(edict_t* self) //mxd. Named 'door_go_down' in original logic.
 {
 	FuncPlayMoveStartSound(self); //mxd
 
@@ -135,7 +135,7 @@ static qboolean FuncDoorSmartSideCheck(const edict_t* self, const edict_t* activ
 	return DotProduct(normal, to_player) < 0.0f;
 }
 
-static void FuncDoorUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'smart_door_side_check' in original logic.
+void FuncDoorUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'smart_door_side_check' in original logic.
 {
 	if (Vec3IsZero(self->avelocity) && strcmp(self->classname, "func_door_rotating") == 0 && (self->spawnflags & SF_DOOR_SWINGAWAY))
 	{
@@ -170,7 +170,7 @@ static void FuncDoorUse(edict_t* self, edict_t* other, edict_t* activator) //mxd
 	}
 }
 
-static void FuncDoorTriggerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_DoorTrigger' in original logic.
+void FuncDoorTriggerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_DoorTrigger' in original logic.
 {
 	if (other->health <= 0 || (!(other->svflags & SVF_MONSTER) && other->client == NULL))
 		return;
@@ -185,7 +185,7 @@ static void FuncDoorTriggerTouch(edict_t* self, edict_t* other, cplane_t* plane,
 	FuncDoorUse(self->owner, other, other);
 }
 
-static void FuncDoorCalcMoveSpeedThink(edict_t* self) //mxd. Named 'Think_CalcMoveSpeed' in original logic.
+void FuncDoorCalcMoveSpeedThink(edict_t* self) //mxd. Named 'Think_CalcMoveSpeed' in original logic.
 {
 	if (self->flags & FL_TEAMSLAVE)
 	{
@@ -227,7 +227,7 @@ static void FuncDoorCalcMoveSpeedThink(edict_t* self) //mxd. Named 'Think_CalcMo
 	self->think = NULL;
 }
 
-static void FuncDoorSpawnDoorTriggerThink(edict_t* self) //mxd. Named 'Think_SpawnDoorTrigger' in original logic.
+void FuncDoorSpawnDoorTriggerThink(edict_t* self) //mxd. Named 'Think_SpawnDoorTrigger' in original logic.
 {
 	self->think = NULL;
 
@@ -269,7 +269,7 @@ static void FuncDoorSpawnDoorTriggerThink(edict_t* self) //mxd. Named 'Think_Spa
 	gi.linkentity(trigger);
 }
 
-static void FuncDoorBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_blocked' in original logic.
+void FuncDoorBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_blocked' in original logic.
 {
 	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_BOSS))
 	{
@@ -307,7 +307,7 @@ static void FuncDoorBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_bl
 	}
 }
 
-static void FuncDoorDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'door_killed' in original logic.
+void FuncDoorDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'door_killed' in original logic.
 {
 	for (edict_t* ent = self->teammaster; ent != NULL; ent = ent->teamchain)
 	{
@@ -318,7 +318,7 @@ static void FuncDoorDie(edict_t* self, edict_t* inflictor, edict_t* attacker, in
 	FuncDoorUse(self->teammaster, attacker, attacker);
 }
 
-static void FuncDoorTouch(edict_t* self, trace_t* trace) //mxd. Named 'door_killed' in original logic.
+void FuncDoorTouch(edict_t* self, trace_t* trace) //mxd. Named 'door_killed' in original logic.
 {
 	const edict_t* other = trace->ent;
 
@@ -693,7 +693,7 @@ void SP_func_water(edict_t* self)
 #define SF_SECRET_1ST_LEFT		2
 #define SF_SECRET_1ST_DOWN		4
 
-static void FuncDoorSecretUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'door_secret_use' in original logic.
+void FuncDoorSecretUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'door_secret_use' in original logic.
 {
 	// Make sure we're not already moving.
 	if (!VectorCompare(self->s.origin, vec3_origin))
@@ -706,13 +706,13 @@ static void FuncDoorSecretUse(edict_t* self, edict_t* other, edict_t* activator)
 	FuncDoorUseAreaportals(self, true);
 }
 
-static void FuncDoorSecretMove1(edict_t* self) //mxd. Named 'door_secret_move1' in original logic.
+void FuncDoorSecretMove1(edict_t* self) //mxd. Named 'door_secret_move1' in original logic.
 {
 	self->nextthink = level.time + 1.0f;
 	self->think = FuncDoorSecretMove2;
 }
 
-static void FuncDoorSecretMove2(edict_t* self) //mxd. Named 'door_secret_move2' in original logic.
+void FuncDoorSecretMove2(edict_t* self) //mxd. Named 'door_secret_move2' in original logic.
 {
 	if (self->moveinfo.sound_middle > 0)
 		gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_middle, 1.0f, ATTN_IDLE, 0.0f);
@@ -720,7 +720,7 @@ static void FuncDoorSecretMove2(edict_t* self) //mxd. Named 'door_secret_move2' 
 	MoveCalc(self, self->pos2, FuncDoorSecretMove3);
 }
 
-static void FuncDoorSecretMove3(edict_t* self) //mxd. Named 'door_secret_move3' in original logic.
+void FuncDoorSecretMove3(edict_t* self) //mxd. Named 'door_secret_move3' in original logic.
 {
 	if (self->moveinfo.sound_end > 0)
 		gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_end, 1.0f, ATTN_IDLE, 0.0f);
@@ -732,7 +732,7 @@ static void FuncDoorSecretMove3(edict_t* self) //mxd. Named 'door_secret_move3' 
 	}
 }
 
-static void FuncDoorSecretMove4(edict_t* self) //mxd. Named 'door_secret_move4' in original logic.
+void FuncDoorSecretMove4(edict_t* self) //mxd. Named 'door_secret_move4' in original logic.
 {
 	if (self->moveinfo.sound_middle > 0)
 		gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_middle, 1.0f, ATTN_IDLE, 0.0f);
@@ -740,7 +740,7 @@ static void FuncDoorSecretMove4(edict_t* self) //mxd. Named 'door_secret_move4' 
 	MoveCalc(self, self->pos1, FuncDoorSecretMove5);
 }
 
-static void FuncDoorSecretMove5(edict_t* self) //mxd. Named 'door_secret_move5' in original logic.
+void FuncDoorSecretMove5(edict_t* self) //mxd. Named 'door_secret_move5' in original logic.
 {
 	if (self->moveinfo.sound_end > 0)
 		gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_end, 1.0f, ATTN_IDLE, 0.0f);
@@ -749,7 +749,7 @@ static void FuncDoorSecretMove5(edict_t* self) //mxd. Named 'door_secret_move5' 
 	self->think = FuncDoorSecretMove6;
 }
 
-static void FuncDoorSecretMove6(edict_t* self) //mxd. Named 'door_secret_move6' in original logic.
+void FuncDoorSecretMove6(edict_t* self) //mxd. Named 'door_secret_move6' in original logic.
 {
 	if (self->moveinfo.sound_start > 0)
 		gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_start, 1.0f, ATTN_IDLE, 0.0f);
@@ -757,7 +757,7 @@ static void FuncDoorSecretMove6(edict_t* self) //mxd. Named 'door_secret_move6' 
 	MoveCalc(self, vec3_origin, FuncDoorSecretDone);
 }
 
-static void FuncDoorSecretDone(edict_t* self) //mxd. Named 'door_secret_done' in original logic.
+void FuncDoorSecretDone(edict_t* self) //mxd. Named 'door_secret_done' in original logic.
 {
 	if (self->targetname == NULL || (self->spawnflags & SF_SECRET_ALWAYS_SHOOT))
 	{
@@ -768,7 +768,7 @@ static void FuncDoorSecretDone(edict_t* self) //mxd. Named 'door_secret_done' in
 	FuncDoorUseAreaportals(self, false);
 }
 
-static void FuncDoorSecretBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_secret_blocked' in original logic.
+void FuncDoorSecretBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_secret_blocked' in original logic.
 {
 	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_BOSS))
 	{
@@ -789,7 +789,7 @@ static void FuncDoorSecretBlocked(edict_t* self, edict_t* other) //mxd. Named 'd
 	}
 }
 
-static void FuncDoorSecretDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'door_secret_die' in original logic.
+void FuncDoorSecretDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'door_secret_die' in original logic.
 {
 	self->takedamage = DAMAGE_NO;
 	FuncDoorSecretUse(self, attacker, attacker);

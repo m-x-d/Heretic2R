@@ -7,6 +7,7 @@
 #include "m_morcalavin.h"
 #include "m_morcalavin_shared.h"
 #include "m_morcalavin_anim.h"
+#include "m_morcalavin_moves.h"
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
 #include "g_playstats.h"
@@ -50,7 +51,7 @@ static int sounds[NUM_SOUNDS];
 
 #pragma region ========================== Morcalavin projectiles utility functions =========================
 
-static void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj1_blocked' in original logic.
+void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj1_blocked' in original logic.
 {
 	if (trace->ent == self->owner || Q_stricmp(trace->ent->classname, "Morcalavin_Missile") == 0) //mxd. stricmp -> Q_stricmp
 		return;
@@ -91,7 +92,7 @@ static void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. N
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void MorcalavinProjectile2Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj2_blocked' in original logic.
+void MorcalavinProjectile2Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj2_blocked' in original logic.
 {
 	if (trace->ent == self->owner)
 		return;
@@ -132,7 +133,7 @@ static void MorcalavinProjectile2Blocked(edict_t* self, trace_t* trace) //mxd. N
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void MorcalavinProjectile3Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj3_blocked' in original logic.
+void MorcalavinProjectile3Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj3_blocked' in original logic.
 {
 	if (trace->ent == self->owner)
 		return;
@@ -202,7 +203,7 @@ static void MorcalavinProjectileInit(edict_t* self, edict_t* proj) //mxd. Named 
 
 #pragma region ========================== Morcalavin big shot =========================
 
-static void MorcalavinLightning2Think(edict_t* self) //mxd. Named 'morcalavin_check_lightning2' in original logic.
+void MorcalavinLightning2Think(edict_t* self) //mxd. Named 'morcalavin_check_lightning2' in original logic.
 {
 	if (self->owner->enemy == NULL)
 	{
@@ -279,7 +280,7 @@ void morcalavin_big_shot(edict_t* self)
 
 #pragma region ========================== Morcalavin tracking projectile =========================
 
-static void MorcalavinTrackingProjectileThink(edict_t* self) //mxd. Named 'morcalavin_proj_track' in original logic.
+void MorcalavinTrackingProjectileThink(edict_t* self) //mxd. Named 'morcalavin_proj_track' in original logic.
 {
 	// No enemy or enemy is dead, stop tracking.
 	if (self->enemy == NULL || self->enemy->health <= 0)
@@ -397,7 +398,7 @@ void morcalavin_tracking_projectile(edict_t* self, float pitch, float yaw, float
 
 #pragma region ========================== Morcalavin beam and beam 2 =========================
 
-static void MorcalavinBeamIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'beam_blocked' in original logic.
+void MorcalavinBeamIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'beam_blocked' in original logic.
 {
 	if (trace->ent->takedamage != DAMAGE_NO)
 	{
@@ -415,7 +416,7 @@ static void MorcalavinBeamIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 
 	G_SetToFree(self);
 }
 
-static void MorcalavinBeamThink(edict_t* self) //mxd. Named 'beam_think' in original logic. //TODO: doesn't do anything useful. Can be removed?
+void MorcalavinBeamThink(edict_t* self) //mxd. Named 'beam_think' in original logic. //TODO: doesn't do anything useful. Can be removed?
 {
 	self->think = NULL;
 	self->nextthink = THINK_NEVER; //mxd. Use define.
@@ -504,7 +505,7 @@ void morcalavin_beam2(edict_t* self)
 
 #pragma region ========================== Morcalavin missile =========================
 
-static void MorcalavinLightningThink(edict_t* self) //mxd. Named 'morcalavin_check_lightning' in original logic.
+void MorcalavinLightningThink(edict_t* self) //mxd. Named 'morcalavin_check_lightning' in original logic.
 {
 	if (self->owner == NULL || self->owner->enemy == NULL)
 	{
@@ -543,7 +544,7 @@ static void MorcalavinLightningThink(edict_t* self) //mxd. Named 'morcalavin_che
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void MorcalavinMissileThink(edict_t* self) //mxd. Named 'morcalavin_missile_update' in original logic.
+void MorcalavinMissileThink(edict_t* self) //mxd. Named 'morcalavin_missile_update' in original logic.
 {
 	vec3_t forward;
 	vec3_t right;
@@ -849,7 +850,7 @@ static void MorcalavinTeleportAttack(edict_t* self) //mxd. Named 'morcalavin_tel
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void MorcalavinPhaseOutPreThink(edict_t* self) //mxd. Named 'morcalavin_phase_out' in original logic.
+void MorcalavinPhaseOutPreThink(edict_t* self) //mxd. Named 'morcalavin_phase_out' in original logic.
 {
 #define PHASE_OUT_INTERVAL	40 //mxd
 
@@ -866,7 +867,7 @@ static void MorcalavinPhaseOutPreThink(edict_t* self) //mxd. Named 'morcalavin_p
 	}
 }
 
-static void MorcalavinPhaseInPreThink(edict_t* self) //mxd. Named 'morcalavin_phase_in' in original logic.
+void MorcalavinPhaseInPreThink(edict_t* self) //mxd. Named 'morcalavin_phase_in' in original logic.
 {
 #define PHASE_IN_INTERVAL	12 //mxd
 
@@ -892,7 +893,7 @@ static void MorcalavinPhaseInPreThink(edict_t* self) //mxd. Named 'morcalavin_ph
 	}
 }
 
-static void MorcalavinLaughPostThink(edict_t* self) //mxd. Named 'mork_laugh' in original logic.
+void MorcalavinLaughPostThink(edict_t* self) //mxd. Named 'mork_laugh' in original logic.
 {
 	gi.sound(self, CHAN_VOICE, sounds[SND_LAUGH], 1.0f, ATTN_NONE, 0.0f);
 
@@ -900,7 +901,7 @@ static void MorcalavinLaughPostThink(edict_t* self) //mxd. Named 'mork_laugh' in
 	self->next_post_think = -1.0f;
 }
 
-static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthink' in original logic.
+void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthink' in original logic.
 {
 	if (self->monsterinfo.morcalavin_taunt_counter == 0)
 		MG_CheckEvade(self);
@@ -1020,7 +1021,7 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 	self->next_post_think = level.time + 0.05f;
 }
 
-static void MorcalavinDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'morcalavin_resist_death' in original logic.
+void MorcalavinDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'morcalavin_resist_death' in original logic.
 {
 	self->msgHandler = DeadMsgHandler;
 

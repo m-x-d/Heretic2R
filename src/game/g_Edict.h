@@ -213,8 +213,9 @@ struct edict_s
 	{
 		qboolean show_hostile; // Only used by monsters (or g_ai.c at least) - not really sure what for. //TODO: used as float. Split into 'float wakeup_time' and 'qboolean sphere_of_annihilation_released'.
 		qboolean elflord_soa_charging; //mxd
-		void (*TriggerActivated)(edict_t* self, edict_t* activator);
 	};
+
+	void (*TriggerActivated)(edict_t* self, edict_t* activator); //mxd. Part of preceding union in original logic. Can't have that because of savegame logic changes...
 
 	union
 	{
@@ -294,11 +295,7 @@ struct edict_s
 
 	// Used by player only.
 
-	edict_t* mynoise; // Can go in client only. //TODO: unused!
-	edict_t* mynoise2; //TODO: unused!
-
 	edict_t* last_buoyed_enemy; // Used by monsters.
-
 	int noise_index; // Used only by targets.
 
 	union
@@ -347,7 +344,7 @@ struct edict_s
 	gitem_t* item; // For bonus items. Used by player, triggers, and monsters.
 
 	// What it's made of, i.e. MAT_XXX. Used to determine gibs to throw.
-	// Curently used only by the barrel, but applicable to anything generically gibbable.
+	// Currently used only by the barrel, but applicable to anything generically gibbable.
 
 	MaterialID_t materialtype; //mxd. int in original logic.
 	int PersistantCFX; // Index to client effect linked to edict.
@@ -370,9 +367,6 @@ struct edict_s
 
 	int mass;
 	float gravity; // Per-entity gravity multiplier (1.0 is normal). Used for lowgrav artifact, flares. //mxd. Lowgrav artifact?
-
-	// Not currently used by anyone, but it's a part of physics. Probably should remove it.
-	void (*prethink) (edict_t* ent); //TODO: unused.
 
 	// Move into the moveinfo structure? Used by polys and turret and in physics. //mxd. Turret??
 	void (*blocked)(edict_t* self, edict_t* other);
@@ -501,7 +495,6 @@ struct edict_s
 	edict_t* nextbuoy[MAX_BUOY_BRANCHES];
 
 	float dead_size; // For dead thinking.
-	struct volume_effect_s* volfx; //mxd. Unused. Can't remove...
 
 	// New monster stuff.
 	char* wakeup_target;	// Target to fire when find an enemy.

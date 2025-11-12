@@ -7,6 +7,7 @@
 #include "m_seraph.h"
 #include "m_seraph_shared.h"
 #include "m_seraph_anim.h"
+#include "m_seraph_moves.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "mg_ai.h" //mxd
@@ -341,7 +342,7 @@ static void SeraphCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 
 #pragma region ========================== Edict callbacks ===========================
 
-static qboolean SeraphAlert(edict_t* self, alertent_t* alerter, edict_t* enemy) //mxd. Named 'seraphAlerted' in original logic.
+qboolean SeraphAlert(edict_t* self, alertent_t* alerter, edict_t* enemy) //mxd. Named 'seraphAlerted' in original logic.
 {
 	if (self->alert_time < level.time)
 	{
@@ -480,7 +481,7 @@ static void SeraphThrowLeg(edict_t* self, const int mesh_part) //mxd. Added to s
 	}
 }
 
-static void SeraphDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'seraph_dismember' in original logic.
+void SeraphDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'seraph_dismember' in original logic.
 {
 	qboolean dismember_ok = false;
 

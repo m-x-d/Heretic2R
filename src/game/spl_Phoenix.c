@@ -16,7 +16,7 @@
 
 #define ARROW_RADIUS	4.0f
 
-static void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	// Did we hit the sky? 
 	if (surface != NULL && (surface->flags & SURF_SKY))
@@ -85,7 +85,7 @@ static void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	G_SetToFree(self);
 }
 
-static void PhoenixMissileThink(edict_t* self)
+void PhoenixMissileThink(edict_t* self)
 {
 	self->svflags |= SVF_NOCLIENT;
 	self->think = NULL;

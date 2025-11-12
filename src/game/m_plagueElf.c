@@ -7,6 +7,7 @@
 #include "m_plagueElf.h"
 #include "m_plagueElf_shared.h"
 #include "m_plagueElf_anim.h"
+#include "m_plagueElf_moves.h"
 #include "c_ai.h"
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
@@ -833,7 +834,7 @@ static void PlagueElfVoicePuppetMsgHandler(edict_t* self, G_Message_t* msg) //mx
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void PlagueElfSpellTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'plagueElfSpellTouch' in original logic.
+void PlagueElfSpellTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'plagueElfSpellTouch' in original logic.
 {
 	if (surface != NULL && (surface->flags & SURF_SKY))
 	{
@@ -1069,7 +1070,7 @@ static void PlagueElfThrowLeg(edict_t* self, const float damage, const int mesh_
 	}
 }
 
-static void PlagueElfDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'plagueElf_dismember' in original logic.
+void PlagueElfDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'plagueElf_dismember' in original logic.
 {
 	//FIXME: throw current weapon.
 	//FIXME: make part fly dir the vector from hit loc to sever loc.
@@ -1164,7 +1165,7 @@ static void PlagueElfDismember(edict_t* self, int damage, HitLocation_t hl) //mx
 		self->monsterinfo.aiflags |= AI_COWARD;
 }
 
-static void PlagueElfPhaseOutPreThink(edict_t* self) //mxd. Named 'pelf_phase_out' in original logic.
+void PlagueElfPhaseOutPreThink(edict_t* self) //mxd. Named 'pelf_phase_out' in original logic.
 {
 	if (self->s.color.a > PLAGUEELF_PHASE_INTERVAL)
 	{
@@ -1180,7 +1181,7 @@ static void PlagueElfPhaseOutPreThink(edict_t* self) //mxd. Named 'pelf_phase_ou
 	}
 }
 
-static void PlagueElfPhaseInPreThink(edict_t* self) //mxd. Named 'pelf_phase_in' in original logic.
+void PlagueElfPhaseInPreThink(edict_t* self) //mxd. Named 'pelf_phase_in' in original logic.
 {
 	if (self->s.color.a < 255 - PLAGUEELF_PHASE_INTERVAL)
 	{

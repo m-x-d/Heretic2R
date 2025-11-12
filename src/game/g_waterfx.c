@@ -13,14 +13,14 @@
 
 #define SF_YELLOW	1 //mxd
 
-static void EnvWaterDripThink(edict_t* self) //mxd. Named 'waterdrip_go' in original logic.
+void EnvWaterDripThink(edict_t* self) //mxd. Named 'waterdrip_go' in original logic.
 {
 	//const byte b_frame = ((self->spawnflags & SF_YELLOW) ? 1 : 0); //mxd
 	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_DRIPPER, CEF_BROADCAST, self->s.origin, "bb", self->count, 0); //mxd. Last arg was 0 or 1 (when SF_YELLOW) in original logic (but waterdrop.sp2 only has single frame...).
 	self->think = NULL;
 }
 
-static void EnvWaterDripUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'waterdrip_use' in original logic.
+void EnvWaterDripUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'waterdrip_use' in original logic.
 {
 	if (self->PersistantCFX > 0)
 	{
@@ -60,7 +60,7 @@ void SP_env_water_drip(edict_t* self)
 
 #define SF_START_OFF	32
 
-static void EnvWaterFountainUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fountain_use' in original logic.
+void EnvWaterFountainUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fountain_use' in original logic.
 {
 	if (self->spawnflags & SF_START_OFF) // Enable effect.
 	{

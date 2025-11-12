@@ -29,7 +29,9 @@ typedef enum
 	F_CLIENT,	// Index on disk, pointer in memory.
 	F_RGBA,
 	F_RGB,
-	F_IGNORE,
+	F_FUNCTION,	// YQ2
+	F_ANIMMOVE,	// YQ2
+	F_IGNORE
 } fieldtype_t;
 
 typedef struct
@@ -38,6 +40,12 @@ typedef struct
 	int ofs;
 	fieldtype_t type;
 	fieldflags_t flags; //mxd. int in original logic.
+
+	union //mxd
+	{
+		struct func_map_s* func_info;
+		struct animmove_map_s* amove_info;
+	} extra;
 } field_t;
 
 #ifdef __cplusplus

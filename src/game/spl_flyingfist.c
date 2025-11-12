@@ -17,7 +17,7 @@
 
 #define FIST_RADIUS		2.0f
 
-static void FlyingFistFizzleThink(edict_t* self)
+void FlyingFistFizzleThink(edict_t* self)
 {
 	// Don't fizzle in deathmatch, or if powered up.
 	if (!DEATHMATCH && self->health == 0)
@@ -27,7 +27,7 @@ static void FlyingFistFizzleThink(edict_t* self)
 	}
 }
 
-static void FlyingFistInitThink(edict_t* self)
+void FlyingFistInitThink(edict_t* self)
 {
 	self->svflags |= SVF_NOCLIENT;
 	self->think = FlyingFistFizzleThink;
@@ -35,7 +35,7 @@ static void FlyingFistInitThink(edict_t* self)
 	FlyingFistFizzleThink(self);
 }
 
-static void FlyingFistTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Moved to avoid forward declaration...
+void FlyingFistTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Moved to avoid forward declaration...
 {
 	if (other == self->owner) // Don't touch owner.
 		return;

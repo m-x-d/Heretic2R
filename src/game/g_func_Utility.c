@@ -9,7 +9,7 @@
 
 #pragma region ====================== Support routines for movement (changes in origin using velocity) ======================
 
-static void MoveDone(edict_t* ent) //mxd. Named 'Move_Done' in original logic.
+void MoveDone(edict_t* ent) //mxd. Named 'Move_Done' in original logic.
 {
 	VectorClear(ent->velocity);
 	ent->think = NULL;
@@ -18,7 +18,7 @@ static void MoveDone(edict_t* ent) //mxd. Named 'Move_Done' in original logic.
 		ent->moveinfo.endfunc(ent);
 }
 
-static void MoveFinal(edict_t* ent) //mxd. Named 'Move_Final' in original logic.
+void MoveFinal(edict_t* ent) //mxd. Named 'Move_Final' in original logic.
 {
 	VectorScale(ent->moveinfo.dir, ent->moveinfo.remaining_distance / FRAMETIME, ent->velocity);
 
@@ -26,7 +26,7 @@ static void MoveFinal(edict_t* ent) //mxd. Named 'Move_Final' in original logic.
 	ent->nextthink = level.time + FRAMETIME;
 }
 
-static void MoveBegin(edict_t* ent) //mxd. Named 'Move_Begin' in original logic.
+void MoveBegin(edict_t* ent) //mxd. Named 'Move_Begin' in original logic.
 {
 	if ((ent->moveinfo.speed * FRAMETIME) >= ent->moveinfo.remaining_distance)
 	{
@@ -107,7 +107,7 @@ void FuncTrainAngleMoveCalc(edict_t* self, const edict_t* ent, const vec3_t dest
 	VectorAdd(self->s.angles, angles, self->moveinfo.end_angles);
 }
 
-static void AngleMoveDone(edict_t* ent) //mxd. Named 'AngleMove_Done' in original logic.
+void AngleMoveDone(edict_t* ent) //mxd. Named 'AngleMove_Done' in original logic.
 {
 	VectorClear(ent->avelocity);
 	ent->think = NULL;
@@ -116,7 +116,7 @@ static void AngleMoveDone(edict_t* ent) //mxd. Named 'AngleMove_Done' in origina
 		ent->moveinfo.endfunc(ent);
 }
 
-static void AngleMoveFinal(edict_t* ent) //mxd. Named 'AngleMove_Final' in original logic.
+void AngleMoveFinal(edict_t* ent) //mxd. Named 'AngleMove_Final' in original logic.
 {
 	vec3_t move;
 	const vec3_t* src_angles = ((ent->moveinfo.state == STATE_UP) ? &ent->moveinfo.end_angles : &ent->moveinfo.start_angles); //mxd
@@ -128,7 +128,7 @@ static void AngleMoveFinal(edict_t* ent) //mxd. Named 'AngleMove_Final' in origi
 	ent->think = AngleMoveDone;
 }
 
-static void AngleMoveBegin(edict_t* ent) //mxd. Named 'AngleMove_Begin' in original logic.
+void AngleMoveBegin(edict_t* ent) //mxd. Named 'AngleMove_Begin' in original logic.
 {
 	// Set dest_delta to the vector needed to move.
 	vec3_t dest_delta;
@@ -267,7 +267,7 @@ static void FuncPlatAccelerate(moveinfo_t* info) //mxd. Named 'plat_Accelerate' 
 }
 
 // The team has completed a frame of movement, so change the speed for the next frame.
-static void AccelMoveThink(edict_t* ent) //mxd. Named 'Think_AccelMove' in original logic.
+void AccelMoveThink(edict_t* ent) //mxd. Named 'Think_AccelMove' in original logic.
 {
 	ent->moveinfo.remaining_distance -= ent->moveinfo.current_speed;
 

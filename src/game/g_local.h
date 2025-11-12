@@ -80,7 +80,7 @@
 
 // Memory tags to allow dynamic memory to be selectively cleaned up.
 #define TAG_GAME	765	// Clear when unloading the dll.
-#define TAG_LEVEL	766	// Clear when loading a new level.
+#define TAG_LEVEL	766	// Clear when loading a savegame or a new level.
 
 typedef enum damage_s
 {
@@ -435,11 +435,11 @@ typedef struct
 	float thinkinc;		// Time between thinks for this entity.
 	float scale;
 
-	void (*idle)(edict_t* self);
-	void (*search)(edict_t* self);
-	void (*dodge)(edict_t* self, edict_t* other, float eta);
-	int (*attack)(edict_t* self);
-	void (*sight)(edict_t* self, edict_t* other);
+	void (*idle)(edict_t* self); //TODO: used, but never assigned?
+	void (*search)(edict_t* self); //TODO: unused.
+	void (*dodge)(edict_t* self, edict_t* other, float eta); //TODO: unused.
+	int (*attack)(edict_t* self); //TODO: unused.
+	void (*sight)(edict_t* self, edict_t* other); //TODO: unused.
 	void (*dismember)(edict_t* self, int damage, HitLocation_t hl); //mxd. Changed 'hl' arg type from int.
 	qboolean(*alert)(edict_t* self, alertent_t* alerter, edict_t* enemy);
 	qboolean(*checkattack)(edict_t* self);
@@ -513,7 +513,7 @@ typedef struct
 	// Cinematic fields.
 	int c_dist;		// Distance left to move.
 	int c_repeat;	// # of times to repeat the anim cycle.
-	void (*c_callback)(struct edict_s* self); // Callback function when action is done
+	void (*c_callback)(struct edict_s* self); // Callback function when action is done. //TODO: doesn't seem to be used.
 	int c_anim_flag;	// Shows if current cinematic anim supports moving, turning, or repeating.
 	qboolean c_mode;	// In cinematic mode or not?
 	edict_t* c_ent;		// Entity passed from a cinematic command.

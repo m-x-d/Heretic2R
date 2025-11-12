@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "g_local.h"
-
 #pragma region ========================== Model definitions ==========================
 
 #define FRAME_rackpain1       	0
@@ -498,12 +496,12 @@ typedef enum AnimID_e
 	ANIM_C_ACTION4,
 	ANIM_C_ACTION5,
 	ANIM_C_ACTION6,
+
 	NUM_ANIMS
 } AnimID_t;
 
-extern const animmove_t victimSsithra_move_c_action1;
-extern const animmove_t victimSsithra_move_c_action2;
-extern const animmove_t victimSsithra_move_c_action3;
-extern const animmove_t victimSsithra_move_c_action4;
-extern const animmove_t victimSsithra_move_c_action5;
-extern const animmove_t victimSsithra_move_c_action6;
+typedef enum C_VictimSsithraSoundID_e
+{
+	SND_PAIN1,
+	NUM_SOUNDS
+} C_VictimSsithraSoundID_t;

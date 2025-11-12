@@ -19,7 +19,7 @@
 #define RIPPER_EXPLODE_BALL_RADIUS	8.0f
 #define RIPPER_MAX_DISTANCE			2000.0f
 
-static void RipperExplodeBallThink(edict_t* self)
+void RipperExplodeBallThink(edict_t* self)
 {
 	trace_t trace;
 
@@ -83,7 +83,7 @@ static void RipperExplodeBallThink(edict_t* self)
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void RipperExplodeBallTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+void RipperExplodeBallTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	G_SetToFree(self);
 }

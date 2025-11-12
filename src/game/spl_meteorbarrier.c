@@ -57,12 +57,12 @@ static void MeteorBarrierDie(edict_t* self, const int flags)
 	G_SetToFree(self);
 }
 
-static void Kill_Meteor(edict_t* self)
+void Kill_Meteor(edict_t* self)
 {
 	MeteorBarrierDie(self, METEOR_BARRIER_DIE_EXPLODE);
 }
 
-static void MeteorBarrierOnBlocked(edict_t* self, trace_t* trace) //mxd. Named 'MeteorBarrierTouch' in original version.
+void MeteorBarrierOnBlocked(edict_t* self, trace_t* trace) //mxd. Named 'MeteorBarrierTouch' in original version.
 {
 	edict_t* other = trace->ent;
 	
@@ -98,7 +98,7 @@ static void MeteorBarrierOnBlocked(edict_t* self, trace_t* trace) //mxd. Named '
 	MeteorBarrierDie(self, METEOR_BARRIER_DIE_EXPLODE | METEOR_BARRIER_DIE_EXPLODEIMPACT);
 }
 
-static void MeteorBarrierHuntThink(edict_t* self)
+void MeteorBarrierHuntThink(edict_t* self)
 {
 	// Don't home in on an enemy in deathmatch... too powerful.
 	if (DEATHMATCH && self->accel > 0.0f)
@@ -150,7 +150,7 @@ static void MeteorBarrierHuntThink(edict_t* self)
 	}
 }
 
-static void MeteorBarrierBounceThink(edict_t* self)
+void MeteorBarrierBounceThink(edict_t* self)
 {
 	self->random += 20.0f; // Lifetime.
 
@@ -285,7 +285,7 @@ static qboolean FindNewTarget(edict_t* self) //mxd. Split out of MeteorBarrierSe
 }
 
 // Make meteors orbit player.
-static void MeteorBarrierSearchThink(edict_t* self)
+void MeteorBarrierSearchThink(edict_t* self)
 {
 	// Only check for a target every so often as this reduces CPU requirements AND it looks much cooler.
 	// (using self->owner->enemy as the target would be much quicker...but not 360 degrees).
@@ -312,7 +312,7 @@ static void MeteorBarrierSearchThink(edict_t* self)
 }
 
 // Move the meteors out to radius.
-static void MeteorBarrierSearchInitThink(edict_t* self)
+void MeteorBarrierSearchInitThink(edict_t* self)
 {
 	if (self->owner->health > 0)
 	{

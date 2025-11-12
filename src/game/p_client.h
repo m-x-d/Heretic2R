@@ -38,5 +38,9 @@ extern void SP_info_player_deathmatch(edict_t* self);
 extern void SP_info_player_coop(edict_t* self);
 extern void SP_info_player_intermission(edict_t* self);
 
+//mxd. Required by save system...
+extern void BleederThink(edict_t* self);
+extern void PlayerBodyDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point);
+
 // Forward declarations local to p_client.c //TODO: move to separate header?
 static void PutClientInServer(edict_t* ent);

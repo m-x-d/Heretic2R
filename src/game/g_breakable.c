@@ -37,7 +37,7 @@ void KillBrush(edict_t* target, edict_t* inflictor, edict_t* attacker, const int
 	}
 }
 
-static void KillBrushUse(edict_t* target, edict_t* inflictor, edict_t* attacker)
+void KillBrushUse(edict_t* target, edict_t* inflictor, edict_t* attacker)
 {
 	G_PostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, 0);
 }
@@ -57,7 +57,7 @@ static qboolean EntitiesTouching(const edict_t* e1, const edict_t* e2)
 }
 
 // Used to link up brushes that have KILLALL set.
-static void LinkBreakables(edict_t* self)
+void LinkBreakables(edict_t* self)
 {
 	self->think = NULL;
 

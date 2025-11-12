@@ -38,7 +38,7 @@
 
 #define SF_PLAT_LOW_TRIGGER	1 //mxd
 
-static void FuncPlatHitTop(edict_t* ent) //mxd. Named 'plat_hit_top' in original logic.
+void FuncPlatHitTop(edict_t* ent) //mxd. Named 'plat_hit_top' in original logic.
 {
 	FuncPlayMoveEndSound(ent); //mxd
 
@@ -47,13 +47,13 @@ static void FuncPlatHitTop(edict_t* ent) //mxd. Named 'plat_hit_top' in original
 	ent->nextthink = level.time + 3.0f;
 }
 
-static void FuncPlatHitBottom(edict_t* ent) //mxd. Named 'plat_hit_bottom' in original logic.
+void FuncPlatHitBottom(edict_t* ent) //mxd. Named 'plat_hit_bottom' in original logic.
 {
 	FuncPlayMoveEndSound(ent); //mxd
 	ent->moveinfo.state = STATE_BOTTOM;
 }
 
-static void FuncPlatGoDown(edict_t* ent) //mxd. Named 'plat_go_down' in original logic.
+void FuncPlatGoDown(edict_t* ent) //mxd. Named 'plat_go_down' in original logic.
 {
 	FuncPlayMoveStartSound(ent); //mxd
 	ent->moveinfo.state = STATE_DOWN;
@@ -67,7 +67,7 @@ static void FuncPlatGoUp(edict_t* ent) //mxd. Named 'plat_go_up' in original log
 	MoveCalc(ent, ent->moveinfo.start_origin, FuncPlatHitTop);
 }
 
-static void FuncPlatBlocked(edict_t* self, edict_t* other) //mxd. Named 'plat_blocked' in original logic.
+void FuncPlatBlocked(edict_t* self, edict_t* other) //mxd. Named 'plat_blocked' in original logic.
 {
 	//TODO: invalid logic? Checks for both presence and absence of SVF_MONSTER flag! Last check is '!(other->svflags & SVF_BOSS)' in FuncDoorBlocked().
 	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_MONSTER))
@@ -96,13 +96,13 @@ static void FuncPlatBlocked(edict_t* self, edict_t* other) //mxd. Named 'plat_bl
 		FuncPlatGoUp(self);
 }
 
-static void FuncPlatUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd. Named 'Use_Plat' in original logic.
+void FuncPlatUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd. Named 'Use_Plat' in original logic.
 {
 	if (ent->think == NULL) // Already down otherwise.
 		FuncPlatGoDown(ent);
 }
 
-static void FuncPlatCenterTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_Plat_Center' in original logic.
+void FuncPlatCenterTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_Plat_Center' in original logic.
 {
 	if (other->client == NULL || other->health <= 0)
 		return;

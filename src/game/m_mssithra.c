@@ -7,6 +7,7 @@
 #include "m_mssithra.h"
 #include "m_mssithra_shared.h"
 #include "m_mssithra_anim.h"
+#include "m_mssithra_moves.h"
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
 #include "g_playstats.h"
@@ -211,7 +212,7 @@ static void MssithraMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void MssithraArrowExplodeThink(edict_t* self) //mxd. Named 'mssithra_missile_explode' in original logic.
+void MssithraArrowExplodeThink(edict_t* self) //mxd. Named 'mssithra_missile_explode' in original logic.
 {
 	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MSSITHRA_EXPLODE, self->movedir);
 
@@ -221,7 +222,7 @@ static void MssithraArrowExplodeThink(edict_t* self) //mxd. Named 'mssithra_miss
 	G_FreeEdict(self);
 }
 
-static void MssithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'mssithraAlphaArrowTouch' in original logic.
+void MssithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'mssithraAlphaArrowTouch' in original logic.
 {
 	// Are we reflecting?
 	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
@@ -254,7 +255,7 @@ static void MssithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, c
 	}
 }
 
-static void MssithraPostThink(edict_t* self) //mxd. Named 'mssithra_postthink' in original logic.
+void MssithraPostThink(edict_t* self) //mxd. Named 'mssithra_postthink' in original logic.
 {
 	// Only display a life-meter if we have an enemy.
 	if (self->enemy != NULL)

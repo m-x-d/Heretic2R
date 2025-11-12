@@ -65,4 +65,12 @@ typedef enum
 	extern qboolean Add_Ammo(const edict_t* ent, const gitem_t* ammo, int count);
 	extern qboolean AddDefenseToInventory(gitem_t* defence, const edict_t* player);
 	extern qboolean AddWeaponToInventory(gitem_t* weapon, const edict_t* player);
+
+	//mxd. Required by save system...
+	extern void DoRespawn(edict_t* ent);
+	extern void DropItemMakeTouchable(edict_t* ent);
+	extern void ItemDropToFloor(edict_t* ent);
+	extern void PreRespawnThink(edict_t* ent);
+	extern void RespawnedThink(edict_t* ent);
+	extern void Touch_Item(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf);
 #endif

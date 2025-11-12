@@ -1462,7 +1462,7 @@ void MG_BuoyNavigate(edict_t* self)
 		self->goalentity = self->enemy;
 }
 
-static void MG_GenericMoodSet(edict_t* self)
+void MG_GenericMoodSet(edict_t* self)
 {
 	if (level.active_buoys == 0 && !DEACTIVATE_BUOYS)
 	{

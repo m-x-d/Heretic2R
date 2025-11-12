@@ -123,7 +123,7 @@ static int cid_for_spawner_style[] =
 #define SF_RANDOMBUOY	2 //mxd
 #define SF_PEACEFUL		4 //mxd //TODO: not implemented.
 
-static void FuncMonsterSpawnerGo(edict_t* self) //mxd. Named 'monsterspawner_go' in original logic.
+void FuncMonsterSpawnerGo(edict_t* self) //mxd. Named 'monsterspawner_go' in original logic.
 {
 	if (self->count <= 0)
 	{
@@ -274,7 +274,7 @@ static void FuncMonsterSpawnerGo(edict_t* self) //mxd. Named 'monsterspawner_go'
 	}
 }
 
-static void FuncMonsterSpawnerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'monsterspawner_use' in original logic. 
+void FuncMonsterSpawnerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'monsterspawner_use' in original logic. 
 {
 	self->enemy = activator;
 	FuncMonsterSpawnerGo(self);

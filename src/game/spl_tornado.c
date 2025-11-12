@@ -20,7 +20,7 @@
 #define TORN_MASS_FACTOR		200.0f
 
 // Do the think for the tornado ring.
-static void TornadoThink(edict_t* self)
+void TornadoThink(edict_t* self)
 {
 	edict_t* ent = NULL;
 
@@ -93,7 +93,7 @@ static void TornadoThink(edict_t* self)
 }
 
 // Time's up, create the tornado effect.
-static void CreateTornado(edict_t* tornado)
+void CreateTornado(edict_t* tornado)
 {
 	tornado->classname = "Spell_Tornado";
 	tornado->timestamp = level.time;

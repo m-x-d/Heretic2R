@@ -6,6 +6,7 @@
 
 #include "c_corvus3.h"
 #include "c_corvus3_anim.h"
+#include "c_corvus3_moves.h"
 #include "c_ai.h"
 #include "FX.h"
 #include "Random.h"

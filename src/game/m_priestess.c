@@ -8,6 +8,7 @@
 #include "m_priestess.h"
 #include "m_priestess_shared.h"
 #include "m_priestess_anim.h"
+#include "m_priestess_moves.h"
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
 #include "mg_guide.h" //mxd
@@ -300,13 +301,13 @@ static void PriestessPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 
 #pragma region ========================== Edict callbacks ===========================
 
-static void PriestessProjectile1DrunkenThink(edict_t* self) //mxd. Named 'priestess_proj1_drunken' in original logic.
+void PriestessProjectile1DrunkenThink(edict_t* self) //mxd. Named 'priestess_proj1_drunken' in original logic.
 {
 	VectorRandomCopy(self->velocity, self->velocity, 64.0f);
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void PriestessProjectile1Think(edict_t* self) //mxd. Named 'priestess_proj1_think' in original logic.
+void PriestessProjectile1Think(edict_t* self) //mxd. Named 'priestess_proj1_think' in original logic.
 {
 #define PROJ1_VELOCITY_MULTIPLIER	1.2f //mxd
 
@@ -357,7 +358,7 @@ static void PriestessProjectile1Think(edict_t* self) //mxd. Named 'priestess_pro
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void PriestessProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Named 'priestess_proj1_blocked' in original logic.
+void PriestessProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Named 'priestess_proj1_blocked' in original logic.
 {
 	if (trace->ent == self->owner || Q_stricmp(trace->ent->classname, "HPriestess_Missile") == 0) //mxd. stricmp -> Q_stricmp.
 		return;
@@ -452,7 +453,7 @@ static void PriestessProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Na
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void PriestessProjectile2Die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'priestess_proj2_die' in original logic.
+void PriestessProjectile2Die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'priestess_proj2_die' in original logic.
 {
 	gi.sound(self, CHAN_AUTO, sounds[SND_BUGHIT], 1.0f, ATTN_NORM, 0.0f);
 	gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE3_EXPLODE);
@@ -461,7 +462,7 @@ static void PriestessProjectile2Die(edict_t* self, edict_t* inflictor, edict_t* 
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void PriestessProjectile2Think(edict_t* self) //mxd. Named 'priestess_proj2_think' in original logic.
+void PriestessProjectile2Think(edict_t* self) //mxd. Named 'priestess_proj2_think' in original logic.
 {
 	// Timeout?
 	if (self->monsterinfo.attack_finished < level.time)
@@ -480,7 +481,7 @@ static void PriestessProjectile2Think(edict_t* self) //mxd. Named 'priestess_pro
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-static void PriestessPostThink(edict_t* self) //mxd. Named 'priestess_postthink' in original logic.
+void PriestessPostThink(edict_t* self) //mxd. Named 'priestess_postthink' in original logic.
 {
 	// Only display a lifemeter if we have an enemy.
 	if (self->enemy != NULL)
