@@ -5,6 +5,7 @@
 //
 
 #include "g_debris.h" //mxd
+#include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
 #include "m_harpy.h" //mxd
 #include "g_playstats.h"

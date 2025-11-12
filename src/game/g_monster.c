@@ -8,7 +8,6 @@
 #include "g_monster.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
-#include "g_HitLocation.h"
 #include "g_items.h" //mxd
 #include "g_playstats.h"
 #include "m_stats.h"
@@ -25,37 +24,6 @@ int MonsterHealth(int health)
 		health += (int)((float)health * (skill->value - 1.0f) / 2.0f); // 150% on Armageddon (skill 3).
 
 	return health + (int)((float)health * ((float)(game.maxclients - 1) * 0.25f)); // 175% with 4 players.
-}
-
-static void HandleMessage(edict_t* self, G_Message_t* msg) //mxd. Added to reduce code duplication.
-{
-	G_MsgReceiver_t receiver = classStatics[self->classID].msgReceivers[msg->ID];
-
-	if (receiver != NULL)
-	{
-		receiver(self, msg);
-		return;
-	}
-
-	// If and when there are a good number of defaults, change the NULL to be an Empty function,
-	// overall that should be faster to just always call the function then do the check.
-	receiver = DefaultMessageReceivers[msg->ID];
-
-	if (receiver != NULL)
-		DefaultMessageReceivers[msg->ID](self, msg);
-}
-
-void DeadMsgHandler(edict_t* self, G_Message_t* msg)
-{
-	if (msg->ID == MSG_DEATH_PAIN)
-		HandleMessage(self, msg); //mxd
-}
-
-// Allows only dismemberment messages to still be called.
-void DyingMsgHandler(edict_t* self, G_Message_t* msg)
-{
-	if (msg->ID == MSG_DISMEMBER)
-		HandleMessage(self, msg); //mxd
 }
 
 static void M_CheckGround(edict_t* ent)
@@ -1320,23 +1288,6 @@ void M_jump(edict_t* self, G_Message_t* msg) //TODO: used only by Rat. Move to m
 	else
 	{
 		VectorCopy(jump_vec, self->velocity);
-	}
-}
-
-// Get the dismember message and send it to my dismember code.
-void DismemberMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'MG_parse_dismember_msg' in original logic.
-{
-	if (self->monsterinfo.dismember != NULL)
-	{
-		int damage;
-		HitLocation_t hl;
-		G_ParseMsgParms(msg, "ii", &damage, &hl);
-
-		self->monsterinfo.dismember(self, damage, hl);
-	}
-	else
-	{
-		gi.dprintf("ERROR: %s with dismember message handler but no dismember function\n", self->classname);
 	}
 }
 

@@ -6,6 +6,7 @@
 
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
+#include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
 #include "g_HitLocation.h"
 #include "m_beast.h" //mxd

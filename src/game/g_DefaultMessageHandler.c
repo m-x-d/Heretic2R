@@ -55,6 +55,8 @@ G_MsgReceiver_t DefaultMessageReceivers[NUM_MESSAGES] =
 	NULL,						// MSG_CHECK_MOOD
 };
 
+#pragma region ================================ MESSAGE HANDLERS ================================
+
 void DefaultMsgHandler(edict_t* self, G_Message_t* msg)
 {
 	if (msg->ID == MSG_PAIN)
@@ -82,6 +84,58 @@ void DefaultMsgHandler(edict_t* self, G_Message_t* msg)
 	else if (DefaultMessageReceivers[msg->ID] != NULL) // If and when there are a good number of defaults, change the NULL to be an Empty function.
 		DefaultMessageReceivers[msg->ID](self, msg);
 }
+
+// Get the dismember message and send it to my dismember code.
+void DismemberMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'MG_parse_dismember_msg' in original logic.
+{
+	if (self->monsterinfo.dismember != NULL)
+	{
+		int damage;
+		HitLocation_t hl;
+		G_ParseMsgParms(msg, "ii", &damage, &hl);
+
+		self->monsterinfo.dismember(self, damage, hl);
+	}
+	else
+	{
+		gi.dprintf("ERROR: %s with dismember message handler but no dismember function\n", self->classname);
+	}
+}
+
+static void HandleMessage(edict_t* self, G_Message_t* msg) //mxd. Added to reduce code duplication.
+{
+	G_MsgReceiver_t receiver = classStatics[self->classID].msgReceivers[msg->ID];
+
+	if (receiver != NULL)
+	{
+		receiver(self, msg);
+		return;
+	}
+
+	// If and when there are a good number of defaults, change the NULL to be an Empty function,
+	// overall that should be faster to just always call the function then do the check.
+	receiver = DefaultMessageReceivers[msg->ID];
+
+	if (receiver != NULL)
+		DefaultMessageReceivers[msg->ID](self, msg);
+}
+
+// Allows only dismemberment messages to still be called.
+void DyingMsgHandler(edict_t* self, G_Message_t* msg)
+{
+	if (msg->ID == MSG_DISMEMBER)
+		HandleMessage(self, msg); //mxd
+}
+
+void DeadMsgHandler(edict_t* self, G_Message_t* msg)
+{
+	if (msg->ID == MSG_DEATH_PAIN)
+		HandleMessage(self, msg); //mxd
+}
+
+#pragma endregion
+
+#pragma region ================================ MESSAGE RECIEVERS ================================
 
 void DefaultReceiver_Repulse(edict_t* self, G_Message_t* msg)
 {
@@ -114,3 +168,5 @@ void DefaultReceiver_Unsuspend(edict_t* self, G_Message_t* msg)
 {
 	self->flags &= ~FL_SUSPENDED;
 }
+
+#pragma endregion
