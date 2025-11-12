@@ -95,10 +95,10 @@ uint P_Load(char *name)
 	P_Freelib();
 
 #ifdef GAME_DLL
-	Com_Printf("------- Loading %s -------\n", name);
+	Com_Printf("---------- Loading %s ----------\n", name);
 	gi.Sys_LoadGameDll(name, &player_library, &playerdll_chksum);
 #else
-	Com_ColourPrintf(P_HEADER, "------- Loading %s -------\n", name);
+	Com_ColourPrintf(P_HEADER, "---------- Loading %s ----------\n", name);
 	Sys_LoadGameDll(name, &player_library, &playerdll_chksum);
 #endif
 
