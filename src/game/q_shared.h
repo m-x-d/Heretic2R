@@ -77,10 +77,6 @@ H2COMMON_API extern float LerpAngle(float a1, float a2, float frac);
 H2COMMON_API extern void LerpAngles(const vec3_t angle_a, float frac, const vec3_t angle_b, vec3_t out); //mxd
 H2COMMON_API extern float LerpFloat(float f1, float f2, float frac); //mxd
 
-#define MAX_COLORS	33
-
-extern H2COMMON_API paletteRGBA_t TextPalette[MAX_COLORS];
-
 typedef enum
 {
 	P_BLACK, //TODO: unused.
@@ -90,7 +86,7 @@ typedef enum
 	P_BLUE, //TODO: unused.
 	P_PURPLE,
 	P_CYAN,
-	P_WHITE,
+	P_WHITE, // Used via colour_names cvar (among other things) --mxd.
 
 	P_HBLACK, //TODO: unused.
 	P_HRED, //TODO: unused.
@@ -101,14 +97,14 @@ typedef enum
 	P_HCYAN, //TODO: unused.
 	P_HWHITE, //TODO: unused.
 
-	P_DESIGNER, //TODO: unused.
-	P_ERROR, //mxd. P_PROGRAMMER (unused) in original logic.
+	P_DESIGNER, // Used via colour_level cvar --mxd.
+	P_PROGRAMMER, // Used via colour_game cvar --mxd.
 	P_OBJ_NORMAL,
 	P_OBJ_BOLD,
-	P_OBIT,
+	P_OBIT, // Used via colour_obituary cvar (among other things) --mxd.
 	P_CAPTION,
-	P_CHAT, //TODO: unused.
-	P_TEAM,
+	P_CHAT, // Used via colour_chat cvar --mxd.
+	P_TEAM, // Used via colour_teamchat cvar (among other things) --mxd.
 
 	P_VERSION,
 	P_FRAGS,
@@ -119,7 +115,12 @@ typedef enum
 	P_CRED_TITLE,
 	P_CRED_CONTENT,
 	P_FRAGNAME,
+	P_ERROR, //mxd
+
+	P_MAX_COLORS //mxd
 } PalIdx_t;
+
+extern H2COMMON_API paletteRGBA_t TextPalette[P_MAX_COLORS];
 
 H2COMMON_API extern char* COM_SkipPath(char* pathname);
 H2COMMON_API extern void COM_StripExtension(const char* in, char* out);

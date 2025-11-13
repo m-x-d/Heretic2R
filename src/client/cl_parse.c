@@ -55,7 +55,8 @@ float sound_event_id_time_array[SND_PRED_MAX];
 
 int COLOUR(const cvar_t* cvar)
 {
-	return ClampI((int)cvar->value, 0, MAX_COLORS - 1); //mxd. Add lower-bound check.
+	const int pal_index = (int)cvar->value % P_MAX_COLORS;
+	return max(0, pal_index); //mxd. Add lower-bound check.
 }
 
 static void CenterPrint(const char* msg, const PalIdx_t color_index) // H2
