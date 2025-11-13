@@ -752,7 +752,7 @@ void M_WalkmonsterStartGo(edict_t* self) //mxd. Named 'walkmonster_start_go' in 
 	if (self->yaw_speed == 0.0f)
 		self->yaw_speed = 20.0f;
 
-	self->viewheight = 25;
+	self->viewheight = 25; //TODO: should set only when self->viewheight == 0 (like in M_FlymonsterStartGo())?
 
 	M_MonsterStartGo(self);
 
