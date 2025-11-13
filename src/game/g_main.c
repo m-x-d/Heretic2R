@@ -164,7 +164,7 @@ static void LoadStrings(void)
 // This will be called when the dll is first loaded, which only happens when a new game is begun.
 void InitGame(void)
 {
-	gi.dprintf("==== InitGame ====\n");
+	gi.dprintf("====== InitGame ======\n");
 
 	G_InitMsgMngr(); //mxd. Inline G_InitResourceManagers().
 
