@@ -88,7 +88,7 @@ typedef enum
 	P_GREEN,
 	P_YELLOW,
 	P_BLUE, //TODO: unused.
-	P_PURPLE, //TODO: unused.
+	P_PURPLE,
 	P_CYAN,
 	P_WHITE,
 
@@ -102,7 +102,7 @@ typedef enum
 	P_HWHITE, //TODO: unused.
 
 	P_DESIGNER, //TODO: unused.
-	P_PROGRAMMER, //TODO: unused.
+	P_ERROR, //mxd. P_PROGRAMMER (unused) in original logic.
 	P_OBJ_NORMAL,
 	P_OBJ_BOLD,
 	P_OBIT,

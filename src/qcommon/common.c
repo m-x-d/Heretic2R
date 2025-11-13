@@ -213,7 +213,7 @@ H2R_NORETURN void Com_Error(const int code, const char* fmt, ...)
 			break;
 
 		case ERR_DROP:
-			Com_Printf("*********************************\nERROR: %s\n*********************************\n", msg);
+			Com_ColourPrintf(P_ERROR, "*********************************\nERROR: %s\n*********************************\n", msg); //mxd. Com_Printf() in original logic.
 			SV_Shutdown(va("Server crashed: %s\n", msg), false);
 			CL_Drop();
 			recursive = false;
