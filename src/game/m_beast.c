@@ -1269,7 +1269,7 @@ static void TBeastStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 
 	if (dist < 200.0f)
 	{
-		self->show_hostile = level.time + 1.0f; // Wake up other monsters.
+		self->wakeup_time = level.time + 1.0f; // Wake up other monsters.
 		G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 
 		return;

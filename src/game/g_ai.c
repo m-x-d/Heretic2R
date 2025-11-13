@@ -502,7 +502,7 @@ void AI_FoundTarget(edict_t* self, const qboolean set_sight_ent) //mxd. Named 'F
 		level.sight_entity->light_level = 128;
 	}
 
-	self->show_hostile = level.time + 1.0f; // Wake up other monsters.
+	self->wakeup_time = level.time + 1.0f; // Wake up other monsters.
 	VectorCopy(self->enemy->s.origin, self->monsterinfo.last_sighting);
 
 	if (self->combattarget == NULL) // Not going for a combat point?
@@ -775,7 +775,7 @@ qboolean FindTarget(edict_t* self)
 
 		if (r == RANGE_NEAR)
 		{
-			if (!enemy_infront && client->show_hostile < level.time)
+			if (!enemy_infront && client->wakeup_time < level.time)
 				continue;
 		}
 		else if (r == RANGE_MID)
@@ -966,7 +966,7 @@ static qboolean AI_CheckAttack(edict_t* self) //mxd. Removed unused 'dist' arg. 
 		}
 	}
 
-	self->show_hostile = level.time + 1.0f; // Wake up other monsters.
+	self->wakeup_time = level.time + 1.0f; // Wake up other monsters.
 
 	// Check knowledge of enemy.
 	const qboolean enemy_vis = AI_IsClearlyVisible(self, self->enemy);

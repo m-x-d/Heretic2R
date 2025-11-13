@@ -211,7 +211,7 @@ struct edict_s
 
 	union
 	{
-		qboolean show_hostile; // Only used by monsters (or g_ai.c at least) - not really sure what for. //TODO: used as float. Change to 'float wakeup_time'.
+		float wakeup_time; //mxd. 'qboolean show_hostile' in original logic.
 		qboolean sphere_of_annihilation_charging; //mxd
 	};
 
