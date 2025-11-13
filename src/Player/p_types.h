@@ -464,7 +464,7 @@ typedef struct playerinfo_s
 	void (*PlayerActionSpellFireball)(const playerinfo_t* playerinfo);
 	void (*PlayerActionSpellBlast)(const playerinfo_t* playerinfo);
 	void (*PlayerActionSpellArray)(const playerinfo_t* playerinfo, int value);
-	void (*PlayerActionSpellSphereCreate)(const playerinfo_t* playerinfo, qboolean* charging);
+	void (*PlayerActionSpellSphereCreate)(const playerinfo_t* playerinfo);
 	void (*PlayerActionSpellFirewall)(const playerinfo_t* playerinfo);
 	void (*PlayerActionSpellBigBall)(const playerinfo_t* playerinfo);
 	void (*PlayerActionRedRainBowAttack)(const playerinfo_t* playerinfo);
@@ -553,7 +553,6 @@ typedef struct playerinfo_s
 	float waterheight;
 	vec3_t LastWatersplashPos; // Not used on client. //TODO: only Z-coord is used.
 	vec3_t oldvelocity;
-	qboolean chargingspell;
 	float quickturn_rate;		// Rotational velocity (degrees/second).
 
 	// From edict_t.

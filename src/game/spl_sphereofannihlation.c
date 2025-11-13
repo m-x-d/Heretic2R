@@ -130,7 +130,7 @@ void SphereOfAnnihilationGrowThink(edict_t* self)
 		AngleVectors(caster->s.angles, forward, NULL, up);
 
 	// If we have released, or we are dead, or a chicken, release the sphere.
-	if (*self->sphere_charging_ptr && !(caster->dead_state & (DEAD_DYING | DEAD_DEAD))
+	if (caster->sphere_of_annihilation_charging && !(caster->dead_state & (DEAD_DYING | DEAD_DEAD))
 		&& cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
 		if (self->count < SPHERE_MAX_CHARGES)
@@ -312,15 +312,16 @@ void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 	vec3_t forward;
 	vec3_t right;
 
-	const gclient_t* cl = self->owner->client; //mxd
+	edict_t* caster = self->owner;
+	const gclient_t* cl = caster->client; //mxd
 
 	if (cl != NULL)
 		AngleVectors(cl->aimangles, forward, right, NULL);
 	else
-		AngleVectors(self->owner->s.angles, forward, right, NULL);
+		AngleVectors(caster->s.angles, forward, right, NULL);
 
 	// If we have released, or we are dead, or a chicken, release the sphere.
-	if (*self->sphere_charging_ptr && !(self->owner->dead_state & (DEAD_DYING | DEAD_DEAD))
+	if (caster->sphere_of_annihilation_charging && !(caster->dead_state & (DEAD_DYING | DEAD_DEAD))
 		&& cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
 		if (self->count < SPHERE_MAX_CHARGES)
@@ -334,11 +335,11 @@ void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 		}
 
 		// Detect if we have teleported, need to move with the player if that's so.
-		VectorCopy(self->owner->s.origin, self->s.origin);
+		VectorCopy(caster->s.origin, self->s.origin);
 
 		self->s.origin[0] += forward[0] * 20.0f;
 		self->s.origin[1] += forward[1] * 20.0f;
-		self->s.origin[2] += (float)self->owner->viewheight - 5.0f;
+		self->s.origin[2] += (float)caster->viewheight - 5.0f;
 
 		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
@@ -350,14 +351,14 @@ void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 
 			edict_t* laser = G_Spawn();
 
-			laser->owner = self->owner;
+			laser->owner = caster;
 			laser->count = self->count - SPHERE_COUNT_MIN;
 			VectorMA(self->s.origin, 10.0f * direction, right, laser->s.origin);
 
 			if (cl != NULL)
 				VectorCopy(cl->aimangles, laser->s.angles);
 			else
-				VectorCopy(self->owner->s.angles, laser->s.angles);
+				VectorCopy(caster->s.angles, laser->s.angles);
 
 			VectorScale(right, SPHERE_LASER_SPEED * direction, laser->velocity);
 			laser->health = i;
@@ -372,7 +373,7 @@ void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 			SpherePowerLaserThink(laser);
 		}
 
-		gi.sound(self->owner, CHAN_WEAPON, gi.soundindex("weapons/SpherePowerFire.wav"), 1.0f, ATTN_NORM, 0.0f);
+		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/SpherePowerFire.wav"), 1.0f, ATTN_NORM, 0.0f);
 		G_SetToFree(self);
 	}
 }
@@ -383,7 +384,7 @@ static edict_t* CreateSphere(void)
 	edict_t* sphere = G_Spawn();
 
 	sphere->svflags |= SVF_ALWAYS_SEND;
-	sphere->s.effects |= EF_ALWAYS_ADD_EFFECTS | EF_MARCUS_FLAG1;
+	sphere->s.effects |= (EF_ALWAYS_ADD_EFFECTS | EF_MARCUS_FLAG1);
 	sphere->classname = "Spell_SphereOfAnnihilation";
 	sphere->clipmask = MASK_SHOT;
 	sphere->movetype = MOVETYPE_FLYMISSILE;
@@ -456,7 +457,7 @@ void SphereWatcherGrowThink(edict_t* self)
 		AngleVectors(self->owner->s.angles, forward, NULL, up);
 
 	// If we have released or we are dead, release the sphere.
-	if (*self->sphere_charging_ptr && !(self->owner->dead_state & (DEAD_DYING | DEAD_DEAD)))
+	if (self->owner->sphere_of_annihilation_charging && !(self->owner->dead_state & (DEAD_DYING | DEAD_DEAD)))
 	{
 		self->count += irand(1, 2);
 
@@ -570,12 +571,12 @@ void SphereWatcherTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface
 		fx_scorch_flag = CEF_FLAG6;
 
 	gi.CreateEffect(&self->s, FX_WEAPON_SPHEREEXPLODE, CEF_OWNERS_ORIGIN | fx_scorch_flag, NULL, "db", self->movedir, (byte)(self->s.scale * 7.5f));
-	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/SphereImpact.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO:why 2.0 volume?
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/SphereImpact.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
 
 	G_SetToFree(self);
 }
 
-void SpellCastSphereOfAnnihilation(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const vec3_t aim_dir, qboolean* release_flags_ptr)
+void SpellCastSphereOfAnnihilation(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const vec3_t aim_dir)
 {
 	// Spawn the sphere of annihilation as an invisible entity (i.e. modelindex = 0).
 	edict_t* sphere = CreateSphere();
@@ -594,7 +595,6 @@ void SpellCastSphereOfAnnihilation(edict_t* caster, const vec3_t start_pos, cons
 
 	VectorCopy(aim_angles, sphere->s.angles);
 
-	sphere->sphere_charging_ptr = release_flags_ptr; //mxd. Added dedicated edict_t property.
 	sphere->avelocity[YAW] = 100.0f;
 	sphere->avelocity[ROLL] = 100.0f;
 	sphere->count = 0;

@@ -245,12 +245,12 @@ static void ElfLordMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 		return;
 
 	gi.sound(self, CHAN_VOICE, sounds[SND_SACHARGE], 1.0f, ATTN_NORM, 0.0f);
-	self->elflord_soa_charging = true;
+	self->sphere_of_annihilation_charging = true;
 
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward, &self->elflord_soa_charging);
+	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward);
 	SetAnim(self, ANIM_ATTACK_SOA_BTRANS);
 }
 
@@ -436,7 +436,7 @@ void elflord_charge(edict_t* self)
 
 void elflord_soa_end(edict_t* self)
 {
-	self->elflord_soa_charging = false;
+	self->sphere_of_annihilation_charging = false;
 	gi.sound(self, CHAN_WEAPON, sounds[SND_SAFIRE], 1.0f, ATTN_NORM, 0.0f);
 	SetAnim(self, ANIM_ATTACK_SOA_END);
 }
@@ -470,12 +470,12 @@ void elflord_soa_charge(edict_t* self)
 void elflord_soa_go(edict_t* self)
 {
 	gi.sound(self, CHAN_VOICE, sounds[SND_SAFIRE], 1.0f, ATTN_NORM, 0.0f);
-	self->elflord_soa_charging = false;
+	self->sphere_of_annihilation_charging = false;
 
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward, &self->elflord_soa_charging);
+	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward);
 }
 
 void elflord_track(edict_t* self)

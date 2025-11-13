@@ -30,7 +30,7 @@ extern void G_PlayerActionSwordAttack(const playerinfo_t* info, int value);
 extern void G_PlayerActionSpellFireball(const playerinfo_t* info);
 extern void G_PlayerActionSpellBlast(const playerinfo_t* info);
 extern void G_PlayerActionSpellArray(const playerinfo_t* info, int value);
-extern void G_PlayerActionSpellSphereCreate(const playerinfo_t* info, qboolean* charging);
+extern void G_PlayerActionSpellSphereCreate(const playerinfo_t* info);
 extern void G_PlayerActionSpellBigBall(const playerinfo_t* info);
 extern void G_PlayerActionSpellFirewall(const playerinfo_t* info);
 extern void G_PlayerActionRedRainBowAttack(const playerinfo_t* info);

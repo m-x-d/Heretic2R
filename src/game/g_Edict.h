@@ -144,7 +144,6 @@ struct edict_s
 	{
 		char* combattarget;	// Monsters are the primary user of this.
 		char* jumptarget;	// For buoys only.
-		qboolean* sphere_charging_ptr; //mxd. Used by Sphere of Annihilation spell.
 	};
 
 	union
@@ -211,8 +210,8 @@ struct edict_s
 
 	union
 	{
-		qboolean show_hostile; // Only used by monsters (or g_ai.c at least) - not really sure what for. //TODO: used as float. Split into 'float wakeup_time' and 'qboolean sphere_of_annihilation_released'.
-		qboolean elflord_soa_charging; //mxd
+		qboolean show_hostile; // Only used by monsters (or g_ai.c at least) - not really sure what for. //TODO: used as float. Change to 'float wakeup_time'.
+		qboolean sphere_of_annihilation_charging; //mxd
 	};
 
 	void (*TriggerActivated)(edict_t* self, edict_t* activator); //mxd. Part of preceding union in original logic. Can't have that because of savegame logic changes...

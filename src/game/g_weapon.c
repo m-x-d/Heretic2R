@@ -505,17 +505,11 @@ void WeaponThink_MagicMissileSpread(edict_t* caster, char* format, ...)
 
 void WeaponThink_SphereOfAnnihilation(edict_t* caster, char* format, ...)
 {
-	// Get pointer to missile's release flag.
-	va_list marker;
-	va_start(marker, format);
-	qboolean* release_flags_ptr = va_arg(marker, qboolean*);
-	va_end(marker);
-
 	// Set up the Sphere-of-annihilation's aiming angles then cast the spell.
-	vec3_t fwd;
-	AngleVectors(caster->client->aimangles, fwd, NULL, NULL);
+	vec3_t forward;
+	AngleVectors(caster->client->aimangles, forward, NULL, NULL);
 
-	SpellCastSphereOfAnnihilation(caster, NULL, caster->client->aimangles, fwd, release_flags_ptr);
+	SpellCastSphereOfAnnihilation(caster, NULL, caster->client->aimangles, forward);
 
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
 	{

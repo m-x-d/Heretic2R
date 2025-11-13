@@ -9,6 +9,7 @@
 #include "p_actions.h"
 #include "p_main.h"
 #include "p_weapon.h"
+#include "g_Edict.h" //mxd
 #include "g_items.h"
 #include "SurfaceProps.h"
 #include "FX.h"
@@ -333,9 +334,11 @@ void PlayerActionSpellSphereCreate(playerinfo_t* info, float value)
 {
 	PlayerSetHandFX(info, HANDFX_SPHERE, -1);
 
-	info->chargingspell = true;
+	edict_t* self = info->self; //mxd
+	self->sphere_of_annihilation_charging = true; //mxd
+
 	info->weaponcharge = 1;
-	info->PlayerActionSpellSphereCreate(info, &info->chargingspell);
+	info->PlayerActionSpellSphereCreate(info);
 }
 
 void PlayerActionSpellSphereCharge(playerinfo_t* info, const float value)
@@ -370,9 +373,10 @@ void PlayerActionSpellSphereCharge(playerinfo_t* info, const float value)
 
 void PlayerActionSpellSphereRelease(playerinfo_t* info, const float value)
 {
-	if (value != 1.0f || !info->seqcmd[ACMDU_ATTACK])
+	if (!info->seqcmd[ACMDU_ATTACK])
 	{
-		info->chargingspell = false;
+		edict_t* self = info->self; //mxd
+		self->sphere_of_annihilation_charging = false; //mxd
 		info->weaponcharge = 0;
 	}
 }
@@ -2615,10 +2619,15 @@ PLAYER_API void PlayerInterruptAction(playerinfo_t* info)
 	{
 		info->PlayerActionPhoenixBowAttack(info);
 	}
-	else if (info->pers.weapon->tag == ITEM_WEAPON_SPHEREOFANNIHILATION && info->chargingspell)
+	else if (info->pers.weapon->tag == ITEM_WEAPON_SPHEREOFANNIHILATION)
 	{
-		info->chargingspell = false;
-		info->PlayerActionSpellSphereCreate(info, &info->chargingspell);
+		edict_t* self = info->self; //mxd
+
+		if (self->sphere_of_annihilation_charging)
+		{
+			self->sphere_of_annihilation_charging = false;
+			info->PlayerActionSpellSphereCreate(info);
+		}
 	}
 
 	// Clear out any pending animations.

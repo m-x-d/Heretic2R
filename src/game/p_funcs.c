@@ -1000,9 +1000,9 @@ void G_PlayerActionSpellArray(const playerinfo_t* info, const int value)
 	WeaponThink_MagicMissileSpread((edict_t*)info->self, "i", value);
 }
 
-void G_PlayerActionSpellSphereCreate(const playerinfo_t* info, qboolean* charging)
+void G_PlayerActionSpellSphereCreate(const playerinfo_t* info)
 {
-	WeaponThink_SphereOfAnnihilation((edict_t*)info->self, "g", charging); // Start a glow effect.
+	WeaponThink_SphereOfAnnihilation(info->self, "");
 }
 
 void G_PlayerActionSpellBigBall(const playerinfo_t* info)

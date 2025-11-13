@@ -21,20 +21,19 @@ static void CL_Sound(const byte event_id, const vec3_t origin, const int channel
 	}
 }
 
-static int CL_Irand(const playerinfo_t* playerinfo, const int min, const int max)
+static int CL_Irand(const playerinfo_t* info, const int min, const int max)
 {
 	if (min >= max)
 		return min;
 
-	const int val = (int)(playerinfo->leveltime * 10.0f);
+	const int val = (int)(info->leveltime * 10.0f);
 	return min + (val >> 7 ^ val >> 10 ^ val >> 5) % (max - min + 1);
 }
 
 //TODO: are these needed?..
-static void EmptyPlayerAction(const playerinfo_t* playerinfo) { }
-static void EmptyPlayerAction2(const playerinfo_t* playerinfo, int val) { }
-static void EmptyPlayerAction3(const playerinfo_t* playerinfo, qboolean* val) { }
-static void EmptyPlayerAction4(playerinfo_t* playerinfo) { }
+static void EmptyPlayerAction(const playerinfo_t* info) { }
+static void EmptyPlayerAction2(const playerinfo_t* info, int val) { }
+static void EmptyPlayerAction3(playerinfo_t* info) { }
 
 void CL_ResetPlayerInfo(void)
 {
@@ -83,13 +82,13 @@ void CL_ResetPlayerInfo(void)
 	cl.playerinfo.PlayerActionSpellFireball = EmptyPlayerAction;
 	cl.playerinfo.PlayerActionSpellBlast = EmptyPlayerAction;
 	cl.playerinfo.PlayerActionSpellArray = EmptyPlayerAction2;
-	cl.playerinfo.PlayerActionSpellSphereCreate = EmptyPlayerAction3;
+	cl.playerinfo.PlayerActionSpellSphereCreate = EmptyPlayerAction;
 	cl.playerinfo.PlayerActionSpellFirewall = EmptyPlayerAction;
 	cl.playerinfo.PlayerActionSpellBigBall = EmptyPlayerAction;
 	cl.playerinfo.PlayerActionRedRainBowAttack = EmptyPlayerAction;
 	cl.playerinfo.PlayerActionPhoenixBowAttack = EmptyPlayerAction;
 	cl.playerinfo.PlayerActionHellstaffAttack = EmptyPlayerAction;
-	cl.playerinfo.PlayerActionSpellDefensive = EmptyPlayerAction4;
+	cl.playerinfo.PlayerActionSpellDefensive = EmptyPlayerAction3;
 	cl.playerinfo.irand = CL_Irand;
 
 	P_InitItems();
