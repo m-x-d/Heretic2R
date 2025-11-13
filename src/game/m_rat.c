@@ -284,13 +284,11 @@ void rat_bite(edict_t* self) //mxd. Named 'ratsqueal' in original logic.
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	vec3_t start_pos;
-	VectorCopy(self->s.origin, start_pos);
+	vec3_t start_pos = VEC3_INIT(self->s.origin);
 	VectorMA(start_pos, self->maxs[0] * 0.5f, forward, start_pos);
 	start_pos[2] += (float)self->viewheight;
 
-	vec3_t end_pos;
-	VectorCopy(self->enemy->s.origin, end_pos);
+	vec3_t end_pos = VEC3_INIT(self->enemy->s.origin);
 	VectorRandomCopy(end_pos, end_pos, 4.0f);
 
 	vec3_t dir;

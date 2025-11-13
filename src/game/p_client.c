@@ -2528,9 +2528,7 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 	if (client->playerinfo.autoaim)
 	{
 		// Get the origin of the LOS (from player to target) used in identifying potential targets.
-		vec3_t los_origin;
-		VectorCopy(ent->s.origin, los_origin);
-		los_origin[2] += (float)ent->viewheight;
+		const vec3_t los_origin = VEC3_INITA(ent->s.origin, 0.0f, 0.0f, (float)ent->viewheight);
 
 		//mxd. Use increased FOVs when we already have autotarget. Fixes frequent switching between auto-targeting and not when enemy is moving near the edge of FOVs.
 		const float h_fov = (have_autotarget ? ANGLE_60 : ANGLE_35);

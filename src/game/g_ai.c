@@ -268,9 +268,7 @@ qboolean AI_IsVisible(const edict_t* self, const edict_t* other) //mxd. Named 'v
 	if (self == NULL || other == NULL)
 		return false;
 
-	vec3_t self_pos;
-	VectorCopy(self->s.origin, self_pos);
-	self_pos[2] += (float)self->viewheight;
+	vec3_t self_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, (float)self->viewheight);
 
 	if (self->classID == CID_TBEAST)
 	{
@@ -280,9 +278,7 @@ qboolean AI_IsVisible(const edict_t* self, const edict_t* other) //mxd. Named 'v
 		VectorMA(self_pos, self->maxs[0], forward, self_pos);
 	}
 
-	vec3_t other_pos;
-	VectorCopy(other->s.origin, other_pos);
-	other_pos[2] += (float)other->viewheight;
+	const vec3_t other_pos = VEC3_INITA(other->s.origin, 0.0f, 0.0f, (float)other->viewheight);
 
 	trace_t trace;
 	gi.trace(self_pos, vec3_origin, vec3_origin, other_pos, self, MASK_OPAQUE, &trace);
@@ -296,13 +292,8 @@ qboolean AI_IsClearlyVisible(const edict_t* self, const edict_t* other) //mxd. N
 	if (self == NULL || other == NULL)
 		return false;
 
-	vec3_t self_pos;
-	VectorCopy(self->s.origin, self_pos);
-	self_pos[2] += (float)self->viewheight;
-
-	vec3_t other_pos;
-	VectorCopy(other->s.origin, other_pos);
-	other_pos[2] += (float)other->viewheight;
+	const vec3_t self_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, (float)self->viewheight);
+	const vec3_t other_pos = VEC3_INITA(other->s.origin, 0.0f, 0.0f, (float)other->viewheight);
 
 	trace_t trace;
 	gi.trace(self_pos, vec3_origin, vec3_origin, other_pos, self, MASK_SOLID, &trace);
@@ -338,9 +329,7 @@ static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original l
 		return false;
 
 	// Get my view spot. //mxd. Moved outside the loop.
-	vec3_t view_pos;
-	VectorCopy(self->s.origin, view_pos);
-	view_pos[2] += (float)self->viewheight;
+	const vec3_t view_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, (float)self->viewheight);
 
 	// Start the search from the most recent alert to the oldest.
 	alertent_t* alerter = level.last_alert; // OOPS, SKIPS LAST.
@@ -837,13 +826,8 @@ qboolean M_CheckAttack(edict_t* self) //TODO: move to g_monster.c?
 	if (self->enemy->health > 0)
 	{
 		// See if any entities are in the way of the shot.
-		vec3_t self_pos;
-		VectorCopy(self->s.origin, self_pos);
-		self_pos[2] += (float)self->viewheight;
-
-		vec3_t enemy_pos;
-		VectorCopy(self->enemy->s.origin, enemy_pos);
-		enemy_pos[2] += (float)self->enemy->viewheight;
+		const vec3_t self_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, (float)self->viewheight);
+		const vec3_t enemy_pos = VEC3_INITA(self->enemy->s.origin, 0.0f, 0.0f, (float)self->enemy->viewheight);
 
 		trace_t trace;
 		gi.trace(self_pos, vec3_origin, vec3_origin, enemy_pos, self, CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_SLIME | CONTENTS_LAVA, &trace);

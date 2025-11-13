@@ -76,9 +76,7 @@ qboolean clear_visible_pos(const edict_t* self, const vec3_t spot) //TODO: renam
 	if (self == NULL || !gi.inPVS(self->s.origin, spot)) // Quicker way to discard points that are very not visible.
 		return false;
 
-	vec3_t start;
-	VectorCopy(self->s.origin, start);
-	start[2] += (float)self->viewheight;
+	vec3_t start = VEC3_INITA(self->s.origin, 0.0f, 0.0f, (float)self->viewheight);
 
 	if (self->classID == CID_TBEAST)
 	{
@@ -334,9 +332,7 @@ static qboolean MG_MakeStartForcedConnection(edict_t* self, const int forced_buo
 
 	self->last_buoyed_enemy = self->enemy; // Remember the last enemy I looked for.
 
-	vec3_t goal_pos;
-	VectorCopy(self->enemy->s.origin, goal_pos);
-	goal_pos[2] += (float)self->viewheight;
+	const vec3_t goal_pos = VEC3_INITA(self->enemy->s.origin, 0.0f, 0.0f, (float)self->viewheight);
 
 	const buoy_t* e_best_buoy = NULL;
 	float e_best_dist = 9999999.0f;
@@ -518,9 +514,7 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 	if (DEACTIVATE_BUOYS)
 		return false;
 
-	vec3_t goal_pos;
-	VectorCopy(self->enemy->s.origin, goal_pos);
-	goal_pos[2] += (float)self->viewheight;
+	const vec3_t goal_pos = VEC3_INITA(self->enemy->s.origin, 0.0f, 0.0f, (float)self->viewheight);
 
 	const buoy_t* best_buoy = NULL;
 	float best_dist = 9999999.0f;
@@ -961,17 +955,11 @@ static qboolean MG_OkToShoot(const edict_t* self, const edict_t* target) //mxd. 
 
 static qboolean MG_CheckClearShotToEnemy(const edict_t* self)
 {
-	static const vec3_t zero_vec = { 0.0f, 0.0f, 0.0f }; //mxd. Made static.
-
-	vec3_t start_pos;
-	VectorCopy(self->s.origin, start_pos);
-	start_pos[2] += (float)self->viewheight;
-
-	vec3_t end_pos;
-	VectorCopy(self->enemy->s.origin, end_pos);
+	const vec3_t start_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, (float)self->viewheight);
+	const vec3_t end_pos = VEC3_INIT(self->enemy->s.origin);
 
 	trace_t trace;
-	gi.trace(start_pos, zero_vec, zero_vec, end_pos, self, MASK_MONSTERSOLID, &trace);
+	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, self, MASK_MONSTERSOLID, &trace);
 
 	return MG_OkToShoot(self, trace.ent);
 }

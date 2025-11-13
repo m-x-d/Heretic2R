@@ -336,8 +336,7 @@ void elflord_attack(edict_t* self)
 		projectile->owner = self;
 		projectile->svflags |= SVF_ALWAYS_SEND;
 
-		vec3_t origin;
-		VectorCopy(self->enemy->s.origin, origin);
+		vec3_t origin = VEC3_INIT(self->enemy->s.origin);
 		M_PredictTargetPosition(self->enemy, self->enemy->velocity, skill->value * 2.0f, origin);
 		origin[2] += (float)self->enemy->viewheight;
 

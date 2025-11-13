@@ -440,12 +440,7 @@ void morcalavin_beam(edict_t* self)
 	VectorMA(beam->s.origin, -20.0f, right, beam->s.origin);
 	beam->s.origin[2] += 16.0f;
 
-	const vec3_t end_pos = //mxd. The only difference between this and morcalavin_beam2()...
-	{
-		self->enemy->s.origin[0],
-		self->enemy->s.origin[1],
-		self->enemy->s.origin[2] + (float)self->enemy->viewheight
-	};
+	const vec3_t end_pos = VEC3_INITA(self->enemy->s.origin, 0.0f, 0.0f, (float)self->enemy->viewheight); //mxd. The only difference between this and morcalavin_beam2()...
 
 	vec3_t dir;
 	VectorSubtract(end_pos, beam->s.origin, dir);
@@ -625,12 +620,7 @@ void MorcalavinMissileThink(edict_t* self) //mxd. Named 'morcalavin_missile_upda
 			VectorMA(self->s.origin, 14.0f, right, self->s.origin);
 			self->s.origin[2] += 42.0f;
 
-			const vec3_t end_pos =
-			{
-				self->owner->enemy->s.origin[0],
-				self->owner->enemy->s.origin[1],
-				self->owner->enemy->s.origin[2] + (float)self->owner->enemy->viewheight
-			};
+			const vec3_t end_pos = VEC3_INITA(self->owner->enemy->s.origin, 0.0f, 0.0f, (float)self->owner->enemy->viewheight);
 
 			vec3_t diff;
 			VectorSubtract(end_pos, self->s.origin, diff);

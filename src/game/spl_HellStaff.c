@@ -207,7 +207,7 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 	vec3_t end;
 
 	//mxd. Replicate II_WEAPON_HELLSTAFF case from Get_Crosshair()...
-	const vec3_t view_pos = { caster->s.origin[0], caster->s.origin[1], caster->s.origin[2] + (float)caster->viewheight + 14.0f };
+	const vec3_t view_pos = VEC3_INITA(caster->s.origin, 0.0f, 0.0f, (float)caster->viewheight + 14.0f);
 
 	if (caster->enemy != NULL) //mxd. Auto-target current enemy?
 	{
@@ -217,10 +217,10 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 	else
 	{
 		// Check ahead first to see if it's going to hit anything at this angle.
-		vec3_t fwd;
-		AngleVectors(aim_angles, fwd, NULL, NULL);
+		vec3_t forward;
+		AngleVectors(aim_angles, forward, NULL, NULL);
 
-		VectorScale(fwd, HELLLASER_DIST, end);
+		VectorScale(forward, HELLLASER_DIST, end);
 		Vec3AddAssign(view_pos, end);
 	}
 

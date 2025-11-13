@@ -205,9 +205,7 @@ static void AssassinThrowDagger(edict_t* self, const float right_ofs) //mxd. Nam
 	dagger->enemy = self->enemy;
 	dagger->owner = self;
 
-	vec3_t enemy_pos;
-	VectorCopy(self->enemy->s.origin, enemy_pos);
-	enemy_pos[2] += (float)self->enemy->viewheight;
+	const vec3_t enemy_pos = VEC3_INITA(self->enemy->s.origin, 0.0f, 0.0f, (float)self->enemy->viewheight);
 
 	vec3_t forward;
 	vec3_t right;
