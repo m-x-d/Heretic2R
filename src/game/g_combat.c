@@ -209,8 +209,6 @@ void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int da
 
 	if ((target->svflags & SVF_MONSTER) && target->dead_state != DEAD_DEAD)
 	{
-		MG_RemoveBuoyEffects(target);
-
 		// What about if off ledge or on steep slope - slide off?
 		M_GetSlopePitchRoll(target, NULL);
 

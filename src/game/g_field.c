@@ -343,7 +343,6 @@ static void TriggerGotoBuoyExecute(const edict_t* self, edict_t* monster, edict_
 	if (monster->enemy == NULL)
 		monster->enemy = activator;
 
-	MG_RemoveBuoyEffects(monster);
 	MG_MakeConnection(monster, NULL, false);
 
 	if (self->spawnflags & SF_BUOY_FIXED)

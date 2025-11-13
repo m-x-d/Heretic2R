@@ -91,10 +91,6 @@ qboolean clear_visible_pos(const edict_t* self, const vec3_t spot) //TODO: renam
 	return (trace.fraction == 1.0f);
 }
 
-void MG_RemoveBuoyEffects(const edict_t* self) //TODO: remove.
-{
-}
-
 int MG_SetFirstBuoy(edict_t* self)
 {
 	if (self->client == NULL && !(self->monsterinfo.aiflags & AI_USING_BUOYS))
@@ -215,8 +211,6 @@ qboolean MG_GoToRandomBuoy(edict_t* self)
 	self->forced_buoy = found_buoy->id;
 
 	G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-
-	MG_RemoveBuoyEffects(self);
 	MG_MakeConnection(self, NULL, false);
 
 	return true;
@@ -654,8 +648,6 @@ static int MG_TryMakeConnection(edict_t* self, const buoy_t* first_buoy, const q
 	if (self->spawnflags & MSF_FIXED)
 		return 0;
 
-	MG_RemoveBuoyEffects(self);
-
 	qboolean dont_use_last;
 	qboolean found_path = false;
 	qboolean last_buoy_clear = false;
@@ -1055,7 +1047,6 @@ qboolean MG_MonsterAttemptTeleport(edict_t* self, const vec3_t destination, cons
 				gi.linkentity(self);
 			}
 
-			MG_RemoveBuoyEffects(self);
 			self->lastbuoy = -1;
 
 			return true;
@@ -1106,8 +1097,6 @@ void MG_Pathfind(edict_t* self, const qboolean check_clear_path)
 
 		if (MG_ReachedBuoy(self, NULL))
 		{
-			MG_RemoveBuoyEffects(self);
-
 			// Check the possibility of activating something.
 			if ((buoy->modflags & BUOY_ACTIVATE) && self->wait < level.time) //mxd. Removed AI_MOOD_DELAY check (always false).
 			{
@@ -1398,7 +1387,6 @@ void MG_BuoyNavigate(edict_t* self)
 				{
 					self->ai_mood = AI_MOOD_NAVIGATE;
 					G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-					MG_RemoveBuoyEffects(self);
 				}
 				else
 				{
@@ -1592,7 +1580,6 @@ void MG_GenericMoodSet(edict_t* self)
 					{
 						self->ai_mood = AI_MOOD_NAVIGATE;
 						G_PostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-						MG_RemoveBuoyEffects(self);
 					}
 					else
 					{
