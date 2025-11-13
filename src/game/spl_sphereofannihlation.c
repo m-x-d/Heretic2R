@@ -178,7 +178,6 @@ void SphereOfAnnihilationGrowThink(edict_t* self)
 
 		self->movetype = MOVETYPE_FLYMISSILE;
 		self->solid = SOLID_BBOX;
-		self->health = 0;
 		self->dmg = SPHERE_DAMAGE;
 		self->dmg_radius = SPHERE_RADIUS_MIN + (SPHERE_RADIUS_PER_CHARGE * (float)self->count);
 		self->touch = SphereOfAnnihilationTouch;
@@ -446,16 +445,6 @@ void SphereWatcherFlyThink(edict_t* self)
 
 void SphereWatcherGrowThink(edict_t* self)
 {
-	vec3_t forward;
-	vec3_t up;
-
-	const gclient_t* cl = self->owner->client; //mxd
-
-	if (cl != NULL)
-		AngleVectors(cl->aimangles, forward, NULL, up);
-	else
-		AngleVectors(self->owner->s.angles, forward, NULL, up);
-
 	// If we have released or we are dead, release the sphere.
 	if (self->owner->sphere_of_annihilation_charging && !(self->owner->dead_state & (DEAD_DYING | DEAD_DEAD)))
 	{
@@ -481,9 +470,8 @@ void SphereWatcherGrowThink(edict_t* self)
 		self->s.effects &= ~EF_MARCUS_FLAG1;
 
 		// Check ahead first to see if it's going to hit anything at this angle.
-		vec3_t angles;
-		VectorCopy(self->owner->s.angles, angles);
-		AngleVectors(angles, forward, NULL, NULL);
+		vec3_t forward;
+		AngleVectors(self->owner->s.angles, forward, NULL, NULL);
 
 		vec3_t end_pos;
 		VectorMA(self->s.origin, SPHERE_FLY_SPEED, forward, end_pos);
@@ -500,7 +488,6 @@ void SphereWatcherGrowThink(edict_t* self)
 
 		self->movetype = MOVETYPE_FLYMISSILE;
 		self->solid = SOLID_BBOX;
-		self->health = 0;
 		self->count = 0;
 		self->dmg = SPHERE_WATCHER_DAMAGE_MIN + (int)(SPHERE_WATCHER_DAMAGE_RANGE * ((self->s.scale - SPHERE_INIT_SCALE) / SPHERE_SCALE_RANGE));
 		self->dmg_radius = SPHERE_WATCHER_EXPLOSION_RADIUS_MIN + (SPHERE_WATCHER_EXPLOSION_RADIUS_MAX - SPHERE_WATCHER_EXPLOSION_RADIUS_MIN) * (self->s.scale - SPHERE_INIT_SCALE) / SPHERE_SCALE_RANGE;
