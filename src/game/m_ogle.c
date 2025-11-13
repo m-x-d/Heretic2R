@@ -668,26 +668,17 @@ static void OgleRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ogl
 	{
 		const float dist = M_DistanceToTarget(self, self->enemy);
 
-		if (dist < 40.0f) // Close enough to swing, not necessarily hit.				
+		if (dist < 40.0f) // Close enough to swing, not necessarily hit.
 		{
 			SetAnim(self, ANIM_ATTACK1);
 		}
-		else if (dist < 100.0f) // Close enough to swing, not necessarily hit.			
+		else if (dist < 100.0f) // Close enough to swing, not necessarily hit.
 		{
-			vec3_t start;
-			VectorCopy(self->s.origin, start);
-			start[2] += (float)self->viewheight;
-
-			vec3_t end;
-			VectorCopy(self->enemy->s.origin, end);
-			end[2] += (float)self->enemy->viewheight;
-
-			vec3_t mins;
-			VectorCopy(self->mins, mins);
-			mins[2] += self->maxs[0] / 2.0f; // Because this guy's mins are 0.
+			const vec3_t start = VEC3_INITA(self->s.origin, 0.0f, 0.0f, (float)self->viewheight);
+			const vec3_t end = VEC3_INITA(self->enemy->s.origin, 0.0f, 0.0f, (float)self->enemy->viewheight);
 
 			trace_t trace;
-			gi.trace(start, mins, self->maxs, end, self, MASK_MONSTERSOLID, &trace);
+			gi.trace(start, self->mins, self->maxs, end, self, MASK_MONSTERSOLID, &trace); //mxd. Original logic uses { self->mins[0], self->mins[1], self->maxs[2] / 2.0f } instead of self->mins.
 
 			if (trace.ent == self->enemy)
 				SetAnim(self, irand(ANIM_ATTACK2, ANIM_ATTACK3));
