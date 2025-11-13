@@ -648,7 +648,7 @@ static int MG_TryMakeConnection(edict_t* self, const buoy_t* first_buoy, const q
 	if (self->spawnflags & MSF_FIXED)
 		return 0;
 
-	qboolean dont_use_last;
+	qboolean dont_use_last = false;
 	qboolean found_path = false;
 	qboolean last_buoy_clear = false;
 
@@ -657,14 +657,9 @@ static int MG_TryMakeConnection(edict_t* self, const buoy_t* first_buoy, const q
 		self->ai_mood_flags &= ~AIMF_CANT_FIND_ENEMY;
 
 		if (self->enemy != self->last_buoyed_enemy) // Current enemy wasn't the last enemy I looked for...
-		{
-			dont_use_last = false;
 			self->lastbuoy = NULL_BUOY; // So forget last buoy I used.
-		}
 		else
-		{
 			dont_use_last = (self->monsterinfo.searchType == SEARCH_BUOY);
-		}
 
 		self->last_buoyed_enemy = self->enemy; // Remember the last enemy I looked for.
 
