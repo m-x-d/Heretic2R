@@ -119,7 +119,7 @@
 
 #pragma region ================================ FUNCS LIST ================================
 
-func_map_t funcs_list[] =
+const func_map_t funcs_list[] =
 {
 	// buoy.c:
 	{ "LinkBuoyInfo",						(byte*)LinkBuoyInfo },
@@ -643,7 +643,7 @@ func_map_t funcs_list[] =
 
 #pragma region ================================ MMOVES LIST ================================
 
-animmove_map_t mmoves_list[] =
+const animmove_map_t mmoves_list[] =
 {
 	// c_corvus1_anim.c:
 	{ "corvus_move_c_action1",					&corvus_move_c_action1 },

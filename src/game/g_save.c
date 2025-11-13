@@ -155,41 +155,41 @@ static field_t savefields[] =
 	{ "", FOFS(fire_damage_enemy),	F_EDICT,	FFL_NONE, NULL },
 
 	//mxd. edict function pointers... Names ares set mainly for debugging purposes.
-	{ "isBlocking", FOFS(isBlocking),				F_FUNCTION,	FFL_NONE, NULL },
-	{ "msgHandler", FOFS(msgHandler),				F_FUNCTION,	FFL_NONE, NULL },
-	{ "think", FOFS(think),							F_FUNCTION,	FFL_NONE, NULL },
-	{ "ai", FOFS(ai),								F_FUNCTION,	FFL_NONE, NULL },
-	{ "bounced", FOFS(bounced),						F_FUNCTION,	FFL_NONE, NULL },
-	{ "isBlocked", FOFS(isBlocked),					F_FUNCTION,	FFL_NONE, NULL },
-	{ "touch", FOFS(touch),							F_FUNCTION,	FFL_NONE, NULL },
-	{ "use", FOFS(use),								F_FUNCTION,	FFL_NONE, NULL },
-	{ "TriggerActivated", FOFS(TriggerActivated),	F_FUNCTION,	FFL_NONE, NULL },
-	{ "blocked", FOFS(blocked),						F_FUNCTION,	FFL_NONE, NULL },
-	{ "pain", FOFS(pain),							F_FUNCTION,	FFL_NONE, NULL },
-	{ "die", FOFS(die),								F_FUNCTION,	FFL_NONE, NULL },
-	{ "oldthink", FOFS(oldthink),					F_FUNCTION,	FFL_NONE, NULL },
-	{ "oldtouch", FOFS(oldtouch),					F_FUNCTION,	FFL_NONE, NULL },
-	{ "cant_attack_think", FOFS(cant_attack_think),	F_FUNCTION,	FFL_NONE, NULL },
-	{ "mood_think", FOFS(mood_think),				F_FUNCTION,	FFL_NONE, NULL },
-	{ "pre_think", FOFS(pre_think),					F_FUNCTION,	FFL_NONE, NULL },
-	{ "post_think", FOFS(post_think),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "isBlocking",					FOFS(isBlocking),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "msgHandler",					FOFS(msgHandler),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "think",						FOFS(think),					F_FUNCTION,	FFL_NONE, NULL },
+	{ "ai",							FOFS(ai),						F_FUNCTION,	FFL_NONE, NULL },
+	{ "bounced",					FOFS(bounced),					F_FUNCTION,	FFL_NONE, NULL },
+	{ "isBlocked",					FOFS(isBlocked),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "touch",						FOFS(touch),					F_FUNCTION,	FFL_NONE, NULL },
+	{ "use",						FOFS(use),						F_FUNCTION,	FFL_NONE, NULL },
+	{ "TriggerActivated",			FOFS(TriggerActivated),			F_FUNCTION,	FFL_NONE, NULL },
+	{ "blocked",					FOFS(blocked),					F_FUNCTION,	FFL_NONE, NULL },
+	{ "pain",						FOFS(pain),						F_FUNCTION,	FFL_NONE, NULL },
+	{ "die",						FOFS(die),						F_FUNCTION,	FFL_NONE, NULL },
+	{ "oldthink",					FOFS(oldthink),					F_FUNCTION,	FFL_NONE, NULL },
+	{ "oldtouch",					FOFS(oldtouch),					F_FUNCTION,	FFL_NONE, NULL },
+	{ "cant_attack_think",			FOFS(cant_attack_think),		F_FUNCTION,	FFL_NONE, NULL },
+	{ "mood_think",					FOFS(mood_think),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "pre_think",					FOFS(pre_think),				F_FUNCTION,	FFL_NONE, NULL },
+	{ "post_think",					FOFS(post_think),				F_FUNCTION,	FFL_NONE, NULL },
 
 	//mxd. edict.monsterinfo function pointers... Names ares set mainly for debugging purposes.
-	{ "monsterinfo.idle", FOFS(monsterinfo.idle),				F_FUNCTION,	FFL_NONE, NULL },
-	{ "monsterinfo.search", FOFS(monsterinfo.search),			F_FUNCTION,	FFL_NONE, NULL },
-	{ "monsterinfo.dodge", FOFS(monsterinfo.dodge),				F_FUNCTION,	FFL_NONE, NULL },
-	{ "monsterinfo.attack", FOFS(monsterinfo.attack),			F_FUNCTION,	FFL_NONE, NULL },
-	{ "monsterinfo.sight", FOFS(monsterinfo.sight),				F_FUNCTION,	FFL_NONE, NULL },
-	{ "monsterinfo.dismember", FOFS(monsterinfo.dismember),		F_FUNCTION,	FFL_NONE, NULL },
-	{ "monsterinfo.alert", FOFS(monsterinfo.alert),				F_FUNCTION,	FFL_NONE, NULL },
-	{ "monsterinfo.checkattack", FOFS(monsterinfo.checkattack),	F_FUNCTION,	FFL_NONE, NULL },
-	{ "monsterinfo.c_callback", FOFS(monsterinfo.c_callback),	F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.idle",			FOFS(monsterinfo.idle),			F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.search",			FOFS(monsterinfo.search),		F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.dodge",			FOFS(monsterinfo.dodge),		F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.attack",			FOFS(monsterinfo.attack),		F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.sight",			FOFS(monsterinfo.sight),		F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.dismember",		FOFS(monsterinfo.dismember),	F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.alert",			FOFS(monsterinfo.alert),		F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.checkattack",	FOFS(monsterinfo.checkattack),	F_FUNCTION,	FFL_NONE, NULL },
+	{ "monsterinfo.c_callback",		FOFS(monsterinfo.c_callback),	F_FUNCTION,	FFL_NONE, NULL },
 
 	//mxd. edict.moveinfo function pointers...
-	{ "moveinfo.endfunc", FOFS(moveinfo.endfunc),	F_FUNCTION,	FFL_NONE, NULL },
+	{ "moveinfo.endfunc",			FOFS(moveinfo.endfunc),			F_FUNCTION,	FFL_NONE, NULL },
 	
 	//mxd. mmove pointer...
-	{ "", FOFS(monsterinfo.currentmove),			F_ANIMMOVE,	FFL_NONE, NULL },
+	{ "",							FOFS(monsterinfo.currentmove),	F_ANIMMOVE,	FFL_NONE, NULL },
 
 	{ NULL, 0, F_INT, FFL_NONE, NULL }
 };
@@ -229,7 +229,7 @@ static field_t clientfields[] =
 #pragma region ========================== FIELDS IO ==========================
 
 // Helper function to get the human-readable function definition by an address.
-static func_map_t* GetFunctionByAddress(const byte* address) // YQ2
+static const func_map_t* GetFunctionByAddress(const byte* address) // YQ2
 {
 	for (int i = 0; funcs_list[i].name != NULL; i++)
 		if (funcs_list[i].address == address)
@@ -249,7 +249,7 @@ static byte* GetFunctionByName(const char* name) // YQ2
 }
 
 // Helper function to get the human-readable definition of an animmove_t struct by a pointer.
-static animmove_map_t* GetAnimMoveByAddress(const animmove_t* address) // YQ2
+static const animmove_map_t* GetAnimMoveByAddress(const animmove_t* address) // YQ2
 {
 	for (int i = 0; mmoves_list[i].name != NULL; i++)
 		if (mmoves_list[i].address == address)

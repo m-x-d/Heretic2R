@@ -43,8 +43,8 @@ typedef struct
 
 	union //mxd
 	{
-		struct func_map_s* func_info;
-		struct animmove_map_s* amove_info;
+		const struct func_map_s* func_info;
+		const struct animmove_map_s* amove_info;
 	} extra;
 } field_t;
 
