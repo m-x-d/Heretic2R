@@ -118,20 +118,14 @@ void SphereOfAnnihilationTouch(edict_t* self, edict_t* other, cplane_t* plane, c
 
 void SphereOfAnnihilationGrowThink(edict_t* self)
 {
-	vec3_t forward;
-	vec3_t up;
-
 	const edict_t* caster = self->owner;
 	const gclient_t* cl = caster->client; //mxd
 
-	if (cl != NULL)
-		AngleVectors(cl->aimangles, forward, NULL, up);
-	else
-		AngleVectors(caster->s.angles, forward, NULL, up);
+	assert(cl != NULL); //mxd
 
 	// If we have released, or we are dead, or a chicken, release the sphere.
 	if (caster->sphere_of_annihilation_charging && !(caster->dead_state & (DEAD_DYING | DEAD_DEAD))
-		&& cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
+		&& !(cl->playerinfo.edictflags & FL_CHICKEN) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
 		if (self->count < SPHERE_MAX_CHARGES)
 		{
@@ -146,6 +140,9 @@ void SphereOfAnnihilationGrowThink(edict_t* self)
 		// Detect if we have teleported, need to move with the player if that's so.
 		VectorCopy(caster->s.origin, self->s.origin);
 
+		vec3_t forward;
+		AngleVectors(cl->aimangles, forward, NULL, NULL);
+
 		self->s.origin[0] += forward[0] * 20.0f;
 		self->s.origin[1] += forward[1] * 20.0f;
 		self->s.origin[2] += (float)caster->viewheight - 5.0f;
@@ -158,21 +155,11 @@ void SphereOfAnnihilationGrowThink(edict_t* self)
 		self->svflags &= ~SVF_NOCLIENT;
 		self->s.effects &= ~EF_MARCUS_FLAG1;
 
-		if (cl != NULL) // When casted by player.
-		{
-			// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
-			if (caster->enemy != NULL)
-				GetAimVelocity(caster->enemy, self->s.origin, SPHERE_FLY_SPEED, cl->aimangles, self->velocity);
-			else
-				AdjustAimVelocity(caster, self->s.origin, cl->aimangles, 1024.0f, 18.0f, self->velocity); //mxd
-		}
-		else // When casted by monster.
-		{
-			if (caster->enemy != NULL)
-				GetAimVelocity(caster->enemy, self->s.origin, SPHERE_FLY_SPEED, caster->s.angles, self->velocity);
-			else
-				VectorScale(forward, SPHERE_FLY_SPEED, self->velocity);
-		}
+		// If we have current enemy, we've already traced to its position and can hit it. Also, crosshair is currently aimed at it --mxd.
+		if (caster->enemy != NULL)
+			GetAimVelocity(caster->enemy, self->s.origin, SPHERE_FLY_SPEED, cl->aimangles, self->velocity);
+		else
+			AdjustAimVelocity(caster, self->s.origin, cl->aimangles, 1024.0f, 18.0f, self->velocity); //mxd
 
 		VectorNormalize2(self->velocity, self->movedir);
 
@@ -286,7 +273,7 @@ void SpherePowerLaserThink(edict_t* self)
 	int fx_flags = CEF_FLAG7;
 
 	// When CEF_FLAG8 is set, move to the left. Otherwise to the right.
-	if (self->health == 2)
+	if (self->sphere_of_annihilation_laser_index == 2)
 		fx_flags |= CEF_FLAG8;
 
 	// Decide if a decal is appropriate or not.
@@ -308,20 +295,14 @@ void SpherePowerLaserTouch(edict_t* self, edict_t* other, cplane_t* plane, csurf
 
 void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 {
-	vec3_t forward;
-	vec3_t right;
-
 	edict_t* caster = self->owner;
 	const gclient_t* cl = caster->client; //mxd
 
-	if (cl != NULL)
-		AngleVectors(cl->aimangles, forward, right, NULL);
-	else
-		AngleVectors(caster->s.angles, forward, right, NULL);
+	assert(cl != NULL); //mxd
 
 	// If we have released, or we are dead, or a chicken, release the sphere.
 	if (caster->sphere_of_annihilation_charging && !(caster->dead_state & (DEAD_DYING | DEAD_DEAD))
-		&& cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
+		&& !(cl->playerinfo.edictflags & FL_CHICKEN) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
 		if (self->count < SPHERE_MAX_CHARGES)
 		{
@@ -336,6 +317,9 @@ void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 		// Detect if we have teleported, need to move with the player if that's so.
 		VectorCopy(caster->s.origin, self->s.origin);
 
+		vec3_t forward;
+		AngleVectors(cl->aimangles, forward, NULL, NULL);
+
 		self->s.origin[0] += forward[0] * 20.0f;
 		self->s.origin[1] += forward[1] * 20.0f;
 		self->s.origin[2] += (float)caster->viewheight - 5.0f;
@@ -344,6 +328,9 @@ void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 	}
 	else
 	{
+		vec3_t right;
+		AngleVectors(cl->aimangles, NULL, right, NULL);
+
 		for (int i = 1; i < 3; i++)
 		{
 			const float direction = (i == 1 ? 1.0f : -1.0f); //mxd. Left / right.
@@ -354,13 +341,10 @@ void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 			laser->count = self->count - SPHERE_COUNT_MIN;
 			VectorMA(self->s.origin, 10.0f * direction, right, laser->s.origin);
 
-			if (cl != NULL)
-				VectorCopy(cl->aimangles, laser->s.angles);
-			else
-				VectorCopy(caster->s.angles, laser->s.angles);
+			VectorCopy(cl->aimangles, laser->s.angles);
 
 			VectorScale(right, SPHERE_LASER_SPEED * direction, laser->velocity);
-			laser->health = i;
+			laser->sphere_of_annihilation_laser_index = i;
 			laser->movetype = MOVETYPE_FLYMISSILE;
 			laser->solid = SOLID_BBOX;
 			laser->clipmask = MASK_SOLID;

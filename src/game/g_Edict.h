@@ -195,6 +195,7 @@ struct edict_s
 	union
 	{
 		int health; // Used by anything that can be destroyed.
+		int sphere_of_annihilation_laser_index; //mxd
 		qboolean is_insect_tracking_projectile; //mxd
 	};
 
