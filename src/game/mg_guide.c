@@ -71,7 +71,7 @@ static qboolean IsClearPath(const edict_t* self, const vec3_t end) //mxd. Named 
 }
 
 // Returns true if the spot is visible, but not through transparencies.
-qboolean clear_visible_pos(const edict_t* self, const vec3_t spot) //TODO: rename to MG_ClearVisiblePos.
+qboolean MG_IsClearlyVisiblePos(const edict_t* self, const vec3_t spot) //mxd. Named 'clear_visible_pos' in original logic.
 {
 	if (self == NULL || !gi.inPVS(self->s.origin, spot)) // Quicker way to discard points that are very not visible.
 		return false;
@@ -247,7 +247,7 @@ static qboolean MG_ResolveBuoyConnection(edict_t* self, const buoy_t* best_buoy,
 
 	//FIXME: Allow assassins to take any buoy even if can't make a connection, since they can teleport.
 	// Basically, pick the player's buoy and randomly pick one off of it or even that one?..
-	if (self->lastbuoy == e_best_buoy->id && !MG_ReachedBuoy(self, e_best_buoy->origin) && !clear_visible_pos(self, goal_pos))
+	if (self->lastbuoy == e_best_buoy->id && !MG_ReachedBuoy(self, e_best_buoy->origin) && !MG_IsClearlyVisiblePos(self, goal_pos))
 	{
 		self->lastbuoy = NULL_BUOY;
 		dont_use_last = false;
@@ -389,7 +389,7 @@ static qboolean MG_MakeStartForcedConnection(edict_t* self, const int forced_buo
 				// Only consider buoys in the current interval. Closer ones have already been checked, and we'll save farther ones for later.
 				if (e_dist < e_best_dist && e_dist > search_pass_interval * (float)i && e_dist < search_pass_interval * (float)(i + 1))
 				{
-					if (clear_visible_pos(self->enemy, found_buoy->origin))
+					if (MG_IsClearlyVisiblePos(self->enemy, found_buoy->origin))
 					{
 						e_best_dist = e_dist;
 						e_best_buoy = found_buoy;
@@ -609,7 +609,7 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 				// Only consider buoys in the current interval. Closer ones have already been checked, and we'll save farther ones for later.
 				if (e_dist < e_best_dist && e_dist > search_pass_interval * (float)i && e_dist < search_pass_interval * (float)(i + 1))
 				{
-					if (clear_visible_pos(self->enemy, buoy->origin))
+					if (MG_IsClearlyVisiblePos(self->enemy, buoy->origin))
 					{
 						e_best_dist = e_dist;
 						e_best_buoy = buoy;
@@ -1249,7 +1249,7 @@ void MG_Pathfind(edict_t* self, const qboolean check_clear_path)
 
 			MG_MakeConnection(self, NULL, false);
 		}
-		else if (irand(0, 4) == 0 && !clear_visible_pos(self, buoy->origin))
+		else if (irand(0, 4) == 0 && !MG_IsClearlyVisiblePos(self, buoy->origin))
 		{
 			// Lost sight of buoy, let's re-acquire.
 			MG_MakeConnection(self, NULL, false);

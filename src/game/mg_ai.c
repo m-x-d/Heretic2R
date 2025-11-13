@@ -956,7 +956,7 @@ static qboolean MG_CheckJump(edict_t* self)
 		return false; // Goalentity not in front.
 
 	//sfs -- Save the trace line for after the easy checks.
-	if (!clear_visible_pos(self, targ_org))
+	if (!MG_IsClearlyVisiblePos(self, targ_org))
 	{
 		vec3_t vis_check_spot;
 		VectorMA(spot1, self->size[0] * 2.0f, forward, vis_check_spot);

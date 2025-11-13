@@ -561,7 +561,7 @@ static void GorgonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'g
 	if (self->ai_mood == AI_MOOD_PURSUE)
 		enemy_visible = AI_IsClearlyVisible(self, self->enemy);
 	else
-		enemy_visible = clear_visible_pos(self, self->monsterinfo.nav_goal);
+		enemy_visible = MG_IsClearlyVisiblePos(self, self->monsterinfo.nav_goal);
 
 	if (enemy_visible)
 	{
