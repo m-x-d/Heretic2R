@@ -1473,9 +1473,7 @@ void CL_Frame(const int packetdelta, const int renderdelta, const int timedelta,
 		// Advance local effects for next frame.
 		if (cl.frame.valid && !(int)cl_paused->value && !(int)cl_freezeworld->value) // H2
 		{
-			if (fxe.UpdateEffects != NULL) //TODO: should be called on packetframe to maintain vanilla compatibility?
-				fxe.UpdateEffects();
-
+			fxe.UpdateEffects();
 			SK_UpdateSkeletons();
 		}
 
