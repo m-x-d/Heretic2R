@@ -490,7 +490,6 @@ struct edict_s
 	void (*post_think)(edict_t* self); // Nextthink time for postthinks.
 
 	int forced_buoy; // Monster is forced to go to this buoy.
-	buoy_t* enemy_buoy; // Monster's enemy's closest buoy. //mxd. Unused. Can't remove...
 	float pathfind_nextthink;
 	edict_t* nextbuoy[MAX_BUOY_BRANCHES];
 
@@ -498,7 +497,7 @@ struct edict_s
 
 	// New monster stuff.
 	char* wakeup_target;	// Target to fire when find an enemy.
-	char* pain_target;		// Target to fire when take pain (only once). //TODO: used in DefaultMsgHandler(), but never set!
+	char* pain_target;		// Target to fire when take pain (only once). Editor field, never set by the engine --mxd.
 	char* homebuoy;
 
 	float alert_time; // Time when a monster is no longer startled.

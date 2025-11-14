@@ -441,8 +441,8 @@ typedef struct
 	int (*attack)(edict_t* self); //TODO: unused.
 	void (*sight)(edict_t* self, edict_t* other); //TODO: unused.
 	void (*dismember)(edict_t* self, int damage, HitLocation_t hl); //mxd. Changed 'hl' arg type from int.
-	qboolean(*alert)(edict_t* self, alertent_t* alerter, edict_t* enemy);
-	qboolean(*checkattack)(edict_t* self);
+	qboolean (*alert)(edict_t* self, alertent_t* alerter, edict_t* enemy);
+	qboolean (*checkattack)(edict_t* self);
 
 	float pausetime;
 	float attack_finished;
