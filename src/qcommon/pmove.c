@@ -711,26 +711,22 @@ static void PM_OnBboxSizeChanged(void) // H2 //mxd. Removed unused return value.
 //mxd. Subtle acceleration/deceleration while walking on land.
 static void PM_AirAccelerate(float* fmove, float* smove) //mxd
 {
-	static float old_fmove;
 	static float fmove_lerp;
 	static float smove_lerp;
 
 	if (*fmove != 0.0f)
 	{
-		fmove_lerp = min(1.0f, fmove_lerp + pml.frametime);
+		fmove_lerp = min(1.0f, fmove_lerp + pml.frametime * 2.0f);
 		*fmove *= 1.0f + sinf(-ANGLE_90 + ANGLE_90 * fmove_lerp);
-		old_fmove = *fmove;
 	}
 	else
 	{
-		fmove_lerp = max(0.0f, fmove_lerp - pml.frametime * 2.0f);
-		*fmove = old_fmove * (1.0f + sinf(-ANGLE_90 + ANGLE_90 * fmove_lerp));
+		fmove_lerp = 0.0f;
 	}
 
 	if (*smove != 0.0f)
 	{
-		const float smove_scaler = (*fmove != 0.0f ? 2.0f : 1.5f);
-		smove_lerp = min(1.0f, smove_lerp + pml.frametime * smove_scaler);
+		smove_lerp = min(1.0f, smove_lerp + pml.frametime * 2.5f);
 		*smove *= 1.0f + sinf(-ANGLE_90 + ANGLE_90 * smove_lerp);
 	}
 	else
