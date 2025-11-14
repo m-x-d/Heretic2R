@@ -591,31 +591,24 @@ void WriteGame(char* filename, const qboolean autosave)
 	const char save_ver[16] = H2R_SAVE_VERSION; //mxd. Use save version instead of build date.
 	fwrite(save_ver, sizeof(save_ver), 1, f);
 
+	//mxd. Write out game size for checking.
+	const int game_size = sizeof(game_locals_t);
+	fwrite(&game_size, sizeof(game_size), 1, f);
+
 	game.autosaved = autosave;
 	fwrite(&game, sizeof(game), 1, f);
 	game.autosaved = false;
+
+	//mxd. Write out client size for checking.
+	const int client_size = sizeof(gclient_t);
+	fwrite(&client_size, sizeof(client_size), 1, f);
 
 	for (int i = 0; i < game.maxclients; i++)
 		WriteClient(f, &game.clients[i]);
 
 	SaveScripts(f, true);
 
-	// This is a bit bogus - search through the client effects and kill all the FX_PLAYER_EFFECTS before saving,
-	// since they will be re-created upon players re-joining the game after a load anyway.
-	PerEffectsBuffer_t* fx_buf = gi.Persistant_Effects_Array;
-	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, fx_buf++)
-		if (fx_buf->fx_num == FX_PLAYER_PERSISTANT)
-			fx_buf->numEffects = 0;
-
-	// Save all the current persistent effects.
-	fwrite(gi.Persistant_Effects_Array, (sizeof(PerEffectsBuffer_t) * MAX_PERSISTANT_EFFECTS), 1, f);
 	fclose(f);
-
-	// This is a bit bogus - search through the client effects and re-enable all FX_PLAYER_EFFECTS.
-	fx_buf = (PerEffectsBuffer_t*)gi.Persistant_Effects_Array;
-	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, fx_buf++)
-		if (fx_buf->fx_num == FX_PLAYER_PERSISTANT)
-			fx_buf->numEffects = 1;
 }
 
 void ReadGame(char* filename)
@@ -639,6 +632,18 @@ void ReadGame(char* filename)
 		return;
 	}
 
+	//mxd. Check game size.
+	int game_size;
+	fread(&game_size, sizeof(game_size), 1, f);
+
+	if (game_size != sizeof(game_locals_t))
+	{
+		fclose(f);
+		gi.error("ReadGame: mismatched game locals size (expected %i, got %i).", sizeof(game_locals_t), game_size);
+
+		return;
+	}
+
 	gi.FreeTags(TAG_GAME);
 
 	g_edicts = gi.TagMalloc(game.maxentities * (int)sizeof(g_edicts[0]), TAG_GAME);
@@ -646,6 +651,18 @@ void ReadGame(char* filename)
 
 	fread(&game, sizeof(game), 1, f);
 	game.clients = gi.TagMalloc(game.maxclients * (int)sizeof(game.clients[0]), TAG_GAME);
+
+	//mxd. Check client size.
+	int client_size;
+	fread(&client_size, sizeof(client_size), 1, f);
+
+	if (client_size != sizeof(gclient_t))
+	{
+		fclose(f);
+		gi.error("ReadGame: mismatched gclient size (expected %i, got %i).", sizeof(gclient_t), client_size);
+
+		return;
+	}
 
 	for (int i = 0; i < game.maxclients; i++)
 		ReadClient(f, &game.clients[i]);
@@ -722,6 +739,10 @@ static void WriteLevelLocals(FILE* f)
 		for (field_t* field = &bouyfields[0]; field->name != NULL; field++)
 			ConvertField(field, (byte*)&temp.buoy_list[i]);
 
+	//mxd. Write out level locals size for checking.
+	const int locals_size = sizeof(level_locals_t);
+	fwrite(&locals_size, sizeof(locals_size), 1, f);
+
 	// Write the block.
 	fwrite(&temp, sizeof(temp), 1, f);
 
@@ -737,6 +758,18 @@ static void WriteLevelLocals(FILE* f)
 // All pointer variables (except function pointers) must be handled specially.
 static void ReadLevelLocals(FILE* f)
 {
+	//mxd. Check level locals size.
+	int locals_size;
+	fread(&locals_size, sizeof(locals_size), 1, f);
+
+	if (locals_size != sizeof(level_locals_t))
+	{
+		fclose(f);
+		gi.error("ReadLevelLocals: mismatched level locals size (expected %i, got %i).", sizeof(level_locals_t), locals_size);
+
+		return;
+	}
+
 	fread(&level, sizeof(level), 1, f);
 
 	// Change the pointers to lengths or indexes.
@@ -818,6 +851,10 @@ void WriteLevel(char* filename)
 	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, fx_buf++)
 		if (fx_buf->fx_num == FX_PLAYER_PERSISTANT)
 			fx_buf->numEffects = 0;
+
+	//mxd. Write out fx buffer size for checking.
+	const int fx_size = sizeof(PerEffectsBuffer_t);
+	fwrite(&fx_size, sizeof(fx_size), 1, f);
 
 	// Save all the current persistent effects.
 	fwrite(gi.Persistant_Effects_Array, (sizeof(PerEffectsBuffer_t) * MAX_PERSISTANT_EFFECTS), 1, f);
@@ -910,6 +947,18 @@ void ReadLevel(char* filename)
 	}
 
 	LoadScripts(f, false);
+
+	//mxd. Check fx buffer size.
+	int fx_size;
+	fread(&fx_size, sizeof(fx_size), 1, f);
+
+	if (fx_size != sizeof(PerEffectsBuffer_t))
+	{
+		fclose(f);
+		gi.error("ReadLevel: mismatched fx buffer size (expected %i, got %i).", sizeof(PerEffectsBuffer_t), fx_size);
+
+		return;
+	}
 
 	// Load up all the persistent effects and fire them off.
 	fread(gi.Persistant_Effects_Array, sizeof(PerEffectsBuffer_t) * MAX_PERSISTANT_EFFECTS, 1, f);
