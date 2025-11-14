@@ -153,8 +153,6 @@ static void PM_StepSlideMove(void)
 {
 	static vec3_t planes[MAX_CLIP_PLANES];
 
-	vec3_t primal_velocity;
-	vec3_t plane_normal;
 	vec3_t dir;
 	vec3_t cross;
 	vec3_t vel;
@@ -169,8 +167,8 @@ static void PM_StepSlideMove(void)
 	if (pm->groundentity == NULL)
 		pml.groundplane.normal[2] = 0.0f;
 
-	VectorCopy(pml.velocity, primal_velocity);
-	VectorCopy(pml.groundplane.normal, plane_normal);
+	vec3_t primal_velocity = VEC3_INIT(pml.velocity);
+	vec3_t plane_normal = VEC3_INIT(pml.groundplane.normal);
 
 	int numplanes = 0;
 	int cur_plane = 0;
@@ -400,8 +398,7 @@ LAB_NotSolid:
 			}
 			else
 			{
-				vec3_t v;
-				VectorSet(v, trace.plane.normal[0], trace.plane.normal[1], 0.0f);
+				vec3_t v = VEC3_SET(trace.plane.normal[0], trace.plane.normal[1], 0.0f);
 				VectorNormalize(v);
 
 				if (numplanes == 0 || !VectorCompare(v, planes[numplanes - 1]))
@@ -512,11 +509,8 @@ LAB_NotSolid:
 		{
 			if (prev_plane == -1)
 			{
-				vec3_t mins;
-				vec3_t maxs;
-
-				VectorCopy(pm->mins, mins);
-				VectorCopy(pm->maxs, maxs);
+				vec3_t mins = VEC3_INIT(pm->mins);
+				vec3_t maxs = VEC3_INIT(pm->maxs);
 
 				int offset = 1;
 				while (maxs[0] - (float)offset >= mins[0] + (float)offset)
@@ -771,7 +765,7 @@ static void PM_AirMove(void)
 
 	if (pm->groundentity != NULL)
 	{
-		// Walking on ground.
+		// Standing on ground.
 		if (maxspeed == 0.0f && pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
 		{
 			VectorClear(pml.velocity);
@@ -952,11 +946,6 @@ static void PM_TryWaterMove(void) // H2
 
 static void PM_CatagorizePosition(void)
 {
-	vec3_t mins;
-	vec3_t maxs;
-	vec3_t point;
-	trace_t trace;
-
 	if (pml.velocity[2] > 100.0f || pm->waterlevel > 1) // H2
 	{
 		pm->s.pm_flags &= ~PMF_ON_GROUND;
@@ -966,9 +955,9 @@ static void PM_CatagorizePosition(void)
 	}
 
 	// See if standing on something solid.
-	VectorSet(point, pml.origin[0], pml.origin[1], pml.origin[2] - 1.0f);
-	VectorCopy(pm->mins, mins);
-	VectorCopy(pm->maxs, maxs);
+	vec3_t point = VEC3_SET(pml.origin[0], pml.origin[1], pml.origin[2] - 1.0f);
+	vec3_t mins = VEC3_INIT(pm->mins);
+	vec3_t maxs = VEC3_INIT(pm->maxs);
 
 	const qboolean big_maxs = (maxs[0] >= 2.0f);
 
@@ -982,6 +971,7 @@ static void PM_CatagorizePosition(void)
 	}
 
 	// If the player hull point one unit down is solid, the player is on ground.
+	trace_t trace;
 	pm->trace(pml.origin, mins, maxs, point, &trace);
 
 	pml.groundplane = trace.plane;
@@ -1009,8 +999,7 @@ static void PM_CatagorizePosition(void)
 		}
 		else
 		{
-			vec3_t start;
-			VectorSet(start, pml.origin[0], pml.origin[1], pml.origin[2] + 0.14f);
+			const vec3_t start = VEC3_SET(pml.origin[0], pml.origin[1], pml.origin[2] + 0.14f);
 			point[2] += 0.14f;
 
 			pm->trace(start, mins, maxs, point, &trace);
