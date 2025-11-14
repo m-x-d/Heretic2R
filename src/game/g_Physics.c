@@ -480,12 +480,7 @@ static void MoveEntity_Slide(edict_t* self)
 	const float gravity = self->gravity * sv_gravity->value;
 	const float base_friction = self->friction * sv_friction->value;
 
-	vec3_t original_velocity;
-	VectorCopy(self->velocity, original_velocity);
-
-	vec3_t primal_velocity;
-	VectorCopy(self->velocity, primal_velocity);
-
+	vec3_t original_velocity = VEC3_INIT(self->velocity);
 	float* ground_normal = self->groundNormal;
 
 	if (self->groundentity == NULL)
@@ -611,8 +606,7 @@ static void MoveEntity_Slide(edict_t* self)
 			delta[2] -= 0.5f * gravity * time_remaining_sq;
 		}
 
-		vec3_t end;
-		VectorCopy(self->s.origin, end);
+		vec3_t end = VEC3_INIT(self->s.origin);
 		Vec3AddAssign(delta, end);
 
 		form_move.end = end;
