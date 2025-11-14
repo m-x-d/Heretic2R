@@ -284,7 +284,7 @@ void IN_Update(void) // YQ2
 			} break;
 
 			case SDL_EVENT_MOUSE_MOTION:
-				if (cls.key_dest == key_game && (int)cl_paused->value == 0)
+				if (cls.key_dest == key_game && (int)cl_paused->value == 0 && (int)cl_freezeworld->value == 0)
 				{
 					mouse_x += event.motion.xrel;
 					mouse_y += event.motion.yrel;
