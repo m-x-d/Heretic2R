@@ -42,7 +42,7 @@ qboolean MG_ReachedBuoy(const edict_t* self, const vec3_t p_spot)
 		return false;
 
 	const float dist = vhlen(spot, self->s.origin);
-	const float radius = 24 + max(16.0f, self->maxs[0]);
+	const float radius = 24.0f + max(16.0f, self->maxs[0]);
 
 	return (dist < radius + 24.0f);
 }
@@ -52,10 +52,8 @@ static qboolean IsClearPath(const edict_t* self, const vec3_t end) //mxd. Named 
 	if (DEACTIVATE_BUOYS || !gi.inPVS(self->s.origin, end)) // Quicker way to discard points that are very not in a clear path.
 		return false;
 
-	vec3_t mins;
-	vec3_t maxs;
-	VectorScale(self->mins, 0.5f, mins);
-	VectorScale(self->maxs, 0.5f, maxs);
+	vec3_t mins = VEC3_INITS(self->mins, 0.5f);
+	vec3_t maxs = VEC3_INITS(self->maxs, 0.5f);
 
 	if (self->mins[2] + 18.0f > mins[2]) // Need to account for stepheight.
 	{
@@ -227,7 +225,7 @@ static void MG_AssignMonsterNextBuoy(edict_t* self, const buoy_t* start_buoy)
 }
 
 // See if this entity and this buoy are ok to be associated (clear path, etc.).
-static qboolean MG_IsValidBestBuoyForEnt(edict_t* ent, const buoy_t* test_buoy) //mxd. Named 'MG_ValidBestBuoyForEnt' in original version.
+static qboolean MG_IsValidBestBuoyForEnt(const edict_t* ent, const buoy_t* test_buoy) //mxd. Named 'MG_ValidBestBuoyForEnt' in original version.
 {
 	vec3_t diff;
 	VectorSubtract(ent->s.origin, test_buoy->origin, diff);
@@ -432,8 +430,7 @@ static qboolean MG_MakeForcedConnection(edict_t* self, const int forced_buoy, co
 
 	const buoy_t* e_best_buoy = &level.buoy_list[forced_buoy];
 
-	vec3_t goal_pos;
-	VectorCopy(e_best_buoy->origin, goal_pos);
+	const vec3_t goal_pos = VEC3_INIT(e_best_buoy->origin);
 
 	const buoy_t* best_buoy = NULL;
 	float best_dist = 9999999.0f; //TODO: use FLT_MAX instead?
@@ -806,16 +803,14 @@ qboolean MG_MakeConnection(edict_t* self, const buoy_t* first_buoy, const qboole
 	return result;
 }
 
-qboolean MG_CheckClearPathToEnemy(edict_t* self)
+qboolean MG_CheckClearPathToEnemy(const edict_t* self)
 {
 	if (self->enemy == NULL)
 		return false;
 
-	vec3_t mins;
-	VectorCopy(self->mins, mins);
-	mins[2] += 18.0f;
+	const vec3_t mins = VEC3_INITA(self->mins, 0.0f, 0.0f, 18.0f);
 
-	trace_t	trace;
+	trace_t trace;
 	gi.trace(self->s.origin, mins, self->maxs, self->enemy->s.origin, self, MASK_SOLID, &trace);
 
 	if (trace.ent != NULL && trace.ent == self->enemy)
@@ -852,9 +847,7 @@ qboolean MG_CheckClearPathToEnemy(edict_t* self)
 	VectorSubtract(self->enemy->s.origin, center, enemy_diff);
 	const float dist = VectorNormalize(enemy_diff);
 
-	vec3_t origin;
-	VectorCopy(self->s.origin, origin);
-	origin[2] += self->mins[2];
+	const vec3_t origin = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2]);
 
 	for (int i = 0; (float)i < dist; i += 8)
 	{
@@ -875,13 +868,11 @@ qboolean MG_CheckClearPathToEnemy(edict_t* self)
 	return true;
 }
 
-static qboolean MG_CheckClearPathToSpot(edict_t* self, const vec3_t spot)
+static qboolean MG_CheckClearPathToSpot(const edict_t* self, const vec3_t spot)
 {
-	vec3_t mins;
-	VectorCopy(self->mins, mins);
-	mins[2] += 18.0f;
+	const vec3_t mins = VEC3_INITA(self->mins, 0.0f, 0.0f, 18.0f);
 
-	trace_t	trace;
+	trace_t trace;
 	gi.trace(self->s.origin, mins, self->maxs, spot, self, MASK_SOLID, &trace);
 
 	if (trace.ent != NULL && trace.ent == self->enemy)
@@ -912,9 +903,7 @@ static qboolean MG_CheckClearPathToSpot(edict_t* self, const vec3_t spot)
 	VectorSubtract(spot, self->s.origin, enemy_diff);
 	const float dist = VectorNormalize(enemy_diff);
 
-	vec3_t origin;
-	VectorCopy(self->s.origin, origin);
-	origin[2] += self->mins[2];
+	const vec3_t origin = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2]);
 
 	for (int i = 0; (float)i < dist; i += 8)
 	{
