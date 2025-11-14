@@ -960,95 +960,71 @@ static void MG_MonsterFirePathTarget(edict_t* self, const char* path_target)
 			ent->use(ent, self, self);
 }
 
+// Destination is always buoy->origin (0 0 24) --mxd.
 qboolean MG_MonsterAttemptTeleport(edict_t* self, const vec3_t destination, const qboolean ignore_los)
 {
-	qboolean can_teleport = true; //mxd. Renamed from 'no_teleport' to avoid shadowing global cvar...
-
 	if ((self->svflags & SVF_BOSS) || self->classID == CID_OGLE)
 		return false;
 
+	// Check line of sight with all players.
 	if (self->classID != CID_ASSASSIN && !ignore_los)
 	{
-		// Check line of sight with all players.
-		for (int i = 0; i <= game.maxclients; i++)
+		for (int i = 1; i <= game.maxclients; i++) //mxd. Counts from 0 in original logic.
 		{
 			const edict_t* ent = &g_edicts[i];
 
 			if (ent->client == NULL)
 				continue;
 
-			edict_t* temp = G_Spawn();
-
+			vec3_t cam_vieworg;
 			for (int c = 0; c < 3; c++)
-				temp->s.origin[c] = (float)ent->client->playerinfo.pcmd.camera_vieworigin[c] * 0.125f;
+				cam_vieworg[c] = (float)ent->client->playerinfo.pcmd.camera_vieworigin[c] * 0.125f;
 
-			can_teleport = (!gi.inPVS(temp->s.origin, destination) && !gi.inPVS(temp->s.origin, self->s.origin));
-
-			G_FreeEdict(temp);
-
-			if (!can_teleport)
-				break;
+			// Can't teleport if our position or destination is visible to any player.
+			if (gi.inPVS(cam_vieworg, self->s.origin) || gi.inPVS(cam_vieworg, destination))
+				return false;
 		}
 	}
 
-	if (can_teleport)
+	// Do traces.
+	vec3_t bottom = VEC3_INITA(destination, 0.0f, 0.0f, -self->size[2]);
+
+	vec3_t mins = VEC3_INIT(self->mins);
+	mins[2] = 0.0f;
+
+	vec3_t maxs = VEC3_INIT(self->maxs);
+	maxs[2] = 1.0f;
+
+	trace_t trace;
+	gi.trace(destination, mins, maxs, bottom, self, MASK_MONSTERSOLID, &trace);
+
+	if (trace.fraction < 1.0f)
 	{
-		// Do traces
-		vec3_t bottom;
-		VectorCopy(destination, bottom);
-		bottom[2] -= self->size[2];
+		VectorCopy(trace.endpos, bottom);
 
-		vec3_t mins;
-		VectorCopy(self->mins, mins);
-		mins[2] = 0.0f;
-
-		vec3_t maxs;
-		VectorCopy(self->maxs, maxs);
-		maxs[2] = 1.0f;
-
-		trace_t trace;
-		gi.trace(destination, mins, maxs, bottom, self, MASK_MONSTERSOLID, &trace);
-
-		qboolean perform_teleport; //mxd
-
-		if (trace.fraction < 1.0f)
-		{
-			VectorCopy(trace.endpos, bottom);
-
-			vec3_t top;
-			VectorCopy(bottom, top);
-			top[2] += self->size[2] - 1.0f;
-
-			gi.trace(bottom, mins, maxs, top, self, MASK_MONSTERSOLID, &trace);
-
-			perform_teleport = (!trace.allsolid && !trace.startsolid && trace.fraction == 1.0f);
-		}
-		else
-		{
-			perform_teleport = (!trace.allsolid && !trace.startsolid);
-		}
-
-		if (perform_teleport)
-		{
-			bottom[2] -= self->mins[2];
-
-			if (self->classID == CID_ASSASSIN)
-			{
-				AssassinPrepareTeleportDestination(self, bottom, false);
-			}
-			else
-			{
-				VectorCopy(bottom, self->s.origin);
-				gi.linkentity(self);
-			}
-
-			self->lastbuoy = -1;
-
-			return true;
-		}
+		const vec3_t top = VEC3_INITA(bottom, 0.0f, 0.0f, self->size[2] - 1.0f);
+		gi.trace(bottom, mins, maxs, top, self, MASK_MONSTERSOLID, &trace);
 	}
 
-	return false;
+	if (trace.allsolid || trace.startsolid || trace.fraction < 1.0f)
+		return false;
+
+	// Perform teleport.
+	bottom[2] -= self->mins[2];
+
+	if (self->classID == CID_ASSASSIN)
+	{
+		AssassinPrepareTeleportDestination(self, bottom, false);
+	}
+	else
+	{
+		VectorCopy(bottom, self->s.origin);
+		gi.linkentity(self);
+	}
+
+	self->lastbuoy = -1;
+
+	return true;
 }
 
 //FIXME: If a monster CAN see player but can't get to him for a short while and does not have a clear path to him, use the buoys anyway!
