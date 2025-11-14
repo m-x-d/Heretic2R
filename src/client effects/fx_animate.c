@@ -166,7 +166,7 @@ void PreCacheFXAnimate(void)
 static qboolean AnimationUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	//mxd. Update frame interpolation settings.
-	self->framelerp_time = fxi.cl->time;
+	self->framelerp_time = fx_time;
 	self->r.oldframe = self->r.frame;
 
 	self->r.frame++;
@@ -204,7 +204,7 @@ void FXAnimate(centity_t* owner, const int type, const int flags, vec3_t origin)
 	if (anim & 0x80)
 	{
 		self->Update = AnimationUpdate;
-		self->nextThinkTime = fxi.cl->time + irand(40, 500); // So they don't all start on frame 0 at the same time.
+		self->nextThinkTime = fx_time + irand(40, 500); // So they don't all start on frame 0 at the same time.
 	}
 	else
 	{

@@ -282,7 +282,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	if (trace->surface->flags & SURF_SKY)
 	{
 		// Remove it.
-		self->nextThinkTime = fxi.cl->time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+		self->nextThinkTime = fx_time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fx_time in UpdateEffects()).
 		self->Update = RemoveSelfAI; //mxd. FXDebris_Remove() in original logic.
 
 		return false;
@@ -363,7 +363,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 			VectorClear(self->acceleration);
 			self->d_alpha = -0.2f;
 			self->Update = FXDebris_Vanish;
-			self->nextThinkTime = fxi.cl->time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+			self->nextThinkTime = fx_time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fx_time in UpdateEffects()).
 		}
 
 		return false; // No need to update trace counter if not sending collision.
@@ -407,7 +407,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		VectorCopy(surface_top, r->origin);
 		self->d_alpha = -0.01f;
 		self->Update = FXDebris_Vanish;
-		self->nextThinkTime = fxi.cl->time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+		self->nextThinkTime = fx_time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fx_time in UpdateEffects()).
 
 		return false; // No need to update trace counter if not sending collision.
 	}
@@ -425,7 +425,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		VectorCopy(surface_top, r->origin);
 		self->d_scale = -0.2f;
 		self->Update = FXDebris_Vanish;
-		self->nextThinkTime = fxi.cl->time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+		self->nextThinkTime = fx_time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fx_time in UpdateEffects()).
 
 		return false;
 	}
@@ -474,7 +474,7 @@ float GetGravity(void)
 qboolean RefPointsValid(const centity_t* owner)
 {
 	// RF_IGNORE_REFS check is necessary in case we're a chicken.
-	return (owner->referenceInfo != NULL && !(owner->current.renderfx & RF_IGNORE_REFS) && owner->referenceInfo->lastUpdate - (float)fxi.cl->time <= REF_MINCULLTIME);
+	return (owner->referenceInfo != NULL && !(owner->current.renderfx & RF_IGNORE_REFS) && owner->referenceInfo->lastUpdate - (float)fx_time <= REF_MINCULLTIME);
 }
 
 qboolean ReferencesInitialized(const centity_t* owner) //TODO: no longer needed?
@@ -538,7 +538,7 @@ void ClearCircularList(void) //mxd
 //mxd. Returns value based on pickup position (simplified version of undulate logic from R_EmitWaterPolys()).
 float GetPickupBobPhase(const vec3_t origin)
 {
-	return (origin[0] + origin[1]) * 0.0495f + (float)fxi.cl->time * 3.0f; // 0.0495 == 2.3 * 0.015.
+	return (origin[0] + origin[1]) * 0.0495f + (float)fx_time * 3.0f; // 0.0495 == 2.3 * 0.015.
 }
 
 // Assumes 'direction' to be normalized --mxd.

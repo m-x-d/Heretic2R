@@ -16,6 +16,7 @@
 #include "Vector.h"
 #include "Utilities.h"
 
+int fx_time; //mxd
 client_entity_t* clientEnts = NULL;
 
 static ResourceManager_t entity_manager;
@@ -93,8 +94,8 @@ client_entity_t* ClientEntity_new(const int type, const int flags, const vec3_t 
 
 	new_ent->updateTime = next_think_time;
 	new_ent->framelerp_scale = 1.0f / (float)next_think_time; //mxd. Setup frame interpolation.
-	new_ent->nextThinkTime = fxi.cl->time + next_think_time;
-	new_ent->startTime = fxi.cl->time;
+	new_ent->nextThinkTime = fx_time + next_think_time;
+	new_ent->startTime = fx_time;
 	new_ent->Update = RemoveSelfAI;
 
 	return new_ent;
@@ -274,7 +275,7 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 			{
 				if (current->flags & CEF_FRAME_LERP) //mxd
 				{
-					const float backlerp = 1.0f - (float)(fxi.cl->time - current->framelerp_time) * current->framelerp_scale;
+					const float backlerp = 1.0f - (float)(fx_time - current->framelerp_time) * current->framelerp_scale;
 					current->r.backlerp = max(0.0f, backlerp); // Otherwise it will advance towards negative infinity when the game is paused.
 				}
 
@@ -318,10 +319,6 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 	assert(root);
 	assert(*root);
 
-	// If the world is frozen then add the particles, just don't update the world time. Always update the particle timer.
-	if (!fx_FreezeWorld)
-		ParticleUpdateTime = fxi.cl->time;
-
 	for (prev = root, current = *root; current != NULL; current = current->next)
 	{
 		num_fx++;
@@ -329,7 +326,7 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 		if (current->msgHandler != NULL)
 			CE_ProcessMessages(current);
 
-		if (current->Update != NULL && current->nextThinkTime <= fxi.cl->time)
+		if (current->Update != NULL && current->nextThinkTime <= fx_time)
 		{
 			// Only think when not culled and not think culled.
 			const qboolean is_culled = (current->flags & CEF_VIEWSTATUSCHANGED) && (current->flags & CEF_CULLED); //mxd
@@ -343,7 +340,7 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 			}
 
 			//mxd. Original logic asserts here when current->updateTime < 17. Removed to allow updating client_ents every renderframe.
-			current->nextThinkTime = fxi.cl->time + current->updateTime;
+			current->nextThinkTime = fx_time + current->updateTime;
 		}
 
 		entity_t* r = &current->r;

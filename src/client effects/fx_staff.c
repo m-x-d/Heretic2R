@@ -41,7 +41,7 @@ void PreCacheStaff(void)
 
 static qboolean StaffElementThink(struct client_entity_s* self, centity_t* owner)
 {
-	float frac = (float)(fxi.cl->time - self->startTime) / 100.0f;
+	float frac = (float)(fx_time - self->startTime) / 100.0f;
 
 	if (self->AnimSpeed > 0.0f)
 		frac *= self->AnimSpeed;
@@ -65,7 +65,7 @@ static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
 #define TRAIL_LVL2_LIFETIME	2000 //mxd
 
 	// If we've timed out, stop the effect (allow for fading).
-	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
+	if (self->LifeTime > 0 && self->LifeTime < fx_time)
 	{
 		self->Update = RemoveSelfAI;
 		self->updateTime = TRAIL_LVL2_LIFETIME; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
@@ -188,7 +188,7 @@ static qboolean StaffLevel3Think(struct client_entity_s* self, centity_t* owner)
 #define TRAIL_LVL3_LIFETIME	500 //mxd
 
 	// If we've timed out, stop the effect (allow for fading).
-	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
+	if (self->LifeTime > 0 && self->LifeTime < fx_time)
 	{
 		self->Update = RemoveSelfAI;
 		self->updateTime = TRAIL_LVL3_LIFETIME; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
@@ -274,7 +274,7 @@ static qboolean StaffLevel1Think(struct client_entity_s* self, centity_t* owner)
 #define TRAIL_LVL1_LIFETIME	1500 //mxd
 
 	// If we've timed out, stop the effect (allow for fading).
-	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
+	if (self->LifeTime > 0 && self->LifeTime < fx_time)
 	{
 		self->Update = RemoveSelfAI;
 		self->updateTime = TRAIL_LVL1_LIFETIME; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
@@ -362,7 +362,7 @@ void FXStaff(centity_t* owner, const int type, const int flags, vec3_t origin)
 	trail->flags |= CEF_NO_DRAW;
 	trail->NoOfAnimFrames = CORVUS_BLADE;
 	trail->SpawnData = powerlevel;
-	trail->LifeTime = ((lifetime > 0) ? fxi.cl->time + lifetime * 100 : (int)lifetime);
+	trail->LifeTime = ((lifetime > 0) ? fx_time + lifetime * 100 : (int)lifetime);
 
 	switch (powerlevel)
 	{
@@ -373,7 +373,7 @@ void FXStaff(centity_t* owner, const int type, const int flags, vec3_t origin)
 			trail->xscale = 0.175f;
 			break;
 
-			//NOTE: These were swapped after the functions were created.
+		//NOTE: These were swapped after the functions were created.
 		case 2: // Fire.
 			trail->Update = StaffLevel3Think;
 			trail->color = color_white;

@@ -83,11 +83,11 @@ static qboolean MeteorBarrierTrailThink(struct client_entity_s* self, centity_t*
 // Putting the angular velocity in here saves 3 bytes of net traffic per meteor per server frame.
 static qboolean MeteorAddToView(client_entity_t* current, centity_t* owner)
 {
-	const float d_time = (float)(fxi.cl->time - current->startTime);
+	const float d_time = (float)(fx_time - current->startTime);
 	current->r.angles[ROLL] = d_time * 0.001f * METEOR_ROLL_SPEED;
 	current->r.angles[YAW] =  d_time * 0.001f * METEOR_YAW_SPEED;
 
-	const float angle = (((float)fxi.cl->time * 0.15f) + (current->SpawnData * 90.0f)) * ANGLE_TO_RAD;
+	const float angle = (((float)fx_time * 0.15f) + (current->SpawnData * 90.0f)) * ANGLE_TO_RAD;
 	current->r.origin[0] = cosf(angle) * 30.0f;
 	current->r.origin[1] = sinf(angle) * 30.0f;
 	current->r.origin[2] = cosf(angle / (M_PI / 5.0f)) * 10.0f;

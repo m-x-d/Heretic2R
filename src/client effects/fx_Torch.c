@@ -27,7 +27,7 @@ void PreCacheTorch(void)
 // Update the position of the torch relative to its owner.
 static qboolean PlayerTorchAddToView(client_entity_t* tome, centity_t* owner)
 {
-	const float time = (float)fxi.cl->time; //mxd
+	const float time = (float)fx_time; //mxd
 
 	VectorSet(tome->r.origin,
 		cosf(time * TORCH_ORBIT_SCALE) * TORCH_ORBIT_DIST,
@@ -51,7 +51,7 @@ static qboolean PlayerTorchAddToView(client_entity_t* tome, centity_t* owner)
 static qboolean PlayerTorchFadeInAddToView(client_entity_t* tome, centity_t* owner)
 {
 	const float tome_orbit = (float)tome->SpawnInfo * TORCH_INCOMING_ORBIT;
-	const float time = (float)fxi.cl->time; //mxd
+	const float time = (float)fx_time; //mxd
 
 	VectorSet(tome->r.origin,
 		cosf(time * TORCH_ORBIT_SCALE) * tome_orbit,
@@ -106,7 +106,7 @@ void FXPlayerTorch(centity_t* owner, const int type, const int flags, vec3_t ori
 	effect->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	effect->r.scale = 0.35f;
 	effect->color = color_white; //mxd. 0xffffff in original version.
-	effect->SpawnData = (float)fxi.cl->time;
+	effect->SpawnData = (float)fx_time;
 	effect->alpha = 0.7f;
 	effect->dlight = CE_DLight_new(effect->color, 250.0f, 0.0f);
 	effect->AddToView = PlayerTorchAddToView;

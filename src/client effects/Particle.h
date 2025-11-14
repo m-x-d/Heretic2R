@@ -142,8 +142,6 @@ typedef struct client_particle_s
 #define SPH_YAW			1
 #define SPH_PITCH		2
 
-extern int ParticleUpdateTime; //mxd
-
 extern void InitParticleMngr(void);
 extern void ReleaseParticleMngr(void);
 

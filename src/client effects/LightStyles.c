@@ -42,7 +42,7 @@ void CL_ClearLightStyles(void)
 void CL_RunLightStyles(void)
 {
 	float value; //mxd
-	const int ofs = fxi.cl->time / 100;
+	const int ofs = fx_time / 100;
 
 	if (ofs == lastofs)
 		return;

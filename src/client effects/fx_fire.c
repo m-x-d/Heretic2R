@@ -148,14 +148,14 @@ static qboolean FireOnEntityThink(client_entity_t* spawner, centity_t* owner)
 	VectorCopy(owner->origin, spawner->origin);
 	VectorCopy(owner->origin, spawner->r.origin);
 
-	if (!(owner->current.effects & EF_ON_FIRE) && spawner->nextEventTime - fxi.cl->time >= 1000)
+	if (!(owner->current.effects & EF_ON_FIRE) && spawner->nextEventTime - fx_time >= 1000)
 	{
 		// Set up the fire to finish early.
-		spawner->nextEventTime = fxi.cl->time + 999;
+		spawner->nextEventTime = fx_time + 999;
 		spawner->dlight->d_intensity = -200.0f;
 	}
 
-	if (spawner->nextEventTime - fxi.cl->time > 1000) // Until 1 second before finish.
+	if (spawner->nextEventTime - fx_time > 1000) // Until 1 second before finish.
 	{
 		for (int i = 0; i < count; i++)
 		{
@@ -207,9 +207,9 @@ static qboolean FireOnEntityThink(client_entity_t* spawner, centity_t* owner)
 		return true;
 	}
 
-	if (fxi.cl->time < spawner->nextEventTime)
+	if (fx_time < spawner->nextEventTime)
 	{
-		spawner->dlight->intensity = (float)(spawner->nextEventTime - fxi.cl->time) * 0.3f;
+		spawner->dlight->intensity = (float)(spawner->nextEventTime - fx_time) * 0.3f;
 		return true;
 	}
 
@@ -219,15 +219,15 @@ static qboolean FireOnEntityThink(client_entity_t* spawner, centity_t* owner)
 static qboolean FireOnEntity2Think(client_entity_t* spawner, centity_t* owner)
 {
 	//FIXME: can miss the message that tells you to remove the effect.
-	if (fxi.cl->time > spawner->nextEventTime)
+	if (fx_time > spawner->nextEventTime)
 		return false; // Just in case.
 
-	if (spawner->nextEventTime - fxi.cl->time < 1000)
+	if (spawner->nextEventTime - fx_time < 1000)
 		return true; // Let the flames finish.
 
-	if (!(owner->current.effects & EF_ON_FIRE) && spawner->nextEventTime - fxi.cl->time >= 1000)
+	if (!(owner->current.effects & EF_ON_FIRE) && spawner->nextEventTime - fx_time >= 1000)
 	{
-		spawner->nextEventTime = fxi.cl->time + 999;
+		spawner->nextEventTime = fx_time + 999;
 		spawner->dlight->d_intensity = -200;
 	}
 
@@ -278,7 +278,7 @@ void FXFireOnEntity(centity_t* owner, const int type, const int flags, vec3_t or
 	client_entity_t* spawner = ClientEntity_new(type, flags, origin, NULL, 17);
 
 	spawner->r.scale = sqrtf(scale) * 0.5f;
-	spawner->nextEventTime = fxi.cl->time + (int)lifetime * 100; // How long to last. Lifetime was in 10th secs.
+	spawner->nextEventTime = fx_time + (int)lifetime * 100; // How long to last. Lifetime was in 10th secs.
 
 	spawner->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	spawner->flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_CULLED | CEF_CHECK_OWNER;
@@ -292,7 +292,7 @@ void FXFireOnEntity(centity_t* owner, const int type, const int flags, vec3_t or
 	else // Fire never goes away - for moving fire ents.
 	{
 		spawner->Update = FireOnEntity2Think;
-		spawner->nextEventTime = fxi.cl->time + 60000; // 60 seconds max, just in case.
+		spawner->nextEventTime = fx_time + 60000; // 60 seconds max, just in case.
 	}
 
 	spawner->dlight = CE_DLight_new(spawner->color, 150.0f, 0.0f);

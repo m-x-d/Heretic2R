@@ -137,7 +137,7 @@ static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 	// Update animation frame.
 
 	// Check if the time is up.
-	if (fxi.cl->time >= missile->lastThinkTime)
+	if (fx_time >= missile->lastThinkTime)
 	{
 		// Set up animations to go the other direction.
 		if (missile->NoOfAnimFrames == 7)
@@ -154,11 +154,11 @@ static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 		}
 
 		missile->Scale = -1;
-		missile->lastThinkTime = fxi.cl->time + (4 * 50);
+		missile->lastThinkTime = fx_time + (4 * 50);
 	}
 	else
 	{
-		missile->r.frame = missile->NoOfAnimFrames - (int)(missile->Scale * ((float)(missile->lastThinkTime - fxi.cl->time) / 50.0f)) - 1;
+		missile->r.frame = missile->NoOfAnimFrames - (int)(missile->Scale * ((float)(missile->lastThinkTime - fx_time) / 50.0f)) - 1;
 	}
 
 	// Remember for even spread of particles.
@@ -169,11 +169,11 @@ static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 
 static qboolean PhoenixExplosionSmallBallThink(client_entity_t* ball, centity_t* owner) //mxd. Moved above FXPhoenixExplosionBallThink.
 {
-	if (fxi.cl->time - ball->startTime > EXPLODE_TIME_MAX)
+	if (fx_time - ball->startTime > EXPLODE_TIME_MAX)
 		return false;
 
-	const float vel_factor = (float)(fxi.cl->time - ball->lastThinkTime) / 1000.0f;
-	ball->lastThinkTime = fxi.cl->time;
+	const float vel_factor = (float)(fx_time - ball->lastThinkTime) / 1000.0f;
+	ball->lastThinkTime = fx_time;
 
 	// Spin the ball of fire while it expands and fades.
 	ball->r.angles[YAW] += ball->velocity2[YAW] * vel_factor;
@@ -239,8 +239,8 @@ client_entity_t* CreatePhoenixSmallExplosion(const vec3_t ball_origin) //TODO: r
 	sub_explosion->radius = 128.0f;
 	sub_explosion->r.model = &phoenix_models[4]; // Inner explosion model.
 	sub_explosion->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
-	sub_explosion->startTime = fxi.cl->time;
-	sub_explosion->lastThinkTime = fxi.cl->time;
+	sub_explosion->startTime = fx_time;
+	sub_explosion->lastThinkTime = fx_time;
 	sub_explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
 	sub_explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
 	sub_explosion->Update = PhoenixExplosionSmallBallThink;
@@ -476,7 +476,7 @@ void FXPhoenixMissile(centity_t* owner, const int type, const int flags, vec3_t 
 	missile->radius = 256.0f;
 	missile->r.model = &phoenix_models[1]; // Phoenix arrow model.
 	missile->flags |= CEF_ADDITIVE_PARTS;
-	missile->lastThinkTime = fxi.cl->time + (50 * 7); // Time to play last frame.
+	missile->lastThinkTime = fx_time + (50 * 7); // Time to play last frame.
 	missile->NoOfAnimFrames = 7; // End on frame number 7.
 	missile->Scale = 1.0f; // Positive frame count.
 	missile->r.scale = 0.8f;
@@ -545,8 +545,8 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 	explosion->r.scale = 0.1f;
 	explosion->d_alpha = 3.0f;
 	explosion->d_scale = 5.0f;
-	explosion->startTime = fxi.cl->time;
-	explosion->lastThinkTime = fxi.cl->time;
+	explosion->startTime = fx_time;
+	explosion->lastThinkTime = fx_time;
 	explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
 	explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
 

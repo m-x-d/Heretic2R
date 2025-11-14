@@ -53,7 +53,7 @@ void PreCachePuzzleItems(void)
 static qboolean PuzzlePickupThink(struct client_entity_s* self, centity_t* owner)
 {
 	// Bob, but don't rotate.
-	const int step = fxi.cl->time - self->nextThinkTime; //mxd
+	const int step = fx_time - self->nextThinkTime; //mxd
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
 
 	VectorCopy(owner->origin, self->r.origin); //mxd. Use interpolated origin (to make items dropped by Drop_Item() fly smoothly).

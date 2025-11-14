@@ -556,7 +556,7 @@ static qboolean BuoyUpdate(struct client_entity_s* self, centity_t* owner)
 	int num_parts;
 	const int type = (int)(self->acceleration2[2]);
 
-	if ((type == BUOY_FX_START || type == BUOY_FX_END) && self->LifeTime < fxi.cl->time) // These effects time out.
+	if ((type == BUOY_FX_START || type == BUOY_FX_END) && self->LifeTime < fx_time) // These effects time out.
 		return false;
 
 	if (owner != NULL)
@@ -683,7 +683,7 @@ static void Buoy(centity_t* owner, const int flags, const vec3_t origin, const q
 		fx->acceleration2[2] = BUOY_FX_END; // Red.
 
 	fx->flags |= CEF_NO_DRAW;
-	fx->LifeTime = fxi.cl->time + 10000;
+	fx->LifeTime = fx_time + 10000;
 	fx->Update = BuoyUpdate;
 
 	if (owner != NULL)
@@ -941,7 +941,7 @@ static void QuakeRing(const vec3_t origin)
 		ring_vel /= 2.0f;
 	}
 
-	fxi.Activate_Screen_Shake(12.0f, 1000.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
+	fxi.Activate_Screen_Shake(12.0f, 1000.0f, (float)fx_time, SHAKE_ALL_DIR);
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("world/quakeshort.wav"), 1.0f, ATTN_NONE, 0.0f);
 }
 
@@ -953,7 +953,7 @@ static void GroundAttack(vec3_t origin)
 	client_entity_t* spawner = ClientEntity_new(FX_M_EFFECTS, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, origin, NULL, MIN_UPDATE_TIME);
 
 	spawner->radius = 100.0f;
-	spawner->LifeTime = fxi.cl->time + 1000;
+	spawner->LifeTime = fx_time + 1000;
 	VectorScale(vec3_up, 50.0f, spawner->direction);
 	spawner->Update = FXFlamethrowerTrail;
 
@@ -1180,7 +1180,7 @@ static void MorkTrackingMissile(centity_t* owner, const vec3_t origin)
 
 static qboolean RubbleUpdate(client_entity_t* self, centity_t* owner)
 {
-	if (self->LifeTime < fxi.cl->time)
+	if (self->LifeTime < fx_time)
 		return false;
 
 	for (int i = 0; i < 3; i++)
@@ -1191,7 +1191,7 @@ static qboolean RubbleUpdate(client_entity_t* self, centity_t* owner)
 
 static qboolean MSsithraExplosionThink(client_entity_t* self, centity_t* owner)
 {
-	if (self->LifeTime < fxi.cl->time)
+	if (self->LifeTime < fx_time)
 		return false;
 
 	// Spawn a white core.
@@ -1256,7 +1256,7 @@ static qboolean MSsithraExplosionThink(client_entity_t* self, centity_t* owner)
 			VectorScale(rubble->velocity, flrand(50.0f, 100.0f), rubble->velocity); //mxd. Was irand().
 			rubble->acceleration[2] -= 256.0f;
 
-			rubble->LifeTime = fxi.cl->time + 2000;
+			rubble->LifeTime = fx_time + 2000;
 			rubble->Update = RubbleUpdate;
 
 			AddEffect(NULL, rubble);
@@ -1304,7 +1304,7 @@ static void MSsithraExplode(vec3_t origin, vec3_t dir)
 	spawner->color.c = 0xff00ffff;
 	spawner->dlight = CE_DLight_new(spawner->color, 100.0f, -50.0f);
 	VectorCopy(dir, spawner->direction);
-	spawner->LifeTime = fxi.cl->time + 250;
+	spawner->LifeTime = fx_time + 250;
 	spawner->Update = MSsithraExplosionThink;
 
 	AddEffect(NULL, spawner);

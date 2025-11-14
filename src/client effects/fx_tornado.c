@@ -75,7 +75,7 @@ void FXTornadoBall(centity_t* owner, const int type, const int flags, vec3_t ori
 	glow->r.model = &tornado_models[0]; // Blue halo model.
 	glow->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	glow->r.scale = 0.4f;
-	glow->LifeTime = fxi.cl->time + (int)(TORNADO_DURATION * 1000.0f) + 200;
+	glow->LifeTime = fx_time + (int)(TORNADO_DURATION * 1000.0f) + 200;
 	glow->Update = TornadoBallThink;
 
 	AddEffect(owner, glow);

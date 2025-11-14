@@ -25,17 +25,17 @@ void PreCacheShield(void)
 static qboolean LightningShieldSparkThink(struct client_entity_s* shield, centity_t* owner)
 {
 	// Update the angle of the spark.
-	VectorMA(shield->direction, (float)(fxi.cl->time - shield->lastThinkTime) / 1000.0f, shield->velocity2, shield->direction);
+	VectorMA(shield->direction, (float)(fx_time - shield->lastThinkTime) / 1000.0f, shield->velocity2, shield->direction);
 
 	// Update the position of the spark.
 	vec3_t direction;
 	AngleVectors(shield->direction, direction, NULL, NULL);
 	VectorMA(owner->origin, shield->radius, direction, shield->r.origin);
 
-	shield->lastThinkTime = fxi.cl->time;
+	shield->lastThinkTime = fx_time;
 
 	// Leave a trail sometimes.
-	if (shield->SpawnDelay < fxi.cl->time)
+	if (shield->SpawnDelay < fx_time)
 	{
 		int particle_type = PART_16x16_SPARK_B;
 		paletteRGBA_t color = { .c = 0xffffffff };
@@ -57,7 +57,7 @@ static qboolean LightningShieldSparkThink(struct client_entity_s* shield, centit
 		AddParticleToList(shield, spark);
 
 		// Do it again in 1/10 sec.
-		shield->SpawnDelay = fxi.cl->time + SHIELD_TRAIL_DELAY;
+		shield->SpawnDelay = fx_time + SHIELD_TRAIL_DELAY;
 	}
 
 	return true;
@@ -67,7 +67,7 @@ static qboolean LightningShieldTerminate(struct client_entity_s* shield, centity
 {
 	// Don't instantly delete yourself. Don't accept any more updates and die out within a second.
 	shield->d_alpha = -1.2f; // Fade out.
-	shield->SpawnDelay = fxi.cl->time + 2000; // No more particles.
+	shield->SpawnDelay = fx_time + 2000; // No more particles.
 	shield->updateTime = 1000; // Die in one second.
 	shield->Update = RemoveSelfAI;
 
@@ -101,8 +101,8 @@ void FXLightningShield(centity_t* owner, const int type, const int flags, vec3_t
 			shield->velocity2[c] += 180.0f * Q_signf(shield->velocity2[c]); // Assure that the sparks are moving around at a pretty good clip.
 		}
 
-		shield->lastThinkTime = fxi.cl->time;
-		shield->SpawnDelay = fxi.cl->time + SHIELD_TRAIL_DELAY;
+		shield->lastThinkTime = fx_time;
+		shield->SpawnDelay = fx_time + SHIELD_TRAIL_DELAY;
 
 		vec3_t direction;
 		AngleVectors(shield->direction, direction, NULL, NULL);

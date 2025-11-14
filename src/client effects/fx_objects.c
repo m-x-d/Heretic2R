@@ -59,8 +59,8 @@ void FXBarrelExplode(centity_t* owner, const int type, const int flags, vec3_t o
 	explosion->r.scale = 0.1f;
 	explosion->d_alpha = 3.0f;
 	explosion->d_scale = 5.0f;
-	explosion->startTime = fxi.cl->time;
-	explosion->lastThinkTime = fxi.cl->time;
+	explosion->startTime = fx_time;
+	explosion->lastThinkTime = fx_time;
 	explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
 	explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
 

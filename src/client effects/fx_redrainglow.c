@@ -19,7 +19,7 @@
 static qboolean RedRainGlowThink(struct client_entity_s* self, centity_t* owner)
 {
 	// If we've timed out, stop the effect (allow for fading). If we're not on a time limit, check the EF flag.
-	if ((self->LifeTime > 0 && self->LifeTime < fxi.cl->time) || (self->LifeTime <= 0 && !(owner->current.effects & EF_TRAILS_ENABLED)))
+	if ((self->LifeTime > 0 && self->LifeTime < fx_time) || (self->LifeTime <= 0 && !(owner->current.effects & EF_TRAILS_ENABLED)))
 	{
 		self->Update = RemoveSelfAI;
 		self->updateTime = 500; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
@@ -111,7 +111,7 @@ void FXRedRainGlow(centity_t* owner, const int type, const int flags, vec3_t ori
 
 	glow->radius = 128.0f;
 	glow->flags |= CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ADDITIVE_PARTS;
-	glow->LifeTime = ((lifetime > 0) ? fxi.cl->time + lifetime * 100 : -1);
+	glow->LifeTime = ((lifetime > 0) ? fx_time + lifetime * 100 : -1);
 
 	if (flags & CEF_FLAG6)
 	{

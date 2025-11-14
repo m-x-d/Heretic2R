@@ -201,7 +201,7 @@ static qboolean RedRainDropAddToView(client_entity_t* drop, centity_t* owner) //
 // This constantly starts new drops up at the top. It also spawns a splash, which is set to go off at the appropriate fall time.
 static qboolean RedRainDropSpawnerUpdate(client_entity_t* rain, centity_t* owner) //mxd. Named 'FXRedRainThink' in original logic.
 {
-	if (rain->nextEventTime <= fxi.cl->time)
+	if (rain->nextEventTime <= fx_time)
 		return false; // In case we lose the packet that tells us to remove.
 
 	if (rain->SpawnData < 0.0f)
@@ -279,7 +279,7 @@ void FXRedRain(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	spawner->radius = radius + MAX_REDRAINHEIGHT + (ceiling - floor);
 	spawner->color = color_white;
-	spawner->nextEventTime = fxi.cl->time + duration; // Waits for EF_DISABLE from owner, but in case we miss the message, time out.
+	spawner->nextEventTime = fx_time + duration; // Waits for EF_DISABLE from owner, but in case we miss the message, time out.
 
 	// The rain should start at the impact height, then move up to the target height.
 	spawner->SpawnData = -ceiling;

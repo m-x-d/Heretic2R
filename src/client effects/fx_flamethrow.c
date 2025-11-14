@@ -26,7 +26,7 @@ void PreCacheFlamethrowerSFX(void) //mxd
 
 qboolean FXFlamethrowerTrail(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFlamethrower_trail' in original logic.
 {
-	if (self->LifeTime < fxi.cl->time)
+	if (self->LifeTime < fx_time)
 	{
 		self->Update = RemoveSelfAI;
 		self->updateTime = 2000; //BUGFIX: mxd. 'fxi.cl->time + 2000' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
@@ -73,7 +73,7 @@ qboolean FXFlamethrowerTrail(client_entity_t* self, centity_t* owner) //mxd. Nam
 
 static qboolean FlamethrowerSteamTrail(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFlamethrower_steam_trail' in original logic.
 {
-	if (self->LifeTime < fxi.cl->time)
+	if (self->LifeTime < fx_time)
 	{
 		self->Update = RemoveSelfAI;
 		self->updateTime = 2000; //BUGFIX: mxd. 'fxi.cl->time + 2000' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
@@ -128,13 +128,13 @@ void FXFlamethrower(centity_t* owner, const int type, const int flags, vec3_t or
 
 	VectorScale(dir, distance, glow->direction);
 	glow->radius = 100.0f;
-	glow->LifeTime = fxi.cl->time + 1000;
+	glow->LifeTime = fx_time + 1000;
 
 	// Steam?
 	if (flags & CEF_FLAG6)
 	{
 		if (flags & CEF_FLAG7)
-			glow->LifeTime = fxi.cl->time + 200;
+			glow->LifeTime = fx_time + 200;
 		else
 			fxi.S_StartSound(origin, -1, CHAN_AUTO, steamjet_sound, 1.0f, ATTN_NORM, 0.0f);
 

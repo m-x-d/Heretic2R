@@ -307,7 +307,7 @@ void FXSphereOfAnnihilationGlowballs(centity_t* owner, const int type, const int
 
 static qboolean SphereOfAnnihilationSphereExplodeThink(struct client_entity_s* self, centity_t* owner)
 {
-	float frac = (float)(fxi.cl->time - self->startTime) / 100.0f;
+	float frac = (float)(fx_time - self->startTime) / 100.0f;
 	if (self->AnimSpeed > 0.0f)
 		frac *= self->AnimSpeed;
 
@@ -473,12 +473,12 @@ void FXSphereOfAnnihilationPower(centity_t* owner, const int type, const int fla
 
 static qboolean SpherePlayerExplodeUpdate(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXSpherePlayerExplodeThink' in original logic.
 {
-	if (fxi.cl->time > self->nextEventTime)
+	if (fx_time > self->nextEventTime)
 	{
 		self->d_alpha = -5.0f;
 		self->dlight->d_intensity = -self->radius * 2.0f;
 
-		if (fxi.cl->time > self->nextEventTime + 1000)
+		if (fx_time > self->nextEventTime + 1000)
 			return false;
 	}
 	else
@@ -491,10 +491,10 @@ static qboolean SpherePlayerExplodeUpdate(struct client_entity_s* self, centity_
 
 static qboolean SpherePlayerExplodeAddToView(struct client_entity_s* self, centity_t* owner)
 {
-	self->r.angles[0] += FX_SPHERE_EXPLOSION_PITCH_INCREMENT * (float)(fxi.cl->time - self->lastThinkTime) / 50.0f;
-	self->r.angles[1] += FX_SPHERE_EXPLOSION_YAW_INCREMENT *   (float)(fxi.cl->time - self->lastThinkTime) / 50.0f;
+	self->r.angles[0] += FX_SPHERE_EXPLOSION_PITCH_INCREMENT * (float)(fx_time - self->lastThinkTime) / 50.0f;
+	self->r.angles[1] += FX_SPHERE_EXPLOSION_YAW_INCREMENT *   (float)(fx_time - self->lastThinkTime) / 50.0f;
 
-	self->lastThinkTime = fxi.cl->time;
+	self->lastThinkTime = fx_time;
 
 	return true;
 }
@@ -502,16 +502,16 @@ static qboolean SpherePlayerExplodeAddToView(struct client_entity_s* self, centi
 static qboolean SpherePlayerExplodeGlowballThink(client_entity_t* glowball, centity_t* owner)
 {
 	// Update the angle of the spark.
-	VectorMA(glowball->direction, (float)(fxi.cl->time - glowball->lastThinkTime) / 1000.0f, glowball->velocity2, glowball->direction);
+	VectorMA(glowball->direction, (float)(fx_time - glowball->lastThinkTime) / 1000.0f, glowball->velocity2, glowball->direction);
 
-	glowball->radius = (SPHERE_RADIUS_MAX - SPHERE_RADIUS_MIN) * ((float)(fxi.cl->time - glowball->SpawnDelay) / 100.0f) / (SPHERE_MAX_CHARGES + 2);
+	glowball->radius = (SPHERE_RADIUS_MAX - SPHERE_RADIUS_MIN) * ((float)(fx_time - glowball->SpawnDelay) / 100.0f) / (SPHERE_MAX_CHARGES + 2);
 
 	// Update the position of the spark.
 	vec3_t dir;
 	AngleVectors(glowball->direction, dir, NULL, NULL);
 	VectorMA(glowball->origin, glowball->radius, dir, glowball->r.origin);
 
-	glowball->lastThinkTime = fxi.cl->time;
+	glowball->lastThinkTime = fx_time;
 
 	return true;
 }
@@ -543,8 +543,8 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 	explosion->d_scale = 1.5f;
 	explosion->SpawnInfo = (int)size;
 	explosion->updateTime = (size + 1) * 100;
-	explosion->nextEventTime = fxi.cl->time + explosion->updateTime;
-	explosion->lastThinkTime = fxi.cl->time;
+	explosion->nextEventTime = fx_time + explosion->updateTime;
+	explosion->lastThinkTime = fx_time;
 	explosion->dlight = CE_DLight_new(color_white, explosion->radius / 0.7f, 0);
 
 	explosion->AddToView = SpherePlayerExplodeAddToView;
@@ -565,9 +565,9 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 		glowball->r.model = &sphere_models[7]; // spark_blue sprite.
 		glowball->r.flags = RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 		glowball->d_scale = 3.0f;
-		glowball->lastThinkTime = fxi.cl->time;
-		glowball->SpawnDelay = fxi.cl->time;
-		glowball->nextThinkTime = fxi.cl->time + (explosion->SpawnInfo + 1) * 100;
+		glowball->lastThinkTime = fx_time;
+		glowball->SpawnDelay = fx_time;
+		glowball->nextThinkTime = fx_time + (explosion->SpawnInfo + 1) * 100;
 
 		VectorClear(glowball->direction);
 

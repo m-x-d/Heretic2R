@@ -38,8 +38,6 @@ qboolean ref_soft; //mxd. int in original logic.
 int numprocessedparticles;
 int numrenderedparticles;
 
-qboolean fx_FreezeWorld = false;
-
 static int num_owned_inview;
 
 static void Clear(void)
@@ -113,9 +111,6 @@ static void AddEffects(const qboolean freeze)
 {
 	int	num_free_inview = 0;
 
-	// If the world is frozen then the client effects, particularly the particles shouldn't update.
-	fx_FreezeWorld = freeze;
-
 	if (clientEnts != NULL)
 		num_free_inview += AddEffectsToView(&clientEnts, NULL);
 
@@ -131,6 +126,27 @@ static void AddEffects(const qboolean freeze)
 		Com_DPrintf("Active CE : free %d, owned %d. Particles : processed %d, rendered %d\n", num_free_inview, num_owned_inview, numprocessedparticles, numrenderedparticles);
 }
 
+//mxd. Original logic uses fxi.cl->time for effects/particles timing.
+static void UpdateEffectsTime(void)
+{
+	static int prev_leveltime;
+	static int rframetime;
+
+	// Use leveltime as a base, because it's not updated when the game is paused.
+	const int leveltime = (int)(*fxi.leveltime * 1000.0f);
+
+	if (leveltime != prev_leveltime)
+	{
+		prev_leveltime = leveltime;
+		rframetime = 0;
+	}
+
+	// leveltime updates at 100 ms. rate, so we need in-between interpolation...
+	rframetime += (int)(fxi.cls->rframetime * 1000.0f); 
+
+	fx_time = leveltime + rframetime;
+}
+
 static void PostRenderUpdate(void)
 {
 	int	num_free_active = 0;
@@ -138,6 +154,9 @@ static void PostRenderUpdate(void)
 
 	numprocessedparticles = 0;
 	numrenderedparticles = 0;
+
+	//mxd. Update timing vars (was done in UpdateEffects() in original logic).
+	UpdateEffectsTime();
 
 	if (clientEnts != NULL)
 		num_free_active += UpdateEffects(&clientEnts, NULL);
@@ -423,10 +442,10 @@ static void AddServerEntities(const frame_t* frame)
 	num_owned_inview = 0;
 
 	// Mace balls rotate at a fixed rate.
-	const float macerotate = anglemod((float)fxi.cl->time / 700.0f);
+	const float macerotate = anglemod((float)fx_time / 700.0f);
 
 	// Brush models can auto animate their frames.
-	const int autoanim = fxi.cl->time / 500;
+	const int autoanim = fx_time / 500;
 
 	memset(sv_ents, 0, sizeof(sv_ents));
 
@@ -474,7 +493,7 @@ static void AddServerEntities(const frame_t* frame)
 		if (effects & EF_ANIM_ALL)
 			ent->frame = autoanim;
 		else if (effects & EF_ANIM_ALLFAST)
-			ent->frame = fxi.cl->time / 100;
+			ent->frame = fx_time / 100;
 		else
 			ent->frame = s1->frame;
 

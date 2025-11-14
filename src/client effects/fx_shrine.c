@@ -450,7 +450,7 @@ static void CreateLightning(struct client_entity_s* self, const centity_t* owner
 		fxi.Activate_Screen_Flash((int)0x80ffd0c0);
 
 		// Make our screen shake a bit.
-		fxi.Activate_Screen_Shake(4.0f, 800.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
+		fxi.Activate_Screen_Shake(4.0f, 800.0f, (float)fx_time, SHAKE_ALL_DIR);
 	}
 }
 

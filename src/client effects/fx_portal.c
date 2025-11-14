@@ -45,13 +45,13 @@ static qboolean MagicPortalThink(client_entity_t* self, centity_t* owner)
 {
 	// Already disabled?
 	if (self->LifeTime == 1)
-		return fxi.cl->time <= self->lastThinkTime;
+		return fx_time <= self->lastThinkTime;
 
-	if ((owner->current.effects & EF_DISABLE_EXTRA_FX) || (self->SpawnDelay > 0 && self->SpawnDelay < fxi.cl->time))
+	if ((owner->current.effects & EF_DISABLE_EXTRA_FX) || (self->SpawnDelay > 0 && self->SpawnDelay < fx_time))
 	{
 		// Start disabling it, but give it a couple of seconds to fitz out.
 		self->LifeTime = 1;
-		self->lastThinkTime = fxi.cl->time + 2000;
+		self->lastThinkTime = fx_time + 2000;
 
 		return true;
 	}
@@ -190,7 +190,7 @@ void FXMagicPortal(centity_t* owner, const int type, const int flags, vec3_t ori
 	portal->SpawnInfo = 2;
 
 	if (duration != 0)
-		portal->SpawnDelay = fxi.cl->time + duration * 1000; // Portal disappears after so many seconds (otherwise it stays indefinitely).
+		portal->SpawnDelay = fx_time + duration * 1000; // Portal disappears after so many seconds (otherwise it stays indefinitely).
 
 	VectorScale(forward, -1.0f, portal->direction);
 	VectorCopy(dir, portal->r.angles);

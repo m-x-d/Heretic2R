@@ -337,7 +337,7 @@ static qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner)
 		self->floor_bloodsplat->SpawnInfo = num_drips; // Pass number of spawned particles.
 		self->floor_bloodsplat->Update = BloodSplatSplashUpdate;
 		self->floor_bloodsplat->updateTime = duration;
-		self->floor_bloodsplat->nextThinkTime = fxi.cl->time + duration;
+		self->floor_bloodsplat->nextThinkTime = fx_time + duration;
 	}
 
 	//mxd. Set next update time.
@@ -347,7 +347,7 @@ static qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner)
 	const int next_time = (int)(BLOODDROPS_TIME * frac);
 
 	self->updateTime = next_time - self->updateTime;
-	self->nextThinkTime = fxi.cl->time + self->updateTime;
+	self->nextThinkTime = fx_time + self->updateTime;
 
 	return true;
 }

@@ -121,7 +121,7 @@ static qboolean LensFlareUpdateOrigin(struct client_entity_s* self)
 // FIXME: These need to interpolate their movement so as to not do snap position changes.
 static qboolean LensFlareThink(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
+	if (self->LifeTime > 0 && self->LifeTime < fx_time)
 		return false;
 
 	return LensFlareUpdateOrigin(self); //mxd
@@ -129,7 +129,7 @@ static qboolean LensFlareThink(struct client_entity_s* self, centity_t* owner)
 
 static qboolean LensFlareThinkAttached(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
+	if (self->LifeTime > 0 && self->LifeTime < fx_time)
 		return false;
 
 	const centity_t* fake_owner = (centity_t*)self->extra;
@@ -138,13 +138,13 @@ static qboolean LensFlareThinkAttached(struct client_entity_s* self, centity_t* 
 
 	// Interpolate. Why am I only getting 2 frames of interpolation?
 	const float oldtime = (float)self->lastThinkTime / 100.0f;
-	const float newtime = (float)fxi.cl->time / 100.0f;
+	const float newtime = (float)fx_time / 100.0f;
 
 	if ((int)oldtime < (int)newtime)
 	{
 		VectorCopy(self->endpos2, self->startpos2);
 		VectorCopy(fake_owner->current.origin, self->endpos2); // Where I need to be.
-		self->lastThinkTime = fxi.cl->time;
+		self->lastThinkTime = fx_time;
 	}
 
 	const float lerp = newtime - (int)newtime;
@@ -194,7 +194,7 @@ void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 		}
 
 		if (flags & CEF_FLAG8)
-			flare->LifeTime = fxi.cl->time + 4000;
+			flare->LifeTime = fx_time + 4000;
 
 		flare->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST);
 		flare->Scale = flare_scale[i];
@@ -220,7 +220,7 @@ void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 			VectorCopy(flare->direction, flare->startpos2);
 			VectorCopy(flare->direction, flare->endpos2);
 
-			flare->lastThinkTime = fxi.cl->time;
+			flare->lastThinkTime = fx_time;
 		}
 		else
 		{

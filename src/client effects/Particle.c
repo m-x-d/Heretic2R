@@ -11,7 +11,6 @@
 #include "Vector.h"
 #include "g_playstats.h"
 
-int ParticleUpdateTime = 0;
 static ResourceManager_t particle_manager;
 
 void InitParticleMngr(void)
@@ -75,7 +74,7 @@ int AddParticlesToView(client_entity_t* ce)
 		assert(ptype < NUM_PARTICLE_TYPES);
 #endif
 
-		const int d_msec = ParticleUpdateTime - current->startTime;
+		const int d_msec = fx_time - current->startTime;
 		const float d_time = (float)d_msec * 0.001f;
 		int alpha = current->color.a + (int)(d_time * current->d_alpha);
 
@@ -197,7 +196,7 @@ int UpdateParticles(client_entity_t* ce)
 
 	for (prev = &ce->p_root, current = ce->p_root; current != NULL; current = current->next)
 	{
-		const int d_msec = ParticleUpdateTime - current->startTime;
+		const int d_msec = fx_time - current->startTime;
 		const float d_time = (float)d_msec * 0.001f;
 		int alpha = current->color.a + (int)(d_time * current->d_alpha);
 
@@ -244,7 +243,7 @@ client_particle_t* ClientParticle_new(const int type, const paletteRGBA_t color,
 	memset(p, 0, sizeof(client_particle_t));
 
 	p->acceleration[2] = -PARTICLE_GRAVITY;
-	p->startTime = ParticleUpdateTime;
+	p->startTime = fx_time;
 	p->duration = duration;
 	p->type = type;
 	p->scale = 1.0f;

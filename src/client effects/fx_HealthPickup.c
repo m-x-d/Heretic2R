@@ -27,7 +27,7 @@ void PreCacheHealth(void)
 static qboolean HealthPickupThink(struct client_entity_s* self, centity_t* owner)
 {
 	// Rotate and bob.
-	const int step = fxi.cl->time - self->nextThinkTime; //mxd
+	const int step = fx_time - self->nextThinkTime; //mxd
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
 	self->LifeTime += step; //mxd
 

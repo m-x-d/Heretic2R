@@ -62,7 +62,7 @@ void GenericGibTrail(centity_t* owner, const int type, const int flags, vec3_t o
 
 static qboolean PebbleUpdate(struct client_entity_s* self, centity_t* owner)
 {
-	const int cur_time = fxi.cl->time;
+	const int cur_time = fx_time;
 	const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
 
 	self->acceleration[2] -= 75.0f;
@@ -137,7 +137,7 @@ void FXOgleHitPuff(centity_t* owner, const int type, const int flags, vec3_t ori
 		rock->d_scale = 0.0f;
 		rock->d_alpha = 0.0f;
 		rock->color = color_white; //mxd
-		rock->LifeTime = fxi.cl->time + 5000;
+		rock->LifeTime = fx_time + 5000;
 
 		AddEffect(NULL, rock); // Add the effect as independent world effect.
 	}
@@ -249,11 +249,11 @@ static void UpdateWaterParticles(const client_entity_t* self)
 			continue;
 		}
 
-		float add_val = SINEAMT / 128.0f * turbsin[(int)(((float)fxi.cl->time * 0.001f + (self->origin[0] * 2.3f + p->origin[1]) * 0.0015f) * SINESCALE) & 255];
-		add_val +=		SINEAMT / 256.0f * turbsin[(int)(((float)fxi.cl->time * 0.002f + (self->origin[1] * 2.3f + p->origin[0]) * 0.0015f) * SINESCALE) & 255];
+		float add_val = SINEAMT / 128.0f * turbsin[(int)(((float)fx_time * 0.001f + (self->origin[0] * 2.3f + p->origin[1]) * 0.0015f) * SINESCALE) & 255];
+		add_val +=		SINEAMT / 256.0f * turbsin[(int)(((float)fx_time * 0.002f + (self->origin[1] * 2.3f + p->origin[0]) * 0.0015f) * SINESCALE) & 255];
 
 		p->origin[2] += add_val;
-		p->duration = fxi.cl->time + 10000000;
+		p->duration = fx_time + 10000000;
 	}
 }
 

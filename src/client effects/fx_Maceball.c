@@ -49,7 +49,7 @@ void PreCacheRipperSFX(void) //mxd
 
 static qboolean MaceballThink(struct client_entity_s* self, centity_t* owner)
 {
-	self->dlight->intensity = 150.0f + cosf((float)fxi.cl->time * 0.01f) * 20.0f;
+	self->dlight->intensity = 150.0f + cosf((float)fx_time * 0.01f) * 20.0f;
 	self->r.angles[2] += ANGLE_30;
 
 	if (self->r.scale >= BALL_MAX_RADIUS)
@@ -287,7 +287,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 	halo->d_scale = -1.0f;
 	halo->d_alpha = -1.4f;
 	halo->dlight = CE_DLight_new(color_white, 150.0f, -100.0f);
-	halo->lastThinkTime = fxi.cl->time + 750;
+	halo->lastThinkTime = fx_time + 750;
 
 	fxi.S_StartSound(halo->r.origin, -1, CHAN_WEAPON, ripper_impact_sound, 1.0f, ATTN_NORM, 0.0f);
 

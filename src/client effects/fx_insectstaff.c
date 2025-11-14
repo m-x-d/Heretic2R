@@ -78,7 +78,7 @@ static qboolean InsectStaffTrailThink(struct client_entity_s* self, centity_t* o
 		if (no_of_intervals > 40)
 			return false;
 
-		float theta = (float)fxi.cl->time * FIST_DELTA_THETA;
+		float theta = (float)fx_time * FIST_DELTA_THETA;
 		const float delta_theta = fxi.cls->rframetime * FIST_DELTA_THETA / (float)no_of_intervals;
 		const int flags = (int)(self->flags & ~(CEF_OWNERS_ORIGIN | CEF_NO_DRAW)); //mxd
 
@@ -553,7 +553,7 @@ static void InsectSpellMissileHit2(const int type, const int flags, const vec3_t
 
 static qboolean InsectStaffElementThink(struct client_entity_s* self, centity_t* owner) //mxd. Renamed from FXStaffElementThink() to avoid collisions with function in fx_staff.c
 {
-	float frac = (float)(fxi.cl->time - self->startTime) / 100.0f;
+	float frac = (float)(fx_time - self->startTime) / 100.0f;
 
 	if (self->AnimSpeed > 0.0f)
 		frac *= self->AnimSpeed;
@@ -577,7 +577,7 @@ static qboolean InsectSwordTrailThink(struct client_entity_s* self, centity_t* o
 	vec3_t last_org;
 	vec3_t current_org;
 
-	if (self->LifeTime < fxi.cl->time || !RefPointsValid(owner))
+	if (self->LifeTime < fx_time || !RefPointsValid(owner))
 		return false;
 
 	self->updateTime = MIN_UPDATE_TIME; // FIXME: with a next think time this effect does not look right.
@@ -651,7 +651,7 @@ static void InsectSwordTrail(centity_t* owner, const int type, const int flags, 
 	trail->color.c = 0x50285020;
 	trail->xscale = 0.175f;
 
-	trail->LifeTime = fxi.cl->time + 180;
+	trail->LifeTime = fx_time + 180;
 	trail->extra = (void*)owner;
 
 	AddEffect(owner, trail);

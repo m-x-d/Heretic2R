@@ -27,7 +27,7 @@ static qboolean RopeCheckToHide(struct client_entity_s* self, centity_t* owner)
 	const centity_t* grab = &fxi.server_entities[self->LifeTime];
 
 	// If the flag isn't set, then we're supposed to disappear.
-	if (!(grab->current.effects & EF_ALTCLIENTFX) && self->SpawnInfo < fxi.cl->time)
+	if (!(grab->current.effects & EF_ALTCLIENTFX) && self->SpawnInfo < fx_time)
 	{
 		// Clear this out and kill the effect.
 		self->AddToView = NULL;
@@ -95,7 +95,7 @@ static qboolean RopeBottomDrawAttached(struct client_entity_s* self, centity_t* 
 
 	// Find the lerp factor by determining where in the 1/10 of a second this frame lies.
 	const float old_time = (float)self->lastThinkTime / 100.0f;
-	const float new_time = (float)fxi.cl->time / 100.0f;
+	const float new_time = (float)fx_time / 100.0f;
 
 	if ((int)old_time < (int)new_time)
 	{
@@ -149,7 +149,7 @@ static qboolean RopeBottomDrawAttached(struct client_entity_s* self, centity_t* 
 	}
 
 	// Store for lerping.
-	self->lastThinkTime = fxi.cl->time;
+	self->lastThinkTime = fx_time;
 
 	return true;
 }
@@ -182,7 +182,7 @@ static qboolean RopeTopDraw(struct client_entity_s* self, centity_t* owner)
 
 	// Find the linear interpolation factor by determining where in the 1/10 of a second this frame lies.
 	const float old_time = (float)self->lastThinkTime / 100.0f;
-	const float new_time = (float)fxi.cl->time / 100.0f;
+	const float new_time = (float)fx_time / 100.0f;
 
 	if ((int)old_time < (int)new_time)
 	{
@@ -205,7 +205,7 @@ static qboolean RopeTopDraw(struct client_entity_s* self, centity_t* owner)
 	self->r.tile = VectorLength(diff_pos) / ROPE_SEGMENT_LENGTH;
 
 	// Store for lerping.
-	self->lastThinkTime = fxi.cl->time;
+	self->lastThinkTime = fx_time;
 
 	return true;
 }
@@ -236,7 +236,7 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 		rope->r.spriteType = SPRITE_LINE;
 		rope->r.flags = RF_LM_COLOR; //mxd
 		rope->r.scale = 3.0f;
-		rope->lastThinkTime = fxi.cl->time;
+		rope->lastThinkTime = fx_time;
 		
 		// End of the rope.
 		rope->extra = (void*)&fxi.server_entities[end_id];
@@ -262,7 +262,7 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 		rope_top->r.spriteType = SPRITE_LINE;
 		rope_top->r.flags = RF_LM_COLOR; //mxd
 		rope_top->r.scale = 3.0f;
-		rope_top->SpawnInfo = fxi.cl->time + 1000;
+		rope_top->SpawnInfo = fx_time + 1000;
 		rope_top->LifeTime = grab_id;
 
 		VectorCopy(top, rope_top->direction);
@@ -288,7 +288,7 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 		rope_mid->r.scale = 3.0f;
 		rope_mid->r.tile = 1.0f;
 		rope_mid->LifeTime = grab_id;
-		rope_mid->SpawnInfo = fxi.cl->time + 1000;
+		rope_mid->SpawnInfo = fx_time + 1000;
 
 		rope_mid->AddToView = RopeMiddleDrawAttached;
 		rope_mid->Update = RopeCheckToHide;
@@ -306,7 +306,7 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 			rope_bottom->r.spriteType = SPRITE_LINE;
 			rope_bottom->r.flags = RF_LM_COLOR; //mxd
 			rope_bottom->r.scale = 3.0f;
-			rope_bottom->lastThinkTime = fxi.cl->time;
+			rope_bottom->lastThinkTime = fx_time;
 
 			// End of the rope_bottom.
 			rope_bottom->extra = (void*)&fxi.server_entities[end_id];
@@ -317,7 +317,7 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 			VectorCopy(rope_bottom->startpos2, rope_bottom->endpos2);
 
 			// The segment number of this piece.
-			rope_bottom->SpawnInfo = fxi.cl->time + 1000;
+			rope_bottom->SpawnInfo = fx_time + 1000;
 			rope_bottom->SpawnDelay = i;
 
 			VectorCopy(top, rope_bottom->direction);

@@ -157,7 +157,7 @@ static void LightningBolt(const int model, const float width, const vec3_t start
 
 static qboolean LightningThink(client_entity_t* thinker, centity_t* owner)
 {
-	if (fxi.cl->time - thinker->lastThinkTime < thinker->LifeTime)
+	if (fx_time - thinker->lastThinkTime < thinker->LifeTime)
 	{
 		LightningBolt(thinker->SpawnInfo, thinker->xscale, thinker->r.startpos, thinker->r.endpos);
 		return true;
@@ -184,7 +184,7 @@ void FXLightning(centity_t* owner, int type, const int flags, vec3_t origin)
 		lightning->radius = VectorLength(diff_pos) * 0.5f;
 		VectorCopy(origin, lightning->r.startpos);
 		VectorCopy(target, lightning->r.endpos);
-		lightning->lastThinkTime = fxi.cl->time;
+		lightning->lastThinkTime = fx_time;
 		lightning->LifeTime = duration * 100 + 250;
 		lightning->SpawnInfo = ((flags & CEF_FLAG6) ? LIGHTNING_TYPE_RED : LIGHTNING_TYPE_BLUE);
 		lightning->xscale = (float)width;
@@ -377,7 +377,7 @@ void FXPowerLightning(centity_t* owner, int type, const int flags, vec3_t origin
 
 	// Now finally flash and shake the screen.
 	fxi.Activate_Screen_Flash((int)0x8080ffc0);
-	fxi.Activate_Screen_Shake(4.0f, 500.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
+	fxi.Activate_Screen_Shake(4.0f, 500.0f, (float)fx_time, SHAKE_ALL_DIR);
 
 	if (flags & CEF_FLAG8) // "Play sound" flag.
 		fxi.S_StartSound(target, -1, CHAN_WEAPON, lightning_sound, 1.0f, ATTN_NORM, 0.0f);

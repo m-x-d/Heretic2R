@@ -141,7 +141,7 @@ static qboolean HPTeleportLineThink2(struct client_entity_s* self, centity_t* ow
 
 static qboolean HPMissileSpawnerThink(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->LifeTime < fxi.cl->time)
+	if (self->LifeTime < fx_time)
 		return false;
 
 	client_entity_t* trail = ClientEntity_new(FX_HP_MISSILE, CEF_DONT_LINK, self->origin, NULL, 1000);
@@ -164,7 +164,7 @@ static qboolean HPMissileSpawnerThink(struct client_entity_s* self, centity_t* o
 
 static qboolean HPMissileSpawnerThink2(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->LifeTime < fxi.cl->time)
+	if (self->LifeTime < fx_time)
 		return false;
 
 	client_entity_t* trail = ClientEntity_new(FX_HP_MISSILE, CEF_DONT_LINK, self->origin, NULL, 1000);
@@ -195,7 +195,7 @@ static qboolean HPHaloDie(struct client_entity_s* self, centity_t* owner)
 
 static qboolean HPMissileSpawnerThink3(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->LifeTime < fxi.cl->time)
+	if (self->LifeTime < fx_time)
 	{
 		self->Update = HPHaloDie;
 		self->d_scale = -2.0f;
@@ -660,7 +660,7 @@ static void SpawnHPMissile12Light(const int type, const vec3_t origin, const pal
 	light->r.model = &hpproj_models[3]; // Halo sprite.
 	light->r.color = color_white;
 	light->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	light->LifeTime = fxi.cl->time + 4000;
+	light->LifeTime = fx_time + 4000;
 	light->dlight = CE_DLight_new(light_color, 200.0f, 0.0f);
 	light->Update = HPMissileSpawnerThink;
 
@@ -672,7 +672,7 @@ static void SpawnHPMissile3Light(const int type, const vec3_t origin, const pale
 	client_entity_t* light = ClientEntity_new(type, CEF_NO_DRAW | CEF_DONT_LINK, origin, NULL, 20);
 
 	light->radius = 500.0f;
-	light->LifeTime = fxi.cl->time + 2000;
+	light->LifeTime = fx_time + 2000;
 	light->dlight = CE_DLight_new(bug_color, 10.0f, 0.0f);
 	light->Update = HPMissileSpawnerThink2;
 
@@ -692,7 +692,7 @@ static void SpawnHPMissile4Light(const int type, const vec3_t origin) //mxd
 	halo->r.scale = 0.1f;
 	halo->d_alpha = -1.0f;
 	halo->d_scale = 4.0f;
-	halo->LifeTime = fxi.cl->time + 4000;
+	halo->LifeTime = fx_time + 4000;
 
 	AddEffect(NULL, halo);
 
@@ -707,14 +707,14 @@ static void SpawnHPMissile4Light(const int type, const vec3_t origin) //mxd
 	spark->alpha = 0.1f;
 	spark->d_alpha = 0.5f;
 	spark->d_scale = 2.0f;
-	spark->LifeTime = fxi.cl->time + 4000;
+	spark->LifeTime = fx_time + 4000;
 	spark->dlight = CE_DLight_new(color_white, 250.0f, 0.0f);
 	spark->Update = HPMissileSpawnerThink3;
 
 	AddEffect(NULL, spark);
 
 	// Shake the screen.
-	fxi.Activate_Screen_Shake(4.0f, 5500.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
+	fxi.Activate_Screen_Shake(4.0f, 5500.0f, (float)fx_time, SHAKE_ALL_DIR);
 }
 
 static void SpawnHPTeleportStart(const int type, const vec3_t origin) //mxd

@@ -20,7 +20,7 @@ static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 #define SH_PARTICLE_DURATION	400 //mxd
 
 	// If we've timed out, stop the effect (allow for fading). If we're not on a time limit, check the EF flag.
-	if ((self->LifeTime > 0 && self->LifeTime < fxi.cl->time) || (self->LifeTime <= 0 && !(owner->current.effects & EF_TRAILS_ENABLED)))
+	if ((self->LifeTime > 0 && self->LifeTime < fx_time) || (self->LifeTime <= 0 && !(owner->current.effects & EF_TRAILS_ENABLED)))
 	{
 		self->Update = RemoveSelfAI;
 		self->updateTime = SH_PARTICLE_DURATION; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
@@ -33,7 +33,7 @@ static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 		return true;
 
 	//mxd. Skip first 4 frames (otherwise trail may look odd).
-	if (fxi.cl->time - self->startTime < MIN_UPDATE_TIME * 4)
+	if (fx_time - self->startTime < MIN_UPDATE_TIME * 4)
 		return true;
 
 	// Calculate start and end positions of the trail.
@@ -133,7 +133,7 @@ void FXSpellHands(centity_t* owner, const int type, const int flags, vec3_t orig
 
 		trail->flags |= (CEF_NO_DRAW | CEF_ADDITIVE_PARTS);
 		trail->SpawnInfo = (flags & (CEF_FLAG7 | CEF_FLAG8)) >> 6;
-		trail->LifeTime = ((lifetime > 0) ? fxi.cl->time + lifetime * 100 : -1);
+		trail->LifeTime = ((lifetime > 0) ? fx_time + lifetime * 100 : -1);
 		trail->refPoint = p;
 		trail->Scale = 3.0f; //mxd
 		trail->AddToView = LinkedEntityUpdatePlacement;

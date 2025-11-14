@@ -27,8 +27,6 @@ extern qboolean ref_soft;
 extern int numprocessedparticles;
 extern int numrenderedparticles;
 
-extern qboolean fx_FreezeWorld;
-
 typedef struct ClientEffect_s
 {
 	void (*SpawnCFX)(centity_t* owner, int type, int flags, vec3_t origin);

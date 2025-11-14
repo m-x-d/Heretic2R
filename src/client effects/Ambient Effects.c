@@ -70,22 +70,22 @@ qboolean CreateFlyParticles(client_entity_t *this, centity_t *owner)
 
 /*	fly_stoptime = this->startTime + this->duration;
 
-	if (fly_stoptime < fxi.cl->time)
+	if (fly_stoptime < fx_time)
 	{
-		starttime = fxi.cl->time;
-		fly_stoptime = fxi.cl->time + 60000;
+		starttime = fx_time;
+		fly_stoptime = fx_time + 60000;
 	}
 	else
 	{
 		starttime = fly_stoptime - 60000;
 	}
 
-	n = fxi.cl->time - starttime;
+	n = fx_time - starttime;
 	if (n < 20000)
 		count = n * 162 / 20000.0;
 	else
 	{
-		n = fly_stoptime - fxi.cl->time;
+		n = fly_stoptime - fx_time;
 		if (n < 20000)
 			count = n * 162 / 20000.0;
 		else
@@ -103,7 +103,7 @@ qboolean CreateFlyParticles(client_entity_t *this, centity_t *owner)
 			avelocities[0][i] = flrand(0.0, 2.55);
 	}
 
-	ltime = (float)fxi.cl->time / 1000.0;
+	ltime = (float)fx_time / 1000.0;
 	for (i=0 ; i<count ; i+=2)
 	{
 		p = ResMngr_AllocateResource(&ParticleMngr, sizeof(*this->p_root));
@@ -124,7 +124,7 @@ qboolean CreateFlyParticles(client_entity_t *this, centity_t *owner)
 		forward[1] = cp*sy;
 		forward[2] = -sp;
 
-		p->startTime = fxi.cl->time;
+		p->startTime = fx_time;
 		p->duration = 50;
 
 		dist = sin(ltime + i)*64;

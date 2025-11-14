@@ -35,7 +35,7 @@ void PreCacheWall(void)
 
 static qboolean FireWormThink(client_entity_t* worm, centity_t* owner)
 {
-	const float delta_time = (float)(fxi.cl->time - worm->startTime) / FIREWORM_LIFETIME_MS;
+	const float delta_time = (float)(fx_time - worm->startTime) / FIREWORM_LIFETIME_MS;
 	const float worm_scale = FIREWORM_BLAST_VELOCITY * worm->r.scale; //mxd
 
 	if (delta_time > FIREWORM_LIFETIME)
@@ -44,7 +44,7 @@ static qboolean FireWormThink(client_entity_t* worm, centity_t* owner)
 		if (worm->SpawnInfo == 0 || delta_time > FIREWORM_LIFETIME + FIREWORM_BLASTLIFE)
 		{
 			// Do nothing, wait for blast to expire.
-			worm->nextThinkTime = fxi.cl->time + 500;
+			worm->nextThinkTime = fx_time + 500;
 			worm->Update = RemoveSelfAI;
 
 			return true;
@@ -205,14 +205,14 @@ static qboolean FireWaveThink(client_entity_t* wall, centity_t* owner)
 		{
 			// Wait one second before disappearing.
 			VectorClear(wall->velocity);
-			wall->lastThinkTime = fxi.cl->time + 1000;
+			wall->lastThinkTime = fx_time + 1000;
 			wall->SpawnInfo = 1;
 			FireWaveImpact(wall);
 
 			return true;
 		}
 
-		if (wall->lastThinkTime > fxi.cl->time)
+		if (wall->lastThinkTime > fx_time)
 		{
 			// Still some time left to live...
 			wall->dlight->intensity -= 20.0f;
@@ -224,7 +224,7 @@ static qboolean FireWaveThink(client_entity_t* wall, centity_t* owner)
 	}
 
 	// Update radius.
-	wall->radius = FIREWAVE_RADIUS + (float)(fxi.cl->time - wall->startTime) * (FIREWAVE_DRADIUS / 1000.0f);
+	wall->radius = FIREWAVE_RADIUS + (float)(fx_time - wall->startTime) * (FIREWAVE_DRADIUS / 1000.0f);
 
 	if (wall->dlight->intensity < 250.0f)
 		wall->dlight->intensity += 15.0f;
@@ -338,7 +338,7 @@ static qboolean FireWaveThink(client_entity_t* wall, centity_t* owner)
 		AddEffect(NULL, blast_bottom);
 	}
 
-	if (fxi.cl->time >= wall->nextEventTime)
+	if (fx_time >= wall->nextEventTime)
 	{
 		// Spawn a worm.
 
@@ -386,7 +386,7 @@ static qboolean FireWaveThink(client_entity_t* wall, centity_t* owner)
 		AddEffect(NULL, worm);
 		FireWormThink(worm, NULL);
 
-		wall->nextEventTime = fxi.cl->time + (int)(flrand(0.8f, 1.2f) * FIREWAVE_WORM_TIME);
+		wall->nextEventTime = fx_time + (int)(flrand(0.8f, 1.2f) * FIREWAVE_WORM_TIME);
 	}
 
 	return true;
@@ -417,7 +417,7 @@ void FXFireWave(centity_t* owner, const int type, const int flags, vec3_t origin
 
 	wall->color.c = 0xff00afff;
 	wall->dlight = CE_DLight_new(wall->color, 120.0f, 0.0f);
-	wall->nextEventTime = fxi.cl->time + (int)(flrand(0.0f, 1.0f) * FIREWAVE_WORM_TIME);
+	wall->nextEventTime = fx_time + (int)(flrand(0.0f, 1.0f) * FIREWAVE_WORM_TIME);
 	wall->Update = FireWaveThink;
 
 	AddEffect(owner, wall);
@@ -524,14 +524,14 @@ static qboolean FireBurstThink(client_entity_t* wall, centity_t* owner)
 		{
 			// Wait one second before disappearing.
 			VectorClear(wall->velocity);
-			wall->lastThinkTime = fxi.cl->time + 1000;
+			wall->lastThinkTime = fx_time + 1000;
 			wall->SpawnInfo = 1;
 			FireBurstImpact(wall);
 
 			return true;
 		}
 
-		if (wall->lastThinkTime > fxi.cl->time)
+		if (wall->lastThinkTime > fx_time)
 		{
 			// Still some time left to live...
 			wall->dlight->intensity -= 20.0f;
@@ -556,7 +556,7 @@ static qboolean FireBurstThink(client_entity_t* wall, centity_t* owner)
 	if (wall->dlight->intensity < 250.0f)
 		wall->dlight->intensity += 15.0f;
 
-	const float delta_time = 1.0f + (float)(fxi.cl->time - wall->lastThinkTime) * (FIREBLAST_DRADIUS / 1000.0f);
+	const float delta_time = 1.0f + (float)(fx_time - wall->lastThinkTime) * (FIREBLAST_DRADIUS / 1000.0f);
 	wall->radius = FIREBLAST_RADIUS * delta_time;
 
 	vec3_t origin;
@@ -620,7 +620,7 @@ void FXFireBurst(centity_t* owner, const int type, const int flags, vec3_t origi
 
 	wall->radius = FIREBLAST_RADIUS;
 	wall->color.c = 0xff00afff;
-	wall->lastThinkTime = fxi.cl->time;
+	wall->lastThinkTime = fx_time;
 
 	wall->r.angles[YAW] = SHORT2ANGLE(short_yaw);
 	wall->r.angles[PITCH] = SHORT2ANGLE(short_pitch);

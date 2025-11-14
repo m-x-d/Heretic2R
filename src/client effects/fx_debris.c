@@ -211,7 +211,7 @@ static void DoFireTrail(client_entity_t* spawner)
 		flame->d_scale = flrand(-5.0f, -2.5f);
 		flame->d_alpha = flrand(-200.0f, -160.0f);
 		flame->duration = (int)((255.0f * (float)flame_duration) / -flame->d_alpha); // Time taken to reach zero alpha.
-		flame->startTime = fxi.cl->time;
+		flame->startTime = fx_time;
 		flame->type |= PFL_ADDITIVE;
 
 		AddParticleToList(spawner, flame);
@@ -235,7 +235,7 @@ static qboolean IsInWater(const vec3_t origin)
 //mxd. Update rotation.
 static void Debris_UpdateAngles(client_entity_t* self)
 {
-	const float d_time = (float)(fxi.cl->time - self->lastThinkTime) / 1000.0f;
+	const float d_time = (float)(fx_time - self->lastThinkTime) / 1000.0f;
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -243,7 +243,7 @@ static void Debris_UpdateAngles(client_entity_t* self)
 		self->debris_avelocity[i] *= 1.0f - fxi.cls->rframetime * 0.5f; // Reduce rotation rate over time.
 	}
 
-	self->lastThinkTime = fxi.cl->time;
+	self->lastThinkTime = fx_time;
 }
 
 #pragma endregion
@@ -259,9 +259,9 @@ static qboolean BodyPartAttachedUpdate(client_entity_t* self, centity_t* owner)
 		owner->lerp_angles[1] * ANGLE_TO_RAD);
 
 	//mxd. Update trails at 20 FPS...
-	if (fxi.cl->time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL)
+	if (fx_time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL)
 	{
-		self->debris_last_trail_update_time = fxi.cl->time;
+		self->debris_last_trail_update_time = fx_time;
 
 		if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
 			DoBloodTrail(self, -1);
@@ -275,7 +275,7 @@ static qboolean BodyPartAttachedUpdate(client_entity_t* self, centity_t* owner)
 
 static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. Named 'FXBodyPart_Update' in original logic.
 {
-	if (fxi.cl->time > self->LifeTime)
+	if (fx_time > self->LifeTime)
 	{
 		self->d_alpha = flrand(-0.05f, -0.2f);
 		self->Update = FXDebris_Vanish;
@@ -286,9 +286,9 @@ static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. 
 	Debris_UpdateAngles(self); //mxd. Interestingly, original logic updates all 3 angle axes here.
 
 	//mxd. Update trails at 20 FPS...
-	if (fxi.cl->time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL)
+	if (fx_time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL)
 	{
-		self->debris_last_trail_update_time = fxi.cl->time;
+		self->debris_last_trail_update_time = fx_time;
 
 		if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
 			DoBloodTrail(self, 6);
@@ -402,10 +402,10 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	switch (R_DETAIL)
 	{
 		default:
-		case DETAIL_LOW:		gib->LifeTime = fxi.cl->time + 1000;  break;
-		case DETAIL_NORMAL:		gib->LifeTime = fxi.cl->time + 3000;  break;
-		case DETAIL_HIGH:		gib->LifeTime = fxi.cl->time + 6000;  break; //mxd. Same as DETAIL_NORMAL in original logic.
-		case DETAIL_UBERHIGH:	gib->LifeTime = fxi.cl->time + 10000; break;
+		case DETAIL_LOW:		gib->LifeTime = fx_time + 1000;  break;
+		case DETAIL_NORMAL:		gib->LifeTime = fx_time + 3000;  break;
+		case DETAIL_HIGH:		gib->LifeTime = fx_time + 6000;  break; //mxd. Same as DETAIL_NORMAL in original logic.
+		case DETAIL_UBERHIGH:	gib->LifeTime = fx_time + 10000; break;
 	}
 
 	if ((flags & CEF_FLAG6) && !IsInWater(origin)) // On fire - add dynamic light.
@@ -493,7 +493,7 @@ qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner)
 
 static qboolean Debris_Update(client_entity_t* self, centity_t* owner)
 {
-	if (fxi.cl->time > self->LifeTime)
+	if (fx_time > self->LifeTime)
 	{
 		self->d_alpha = flrand(-0.05f, -0.2f);
 		self->Update = FXDebris_Vanish;
@@ -504,9 +504,9 @@ static qboolean Debris_Update(client_entity_t* self, centity_t* owner)
 	Debris_UpdateAngles(self); //mxd
 
 	//mxd. Update trails at 20 FPS...
-	if ((self->flags & CEF_FLAG6) && fxi.cl->time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL) // On fire - do a fire trail.
+	if ((self->flags & CEF_FLAG6) && fx_time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL) // On fire - do a fire trail.
 	{
-		self->debris_last_trail_update_time = fxi.cl->time;
+		self->debris_last_trail_update_time = fx_time;
 		DoFireTrail(self);
 	}
 
@@ -515,7 +515,7 @@ static qboolean Debris_Update(client_entity_t* self, centity_t* owner)
 
 static qboolean FleshDebris_Update(client_entity_t* self, centity_t* owner)
 {
-	if (fxi.cl->time > self->LifeTime)
+	if (fx_time > self->LifeTime)
 	{
 		self->d_alpha = flrand(-0.05f, -0.2f);
 		self->Update = FXDebris_Vanish;
@@ -526,9 +526,9 @@ static qboolean FleshDebris_Update(client_entity_t* self, centity_t* owner)
 	Debris_UpdateAngles(self); //mxd
 
 	//mxd. Update trails at 20 FPS...
-	if (fxi.cl->time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL)
+	if (fx_time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL)
 	{
-		self->debris_last_trail_update_time = fxi.cl->time;
+		self->debris_last_trail_update_time = fx_time;
 
 		if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
 		{
@@ -602,7 +602,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	}
 
 	// Debris lasts 10 seconds before it slowly goes away.
-	debris->LifeTime = fxi.cl->time + 1000;
+	debris->LifeTime = fx_time + 1000;
 
 	if (flags & CEF_FLAG6) // On fire - add dynamic light.
 	{
@@ -782,9 +782,9 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 	if (trace->startsolid || trace->allsolid || Vec3IsZeroEpsilon(trace->plane.normal) || trace->ent != (struct edict_s*)-1)
 		return;
 
-	if ((trace->contents & CONTENTS_SOLID) && fxi.cl->time - self->debris_last_bounce_time > 250) //mxd. Added debris_last_bounce_time check.
+	if ((trace->contents & CONTENTS_SOLID) && fx_time - self->debris_last_bounce_time > 250) //mxd. Added debris_last_bounce_time check.
 	{
-		self->debris_last_bounce_time = fxi.cl->time; //mxd. Avoid making the TRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR sound when stuck...
+		self->debris_last_bounce_time = fx_time; //mxd. Avoid making the TRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR sound when stuck...
 
 		// Hit a solid surface, make noise and leave any decals.
 		const int material = (self->SpawnInfo & SIF_FLAG_MASK); // Again, the SpawnInfo lower 2 bits are material types, >= 16 are flags - here we mask out those flags to get the actual materialtype.

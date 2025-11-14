@@ -40,7 +40,7 @@ void PreCacheItemDefense(void)
 
 static qboolean DefensePickupSparkThink(struct client_entity_s* self, centity_t* owner) //mxd. FXEggSparkThink in original version.
 {
-	const int step = fxi.cl->time - self->nextThinkTime; //mxd
+	const int step = fx_time - self->nextThinkTime; //mxd
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
 
 	vec3_t origin;
@@ -65,7 +65,7 @@ static qboolean DefensePickupSparkThink(struct client_entity_s* self, centity_t*
 static qboolean DefensePickupThink(struct client_entity_s* self, centity_t* owner)
 {
 	// Rotate and bob.
-	const int step = fxi.cl->time - self->nextThinkTime; //mxd
+	const int step = fx_time - self->nextThinkTime; //mxd
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
 
 	self->r.angles[YAW] += ANGLE_5 * lerp;
@@ -125,8 +125,8 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		spark->velocity2[YAW] =   flrand(0.0f, 360.0f) * Q_signf(flrand(-1.0f, 0.0f));
 		spark->velocity2[PITCH] = flrand(0.0f, 360.0f) * Q_signf(flrand(-1.0f, 0.0f)); // This is a velocity around the sphere.
 
-		spark->SpawnDelay = fxi.cl->time + SPARK_TRAIL_DELAY;
-		spark->lastThinkTime = fxi.cl->time;
+		spark->SpawnDelay = fx_time + SPARK_TRAIL_DELAY;
+		spark->lastThinkTime = fx_time;
 
 		AddEffect(owner, spark);
 	}

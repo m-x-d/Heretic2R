@@ -170,6 +170,7 @@ typedef struct client_entity_s
 	void* extra; // Extra whatever.
 } client_entity_t;
 
+extern int fx_time; //mxd
 extern client_entity_t* clientEnts;
 extern CE_ClassStatics_t ce_class_statics[NUM_CLASSIDS];
 

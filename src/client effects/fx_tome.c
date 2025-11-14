@@ -41,7 +41,7 @@ void PreCacheTomeSFX(void) //mxd
 // Update the position of the Tome of Power relative to its owner.
 static void TomeOfPowerAnimate(client_entity_t* tome, const centity_t* owner)
 {
-	const float time = (float)fxi.cl->time; //mxd
+	const float time = (float)fx_time; //mxd
 	const float step = time - (float)tome->nextThinkTime;
 
 	vec3_t pos =
@@ -55,9 +55,9 @@ static void TomeOfPowerAnimate(client_entity_t* tome, const centity_t* owner)
 	tome->dlight->intensity = 150.0f + cosf(time * 0.01f) * 20.0f;
 
 	//mxd. Book appear animation.
-	if (fxi.cl->time < tome->tome_fadein_end_time)
+	if (fx_time < tome->tome_fadein_end_time)
 	{
-		const float lerp = (float)(tome->tome_fadein_end_time - fxi.cl->time) / TOME_FADEIN_ANIM_LENGTH; // [1.0 .. 0.0]
+		const float lerp = (float)(tome->tome_fadein_end_time - fx_time) / TOME_FADEIN_ANIM_LENGTH; // [1.0 .. 0.0]
 		const float scaler = 1.0f + (1.0f - cosf(lerp * ANGLE_90)) * 2.0f;
 		pos[0] *= scaler;
 		pos[1] *= scaler;
@@ -71,9 +71,9 @@ static void TomeOfPowerAnimate(client_entity_t* tome, const centity_t* owner)
 
 		tome->dlight->intensity *= 1.0f - lerp;
 	}
-	else if (fxi.cl->time < tome->tome_fadeout_end_time) //mxd. Book disappear animation.
+	else if (fx_time < tome->tome_fadeout_end_time) //mxd. Book disappear animation.
 	{
-		const float lerp = 1.0f - (float)(tome->tome_fadeout_end_time - fxi.cl->time) / TOME_FADEOUT_ANIM_LENGTH; // [0.0 .. 1.0]
+		const float lerp = 1.0f - (float)(tome->tome_fadeout_end_time - fx_time) / TOME_FADEOUT_ANIM_LENGTH; // [0.0 .. 1.0]
 		const float oz = 25.0f + (1.0f - cosf(lerp * ANGLE_90)) * 32.0f;
 		pos[2] = LerpFloat(pos[2], oz, lerp);
 
@@ -143,22 +143,22 @@ static void TomeOfPowerSpawnSparks(client_entity_t* tome)
 static qboolean TomeOfPowerThink(client_entity_t* tome, centity_t* owner)
 {
 	//mxd. Fade-out effect ended, remove entity.
-	if (tome->tome_fadeout_end_time > 0 && tome->tome_fadeout_end_time <= fxi.cl->time)
+	if (tome->tome_fadeout_end_time > 0 && tome->tome_fadeout_end_time <= fx_time)
 		return false;
 
 	//mxd. Start fade-out effect?
 	if (!(owner->current.effects & EF_POWERUP_ENABLED) && tome->tome_fadeout_end_time == 0)
 	{
 		fxi.S_StartSound(tome->r.origin, -1, CHAN_ITEM, tome_expired_sound, 1.0f, ATTN_NORM, 0.0f); //mxd. Add expire sound.
-		tome->tome_fadeout_end_time = fxi.cl->time + (int)TOME_FADEOUT_ANIM_LENGTH;
+		tome->tome_fadeout_end_time = fx_time + (int)TOME_FADEOUT_ANIM_LENGTH;
 	}
 
 	TomeOfPowerAnimate(tome, owner);
 
-	if (tome->lastThinkTime < fxi.cl->time)
+	if (tome->lastThinkTime < fx_time)
 	{
 		TomeOfPowerSpawnSparks(tome);
-		tome->lastThinkTime = fxi.cl->time + TOME_SPARKS_SPAWN_RATE;
+		tome->lastThinkTime = fx_time + TOME_SPARKS_SPAWN_RATE;
 	}
 
 	return true;
@@ -175,8 +175,8 @@ void FXTomeOfPower(centity_t* owner, const int type, const int flags, vec3_t ori
 	tome->r.scale = 0.001f;
 	COLOUR_SETA(tome->color, 32, 32, 255, 229); //mxd. Use macro.
 
-	tome->lastThinkTime = fxi.cl->time;
-	tome->tome_fadein_end_time = fxi.cl->time + (int)TOME_FADEIN_ANIM_LENGTH; //mxd
+	tome->lastThinkTime = fx_time;
+	tome->tome_fadein_end_time = fx_time + (int)TOME_FADEIN_ANIM_LENGTH; //mxd
 
 	tome->dlight = CE_DLight_new(tome->color, 150.0f, 0.0f);
 	tome->Update = TomeOfPowerThink;

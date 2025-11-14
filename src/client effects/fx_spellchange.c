@@ -15,9 +15,9 @@
 
 static qboolean SpellChangeDlightThink(struct client_entity_s* self, centity_t* owner)
 {
-	if (fxi.cl->time - self->startTime <= LIGHT_LIFETIME)
+	if (fx_time - self->startTime <= LIGHT_LIFETIME)
 	{
-		self->dlight->intensity = 200.0f * (float)(LIGHT_LIFETIME - (fxi.cl->time - self->startTime)) / (float)LIGHT_LIFETIME;
+		self->dlight->intensity = 200.0f * (float)(LIGHT_LIFETIME - (fx_time - self->startTime)) / (float)LIGHT_LIFETIME;
 		return true;
 	}
 
@@ -84,7 +84,7 @@ void FXSpellChange(centity_t* owner, const int type, const int flags, vec3_t ori
 
 	spell_puff->radius = 32.0f;
 	spell_puff->dlight = CE_DLight_new(color, 150.0f, 0.0f);
-	spell_puff->startTime = fxi.cl->time;
+	spell_puff->startTime = fx_time;
 	spell_puff->Update = SpellChangeDlightThink;
 
 	// Attach some particles to it.
