@@ -95,27 +95,26 @@ static qboolean CheckCollision(const float aimangle)
 	return false;
 }
 
-static qboolean PM_CanMoveToPos(const float offset_z, const float frametime, trace_t* tr) // H2
+static qboolean PM_TryStepUp(const float step_height, const float frametime, trace_t* tr) // H2
 {
-	vec3_t start;
-	vec3_t end;
-	trace_t trace;
+	const vec3_t vel = VEC3_INITS(pml.velocity, frametime);
 
-	vec3_t vel;
-	VectorScale(pml.velocity, frametime, vel);
-
+	// Can't step up if we don't move.
 	if (vhlen(vel, vec3_origin) < 0.01f)
 		return false;
 
-	VectorCopy(pml.origin, start);
-	VectorCopy(pml.origin, end);
-	end[2] += offset_z + max(0.0f, vel[2]);
+	// Check headroom.
+	vec3_t start = VEC3_INIT(pml.origin);
+	vec3_t end = VEC3_INIT(pml.origin);
+	end[2] += step_height + max(0.0f, vel[2]);
 
+	trace_t trace;
 	pm->trace(start, pm->mins, pm->maxs, end, &trace);
 
 	if (trace.startsolid || trace.allsolid || trace.endpos[2] < pml.origin[2] + 1.0f)
 		return false;
 
+	// Check horizontal move from step-up position.
 	VectorCopy(trace.endpos, start);
 	VectorCopy(trace.endpos, end);
 	end[0] += vel[0];
@@ -126,6 +125,7 @@ static qboolean PM_CanMoveToPos(const float offset_z, const float frametime, tra
 	if (trace.startsolid || trace.allsolid || trace.fraction == 0.0f)
 		return false;
 
+	// Check vertical move from previous position.
 	const float prev_fraction = trace.fraction;
 
 	VectorCopy(trace.endpos, start);
@@ -134,13 +134,13 @@ static qboolean PM_CanMoveToPos(const float offset_z, const float frametime, tra
 
 	pm->trace(start, pm->mins, pm->maxs, end, &trace);
 
-	if (trace.startsolid || trace.allsolid)
-		return false;
-
-	if ((prev_fraction < 1.0f && trace.endpos[2] <= pml.origin[2] + 0.01f) || 
+	// Abort if we can't move, won't move up or plane in front of us is too steep.
+	if (trace.startsolid || trace.allsolid ||
+		(prev_fraction < 1.0f && trace.endpos[2] <= pml.origin[2] + 0.01f) ||
 		(trace.fraction < 1.0f && trace.plane.normal[2] <= MIN_STEP_NORMAL))
 		return false;
 
+	// Move player.
 	trace.fraction = prev_fraction;
 	memcpy(tr, &trace, sizeof(trace_t));
 	VectorCopy(trace.endpos, pml.origin);
@@ -357,10 +357,11 @@ LAB_NotSolid:
 
 			time_left -= time_step;
 
+			// Try stepping over obstacle.
 			if (trace.plane.normal[2] <= MIN_STEP_NORMAL && trace.ent != NULL)
 			{
-				const qboolean have_trace_ent = (!pml.server || (trace.ent->solid == SOLID_BSP || trace.ent->solid == SOLID_BBOX)); //mxd
-				if (have_trace_ent && PM_CanMoveToPos(STEP_SIZE, time_left, &trace))
+				const qboolean check_step_up = (!pml.server || trace.ent->solid == SOLID_BSP || trace.ent->solid == SOLID_BBOX); //mxd
+				if (check_step_up && PM_TryStepUp(STEP_SIZE, time_left, &trace))
 					break;
 			}
 
