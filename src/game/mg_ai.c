@@ -1792,13 +1792,13 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 			VectorScale(wall_right, -1.0f, new_forward);
 
 		if (irand(0, 10) < 3) // 30% chance of trying other way first.
-			VectorScale(new_forward, -1.0f, new_forward);
+			Vec3ScaleAssign(-1.0f, new_forward);
 
 		self->best_move_yaw = VectorYaw(new_forward);
 
 		if (new_best_yaw && self->best_move_yaw == old_best_yaw)
 		{
-			VectorScale(new_forward, -1.0f, new_forward);
+			Vec3ScaleAssign(-1.0f, new_forward);
 			self->best_move_yaw = VectorYaw(new_forward);
 		}
 
@@ -1806,9 +1806,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 		const float step_size = ((self->classID == CID_TBEAST) ? STEP_SIZE * 3.0f : STEP_SIZE); //mxd
 
 		// Set up mins and maxs for these moves.
-		vec3_t mins;
-		VectorCopy(self->mins, mins);
-		mins[2] += step_size; // Account for STEPSIZE.
+		vec3_t mins = VEC3_INITA(self->mins, 0.0f, 0.0f, step_size); // Account for STEPSIZE.
 		if (mins[2] >= self->maxs[2])
 			mins[2] = self->maxs[2] - 1.0f;
 
@@ -1821,15 +1819,14 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 		float adj_dist = dist - (dist * dist_loss);
 
 		vec3_t source;
-		VectorCopy(self->s.origin, source);
-		VectorMA(source, adj_dist, new_forward, source);
+		VectorMA(self->s.origin, adj_dist, new_forward, source);
 
 		gi.trace(self->s.origin, mins, self->maxs, source, self, MASK_SOLID, &trace); // Was MASK_SHOT.
 
 		if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
 		{
 			// Try other way.
-			VectorScale(new_forward, -1.0f, new_forward);
+			Vec3ScaleAssign(-1.0f, new_forward);
 			self->best_move_yaw = VectorYaw(new_forward);
 			self->s.angles[YAW] = save_yaw; // Restore yaw.
 
@@ -1838,12 +1835,9 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 			dist_loss = turn_amount / self->yaw_speed * 0.8f;
 			adj_dist = dist - (dist * dist_loss);
 
-			VectorMA(source, adj_dist, new_forward, source);
+			VectorMA(self->s.origin, adj_dist, new_forward, source); //mxd. Original logic uses 'source' as 'veca' arg, resulting in incorrect 'source' position.
 
-			mins[2] += step_size; // Account for STEPSIZE. //TODO: not needed? Already done above.
-			if (mins[2] >= self->maxs[2])
-				mins[2] = self->maxs[2] - 1.0f;
-
+			//mxd. Original logic increments mins[2] by step_size AGAIN here.
 			gi.trace(self->s.origin, mins, self->maxs, source, self, MASK_SOLID, &trace); // Was MASK_SHOT.
 
 			if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
