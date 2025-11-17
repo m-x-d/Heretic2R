@@ -131,9 +131,7 @@ void FuncMonsterSpawnerGo(edict_t* self) //mxd. Named 'monsterspawner_go' in ori
 		return;
 	}
 
-	vec3_t hold_origin;
-	VectorCopy(self->s.origin, hold_origin);
-	hold_origin[2] -= 8.0f;
+	const vec3_t hold_origin = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -8.0f);
 
 	trace_t trace;
 	gi.trace(self->s.origin, self->mins, self->maxs, hold_origin, self, MASK_MONSTERSOLID, &trace);
@@ -161,7 +159,7 @@ void FuncMonsterSpawnerGo(edict_t* self) //mxd. Named 'monsterspawner_go' in ori
 
 	if (self->maxrange > 0.0f)
 	{
-		const vec3_t angle = { flrand(0.0f, 360.0f), 0.0f, 0.0f };
+		const vec3_t angle = VEC3_SET(flrand(0.0f, 360.0f), 0.0f, 0.0f);
 
 		vec3_t forward;
 		AngleVectors(angle, forward, NULL, NULL);
@@ -328,8 +326,8 @@ void SP_func_monsterspawner(edict_t* self)
 	if (self->wait == 0.0f)
 		self->wait = 10.0f;
 
-	if (self->s.scale == 0.0f) //TODO: why scale check?
-		self->s.scale = 1.0f;
+	if (self->s.scale == 0.0f)
+		self->s.scale = 1.0f; // Transferred to spawned monster --mxd.
 
 	if (self->targetname != NULL)
 	{
