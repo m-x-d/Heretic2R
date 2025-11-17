@@ -293,10 +293,7 @@ void SP_light_walltorch(edict_t* self)
 
 	if (self->spawnflags & SF_TORCH_ANIMATE) // Animate it.
 	{
-		vec3_t hold_origin;
-		VectorCopy(self->s.origin, hold_origin);
-		hold_origin[2] += 28.0f;
-
+		const vec3_t hold_origin = VEC3_INITA(self->s.origin, 0.0f, 0.0f, 28.0f);
 		SpawnFlame(self, hold_origin);
 	}
 
@@ -321,10 +318,7 @@ void SP_light_floortorch(edict_t* self)
 
 	if (self->spawnflags & SF_TORCH_ANIMATE) // Animate it.
 	{
-		vec3_t hold_origin;
-		VectorCopy(self->s.origin, hold_origin);
-		hold_origin[2] += 33.0f;
-
+		const vec3_t hold_origin = VEC3_INITA(self->s.origin, 0.0f, 0.0f, 33.0f);
 		SpawnFlame(self, hold_origin);
 	}
 
@@ -347,12 +341,11 @@ void SP_light_torch1(edict_t* self)
 
 	if (!(self->spawnflags & SF_TORCH_NOHALO))
 	{
-		vec3_t origin;
-		VectorCopy(self->s.origin, origin);
+		vec3_t origin = VEC3_INIT(self->s.origin);
 
-		vec3_t vf;
-		AngleVectors(self->s.angles, vf, NULL, NULL);
-		VectorMA(origin, 2.0f, vf, origin);
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+		VectorMA(origin, 2.0f, forward, origin);
 
 		origin[2] += 16.0f;
 
@@ -449,10 +442,7 @@ void SP_light_lantern1(edict_t* self)
 
 	if (!(self->spawnflags & SF_TORCH_NOHALO))
 	{
-		vec3_t origin;
-		VectorCopy(self->s.origin, origin);
-		origin[2] -= 10.0f;
-
+		const vec3_t origin = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -10.0f);
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, 0, origin, "");
 	}
 
@@ -475,10 +465,7 @@ void SP_light_lantern2(edict_t* self)
 
 	if (!(self->spawnflags & SF_TORCH_NOHALO))
 	{
-		vec3_t origin;
-		VectorCopy(self->s.origin, origin);
-		origin[2] -= 10.0f;
-
+		const vec3_t origin = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -10.0f);
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, 0, origin, "");
 	}
 
@@ -501,10 +488,7 @@ void SP_light_lantern3(edict_t* self)
 
 	if (!(self->spawnflags & SF_TORCH_NOHALO))
 	{
-		vec3_t origin;
-		VectorCopy(self->s.origin, origin);
-		origin[2] -= 2.0f;
-
+		const vec3_t origin = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -2.0f);
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, 0, origin, "");
 	}
 
