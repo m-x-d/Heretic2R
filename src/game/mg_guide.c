@@ -1386,16 +1386,15 @@ void MG_BuoyNavigate(edict_t* self)
 	{
 		self->ai_mood = AI_MOOD_NAVIGATE;
 		MG_Pathfind(self, false);
-
-		return;
 	}
+	else // Actually have a valid enemy. Let's try to get him.
+	{
+		self->ai_mood = AI_MOOD_PURSUE;
+		MG_Pathfind(self, true);
 
-	// Actually have a valid enemy. Let's try to get him.
-	self->ai_mood = AI_MOOD_PURSUE;
-
-	MG_Pathfind(self, true);
-	if (self->ai_mood == AI_MOOD_PURSUE)
-		self->goalentity = self->enemy;
+		if (self->ai_mood == AI_MOOD_PURSUE)
+			self->goalentity = self->enemy;
+	}
 }
 
 void MG_GenericMoodSet(edict_t* self)
