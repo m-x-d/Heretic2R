@@ -1749,8 +1749,6 @@ void SP_monster_plagueElf(edict_t* self)
 	if (irand(0, 1) == 1)
 		self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
 
-	self->s.origin[2] += 32.0f; //FIXME: Hack to account for new origin with old QuakEd header.
-
 	VectorCopy(STDMinsForClass[self->classID], self->mins);
 	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
 	self->viewheight = (int)(self->maxs[2] * 0.8f);

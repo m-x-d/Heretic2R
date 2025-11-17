@@ -348,6 +348,15 @@ void SpawnEntities(const char* map_name, char* entities, const char* spawn_point
 				continue;
 			}
 
+			//mxd. GROSS HACK to account for new origin with old QuakEd header (done in SP_monster_plagueElf() in original logic).
+			//mxd. Doing it here fixes plague elves occasionally getting stuck in low ceilings when spawned by func_monsterspawner.
+			if (strcmp(ent->classname, "monster_plagueElf") == 0 || 
+				strcmp(ent->classname, "monster_palace_plague_guard") == 0 || 
+				strcmp(ent->classname, "monster_palace_plague_guard_invisible") == 0)
+			{
+				ent->s.origin[2] += 32.0f;
+			}
+
 			ent->spawnflags &= ~(SPAWNFLAG_NOT_EASY | SPAWNFLAG_NOT_MEDIUM | SPAWNFLAG_NOT_HARD | SPAWNFLAG_NOT_COOP | SPAWNFLAG_NOT_DEATHMATCH);
 		}
 
