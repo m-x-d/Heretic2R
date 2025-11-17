@@ -8,7 +8,8 @@
 #include "Vector.h"
 #include "g_playstats.h"
 
-#define HALO_MAX_CAMERA_DISTANCE	1024.0f //mxd
+#define HALO_MAX_CAMERA_DISTANCE	2048.0f //mxd
+#define HALO_MIN_CAMERA_DISTANCE	512.0f //mxd
 #define HALO_MAX_ALPHA				1.0f //mxd
 #define HALO_MIN_ALPHA				0.01f //mxd
 
@@ -23,21 +24,26 @@ void PreCacheHalos(void)
 static void HaloUpdateVisibility(client_entity_t* self, const float cam_dist, const qboolean is_visible) //mxd
 {
 	const float dist_scaler = cam_dist / HALO_MAX_CAMERA_DISTANCE;
-	self->r.scale = 0.75f + dist_scaler * 0.75f;
+	self->r.scale = 0.75f + dist_scaler;
 
 	if (is_visible)
 	{
-		const float max_alpha = 0.25f + (1.0f - dist_scaler * HALO_MAX_ALPHA) * 0.75f;
-		self->alpha = min(max_alpha, self->alpha * 1.35f);
+		const float alpha_scaler = 1.0f - max(0.0f, cam_dist - HALO_MIN_CAMERA_DISTANCE) / (HALO_MAX_CAMERA_DISTANCE - HALO_MIN_CAMERA_DISTANCE);
+		self->alpha = Clamp(self->alpha + 0.1f, HALO_MIN_ALPHA, alpha_scaler * HALO_MAX_ALPHA);
 		self->flags &= ~CEF_NO_DRAW;
 	}
 	else if (!(self->flags & CEF_NO_DRAW))
 	{
-		self->alpha = max(HALO_MIN_ALPHA, self->alpha * 0.9f);
+		if (fx_time - self->halo_last_update_time > 100) // If we were culled for a bit AND we aren't visible now, skip fade-out.
+			self->alpha = HALO_MIN_ALPHA;
+		else
+			self->alpha = max(HALO_MIN_ALPHA, self->alpha * 0.9f);
 
 		if (self->alpha == HALO_MIN_ALPHA)
 			self->flags |= CEF_NO_DRAW;
 	}
+
+	self->halo_last_update_time = fx_time;
 }
 
 static qboolean HaloUpdate(client_entity_t* self, centity_t* owner)

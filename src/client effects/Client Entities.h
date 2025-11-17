@@ -117,6 +117,7 @@ typedef struct client_entity_s
 		int LifeTime;
 		int nextEventTime; // For user-timed stuff.
 		int tome_fadein_end_time; //mxd
+		int halo_last_update_time; //mxd
 	};
 
 	union
