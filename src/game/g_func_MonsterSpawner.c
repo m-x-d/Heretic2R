@@ -159,7 +159,8 @@ void FuncMonsterSpawnerGo(edict_t* self) //mxd. Named 'monsterspawner_go' in ori
 
 	if (self->maxrange > 0.0f)
 	{
-		const vec3_t angle = VEC3_SET(flrand(0.0f, 360.0f), 0.0f, 0.0f);
+		//H2_BUGFIX: mxd. Original logic sets angle[PITCH], which can result in monsters getting stuck in floor or ceiling when spawning.
+		const vec3_t angle = VEC3_SET(0.0f, flrand(0.0f, 359.0f), 0.0f);
 
 		vec3_t forward;
 		AngleVectors(angle, forward, NULL, NULL);
