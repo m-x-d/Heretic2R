@@ -496,7 +496,7 @@ static qboolean MG_GetGoalPos(edict_t* self, vec3_t goal_pos)
 	{
 		if (self->monsterinfo.searchType == SEARCH_BUOY)
 		{
-			if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+			if (self->buoy_index < 0 || self->buoy_index >= level.active_buoys) //mxd. 'self->buoy_index > level.active_buoys' in original logic.
 				return false;
 
 			VectorCopy(level.buoy_list[self->buoy_index].origin, self->monsterinfo.nav_goal);
@@ -701,7 +701,7 @@ static qboolean MG_AssassinCheckJump(edict_t* self) //mxd. Named 'MG_ExtraCheckJ
 
 	if (self->monsterinfo.searchType == SEARCH_BUOY)
 	{
-		if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->buoy_index < 0 || self->buoy_index >= level.active_buoys) //mxd. 'self->buoy_index > level.active_buoys' in original logic.
 			return false;
 
 		VectorCopy(level.buoy_list[self->buoy_index].origin, targ_org);
@@ -885,7 +885,7 @@ static qboolean MG_CheckJump(edict_t* self)
 
 	if (self->monsterinfo.searchType == SEARCH_BUOY)
 	{
-		if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->buoy_index < 0 || self->buoy_index >= level.active_buoys) //mxd. 'self->buoy_index > level.active_buoys' in original logic.
 			return false;
 
 		VectorCopy(level.buoy_list[self->buoy_index].origin, targ_org);
@@ -1553,7 +1553,7 @@ qboolean MG_TryGetTargetOrigin(edict_t* self, vec3_t target_origin) //mxd. Named
 {
 	if (self->monsterinfo.searchType == SEARCH_BUOY)
 	{
-		if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->buoy_index < 0 || self->buoy_index >= level.active_buoys) //mxd. 'self->buoy_index > level.active_buoys' in original logic.
 		{
 			VectorClear(target_origin);
 			return false;

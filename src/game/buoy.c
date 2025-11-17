@@ -24,6 +24,21 @@ static int branch_counter; // Short circuit check if 1024.
 // Returns the buoy's id.
 static int InsertBuoy(const edict_t* self) //mxd. Named 'insert_buoy' in original version.
 {
+	// 1-st buoy, initialize a couple arrays. Done in SP_info_buoy() in original logic --mxd.
+	if (level.active_buoys == 0)
+	{
+		for (int i = 0; i < MAX_CLIENTS; i++)
+		{
+			level.player_buoy[i] = NULL_BUOY; // Stores current bestbuoy for a player enemy (if any).
+			level.player_last_buoy[i] = NULL_BUOY; // When player_buoy is invalid, saves it here so monsters can check it first instead of having to do a whole search.
+		}
+	}
+	else if (level.active_buoys == MAX_MAP_BUOYS - 1) //mxd. Add sanity check.
+	{
+		gi.dprintf("InsertBuoy: failed to insert buoy at %s: maximum number of buoys reached (%i)!\n", pv(self->s.origin), MAX_MAP_BUOYS);
+		return NULL_BUOY;
+	}
+
 	buoy_t* buoy = &level.buoy_list[level.active_buoys];
 
 	// Init these values to -1 so we know what's filled.
@@ -262,16 +277,6 @@ void SP_info_buoy(edict_t* self)
 	static const vec3_t mins = { -24.0f, -24.0f, 0.0f }; //mxd. Made local static.
 	static const vec3_t maxs = {  24.0f,  24.0f, 1.0f }; //mxd. Made local static.
 
-	// 1-st buoy, initialize a couple arrays.
-	if (level.active_buoys == 0)
-	{
-		for (int i = 0; i < MAX_CLIENTS; i++)
-		{
-			level.player_buoy[i] = NULL_BUOY; // Stores current bestbuoy for a player enemy (if any).
-			level.player_last_buoy[i] = NULL_BUOY; // When player_buoy is invalid, saves it here so monsters can check it first instead of having to do a whole search.
-		}
-	}
-
 	if (self->spawnflags & BUOY_JUMP)
 	{
 		if (self->speed == 0.0f)
@@ -332,9 +337,9 @@ void SP_info_buoy(edict_t* self)
 	self->count = InsertBuoy(self);
 
 	if (self->count == NULL_BUOY)
-		gi.dprintf("ERROR! SP_info_buoy: failed to insert buoy into map list!\n");
-
-	gi.linkentity(self);
+		G_FreeEdict(self); //mxd. InsertBuoy() is expected to report error.
+	else
+		gi.linkentity(self);
 }
 
 static qboolean CheckBuoyPath(edict_t* self, const int last_buoy_id, const int start_buoy_id, const int final_buoy_id) //mxd. Named 'check_buoy_path' in original version.
@@ -559,7 +564,7 @@ buoy_t* FindNextBuoy(edict_t* self, const int start_buoy_id, const int final_buo
 		}
 	}
 
-	for (int i = 0; i <= level.active_buoys; i++)
+	for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
 		level.buoy_list[i].opflags &= ~SF_DONT_TRY;
 
 	check_depth = 0;

@@ -1321,7 +1321,7 @@ void MG_SetNormalizedVelToGoal(edict_t* self, vec3_t vec) //mxd. Named 'MG_SetNo
 
 	if (self->monsterinfo.searchType == SEARCH_BUOY && !charge_enemy)
 	{
-		if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->buoy_index < 0 || self->buoy_index >= level.active_buoys) //mxd. 'self->buoy_index > level.active_buoys' in original logic.
 		{
 			VectorClear(vec);
 			return;

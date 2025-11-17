@@ -101,7 +101,7 @@ int MG_SetFirstBuoy(edict_t* self)
 		return NULL_BUOY;
 
 	// First, pre-calculate all distances.
-	for (int i = 0; i <= level.active_buoys; i++)
+	for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
 	{
 		buoy_t* buoy = &level.buoy_list[i];
 
@@ -117,7 +117,7 @@ int MG_SetFirstBuoy(edict_t* self)
 	// Now, do all the passes, going from closest to farthest.
 	for (int i = 0; i < BUOY_SEARCH_PASSES && best_buoy == NULL; i++)
 	{
-		for (int c = 0; c <= level.active_buoys; c++)
+		for (int c = 0; c < level.active_buoys; c++) //mxd. 'c <= level.active_buoys' in original logic.
 		{
 			const buoy_t* buoy = &level.buoy_list[c];
 			const float dist = buoy->temp_dist;
@@ -331,7 +331,7 @@ static qboolean MG_MakeStartForcedConnection(edict_t* self, const int forced_buo
 	const float e_radius = 24.0f + max(16.0f, self->enemy->maxs[0]);
 
 	// First, pre-calculate all distances.
-	for (int i = 0; i <= level.active_buoys; i++)
+	for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
 	{
 		buoy_t* buoy = &level.buoy_list[i];
 
@@ -354,7 +354,7 @@ static qboolean MG_MakeStartForcedConnection(edict_t* self, const int forced_buo
 	// Now, do all the passes, going from closest to farthest.
 	for (int i = 0; i < BUOY_SEARCH_PASSES && e_best_buoy == NULL; i++)
 	{
-		for (int c = 0; c <= level.active_buoys; c++)
+		for (int c = 0; c < level.active_buoys; c++) //mxd. 'c <= level.active_buoys' in original logic.
 		{
 			const buoy_t* buoy = &level.buoy_list[c];
 			const float e_dist = buoy->temp_e_dist;
@@ -377,9 +377,9 @@ static qboolean MG_MakeStartForcedConnection(edict_t* self, const int forced_buo
 		// Distances are pre-calculated already, so skip that step.
 
 		// Now, do all the passes, going from closest to farthest.
-		for (int i = 0; (i < BUOY_SEARCH_PASSES) && (!e_best_buoy); i++)
+		for (int i = 0; i < BUOY_SEARCH_PASSES && e_best_buoy == NULL; i++)
 		{
-			for (int c = 0; c <= level.active_buoys; c++)
+			for (int c = 0; c < level.active_buoys; c++) //mxd. 'c <= level.active_buoys' in original logic.
 			{
 				const buoy_t* found_buoy = &level.buoy_list[c];
 				const float e_dist = found_buoy->temp_e_dist;
@@ -437,7 +437,7 @@ static qboolean MG_MakeForcedConnection(edict_t* self, const int forced_buoy, co
 	const float radius = 24.0f + max(16.0f, self->maxs[0]);
 
 	// First, pre-calculate all distances.
-	for (int i = 0; i <= level.active_buoys; i++)
+	for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
 	{
 		buoy_t* buoy = &level.buoy_list[i];
 
@@ -459,7 +459,7 @@ static qboolean MG_MakeForcedConnection(edict_t* self, const int forced_buoy, co
 	// Now, do all the passes, going from closest to farthest.
 	for (int i = 0; i < BUOY_SEARCH_PASSES && best_buoy == NULL; i++)
 	{
-		for (int c = 0; c <= level.active_buoys; c++)
+		for (int c = 0; c < level.active_buoys; c++) //mxd. 'c <= level.active_buoys' in original logic.
 		{
 			const buoy_t* found_buoy = &level.buoy_list[c];
 			const float dist = found_buoy->temp_dist;
@@ -516,7 +516,7 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 	const float e_radius = 24.0f + max(16.0f, self->enemy->maxs[0]);
 
 	// First, pre-calculate all distances.
-	for (int i = 0; i <= level.active_buoys; i++)
+	for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
 	{
 		buoy_t* buoy = &level.buoy_list[i];
 
@@ -555,7 +555,7 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 	// Now, do all the passes, going from closest to farthest.
 	for (int i = 0; i < BUOY_SEARCH_PASSES && (best_buoy == NULL || e_best_buoy == NULL); i++)
 	{
-		for (int c = 0; c <= level.active_buoys; c++)
+		for (int c = 0; c < level.active_buoys; c++) //mxd. 'c <= level.active_buoys' in original logic.
 		{
 			const buoy_t* buoy = &level.buoy_list[c];
 			const float dist = buoy->temp_dist;
@@ -598,7 +598,7 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 		// Now, do all the passes, going from closest to farthest.
 		for (int i = 0; i < BUOY_SEARCH_PASSES && e_best_buoy == NULL; i++)
 		{
-			for (int c = 0; c <= level.active_buoys; c++)
+			for (int c = 0; c < level.active_buoys; c++) //mxd. 'c <= level.active_buoys' in original logic.
 			{
 				const buoy_t* buoy = &level.buoy_list[c];
 				const float e_dist = buoy->temp_e_dist;
@@ -1321,7 +1321,7 @@ void MG_BuoyNavigate(edict_t* self)
 			const buoy_t* found_buoy = NULL;
 
 			// Have a home base, let's get back there if no enemy.
-			for (int i = 0; i <= level.active_buoys; i++)
+			for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
 			{
 				found_buoy = &level.buoy_list[i];
 
@@ -1513,7 +1513,7 @@ void MG_GenericMoodSet(edict_t* self)
 				qboolean found = false;
 
 				// Have a home base, let's get back there if no enemy.
-				for (int i = 0; i <= level.active_buoys; i++)
+				for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
 				{
 					found_buoy = &level.buoy_list[i];
 

@@ -183,7 +183,7 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 
 	if (self->monsterinfo.searchType == SEARCH_BUOY)
 	{
-		if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->buoy_index < 0 || self->buoy_index >= level.active_buoys) //mxd. 'self->buoy_index > level.active_buoys' in original logic.
 			return;
 
 		VectorCopy(level.buoy_list[self->buoy_index].origin, target_origin);
@@ -1774,7 +1774,7 @@ void ssithra_check_dive(edict_t* self) //mxd. Named 'ssithraDiveCheck' in origin
 
 	if (self->monsterinfo.searchType == SEARCH_BUOY)
 	{
-		if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->buoy_index < 0 || self->buoy_index >= level.active_buoys) //mxd. 'self->buoy_index > level.active_buoys' in original logic.
 			return;
 
 		VectorCopy(level.buoy_list[self->buoy_index].origin, target_origin);
