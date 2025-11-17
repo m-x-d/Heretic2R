@@ -32,19 +32,19 @@ static qboolean SimpleBottomCornersCheck(const vec3_t mins, const vec3_t maxs) /
 // Returns false if any part of the bottom of the entity is off an edge that is not a staircase.
 static qboolean M_CheckBottom(const edict_t* ent)
 {
-	vec3_t mins;
-	vec3_t maxs;
-	VectorAdd(ent->s.origin, ent->mins, mins);
-	VectorAdd(ent->s.origin, ent->maxs, maxs);
+	vec3_t abs_mins;
+	vec3_t abs_maxs;
+	VectorAdd(ent->s.origin, ent->mins, abs_mins);
+	VectorAdd(ent->s.origin, ent->maxs, abs_maxs);
 
 	// If all of the points under the corners are solid world, don't bother with the tougher checks.
 	// The corners must be within 16 of the midpoint.
-	if (SimpleBottomCornersCheck(mins, maxs)) //mxd
+	if (SimpleBottomCornersCheck(abs_mins, abs_maxs)) //mxd
 		return true; // We got out easy.
 
 	// Check it for real... The midpoint must be within 16 of the bottom.
-	vec3_t start = { (mins[0] + maxs[0]) * 0.5f, (mins[1] + maxs[1]) * 0.5f, mins[2] };
-	vec3_t stop =  { start[0], start[1], start[2] - STEP_SIZE * 2.0f };
+	vec3_t start = VEC3_SET((abs_mins[0] + abs_maxs[0]) * 0.5f, (abs_mins[1] + abs_maxs[1]) * 0.5f, abs_mins[2]);
+	vec3_t stop =  VEC3_SET(start[0], start[1], start[2] - STEP_SIZE * 2.0f);
 
 	trace_t	trace;
 	gi.trace(start, vec3_origin, vec3_origin, stop, ent, MASK_MONSTERSOLID, &trace);
@@ -60,8 +60,8 @@ static qboolean M_CheckBottom(const edict_t* ent)
 	{
 		for (int y = 0; y < 2; y++)
 		{
-			start[0] = (x == 1 ? maxs[0] : mins[0]);
-			start[1] = (y == 1 ? maxs[1] : mins[1]);
+			start[0] = (x == 1 ? abs_maxs[0] : abs_mins[0]);
+			start[1] = (y == 1 ? abs_maxs[1] : abs_mins[1]);
 			stop[0] = start[0];
 			stop[1] = start[1];
 
@@ -81,8 +81,7 @@ static qboolean M_CheckBottom(const edict_t* ent)
 static qboolean SV_MoveStep_Walk(edict_t* ent, const vec3_t move, const qboolean relink) //mxd. Split from SV_movestep().
 {
 	// Try the move.
-	vec3_t initial_org;
-	VectorCopy(ent->s.origin, initial_org);
+	const vec3_t initial_org = VEC3_INIT(ent->s.origin);
 
 	// Push down from a step height above the wished position.
 	const float step_size = ((ent->monsterinfo.aiflags & AI_NOSTEP) ? 1.0f : STEP_SIZE);
@@ -121,8 +120,7 @@ static qboolean SV_MoveStep_Walk(edict_t* ent, const vec3_t move, const qboolean
 	if (ent->waterlevel == 0)
 	{
 		// Not currently in water.
-		vec3_t pos;
-		VectorCopy(trace.endpos, pos);
+		vec3_t pos = VEC3_INIT(trace.endpos);
 		pos[2] += ent->mins[2] + (ent->maxs[2] - ent->mins[2]) * 0.4f;
 
 		if (gi.pointcontents(pos) & MASK_WATER) //TODO: MG_MoveStep_Walk() also checks for FL_AMPHIBIAN here.
@@ -134,7 +132,7 @@ static qboolean SV_MoveStep_Walk(edict_t* ent, const vec3_t move, const qboolean
 		// If monster had the ground pulled out, go ahead and fall.
 		if (ent->flags & FL_PARTIALGROUND)
 		{
-			VectorAdd(ent->s.origin, move, ent->s.origin);
+			Vec3AddAssign(move, ent->s.origin);
 
 			if (relink)
 			{
@@ -242,7 +240,7 @@ qboolean M_walkmove(edict_t* ent, float yaw, const float dist)
 	if (ent->groundentity != NULL || (ent->flags & (FL_FLY | FL_SWIM)))
 	{
 		yaw *= ANGLE_TO_RAD;
-		vec3_t move = { cosf(yaw) * dist, sinf(yaw) * dist, 0.0f };
+		vec3_t move = VEC3_SET(cosf(yaw) * dist, sinf(yaw) * dist, 0.0f);
 
 		return SV_movestep(ent, move, true);
 	}
