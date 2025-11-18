@@ -510,7 +510,7 @@ static void R_SetupGL(void)
 
 static void R_Fog(void) // H2: GL_Fog
 {
-	const int mode = ClampI((int)r_fog_mode->value, 0, sizeof(fog_modes) / sizeof(fog_modes[0])); //mxd. Added ClampI().
+	const int mode = ClampI((int)r_fog_mode->value, 0, ARRAY_SIZE(fog_modes) - 1); //mxd. Added ClampI().
 	glFogi(GL_FOG_MODE, fog_modes[mode]);
 
 	if (mode == 0)
@@ -534,8 +534,7 @@ static void R_Fog(void) // H2: GL_Fog
 
 static void R_WaterFog(void) // H2: GL_WaterFog
 {
-	//TODO: GL_EXP2 fog mode is ignored. Why?
-	const int mode = ClampI((int)r_fog_underwater_mode->value, 0, sizeof(fog_modes) / sizeof(fog_modes[0]) - 1); //mxd. Added ClampI().
+	const int mode = ClampI((int)r_fog_underwater_mode->value, 0, ARRAY_SIZE(fog_modes) - 1); //mxd. Added ClampI().
 	glFogi(GL_FOG_MODE, fog_modes[mode]);
 
 	if (mode == 0)
