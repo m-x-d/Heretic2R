@@ -223,7 +223,7 @@ void ParseEffectToSizeBuf(sizebuf_t* sb, const char* format, va_list marker) // 
 				break;
 
 			case 'f':
-				MSG_WriteFloat(sb, va_arg(marker, float));
+				MSG_WriteFloat(sb, (float)va_arg(marker, double)); // float variadic arg is promoted to double --mxd.
 				break;
 
 			case 'i':
