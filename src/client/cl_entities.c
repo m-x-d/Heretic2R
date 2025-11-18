@@ -19,8 +19,6 @@ ResourceManager_t cl_FXBufMngr;
 int camera_timer; // H2
 qboolean offsetangles_changed; // H2
 
-static vec3_t look_angles;
-
 //mxd. Very similar to LERPedReferences_new().
 static LERPedReferences_t* AllocateLERPedReference(const int ref_type)
 {
@@ -1179,7 +1177,7 @@ static void vectoangles2(const vec3_t value1, vec3_t angles)
 	}
 }
 
-static void CL_UpdateCameraOrientation(float viewheight, const qboolean interpolate) // H2 //mxd. Flipped 'interpolate' arg logic.
+static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheight, const qboolean interpolate) // H2 //mxd. Add 'look_angles' arg, flip 'interpolate' arg logic.
 {
 #define MAX_CAMERA_TIMER	500
 #define MASK_CAMERA			(CONTENTS_SOLID | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK)
@@ -1505,6 +1503,8 @@ static void CL_CalcViewValues(void)
 	}
 	else
 	{
+		vec3_t look_angles; //mxd. Made local.
+
 		if (ps->pmove.pm_type == PM_FREEZE)
 		{
 			for (int i = 0; i < 3; i++)
@@ -1528,7 +1528,7 @@ static void CL_CalcViewValues(void)
 
 			if (player_teleported)
 			{
-				CL_UpdateCameraOrientation(viewheight, false);
+				CL_UpdateCameraOrientation(look_angles, viewheight, false);
 			}
 			else
 			{
@@ -1538,7 +1538,7 @@ static void CL_CalcViewValues(void)
 				const int num_frames = (int)frame_delta;
 
 				for (int i = 0; i < num_frames; i++)
-					CL_UpdateCameraOrientation(viewheight, true);
+					CL_UpdateCameraOrientation(look_angles, viewheight, true);
 
 				frame_delta -= (float)num_frames;
 			}
