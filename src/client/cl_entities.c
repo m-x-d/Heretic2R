@@ -1177,7 +1177,7 @@ static void vectoangles2(const vec3_t value1, vec3_t angles)
 	}
 }
 
-static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheight, const qboolean interpolate) // H2 //mxd. Add 'look_angles' arg, flip 'interpolate' arg logic.
+static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheight, const qboolean interpolate, const qboolean noclip_mode) // H2 //mxd. Add 'look_angles' arg, flip 'interpolate' arg logic, add 'noclip_mode' arg.
 {
 #define MAX_CAMERA_TIMER	500
 #define MASK_CAMERA			(CONTENTS_SOLID | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK)
@@ -1264,7 +1264,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 		trace_t tr;
 		CL_Trace(start, mins_2, maxs_2, end, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &tr);
 
-		if (tr.fraction != 1.0f)
+		if (!noclip_mode && tr.fraction != 1.0f)
 			VectorCopy(tr.endpos, end);
 
 		end[2] -= 4.0f;
@@ -1332,7 +1332,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 	trace_t trace;
 	CL_Trace(start, mins_2, maxs_2, end, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
 
-	if (trace.fraction != 1.0f)
+	if (!noclip_mode && trace.fraction != 1.0f)
 		VectorCopy(trace.endpos, end);
 
 	float viewdist;
@@ -1366,9 +1366,10 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 		VectorLerp(old_vieworg, damp_factor, end_2, end_2);
 	}
 
+	// Check against world --mxd.
 	CL_Trace(end, mins, maxs, end_2, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
 
-	if (trace.fraction != 1.0f)
+	if (!noclip_mode && trace.fraction != 1.0f)
 	{
 		if ((int)cl_camera_clipdamp->value)
 		{
@@ -1390,9 +1391,10 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 		const float roll_scaler = 1.0f - fabsf(look_angles[PITCH] / 89.0f);
 		const vec3_t v = { mins[0], mins[1], -1.0f - roll_scaler * 2.0f };
 
+		// Check against bmodels / solid entities --mxd.
 		CL_Trace(end, v, maxs, end_2, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
 
-		if (trace.fraction != 1.0f)
+		if (!noclip_mode && trace.fraction != 1.0f)
 			VectorCopy(trace.endpos, end_2);
 	}
 
@@ -1525,10 +1527,11 @@ static void CL_CalcViewValues(void)
 		if (ps->remote_id < 0) // When not looking through a remote camera.
 		{
 			const float viewheight = (float)ops->viewheight + (float)(ps->viewheight - ops->viewheight) * lerp;
+			const qboolean noclip_mode = (ps->pmove.pm_type == PM_SPECTATOR); //mxd
 
 			if (player_teleported)
 			{
-				CL_UpdateCameraOrientation(look_angles, viewheight, false);
+				CL_UpdateCameraOrientation(look_angles, viewheight, false, noclip_mode);
 			}
 			else
 			{
@@ -1538,7 +1541,7 @@ static void CL_CalcViewValues(void)
 				const int num_frames = (int)frame_delta;
 
 				for (int i = 0; i < num_frames; i++)
-					CL_UpdateCameraOrientation(look_angles, viewheight, true);
+					CL_UpdateCameraOrientation(look_angles, viewheight, true, noclip_mode);
 
 				frame_delta -= (float)num_frames;
 			}
