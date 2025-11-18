@@ -322,7 +322,7 @@ static void Mod_LoadTexinfo(model_t* loadmodel, const byte* mod_base, const lump
 		const int next = LittleLong(in->nexttexinfo);
 
 		if (next > 0)
-			out->next = loadmodel->texinfo + next;
+			out->next = &loadmodel->texinfo[next];
 		else
 			out->next = NULL;
 
@@ -343,12 +343,20 @@ static void Mod_LoadTexinfo(model_t* loadmodel, const byte* mod_base, const lump
 		out->numframes = 1;
 
 		for (const mtexinfo_t* step = out->next; step != NULL && step != out; step = step->next)
+		{
+			if (out->numframes > 1024) //mxd. Add sanity check.
+			{
+				ri.Com_Error(ERR_DROP, "Mod_LoadTexinfo: invalid '%s' animation chain!", out->image->name);
+				return;
+			}
+
 			out->numframes++;
+		}
 	}
 }
 
 // Q2 counterpart. Fills in s->texturemins[] and s->extents[]
-static void CalcSurfaceExtents(model_t* loadmodel, msurface_t* s)
+static void CalcSurfaceExtents(const model_t* loadmodel, msurface_t* s)
 {
 	float mins[2];
 	float maxs[2];
