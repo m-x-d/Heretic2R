@@ -23,27 +23,20 @@ void PreCacheShadow(void) //mxd. Named 'PrecacheShadow' in original logic.
 	shadow_model = fxi.RegisterModel("models/fx/shadow/tris.fm");
 }
 
-static qboolean ShadowUpdate(struct client_entity_s* self, centity_t* owner)
+static qboolean ShadowAddToView(struct client_entity_s* self, centity_t* owner)
 {
 	VectorCopy(owner->origin, self->r.origin);
 
-	const vec3_t start_pos = { owner->origin[0], owner->origin[1], owner->origin[2] + 4.0f };
-
-	// Now trace from the start_pos down.
-	const vec3_t end_pos = { start_pos[0], start_pos[1], start_pos[2] - SHADOW_CHECK_DIST };
+	const vec3_t start_pos = VEC3_INITA(owner->origin, 0.0f, 0.0f, 4.0f);
+	const vec3_t end_pos =   VEC3_INITA(owner->origin, 0.0f, 0.0f, -SHADOW_CHECK_DIST);
 
 	// Determine visibility.
 	trace_t trace;
 	fxi.Trace(start_pos, vec3_origin, vec3_origin, end_pos, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
 
-	if (trace.startsolid || trace.fraction >= 1.0f)
-	{
-		// No shadow, in something.
-		self->alpha = 0.01f;
-		VectorCopy(end_pos, self->r.origin);
-
-		return true;
-	}
+	// In air or in solid, so no shadow.
+	if (trace.startsolid || trace.fraction == 1.0f)
+		return false;
 
 	// Did hit the ground.
 	self->alpha = (1.0f - trace.fraction) * 0.5f + 0.01f;
@@ -63,41 +56,30 @@ static float GetLightLevelScaler(void) //mxd
 	return (float)(fxi.cl->cmd.lightlevel - SHADOW_MIN_LIGHTLEVEL) / (float)(SHADOW_MAX_LIGHTLEVEL - SHADOW_MIN_LIGHTLEVEL) * 1.2f;
 }
 
-static qboolean PlayerShadowUpdate(struct client_entity_s* self, centity_t* owner) //mxd
+static qboolean PlayerShadowAddToView(struct client_entity_s* self, centity_t* owner) //mxd
 {
 	// Too dark. Show no shadows.
 	if (fxi.cl->cmd.lightlevel < SHADOW_MIN_LIGHTLEVEL)
 	{
-		self->alpha = 0.01f;
 		VectorCopy(owner->origin, self->r.origin);
-
-		return true;
+		return false;
 	}
 
-	ShadowUpdate(self, owner);
+	if (!ShadowAddToView(self, owner))
+		return false;
 
-	if (self->alpha > 0.01f) //mxd. If not hidden, factor in player lightlevel.
-	{
-		self->alpha = self->alpha * GetLightLevelScaler() * 1.2f;
-		self->alpha = Clamp(self->alpha, 0.01f, 1.0f);
-	}
-
+	//mxd. Factor in player lightlevel.
+	self->alpha = Clamp(self->alpha * GetLightLevelScaler() * 1.2f, 0.01f, 1.0f);
 	return true;
 }
 
-static qboolean ShadowReferenceUpdate(struct client_entity_s* self, centity_t* owner)
+static qboolean ShadowReferenceAddToView(struct client_entity_s* self, centity_t* owner)
 {
+	VectorCopy(owner->origin, self->r.origin);
+
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner) || fxi.cl->cmd.lightlevel < SHADOW_MIN_LIGHTLEVEL) //mxd. No shadows in the dark (looks more natural, no?)
-	{
-		// The foot shadows should not be visible when there are no ref points.
-		VectorCopy(owner->origin, self->r.origin);
-		self->alpha = 0.01f;
-
-		return true;
-	}
-
-	VectorCopy(owner->origin, self->r.origin);
+		return false;
 
 	matrix3_t rotation;
 	Matrix3FromAngles(owner->lerp_angles, rotation);
@@ -117,18 +99,12 @@ static qboolean ShadowReferenceUpdate(struct client_entity_s* self, centity_t* o
 	trace_t trace;
 	fxi.Trace(start_pos, vec3_origin, vec3_origin, end_pos, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
 
-	if (trace.startsolid || trace.fraction >= 1.0f)
-	{
-		// No shadow, in something.
-		VectorCopy(end_pos, self->r.origin);
-		self->alpha = 0.01f;
-
-		return true;
-	}
+	// In air or in solid, so no shadow.
+	if (trace.startsolid || trace.fraction == 1.0f)
+		return false;
 
 	// Did hit the ground.
-	self->alpha = (1.0f - trace.fraction) * GetLightLevelScaler(); //mxd. Factor in player lightlevel.
-	self->alpha = Clamp(self->alpha, 0.01f, 1.0f);
+	self->alpha = Clamp((1.0f - trace.fraction) * GetLightLevelScaler(), 0.01f, 1.0f); //mxd. Factor in player lightlevel.
 
 	// If we are in ref soft, bring us out a touch, since we are having z buffer problems.
 	const float offset = (ref_soft ? 0.9f : 0.2f); //mxd
@@ -148,17 +124,17 @@ void FXShadow(centity_t* owner, const int type, const int flags, vec3_t origin)
 	if (R_DETAIL < DETAIL_UBERHIGH)
 		return;
 
-	// Create shadow under the player.
-	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, INT_MAX);
+	// Create shadow under the monster.
+	client_entity_t* shadow = ClientEntity_new(type, flags, origin, NULL, INT_MAX);
 
-	self->radius = SHADOW_CHECK_DIST;
-	self->r.model = &shadow_model;
-	self->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_ALPHA_TEXTURE);
-	self->r.scale = scale;
-	self->nextThinkTime = INT_MAX;
-	self->AddToView = ShadowUpdate;
+	shadow->radius = SHADOW_CHECK_DIST;
+	shadow->r.model = &shadow_model;
+	shadow->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_ALPHA_TEXTURE);
+	shadow->r.scale = scale;
+	shadow->nextThinkTime = INT_MAX;
+	shadow->AddToView = ShadowAddToView;
 
-	AddEffect(owner, self);
+	AddEffect(owner, shadow);
 }
 
 // Cast a shadow down from each foot and the player, too.
@@ -170,9 +146,9 @@ void FXPlayerShadow(centity_t* owner, const int type, const int flags, vec3_t or
 	shadow_mid->radius = SHADOW_CHECK_DIST;
 	shadow_mid->r.model = &shadow_model;
 	shadow_mid->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_ALPHA_TEXTURE);
-	shadow_mid->nextThinkTime = INT_MAX;
 	shadow_mid->r.scale = 0.9f; //mxd. 1.0 in original logic.
-	shadow_mid->AddToView = PlayerShadowUpdate;
+	shadow_mid->nextThinkTime = INT_MAX;
+	shadow_mid->AddToView = PlayerShadowAddToView;
 
 	AddEffect(owner, shadow_mid);
 
@@ -182,10 +158,10 @@ void FXPlayerShadow(centity_t* owner, const int type, const int flags, vec3_t or
 	shadow_left->radius = SHADOW_CHECK_DIST;
 	shadow_left->r.model = &shadow_model;
 	shadow_left->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_ALPHA_TEXTURE);
-	shadow_left->nextThinkTime = INT_MAX;
-	shadow_left->refPoint = CORVUS_LEFTFOOT;
 	shadow_left->r.scale = 0.45f; //mxd. 0.8 in original logic.
-	shadow_left->AddToView = ShadowReferenceUpdate;
+	shadow_left->refPoint = CORVUS_LEFTFOOT;
+	shadow_left->nextThinkTime = INT_MAX;
+	shadow_left->AddToView = ShadowReferenceAddToView;
 
 	AddEffect(owner, shadow_left);
 
@@ -195,10 +171,10 @@ void FXPlayerShadow(centity_t* owner, const int type, const int flags, vec3_t or
 	shadow_right->radius = SHADOW_CHECK_DIST;
 	shadow_right->r.model = &shadow_model;
 	shadow_right->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_ALPHA_TEXTURE);
-	shadow_right->nextThinkTime = INT_MAX;
-	shadow_right->refPoint = CORVUS_RIGHTFOOT;
 	shadow_right->r.scale = 0.45f; //mxd. 0.8 in original logic.
-	shadow_right->AddToView = ShadowReferenceUpdate;
+	shadow_right->refPoint = CORVUS_RIGHTFOOT;
+	shadow_right->nextThinkTime = INT_MAX;
+	shadow_right->AddToView = ShadowReferenceAddToView;
 
 	AddEffect(owner, shadow_right);
 }
