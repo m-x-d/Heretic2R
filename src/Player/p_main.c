@@ -13,6 +13,7 @@
 #include "p_utility.h" //mxd
 #include "FX.h"
 #include "m_player.h"
+#include "Random.h"
 #include "Vector.h"
 
 PLAYER_API void P_Init(void) //mxd. Originally defined in main.c.
@@ -120,11 +121,9 @@ PLAYER_API void PlayerUpdate(playerinfo_t* info)
 	if (info->deadflag == DEAD_DEAD || info->deadflag == DEAD_DYING)
 		return;
 
-	vec3_t endpos;
-	VectorCopy(info->origin, endpos);
-	endpos[2] += info->mins[2];
+	const vec3_t end_pos = VEC3_INITA(info->origin, 0.0f, 0.0f, info->mins[2]);
 
-	if (!(info->PointContents(endpos) & (CONTENTS_SLIME | CONTENTS_LAVA)))
+	if (!(info->PointContents(end_pos) & (CONTENTS_SLIME | CONTENTS_LAVA)))
 	{
 		// At the very first point, evaluate whether we are in a water or air sequence, and then whether the player is in water or air.
 		if (info->waterlevel > 2 && PlayerSeqData2[info->lowerseq].waterseq == ASEQ_SSWIM_IDLE)
@@ -148,13 +147,25 @@ PLAYER_API void PlayerUpdate(playerinfo_t* info)
 
 	if (info->remember_buttons & BUTTON_DEFEND)
 	{
-		// Not a chicken, so... //TODO: but there are no chicken checks in sight?
 		if (!info->isclient && info->pers.defence != NULL)
 		{
 			if (Defence_CurrentShotsLeft(info, 0) > 0)
+			{
 				info->PlayerActionSpellDefensive(info);
+			}
 			else
-				P_Sound(info, SND_PRED_ID50, CHAN_VOICE, "*nomana.wav", 0.75f); //mxd // Play a sound to tell the player they're out of mana.
+			{
+				char* snd_name; //mxd
+
+				if (info->edictflags & FL_AVERAGE_CHICKEN)
+					snd_name = va("Monsters/chicken/pain%i.wav", irand(1, 2)); // Sounds unused in original logic --mxd.
+				else if (info->edictflags & FL_SUPER_CHICKEN)
+					snd_name = va("Monsters/superchicken/pain%i.wav", irand(1, 2)); // Sounds unused in original logic --mxd.
+				else
+					snd_name = "*nomana.wav";
+
+				P_Sound(info, SND_PRED_ID50, CHAN_VOICE, snd_name, 0.75f); //mxd // Play a sound to tell the player they're out of mana.
+			}
 		}
 
 		info->remember_buttons &= ~BUTTON_DEFEND;
