@@ -520,7 +520,7 @@ void Cmd_Use_f(edict_t* ent, char* name)
 		return;
 
 	assert(ent != NULL && ent->client != NULL);
-	playerinfo_t* p_info = &ent->client->playerinfo;
+	playerinfo_t* info = &ent->client->playerinfo;
 
 	if (name[0] == '*')
 	{
@@ -549,7 +549,7 @@ void Cmd_Use_f(edict_t* ent, char* name)
 
 	const int index = ITEM_INDEX(item);
 
-	if (p_info->pers.inventory.Items[index] == 0)
+	if (info->pers.inventory.Items[index] == 0)
 	{
 		// Index is two off for weapons, since we can never run out of the staff or the flying fist.
 		const short msg_id = (short)((item->flags & (IT_WEAPON | IT_DEFENSE)) ? item->msg_nouse : GM_NOITEM); //mxd
@@ -558,40 +558,49 @@ void Cmd_Use_f(edict_t* ent, char* name)
 		return;
 	}
 
-	if (cast_me && (item->flags & IT_DEFENSE) && item->weaponthink != NULL && ent->dead_state != DEAD_DEAD && p_info->deadflag != DEAD_DYING)
+	if (cast_me && (item->flags & IT_DEFENSE) && item->weaponthink != NULL && ent->dead_state != DEAD_DEAD && info->deadflag != DEAD_DYING)
 	{
-		if (p_info->leveltime > p_info->defensive_debounce)
+		if (info->leveltime > info->defensive_debounce)
 		{
 			// Do something only if the debounce is okay.
-			p_info->pers.lastdefence = p_info->pers.defence;
-			p_info->pers.defence = item;
+			info->pers.lastdefence = info->pers.defence;
+			info->pers.defence = item;
 
-			if (P_Defence_CurrentShotsLeft(p_info, 1) > 0)
+			if (P_Defence_CurrentShotsLeft(info, 1) > 0)
 			{
 				// Only if there is ammo.
 				item->weaponthink(ent, "");
 
-				if (p_info->pers.defence != NULL && p_info->pers.defence->ammo != NULL)
-					p_info->def_ammo_index = ITEM_INDEX(P_FindItem(p_info->pers.defence->ammo));
+				if (info->pers.defence != NULL && info->pers.defence->ammo != NULL)
+					info->def_ammo_index = ITEM_INDEX(P_FindItem(info->pers.defence->ammo));
 				else
-					p_info->def_ammo_index = 0;
+					info->def_ammo_index = 0;
 
-				p_info->defensive_debounce = p_info->leveltime + DEFENSE_DEBOUNCE;
+				info->defensive_debounce = info->leveltime + DEFENSE_DEBOUNCE;
 			}
 			else
 			{
-				// Play a sound to tell the player they're out of mana.
-				gi.sound(ent, CHAN_VOICE, gi.soundindex("*nomana.wav"), 0.75f, ATTN_NORM, 0.0f);
+				// Play a sound to tell the player they're out of mana (also done in PlayerUpdate() --mxd).
+				char* snd_name; //mxd
+
+				if (info->edictflags & FL_AVERAGE_CHICKEN)
+					snd_name = va("Monsters/chicken/pain%i.wav", irand(1, 2)); // Sounds unused in original logic --mxd.
+				else if (info->edictflags & FL_SUPER_CHICKEN)
+					snd_name = va("Monsters/superchicken/pain%i.wav", irand(1, 2)); // Sounds unused in original logic --mxd.
+				else
+					snd_name = "*nomana.wav";
+
+				gi.sound(ent, CHAN_VOICE, gi.soundindex(snd_name), 0.75f, ATTN_NORM, 0.0f);
 			}
 
 			// Put the ammo back.
-			p_info->pers.defence = p_info->pers.lastdefence;
-			p_info->pers.lastdefence = item;
+			info->pers.defence = info->pers.lastdefence;
+			info->pers.lastdefence = item;
 		}
 	}
 	else
 	{
-		item->use(&ent->client->playerinfo, item);
+		item->use(info, item);
 	}
 }
 

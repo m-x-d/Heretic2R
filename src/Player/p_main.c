@@ -155,6 +155,7 @@ PLAYER_API void PlayerUpdate(playerinfo_t* info)
 			}
 			else
 			{
+				// Play a sound to tell the player they're out of mana (also done in Cmd_Use_f() --mxd).
 				char* snd_name; //mxd
 
 				if (info->edictflags & FL_AVERAGE_CHICKEN)
@@ -164,7 +165,7 @@ PLAYER_API void PlayerUpdate(playerinfo_t* info)
 				else
 					snd_name = "*nomana.wav";
 
-				P_Sound(info, SND_PRED_ID50, CHAN_VOICE, snd_name, 0.75f); //mxd // Play a sound to tell the player they're out of mana.
+				P_Sound(info, SND_PRED_ID50, CHAN_VOICE, snd_name, 0.75f); //mxd
 			}
 		}
 
