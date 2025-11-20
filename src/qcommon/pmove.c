@@ -155,9 +155,9 @@ static void PM_StepSlideMove(void)
 
 	trace_t trace;
 
-	float time_left = pml.frametime;
-	float scaled_vel = 0.0f;
-	float inv_scaled_vel = 0.0f;
+	float time_step = pml.frametime;
+	float slide_vel = 0.0f;
+	float inv_slide_vel = 0.0f;
 
 	if (pm->groundentity == NULL)
 		pml.groundplane.normal[2] = 0.0f;
@@ -173,10 +173,10 @@ static void PM_StepSlideMove(void)
 	{
 		qboolean do_slide = false;
 		qboolean apply_gravity = true;
-		float time_left_sq = time_left * time_left;
+		float time_step_sq = time_step * time_step;
 
 		vec3_t velocity_step;
-		VectorScale(pml.velocity, time_left, velocity_step);
+		VectorScale(pml.velocity, time_step, velocity_step);
 
 		// Get plane_normal perpendicular (parallel to plane, points in the same direction on xy axis as plane_normal; when plane_normal is [0 0 1], slide_direction is [0 0 0]) --mxd.
 		vec3_t slide_dir = VEC3_SET(plane_normal[0] * plane_normal[2],
@@ -216,27 +216,27 @@ static void PM_StepSlideMove(void)
 
 			if (do_slide)
 			{
-				scaled_vel = pml.groundplane.normal[2] * pml.max_velocity;
+				slide_vel = pml.groundplane.normal[2] * pml.max_velocity;
 
 				// Check if we should be sliding.
 				if (pml.groundplane.normal[2] < MIN_STEP_NORMAL && pm->waterlevel == 0)
 				{
-					inv_scaled_vel = -scaled_vel * 0.1f;
+					inv_slide_vel = -slide_vel * 0.1f;
 
 					pm->s.c_flags |= PC_SLIDING;
 					pml.velocity[2] = min(-40.0f, pml.velocity[2]);
 				}
 				else
 				{
-					inv_scaled_vel = -scaled_vel;
+					inv_slide_vel = -slide_vel;
 				}
 
-				float move_dist = inv_scaled_vel * time_left_sq * 0.5f + move_step;
+				float move_dist = inv_slide_vel * time_step_sq * 0.5f + move_step;
 
 				if (move_dist < 0.0f)
 				{
 					move_dist = 0.0f;
-					inv_scaled_vel = 0.0f;
+					inv_slide_vel = 0.0f;
 				}
 
 				if (DotProduct(slide_dir, plane_normal) < -FLOAT_ZERO_EPSILON)
@@ -248,21 +248,21 @@ static void PM_StepSlideMove(void)
 				// Check if we should be sliding... again!
 				if (pml.groundplane.normal[2] < MIN_STEP_NORMAL && pm->waterlevel == 0)
 				{
-					scaled_vel = (1.0f - pml.groundplane.normal[2]) * pml.gravity - pml.groundplane.normal[2] * pml.max_velocity * 0.1f;
+					slide_vel = (1.0f - pml.groundplane.normal[2]) * pml.gravity - pml.groundplane.normal[2] * pml.max_velocity * 0.1f;
 					pm->s.c_flags |= PC_SLIDING;
 				}
 				else
 				{
-					scaled_vel = (1.0f - pml.groundplane.normal[2]) * pml.gravity - scaled_vel;
+					slide_vel = (1.0f - pml.groundplane.normal[2]) * pml.gravity - slide_vel;
 				}
 
-				scaled_vel = max(0.0f, scaled_vel);
-				const float slide_dist = scaled_vel * time_left_sq * 0.5f;
+				slide_vel = max(0.0f, slide_vel);
+				const float slide_dist = slide_vel * time_step_sq * 0.5f;
 
 				for (int i = 0; i < 3; i++)
 					velocity_step[i] = slide_dir[i] * slide_dist + move_dir[i] * move_dist;
 
-				if (scaled_vel + inv_scaled_vel + move_dist != 0.0f)
+				if (slide_vel + inv_slide_vel + move_dist != 0.0f)
 				{
 					apply_gravity = false;
 				}
@@ -275,7 +275,7 @@ static void PM_StepSlideMove(void)
 		}
 
 		if (apply_gravity && pm->groundentity == NULL)
-			velocity_step[2] -= time_left_sq * pml.gravity * 0.5f;
+			velocity_step[2] -= time_step_sq * pml.gravity * 0.5f;
 
 		vec3_t end;
 		VectorAdd(pml.origin, velocity_step, end);
@@ -294,27 +294,27 @@ LAB_NotSolid:
 				return;
 			}
 
-			const float time_step = time_left * trace.fraction;
-
 			if (trace.fraction > 0.0f)
 			{
 				// Actually covered some distance.
 				VectorCopy(trace.endpos, pml.origin);
 
+				const float time_step_frac = time_step * trace.fraction;
+
 				if (do_slide)
 				{
 					vec3_t vel_dir;
-					float dist = VectorNormalize2(pml.velocity, vel_dir);
-					dist += time_step * inv_scaled_vel;
+					float vel_dist = VectorNormalize2(pml.velocity, vel_dir);
+					vel_dist += time_step_frac * inv_slide_vel;
 
-					float scaler = time_step * scaled_vel;
+					float scaler = time_step_frac * slide_vel;
 
 					for (int i = 0; i < 3; i++)
-						pml.velocity[i] = slide_dir[i] * scaler + vel_dir[i] * dist;
+						pml.velocity[i] = slide_dir[i] * scaler + vel_dir[i] * vel_dist;
 				}
 				else
 				{
-					pml.velocity[2] -= time_step * pml.gravity;
+					pml.velocity[2] -= time_step_frac * pml.gravity;
 				}
 
 				if (trace.fraction == 1.0f)
@@ -322,6 +322,7 @@ LAB_NotSolid:
 
 				numplanes = 0;
 				prev_plane = -1;
+				time_step -= time_step_frac;
 
 				VectorCopy(pml.velocity, primal_velocity);
 			}
@@ -346,13 +347,11 @@ LAB_NotSolid:
 				pm->numtouch++;
 			}
 
-			time_left -= time_step;
-
 			// Try stepping over obstacle.
 			if (trace.plane.normal[2] <= MIN_STEP_NORMAL && trace.ent != NULL)
 			{
 				const qboolean check_step_up = (!pml.server || trace.ent->solid == SOLID_BSP || trace.ent->solid == SOLID_BBOX); //mxd
-				if (check_step_up && PM_TryStepUp(STEP_SIZE, time_left, &trace))
+				if (check_step_up && PM_TryStepUp(STEP_SIZE, time_step, &trace))
 					break;
 			}
 
@@ -401,14 +400,14 @@ LAB_NotSolid:
 			}
 
 			// Modify pml.velocity so it parallels all of the clip planes.
-			vec3_t slide_vel;
+			vec3_t cur_slide_vel;
 
 			for (cur_plane = 0; cur_plane < numplanes; cur_plane++)
 			{
-				BounceVelocity(primal_velocity, planes[cur_plane], slide_vel, ELASTICITY_SLIDE);
+				BounceVelocity(primal_velocity, planes[cur_plane], cur_slide_vel, ELASTICITY_SLIDE);
 
 				vec3_t cur_slide_dir;
-				const float slide_dist = VectorNormalize2(slide_vel, cur_slide_dir);
+				const float slide_dist = VectorNormalize2(cur_slide_vel, cur_slide_dir);
 
 				// Can't slide along this plane.
 				if (fabsf(slide_dist) < FLOAT_ZERO_EPSILON)
@@ -439,7 +438,7 @@ LAB_NotSolid:
 				// Check if slide velocity is opposite to any of clip planes. 
 				int c;
 				for (c = 0; c < numplanes; c++)
-					if (c != cur_plane && DotProduct(slide_vel, planes[c]) <= 0.0f)
+					if (c != cur_plane && DotProduct(cur_slide_vel, planes[c]) <= 0.0f)
 						break; // Not ok.
 
 				// Stop checking clip planes when slide velocity is adjacent to all of them (e.g. current move won't move us into any of them). 
@@ -456,7 +455,7 @@ LAB_NotSolid:
 					return;
 				}
 
-				VectorCopy(slide_vel, pml.velocity);
+				VectorCopy(cur_slide_vel, pml.velocity);
 			}
 			else
 			{
