@@ -9,8 +9,7 @@
 #include "q_Physics.h"
 #include "Vector.h"
 
-// All of the locals will be zeroed before each pmove, just to make sure
-// we don't have any differences when running on client or server.
+// All of the locals will be zeroed before each pmove, just to make sure we don't have any differences when running on client or server.
 
 typedef struct
 {
@@ -47,7 +46,25 @@ static pml_t pml;
 #define PM_WATERSPEED		400.0f
 
 #define MIN_STEP_NORMAL	0.7f // Can't step up onto very steep slopes.
+
+typedef struct ssm_settings_s //mxd
+{
+	float time_step;
+	vec3_t primal_velocity;
+	vec3_t plane_normal;
+
+	qboolean is_sliding;
+	float slide_vel;
+	vec3_t slide_dir;
+	float inv_slide_vel;
+
+	int numplanes;
+	int cur_plane;
+	int prev_plane;
+} ssm_settings_t;
+
 #define MAX_CLIP_PLANES	5
+static vec3_t clip_planes[MAX_CLIP_PLANES];
 
 static float ClampVelocity(vec3_t vel, vec3_t vel_normal, const qboolean run_shrine, const qboolean high_max)
 {
@@ -148,382 +165,437 @@ static qboolean PM_TryStepUp(const float step_height, const float frametime, tra
 	return true;
 }
 
+static void PM_StepSlideFinishMove(const qboolean clear_velocity) //mxd. Split from PM_StepSlideMove().
+{
+	if (clear_velocity)
+		VectorClear(pml.velocity);
+
+	CheckCollision((float)pm->cmd.aimangles[YAW] * SHORT_TO_ANGLE * ANGLE_TO_RAD);
+}
+
+static qboolean PM_StepSlideSetupSlide(ssm_settings_t* ssm, vec3_t velocity_step, const qboolean add_velocity_step) //mxd. Split from PM_StepSlideMove().
+{
+	ssm->slide_vel = pml.groundplane.normal[2] * pml.max_velocity;
+
+	// Check if we should be sliding.
+	if (pml.groundplane.normal[2] < MIN_STEP_NORMAL && pm->waterlevel == 0)
+	{
+		ssm->inv_slide_vel = -ssm->slide_vel * 0.1f;
+
+		pm->s.c_flags |= PC_SLIDING;
+		pml.velocity[2] = min(-40.0f, pml.velocity[2]);
+	}
+	else
+	{
+		ssm->inv_slide_vel = -ssm->slide_vel;
+	}
+
+	vec3_t move_dir;
+	const float time_step_sq = ssm->time_step * ssm->time_step;
+	float move_dist = ssm->inv_slide_vel * time_step_sq * 0.5f;
+
+	if (add_velocity_step)
+		move_dist += VectorNormalize2(velocity_step, move_dir);
+
+	if (move_dist < 0.0f)
+	{
+		move_dist = 0.0f;
+		ssm->inv_slide_vel = 0.0f;
+	}
+
+	if (DotProduct(ssm->slide_dir, ssm->plane_normal) < -FLOAT_ZERO_EPSILON)
+	{
+		VectorMA(pml.origin, 0.5f, clip_planes[ssm->cur_plane], pml.origin);
+		ssm->prev_plane = ssm->cur_plane;
+	}
+
+	// Check if we should be sliding... again!
+	if (pml.groundplane.normal[2] < MIN_STEP_NORMAL && pm->waterlevel == 0)
+	{
+		ssm->slide_vel = (1.0f - pml.groundplane.normal[2]) * pml.gravity - pml.groundplane.normal[2] * pml.max_velocity * 0.1f;
+		pm->s.c_flags |= PC_SLIDING;
+	}
+	else
+	{
+		ssm->slide_vel = (1.0f - pml.groundplane.normal[2]) * pml.gravity - ssm->slide_vel;
+	}
+
+	ssm->slide_vel = max(0.0f, ssm->slide_vel);
+	const float slide_dist = ssm->slide_vel * time_step_sq * 0.5f;
+
+	// Set velocity_step.
+	VectorScale(ssm->slide_dir, slide_dist, velocity_step);
+
+	if (add_velocity_step)
+		VectorScale(move_dir, move_dist, velocity_step);
+
+	if (ssm->slide_vel + ssm->inv_slide_vel + move_dist == 0.0f)
+	{
+		PM_StepSlideFinishMove(true);
+		return false;
+	}
+
+	return true;
+}
+
+static qboolean PM_StepSlideCheckSlope(ssm_settings_t* ssm, vec3_t velocity_step, const qboolean first_bump) //mxd. Split from PM_StepSlideMove().
+{
+	// Get plane_normal perpendicular (parallel to plane, points in the same direction on xy axis as plane_normal; when plane_normal is [0 0 1], slide_direction is [0 0 0]) --mxd.
+	ssm->slide_dir[0] = ssm->plane_normal[0] * ssm->plane_normal[2];
+	ssm->slide_dir[1] = ssm->plane_normal[1] * ssm->plane_normal[2];
+	ssm->slide_dir[2] = -(ssm->plane_normal[0] * ssm->plane_normal[0] + ssm->plane_normal[1] * ssm->plane_normal[1]);
+	VectorNormalize(ssm->slide_dir);
+
+	VectorScale(pml.velocity, ssm->time_step, velocity_step);
+
+	if (pml.groundplane.normal[2] != 0.0f)
+	{
+		if (Vec3IsZero(pml.velocity))
+		{
+			if (!first_bump && pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
+				return false;
+
+			if (DotProduct(ssm->slide_dir, ssm->plane_normal) < -FLOAT_ZERO_EPSILON)
+			{
+				VectorMA(pml.origin, 0.5f, clip_planes[ssm->cur_plane], pml.origin);
+				ssm->prev_plane = ssm->cur_plane;
+			}
+
+			ssm->is_sliding = true;
+			return PM_StepSlideSetupSlide(ssm, velocity_step, false);
+		}
+
+		vec3_t velocity_dir;
+		VectorNormalize2(velocity_step, velocity_dir);
+
+		if (fabsf(DotProduct(velocity_dir, ssm->plane_normal)) <= 0.05f)
+		{
+			ssm->is_sliding = true;
+			return PM_StepSlideSetupSlide(ssm, velocity_step, true);
+		}
+	}
+
+	if (pm->groundentity == NULL)
+	{
+		const float time_step_sq = ssm->time_step * ssm->time_step;
+		velocity_step[2] -= time_step_sq * pml.gravity * 0.5f;
+	}
+
+	return true;
+}
+
+static qboolean PM_AddClipPlane(ssm_settings_t* ssm, const trace_t* trace) //mxd. Split from PM_StepSlideMove().
+{
+	if (pm->groundentity != NULL && pml.groundplane.normal[2] > MIN_STEP_NORMAL && trace->plane.normal[2] <= MIN_STEP_NORMAL)
+	{
+		vec3_t v = VEC3_SET(trace->plane.normal[0], trace->plane.normal[1], 0.0f);
+		VectorNormalize(v);
+
+		if (ssm->numplanes == 0 || !VectorCompare(v, clip_planes[ssm->numplanes - 1]))
+		{
+			VectorCopy(v, clip_planes[ssm->numplanes]);
+			ssm->numplanes++;
+		}
+	}
+	else
+	{
+		VectorCopy(trace->plane.normal, pml.groundplane.normal);
+		VectorCopy(trace->plane.normal, ssm->plane_normal);
+
+		const qboolean have_trace_ent = (pml.server && (trace->ent->solid == SOLID_BSP || trace->ent->solid == SOLID_BBOX)) || (!pml.server && trace->ent != NULL); //mxd
+		if (have_trace_ent && trace->plane.normal[2] > 0.0f)
+		{
+			pm->groundentity = trace->ent;
+		}
+		else
+		{
+			pm->groundentity = NULL;
+
+			if (trace->plane.normal[2] < 0.0f)
+				pml.groundplane.normal[2] = 0.0f;
+		}
+
+		if (ssm->numplanes == 0 || !VectorCompare(trace->plane.normal, clip_planes[ssm->numplanes - 1]))
+		{
+			VectorCopy(trace->plane.normal, clip_planes[ssm->numplanes]);
+			ssm->numplanes++;
+		}
+		else
+		{
+			ssm->prev_plane = ssm->numplanes - 1;
+			VectorMA(pml.origin, 0.5f, clip_planes[ssm->prev_plane], pml.origin);
+		}
+	}
+
+	return (ssm->numplanes <= MAX_CLIP_PLANES - 1);
+}
+
+static qboolean PM_StepSlideTryMove(ssm_settings_t* ssm, trace_t* trace, const qboolean last_bump) //mxd. Split from PM_StepSlideMove().
+{
+	// We are already stuck...
+	if (trace->allsolid)
+	{
+		VectorClear(pml.velocity);
+		pml.origin[2] += 20.0f;
+
+		return true;
+	}
+
+	// Suggested move will get us stuck...
+	if (trace->startsolid)
+	{
+		if (ssm->prev_plane == -1)
+		{
+			vec3_t mins = VEC3_INIT(pm->mins);
+			vec3_t maxs = VEC3_INIT(pm->maxs);
+
+			float offset = 1.0f;
+			while (maxs[0] - offset >= mins[0] + offset)
+			{
+				VectorInc(mins);
+				VectorDec(maxs);
+
+				pm->trace(pml.origin, mins, maxs, pml.origin, trace);
+
+				if (!trace->startsolid)
+				{
+					VectorCopy(pm->mins, pm->intentMins);
+					VectorCopy(pm->maxs, pm->intentMaxs);
+					VectorCopy(mins, pm->mins);
+					VectorCopy(maxs, pm->maxs);
+
+					// Found possible settings, restart.
+					return PM_StepSlideTryMove(ssm, trace, last_bump);
+				}
+
+				offset += 1.0f;
+			}
+
+			VectorClear(pml.velocity);
+
+			return true;
+		}
+
+		for (int i = 0; i < 3; i++)
+			pml.origin[i] -= clip_planes[ssm->prev_plane][i] * 0.5f;
+
+		if (last_bump)
+			PM_StepSlideFinishMove(trace->fraction < 1.0f);
+
+		return false;
+	}
+
+	// Check current move.
+	if (trace->fraction > 0.0f)
+	{
+		// Actually covered some distance.
+		VectorCopy(trace->endpos, pml.origin);
+
+		const float time_step_frac = ssm->time_step * trace->fraction;
+
+		if (ssm->is_sliding)
+		{
+			vec3_t vel_dir;
+			float vel_dist = VectorNormalize2(pml.velocity, vel_dir);
+			vel_dist += time_step_frac * ssm->inv_slide_vel;
+
+			const float scaler = time_step_frac * ssm->slide_vel;
+
+			for (int i = 0; i < 3; i++)
+				pml.velocity[i] = ssm->slide_dir[i] * scaler + vel_dir[i] * vel_dist;
+		}
+		else
+		{
+			pml.velocity[2] -= time_step_frac * pml.gravity;
+		}
+
+		// Moved the entire distance.
+		if (trace->fraction == 1.0f)
+		{
+			PM_StepSlideFinishMove(false);
+			return true;
+		}
+
+		// Reset collision settings...
+		ssm->numplanes = 0;
+		ssm->prev_plane = -1;
+		ssm->time_step -= time_step_frac;
+
+		VectorCopy(pml.velocity, ssm->primal_velocity);
+	}
+	else if (Vec3IsZero(pml.velocity) && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
+	{
+		PM_StepSlideFinishMove(true);
+		return true;
+	}
+
+	// Handle entity blocking.
+	if (pml.server && trace->ent != NULL && trace->ent->isBlocking != NULL)
+	{
+		trace_t tr = *trace;
+
+		tr.ent = pm->self;
+		VectorInverse(tr.plane.normal);
+		trace->ent->isBlocking(trace->ent, &tr);
+	}
+
+	// Save entity for contact.
+	if (pm->numtouch < MAXTOUCH && trace->ent != NULL)
+	{
+		pm->touchents[pm->numtouch] = trace->ent;
+		pm->numtouch++;
+	}
+
+	// Try stepping over obstacle.
+	if (trace->plane.normal[2] <= MIN_STEP_NORMAL && trace->ent != NULL)
+	{
+		const qboolean check_step_up = (!pml.server || trace->ent->solid == SOLID_BSP || trace->ent->solid == SOLID_BBOX); //mxd
+		if (check_step_up && PM_TryStepUp(STEP_SIZE, ssm->time_step, trace))
+		{
+			PM_StepSlideFinishMove(trace->fraction < 1.0f);
+			return true;
+		}
+	}
+
+	// Store trace.plane as current clip plane.
+	if (!PM_AddClipPlane(ssm, trace))
+	{
+		PM_StepSlideFinishMove(trace->fraction < 1.0f);
+		return true;
+	}
+
+	// Modify pml.velocity so it's parallel to all clip planes.
+	vec3_t cur_slide_vel;
+
+	for (int i = 0; i < ssm->numplanes; i++)
+	{
+		ssm->cur_plane = i;
+		BounceVelocity(ssm->primal_velocity, clip_planes[i], cur_slide_vel, ELASTICITY_SLIDE);
+
+		vec3_t cur_slide_dir;
+		const float slide_dist = VectorNormalize2(cur_slide_vel, cur_slide_dir);
+
+		// Can't slide along this plane.
+		if (fabsf(slide_dist) < FLOAT_ZERO_EPSILON)
+		{
+			// If current plane normal points even a little bit upwards, slide along its perpendicular.
+			if (clip_planes[i][2] > 0.0f)
+			{
+				// Get current plane perpendicular (parallel to plane, points in the same direction on xy axis as current plane; when current plane normal is [0 0 1], slide_direction is [0 0 0]) --mxd.
+				cur_slide_dir[0] = -(clip_planes[i][2] * clip_planes[i][0]);
+				cur_slide_dir[1] = -(clip_planes[i][1] * clip_planes[i][2]);
+				cur_slide_dir[2] = clip_planes[i][0] * clip_planes[i][0] + clip_planes[i][1] * clip_planes[i][1];
+
+				VectorNormalize(cur_slide_dir);
+			}
+			else
+			{
+				VectorCopy(vec3_down, cur_slide_dir);
+			}
+		}
+
+		// If current slide direction is opposite to current plane normal, move us away from this plane.
+		if (DotProduct(cur_slide_dir, clip_planes[i]) < -FLOAT_ZERO_EPSILON)
+		{
+			VectorMA(pml.origin, 0.5f, clip_planes[i], pml.origin);
+			ssm->prev_plane = i;
+		}
+
+		// Check if slide velocity is opposite to any of clip planes. 
+		int c;
+		for (c = 0; c < ssm->numplanes; c++)
+			if (c != i && DotProduct(cur_slide_vel, clip_planes[c]) <= 0.0f)
+				break; // Not ok.
+
+		// Stop checking clip planes when slide velocity is adjacent to all of them (e.g. current move won't move us into any of them). 
+		if (c == ssm->numplanes)
+			break;
+	}
+
+	// Go along the crease.
+	if (ssm->numplanes != 2)
+	{
+		if (ssm->cur_plane == ssm->numplanes)
+		{
+			VectorClear(pml.velocity);
+			return true;
+		}
+
+		VectorCopy(cur_slide_vel, pml.velocity);
+	}
+	else
+	{
+		vec3_t move_dir;
+		CrossProduct(clip_planes[0], clip_planes[1], move_dir);
+
+		if (DotProduct(move_dir, pml.velocity) < 0.0f)
+			VectorInverse(move_dir);
+
+		move_dir[2] += 0.1f;
+		VectorNormalize(move_dir);
+
+		VectorAdd(clip_planes[0], clip_planes[1], ssm->plane_normal);
+		VectorNormalize(ssm->plane_normal);
+
+		if (pm->groundentity != NULL && move_dir[2] > MIN_STEP_NORMAL)
+		{
+			PM_StepSlideFinishMove(true);
+			return true;
+		}
+
+		float d = DotProduct(move_dir, pml.velocity);
+		d = max(0.0f, d);
+
+		VectorScale(move_dir, d, pml.velocity);
+	}
+
+	if (last_bump)
+		PM_StepSlideFinishMove(trace->fraction < 1.0f);
+
+	return false;
+}
+
 // Each intersection will try to step over the obstruction instead of sliding along it.
 static void PM_StepSlideMove(void)
 {
-	static vec3_t planes[MAX_CLIP_PLANES];
+#define NUM_BUMPS	4
 
 	trace_t trace;
+	ssm_settings_t ssm; //mxd
 
-	float time_step = pml.frametime;
-	float slide_vel = 0.0f;
-	float inv_slide_vel = 0.0f;
+	// Init settings.
+	ssm.time_step = pml.frametime;
+	ssm.slide_vel = 0.0f;
+	ssm.inv_slide_vel = 0.0f;
+
+	ssm.numplanes = 0;
+	ssm.cur_plane = 0;
+	ssm.prev_plane = -1;
 
 	if (pm->groundentity == NULL)
 		pml.groundplane.normal[2] = 0.0f;
 
-	vec3_t primal_velocity = VEC3_INIT(pml.velocity);
-	vec3_t plane_normal = VEC3_INIT(pml.groundplane.normal);
+	VectorCopy(pml.velocity, ssm.primal_velocity);
+	VectorCopy(pml.groundplane.normal, ssm.plane_normal);
 
-	int numplanes = 0;
-	int cur_plane = 0;
-	int prev_plane = -1;
-
-	for (int bumpcount = 0; bumpcount < 4; bumpcount++)
+	for (int bumpcount = 0; bumpcount < NUM_BUMPS; bumpcount++)
 	{
-		qboolean do_slide = false;
-		qboolean apply_gravity = true;
-		float time_step_sq = time_step * time_step;
-
+		// Plot current move.
 		vec3_t velocity_step;
-		VectorScale(pml.velocity, time_step, velocity_step);
+		ssm.is_sliding = false;
 
-		// Get plane_normal perpendicular (parallel to plane, points in the same direction on xy axis as plane_normal; when plane_normal is [0 0 1], slide_direction is [0 0 0]) --mxd.
-		vec3_t slide_dir = VEC3_SET(plane_normal[0] * plane_normal[2],
-									plane_normal[1] * plane_normal[2],
-									-(plane_normal[0] * plane_normal[0] + plane_normal[1] * plane_normal[1]));
-		VectorNormalize(slide_dir);
+		if (!PM_StepSlideCheckSlope(&ssm, velocity_step, bumpcount == 0))
+			return;
 
-		if (pml.groundplane.normal[2] != 0.0f)
-		{
-			float move_step;
-			vec3_t move_dir;
-
-			do_slide = true;
-
-			if (Vec3IsZero(pml.velocity))
-			{
-				if (bumpcount > 0 && pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
-					return;
-
-				if (DotProduct(slide_dir, plane_normal) < -FLOAT_ZERO_EPSILON)
-				{
-					VectorMA(pml.origin, 0.5f, planes[cur_plane], pml.origin);
-					prev_plane = cur_plane;
-				}
-
-				move_step = 0.0f;
-				VectorClear(move_dir); //mxd
-			}
-			else
-			{
-				move_step = VectorNormalize2(velocity_step, move_dir);
-
-				const float d = DotProduct(move_dir, plane_normal);
-				if (d < -0.05f || d >= 0.05f)
-					do_slide = false;
-			}
-
-			if (do_slide)
-			{
-				slide_vel = pml.groundplane.normal[2] * pml.max_velocity;
-
-				// Check if we should be sliding.
-				if (pml.groundplane.normal[2] < MIN_STEP_NORMAL && pm->waterlevel == 0)
-				{
-					inv_slide_vel = -slide_vel * 0.1f;
-
-					pm->s.c_flags |= PC_SLIDING;
-					pml.velocity[2] = min(-40.0f, pml.velocity[2]);
-				}
-				else
-				{
-					inv_slide_vel = -slide_vel;
-				}
-
-				float move_dist = inv_slide_vel * time_step_sq * 0.5f + move_step;
-
-				if (move_dist < 0.0f)
-				{
-					move_dist = 0.0f;
-					inv_slide_vel = 0.0f;
-				}
-
-				if (DotProduct(slide_dir, plane_normal) < -FLOAT_ZERO_EPSILON)
-				{
-					VectorMA(pml.origin, 0.5f, planes[cur_plane], pml.origin);
-					prev_plane = cur_plane;
-				}
-
-				// Check if we should be sliding... again!
-				if (pml.groundplane.normal[2] < MIN_STEP_NORMAL && pm->waterlevel == 0)
-				{
-					slide_vel = (1.0f - pml.groundplane.normal[2]) * pml.gravity - pml.groundplane.normal[2] * pml.max_velocity * 0.1f;
-					pm->s.c_flags |= PC_SLIDING;
-				}
-				else
-				{
-					slide_vel = (1.0f - pml.groundplane.normal[2]) * pml.gravity - slide_vel;
-				}
-
-				slide_vel = max(0.0f, slide_vel);
-				const float slide_dist = slide_vel * time_step_sq * 0.5f;
-
-				for (int i = 0; i < 3; i++)
-					velocity_step[i] = slide_dir[i] * slide_dist + move_dir[i] * move_dist;
-
-				if (slide_vel + inv_slide_vel + move_dist != 0.0f)
-				{
-					apply_gravity = false;
-				}
-				else
-				{
-					trace.fraction = 0.0f;
-					break;
-				}
-			}
-		}
-
-		if (apply_gravity && pm->groundentity == NULL)
-			velocity_step[2] -= time_step_sq * pml.gravity * 0.5f;
-
+		// Trace current move.
 		vec3_t end;
 		VectorAdd(pml.origin, velocity_step, end);
 		pm->trace(pml.origin, pm->mins, pm->maxs, end, &trace);
 
-		// Check current move.
-		if (!trace.startsolid)
-		{
-LAB_NotSolid:
-			if (trace.allsolid)
-			{
-				// Entity is trapped in another solid.
-				VectorClear(pml.velocity);
-				pml.origin[2] += 20.0f;
-
-				return;
-			}
-
-			if (trace.fraction > 0.0f)
-			{
-				// Actually covered some distance.
-				VectorCopy(trace.endpos, pml.origin);
-
-				const float time_step_frac = time_step * trace.fraction;
-
-				if (do_slide)
-				{
-					vec3_t vel_dir;
-					float vel_dist = VectorNormalize2(pml.velocity, vel_dir);
-					vel_dist += time_step_frac * inv_slide_vel;
-
-					float scaler = time_step_frac * slide_vel;
-
-					for (int i = 0; i < 3; i++)
-						pml.velocity[i] = slide_dir[i] * scaler + vel_dir[i] * vel_dist;
-				}
-				else
-				{
-					pml.velocity[2] -= time_step_frac * pml.gravity;
-				}
-
-				if (trace.fraction == 1.0f)
-					break; // Moved the entire distance.
-
-				numplanes = 0;
-				prev_plane = -1;
-				time_step -= time_step_frac;
-
-				VectorCopy(pml.velocity, primal_velocity);
-			}
-			else if (Vec3IsZero(pml.velocity) && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
-			{
-				break;
-			}
-
-			if (pml.server && trace.ent != NULL && trace.ent->isBlocking != NULL)
-			{
-				trace_t tr = trace;
-
-				tr.ent = pm->self;
-				VectorInverse(tr.plane.normal);
-				trace.ent->isBlocking(trace.ent, &tr);
-			}
-
-			// Save entity for contact.
-			if (pm->numtouch < MAXTOUCH && trace.ent != NULL)
-			{
-				pm->touchents[pm->numtouch] = trace.ent;
-				pm->numtouch++;
-			}
-
-			// Try stepping over obstacle.
-			if (trace.plane.normal[2] <= MIN_STEP_NORMAL && trace.ent != NULL)
-			{
-				const qboolean check_step_up = (!pml.server || trace.ent->solid == SOLID_BSP || trace.ent->solid == SOLID_BBOX); //mxd
-				if (check_step_up && PM_TryStepUp(STEP_SIZE, time_step, &trace))
-					break;
-			}
-
-			if (pm->groundentity == NULL || pml.groundplane.normal[2] <= MIN_STEP_NORMAL || trace.plane.normal[2] > MIN_STEP_NORMAL)
-			{
-				VectorCopy(trace.plane.normal, pml.groundplane.normal);
-				VectorCopy(trace.plane.normal, plane_normal);
-
-				qboolean have_trace_ent = (pml.server && (trace.ent->solid == SOLID_BSP || trace.ent->solid == SOLID_BBOX)) || (!pml.server && trace.ent != NULL); //mxd
-				if (have_trace_ent && trace.plane.normal[2] > 0.0f)
-				{
-					pm->groundentity = trace.ent;
-				}
-				else
-				{
-					pm->groundentity = NULL;
-
-					if (trace.plane.normal[2] < 0.0f)
-						pml.groundplane.normal[2] = 0.0f;
-				}
-
-				if (numplanes > MAX_CLIP_PLANES - 1)
-					break;
-
-				if (numplanes == 0 || !VectorCompare(trace.plane.normal, planes[numplanes - 1]))
-				{
-					VectorCopy(trace.plane.normal, planes[numplanes]);
-					numplanes++;
-				}
-				else
-				{
-					prev_plane = numplanes - 1;
-					VectorMA(pml.origin, 0.5f, planes[prev_plane], pml.origin);
-				}
-			}
-			else
-			{
-				vec3_t v = VEC3_SET(trace.plane.normal[0], trace.plane.normal[1], 0.0f);
-				VectorNormalize(v);
-
-				if (numplanes == 0 || !VectorCompare(v, planes[numplanes - 1]))
-				{
-					VectorCopy(v, planes[numplanes]);
-					numplanes++;
-				}
-			}
-
-			// Modify pml.velocity so it parallels all of the clip planes.
-			vec3_t cur_slide_vel;
-
-			for (cur_plane = 0; cur_plane < numplanes; cur_plane++)
-			{
-				BounceVelocity(primal_velocity, planes[cur_plane], cur_slide_vel, ELASTICITY_SLIDE);
-
-				vec3_t cur_slide_dir;
-				const float slide_dist = VectorNormalize2(cur_slide_vel, cur_slide_dir);
-
-				// Can't slide along this plane.
-				if (fabsf(slide_dist) < FLOAT_ZERO_EPSILON)
-				{
-					// If current plane normal points even a little bit upwards, slide along its perpendicular.
-					if (planes[cur_plane][2] > 0.0f)
-					{
-						// Get current plane perpendicular (parallel to plane, points in the same direction on xy axis as current plane; when current plane normal is [0 0 1], slide_direction is [0 0 0]) --mxd.
-						cur_slide_dir[0] = -(planes[cur_plane][2] * planes[cur_plane][0]);
-						cur_slide_dir[1] = -(planes[cur_plane][1] * planes[cur_plane][2]);
-						cur_slide_dir[2] = planes[cur_plane][0] * planes[cur_plane][0] + planes[cur_plane][1] * planes[cur_plane][1];
-
-						VectorNormalize(cur_slide_dir);
-					}
-					else
-					{
-						VectorCopy(vec3_down, cur_slide_dir);
-					}
-				}
-
-				// If current slide direction is opposite to current plane normal, move us away from this plane.
-				if (DotProduct(cur_slide_dir, planes[cur_plane]) < -FLOAT_ZERO_EPSILON)
-				{
-					VectorMA(pml.origin, 0.5f, planes[cur_plane], pml.origin);
-					prev_plane = cur_plane;
-				}
-
-				// Check if slide velocity is opposite to any of clip planes. 
-				int c;
-				for (c = 0; c < numplanes; c++)
-					if (c != cur_plane && DotProduct(cur_slide_vel, planes[c]) <= 0.0f)
-						break; // Not ok.
-
-				// Stop checking clip planes when slide velocity is adjacent to all of them (e.g. current move won't move us into any of them). 
-				if (c == numplanes)
-					break;
-			}
-
-			// Go along the crease.
-			if (numplanes != 2)
-			{
-				if (cur_plane == numplanes)
-				{
-					VectorClear(pml.velocity);
-					return;
-				}
-
-				VectorCopy(cur_slide_vel, pml.velocity);
-			}
-			else
-			{
-				vec3_t move_dir;
-				CrossProduct(planes[0], planes[1], move_dir);
-
-				if (DotProduct(move_dir, pml.velocity) < 0.0f)
-					VectorInverse(move_dir);
-
-				move_dir[2] += 0.1f;
-				VectorNormalize(move_dir);
-
-				VectorAdd(planes[0], planes[1], plane_normal);
-				VectorNormalize(plane_normal);
-
-				if (pm->groundentity != NULL && move_dir[2] > MIN_STEP_NORMAL)
-				{
-					trace.fraction = 0.0f;
-					break;
-				}
-
-				float d = DotProduct(move_dir, pml.velocity);
-				d = max(0.0f, d);
-
-				VectorScale(move_dir, d, pml.velocity);
-			}
-		}
-		else
-		{
-			if (prev_plane == -1)
-			{
-				vec3_t mins = VEC3_INIT(pm->mins);
-				vec3_t maxs = VEC3_INIT(pm->maxs);
-
-				float offset = 1.0f;
-				while (maxs[0] - offset >= mins[0] + offset)
-				{
-					VectorInc(mins);
-					VectorDec(maxs);
-
-					pm->trace(pml.origin, mins, maxs, pml.origin, &trace);
-
-					if (!trace.startsolid)
-					{
-						VectorCopy(pm->mins, pm->intentMins);
-						VectorCopy(pm->maxs, pm->intentMaxs);
-						VectorCopy(mins, pm->mins);
-						VectorCopy(maxs, pm->maxs);
-
-						goto LAB_NotSolid;
-					}
-
-					offset += 1.0f;
-				}
-
-				VectorClear(pml.velocity);
-				return;
-			}
-
-			for (int i = 0; i < 3; i++)
-				pml.origin[i] -= planes[prev_plane][i] * 0.5f;
-		}
+		// Check & perform current move.
+		if (PM_StepSlideTryMove(&ssm, &trace, bumpcount == NUM_BUMPS - 1))
+			return;
 	}
-
-	if (trace.fraction < 1.0f)
-		VectorClear(pml.velocity);
-
-	CheckCollision((float)pm->cmd.aimangles[YAW] * SHORT_TO_ANGLE * ANGLE_TO_RAD);
 }
 
 static void PM_AddCurrents(vec3_t wishvel)
@@ -746,9 +818,7 @@ static void PM_AirMove(void)
 		// Standing on ground.
 		if (maxspeed == 0.0f && pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
 		{
-			VectorClear(pml.velocity);
-			CheckCollision((float)pm->cmd.aimangles[YAW] * SHORT_TO_ANGLE * ANGLE_TO_RAD);
-
+			PM_StepSlideFinishMove(true); //mxd
 			return;
 		}
 
