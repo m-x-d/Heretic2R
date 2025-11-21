@@ -53,7 +53,7 @@ typedef struct ssm_settings_s //mxd
 	vec3_t primal_velocity;
 	vec3_t plane_normal;
 
-	qboolean is_sliding;
+	qboolean is_sliding; // When true, player is moving along an upwards-facing surface (including horizontal ones with [0 0 1] normal).
 	float slide_vel;
 	vec3_t slide_dir;
 	float inv_slide_vel;
@@ -116,7 +116,7 @@ static qboolean PM_TryStepUp(const float step_height, const float frametime, tra
 {
 	const vec3_t vel = VEC3_INITS(pml.velocity, frametime);
 
-	// Can't step up if we don't move.
+	// Can't step up if we aren't moving.
 	if (vhlen(vel, vec3_origin) < 0.01f)
 		return false;
 
@@ -173,7 +173,7 @@ static void PM_StepSlideFinishMove(const qboolean clear_velocity) //mxd. Split f
 	CheckCollision((float)pm->cmd.aimangles[YAW] * SHORT_TO_ANGLE * ANGLE_TO_RAD);
 }
 
-static qboolean PM_StepSlideSetupSlide(ssm_settings_t* ssm, vec3_t velocity_step, const qboolean add_velocity_step) //mxd. Split from PM_StepSlideMove().
+static qboolean PM_StepSlideSetupMove(ssm_settings_t* ssm, vec3_t velocity_step, const qboolean add_velocity_step) //mxd. Split from PM_StepSlideMove().
 {
 	ssm->slide_vel = pml.groundplane.normal[2] * pml.max_velocity;
 
@@ -238,7 +238,7 @@ static qboolean PM_StepSlideSetupSlide(ssm_settings_t* ssm, vec3_t velocity_step
 	return true;
 }
 
-static qboolean PM_StepSlideCheckSlope(ssm_settings_t* ssm, vec3_t velocity_step, const qboolean first_bump) //mxd. Split from PM_StepSlideMove().
+static qboolean PM_StepSlideCheckMove(ssm_settings_t* ssm, vec3_t velocity_step, const qboolean first_bump) //mxd. Split from PM_StepSlideMove().
 {
 	// Get plane_normal perpendicular (parallel to plane, points in the same direction on xy axis as plane_normal; when plane_normal is [0 0 1], slide_direction is [0 0 0]) --mxd.
 	ssm->slide_dir[0] = ssm->plane_normal[0] * ssm->plane_normal[2];
@@ -248,6 +248,8 @@ static qboolean PM_StepSlideCheckSlope(ssm_settings_t* ssm, vec3_t velocity_step
 
 	VectorScale(pml.velocity, ssm->time_step, velocity_step);
 
+	// Slide along groundplane (including horizontal [0 0 1] planes too!) --mxd.
+	// When groundplane.normal[2] == 0, either normal is empty, or normal[2] was explicitly set to 0 in PM_StepSlideMove() or PM_AddClipPlane() --mxd.
 	if (pml.groundplane.normal[2] != 0.0f)
 	{
 		if (Vec3IsZero(pml.velocity))
@@ -262,7 +264,7 @@ static qboolean PM_StepSlideCheckSlope(ssm_settings_t* ssm, vec3_t velocity_step
 			}
 
 			ssm->is_sliding = true;
-			return PM_StepSlideSetupSlide(ssm, velocity_step, false);
+			return PM_StepSlideSetupMove(ssm, velocity_step, false);
 		}
 
 		vec3_t velocity_dir;
@@ -271,7 +273,7 @@ static qboolean PM_StepSlideCheckSlope(ssm_settings_t* ssm, vec3_t velocity_step
 		if (fabsf(DotProduct(velocity_dir, ssm->plane_normal)) <= 0.05f)
 		{
 			ssm->is_sliding = true;
-			return PM_StepSlideSetupSlide(ssm, velocity_step, true);
+			return PM_StepSlideSetupMove(ssm, velocity_step, true);
 		}
 	}
 
@@ -586,7 +588,7 @@ static void PM_StepSlideMove(void)
 		vec3_t velocity_step;
 		ssm.is_sliding = false;
 
-		if (!PM_StepSlideCheckSlope(&ssm, velocity_step, bumpcount == 0))
+		if (!PM_StepSlideCheckMove(&ssm, velocity_step, bumpcount == 0))
 			return;
 
 		// Trace current move.
@@ -1088,6 +1090,7 @@ static void PM_CatagorizePosition(void)
 		pm->s.pm_flags &= ~PMF_ON_GROUND;
 	}
 
+	// Save entity for contact.
 	if (pm->numtouch < MAXTOUCH && trace.ent != NULL)
 	{
 		pm->touchents[pm->numtouch] = trace.ent;
@@ -1289,9 +1292,9 @@ static void PM_UpdateWaterLevel(void) // H2. Part of PM_CatagorizePosition() log
 void Pmove(pmove_t* pmove, const qboolean server)
 {
 	pm = pmove;
-	pm->s.c_flags &= ~(PC_COLLISION | PC_SLIDING); // H2
 
 	// Clear results.
+	pm->s.c_flags &= ~(PC_COLLISION | PC_SLIDING); // H2
 	pm->numtouch = 0;
 	VectorClear(pm->viewangles);
 
