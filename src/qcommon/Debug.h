@@ -38,7 +38,7 @@ Q2DLL_DECLSPEC extern paletteRGBA_t dc_orange;
 Q2DLL_DECLSPEC extern paletteRGBA_t dc_cyan;
 Q2DLL_DECLSPEC extern paletteRGBA_t dc_purple;
 
-#define pb(v)	((v) ? "TURE " : "FALSE") // Print bool.
+#define pb(v)	((v) ? "TRUE " : "FALSE") // Print bool.
 Q2DLL_DECLSPEC extern char* pv(const vec3_t v); // vtos() from g_utils.c, basically...
 Q2DLL_DECLSPEC extern char* psv(const short* v);
 
