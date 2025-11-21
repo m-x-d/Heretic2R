@@ -380,13 +380,13 @@ static void HandleCollision(edict_t* self, trace_t* trace, const vec3_t move, co
 	if (forceful)
 		HandleForcefulCollision(self, other, move, forceful);
 
-	if ((flags & CH_ISBLOCKED) && self->isBlocked)
+	if ((flags & CH_ISBLOCKED) && self->isBlocked != NULL)
 		self->isBlocked(self, trace);
 
-	if ((flags & CH_BOUNCED) && self->bounced)
+	if ((flags & CH_BOUNCED) && self->bounced != NULL)
 		self->bounced(self, trace);
 
-	if ((flags & CH_ISBLOCKING) && other->isBlocking)
+	if ((flags & CH_ISBLOCKING) && other->isBlocking != NULL)
 	{
 		trace_t temp = *trace;
 
