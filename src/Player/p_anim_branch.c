@@ -342,6 +342,10 @@ int BranchLwrStanding(playerinfo_t* info)
 		return ASEQ_JUMPSTD_GO;
 	}
 
+	//mxd. Check for slide (allow transitioning into ASEQ_JUMP_NNN or ASEQ_FALL, but nothing else).
+	if (info->lowerseq == ASEQ_SLIDE_FORWARD || info->lowerseq == ASEQ_SLIDE_BACKWARD)
+		return info->lowerseq;
+
 	// Check for a crouch.
 	if (info->seqcmd[ACMDL_CROUCH])
 	{
