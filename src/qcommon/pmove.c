@@ -525,28 +525,30 @@ static qboolean PM_StepSlideTryMove(ssm_settings_t* ssm, trace_t* trace, const q
 	}
 	else
 	{
-		vec3_t move_dir;
-		CrossProduct(clip_planes[0], clip_planes[1], move_dir);
+		vec3_t move_vel;
+		CrossProduct(clip_planes[0], clip_planes[1], move_vel);
 
-		if (DotProduct(move_dir, pml.velocity) < 0.0f)
-			VectorInverse(move_dir);
+		if (DotProduct(move_vel, pml.velocity) < 0.0f)
+			VectorInverse(move_vel);
 
-		move_dir[2] += 0.1f;
-		VectorNormalize(move_dir);
+		move_vel[2] += 0.1f;
+		VectorNormalize(move_vel);
 
 		VectorAdd(clip_planes[0], clip_planes[1], ssm->plane_normal);
 		VectorNormalize(ssm->plane_normal);
 
-		if (pm->groundentity != NULL && move_dir[2] > MIN_STEP_NORMAL)
+		if (pm->groundentity != NULL && move_vel[2] > MIN_STEP_NORMAL)
 		{
 			PM_StepSlideFinishMove(true);
 			return true;
 		}
 
-		float d = DotProduct(move_dir, pml.velocity);
-		d = max(0.0f, d);
+		const float d = DotProduct(move_vel, pml.velocity);
 
-		VectorScale(move_dir, d, pml.velocity);
+		if (d > 0.0f)
+			VectorScale(move_vel, d, pml.velocity);
+		else
+			VectorClear(pml.velocity);
 	}
 
 	if (last_bump)
