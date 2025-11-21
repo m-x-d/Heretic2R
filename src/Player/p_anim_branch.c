@@ -487,9 +487,9 @@ int BranchLwrStanding(playerinfo_t* info)
 	if (info->isclient && ((info->lowerseq >= ASEQ_LSTAIR4 && info->lowerseq <= ASEQ_RSTAIR16) || info->lowerseq == ASEQ_STAND))
 		return info->lowerseq;
 
-	const int checksloped = CheckSlopedStand(info);
-	if (checksloped != ASEQ_NONE)
-		return checksloped;
+	const int sloped_seq = CheckSlopedStand(info);
+	if (sloped_seq != ASEQ_NONE)
+		return sloped_seq;
 
 	info->loweridle = true;
 
@@ -563,9 +563,9 @@ int BranchLwrStandingRun(playerinfo_t* info)
 	if (info->seqcmd[ACMDL_ROTATE_R])
 		return ((info->lowerseq < ASEQ_PIVOTR_GO || info->lowerseq > ASEQ_PIVOTR_END) ? ASEQ_PIVOTR_GO : ASEQ_NONE);
 
-	const int checksloped = CheckSlopedStand(info);
-	if (checksloped != ASEQ_NONE)
-		return checksloped;
+	const int sloped_seq = CheckSlopedStand(info);
+	if (sloped_seq != ASEQ_NONE)
+		return sloped_seq;
 
 	info->loweridle = true;
 
