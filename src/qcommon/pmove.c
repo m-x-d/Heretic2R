@@ -132,7 +132,8 @@ static qboolean PM_TryStepUp(const float step_height, const float frametime, tra
 		return false;
 
 	// Check headroom.
-	end[2] = pml.origin[2] + step_height + max(0.0f, vel[2]);
+	VectorCopy(pml.origin, end);
+	end[2] += step_height + max(0.0f, vel[2]);
 
 	pm->trace(start, pm->mins, pm->maxs, end, &trace);
 
