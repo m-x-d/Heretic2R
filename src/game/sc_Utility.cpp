@@ -192,7 +192,7 @@ void script_signaler(edict_t* which, const SignalT signal_type)
 			(*script)->CheckSignalers(which, signal_type);
 }
 
-void animate_signaler(edict_t* which)
+extern "C" void animate_signaler(edict_t* which)
 {
 	script_signaler(which, SIGNAL_ANIMATE);
 }

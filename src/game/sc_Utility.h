@@ -39,7 +39,7 @@ extern void ReadEnt(edict_t** to, FILE* f);
 extern void WriteEnt(edict_t** to, FILE* f);
 extern void* RestoreObject(FILE* f, const RestoreList_t* list, void* data);
 extern void script_signaler(edict_t* which, SignalT signal_type);
-extern void animate_signaler(edict_t* which);
+extern "C" void animate_signaler(edict_t* which);
 extern Variable* FindGlobal(const char* name);
 extern bool NewGlobal(Variable* var);
 

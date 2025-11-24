@@ -513,7 +513,7 @@ typedef struct
 	// Cinematic fields.
 	int c_dist;		// Distance left to move.
 	int c_repeat;	// # of times to repeat the anim cycle.
-	void (*c_callback)(struct edict_s* self); // Callback function when action is done. //TODO: doesn't seem to be used.
+	void (*c_callback)(struct edict_s* self); // Callback function when action is done. Used only by script system --mxd.
 	int c_anim_flag;	// Shows if current cinematic anim supports moving, turning, or repeating.
 	qboolean c_mode;	// In cinematic mode or not?
 	edict_t* c_ent;		// Entity passed from a cinematic command.

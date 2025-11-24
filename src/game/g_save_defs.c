@@ -556,7 +556,10 @@ const func_map_t funcs_list[] =
 	{ "PlayerTeleporterTouch",				(byte*)PlayerTeleporterTouch },
 
 	// sc_Main.cpp
-	{"ScriptUse",							(byte*)ScriptUse },
+	{ "ScriptUse",							(byte*)ScriptUse },
+
+	// sc_Utility.cpp
+	{ "animate_signaler",					(byte*)animate_signaler },
 
 	// spl_BlueRing.c:
 	{ "RingThink",							(byte*)RingThink },

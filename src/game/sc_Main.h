@@ -16,4 +16,5 @@
 
 	//mxd. Required by save system...
 	extern void ScriptUse(edict_t* ent, edict_t* other, edict_t* activator);
+	extern void animate_signaler(edict_t* which);
 #endif
