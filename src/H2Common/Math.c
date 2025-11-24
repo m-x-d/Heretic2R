@@ -84,6 +84,12 @@ H2COMMON_API void LerpAngles(const vec3_t angle_a, const float frac, const vec3_
 	out[2] = LerpAngle(angle_a[2], angle_b[2], frac);
 }
 
+//mxd. Mimics MSG_WriteAngle() logic. Expects angle in degrees. //TODO: remove if we increase angles transmission precision.
+H2COMMON_API float SnapAngleToNetworkPrecision(const float a)
+{
+	return (float)((int)(a * 256.0f / 360.0f) & 255) * 360.0f / 256.0f;
+}
+
 H2COMMON_API float Clamp(const float src, const float val_min, const float val_max)
 {
 	return min(max(src, val_min), val_max);

@@ -51,7 +51,7 @@
 #define PRINT_ALERT			2
 
 #ifndef M_PI
-	#define M_PI			3.14159265358979323846f	// Matches value in gcc v2 math.h.
+	#define M_PI			3.14159265358979323846f // Matches value in gcc v2 math.h.
 #endif
 
 #define TIME_EPSILON		0.01f
@@ -75,6 +75,7 @@ H2COMMON_API extern float anglemod(float a);
 H2COMMON_API extern float anglemod_old(float a);
 H2COMMON_API extern float LerpAngle(float a1, float a2, float frac);
 H2COMMON_API extern void LerpAngles(const vec3_t angle_a, float frac, const vec3_t angle_b, vec3_t out); //mxd
+H2COMMON_API extern float SnapAngleToNetworkPrecision(float a); //mxd
 H2COMMON_API extern float LerpFloat(float f1, float f2, float frac); //mxd
 
 typedef enum
