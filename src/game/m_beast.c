@@ -1579,9 +1579,7 @@ void tbeast_snort(edict_t* self)
 	vec3_t right;
 	AngleVectors(self->s.angles, forward, right, NULL);
 
-	vec3_t spot;
-	VectorCopy(self->s.origin, spot);
-	spot[2] += 36.0f;
+	const vec3_t spot = VEC3_INITA(self->s.origin, 0.0f, 0.0f, 36.0f);
 
 	vec3_t spot2;
 	VectorMA(spot, 100.0f, forward, spot2);
@@ -1596,13 +1594,14 @@ void tbeast_snort(edict_t* self)
 
 	gi.CreateEffect(NULL, FX_FLAMETHROWER, CEF_FLAG6 | CEF_FLAG7, spot2, "df", fx_dir, 100.0f);
 
-	Vec3ScaleAssign(-1.0f, right);
+	vec3_t left; //mxd
+	VectorNegate(right, left);
 
-	VectorMA(spot2, 72.0f, right, spot2); // More than we want to get a nice vec.
+	VectorMA(spot2, 72.0f, left, spot2); // More than we want to get a nice vec.
 	VectorSubtract(spot2, spot, fx_dir);
 	VectorNormalize(fx_dir);
 
-	VectorMA(spot2, -56.0f, right, spot2); // Back to +16.
+	VectorMA(spot2, -56.0f, left, spot2); // Back to +16.
 
 	gi.CreateEffect(NULL, FX_FLAMETHROWER, CEF_FLAG6 | CEF_FLAG7, spot2, "df", fx_dir, 100.0f);
 }
