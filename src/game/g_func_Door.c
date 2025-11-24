@@ -14,7 +14,9 @@
 
 #pragma region ========================== func_door, func_door_rotating, func_water ==========================
 
-#define DOOR_MOVE_LOOP	(-2) //mxd
+#define SF_DOOR_ROTATING_X_AXIS		64
+#define SF_DOOR_ROTATING_Y_AXIS		128
+#define DOOR_MOVE_LOOP				(-2) //mxd
 
 static void FuncDoorUseAreaportals(const edict_t* self, const qboolean open) //mxd. Named 'door_use_areaportals' in original logic.
 {
@@ -451,10 +453,10 @@ void SP_func_door(edict_t* self)
 	Vec3ScaleAssign(0.5f, self->s.bmodel_origin);
 	VectorAdd(self->mins, self->s.bmodel_origin, self->s.bmodel_origin);
 
-	if (self->spawnflags & 16)
+	if (self->spawnflags & SF_DOOR_ANIMATED)
 		self->s.effects |= EF_ANIM_ALL;
 
-	if (self->spawnflags & 64)
+	if (self->spawnflags & SF_DOOR_ANIMATED_FAST)
 		self->s.effects |= EF_ANIM_ALLFAST;
 
 	// To simplify logic elsewhere, make non-teamed doors into a team of one.
@@ -520,9 +522,9 @@ void SP_func_door_rotating(edict_t* ent)
 	// Set the axis of rotation.
 	VectorClear(ent->movedir);
 
-	if (ent->spawnflags & SF_DOOR_X_AXIS)
+	if (ent->spawnflags & SF_DOOR_ROTATING_X_AXIS)
 		ent->movedir[2] = 1.0f;
-	else if (ent->spawnflags & SF_DOOR_Y_AXIS)
+	else if (ent->spawnflags & SF_DOOR_ROTATING_Y_AXIS)
 		ent->movedir[0] = 1.0f;
 	else // Z_AXIS
 		ent->movedir[1] = 1.0f;
@@ -602,15 +604,15 @@ void SP_func_door_rotating(edict_t* ent)
 	Vec3ScaleAssign(0.5f, ent->s.bmodel_origin);
 	VectorAdd(ent->mins, ent->s.bmodel_origin, ent->s.bmodel_origin);
 
-	if (ent->spawnflags & 16)
+	if (ent->spawnflags & SF_DOOR_ANIMATED)
 		ent->s.effects |= EF_ANIM_ALL;
 
-	ent->nextthink = level.time + FRAMETIME;
-
-	if (ent->health || ent->targetname)
+	if (ent->health > 0 || ent->targetname != NULL)
 		ent->think = FuncDoorCalcMoveSpeedThink;
 	else
 		ent->think = FuncDoorSpawnDoorTriggerThink;
+
+	ent->nextthink = level.time + FRAMETIME;
 }
 
 // QUAKED func_water (0 .5 .8) ? START_OPEN

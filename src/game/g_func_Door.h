@@ -9,14 +9,14 @@
 #include "g_Edict.h"
 
 //mxd. Here, because SF_DOOR_CRUSHER is used by FuncPlatBlocked()...
-#define SF_DOOR_START_OPEN	1
-#define SF_DOOR_REVERSE		2
-#define SF_DOOR_CRUSHER		4
-#define SF_DOOR_NOMONSTER	8
-#define SF_DOOR_TOGGLE		32
-#define SF_DOOR_X_AXIS		64
-#define SF_DOOR_Y_AXIS		128
-#define SF_DOOR_SWINGAWAY	8192
+#define SF_DOOR_START_OPEN		1
+#define SF_DOOR_REVERSE			2
+#define SF_DOOR_CRUSHER			4
+#define SF_DOOR_NOMONSTER		8
+#define SF_DOOR_ANIMATED		16
+#define SF_DOOR_TOGGLE			32
+#define SF_DOOR_ANIMATED_FAST	64 //mxd
+#define SF_DOOR_SWINGAWAY		8192
 
 extern void SP_func_door(edict_t* self);
 extern void SP_func_door_rotating(edict_t* ent);
