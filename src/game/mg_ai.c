@@ -728,16 +728,13 @@ static qboolean MG_AssassinCheckJump(edict_t* self) //mxd. Named 'MG_ExtraCheckJ
 			return false;
 
 		// Setup the trace.
-		vec3_t source;
-		VectorCopy(self->s.origin, source);
+		vec3_t source = VEC3_INIT(self->s.origin);
 
 		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
 		VectorMA(source, 128.0f, forward, source);
 
-		vec3_t maxs;
-		VectorCopy(self->maxs, maxs);
-		maxs[2] += 16.0f;
+		const vec3_t maxs = VEC3_INITA(self->maxs, 0.0f, 0.0f, 16.0f);
 
 		trace_t trace;
 		gi.trace(self->s.origin, self->mins, maxs, source, self, MASK_MONSTERSOLID, &trace);
@@ -746,9 +743,7 @@ static qboolean MG_AssassinCheckJump(edict_t* self) //mxd. Named 'MG_ExtraCheckJ
 			return true; //TODO: MGAI_DEBUG: "checkdown: not clear infront" -- should return false?
 
 		// Clear ahead and above.
-		vec3_t source_bottom;
-		VectorCopy(source, source_bottom);
-		source_bottom[2] -= 1024.0f;
+		const vec3_t source_bottom = VEC3_INITA(source, 0.0f, 0.0f, -1024.0f);
 
 		// Trace down.
 		gi.trace(source, self->mins, self->maxs, source_bottom, self, MASK_ALL, &trace);
@@ -759,9 +754,10 @@ static qboolean MG_AssassinCheckJump(edict_t* self) //mxd. Named 'MG_ExtraCheckJ
 		if (trace.fraction == 1.0f || (trace.contents != CONTENTS_SOLID && trace.ent != self->enemy)) // Ground too far down...
 			return false;
 
-		VectorSubtract(trace.endpos, self->s.origin, source_bottom);
-		VectorNormalize(source_bottom);
-		self->ideal_yaw = VectorYaw(source_bottom);
+		vec3_t dst_dir;
+		VectorSubtract(trace.endpos, self->s.origin, dst_dir);
+		VectorNormalize(dst_dir);
+		self->ideal_yaw = VectorYaw(dst_dir);
 
 		VectorMA(self->velocity, 300.0f, forward, self->velocity);
 		self->velocity[2] += 150.0f;
@@ -771,8 +767,7 @@ static qboolean MG_AssassinCheckJump(edict_t* self) //mxd. Named 'MG_ExtraCheckJ
 	}
 	else // Jumping over something.
 	{
-		vec3_t save_org;
-		VectorCopy(self->s.origin, save_org);
+		const vec3_t save_org = VEC3_INIT(self->s.origin);
 		const qboolean can_move = M_walkmove(self, self->s.angles[YAW], 64.0f);
 		VectorCopy(save_org, self->s.origin);
 
@@ -783,18 +778,13 @@ static qboolean MG_AssassinCheckJump(edict_t* self) //mxd. Named 'MG_ExtraCheckJ
 		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
 
-		vec3_t source;
-		VectorCopy(self->s.origin, source);
+		vec3_t end_pos;
+		VectorMA(self->s.origin, 128.0f, forward, end_pos);
 
-		vec3_t source2;
-		VectorMA(source, 128.0f, forward, source2);
-
-		vec3_t mins;
-		VectorCopy(self->mins, mins);
-		mins[2] += 24.0f; // Can clear it.
+		const vec3_t mins = VEC3_INITA(self->mins, 0.0f, 0.0f, 24.0f); // Can clear it.
 
 		trace_t trace;
-		gi.trace(source, mins, self->maxs, source2, self, MASK_SOLID, &trace);
+		gi.trace(self->s.origin, mins, self->maxs, end_pos, self, MASK_SOLID, &trace);
 
 		if ((!trace.allsolid && !trace.startsolid && trace.fraction == 1.0f) || trace.ent == self->enemy)
 		{
@@ -809,19 +799,15 @@ static qboolean MG_AssassinCheckJump(edict_t* self) //mxd. Named 'MG_ExtraCheckJ
 		{
 			const float height_diff = (targ_org[2] + targ_mins[2]) - (self->s.origin[2] + self->mins[2]) + 32.0f;
 
-			vec3_t pos_top;
-			VectorCopy(self->s.origin, pos_top);
-			pos_top[2] += height_diff;
-
+			const vec3_t pos_top = VEC3_INITA(self->s.origin, 0.0f, 0.0f, height_diff);
 			gi.trace(self->s.origin, self->mins, self->maxs, pos_top, self, MASK_MONSTERSOLID, &trace);
 
 			if (trace.fraction == 1.0f)
 			{
 				// Clear above.
-				vec3_t pos_fwd;
-				VectorCopy(pos_top, pos_fwd);
-
 				AngleVectors(self->s.angles, forward, NULL, NULL);
+
+				vec3_t pos_fwd;
 				VectorMA(pos_top, 64.0f, forward, pos_fwd);
 				pos_fwd[2] -= 24.0f;
 
@@ -2062,7 +2048,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 		if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
 		{
 			// Try other way.
-			VectorScale(new_forward, -1.0f, new_forward);
+			VectorInverse(new_forward);
 			self->best_move_yaw = VectorYaw(new_forward);
 			self->s.angles[YAW] = save_yaw; // Restore yaw.
 
