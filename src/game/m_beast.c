@@ -111,11 +111,8 @@ static int sounds[NUM_SOUNDS];
 
 qboolean TBeastCheckBottom(edict_t* self)
 {
-	vec3_t end;
-	VectorCopy(self->s.origin, end);
-	end[2] -= 1.0f;
-
 	trace_t trace;
+	const vec3_t end = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -1.0f);
 	gi.trace(self->s.origin, self->mins, self->maxs, end, self, MASK_ALL, &trace);
 
 	//mxd. Skip non-functional stomping damage logic.
@@ -172,12 +169,8 @@ qboolean TBeastCheckJump(edict_t* self)
 	if (self->monsterinfo.jump_time > level.time)
 		return false;
 
-	vec3_t start;
-	VectorCopy(self->s.origin, start);
-
-	vec3_t end;
-	VectorCopy(start, end);
-	end[2] += self->size[2]; // Try a jump of 186.
+	const vec3_t start = VEC3_INIT(self->s.origin);
+	vec3_t end = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->size[2]); // Try a jump of 186.
 
 	if (!skip_low)
 	{
@@ -189,8 +182,7 @@ qboolean TBeastCheckJump(edict_t* self)
 			vec3_t forward;
 			AngleVectors(self->s.angles, forward, NULL, NULL);
 
-			vec3_t start2;
-			VectorCopy(end, start2);
+			const vec3_t start2 = VEC3_INIT(end);
 
 			vec3_t end2;
 			VectorMA(end, 64.0f, forward, end2);
@@ -221,8 +213,7 @@ qboolean TBeastCheckJump(edict_t* self)
 		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
 
-		vec3_t start2;
-		VectorCopy(end, start2);
+		const vec3_t start2 = VEC3_INIT(end);
 
 		vec3_t end2;
 		VectorMA(end, 64.0f, forward, end2);
