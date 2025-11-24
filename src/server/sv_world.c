@@ -194,7 +194,7 @@ void SV_LinkEdict(edict_t* ent)
 	}
 
 	// Set the abs box.
-	if (ent->solid == SOLID_BSP && (ent->s.angles[0] != 0.0f || ent->s.angles[1] != 0.0f || ent->s.angles[2] != 0.0f))
+	if (ent->solid == SOLID_BSP && Vec3NotZero(ent->s.angles))
 	{
 		// Expand for rotation.
 		float max = 0.0f;
