@@ -21,43 +21,46 @@
 #define SPEC_DELTA_ANGLES	(-4)
 #define SPEC_P_ORIGIN		(-5)
 
-static field_t script_fields[] =
+namespace
 {
-	{ "x",				SPEC_X,							F_FLOAT,	FFL_NONE },
-	{ "y",				SPEC_Y,							F_FLOAT,	FFL_NONE },
-	{ "z",				SPEC_Z,							F_FLOAT,	FFL_NONE },
-	{ "origin",			FOFS(s.origin),					F_VECTOR,	FFL_RELINK }, //mxd. Needs re-linking...
-	{ "movetype",		FOFS(movetype),					F_INT,		FFL_NONE },
-	{ "start_origin",	FOFS(moveinfo.start_origin),	F_VECTOR,	FFL_NONE },
-	{ "distance",		FOFS(moveinfo.distance),		F_FLOAT,	FFL_NONE },
-	{ "owner",			FOFS(owner),					F_EDICT,	FFL_NONE },
-	{ "wait",			FOFS(wait),						F_FLOAT,	FFL_NONE },
-	{ "velocity",		FOFS(velocity),					F_VECTOR,	FFL_NONE },
-	{ "angle_velocity",	FOFS(avelocity),				F_VECTOR,	FFL_NONE },
-	{ "team_chain",		FOFS(teamchain),				F_EDICT,	FFL_NONE },
-	{ "yaw_speed",		FOFS(yaw_speed),				F_FLOAT,	FFL_NONE },
-	{ "modelindex",		FOFS(s.modelindex),				F_INT,		FFL_NONE },
-	{ "count",			FOFS(count),					F_INT,		FFL_NONE },
-	{ "solid",			FOFS(solid),					F_INT,		FFL_RELINK }, //mxd. Needs re-linking...
-	{ "angles",			FOFS(s.angles),					F_VECTOR,	FFL_NONE },
-	{ "start_angles",	FOFS(moveinfo.start_angles),	F_VECTOR,	FFL_NONE },
-	{ "state",			FOFS(moveinfo.state),			F_INT,		FFL_NONE },
-	{ "c_mode",			FOFS(monsterinfo.c_mode),		F_INT,		FFL_NONE },
-	{ "skinnum",		FOFS(s.skinnum),				F_INT,		FFL_NONE },
-	{ "ideal_yaw",		FOFS(ideal_yaw),				F_FLOAT,	FFL_NONE },
-	{ "delta_angles",	SPEC_DELTA_ANGLES,				F_VECTOR,	FFL_NONE },
-	{ "p_origin",		SPEC_P_ORIGIN,					F_VECTOR,	FFL_NONE },
-	{ "takedamage",		FOFS(takedamage),				F_INT,		FFL_NONE },
+	field_t script_fields[] =
+	{
+		{ "x",				SPEC_X,							F_FLOAT,	FFL_NONE,	{ nullptr } },
+		{ "y",				SPEC_Y,							F_FLOAT,	FFL_NONE,	{ nullptr } },
+		{ "z",				SPEC_Z,							F_FLOAT,	FFL_NONE,	{ nullptr } },
+		{ "origin",			FOFS(s.origin),					F_VECTOR,	FFL_RELINK,	{ nullptr } }, //mxd. Needs re-linking...
+		{ "movetype",		FOFS(movetype),					F_INT,		FFL_NONE,	{ nullptr } },
+		{ "start_origin",	FOFS(moveinfo.start_origin),	F_VECTOR,	FFL_NONE,	{ nullptr } },
+		{ "distance",		FOFS(moveinfo.distance),		F_FLOAT,	FFL_NONE,	{ nullptr } },
+		{ "owner",			FOFS(owner),					F_EDICT,	FFL_NONE,	{ nullptr } },
+		{ "wait",			FOFS(wait),						F_FLOAT,	FFL_NONE,	{ nullptr } },
+		{ "velocity",		FOFS(velocity),					F_VECTOR,	FFL_NONE,	{ nullptr } },
+		{ "angle_velocity",	FOFS(avelocity),				F_VECTOR,	FFL_NONE,	{ nullptr } },
+		{ "team_chain",		FOFS(teamchain),				F_EDICT,	FFL_NONE,	{ nullptr } },
+		{ "yaw_speed",		FOFS(yaw_speed),				F_FLOAT,	FFL_NONE,	{ nullptr } },
+		{ "modelindex",		FOFS(s.modelindex),				F_INT,		FFL_NONE,	{ nullptr } },
+		{ "count",			FOFS(count),					F_INT,		FFL_NONE,	{ nullptr } },
+		{ "solid",			FOFS(solid),					F_INT,		FFL_RELINK,	{ nullptr } }, //mxd. Needs re-linking...
+		{ "angles",			FOFS(s.angles),					F_VECTOR,	FFL_NONE,	{ nullptr } },
+		{ "start_angles",	FOFS(moveinfo.start_angles),	F_VECTOR,	FFL_NONE,	{ nullptr } },
+		{ "state",			FOFS(moveinfo.state),			F_INT,		FFL_NONE,	{ nullptr } },
+		{ "c_mode",			FOFS(monsterinfo.c_mode),		F_INT,		FFL_NONE,	{ nullptr } },
+		{ "skinnum",		FOFS(s.skinnum),				F_INT,		FFL_NONE,	{ nullptr } },
+		{ "ideal_yaw",		FOFS(ideal_yaw),				F_FLOAT,	FFL_NONE,	{ nullptr } },
+		{ "delta_angles",	SPEC_DELTA_ANGLES,				F_VECTOR,	FFL_NONE,	{ nullptr } },
+		{ "p_origin",		SPEC_P_ORIGIN,					F_VECTOR,	FFL_NONE,	{ nullptr } },
+		{ "takedamage",		FOFS(takedamage),				F_INT,		FFL_NONE,	{ nullptr } },
 
-	{ nullptr, 0, F_INT, FFL_NONE }
-};
+		{ nullptr, 0, F_INT, FFL_NONE, { nullptr } }
+	};
+}
 
 FieldDef::FieldDef(CScript* script)
 {
 	strcpy_s(name, sizeof(name), script->ReadString()); //mxd. strcpy -> strcpy_s.
 	type = static_cast<VariableType>(script->ReadByte());
 
-	for (const field_t* field = script_fields; field->name != nullptr; field++)
+	for (const field_t* field = &script_fields[0]; field->name != nullptr; field++)
 	{
 		if (strcmp(name, field->name) == 0)
 		{
@@ -81,7 +84,7 @@ FieldDef::FieldDef(FILE* f, CScript* script)
 	if (script != nullptr && index != -1)
 		script->SetFieldIndex(index, this);
 
-	for (const field_t* field = script_fields; field->name != nullptr; field++)
+	for (const field_t* field = &script_fields[0]; field->name != nullptr; field++)
 	{
 		if (strcmp(name, field->name) == 0)
 		{
