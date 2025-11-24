@@ -355,7 +355,7 @@ void SP_func_train(edict_t* self)
 
 	VectorSubtract(self->maxs, self->mins, self->s.bmodel_origin);
 	Vec3ScaleAssign(0.5f, self->s.bmodel_origin);
-	VectorAdd(self->mins, self->s.bmodel_origin, self->s.bmodel_origin);
+	Vec3AddAssign(self->mins, self->s.bmodel_origin);
 
 	gi.linkentity(self);
 
