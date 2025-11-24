@@ -343,15 +343,6 @@ static qboolean PM_AddClipPlane(ssm_settings_t* ssm, const trace_t* trace) //mxd
 
 static qboolean PM_StepSlideTryMove(ssm_settings_t* ssm, trace_t* trace, const qboolean last_bump) //mxd. Split from PM_StepSlideMove().
 {
-	// We are already stuck...
-	if (trace->allsolid)
-	{
-		VectorClear(pml.velocity);
-		pml.origin[2] += 20.0f;
-
-		return true;
-	}
-
 	// Suggested move will get us stuck...
 	if (trace->startsolid)
 	{
