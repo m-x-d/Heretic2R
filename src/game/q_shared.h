@@ -75,8 +75,15 @@ H2COMMON_API extern float anglemod(float a);
 H2COMMON_API extern float anglemod_old(float a);
 H2COMMON_API extern float LerpAngle(float a1, float a2, float frac);
 H2COMMON_API extern void LerpAngles(const vec3_t angle_a, float frac, const vec3_t angle_b, vec3_t out); //mxd
-H2COMMON_API extern float SnapAngleToNetworkPrecision(float a); //mxd
 H2COMMON_API extern float LerpFloat(float f1, float f2, float frac); //mxd
+
+#ifdef __cplusplus //mxd. Needed, so the Script system code could build...
+extern "C" {
+#endif
+	H2COMMON_API extern float SnapAngleToNetworkPrecision(float a); //mxd
+#ifdef __cplusplus
+}
+#endif
 
 typedef enum
 {

@@ -1607,6 +1607,10 @@ void CScript::Move(edict_t* ent, const vec3_t dest)
 void CScript::Rotate_Done(edict_t* ent)
 {
 	VectorClear(ent->avelocity);
+
+	//mxd. Sidestep client/server byte angle imprecisions by snapping destination angle to said precision. //TODO: remove if we increase angles transmission precision.
+	for (float& angle : ent->s.angles)
+		angle = SnapAngleToNetworkPrecision(angle);
 }
 
 void CScript::Rotate(edict_t* ent)

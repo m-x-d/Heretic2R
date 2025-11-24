@@ -12,7 +12,7 @@
 #include "Angles.h"
 #include "q_Typedef.h"
 
-#ifdef __cplusplus //mxd. Needed, so code in game/ds.cpp could build...
+#ifdef __cplusplus //mxd. Needed, so the Script system code could build...
 extern "C"
 {
 #endif
@@ -72,7 +72,7 @@ H2COMMON_API extern void VectorRound(vec3_t v);
 H2COMMON_API extern float DotProduct(const vec3_t v1, const vec3_t v2);
 H2COMMON_API extern void VectorDec(vec3_t v);
 H2COMMON_API extern void VectorInc(vec3_t v);
-H2COMMON_API extern void VectorClear (vec3_t v);
+H2COMMON_API extern void VectorClear(vec3_t v);
 H2COMMON_API extern void VectorSet(vec3_t v, float x, float y, float z);
 H2COMMON_API extern void VectorRandomSet(vec3_t v, float rand_val); //mxd
 H2COMMON_API extern void VectorCopy(const vec3_t in, vec3_t out);
