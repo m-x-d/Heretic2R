@@ -515,7 +515,7 @@ static void MiscTeleporterCreateEffect(edict_t* self) //mxd. Added to reduce cod
 	VectorCopy(self->mins, effect->mins);
 	effect->solid = SOLID_NOT;
 	effect->s.effects |= (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
-	self->enemy = effect;
+	self->teleporter_effect = effect;
 
 	gi.linkentity(effect);
 
@@ -532,17 +532,17 @@ static void MiscTeleporterDeactivate(edict_t* self, G_Message_t* msg) //mxd. Nam
 	self->touch = NULL;
 
 	// If there's an effect out there, kill it.
-	if (self->enemy != NULL)
+	if (self->teleporter_effect != NULL)
 	{
-		gi.RemoveEffects(&self->enemy->s, FX_TELEPORT_PAD);
+		gi.RemoveEffects(&self->teleporter_effect->s, FX_TELEPORT_PAD);
 
-		if (self->enemy->PersistantCFX > 0)
+		if (self->teleporter_effect->PersistantCFX > 0)
 		{
-			gi.RemovePersistantEffect(self->enemy->PersistantCFX, REMOVE_TELEPORT_PAD);
-			self->enemy->PersistantCFX = 0;
+			gi.RemovePersistantEffect(self->teleporter_effect->PersistantCFX, REMOVE_TELEPORT_PAD);
+			self->teleporter_effect->PersistantCFX = 0;
 		}
 
-		self->enemy = NULL;
+		self->teleporter_effect = NULL;
 	}
 }
 
@@ -551,7 +551,7 @@ static void MiscTeleporterActivate(edict_t* self, G_Message_t* msg) //mxd. Named
 	self->touch = PlayerTeleporterTouch;
 
 	// If there's no effect already, create a new one.
-	if (self->enemy == NULL)
+	if (self->teleporter_effect == NULL)
 		MiscTeleporterCreateEffect(self); //mxd
 }
 

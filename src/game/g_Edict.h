@@ -283,6 +283,7 @@ struct edict_s
 	{
 		edict_t* enemy;	// Used by monsters, player, and a poly or two.
 		edict_t* rope_user; //mxd. Player attached to this rope.
+		edict_t* teleporter_effect; //mxd
 	};
 
 	edict_t* oldenemy;	// Used by monsters.
