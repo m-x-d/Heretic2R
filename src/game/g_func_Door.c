@@ -143,8 +143,8 @@ void FuncDoorUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named
 	{
 		if (FuncDoorSmartSideCheck(self, activator))
 		{
-			VectorNegate(self->movedir, self->movedir);
-			VectorNegate(self->moveinfo.end_angles, self->moveinfo.end_angles);
+			VectorInverse(self->movedir);
+			VectorInverse(self->moveinfo.end_angles);
 		}
 	}
 
@@ -531,7 +531,7 @@ void SP_func_door_rotating(edict_t* ent)
 
 	// Check for reverse rotation.
 	if (ent->spawnflags & SF_DOOR_REVERSE)
-		VectorNegate(ent->movedir, ent->movedir);
+		VectorInverse(ent->movedir);
 
 	if (st.distance == 0)
 	{
@@ -574,7 +574,7 @@ void SP_func_door_rotating(edict_t* ent)
 		VectorCopy(ent->pos2, ent->s.angles);
 		VectorCopy(ent->pos1, ent->pos2);
 		VectorCopy(ent->s.angles, ent->pos1);
-		VectorNegate(ent->movedir, ent->movedir);
+		VectorInverse(ent->movedir);
 	}
 
 	if (ent->health > 0)

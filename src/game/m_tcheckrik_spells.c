@@ -456,7 +456,7 @@ void SpellCastInsectSpear(edict_t* caster, const vec3_t start_pos, const vec3_t 
 				break;
 
 			case 2:
-				Vec3ScaleAssign(-1.0f, right);
+				VectorInverse(right);
 				VectorAverage(forward, right, forward);
 				break;
 

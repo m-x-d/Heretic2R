@@ -415,7 +415,7 @@ static void HandleForcefulCollision(edict_t* forcer, edict_t* forcee, const vec3
 	if (!hit_world)
 	{
 		PostKnockBack(forcee, dir, knockback, 0);
-		Vec3ScaleAssign(-1.0f, dir);
+		VectorInverse(dir);
 	}
 
 	// Knock back running ent?

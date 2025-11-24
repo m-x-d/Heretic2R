@@ -115,7 +115,7 @@ void HarpyHeadThink(edict_t* self) //mxd. Named 'harpy_head_think' in original l
 
 		vec3_t down;
 		AngleVectors(self->s.angles, NULL, NULL, down);
-		Vec3ScaleAssign(-1.0f, down);
+		VectorInverse(down);
 
 		VectorMA(self->s.origin, self->harpy_head_offset, down, self->s.origin);
 
@@ -144,7 +144,7 @@ void HarpyTakeHead(edict_t* self, edict_t* victim, const int bodypart_node_id, c
 	vec3_t forward;
 	vec3_t down;
 	AngleVectors(head->s.angles, forward, NULL, down);
-	Vec3ScaleAssign(-1.0f, down);
+	VectorInverse(down);
 
 	head->harpy_head_offset = 8.0f;
 	VectorMA(head->s.origin, head->harpy_head_offset, down, head->s.origin);
@@ -210,7 +210,7 @@ static qboolean HarpyCheckDirections(const edict_t* self, const vec3_t goal, con
 
 		// Don't always check same direction first (looks mechanical).
 		if (irand(0, 1) == 1)
-			Vec3ScaleAssign(-1.0f, direction);
+			VectorInverse(direction);
 
 		// Check opposite directions.
 		for (int c = 0; c < 2; c++)
@@ -228,7 +228,7 @@ static qboolean HarpyCheckDirections(const edict_t* self, const vec3_t goal, con
 				return true;
 			}
 
-			Vec3ScaleAssign(-1.0f, direction); //BUGFIX: mxd. Original logic checks self->s.origin position instead of check_dist offset from it when checking second direction.
+			VectorInverse(direction); //BUGFIX: mxd. Original logic checks self->s.origin position instead of check_dist offset from it when checking second direction.
 		}
 	}
 
@@ -989,7 +989,7 @@ void harpy_check_dodge(edict_t* self)
 			AngleVectors(self->s.angles, NULL, right, NULL);
 
 			if (irand(0, 1) == 1)
-				Vec3ScaleAssign(-1.0f, right);
+				VectorInverse(right);
 
 			vec3_t goal_pos;
 			VectorMA(self->s.origin, 100.0f, right, goal_pos);
@@ -998,7 +998,7 @@ void harpy_check_dodge(edict_t* self)
 			gi.trace(self->s.origin, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
 			if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
-				Vec3ScaleAssign(-1.0f, right);
+				VectorInverse(right);
 
 			VectorCopy(right, dodge_dir);
 
@@ -1096,7 +1096,7 @@ void harpy_hover_move(edict_t* self) //mxd. Named 'move_harpy_hover' in original
 				AngleVectors(self->s.angles, NULL, right, NULL);
 
 				if (irand(0, 1) == 1)
-					Vec3ScaleAssign(-1.0f, right);
+					VectorInverse(right);
 
 				vec3_t goal_pos;
 				VectorMA(self->s.origin, 100.0f, right, goal_pos);
@@ -1104,7 +1104,7 @@ void harpy_hover_move(edict_t* self) //mxd. Named 'move_harpy_hover' in original
 				gi.trace(self->s.origin, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
 				if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
-					Vec3ScaleAssign(-1.0f, right);
+					VectorInverse(right);
 
 				//TODO: should probably check if this dir is blocked as well. Could also try dodging up/down/diagonally.
 				VectorCopy(right, dodge_dir);

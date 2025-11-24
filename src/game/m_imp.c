@@ -158,7 +158,7 @@ static qboolean ImpCheckDirections(const edict_t* self, const vec3_t goal, const
 				return true;
 			}
 
-			Vec3ScaleAssign(-1.0f, direction); //BUGFIX: mxd. Original logic checks self->s.origin position instead of check_dist offset from it when checking second direction.
+			VectorInverse(direction); //BUGFIX: mxd. Original logic checks self->s.origin position instead of check_dist offset from it when checking second direction.
 		}
 	}
 
@@ -589,7 +589,7 @@ void imp_check_dodge(edict_t* self)
 
 			if (trace.fraction < 1.0f) // Bad direction, try another.
 			{
-				Vec3ScaleAssign(-1.0f, dodge_dir);
+				VectorInverse(dodge_dir);
 
 				if (vertical_dodge)
 				{
@@ -708,7 +708,7 @@ void imp_hover_move(edict_t* self) //mxd. Named 'move_imp_hover' in original log
 				AngleVectors(self->s.angles, NULL, right, NULL);
 
 				if (irand(0, 1) == 1)
-					Vec3ScaleAssign(-1.0f, right);
+					VectorInverse(right);
 
 				vec3_t goal_pos;
 				VectorMA(self->s.origin, 100.0f, right, goal_pos);
@@ -716,7 +716,7 @@ void imp_hover_move(edict_t* self) //mxd. Named 'move_imp_hover' in original log
 				gi.trace(self->s.origin, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
 				if (trace.fraction < 1.0f) //mxd. harpy_hover_move() also checks trace.startsolid and trace.allsolid here.
-					Vec3ScaleAssign(-1.0f, right);
+					VectorInverse(right);
 
 				VectorCopy(right, dodge_dir);
 

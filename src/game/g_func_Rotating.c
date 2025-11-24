@@ -108,7 +108,7 @@ void SP_func_rotating(edict_t* ent)
 
 	// Check for reverse rotation.
 	if (ent->spawnflags & SF_REVERSE)
-		VectorNegate(ent->movedir, ent->movedir);
+		VectorInverse(ent->movedir);
 
 	if (ent->speed == 0.0f)
 		ent->speed = 100.0f;

@@ -391,7 +391,7 @@ void ThrowBlood(const vec3_t torigin, const vec3_t tnormal, const qboolean dark,
 
 	if (!trueplane)
 	{
-		Vec3ScaleAssign(-1.0f, normal);
+		VectorInverse(normal);
 
 		if (!GetTruePlane(origin, normal, 16.0f, flrand(0.25f, 0.5f))) //mxd. Add offset_scale randomization (to reduce z-fighting among overlapping blood splats).
 			return;

@@ -1778,13 +1778,13 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 			VectorScale(wall_right, -1.0f, new_forward);
 
 		if (irand(0, 10) < 3) // 30% chance of trying other way first.
-			Vec3ScaleAssign(-1.0f, new_forward);
+			VectorInverse(new_forward);
 
 		self->best_move_yaw = VectorYaw(new_forward);
 
 		if (new_best_yaw && self->best_move_yaw == old_best_yaw)
 		{
-			Vec3ScaleAssign(-1.0f, new_forward);
+			VectorInverse(new_forward);
 			self->best_move_yaw = VectorYaw(new_forward);
 		}
 
@@ -1812,7 +1812,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 		if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
 		{
 			// Try other way.
-			Vec3ScaleAssign(-1.0f, new_forward);
+			VectorInverse(new_forward);
 			self->best_move_yaw = VectorYaw(new_forward);
 			self->s.angles[YAW] = save_yaw; // Restore yaw.
 

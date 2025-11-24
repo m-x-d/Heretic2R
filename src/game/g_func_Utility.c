@@ -156,7 +156,7 @@ void AngleMoveBegin(edict_t* ent) //mxd. Named 'AngleMove_Begin' in original log
 	ent->think = AngleMoveFinal;
 }
 
-void AngleMoveCalc(edict_t* ent, void(*func)(edict_t*)) //mxd. Named 'AngleMove_Calc' in original logic.
+void AngleMoveCalc(edict_t* ent, void (*func)(edict_t*)) //mxd. Named 'AngleMove_Calc' in original logic.
 {
 	VectorClear(ent->avelocity);
 	ent->moveinfo.endfunc = func;
