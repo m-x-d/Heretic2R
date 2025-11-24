@@ -517,8 +517,6 @@ void SP_func_door(edict_t* self)
 //		21) The bam sound.
 void SP_func_door_rotating(edict_t* ent)
 {
-	VectorClear(ent->s.angles);
-
 	// Set the axis of rotation.
 	VectorClear(ent->movedir);
 
@@ -542,9 +540,13 @@ void SP_func_door_rotating(edict_t* ent)
 	gi.setmodel(ent, ent->model);
 	gi.linkentity(ent);
 
-	VectorCopy(ent->s.angles, ent->pos1);
-	VectorMA(ent->s.angles, (float)st.distance, ent->movedir, ent->pos2);
-	ent->moveinfo.distance = (float)st.distance;
+	//mxd. Sidestep client/server byte angle imprecisions by snapping destination angle to said precision. //TODO: remove if we increase angles transmission precision.
+	const float dest_angle = SnapAngleToNetworkPrecision((float)st.distance);
+
+	VectorClear(ent->s.angles);
+	VectorClear(ent->pos1); // Start rotation.
+	VectorScale(ent->movedir, dest_angle, ent->pos2); // End rotation.
+	ent->moveinfo.distance = dest_angle;
 
 	ent->movetype = PHYSICSTYPE_PUSH;
 	ent->solid = SOLID_BSP;
