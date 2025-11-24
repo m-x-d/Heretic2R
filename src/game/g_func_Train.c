@@ -306,7 +306,6 @@ void FuncTrainUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Name
 void SP_func_train(edict_t* self)
 {
 	self->movetype = PHYSICSTYPE_PUSH;
-	self->solid = ((self->spawnflags & SF_TRAIN_NO_CLIP) ? SOLID_NOT : SOLID_BBOX);
 
 	if (self->spawnflags & SF_TRAIN_BLOCK_STOPS)
 		self->dmg = 0;
@@ -315,11 +314,13 @@ void SP_func_train(edict_t* self)
 
 	if (st.file != NULL)
 	{
+		self->solid = ((self->spawnflags & SF_TRAIN_NO_CLIP) ? SOLID_NOT : SOLID_BBOX);
 		self->s.modelindex = (byte)gi.modelindex(st.file);
 		VectorCopy(self->s.angles, self->moveinfo.end_angles);
 	}
 	else
 	{
+		self->solid = ((self->spawnflags & SF_TRAIN_NO_CLIP) ? SOLID_NOT : SOLID_BSP);
 		VectorClear(self->s.angles);
 		gi.setmodel(self, self->model);
 	}
