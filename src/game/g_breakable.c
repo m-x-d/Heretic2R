@@ -37,11 +37,6 @@ void KillBrush(edict_t* target, edict_t* inflictor, edict_t* attacker, const int
 	}
 }
 
-void KillBrushUse(edict_t* target, edict_t* inflictor, edict_t* attacker)
-{
-	G_PostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, 0);
-}
-
 void BBrushStaticsInit(void)
 {
 	classStatics[CID_BBRUSH].msgReceivers[MSG_DEATH] = DefaultObjectDieHandler;
@@ -57,7 +52,7 @@ static qboolean EntitiesTouching(const edict_t* e1, const edict_t* e2)
 }
 
 // Used to link up brushes that have KILLALL set.
-void LinkBreakables(edict_t* self)
+void LinkBreakableBrushesThink(edict_t* self) //mxd. Named 'LinkBreakables' in original logic.
 {
 	self->think = NULL;
 
@@ -99,6 +94,11 @@ void LinkBreakables(edict_t* self)
 	}
 }
 
+void BreakableBrushUse(edict_t* target, edict_t* inflictor, edict_t* attacker) //mxd. Named 'KillBrushUse' in original logic.
+{
+	G_PostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, 0);
+}
+
 // QUAKED breakable_brush (1 .5 0) ? KILLALL NOLINK x x INVULNERABLE INVULNERABLE PUSHABLE NOPLAYERDAMAGE
 // A brush that explodes.
 
@@ -129,7 +129,6 @@ void SP_breakable_brush(edict_t* ent)
 	ent->takedamage = ((ent->spawnflags & (SF_INVULNERABLE | SF_INVULNERABLE2)) ? DAMAGE_NO : DAMAGE_YES); //mxd. Preserve original logic... //TODO: are both of these spawnflags used in vanilla maps?
 	ent->movetype = ((ent->spawnflags & SF_PUSHABLE) ? PHYSICSTYPE_PUSH : PHYSICSTYPE_NONE);
 	ent->solid = SOLID_BSP;
-	ent->use = KillBrushUse;
 
 	gi.setmodel(ent, ent->model);
 	gi.linkentity(ent);
@@ -139,6 +138,7 @@ void SP_breakable_brush(edict_t* ent)
 	VectorSubtract(ent->maxs, ent->mins, space);
 	ent->mass = (int)((space[0] * space[1] * space[2]) / 64.0f);
 
+	ent->use = BreakableBrushUse;
+	ent->think = LinkBreakableBrushesThink;
 	ent->nextthink = level.time + FRAMETIME;
-	ent->think = LinkBreakables;
 }

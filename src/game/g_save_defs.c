@@ -125,8 +125,8 @@ const func_map_t funcs_list[] =
 	{ "LinkBuoyInfo",						(byte*)LinkBuoyInfo },
 
 	// g_breakable.c:
-	{ "KillBrushUse",						(byte*)KillBrushUse },
-	{ "LinkBreakables",						(byte*)LinkBreakables },
+	{ "BreakableBrushUse",					(byte*)BreakableBrushUse },
+	{ "LinkBreakableBrushesThink",			(byte*)LinkBreakableBrushesThink },
 
 	// g_debris.c:
 	{ "BecomeDebris",						(byte*)BecomeDebris },
