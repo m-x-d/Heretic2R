@@ -20,4 +20,4 @@
 
 extern void CleanUpPlayerTeleport(edict_t* self);
 extern void PerformPlayerTeleport(edict_t* self);
-extern void teleporter_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
+extern void PlayerTeleporterTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);

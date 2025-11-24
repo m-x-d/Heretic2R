@@ -548,7 +548,7 @@ static void MiscTeleporterDeactivate(edict_t* self, G_Message_t* msg) //mxd. Nam
 
 static void MiscTeleporterActivate(edict_t* self, G_Message_t* msg) //mxd. Named 'Teleporter_Activate' in original logic.
 {
-	self->touch = teleporter_touch;
+	self->touch = PlayerTeleporterTouch;
 
 	// If there's no effect already, create a new one.
 	if (self->enemy == NULL)
@@ -599,7 +599,7 @@ void SP_misc_teleporter(edict_t* ent)
 	// If we want an effect on spawn, create it.
 	if (!(ent->spawnflags & SF_START_OFF))
 	{
-		ent->touch = teleporter_touch;
+		ent->touch = PlayerTeleporterTouch;
 		MiscTeleporterCreateEffect(ent); //mxd
 	}
 }

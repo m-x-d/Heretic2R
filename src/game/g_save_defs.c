@@ -553,7 +553,7 @@ const func_map_t funcs_list[] =
 	{ "ChickenPlayerThink",					(byte*)ChickenPlayerThink },
 
 	// p_teleport.c
-	{ "teleporter_touch",					(byte*)teleporter_touch },
+	{ "PlayerTeleporterTouch",				(byte*)PlayerTeleporterTouch },
 
 	// sc_Main.cpp
 	{"ScriptUse",							(byte*)ScriptUse },

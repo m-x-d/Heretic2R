@@ -69,7 +69,7 @@ void CleanUpPlayerTeleport(edict_t* self) //mxd. Named 'CleanUpTeleport' in orig
 
 // Setup the teleporter - from the player hitting a teleport pad.
 // We could send the teleport type over the flags instead of as a parameter byte.
-void teleporter_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //TODO: rename to TeleporterTouch?
+void PlayerTeleporterTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'teleporter_touch' in original logic.
 {
 	// If we aren't a player, dead or already teleporting, forget it.
 	if (other->client == NULL || (other->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING)) || (other->dead_state & (DEAD_DYING | DEAD_DEAD)))
