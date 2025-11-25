@@ -414,7 +414,7 @@ static void P_WorldEffects(edict_t* player) //mxd. +player arg.
 	//TODO: move 'Handle lava sizzle damage' block here, abort when in lava?
 
 	// Start a waterwake effect if the current player has been in water and still is in water.
-	if (waterlevel > 0 && (old_waterlevel > 1 && waterlevel < 3) && VectorLength(player->velocity) != 0.0f)
+	if (old_waterlevel > 0 && waterlevel > 0 && waterlevel < 3 && VectorLength(player->velocity) != 0.0f)
 	{
 		// No ripples while in cinematics.
 		if (SV_CINEMATICFREEZE) //TODO: shouldn't this check be at the beginning of the function?
