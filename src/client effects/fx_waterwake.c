@@ -32,7 +32,7 @@ void FXWaterWake(centity_t* owner, int type, const int flags, vec3_t origin)
 	client_entity_t* wake = ClientEntity_new(FX_WATER_WAKE, flags, origin, vec3_up, 5000);
 
 	wake->r.model = &wake_models[0]; // wake_add sprite.
-	wake->r.flags = RF_FIXED | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	wake->r.flags = (RF_FIXED | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	wake->r.scale = 0.3f;
 	wake->d_scale = 1.1f;
 	wake->alpha = 0.7f;
@@ -52,21 +52,21 @@ void FXWaterWake(centity_t* owner, int type, const int flags, vec3_t origin)
 	// Splashies too.
 	vel = min(320.0f, vel);
 
-	int parts;
+	int num_particles;
 	if (R_DETAIL == DETAIL_LOW)
-		parts = 0;
+		num_particles = 0;
 	else if (R_DETAIL == DETAIL_NORMAL)
-		parts = (int)(vel / 64.0f);
+		num_particles = (int)(vel / 64.0f);
 	else // DETAIL_HIGH+
-		parts = (int)(vel / 32.0f); //TODO: separate case for DETAIL_UBERHIGH.
+		num_particles = (int)(vel / 32.0f); //TODO: separate case for DETAIL_UBERHIGH.
 
-	if (parts < 4)
+	if (num_particles < 4)
 		return;
 
-	const vec3_t fwd = { -cosf(yaw), -sinf(yaw), 0.0f };
+	const vec3_t fwd =   { -cosf(yaw), -sinf(yaw), 0.0f };
 	const vec3_t right = { -sinf(yaw),  cosf(yaw), 0.0f };
 
-	for (int i = 0; i < parts; i++)
+	for (int i = 0; i < num_particles; i++)
 	{
 		// Big particle.
 		client_particle_t* bp = ClientParticle_new(PART_32x32_WFALL, color_white, 500);
