@@ -24,7 +24,8 @@ static void CreateFountainSplash(client_entity_t* owner, const float xspread, co
 
 	const paletteRGBA_t color = { .c = 0x40ffffff };
 	const int duration = (R_DETAIL >= DETAIL_NORMAL ? 500 : 350); //mxd
-	client_particle_t* mist = ClientParticle_new(PART_32x32_ALPHA_GLOBE | PFL_LM_COLOR, color, duration);
+	const int extra_flags = (R_DETAIL > DETAIL_HIGH ? PFL_LM_COLOR : 0); //mxd
+	client_particle_t* mist = ClientParticle_new(PART_32x32_ALPHA_GLOBE | extra_flags, color, duration);
 
 	VectorCopy(offset, mist->origin);
 
@@ -97,7 +98,8 @@ static qboolean FountainUpdate(client_entity_t* spawner, centity_t* owner) //mxd
 		const float dist = spawner->SpawnData - origin[2];
 		time = (int)(GetTimeToReachDistance(velocity[2], fabsf(accel), fabsf(dist))); //BUGFIX: mxd. GetTimeToReachDistance() expects positive acceleration and distance...
 
-		drop = ClientParticle_new((int)(PART_32x32_WFALL | PFL_NEARCULL | PFL_LM_COLOR), spawner->color, time);
+		const int extra_flags = (R_DETAIL > DETAIL_HIGH ? PFL_LM_COLOR : 0); //mxd
+		drop = ClientParticle_new((int)(PART_32x32_WFALL | extra_flags | PFL_NEARCULL), spawner->color, time);
 
 		VectorCopy(origin, drop->origin);
 		VectorCopy(velocity, drop->velocity);

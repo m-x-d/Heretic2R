@@ -30,8 +30,12 @@ static void CreateScorchmark(vec3_t origin, vec3_t dir, const int type, const in
 
 		scorchmark->radius = 10.0f;
 		scorchmark->r.model = &scorch_model;
-		scorchmark->r.flags = (RF_FIXED | RF_TRANSLUCENT | RF_LM_COLOR); //mxd. +RF_LM_COLOR.
 		scorchmark->r.scale = 0.6f;
+		scorchmark->r.flags = (RF_FIXED | RF_TRANSLUCENT);
+
+		if (R_DETAIL >= DETAIL_HIGH) //mxd. +RF_LM_COLOR.
+			scorchmark->r.flags |= RF_LM_COLOR;
+
 		scorchmark->Update = KeepSelfAI;
 
 		AddEffect(NULL, scorchmark);
