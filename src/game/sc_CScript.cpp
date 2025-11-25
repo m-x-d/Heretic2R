@@ -4,6 +4,8 @@
 // Copyright 1998 Raven Software
 //
 
+#include <map> //mxd
+#include <string> //mxd
 #include "sc_CScript.h"
 #include "c_ai.h"
 #include "sc_EntityVar.h"
@@ -1095,6 +1097,12 @@ void CScript::HandlePrint()
 
 void CScript::HandlePlaySound()
 {
+	//mxd. Remap non-existing sounds used in H2 scripts... //TODO: un-hardcode?
+	static const std::map<std::string, std::string> snd_remap =
+	{
+		{ "elves/diep.wav", "Monsters/plagueElf/voices/diep.wav" }, // Used in crane.ds
+	};
+
 	const Variable* time_delay_var = nullptr;
 	const Variable* channel_var = nullptr;
 	const Variable* attenuation_var = nullptr;
@@ -1178,7 +1186,14 @@ void CScript::HandlePlaySound()
 	}
 
 	if (!static_cast<int>(sv_jumpcinematic->value) || !static_cast<int>(sv_cinematicfreeze->value))
+	{
+		//mxd. Fix sound?..
+		const auto k = snd_remap.find(sound_name);
+		if (k != snd_remap.end())
+			sound_name = k->second.c_str();
+
 		gi.sound(ent, channel, gi.soundindex(sound_name), volume, attenuation, time_delay);
+	}
 
 	delete sound_name_var;
 	delete time_delay_var;
