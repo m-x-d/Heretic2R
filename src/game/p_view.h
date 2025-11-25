@@ -8,7 +8,7 @@
 
 #include "q_Typedef.h"
 
-extern void ClientEndServerFrame(edict_t* ent);
+extern void ClientEndServerFrame(edict_t* player);
 extern void InitPlayerinfo(const edict_t* ent);
 extern void SetupPlayerinfo(edict_t* ent);
 extern void WritePlayerinfo(edict_t* ent);

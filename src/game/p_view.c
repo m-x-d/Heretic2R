@@ -17,9 +17,6 @@
 #include "Vector.h"
 #include "g_local.h" //mxd
 
-static edict_t* current_player;
-static gclient_t* current_client;
-
 static float bob_move;
 static int bob_cycle; // Odd cycles are right foot going forward.
 
@@ -338,50 +335,47 @@ static void P_DamageFeedback(edict_t* player)
 	client->damage_knockback = 0;
 }
 
-static void P_WorldEffects(void)
+static void P_WorldEffects(edict_t* player) //mxd. +player arg.
 {
-	if (current_player->client->playerinfo.deadflag != DEAD_NO)
+	if (player->client->playerinfo.deadflag != DEAD_NO)
 		return;
 
 	// If we are in no clip, we don't need air.
-	if (current_player->movetype == PHYSICSTYPE_NOCLIP)
+	if (player->movetype == PHYSICSTYPE_NOCLIP)
 	{
-		current_player->air_finished = level.time + HOLD_BREATH_TIME;
+		player->air_finished = level.time + HOLD_BREATH_TIME;
 		return;
 	}
 
-	const int waterlevel = current_player->waterlevel;
-	const int old_waterlevel = current_client->old_waterlevel;
-	current_client->old_waterlevel = waterlevel;
+	const int waterlevel = player->waterlevel;
+	const int old_waterlevel = player->client->old_waterlevel;
+	player->client->old_waterlevel = waterlevel;
 
 	// If the current player just entered a water volume, play a sound and start a water-ripple client effect.
 	if (old_waterlevel == 0 && waterlevel > 0)
 	{
 		// Clear damage_debounce_time, so the pain sound will play immediately.
-		current_player->damage_debounce_time = level.time - 1.0f;
+		player->damage_debounce_time = level.time - 1.0f;
 
-		if (current_player->watertype & CONTENTS_LAVA)
+		if (player->watertype & CONTENTS_LAVA)
 		{
-			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/inlava.wav"), 1.0f, ATTN_NORM, 0.0f);
-			current_player->flags |= FL_INLAVA;
+			gi.sound(player, CHAN_BODY, gi.soundindex("player/inlava.wav"), 1.0f, ATTN_NORM, 0.0f);
+			player->flags |= FL_INLAVA;
 		}
-		else if (current_player->watertype & CONTENTS_SLIME)
+		else if (player->watertype & CONTENTS_SLIME)
 		{
-			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/muckin.wav"), 1.0f, ATTN_NORM, 0.0f);
-			current_player->flags |= FL_INSLIME;
+			gi.sound(player, CHAN_BODY, gi.soundindex("player/muckin.wav"), 1.0f, ATTN_NORM, 0.0f);
+			player->flags |= FL_INSLIME;
 		}
 		else
 		{
-			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/Water Enter.wav"), 1.0f, ATTN_NORM, 0.0f);
+			gi.sound(player, CHAN_BODY, gi.soundindex("player/Water Enter.wav"), 1.0f, ATTN_NORM, 0.0f);
 		}
 
-		current_player->flags |= FL_INWATER;
+		player->flags |= FL_INWATER;
 
-		vec3_t origin;
-		VectorCopy(current_player->s.origin, origin);
-		origin[2] += current_player->client->playerinfo.waterheight;
-
-		VectorCopy(origin, current_player->client->playerinfo.LastWatersplashPos);
+		const vec3_t origin = VEC3_INITA(player->s.origin, 0.0f, 0.0f, player->client->playerinfo.waterheight);
+		VectorCopy(origin, player->client->playerinfo.LastWatersplashPos);
 
 		//TODO: different entry splashes for lava and slime.
 		// Fixme: Need to determine the actual water surface normal - if we have any sloping water??
@@ -392,103 +386,98 @@ static void P_WorldEffects(void)
 		// If the current player just completely exited a water volume, play a sound.
 
 		// FL_INWATER is set whether in lava, slime or water.
-		if (current_player->flags & FL_INLAVA)
+		if (player->flags & FL_INLAVA)
 		{
-			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/inlava.wav"), 1.0f, ATTN_NORM, 0.0f);
-			current_player->flags &= ~FL_INLAVA;
+			gi.sound(player, CHAN_BODY, gi.soundindex("player/inlava.wav"), 1.0f, ATTN_NORM, 0.0f);
+			player->flags &= ~FL_INLAVA;
 		}
-		else if (current_player->flags & FL_INSLIME)
+		else if (player->flags & FL_INSLIME)
 		{
-			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/muckexit.wav"), 1.0f, ATTN_NORM, 0.0f);
-			current_player->flags &= ~FL_INSLIME;
+			gi.sound(player, CHAN_BODY, gi.soundindex("player/muckexit.wav"), 1.0f, ATTN_NORM, 0.0f);
+			player->flags &= ~FL_INSLIME;
 		}
 		else
 		{
-			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/Water Exit.wav"), 1.0f, ATTN_NORM, 0.0f);
+			gi.sound(player, CHAN_BODY, gi.soundindex("player/Water Exit.wav"), 1.0f, ATTN_NORM, 0.0f);
 		}
 
-		current_player->flags &= ~FL_INWATER;
+		player->flags &= ~FL_INWATER;
 
-		vec3_t origin;
-		VectorCopy(current_player->s.origin, origin);
-		origin[2] = current_player->client->playerinfo.LastWatersplashPos[2];
-
-		VectorCopy(origin, current_player->client->playerinfo.LastWatersplashPos);
+		player->client->playerinfo.LastWatersplashPos[0] = player->s.origin[0];
+		player->client->playerinfo.LastWatersplashPos[1] = player->s.origin[1];
 
 		//TODO: different entry splashes for lava and slime.
 		// Fixme: Need to determine the actual water surface normal - if we have any sloping water??
-		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, origin, "bd", 96, vec3_up); // FIXME: Size propn. to exit velocity.
+		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, player->client->playerinfo.LastWatersplashPos, "bd", 96, vec3_up); // FIXME: Size propn. to exit velocity.
 	}
 
 	//TODO: move 'Handle lava sizzle damage' block here, abort when in lava?
 
 	// Start a waterwake effect if the current player has been in water and still is in water.
-	if (waterlevel > 0 && (old_waterlevel > 1 && waterlevel < 3) && VectorLength(current_player->velocity) != 0.0f)
+	if (waterlevel > 0 && (old_waterlevel > 1 && waterlevel < 3) && VectorLength(player->velocity) != 0.0f)
 	{
 		// No ripples while in cinematics.
 		if (SV_CINEMATICFREEZE) //TODO: shouldn't this check be at the beginning of the function?
 			return;
 
-		if ((int)(current_client->bobtime + bob_move) != bob_cycle) //TODO: skip when in lava.
+		if ((int)(player->client->bobtime + bob_move) != bob_cycle) //TODO: skip when in lava.
 		{
-			// FIXME: Doing more work then we need to here????
+			// FIXME: Doing more work than we need to here???
 			// How about re-writing this so that it is always active on the client and does water tests itself?
 			// We'll see - currently not enough info is available on the client to try this.
-			vec3_t temp;
-			VectorCopy(current_player->velocity, temp);
-			VectorNormalize(temp);
+			vec3_t dir = VEC3_INIT(player->velocity);
+			VectorNormalize(dir);
 
 			vec3_t angles;
-			vectoangles(temp, angles);
+			vectoangles(dir, angles);
 
-			vec3_t origin;
-			VectorCopy(current_player->s.origin, origin);
-			origin[2] += current_player->client->playerinfo.waterheight;
+			vec3_t origin = VEC3_INIT(player->s.origin);
+			origin[2] += player->client->playerinfo.waterheight;
 
 			const byte angle_byte = (byte)((angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
-			gi.CreateEffect(NULL, FX_WATER_WAKE, 0, origin, "sbv", current_player->s.number, angle_byte, current_player->velocity);
+			gi.CreateEffect(NULL, FX_WATER_WAKE, 0, origin, "sbv", player->s.number, angle_byte, player->velocity);
 		}
 	}
 
 	// Check for head just coming out of water.
 	if (old_waterlevel == 3 && waterlevel != 3)
 	{
-		if (current_player->air_finished < level.time)
-			gi.sound(current_player, CHAN_BODY, gi.soundindex(va("*gasp%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f); // Gasp for air.
-		else if (current_player->air_finished < level.time + 11)
-			gi.sound(current_player, CHAN_BODY, gi.soundindex("*waterresurface.wav"), 1.0f, ATTN_NORM, 0.0f); // Broke surface, low on air.
+		if (player->air_finished < level.time)
+			gi.sound(player, CHAN_BODY, gi.soundindex(va("*gasp%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f); // Gasp for air.
+		else if (player->air_finished < level.time + 11)
+			gi.sound(player, CHAN_BODY, gi.soundindex("*waterresurface.wav"), 1.0f, ATTN_NORM, 0.0f); // Broke surface, low on air.
 	}
 
 	// Handle drowning.
 	if (waterlevel == 3)
 	{
-		if (current_player->watertype & CONTENTS_SLIME)
+		if (player->watertype & CONTENTS_SLIME)
 		{
 			// Slime should kill really quick.
-			current_player->dmg = 25;
+			player->dmg = 25;
 
 			// Play a gurp sound instead of a normal pain sound.
-			gi.sound(current_player, CHAN_VOICE, gi.soundindex(va("*drowning%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f);
-			current_player->pain_debounce_time = level.time;
+			gi.sound(player, CHAN_VOICE, gi.soundindex(va("*drowning%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f);
+			player->pain_debounce_time = level.time;
 
-			T_Damage(current_player, world, world, vec3_origin, current_player->s.origin, vec3_origin, current_player->dmg, 0, DAMAGE_SUFFOCATION, MOD_SLIME);
+			T_Damage(player, world, world, vec3_origin, player->s.origin, vec3_origin, player->dmg, 0, DAMAGE_SUFFOCATION, MOD_SLIME);
 		}
-		else if (current_player->air_finished + current_player->client->playerinfo.lungs_timer < level.time)
+		else if (player->air_finished + player->client->playerinfo.lungs_timer < level.time)
 		{
 			// If out of air, start drowning.
-			if (current_player->client->next_drown_time < level.time && current_player->health > 0)
+			if (player->client->next_drown_time < level.time && player->health > 0)
 			{
-				current_player->client->next_drown_time = level.time + 1.0f;
+				player->client->next_drown_time = level.time + 1.0f;
 
 				// Take more damage the longer underwater.
-				current_player->dmg = min(15, current_player->dmg + 2);
+				player->dmg = min(15, player->dmg + 2);
 
 				// Play a gurp sound instead of a normal pain sound.
-				gi.sound(current_player, CHAN_VOICE, gi.soundindex(va("*drowning%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f);
+				gi.sound(player, CHAN_VOICE, gi.soundindex(va("*drowning%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f);
 
-				current_player->pain_debounce_time = level.time;
+				player->pain_debounce_time = level.time;
 
-				T_Damage(current_player, world, world, vec3_origin, current_player->s.origin, vec3_origin, current_player->dmg, 0, DAMAGE_SUFFOCATION, MOD_WATER);
+				T_Damage(player, world, world, vec3_origin, player->s.origin, vec3_origin, player->dmg, 0, DAMAGE_SUFFOCATION, MOD_WATER);
 			}
 
 		}
@@ -497,92 +486,91 @@ static void P_WorldEffects(void)
 			// We aren't drowning yet, but we may well need to decrement the amount of extra lungs we have from shrines.
 
 			// Since we still have lungs, reset air finished till we don't anymore.
-			if (current_player->client->playerinfo.lungs_timer > 0.0f)
+			if (player->client->playerinfo.lungs_timer > 0.0f)
 			{
-				current_player->client->playerinfo.lungs_timer -= 0.1f;
-				current_player->air_finished = level.time + HOLD_BREATH_TIME;
+				player->client->playerinfo.lungs_timer -= 0.1f;
+				player->air_finished = level.time + HOLD_BREATH_TIME;
 
-				// Floating point inaccuracy never lets us equal zero by ourselves
-				if (current_player->client->playerinfo.lungs_timer < 0.1f)
-					current_player->client->playerinfo.lungs_timer = 0.0f;
+				// Floating point inaccuracy never lets us equal zero by ourselves.
+				if (player->client->playerinfo.lungs_timer < 0.1f)
+					player->client->playerinfo.lungs_timer = 0.0f;
 			}
 		}
 
 		// We weren't underwater before this, so play a submerged sound. //TODO: don't play when submerged in lava!
 		if (old_waterlevel != 3)
-			gi.sound(current_player, CHAN_VOICE, gi.soundindex("player/underwater.wav"), 1.0f, ATTN_IDLE, 0.0f);
+			gi.sound(player, CHAN_VOICE, gi.soundindex("player/underwater.wav"), 1.0f, ATTN_IDLE, 0.0f);
 		else if ((int)(level.time / 4.0f) * 4 == (int)level.time) // Play an underwater sound every 4 seconds! //BUGFIX, kinda: mxd. Separate if case in original logic.
-			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/underwater.wav"), 1.0f, ATTN_IDLE, 0.0f); // Play local only?
+			gi.sound(player, CHAN_BODY, gi.soundindex("player/underwater.wav"), 1.0f, ATTN_IDLE, 0.0f); // Play local only?
 	}
 	else
 	{
-		current_player->air_finished = level.time + HOLD_BREATH_TIME;
-		current_player->dmg = 2;
+		player->air_finished = level.time + HOLD_BREATH_TIME;
+		player->dmg = 2;
 	}
 
 	// Handle lava sizzle damage.
-	if (waterlevel > 0 && (current_player->watertype & CONTENTS_LAVA))
+	if (waterlevel > 0 && (player->watertype & CONTENTS_LAVA))
 	{
-		if (current_player->health > 0 && current_player->pain_debounce_time <= level.time)
+		if (player->health > 0 && player->pain_debounce_time <= level.time)
 		{
-			gi.sound(current_player, CHAN_VOICE, gi.soundindex("player/lavadamage.wav"), 1.0f, ATTN_NORM, 0.0f);
-			current_player->pain_debounce_time = level.time + 1.0f;
+			gi.sound(player, CHAN_VOICE, gi.soundindex("player/lavadamage.wav"), 1.0f, ATTN_NORM, 0.0f);
+			player->pain_debounce_time = level.time + 1.0f;
 		}
 
 		const int damage = (waterlevel > 2 ? 25 : waterlevel * 3); //mxd
-		T_Damage(current_player, world, world, vec3_origin, current_player->s.origin, vec3_origin, damage, 0, DAMAGE_LAVA, MOD_LAVA);
+		T_Damage(player, world, world, vec3_origin, player->s.origin, vec3_origin, damage, 0, DAMAGE_LAVA, MOD_LAVA);
 	}
 }
 
 // Called for each player at the end of the server frame and right after spawning.
-void ClientEndServerFrame(edict_t* ent)
+void ClientEndServerFrame(edict_t* player)
 {
-	current_player = ent;
-	current_client = ent->client;
+	gclient_t* cl = player->client;
 
 	// When in intermission, don't give the player any normal movement attributes.
 	if (level.intermissiontime > 0.0f)
 	{
-		current_client->ps.fov = 75.0f;
-		G_SetStats(ent);
+		cl->ps.fov = 75.0f;
+		G_SetStats(player);
 
 		return;
 	}
 
 	// Apply world effect, e.g. burn from lava, etc.
-	P_WorldEffects();
+	P_WorldEffects(player);
 
 	// Set the player entity's model angles.
-	if (ent->dead_state == DEAD_NO)
+	if (player->dead_state == DEAD_NO)
 	{
 		// PITCH.
-		if (ent->client->ps.pmove.w_flags & (WF_DIVING | WF_SWIMFREE))
+		if (cl->ps.pmove.w_flags & (WF_DIVING | WF_SWIMFREE))
 		{
-			if (ent->client->v_angle[PITCH] > 180.0f)
-				ent->s.angles[PITCH] = -(-360.0f + ent->client->v_angle[PITCH]);
+			if (cl->v_angle[PITCH] > 180.0f)
+				player->s.angles[PITCH] = -(-360.0f + cl->v_angle[PITCH]);
 			else
-				ent->s.angles[PITCH] = -ent->client->v_angle[PITCH];
+				player->s.angles[PITCH] = -cl->v_angle[PITCH];
 		}
 		else
 		{
-			ent->s.angles[PITCH] = 0.0f;
+			player->s.angles[PITCH] = 0.0f;
 		}
 
 		// YAW and ROLL.
-		ent->s.angles[YAW] = ent->client->v_angle[YAW];
-		ent->s.angles[ROLL] = 0.0f;
+		player->s.angles[YAW] = cl->v_angle[YAW];
+		player->s.angles[ROLL] = 0.0f;
 	}
 
 	// Handle calcs for cyclic effects like walking / swimming.
-	const float xy_speed = sqrtf(ent->velocity[0] * ent->velocity[0] + ent->velocity[1] * ent->velocity[1]);
+	const float xy_speed = sqrtf(player->velocity[0] * player->velocity[0] + player->velocity[1] * player->velocity[1]);
 
 	if (xy_speed < 5.0f)
 	{
 		// Start at beginning of cycle again.
 		bob_move = 0.0f;
-		current_client->bobtime = 0.0f;
+		cl->bobtime = 0.0f;
 	}
-	else if (ent->groundentity != NULL && current_player->waterlevel == 0)
+	else if (player->groundentity != NULL && player->waterlevel == 0)
 	{
 		// So bobbing only cycles when on ground.
 		if (xy_speed > 210.0f)
@@ -592,7 +580,7 @@ void ClientEndServerFrame(edict_t* ent)
 		else
 			bob_move = 0.0625f;
 	}
-	else if (current_player->waterlevel > 0)
+	else if (player->waterlevel > 0)
 	{
 		// So bobbing only cycles when in water.
 		if (xy_speed > 100.0f)
@@ -603,142 +591,142 @@ void ClientEndServerFrame(edict_t* ent)
 			bob_move = 0.25f;
 	}
 
-	current_client->bobtime += bob_move;
-	bob_cycle = (int)current_client->bobtime;
+	cl->bobtime += bob_move;
+	bob_cycle = (int)cl->bobtime;
 
 	// Calculate damage (if any) from hitting the floor and apply the damage taken this frame from ALL sources.
-	SetupPlayerinfo(ent);
+	SetupPlayerinfo(player);
 
-	P_PlayerFallingDamage(&ent->client->playerinfo);
-	P_DamageFeedback(ent);
+	P_PlayerFallingDamage(&cl->playerinfo);
+	P_DamageFeedback(player);
 
-	WritePlayerinfo(ent);
+	WritePlayerinfo(player);
 
 	// Generate client-side status display data.
-	G_SetStats(ent);
+	G_SetStats(player);
 
 	// Handle player animation.
-	SetupPlayerinfo(ent);
+	SetupPlayerinfo(player);
 
-	P_PlayerUpdateCmdFlags(&ent->client->playerinfo);
-	P_PlayerUpdate(&ent->client->playerinfo);
-	P_AnimUpdateFrame(&ent->client->playerinfo);
-	PlayerTimerUpdate(ent);
+	P_PlayerUpdateCmdFlags(&cl->playerinfo);
+	P_PlayerUpdate(&cl->playerinfo);
+	P_AnimUpdateFrame(&cl->playerinfo);
+	PlayerTimerUpdate(player);
 
-	WritePlayerinfo(ent);
+	WritePlayerinfo(player);
 
 	// Save velocity and viewangles away for use next game frame.
-	VectorCopy(ent->velocity, ent->client->playerinfo.oldvelocity);
-	VectorCopy(ent->client->ps.viewangles, ent->client->oldviewangles);
+	VectorCopy(player->velocity, cl->playerinfo.oldvelocity);
+	VectorCopy(cl->ps.viewangles, cl->oldviewangles);
 
 	// If the deathmatch scoreboard is up then update it.
-	if (ent->client->playerinfo.showscores && DEATHMATCH && !(level.framenum & 31))
+	if (cl->playerinfo.showscores && DEATHMATCH && !(level.framenum & 31))
 	{
 		DeathmatchScoreboardMessage(false);
-		gi.unicast(ent, false);
+		gi.unicast(player, false);
 	}
 
 	// Reflect remote camera views(s) in the client's playerstate.
-	if (current_client->RemoteCameraLockCount > 0)
-		current_client->ps.remote_id = current_client->RemoteCameraNumber;
+	if (cl->RemoteCameraLockCount > 0)
+		cl->ps.remote_id = cl->RemoteCameraNumber;
 	else
-		current_client->ps.remote_id = -1;
+		cl->ps.remote_id = -1;
 
 	// Reflect inventory changes in the client's playetstate.
-	current_client->ps.NoOfItems = 0;
+	cl->ps.NoOfItems = 0;
 	int items_count = 0;
 
 	for (int i = 0; i < MAX_ITEMS; i++)
 	{
-		if (current_client->playerinfo.pers.inventory.Items[i] != current_client->playerinfo.pers.old_inventory.Items[i])
+		if (cl->playerinfo.pers.inventory.Items[i] != cl->playerinfo.pers.old_inventory.Items[i])
 		{
-			current_client->ps.inventory_changes[items_count] = (byte)i;
-			current_client->ps.inventory_remaining[items_count] = (byte)current_client->playerinfo.pers.inventory.Items[i];
-			current_client->playerinfo.pers.old_inventory.Items[i] = current_client->playerinfo.pers.inventory.Items[i];
+			cl->ps.inventory_changes[items_count] = (byte)i;
+			cl->ps.inventory_remaining[items_count] = (byte)cl->playerinfo.pers.inventory.Items[i];
+			cl->playerinfo.pers.old_inventory.Items[i] = cl->playerinfo.pers.inventory.Items[i];
 
 			items_count++;
 		}
 	}
 
-	current_client->ps.NoOfItems = (byte)items_count;
+	cl->ps.NoOfItems = (byte)items_count;
 
 	// Reflect changes to the client's origin and velocity due to the current player animation, in the client's playerstate.
 	for (int i = 0; i < 3; i++)
 	{
-		current_client->ps.pmove.origin[i] = (short)(ent->s.origin[i] * 8.0f);
-		current_client->ps.pmove.velocity[i] = (short)(ent->velocity[i] * 8.0f);
+		cl->ps.pmove.origin[i] = (short)(player->s.origin[i] * 8.0f);
+		cl->ps.pmove.velocity[i] = (short)(player->velocity[i] * 8.0f);
 	}
 
 	// Reflect viewheight changes in client's playerstate.
-	current_client->ps.viewheight = (short)ent->viewheight;
+	cl->ps.viewheight = (short)player->viewheight;
 
 	// Write all the shit that animation system modifies out to the playerstate (for prediction).
-	VectorCopy(current_client->playerinfo.mins, current_client->ps.mins);
-	VectorCopy(current_client->playerinfo.maxs, current_client->ps.maxs);
+	VectorCopy(cl->playerinfo.mins, cl->ps.mins);
+	VectorCopy(cl->playerinfo.maxs, cl->ps.maxs);
 
-	current_client->ps.NonNullgroundentity = (byte)(current_client->playerinfo.groundentity != NULL ? 1 : 0);
-	current_client->ps.GroundPlane = current_client->playerinfo.GroundPlane;
-	current_client->ps.GroundContents = current_client->playerinfo.GroundContents;
-	current_client->ps.GroundSurface.flags = (current_client->playerinfo.GroundSurface != NULL) ? current_client->playerinfo.GroundSurface->flags : 0;
+	cl->ps.NonNullgroundentity = (byte)(cl->playerinfo.groundentity != NULL ? 1 : 0);
+	cl->ps.GroundPlane = cl->playerinfo.GroundPlane;
+	cl->ps.GroundContents = cl->playerinfo.GroundContents;
+	cl->ps.GroundSurface.flags = ((cl->playerinfo.GroundSurface != NULL) ? cl->playerinfo.GroundSurface->flags : 0);
 
-	current_client->ps.watertype = current_client->playerinfo.watertype;
-	current_client->ps.waterlevel = current_client->playerinfo.waterlevel;
-	current_client->ps.waterheight = current_client->playerinfo.waterheight;
+	cl->ps.watertype = cl->playerinfo.watertype;
+	cl->ps.waterlevel = cl->playerinfo.waterlevel;
+	cl->ps.waterheight = cl->playerinfo.waterheight;
 
-	VectorCopy(current_client->playerinfo.grabloc, current_client->ps.grabloc);
-	current_client->ps.grabangle = current_client->playerinfo.grabangle;
+	VectorCopy(cl->playerinfo.grabloc, cl->ps.grabloc);
+	cl->ps.grabangle = cl->playerinfo.grabangle;
 
-	current_client->ps.fwdvel = current_client->playerinfo.fwdvel;
-	current_client->ps.sidevel = current_client->playerinfo.sidevel;
-	current_client->ps.upvel = current_client->playerinfo.upvel;
+	cl->ps.fwdvel = cl->playerinfo.fwdvel;
+	cl->ps.sidevel = cl->playerinfo.sidevel;
+	cl->ps.upvel = cl->playerinfo.upvel;
 
-	current_client->ps.flags = current_client->playerinfo.flags;
+	cl->ps.flags = cl->playerinfo.flags;
 
-	current_client->ps.edictflags = current_client->playerinfo.edictflags;
+	cl->ps.edictflags = cl->playerinfo.edictflags;
 
-	current_client->ps.oldvelocity_z = current_client->playerinfo.oldvelocity[2];
+	cl->ps.oldvelocity_z = cl->playerinfo.oldvelocity[2];
 
-	current_client->ps.upperseq = current_client->playerinfo.upperseq;
-	current_client->ps.lowerseq = current_client->playerinfo.lowerseq;
+	cl->ps.upperseq = cl->playerinfo.upperseq;
+	cl->ps.lowerseq = cl->playerinfo.lowerseq;
 
-	current_client->ps.upperframe = current_client->playerinfo.upperframe;
-	current_client->ps.lowerframe = current_client->playerinfo.lowerframe;
+	cl->ps.upperframe = cl->playerinfo.upperframe;
+	cl->ps.lowerframe = cl->playerinfo.lowerframe;
 
-	current_client->ps.upperidle = (byte)(current_client->playerinfo.upperidle ? 1 : 0);
-	current_client->ps.loweridle = (byte)(current_client->playerinfo.loweridle ? 1 : 0);
+	cl->ps.upperidle = (byte)(cl->playerinfo.upperidle ? 1 : 0);
+	cl->ps.loweridle = (byte)(cl->playerinfo.loweridle ? 1 : 0);
 
-	current_client->ps.uppermove_index = current_client->playerinfo.uppermove_index;
-	current_client->ps.lowermove_index = current_client->playerinfo.lowermove_index;
+	cl->ps.uppermove_index = cl->playerinfo.uppermove_index;
+	cl->ps.lowermove_index = cl->playerinfo.lowermove_index;
 
-	current_client->ps.weapon = (byte)ITEM_INDEX(current_client->playerinfo.pers.weapon);
-	current_client->ps.defense = (byte)ITEM_INDEX(current_client->playerinfo.pers.defence);
-	current_client->ps.lastweapon = (byte)ITEM_INDEX(current_client->playerinfo.pers.lastweapon);
-	current_client->ps.lastdefense = (byte)ITEM_INDEX(current_client->playerinfo.pers.lastdefence);
-	current_client->ps.weaponready = (byte)current_client->playerinfo.pers.weaponready;
-	current_client->ps.switchtoweapon = (byte)current_client->playerinfo.switchtoweapon;
-	current_client->ps.newweapon = (byte)ITEM_INDEX(current_client->playerinfo.pers.newweapon);
-	current_client->ps.weap_ammo_index = (byte)current_client->playerinfo.weap_ammo_index;
-	current_client->ps.def_ammo_index = (byte)current_client->playerinfo.def_ammo_index;
-	current_client->ps.weaponcharge = (byte)current_client->playerinfo.weaponcharge;
-	current_client->ps.armortype = current_client->playerinfo.pers.armortype;
-	current_client->ps.bowtype = current_client->playerinfo.pers.bowtype;
-	current_client->ps.stafflevel = current_client->playerinfo.pers.stafflevel;
-	current_client->ps.helltype = current_client->playerinfo.pers.helltype;
-	current_client->ps.meteor_count = current_client->playerinfo.meteor_count;
-	current_client->ps.handfxtype = current_client->playerinfo.pers.handfxtype;
-	current_client->ps.plaguelevel = current_client->playerinfo.plaguelevel;
-	current_client->ps.skintype = (byte)current_client->playerinfo.pers.skintype;
-	current_client->ps.altparts = (byte)current_client->playerinfo.pers.altparts;
-	current_client->ps.deadflag = current_client->playerinfo.deadflag;
-	current_client->ps.ideal_yaw = ent->ideal_yaw;
-	current_client->ps.leveltime = level.time;
-	current_client->ps.idletime = current_client->playerinfo.idletime;
-	current_client->ps.quickturnEndTime = current_client->playerinfo.quickturnEndTime;
-	current_client->ps.powerup_timer = current_client->playerinfo.powerup_timer;
-	current_client->ps.quickturn_rate = current_client->playerinfo.quickturn_rate;
+	cl->ps.weapon = (byte)ITEM_INDEX(cl->playerinfo.pers.weapon);
+	cl->ps.defense = (byte)ITEM_INDEX(cl->playerinfo.pers.defence);
+	cl->ps.lastweapon = (byte)ITEM_INDEX(cl->playerinfo.pers.lastweapon);
+	cl->ps.lastdefense = (byte)ITEM_INDEX(cl->playerinfo.pers.lastdefence);
+	cl->ps.weaponready = (byte)cl->playerinfo.pers.weaponready;
+	cl->ps.switchtoweapon = (byte)cl->playerinfo.switchtoweapon;
+	cl->ps.newweapon = (byte)ITEM_INDEX(cl->playerinfo.pers.newweapon);
+	cl->ps.weap_ammo_index = (byte)cl->playerinfo.weap_ammo_index;
+	cl->ps.def_ammo_index = (byte)cl->playerinfo.def_ammo_index;
+	cl->ps.weaponcharge = (byte)cl->playerinfo.weaponcharge;
+	cl->ps.armortype = cl->playerinfo.pers.armortype;
+	cl->ps.bowtype = cl->playerinfo.pers.bowtype;
+	cl->ps.stafflevel = cl->playerinfo.pers.stafflevel;
+	cl->ps.helltype = cl->playerinfo.pers.helltype;
+	cl->ps.meteor_count = cl->playerinfo.meteor_count;
+	cl->ps.handfxtype = cl->playerinfo.pers.handfxtype;
+	cl->ps.plaguelevel = cl->playerinfo.plaguelevel;
+	cl->ps.skintype = (byte)cl->playerinfo.pers.skintype;
+	cl->ps.altparts = (byte)cl->playerinfo.pers.altparts;
+	cl->ps.deadflag = cl->playerinfo.deadflag;
+	cl->ps.ideal_yaw = player->ideal_yaw;
+	cl->ps.leveltime = level.time;
+	cl->ps.idletime = cl->playerinfo.idletime;
+	cl->ps.quickturnEndTime = cl->playerinfo.quickturnEndTime;
+	cl->ps.powerup_timer = cl->playerinfo.powerup_timer;
+	cl->ps.quickturn_rate = cl->playerinfo.quickturn_rate;
 
-	current_client->ps.dmflags = current_client->playerinfo.dmflags;
-	current_client->ps.advancedstaff = (byte)current_client->playerinfo.advancedstaff;
+	cl->ps.dmflags = cl->playerinfo.dmflags;
+	cl->ps.advancedstaff = (byte)cl->playerinfo.advancedstaff;
 
-	current_client->ps.cinematicfreeze = (byte)current_client->playerinfo.sv_cinematicfreeze;
+	cl->ps.cinematicfreeze = (byte)cl->playerinfo.sv_cinematicfreeze;
 }
