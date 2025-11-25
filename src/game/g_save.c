@@ -154,7 +154,7 @@ static field_t savefields[] =
 	{ "", FOFS(placeholder),		F_EDICT,	FFL_NONE, NULL },
 	{ "", FOFS(fire_damage_enemy),	F_EDICT,	FFL_NONE, NULL },
 
-	//mxd. edict function pointers... Names ares set mainly for debugging purposes.
+	//mxd. edict function pointers... Names are set for debugging purposes.
 	{ "isBlocking",					FOFS(isBlocking),				F_FUNCTION,	FFL_NONE, NULL },
 	{ "msgHandler",					FOFS(msgHandler),				F_FUNCTION,	FFL_NONE, NULL },
 	{ "think",						FOFS(think),					F_FUNCTION,	FFL_NONE, NULL },
@@ -174,7 +174,7 @@ static field_t savefields[] =
 	{ "pre_think",					FOFS(pre_think),				F_FUNCTION,	FFL_NONE, NULL },
 	{ "post_think",					FOFS(post_think),				F_FUNCTION,	FFL_NONE, NULL },
 
-	//mxd. edict.monsterinfo function pointers... Names ares set mainly for debugging purposes.
+	//mxd. edict.monsterinfo function pointers... Names are set for debugging purposes.
 	{ "monsterinfo.idle",			FOFS(monsterinfo.idle),			F_FUNCTION,	FFL_NONE, NULL },
 	{ "monsterinfo.search",			FOFS(monsterinfo.search),		F_FUNCTION,	FFL_NONE, NULL },
 	{ "monsterinfo.dodge",			FOFS(monsterinfo.dodge),		F_FUNCTION,	FFL_NONE, NULL },
@@ -268,7 +268,7 @@ static const animmove_t* GetAnimMoveByName(const char* name) // YQ2
 	return NULL;
 }
 
-static void ConvertField(field_t* field, byte* base) //mxd. Named 'WriteField1' in original logic.
+static void ConvertField(field_t* field, byte* base, const char* obj_name) //mxd. Named 'WriteField1' in original logic. +obj_name arg.
 {
 	int len;
 	int index;
@@ -329,9 +329,8 @@ static void ConvertField(field_t* field, byte* base) //mxd. Named 'WriteField1' 
 
 				if (field->extra.func_info == NULL)
 				{
-					const edict_t* ent = (edict_t*)base;
-					const char* classname = ((ent->classname != NULL && *ent->classname != 0) ? ent->classname : "NO_CLASSNAME");
-					gi.error("ConvertField: %s.%s func not in the list, can't save game!", classname, field->name);
+					const char* func_name = ((obj_name != NULL && *obj_name != 0) ? va("%s.%s", obj_name, field->name) : field->name);
+					gi.error("ConvertField: %s not in the functions list, can't save game!", func_name);
 
 					return;
 				}
@@ -355,9 +354,8 @@ static void ConvertField(field_t* field, byte* base) //mxd. Named 'WriteField1' 
 
 				if (field->extra.amove_info == NULL)
 				{
-					const edict_t* ent = (edict_t*)base;
-					const char* classname = ((ent->classname != NULL && *ent->classname != 0) ? ent->classname : "NO_CLASSNAME");
-					gi.error("ConvertField: %s animmove_t not in the list, can't save game!", classname);
+					const char* amove_name = ((obj_name != NULL && *obj_name != 0) ? va("%s.%s", obj_name, field->name) : field->name);
+					gi.error("ConvertField: %s not in the animmoves list, can't save game!", amove_name);
 
 					return;
 				}
@@ -549,7 +547,7 @@ static void WriteClient(FILE* f, gclient_t* client)
 
 	// Change the pointers to lengths or indexes.
 	for (field_t* field = &clientfields[0]; field->name != NULL; field++)
-		ConvertField(field, (byte*)&temp);
+		ConvertField(field, (byte*)&temp, "client");
 
 	// Write the block.
 	fwrite(&temp, sizeof(temp), 1, f);
@@ -684,7 +682,7 @@ static void WriteEdict(FILE* f, edict_t* ent)
 
 	// Change the pointers to lengths or indexes.
 	for (field_t* field = &savefields[0]; field->name != NULL; field++)
-		ConvertField(field, (byte*)&temp);
+		ConvertField(field, (byte*)&temp, ent->classname);
 
 	// Write the block.
 	fwrite(&temp, sizeof(temp), 1, f);
@@ -733,11 +731,11 @@ static void WriteLevelLocals(FILE* f)
 
 	// Change the pointers to lengths or indexes.
 	for (field_t* field = &levelfields[0]; field->name != NULL; field++)
-		ConvertField(field, (byte*)&temp);
+		ConvertField(field, (byte*)&temp, "level");
 
 	for (int i = 0; i < level.active_buoys; i++)
 		for (field_t* field = &bouyfields[0]; field->name != NULL; field++)
-			ConvertField(field, (byte*)&temp.buoy_list[i]);
+			ConvertField(field, (byte*)&temp.buoy_list[i], "buoy");
 
 	//mxd. Write out level locals size for checking.
 	const int locals_size = sizeof(level_locals_t);
