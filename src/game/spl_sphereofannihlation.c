@@ -411,7 +411,7 @@ static edict_t* CreateReflectedSphere(edict_t* self, edict_t* other, const vec3_
 	return sphere;
 }
 
-edict_t* SphereReflect(edict_t* self, edict_t* other, vec3_t vel)
+edict_t* SphereReflect(edict_t* self, edict_t* other, const vec3_t vel)
 {
 	edict_t* sphere = CreateReflectedSphere(self, other, vel);
 	sphere->touch = SphereOfAnnihilationTouch;

@@ -9,7 +9,7 @@
 #include "q_shared.h"
 
 extern void SpellCastMeteorBarrier(edict_t* caster, const vec3_t start_pos);
-extern edict_t* MeteorBarrierReflect(edict_t* self, edict_t* other, vec3_t vel);
+extern edict_t* MeteorBarrierReflect(edict_t* self, edict_t* other, const vec3_t vel);
 
 //mxd. Required by save system...
 extern void Kill_Meteor(edict_t* self);

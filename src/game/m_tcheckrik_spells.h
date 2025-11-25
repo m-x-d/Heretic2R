@@ -12,7 +12,7 @@ extern void SpellCastInsectStaff(edict_t* caster, const vec3_t start_pos, const 
 extern void SpellCastGlobeOfOuchiness(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const vec3_t aim_dir);
 extern void SpellCastInsectSpear(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, int offset);
 
-extern edict_t* SpearProjReflect(edict_t* self, edict_t* other, vec3_t vel);
+extern edict_t* SpearProjReflect(edict_t* self, edict_t* other, const vec3_t vel);
 
 //mxd. Required by save system...
 extern void InsectGlobeOfOuchinessGrowThink(edict_t* self);

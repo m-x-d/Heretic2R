@@ -114,7 +114,7 @@ static edict_t* CreatePhoenixArrow(const qboolean is_powered) //mxd. Named 'crea
 	return arrow;
 }
 
-edict_t* PhoenixMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
+edict_t* PhoenixMissileReflect(edict_t* self, edict_t* other, const vec3_t vel)
 {
 	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
 	// with the existing one, since we hit something. Hence, we create a new one totally.

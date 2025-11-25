@@ -109,7 +109,7 @@ static edict_t* CreateMagicMissile(void) //mxd. Named 'create_magic' in original
 	return missile;
 }
 
-edict_t* MagicMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
+edict_t* MagicMissileReflect(edict_t* self, edict_t* other, const vec3_t vel)
 {
 	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
 	// with the existing one, since we hit something. Hence, we create a new one totally.

@@ -9,7 +9,7 @@
 #include "g_Edict.h"
 
 extern void SP_Monster_Gkrokon(edict_t* self);
-extern edict_t* GkrokonSpooReflect(edict_t* self, edict_t* other, vec3_t vel);
+extern edict_t* GkrokonSpooReflect(edict_t* self, edict_t* other, const vec3_t vel);
 extern void GkrokonStaticsInit(void);
 
 //mxd. Required by save system...

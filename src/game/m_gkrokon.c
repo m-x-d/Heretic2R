@@ -125,7 +125,7 @@ static void SpooInit(edict_t* spoo) //mxd. Named 'create_gkrokon_spoo' in origin
 	VectorSet(spoo->maxs, 1.0f, 1.0f, 1.0f);
 }
 
-edict_t* GkrokonSpooReflect(edict_t* self, edict_t* other, vec3_t vel)
+edict_t* GkrokonSpooReflect(edict_t* self, edict_t* other, const vec3_t vel)
 {
 	edict_t* spoo = G_Spawn();
 

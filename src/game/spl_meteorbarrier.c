@@ -180,7 +180,7 @@ static void CreateMeteor(edict_t* meteor) //mxd. Named 'create_meteor' in origin
 	meteor->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-edict_t* MeteorBarrierReflect(edict_t* self, edict_t* other, vec3_t vel)
+edict_t* MeteorBarrierReflect(edict_t* self, edict_t* other, const vec3_t vel)
 {
 	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
 	// with the existing one, since we hit something. Hence, we create a new one totally.

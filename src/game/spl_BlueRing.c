@@ -51,7 +51,7 @@ edict_t* FindRingRadius(edict_t* from, const vec3_t org, const float rad, const 
 		if (from->reflected_time > level.time || from == ring_ent->owner)
 			continue;
 
-		if (fabsf(from->s.origin[2] - ring_ent->s.origin[2]) > 50.0f) // This is a RING, not a sphere. Cap the vert at 40].
+		if (fabsf(from->s.origin[2] - ring_ent->s.origin[2]) > 50.0f) // This is a RING, not a sphere. Cap the vert at 50].
 			continue;
 
 		if (from->client != NULL)
@@ -139,7 +139,7 @@ void RingThink(edict_t* self)
 
 		// If it's a projectile, reflect it.
 		qboolean hit = false;
-		edict_t* (*reflect)(edict_t*, edict_t*, vec3_t) = NULL;
+		edict_t* (*reflect)(edict_t*, edict_t*, const vec3_t) = NULL;
 
 		if (strcmp(ent->classname, "Spell_RedRainArrow") == 0) //TODO: convert to defines? Or add/use ent->classID?
 		{

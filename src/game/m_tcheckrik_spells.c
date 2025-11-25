@@ -268,7 +268,7 @@ static void InsectSpearProjectileInit(edict_t* proj) //mxd. Named 'create_spearp
 		proj->dmg = TC_DMG_SPEAR_MAX;
 }
 
-edict_t* SpearProjReflect(edict_t* self, edict_t* other, vec3_t vel) //TODO: rename to InsectSpearProjectileReflect.
+edict_t* SpearProjReflect(edict_t* self, edict_t* other, const vec3_t vel) //TODO: rename to InsectSpearProjectileReflect.
 {
 	edict_t* proj = G_Spawn();
 

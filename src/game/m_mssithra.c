@@ -65,7 +65,7 @@ static void MssithraArrowInit(edict_t* arrow) //mxd. Named 'create_ssithra_arrow
 	VectorSet(arrow->maxs,  1.0f,  1.0f,  1.0f);
 }
 
-edict_t* MssithraArrowReflect(edict_t* self, edict_t* other, vec3_t vel) //mxd. Named 'MssithraAlphaArrowReflect' in original logic.
+edict_t* MssithraArrowReflect(edict_t* self, edict_t* other, const vec3_t vel) //mxd. Named 'MssithraAlphaArrowReflect' in original logic.
 {
 	edict_t* arrow = G_Spawn();
 
