@@ -340,8 +340,7 @@ void Perform_Screen_Shake(vec3_t out, const float current_time)
 
 	//mxd. Interpolate between stored points.
 	const float lerp = sshake.time_delta / LERP_DURATION;
-	for (int i = 0; i < 3; i++)
-		out[i] = sshake.start[i] + (sshake.end[i] - sshake.start[i]) * lerp;
+	VectorLerp(sshake.start, lerp, sshake.end, out);
 
 	sshake.time_delta += current_time - sshake.prev_time;
 	sshake.prev_time = current_time;
