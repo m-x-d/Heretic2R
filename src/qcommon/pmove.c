@@ -39,11 +39,13 @@ static pmove_t* pm;
 static pml_t pml;
 
 // Movement parameters.
-#define PM_STOPSPEED		100.0f
-#define PM_MAXSPEED			300.0f
-#define PM_FRICTION			6.0f
-#define PM_WATERACCELERATE	10.0f
-#define PM_WATERSPEED		400.0f
+#define PM_STOP_SPEED			100.0f
+#define PM_MAX_SPEED			300.0f
+#define PM_MAX_SWIM_SPEED		240.0f //mxd
+#define PM_FRICTION				6.0f
+#define PM_WATER_ACCELERATE		10.0f
+#define PM_WATER_CURRENT_SPEED	400.0f
+#define PM_CONVEYOR_SPEED		100.0f
 
 #define MIN_STEP_NORMAL	0.7f // Can't step up onto very steep slopes.
 
@@ -66,17 +68,17 @@ typedef struct ssm_settings_s //mxd
 #define MAX_CLIP_PLANES	5
 static vec3_t clip_planes[MAX_CLIP_PLANES];
 
-static float ClampVelocity(vec3_t vel, vec3_t vel_normal, const qboolean run_shrine, const qboolean high_max)
+static float ClampVelocity(vec3_t vel, float max_speed, const qboolean run_shrine, const qboolean high_max)
 {
-	float max_speed = PM_MAXSPEED;
 	if (high_max || run_shrine)
 		max_speed *= 2.0f;
 
-	const float speed = VectorNormalize2(vel, vel_normal);
+	vec3_t dir;
+	const float speed = VectorNormalize2(vel, dir);
 
 	if (speed > max_speed)
 	{
-		VectorScale(vel_normal, max_speed, vel);
+		VectorScale(dir, max_speed, vel);
 		return max_speed;
 	}
 
@@ -629,8 +631,8 @@ static void PM_AddCurrents(vec3_t wishvel)
 		if (pm->watertype & CONTENTS_CURRENT_DOWN)
 			v[2] -= 1.0f;
 
-		float s = PM_WATERSPEED;
-		if (pm->waterlevel == 1 && pm->groundentity != NULL)
+		float s = PM_WATER_CURRENT_SPEED;
+		if (pm->waterlevel == 1 && pm->groundentity != NULL) // Half speed when wading.
 			s /= 2;
 
 		VectorMA(wishvel, s, v, wishvel);
@@ -654,9 +656,9 @@ static void PM_AddCurrents(vec3_t wishvel)
 			v[1] -= 1.0f;
 
 		if (pml.groundcontents & (CONTENTS_CURRENT_UP | CONTENTS_CURRENT_DOWN)) // H2
-			Com_Printf("CONTENTS_CURRENT_UP or CONTENTS_CURRENT_DOWN not supported on groundcontents (conveyor belts)\n");
+			Com_DPrintf("CONTENTS_CURRENT_UP or CONTENTS_CURRENT_DOWN not supported on groundcontents (conveyor belts)\n"); //mxd. Com_Printf -> Com_DPrintf.
 
-		VectorMA(wishvel, 100.0f, v, wishvel);
+		VectorMA(wishvel, PM_CONVEYOR_SPEED, v, wishvel);
 	}
 }
 
@@ -785,9 +787,9 @@ static void PM_AirAccelerate(float* fmove, float* smove) //mxd
 
 static void PM_AirMove(void)
 {
-	qboolean run_shrine = false; // H2
 	float fmove = pm->cmd.forwardmove;
 	float smove = pm->cmd.sidemove;
+	qboolean run_shrine = false; // H2
 
 	pml.gravity = pm->s.gravity; // H2
 
@@ -813,14 +815,12 @@ static void PM_AirMove(void)
 		pml.max_velocity *= (1.0f - pml.knockbackfactor);
 
 	VectorMA(wishvel, pml.knockbackfactor, pml.velocity, wishvel);
-
-	vec3_t unused;
-	const float maxspeed = ClampVelocity(wishvel, unused, run_shrine, pm->high_max);
+	const float speed = ClampVelocity(wishvel, PM_MAX_SPEED, run_shrine, pm->high_max);
 
 	if (pm->groundentity != NULL)
 	{
 		// Standing on ground.
-		if (maxspeed == 0.0f && pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
+		if (speed == 0.0f && pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
 		{
 			PM_StepSlideFinishMove(true); //mxd
 			return;
@@ -849,7 +849,7 @@ static void PM_Friction(void)
 
 	// Apply ground friction?
 	if (pm->groundentity != NULL && pml.groundsurface != NULL && !(pml.groundsurface->flags & SURF_SLICK))
-		drop = max(PM_STOPSPEED, speed) * pml.frametime * PM_FRICTION;
+		drop = max(PM_STOP_SPEED, speed) * pml.frametime * PM_FRICTION;
 
 	// Apply water friction?
 	if (pm->waterlevel > 0)
@@ -866,16 +866,13 @@ static void PM_Friction(void)
 //mxd. Simplified version of PM_WaterMove().
 static void PM_LavaAndSlimeMove(const float scaler)
 {
-	vec3_t wishvel;
-	vec3_t wishdir;
-
-	qboolean run_shrine = false;
 	pml.gravity = 0.0f;
 
 	PM_Friction();
 
 	float forwardmove = pm->cmd.forwardmove;
 	const float sidemove = pm->cmd.sidemove;
+	qboolean run_shrine = false;
 
 	if (pm->run_shrine && forwardmove > 0.0f)
 	{
@@ -884,14 +881,14 @@ static void PM_LavaAndSlimeMove(const float scaler)
 	}
 
 	// User intentions.
+	vec3_t wishvel;
 	for (int i = 0; i < 3; i++)
 		wishvel[i] = pml.forward[i] * forwardmove + pml.right[i] * sidemove;
 
 	PM_AddCurrents(wishvel);
+	Vec3ScaleAssign(scaler, wishvel);
 
-	VectorScale(wishvel, scaler, wishvel);
-	ClampVelocity(wishvel, wishdir, run_shrine, false);
-
+	ClampVelocity(wishvel, PM_MAX_SPEED, run_shrine, false);
 	VectorCopy(wishvel, pml.velocity);
 }
 
@@ -922,51 +919,54 @@ static void PM_WaterAccelerate(vec3_t wishdir, const float wishspeed, const floa
 	float accelspeed = accel * pml.frametime * wishspeed;
 	accelspeed = min(addspeed, accelspeed);
 
-	for (int i = 0; i < 3; i++)
-		pml.velocity[i] += accelspeed * wishdir[i];
+	VectorMA(pml.velocity, accelspeed, wishdir, pml.velocity);
 }
 
-static qboolean PM_WaterMove(const float scaler)
+static qboolean PM_WaterMove(const float scaler) //TODO: scaler is always 0.5. Remove arg?
 {
-	vec3_t wishvel;
-	vec3_t wishdir;
-
-	qboolean run_shrine = false;
 	pml.gravity = 0.0f;
 
 	PM_Friction();
 
-	float forwardmove = pm->cmd.forwardmove;
-	const float sidemove = pm->cmd.sidemove;
+	float fmove = pm->cmd.forwardmove;
+	const float smove = pm->cmd.sidemove;
+	qboolean run_shrine = false;
 
-	if (pm->run_shrine && forwardmove > 0.0f)
+	if (pm->run_shrine && fmove > 0.0f)
 	{
-		forwardmove *= 1.65f;
+		fmove *= 1.65f;
 		run_shrine = true;
 	}
 
 	// User intentions.
+	vec3_t wishvel;
 	for (int i = 0; i < 3; i++)
-		wishvel[i] = pml.forward[i] * forwardmove + pml.right[i] * sidemove;
+		wishvel[i] = pml.forward[i] * fmove + pml.right[i] * smove;
 
 	PM_AddCurrents(wishvel);
 
-	const float wishspeed = ClampVelocity(wishvel, wishdir, run_shrine, false);
-	PM_WaterAccelerate(wishdir, wishspeed * scaler, PM_WATERACCELERATE);
+	const float max_swim_speed = PM_MAX_SWIM_SPEED * scaler; //mxd. Use swim-specific max. speed.
+	const float speed = ClampVelocity(wishvel, max_swim_speed, run_shrine, false);
 
-	if (pm->groundentity == NULL)
-		return false;
+	vec3_t wishdir;
+	VectorNormalize2(wishvel, wishdir);
+	PM_WaterAccelerate(wishdir, speed, PM_WATER_ACCELERATE);
 
-	if (wishspeed * scaler == 0.0f && pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
+	//mxd. Clamp to max. velocity again (with some room for inertia), because PM_WaterAccelerate() can greatly exceed it...
+	if (VectorLength(pml.velocity) > max_swim_speed * 1.25f)
+		VectorScale(wishdir, max_swim_speed * 1.25f, pml.velocity);
+
+	if (pm->groundentity != NULL)
 	{
-		VectorClear(pml.velocity);
-		return true;
+		// Standing on ground.
+		if (speed == 0.0f && pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
+		{
+			VectorClear(pml.velocity);
+			return true;
+		}
 	}
-	else
-	{
-		VectorCopy(wishvel, pml.velocity);
-		return false;
-	}
+
+	return false;
 }
 
 static void PM_TryUnderwaterMove(void) // H2
@@ -1238,9 +1238,7 @@ static void PM_SpectatorMove(void) // H2
 	vel[1] = pml.forward[1] * forwardmove + pml.right[1] * sidemove;
 	vel[2] = pml.forward[2] * forwardmove + upmove;
 
-	vec3_t unused;
-	ClampVelocity(vel, unused, pm->run_shrine, false);
-
+	ClampVelocity(vel, PM_MAX_SPEED, pm->run_shrine, false);
 	VectorCopy(vel, pml.velocity);
 	VectorMA(pml.origin, pml.frametime, vel, pml.origin);
 }
