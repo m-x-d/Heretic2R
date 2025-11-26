@@ -910,7 +910,7 @@ static void PM_LavaMove(void) // H2
 
 // Q2 counterpart (PM_Accelerate()).
 // Handles user intended acceleration.
-static void PM_WaterAccelerate(vec3_t wishdir, const float wishspeed, const float accel) //mxd. Used only by PM_TryWaterMove() in H2.
+static void PM_WaterAccelerate(const vec3_t wishdir, const float wishspeed, const float accel) //mxd. Used only by PM_TryWaterMove() in H2.
 {
 	const float currentspeed = DotProduct(pml.velocity, wishdir);
 	const float addspeed = wishspeed - currentspeed;
@@ -956,7 +956,10 @@ static qboolean PM_TryWaterMove(const float scaler) //TODO: scaler is always 0.5
 
 	//mxd. Clamp to max. velocity again (with some room for inertia), because PM_WaterAccelerate() can greatly exceed it...
 	if (VectorLength(pml.velocity) > max_swim_speed * 1.25f)
-		VectorScale(wishdir, max_swim_speed * 1.25f, pml.velocity);
+	{
+		VectorNormalize(pml.velocity); // Can't use wishdir here - ignores vertical velocity... --mxd.
+		VectorScale(pml.velocity, max_swim_speed * 1.25f, pml.velocity);
+	}
 
 	if (pm->groundentity != NULL)
 	{
