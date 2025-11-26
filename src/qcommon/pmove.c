@@ -872,20 +872,20 @@ static void PM_LavaAndSlimeMove(const float scaler)
 
 	PM_Friction();
 
-	float forwardmove = pm->cmd.forwardmove;
-	const float sidemove = pm->cmd.sidemove;
+	float fmove = pm->cmd.forwardmove;
+	const float smove = pm->cmd.sidemove;
 	qboolean run_shrine = false;
 
-	if (pm->run_shrine && forwardmove > 0.0f)
+	if (pm->run_shrine && fmove > 0.0f)
 	{
-		forwardmove *= 1.65f;
+		fmove *= 1.65f;
 		run_shrine = true;
 	}
 
 	// User intentions.
 	vec3_t wishvel;
 	for (int i = 0; i < 3; i++)
-		wishvel[i] = pml.forward[i] * forwardmove + pml.right[i] * sidemove;
+		wishvel[i] = pml.forward[i] * fmove + pml.right[i] * smove;
 
 	PM_AddCurrents(wishvel);
 	Vec3ScaleAssign(scaler, wishvel);
