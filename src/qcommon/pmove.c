@@ -910,7 +910,7 @@ static void PM_LavaMove(void) // H2
 
 // Q2 counterpart (PM_Accelerate()).
 // Handles user intended acceleration.
-static void PM_WaterAccelerate(vec3_t wishdir, const float wishspeed, const float accel) //mxd. Used only by PM_WaterMove() in H2.
+static void PM_WaterAccelerate(vec3_t wishdir, const float wishspeed, const float accel) //mxd. Used only by PM_TryWaterMove() in H2.
 {
 	const float currentspeed = DotProduct(pml.velocity, wishdir);
 	const float addspeed = wishspeed - currentspeed;
@@ -924,7 +924,7 @@ static void PM_WaterAccelerate(vec3_t wishdir, const float wishspeed, const floa
 	VectorMA(pml.velocity, accelspeed, wishdir, pml.velocity);
 }
 
-static qboolean PM_WaterMove(const float scaler) //TODO: scaler is always 0.5. Remove arg?
+static qboolean PM_TryWaterMove(const float scaler) //TODO: scaler is always 0.5. Remove arg?
 {
 	pml.gravity = 0.0f;
 
@@ -971,25 +971,25 @@ static qboolean PM_WaterMove(const float scaler) //TODO: scaler is always 0.5. R
 	return false;
 }
 
-static void PM_TryUnderwaterMove(void) // H2
+static void PM_UnderwaterMove(void) // H2
 {
-	if (PM_WaterMove(0.5f))
+	if (PM_TryWaterMove(0.5f))
 		return;
 
 	PM_StepSlideMove();
 }
 
 // Swim on water surface or walk while in water.
-static void PM_TryWaterMove(void) // H2
+static void PM_WaterMove(void) // H2
 {
-	if (PM_WaterMove(0.5f))
+	if (PM_TryWaterMove(0.5f))
 		return;
 
 	if (pm->s.w_flags & WF_SINK)
 	{
 		pm->s.w_flags &= ~WF_SINK;
 	}
-	else
+	else // Bob on water surface.
 	{
 		pml.velocity[2] = (pm->waterheight - pml.desired_water_height) / pml.frametime;
 
@@ -1398,7 +1398,7 @@ void Pmove(pmove_t* pmove, const qboolean server)
 		}
 		else if (pm->waterlevel == 1)
 		{
-			PM_TryWaterMove();
+			PM_WaterMove();
 		}
 		else if (pm->waterlevel == 2)
 		{
@@ -1407,19 +1407,19 @@ void Pmove(pmove_t* pmove, const qboolean server)
 				if (!(pm->s.w_flags & WF_DIVING))
 					pm->s.w_flags |= WF_DIVE;
 
-				PM_TryUnderwaterMove();
+				PM_UnderwaterMove();
 			}
 			else
 			{
 				pm->s.w_flags |= WF_SURFACE;
 				pm->s.w_flags &= ~WF_DIVE;
-				PM_TryWaterMove();
+				PM_WaterMove();
 			}
 		}
 		else // m->waterlevel == 3
 		{
 			pm->s.w_flags = WF_SWIMFREE;
-			PM_TryUnderwaterMove();
+			PM_UnderwaterMove();
 		}
 	}
 
