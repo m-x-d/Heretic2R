@@ -4,9 +4,11 @@
 // Copyright 1998 Raven Software
 //
 
+#include "client.h" //mxd
 #include "qcommon.h"
 #include "game.h"
 #include "q_Physics.h"
+#include "turbsin.h"
 #include "Vector.h"
 
 // All of the locals will be zeroed before each pmove, just to make sure we don't have any differences when running on client or server.
@@ -990,7 +992,11 @@ static void PM_TryWaterMove(void) // H2
 	else
 	{
 		pml.velocity[2] = (pm->waterheight - pml.desired_water_height) / pml.frametime;
-		pml.velocity[2] += sinf((float)Sys_Milliseconds() / 150.0f) * 8.0f;
+
+		//mxd. Replicate R_EmitWaterPolys() logic, so player's vertical offset is synched with water polys movement...
+		//TODO: using cl.refdef.time here probably breaks client/server logic separation...
+		pml.velocity[2] += (turbsin[TURBSIN_V0(pml.origin[0], pml.origin[1], cl.refdef.time)] * 0.25f +
+							turbsin[TURBSIN_V1(pml.origin[0], pml.origin[1], cl.refdef.time)] * 0.125f) * 12.0f;
 	}
 
 	PM_StepSlideMove();

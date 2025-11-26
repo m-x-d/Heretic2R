@@ -10,11 +10,6 @@
 #include "Vector.h"
 
 #define SUBDIVIDE_SIZE	64.0f
-#define TURBSCALE		(256.0f / ANGLE_360) //mxd. Replaced (2 * M_PI) with ANGLE_360
-
-//mxd. Helper defines...
-#define TURBSIN_V0(v0, v1)	((int)((((v0) * 2.3f + (v1)) * 0.015f + r_newrefdef.time * 3.0f) * TURBSCALE) & 255)
-#define TURBSIN_V1(v0, v1)	((int)((((v1) * 2.3f + (v0)) * 0.015f + r_newrefdef.time * 6.0f) * TURBSCALE) & 255)
 
 #pragma region ========================== POLYGON GENERATION ==========================
 
@@ -49,11 +44,9 @@ void R_EmitWaterPolys(const msurface_t* fa, const qboolean undulate) // H2: extr
 
 			if (undulate) // H2: new undulate logic.
 			{
-				vec3_t pos;
-				VectorCopy(v, pos);
-
-				pos[2] += turbsin[TURBSIN_V0(v[0], v[1])] * 0.25f +
-						  turbsin[TURBSIN_V1(v[0], v[1])] * 0.125f;
+				vec3_t pos = VEC3_INIT(v);
+				pos[2] += turbsin[TURBSIN_V0(v[0], v[1], r_newrefdef.time)] * 0.25f +
+						  turbsin[TURBSIN_V1(v[0], v[1], r_newrefdef.time)] * 0.125f;
 
 				glVertex3fv(pos);
 			}
@@ -77,11 +70,9 @@ void R_EmitUnderwaterPolys(const msurface_t* fa) // H2
 		float* v = p->verts[0];
 		for (int i = 0; i < p->numverts; i++, v += VERTEXSIZE)
 		{
-			vec3_t pos;
-			VectorCopy(v, pos);
-
-			pos[2] += turbsin[TURBSIN_V0(v[0], v[1])] * 0.5f +
-					  turbsin[TURBSIN_V1(v[0], v[1])] * 0.25f;
+			vec3_t pos = VEC3_INIT(v);
+			pos[2] += turbsin[TURBSIN_V0(v[0], v[1], r_newrefdef.time)] * 0.5f +
+					  turbsin[TURBSIN_V1(v[0], v[1], r_newrefdef.time)] * 0.25f;
 
 			glTexCoord2f(v[3], v[4]);
 			glVertex3fv(pos);
@@ -103,11 +94,9 @@ void R_EmitQuakeFloorPolys(const msurface_t* fa) // H2
 		float* v = p->verts[0];
 		for (int i = 0; i < p->numverts; i++, v += VERTEXSIZE)
 		{
-			vec3_t pos;
-			VectorCopy(v, pos);
-
-			pos[2] += turbsin[TURBSIN_V0(v[0], v[1])] * amount * 0.5f +
-					  turbsin[TURBSIN_V1(v[0], v[1])] * amount * 0.25f;
+			vec3_t pos = VEC3_INIT(v);
+			pos[2] += turbsin[TURBSIN_V0(v[0], v[1], r_newrefdef.time)] * amount * 0.5f +
+					  turbsin[TURBSIN_V1(v[0], v[1], r_newrefdef.time)] * amount * 0.25f;
 
 			glTexCoord2f(v[3], v[4]);
 			glVertex3fv(pos);

@@ -78,6 +78,7 @@
     <ClCompile Include="..\qcommon\Reference.c" />
     <ClCompile Include="..\qcommon\Skeletons.c" />
     <ClCompile Include="..\qcommon\tokens.c" />
+    <ClCompile Include="..\qcommon\turbsin.c" />
     <ClCompile Include="..\server\sv_ccmds.c" />
     <ClCompile Include="..\server\sv_effects.c" />
     <ClCompile Include="..\server\sv_entities.c" />
@@ -172,6 +173,7 @@
     <ClInclude Include="..\qcommon\ResourceManager.h" />
     <ClInclude Include="..\qcommon\Skeletons.h" />
     <ClInclude Include="..\qcommon\tokens.h" />
+    <ClInclude Include="..\qcommon\turbsin.h" />
     <ClInclude Include="..\qcommon\Vector.h" />
     <ClInclude Include="..\server\server.h" />
     <ClInclude Include="..\server\sv_effects.h" />

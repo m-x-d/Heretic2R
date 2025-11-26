@@ -276,6 +276,9 @@
     <ClCompile Include="vid_Screenshot.c">
       <Filter>win32</Filter>
     </ClCompile>
+    <ClCompile Include="..\qcommon\turbsin.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -532,6 +535,9 @@
     </ClInclude>
     <ClInclude Include="vid_Screenshot.h">
       <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\turbsin.h">
+      <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
