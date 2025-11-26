@@ -1251,12 +1251,7 @@ static void PM_SpectatorMove(void) // H2
 
 static void PM_UpdateWaterLevel(void) // H2. Part of PM_CatagorizePosition() logic in Q2.
 {
-	trace_t trace;
-
-	vec3_t bottom_pos;
-	bottom_pos[0] = pml.origin[0];
-	bottom_pos[1] = pml.origin[1];
-	bottom_pos[2] = pml.origin[2] + pm->mins[2] + 1.0f;
+	const vec3_t bottom_pos = VEC3_INITA(pml.origin, 0.0f, 0.0f, pm->mins[2] + 1.0f);
 
 	int contents = pm->pointcontents(bottom_pos);
 	if (!(contents & MASK_WATER)) // Not submerged.
@@ -1271,14 +1266,12 @@ static void PM_UpdateWaterLevel(void) // H2. Part of PM_CatagorizePosition() log
 	pm->watertype = contents;
 	pm->waterlevel = 1;
 
-	vec3_t top_pos;
-	top_pos[0] = bottom_pos[0];
-	top_pos[1] = bottom_pos[1];
-	top_pos[2] = pml.origin[2] + pm->maxs[2];
+	const vec3_t top_pos = VEC3_INITA(pml.origin, 0.0f, 0.0f, pm->maxs[2]);
 
 	contents = pm->pointcontents(top_pos);
 	if (!(contents & MASK_WATER)) // Partially submerged.
 	{
+		trace_t trace;
 		pm->trace(top_pos, NULL, NULL, bottom_pos, &trace);
 		pm->waterheight = trace.endpos[2] - pml.origin[2];
 
