@@ -857,20 +857,6 @@ void PlayerActionClimbFinishSound(const playerinfo_t* info, float value)
 	P_Sound(info, SND_PRED_ID19, CHAN_VOICE, "player/pullup 2.wav", 1.0f); //mxd
 }
 
-void PlayerActionSwim(const playerinfo_t* info, const float value)
-{
-	if (value != 1.0f)
-		return;
-
-	vec3_t origin;
-	VectorCopy(info->origin, origin);
-	origin[2] += info->waterheight;
-
-	// Fixme: Need to determine the actual water surface normal - if we have any sloping water?
-	vec3_t dir = { 0.0f, 0.0f, 1.0f };
-	P_CreateEffect(info, EFFECT_PRED_ID9, NULL, FX_WATER_ENTRYSPLASH, 0, origin, "bd", 32, dir);
-}
-
 static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 {
 	trace_t grabtrace;
