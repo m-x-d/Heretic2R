@@ -32,6 +32,7 @@ typedef struct
 	float max_velocity; // H2 //TODO: check if correct var name.
 	float knockbackfactor; // H2
 	float desired_water_height; // H2
+	float water_bob_offset; //mxd
 
 	short previous_origin[3]; //mxd. vec3_t in H2.
 	short snapped_origin[3]; // H2
@@ -998,8 +999,11 @@ static void PM_WaterMove(void) // H2
 
 		//mxd. Replicate R_EmitWaterPolys() logic, so player's vertical offset is synched with water polys movement...
 		//TODO: using cl.refdef.time here probably breaks client/server logic separation...
-		pml.velocity[2] += (turbsin[TURBSIN_V0(pml.origin[0], pml.origin[1], cl.refdef.time)] * 0.25f +
-							turbsin[TURBSIN_V1(pml.origin[0], pml.origin[1], cl.refdef.time)] * 0.125f) * 12.0f;
+		const float bob_offset = (turbsin[TURBSIN_V0(pml.origin[0], pml.origin[1], cl.refdef.time)] * 0.25f +
+								  turbsin[TURBSIN_V1(pml.origin[0], pml.origin[1], cl.refdef.time)] * 0.125f);
+
+		pml.velocity[2] += bob_offset * 12.0f;
+		pml.water_bob_offset = max(0.2f, fabsf(bob_offset) * 2.5f); //mxd. bob_offset effect on velocity is delayed, so use absolute value & some padding and scaling...
 	}
 
 	PM_StepSlideMove();
@@ -1278,7 +1282,8 @@ static void PM_UpdateWaterLevel(void) // H2. Part of PM_CatagorizePosition() log
 		pm->trace(top_pos, NULL, NULL, bottom_pos, &trace);
 		pm->waterheight = trace.endpos[2] - pml.origin[2];
 
-		if (trace.fraction < 1.0f && pml.desired_water_height < pm->waterheight)
+		//H2_BUGFIX: mxd. Take the bobbing effect into account (otherwise it will cause waterlevel to fluctuate between 1 and 2 when swimming on water surface. Can't dive when waterlevel 1 (see ClientThink())).
+		if (trace.fraction < 1.0f && pm->waterheight + pml.water_bob_offset >= pml.desired_water_height)
 			pm->waterlevel = 2;
 	}
 	else // Fully submerged.
