@@ -154,7 +154,18 @@ static qboolean PM_TryStepUp(const float step_height, const float frametime, tra
 	pm->trace(start, pm->mins, pm->maxs, end, &trace);
 
 	if (trace.startsolid || trace.allsolid || trace.fraction == 0.0f)
+	{
+		//mxd. Roundabout way to detect if we are blocked by a RAT (because it's kinda silly to be blocked by a rat if it happens to be on a slight upwards slope ahead of us)...
+		if (pml.server && step_height == STEP_SIZE && trace.ent != NULL && (trace.ent->clipmask & CONTENTS_MONSTER) && trace.ent->size[2] <= STEP_SIZE) // Client version of ent contains ent.s data only --mxd.
+		{
+			const float height_diff = (trace.ent->s.origin[2] + trace.ent->mins[2]) - (pm->origin[2] + pm->mins[2]);
+
+			if (height_diff <= step_height)
+				return PM_TryStepUp(step_height + height_diff, frametime, tr);
+		}
+
 		return false;
+	}
 
 	// Check vertical move from previous position.
 	const float prev_fraction = trace.fraction;
