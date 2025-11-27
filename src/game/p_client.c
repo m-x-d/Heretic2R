@@ -30,6 +30,7 @@
 #include "g_local.h"
 
 #define SWIM_ADJUST_AMOUNT	16.0f
+#define DIVE_ADJUST_AMOUNT	150.0f //mxd
 #define FOV_DEFAULT			75.0f
 
 const vec3_t player_mins = { -14.0f, -14.0f, -34.0f };
@@ -2330,29 +2331,25 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 		VectorCopy(ent->velocity, client->playerinfo.velocity);
 	}
 
-	// Check to add into movement velocity through crouch and duck if underwater.
+	// Check to add into movement velocity through crouch and jump if underwater.
 	if (ent->dead_state == DEAD_NO)
 	{
-		if (ent->waterlevel > 2)
+		if (ent->waterlevel == 3)
 		{
-			// NOTENOTE: If they're pressing both, nullify it.
+			// Pressing both ACMDL_CROUCH and ACMDL_JUMP nullifies the effect --mxd.
 			if (client->playerinfo.seqcmd[ACMDL_CROUCH])
 				client->playerinfo.velocity[2] -= SWIM_ADJUST_AMOUNT;
 
 			if (client->playerinfo.seqcmd[ACMDL_JUMP])
 				client->playerinfo.velocity[2] += SWIM_ADJUST_AMOUNT;
 		}
-		else if (ent->waterlevel > 1) // On the surface trying to go down?
+		else if (ent->waterlevel == 2) // On the surface trying to go down?
 		{
-			// NOTENOTE: If they're pressing both, nullify it.
 			if (client->playerinfo.seqcmd[ACMDL_CROUCH])
 			{
 				pm.s.w_flags |= WF_SINK;
-				client->playerinfo.velocity[2] -= SWIM_ADJUST_AMOUNT;
+				client->playerinfo.velocity[2] = min(-DIVE_ADJUST_AMOUNT, client->playerinfo.velocity[2]); //H2_BUGFIX: mxd. SWIM_ADJUST_AMOUNT in original logic (required 4-6 calls to actually push player underwater).
 			}
-
-			if (client->playerinfo.seqcmd[ACMDL_JUMP])
-				client->playerinfo.velocity[2] += SWIM_ADJUST_AMOUNT;
 		}
 	}
 
