@@ -52,7 +52,7 @@ void* RestoreObject(FILE* f, CScript* data)
 void ReadEnt(edict_t** to, FILE* f)
 {
 	int index;
-	tRead(&index, f);
+	fread(&index, 1, sizeof(index), f);
 
 	if (index < 0 || index >= globals.num_edicts)
 	{
@@ -79,7 +79,7 @@ void WriteEnt(edict_t** to, FILE* f)
 		index = -1;
 	}
 
-	tWrite(&index, f);
+	fwrite(&index, 1, sizeof(index), f);
 }
 
 //==========================================================================

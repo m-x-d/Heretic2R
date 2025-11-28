@@ -20,13 +20,3 @@ extern void script_signaler(edict_t* which, SignalT signal_type);
 extern "C" void animate_signaler(edict_t* which);
 extern Variable* FindGlobal(const char* name);
 extern bool NewGlobal(Variable* var);
-
-template<class T> size_t tWrite(T* ptr, FILE* f, const int n = 1)
-{
-	return fwrite(ptr, n, sizeof(T), f);
-}
-
-template<class T> size_t tRead(T* ptr, FILE* f, const int n = 1)
-{
-	return fread(ptr, n, sizeof(T), f);
-}

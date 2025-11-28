@@ -17,7 +17,7 @@ Signaler::Signaler(edict_t* new_edict, Variable* new_var, const SignalT new_sign
 Signaler::Signaler(FILE* f, CScript* script)
 {
 	ReadEnt(&edict, f);
-	tRead(&signal_type, f);
+	fread(&signal_type, 1, sizeof(signal_type), f);
 
 	var = static_cast<Variable*>(RestoreObject(f, script));
 }
@@ -33,7 +33,7 @@ void Signaler::Write(FILE* f, CScript* script)
 	fwrite(&index, 1, sizeof(index), f);
 
 	WriteEnt(&edict, f);
-	tWrite(&signal_type, f);
+	fwrite(&signal_type, 1, sizeof(signal_type), f);
 
 	var->Write(f, script);
 }
