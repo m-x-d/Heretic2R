@@ -19,7 +19,7 @@ Signaler::Signaler(FILE* f, CScript* script)
 	ReadEnt(&edict, f);
 	tRead(&signal_type, f);
 
-	var = static_cast<Variable*>(RestoreObject(f, ScriptRL, script));
+	var = static_cast<Variable*>(RestoreObject(f, script));
 }
 
 Signaler::~Signaler()

@@ -10,34 +10,31 @@
 #include "sc_Variable.h"
 #include "sc_Signaler.h"
 
-#define RLID_INTVAR				1
-#define RLID_FLOATVAR			2
-#define RLID_VECTORVAR			3
-#define RLID_ENTITYVAR			4
-#define RLID_STRINGVAR			5
-#define RLID_VARIABLEVAR		6
-#define RLID_FIELDVARIABLEVAR	7
-#define RLID_SIGNALER			8
-#define RLID_MOVEDONEEVENT		9
-#define RLID_ROTATEDONEEVENT	10
-#define RLID_EXECUTEEVENT		11
-#define RLID_WAITEVENT			12
-#define RLID_SCRIPT				13
-#define RLID_FIELDDEF			14
-
-typedef struct RestoreList_s
+typedef enum RestoreListID_s
 {
-	int ID;
-	void* (*alloc_func)(FILE*, void*);
-} RestoreList_t;
+	RLID_UNDEFINED = -1, //mxd
+	RLID_INTVAR = 1,
+	RLID_FLOATVAR,
+	RLID_VECTORVAR,
+	RLID_ENTITYVAR,
+	RLID_STRINGVAR,
+	RLID_VARIABLEVAR,
+	RLID_FIELDVARIABLEVAR,
+	RLID_SIGNALER,
+	RLID_MOVEDONEEVENT,
+	RLID_ROTATEDONEEVENT,
+	RLID_EXECUTEEVENT,
+	RLID_WAITEVENT,
+	RLID_SCRIPT,
+	RLID_FIELDDEF,
+} RestoreListID_t;
 
 extern List<Variable*> GlobalVariables;
 extern List<CScript*> Scripts;
-extern RestoreList_t ScriptRL[];
 
 extern void ReadEnt(edict_t** to, FILE* f);
 extern void WriteEnt(edict_t** to, FILE* f);
-extern void* RestoreObject(FILE* f, const RestoreList_t* list, void* data);
+extern void* RestoreObject(FILE* f, CScript* data);
 extern void script_signaler(edict_t* which, SignalT signal_type);
 extern "C" void animate_signaler(edict_t* which);
 extern Variable* FindGlobal(const char* name);

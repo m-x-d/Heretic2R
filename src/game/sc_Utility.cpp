@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include <map>
 #include "sc_Utility.h"
 #include "sc_CScript.h"
 #include "sc_EntityVar.h"
@@ -19,112 +20,31 @@
 #include "g_local.h"
 
 List<CScript*> Scripts;
-List<Variable*>	GlobalVariables;
+List<Variable*> GlobalVariables;
 
-//==========================================================================
-
-static void* RF_IntVar(FILE* f, void* data)
+void* RestoreObject(FILE* f, CScript* data)
 {
-	return new IntVar(f, static_cast<CScript*>(data));
-}
-
-static void* RF_FloatVar(FILE* f, void* data)
-{
-	return new FloatVar(f, static_cast<CScript*>(data));
-}
-
-static void* RF_VectorVar(FILE* f, void* data)
-{
-	return new VectorVar(f, static_cast<CScript*>(data));
-}
-
-static void* RF_EntityVar(FILE* f, void* data)
-{
-	return new EntityVar(f, static_cast<CScript*>(data));
-}
-
-static void* RF_StringVar(FILE* f, void* data)
-{
-	return new StringVar(f, static_cast<CScript*>(data));
-}
-
-static void* RF_VariableVar(FILE* f, void* data)
-{
-	return new VariableVar(f, static_cast<CScript*>(data));
-}
-
-static void* RF_FieldVariableVar(FILE* f, void* data)
-{
-	return new FieldVariableVar(f, static_cast<CScript*>(data));
-}
-
-static void* RF_Signaler(FILE* f, void* data)
-{
-	return new Signaler(f, static_cast<CScript*>(data));
-}
-
-static void* RF_MoveDoneEvent(FILE* f, void* data)
-{
-	return new MoveDoneEvent(f, static_cast<CScript*>(data));
-}
-
-static void* RF_RotateDoneEvent(FILE* f, void* data)
-{
-	return new RotateDoneEvent(f, static_cast<CScript*>(data));
-}
-
-static void* RF_ExecuteEvent(FILE* f, void* data)
-{
-	return new ExecuteEvent(f, static_cast<CScript*>(data));
-}
-
-static void* RF_WaitEvent(FILE* f, void* data)
-{
-	return new WaitEvent(f, static_cast<CScript*>(data));
-}
-
-static void* RF_Script(FILE* f, void* data)
-{
-	return new CScript(f);
-}
-
-static void* RF_FieldDef(FILE* f, void* data)
-{
-	return new FieldDef(f, static_cast<CScript*>(data));
-}
-
-RestoreList_t ScriptRL[] =
-{
-	{ RLID_INTVAR,				RF_IntVar },
-	{ RLID_FLOATVAR,			RF_FloatVar },
-	{ RLID_VECTORVAR,			RF_VectorVar },
-	{ RLID_ENTITYVAR,			RF_EntityVar },
-	{ RLID_STRINGVAR,			RF_StringVar },
-	{ RLID_VARIABLEVAR,			RF_VariableVar },
-	{ RLID_FIELDVARIABLEVAR,	RF_FieldVariableVar },
-	{ RLID_SIGNALER,			RF_Signaler },
-	{ RLID_MOVEDONEEVENT,		RF_MoveDoneEvent },
-	{ RLID_ROTATEDONEEVENT,		RF_RotateDoneEvent },
-	{ RLID_EXECUTEEVENT,		RF_ExecuteEvent },
-	{ RLID_WAITEVENT,			RF_WaitEvent },
-	{ RLID_SCRIPT,				RF_Script },
-	{ RLID_FIELDDEF,			RF_FieldDef },
-
-	{ 0,						nullptr },
-};
-
-//==========================================================================
-
-void* RestoreObject(FILE* f, const RestoreList_t* list, void* data)
-{
-	int id;
+	RestoreListID_t id;
 	fread(&id, 1, sizeof(id), f);
 
-	for (const RestoreList_t* pos = list; pos->alloc_func; pos++)
-		if (pos->ID == id)
-			return pos->alloc_func(f, data);
-
-	return nullptr;
+	switch (id)
+	{
+		case RLID_INTVAR:			return new IntVar(f, data);
+		case RLID_FLOATVAR:			return new FloatVar(f, data);
+		case RLID_VECTORVAR:		return new VectorVar(f, data);
+		case RLID_ENTITYVAR:		return new EntityVar(f, data);
+		case RLID_STRINGVAR:		return new StringVar(f, data);
+		case RLID_VARIABLEVAR:		return new VariableVar(f, data);
+		case RLID_FIELDVARIABLEVAR:	return new FieldVariableVar(f, data);
+		case RLID_SIGNALER:			return new Signaler(f, data);
+		case RLID_MOVEDONEEVENT:	return new MoveDoneEvent(f, data);
+		case RLID_ROTATEDONEEVENT:	return new RotateDoneEvent(f, data);
+		case RLID_EXECUTEEVENT:		return new ExecuteEvent(f, data);
+		case RLID_WAITEVENT:		return new WaitEvent(f, data);
+		case RLID_SCRIPT:			return new CScript(f);
+		case RLID_FIELDDEF:			return new FieldDef(f, data);
+		default:					return nullptr;
+	}
 }
 
 //==========================================================================

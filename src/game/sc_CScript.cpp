@@ -150,7 +150,7 @@ CScript::CScript(FILE* f)
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		RestoreObject(f, ScriptRL, this); // Fields - they'll put themselves in.
+		RestoreObject(f, this); // Fields - they'll put themselves in.
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
@@ -165,31 +165,31 @@ CScript::CScript(FILE* f)
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		local_variables.PushBack(static_cast<Variable*>(RestoreObject(f, ScriptRL, this)));
+		local_variables.PushBack(static_cast<Variable*>(RestoreObject(f, this)));
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		parameter_variables.PushBack(static_cast<Variable*>(RestoreObject(f, ScriptRL, this)));
+		parameter_variables.PushBack(static_cast<Variable*>(RestoreObject(f, this)));
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		stack_variables.PushBack(static_cast<Variable*>(RestoreObject(f, ScriptRL, this)));
+		stack_variables.PushBack(static_cast<Variable*>(RestoreObject(f, this)));
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		waiting_variables.PushBack(static_cast<Variable*>(RestoreObject(f, ScriptRL, this)));
+		waiting_variables.PushBack(static_cast<Variable*>(RestoreObject(f, this)));
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		signalers.PushBack(static_cast<Signaler*>(RestoreObject(f, ScriptRL, this)));
+		signalers.PushBack(static_cast<Signaler*>(RestoreObject(f, this)));
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		parameter_values.PushBack(static_cast<StringVar*>(RestoreObject(f, ScriptRL, this)));
+		parameter_values.PushBack(static_cast<StringVar*>(RestoreObject(f, this)));
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		events.PushBack(static_cast<Event*>(RestoreObject(f, ScriptRL, this)));
+		events.PushBack(static_cast<Event*>(RestoreObject(f, this)));
 }
 
 CScript::~CScript()

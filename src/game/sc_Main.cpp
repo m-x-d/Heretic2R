@@ -84,7 +84,7 @@ extern "C" void LoadScripts(FILE* f, const qboolean do_globals)
 		fread(&size, 1, sizeof(size), f);
 
 		for (int i = 0; i < size; i++)
-			GlobalVariables.PushBack(static_cast<Variable*>(RestoreObject(f, ScriptRL, nullptr)));
+			GlobalVariables.PushBack(static_cast<Variable*>(RestoreObject(f, nullptr)));
 	}
 	else
 	{
@@ -98,7 +98,7 @@ extern "C" void LoadScripts(FILE* f, const qboolean do_globals)
 		fread(&size, 1, sizeof(size), f);
 
 		for (int i = 0; i < size; i++)
-			Scripts.PushBack(static_cast<CScript*>(RestoreObject(f, ScriptRL, nullptr)));
+			Scripts.PushBack(static_cast<CScript*>(RestoreObject(f, nullptr)));
 	}
 }
 
