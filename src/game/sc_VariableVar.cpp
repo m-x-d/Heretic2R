@@ -21,7 +21,7 @@ VariableVar::VariableVar(FILE* f, CScript* script) : Variable(f, script)
 	value = script->LookupVar(index);
 }
 
-void VariableVar::Write(FILE* f, CScript* script, int id)
+void VariableVar::Write(FILE* f, CScript* script, RestoreListID_t id)
 {
 	Variable::Write(f, script, RLID_VARIABLEVAR);
 

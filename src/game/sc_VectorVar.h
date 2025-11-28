@@ -18,7 +18,7 @@ public:
 	VectorVar(vec3_t new_value);
 	VectorVar(FILE* f, CScript* script);
 
-	void Write(FILE* f, CScript* script, int id = -1) override;
+	void Write(FILE* f, CScript* script, RestoreListID_t id = RLID_UNDEFINED) override;
 	void GetVectorValue(vec3_t& dest_value) const override;
 	void ReadValue(CScript* script) override;
 	void Debug(CScript* script) override;

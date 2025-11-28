@@ -18,7 +18,7 @@ public:
 	FieldVariableVar(const char* new_name = "");
 	FieldVariableVar(FILE* f, CScript* script);
 
-	void Write(FILE* f, CScript* script, int id = -1) override;
+	void Write(FILE* f, CScript* script, RestoreListID_t id = RLID_UNDEFINED) override;
 	int GetIntValue() const override;
 	float GetFloatValue() const override;
 	void GetVectorValue(vec3_t& vec_value) const override;

@@ -17,6 +17,6 @@ public:
 	ExecuteEvent(float new_time, edict_t* new_other = nullptr, edict_t* new_activator = nullptr);
 	ExecuteEvent(FILE* f, CScript* script);
 
-	void Write(FILE* f, CScript* script, int id = -1) override;
+	void Write(FILE* f, CScript* script, RestoreListID_t id = RLID_UNDEFINED) override;
 	bool Process(CScript* script) override;
 };

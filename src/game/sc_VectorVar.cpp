@@ -24,7 +24,7 @@ VectorVar::VectorVar(FILE* f, CScript* script) : Variable(f, script)
 	fread(&value, 1, sizeof(value), f);
 }
 
-void VectorVar::Write(FILE* f, CScript* script, int id)
+void VectorVar::Write(FILE* f, CScript* script, RestoreListID_t id)
 {
 	Variable::Write(f, script, RLID_VECTORVAR);
 	fwrite(value, 1, sizeof(value), f);

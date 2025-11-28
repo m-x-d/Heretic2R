@@ -23,7 +23,7 @@ Event::Event(FILE* f, CScript* script)
 	tRead(&priority, f);
 }
 
-void Event::Write(FILE* f, CScript* script, const int id)
+void Event::Write(FILE* f, CScript* script, const RestoreListID_t id)
 {
 	fwrite(&id, 1, sizeof(id), f);
 	tWrite(&time, f);

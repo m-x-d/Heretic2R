@@ -18,7 +18,7 @@ IntVar::IntVar(FILE* f, CScript* script) : Variable(f, script)
 	fread(&value, 1, sizeof(value), f);
 }
 
-void IntVar::Write(FILE* f, CScript* script, int id)
+void IntVar::Write(FILE* f, CScript* script, RestoreListID_t id)
 {
 	Variable::Write(f, script, RLID_INTVAR);
 	fwrite(&value, 1, sizeof(value), f);

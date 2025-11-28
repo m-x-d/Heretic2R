@@ -17,7 +17,7 @@ WaitEvent::WaitEvent(FILE* f, CScript* script) : Event(f, script)
 {
 }
 
-void WaitEvent::Write(FILE* f, CScript* script, int id)
+void WaitEvent::Write(FILE* f, CScript* script, RestoreListID_t id)
 {
 	Event::Write(f, script, RLID_WAITEVENT);
 }

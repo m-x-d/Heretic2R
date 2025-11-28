@@ -17,7 +17,7 @@ public:
 	StringVar(const char* new_name = "", const char* new_value = "");
 	StringVar(FILE* f, CScript* script);
 
-	void Write(FILE* f, CScript* script, int id = -1) override;
+	void Write(FILE* f, CScript* script, RestoreListID_t id = RLID_UNDEFINED) override;
 
 	const char* GetStringValue() const override
 	{

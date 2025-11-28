@@ -19,7 +19,7 @@ MoveDoneEvent::MoveDoneEvent(FILE* f, CScript* script) : Event(f, script)
 	ReadEnt(&ent, f);
 }
 
-void MoveDoneEvent::Write(FILE* f, CScript* script, int id)
+void MoveDoneEvent::Write(FILE* f, CScript* script, RestoreListID_t id)
 {
 	Event::Write(f, script, RLID_MOVEDONEEVENT);
 	WriteEnt(&ent, f);

@@ -25,7 +25,7 @@ FieldVariableVar::FieldVariableVar(FILE* f, CScript* script) : Variable(f, scrip
 	field = script->LookupField(field_index);
 }
 
-void FieldVariableVar::Write(FILE* f, CScript* script, int id)
+void FieldVariableVar::Write(FILE* f, CScript* script, RestoreListID_t id)
 {
 	Variable::Write(f, script, RLID_FIELDVARIABLEVAR);
 

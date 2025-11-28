@@ -10,25 +10,6 @@
 #include "sc_Variable.h"
 #include "sc_Signaler.h"
 
-typedef enum RestoreListID_s
-{
-	RLID_UNDEFINED = -1, //mxd
-	RLID_INTVAR = 1,
-	RLID_FLOATVAR,
-	RLID_VECTORVAR,
-	RLID_ENTITYVAR,
-	RLID_STRINGVAR,
-	RLID_VARIABLEVAR,
-	RLID_FIELDVARIABLEVAR,
-	RLID_SIGNALER,
-	RLID_MOVEDONEEVENT,
-	RLID_ROTATEDONEEVENT,
-	RLID_EXECUTEEVENT,
-	RLID_WAITEVENT,
-	RLID_SCRIPT,
-	RLID_FIELDDEF,
-} RestoreListID_t;
-
 extern List<Variable*> GlobalVariables;
 extern List<CScript*> Scripts;
 

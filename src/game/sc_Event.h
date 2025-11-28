@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "sc_Pcode.h" //mxd
 #include "g_local.h"
 
 enum EventT
@@ -29,7 +30,7 @@ public:
 	Event(FILE* f, CScript* script);
 	virtual ~Event() = default; //mxd. Added to avoid compiler warning...
 
-	virtual void Write(FILE* f, CScript* script, int id = -1);
+	virtual void Write(FILE* f, CScript* script, RestoreListID_t id = RLID_UNDEFINED);
 
 	float GetTime() const
 	{

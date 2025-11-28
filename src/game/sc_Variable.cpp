@@ -25,7 +25,7 @@ Variable::Variable(FILE* f, CScript* script)
 		script->SetVarIndex(index, this);
 }
 
-void Variable::Write(FILE* f, CScript* script, const int id)
+void Variable::Write(FILE* f, CScript* script, const RestoreListID_t id)
 {
 	fwrite(&id, 1, sizeof(id), f);
 	fwrite(name, 1, sizeof(name), f);

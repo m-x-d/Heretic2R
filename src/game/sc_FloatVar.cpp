@@ -18,7 +18,7 @@ FloatVar::FloatVar(FILE* f, CScript* script) : Variable(f, script)
 	fread(&value, 1, sizeof(value), f);
 }
 
-void FloatVar::Write(FILE* f, CScript* script, int id)
+void FloatVar::Write(FILE* f, CScript* script, RestoreListID_t id)
 {
 	Variable::Write(f, script, RLID_FLOATVAR);
 	fwrite(&value, 1, sizeof(value), f);

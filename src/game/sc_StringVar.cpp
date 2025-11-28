@@ -18,7 +18,7 @@ StringVar::StringVar(FILE* f, CScript* script) : Variable(f, script)
 	fread(&value, 1, sizeof(value), f);
 }
 
-void StringVar::Write(FILE* f, CScript* script, int id)
+void StringVar::Write(FILE* f, CScript* script, RestoreListID_t id)
 {
 	Variable::Write(f, script, RLID_STRINGVAR);
 	fwrite(&value, 1, sizeof(value), f);

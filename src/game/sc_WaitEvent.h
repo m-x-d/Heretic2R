@@ -14,6 +14,6 @@ public:
 	WaitEvent(float new_time);
 	WaitEvent(FILE* f, CScript* script);
 
-	void Write(FILE* f, CScript* script, int id = -1) override;
+	void Write(FILE* f, CScript* script, RestoreListID_t id = RLID_UNDEFINED) override;
 	bool Process(CScript* script) override;
 };

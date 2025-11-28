@@ -17,7 +17,7 @@ public:
 	IntVar(const char* new_name = "", int new_value = 0);
 	IntVar(FILE* f, CScript* script);
 
-	void Write(FILE* f, CScript* script, int id = -1) override;
+	void Write(FILE* f, CScript* script, RestoreListID_t id = RLID_UNDEFINED) override;
 
 	int GetIntValue() const override
 	{

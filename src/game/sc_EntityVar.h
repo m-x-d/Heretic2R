@@ -18,7 +18,7 @@ public:
 	EntityVar(edict_t* which);
 	EntityVar(FILE* f, CScript* script);
 
-	void Write(FILE* f, CScript* script, int id = -1) override;
+	void Write(FILE* f, CScript* script, RestoreListID_t id = RLID_UNDEFINED) override;
 	int GetIntValue() const override;
 
 	edict_t* GetEdictValue() const override

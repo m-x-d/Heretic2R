@@ -17,7 +17,7 @@ public:
 	FloatVar(const char* new_name = "", float new_value = 0.0f);
 	FloatVar(FILE* f, CScript* script);
 
-	void Write(FILE* f, CScript* script, int id = -1) override;
+	void Write(FILE* f, CScript* script, RestoreListID_t id = RLID_UNDEFINED) override;
 
 	int GetIntValue() const override
 	{

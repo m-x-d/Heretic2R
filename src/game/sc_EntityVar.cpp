@@ -33,7 +33,7 @@ EntityVar::EntityVar(FILE* f, CScript* script) : Variable(f, script)
 		value = &g_edicts[index]; //TODO: check if index >= 0 && < globals.num_edicts?
 }
 
-void EntityVar::Write(FILE* f, CScript* script, int id)
+void EntityVar::Write(FILE* f, CScript* script, RestoreListID_t id)
 {
 	Variable::Write(f, script, RLID_ENTITYVAR);
 

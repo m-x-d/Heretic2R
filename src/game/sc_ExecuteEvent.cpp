@@ -21,7 +21,7 @@ ExecuteEvent::ExecuteEvent(FILE* f, CScript* script) : Event(f, script)
 	ReadEnt(&activator, f);
 }
 
-void ExecuteEvent::Write(FILE* f, CScript* script, int id)
+void ExecuteEvent::Write(FILE* f, CScript* script, RestoreListID_t id)
 {
 	Event::Write(f, script, RLID_EXECUTEEVENT);
 	WriteEnt(&other, f);
