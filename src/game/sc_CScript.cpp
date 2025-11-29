@@ -181,7 +181,7 @@ CScript::CScript(FILE* f)
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		signalers.PushBack(static_cast<Signaler*>(RestoreObject(f, this)));
+		signalers.push_back(static_cast<Signaler*>(RestoreObject(f, this)));
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
@@ -248,13 +248,9 @@ void CScript::Free() //mxd. Removed unused 'do_data' arg.
 		delete var;
 	waiting_variables.clear();
 
-	while (signalers.Size())
-	{
-		List<Signaler*>::Iter signaler = signalers.Begin();
-		delete *signaler;
-
-		signalers.Erase(signaler);
-	}
+	for (const Signaler* signaler : signalers)
+		delete signaler;
+	signalers.clear();
 
 	while (parameter_values.Size())
 	{
@@ -363,10 +359,10 @@ void CScript::Write(FILE* f)
 	for (Variable* var : waiting_variables)
 		var->Write(f, this);
 
-	size = signalers.Size();
+	size = signalers.size();
 	fwrite(&size, 1, sizeof(size), f);
-	for (List<Signaler*>::Iter signaler = signalers.Begin(); signaler != signalers.End(); ++signaler)
-		(*signaler)->Write(f, this);
+	for (Signaler* signaler : signalers)
+		signaler->Write(f, this);
 
 	size = parameter_values.Size();
 	fwrite(&size, 1, sizeof(size), f);
@@ -1679,33 +1675,32 @@ void CScript::AddSignaler(edict_t* edict, Variable* var, const SignalT signal_ty
 
 	// Note that this check does not need to be in there - signalers are very flexible, but if used incorrectly,
 	// they can result in weird behavior - this check prevents more than one command using the same signal variable prior to a wait command.
-	for (List<Signaler*>::Iter signaler = signalers.Begin(); signaler != signalers.End(); ++signaler)
-		if (*(*signaler) == new_signaler)
+	for (const Signaler* signaler : signalers)
+		if (*signaler == new_signaler)
 			Error("AddSignaler: variable '%s' is being used for multiple signals", var->GetName());
 
-	signalers.PushBack(new_signaler);
+	signalers.push_back(new_signaler);
 }
 
 void CScript::CheckSignalers(edict_t* which, const SignalT signal_type)
 {
 	bool check_wait = false;
 
-	if (signalers.Size() > 0)
+	auto iter = signalers.begin();
+	while (iter != signalers.end())
 	{
-		List<Signaler*>::Iter next;
+		const Signaler* signaler = *iter;
 
-		for (List<Signaler*>::Iter signaler = signalers.Begin(); signaler != signalers.End(); signaler = next)
+		if (signaler->Test(which, signal_type))
 		{
-			next = signaler;
-			++next;
+			delete signaler;
+			iter = signalers.erase(iter);
 
-			if ((*signaler)->Test(which, signal_type))
-			{
-				delete *signaler;
-				signalers.Erase(signaler);
-
-				check_wait = true;
-			}
+			check_wait = true;
+		}
+		else
+		{
+			++iter;
 		}
 	}
 

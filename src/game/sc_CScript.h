@@ -40,7 +40,7 @@ class CScript
 	std::list<Variable*> parameter_variables;
 	std::list<Variable*> stack_variables;
 	std::list<Variable*> waiting_variables;
-	List<Signaler*> signalers;
+	std::list<Signaler*> signalers;
 	List<StringVar*> parameter_values;
 	List<Event*> events;
 	Variable* variable_index[MAX_INDEX] = { nullptr };
