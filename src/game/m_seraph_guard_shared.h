@@ -54,16 +54,16 @@ typedef enum SoundID_e
 	NUM_SOUNDS
 } SoundID_t;
 
-void seraph_guard_death_loop(edict_t* self);
-void seraph_guard_check_land(edict_t* self);
-void seraph_guard_dead(edict_t* self);
-void seraph_guard_check_poke(edict_t* self);
+extern void seraph_guard_death_loop(edict_t* self);
+extern void seraph_guard_check_land(edict_t* self);
+extern void seraph_guard_dead(edict_t* self);
+extern void seraph_guard_check_poke(edict_t* self);
 
-void seraph_guard_pause(edict_t* self);
-void seraph_guard_strike(edict_t* self, float damage, float forward, float up);
-void seraph_guard_jump(edict_t* self);
-void seraph_guard_back(edict_t* self, float distance);
-void seraph_guard_fire(edict_t* self);
+extern void seraph_guard_pause(edict_t* self);
+extern void seraph_guard_strike(edict_t* self, float damage, float forward, float up);
+extern void seraph_guard_jump(edict_t* self);
+extern void seraph_guard_back(edict_t* self, float distance);
+extern void seraph_guard_fire(edict_t* self);
 
 #define BIT_BASEBIN		0
 #define BIT_PITHEAD		1

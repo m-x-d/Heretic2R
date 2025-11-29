@@ -681,7 +681,7 @@ void seraph_guard_dead(edict_t* self)
 	M_EndDeath(self);
 }
 
-void seraph_guard_strike(edict_t* self, float damage, float var2, float var3)
+void seraph_guard_strike(edict_t* self, float damage, float forward, float up)
 {
 	if (self->monsterinfo.aiflags & AI_NO_MELEE)
 		return;
