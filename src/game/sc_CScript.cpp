@@ -165,7 +165,7 @@ CScript::CScript(FILE* f)
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		local_variables.PushBack(static_cast<Variable*>(RestoreObject(f, this)));
+		local_variables.push_back(static_cast<Variable*>(RestoreObject(f, this)));
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
@@ -232,13 +232,9 @@ void CScript::Free() //mxd. Removed unused 'do_data' arg.
 		data = nullptr;
 	}
 
-	while (local_variables.Size())
-	{
-		List<Variable*>::Iter var = local_variables.Begin();
-		delete *var;
-
-		local_variables.Erase(var);
-	}
+	for (const Variable* var : local_variables)
+		delete var;
+	local_variables.clear();
 
 	while (parameter_variables.Size())
 	{
@@ -334,7 +330,7 @@ void CScript::Write(FILE* f)
 	index = ((activator != nullptr) ? activator - g_edicts : -1);
 	fwrite(&index, 1, sizeof(index), f);
 
-	int size = 0;
+	uint size = 0;
 	for (const auto& fielddef : fielddefs)
 		if (fielddef != nullptr)
 			size++;
@@ -359,10 +355,10 @@ void CScript::Write(FILE* f)
 		}
 	}
 
-	size = local_variables.Size();
+	size = local_variables.size();
 	fwrite(&size, 1, sizeof(size), f);
-	for (List<Variable*>::Iter var = local_variables.Begin(); var != local_variables.End(); ++var)
-		(*var)->Write(f, this);
+	for (Variable* var : local_variables)
+		var->Write(f, this);
 
 	size = parameter_variables.Size();
 	fwrite(&size, 1, sizeof(size), f);
@@ -861,11 +857,11 @@ void CScript::HandleDebug()
 			pair.second->Debug(this);
 	}
 
-	if (local_variables.Size() > 0)
+	if (!local_variables.empty())
 	{
 		DebugLine("   Local Variables:\n");
-		for (List<Variable*>::Iter var = local_variables.Begin(); var != local_variables.End(); ++var)
-			(*var)->Debug(this);
+		for (Variable* var : local_variables)
+			var->Debug(this);
 	}
 
 	EndDebug();
@@ -2026,14 +2022,11 @@ ScriptConditionT CScript::Execute(edict_t* new_other, edict_t* new_activator)
 	return script_condition;
 }
 
-Variable* CScript::FindLocal(const char* var_name)
+Variable* CScript::FindLocal(const char* var_name) const
 {
-	if (local_variables.Size() > 0)
-	{
-		for (List<Variable*>::Iter var = local_variables.Begin(); var != local_variables.End(); ++var)
-			if (strcmp(var_name, (*var)->GetName()) == 0)
-				return *var;
-	}
+	for (Variable* var : local_variables)
+		if (strcmp(var_name, var->GetName()) == 0)
+			return var;
 
 	return nullptr;
 }
@@ -2042,7 +2035,7 @@ bool CScript::NewLocal(Variable* which)
 {
 	if (FindLocal(which->GetName()) == nullptr)
 	{
-		local_variables.PushBack(which);
+		local_variables.push_back(which);
 		return true;
 	}
 

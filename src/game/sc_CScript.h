@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <list>
 #include "sc_Event.h"
 #include "sc_FieldDef.h"
 #include "sc_StringVar.h"
@@ -35,7 +36,7 @@ class CScript
 	int condition_info = 0;
 	int length = 0;
 	int position = 0;
-	List<Variable*> local_variables;
+	std::list<Variable*> local_variables;
 	List<Variable*> parameter_variables;
 	List<Variable*> stack_variables;
 	List<Variable*> waiting_variables;
@@ -107,7 +108,7 @@ class CScript
 	void StartDebug();
 	void EndDebug() const;
 
-	Variable* FindLocal(const char* var_name);
+	Variable* FindLocal(const char* var_name) const;
 	bool NewLocal(Variable* which);
 	Variable* FindParameter(const char* param_name);
 	bool NewParameter(Variable* which);
