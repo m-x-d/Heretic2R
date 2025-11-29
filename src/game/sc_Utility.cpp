@@ -19,7 +19,7 @@
 #include "sc_WaitEvent.h"
 #include "g_local.h"
 
-List<CScript*> Scripts;
+std::list<CScript*> Scripts;
 List<Variable*> GlobalVariables;
 
 void* RestoreObject(FILE* f, CScript* data)
@@ -107,9 +107,8 @@ bool NewGlobal(Variable* var)
 
 void script_signaler(edict_t* which, const SignalT signal_type)
 {
-	if (Scripts.Size() > 0)
-		for (List<CScript*>::Iter script = Scripts.Begin(); script != Scripts.End(); ++script)
-			(*script)->CheckSignalers(which, signal_type);
+	for (CScript* script : Scripts)
+		script->CheckSignalers(which, signal_type);
 }
 
 extern "C" void animate_signaler(edict_t* which)

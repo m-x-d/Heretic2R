@@ -6,12 +6,13 @@
 
 #pragma once
 
+#include <list>
 #include "sc_List.h"
 #include "sc_Variable.h"
 #include "sc_Signaler.h"
 
 extern List<Variable*> GlobalVariables;
-extern List<CScript*> Scripts;
+extern std::list<CScript*> Scripts;
 
 extern void ReadEnt(edict_t** to, FILE* f);
 extern void WriteEnt(edict_t** to, FILE* f);

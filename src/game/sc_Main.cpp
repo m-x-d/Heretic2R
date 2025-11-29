@@ -7,27 +7,21 @@
 #include "sc_Main.h"
 #include "sc_CScript.h"
 #include "sc_ExecuteEvent.h"
-#include "sc_List.h"
 #include "sc_Utility.h"
 
 #define SCRIPT_SAVE_VERSION 2
 
 extern "C" void ProcessScripts(void)
 {
-	if (Scripts.Size() > 0)
-		for (List<CScript*>::Iter is = Scripts.Begin(); is != Scripts.End(); ++is)
-			(*is)->Think();
+	for (CScript* script : Scripts)
+		script->Think();
 }
 
 extern "C" void ShutdownScripts(const qboolean complete)
 {
-	while (Scripts.Size() > 0)
-	{
-		List<CScript*>::Iter script = Scripts.Begin();
-		delete (*script);
-
-		Scripts.Erase(script);
-	}
+	for (const CScript* script : Scripts)
+		delete script;
+	Scripts.clear();
 
 	edict_t* ent = &g_edicts[0];
 	for (int i = 0; i < globals.num_edicts; i++, ent++)
@@ -60,11 +54,11 @@ extern "C" void SaveScripts(FILE* f, const qboolean do_globals)
 	}
 	else
 	{
-		const int size = Scripts.Size();
+		const uint size = Scripts.size();
 		fwrite(&size, 1, sizeof(size), f);
 
-		for (List<CScript*>::Iter script = Scripts.Begin(); script != Scripts.End(); ++script)
-			(*script)->Write(f);
+		for (CScript* script : Scripts)
+			script->Write(f);
 	}
 }
 
@@ -94,11 +88,11 @@ extern "C" void LoadScripts(FILE* f, const qboolean do_globals)
 		for (int i = 0; i < globals.num_edicts; i++, ent++)
 			ent->Script = nullptr;
 
-		int size;
+		uint size;
 		fread(&size, 1, sizeof(size), f);
 
-		for (int i = 0; i < size; i++)
-			Scripts.PushBack(static_cast<CScript*>(RestoreObject(f, nullptr)));
+		for (uint i = 0; i < size; i++)
+			Scripts.push_back(static_cast<CScript*>(RestoreObject(f, nullptr)));
 	}
 }
 
@@ -116,15 +110,10 @@ extern "C" void SP_script_runner(edict_t* ent)
 	sprintf_s(script_path, "ds/%s.os", st.script); //mxd. sprintf -> sprintf_s.
 
 	ent->Script = new CScript(script_path, ent);
-	Scripts.PushBack(ent->Script);
+	Scripts.push_back(ent->Script);
 
-	for (const auto& parm : st.parms)
-	{
-		if (parm != nullptr)
-			ent->Script->SetParameter(parm);
-		else
-			break;
-	}
+	for (uint i = 0; i < std::size(st.parms) && st.parms[i] != nullptr; i++)
+		ent->Script->SetParameter(st.parms[i]);
 
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->solid = SOLID_NOT;
