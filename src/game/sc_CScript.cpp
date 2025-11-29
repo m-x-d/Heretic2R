@@ -185,7 +185,7 @@ CScript::CScript(FILE* f)
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		parameter_values.PushBack(static_cast<StringVar*>(RestoreObject(f, this)));
+		parameter_values.push_back(static_cast<StringVar*>(RestoreObject(f, this)));
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
@@ -252,13 +252,9 @@ void CScript::Free() //mxd. Removed unused 'do_data' arg.
 		delete signaler;
 	signalers.clear();
 
-	while (parameter_values.Size())
-	{
-		List<StringVar*>::Iter param_val = parameter_values.Begin();
-		delete *param_val;
-
-		parameter_values.Erase(param_val);
-	}
+	for (const StringVar* param_val : parameter_values)
+		delete param_val;
+	parameter_values.clear();
 
 	while (events.Size())
 	{
@@ -364,10 +360,10 @@ void CScript::Write(FILE* f)
 	for (Signaler* signaler : signalers)
 		signaler->Write(f, this);
 
-	size = parameter_values.Size();
+	size = parameter_values.size();
 	fwrite(&size, 1, sizeof(size), f);
-	for (List<StringVar*>::Iter param_val = parameter_values.Begin(); param_val != parameter_values.End(); ++param_val)
-		(*param_val)->Write(f, this);
+	for (StringVar* param_val : parameter_values)
+		param_val->Write(f, this);
 
 	size = events.Size();
 	fwrite(&size, 1, sizeof(size), f);
@@ -395,7 +391,7 @@ int	CScript::LookupFieldIndex(const FieldDef* field) const
 
 void CScript::SetParameter(const char* value)
 {
-	parameter_values.PushBack(new StringVar("parm", value));
+	parameter_values.push_back(new StringVar("parm", value));
 }
 
 byte CScript::ReadByte()
@@ -2034,11 +2030,11 @@ bool CScript::NewParameter(Variable* which)
 
 	parameter_variables.push_back(which);
 
-	if (parameter_values.Size() == 0)
+	if (parameter_values.empty())
 		Error("Missing Parameter");
 
-	const StringVar* parm_value = *parameter_values.Begin();
-	parameter_values.Erase(parameter_values.Begin());
+	const StringVar* parm_value = *parameter_values.begin();
+	parameter_values.pop_front();
 
 	Variable* temp;
 
