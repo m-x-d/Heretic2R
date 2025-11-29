@@ -37,7 +37,7 @@ class CScript
 	int length = 0;
 	int position = 0;
 	std::list<Variable*> local_variables;
-	List<Variable*> parameter_variables;
+	std::list<Variable*> parameter_variables;
 	List<Variable*> stack_variables;
 	List<Variable*> waiting_variables;
 	List<Signaler*> signalers;
@@ -110,7 +110,7 @@ class CScript
 
 	Variable* FindLocal(const char* var_name) const;
 	bool NewLocal(Variable* which);
-	Variable* FindParameter(const char* param_name);
+	Variable* FindParameter(const char* param_name) const;
 	bool NewParameter(Variable* which);
 
 public:

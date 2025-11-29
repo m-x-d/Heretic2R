@@ -169,7 +169,7 @@ CScript::CScript(FILE* f)
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		parameter_variables.PushBack(static_cast<Variable*>(RestoreObject(f, this)));
+		parameter_variables.push_back(static_cast<Variable*>(RestoreObject(f, this)));
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
@@ -236,13 +236,9 @@ void CScript::Free() //mxd. Removed unused 'do_data' arg.
 		delete var;
 	local_variables.clear();
 
-	while (parameter_variables.Size())
-	{
-		List<Variable*>::Iter var = parameter_variables.Begin();
-		delete *var;
-
-		parameter_variables.Erase(var);
-	}
+	for (const Variable* var : parameter_variables)
+		delete var;
+	parameter_variables.clear();
 
 	while (stack_variables.Size())
 	{
@@ -360,10 +356,10 @@ void CScript::Write(FILE* f)
 	for (Variable* var : local_variables)
 		var->Write(f, this);
 
-	size = parameter_variables.Size();
+	size = parameter_variables.size();
 	fwrite(&size, 1, sizeof(size), f);
-	for (List<Variable*>::Iter var = parameter_variables.Begin(); var != parameter_variables.End(); ++var)
-		(*var)->Write(f, this);
+	for (Variable* var : parameter_variables)
+		var->Write(f, this);
 
 	size = stack_variables.Size();
 	fwrite(&size, 1, sizeof(size), f);
@@ -843,11 +839,11 @@ void CScript::HandleDebug()
 
 	StartDebug();
 
-	if (parameter_variables.Size() > 0)
+	if (!parameter_variables.empty())
 	{
 		DebugLine("   Parameters:\n");
-		for (List<Variable*>::Iter var = parameter_variables.Begin(); var != parameter_variables.End(); ++var)
-			(*var)->Debug(this);
+		for (Variable* var : parameter_variables)
+			var->Debug(this);
 	}
 
 	if (!GlobalVariables.empty())
@@ -2043,14 +2039,11 @@ bool CScript::NewLocal(Variable* which)
 	return false;
 }
 
-Variable* CScript::FindParameter(const char* param_name)
+Variable* CScript::FindParameter(const char* param_name) const
 {
-	if (parameter_variables.Size() > 0)
-	{
-		for (List<Variable*>::Iter var = parameter_variables.Begin(); var != parameter_variables.End(); ++var)
-			if (strcmp(param_name, (*var)->GetName()) == 0)
-				return *var;
-	}
+	for (Variable* var : parameter_variables)
+		if (strcmp(param_name, var->GetName()) == 0)
+			return var;
 
 	return nullptr;
 }
@@ -2060,7 +2053,7 @@ bool CScript::NewParameter(Variable* which)
 	if (FindParameter(which->GetName()) != nullptr)
 		return false; // Already exists.
 
-	parameter_variables.PushBack(which);
+	parameter_variables.push_back(which);
 
 	if (parameter_values.Size() == 0)
 		Error("Missing Parameter");
