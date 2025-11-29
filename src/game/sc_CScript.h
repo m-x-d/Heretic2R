@@ -38,7 +38,7 @@ class CScript
 	int position = 0;
 	std::list<Variable*> local_variables;
 	std::list<Variable*> parameter_variables;
-	List<Variable*> stack_variables;
+	std::list<Variable*> stack_variables;
 	List<Variable*> waiting_variables;
 	List<Signaler*> signalers;
 	List<StringVar*> parameter_values;

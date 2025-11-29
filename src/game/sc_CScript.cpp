@@ -173,7 +173,7 @@ CScript::CScript(FILE* f)
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		stack_variables.PushBack(static_cast<Variable*>(RestoreObject(f, this)));
+		stack_variables.push_back(static_cast<Variable*>(RestoreObject(f, this)));
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
@@ -240,13 +240,9 @@ void CScript::Free() //mxd. Removed unused 'do_data' arg.
 		delete var;
 	parameter_variables.clear();
 
-	while (stack_variables.Size())
-	{
-		List<Variable*>::Iter var = stack_variables.Begin();
-		delete *var;
-
-		stack_variables.Erase(var);
-	}
+	for (const Variable* var : stack_variables)
+		delete var;
+	stack_variables.clear();
 
 	while (waiting_variables.Size())
 	{
@@ -361,10 +357,10 @@ void CScript::Write(FILE* f)
 	for (Variable* var : parameter_variables)
 		var->Write(f, this);
 
-	size = stack_variables.Size();
+	size = stack_variables.size();
 	fwrite(&size, 1, sizeof(size), f);
-	for (List<Variable*>::Iter var = stack_variables.Begin(); var != stack_variables.End(); ++var)
-		(*var)->Write(f, this);
+	for (Variable* var : stack_variables)
+		var->Write(f, this);
 
 	size = waiting_variables.Size();
 	fwrite(&size, 1, sizeof(size), f);
@@ -505,17 +501,16 @@ void CScript::PushStack(Variable* v)
 	if (v == nullptr)
 		Error("Illegal push");
 
-	stack_variables.PushBack(v);
+	stack_variables.push_back(v);
 }
 
 Variable* CScript::PopStack()
 {
-	if (stack_variables.Size() == 0)
+	if (stack_variables.empty())
 		Error("Illegal pop"); //mxd. Throw error instead of returning nullptr.
 
-	const List<Variable*>::Iter var_iter = --stack_variables.End();
-	Variable* var = *var_iter;
-	stack_variables.PopBack();
+	Variable* var = stack_variables.back();
+	stack_variables.pop_back();
 
 	return var;
 }
