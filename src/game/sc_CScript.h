@@ -39,7 +39,7 @@ class CScript
 	std::list<Variable*> local_variables;
 	std::list<Variable*> parameter_variables;
 	std::list<Variable*> stack_variables;
-	List<Variable*> waiting_variables;
+	std::list<Variable*> waiting_variables;
 	List<Signaler*> signalers;
 	List<StringVar*> parameter_values;
 	List<Event*> events;

@@ -177,7 +177,7 @@ CScript::CScript(FILE* f)
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		waiting_variables.PushBack(static_cast<Variable*>(RestoreObject(f, this)));
+		waiting_variables.push_back(static_cast<Variable*>(RestoreObject(f, this)));
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
@@ -244,13 +244,9 @@ void CScript::Free() //mxd. Removed unused 'do_data' arg.
 		delete var;
 	stack_variables.clear();
 
-	while (waiting_variables.Size())
-	{
-		List<Variable*>::Iter var = waiting_variables.Begin();
-		delete *var;
-
-		waiting_variables.Erase(var);
-	}
+	for (const Variable* var : waiting_variables)
+		delete var;
+	waiting_variables.clear();
 
 	while (signalers.Size())
 	{
@@ -362,10 +358,10 @@ void CScript::Write(FILE* f)
 	for (Variable* var : stack_variables)
 		var->Write(f, this);
 
-	size = waiting_variables.Size();
+	size = waiting_variables.size();
 	fwrite(&size, 1, sizeof(size), f);
-	for (List<Variable*>::Iter var = waiting_variables.Begin(); var != waiting_variables.End(); ++var)
-		(*var)->Write(f, this);
+	for (Variable* var : waiting_variables)
+		var->Write(f, this);
 
 	size = signalers.Size();
 	fwrite(&size, 1, sizeof(size), f);
@@ -932,7 +928,7 @@ bool CScript::HandleWait(const bool for_all)
 		if (var == nullptr)
 			Error("Invalid stack for HandleWait");
 
-		waiting_variables.PushBack(var);
+		waiting_variables.push_back(var);
 	}
 
 	script_condition = (for_all ? COND_WAIT_ALL : COND_WAIT_ANY);
@@ -1719,10 +1715,10 @@ void CScript::CheckSignalers(edict_t* which, const SignalT signal_type)
 
 bool CScript::CheckWait()
 {
-	int needed_vars;
+	uint needed_vars;
 
 	if (script_condition == COND_WAIT_ALL)
-		needed_vars = waiting_variables.Size();
+		needed_vars = waiting_variables.size();
 	else if (script_condition == COND_WAIT_ANY)
 		needed_vars = 1;
 	else if (script_condition == COND_READY)
@@ -1730,14 +1726,10 @@ bool CScript::CheckWait()
 	else // COND_WAIT_TIME, COND_COMPLETED, COND_SUSPENDED.
 		return false;
 
-	int num_vars = 0;
-
-	if (waiting_variables.Size() > 0)
-	{
-		for (List<Variable*>::Iter var = waiting_variables.Begin(); var != waiting_variables.End(); ++var)
-			if ((*var)->GetIntValue() != 0)
-				num_vars++;
-	}
+	uint num_vars = 0;
+	for (const Variable* var : waiting_variables)
+		if (var->GetIntValue() != 0)
+			num_vars++;
 
 	if (num_vars == needed_vars)
 	{
@@ -1750,18 +1742,15 @@ bool CScript::CheckWait()
 
 void CScript::FinishWait(edict_t* which, const bool execute) //mxd. Second var named 'no_execute' in original logic.
 {
-	if (waiting_variables.Size() > 0)
+	for (Variable* var : waiting_variables)
 	{
-		for (List<Variable*>::Iter var = waiting_variables.Begin(); var != waiting_variables.End(); ++var)
-		{
-			if (condition_info == WAIT_CLEAR)
-				(*var)->ClearSignal();
+		if (condition_info == WAIT_CLEAR)
+			var->ClearSignal();
 
-			delete *var;
-		}
+		delete var;
 	}
 
-	waiting_variables.Erase(waiting_variables.Begin(), waiting_variables.End());
+	waiting_variables.clear();
 
 	if (execute)
 		Execute(which, nullptr);
