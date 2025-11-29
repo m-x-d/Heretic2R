@@ -29,13 +29,9 @@ extern "C" void ShutdownScripts(const qboolean complete)
 
 	if (complete)
 	{
-		while (GlobalVariables.Size() > 0)
-		{
-			List<Variable*>::Iter var = GlobalVariables.Begin();
-			delete (*var);
-
-			GlobalVariables.Erase(var);
-		}
+		for (const auto& pair : GlobalVariables)
+			delete pair.second;
+		GlobalVariables.clear();
 	}
 }
 
@@ -46,11 +42,11 @@ extern "C" void SaveScripts(FILE* f, const qboolean do_globals)
 
 	if (do_globals)
 	{
-		const int size = GlobalVariables.Size();
+		const uint size = GlobalVariables.size();
 		fwrite(&size, 1, sizeof(size), f);
 
-		for (List<Variable*>::Iter var = GlobalVariables.Begin(); var != GlobalVariables.End(); ++var)
-			(*var)->Write(f, nullptr);
+		for (const auto& pair : GlobalVariables)
+			pair.second->Write(f, nullptr);
 	}
 	else
 	{
@@ -74,11 +70,14 @@ extern "C" void LoadScripts(FILE* f, const qboolean do_globals)
 	{
 		ShutdownScripts(true);
 
-		int size;
+		uint size;
 		fread(&size, 1, sizeof(size), f);
 
-		for (int i = 0; i < size; i++)
-			GlobalVariables.PushBack(static_cast<Variable*>(RestoreObject(f, nullptr)));
+		for (uint i = 0; i < size; i++)
+		{
+			Variable* var = static_cast<Variable*>(RestoreObject(f, nullptr));
+			GlobalVariables[var->GetName()] = var;
+		}
 	}
 	else
 	{

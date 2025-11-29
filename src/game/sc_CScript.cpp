@@ -345,17 +345,17 @@ void CScript::Write(FILE* f)
 			fielddef->Write(f, this);
 
 	size = 0;
-	for (List<Variable*>::Iter var = GlobalVariables.Begin(); var != GlobalVariables.End(); ++var)
-		if (LookupVarIndex(*var) != -1)
+	for (const auto& pair : GlobalVariables)
+		if (LookupVarIndex(pair.second) != -1)
 			size++;
 	fwrite(&size, 1, sizeof(size), f);
-	for (List<Variable*>::Iter var = GlobalVariables.Begin(); var != GlobalVariables.End(); ++var)
+	for (const auto& pair : GlobalVariables)
 	{
-		index = LookupVarIndex(*var);
+		index = LookupVarIndex(pair.second);
 		if (index != -1)
 		{
 			fwrite(&index, 1, sizeof(index), f);
-			fwrite((*var)->GetName(), 1, VAR_LENGTH, f);
+			fwrite(pair.second->GetName(), 1, VAR_LENGTH, f);
 		}
 	}
 
@@ -854,11 +854,11 @@ void CScript::HandleDebug()
 			(*var)->Debug(this);
 	}
 
-	if (GlobalVariables.Size() > 0)
+	if (!GlobalVariables.empty())
 	{
 		DebugLine("   Global Variables:\n");
-		for (List<Variable*>::Iter var = GlobalVariables.Begin(); var != GlobalVariables.End(); ++var)
-			(*var)->Debug(this);
+		for (const auto& pair : GlobalVariables)
+			pair.second->Debug(this);
 	}
 
 	if (local_variables.Size() > 0)

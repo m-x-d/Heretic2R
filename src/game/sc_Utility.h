@@ -7,11 +7,12 @@
 #pragma once
 
 #include <list>
-#include "sc_List.h"
+#include <string>
+#include <unordered_map>
 #include "sc_Variable.h"
 #include "sc_Signaler.h"
 
-extern List<Variable*> GlobalVariables;
+extern std::unordered_map<std::string, Variable*> GlobalVariables;
 extern std::list<CScript*> Scripts;
 
 extern void ReadEnt(edict_t** to, FILE* f);

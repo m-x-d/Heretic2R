@@ -20,7 +20,7 @@
 #include "g_local.h"
 
 std::list<CScript*> Scripts;
-List<Variable*> GlobalVariables;
+std::unordered_map<std::string, Variable*> GlobalVariables;
 
 void* RestoreObject(FILE* f, CScript* data)
 {
@@ -86,12 +86,8 @@ void WriteEnt(edict_t** to, FILE* f)
 
 Variable* FindGlobal(const char* name)
 {
-	if (GlobalVariables.Size() > 0)
-		for (List<Variable*>::Iter var = GlobalVariables.Begin(); var != GlobalVariables.End(); ++var)
-			if (strcmp(name, (*var)->GetName()) == 0)
-				return *var;
-
-	return nullptr;
+	const auto val = GlobalVariables.find(name);
+	return (val != GlobalVariables.end() ? val->second : nullptr);
 }
 
 bool NewGlobal(Variable* var)
@@ -99,7 +95,7 @@ bool NewGlobal(Variable* var)
 	if (FindGlobal(var->GetName()) != nullptr)
 		return false; // Already exists.
 
-	GlobalVariables.PushBack(var);
+	GlobalVariables[var->GetName()] = var;
 	return true;
 }
 
