@@ -10,7 +10,6 @@
 #include "sc_Event.h"
 #include "sc_FieldDef.h"
 #include "sc_StringVar.h"
-#include "sc_List.h"
 #include "sc_Signaler.h"
 #include "g_local.h"
 
@@ -42,7 +41,7 @@ class CScript
 	std::list<Variable*> waiting_variables;
 	std::list<Signaler*> signalers;
 	std::list<StringVar*> parameter_values;
-	List<Event*> events;
+	std::list<Event*> events;
 	Variable* variable_index[MAX_INDEX] = { nullptr };
 	FieldDef* fielddefs[MAX_INDEX] = { nullptr };
 	edict_t* owner = nullptr;

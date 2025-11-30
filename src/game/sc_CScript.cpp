@@ -189,7 +189,7 @@ CScript::CScript(FILE* f)
 
 	fread(&size, 1, sizeof(size), f);
 	for (int i = 0; i < size; i++)
-		events.PushBack(static_cast<Event*>(RestoreObject(f, this)));
+		events.push_back(static_cast<Event*>(RestoreObject(f, this)));
 }
 
 CScript::~CScript()
@@ -256,13 +256,9 @@ void CScript::Free() //mxd. Removed unused 'do_data' arg.
 		delete param_val;
 	parameter_values.clear();
 
-	while (events.Size())
-	{
-		List<Event*>::Iter ei = events.Begin();
-		delete *ei;
-
-		events.Erase(ei);
-	}
+	for (const Event* event : events)
+		delete event;
+	events.clear();
 
 	for (const auto& fielddef : fielddefs)
 		delete fielddef;
@@ -365,10 +361,10 @@ void CScript::Write(FILE* f)
 	for (StringVar* param_val : parameter_values)
 		param_val->Write(f, this);
 
-	size = events.Size();
+	size = events.size();
 	fwrite(&size, 1, sizeof(size), f);
-	for (List<Event*>::Iter ei = events.Begin(); ei != events.End(); ++ei)
-		(*ei)->Write(f, this);
+	for (Event* event : events)
+		event->Write(f, this);
 }
 
 int CScript::LookupVarIndex(const Variable* var) const
@@ -1627,35 +1623,32 @@ void CScript::Rotate(edict_t* ent)
 
 void CScript::AddEvent(Event* which)
 {
-	if (events.Size() > 0)
+	if (events.empty())
 	{
-		const float time = which->GetTime();
-		List<Event*>::Iter ei;
-
-		// Insert by event time.
-		for (ei = events.Begin(); ei != events.End(); ++ei)
-			if ((*ei)->GetTime() > time)
-				break;
-
-		events.Insert(ei, which);
+		events.push_back(which);
+		return;
 	}
-	else
-	{
-		events.PushBack(which);
-	}
+
+	// Insert by event time.
+	std::list<Event*>::iterator ei;
+	for (ei = events.begin(); ei != events.end(); ++ei)
+		if ((*ei)->GetTime() > which->GetTime())
+			break;
+
+	events.insert(ei, which);
 }
 
 void CScript::ProcessEvents()
 {
-	while (events.Size() > 0)
+	while (!events.empty())
 	{
-		List<Event*>::Iter ei = events.Begin();
+		auto ei = events.begin();
 
 		if (!(*ei)->Process(this))
 			break;
 
 		delete *ei;
-		events.Erase(ei);
+		events.erase(ei);
 	}
 }
 
