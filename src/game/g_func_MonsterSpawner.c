@@ -256,7 +256,7 @@ void FuncMonsterSpawnerGo(edict_t* self) //mxd. Named 'monsterspawner_go' in ori
 	if (self->enemy != NULL && !(self->spawnflags & SF_ONDEATH))
 	{
 		// Was activated.
-		if (self->enemy->client != NULL) //TODO: skip if SF_PEACEFUL is set?
+		if (self->enemy->client != NULL && !(self->enemy->flags & FL_NOTARGET)) //mxd. Skip when notarget cheat is enabled. //TODO: skip if SF_PEACEFUL is set?
 			monster->enemy = self->enemy; // monster_start_go will check their enemy and do a FoundTarget.
 
 		self->enemy = NULL;
