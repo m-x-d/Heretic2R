@@ -81,37 +81,37 @@ typedef enum SoundID_e
 	NUM_SOUNDS
 } SoundID_t;
 
-void tbeast_snort(edict_t* self);
-void tbeast_growl(edict_t* self);
-void tbeast_check_mood(edict_t* self); //mxd
-void tbeast_pause(edict_t* self);
-void tbeast_bite(edict_t* self, float forward_offset, float right_offset, float up_offset);
-void tbeast_land(edict_t* self);
-void tbeast_roar(edict_t* self);
-void tbeast_apply_jump(edict_t* self);
-void tbeast_ready_catch(edict_t* self);
-void tbeast_throw_toy(edict_t* self);
-void tbeast_shake_toy(edict_t* self, float forward_offset, float right_offset, float up_offset);
-void tbeast_check_snatch(edict_t* self, float forward_offset, float right_offset, float up_offset);
-void tbeast_gore_toy(edict_t* self, float jump_height);
-void tbeast_anger_sound(edict_t* self);
-void tbeast_leap(edict_t* self, float forward_offset, float right_offset, float up_offset);
-void tbeast_eat_order(edict_t* self);
-void tbeast_footstep(edict_t* self);
-void tbeast_walk_order(edict_t* self);
-void tbeast_stand_order(edict_t* self);
-void tbeast_dead(edict_t* self);
-void tbeast_charge(edict_t* self, float force);
-void tbeast_done_gore(edict_t* self);
-void tbeast_run(edict_t* self, float dist);
-void tbeast_check_landed(edict_t* self);
-void tbeast_inair(edict_t* self);
-void tbeast_gcheck_landed(edict_t* self);
-void tbeast_ginair(edict_t* self);
-void tbeast_snatch_go(edict_t* self);
-void tbeast_roar_knockdown(edict_t* self);
-void tbeast_roar_short(edict_t* self);
-void tbeast_gibs(edict_t* self);
+extern void tbeast_snort(edict_t* self);
+extern void tbeast_growl(edict_t* self);
+extern void tbeast_check_mood(edict_t* self); //mxd
+extern void tbeast_pause(edict_t* self);
+extern void tbeast_bite(edict_t* self, float forward_offset, float right_offset, float up_offset);
+extern void tbeast_land(edict_t* self);
+extern void tbeast_roar(edict_t* self);
+extern void tbeast_apply_jump(edict_t* self);
+extern void tbeast_ready_catch(edict_t* self);
+extern void tbeast_throw_toy(edict_t* self);
+extern void tbeast_shake_toy(edict_t* self, float forward_offset, float right_offset, float up_offset);
+extern void tbeast_check_snatch(edict_t* self, float forward_offset, float right_offset, float up_offset);
+extern void tbeast_gore_toy(edict_t* self, float jump_height);
+extern void tbeast_anger_sound(edict_t* self);
+extern void tbeast_leap(edict_t* self, float forward_offset, float right_offset, float up_offset);
+extern void tbeast_eat_order(edict_t* self);
+extern void tbeast_footstep(edict_t* self);
+extern void tbeast_walk_order(edict_t* self);
+extern void tbeast_stand_order(edict_t* self);
+extern void tbeast_dead(edict_t* self);
+extern void tbeast_charge(edict_t* self, float force);
+extern void tbeast_done_gore(edict_t* self);
+extern void tbeast_run(edict_t* self, float dist);
+extern void tbeast_check_landed(edict_t* self);
+extern void tbeast_inair(edict_t* self);
+extern void tbeast_gcheck_landed(edict_t* self);
+extern void tbeast_ginair(edict_t* self);
+extern void tbeast_snatch_go(edict_t* self);
+extern void tbeast_roar_knockdown(edict_t* self);
+extern void tbeast_roar_short(edict_t* self);
+extern void tbeast_gibs(edict_t* self);
 
 #define TB_HIBITE_F		150
 #define TB_HIBITE_R		0
