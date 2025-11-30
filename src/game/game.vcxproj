@@ -350,7 +350,6 @@
     <ClInclude Include="sc_WaitEvent.h" />
     <ClInclude Include="spl_teleport.h" />
     <ClInclude Include="g_weapon.h" />
-    <ClInclude Include="sc_List.h" />
     <ClInclude Include="mg_ai.h" />
     <ClInclude Include="mg_guide.h" />
     <ClInclude Include="m_assassin.h" />
