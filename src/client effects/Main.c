@@ -140,11 +140,13 @@ static void UpdateEffectsTime(void)
 		prev_leveltime = leveltime;
 		rframetime = 0;
 	}
+	else
+	{
+		// leveltime updates at 100 ms. rate, so we need in-between interpolation...
+		rframetime += (int)(fxi.cls->rframetime * 1000.0f);
+	}
 
-	// leveltime updates at 100 ms. rate, so we need in-between interpolation...
-	rframetime += (int)(fxi.cls->rframetime * 1000.0f); 
-
-	fx_time = leveltime + rframetime;
+	fx_time = leveltime + min(100, rframetime);
 }
 
 static void PostRenderUpdate(void)
