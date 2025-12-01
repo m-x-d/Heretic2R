@@ -52,9 +52,16 @@ static qboolean ShadowAddToView(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-static float GetLightLevelScaler(void) //mxd
+static float GetPlayerShadowAlphaScaler(const centity_t* player) //mxd
 {
-	return (float)(fxi.cl->cmd.lightlevel - SHADOW_MIN_LIGHTLEVEL) / (float)(SHADOW_MAX_LIGHTLEVEL - SHADOW_MIN_LIGHTLEVEL) * 1.2f;
+	// Factor in player lightlevel.
+	float alpha_scaler = (float)(fxi.cl->cmd.lightlevel - SHADOW_MIN_LIGHTLEVEL) / (float)(SHADOW_MAX_LIGHTLEVEL - SHADOW_MIN_LIGHTLEVEL) * 1.2f;
+
+	// Factor in player ghost effect.
+	if (player->current.renderfx & RF_TRANS_GHOST)
+		alpha_scaler *= 0.25f;
+
+	return alpha_scaler;
 }
 
 static qboolean PlayerShadowAddToView(struct client_entity_s* self, centity_t* owner) //mxd
@@ -69,8 +76,9 @@ static qboolean PlayerShadowAddToView(struct client_entity_s* self, centity_t* o
 	if (!ShadowAddToView(self, owner))
 		return false;
 
-	//mxd. Factor in player lightlevel.
-	self->alpha = Clamp(self->alpha * GetLightLevelScaler() * 1.2f, 0.01f, 1.0f);
+	//mxd. Factor in player lightlevel and ghost effect.
+	self->alpha = Clamp(self->alpha * GetPlayerShadowAlphaScaler(owner) * 1.2f, 0.01f, 1.0f);
+
 	return true;
 }
 
@@ -105,7 +113,7 @@ static qboolean ShadowReferenceAddToView(struct client_entity_s* self, centity_t
 		return false;
 
 	// Did hit the ground.
-	self->alpha = Clamp((1.0f - trace.fraction) * GetLightLevelScaler(), 0.01f, 1.0f); //mxd. Factor in player lightlevel.
+	self->alpha = Clamp((1.0f - trace.fraction) * GetPlayerShadowAlphaScaler(owner), 0.01f, 1.0f); //mxd. Factor in player lightlevel and ghost effect.
 
 	// If we are in ref soft, bring us out a touch, since we are having z buffer problems.
 	const float offset = (ref_soft ? 0.9f : 0.2f); //mxd
