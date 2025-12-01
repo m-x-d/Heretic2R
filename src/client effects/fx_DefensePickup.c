@@ -43,10 +43,12 @@ static qboolean DefensePickupSparkThink(struct client_entity_s* self, centity_t*
 	const int step = fx_time - self->nextThinkTime; //mxd
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
 
-	vec3_t origin;
-	VectorCopy(owner->current.origin, origin); //mxd. VectorCopy(self->origin, origin) in original logic. Changed, so sparks move in synch with pickup model.
+	vec3_t origin = VEC3_INIT(owner->current.origin); //mxd. VectorCopy(self->origin, origin) in original logic. Changed, so sparks move in synch with pickup model.
 	origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
 	self->SpawnData += BOB_SPEED * lerp;
+
+	if (self->SpawnData > ANGLE_360)
+		self->SpawnData = fmodf(self->SpawnData, ANGLE_360); //mxd. Otherwise SpawnData will eventually (in ~8 minutes of runtime) cause floating point precision errors...
 
 	// Update the angle of the spark.
 	VectorMA(self->direction, (float)step / 1000.0f, self->velocity2, self->direction);
@@ -72,6 +74,9 @@ static qboolean DefensePickupThink(struct client_entity_s* self, centity_t* owne
 	VectorCopy(owner->origin, self->r.origin); //mxd. Use interpolated origin (to make items dropped by Drop_Item() fly smoothly).
 	self->r.origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
 	self->SpawnData += BOB_SPEED * lerp;
+
+	if (self->SpawnData > ANGLE_360)
+		self->SpawnData = fmodf(self->SpawnData, ANGLE_360); //mxd. Otherwise SpawnData will eventually (in ~8 minutes of runtime) cause floating point precision errors...
 
 	return true;
 }

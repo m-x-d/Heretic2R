@@ -60,6 +60,9 @@ static qboolean PuzzlePickupThink(struct client_entity_s* self, centity_t* owner
 	self->r.origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
 	self->SpawnData += BOB_SPEED * lerp;
 
+	if (self->SpawnData > ANGLE_360)
+		self->SpawnData = fmodf(self->SpawnData, ANGLE_360); //mxd. Otherwise SpawnData will eventually (in ~8 minutes of runtime) cause floating point precision errors...
+
 	return true;
 }
 

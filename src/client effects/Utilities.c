@@ -538,7 +538,8 @@ void ClearCircularList(void) //mxd
 //mxd. Returns value based on pickup position (simplified version of undulate logic from R_EmitWaterPolys()).
 float GetPickupBobPhase(const vec3_t origin)
 {
-	return (origin[0] + origin[1]) * 0.0495f + (float)fx_time * 3.0f; // 0.0495 == 2.3 * 0.015.
+	const float bob_phase = (origin[0] + origin[1]) * 0.0495f + (float)fx_time * 3.0f; // 0.0495 == 2.3 * 0.015.
+	return fmodf(bob_phase, ANGLE_360); // Use remainder. Otherwise returned value will eventually cause floating point precision errors...
 }
 
 // Assumes 'direction' to be normalized --mxd.
