@@ -57,10 +57,9 @@ void PreCacheDripperSFX(void) //mxd
 	drip_sounds[SND_LAVADROP3] = fxi.S_RegisterSound("ambient/lavadrop3.wav");
 }
 
-static qboolean DripThinkSolid(client_entity_t* drip, centity_t* owner)
+static qboolean DripSolidUpdate(client_entity_t* drip, centity_t* owner)
 {
-	vec3_t origin;
-	VectorCopy(drip->r.origin, origin);
+	vec3_t origin = VEC3_INIT(drip->r.origin);
 	origin[2] = drip->SpawnData;
 
 	client_entity_t* mist = ClientEntity_new(-1, 0, origin, NULL, 500);
@@ -84,10 +83,9 @@ static qboolean DripThinkSolid(client_entity_t* drip, centity_t* owner)
 	return true;
 }
 
-static qboolean DripThinkWater(client_entity_t* drip, centity_t* owner)
+static qboolean DripWaterUpdate(client_entity_t* drip, centity_t* owner)
 {
-	vec3_t origin;
-	VectorCopy(drip->r.origin, origin);
+	vec3_t origin = VEC3_INIT(drip->r.origin);
 	origin[2] = drip->SpawnData;
 
 	client_entity_t* mist = ClientEntity_new(-1, 0, origin, NULL, 500);
@@ -112,10 +110,9 @@ static qboolean DripThinkWater(client_entity_t* drip, centity_t* owner)
 	return true;
 }
 
-static qboolean DripThinkLava(client_entity_t* drip, centity_t* owner)
+static qboolean DripLavaUpdate(client_entity_t* drip, centity_t* owner)
 {
-	vec3_t origin;
-	VectorCopy(drip->r.origin, origin);
+	vec3_t origin = VEC3_INIT(drip->r.origin);
 	origin[2] = drip->SpawnData;
 
 	client_entity_t* mist = ClientEntity_new(-1, 0, origin, NULL, 500);
@@ -165,15 +162,15 @@ static qboolean DripperParticleSpawner(client_entity_t* spawner, centity_t* owne
 	switch (spawner->SpawnInfo & (CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_LAVA))
 	{
 		case CONTENTS_WATER:
-			drip->Update = DripThinkWater;
+			drip->Update = DripWaterUpdate;
 			break;
 
 		case CONTENTS_LAVA:
-			drip->Update = DripThinkLava;
+			drip->Update = DripLavaUpdate;
 			break;
 
 		default:
-			drip->Update = DripThinkSolid;
+			drip->Update = DripSolidUpdate;
 			break;
 	}
 
