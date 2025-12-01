@@ -125,21 +125,19 @@ static qboolean PM_TryStepUp(const float step_height, const float frametime, tra
 	if (vhlen(vel, vec3_origin) < 0.01f)
 		return false;
 
-	//mxd. Check horizontal move from initial position.
-	vec3_t start = VEC3_INIT(pml.origin);
-	vec3_t end = VEC3_INITA(pml.origin, vel[0], vel[1], 0.0f);
+	vec3_t dir;
+	VectorNormalize2(vel, dir);
 
-	trace_t trace;
-	pm->trace(start, pm->mins, pm->maxs, end, &trace);
-
-	//mxd. If we can move forwards, we don't need to step up (fixes successfully stepping up (and breaking ASEQ_SLIDE_FORWARD/ASEQ_SLIDE_BACKWARD animations as a result) while sliding down a slope...).
-	if (trace.fraction == 1.0f)
+	//mxd. Don't try to step up the slope we are sliding on (fixes successfully stepping up (and breaking ASEQ_SLIDE_FORWARD/ASEQ_SLIDE_BACKWARD animations as a result) while sliding down a slope...).
+	if (fabsf(DotProduct(dir, tr->plane.normal)) < 0.1f)
 		return false;
 
 	// Check headroom.
-	VectorCopy(pml.origin, end);
+	vec3_t start = VEC3_INIT(pml.origin);
+	vec3_t end = VEC3_INIT(pml.origin);
 	end[2] += step_height + max(0.0f, vel[2]);
 
+	trace_t trace;
 	pm->trace(start, pm->mins, pm->maxs, end, &trace);
 
 	if (trace.startsolid || trace.allsolid || trace.endpos[2] < pml.origin[2] + 1.0f)
