@@ -39,7 +39,8 @@ static qboolean ShadowAddToView(struct client_entity_s* self, centity_t* owner)
 		return false;
 
 	// Did hit the ground.
-	self->alpha = (1.0f - trace.fraction) * 0.5f + 0.01f;
+	const float owner_alpha = (float)owner->current.color.a / 255.0f; //mxd
+	self->alpha = (1.0f - trace.fraction) * owner_alpha * 0.5f + 0.01f;
 
 	// If we are in ref soft, bring us out a touch, since we are having z buffer problems.
 	const float offset = (ref_soft ? 0.9f : 0.2f); //mxd
