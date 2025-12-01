@@ -532,7 +532,10 @@ qboolean M_Start(edict_t* self) //mxd. Named 'monster_start' in original logic.
 		self->s.effects |= EF_CAMERA_NO_CLIP;
 
 	if (G_MonsterShadow[self->classID].use_shadow)
+	{
+		self->s.color.c = 0xFFFFFFFF; //mxd. Because ShadowAddToView() now checks owner alpha...
 		gi.CreateEffect(&self->s, FX_SHADOW, CEF_OWNERS_ORIGIN, self->s.origin, "f", G_MonsterShadow[self->classID].scale);
+	}
 
 	self->s.skinnum = 0;
 	self->dead_state = DEAD_NO;
