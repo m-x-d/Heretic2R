@@ -6,6 +6,7 @@
 
 #include "Ambient effects.h"
 #include "Client Effects.h"
+#include "g_playstats.h"
 #include "Vector.h"
 #include "Random.h"
 #include "Utilities.h"
@@ -68,6 +69,9 @@ static qboolean DripSolidUpdate(client_entity_t* drip, centity_t* owner)
 	mist->r.scale = 0.5f;
 	mist->r.flags = RF_TRANSLUCENT;
 
+	if (R_DETAIL >= DETAIL_HIGH) //mxd. +RF_LM_COLOR.
+		mist->r.flags |= RF_LM_COLOR;
+
 	mist->alpha = 0.4f;
 	mist->d_alpha = -0.8f;
 
@@ -93,6 +97,9 @@ static qboolean DripWaterUpdate(client_entity_t* drip, centity_t* owner)
 	mist->r.model = &drip_models[0];
 	mist->r.scale = 0.5f;
 	mist->r.flags = RF_TRANSLUCENT;
+
+	if (R_DETAIL >= DETAIL_HIGH) //mxd. +RF_LM_COLOR.
+		mist->r.flags |= RF_LM_COLOR;
 
 	mist->d_scale = -2.0f;
 	mist->d_alpha = -8.0f;
@@ -120,6 +127,9 @@ static qboolean DripLavaUpdate(client_entity_t* drip, centity_t* owner)
 	mist->r.model = &drip_models[1];
 	mist->r.scale = 0.5f;
 	mist->r.flags = RF_TRANSLUCENT;
+
+	if (R_DETAIL >= DETAIL_HIGH) //mxd. +RF_LM_COLOR.
+		mist->r.flags |= RF_LM_COLOR;
 
 	mist->alpha = 0.4f;
 	mist->d_alpha = -0.8f;
@@ -150,6 +160,9 @@ static qboolean DripperParticleSpawner(client_entity_t* spawner, centity_t* owne
 	drip->r.scale = 0.1f;
 	drip->r.flags = RF_TRANSLUCENT; //mxd. Original logic also adds RF_ALPHA_TEXTURE flag, which is used only in conjunction with RF_TRANS_ADD flag in ref_gl1...
 	//drip->r.frame = spawner->r.frame; //mxd. waterdrop.sp2 has single frame...
+
+	if (R_DETAIL >= DETAIL_HIGH) //mxd. +RF_LM_COLOR.
+		drip->r.flags |= RF_LM_COLOR;
 
 	//mxd. Add subtle fade-in effect.
 	drip->alpha = 0.1f;
