@@ -549,8 +549,11 @@ static void PlagueElfCinematicActionMsgHandler(edict_t* self, G_Message_t* msg) 
 			break;
 
 		case MSG_C_THINKAGAIN: // Think for yourself, elf.
-			self->enemy = self->monsterinfo.c_ent;
-			AI_FoundTarget(self, true);
+			if (self->monsterinfo.c_ent != NULL && !(self->monsterinfo.c_ent->flags & FL_NOTARGET)) //mxd. Skip when notarget cheat is enabled.
+			{
+				self->enemy = self->monsterinfo.c_ent;
+				AI_FoundTarget(self, true);
+			}
 			curr_anim = ANIM_C_THINKAGAIN;
 			break;
 
