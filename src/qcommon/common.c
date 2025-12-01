@@ -6,7 +6,6 @@
 
 #include <float.h>
 #include <setjmp.h>
-
 #include "anorms.h"
 #include "client.h"
 #include "cmodel.h"
@@ -36,7 +35,6 @@ cvar_t* dedicated;
 cvar_t* vid_maxfps; // YQ2
 
 // H2:
-static cvar_t* fpu_precision;
 static cvar_t* hideconprint;
 cvar_t* player_dll;
 
@@ -584,8 +582,6 @@ void Qcommon_Init(const int argc, char** argv)
 	vid_maxfps = Cvar_Get("vid_maxfps", "60", CVAR_ARCHIVE); // YQ2
 
 	// H2:
-	fpu_precision = Cvar_Get("fpu_precision", "1", 0);
-	//sys_copyfail = Cvar_Get("sys_copyfail", "You must have the Heretic II CD in the drive to play.", 0); //mxd. Relevant logic skipped
 	hideconprint = Cvar_Get("hideconprint", "0", 0);
 	player_dll = Cvar_Get("player_dll", "Player", 0);
 
@@ -637,18 +633,10 @@ void Qcommon_Frame(int usec) //mxd. msec -> usec.
 	static int clienttimedelta = 0; // Accumulated time since last client run.
 	static int servertimedelta = 0; // Accumulated time since last server run.
 
-	uint control_word; //mxd
-
 	if (setjmp(abortframe))
 		return; // An ERR_DROP was thrown.
 
-	// H2: set fpu precision (done in WinMain in Q2). //TODO: is this relevant? _controlfp logic is removed in YQ2.
-	if (fpu_precision->value == 0.0f)
-		_controlfp_s(&control_word, _PC_24, _MCW_PC);
-	else if (fpu_precision->value == 1.0f)
-		_controlfp_s(&control_word, _PC_53, _MCW_PC);
-	else
-		_controlfp_s(&control_word, _PC_64, _MCW_PC);
+	//mxd. Skip _controlfp logic (default value (_PC_53) matches MSVC default anyway).
 
 	if (log_stats->modified)
 	{
@@ -678,11 +666,11 @@ void Qcommon_Frame(int usec) //mxd. msec -> usec.
 	}
 
 	// We can render 1000 frames at maximum, because the minimum frametime of the client is 1 millisecond.
-	if (vid_maxfps->value > 999 || vid_maxfps->value < 1)
-		Cvar_SetValue("vid_maxfps", 999);
+	if (vid_maxfps->value > 999.0f || vid_maxfps->value < 1.0f)
+		Cvar_SetValue("vid_maxfps", 999.0f);
 
-	if (cl_maxfps->value > 250)
-		Cvar_SetValue("cl_maxfps", 250);
+	if (cl_maxfps->value > 250.0f)
+		Cvar_SetValue("cl_maxfps", 250.0f);
 
 	const float rfps = vid_maxfps->value;
 	const float pfps = min(cl_maxfps->value, rfps); // We can't have more packet frames than render frames, so limit pfps to rfps.
