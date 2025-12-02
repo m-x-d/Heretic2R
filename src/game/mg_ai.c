@@ -1604,7 +1604,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 
 			if (VectorNormalize(goal_dir) < self->maxs[0] + self->enemy->maxs[0] + dist * 2.0f)
 			{
-				// We're close to our goal
+				// We're close to our goal.
 				MG_ChangeWhichYaw(self, YAW_IDEAL);
 				return true; // So close to enemy, just turn, no movement - not if rat?
 			}
@@ -1927,7 +1927,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 	qboolean new_best_yaw = false;
 	float old_best_yaw = 0.0f; //mxd. Initialize to avoid compiler warning.
 
-	// If facing best_move_yaw and can't move that way, stop trying in that dir now.
+	// If facing best_move_yaw and can't move that way, stop trying to move in that dir now.
 	if (self->monsterinfo.idle_time > level.time && self->s.angles[YAW] == self->best_move_yaw)
 	{
 		new_best_yaw = true;
@@ -1957,7 +1957,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 		}
 		else if (trace.ent->svflags & SVF_MONSTER)
 		{
-			//if bumped into a monster that's not after an enemy but not ambushing, bring him along
+			// If bumped into a monster that's not after an enemy but not ambushing, bring him along.
 			if (trace.ent->enemy == NULL && trace.ent->health > 0 && !trace.ent->monsterinfo.awake && !(trace.ent->spawnflags & MSF_AMBUSH))
 			{
 				if (self->enemy != NULL && self->enemy->client != NULL)
@@ -1972,7 +1972,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 		{
 			if (self->monsterinfo.idle_time < level.time)
 			{
-				// Not already following a weird dir
+				// Not already following a weird dir.
 				self->monsterinfo.idle_time = level.time + flrand(0.5f, 1.2f);
 				self->best_move_yaw = anglemod(self->ideal_yaw + 180.0f);
 				MG_NewDir(self, dist);
@@ -2021,13 +2021,13 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 			VectorScale(wall_right, -1.0f, new_forward);
 
 		if (irand(0, 10) < 3) // 30% chance of trying other way first.
-			VectorScale(new_forward, -1.0f, new_forward);
+			VectorInverse(new_forward);
 
 		self->best_move_yaw = VectorYaw(new_forward);
 
 		if (new_best_yaw && self->best_move_yaw == old_best_yaw)
 		{
-			VectorScale(new_forward, -1.0f, new_forward);
+			VectorInverse(new_forward);
 			self->best_move_yaw = VectorYaw(new_forward);
 		}
 
@@ -2040,8 +2040,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 		float adj_dist = dist - (dist * dist_loss);
 
 		vec3_t source;
-		VectorCopy(self->s.origin, source);
-		VectorMA(source, adj_dist, new_forward, source);
+		VectorMA(self->s.origin, adj_dist, new_forward, source);
 
 		gi.trace(self->s.origin, self->mins, self->maxs, source, self, MASK_SOLID, &trace); // Was MASK_SHOT.
 
