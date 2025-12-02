@@ -856,7 +856,7 @@ static void CL_FinishMove(usercmd_t* cmd) // Called on packetframe.
 
 	// Autoaim.
 	const qboolean do_autoaim = (cl_autoaim->value > 0.0f); //mxd
-	if ((in_autoaim.state & (KS_DOWN | KS_IMPULSE_DOWN)) != do_autoaim)
+	if ((qboolean)(in_autoaim.state & (KS_DOWN | KS_IMPULSE_DOWN)) != do_autoaim)
 		cmd->buttons |= BUTTON_AUTOAIM;
 	in_autoaim.state &= ~KS_IMPULSE_DOWN;
 
