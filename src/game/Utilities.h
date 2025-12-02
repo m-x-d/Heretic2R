@@ -10,6 +10,7 @@
 
 #define KNOCK_BACK_MULTIPLIER 1000.0f
 
+extern void GetEdictCenter(const edict_t* self, vec3_t out);
 extern float NormalizeAngleRad(float angle); //mxd
 extern float NormalizeAngleDeg(float angle); //mxd
 

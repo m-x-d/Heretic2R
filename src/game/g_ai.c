@@ -13,6 +13,7 @@
 #include "m_stats.h"
 #include "p_anims.h"
 #include "Random.h"
+#include "Utilities.h"
 #include "Vector.h"
 
 // AI targeting globals.
@@ -321,6 +322,32 @@ qboolean AI_IsInfrontOf(const edict_t* self, const edict_t* other) //mxd. Named 
 	return (DotProduct(diff, forward) > 0.3f);
 }
 
+static qboolean AI_ShouldBeAlertedBy(const edict_t* self, const alertent_t* alerter) //mxd. Split from AI_IsAlerted() to simplify logic.
+{
+	// Get center of alert enemy.
+	vec3_t enemy_pos;
+	GetEdictCenter(alerter->enemy, enemy_pos);
+
+	// Get my view spot.
+	const vec3_t view_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, (float)self->viewheight);
+
+	// If being alerted by a monster and not waiting to ambush.
+	if ((alerter->alert_svflags & SVF_MONSTER) && !(self->spawnflags & MSF_AMBUSH))
+		return gi.inPVS(enemy_pos, view_pos); // Can "see" the owner of the alert even around a corner.
+
+	// Alerter not a monster, a projectile or player (OR we are an ambush monster --mxd).
+
+	// Can I see (even through translucent brushes) the owner of the alert? If so, ok even if I'm an ambush monster.
+	if (MG_IsVisiblePos(self, enemy_pos))
+		return true;
+
+	// No line of sight and not an ambush monster.
+	if (!(self->spawnflags & MSF_AMBUSH) && gi.inPVS(view_pos, alerter->origin))
+		return (irand(0, 3) == 0); // 25% chance will see impact (alerter) and detect alert owner anyway.
+
+	return false;
+}
+
 // Checks and see if an alert entity is capable of waking up a monster.
 static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original logic.
 {
@@ -328,24 +355,9 @@ static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original l
 	if ((self->monsterinfo.aiflags & AI_NO_ALERT) || self->enemy != NULL || self->monsterinfo.alert == NULL) //mxd. Moved alert() check outside the loop.
 		return false;
 
-	// Get my view spot. //mxd. Moved outside the loop.
-	const vec3_t view_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, (float)self->viewheight);
-
-	// Start the search from the most recent alert to the oldest.
-	alertent_t* alerter = level.last_alert; // OOPS, SKIPS LAST.
-	qboolean first_step = true; //mxd
-
-	// The loop.
-	while (true)
+	// Search from the most recent alert to the oldest.
+	for (alertent_t* alerter = level.last_alert; alerter != NULL; alerter = alerter->prev_alert)
 	{
-		if (first_step)
-			first_step = false;
-		else if (alerter != NULL)
-			alerter = alerter->prev_alert;
-
-		if (alerter == NULL)
-			return false;
-
 		// Loading a saved game invalidates all alerts.
 		if (!alerter->inuse)
 			continue;
@@ -377,8 +389,8 @@ static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original l
 		if (!(self->svflags & SVF_MONSTER) || self->health <= 0)
 			continue;
 
-		// Eating or in a cinematic or not awake (or laying in ambush --mxd), leave them alone.
-		if (!AI_OkToWake(self, false, false)) //mxd. Don't ignore ambush.
+		// Eating or in a cinematic or not awake, leave them alone.
+		if (!AI_OkToWake(self, false, true))
 			continue;
 
 		vec3_t dir;
@@ -393,35 +405,15 @@ static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original l
 		if (dist > flrand(100.0f, self->wakeup_distance)) // If within 100 always wake up?
 			continue;
 
-		// If not a player, a player's missile or a monster, continue loop?
-
-		// Get center of alert enemy.
-		edict_t* enemy = alerter->enemy;
-
-		vec3_t enemy_pos;
-		VectorAdd(enemy->s.origin, enemy->mins, enemy_pos);
-		VectorMA(enemy_pos, 0.5f, enemy->size, enemy_pos);
-
-		// If being alerted by a monster.
-		if (alerter->alert_svflags & SVF_MONSTER)
+		// Break the loop?
+		if (AI_ShouldBeAlertedBy(self, alerter))
 		{
-			// Can "see" the owner of the alert even around a corner.
-			if (!gi.inPVS(enemy_pos, view_pos))
-				continue;
+			self->last_alert = alerter;
+			return self->monsterinfo.alert(self, alerter, alerter->enemy);
 		}
-		else
-		{
-			// No direct line of sight.
-			if (!MG_IsVisiblePos(self, enemy_pos) && gi.inPVS(view_pos, alerter->origin))
-				if (irand(0, 3) != 0) // 25% chance will see impact (alerter) and detect alert owner anyway.
-					continue;
-		}
-
-		self->last_alert = alerter;
-
-		// Break the loop.
-		return self->monsterinfo.alert(self, alerter, enemy);
 	}
+
+	return false;
 }
 
 // A target has been found, it is visible, so do we attack it, watch it, or stand there?
