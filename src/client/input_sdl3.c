@@ -13,7 +13,7 @@
 
 #include <SDL3/SDL.h>
 
-uint sys_frame_time;
+uint sys_frame_time; //TODO: replace with curtime?
 
 // Mouse vars:
 static float mouse_x;
@@ -373,7 +373,7 @@ void IN_Update(void) // YQ2
 	GLimp_GrabInput(IN_ShouldGrabInput());
 
 	// We need to save the frame time so other subsystems know the exact time of the last input events.
-	sys_frame_time = Sys_Milliseconds();
+	sys_frame_time = curtime; //mxd. Sys_Milliseconds() -> curtime.
 }
 
 void IN_Move(usercmd_t* cmd) // Called on packetframe or renderframe.

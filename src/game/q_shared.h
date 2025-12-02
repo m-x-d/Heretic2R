@@ -184,7 +184,6 @@ H2COMMON_API extern const vec3_t vec3_down; //mxd
 
 extern int curtime; // Time returned by last Sys_Milliseconds() call.
 
-extern int Sys_Milliseconds(void);
 extern long long Sys_Microseconds(void); // YQ2
 extern void Sys_Nanosleep(int nanosec); // YQ2
 extern void Sys_Mkdir(const char* path);

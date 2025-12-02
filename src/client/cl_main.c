@@ -160,7 +160,7 @@ void CL_Disconnect(void)
 
 	if (cl_timedemo != NULL && (int)cl_timedemo->value)
 	{
-		const int time = Sys_Milliseconds() - cl.timedemo_start;
+		const int time = curtime - cl.timedemo_start; //mxd. Sys_Milliseconds() -> curtime.
 		if (time > 0)
 			Com_Printf("%i frames, %3.1f seconds: %3.1f fps\n", cl.timedemo_frames, time / 1000.0, cl.timedemo_frames * 1000.0 / time);
 	}
@@ -1110,7 +1110,7 @@ void CL_ReadPackets(void)
 static void CL_InitLocal(void)
 {
 	cls.state = ca_disconnected;
-	cls.realtime = Sys_Milliseconds();
+	cls.realtime = curtime; //mxd. Sys_Milliseconds() -> curtime.
 	cl.lastanimtime = 0; // H2
 
 	CL_InitInput();
@@ -1416,7 +1416,7 @@ void CL_Frame(const int packetdelta, const int renderdelta, const int timedelta,
 
 	// If in the debugger last frame, don't timeout.
 	if (timedelta > 5000000)
-		cls.netchan.last_received = Sys_Milliseconds();
+		cls.netchan.last_received = curtime; //mxd. Sys_Milliseconds() -> curtime.
 
 	// Don't throttle too much when connecting / loading.
 	if (!(int)cl_timedemo->value && cls.state == ca_connected && packetdelta > 100000)
@@ -1485,14 +1485,13 @@ void CL_Frame(const int packetdelta, const int renderdelta, const int timedelta,
 		{
 			if (lasttimecalled == 0)
 			{
-				lasttimecalled = Sys_Milliseconds();
+				lasttimecalled = curtime; //mxd. Sys_Milliseconds() -> curtime.
 				fprintf(log_stats_file, "0\n");
 			}
 			else
 			{
-				const int now = Sys_Milliseconds();
-				fprintf(log_stats_file, "%d\n", now - lasttimecalled);
-				lasttimecalled = now;
+				fprintf(log_stats_file, "%d\n", curtime - lasttimecalled); //mxd. Sys_Milliseconds() -> curtime.
+				lasttimecalled = curtime;
 			}
 		}
 	}

@@ -154,7 +154,7 @@ static void SCR_TimeRefresh_f(void)
 	if (cls.state != ca_active)
 		return;
 
-	const int start = Sys_Milliseconds();
+	const int starttime = curtime; //mxd. Sys_Milliseconds() -> curtime.
 
 	if (Cmd_Argc() == 2)
 	{
@@ -182,8 +182,7 @@ static void SCR_TimeRefresh_f(void)
 		}
 	}
 
-	const int stop = Sys_Milliseconds();
-	const float time = (float)(stop - start) / 1000.0f;
+	const float time = (float)(curtime - starttime) / 1000.0f; //mxd. Sys_Milliseconds() -> curtime.
 	Com_Printf("%f seconds (%f fps)\n", time, 128.0f / time);
 }
 
@@ -1013,14 +1012,12 @@ static void SCR_DrawGameMessage(void) // H2
 
 static void SCR_UpdateFogDensity(void)
 {
-	static int old_msec;
+	static int old_time;
 	static float old_density;
-
-	const int msec = Sys_Milliseconds();
 
 	if (cl.frame.playerstate.fog_density > 0.0f) //TODO: != 0.0f in original logic. Can playerstate.fog_density be negative?
 	{
-		r_fog_density->value += (cl.frame.playerstate.fog_density - old_density) * (float)(msec - old_msec) * 0.0008f;
+		r_fog_density->value += (cl.frame.playerstate.fog_density - old_density) * (float)(curtime - old_time) * 0.0008f; //mxd. Sys_Milliseconds() -> curtime.
 		old_density = r_fog_density->value;
 		r_fog->value = 1.0f;
 	}
@@ -1031,7 +1028,7 @@ static void SCR_UpdateFogDensity(void)
 		r_fog->value = 0.0f;
 	}
 
-	old_msec = msec;
+	old_time = curtime;
 }
 
 static void SCR_DrawFramecounter(void) //mxd

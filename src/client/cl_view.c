@@ -166,7 +166,7 @@ void V_RenderView(const float stereo_separation)
 	if ((int)cl_timedemo->value)
 	{
 		if (cl.timedemo_start == 0)
-			cl.timedemo_start = Sys_Milliseconds();
+			cl.timedemo_start = curtime; //mxd. Sys_Milliseconds() -> curtime.
 
 		cl.timedemo_frames++;
 	}

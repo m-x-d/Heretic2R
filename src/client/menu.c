@@ -966,7 +966,7 @@ static void Field_Draw(const menufield_t* field, const qboolean selected)
 	if ((menufield_t*)Menu_ItemAtCursor(field->generic.parent) == field)
 	{
 		const int offset = ((field->visible_offset != 0) ? field->visible_length : field->cursor);
-		const int ch = ((Sys_Milliseconds() / 250 & 1) ? 11 : ' ');
+		const int ch = ((curtime / 250 & 1) ? 11 : ' '); //mxd. Sys_Milliseconds() -> curtime.
 		re.DrawChar(x + offset * ui_char_size, y, ui_scale, ch, color);
 	}
 }
@@ -1028,7 +1028,7 @@ static void InputKey_Draw(const menuinputkey_t* key, const qboolean selected) //
 		Com_sprintf(key_name, sizeof(key_name), "%s or %s", Key_KeynumToString(keys[0]), Key_KeynumToString(keys[1]));
 	
 	if (bind_grab && selected)
-		alpha = fabsf(cosf((float)Sys_Milliseconds() * 0.005f));
+		alpha = fabsf(cosf((float)curtime * 0.005f)); //mxd. Sys_Milliseconds() -> curtime.
 
 	x = M_GetMenuLabelX(re.BF_Strlen(key_name));
 	Menu_DrawString(x, y, key_name, alpha, selected);
@@ -1286,7 +1286,7 @@ menucommon_t* Menu_ItemAtCursor(const menuframework_t* menu)
 
 static float MenuAlpha(const int menutime) // H2
 {
-	const float alpha = (float)(Sys_Milliseconds() - menutime) / 250.0f;
+	const float alpha = (float)(curtime - menutime) / 250.0f; //mxd. Sys_Milliseconds() -> curtime.
 	return min(alpha, 1.0f);
 }
 
@@ -1302,7 +1302,7 @@ void M_Draw(void)
 	{
 		case MS_FADE_IN_START:
 			m_entersound = false;
-			cls.startmenu = Sys_Milliseconds();
+			cls.startmenu = curtime; //mxd. Sys_Milliseconds() -> curtime.
 			m_menu_side = ((m_menudepth & 1) == 0);
 			m_layers[0].draw = m_drawfunc;
 			m_keyfunc2 = m_keyfunc;
@@ -1325,7 +1325,7 @@ void M_Draw(void)
 			break;
 
 		case MS_FADE_OUT_START:
-			cls.startmenu = Sys_Milliseconds();
+			cls.startmenu = curtime; //mxd. Sys_Milliseconds() -> curtime.
 			cls.m_menustate = MS_FADE_OUT_LOOP;
 			cls.m_menualpha = 1.0f;
 			m_layers[0].draw();
@@ -1340,7 +1340,7 @@ void M_Draw(void)
 			break;
 
 		case MS_ZOOM_IN_START:
-			cls.startmenuzoom = Sys_Milliseconds();
+			cls.startmenuzoom = curtime; //mxd. Sys_Milliseconds() -> curtime.
 			m_layers[0].draw = m_drawfunc;
 			m_menu_side = ((m_menudepth & 1) == 0);
 			m_keyfunc2 = m_keyfunc;
@@ -1355,7 +1355,7 @@ void M_Draw(void)
 
 		case MS_ZOOM_OUT_START:
 			m_entersound = true;
-			cls.startmenuzoom = Sys_Milliseconds();
+			cls.startmenuzoom = curtime; //mxd. Sys_Milliseconds() -> curtime.
 			cls.m_menuscale = 1.0f;
 			m_layers[0].draw();
 
