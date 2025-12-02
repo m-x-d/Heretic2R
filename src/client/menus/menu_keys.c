@@ -28,30 +28,30 @@ static BindData_s bindnames[NUM_BINDS] =
 	{ "+attack",			&m_item_attack },
 	{ "+defend",			&m_item_defend },
 	{ "+action",			&m_item_action },
+	{ "weapnext",			&m_item_nextweapon },
+	{ "weapprev",			&m_item_prevweapon },
+	{ "defnext",			&m_item_nextdef },
+	{ "defprev",			&m_item_prevdef },
+	{ "+lookaround",		&m_item_lookaround },
+	{ "+autoaim",			&m_item_doautoaim }, //mxd
 	{ "+lookup",			&m_item_lookup },
 	{ "+lookdown",			&m_item_lookdown },
 	{ "centerview",			&m_item_centerview },
 	{ "+mlook",				&m_item_mouselook },
 	{ "+klook",				&m_item_keyboardlook },
-	{ "+lookaround",		&m_item_lookaround },
-	{ "+autoaim",			&m_item_doautoaim }, //mxd
-	{ "weapnext",			&m_item_nextweapon },
-	{ "weapprev",			&m_item_prevweapon },
-	{ "defnext",			&m_item_nextdef },
-	{ "defprev",			&m_item_prevdef },
 
 	// Move keys.
 	{ "+forward",			&m_item_walkforward },
 	{ "+back",				&m_item_backpedal },
-	{ "+left",				&m_item_turnleft },
-	{ "+right",				&m_item_turnright },
-	{ "+creep",				&m_item_creep },
-	{ "+speed",				&m_item_run },
 	{ "+moveleft",			&m_item_stepleft },
 	{ "+moveright",			&m_item_stepright },
-	{ "+strafe",			&m_item_sidestep },
 	{ "+moveup",			&m_item_up },
 	{ "+movedown",			&m_item_down },
+	{ "+speed",				&m_item_run },
+	{ "+creep",				&m_item_creep },
+	{ "+left",				&m_item_turnleft },
+	{ "+right",				&m_item_turnright },
+	{ "+strafe",			&m_item_sidestep },
 	{ "+quickturn",			&m_item_quickturn },
 
 	// Shortcut keys.
@@ -71,14 +71,14 @@ static BindData_s bindnames[NUM_BINDS] =
 	{ "score",				&m_item_frags },
 
 	// Double-tap keys.
-	{ "+flip_left",			&m_item_flipleft },
-	{ "+flip_right",		&m_item_flipright },
 	{ "+flip_forward",		&m_item_flipforward },
 	{ "+flip_back",			&m_item_flipback },
-	{ "+roll_left",			&m_item_rollleft },
-	{ "+roll_right",		&m_item_rollright },
+	{ "+flip_left",			&m_item_flipleft },
+	{ "+flip_right",		&m_item_flipright },
 	{ "+roll_forward",		&m_item_rollforward },
 	{ "+roll_back",			&m_item_rollback },
+	{ "+roll_left",			&m_item_rollleft },
+	{ "+roll_right",		&m_item_rollright },
 	{ "+quickturn",			&m_item_quickturn },
 	{ "+spinattack",		&m_item_spinattack }
 };
