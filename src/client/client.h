@@ -577,7 +577,7 @@ extern cvar_t* cl_fx_dll; //mxd
 extern cvar_t* shownames;
 extern cvar_t* autoweapon;
 extern cvar_t* cl_showcaptions;
-extern cvar_t* cl_doautoaim; //mxd
+extern cvar_t* cl_autoaim; //mxd
 
 extern cvar_t* colour_obituary;
 extern cvar_t* colour_chat;

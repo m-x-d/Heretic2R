@@ -35,7 +35,7 @@ void DoubletapKeys_MenuDraw(void)
 
 void M_Menu_DoubletapKeys_f(void)
 {
-	keys_category_offset = 39;
+	keys_category_offset = 40;
 	keys_count = 10;
 	use_doublebind = true;
 

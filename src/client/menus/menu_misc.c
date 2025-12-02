@@ -12,7 +12,7 @@ cvar_t* m_banner_misc;
 
 cvar_t* m_item_alwaysrun;
 cvar_t* m_item_crosshair;
-cvar_t* m_item_autotarget;
+cvar_t* m_item_autoaim; //mxd
 cvar_t* m_item_caption;
 cvar_t* m_item_violence;
 cvar_t* m_item_yawspeed;
@@ -23,7 +23,7 @@ static menuframework_t s_misc_menu;
 
 static menulist_t s_options_crosshair_box;
 static menulist_t s_options_alwaysrun_box;
-static menulist_t s_options_autotarget_box;
+static menuslider_t s_options_autoaim_slider; //mxd
 static menulist_t s_options_autoweapon_box;
 static menulist_t s_options_captions_box;
 static menulist_t s_options_lookspring_box;
@@ -43,9 +43,9 @@ static void AlwaysRunFunc(void* self)
 	Cvar_SetValue("cl_run", (float)s_options_alwaysrun_box.curvalue);
 }
 
-static void AutoTargetFunc(void* self) // H2
+static void AutoAimFunc(void* self) //mxd
 {
-	Cvar_SetValue("cl_doautoaim", (float)s_options_autotarget_box.curvalue);
+	Cvar_SetValue("cl_autoaim", s_options_autoaim_slider.curvalue / 5.0f);
 }
 
 static void AutoWeaponFunc(void* self) // H2
@@ -95,17 +95,14 @@ static void ConsoleFunc(void* self)
 
 static void Misc_SetValues(void) // H2
 {
-	Cvar_SetValue("cl_run", Clamp(cl_run->value, 0, 1));
+	Cvar_SetValue("cl_run", Clamp(cl_run->value, 0.0f, 1.0f));
 	s_options_alwaysrun_box.curvalue = (int)cl_run->value;
 
-	Cvar_SetValue("lookspring", Clamp(lookspring->value, 0, 1));
+	Cvar_SetValue("lookspring", Clamp(lookspring->value, 0.0f, 1.0f));
 	s_options_lookspring_box.curvalue = (int)lookspring->value;
 
-	Cvar_SetValue("crosshair", Clamp(crosshair->value, 0, 3));
+	Cvar_SetValue("crosshair", Clamp(crosshair->value, 0.0f, 3.0f));
 	s_options_crosshair_box.curvalue = (int)crosshair->value;
-
-	Cvar_SetValue("cl_doautoaim", Clamp(cl_doautoaim->value, 0, 1));
-	s_options_autotarget_box.curvalue = (int)cl_doautoaim->value;
 }
 
 static void Misc_MenuInit(void) // H2
@@ -121,7 +118,7 @@ static void Misc_MenuInit(void) // H2
 
 	static char name_crosshair[MAX_QPATH];
 	static char name_alwaysrun[MAX_QPATH];
-	static char name_autotarget[MAX_QPATH];
+	static char name_autoaim[MAX_QPATH];
 	static char name_autoweapon[MAX_QPATH];
 	static char name_caption[MAX_QPATH];
 	static char name_lookspring[MAX_QPATH];
@@ -155,7 +152,10 @@ static void Misc_MenuInit(void) // H2
 	violence_refs[NUM_VIOLENCE_LEVELS] = NULL;
 
 	// Clamp blood level.
-	Cvar_SetValue("blood_level", Clamp(Cvar_VariableValue("blood_level"), 0, 3));
+	Cvar_SetValue("blood_level", Clamp(Cvar_VariableValue("blood_level"), 0.0f, 3.0f));
+
+	//mxd. Clamp autoaim amount.
+	Cvar_SetValue("cl_autoaim", Clamp(cl_autoaim->value, 0.0f, 1.0f));
 
 	s_misc_menu.nitems = 0;
 
@@ -179,20 +179,22 @@ static void Misc_MenuInit(void) // H2
 	s_options_alwaysrun_box.generic.callback = AlwaysRunFunc;
 	s_options_alwaysrun_box.itemnames = yes_no_names;
 
-	Com_sprintf(name_autotarget, sizeof(name_autotarget), "\x02%s", m_item_autotarget->string);
-	s_options_autotarget_box.generic.type = MTYPE_SPINCONTROL;
-	s_options_autotarget_box.generic.x = 0;
-	s_options_autotarget_box.generic.y = 40;
-	s_options_autotarget_box.generic.name = name_autotarget;
-	s_options_autotarget_box.generic.width = re.BF_Strlen(name_autotarget);
-	s_options_autotarget_box.generic.flags = QMF_SINGLELINE;
-	s_options_autotarget_box.generic.callback = AutoTargetFunc;
-	s_options_autotarget_box.itemnames = yes_no_names;
+	//mxd. Yes/No box in original logic.
+	Com_sprintf(name_autoaim, sizeof(name_autoaim), "\x02%s", m_item_autoaim->string);
+	s_options_autoaim_slider.generic.y = 40;
+	s_options_autoaim_slider.generic.type = MTYPE_SLIDER;
+	s_options_autoaim_slider.generic.x = 0;
+	s_options_autoaim_slider.generic.name = name_autoaim;
+	s_options_autoaim_slider.generic.width = re.BF_Strlen(name_autoaim);
+	s_options_autoaim_slider.minvalue = 0.0f;
+	s_options_autoaim_slider.maxvalue = 5.0f;
+	s_options_autoaim_slider.curvalue = cl_autoaim->value * 5.0f;
+	s_options_autoaim_slider.generic.callback = AutoAimFunc;
 
 	Com_sprintf(name_autoweapon, sizeof(name_autoweapon), "\x02%s", m_item_autoweapon->string);
 	s_options_autoweapon_box.generic.type = MTYPE_SPINCONTROL;
 	s_options_autoweapon_box.generic.x = 0;
-	s_options_autoweapon_box.generic.y = 60;
+	s_options_autoweapon_box.generic.y = 80;
 	s_options_autoweapon_box.generic.name = name_autoweapon;
 	s_options_autoweapon_box.generic.width = re.BF_Strlen(name_autoweapon);
 	s_options_autoweapon_box.generic.flags = QMF_SINGLELINE;
@@ -203,7 +205,7 @@ static void Misc_MenuInit(void) // H2
 	Com_sprintf(name_caption, sizeof(name_caption), "\x02%s", m_item_caption->string);
 	s_options_captions_box.generic.type = MTYPE_SPINCONTROL;
 	s_options_captions_box.generic.x = 0;
-	s_options_captions_box.generic.y = 80;
+	s_options_captions_box.generic.y = 100;
 	s_options_captions_box.generic.name = name_caption;
 	s_options_captions_box.generic.width = re.BF_Strlen(name_caption);
 	s_options_captions_box.generic.flags = QMF_SINGLELINE;
@@ -214,7 +216,7 @@ static void Misc_MenuInit(void) // H2
 	Com_sprintf(name_lookspring, sizeof(name_lookspring), "\x02%s", m_item_lookspring->string);
 	s_options_lookspring_box.generic.type = MTYPE_SPINCONTROL;
 	s_options_lookspring_box.generic.x = 0;
-	s_options_lookspring_box.generic.y = 100;
+	s_options_lookspring_box.generic.y = 120;
 	s_options_lookspring_box.generic.name = name_lookspring;
 	s_options_lookspring_box.generic.width = re.BF_Strlen(name_lookspring);
 	s_options_lookspring_box.generic.flags = QMF_SINGLELINE;
@@ -222,7 +224,7 @@ static void Misc_MenuInit(void) // H2
 	s_options_lookspring_box.itemnames = yes_no_names;
 	
 	Com_sprintf(name_yawspeed, sizeof(name_yawspeed), "\x02%s", m_item_yawspeed->string);
-	s_options_yawspeed_slider.generic.y = 120;
+	s_options_yawspeed_slider.generic.y = 140;
 	s_options_yawspeed_slider.generic.type = MTYPE_SLIDER;
 	s_options_yawspeed_slider.generic.x = 0;
 	s_options_yawspeed_slider.generic.name = name_yawspeed;
@@ -233,7 +235,7 @@ static void Misc_MenuInit(void) // H2
 	s_options_yawspeed_slider.generic.callback = YawSpeedFunc;
 
 	Com_sprintf(name_violence, sizeof(name_violence), "\x02%s", m_item_violence->string);
-	s_options_violence_box.generic.y = 160;
+	s_options_violence_box.generic.y = 180;
 	s_options_violence_box.generic.type = MTYPE_SPINCONTROL;
 	s_options_violence_box.generic.x = 0;
 	s_options_violence_box.generic.name = name_violence;
@@ -245,7 +247,7 @@ static void Misc_MenuInit(void) // H2
 
 	Com_sprintf(name_console, sizeof(name_console), "\x02%s", m_item_console->string);
 	s_options_console_action.generic.type = MTYPE_ACTION;
-	s_options_console_action.generic.y = 240;
+	s_options_console_action.generic.y = 260;
 	s_options_console_action.generic.x = 0;
 	s_options_console_action.generic.name = name_console;
 	s_options_console_action.generic.width = re.BF_Strlen(name_console);
@@ -253,7 +255,7 @@ static void Misc_MenuInit(void) // H2
 
 	Menu_AddItem(&s_misc_menu, &s_options_crosshair_box);
 	Menu_AddItem(&s_misc_menu, &s_options_alwaysrun_box);
-	Menu_AddItem(&s_misc_menu, &s_options_autotarget_box);
+	Menu_AddItem(&s_misc_menu, &s_options_autoaim_slider);
 	Menu_AddItem(&s_misc_menu, &s_options_autoweapon_box);
 	Menu_AddItem(&s_misc_menu, &s_options_captions_box);
 	Menu_AddItem(&s_misc_menu, &s_options_lookspring_box);

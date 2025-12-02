@@ -35,7 +35,7 @@ static void ActionKeys_MenuDraw(void) // H2
 
 void M_Menu_ActionKeys_f(void) // H2
 {
-	keys_count = 13;
+	keys_count = 14;
 	keys_category_offset = 0;
 	use_doublebind = false;
 

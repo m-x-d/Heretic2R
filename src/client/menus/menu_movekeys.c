@@ -35,7 +35,7 @@ static void MoveKeys_MenuDraw(void)
 
 void M_Menu_MoveKeys_f(void)
 {
-	keys_category_offset = 13;
+	keys_category_offset = 14;
 	keys_count = 12;
 	use_doublebind = false;
 

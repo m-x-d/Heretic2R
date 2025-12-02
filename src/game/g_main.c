@@ -42,6 +42,7 @@ cvar_t* deathmatch;
 cvar_t* coop;
 cvar_t* dmflags;
 cvar_t* advancedstaff;
+cvar_t* cl_autoaim; //mxd
 cvar_t* skill;
 cvar_t* fraglimit;
 cvar_t* timelimit;
@@ -194,6 +195,7 @@ void InitGame(void)
 	// Change anytime vars.
 	dmflags = gi.cvar("dmflags", "0", CVAR_SERVERINFO);
 	advancedstaff = gi.cvar("advancedstaff", "1", CVAR_SERVERINFO);
+	cl_autoaim = Cvar_Get("cl_autoaim", "0.8", CVAR_ARCHIVE); //mxd
 
 	fraglimit = gi.cvar("fraglimit", "0", CVAR_SERVERINFO);
 	timelimit = gi.cvar("timelimit", "0", CVAR_SERVERINFO);

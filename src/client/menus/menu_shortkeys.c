@@ -35,7 +35,7 @@ static void ShortKeys_MenuDraw(void)
 
 void M_Menu_ShortKeys_f(void)
 {
-	keys_category_offset = 25;
+	keys_category_offset = 26;
 	keys_count = 14;
 	use_doublebind = false;
 

@@ -57,6 +57,7 @@ cvar_t* m_item_centerview;
 cvar_t* m_item_mouselook;
 cvar_t* m_item_keyboardlook;
 cvar_t* m_item_lookaround;
+cvar_t* m_item_doautoaim;
 cvar_t* m_item_nextweapon;
 cvar_t* m_item_prevweapon;
 cvar_t* m_item_nextdef;
@@ -585,7 +586,7 @@ void M_Init(void)
 	m_item_mouseinvert = Cvar_Get("m_item_mouseinvert", "Invert Mouse", 0);
 	m_item_lookspring = Cvar_Get("m_item_lookspring", "Lookspring", 0);
 	m_item_crosshair = Cvar_Get("m_item_crosshair", "Crosshair", 0);
-	m_item_autotarget = Cvar_Get("m_item_autotarget", "Auto Target", 0);
+	m_item_autoaim = Cvar_Get("m_item_autoaim", "Autoaim amount", 0); //mxd
 	m_item_caption = Cvar_Get("m_item_caption", "Captioning", 0);
 	m_item_violence = Cvar_Get("m_item_violence", "Violence Level", 0);
 	m_item_yawspeed = Cvar_Get("m_item_yawspeed", "Key Turn Speed", 0);
@@ -659,6 +660,7 @@ void M_Init(void)
 	m_item_mouselook = Cvar_Get("m_item_mouselook", "Mouselook", 0);
 	m_item_keyboardlook = Cvar_Get("m_item_keyboardlook", "Keyboardlook", 0);
 	m_item_lookaround = Cvar_Get("m_item_lookaround", "Look Around", 0);
+	m_item_doautoaim = Cvar_Get("m_item_doautoaim", "Autoaim", 0); //mxd
 	m_item_nextweapon = Cvar_Get("m_item_nextweapon", "Next Weapon", 0);
 	m_item_prevweapon = Cvar_Get("m_item_prevweapon", "Previous Weapon", 0);
 	m_item_nextdef = Cvar_Get("m_item_nextdef", "Next Defence", 0);

@@ -40,6 +40,7 @@ extern cvar_t* m_item_centerview;
 extern cvar_t* m_item_mouselook;
 extern cvar_t* m_item_keyboardlook;
 extern cvar_t* m_item_lookaround;
+extern cvar_t* m_item_doautoaim; //mxd
 extern cvar_t* m_item_nextweapon;
 extern cvar_t* m_item_prevweapon;
 extern cvar_t* m_item_nextdef;

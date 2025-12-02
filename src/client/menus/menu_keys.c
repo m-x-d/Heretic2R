@@ -9,6 +9,7 @@
 
 #include "menu_citymap.h"
 #include "menu_help.h"
+#include "menu_misc.h"
 #include "menu_objectives.h"
 #include "menu_worldmap.h"
 
@@ -19,7 +20,7 @@ typedef struct
 	cvar_t** label;
 } BindData_s;
 
-#define NUM_BINDS	49
+#define NUM_BINDS	50
 
 static BindData_s bindnames[NUM_BINDS] =
 {
@@ -28,56 +29,57 @@ static BindData_s bindnames[NUM_BINDS] =
 	{ "+defend",			&m_item_defend },
 	{ "+action",			&m_item_action },
 	{ "+lookup",			&m_item_lookup },
-	{ "+lookdown",		&m_item_lookdown },
-	{ "centerview",		&m_item_centerview },
-	{ "+mlook",			&m_item_mouselook },
-	{ "+klook",			&m_item_keyboardlook },
+	{ "+lookdown",			&m_item_lookdown },
+	{ "centerview",			&m_item_centerview },
+	{ "+mlook",				&m_item_mouselook },
+	{ "+klook",				&m_item_keyboardlook },
 	{ "+lookaround",		&m_item_lookaround },
-	{ "weapnext",		&m_item_nextweapon },
-	{ "weapprev",		&m_item_prevweapon },
+	{ "+autoaim",			&m_item_doautoaim }, //mxd
+	{ "weapnext",			&m_item_nextweapon },
+	{ "weapprev",			&m_item_prevweapon },
 	{ "defnext",			&m_item_nextdef },
 	{ "defprev",			&m_item_prevdef },
 
 	// Move keys.
-	{ "+forward",		&m_item_walkforward },
-	{ "+back",			&m_item_backpedal },
-	{ "+left",			&m_item_turnleft },
-	{ "+right",			&m_item_turnright },
-	{ "+creep",			&m_item_creep },
-	{ "+speed",			&m_item_run },
-	{ "+moveleft",		&m_item_stepleft },
-	{ "+moveright",		&m_item_stepright },
+	{ "+forward",			&m_item_walkforward },
+	{ "+back",				&m_item_backpedal },
+	{ "+left",				&m_item_turnleft },
+	{ "+right",				&m_item_turnright },
+	{ "+creep",				&m_item_creep },
+	{ "+speed",				&m_item_run },
+	{ "+moveleft",			&m_item_stepleft },
+	{ "+moveright",			&m_item_stepright },
 	{ "+strafe",			&m_item_sidestep },
 	{ "+moveup",			&m_item_up },
-	{ "+movedown",		&m_item_down },
-	{ "+quickturn",		&m_item_quickturn },
+	{ "+movedown",			&m_item_down },
+	{ "+quickturn",			&m_item_quickturn },
 
 	// Shortcut keys.
-	{ "menu_help",		&m_item_helpscreen },
-	{ "use *powerup",	&m_item_powerup },
-	{ "use *ring",		&m_item_bluering },
+	{ "menu_help",			&m_item_helpscreen },
+	{ "use *powerup",		&m_item_powerup },
+	{ "use *ring",			&m_item_bluering },
 	{ "use *meteor",		&m_item_meteor },
-	{ "use *morph",		&m_item_morph },
-	{ "use *tele",		&m_item_teleport },
-	{ "use *lshield",	&m_item_shield },
-	{ "use *tornado",	&m_item_tornado },
-	{ "+inventory",		&m_item_inventory },
+	{ "use *morph",			&m_item_morph },
+	{ "use *tele",			&m_item_teleport },
+	{ "use *lshield",		&m_item_shield },
+	{ "use *tornado",		&m_item_tornado },
+	{ "+inventory",			&m_item_inventory },
 	{ "menu_objectives",	&m_banner_objectives },
-	{ "menu_world_map",	&m_banner_worldmap },
-	{ "menu_city_map",	&m_banner_citymap },
+	{ "menu_world_map",		&m_banner_worldmap },
+	{ "menu_city_map",		&m_banner_citymap },
 	{ "messagemode",		&m_item_messagemode },
-	{ "score",			&m_item_frags },
+	{ "score",				&m_item_frags },
 
 	// Double-tap keys.
-	{ "+flip_left",		&m_item_flipleft },
+	{ "+flip_left",			&m_item_flipleft },
 	{ "+flip_right",		&m_item_flipright },
-	{ "+flip_forward",	&m_item_flipforward },
-	{ "+flip_back",		&m_item_flipback },
-	{ "+roll_left",		&m_item_rollleft },
+	{ "+flip_forward",		&m_item_flipforward },
+	{ "+flip_back",			&m_item_flipback },
+	{ "+roll_left",			&m_item_rollleft },
 	{ "+roll_right",		&m_item_rollright },
-	{ "+roll_forward",	&m_item_rollforward },
-	{ "+roll_back",		&m_item_rollback },
-	{ "+quickturn",		&m_item_quickturn },
+	{ "+roll_forward",		&m_item_rollforward },
+	{ "+roll_back",			&m_item_rollback },
+	{ "+quickturn",			&m_item_quickturn },
 	{ "+spinattack",		&m_item_spinattack }
 };
 
