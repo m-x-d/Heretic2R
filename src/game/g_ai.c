@@ -377,8 +377,8 @@ static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original l
 		if (!(self->svflags & SVF_MONSTER) || self->health <= 0)
 			continue;
 
-		// Eating or in a cinematic or not awake, leave them alone.
-		if (!AI_OkToWake(self, false, true))
+		// Eating or in a cinematic or not awake (or laying in ambush --mxd), leave them alone.
+		if (!AI_OkToWake(self, false, false)) //mxd. Don't ignore ambush.
 			continue;
 
 		vec3_t dir;
@@ -402,8 +402,8 @@ static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original l
 		VectorAdd(enemy->s.origin, enemy->mins, enemy_pos);
 		VectorMA(enemy_pos, 0.5f, enemy->size, enemy_pos);
 
-		// If being alerted by a monster and not waiting to ambush.
-		if ((alerter->alert_svflags & SVF_MONSTER) && !(self->spawnflags & MSF_AMBUSH))
+		// If being alerted by a monster.
+		if (alerter->alert_svflags & SVF_MONSTER)
 		{
 			// Can "see" the owner of the alert even around a corner.
 			if (!gi.inPVS(enemy_pos, view_pos))
@@ -411,8 +411,8 @@ static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original l
 		}
 		else
 		{
-			// No line of sight and not an ambush monster.
-			if (!MG_IsVisiblePos(self, enemy_pos) && !(self->spawnflags & MSF_AMBUSH) && gi.inPVS(view_pos, alerter->origin))
+			// No direct line of sight.
+			if (!MG_IsVisiblePos(self, enemy_pos) && gi.inPVS(view_pos, alerter->origin))
 				if (irand(0, 3) != 0) // 25% chance will see impact (alerter) and detect alert owner anyway.
 					continue;
 		}
@@ -544,7 +544,7 @@ qboolean AI_OkToWake(const edict_t* monster, const qboolean gorgon_roar, const q
 
 	// When targetname is set: a monster that's supposed to be triggered - problem, one a monster is used and woken up, won't respond to alerts like others...?
 	if ((monster->monsterinfo.aiflags & AI_EATING) || monster->targetname != NULL ||
-		monster->monsterinfo.c_mode || (monster->spawnflags & MSF_ASLEEP) || (monster->spawnflags & MSF_AMBUSH && !ignore_ambush))
+		monster->monsterinfo.c_mode || (monster->spawnflags & MSF_ASLEEP) || ((monster->spawnflags & MSF_AMBUSH) && !ignore_ambush))
 		return false;
 
 	return true;
