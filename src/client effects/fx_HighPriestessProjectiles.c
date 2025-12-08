@@ -714,7 +714,7 @@ static void SpawnHPMissile4Light(const int type, const vec3_t origin) //mxd
 	AddEffect(NULL, spark);
 
 	// Shake the screen.
-	fxi.Activate_Screen_Shake(4.0f, 5500.0f, (float)fx_time, SHAKE_ALL_DIR);
+	fxi.Activate_Screen_Shake(4.0f, 5500.0f, (float)fxi.cl->time, SHAKE_ALL_DIR); // 'current_time' MUST be cl.time, because that's what used by Perform_Screen_Shake() to calculate effect intensity/timing... --mxd.
 }
 
 static void SpawnHPTeleportStart(const int type, const vec3_t origin) //mxd

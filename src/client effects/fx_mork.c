@@ -941,7 +941,7 @@ static void QuakeRing(const vec3_t origin)
 		ring_vel /= 2.0f;
 	}
 
-	fxi.Activate_Screen_Shake(12.0f, 1000.0f, (float)fx_time, SHAKE_ALL_DIR);
+	fxi.Activate_Screen_Shake(12.0f, 1000.0f, (float)fxi.cl->time, SHAKE_ALL_DIR); // 'current_time' MUST be cl.time, because that's what used by Perform_Screen_Shake() to calculate effect intensity/timing... --mxd.
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("world/quakeshort.wav"), 1.0f, ATTN_NONE, 0.0f);
 }
 

@@ -245,7 +245,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 			halo->Update = CWBeamThink2;
 			halo->AddToView = LinkedEntityUpdatePlacement;
 
-			fxi.Activate_Screen_Shake(8.0f, 4000.0f, (float)fx_time, SHAKE_ALL_DIR);
+			fxi.Activate_Screen_Shake(8.0f, 4000.0f, (float)fxi.cl->time, SHAKE_ALL_DIR); // 'current_time' MUST be cl.time, because that's what used by Perform_Screen_Shake() to calculate effect intensity/timing... --mxd.
 
 			AddEffect(owner, halo);
 		} break;
@@ -264,7 +264,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 
 			beam->AddToView = LinkedEntityUpdatePlacement;
 
-			fxi.Activate_Screen_Shake(8.0f, 3000.0f, (float)fx_time, SHAKE_ALL_DIR);
+			fxi.Activate_Screen_Shake(8.0f, 3000.0f, (float)fxi.cl->time, SHAKE_ALL_DIR); // 'current_time' MUST be cl.time, because that's what used by Perform_Screen_Shake() to calculate effect intensity/timing... --mxd.
 
 			AddEffect(owner, beam);
 		} break;

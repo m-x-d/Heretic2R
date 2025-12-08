@@ -377,7 +377,7 @@ void FXPowerLightning(centity_t* owner, int type, const int flags, vec3_t origin
 
 	// Now finally flash and shake the screen.
 	fxi.Activate_Screen_Flash((int)0x8080ffc0);
-	fxi.Activate_Screen_Shake(4.0f, 500.0f, (float)fx_time, SHAKE_ALL_DIR);
+	fxi.Activate_Screen_Shake(4.0f, 500.0f, (float)fxi.cl->time, SHAKE_ALL_DIR); // 'current_time' MUST be cl.time, because that's what used by Perform_Screen_Shake() to calculate effect intensity/timing... --mxd.
 
 	if (flags & CEF_FLAG8) // "Play sound" flag.
 		fxi.S_StartSound(target, -1, CHAN_WEAPON, lightning_sound, 1.0f, ATTN_NORM, 0.0f);
