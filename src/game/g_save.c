@@ -216,6 +216,12 @@ static field_t bouyfields[] =
 
 static field_t clientfields[] =
 {
+	{ "", CLOFS(lastentityhit),					F_EDICT,	FFL_NONE, NULL}, //mxd. Can be -1 (when hit world)!
+	{ "", CLOFS(Meteors[0]),					F_EDICT,	FFL_NONE, NULL}, //mxd
+	{ "", CLOFS(Meteors[1]),					F_EDICT,	FFL_NONE, NULL}, //mxd
+	{ "", CLOFS(Meteors[2]),					F_EDICT,	FFL_NONE, NULL}, //mxd
+	{ "", CLOFS(Meteors[3]),					F_EDICT,	FFL_NONE, NULL}, //mxd
+
 	{ "", CLOFS(playerinfo.pers.weapon),		F_ITEM,	FFL_NONE, NULL },
 	{ "", CLOFS(playerinfo.pers.lastweapon),	F_ITEM,	FFL_NONE, NULL },
 	{ "", CLOFS(playerinfo.pers.defence),		F_ITEM,	FFL_NONE, NULL },
@@ -295,7 +301,9 @@ static void ConvertField(field_t* field, byte* base, const char* obj_name) //mxd
 			break;
 
 		case F_EDICT: // Convert edict pointer to edict index.
-			if (*(edict_t**)p != NULL)
+			if (*(int*)p == -1) //mxd. Very special "hit world" case (probably used by gclient_t.lastentityhit only)...
+				index = -2;
+			else if (*(edict_t**)p != NULL)
 				index = *(edict_t**)p - g_edicts;
 			else
 				index = -1;
@@ -450,7 +458,9 @@ static void ReadField(FILE* f, const field_t* field, byte* base)
 
 		case F_EDICT:
 			index = *(int*)p;
-			if (index == -1)
+			if (index == -2) //mxd. Very special "hit world" case (probably used by gclient_t.lastentityhit only)...
+				*(int*)p = -1;
+			else if (index == -1)
 				*(edict_t**)p = NULL;
 			else
 				*(edict_t**)p = &g_edicts[index];
