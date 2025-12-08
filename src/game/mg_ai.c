@@ -257,40 +257,36 @@ trace_t MG_MoveStep_SwimOrFly(edict_t* self, const vec3_t move, const qboolean r
 
 static trace_t MG_MoveStep_Walk(edict_t* self, const vec3_t move, const qboolean relink) //mxd. Split from MG_MoveStep().
 {
-	vec3_t initial_org;
-	VectorCopy(self->s.origin, initial_org);
+	const vec3_t initial_org = VEC3_INIT(self->s.origin);
 
 	// Push down from a step height above the wished position.
 	int clipmask = MASK_MONSTERSOLID;
 	float step_size;
 
-	if (!(self->monsterinfo.aiflags & AI_NOSTEP))
-	{
-		if (self->classID == CID_TBEAST)
-		{
-			clipmask = MASK_SOLID;
-			step_size = STEP_SIZE * 3.0f;
-		}
-		else
-		{
-			step_size = STEP_SIZE;
-		}
-	}
-	else
+	if (self->monsterinfo.aiflags & AI_NOSTEP)
 	{
 		step_size = 1.0f;
 	}
+	else if (self->classID == CID_TBEAST)
+	{
+		clipmask = MASK_SOLID;
+		step_size = STEP_SIZE * 3.0f;
+	}
+	else
+	{
+		step_size = STEP_SIZE;
+	}
 
-	vec3_t test_org;
-	VectorAdd(self->s.origin, move, test_org);
-	test_org[2] += step_size;
+	vec3_t start;
+	VectorAdd(self->s.origin, move, start);
+	start[2] += step_size;
 
 	vec3_t end;
-	VectorCopy(test_org, end);
-	end[2] -= step_size * 2.0f;
+	VectorAdd(self->s.origin, move, end);
+	end[2] -= step_size;
 
 	trace_t trace;
-	gi.trace(test_org, self->mins, self->maxs, end, self, clipmask, &trace);
+	gi.trace(start, self->mins, self->maxs, end, self, clipmask, &trace);
 
 	// The step up/down is all solid in front.
 	if (trace.allsolid)
@@ -303,8 +299,8 @@ static trace_t MG_MoveStep_Walk(edict_t* self, const vec3_t move, const qboolean
 	if (trace.startsolid)
 	{
 		// Can't step up, try down.
-		test_org[2] -= step_size;
-		gi.trace(test_org, self->mins, self->maxs, end, self, clipmask, &trace);
+		start[2] -= step_size;
+		gi.trace(start, self->mins, self->maxs, end, self, clipmask, &trace);
 
 		if (trace.allsolid || trace.startsolid)
 		{
@@ -324,10 +320,7 @@ static trace_t MG_MoveStep_Walk(edict_t* self, const vec3_t move, const qboolean
 	if (self->waterlevel == 0)
 	{
 		// Not currently in water.
-		vec3_t pos;
-		VectorCopy(trace.endpos, pos);
-		pos[2] += self->mins[2] + (self->maxs[2] - self->mins[2]) * 0.4f;
-
+		const vec3_t pos = VEC3_INITA(trace.endpos, 0.0f, 0.0f, self->mins[2] + (self->maxs[2] - self->mins[2]) * 0.4f);
 		contents = gi.pointcontents(pos);
 
 		if ((contents & MASK_WATER) && !(self->flags & FL_AMPHIBIAN))
@@ -342,7 +335,7 @@ static trace_t MG_MoveStep_Walk(edict_t* self, const vec3_t move, const qboolean
 		if ((self->flags & FL_PARTIALGROUND) || (self->svflags & SVF_FLOAT) || self->classID == CID_TBEAST || is_amphibian) // Allow amphibian monsters to step off ledges into water.
 		{
 			// If monster had the ground pulled out, go ahead and fall.
-			VectorAdd(self->s.origin, move, self->s.origin);
+			Vec3AddAssign(move, self->s.origin);
 
 			if (relink)
 			{
@@ -367,7 +360,7 @@ static trace_t MG_MoveStep_Walk(edict_t* self, const vec3_t move, const qboolean
 	if (!is_amphibian && !MG_CheckBottom(self))
 	{
 		// Not completely on solid ground.
-		if (self->flags & FL_PARTIALGROUND || self->svflags & SVF_FLOAT)
+		if ((self->flags & FL_PARTIALGROUND) || (self->svflags & SVF_FLOAT))
 		{
 			// Entity had floor mostly pulled out from underneath it and is trying to correct or can float.
 			if (relink)
