@@ -690,7 +690,7 @@ extern "C"
 // Client data that stays across deathmatch respawns.
 typedef struct
 {
-	client_persistant_t coop_respawn; // What to set 'client'->pers to on a respawn.
+	client_persistant_t coop_respawn; // What to set 'client'->pers to on a respawn. //TODO: set, but never used?
 	int enterframe; // The level.framenum when the client entered the game.
 	int score; // Frags, etc.
 	vec3_t cmd_angles; // Angles sent over in the last command.
@@ -729,15 +729,15 @@ typedef struct gclient_s
 	// Remote and walkby camera stuff.
 	int RemoteCameraLockCount;
 	int RemoteCameraNumber;
-	int savedtargetcount;
-	edict_t* savedtarget;
+	int savedtargetcount; //TODO: unused.
+	edict_t* savedtarget; //TODO: unused.
 
 	// Teleport stuff.
 	vec3_t tele_dest;
 	vec3_t tele_angles;
 	int tele_count;
 	int tele_type; // Note: only a byte of this is used.
-	int old_solid;
+	int old_solid; //TODO: set, but never used.
 
 	// Weapon / defense stuff.
 	edict_t* lastentityhit;
