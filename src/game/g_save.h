@@ -31,6 +31,7 @@ typedef enum
 	F_RGB,
 	F_FUNCTION,	// YQ2
 	F_ANIMMOVE,	// YQ2
+	F_CLEAR,	//mxd. Set to NULL when loading game.
 	F_IGNORE
 } fieldtype_t;
 

@@ -222,6 +222,7 @@ static field_t clientfields[] =
 	{ "", CLOFS(Meteors[2]),					F_EDICT,	FFL_NONE, NULL}, //mxd
 	{ "", CLOFS(Meteors[3]),					F_EDICT,	FFL_NONE, NULL}, //mxd
 
+	{ "", CLOFS(playerinfo.GroundSurface),		F_CLEAR,	FFL_NONE, NULL }, //mxd. Clear (can point to 'ground_surf' local var in CL_PredictMovement_impl())...
 	{ "", CLOFS(playerinfo.pers.weapon),		F_ITEM,	FFL_NONE, NULL },
 	{ "", CLOFS(playerinfo.pers.lastweapon),	F_ITEM,	FFL_NONE, NULL },
 	{ "", CLOFS(playerinfo.pers.defence),		F_ITEM,	FFL_NONE, NULL },
@@ -288,6 +289,7 @@ static void ConvertField(field_t* field, byte* base, const char* obj_name) //mxd
 		case F_FLOAT:
 		case F_ANGLEHACK:
 		case F_VECTOR:
+		case F_CLEAR: //mxd
 		case F_IGNORE:
 			break;
 
@@ -439,6 +441,10 @@ static void ReadField(FILE* f, const field_t* field, byte* base)
 		case F_ANGLEHACK:
 		case F_VECTOR:
 		case F_IGNORE:
+			break;
+
+		case F_CLEAR: //mxd. Some fields should not be restored...
+			*(int*)p = 0;
 			break;
 
 		case F_LSTRING:
