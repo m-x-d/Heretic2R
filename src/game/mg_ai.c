@@ -80,7 +80,10 @@ static qboolean MG_CheckBottom(edict_t* ent)
 
 	float step_size = 0.0f;
 
-	if (ent->maxs[0] > maxs[0])
+	//mxd. Allow rats to POUR from much higher places (fixes rats unable to emerge from literal monster closet near the start of sspalace).
+	if (ent->classID == CID_RAT)
+		step_size = RAT_STEP_DOWN_SIZE;
+	else if (ent->maxs[0] > maxs[0])
 		step_size = STEP_SIZE + (ent->maxs[0] - maxs[0]);
 
 	Vec3AddAssign(ent->s.origin, mins);
@@ -330,7 +333,7 @@ static trace_t MG_MoveStep_Walk(edict_t* self, const vec3_t move, const qboolean
 	if (trace.fraction == 1.0f)
 	{
 		// Too long of a step down.
-		if ((self->flags & FL_PARTIALGROUND) || (self->svflags & SVF_FLOAT) || self->classID == CID_TBEAST || is_amphibian) // Allow amphibian monsters to step off ledges into water.
+		if ((self->flags & FL_PARTIALGROUND) || (self->svflags & SVF_FLOAT) || self->classID == CID_TBEAST || self->classID == CID_RAT || is_amphibian) // Allow amphibian monsters to step off ledges into water. //mxd. +CID_RAT check.
 		{
 			// If monster had the ground pulled out, go ahead and fall.
 			Vec3AddAssign(move, self->s.origin);
