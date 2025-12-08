@@ -14,9 +14,6 @@
 #include "m_player.h"
 #include "p_utility.h" //mxd
 
-static const vec3_t footmins = { -1.0f, -1.0f, 0.0f };
-static const vec3_t footmaxs = { 1.0f,  1.0f, 1.0f };
-
 qboolean CheckFall(const playerinfo_t* info)
 {
 #define FALL_MINHEIGHT	34
@@ -87,6 +84,9 @@ static qboolean CheckCreep(const playerinfo_t* info, const int dir)
 
 static int CheckSlopedStand(const playerinfo_t* info) //TODO: it would be nice to use inverse kinematics for this...
 {
+	static const vec3_t foot_mins = { -1.0f, -1.0f, 0.0f }; //mxd. Made local static.
+	static const vec3_t foot_maxs = {  1.0f,  1.0f, 1.0f }; //mxd. Made local static.
+
 	//mxd. Check for noclip, just to make things more robust.
 	if (info->movetype == PHYSICSTYPE_NOCLIP)
 		return ASEQ_STAND;
@@ -115,12 +115,12 @@ static int CheckSlopedStand(const playerinfo_t* info) //TODO: it would be nice t
 	const vec3_t rspotmin = { rspotmax[0], rspotmax[1], rspotmax[2] + info->mins[2] * 2.0f };
 
 	trace_t rightfoot;
-	P_Trace(info, rspotmax, footmins, footmaxs, rspotmin, &rightfoot); //mxd
+	P_Trace(info, rspotmax, foot_mins, foot_maxs, rspotmin, &rightfoot); //mxd
 	if (rightfoot.fraction == 1.0f && !rightfoot.startsolid && !rightfoot.allsolid)
 		return ASEQ_LSTAIR16;
 
 	trace_t leftfoot;
-	P_Trace(info, lspotmax, footmins, footmaxs, lspotmin, &leftfoot); //mxd
+	P_Trace(info, lspotmax, foot_mins, foot_maxs, lspotmin, &leftfoot); //mxd
 	if (leftfoot.fraction == 1.0f && !leftfoot.startsolid && !leftfoot.allsolid)
 		return ASEQ_RSTAIR16;
 
