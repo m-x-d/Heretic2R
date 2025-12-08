@@ -67,10 +67,8 @@ static qboolean MG_CheckBottom(edict_t* ent)
 		return TBeastCheckBottom(ent);
 
 	// Lenient, max 16 corner checking.
-	vec3_t mins;
-	vec3_t maxs;
-	VectorCopy(ent->mins, mins);
-	VectorCopy(ent->maxs, maxs);
+	vec3_t mins = VEC3_INIT(ent->mins);
+	vec3_t maxs = VEC3_INIT(ent->maxs);
 
 	// Keep corner checks within 16 of center.
 	for (int i = 0; i < 2; i++)
@@ -85,8 +83,8 @@ static qboolean MG_CheckBottom(edict_t* ent)
 	if (ent->maxs[0] > maxs[0])
 		step_size = STEP_SIZE + (ent->maxs[0] - maxs[0]);
 
-	VectorAdd(ent->s.origin, mins, mins);
-	VectorAdd(ent->s.origin, maxs, maxs);
+	Vec3AddAssign(ent->s.origin, mins);
+	Vec3AddAssign(ent->s.origin, maxs);
 
 	// If all of the points under the corners are solid world, don't bother with the tougher checks.
 	qboolean corner_ok[4];
@@ -215,7 +213,7 @@ trace_t MG_MoveStep_SwimOrFly(edict_t* self, const vec3_t move, const qboolean r
 
 		if ((self->flags & FL_FLY) && self->waterlevel == 0) // Fly monsters don't enter water voluntarily.
 		{
-			const vec3_t pos = { trace.endpos[0], trace.endpos[1], trace.endpos[2] + self->mins[2] + 1.0f };
+			const vec3_t pos = VEC3_INITA(trace.endpos, 0.0f, 0.0f, self->mins[2] + 1.0f);
 
 			if (gi.pointcontents(pos) & MASK_WATER)
 			{
@@ -225,7 +223,7 @@ trace_t MG_MoveStep_SwimOrFly(edict_t* self, const vec3_t move, const qboolean r
 		}
 		else if ((self->flags & FL_SWIM) && self->waterlevel < 2) // Swim monsters don't exit water voluntarily.
 		{
-			const vec3_t pos = { trace.endpos[0], trace.endpos[1], trace.endpos[2] + self->mins[2] + 1.0f };
+			const vec3_t pos = VEC3_INITA(trace.endpos, 0.0f, 0.0f, self->mins[2] + 1.0f);
 
 			if (!(gi.pointcontents(pos) & MASK_WATER))
 			{
@@ -304,7 +302,7 @@ static trace_t MG_MoveStep_Walk(edict_t* self, const vec3_t move, const qboolean
 
 		if (trace.allsolid || trace.startsolid)
 		{
-			const qboolean slip_under = (trace.ent != NULL && trace.ent->client != NULL); // Lets rats walk between legs.
+			const qboolean slip_under = (trace.ent != NULL && trace.ent->client != NULL); // Lets rats walk between legs. //TODO: do only for CID_RAT?
 
 			if (!slip_under)
 			{
