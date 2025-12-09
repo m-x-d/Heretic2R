@@ -1678,7 +1678,7 @@ void ssithra_ai_run(edict_t* self, float distance) //mxd. Originally defined in 
 	if (SsithraCheckInWater(self))
 	{
 		MG_SwimFlyToGoal(self, distance); // Really need to get rid of this!
-		MG_Pathfind(self, false);
+		MG_Pathfind(self, true); //H2_BUGFIX: mxd. check_clear_path:false in original logic (results in ssithra awkwardly stuck near nearest undwewater buoy instead of following player).
 	}
 	else
 	{
