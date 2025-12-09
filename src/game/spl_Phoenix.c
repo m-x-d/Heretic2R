@@ -71,7 +71,7 @@ void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfac
 	VectorNormalize2(self->velocity, self->movedir);
 
 	// Start the explosion effect.
-	const vec3_t* dir = (Vec3NotZero(plane->normal) ? &plane->normal : &self->movedir); //BUGFIX: mxd. 'if (plane->normal)' in original version (always true).
+	const vec3_t* dir = (plane != NULL ? &plane->normal : &self->movedir); //BUGFIX: mxd. 'if (plane->normal)' in original version (always true).
 
 	if (is_powered)
 		fx_flags |= CEF_FLAG6;
