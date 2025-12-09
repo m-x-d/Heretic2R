@@ -301,13 +301,8 @@ void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic.
 		if (!self->fish_ripple_spawned)
 		{
 			// Create a ripple.
-			vec3_t top;
-			VectorCopy(self->s.origin, top);
-			top[2] += self->maxs[2] * 0.75f;
-
-			vec3_t bottom;
-			VectorCopy(self->s.origin, bottom);
-			bottom[2] += self->mins[2];
+			const vec3_t top =    VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2] * 0.75f);
+			const vec3_t bottom = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2]);
 
 			trace_t trace;
 			gi.trace(top, vec3_origin, vec3_origin, bottom, self, MASK_WATER, &trace);
@@ -317,13 +312,13 @@ void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic.
 				// No ripples while in cinematics.
 				if (!SV_CINEMATICFREEZE)
 				{
-					vec3_t dir;
-					AngleVectors(self->s.angles, dir, NULL, NULL);
-					Vec3ScaleAssign(200.0f, dir);
+					vec3_t forward;
+					AngleVectors(self->s.angles, forward, NULL, NULL);
+					Vec3ScaleAssign(200.0f, forward);
 
 					const byte b_angle = (byte)((self->s.angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
 
-					gi.CreateEffect(NULL, FX_WATER_WAKE, 0, trace.endpos, "sbv", self->s.number, b_angle, dir);
+					gi.CreateEffect(NULL, FX_WATER_WAKE, 0, trace.endpos, "sbv", self->s.number, b_angle, forward);
 				}
 
 				gi.sound(self, CHAN_WEAPON, sounds[SND_SPLASH], 1.0f, ATTN_NORM, 0.0f);
