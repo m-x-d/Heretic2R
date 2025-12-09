@@ -34,7 +34,7 @@ static void PlayerClimbSound(const playerinfo_t* info, const char* snd_name)
 #define ROPE_SOUND_DEBOUNCE_DELAY 1.0f
 
 	const edict_t* player = info->self;
-	edict_t* rope = player->targetEnt->rope_grab;
+	edict_t* rope = player->rope->rope_grab;
 	monsterinfo_t* rope_info = &rope->monsterinfo;
 
 	if (rope_info->rope_sound_debounce_time < level.time)
@@ -78,9 +78,9 @@ static void PlayerActionDoRopeJump(playerinfo_t* info, const vec3_t velocity) //
 	PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav")); // Play BEFORE releasing rope ptr.
 
 	player->monsterinfo.rope_jump_debounce_time = info->leveltime + ROPE_JUMP_DEBOUNCE_DELAY;
-	player->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
-	player->targetEnt->enemy = NULL;
-	player->targetEnt = NULL;
+	player->rope->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
+	player->rope->rope_user = NULL;
+	player->rope = NULL;
 
 	P_PlayerAnimSetUpperSeq(info, ASEQ_NONE);
 	P_PlayerAnimSetLowerSeq(info, lowerseq);
@@ -97,7 +97,7 @@ static void PlayerActionReleaseRope(playerinfo_t* info, const float vel_scale, c
 	else
 	{
 		const edict_t* player = info->self;
-		VectorScale(player->targetEnt->rope_grab->velocity, 0.5f, velocity);
+		VectorScale(player->rope->rope_grab->velocity, 0.5f, velocity);
 	}
 
 	vec3_t forward;
@@ -143,7 +143,7 @@ static void PlayerActionRopeJumpCommand(playerinfo_t* info) //mxd. Assumes that 
 	}
 
 	const edict_t* player = info->self;
-	const edict_t* rope = player->targetEnt->rope_grab;
+	const edict_t* rope = player->rope->rope_grab;
 	const float velocity = max(fwd_vel, side_vel);
 
 	// Jump in this direction.
@@ -163,7 +163,7 @@ static void PlayerActionRopeJumpCommand(playerinfo_t* info) //mxd. Assumes that 
 static void PlayerActionRopeCrouchCommand(playerinfo_t* info) //mxd. Assumes that ACMDL_CROUCH is pressed.
 {
 	const edict_t* player = info->self;
-	const edict_t* rope_end = player->targetEnt->rope_end;
+	const edict_t* rope_end = player->rope->rope_end;
 
 	trace_t trace;
 	const vec3_t end_point = VEC3_INITA(info->origin, 0.0f, 0.0f, -38.0f);
@@ -177,7 +177,7 @@ static void PlayerActionRopeCrouchCommand(playerinfo_t* info) //mxd. Assumes tha
 static void PlayerActionRopeSwingCommand(const playerinfo_t* info) //mxd. Assumes that ACMDL_FWD, ACMDL_BACK, ACMDL_STRAFE_L or ACMDL_STRAFE_R is/are pressed.
 {
 	const edict_t* player = info->self;
-	edict_t* rope = player->targetEnt->rope_grab;
+	edict_t* rope = player->rope->rope_grab;
 	monsterinfo_t* rope_info = &rope->monsterinfo;
 
 	// Calculate swing direction and speed.
@@ -237,7 +237,7 @@ static void ApplyPlayerRopeSwingVelocity(const playerinfo_t* info) //mxd
 	const edict_t* player = info->self;
 
 	// Apply rope swinging velocity...
-	edict_t* rope = player->targetEnt->rope_grab;
+	edict_t* rope = player->rope->rope_grab;
 	monsterinfo_t* rope_info = &rope->monsterinfo;
 
 	// No rope swinging required.
@@ -271,7 +271,7 @@ static void ApplyPlayerRopeSwingVelocity(const playerinfo_t* info) //mxd
 		}
 
 		// Apply swing velocity. Reduce swing amount when close to rope top.
-		const float dist = player->targetEnt->s.origin[2] - info->origin[2] - 16.0f;
+		const float dist = player->rope->s.origin[2] - info->origin[2] - 16.0f;
 		const float dist_scaler = min(dist, 128.0f) / 128.0f;
 
 		VectorMA(rope->velocity, cur_speed * dist_scaler, rope_info->rope_player_swing_direction, rope->velocity);
@@ -295,7 +295,7 @@ void G_PlayerActionCheckRopeMove(playerinfo_t* info) // Called from PlayerAction
 		PlayerActionRopeSwingCommand(info);
 
 	const edict_t* player = info->self;
-	if (player->targetEnt != NULL) // If NULL, we jumped from the rope.
+	if (player->rope != NULL) // If NULL, we jumped from the rope.
 		ApplyPlayerRopeSwingVelocity(info);
 }
 
@@ -306,14 +306,14 @@ void G_PlayerActionCheckRopeMove(playerinfo_t* info) // Called from PlayerAction
 static int PlayerActionRopeClimbUpAnimation(const playerinfo_t* info) //mxd
 {
 	const edict_t* player = info->self;
-	edict_t* rope = player->targetEnt->rope_grab;
+	edict_t* rope = player->rope->rope_grab;
 
 	trace_t trace;
 	const vec3_t end_point = VEC3_INITA(info->origin, 0.0f, 0.0f, 16.0f);
 	info->G_Trace(info->origin, info->mins, info->maxs, end_point, info->self, MASK_PLAYERSOLID, &trace);
 
 	vec3_t rope_top_dist;
-	VectorSubtract(player->targetEnt->s.origin, info->origin, rope_top_dist);
+	VectorSubtract(player->rope->s.origin, info->origin, rope_top_dist);
 
 	if (trace.fraction == 1.0f && VectorLength(rope_top_dist) > info->maxs[2] + 32.0f)
 	{
@@ -389,7 +389,7 @@ static int PlayerActionRopeClimbUpAnimation(const playerinfo_t* info) //mxd
 static int PlayerActionRopeClimbDownAnimation(const playerinfo_t* info) //mxd
 {
 	const edict_t* player = info->self;
-	edict_t* rope = player->targetEnt->rope_grab;
+	edict_t* rope = player->rope->rope_grab;
 
 	Vec3ScaleAssign(0.9f, rope->velocity); // Settle down the rope when climbing... 
 	const int chance = irand(1, 4);
