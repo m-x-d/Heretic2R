@@ -127,8 +127,6 @@ static void ApplySkeletonToRef(Placement_t* placement, const int joint_index, co
 
 static void LerpReferences(const fmdl_t* fmdl, const entity_t* e) //mxd. Original logic uses 'fmodel' and 'currententity' global vars.
 {
-	assert(fmdl_referenceInfo->jointIDs != NULL); //mxd
-
 	const float delta = r_newrefdef.time - fmdl_referenceInfo->lastUpdate;
 	fmdl_referenceInfo->lastUpdate = r_newrefdef.time;
 
@@ -161,7 +159,7 @@ static void LerpReferences(const fmdl_t* fmdl, const entity_t* e) //mxd. Origina
 
 		if (fmdl->frames == NULL) //TODO: can't happen? There's fmodel->frames NULL-check in FrameLerp().
 		{
-			if (e->swapFrame == NO_SWAP_FRAME || fmdl_referenceInfo->jointIDs[i] < e->swapCluster)
+			if (e->swapFrame == NO_SWAP_FRAME || (fmdl_referenceInfo->jointIDs != NULL && fmdl_referenceInfo->jointIDs[i] < e->swapCluster)) //mxd. Added jointIDs NULL check.
 			{
 				VectorCopy(s_lerped[fmdl->header.num_xyz + i * 3 + 0], cur_placement->origin);
 				VectorCopy(s_lerped[fmdl->header.num_xyz + i * 3 + 1], cur_placement->direction);
@@ -173,7 +171,7 @@ static void LerpReferences(const fmdl_t* fmdl, const entity_t* e) //mxd. Origina
 				ri.Com_Error(ERR_DROP, "LerpReferences: fmodel compressed frame lerp logic not implemented...");
 			}
 		}
-		else if (e->swapFrame == NO_SWAP_FRAME || fmdl_referenceInfo->jointIDs[i] < e->swapCluster)
+		else if (e->swapFrame == NO_SWAP_FRAME || (fmdl_referenceInfo->jointIDs != NULL && fmdl_referenceInfo->jointIDs[i] < e->swapCluster)) //mxd. Added jointIDs NULL check.
 		{
 			const Placement_t* frame = &fmdl->refsForFrame[e->frame * num_refs + i];
 			const Placement_t* oldframe = &fmdl->refsForFrame[e->oldframe * num_refs + i];
