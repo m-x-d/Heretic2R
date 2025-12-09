@@ -477,7 +477,7 @@ struct edict_s
 	float wakeup_distance; // How far the player can be when I see him to wake me up.
 
 	float evade_debounce_time; // How long to evade for.
-	float oldenemy_debounce_time; // How long to hunt enemy before looking for oldenemy again.
+	float oldenemy_debounce_time; // How long to hunt enemy before looking for oldenemy again. //TODO: never set to anything other than -1. Remove?
 
 	float best_move_yaw;
 
