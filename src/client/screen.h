@@ -9,6 +9,17 @@
 #include "q_shared.h" //mxd
 #include "vid.h" //mxd
 
+typedef struct GameMessageDisplayInfo_s //mxd
+{
+	char message[1024];
+	int num_lines;
+	paletteRGBA_t color;
+	qboolean is_caption;
+	float dispay_time;
+} GameMessageDisplayInfo_t;
+
+extern GameMessageDisplayInfo_t display_msg; //mxd
+
 extern qboolean scr_draw_loading_plaque; //mxd
 
 extern float scr_con_current;

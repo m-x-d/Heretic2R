@@ -21,6 +21,8 @@ int ui_line_height = (int)((float)CONCHAR_SIZE * 1.25f); //mxd. Original logic u
 int ui_screen_width = DEF_WIDTH; // Screen width sized to 4x3 aspect ratio.
 int ui_screen_offset_x = 0; // Horizontal offset from viddef.width to centered ui_screen_width.
 
+GameMessageDisplayInfo_t display_msg; //mxd
+
 qboolean scr_draw_loading_plaque; // H2
 static qboolean scr_draw_loading; // int in Q2
 static int scr_progressbar_width; // H2
@@ -974,19 +976,16 @@ static void SCR_DrawCinematicBorders(void) // H2
 
 static void SCR_DrawGameMessage(void) // H2
 {
-	game_message_dispay_time -= cls.rframetime;
+	display_msg.dispay_time -= cls.rframetime;
 
-	if (game_message_dispay_time <= 0.0f)
+	if (display_msg.dispay_time <= 0.0f)
 		return;
-		
+
 	//mxd. The above code was in a separate function in original version.
-	if (strlen(game_message) > 9999) // TODO: but game_message[] it only 1024 chars long?..
-		return;
+	const float scaler = (display_msg.is_caption ? 0.9f : 0.4f);
+	int y = (int)((float)viddef.height * scaler) - (display_msg.num_lines / 2) * ui_char_size;
 
-	const float scaler = (game_message_show_at_top ? 0.9f : 0.4f);
-	int y = (int)((float)viddef.height * scaler) - (game_message_num_lines / 2) * ui_char_size;
-
-	const char* s = game_message;
+	const char* s = &display_msg.message[0];
 	while (true)
 	{
 		int line_len;
@@ -996,7 +995,7 @@ static void SCR_DrawGameMessage(void) // H2
 
 		const int x = (viddef.width - line_len * ui_char_size) / 2;
 		SCR_AddDirtyPoint(x, y);
-		DrawString(x, y, s, game_message_color, line_len);
+		DrawString(x, y, s, display_msg.color, line_len);
 		SCR_AddDirtyPoint(x + line_len * ui_char_size, y + ui_char_size);
 
 		// Skip to next line.

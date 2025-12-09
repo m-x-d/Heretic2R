@@ -8,12 +8,6 @@
 #include "cl_strings.h"
 #include "qcommon.h"
 
-char game_message[1024];
-int game_message_num_lines;
-paletteRGBA_t game_message_color;
-qboolean game_message_show_at_top;
-float game_message_dispay_time;
-
 static char* game_messages_text;
 static GameMessage_t game_messages[MAX_MESSAGES];
 

@@ -66,10 +66,10 @@ static void CenterPrint(const char* msg, const PalIdx_t color_index) // H2
 	if (msg == NULL)
 		return;
 
-	strncpy_s(game_message, sizeof(game_message), msg, sizeof(game_message) - 1); //mxd. strncpy -> strncpy_s
-	game_message_dispay_time = scr_centertime->value;
-	game_message_num_lines = 1;
-	game_message_color = TextPalette[color_index];
+	strncpy_s(display_msg.message, sizeof(display_msg.message), msg, sizeof(display_msg.message) - 1); //mxd. strncpy -> strncpy_s
+	display_msg.dispay_time = scr_centertime->value;
+	display_msg.num_lines = 1;
+	display_msg.color = TextPalette[color_index];
 
 	// Calculate display time and number of lines.
 	int num_chars = 0;
@@ -80,12 +80,12 @@ static void CenterPrint(const char* msg, const PalIdx_t color_index) // H2
 
 		if (*s == '\n')
 		{
-			game_message_dispay_time += 0.8f;
-			game_message_num_lines++;
+			display_msg.dispay_time += 0.8f;
+			display_msg.num_lines++;
 		}
 		else if ((int)(scr_centertime->value * 10.0f) < num_chars)
 		{
-			game_message_dispay_time += 0.2f;
+			display_msg.dispay_time += 0.2f;
 		}
 
 		s++;
@@ -990,7 +990,7 @@ void CL_ParseServerMessage(void)
 
 			case svc_gamemsg_centerprint: // H2
 			{
-				game_message_show_at_top = false;
+				display_msg.is_caption = false;
 				const int msg_index = MSG_ReadShort(&net_message);
 				const char* msg = CL_GetGameString(msg_index);
 				if (msg != NULL && !(int)cl_no_middle_text->value)
@@ -1003,7 +1003,7 @@ void CL_ParseServerMessage(void)
 
 			case svc_gamemsgvar_centerprint: // H2
 			{
-				game_message_show_at_top = false;
+				display_msg.is_caption = false;
 				const int msg_index = MSG_ReadShort(&net_message);
 				const int msg_val = MSG_ReadLong(&net_message);
 				
@@ -1021,7 +1021,7 @@ void CL_ParseServerMessage(void)
 
 			case svc_levelmsg_centerprint: // H2
 			{
-				game_message_show_at_top = false;
+				display_msg.is_caption = false;
 				const int msg_index = MSG_ReadShort(&net_message);
 				const char* msg = CL_GetLevelString(msg_index);
 				if (msg != NULL)
@@ -1034,7 +1034,7 @@ void CL_ParseServerMessage(void)
 
 			case svc_captionprint: // H2
 			{
-				game_message_show_at_top = true;
+				display_msg.is_caption = true;
 				const int msg_index = MSG_ReadShort(&net_message);
 				if ((int)cl_showcaptions->value)
 				{
@@ -1053,7 +1053,7 @@ void CL_ParseServerMessage(void)
 				const int msg_index = MSG_ReadShort(&net_message);
 				if ((byte)msg_index == 132 && cl.configstrings[CS_WELCOME][0] != -2)
 				{
-					game_message_show_at_top = false;
+					display_msg.is_caption = false;
 					CenterPrint(cl.configstrings[CS_WELCOME], COLOUR(colour_game));
 					cl.configstrings[CS_WELCOME][0] = -2;
 				}
@@ -1103,7 +1103,7 @@ void CL_ParseServerMessage(void)
 
 			case svc_gamemsgdual_centerprint: // H2
 			{
-				game_message_show_at_top = false;
+				display_msg.is_caption = false;
 				const int msg_index1 = MSG_ReadShort(&net_message);
 				const int msg_index2 = MSG_ReadShort(&net_message);
 				const char* msg1 = CL_GetGameString(msg_index1);
