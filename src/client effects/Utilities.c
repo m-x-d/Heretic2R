@@ -542,13 +542,9 @@ float GetPickupBobPhase(const vec3_t origin)
 	return fmodf(bob_phase, ANGLE_360); // Use remainder. Otherwise returned value will eventually cause floating point precision errors...
 }
 
-// Assumes 'direction' to be normalized --mxd.
 qboolean GetTruePlane(vec3_t origin, vec3_t direction, const float direction_scale, const float offset_scale) //mxd. 2 similar same-named functions (in fx_blood.c and fx_scorchmark.c) in original logic.
 {
-#if _DEBUG
-	const float len = VectorLength(direction);
-	assert(len >= 1.0f - FLOAT_ZERO_EPSILON && len <= 1.0f + FLOAT_ZERO_EPSILON); //mxd. Make sure it's normalized...
-#endif
+	VectorNormalize(direction); //mxd. Make sure it's normalized (can be non-normalized because of network transmission imprecision)...
 
 	vec3_t end;
 	VectorMA(origin, direction_scale, direction, end);
