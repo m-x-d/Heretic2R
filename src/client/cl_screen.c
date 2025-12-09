@@ -962,15 +962,15 @@ static void SCR_DrawNames(void) // H2
 	}
 }
 
+#define CINE_BORDER_TOP_HEIGHT		((viddef.height * 48) / DEF_HEIGHT) //mxd
+#define CINE_BORDER_BOTTOM_HEIGHT	((viddef.height * 64) / DEF_HEIGHT) //mxd
+
 static void SCR_DrawCinematicBorders(void) // H2
 {
 	if (cls.key_dest != key_console && cl.frame.playerstate.cinematicfreeze)
 	{
-		const int top_height = (viddef.height * 48) / DEF_HEIGHT;
-		const int bottom_height = (viddef.height * 64) / DEF_HEIGHT;
-
-		re.DrawFill(0, 0, viddef.width, top_height, TextPalette[P_BLACK]);
-		re.DrawFill(0, viddef.height - bottom_height, viddef.width, bottom_height, TextPalette[P_BLACK]);
+		re.DrawFill(0, 0, viddef.width, CINE_BORDER_TOP_HEIGHT, TextPalette[P_BLACK]);
+		re.DrawFill(0, viddef.height - CINE_BORDER_BOTTOM_HEIGHT, viddef.width, CINE_BORDER_BOTTOM_HEIGHT, TextPalette[P_BLACK]);
 	}
 }
 
@@ -982,8 +982,16 @@ static void SCR_DrawGameMessage(void) // H2
 		return;
 
 	//mxd. The above code was in a separate function in original version.
-	const float scaler = (display_msg.is_caption ? 0.9f : 0.4f);
-	int y = (int)((float)viddef.height * scaler) - (display_msg.num_lines / 2) * ui_char_size;
+
+	//mxd. When drawing a caption, start at vertical center of bottom cinematic border. Original logic uses viddef.height * 0.9f instead
+	// (can result in caption text drawn above cinematic border when drawing 4-line messages).
+	int start_y;
+	if (display_msg.is_caption)
+		start_y = viddef.height - CINE_BORDER_BOTTOM_HEIGHT / 2;
+	else
+		start_y = (int)((float)viddef.height * 0.4f);
+
+	int y = start_y - (display_msg.num_lines * ui_char_size / 2);
 
 	const char* s = &display_msg.message[0];
 	while (true)
