@@ -233,11 +233,8 @@ void M_DropToFloor(edict_t* ent) //mxd. Named 'M_droptofloor' in original logic.
 	ent->nextthink = level.time + FRAMETIME;
 	ent->s.origin[2] += 1.0f;
 
-	vec3_t end;
-	VectorCopy(ent->s.origin, end);
-	end[2] -= 256.0f;
-
 	trace_t trace;
+	const vec3_t end = VEC3_INITA(ent->s.origin, 0.0f, 0.0f, -256.0f);
 	gi.trace(ent->s.origin, ent->mins, ent->maxs, end, ent, MASK_MONSTERSOLID, &trace);
 
 	if (trace.allsolid || trace.startsolid)
