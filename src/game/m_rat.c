@@ -210,21 +210,12 @@ void RatTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf) /
 	if (!(other->svflags & SVF_MONSTER) && other->client == NULL)
 		return;
 
-	vec3_t other_pos;
-	VectorCopy(other->s.origin, other_pos);
-	other_pos[2] += other->mins[2];
+	const vec3_t other_pos = VEC3_INITA(other->s.origin, 0.0f, 0.0f, other->mins[2]);
+	const vec3_t self_pos = VEC3_INITA(ent->s.origin, 0.0f, 0.0f, ent->maxs[2]);
 
-	vec3_t self_pos;
-	VectorCopy(ent->s.origin, self_pos);
-	self_pos[2] += ent->maxs[2];
-
-	// On top?
+	// When on top, squish the rat a bit. //TODO: always kill rat (at least on easy and medium skill)? Gib when player jumped on rat? Do this only for regular rats (not giant)?
 	if (other_pos[2] - self_pos[2] >= 0.0f)
-	{
-		// Squish the rat a bit. //TODO: always kill rat (at least on easy and medium skill)? Gib when player jumped on rat? Do this only for regular rats (not giant)?
-		const vec3_t dir = { 0.0f, 0.0f, -1.0f }; //mxd. Uninitialized in original logic.
-		T_Damage(ent, other, other, dir, self_pos, vec3_origin, irand(4, 6), 0, DAMAGE_AVOID_ARMOR, MOD_DIED); //mxd. flrand() in original logic.
-	}
+		T_Damage(ent, other, other, vec3_down, self_pos, vec3_origin, irand(4, 6), 0, DAMAGE_AVOID_ARMOR, MOD_DIED); //mxd. flrand() in original logic.
 }
 
 #pragma endregion
