@@ -390,11 +390,8 @@ void ThrowBlood(const vec3_t torigin, const vec3_t tnormal, const qboolean dark,
 {
 #define MIN_DRIPPER_NORMAL_Z	0.4f //mxd. Original logic uses GROUND_NORMAL instead.
 
-	vec3_t normal;
-	VectorCopy(tnormal, normal);
-
-	vec3_t origin;
-	VectorCopy(torigin, origin);
+	vec3_t normal = VEC3_INIT(tnormal);
+	vec3_t origin = VEC3_INIT(torigin);
 
 	if (!trueplane)
 	{
