@@ -2474,6 +2474,12 @@ void SP_monster_plague_ssithra(edict_t* self)
 	self->flags |= (FL_IMMUNE_SLIME | FL_AMPHIBIAN);
 	self->svflags |= SVF_WAIT_NOTSOLID;
 
+	M_CatagorizePosition(self); //mxd. Otherwise the SsithraCheckInWater() call below doesn't make much sense...
+
+	//mxd. Avoid playing splash sound in M_WorldEffects()...
+	if (self->waterlevel > 0)
+		self->flags |= FL_INWATER;
+
 	SsithraCheckInWater(self);
 
 	if (self->health <= 0)
