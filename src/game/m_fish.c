@@ -128,21 +128,10 @@ static float FishChangeYaw(edict_t* self) //mxd. Named 'M_ChangeFishYaw' in orig
 {
 	const float current = anglemod(self->s.angles[YAW]);
 	const float ideal = self->movedir[YAW];
-	float move = ideal - current;
+	float move = NormalizeAngleDeg(ideal - current); //mxd. Use function instead of doing it manually.
 
 	if (FloatIsZeroEpsilon(move)) //mxd. Avoid direct float comparison.
 		return 0.0f;
-
-	if (ideal > current)
-	{
-		if (move >= 180.0f)
-			move -= 360.0f;
-	}
-	else
-	{
-		if (move <= -180.0f)
-			move += 360.0f;
-	}
 
 	move = Clamp(move, -self->yaw_speed, self->yaw_speed);
 	self->s.angles[YAW] = anglemod(current + move);
@@ -154,21 +143,10 @@ static float FishChangePitch(edict_t* self) //mxd. Named 'M_ChangeFishPitch' in 
 {
 	const float current = anglemod(self->s.angles[PITCH]);
 	const float ideal = self->movedir[PITCH];
-	float move = ideal - current;
+	float move = NormalizeAngleDeg(ideal - current); //mxd. Use function instead of doing it manually.
 
 	if (FloatIsZeroEpsilon(move)) //mxd. Avoid direct float comparison.
 		return 0.0f;
-
-	if (ideal > current)
-	{
-		if (move >= 180.0f)
-			move -= 360.0f;
-	}
-	else
-	{
-		if (move <= -180.0f)
-			move += 360.0f;
-	}
 
 	move = Clamp(move, -self->fish_max_pitch_speed, self->fish_max_pitch_speed);
 	self->s.angles[PITCH] = anglemod(current + move);
