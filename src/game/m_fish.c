@@ -839,4 +839,10 @@ void SP_monster_fish(edict_t* self) //TODO: perform default initialization via M
 	SetAnim(self, ANIM_STAND1);
 	gi.linkentity(self);
 	M_CatagorizePosition(self);
+
+	//mxd. Avoid playing splash sound in M_WorldEffects()...
+	if (self->waterlevel > 0)
+		self->flags |= FL_INWATER;
+	else
+		gi.dprintf("%s spawned outside of water at %s!\n", self->classname, pv(self->s.origin));
 }
