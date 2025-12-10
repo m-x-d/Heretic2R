@@ -531,7 +531,7 @@ qboolean M_Start(edict_t* self) //mxd. Named 'monster_start' in original logic.
 	if (G_MonsterShadow[self->classID].use_shadow)
 	{
 		self->s.color.c = 0xFFFFFFFF; //mxd. Because ShadowAddToView() now checks owner alpha...
-		gi.CreateEffect(&self->s, FX_SHADOW, CEF_OWNERS_ORIGIN, self->s.origin, "f", G_MonsterShadow[self->classID].scale);
+		gi.CreateEffect(&self->s, FX_SHADOW, CEF_OWNERS_ORIGIN, self->s.origin, "f", G_MonsterShadow[self->classID].scale * self->s.scale); //mxd. Scale by s.scale.
 	}
 
 	self->s.skinnum = 0;
