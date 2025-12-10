@@ -567,10 +567,9 @@ static void M_BBoxAndOriginAdjustForScale(edict_t* self) //mxd. Named 'MG_BBoxAn
 	if (self->s.scale == 0.0f)
 	{
 		if (self->monsterinfo.scale == 0.0f)
-		{
-			self->s.scale = 1.0f;
 			self->monsterinfo.scale = 1.0f;
-		}
+
+		self->s.scale = self->monsterinfo.scale; //mxd. Set only when self->monsterinfo.scale is also 0 in original logic.
 	}
 	else if (self->monsterinfo.scale == 0.0f)
 	{
