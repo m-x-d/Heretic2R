@@ -545,9 +545,9 @@ static void GorgonMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 // Gorgon Run - decide which run animations to use.
 static void GorgonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_run' in original logic.
 {
-	vec3_t targ_org;
+	vec3_t target_origin;
 
-	if (!AI_HaveEnemy(self) || !MG_TryGetTargetOrigin(self, targ_org))
+	if (!AI_HaveEnemy(self) || !MG_TryGetTargetOrigin(self, target_origin))
 		return;
 
 	if (self->flags & FL_INWATER)
@@ -588,15 +588,15 @@ static void GorgonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'g
 		}
 
 		// Enemy is within range and far enough above or below to warrant a jump.
-		if (MG_IsInforntPos(self, targ_org))
+		if (MG_IsInforntPos(self, target_origin))
 		{
 			vec3_t diff;
-			VectorSubtract(self->s.origin, targ_org, diff);
+			VectorSubtract(self->s.origin, target_origin, diff);
 			const float dist = VectorLength(diff);
 
-			if (dist > 40.0f && dist < 600.0f && (self->s.origin[2] < targ_org[2] - 24.0f || self->s.origin[2] > targ_org[2] + 24.0f))
+			if (dist > 40.0f && dist < 600.0f && (self->s.origin[2] < target_origin[2] - 24.0f || self->s.origin[2] > target_origin[2] + 24.0f))
 			{
-				if (fabsf(self->s.origin[2] - targ_org[2] - 24.0f) < 200.0f) // Can't jump more than 200 high. //mxd. abs() -> fabsf().
+				if (fabsf(self->s.origin[2] - target_origin[2] - 24.0f) < 200.0f) // Can't jump more than 200 high. //mxd. abs() -> fabsf().
 				{
 					if (irand(0, 2) == 0 && (self->ai_mood == AI_MOOD_PURSUE || irand(0, 4) == 0) && GorgonSetupJump(self)) // 20% chance to jump at a buoy.
 					{
