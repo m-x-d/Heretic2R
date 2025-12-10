@@ -1651,13 +1651,8 @@ void ssithra_check_ripple(edict_t* self) //mxd. Named 'ssithraCheckRipple' in or
 	if (SV_CINEMATICFREEZE)
 		return;
 
-	vec3_t top;
-	VectorCopy(self->s.origin, top);
-	top[2] += self->maxs[2] * 0.75f;
-
-	vec3_t bottom;
-	VectorCopy(self->s.origin, bottom);
-	bottom[2] += self->mins[2];
+	const vec3_t top = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2] * 0.75f);
+	const vec3_t bottom = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2]);
 
 	trace_t trace;
 	gi.trace(top, vec3_origin, vec3_origin, bottom, self, MASK_WATER, &trace);
