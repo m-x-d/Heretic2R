@@ -980,10 +980,11 @@ void gorgon_apply_jump(edict_t* self) //mxd. Named 'gorgonApplyJump' in original
 	}
 	else
 	{
-		self->jump_time = level.time + 0.5f;
 		VectorCopy(self->movedir, self->velocity);
 		VectorClear(self->movedir);
 	}
+
+	self->jump_time = level.time + 0.5f; //mxd. Done only in 'else' cause in original logic. 
 }
 
 void gorgon_jump_out_of_water(edict_t* self) //mxd. Named 'gorgonJumpOutWater' in original logic.
