@@ -285,7 +285,7 @@ void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic.
 			trace_t trace;
 			gi.trace(top, vec3_origin, vec3_origin, bottom, self, MASK_WATER, &trace);
 
-			if (trace.fraction <= 1.0f)
+			if (trace.fraction <= 1.0f) //TODO: this is ALWAYS true. Remove or change to < 1.0?
 			{
 				// No ripples while in cinematics.
 				if (!SV_CINEMATICFREEZE)
@@ -295,7 +295,6 @@ void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic.
 					Vec3ScaleAssign(200.0f, forward);
 
 					const byte b_angle = (byte)((self->s.angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
-
 					gi.CreateEffect(NULL, FX_WATER_WAKE, 0, trace.endpos, "sbv", self->s.number, b_angle, forward);
 				}
 
