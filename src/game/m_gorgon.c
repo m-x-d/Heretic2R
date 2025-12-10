@@ -928,13 +928,11 @@ void gorgon_land(edict_t* self)
 
 void gorgon_hop(edict_t* self)
 {
-#define JUMP_SCALE 1.5f
+#define JUMP_SCALE 2.5f //mxd. 1.5 in original logic.
 
 	if (self->s.frame == FRAME_hop8)
 	{
-		self->movetype = PHYSICSTYPE_STEP;
 		self->velocity[2] = -10.0f;
-
 		return;
 	}
 
@@ -945,7 +943,7 @@ void gorgon_hop(edict_t* self)
 
 		vec3_t right;
 		AngleVectors(angles, NULL, right, NULL);
-		VectorScale(right, -40.0f * JUMP_SCALE, self->velocity);
+		VectorScale(right, -50.0f * JUMP_SCALE, self->velocity); //mxd. Increase scaler (from -40).
 	}
 	else if (self->monsterinfo.currentmove == &gorgon_move_melee7) // Hop right.
 	{
@@ -954,13 +952,13 @@ void gorgon_hop(edict_t* self)
 
 		vec3_t right;
 		AngleVectors(angles, NULL, right, NULL);
-		VectorScale(right, 40.0f * JUMP_SCALE, self->velocity);
+		VectorScale(right, 50.0f * JUMP_SCALE, self->velocity); //mxd. Increase scaler (from 40).
 	}
 	else if (self->monsterinfo.currentmove == &gorgon_move_melee8) // Hop forward.
 	{
 		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
-		VectorScale(forward, 50.0f * JUMP_SCALE, self->velocity);
+		VectorScale(forward, 75.0f * JUMP_SCALE, self->velocity); //mxd. Increase scaler (from 50), so it doesn't look like we are jumping in place.
 	}
 	else if (self->monsterinfo.currentmove == &gorgon_move_melee9) // Hop backward.
 	{
@@ -970,6 +968,10 @@ void gorgon_hop(edict_t* self)
 	}
 
 	self->velocity[2] += 175.0f;
+
+	//mxd. Scale by s.scale.
+	const float mass_scaler = LerpFloat(self->s.scale, 1.0f, 0.5f);
+	Vec3ScaleAssign(mass_scaler, self->velocity);
 }
 
 void gorgon_apply_jump(edict_t* self) //mxd. Named 'gorgonApplyJump' in original logic.
