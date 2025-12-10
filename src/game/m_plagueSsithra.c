@@ -1647,8 +1647,8 @@ void ssithra_decide_swimforward(edict_t* self)
 
 void ssithra_check_ripple(edict_t* self) //mxd. Named 'ssithraCheckRipple' in original logic.
 {
-	// No ripples while in cinematics.
-	if (SV_CINEMATICFREEZE)
+	// No ripples while in cinematics. //mxd. Also skip when not near water surface (otherwise we'll spawn wake FX when near 2 vertically touching water brushes).
+	if (self->waterlevel == 3 || SV_CINEMATICFREEZE)
 		return;
 
 	const vec3_t top = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2] * 0.75f);
