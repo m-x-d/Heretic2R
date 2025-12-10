@@ -507,8 +507,6 @@ static void GorgonMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 		else
 			SetAnim(self, ANIM_MELEE4); // Pull back.
 
-		self->monsterinfo.attack_finished = level.time + flrand(0.0f, 3.0f - skill->value);
-
 		return;
 	}
 
@@ -866,6 +864,9 @@ void gorgon_bite(edict_t* self) //mxd. Named 'gorgonbite' in original logic.
 
 		const int damage = (int)((float)(irand(GORGON_DMG_MIN, GORGON_DMG_MAX)) * self->monsterinfo.scale);
 		T_Damage(self->enemy, self, self, forward, trace.endpos, normal, damage, damage / 2, DAMAGE_EXTRA_BLOOD, MOD_DIED);
+
+		//mxd. Set only when we actually damaged our target (original logic sets this when setting attack animation, which can result in gorgon approaching its target and just standing still if it happens too soon after previous attack animation (even unsuccessful one)).
+		self->monsterinfo.attack_finished = level.time + flrand(0.0f, 3.0f - skill->value);
 	}
 	else // A miss.
 	{
@@ -1529,14 +1530,9 @@ void gorgon_ai_swim(edict_t* self, float distance)
 		const float dist = VectorLength(diff);
 
 		if (dist < self->melee_range + VectorLength(self->velocity) * 0.1f)
-		{
 			SetAnim(self, irand(ANIM_SWIM_BITE_A, ANIM_SWIM_BITE_B));
-			self->monsterinfo.attack_finished = level.time + flrand(0.0f, 3.0f - skill->value);
-		}
 		else if (self->monsterinfo.jump_time < level.time && !(self->enemy->flags & FL_INWATER) && dist < GORGON_MAX_HOP_RANGE * 2.0f)
-		{
 			SetAnim(self, ANIM_OUT_WATER);
-		}
 	}
 }
 
