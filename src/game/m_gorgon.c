@@ -936,8 +936,7 @@ void gorgon_hop(edict_t* self)
 
 	if (self->monsterinfo.currentmove == &gorgon_move_melee6) // Hop left.
 	{
-		vec3_t angles;
-		VectorCopy(self->s.angles, angles);
+		vec3_t angles = VEC3_INIT(self->s.angles);
 		angles[YAW] -= 15.0f;
 
 		vec3_t right;
@@ -946,8 +945,7 @@ void gorgon_hop(edict_t* self)
 	}
 	else if (self->monsterinfo.currentmove == &gorgon_move_melee7) // Hop right.
 	{
-		vec3_t angles;
-		VectorCopy(self->s.angles, angles);
+		vec3_t angles = VEC3_INIT(self->s.angles);
 		angles[YAW] += 15.0f;
 
 		vec3_t right;
@@ -1014,8 +1012,7 @@ void gorgon_forward(edict_t* self, float dist) //mxd. Named 'gorgonForward' in o
 	AngleVectors(self->s.angles, forward, NULL, NULL);
 
 	vec3_t fwd_dir;
-	VectorCopy(self->velocity, fwd_dir);
-	VectorNormalize(fwd_dir);
+	VectorNormalize2(self->velocity, fwd_dir);
 
 	dist *= 1.0f - DotProduct(fwd_dir, forward);
 
@@ -1040,11 +1037,8 @@ void gorgon_swim_go(edict_t* self) //mxd. Named 'gorgonGoSwim' in original logic
 
 void gorgon_check_in_water(edict_t* self) //mxd. Named 'gorgonCheckInWater' in original logic.
 {
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-	end_pos[2] -= 32.0f;
-
 	trace_t trace;
+	const vec3_t end_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -32.0f);
 	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
 	if (trace.fraction < 1.0f && ((trace.contents & CONTENTS_SOLID) || (trace.contents & CONTENTS_MONSTER)))
@@ -1065,9 +1059,7 @@ void gorgon_check_landed(edict_t* self)
 	}
 	else if (self->velocity[2] < 0.0f)
 	{
-		vec3_t pos;
-		VectorCopy(self->s.origin, pos);
-		pos[2] += self->mins[2];
+		vec3_t pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2]);
 		VectorMA(pos, 0.5f, self->velocity, pos);
 
 		const int contents = gi.pointcontents(pos);
@@ -1090,11 +1082,7 @@ void gorgon_jump(edict_t* self)
 
 	if (!MG_TryGetTargetOrigin(self, landing_spot))
 	{
-		if (irand(0, 3) == 0)
-			SetAnim(self, ANIM_ROAR2);
-		else
-			SetAnim(self, ANIM_RUN1);
-
+		SetAnim(self, ((irand(0, 3) == 0) ? ANIM_ROAR2 : ANIM_RUN1));
 		return;
 	}
 
@@ -1103,11 +1091,7 @@ void gorgon_jump(edict_t* self)
 
 	if (VectorLength(diff) > 400.0f)
 	{
-		if (irand(0, 3) == 0)
-			SetAnim(self, ANIM_ROAR2);
-		else
-			SetAnim(self, ANIM_RUN1);
-
+		SetAnim(self, ((irand(0, 3) == 0) ? ANIM_ROAR2 : ANIM_RUN1));
 		return;
 	}
 
@@ -1874,7 +1858,6 @@ void SP_monster_gorgon(edict_t* self)
 
 	self->msgHandler = DefaultMsgHandler;
 	self->materialtype = MAT_FLESH;
-	self->touch = M_Touch;
 
 	self->mass = GORGON_MASS;
 	self->yaw_speed = ((self->spawnflags & MSF_GORGON_SPEEDY) ? 30.0f : 15.0f);
