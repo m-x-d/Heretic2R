@@ -583,7 +583,7 @@ static void GorgonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'g
 				self->gorgon_wakeup_roar = true;
 				SetAnim(self, ANIM_ROAR2);
 
-				//TODO: should return here? Will be overridden by either jump or walk anim below.
+				return; //mxd. Original logic doesn't return here, so this behaviour is always overridden by either jump or walk anim below.
 			}
 		}
 
