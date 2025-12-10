@@ -159,7 +159,61 @@ static qboolean GorgonCanAttack(edict_t* self) //mxd. Named 'gorgon_check_attack
 	return false;
 }
 
-static qboolean GorgonCanJump(edict_t* self) //mxd. Named 'gorgon_check_jump' in original logic.
+static qboolean GorgonSetupJumpArc(edict_t* self, const vec3_t angles, const vec3_t landing_spot) //mxd. Added to reduce code duplication.
+{
+	// JUMPING
+	// Calculate landing spot behind enemy to jump to.
+	// Calculate arc spot to jump at which will arc the monster to the landing spot.
+	// Calculate velocity to make monster jump to hit arc spot.
+
+	// Choose landing spot behind enemy.
+	vec3_t forward;
+	AngleVectors(angles, forward, NULL, NULL);
+
+	vec3_t landing_pos;
+	VectorMA(landing_spot, 60.0f, forward, landing_pos);
+
+	trace_t trace;
+	const vec3_t test_spot = VEC3_INITA(landing_pos, 0.0f, 0.0f, -1024.0f);
+	gi.trace(landing_pos, self->mins, self->maxs, test_spot, self, MASK_MONSTERSOLID | MASK_WATER, &trace);
+
+	if (trace.fraction == 1.0f || (!(trace.contents & CONTENTS_SOLID) && !(trace.contents & CONTENTS_WATER)))
+		return false;
+
+	// Calculate arc spot (the top of his jump arc) which will land monster at landing spot.
+	vec3_t landing_dir;
+	VectorSubtract(self->s.origin, landing_pos, landing_dir);
+
+	const vec3_t landing_spot_angles = VEC3_SET(0.0f, VectorYaw(landing_dir), 0.0f);
+
+	vec3_t up;
+	AngleVectors(landing_spot_angles, forward, NULL, up);
+
+	vec3_t arc_spot;
+	VectorMA(landing_pos, 20.0f, forward, arc_spot);
+	VectorMA(landing_pos, 180.0f, up, arc_spot);
+
+	// Calculate velocity to make monster jump to hit arc spot.
+	vec3_t arc_dir;
+	VectorSubtract(arc_spot, self->s.origin, arc_dir); // Face monster to arc spot.
+
+	vec3_t arc_angles;
+	vectoangles(arc_dir, arc_angles);
+	self->best_move_yaw = arc_angles[YAW];
+
+	const float hold_time = VectorLength(arc_dir) / 200.0f;
+
+	AngleVectors(arc_angles, forward, NULL, NULL);
+	VectorScale(forward, hold_time * 300.0f, self->movedir); // Store calculated jump velocity in movedir.
+	self->movedir[2] = hold_time * 200.0f;
+
+	self->jump_time = level.time + 0.5f;
+	self->monsterinfo.jump_time = level.time + 3.0f;
+
+	return true;
+}
+
+static qboolean GorgonSetupJump(edict_t* self) //mxd. Named 'gorgon_check_jump' in original logic.
 {
 	vec3_t landing_spot;
 
@@ -179,61 +233,7 @@ static qboolean GorgonCanJump(edict_t* self) //mxd. Named 'gorgon_check_jump' in
 	else
 		VectorCopy(self->s.angles, angles);
 
-	// Incorporate scale?
-
-	// JUMPING
-	// Calculate landing spot behind enemy to jump to.
-	// Calculate arc spot to jump at which will arc the monster to the landing spot.
-	// Calculate velocity to make monster jump to hit arc spot.
-
-	// Choose landing spot behind enemy.
-	vec3_t forward;
-	AngleVectors(angles, forward, NULL, NULL);
-
-	VectorMA(landing_spot, 60.0f, forward, landing_spot);
-
-	vec3_t test_spot;
-	VectorCopy(landing_spot, test_spot);
-	test_spot[2] -= 1024.0f;
-
-	trace_t trace;
-	gi.trace(landing_spot, self->mins, self->maxs, test_spot, self, MASK_MONSTERSOLID | MASK_WATER, &trace);
-
-	if (trace.fraction == 1.0f || (!(trace.contents & CONTENTS_SOLID) && !(trace.contents & CONTENTS_WATER)))
-		return false;
-
-	self->jump_time = level.time + 0.5f;
-
-	// Calculate arc spot (the top of his jump arc) which will land monster at landing spot.
-	vec3_t landing_dir;
-	VectorSubtract(self->s.origin, landing_spot, landing_dir);
-
-	const vec3_t landing_spot_angles = { 0.0f, VectorYaw(landing_dir), 0.0f };
-
-	vec3_t up;
-	AngleVectors(landing_spot_angles, forward, NULL, up);
-
-	vec3_t arc_spot;
-	VectorMA(landing_spot, 20.0f, forward, arc_spot);
-	VectorMA(landing_spot, 180.0f, up, arc_spot);
-
-	// Calculate velocity to make monster jump to hit arc spot.
-	vec3_t arc_dir;
-	VectorSubtract(arc_spot, self->s.origin, arc_dir); // Face monster to arc spot.
-
-	vec3_t arc_angles;
-	vectoangles(arc_dir, arc_angles);
-	self->best_move_yaw = arc_angles[YAW];
-
-	const float hold_time = VectorLength(arc_dir) / 200.0f;
-
-	AngleVectors(arc_angles, forward, NULL, NULL);
-	VectorScale(forward, hold_time * 300.0f, self->movedir); // Store calculated jump velocity in movedir.
-	self->movedir[2] = hold_time * 200.0f;
-
-	self->monsterinfo.jump_time = level.time + 3.0f;
-
-	return true;
+	return GorgonSetupJumpArc(self, angles, landing_spot);
 }
 
 static qboolean GorgonStartSlipAnimation(edict_t* self, const qboolean from_pain) //mxd. Named 'gorgonCheckSlipGo' in original logic.
@@ -433,7 +433,7 @@ static void GorgonWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 		const float dist = VectorLength(diff);
 
 		// target_origin is within range and far enough above or below to warrant a jump.
-		if (dist > 40.0f && dist < 600.0f && (self->s.origin[2] < target_origin[2] - 18.0f || self->s.origin[2] > target_origin[2] + 18.0f) && GorgonCanJump(self))
+		if (dist > 40.0f && dist < 600.0f && (self->s.origin[2] < target_origin[2] - 18.0f || self->s.origin[2] > target_origin[2] + 18.0f) && GorgonSetupJump(self))
 		{
 			SetAnim(self, ANIM_FJUMP);
 			return;
@@ -598,7 +598,7 @@ static void GorgonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'g
 			{
 				if (fabsf(self->s.origin[2] - targ_org[2] - 24.0f) < 200.0f) // Can't jump more than 200 high. //mxd. abs() -> fabsf().
 				{
-					if (irand(0, 2) == 0 && (self->ai_mood == AI_MOOD_PURSUE || irand(0, 4) == 0) && GorgonCanJump(self)) // 20% chance to jump at a buoy.
+					if (irand(0, 2) == 0 && (self->ai_mood == AI_MOOD_PURSUE || irand(0, 4) == 0) && GorgonSetupJump(self)) // 20% chance to jump at a buoy.
 					{
 						SetAnim(self, ANIM_FJUMP);
 						return;
@@ -1102,59 +1102,7 @@ void gorgon_jump(edict_t* self)
 	else
 		VectorCopy(self->s.angles, angles);
 
-	// Incorporate scale?
-
-	// JUMPING
-	// Calculate landing spot behind enemy to jump to.
-	// Calculate arc spot to jump at which will arc the monster to the landing spot.
-	// Calculate velocity to make monster jump to hit arc spot.
-
-	// Choose landing spot behind enemy.
-	vec3_t forward;
-	AngleVectors(angles, forward, NULL, NULL);
-
-	VectorMA(landing_spot, 60.0f, forward, landing_spot);
-
-	vec3_t test_spot;
-	VectorCopy(landing_spot, test_spot);
-	test_spot[2] -= 1024.0f;
-
-	trace_t trace;
-	gi.trace(landing_spot, self->mins, self->maxs, test_spot, self, MASK_MONSTERSOLID | MASK_WATER, &trace);
-
-	if (trace.fraction == 1.0f || (!(trace.contents & CONTENTS_SOLID) && !(trace.contents & CONTENTS_WATER)))
-		return;
-
-	self->jump_time = level.time + 0.5f;
-
-	// Calculate arc spot (the top of his jump arc) which will land monster at landing spot.
-	vec3_t landing_dir;
-	VectorSubtract(self->s.origin, landing_spot, landing_dir);
-
-	const vec3_t landing_spot_angles = { 0.0f, VectorYaw(landing_dir), 0.0f };
-
-	vec3_t up;
-	AngleVectors(landing_spot_angles, forward, NULL, up);
-
-	vec3_t arc_spot;
-	VectorMA(landing_spot, 20.0f, forward, arc_spot);
-	VectorMA(landing_spot, 180.0f, up, arc_spot);
-
-	// Calculate velocity to make monster jump to hit arc spot.
-	vec3_t arc_dir;
-	VectorSubtract(arc_spot, self->s.origin, arc_dir); // Face monster to arc spot.
-
-	vec3_t arc_angles;
-	vectoangles(arc_dir, arc_angles);
-	self->best_move_yaw = arc_angles[YAW];
-
-	const float hold_time = VectorLength(arc_dir) / 200.0f;
-
-	AngleVectors(arc_angles, forward, NULL, NULL);
-	VectorScale(forward, hold_time * 300.0f, self->velocity);
-	self->velocity[2] = hold_time * 200.0f;
-
-	self->monsterinfo.jump_time = level.time + 3.0f;
+	GorgonSetupJumpArc(self, angles, landing_spot);
 }
 
 // Gorgon picks up and gores something.
