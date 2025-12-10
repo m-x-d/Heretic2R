@@ -51,6 +51,7 @@ void CL_PrepRefresh(void)
 		return; // No map loaded.
 
 	cls.disable_screen = false; // H2
+	display_msg.dispay_time = 0.0f; //mxd. Hide display message.
 
 	SCR_AddDirtyPoint(0, 0);
 	SCR_AddDirtyPoint(viddef.width - 1, viddef.height - 1);
