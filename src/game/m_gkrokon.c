@@ -870,7 +870,6 @@ void SP_Monster_Gkrokon(edict_t* self)
 	self->movetype = PHYSICSTYPE_STEP;
 	VectorClear(self->knockbackvel);
 	self->solid = SOLID_BBOX;
-	self->s.renderfx |= RF_FRAMELERP;
 
 	VectorCopy(STDMinsForClass[self->classID], self->mins);
 	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
@@ -882,7 +881,6 @@ void SP_Monster_Gkrokon(edict_t* self)
 	self->monsterinfo.attack_finished = level.time;
 
 	self->monsterinfo.dismember = GkrokonDismember;
-	self->touch = M_Touch;
 
 	MG_InitMoods(self);
 

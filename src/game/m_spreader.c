@@ -1087,7 +1087,6 @@ void SP_monster_spreader(edict_t* self)
 
 	self->msgHandler = DefaultMsgHandler;
 	self->monsterinfo.dismember = SpreaderDismember;
-	self->touch = M_Touch;
 
 	if (self->health == 0)
 		self->health = SPREADER_HEALTH;

@@ -2463,7 +2463,6 @@ void SP_monster_plague_ssithra(edict_t* self)
 	self->monsterinfo.alert = SsithraAlert;
 	self->monsterinfo.dismember = SsithraDismember;
 	self->isBlocked = SsithraBlocked;
-	self->touch = M_Touch;
 
 	self->materialtype = MAT_FLESH;
 	self->flags |= (FL_IMMUNE_SLIME | FL_AMPHIBIAN);
