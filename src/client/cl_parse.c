@@ -102,17 +102,21 @@ static void CenterPrint(const char* msg, const PalIdx_t color_index) // H2
 			if (s[line_len] == 0 || s[line_len] == '\n')
 				break;
 
+		//mxd. Ignore trailing spaces when centering...
+		int trimmed_len = line_len;
+		while (trimmed_len > 0 && s[trimmed_len - 1] == ' ')
+			trimmed_len--;
+
 		// Calculate padding to center string. 
-		const int padding = max(0, (MAX_MESSAGE_LINE_LENGTH - line_len) / 2);
+		const int padding = max(0, (MAX_MESSAGE_LINE_LENGTH - trimmed_len) / 2);
 		if (padding > 0)
 			memset(line, ' ', padding);
 
-		if (line_len > 0)
-			memcpy(&line[padding], s, line_len);
+		if (trimmed_len > 0)
+			memcpy(&line[padding], s, trimmed_len);
 
-		line[line_len + padding] = '\n';
-		line[line_len + padding + 1] = 0;
-		Com_ColourPrintf(color_index, "%s", line);
+		line[trimmed_len + padding] = 0;
+		Com_ColourPrintf(color_index, "%s\n", line);
 
 		// Skip to next line.
 		s += line_len;

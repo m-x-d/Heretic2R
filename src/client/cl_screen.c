@@ -1001,10 +1001,15 @@ static void SCR_DrawGameMessage(void) // H2
 			if (s[line_len] == 0 || s[line_len] == '\n')
 				break;
 
-		const int x = (viddef.width - line_len * ui_char_size) / 2;
+		//mxd. Ignore trailing spaces when centering...
+		int trimmed_len = line_len;
+		while (trimmed_len > 0 && s[trimmed_len - 1] == ' ')
+			trimmed_len--;
+
+		const int x = (viddef.width - trimmed_len * ui_char_size) / 2;
 		SCR_AddDirtyPoint(x, y);
-		DrawString(x, y, s, display_msg.color, line_len);
-		SCR_AddDirtyPoint(x + line_len * ui_char_size, y + ui_char_size);
+		DrawString(x, y, s, display_msg.color, trimmed_len);
+		SCR_AddDirtyPoint(x + trimmed_len * ui_char_size, y + ui_char_size);
 
 		// Skip to next line.
 		s += line_len;
