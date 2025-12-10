@@ -207,6 +207,10 @@ static qboolean GorgonSetupJumpArc(edict_t* self, const vec3_t angles, const vec
 	VectorScale(forward, hold_time * 300.0f, self->movedir); // Store calculated jump velocity in movedir.
 	self->movedir[2] = hold_time * 200.0f;
 
+	//mxd. Scale by s.scale (scaling directly by s.scale results in SMOL gorgons greatly under-shooting the jump (tested with .5 scale)).
+	const float mass_scaler = LerpFloat(self->s.scale, 1.0f, 0.5f);
+	Vec3ScaleAssign(mass_scaler, self->movedir);
+
 	self->jump_time = level.time + 0.5f;
 	self->monsterinfo.jump_time = level.time + 3.0f;
 
