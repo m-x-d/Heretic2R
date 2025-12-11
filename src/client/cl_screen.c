@@ -954,10 +954,7 @@ static void SCR_DrawNames(void) // H2
 			color = TextPalette[COLOUR(colour_names)];
 		}
 
-		vec3_t origin;
-		VectorCopy(cl.clientinfo[i].origin, origin);
-		origin[2] += 32.0f; //mxd. '+= 64.0f - shownames->value * 32.0f' in original logic.
-
+		const vec3_t origin = VEC3_INITA(cl.clientinfo[i].origin, 0.0f, 0.0f, 32.0f); //mxd. '+= 64.0f - shownames->value * 32.0f' in original logic.
 		re.Draw_Name(origin, cl.clientinfo[i].name, color);
 	}
 }
