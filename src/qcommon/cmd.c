@@ -451,19 +451,23 @@ static char* MacroExpandString(char* text)
 
 		// Don't expand inside quotes
 		if (inquote)
-			continue; 
+			continue;
 
 		if (scan[i] != '$')
 			continue;
 
 		// Scan out the complete macro
-		char* start = scan + i + 1;
+		char* start = &scan[i + 1];
 		const char* token = COM_Parse(&start);
 
 		if (start == NULL)
 			continue;
 
 		token = Cvar_VariableString(token);
+
+		//mxd. If can't expand, leave as is (allows to preserve info_player_start name when loading map from console or cmdline (e.g. 'map andhealer$dmireswamp')).
+		if (token[0] == 0)
+			continue;
 
 		const int j = (int)strlen(token);
 		len += j;
