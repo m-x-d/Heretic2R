@@ -508,6 +508,23 @@ static void R_SetupGL(void)
 	glEnable(GL_DEPTH_TEST);
 }
 
+// Q2 counterpart
+static void R_SetGL2D(void)
+{
+	// Set 2D virtual screen size.
+	glViewport(0, 0, viddef.width, viddef.height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0, (double)viddef.width, (double)viddef.height, 0.0, -99999.0, 99999.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
+	glEnable(GL_ALPHA_TEST);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
 static void R_Fog(void) // H2: GL_Fog
 {
 	const int mode = ClampI((int)r_fog_mode->value, 0, ARRAY_SIZE(fog_modes) - 1); //mxd. Added ClampI().
@@ -843,17 +860,7 @@ static void RI_BeginFrame(const float camera_separation) //TODO: remove camera_s
 	}
 
 	// Go into 2D mode.
-	glViewport(0, 0, viddef.width, viddef.height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0.0, viddef.width, viddef.height, 0.0, -99999.0, 99999.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_BLEND);
-	glEnable(GL_ALPHA_TEST);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	R_SetGL2D();
 
 	// Draw buffer stuff.
 	if (gl_drawbuffer->modified)
@@ -930,23 +937,6 @@ static void R_RenderView(const refdef_t* fd)
 
 	if ((int)gl_reporthash->value) // H2
 		R_DisplayHashTable();
-}
-
-// Q2 counterpart
-static void R_SetGL2D(void)
-{
-	// Set 2D virtual screen size.
-	glViewport(0, 0, viddef.width, viddef.height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0.0, (double)viddef.width, (double)viddef.height, 0.0, -99999.0, 99999.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_BLEND);
-	glEnable(GL_ALPHA_TEST);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 static void R_SetLightLevel(void)
