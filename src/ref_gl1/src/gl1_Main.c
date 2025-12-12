@@ -981,6 +981,10 @@ static int RI_RenderFrame(const refdef_t* fd)
 		R_SetLightLevel();
 		R_SetGL2D();
 
+#ifdef _DEBUG
+		R_DrawDebugLabels(); //mxd
+#endif
+
 		if (color.a == 0)
 			return 0;
 	}
@@ -1052,6 +1056,7 @@ REF_DECLSPEC refexport_t GetRefAPI(const refimport_t rimp)
 	re.AddDebugBox = RI_AddDebugBox;
 	re.AddDebugBbox = RI_AddDebugBbox;
 	re.AddDebugEntityBbox = RI_AddDebugEntityBbox;
+	re.AddDebugEntityLabel = RI_AddDebugEntityLabel;
 
 	re.AddDebugLine = RI_AddDebugLine;
 	re.AddDebugArrow = RI_AddDebugArrow;

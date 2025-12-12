@@ -146,6 +146,23 @@ Q2DLL_DECLSPEC void DBG_AddEntityBbox(const edict_t* ent, const paletteRGBA_t co
 #endif
 }
 
+Q2DLL_DECLSPEC void DBG_AddEntityLabel(const edict_t* ent, const paletteRGBA_t color, const char* fmt, ...)
+{
+#if _DEBUG
+	if (fmt == NULL)
+		return;
+
+	va_list argptr;
+
+	va_start(argptr, fmt);
+	char label[64];
+	vsprintf_s(label, sizeof(label), fmt, argptr);
+	va_end(argptr);
+
+	re.AddDebugEntityLabel(ent, color, label);
+#endif
+}
+
 Q2DLL_DECLSPEC void DBG_AddLine(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
 {
 #if _DEBUG

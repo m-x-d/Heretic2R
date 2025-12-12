@@ -5,9 +5,12 @@
 //
 
 #include "gl1_Debug.h"
+#include "gl1_Draw.h"
+#include "gl1_Misc.h"
 #include "gl1_Local.h"
 #include "game.h"
 #include "Vector.h"
+#include "vid.h"
 
 typedef enum
 {
@@ -32,6 +35,19 @@ typedef struct DebugObjectInfo_s
 #define MAX_DEBUG_PRIMITIVES	512
 static DebugPrimitive_t dbg_primitives[MAX_DEBUG_PRIMITIVES];
 
+typedef struct DebugLabelInfo_s
+{
+	char label[64];
+	const struct edict_s* ent;
+	vec3_t cur_origin;
+	vec3_t old_origin;
+	float last_update;
+	paletteRGBA_t color;
+} DebugLabel_t;
+
+#define MAX_DEBUG_LABELS		128
+static DebugLabel_t dbg_labels[MAX_DEBUG_LABELS];
+
 static void SetDebugBoxVerts(DebugPrimitive_t* box, const vec3_t mins, const vec3_t maxs)
 {
 	// Init top verts...
@@ -47,7 +63,7 @@ static void SetDebugBoxVerts(DebugPrimitive_t* box, const vec3_t mins, const vec
 	VectorSet(box->verts[7], maxs[0], mins[1], mins[2]);
 }
 
-static DebugPrimitive_t* InitDebugPrimitive(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime, const DebugPrimitiveType_e type)
+static DebugPrimitive_t* InitDebugPrimitive(const struct edict_s* ent, const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime, const DebugPrimitiveType_e type)
 {
 	// Find free slot.
 	DebugPrimitive_t* p = NULL;
@@ -56,7 +72,7 @@ static DebugPrimitive_t* InitDebugPrimitive(const vec3_t mins, const vec3_t maxs
 	{
 		p = &dbg_primitives[i];
 
-		if (p->type == DPT_NONE || (p->lifetime != -1.0f && p->lifetime < r_newrefdef.time))
+		if (p->type == DPT_NONE || (p->lifetime != -1.0f && p->lifetime < r_newrefdef.time) || (ent != NULL && p->ent == ent))
 			break;
 	}
 
@@ -66,7 +82,7 @@ static DebugPrimitive_t* InitDebugPrimitive(const vec3_t mins, const vec3_t maxs
 
 	p->type = type;
 	p->color = color;
-	p->ent = NULL;
+	p->ent = ent;
 
 	if (lifetime == -1.0f)
 		p->lifetime = lifetime;
@@ -79,6 +95,52 @@ static DebugPrimitive_t* InitDebugPrimitive(const vec3_t mins, const vec3_t maxs
 	return p;
 }
 
+// Assumes ent exists.
+static DebugLabel_t* InitDebugLabel(const struct edict_s* ent, const paletteRGBA_t color)
+{
+	// Find free slot...
+	DebugLabel_t* l = NULL;
+
+	// First, look for label attached to the same entity...
+	for (int i = 0; i < MAX_DEBUG_LABELS; i++)
+	{
+		if (dbg_labels[i].ent == ent)
+		{
+			l = &dbg_labels[i];
+			break;
+		}
+	}
+	
+	// Then, look for a free label...
+	if (l == NULL)
+	{
+		for (int i = 0; i < MAX_DEBUG_LABELS; i++)
+		{
+			if (dbg_labels[i].ent == NULL)
+			{
+				l = &dbg_labels[i];
+				break;
+			}
+		}
+	}
+
+	// Init primitive.
+	if (l == NULL)
+		return NULL;
+
+	l->color = color;
+
+	if (l->ent != ent)
+	{
+		l->ent = ent;
+		l->last_update = r_newrefdef.time;
+		VectorCopy(ent->s.origin, l->cur_origin);
+		VectorCopy(ent->s.origin, l->old_origin);
+	}
+
+	return l;
+}
+
 void RI_AddDebugBox(const vec3_t center, float size, const paletteRGBA_t color, const float lifetime)
 {
 	size *= 0.5f;
@@ -86,7 +148,7 @@ void RI_AddDebugBox(const vec3_t center, float size, const paletteRGBA_t color, 
 	const vec3_t maxs = { center[0] + size, center[1] + size, center[2] + size };
 
 	// Find free slot...
-	const DebugPrimitive_t* box = InitDebugPrimitive(mins, maxs, color, lifetime, DPT_BOX);
+	const DebugPrimitive_t* box = InitDebugPrimitive(NULL, mins, maxs, color, lifetime, DPT_BOX);
 
 	if (box == NULL)
 		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugBox: failed to add box at %s...", pv(center));
@@ -95,7 +157,7 @@ void RI_AddDebugBox(const vec3_t center, float size, const paletteRGBA_t color, 
 void RI_AddDebugBbox(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime)
 {
 	// Find free slot...
-	const DebugPrimitive_t* box = InitDebugPrimitive(mins, maxs, color, lifetime, DPT_BBOX);
+	const DebugPrimitive_t* box = InitDebugPrimitive(NULL, mins, maxs, color, lifetime, DPT_BBOX);
 
 	if (box == NULL)
 	{
@@ -111,24 +173,30 @@ void RI_AddDebugEntityBbox(const struct edict_s* ent, const paletteRGBA_t color)
 		return;
 
 	// Find free slot...
-	DebugPrimitive_t* box = InitDebugPrimitive(ent->mins, ent->maxs, color, -1.0f, DPT_ENTITY_BBOX);
+	const DebugPrimitive_t* box = InitDebugPrimitive(ent, ent->mins, ent->maxs, color, -1.0f, DPT_ENTITY_BBOX);
 
-	if (box != NULL)
-	{
-		box->ent = ent;
-	}
+	if (box == NULL)
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugEntityBbox: failed to add entity bbox at %s...", pv(ent->s.origin));
+}
+
+void RI_AddDebugEntityLabel(const struct edict_s* ent, const paletteRGBA_t color, const char* label)
+{
+	if (ent == NULL)
+		return;
+
+	// Find free slot...
+	DebugLabel_t* l = InitDebugLabel(ent, color);
+
+	if (l != NULL)
+		strcpy_s(l->label, sizeof(l->label), label);
 	else
-	{
-		vec3_t center;
-		VectorAverage(ent->mins, ent->maxs, center);
-		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugEntityBbox: failed to add entity bbox at [%f %f %f]...", center[0], center[1], center[2]);
-	}
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugEntityLabel: failed to add entity label at %s...", pv(ent->s.origin));
 }
 
 void RI_AddDebugLine(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
 {
 	// Find free slot...
-	DebugPrimitive_t* line = InitDebugPrimitive(start, end, color, lifetime, DPT_LINE);
+	DebugPrimitive_t* line = InitDebugPrimitive(NULL, start, end, color, lifetime, DPT_LINE);
 
 	if (line != NULL)
 	{
@@ -146,7 +214,7 @@ void RI_AddDebugArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t 
 #define ARROWHEAD_SIZE	16.0f
 
 	// Find free slot...
-	DebugPrimitive_t* arrow = InitDebugPrimitive(start, end, color, lifetime, DPT_ARROW);
+	DebugPrimitive_t* arrow = InitDebugPrimitive(NULL, start, end, color, lifetime, DPT_ARROW);
 
 	if (arrow != NULL)
 	{
@@ -195,7 +263,7 @@ void RI_AddDebugDirection(const vec3_t start, const vec3_t angles_deg, const flo
 void RI_AddDebugMarker(const vec3_t center, const float size, const paletteRGBA_t color, const float lifetime)
 {
 	// Find free slot...
-	DebugPrimitive_t* marker = InitDebugPrimitive(NULL, NULL, color, lifetime, DPT_MARKER);
+	DebugPrimitive_t* marker = InitDebugPrimitive(NULL, NULL, NULL, color, lifetime, DPT_MARKER);
 
 	if (marker != NULL)
 	{
@@ -287,6 +355,50 @@ static void DrawDebugMarker(const DebugPrimitive_t* marker)
 	glEnd();
 }
 
+static void DrawDebugEntityLabel(DebugLabel_t* l)
+{
+	// Interpolate label pos (too twitchy on moving entities otherwise...).
+	float delta = r_newrefdef.time - l->last_update;
+
+	if (delta >= 0.2f)
+	{
+		l->last_update = r_newrefdef.time;
+		VectorCopy(l->cur_origin, l->old_origin);
+		VectorCopy(l->ent->s.origin, l->cur_origin);
+		delta = 0.0f;
+	}
+
+	vec3_t label_pos;
+	VectorLerp(l->old_origin, delta * 5.0f, l->cur_origin, label_pos);
+	label_pos[2] += 32.0f;
+
+	vec3_t screen_pos; // Valid z-coord is in [0.0 .. 1.0] range.
+	if (!R_PointToScreen(label_pos, screen_pos) || screen_pos[2] <= 0.0f || screen_pos[2] > 1.0f)
+		return; // Can't project or not within frustum.
+
+	// Replicate SCR_UpdateUIScale() logic...
+	const int ui_scale = min((int)(roundf((float)viddef.width / DEF_WIDTH)), (int)(roundf((float)viddef.height / DEF_HEIGHT)));
+	const int ui_char_size = CONCHAR_SIZE * ui_scale;
+
+	// Setup label coords.
+	const int len = (int)strlen(l->label);
+	const int ui_len = len * ui_char_size;
+
+	const int sx = (int)screen_pos[0] - ui_len / 2;
+	const int ex = (int)screen_pos[0] + ui_len / 2;
+	const int sy = (int)screen_pos[1] - ui_char_size / 2;
+	const int ey = (int)screen_pos[1] + ui_char_size / 2;
+
+	// Not on screen.
+	if (sx >= viddef.width || ex <= 0 || sy >= viddef.height || ey <= 0)
+		return;
+
+	// Draw label.
+	int x = sx;
+	for (int i = 0; i < len; i++, x += ui_char_size)
+		Draw_Char(x, sy, ui_scale, l->label[i], l->color);
+}
+
 // Draw all debug primitives.
 void R_DrawDebugPrimitives(void)
 {
@@ -350,7 +462,21 @@ void R_DrawDebugPrimitives(void)
 	glEnable(GL_TEXTURE_2D);
 }
 
+void R_DrawDebugLabels(void) // Needs to be called AFTER R_SetGL2D()...
+{
+	// Draw labels...
+	DebugLabel_t* l = &dbg_labels[0];
+	for (int i = 0; i < MAX_DEBUG_LABELS; i++, l++)
+	{
+		if (l->ent != NULL && l->ent->inuse)
+			DrawDebugEntityLabel(l);
+		else
+			l->ent = NULL;
+	}
+}
+
 void R_FreeDebugPrimitives(void)
 {
 	memset(dbg_primitives, 0, sizeof(dbg_primitives));
+	memset(dbg_labels, 0, sizeof(dbg_labels));
 }
