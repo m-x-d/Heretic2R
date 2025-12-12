@@ -89,7 +89,7 @@ void RI_AddDebugBox(const vec3_t center, float size, const paletteRGBA_t color, 
 	const DebugPrimitive_t* box = InitDebugPrimitive(mins, maxs, color, lifetime, DPT_BOX);
 
 	if (box == NULL)
-		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugBox: failed to add box at [%f %f %f]...", center[0], center[1], center[2]);
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugBox: failed to add box at %s...", pv(center));
 }
 
 void RI_AddDebugBbox(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime)
@@ -101,7 +101,7 @@ void RI_AddDebugBbox(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t c
 	{
 		vec3_t center;
 		VectorAverage(mins, maxs, center);
-		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugBbox: failed to add bbox at [%f %f %f]...", center[0], center[1], center[2]);
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugBbox: failed to add bbox at %s...", pv(center));
 	}
 }
 
@@ -137,7 +137,7 @@ void RI_AddDebugLine(const vec3_t start, const vec3_t end, const paletteRGBA_t c
 	}
 	else
 	{
-		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugLine: failed to add line at [%f %f %f] -> [%f %f %f]...", start[0], start[1], start[2], end[0], end[1], end[2]);
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugLine: failed to add line at %s -> %s...", pv(start), pv(end));
 	}
 }
 
@@ -176,7 +176,7 @@ void RI_AddDebugArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t 
 	}
 	else
 	{
-		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugArrow: failed to add arrow at [%f %f %f] -> [%f %f %f]...", start[0], start[1], start[2], end[0], end[1], end[2]);
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugArrow: failed to add arrow at %s -> %s...", pv(start), pv(end));
 	}
 }
 
@@ -212,7 +212,7 @@ void RI_AddDebugMarker(const vec3_t center, const float size, const paletteRGBA_
 	}
 	else
 	{
-		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugMarker: failed to add marker at [%f %f %f]...", center[0], center[1], center[2]);
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugMarker: failed to add marker at %s...", pv(center));
 	}
 }
 
