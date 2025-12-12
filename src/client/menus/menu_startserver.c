@@ -44,11 +44,19 @@ static int LoadMapnames(const qboolean is_coop)
 
 	char* buffer;
 	const cvar_t* cv_maplist = (is_coop ? m_cooplist : m_dmlist);
-	if (FS_LoadFile(va("%s.lst", cv_maplist->string), (void**)&buffer) == -1)
+	const int size = FS_LoadFile(va("%s.lst", cv_maplist->string), (void**)&buffer);
+	if (size == -1)
 		Com_Error(ERR_DROP, "*************************\n\t\t\t\t\t\t\t Could not open %s.lst\n\t\t\t\t\t\t\t *************************\n", cv_maplist->string);
 
+	//mxd. We need trailing 0...
+	char* maplist = Z_Malloc(size + 1);
+	memcpy(maplist, buffer, size);
+	maplist[size] = 0;
+
+	FS_FreeFile(buffer);
+
 	int num_maps = 0;
-	char* s = &buffer[0];
+	char* s = &maplist[0];
 
 	while (s != NULL)
 	{
@@ -64,20 +72,26 @@ static int LoadMapnames(const qboolean is_coop)
 		FILE* file;
 		FS_FOpenFile(va("maps/%s.bsp", map_name), &file);
 
-		if (file != NULL)
+		if (file == NULL)
 		{
-			FS_FCloseFile(file);
-			Com_sprintf(mapnames_buffer[num_maps], sizeof(mapnames_buffer[num_maps]), "%s\n%s", map_title, map_name);
-			num_maps++;
+			Com_Printf("WARNING: could not find map '%s.bsp'!\n", map_name);
+			continue;
 		}
-		else
+
+		FS_FCloseFile(file);
+		Com_sprintf(mapnames_buffer[num_maps], sizeof(mapnames_buffer[num_maps]), "%s\n%s", map_title, map_name);
+		num_maps++;
+
+		//mxd. Add max. maps sanity check.
+		if (num_maps >= NUM_MAPNAMES - 1)
 		{
-			Com_Printf("WARNING : Could not find map %s.bsp\n", map_name);
+			Com_Printf("WARNING: maximum number of maps (%i) exceeded in %s.lst!\n", NUM_MAPNAMES - 1, cv_maplist->string);
+			break;
 		}
 	}
 
 	mapnames[num_maps] = NULL;
-	FS_FreeFile(buffer);
+	Z_Free(maplist);
 
 	return num_maps;
 }
