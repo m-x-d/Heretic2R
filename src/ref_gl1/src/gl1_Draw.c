@@ -316,39 +316,31 @@ void Draw_FadeScreen(const paletteRGBA_t color)
 	glDisable(GL_BLEND);
 }
 
-void Draw_Name(const vec3_t origin, const char* name, const paletteRGBA_t color)
+void Draw_Name(const vec3_t origin, const char* name, const paletteRGBA_t color) //mxd. Rewritten logic to use R_PointToScreen() (fixes somewhat incorrect name positioning in widescreen).
 {
-	vec3_t diff;
-	VectorSubtract(origin, r_origin, diff);
-
 	vec3_t screen_pos;
-	R_TransformVector(diff, screen_pos);
+	if (!R_PointToScreen(origin, screen_pos) || screen_pos[2] <= 0.0f || screen_pos[2] > 1.0f)
+		return; // Can't project or not within frustum.
 
-	if (screen_pos[2] < 0.01f)
-		return;
+	// Replicate SCR_UpdateUIScale() logic...
+	const int ui_scale = min((int)(roundf((float)viddef.width / DEF_WIDTH)), (int)(roundf((float)viddef.height / DEF_HEIGHT)));
+	const int ui_char_size = CONCHAR_SIZE * ui_scale;
 
+	// Setup label coords.
 	const int len = (int)strlen(name);
+	const int ui_len = len * ui_char_size;
 
-	const float aspect_scaler = ((float)r_newrefdef.height * 1.25f) / (float)r_newrefdef.width;
-	const float center_x = (float)r_newrefdef.width *  0.5f;
-	const float center_y = (float)r_newrefdef.height * 0.5f;
-	const float scaler = center_x / screen_pos[2] * 1.28f * aspect_scaler; //mxd. Adjust for widescreen... //TODO: what's 1.28 scaler?
+	const int sx = (int)screen_pos[0] - ui_len / 2;
+	const int ex = (int)screen_pos[0] + ui_len / 2;
+	const int sy = (int)screen_pos[1] - ui_char_size / 2;
+	const int ey = (int)screen_pos[1] + ui_char_size / 2;
 
-	//mxd. Hires scaling...
-	const int ui_char_scale = (int)(roundf((float)viddef.height / DEF_HEIGHT));
-	const int ui_char_size = CONCHAR_SIZE * ui_char_scale;
-
-	const int text_w = ui_char_size * len;
-	const int text_h = ui_char_size;
-
-	// Setup top-left corner coords...
-	int x =       (int)(center_x + screen_pos[0] * scaler) - text_w / 2;
-	const int y = (int)(center_y - screen_pos[1] * scaler) - text_h / 2;
-
-	// Skip when completely off-screen...
-	if (x + text_w < 0 || y + text_h < 0 || x > r_newrefdef.width || y > r_newrefdef.height)
+	// Not on screen.
+	if (sx >= viddef.width || ex <= 0 || sy >= viddef.height || ey <= 0)
 		return;
 
+	// Draw label.
+	int x = sx;
 	for (int i = 0; i < len; i++, x += ui_char_size)
-		Draw_Char(x, y, ui_char_scale, name[i], color);
+		Draw_Char(x, sy, ui_scale, name[i], color);
 }
