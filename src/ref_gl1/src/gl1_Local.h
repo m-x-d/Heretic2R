@@ -157,6 +157,7 @@ extern vec3_t vright;
 extern vec3_t r_origin;
 
 extern float r_world_matrix[16];
+extern float r_projection_matrix[16]; //mxd
 extern cplane_t frustum[4];
 
 extern refdef_t r_newrefdef;

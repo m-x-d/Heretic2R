@@ -121,6 +121,45 @@ void R_RotateForEntity(const entity_t* e)
 	glRotatef(-e->angles[2] * RAD_TO_ANGLE, 1.0f, 0.0f, 0.0f);
 }
 
+//mxd. Map object coordinates to window coordinates (slightly modified version of glhProjectf() from https://wikis.khronos.org/opengl/GluProject_and_gluUnProject_code).
+qboolean R_PointToScreen(const vec3_t pos, vec3_t screen_pos)
+{
+	// Transformation vectors.
+	float tmp[8];
+
+	// Modelview transform.
+	tmp[0] = r_world_matrix[0] * pos[0] + r_world_matrix[4] * pos[1] + r_world_matrix[8] *  pos[2] + r_world_matrix[12]; // w is always 1.
+	tmp[1] = r_world_matrix[1] * pos[0] + r_world_matrix[5] * pos[1] + r_world_matrix[9] *  pos[2] + r_world_matrix[13];
+	tmp[2] = r_world_matrix[2] * pos[0] + r_world_matrix[6] * pos[1] + r_world_matrix[10] * pos[2] + r_world_matrix[14];
+	tmp[3] = r_world_matrix[3] * pos[0] + r_world_matrix[7] * pos[1] + r_world_matrix[11] * pos[2] + r_world_matrix[15];
+
+	// Projection transform, the final row of projection matrix is always [0 0 -1 0], so we optimize for that.
+	tmp[4] = r_projection_matrix[0] * tmp[0] + r_projection_matrix[4] * tmp[1] + r_projection_matrix[8] *  tmp[2] + r_projection_matrix[12] * tmp[3];
+	tmp[5] = r_projection_matrix[1] * tmp[0] + r_projection_matrix[5] * tmp[1] + r_projection_matrix[9] *  tmp[2] + r_projection_matrix[13] * tmp[3];
+	tmp[6] = r_projection_matrix[2] * tmp[0] + r_projection_matrix[6] * tmp[1] + r_projection_matrix[10] * tmp[2] + r_projection_matrix[14] * tmp[3];
+
+	// The result normalizes between -1 and 1.
+	if (tmp[2] == 0.0f) // The w value.
+		return false;
+
+	tmp[7] = 1.0f / -tmp[2];
+
+	// Perspective division.
+	tmp[4] *= tmp[7];
+	tmp[5] *= tmp[7];
+	tmp[6] *= tmp[7];
+
+	// Window coordinates. Map x, y to range 0 - 1.
+	screen_pos[0] = (tmp[4] * 0.5f + 0.5f) * (float)r_newrefdef.width +  (float)r_newrefdef.x;
+	screen_pos[1] = (tmp[5] * 0.5f + 0.5f) * (float)r_newrefdef.height + (float)r_newrefdef.y;
+	screen_pos[2] = (1.0f + tmp[6]) * 0.5f; // This is only correct when glDepthRange(0.0, 1.0).
+
+	//mxd. y-coord needs flipping...
+	screen_pos[1] = (float)r_newrefdef.height - screen_pos[1];
+
+	return true;
+}
+
 paletteRGBA_t R_GetSpriteShadelight(const vec3_t origin, const byte alpha) //mxd
 {
 	static const vec3_t light_add = { 0.1f, 0.1f, 0.1f };

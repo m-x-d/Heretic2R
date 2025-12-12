@@ -43,6 +43,7 @@ vec3_t vright;
 vec3_t r_origin;
 
 float r_world_matrix[16];
+float r_projection_matrix[16]; //mxd
 cplane_t frustum[4];
 
 refdef_t r_newrefdef; // Screen size info.
@@ -494,6 +495,7 @@ static void R_SetupGL(void)
 	glTranslatef(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
 
 	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
+	glGetFloatv(GL_PROJECTION_MATRIX, r_projection_matrix); //mxd
 
 	// Set drawing parms.
 	if ((int)gl_cull->value)
