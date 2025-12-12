@@ -469,12 +469,12 @@ qboolean SV_ValidateMapFilename(const char* level)
 
 	// Check map file.
 	Com_sprintf(mappath, sizeof(mappath), "maps/%s.bsp", level);
-	if (FS_LoadFile(mappath, 0) != -1)
+	if (FS_LoadFile(mappath, NULL) != -1)
 		return true;
 
 	// Check demo file.
 	Com_sprintf(mappath, sizeof(mappath), "demos/%s", level);
-	if (FS_LoadFile(mappath, 0) != -1)
+	if (FS_LoadFile(mappath, NULL) != -1)
 		return true;
 
 	// Check movie file.
