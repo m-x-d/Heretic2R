@@ -463,6 +463,12 @@ static void Z_Stats_f(void)
 // Q2 counterpart
 void Z_FreeTags(const int tag)
 {
+#if _DEBUG
+	//mxd. Definitely not the best place to do this, but all preceding code is either server-side or game-side during map change... 
+	if (tag == 766) // TAG_LEVEL
+		re.FreeDebugPrimitives();
+#endif
+
 	zhead_t* next;
 
 	for (zhead_t* z = z_chain.next; z != &z_chain; z = next)

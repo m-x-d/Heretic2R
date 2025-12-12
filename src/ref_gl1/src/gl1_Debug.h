@@ -18,3 +18,4 @@ extern void RI_AddDebugDirection(const vec3_t start, const vec3_t angles_deg, fl
 extern void RI_AddDebugMarker(const vec3_t center, float size, paletteRGBA_t color, float lifetime);
 
 extern void R_DrawDebugPrimitives(void);
+extern void R_FreeDebugPrimitives(void);

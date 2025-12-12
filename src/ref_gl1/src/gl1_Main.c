@@ -1055,6 +1055,8 @@ REF_DECLSPEC refexport_t GetRefAPI(const refimport_t rimp)
 	re.AddDebugArrow = RI_AddDebugArrow;
 	re.AddDebugDirection = RI_AddDebugDirection;
 	re.AddDebugMarker = RI_AddDebugMarker;
+
+	re.FreeDebugPrimitives = R_FreeDebugPrimitives;
 #endif
 
 	// Unbound: A3D_RenderGeometry();

@@ -349,3 +349,8 @@ void R_DrawDebugPrimitives(void)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
 }
+
+void R_FreeDebugPrimitives(void)
+{
+	memset(dbg_primitives, 0, sizeof(dbg_primitives));
+}
