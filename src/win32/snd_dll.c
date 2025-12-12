@@ -217,9 +217,6 @@ static void SndDll_Init(void)
 	si.Z_Free = Z_Free;
 
 #ifdef _DEBUG
-	si.pv = pv;
-	si.psv = psv;
-
 	si.DBG_IDEPrint = DBG_IDEPrint;
 	si.DBG_HudPrint = DBG_HudPrint;
 

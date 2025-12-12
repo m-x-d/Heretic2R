@@ -488,9 +488,6 @@ typedef struct
 
 #ifdef _DEBUG
 	//mxd. Debug logic.
-	char* (*pv)(const vec3_t v); // vtos() from g_utils.c, basically...
-	char* (*psv)(const short* v);
-
 	void (*DBG_IDEPrint)(const char* fmt, ...);
 	void (*DBG_HudPrint)(int slot, const char* label, const char* fmt, ...);
 
@@ -504,7 +501,7 @@ typedef struct
 } snd_import_t;
 
 //mxd. This is the only function actually exported at the linker level.
-typedef snd_export_t(*GetSoundAPI_t)(snd_import_t);
+typedef snd_export_t (*GetSoundAPI_t)(snd_import_t);
 
 #pragma endregion
 

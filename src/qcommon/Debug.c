@@ -38,32 +38,6 @@ Q2DLL_DECLSPEC void DBG_IDEPrint(const char* fmt, ...)
 #endif
 }
 
-// Print vector.
-Q2DLL_DECLSPEC char* pv(const vec3_t v)
-{
-	static char buf[8][128];
-	static int buf_index;
-
-	buf_index = (buf_index + 1) % 7;
-
-	sprintf_s(buf[buf_index], sizeof(buf[buf_index]), "[%f %f %f]", v[0], v[1], v[2]);
-
-	return buf[buf_index];
-}
-
-// Print short vector.
-Q2DLL_DECLSPEC char* psv(const short* v)
-{
-	static char buf[8][128];
-	static int buf_index;
-
-	buf_index = (buf_index + 1) % 7;
-
-	sprintf_s(buf[buf_index], sizeof(buf[buf_index]), "[%i %i %i]", v[0], v[1], v[2]);
-
-	return buf[buf_index];
-}
-
 #define NUM_DEBUG_MESSAGES	16
 
 typedef struct

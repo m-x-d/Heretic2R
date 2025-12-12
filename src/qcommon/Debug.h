@@ -38,10 +38,6 @@ Q2DLL_DECLSPEC extern paletteRGBA_t dc_orange;
 Q2DLL_DECLSPEC extern paletteRGBA_t dc_cyan;
 Q2DLL_DECLSPEC extern paletteRGBA_t dc_purple;
 
-#define pb(v)	((v) ? "TRUE " : "FALSE") // Print bool.
-Q2DLL_DECLSPEC extern char* pv(const vec3_t v); // vtos() from g_utils.c, basically...
-Q2DLL_DECLSPEC extern char* psv(const short* v);
-
 #ifdef __cplusplus //mxd. Needed, so code in game/ds.cpp could build...
 extern "C"
 {

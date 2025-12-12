@@ -205,8 +205,34 @@ H2COMMON_API char* va(const char* format, ...)
 	static char string[1024];
 
 	va_start(argptr, format);
-	vsnprintf(string, 1024, format, argptr);
+	vsnprintf(string, sizeof(string), format, argptr);
 	va_end(argptr);
 
 	return string;
+}
+
+//mxd. Print vector.
+H2COMMON_API char* pv(const vec3_t v)
+{
+	static char buf[8][128];
+	static int buf_index;
+
+	buf_index = (buf_index + 1) % 7;
+
+	sprintf_s(buf[buf_index], sizeof(buf[buf_index]), "[%f %f %f]", v[0], v[1], v[2]);
+
+	return buf[buf_index];
+}
+
+//mxd. Print short vector.
+H2COMMON_API char* psv(const short* v)
+{
+	static char buf[8][128];
+	static int buf_index;
+
+	buf_index = (buf_index + 1) % 7;
+
+	sprintf_s(buf[buf_index], sizeof(buf[buf_index]), "[%i %i %i]", v[0], v[1], v[2]);
+
+	return buf[buf_index];
 }

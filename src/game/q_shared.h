@@ -155,6 +155,10 @@ H2COMMON_API extern int ClampI(int src, int min, int max);
 H2COMMON_API extern float Approach(float curr, float dest, float rate);
 H2COMMON_API extern char* va(const char* format, ...);
 
+#define pb(v)	((v) ? "TRUE " : "FALSE") //mxd. Print bool.
+H2COMMON_API extern char* pv(const vec3_t v); //mxd. vtos() from g_utils.c, basically...
+H2COMMON_API extern char* psv(const short* v); //mxd
+
 // Key / value info strings.
 #define MAX_INFO_KEY		64
 #define MAX_INFO_VALUE		64
