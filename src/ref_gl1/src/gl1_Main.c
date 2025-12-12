@@ -467,7 +467,7 @@ static void R_SetPerspective(const GLdouble fovy) // YQ2
 	glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
 }
 
-static void R_SetupGL(void)
+static void R_SetupGL3D(void) //mxd. Named 'R_SetupGL' in original logic.
 {
 	//mxd. Removed unneeded integer multiplications/divisions.
 	const int xl = r_newrefdef.x;
@@ -488,7 +488,7 @@ static void R_SetupGL(void)
 	glLoadIdentity();
 
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f); // Put Z going up.
-	glRotatef(90.0f, 0.0f, 0.0f, 1.0f); // Put Z going up.
+	glRotatef( 90.0f, 0.0f, 0.0f, 1.0f); // Put Z going up.
 	glRotatef(-r_newrefdef.viewangles[2], 1.0f, 0.0f, 0.0f);
 	glRotatef(-r_newrefdef.viewangles[0], 0.0f, 1.0f, 0.0f);
 	glRotatef(-r_newrefdef.viewangles[1], 0.0f, 0.0f, 1.0f);
@@ -511,7 +511,7 @@ static void R_SetupGL(void)
 }
 
 // Q2 counterpart
-static void R_SetGL2D(void)
+static void R_SetupGL2D(void) //mxd. Named 'R_SetGL2D' in original logic.
 {
 	// Set 2D virtual screen size.
 	glViewport(0, 0, viddef.width, viddef.height);
@@ -862,7 +862,7 @@ static void RI_BeginFrame(const float camera_separation) //TODO: remove camera_s
 	}
 
 	// Go into 2D mode.
-	R_SetGL2D();
+	R_SetupGL2D();
 
 	// Draw buffer stuff.
 	if (gl_drawbuffer->modified)
@@ -914,7 +914,7 @@ static void R_RenderView(const refdef_t* fd)
 
 	R_SetupFrame();
 	R_SetFrustum();
-	R_SetupGL();
+	R_SetupGL3D();
 	R_MarkLeaves(); // Done here so we know if we're in water.
 	R_DrawWorld();
 	R_DrawEntitiesOnList();
@@ -979,7 +979,7 @@ static int RI_RenderFrame(const refdef_t* fd)
 		// Q2 version calls these 3 functions only.
 		R_RenderView(fd);
 		R_SetLightLevel();
-		R_SetGL2D();
+		R_SetupGL2D();
 
 #ifdef _DEBUG
 		R_DrawDebugLabels(); //mxd
