@@ -770,37 +770,10 @@ static void PM_OnBboxSizeChanged(void) // H2 //mxd. Removed unused return value.
 	}
 }
 
-//mxd. Subtle acceleration/deceleration while walking on land.
-static void PM_AirAccelerate(float* fmove, float* smove) //mxd
-{
-	static float fmove_lerp;
-	static float smove_lerp;
-
-	if (*fmove != 0.0f)
-	{
-		fmove_lerp = min(1.0f, fmove_lerp + pml.frametime * 2.0f);
-		*fmove *= 1.0f + sinf(-ANGLE_90 + ANGLE_90 * fmove_lerp);
-	}
-	else
-	{
-		fmove_lerp = 0.0f;
-	}
-
-	if (*smove != 0.0f)
-	{
-		smove_lerp = min(1.0f, smove_lerp + pml.frametime * 2.5f);
-		*smove *= 1.0f + sinf(-ANGLE_90 + ANGLE_90 * smove_lerp);
-	}
-	else
-	{
-		smove_lerp = 0.0f;
-	}
-}
-
 static void PM_AirMove(void)
 {
 	float fmove = pm->cmd.forwardmove;
-	float smove = pm->cmd.sidemove;
+	const float smove = pm->cmd.sidemove;
 	qboolean run_shrine = false; // H2
 
 	pml.gravity = pm->s.gravity; // H2
@@ -813,8 +786,6 @@ static void PM_AirMove(void)
 
 	VectorNormalize(pml.forward);
 	VectorNormalize(pml.right);
-
-	PM_AirAccelerate(&fmove, &smove); //mxd
 
 	vec3_t wishvel;
 	for (int i = 0; i < 2; i++)
