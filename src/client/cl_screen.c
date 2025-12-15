@@ -1059,11 +1059,11 @@ static void SCR_DrawInitialFadeIn(void)
 	static qboolean draw_fade = true;
 	static int fade_end_time = INT_MAX;
 
-	if (!draw_fade)
+	if (!draw_fade || cl.cinematictime > 0)
 		return;
 
 	// Disable fade when we are loading something, showing cinematic or fade-in animation ended.
-	if (scr_progressbar_width > 0 || cl.cinematictime > 0 || fade_end_time <= cls.realtime)
+	if (scr_progressbar_width > 0 || fade_end_time <= cls.realtime)
 	{
 		draw_fade = false;
 		return;
