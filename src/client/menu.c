@@ -194,7 +194,7 @@ void M_PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) // H2
 
 		if (m_menudepth == 0)
 		{
-			cls.m_menustate = MS_ZOOM_IN_START;
+			cls.m_menustate = (cls.state == ca_active ? MS_ZOOM_IN_START : MS_FADE_IN_START); //mxd. Do zoom-in effect only when ingame.
 			OnMainMenuOpened();
 		}
 		else
