@@ -933,7 +933,7 @@ void CL_SendCmd(void)
 		return;
 
 	// H2. Skip the rest of the cinematic?
-	if (anykeydown > 0 && cl.cinematictime > 0 && !cl.attractloop && cls.realtime - cl.cinematictime > 1000)
+	if (anykeydown > 0 && !cl.attractloop && cl.cinematictime > 0 && cls.realtime - cl.cinematictime > 1000)
 		SCR_FinishCinematic();
 
 	if (cls.state == ca_connected)
