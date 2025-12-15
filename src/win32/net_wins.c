@@ -242,8 +242,6 @@ static qboolean NET_StringToSockaddr(const char* s, struct sockaddr* sadr)
 	}
 
 	return true;
-
-#undef DO
 }
 
 // Q2 counterpart
