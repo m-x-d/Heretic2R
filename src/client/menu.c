@@ -584,10 +584,9 @@ void M_Init(void)
 	// Misc menu.
 	m_item_alwaysrun = Cvar_Get("m_item_alwaysrun", "Always run", 0);
 	m_item_mouseinvert = Cvar_Get("m_item_mouseinvert", "Invert Mouse", 0);
-	m_item_lookspring = Cvar_Get("m_item_lookspring", "Lookspring", 0);
 	m_item_crosshair = Cvar_Get("m_item_crosshair", "Crosshair", 0);
-	m_item_autoaim = Cvar_Get("m_item_autoaim", "Autoaim amount", 0); //mxd
 	m_item_caption = Cvar_Get("m_item_caption", "Captioning", 0);
+	m_item_show_splash_movies = Cvar_Get("m_item_show_splash_movies", "Show Splash Movies", 0); //mxd
 	m_item_violence = Cvar_Get("m_item_violence", "Violence Level", 0);
 	m_item_yawspeed = Cvar_Get("m_item_yawspeed", "Key Turn Speed", 0);
 	m_item_console = Cvar_Get("m_item_console", "Go to console", 0);
@@ -647,7 +646,9 @@ void M_Init(void)
 	m_item_nomap = Cvar_Get("m_item_nomap", "No Map Available", 0);
 
 	// Camera cfg menu.
+	m_item_lookspring = Cvar_Get("m_item_lookspring", "Lookspring", 0);
 	m_item_cameradamp = Cvar_Get("m_item_cameradamp", "Camera Stiffness", 0);
+	m_item_autoaim = Cvar_Get("m_item_autoaim", "Autoaim amount", 0); //mxd
 
 	// Keys menu.
 	m_item_helpscreen = Cvar_Get("m_item_helpscreen", "Help Screen", 0);

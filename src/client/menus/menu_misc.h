@@ -13,6 +13,7 @@ extern cvar_t* m_banner_misc;
 extern cvar_t* m_item_alwaysrun;
 extern cvar_t* m_item_crosshair;
 extern cvar_t* m_item_caption;
+extern cvar_t* m_item_show_splash_movies; //mxd
 extern cvar_t* m_item_violence;
 extern cvar_t* m_item_yawspeed;
 extern cvar_t* m_item_console;

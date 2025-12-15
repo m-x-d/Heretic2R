@@ -12,6 +12,7 @@ cvar_t* m_banner_misc;
 cvar_t* m_item_alwaysrun;
 cvar_t* m_item_crosshair;
 cvar_t* m_item_caption;
+cvar_t* m_item_show_splash_movies; //mxd
 cvar_t* m_item_violence;
 cvar_t* m_item_yawspeed;
 cvar_t* m_item_console;
@@ -23,6 +24,7 @@ static menulist_t s_options_crosshair_box;
 static menulist_t s_options_alwaysrun_box;
 static menulist_t s_options_autoweapon_box;
 static menulist_t s_options_captions_box;
+static menulist_t s_options_show_splash_movies_box; //mxd
 static menuslider_t s_options_yawspeed_slider;
 static menulist_t s_options_violence_box;
 static menuaction_t s_options_console_action;
@@ -47,6 +49,11 @@ static void AutoWeaponFunc(void* self) // H2
 static void ShowCaptionsFunc(void* self) // H2
 {
 	Cvar_SetValue("cl_showcaptions", (float)s_options_captions_box.curvalue);
+}
+
+static void ShowSplashMoviesFunc(void* self) //mxd
+{
+	Cvar_SetValue("show_splash_movies", (float)s_options_show_splash_movies_box.curvalue);
 }
 
 static void YawSpeedFunc(void* self) // H2
@@ -102,6 +109,7 @@ static void Misc_MenuInit(void) // H2
 	static char name_alwaysrun[MAX_QPATH];
 	static char name_autoweapon[MAX_QPATH];
 	static char name_caption[MAX_QPATH];
+	static char name_show_splash_movies[MAX_QPATH]; //mxd
 	static char name_yawspeed[MAX_QPATH];
 	static char name_violence[MAX_QPATH];
 	static char name_console[MAX_QPATH];
@@ -179,10 +187,22 @@ static void Misc_MenuInit(void) // H2
 	s_options_captions_box.curvalue = (int)(Cvar_VariableValue("cl_showcaptions") != 0.0f); //mxd. Original logic just sets curvalue to cl_showcaptions value.
 	s_options_captions_box.itemnames = yes_no_names;
 
+	//mxd. "Show Splash Movies" option.
+	Com_sprintf(name_show_splash_movies, sizeof(name_show_splash_movies), "\x02%s", m_item_show_splash_movies->string);
+	s_options_show_splash_movies_box.generic.type = MTYPE_SPINCONTROL;
+	s_options_show_splash_movies_box.generic.x = 0;
+	s_options_show_splash_movies_box.generic.y = 80;
+	s_options_show_splash_movies_box.generic.name = name_show_splash_movies;
+	s_options_show_splash_movies_box.generic.width = re.BF_Strlen(name_show_splash_movies);
+	s_options_show_splash_movies_box.generic.flags = QMF_SINGLELINE;
+	s_options_show_splash_movies_box.generic.callback = ShowSplashMoviesFunc;
+	s_options_show_splash_movies_box.curvalue = (int)(Cvar_VariableValue("show_splash_movies") != 0.0f);
+	s_options_show_splash_movies_box.itemnames = yes_no_names;
+
 	Com_sprintf(name_yawspeed, sizeof(name_yawspeed), "\x02%s", m_item_yawspeed->string);
 	s_options_yawspeed_slider.generic.type = MTYPE_SLIDER;
 	s_options_yawspeed_slider.generic.x = 0;
-	s_options_yawspeed_slider.generic.y = 80;
+	s_options_yawspeed_slider.generic.y = 100;
 	s_options_yawspeed_slider.generic.name = name_yawspeed;
 	s_options_yawspeed_slider.generic.width = re.BF_Strlen(name_yawspeed);
 	s_options_yawspeed_slider.minvalue = 0.0f;
@@ -193,7 +213,7 @@ static void Misc_MenuInit(void) // H2
 	Com_sprintf(name_violence, sizeof(name_violence), "\x02%s", m_item_violence->string);
 	s_options_violence_box.generic.type = MTYPE_SPINCONTROL;
 	s_options_violence_box.generic.x = 0;
-	s_options_violence_box.generic.y = 120;
+	s_options_violence_box.generic.y = 140;
 	s_options_violence_box.generic.name = name_violence;
 	s_options_violence_box.generic.width = re.BF_Strlen(name_violence);
 	s_options_violence_box.generic.flags = 0;
@@ -213,6 +233,7 @@ static void Misc_MenuInit(void) // H2
 	Menu_AddItem(&s_misc_menu, &s_options_alwaysrun_box);
 	Menu_AddItem(&s_misc_menu, &s_options_autoweapon_box);
 	Menu_AddItem(&s_misc_menu, &s_options_captions_box);
+	Menu_AddItem(&s_misc_menu, &s_options_show_splash_movies_box); //mxd
 	Menu_AddItem(&s_misc_menu, &s_options_yawspeed_slider);
 	Menu_AddItem(&s_misc_menu, &s_options_violence_box);
 	Menu_AddItem(&s_misc_menu, &s_options_console_action);

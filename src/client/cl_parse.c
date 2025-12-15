@@ -393,7 +393,10 @@ static void CL_ParseServerData(void)
 	str = MSG_ReadString(&net_message);
 	if (cl.playernum == -1)
 	{
-		SCR_PlayCinematic(str); // Playing a cinematic, not a level.
+		if (!(int)show_splash_movies->value && strcmp(str, "bumper.smk") == 0) //mxd. Add show_splash_movies option.
+			SCR_FinishCinematic(); // Skipping a cinematic.
+		else
+			SCR_PlayCinematic(str); // Playing a cinematic, not a level.
 	}
 	else
 	{
