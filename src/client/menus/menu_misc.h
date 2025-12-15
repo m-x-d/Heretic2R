@@ -12,7 +12,6 @@ extern cvar_t* m_banner_misc;
 
 extern cvar_t* m_item_alwaysrun;
 extern cvar_t* m_item_crosshair;
-extern cvar_t* m_item_autoaim; //mxd
 extern cvar_t* m_item_caption;
 extern cvar_t* m_item_violence;
 extern cvar_t* m_item_yawspeed;
