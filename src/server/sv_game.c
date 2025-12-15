@@ -13,6 +13,8 @@
 #include "tokens.h"
 #include "Vector.h"
 
+typedef game_export_t* (*GetGameAPI_t)(game_import_t* gi);
+
 game_export_t* ge;
 
 static HINSTANCE game_library; // Defined in sys_win.c in Q2
@@ -414,8 +416,7 @@ void SV_InitGameProgs(void)
 #define FX_BUF_BLOCK_SIZE	12 //mxd
 
 	game_import_t import;
-	game_export_t* (*GetGameAPI)(game_import_t* gi);
-	
+
 	// Unload anything we have now.
 	if (ge != NULL)
 		SV_ShutdownGameProgs();
@@ -513,7 +514,7 @@ void SV_InitGameProgs(void)
 	DWORD checksum;
 	Sys_LoadGameDll("gamex86", &game_library, &checksum);
 
-	GetGameAPI = (void*)GetProcAddress(game_library, "GetGameAPI");
+	const GetGameAPI_t GetGameAPI = (GetGameAPI_t)GetProcAddress(game_library, "GetGameAPI");
 	if (GetGameAPI == NULL) // H2
 		Com_Error(ERR_DROP, "Failed to obtain 'Gamex86' API"); //mxd. Sys_Error() in original logic.
 

@@ -88,7 +88,7 @@ static qboolean SND_StoreSndlibInfo(const char* snd_path) //mxd
 	if (sndlib == NULL)
 		return false;
 
-	const GetSoundAPI_t GetSoundAPI = (void*)GetProcAddress(sndlib, "GetSoundAPI");
+	const GetSoundAPI_t GetSoundAPI = (GetSoundAPI_t)GetProcAddress(sndlib, "GetSoundAPI");
 	if (GetSoundAPI == NULL)
 	{
 		FreeLibrary(sndlib);
@@ -228,7 +228,7 @@ static void SndDll_Init(void)
 	si.DBG_AddArrow = DBG_AddArrow;
 #endif
 
-	const GetSoundAPI_t GetSoundAPI = (void*)GetProcAddress(sound_library, "GetSoundAPI");
+	const GetSoundAPI_t GetSoundAPI = (GetSoundAPI_t)GetProcAddress(sound_library, "GetSoundAPI");
 	if (GetSoundAPI == NULL)
 	{
 		Com_ColourPrintf(P_ERROR, "GetProcAddress failed on %s\n", snd_dll->string);

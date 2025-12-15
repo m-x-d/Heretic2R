@@ -102,179 +102,179 @@ uint P_Load(char *name)
 	Sys_LoadGameDll(name, &player_library, &playerdll_chksum);
 #endif
 
-	GetPlayerAPI_t P_GetPlayerAPI = (void*)GetProcAddress(player_library, "GetPlayerAPI");
+	const GetPlayerAPI_t P_GetPlayerAPI = (GetPlayerAPI_t)GetProcAddress(player_library, "GetPlayerAPI");
 	if (P_GetPlayerAPI == NULL)
 		Sys_Error("GetProcAddress failed on GetPlayerAPI for library %s", name);
 
-	P_Init = (void*)GetProcAddress(player_library, "P_Init");
+	P_Init = (void (*)(void))GetProcAddress(player_library, "P_Init");
 	if (P_Init == NULL)
 		Sys_Error("GetProcAddress failed on P_Init for library %s", name);
 
-	P_Shutdown = (void*)GetProcAddress(player_library, "P_Shutdown");
+	P_Shutdown = (void (*)(void))GetProcAddress(player_library, "P_Shutdown");
 	if (P_Shutdown == NULL)
 		Sys_Error("GetProcAddress failed on P_Shutdown for library %s", name);
 
-	P_PlayerReleaseRope = (void*)GetProcAddress(player_library, "PlayerReleaseRope"); //TODO: unused?
+	P_PlayerReleaseRope = (void (*)(playerinfo_t*))GetProcAddress(player_library, "PlayerReleaseRope"); //TODO: unused?
 	if (P_PlayerReleaseRope == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerReleaseRope for library %s", name);
 
-	P_KnockDownPlayer = (void*)GetProcAddress(player_library, "KnockDownPlayer");
+	P_KnockDownPlayer = (void (*)(playerinfo_t*))GetProcAddress(player_library, "KnockDownPlayer");
 	if (P_KnockDownPlayer == NULL)
 		Sys_Error("GetProcAddress failed on P_KnockDownPlayer for library %s", name);
 
-	P_PlayFly = (void*)GetProcAddress(player_library, "PlayFly"); //TODO: unused?
+	P_PlayFly = (void (*)(playerinfo_t*, float))GetProcAddress(player_library, "PlayFly"); //TODO: unused?
 	if (P_PlayFly == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayFly for library %s", name);
 
-	P_PlaySlap = (void*)GetProcAddress(player_library, "PlaySlap"); //TODO: unused?
+	P_PlaySlap = (void (*)(playerinfo_t*, float))GetProcAddress(player_library, "PlaySlap"); //TODO: unused?
 	if (P_PlaySlap == NULL)
 		Sys_Error("GetProcAddress failed on P_PlaySlap for library %s", name);
 
-	P_PlayScratch = (void*)GetProcAddress(player_library, "PlayScratch"); //TODO: unused?
+	P_PlayScratch = (void (*)(playerinfo_t*, float))GetProcAddress(player_library, "PlayScratch"); //TODO: unused?
 	if (P_PlayScratch == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayScratch for library %s", name);
 
-	P_PlaySigh = (void*)GetProcAddress(player_library, "PlaySigh"); //TODO: unused?
+	P_PlaySigh = (void (*)(playerinfo_t*, float))GetProcAddress(player_library, "PlaySigh"); //TODO: unused?
 	if (P_PlaySigh == NULL)
 		Sys_Error("GetProcAddress failed on P_PlaySigh for library %s", name);
 
-	P_SpawnDustPuff = (void*)GetProcAddress(player_library, "SpawnDustPuff"); //TODO: unused?
+	P_SpawnDustPuff = (void (*)(playerinfo_t*, float))GetProcAddress(player_library, "SpawnDustPuff"); //TODO: unused?
 	if (P_SpawnDustPuff == NULL)
 		Sys_Error("GetProcAddress failed on P_SpawnDustPuff for library %s", name);
 
-	P_PlayerInterruptAction = (void*)GetProcAddress(player_library, "PlayerInterruptAction");
+	P_PlayerInterruptAction = (void (*)(playerinfo_t*))GetProcAddress(player_library, "PlayerInterruptAction");
 	if (P_PlayerInterruptAction == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerInterruptAction for library %s", name);
 
-	P_BranchCheckDismemberAction = (void*)GetProcAddress(player_library, "BranchCheckDismemberAction");
+	P_BranchCheckDismemberAction = (qboolean (*)(playerinfo_t*, int))GetProcAddress(player_library, "BranchCheckDismemberAction");
 	if (P_BranchCheckDismemberAction == NULL)
 		Sys_Error("GetProcAddress failed on P_BranchCheckDismemberAction for library %s", name);
 
-	P_TurnOffPlayerEffects = (void*)GetProcAddress(player_library, "TurnOffPlayerEffects");
+	P_TurnOffPlayerEffects = (void (*)(playerinfo_t*))GetProcAddress(player_library, "TurnOffPlayerEffects");
 	if (P_TurnOffPlayerEffects == NULL)
 		Sys_Error("GetProcAddress failed on P_TurnOffPlayerEffects for library %s", name);
 
-	P_AnimUpdateFrame = (void*)GetProcAddress(player_library, "AnimUpdateFrame");
+	P_AnimUpdateFrame = (void (*)(playerinfo_t*))GetProcAddress(player_library, "AnimUpdateFrame");
 	if (P_AnimUpdateFrame == NULL)
 		Sys_Error("GetProcAddress failed on P_AnimUpdateFrame for library %s", name);
 
-	P_PlayerFallingDamage = (void*)GetProcAddress(player_library, "PlayerFallingDamage");
+	P_PlayerFallingDamage = (void (*)(playerinfo_t*))GetProcAddress(player_library, "PlayerFallingDamage");
 	if (P_PlayerFallingDamage == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerFallingDamage for library %s", name);
 
-	P_PlayerBasicAnimReset = (void*)GetProcAddress(player_library, "PlayerBasicAnimReset");
+	P_PlayerBasicAnimReset = (void (*)(playerinfo_t*))GetProcAddress(player_library, "PlayerBasicAnimReset");
 	if (P_PlayerBasicAnimReset == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerBasicAnimReset for library %s", name);
 
-	P_PlayerAnimReset = (void*)GetProcAddress(player_library, "PlayerAnimReset");
+	P_PlayerAnimReset = (void (*)(playerinfo_t*))GetProcAddress(player_library, "PlayerAnimReset");
 	if (P_PlayerAnimReset == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerAnimReset for library %s", name);
 
-	P_PlayerAnimSetLowerSeq = (void*)GetProcAddress(player_library, "PlayerAnimSetLowerSeq");
+	P_PlayerAnimSetLowerSeq = (void (*)(playerinfo_t*, int))GetProcAddress(player_library, "PlayerAnimSetLowerSeq");
 	if (P_PlayerAnimSetLowerSeq == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerAnimSetLowerSeq for library %s", name);
 
-	P_PlayerAnimSetUpperSeq = (void*)GetProcAddress(player_library, "PlayerAnimSetUpperSeq");
+	P_PlayerAnimSetUpperSeq = (void (*)(playerinfo_t*, int))GetProcAddress(player_library, "PlayerAnimSetUpperSeq");
 	if (P_PlayerAnimSetUpperSeq == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerAnimSetUpperSeq for library %s", name);
 
-	P_PlayerAnimUpperIdle = (void*)GetProcAddress(player_library, "PlayerAnimUpperIdle"); //TODO: unused?
+	P_PlayerAnimUpperIdle = (void (*)(playerinfo_t*))GetProcAddress(player_library, "PlayerAnimUpperIdle"); //TODO: unused?
 	if (P_PlayerAnimUpperIdle == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerAnimUpperIdle for library %s", name);
 
-	P_PlayerAnimLowerIdle = (void*)GetProcAddress(player_library, "PlayerAnimLowerIdle"); //TODO: unused?
+	P_PlayerAnimLowerIdle = (void (*)(playerinfo_t*))GetProcAddress(player_library, "PlayerAnimLowerIdle"); //TODO: unused?
 	if (P_PlayerAnimLowerIdle == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerAnimLowerIdle for library %s", name);
 
-	P_PlayerAnimUpperUpdate = (void*)GetProcAddress(player_library, "PlayerAnimUpperUpdate"); //TODO: unused?
+	P_PlayerAnimUpperUpdate = (void (*)(playerinfo_t*))GetProcAddress(player_library, "PlayerAnimUpperUpdate"); //TODO: unused?
 	if (P_PlayerAnimUpperUpdate == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerAnimUpperUpdate for library %s", name);
 
-	P_PlayerAnimLowerUpdate = (void*)GetProcAddress(player_library, "PlayerAnimLowerUpdate"); //TODO: unused?
+	P_PlayerAnimLowerUpdate = (void (*)(playerinfo_t*))GetProcAddress(player_library, "PlayerAnimLowerUpdate"); //TODO: unused?
 	if (P_PlayerAnimLowerUpdate == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerReleaseRope for library %s", name);
 
-	P_PlayerAnimSetVault = (void*)GetProcAddress(player_library, "PlayerAnimSetVault"); //TODO: unused?
+	P_PlayerAnimSetVault = (void (*)(playerinfo_t*, int))GetProcAddress(player_library, "PlayerAnimSetVault"); //TODO: unused?
 	if (P_PlayerAnimSetVault == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerAnimSetVault for library %s", name);
 
-	P_PlayerPlayPain = (void*)GetProcAddress(player_library, "PlayerPlayPain");
+	P_PlayerPlayPain = (void (*)(playerinfo_t*, int))GetProcAddress(player_library, "PlayerPlayPain");
 	if (P_PlayerPlayPain == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerPlayPain for library %s", name);
 
-	P_PlayerIntLand = (void*)GetProcAddress(player_library, "PlayerIntLand"); //TODO: unused?
+	P_PlayerIntLand = (void (*)(playerinfo_t*, float))GetProcAddress(player_library, "PlayerIntLand"); //TODO: unused?
 	if (P_PlayerIntLand == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerIntLand for library %s", name);
 
-	P_PlayerInit = (void*)GetProcAddress(player_library, "PlayerInit");
+	P_PlayerInit = (void (*)(playerinfo_t*, int))GetProcAddress(player_library, "PlayerInit");
 	if (P_PlayerInit == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerInit for library %s", name);
 
-	P_PlayerClearEffects = (void*)GetProcAddress(player_library, "PlayerClearEffects"); //TODO: unused?
+	P_PlayerClearEffects = (void (*)(const playerinfo_t*))GetProcAddress(player_library, "PlayerClearEffects"); //TODO: unused?
 	if (P_PlayerClearEffects == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerClearEffects for library %s", name);
 
-	P_PlayerUpdate = (void*)GetProcAddress(player_library, "PlayerUpdate");
+	P_PlayerUpdate = (void (*)(playerinfo_t*))GetProcAddress(player_library, "PlayerUpdate");
 	if (P_PlayerUpdate == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerUpdate for library %s", name);
 
-	P_PlayerUpdateCmdFlags = (void*)GetProcAddress(player_library, "PlayerUpdateCmdFlags");
+	P_PlayerUpdateCmdFlags = (void (*)(playerinfo_t*))GetProcAddress(player_library, "PlayerUpdateCmdFlags");
 	if (P_PlayerUpdateCmdFlags == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerUpdateCmdFlags for library %s", name);
 
-	P_PlayerUpdateModelAttributes = (void*)GetProcAddress(player_library, "PlayerUpdateModelAttributes");
+	P_PlayerUpdateModelAttributes = (void (*)(playerinfo_t*))GetProcAddress(player_library, "PlayerUpdateModelAttributes");
 	if (P_PlayerUpdateModelAttributes == NULL)
 		Sys_Error("GetProcAddress failed on P_PlayerUpdateModelAttributes for library %s", name);
 
-	P_Weapon_Ready = (void*)GetProcAddress(player_library, "Weapon_Ready"); //TODO: unused?
+	P_Weapon_Ready = (void (*)(playerinfo_t*, gitem_t*))GetProcAddress(player_library, "Weapon_Ready"); //TODO: unused?
 	if (P_Weapon_Ready == NULL)
 		Sys_Error("GetProcAddress failed on P_Weapon_Ready for library %s", name);
 
-	P_Weapon_EquipSpell = (void*)GetProcAddress(player_library, "Weapon_EquipSpell");
+	P_Weapon_EquipSpell = (void (*)(playerinfo_t*, gitem_t*))GetProcAddress(player_library, "Weapon_EquipSpell");
 	if (P_Weapon_EquipSpell == NULL)
 		Sys_Error("GetProcAddress failed on P_Weapon_EquipSpell for library %s", name);
 
-	P_Weapon_EquipSwordStaff = (void*)GetProcAddress(player_library, "Weapon_EquipSwordStaff");
+	P_Weapon_EquipSwordStaff = (void (*)(playerinfo_t*, gitem_t*))GetProcAddress(player_library, "Weapon_EquipSwordStaff");
 	if (P_Weapon_EquipSwordStaff == NULL)
 		Sys_Error("GetProcAddress failed on P_Weapon_EquipSwordStaff for library %s", name);
 
-	P_Weapon_EquipHellStaff = (void*)GetProcAddress(player_library, "Weapon_EquipHellStaff");
+	P_Weapon_EquipHellStaff = (void (*)(playerinfo_t*, gitem_t*))GetProcAddress(player_library, "Weapon_EquipHellStaff");
 	if (P_Weapon_EquipHellStaff == NULL)
 		Sys_Error("GetProcAddress failed on P_Weapon_EquipHellStaff for library %s", name);
 
-	P_Weapon_EquipBow = (void*)GetProcAddress(player_library, "Weapon_EquipBow");
+	P_Weapon_EquipBow = (void (*)(playerinfo_t*, gitem_t*))GetProcAddress(player_library, "Weapon_EquipBow");
 	if (P_Weapon_EquipBow == NULL)
 		Sys_Error("GetProcAddress failed on P_Weapon_EquipBow for library %s", name);
 
-	P_Weapon_EquipArmor = (void*)GetProcAddress(player_library, "Weapon_EquipArmor"); //TODO: unused?
+	P_Weapon_EquipArmor = (void (*)(playerinfo_t*, gitem_t*))GetProcAddress(player_library, "Weapon_EquipArmor"); //TODO: unused?
 	if (P_Weapon_EquipArmor == NULL)
 		Sys_Error("GetProcAddress failed on P_Weapon_EquipArmor for library %s", name);
 
-	P_Weapon_CurrentShotsLeft = (void*)GetProcAddress(player_library, "Weapon_CurrentShotsLeft"); //TODO: unused?
+	P_Weapon_CurrentShotsLeft = (int (*)(playerinfo_t*))GetProcAddress(player_library, "Weapon_CurrentShotsLeft"); //TODO: unused?
 	if (P_Weapon_CurrentShotsLeft == NULL)
 		Sys_Error("GetProcAddress failed on P_Weapon_CurrentShotsLeft for library %s", name);
 
-	P_Defence_CurrentShotsLeft = (void*)GetProcAddress(player_library, "Defence_CurrentShotsLeft");
+	P_Defence_CurrentShotsLeft = (int (*)(playerinfo_t*, int))GetProcAddress(player_library, "Defence_CurrentShotsLeft");
 	if (P_Defence_CurrentShotsLeft == NULL)
 		Sys_Error("GetProcAddress failed on P_Defence_CurrentShotsLeft for library %s", name);
 
-	P_GetItemIndex = (void*)GetProcAddress(player_library, "GetItemIndex");
+	P_GetItemIndex = (int (*)(const gitem_t*))GetProcAddress(player_library, "GetItemIndex");
 	if (P_GetItemIndex == NULL)
 		Sys_Error("GetProcAddress failed on P_GetItemIndex for library %s", name);
 
-	P_GetItemByIndex = (void*)GetProcAddress(player_library, "GetItemByIndex");
+	P_GetItemByIndex = (gitem_t* (*)(int))GetProcAddress(player_library, "GetItemByIndex");
 	if (P_GetItemByIndex == NULL)
 		Sys_Error("GetProcAddress failed on P_GetItemByIndex for library %s", name);
 
-	P_FindItemByClassname = (void*)GetProcAddress(player_library, "FindItemByClassname");
+	P_FindItemByClassname = (gitem_t* (*)(const char*))GetProcAddress(player_library, "FindItemByClassname");
 	if (P_FindItemByClassname == NULL)
 		Sys_Error("GetProcAddress failed on P_Defence_CurrentShotsLeft for library %s", name);
 
-	P_FindItem = (void*)GetProcAddress(player_library, "FindItem");
+	P_FindItem = (gitem_t* (*)(const char*))GetProcAddress(player_library, "FindItem");
 	if (P_FindItem == NULL)
 		Sys_Error("GetProcAddress failed on P_FindItem for library %s", name);
 
-	P_InitItems = (void*)GetProcAddress(player_library, "InitItems");
+	P_InitItems = (void (*)(void))GetProcAddress(player_library, "InitItems");
 	if (P_InitItems == NULL)
 		Sys_Error("GetProcAddress failed on P_InitItems for library %s", name);
 

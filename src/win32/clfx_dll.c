@@ -29,7 +29,7 @@ void CLFX_LoadDll(void)
 	const cvar_t* fx_dll = Cvar_Get("cl_fx_dll", "Client Effects", 0);
 	Sys_LoadGameDll(fx_dll->string, &dll_handle, &checksum);
 
-	GetfxAPI = (void*)GetProcAddress(dll_handle, "GetfxAPI");
+	GetfxAPI = (GetfxAPI_t)GetProcAddress(dll_handle, "GetfxAPI");
 	if (GetfxAPI == NULL)
 		Com_Error(ERR_FATAL, "GetProcAddress failed on Client Effects DLL");
 

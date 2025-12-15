@@ -17,12 +17,6 @@ void RI_EndFrame(void) //mxd. GLimp_EndFrame in original logic.
 	SDL_GL_SwapWindow(window);
 }
 
-// Returns the address of an OpenGL function.
-void* R_GetProcAddress(const char* proc)
-{
-	return (void(*)(void))SDL_GL_GetProcAddress(proc);
-}
-
 // This function returns the flags used at the SDL window creation by GLimp_InitGraphics().
 // In case of error -1 is returned.
 int RI_PrepareForWindow(void)
@@ -88,7 +82,7 @@ qboolean RI_InitContext(void* win)
 	}
 
 	//mxd. Load OpenGL function pointers through GLAD. Must be called after GLimp_Init().
-	if (!gladLoadGLLoader(R_GetProcAddress))
+	if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
 	{
 		ri.Con_Printf(PRINT_ALL, "RI_InitContext(): failed to initialize OpenGL\n");
 		return false;

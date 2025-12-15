@@ -9,7 +9,6 @@
 #include "q_Typedef.h"
 
 extern void RI_EndFrame(void);
-extern void* R_GetProcAddress(const char* proc);
 
 extern qboolean RI_InitContext(void* win);
 extern void RI_ShutdownContext(void);

@@ -220,7 +220,7 @@ static qboolean VID_LoadRefresh(const char* name)
 	ri.DBG_HudPrint = DBG_HudPrint;
 #endif
 
-	const GetRefAPI_t GetRefAPI = (void*)GetProcAddress(reflib_library, "GetRefAPI");
+	const GetRefAPI_t GetRefAPI = (GetRefAPI_t)GetProcAddress(reflib_library, "GetRefAPI");
 	if (GetRefAPI == NULL)
 		Com_Error(ERR_FATAL, "GetProcAddress failed on '%s'", name);
 
@@ -262,7 +262,7 @@ static qboolean VID_StroreReflibInfo(const char* ref_path) //mxd
 	if (reflib == NULL)
 		return false;
 
-	const GetRefAPI_t GetRefAPI = (void*)GetProcAddress(reflib, "GetRefAPI");
+	const GetRefAPI_t GetRefAPI = (GetRefAPI_t)GetProcAddress(reflib, "GetRefAPI");
 	if (GetRefAPI == NULL)
 	{
 		FreeLibrary(reflib);
