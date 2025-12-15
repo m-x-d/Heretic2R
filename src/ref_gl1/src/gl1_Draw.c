@@ -88,9 +88,9 @@ void Draw_InitLocal(void)
 
 // Draws one 8*8 graphics character with 0 being transparent.
 // It can be clipped to the top of the screen to allow the console to be smoothly scrolled off.
-void Draw_Char(const int x, const int y, const int scale, int c, const paletteRGBA_t color)
+static void Draw_Char_impl(const int x, const int y, const int scale, int c, const paletteRGBA_t color)
 {
-#define CELL_SIZE	0.0625f	// 16 chars per row/column (0.0625 == 1 / 16).
+#define CELL_SIZE	0.0625f // 16 chars per row/column (0.0625 == 1 / 16).
 
 	c &= 255;
 
@@ -131,6 +131,17 @@ void Draw_Char(const int x, const int y, const int scale, int c, const paletteRG
 
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_BLEND);
+}
+
+void Draw_Char(const int x, const int y, const int scale, const int c, const paletteRGBA_t color, const qboolean draw_shadow)
+{
+	if (draw_shadow)
+	{
+		const paletteRGBA_t shade_color = { .r = 32, .g = 32, .b = 32, .a = (byte)((float)color.a * 0.75f) }; //mxd
+		Draw_Char_impl(x + scale, y + scale, scale, c, shade_color);
+	}
+
+	Draw_Char_impl(x, y, scale, c, color);
 }
 
 void Draw_GetPicSize(int* w, int* h, const char* name)
@@ -342,5 +353,5 @@ void Draw_Name(const vec3_t origin, const char* name, const paletteRGBA_t color)
 	// Draw label.
 	int x = sx;
 	for (int i = 0; i < len; i++, x += ui_char_size)
-		Draw_Char(x, sy, ui_scale, name[i], color);
+		Draw_Char(x, sy, ui_scale, name[i], color, true);
 }

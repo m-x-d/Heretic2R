@@ -396,7 +396,7 @@ static void DrawDebugEntityLabel(DebugLabel_t* l)
 	// Draw label.
 	int x = sx;
 	for (int i = 0; i < len; i++, x += ui_char_size)
-		Draw_Char(x, sy, ui_scale, l->label[i], l->color);
+		Draw_Char(x, sy, ui_scale, l->label[i], l->color, true);
 }
 
 // Draw all debug primitives.

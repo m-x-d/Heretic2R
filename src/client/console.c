@@ -12,27 +12,15 @@ static cvar_t* con_notifytime;
 static cvar_t* con_alpha; // H2
 static cvar_t* nextserver; // H2
 
-static void DrawString_impl(int x, const int y, const char* s, const paletteRGBA_t color, int maxlen) //mxd
+void DrawString(int x, const int y, const char* s, const paletteRGBA_t color, int maxlen) //mxd. +char scaling and shadow logic.
 {
 	while (*s != 0 && maxlen != 0) //NOTE: 'maxlen' can be -1!
 	{
-		re.DrawChar(x, y, ui_scale, *s, color);
+		re.DrawChar(x, y, ui_scale, *s, color, true);
 		s++;
 		x += ui_char_size;
 		maxlen--;
 	}
-}
-
-void DrawString(const int x, const int y, const char* s, const paletteRGBA_t color, const int maxlen) //mxd. +char scaling and shadow logic.
-{
-	static paletteRGBA_t shade_color = { .r = 32, .g = 32, .b = 32, .a = 255 }; //mxd
-
-	// Draw text shadow.
-	shade_color.a = color.a;
-	DrawString_impl(x + ui_scale, y + ui_scale, s, shade_color, maxlen);
-
-	// Draw text.
-	DrawString_impl(x, y, s, color, maxlen);
 }
 
 // Q2 counterpart

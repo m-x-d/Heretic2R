@@ -210,7 +210,7 @@ typedef struct refexport_s
 	void (*DrawGetPicSize)(int* w, int* h, const char* name);
 	void (*DrawPic)(int x, int y, int scale, const char* name, float alpha); //mxd. +scale arg.
 	void (*DrawStretchPic)(int x, int y, int w, int h, const char* name, float alpha, DrawStretchPicScaleMode_t mode); //mxd. qboolean scale -> DrawStretchPicScaleMode_t mode.
-	void (*DrawChar)(int x, int y, int scale, int c, paletteRGBA_t color); //mxd. +scale arg.
+	void (*DrawChar)(int x, int y, int scale, int c, paletteRGBA_t color, qboolean draw_shadow); //mxd. +scale and draw_shadow args.
 	void (*DrawTileClear)(int x, int y, int w, int h, const char* name);
 	void (*DrawFill)(int x, int y, int w, int h, paletteRGBA_t color); //mxd. r, g, b -> color.
 	void (*DrawFadeScreen)(paletteRGBA_t color);

@@ -909,18 +909,18 @@ static void Slider_Draw(menuslider_t* slider, const qboolean selected)
 	x -= (SLIDER_RANGE * ui_char_size) / 2; //mxd. Offset by slider size.
 
 	y = (y + CONCHAR_LINE_HEIGHT) * viddef.height / DEF_HEIGHT;
-	re.DrawChar(x - ui_char_size, y, ui_scale, 15, color);
+	re.DrawChar(x - ui_char_size, y, ui_scale, 15, color, false);
 
 	// Draw BG mid.
 	int ox = x;
 	for (int i = 0; i < SLIDER_RANGE; i++, ox += ui_char_size)
-		re.DrawChar(ox, y, ui_scale, 1, color);
+		re.DrawChar(ox, y, ui_scale, 1, color, false);
 
 	// Draw BG right.
-	re.DrawChar(x + ui_char_size * SLIDER_RANGE, y, ui_scale, 2, color);
+	re.DrawChar(x + ui_char_size * SLIDER_RANGE, y, ui_scale, 2, color, false);
 
 	// Draw slider value.
-	re.DrawChar(x + (int)(slider->range * (float)ui_char_size * (SLIDER_RANGE - 1)), y, ui_scale, 3, color);
+	re.DrawChar(x + (int)(slider->range * (float)ui_char_size * (SLIDER_RANGE - 1)), y, ui_scale, 3, color, false);
 }
 
 static void Field_Draw(const menufield_t* field, const qboolean selected)
@@ -944,17 +944,17 @@ static void Field_Draw(const menufield_t* field, const qboolean selected)
 
 	// Draw field BG corners.
 	const int half_size = ui_char_size / 2; //mxd
-	re.DrawChar(x - ui_char_size, y - half_size, ui_scale, 18, color);
-	re.DrawChar(x - ui_char_size, y + half_size, ui_scale, 24, color);
-	re.DrawChar(x + field->visible_length * ui_char_size, y - half_size, ui_scale, 20, color);
-	re.DrawChar(x + field->visible_length * ui_char_size, y + half_size, ui_scale, 26, color);
+	re.DrawChar(x - ui_char_size, y - half_size, ui_scale, 18, color, false);
+	re.DrawChar(x - ui_char_size, y + half_size, ui_scale, 24, color, false);
+	re.DrawChar(x + field->visible_length * ui_char_size, y - half_size, ui_scale, 20, color, false);
+	re.DrawChar(x + field->visible_length * ui_char_size, y + half_size, ui_scale, 26, color, false);
 
 	// Draw field BG middle part.
 	int ox = x;
 	for (int i = 0; i < field->visible_length; i++, ox += ui_char_size)
 	{
-		re.DrawChar(ox, y - half_size, ui_scale, 19, color);
-		re.DrawChar(ox, y + half_size, ui_scale, 25, color);
+		re.DrawChar(ox, y - half_size, ui_scale, 19, color, false);
+		re.DrawChar(ox, y + half_size, ui_scale, 25, color, false);
 	}
 
 	// Draw field value.
@@ -967,7 +967,7 @@ static void Field_Draw(const menufield_t* field, const qboolean selected)
 	{
 		const int offset = ((field->visible_offset != 0) ? field->visible_length : field->cursor);
 		const int ch = ((curtime / 250 & 1) ? 11 : ' '); //mxd. Sys_Milliseconds() -> curtime.
-		re.DrawChar(x + offset * ui_char_size, y, ui_scale, ch, color);
+		re.DrawChar(x + offset * ui_char_size, y, ui_scale, ch, color, false);
 	}
 }
 
@@ -1244,7 +1244,7 @@ void Menu_DrawObjectives(const char* message, const int max_line_length) // H2
 				{
 					paletteRGBA_t color = TextPalette[color_index];
 					color.a = (byte)(cls.m_menualpha * 255.0f);
-					re.DrawChar(x, y, ui_scale, *s, color);
+					re.DrawChar(x, y, ui_scale, *s, color, false);
 					x += ui_char_size;
 				} break;
 			}
