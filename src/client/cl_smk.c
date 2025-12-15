@@ -176,6 +176,7 @@ void SCR_PlayCinematic(const char* name)
 	}
 
 	cl.cinematictime = (int)((float)cls.realtime - 2000.0f / spi.fps);
+	cl.cinematictime = max(1, cl.cinematictime); //mxd. Ensure positive value (can get negative value here, because unlike original logic, cls.realtime starts from 0).
 
 	SCR_DoCinematicFrame(); // Advance cinematic_frame to match with cl.cinematictime in SCR_RunCinematic()...
 
