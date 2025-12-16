@@ -73,7 +73,7 @@ extern "C"
 }
 #endif
 
-extern void WriteGame(char* filename, qboolean autosave);
-extern void ReadGame(char* filename);
-extern void WriteLevel(char* filename);
-extern void ReadLevel(char* filename);
+extern void WriteGame(const char* filename, qboolean autosave);
+extern void ReadGame(const char* filename);
+extern void WriteLevel(const char* filename);
+extern void ReadLevel(const char* filename);

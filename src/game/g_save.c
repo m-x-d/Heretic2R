@@ -589,10 +589,10 @@ static void ReadClient(FILE* f, gclient_t* client)
 
 #define H2R_SAVE_VERSION	"H2RSG1" //mxd
 
-// This will be called whenever the game goes to a new level and when the user explicitly saves the game.
+// This will be called whenever the game goes to a new level (autosave:true) and when the user explicitly saves the game.
 // Game information include cross-level data, like multi-level triggers, and all client states.
 // A single player death will automatically restore from the last save position.
-void WriteGame(char* filename, const qboolean autosave)
+void WriteGame(const char* filename, const qboolean autosave)
 {
 	SaveClientData();
 
@@ -626,7 +626,7 @@ void WriteGame(char* filename, const qboolean autosave)
 	fclose(f);
 }
 
-void ReadGame(char* filename)
+void ReadGame(const char* filename)
 {
 	FILE* f;
 	if (fopen_s(&f, filename, "rb") != 0) //mxd. fopen -> fopen_s
@@ -822,7 +822,7 @@ static void ReadLevelLocals(FILE* f)
 
 #pragma region ========================== LEVEL IO ==========================
 
-void WriteLevel(char* filename)
+void WriteLevel(const char* filename)
 {
 	FILE* f;
 	if (fopen_s(&f, filename, "wb") != 0) //mxd. fopen -> fopen_s
@@ -885,7 +885,7 @@ void WriteLevel(char* filename)
 // SpawnEntities will already have been called on the level the same way it was when the level was saved.
 // That is necessary to get the baselines set up identically.
 // The server will have cleared all of the world links before calling ReadLevel.
-void ReadLevel(char* filename)
+void ReadLevel(const char* filename)
 {
 	FILE* f;
 	if (fopen_s(&f, filename, "rb") != 0) //mxd. fopen -> fopen_s
