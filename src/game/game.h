@@ -264,26 +264,26 @@ typedef struct
 	void (*Shutdown)(void);
 
 	// Each new level entered will cause a call to SpawnEntities().
-	void (*SpawnEntities)(char *mapname, char *entstring, char *spawnpoint, qboolean loadgame);
+	void (*SpawnEntities)(const char* mapname, char* entstring, const char* spawnpoint, qboolean loadgame);
 	void (*ConstructEntities)(void);
 	void (*CheckCoopTimeout)(qboolean BeenHereBefore);
 
-	// Read/Write Game is for storing persistant cross level information about the world state and the clients.
+	// Read/Write Game is for storing persistent cross level information about the world state and the clients.
 	// WriteGame is called every time a level is exited. ReadGame is called on a loadgame.
-	void (*WriteGame)(char *filename, qboolean autosave);
-	void (*ReadGame)(char *filename);
+	void (*WriteGame)(char* filename, qboolean autosave);
+	void (*ReadGame)(char* filename);
 
 	// ReadLevel is called after the default map information has been loaded with SpawnEntities,
 	// so any stored client spawn spots will be used when the clients reconnect.
-	void (*WriteLevel)(char *filename);
-	void (*ReadLevel)(char *filename);
+	void (*WriteLevel)(char* filename);
+	void (*ReadLevel)(char* filename);
 
-	qboolean (*ClientConnect)(edict_t *ent, char *userinfo);
-	void (*ClientBegin)(edict_t *ent);
-	void (*ClientUserinfoChanged)(edict_t *ent, char *userinfo);
-	void (*ClientDisconnect)(edict_t *ent);
-	void (*ClientCommand)(edict_t *ent);
-	void (*ClientThink)(edict_t *ent, usercmd_t *cmd);
+	qboolean (*ClientConnect)(edict_t* ent, char* userinfo);
+	void (*ClientBegin)(edict_t* ent);
+	void (*ClientUserinfoChanged)(edict_t* ent, char* userinfo);
+	void (*ClientDisconnect)(edict_t* ent);
+	void (*ClientCommand)(edict_t* ent);
+	void (*ClientThink)(edict_t* ent, usercmd_t* cmd);
 
 	void (*RunFrame)(void);
 
