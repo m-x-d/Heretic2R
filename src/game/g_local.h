@@ -156,7 +156,7 @@ typedef struct
 	int num_items;
 
 	// Flag that we've autosaved.
-	qboolean autosaved;
+	qboolean autosaved; //TODO: set, but never used.
 	qboolean entitiesSpawned;
 } game_locals_t;
 
