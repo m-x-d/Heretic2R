@@ -445,8 +445,9 @@ typedef struct
 	struct sfx_s* (*FindName)(const char* name, qboolean create);
 
 	// Music playback.
-	void (*MusicPlay)(int track, qboolean looping);
+	void (*MusicPlay)(int track, uint track_pos, qboolean looping);
 	void (*MusicStop)(void);
+	void (*MusicGetCurrentTrackInfo)(int* track, uint* track_pos, qboolean* looping);
 
 	// Cinematics playback.
 	void (*RawSamples)(int samples, uint rate, int width, int num_channels, const byte* data, float volume);

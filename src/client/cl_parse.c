@@ -608,7 +608,15 @@ static void CL_ParseConfigString(void)
 	if (i == CS_CDTRACK)
 	{
 		if (cl.refresh_prepped)
-			se.MusicPlay(Q_atoi(cl.configstrings[CS_CDTRACK]), true); //mxd. CDAudio_Play() in original logic.
+		{
+			//mxd. Parse track info.
+			int track;
+			uint track_pos;
+			qboolean looping;
+			sscanf_s(cl.configstrings[CS_CDTRACK], "%i %i %i", &track, &track_pos, &looping);
+
+			se.MusicPlay(track, track_pos, looping); //mxd. CDAudio_Play() in original logic.
+		}
 
 		return;
 	}
@@ -851,7 +859,12 @@ static void ChangeCDTrack(void) // H2
 	const int track = MSG_ReadByte(&net_message);
 	const int looping = MSG_ReadByte(&net_message);
 
-	se.MusicPlay(track, looping); //mxd. CDAudio_Play() in original logic.
+	se.MusicPlay(track, 0, looping); //mxd. CDAudio_Play() in original logic.
+}
+
+void CL_MusicGetCurrentTrackInfo(int* track, uint* track_pos, qboolean* looping) //mxd
+{
+	se.MusicGetCurrentTrackInfo(track, track_pos, looping);
 }
 
 static void ParseFramenum(void) // H2

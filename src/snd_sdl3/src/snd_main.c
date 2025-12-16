@@ -735,6 +735,7 @@ SNDLIB_DECLSPEC snd_export_t GetSoundAPI(const snd_import_t snd_import)
 	// Music playback.
 	snd_export.MusicPlay = OGG_PlayTrack;
 	snd_export.MusicStop = OGG_Stop;
+	snd_export.MusicGetCurrentTrackInfo = OGG_GetCurrentTrackInfo; //mxd
 
 	// Cinematics playback.
 	snd_export.RawSamples = S_RawSamples;

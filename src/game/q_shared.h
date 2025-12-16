@@ -680,7 +680,7 @@ typedef struct
 // Config strings are a general means of communication from the server to all connected clients.
 // Each config string can be at most MAX_QPATH characters.
 #define CS_NAME				0
-#define CS_CDTRACK			1
+#define CS_CDTRACK			1	//mxd. Changed to %i %i %i (track_num, track_pos, looping).
 #define CS_SKY				2
 #define CS_SKYAXIS			3	// %f %f %f format.
 #define CS_SKYROTATE		4

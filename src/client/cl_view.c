@@ -119,7 +119,12 @@ void CL_PrepRefresh(void)
 	cls.key_dest = key_game; // H2
 
 	// Start the cd track.
-	se.MusicPlay(Q_atoi(cl.configstrings[CS_CDTRACK]), true); //mxd. CDAudio_Play() in original logic.
+	int track;
+	uint track_pos;
+	qboolean looping;
+	sscanf_s(cl.configstrings[CS_CDTRACK], "%i %i %i", &track, &track_pos, &looping); //mxd. Parse track info.
+
+	se.MusicPlay(track, track_pos, looping); //mxd. CDAudio_Play() in original logic.
 }
 
 static void CalcFov(const float width, const float height) //mxd. Added Hor+ widescreen fov calculation.

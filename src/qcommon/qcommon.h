@@ -492,6 +492,10 @@ extern char* Cvar_Serverinfo(void);
 // This is set each time a CVAR_USERINFO variable is changed so that the client knows to send it to the server.
 extern qboolean userinfo_modified;
 
+#pragma endregion
+
+#pragma region ========================== SCREEN EFFECTS ==========================
+
 // Screen flash set.
 extern void Activate_Screen_Flash(int color);
 
@@ -688,6 +692,8 @@ extern void Z_FreeTags(int tag);
 
 extern void Qcommon_Init(int argc, char** argv);
 extern void Qcommon_Frame(int usec);
+
+extern void CL_MusicGetCurrentTrackInfo(int* track, uint* track_pos, qboolean* looping); //mxd
 
 #pragma endregion
 

@@ -124,6 +124,14 @@ static void SV_WriteLevelFile(void)
 		return;
 	}
 
+	//mxd. Store music track info...
+	int track;
+	uint track_pos;
+	qboolean looping;
+	CL_MusicGetCurrentTrackInfo(&track, &track_pos, &looping);
+
+	sprintf_s(sv.configstrings[CS_CDTRACK], sizeof(sv.configstrings[0]), "%i %i %i", track, track_pos, looping);
+
 	fwrite(sv.configstrings, sizeof(sv.configstrings), 1, f);
 	CM_WritePortalState(f);
 	fclose(f);

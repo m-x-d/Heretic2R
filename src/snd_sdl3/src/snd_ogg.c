@@ -50,14 +50,14 @@ void OGG_Stream(void)
 			OGG_Stop();
 
 			if (ogg_loop)
-				OGG_PlayTrack(ogg_curtrack, true);
+				OGG_PlayTrack(ogg_curtrack, 0, true);
 
 			break; //mxd
 		}
 	}
 }
 
-void OGG_PlayTrack(const int track, const qboolean looping)
+void OGG_PlayTrack(const int track, const uint track_pos, const qboolean looping)
 {
 	if (!ogg_started)
 		return;
@@ -91,6 +91,9 @@ void OGG_PlayTrack(const int track, const qboolean looping)
 		return;
 	}
 
+	if (track_pos > 0)
+		stb_vorbis_seek_frame(ogg_file, track_pos);
+
 	// Play file.
 	ogg_curtrack = track;
 	ogg_loop = looping;
@@ -104,6 +107,22 @@ void OGG_Stop(void)
 	{
 		stb_vorbis_close(ogg_file);
 		ogg_status = OGG_STOP;
+	}
+}
+
+void OGG_GetCurrentTrackInfo(int* track, uint* track_pos, qboolean* looping) //mxd
+{
+	if (ogg_started && ogg_status == OGG_PLAY)
+	{
+		*track = ogg_curtrack;
+		*track_pos = ogg_file->current_loc;
+		*looping = ogg_loop;
+	}
+	else
+	{
+		*track = 0;
+		*track_pos = 0;
+		*looping = false;
 	}
 }
 
