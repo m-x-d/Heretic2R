@@ -596,21 +596,17 @@ void SP_trigger_Activate(edict_t* self)
 
 #define SF_NO_LOOP	1 //mxd
 
-// Make every active client out there change CD track.
-static void ChooseCDTrackPlayTrack(const int track, const int loop) //mxd. Named 'everyone_play_track' in original logic.
+void ChooseCDTrackUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'choose_CDTrack_use' in original logic.
 {
+	// Make every active client out there change CD track.
 	for (int i = 1; i <= game.maxclients; i++)
 	{
 		const edict_t* cl = &g_edicts[i];
 
 		if (cl->inuse && cl->client != NULL)
-			gi.changeCDtrack(cl, track, loop);
+			gi.changeCDtrack(cl, self->choose_cdtrack_track, self->choose_cdtrack_loop);
 	}
-}
 
-void ChooseCDTrackUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'choose_CDTrack_use' in original logic.
-{
-	ChooseCDTrackPlayTrack(self->style, self->spawnflags);
 	G_SetToFree(self); // Kill this trigger. //TODO: don't kill this trigger? Advertised as repeatable in entity description.
 }
 
@@ -629,18 +625,19 @@ void ChooseCDTrackTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface
 // style - # of CD track to play.
 void SP_choose_CDTrack(edict_t* self)
 {
-	self->msgHandler = DefaultMsgHandler;
-	self->spawnflags = ((self->spawnflags & SF_NO_LOOP) ? false : true);
+	self->choose_cdtrack_loop = ((self->spawnflags & SF_NO_LOOP) ? false : true);
 
 	if (self->wait == 0.0f)
 		self->wait = 0.2f;
 
 	// Triggers still use the touch function even with the new physics.
-	self->touch = ChooseCDTrackTouch;
-	self->use = ChooseCDTrackUse;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
 	self->solid = SOLID_TRIGGER;
+
+	self->msgHandler = DefaultMsgHandler;
+	self->touch = ChooseCDTrackTouch;
+	self->use = ChooseCDTrackUse;
 
 	gi.setmodel(self, self->model);
 	gi.linkentity(self);

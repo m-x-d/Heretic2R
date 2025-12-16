@@ -77,7 +77,12 @@ struct edict_s
 	int flags; //TODO: change to uint?
 	float freetime; // Server time when the object was freed.
 	char* classname;
-	int spawnflags; //TODO: change to uint?
+
+	union
+	{
+		int spawnflags; //TODO: change to uint?
+		qboolean choose_cdtrack_loop; //mxd
+	};
 
 	// Used by the game physics.
 	physicsType_t movetype; //mxd. int in original logic.
@@ -341,7 +346,13 @@ struct edict_s
 	// Move these to clientinfo?
 
 	int light_level; // Set on player, checked by monsters.
-	int style; // Also used as areaportal number used by items.
+
+	union
+	{
+		int style; // Also used as areaportal number used by items.
+		int choose_cdtrack_track; //mxd
+	};
+	
 	gitem_t* item; // For bonus items. Used by player, triggers, and monsters.
 
 	// What it's made of, i.e. MAT_XXX. Used to determine gibs to throw.
