@@ -1269,7 +1269,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 
 		end[2] -= 4.0f;
 
-		if (CL_PMpointcontents(end) & MASK_WATER)
+		if (!noclip_mode && (CL_PMpointcontents(end) & MASK_WATER))
 		{
 			vec3_t tmp_end;
 			VectorCopy(start, tmp_end);
