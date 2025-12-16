@@ -26,6 +26,9 @@ static ogg_status_t ogg_status;
 static stb_vorbis* ogg_file;
 static qboolean ogg_started;
 
+#define OGG_FADEIN_DURATION	1500 //mxd. In ms.
+static int ogg_fadein_time; //mxd.
+
 void OGG_Stream(void)
 {
 #define BUFFER_SIZE	4096
@@ -35,6 +38,11 @@ void OGG_Stream(void)
 	if (!ogg_started || ogg_status != OGG_PLAY)
 		return;
 
+	//mxd. Setup fade-in effect.
+	float fadein_volume = 1.0f;
+	if (si.cl->time < ogg_fadein_time)
+		fadein_volume -= (float)(ogg_fadein_time - si.cl->time) / (float)OGG_FADEIN_DURATION; // [0.0 .. 1.0]
+
 	// Read that number samples into the buffer, that were played since the last call to this function.
 	// This keeps the buffer at all times at an "optimal" fill level.
 	while (paintedtime + MAX_RAW_SAMPLES - 2048 > s_rawend)
@@ -43,7 +51,7 @@ void OGG_Stream(void)
 
 		if (read_samples > 0)
 		{
-			S_RawSamples(read_samples, ogg_file->sample_rate, sizeof(buffer[0]), ogg_file->channels, (const byte*)buffer, ogg_volume->value);
+			S_RawSamples(read_samples, ogg_file->sample_rate, sizeof(buffer[0]), ogg_file->channels, (const byte*)buffer, ogg_volume->value * fadein_volume);
 		}
 		else // Track ended. Time to restart?
 		{
@@ -92,7 +100,10 @@ void OGG_PlayTrack(const int track, const uint track_pos, const qboolean looping
 	}
 
 	if (track_pos > 0)
+	{
 		stb_vorbis_seek_frame(ogg_file, track_pos);
+		ogg_fadein_time = si.cl->time + OGG_FADEIN_DURATION;
+	}
 
 	// Play file.
 	ogg_curtrack = track;
@@ -107,6 +118,7 @@ void OGG_Stop(void)
 	{
 		stb_vorbis_close(ogg_file);
 		ogg_status = OGG_STOP;
+		ogg_fadein_time = 0;
 	}
 }
 
