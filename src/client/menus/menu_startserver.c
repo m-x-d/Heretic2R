@@ -66,7 +66,7 @@ static int LoadMapnames(const qboolean is_coop)
 		char map_title[MAX_TOKEN_CHARS];
 		strcpy_s(map_title, sizeof(map_title), COM_Parse(&s)); //mxd. strcpy -> strcpy_s
 
-		if (strlen(map_name) == 0 || strlen(map_title) == 0)
+		if (map_name[0] == '\0' || map_title[0] == '\0')
 			continue;
 
 		FILE* file;
