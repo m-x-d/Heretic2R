@@ -859,6 +859,9 @@ static void SCR_ExecuteLayoutString(char* s)
 		else if (strcmp(token, "gbar") == 0) // H2
 		{
 			const int index = Q_atoi(COM_Parse(&s));
+			if (index < 0 || index >= MAX_STATS - 1) //mxd. Add sanity check.
+				Com_Error(ERR_DROP, "Bad gbar index");
+
 			width = cl.frame.playerstate.stats[index];
 			const int height = cl.frame.playerstate.stats[index + 1];
 
@@ -867,7 +870,7 @@ static void SCR_ExecuteLayoutString(char* s)
 		else if (strcmp(token, "stat_string") == 0)
 		{
 			int index = Q_atoi(COM_Parse(&s));
-			if (index < 0 || index >= MAX_CONFIGSTRINGS)
+			if (index < 0 || index >= MAX_STATS) //mxd. '>= MAX_CONFIGSTRINGS' in original logic.
 				Com_Error(ERR_DROP, "Bad stat_string index");
 
 			index = cl.frame.playerstate.stats[index];
@@ -896,10 +899,10 @@ static void SCR_ExecuteLayoutString(char* s)
 		}
 		else if (strcmp(token, "if") == 0)
 		{
-			// Draw a number
+			// Draw a number.
 			token = COM_Parse(&s);
 			if (cl.frame.playerstate.stats[Q_atoi(token)] == 0)
-				while (s != NULL && strcmp(token, "endif") != 0) // Skip to endif
+				while (s != NULL && strcmp(token, "endif") != 0) // Skip to endif.
 					token = COM_Parse(&s);
 		}
 	}
