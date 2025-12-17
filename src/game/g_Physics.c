@@ -214,8 +214,7 @@ void CheckEntityOn(edict_t* self)
 	}
 
 	// If the hull point one-quarter unit down is solid, the entity is on ground.
-	vec3_t point;
-	VectorCopy(self->s.origin, point);
+	vec3_t point = VEC3_INIT(self->s.origin);
 	point[2] -= PHYSICS_Z_FUDGE + CHECK_BELOW_DIST;
 
 	FormMove_t form_move;
@@ -423,7 +422,7 @@ static void HandleForcefulCollision(edict_t* forcer, edict_t* forcee, const vec3
 		PostKnockBack(forcer, dir, knockback, 0);
 }
 
-// Takes into account gravity, and bounces an ent away from impacts based on elasticity. Fiction is ignored.
+// Takes into account gravity, and bounces an ent away from impacts based on elasticity. Friction is ignored.
 static void MoveEntity_Bounce(edict_t* self, FormMove_t* form_move)
 {
 	vec3_t move;
