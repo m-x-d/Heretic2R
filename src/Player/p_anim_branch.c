@@ -508,13 +508,8 @@ int BranchLwrStandingRun(playerinfo_t* info)
 	if (info->groundentity == NULL && info->waterlevel < 2 && CheckFall(info))
 		return ASEQ_FALL;
 
-	if (info->seqcmd[ACMDL_FWD] && info->upperidle)
-	{
-		PlayerActionCheckVault(info);
-
-		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_PULLUP_HALFWALL)
-			return info->lowerseq;
-	}
+	if (info->seqcmd[ACMDL_FWD] && info->upperidle && PlayerActionCheckVault(info)) // On success, PlayerActionCheckVault also sets appropriate lowerseq --mxd.
+		return info->lowerseq;
 
 	if (info->seqcmd[ACMDL_JUMP])
 		return ASEQ_JUMPSTD_GO;
@@ -1075,9 +1070,8 @@ int BranchLwrSurfaceSwim(playerinfo_t* info)
 	{
 		// Try and use a puzzle piece.
 		PlayerActionUsePuzzle(info);
-		PlayerActionCheckVault(info);
 
-		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_PULLUP_HALFWALL)
+		if (PlayerActionCheckVault(info)) // On success, also sets appropriate lowerseq --mxd.
 			return info->lowerseq;
 
 		return ASEQ_NONE;
@@ -1085,10 +1079,8 @@ int BranchLwrSurfaceSwim(playerinfo_t* info)
 
 	if (info->seqcmd[ACMDL_FWD])
 	{
-		PlayerActionCheckVault(info);
-
-		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_PULLUP_HALFWALL)
-			return  info->lowerseq;
+		if (PlayerActionCheckVault(info)) // On success, also sets appropriate lowerseq --mxd.
+			return info->lowerseq;
 
 		if (info->waterlevel > 2)
 			return ASEQ_USWIMF_GO;
