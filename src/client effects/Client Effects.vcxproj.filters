@@ -69,9 +69,6 @@
     <ClCompile Include="Generic Weapon Effects.c">
       <Filter>src\Generic Effects</Filter>
     </ClCompile>
-    <ClCompile Include="Player Effects.c">
-      <Filter>src\Generic Effects</Filter>
-    </ClCompile>
     <ClCompile Include="TestEffect.c">
       <Filter>src\Generic Effects</Filter>
     </ClCompile>
@@ -284,6 +281,9 @@
     </ClCompile>
     <ClCompile Include="fx_WeaponPickup.c">
       <Filter>src\Effects\Pickups</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_PlayerPersistent.c">
+      <Filter>src\Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

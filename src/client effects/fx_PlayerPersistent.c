@@ -1,5 +1,5 @@
 //
-// Player Effects.c
+// fx_PlayerPersistent.c -- Named 'Player Effects.c' in original logic.
 //
 // Copyright 1998 Raven Software
 //

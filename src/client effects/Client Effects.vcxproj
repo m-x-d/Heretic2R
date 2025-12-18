@@ -97,7 +97,7 @@
     <ClCompile Include="LightStyles.c" />
     <ClCompile Include="Main.c" />
     <ClCompile Include="Particle.c" />
-    <ClCompile Include="Player Effects.c" />
+    <ClCompile Include="fx_PlayerPersistent.c" />
     <ClCompile Include="TestEffect.c" />
     <ClCompile Include="Utilities.c" />
   </ItemGroup>
