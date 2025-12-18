@@ -10,9 +10,6 @@
     <Filter Include="src\Effects">
       <UniqueIdentifier>{8009a782-9fdc-4271-b351-7b4371aecec0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Generic Effects">
-      <UniqueIdentifier>{52bcf2bc-85f7-412f-9c13-f09052b8e30e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Effects\Pickups">
       <UniqueIdentifier>{447788bb-52b8-4654-8978-e1025628b3db}</UniqueIdentifier>
     </Filter>
@@ -56,12 +53,6 @@
     </ClCompile>
     <ClCompile Include="..\qcommon\turbsin.c">
       <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="Client Effects.c">
-      <Filter>src\Generic Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="Generic Character Effects.c">
-      <Filter>src\Generic Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_animate.c">
       <Filter>src\Effects</Filter>
@@ -300,6 +291,15 @@
     <ClCompile Include="fx_CorpseRemove.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
+    <ClCompile Include="fx_Leader.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_FeetTrail.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Client Effects.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ce_DefaultMessageHandler.h">
@@ -341,9 +341,6 @@
     <ClInclude Include="..\qcommon\turbsin.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="Client Effects.h">
-      <Filter>src\Generic Effects</Filter>
-    </ClInclude>
     <ClInclude Include="fx_blood.h">
       <Filter>src\Effects</Filter>
     </ClInclude>
@@ -379,6 +376,9 @@
     </ClInclude>
     <ClInclude Include="fx_WaterSplash.h">
       <Filter>src\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Client Effects.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

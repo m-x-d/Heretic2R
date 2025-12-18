@@ -19,6 +19,7 @@
     <ClCompile Include="fx_Explosion.c" />
     <ClCompile Include="fx_GibTrail.c" />
     <ClCompile Include="fx_HitPuffs.c" />
+    <ClCompile Include="fx_Leader.c" />
     <ClCompile Include="fx_WaterParticles.c" />
     <ClCompile Include="fx_WaterSplash.c" />
     <ClCompile Include="ce_DefaultMessageHandler.c" />
@@ -96,7 +97,7 @@
     <ClCompile Include="fx_waterentrysplash.c" />
     <ClCompile Include="fx_waterwake.c" />
     <ClCompile Include="fx_WeaponPickup.c" />
-    <ClCompile Include="Generic Character Effects.c" />
+    <ClCompile Include="fx_FeetTrail.c" />
     <ClCompile Include="fx_ArmorHit.c" />
     <ClCompile Include="LevelMaps.c" />
     <ClCompile Include="LightStyles.c" />
