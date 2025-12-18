@@ -352,8 +352,8 @@ void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fish_bloc
 	// Did we hit a monster or player?
 	if (trace->ent != NULL && ((trace->ent->svflags & SVF_MONSTER) || trace->ent->client != NULL))
 	{
-		// Hit another fish - send us on our way.
-		if (trace->ent->classID == CID_FISH)
+		// Hit another fish - send us on our way. //mxd. Also bounce off ambushing monsters (to avoid breaking ambush setups) and non-targetable players.
+		if (trace->ent->classID == CID_FISH || (trace->ent->spawnflags & MSF_AMBUSH) || (trace->ent->flags & FL_NOTARGET))
 		{
 			FishPickBounceDirection(self);
 			return;
