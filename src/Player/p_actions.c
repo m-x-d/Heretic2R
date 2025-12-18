@@ -1481,7 +1481,7 @@ void PlayerPullupHeight(playerinfo_t* info, const float height, const float ends
 	if (endseq > 0.0f)
 	{
 		// End Sequence.
-		const vec3_t end_pos = { info->grabloc[0], info->grabloc[1], info->grabloc[2] - (info->mins[2] + 2.0f) };
+		const vec3_t end_pos = VEC3_INITA(info->grabloc, 0.0f, 0.0f, -(info->mins[2] + 2.0f));
 
 		// Trace towards grabloc.
 		trace_t trace;
@@ -1512,8 +1512,7 @@ void PlayerPullupHeight(playerinfo_t* info, const float height, const float ends
 			return;
 		}
 
-		vec3_t save_pos;
-		VectorCopy(end_pos, save_pos);
+		const vec3_t save_pos = VEC3_INIT(end_pos);
 
 		// Trace towards the wall.
 		vec3_t forward;
