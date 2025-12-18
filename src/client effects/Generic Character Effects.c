@@ -27,7 +27,7 @@ void PreCacheOgleHitPuff(void) //mxd. Named 'PrecacheOgleHitPuff' in original lo
 	genfx_models[5] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-static qboolean ParticleTrailAI(client_entity_t* this, centity_t* owner)
+static qboolean ParticleTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'ParticleTrailAI' in original logic.
 {
 #define PARTICLE_TRAIL_PUFF_TIME 1000 // Puffs last for 1 sec.
 
@@ -37,7 +37,7 @@ static qboolean ParticleTrailAI(client_entity_t* this, centity_t* owner)
 
 	for (int i = 0; i < 40; i++)
 	{
-		client_particle_t* p = ClientParticle_new(PART_4x4_WHITE, this->color, PARTICLE_TRAIL_PUFF_TIME);
+		client_particle_t* p = ClientParticle_new(PART_4x4_WHITE, self->color, PARTICLE_TRAIL_PUFF_TIME);
 		VectorSet(p->velocity, flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f), flrand(30.0f, 80.0f));
 		AddParticleToList(effect, p);
 	}
@@ -54,10 +54,10 @@ void GenericGibTrail(centity_t* owner, const int type, const int flags, vec3_t o
 	client_entity_t* effect = ClientEntity_new(type, flags, origin, NULL, PARTICLE_TRAIL_THINK_TIME);
 	effect->flags |= CEF_NO_DRAW;
 	effect->color.c = 0xFF2020FF;
-	effect->Update = ParticleTrailAI;
+	effect->Update = ParticleTrailUpdate;
 
 	AddEffect(owner, effect);
-	ParticleTrailAI(effect, owner); // Think once right away, to spawn the first puff.
+	ParticleTrailUpdate(effect, owner); // Think once right away, to spawn the first puff.
 }
 
 static qboolean PebbleUpdate(struct client_entity_s* self, centity_t* owner)
@@ -297,30 +297,31 @@ static void DoWake(client_entity_t* self, const centity_t* owner, const int refp
 		PART_32x32_BUBBLE
 	};
 
-	vec3_t org;
-	vec3_t handpt;
-	vec3_t right;
-	vec3_t diff;
-	vec3_t diff2;
-	matrix3_t rotation;
-
 	const paletteRGBA_t light_color = { .r = 200, .g = 255, .b = 255, .a = 140 };
 
+	vec3_t diff;
 	VectorSubtract(owner->referenceInfo->references[refpt].placement.origin, owner->referenceInfo->oldReferences[refpt].placement.origin, diff);
+
+	vec3_t diff2;
 	VectorSubtract(owner->origin, self->endpos, diff2);
-	VectorAdd(diff, diff2, diff);
+	Vec3AddAssign(diff2, diff);
 
 	int num_parts = (int)(VectorLength(diff));
 	num_parts = min(6, num_parts);
 
 	// Let's take the origin and transform it to the proper coordinate offset from the owner's origin.
+	vec3_t org;
 	VectorCopy(owner->referenceInfo->references[refpt].placement.origin, org);
 
-	// Create a rotation matrix
+	// Create a rotation matrix.
+	matrix3_t rotation;
 	Matrix3FromAngles(owner->lerp_angles, rotation);
-	Matrix3MultByVec3(rotation, org, handpt);
-	VectorAdd(handpt, owner->origin, handpt);
 
+	vec3_t handpt;
+	Matrix3MultByVec3(rotation, org, handpt);
+	Vec3AddAssign(owner->origin, handpt);
+
+	vec3_t right;
 	AngleVectors(owner->lerp_angles, NULL, right, NULL);
 
 	for (int i = 0; i < num_parts; i++)
@@ -349,7 +350,7 @@ static void DoWake(client_entity_t* self, const centity_t* owner, const int refp
 	}
 }
 
-static qboolean BubbleSpawner(client_entity_t* self, centity_t* owner)
+static qboolean BubbleSpawnerUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'BubbleSpawner' in original logic.
 {
 	vec3_t org;
 
@@ -383,7 +384,7 @@ void FXWaterParticles(centity_t* owner, const int type, int flags, vec3_t origin
 
 	flags |= CEF_NO_DRAW | CEF_ABSOLUTE_PARTS | CEF_OWNERS_ORIGIN | CEF_VIEWSTATUSCHANGED; //mxd
 
-	// Spawn static water particle handler
+	// Spawn static water particle handler.
 	client_entity_t* water_fx = ClientEntity_new(type, flags, origin, NULL, PARTICLE_TRAIL_THINK_TIME);
 
 	water_fx->AddToView = LinkedEntityUpdatePlacement;
@@ -397,7 +398,7 @@ void FXWaterParticles(centity_t* owner, const int type, int flags, vec3_t origin
 
 	bubble_fx->AddToView = LinkedEntityUpdatePlacement;
 	bubble_fx->radius = 100.0f;
-	bubble_fx->Update = BubbleSpawner;
+	bubble_fx->Update = BubbleSpawnerUpdate;
 	VectorCopy(owner->origin, bubble_fx->endpos);
 
 	AddEffect(owner, bubble_fx);
@@ -461,7 +462,7 @@ void FXCorpseRemove(centity_t* owner, const int type, int flags, vec3_t origin)
 }
 
 // Create the two circles that ring the player.
-static qboolean FXLeaderThink(struct client_entity_s* self, centity_t* owner)
+static qboolean FXLeaderUpdate(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXLeaderThink' in original logic.
 {
 #define LEADER_RAD				12
 #define TOTAL_LEADER_EFFECTS	30
@@ -502,15 +503,15 @@ void FXLeader(centity_t* owner, const int type, int flags, vec3_t origin)
 	client_entity_t* glow = ClientEntity_new(type, flags, origin, NULL, 60);
 
 	VectorClear(glow->origin);
-	glow->Update = FXLeaderThink;
 	glow->LifeTime = TOTAL_LEADER_EFFECTS;
-	glow->AddToView = LinkedEntityUpdatePlacement;
 	glow->Scale = 0.0f;
+	glow->AddToView = LinkedEntityUpdatePlacement;
+	glow->Update = FXLeaderUpdate;
 
 	AddEffect(owner, glow);
 }
 
-static qboolean FXFeetTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean FXFeetTrailUpdate(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXFeetTrailThink' in original logic.
 {
 #define FOOTTRAIL_RADIUS	2.0f
 #define FOOTTRAIL_SCALE		8.0f
@@ -538,7 +539,7 @@ static qboolean FXFeetTrailThink(struct client_entity_s* self, centity_t* owner)
 
 	vec3_t origin;
 	Matrix3MultByVec3(rotation, firestart, origin);
-	VectorAdd(origin, owner->origin, origin);
+	Vec3AddAssign(owner->origin, origin);
 
 	if (Vec3NotZero(self->origin))
 	{
@@ -581,7 +582,7 @@ static qboolean FXFeetTrailThink(struct client_entity_s* self, centity_t* owner)
 void FXFeetTrail(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	const short refpoints = (1 << CORVUS_LEFTFOOT) | (1 << CORVUS_RIGHTFOOT);
-	const int flame_dur = (R_DETAIL > DETAIL_NORMAL ? 50 : 75); //TODO: why is it longer on lower detail settings?
+	const int flame_update = (R_DETAIL > DETAIL_NORMAL ? 50 : 75);
 
 	VectorClear(origin);
 
@@ -591,15 +592,15 @@ void FXFeetTrail(centity_t* owner, const int type, const int flags, vec3_t origi
 		if (!(refpoints & (1 << i)))
 			continue;
 
-		client_entity_t* trail = ClientEntity_new(type, flags, origin, NULL, flame_dur);
+		client_entity_t* trail = ClientEntity_new(type, flags, origin, NULL, flame_update);
 
 		VectorClear(trail->origin);
-		trail->Update = FXFeetTrailThink;
 		trail->flags |= (int)(CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ABSOLUTE_PARTS);
 		trail->radius = 40;
-		trail->AddToView = LinkedEntityUpdatePlacement;
 		trail->refPoint = (short)i;
 		trail->color.c = 0xe5007fff; //TODO: unused?
+		trail->AddToView = LinkedEntityUpdatePlacement;
+		trail->Update = FXFeetTrailUpdate;
 
 		AddEffect(owner, trail);
 	}
