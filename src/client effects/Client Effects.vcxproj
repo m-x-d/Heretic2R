@@ -15,6 +15,7 @@
     <ClCompile Include="..\qcommon\Message.c" />
     <ClCompile Include="..\qcommon\netmsg_read.c" />
     <ClCompile Include="..\qcommon\turbsin.c" />
+    <ClCompile Include="fx_CorpseRemove.c" />
     <ClCompile Include="fx_Explosion.c" />
     <ClCompile Include="fx_GibTrail.c" />
     <ClCompile Include="fx_HitPuffs.c" />
