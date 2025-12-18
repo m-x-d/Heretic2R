@@ -25,7 +25,7 @@ void PreCacheOgleHitPuff(void) //mxd. Named 'PrecacheOgleHitPuff' in original lo
 	genfx_models[5] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-static qboolean ParticleTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'ParticleTrailAI' in original logic.
+static qboolean GibTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'ParticleTrailAI' in original logic.
 {
 #define PARTICLE_TRAIL_PUFF_TIME 1000 // Puffs last for 1 sec.
 
@@ -45,17 +45,17 @@ static qboolean ParticleTrailUpdate(client_entity_t* self, centity_t* owner) //m
 	return true; // Actual puff spawner only goes away when it owner has a FX_REMOVE_EFFECTS sent on it.
 }
 
-void GenericGibTrail(centity_t* owner, const int type, const int flags, vec3_t origin)
+void FXGibTrail(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	assert(owner);
 
 	client_entity_t* effect = ClientEntity_new(type, flags, origin, NULL, PARTICLE_TRAIL_THINK_TIME);
 	effect->flags |= CEF_NO_DRAW;
 	effect->color.c = 0xFF2020FF;
-	effect->Update = ParticleTrailUpdate;
+	effect->Update = GibTrailUpdate;
 
 	AddEffect(owner, effect);
-	ParticleTrailUpdate(effect, owner); // Think once right away, to spawn the first puff.
+	GibTrailUpdate(effect, owner); // Think once right away, to spawn the first puff.
 }
 
 static qboolean PebbleUpdate(struct client_entity_s* self, centity_t* owner)

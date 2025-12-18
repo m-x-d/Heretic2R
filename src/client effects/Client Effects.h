@@ -52,7 +52,7 @@ extern void DoWaterEntrySplash(int type, int flags, vec3_t origin, byte splash_s
 
 extern void FXExplosion1(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXExplosion2(centity_t* owner, int type, int flags, vec3_t origin);
-extern void GenericGibTrail(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXGibTrail(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBlood(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBloodTrail(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXLinkedBlood(centity_t* owner, int type, int flags, vec3_t origin);

@@ -47,7 +47,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	},
 
 	{ // FX_GIB_TRAIL
-		.SpawnCFX = GenericGibTrail,
+		.SpawnCFX = FXGibTrail,
 		.PrecacheCFX = NULL,
 		.PrecacheSFX = NULL,
 		.formatString = NULL
