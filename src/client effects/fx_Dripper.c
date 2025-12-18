@@ -4,8 +4,8 @@
 // Copyright 1998 Raven Software
 //
 
-#include "Ambient effects.h"
 #include "Client Effects.h"
+#include "fx_WaterSplash.h"
 #include "g_playstats.h"
 #include "Vector.h"
 #include "Random.h"

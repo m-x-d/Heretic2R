@@ -186,6 +186,7 @@ extern void FXTornado(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXTornadoBall(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXTornadoBallExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFeetTrail(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXWaterSplash(centity_t* owner, int type, int flags, vec3_t origin); //mxd
 
 // Client effect used by another client effect - needs its own wrapper.
 extern void FXClientScorchmark(vec3_t origin, vec3_t dir);

@@ -57,9 +57,6 @@
     <ClCompile Include="..\qcommon\turbsin.c">
       <Filter>qcommon</Filter>
     </ClCompile>
-    <ClCompile Include="Ambient Effects.c">
-      <Filter>src\Generic Effects</Filter>
-    </ClCompile>
     <ClCompile Include="Client Effects.c">
       <Filter>src\Generic Effects</Filter>
     </ClCompile>
@@ -285,6 +282,9 @@
     <ClCompile Include="fx_PlayerPersistent.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
+    <ClCompile Include="fx_WaterSplash.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ce_DefaultMessageHandler.h">
@@ -326,9 +326,6 @@
     <ClInclude Include="..\qcommon\turbsin.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="Ambient Effects.h">
-      <Filter>src\Generic Effects</Filter>
-    </ClInclude>
     <ClInclude Include="Client Effects.h">
       <Filter>src\Generic Effects</Filter>
     </ClInclude>
@@ -364,6 +361,9 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\ParticleFlags.h">
       <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="fx_WaterSplash.h">
+      <Filter>src\Effects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,7 +5,6 @@
 //
 
 #include "Client Effects.h"
-#include "Ambient Effects.h"
 
 #pragma region ========================== CLIENT EFFECT SPAWNERS ==========================
 
@@ -41,7 +40,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	},
 
 	{ // FX_SPLASH
-		.SpawnCFX = WaterSplash,
+		.SpawnCFX = FXWaterSplash,
 		.PrecacheCFX = PreCacheWaterSplash,
 		.PrecacheSFX = NULL,
 		.formatString = "b"

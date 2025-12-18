@@ -15,7 +15,7 @@
     <ClCompile Include="..\qcommon\Message.c" />
     <ClCompile Include="..\qcommon\netmsg_read.c" />
     <ClCompile Include="..\qcommon\turbsin.c" />
-    <ClCompile Include="Ambient Effects.c" />
+    <ClCompile Include="fx_WaterSplash.c" />
     <ClCompile Include="ce_DefaultMessageHandler.c" />
     <ClCompile Include="ce_DLight.c" />
     <ClCompile Include="ce_Message.c" />
@@ -110,7 +110,7 @@
     <ClInclude Include="..\qcommon\ParticleFlags.h" />
     <ClInclude Include="..\qcommon\turbsin.h" />
     <ClInclude Include="..\qcommon\Vector.h" />
-    <ClInclude Include="Ambient Effects.h" />
+    <ClInclude Include="fx_WaterSplash.h" />
     <ClInclude Include="ce_DefaultMessageHandler.h" />
     <ClInclude Include="ce_DLight.h" />
     <ClInclude Include="ce_Message.h" />
