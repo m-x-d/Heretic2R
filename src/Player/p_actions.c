@@ -1107,7 +1107,7 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 {
 #define VAULT_HAND_WIDTH	4
 #define VAULT_HAND_HEIGHT	32
-#define VAULT_HAND_VERTZONE 48
+#define VAULT_HAND_VERTZONE	48
 #define VAULT_HAND_HORZONE	24
 
 	assert(info);
@@ -1115,23 +1115,19 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 	// Check in front of the player, and decide if there is a suitable wall here.
 	vec3_t forward;
 	vec3_t right;
-	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f};
+	const vec3_t player_facing = VEC3_SET(0.0f, info->angles[YAW], 0.0f);
 	AngleVectors(player_facing, forward, right, NULL);
 
-	vec3_t vaultcheckmins;
-	vec3_t vaultcheckmaxs;
-	VectorCopy(info->mins, vaultcheckmins);
-	VectorCopy(info->maxs, vaultcheckmaxs);
-	vaultcheckmins[2] += 18.0f; // Don't try to vault stairs.
+	const vec3_t vaultcheck_mins = VEC3_INITA(info->mins, 0.0f, 0.0f, 18.0f); // Don't try to vault stairs.
+	const vec3_t vaultcheck_maxs = VEC3_INIT(info->maxs);
 
-	vec3_t start;
-	VectorCopy(info->origin, start);
+	const vec3_t start = VEC3_INIT(info->origin);
 
 	vec3_t end;
 	VectorMA(start, VAULT_HAND_HORZONE, forward, end);
 
 	trace_t grabtrace;
-	P_Trace(info, start, vaultcheckmins, vaultcheckmaxs, end, &grabtrace); //mxd
+	P_Trace(info, start, vaultcheck_mins, vaultcheck_maxs, end, &grabtrace); //mxd
 
 	// Body stopped, but not on a grabbable surface.
 	if (grabtrace.fraction == 1.0f || !(grabtrace.contents & MASK_SOLID))
@@ -1155,9 +1151,6 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 	// Bad angle. Player should bounce.
 	if (yaw > 30.0f || yaw < -30.0f)
 		return false;
-
-	vec3_t grabloc;
-	VectorCopy(grabtrace.endpos, grabloc);
 
 	// Now we want to cast some rays. If the two rays moving from the player's hands at "grab" width
 	// successfully clear any surface, then at least his hands are free enough to make the grab.
@@ -1235,8 +1228,7 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 		// One more check, make sure we can fit in there, so we don't start climbing then fall back down.
 
 		// Get the z height.
-		vec3_t lastcheck_start;
-		VectorCopy(info->origin, lastcheck_start);
+		vec3_t lastcheck_start = VEC3_INIT(info->origin);
 		lastcheck_start[2] = max(lefthand[2], righthand[2]) - info->mins[2];
 
 		vec3_t lastcheck_end;
