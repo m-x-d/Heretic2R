@@ -345,7 +345,7 @@ int SV_CreatePersistantEffect(const entity_state_t* ent, const int fx_type, int 
 	return fx_index + 1; // 1-based, because 0 means "no effect" --mxd.
 }
 
-qboolean SV_RemovePersistantEffect(const int fx_type, const int call_from)
+qboolean SV_RemovePersistantEffect(int fx_index, const int call_from)
 {
 	static const char* fx_types[] =
 	{
@@ -367,7 +367,8 @@ qboolean SV_RemovePersistantEffect(const int fx_type, const int call_from)
 		"REMOVE PORTAL",
 	};
 
-	const int fx_index = fx_type - 1;
+	fx_index -= 1; // Convert effect index form 1-based to 0-based...
+
 	if (fx_index < 0 || fx_index >= MAX_PERSISTANT_EFFECTS) //mxd. Added upper bound check.
 	{
 		Com_DPrintf("WARNING: Trying to remove a persistent effect of %i\n", fx_index);
@@ -388,7 +389,7 @@ qboolean SV_RemovePersistantEffect(const int fx_type, const int call_from)
 		return true;
 	}
 
-	Com_DPrintf("WARNING: Persistent effect not found! Call from %s, last deleted by %s, last effect number %i\n", fx_types[call_from], fx->send_mask, fx->fx_num);
+	Com_DPrintf("WARNING: Persistent effect not found! Call from %s, last deleted by %i, last effect number %i\n", fx_types[call_from], fx->send_mask, fx->fx_num);
 
 	return false;
 }
@@ -396,17 +397,17 @@ qboolean SV_RemovePersistantEffect(const int fx_type, const int call_from)
 void SV_RemoveEdictFromPersistantEffectsArray(const edict_t* ed)
 {
 	// Remove edict from send_mask of all persistant_effects...
-	const int bit = EDICT_MASK(ed);
+	const int send_mask = EDICT_MASK(ed);
 	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++)
-		persistant_effects[i].send_mask &= ~bit;
+		persistant_effects[i].send_mask &= ~send_mask;
 }
 
 void SV_RemoveDemoEdictFromPersistantEffectsArray(const client_t* cl)
 {
 	// Remove edict from demo_send_mask of all persistant_effects...
-	const int bit = EDICT_MASK(cl->edict);
+	const int send_mask = EDICT_MASK(cl->edict);
 	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++)
-		persistant_effects[i].demo_send_mask &= ~bit;
+		persistant_effects[i].demo_send_mask &= ~send_mask;
 }
 
 void SV_ClearPersistantEffects(void)
@@ -502,7 +503,7 @@ void SV_SendClientEffects(client_t* cl)
 	const int send_mask = EDICT_MASK(cl->edict);
 	PerEffectsBuffer_t* pfx = &persistant_effects[0];
 
-	const int send_size = cl->netchan.message.cursize + send_sizes[1]; // send_size2
+	const int send_size = cl->netchan.message.cursize + send_sizes[1];
 	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, pfx++)
 	{
 		if (pfx->numEffects == 0)
