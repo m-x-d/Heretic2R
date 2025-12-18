@@ -265,8 +265,8 @@ extern void PreCachePortal(void);
 extern void PreCacheCrosshair(void);
 extern void PreCacheStaffHit(void);
 extern void PreCacheArmorHit(void);
-extern void PreCacheHitPuff(void);
-extern void PreCacheHitPuffSFX(void); //mxd
+extern void PreCacheLightningHit(void);
+extern void PreCacheLightningHitSFX(void); //mxd
 extern void PreCacheBarrelExplode(void);
 extern void PreCacheBarrelExplodeSFX(void); //mxd
 extern void PreCacheCWModels(void);

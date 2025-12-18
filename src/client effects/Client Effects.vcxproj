@@ -45,7 +45,7 @@
     <ClCompile Include="fx_HellStaff.c" />
     <ClCompile Include="fx_HighPriestessProjectiles.c" />
     <ClCompile Include="fx_HighPriestessStaff.c" />
-    <ClCompile Include="fx_hitpuff.c" />
+    <ClCompile Include="fx_LightningHit.c" />
     <ClCompile Include="fx_insectstaff.c" />
     <ClCompile Include="fx_lensflare.c" />
     <ClCompile Include="fx_lightning.c" />

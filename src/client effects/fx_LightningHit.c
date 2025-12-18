@@ -1,5 +1,5 @@
 //
-// fx_hitpuff.c
+// fx_LightningHit.c -- named fx_hitpuff.c in original logic.
 //
 // Copyright 1998 Raven Software
 //
@@ -16,12 +16,12 @@
 static struct model_s* hit_model;
 static struct sfx_s* hit_sound; //mxd
 
-void PreCacheHitPuff(void)
+void PreCacheLightningHit(void) //mxd. Named 'PreCacheHitPuff' in original logic.
 {
 	hit_model = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-void PreCacheHitPuffSFX(void) //mxd
+void PreCacheLightningHitSFX(void) //mxd
 {
 	hit_sound = fxi.S_RegisterSound("weapons/HellHit.wav");
 }

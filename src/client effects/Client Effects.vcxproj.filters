@@ -123,9 +123,6 @@
     <ClCompile Include="fx_HighPriestessStaff.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="fx_hitpuff.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
     <ClCompile Include="fx_insectstaff.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
@@ -286,6 +283,9 @@
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_TestBBox.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_LightningHit.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
   </ItemGroup>
