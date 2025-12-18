@@ -1105,10 +1105,10 @@ qboolean PlayerActionCheckPuzzleGrab(playerinfo_t* info)
 
 qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value' arg.
 {
-#define VAULT_HAND_WIDTH	4
-#define VAULT_HAND_HEIGHT	32
-#define VAULT_HAND_VERTZONE	48
-#define VAULT_HAND_HORZONE	24
+#define VAULT_HAND_WIDTH	4.0f
+#define VAULT_HAND_HEIGHT	32.0f
+#define VAULT_HAND_VERTZONE	48.0f
+#define VAULT_HAND_HORZONE	24.0f
 
 	assert(info);
 
@@ -1118,7 +1118,7 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 	const vec3_t player_facing = VEC3_SET(0.0f, info->angles[YAW], 0.0f);
 	AngleVectors(player_facing, forward, right, NULL);
 
-	const vec3_t vaultcheck_mins = VEC3_INITA(info->mins, 0.0f, 0.0f, 18.0f); // Don't try to vault stairs.
+	const vec3_t vaultcheck_mins = VEC3_INITA(info->mins, 0.0f, 0.0f, STEP_SIZE); // Don't try to vault stairs.
 	const vec3_t vaultcheck_maxs = VEC3_INIT(info->maxs);
 
 	const vec3_t start = VEC3_INIT(info->origin);
@@ -1133,7 +1133,7 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 	if (grabtrace.fraction == 1.0f || !(grabtrace.contents & MASK_SOLID))
 		return false;
 
-	// Sloped surfaces are not grabbable. Question: sloped away or towards?
+	// Sloped surfaces are not grabbable. Question: sloped away or towards? //TODO: check this.
 	if (grabtrace.plane.normal[2] > 0.3f)
 		return false;
 
@@ -1146,11 +1146,15 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 	vectoangles(grabtrace.plane.normal, planedir);
 	info->grabangle = anglemod(planedir[YAW] - 180.0f);
 
-	const float yaw = anglemod(planedir[YAW] - info->angles[YAW]) - 180.0f;
+	//mxd. Skip yaw check when surface-swimming (fixes inability to climb up when swimming into a climbable corner).
+	if (!(info->pm_w_flags & WF_SURFACE))
+	{
+		const float yaw = anglemod(planedir[YAW] - info->angles[YAW]) - 180.0f;
 
-	// Bad angle. Player should bounce.
-	if (yaw > 30.0f || yaw < -30.0f)
-		return false;
+		// Bad angle. Player should bounce.
+		if (fabsf(yaw) > 30.0f)
+			return false;
+	}
 
 	// Now we want to cast some rays. If the two rays moving from the player's hands at "grab" width
 	// successfully clear any surface, then at least his hands are free enough to make the grab.
