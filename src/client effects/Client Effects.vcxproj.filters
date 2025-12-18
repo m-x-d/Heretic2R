@@ -63,9 +63,6 @@
     <ClCompile Include="Generic Character Effects.c">
       <Filter>src\Generic Effects</Filter>
     </ClCompile>
-    <ClCompile Include="Generic Weapon Effects.c">
-      <Filter>src\Generic Effects</Filter>
-    </ClCompile>
     <ClCompile Include="TestEffect.c">
       <Filter>src\Generic Effects</Filter>
     </ClCompile>
@@ -283,6 +280,12 @@
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_WaterSplash.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_Explosion.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_ArmorHit.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
   </ItemGroup>

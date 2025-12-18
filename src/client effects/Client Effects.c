@@ -26,14 +26,14 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	},
 
 	{ // FX_EXPLOSION1
-		.SpawnCFX = GenericExplosion1,
+		.SpawnCFX = FXExplosion1,
 		.PrecacheCFX = NULL,
 		.PrecacheSFX = NULL,
 		.formatString = NULL
 	},
 
 	{ // FX_EXPLOSION2
-		.SpawnCFX = GenericExplosion2,
+		.SpawnCFX = FXExplosion2,
 		.PrecacheCFX = NULL,
 		.PrecacheSFX = NULL,
 		.formatString = NULL
@@ -943,7 +943,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	},
 
 	{ // FX_ARMOR_HIT
-		.SpawnCFX = FXCreateArmorHit,
+		.SpawnCFX = FXArmorHit,
 		.PrecacheCFX = PreCacheArmorHit,
 		.PrecacheSFX = NULL,
 		.formatString = "d"

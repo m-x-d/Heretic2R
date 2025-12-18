@@ -15,6 +15,7 @@
     <ClCompile Include="..\qcommon\Message.c" />
     <ClCompile Include="..\qcommon\netmsg_read.c" />
     <ClCompile Include="..\qcommon\turbsin.c" />
+    <ClCompile Include="fx_Explosion.c" />
     <ClCompile Include="fx_WaterSplash.c" />
     <ClCompile Include="ce_DefaultMessageHandler.c" />
     <ClCompile Include="ce_DLight.c" />
@@ -92,7 +93,7 @@
     <ClCompile Include="fx_waterwake.c" />
     <ClCompile Include="fx_WeaponPickup.c" />
     <ClCompile Include="Generic Character Effects.c" />
-    <ClCompile Include="Generic Weapon Effects.c" />
+    <ClCompile Include="fx_ArmorHit.c" />
     <ClCompile Include="LevelMaps.c" />
     <ClCompile Include="LightStyles.c" />
     <ClCompile Include="Main.c" />

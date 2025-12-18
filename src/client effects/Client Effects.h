@@ -50,8 +50,8 @@ extern void RemoveEffects(centity_t* owner, int type, int flags, vec3_t origin);
 extern void MakeBubble(vec3_t loc, client_entity_t* spawner); //mxd
 extern void DoWaterEntrySplash(int type, int flags, vec3_t origin, byte splash_size, vec3_t dir); //mxd
 
-extern void GenericExplosion1(centity_t* owner, int type, int flags, vec3_t origin);
-extern void GenericExplosion2(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXExplosion1(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXExplosion2(centity_t* owner, int type, int flags, vec3_t origin);
 extern void GenericGibTrail(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBlood(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBloodTrail(centity_t* owner, int type, int flags, vec3_t origin);
@@ -177,7 +177,7 @@ extern void FXPESpell(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXLightningHit(centity_t* owner, int type, int flags, vec3_t origin);
 extern void NullEffect(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXStaffStrike(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXCreateArmorHit(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXArmorHit(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBarrelExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXCWatcherEffects(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXCorpseRemove(centity_t* owner, int type, int flags, vec3_t origin);
