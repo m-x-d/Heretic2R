@@ -18,6 +18,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#pragma warning(disable: 4996) //mxd. Disable _CRT_SECURE_NO_WARNINGS
+
 /* ************************************************************************* */
 /* BITSTREAM Structure */
 /* ************************************************************************* */
@@ -147,7 +149,7 @@ static int _smk_huff8_build_rec(struct smk_huff8_t * const t, struct smk_bit_t *
 
 		/* now go back to our current location, and
 			mark our location as a "jump" */
-		t->tree[value] = SMK_HUFF8_BRANCH | t->size;
+		t->tree[value] = (unsigned short)(SMK_HUFF8_BRANCH | t->size); //mxd. Added typecast to avoid compiler warning.
 
 		/* continue building the right side */
 		if (! _smk_huff8_build_rec(t, bs)) {
@@ -1795,3 +1797,5 @@ char smk_seek_keyframe(smk s, unsigned long f)
 
 	return 0;
 }
+
+#pragma warning(default: 4996) //mxd. Enable _CRT_SECURE_NO_WARNINGS
