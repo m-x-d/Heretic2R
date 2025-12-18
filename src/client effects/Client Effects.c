@@ -586,8 +586,8 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	},
 
 	{ // FX_HITPUFF
-		.SpawnCFX = FXGenericHitPuff,
-		.PrecacheCFX = NULL,
+		.SpawnCFX = FXHitPuff,
+		.PrecacheCFX = PreCacheHitPuff, //mxd
 		.PrecacheSFX = NULL,
 		.formatString = "db"
 	},

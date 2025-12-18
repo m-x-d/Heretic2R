@@ -127,7 +127,7 @@ extern void FXDustPuffOnGround(centity_t* owner, int type, int flags, vec3_t ori
 extern void FXFire(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSound(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXPickup(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXGenericHitPuff(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXHitPuff(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXDust(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXEnvSmoke(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSpooSplat(centity_t* owner, int type, int flags, vec3_t origin);
@@ -250,6 +250,7 @@ extern void PreCacheHPMissile(void);
 extern void PreCacheIEffects(void);
 extern void PreCacheInsectStaffSFX(void); //mxd
 extern void PreCacheShadow(void);
+extern void PreCacheHitPuff(void); //mxd
 extern void PreCacheOgleHitPuff(void);
 extern void PreCacheMEffects(void);
 extern void PreCacheLightning(void);

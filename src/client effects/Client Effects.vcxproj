@@ -17,6 +17,7 @@
     <ClCompile Include="..\qcommon\turbsin.c" />
     <ClCompile Include="fx_Explosion.c" />
     <ClCompile Include="fx_GibTrail.c" />
+    <ClCompile Include="fx_HitPuffs.c" />
     <ClCompile Include="fx_WaterParticles.c" />
     <ClCompile Include="fx_WaterSplash.c" />
     <ClCompile Include="ce_DefaultMessageHandler.c" />
