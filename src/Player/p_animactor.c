@@ -295,7 +295,7 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info) // Called by CL_PredictMovem
 				case ASEQ_SSWIM_FAST_GO:
 				case ASEQ_SSWIM_FAST:
 					// Check for an autovault.
-					if (info->upperidle && info->waterlevel < 2)
+					if (info->upperidle && (info->waterlevel < 2 || (info->pm_w_flags & WF_SURFACE))) //mxd. Added WF_SURFACE check. //TODO: don't need water checks? We are already in walk/run or surface swim animation...
 						PlayerActionCheckVault(info);
 					break;
 
