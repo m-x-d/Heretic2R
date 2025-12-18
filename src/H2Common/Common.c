@@ -90,6 +90,7 @@ H2COMMON_API void COM_DefaultExtension(char* path, const char* extension)
 		src--;
 	}
 
+	#pragma warning(suppress: 4996, justification: "Can't fix without modifying API. Function is unused anyways... --mxd")
 	strcat(path, extension);
 }
 
