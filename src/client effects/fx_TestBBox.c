@@ -1,5 +1,5 @@
 //
-// TestEffect.c
+// fx_TestBBox.c -- originally named 'TestEffect.c'.
 //
 // Copyright 1998 Raven Software
 //

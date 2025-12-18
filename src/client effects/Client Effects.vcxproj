@@ -99,7 +99,7 @@
     <ClCompile Include="Main.c" />
     <ClCompile Include="Particle.c" />
     <ClCompile Include="fx_PlayerPersistent.c" />
-    <ClCompile Include="TestEffect.c" />
+    <ClCompile Include="fx_TestBBox.c" />
     <ClCompile Include="Utilities.c" />
   </ItemGroup>
   <ItemGroup>

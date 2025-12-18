@@ -63,9 +63,6 @@
     <ClCompile Include="Generic Character Effects.c">
       <Filter>src\Generic Effects</Filter>
     </ClCompile>
-    <ClCompile Include="TestEffect.c">
-      <Filter>src\Generic Effects</Filter>
-    </ClCompile>
     <ClCompile Include="fx_animate.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
@@ -286,6 +283,9 @@
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_ArmorHit.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_TestBBox.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
   </ItemGroup>
