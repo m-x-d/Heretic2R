@@ -8,6 +8,7 @@
 #include "cmodel.h"
 #include "sv_effects.h"
 #include "cl_strings.h"
+#include "FX.h" //mxd. For FX_REMOVE_EFFECTS.
 #include "p_types.h" //mxd. For SND_PRED_NULL.
 #include "Vector.h"
 
@@ -689,7 +690,7 @@ void SV_SendClientMessages(const qboolean send_client_data)
 	PerEffectsBuffer_t* effect = persistant_effects;
 	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, effect++)
 	{
-		if (effect->fx_num == 0 && effect->numEffects != 0 && effect->send_mask == send_mask)
+		if (effect->fx_num == FX_REMOVE_EFFECTS && effect->numEffects != 0 && effect->send_mask == send_mask)
 		{
 			memset(effect, 0, sizeof(PerEffectsBuffer_t));
 			num_persistant_effects--;
