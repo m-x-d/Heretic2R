@@ -270,12 +270,30 @@ int SV_CreatePersistantEffect(const entity_state_t* ent, const int fx_type, int 
 	// Find a free fx slot.
 	int fx_index = -1;
 
-	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++)
+	//mxd. For FX_PLAYER_PERSISTANT specifically, first try to locate existing effect, which may've been restored when loading the game (to avoid creating duplicate effects when creating it unconditionally in SpawnInitialPlayerEffects()).
+	if (fx_type == FX_PLAYER_PERSISTANT)
 	{
-		if (persistant_effects[i].numEffects == 0)
+		PerEffectsBuffer_t* pfx = &persistant_effects[0];
+		for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, pfx++)
 		{
-			fx_index = i;
-			break;
+			if (pfx->fx_num == fx_type && pfx->numEffects == 0)
+			{
+				fx_index = i;
+				break;
+			}
+		}
+	}
+
+	if (fx_index == -1)
+	{
+		PerEffectsBuffer_t* pfx = &persistant_effects[0];
+		for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, pfx++)
+		{
+			if (pfx->numEffects == 0)
+			{
+				fx_index = i;
+				break;
+			}
 		}
 	}
 
@@ -324,7 +342,7 @@ int SV_CreatePersistantEffect(const entity_state_t* ent, const int fx_type, int 
 	pfx->bufSize = sb.cursize;
 	num_persistant_effects++;
 
-	return fx_index + 1; //mxd. 1-based, because fx type 0 is FX_REMOVE_EFFECTS?
+	return fx_index + 1; // 1-based, because 0 means "no effect" --mxd.
 }
 
 qboolean SV_RemovePersistantEffect(const int fx_type, const int call_from)

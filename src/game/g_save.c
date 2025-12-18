@@ -862,10 +862,16 @@ void WriteLevel(const char* filename)
 
 	// This is a bit bogus - search through the client effects and kill all the FX_PLAYER_EFFECTS before saving,
 	// since they will be re-created upon players re-joining the game after a load anyway.
+	int num_effects_tmp[MAX_PERSISTANT_EFFECTS]; //mxd
 	PerEffectsBuffer_t* fx_buf = gi.Persistant_Effects_Array;
 	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, fx_buf++)
+	{
 		if (fx_buf->fx_num == FX_PLAYER_PERSISTANT)
+		{
+			num_effects_tmp[i] = fx_buf->numEffects; //mxd. Store (may already be 0).
 			fx_buf->numEffects = 0;
+		}
+	}
 
 	//mxd. Write out fx buffer size for checking.
 	const int fx_size = sizeof(PerEffectsBuffer_t);
@@ -879,7 +885,7 @@ void WriteLevel(const char* filename)
 	fx_buf = (PerEffectsBuffer_t*)gi.Persistant_Effects_Array;
 	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, fx_buf++)
 		if (fx_buf->fx_num == FX_PLAYER_PERSISTANT)
-			fx_buf->numEffects = 1;
+			fx_buf->numEffects = num_effects_tmp[i]; //mxd. Original logic sets numEffects to 1 instead.
 }
 
 // SpawnEntities will already have been called on the level the same way it was when the level was saved.
