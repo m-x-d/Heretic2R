@@ -1701,16 +1701,8 @@ void PlayerActionCheckCreep(playerinfo_t* info)
 	const int curseq = info->lowerseq;
 
 	// Check for an autovault (only occurs if upper half of body is idle!).
-	if ((info->flags & PLAYER_FLAG_COLLISION) && info->upperidle && info->seqcmd[ACMDL_FWD])
-	{
-		PlayerActionCheckVault(info);
-
-		if (curseq == ASEQ_VAULT_LOW || curseq == ASEQ_PULLUP_HALFWALL)
-		{
-			PlayerAnimSetLowerSeq(info, curseq);
-			return;
-		}
-	}
+	if (info->seqcmd[ACMDL_FWD] && info->upperidle && (info->flags & PLAYER_FLAG_COLLISION) && PlayerActionCheckVault(info)) // On success, PlayerActionCheckVault() also sets appropriate lowerseq --mxd.
+		return;
 
 	// Check for a jump [High probability]. Slime causes skipping, so no jumping in it!
 	if (info->seqcmd[ACMDL_JUMP] && !(info->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)))
@@ -2001,16 +1993,8 @@ void PlayerActionCheckWalk(playerinfo_t* info)
 	}
 
 	// Check for an autovault (only occurs if upper half of body is idle!).
-	if ((info->flags & PLAYER_FLAG_COLLISION) && info->upperidle && info->seqcmd[ACMDL_FWD])
-	{
-		PlayerActionCheckVault(info);
-
-		if (curseq == ASEQ_VAULT_LOW || curseq == ASEQ_PULLUP_HALFWALL)
-		{
-			PlayerAnimSetLowerSeq(info, curseq);
-			return;
-		}
-	}
+	if (info->seqcmd[ACMDL_FWD] && info->upperidle && (info->flags & PLAYER_FLAG_COLLISION) && PlayerActionCheckVault(info)) // On success, PlayerActionCheckVault() also sets appropriate lowerseq --mxd.
+		return;
 
 	// Check for a jump	[High probability]. Slime causes skipping, so no jumping in it!
 	if (info->seqcmd[ACMDL_JUMP] && !(info->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)))
@@ -2348,16 +2332,8 @@ void PlayerActionCheckRun(playerinfo_t* info)
 	}
 
 	// Check for an autovault (only occurs if upper half of body is idle!).
-	if (info->seqcmd[ACMDL_FWD] && info->upperidle && (info->flags & PLAYER_FLAG_COLLISION))
-	{
-		PlayerActionCheckVault(info);
-
-		if (curseq == ASEQ_VAULT_LOW || curseq == ASEQ_PULLUP_HALFWALL)
-		{
-			PlayerAnimSetLowerSeq(info, curseq);
-			return;
-		}
-	}
+	if (info->seqcmd[ACMDL_FWD] && info->upperidle && (info->flags & PLAYER_FLAG_COLLISION) && PlayerActionCheckVault(info)) // On success, PlayerActionCheckVault() also sets appropriate lowerseq --mxd.
+		return;
 
 	// Check for a transition to a walking or running strafe [High probability].
 	if (info->seqcmd[ACMDL_FWD] && info->seqcmd[ACMDL_STRAFE_L] && curseq != ASEQ_RSTRAFE_LEFT)
