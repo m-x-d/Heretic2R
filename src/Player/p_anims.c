@@ -360,6 +360,7 @@ PLAYER_API void PlayerAnimSetVault(playerinfo_t* info, const int seq)
 	VectorClear(info->velocity);
 
 	info->waterlevel = min(info->waterlevel, 1);
+	info->pm_w_flags &= ~WF_SURFACE; //mxd. Clear WF_SURFACE flag as well (otherwise "align player to water surface" logic in PM_WaterMove() will actively block our attempt to climb out).
 }
 
 PLAYER_API void PlayerPlayPain(const playerinfo_t* info, const int type)
