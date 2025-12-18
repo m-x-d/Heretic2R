@@ -291,6 +291,9 @@
     <ClCompile Include="fx_WaterParticles.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
+    <ClCompile Include="fx_GibTrail.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ce_DefaultMessageHandler.h">
