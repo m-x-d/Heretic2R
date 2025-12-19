@@ -75,7 +75,7 @@ static qboolean DripSolidUpdate(client_entity_t* drip, centity_t* owner)
 	mist->alpha = 0.4f;
 	mist->d_alpha = -0.8f;
 
-	DoWaterSplash(mist, color_white, DRIP_NUM_SPLASHES);
+	DoWaterSplash(mist, color_white, DRIP_NUM_SPLASHES, true);
 
 	AddEffect(NULL, mist);
 
@@ -97,16 +97,12 @@ static qboolean DripWaterUpdate(client_entity_t* drip, centity_t* owner)
 	mist->r.model = &drip_models[0];
 	mist->r.scale = 0.5f;
 	mist->r.flags = RF_TRANSLUCENT;
-
-	if (R_DETAIL >= DETAIL_HIGH) //mxd. +RF_LM_COLOR.
-		mist->r.flags |= RF_LM_COLOR;
-
 	mist->d_scale = -2.0f;
 	mist->d_alpha = -8.0f;
 
 	AddEffect(NULL, mist);
 
-	DoWaterSplash(mist, color_white, DRIP_NUM_SPLASHES);
+	DoWaterSplash(mist, color_white, DRIP_NUM_SPLASHES, false);
 	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, drip->r.origin);
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_WATERDROP1, SND_WATERDROP3)], 1.0f, ATTN_STATIC, 0.0f);
@@ -127,10 +123,6 @@ static qboolean DripLavaUpdate(client_entity_t* drip, centity_t* owner)
 	mist->r.model = &drip_models[1];
 	mist->r.scale = 0.5f;
 	mist->r.flags = RF_TRANSLUCENT;
-
-	if (R_DETAIL >= DETAIL_HIGH) //mxd. +RF_LM_COLOR.
-		mist->r.flags |= RF_LM_COLOR;
-
 	mist->alpha = 0.4f;
 	mist->d_alpha = -0.8f;
 

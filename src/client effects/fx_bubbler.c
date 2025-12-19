@@ -44,7 +44,7 @@ static qboolean BubbleThink(client_entity_t* bubble, centity_t* owner)
 	bubble->nextThinkTime = fx_time + 500;
 	bubble->Update = RemoveSelfAI;
 
-	DoWaterSplash(bubble, color_white, BUBBLE_NUM_SPLASHES);
+	DoWaterSplash(bubble, color_white, BUBBLE_NUM_SPLASHES, false);
 	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, bubble->r.origin);
 
 	fxi.S_StartSound(bubble->r.origin, -1, CHAN_AUTO, bubble_sounds[irand(0, 2)], 1.0f, ATTN_STATIC, 0.0f);

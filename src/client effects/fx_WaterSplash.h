@@ -8,4 +8,4 @@
 
 #include "Client Entities.h"
 
-extern void DoWaterSplash(client_entity_t* effect, paletteRGBA_t color, int count);
+extern void DoWaterSplash(client_entity_t* effect, paletteRGBA_t color, int count, qboolean use_lightmap_color); //mxd. +use_lightmap_color arg.

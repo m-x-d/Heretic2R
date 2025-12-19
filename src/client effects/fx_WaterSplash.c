@@ -10,10 +10,10 @@
 #include "Particle.h"
 #include "Random.h"
 
-void DoWaterSplash(client_entity_t* effect, const paletteRGBA_t color, int count)
+void DoWaterSplash(client_entity_t* effect, const paletteRGBA_t color, int count, const qboolean use_lightmap_color)
 {
 	count = min(500, count);
-	const int extra_flags = (R_DETAIL > DETAIL_HIGH ? PFL_LM_COLOR : 0); //mxd
+	const int extra_flags = ((use_lightmap_color && R_DETAIL > DETAIL_HIGH) ? PFL_LM_COLOR : 0); //mxd
 
 	for (int i = 0; i < count; i++)
 	{
@@ -39,5 +39,5 @@ void FXWaterSplash(centity_t* owner, const int type, const int flags, vec3_t ori
 
 	AddEffect(NULL, effect);
 
-	DoWaterSplash(effect, color_white, count); //mxd. Use color_white.
+	DoWaterSplash(effect, color_white, count, false); //mxd. Use color_white.
 }
