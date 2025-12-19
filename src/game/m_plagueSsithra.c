@@ -208,12 +208,8 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 		if (SsithraCheckInWater(self))
 			return;
 
-		vec3_t s_maxs;
-		VectorCopy(self->maxs, s_maxs);
-		s_maxs[2] += 32.0f;
-
-		vec3_t source;
-		VectorCopy(self->s.origin, source);
+		const vec3_t s_maxs = VEC3_INITA(self->maxs, 0.0f, 0.0f, 32.0f);
+		vec3_t source = VEC3_INIT(self->s.origin);
 
 		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
@@ -226,9 +222,7 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 		if (trace.fraction == 1.0f)
 		{
 			// Clear ahead and above.
-			vec3_t source2;
-			VectorCopy(source, source2);
-			source2[2] -= 1024.0f;
+			vec3_t source2 = VEC3_INITA(source, 0.0f, 0.0f, -1024.0f);
 
 			// Trace down.
 			gi.trace(source, self->mins, self->maxs, source2, self, MASK_ALL, &trace);
@@ -290,9 +284,7 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 
 	if (!jump_up_check)
 	{
-		vec3_t source;
-		VectorCopy(self->s.origin, source);
-		source[2] -= 10.0f;
+		vec3_t source = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -10.0f);
 
 		if (gi.pointcontents(source) & CONTENTS_WATER)
 		{
@@ -328,8 +320,7 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 			{
 				VectorCopy(trace.endpos, source);
 
-				vec3_t source2;
-				VectorCopy(source, source2);
+				const vec3_t source2 = VEC3_INIT(source);
 				source[2] -= 64.0f;
 
 				const vec3_t mins = { self->mins[0], self->mins[1], 0.0f };
@@ -353,8 +344,7 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 	// Jumping up?
 	if (target_origin[2] > self->s.origin[2] + 28.0f || !(self->monsterinfo.aiflags & AI_FLEE))
 	{
-		vec3_t source;
-		VectorCopy(self->s.origin, source);
+		vec3_t source = VEC3_INIT(self->s.origin);
 
 		//FIXME: what about if running away?
 		const float height_diff = (target_origin[2] + target_mins[2]) - (self->s.origin[2] + self->mins[2]) + 32.0f;
@@ -395,8 +385,7 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 	}
 
 	// Check to jump over something.
-	vec3_t save_org;
-	VectorCopy(self->s.origin, save_org);
+	const vec3_t save_org = VEC3_INIT(self->s.origin);
 	const qboolean can_move = M_walkmove(self, self->s.angles[YAW], 64.0f);
 	VectorCopy(save_org, self->s.origin);
 
@@ -408,9 +397,7 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 		vec3_t end_pos;
 		VectorMA(self->s.origin, 128.0f, forward, end_pos);
 
-		vec3_t mins;
-		VectorCopy(self->mins, mins);
-		mins[2] += 24.0f; // Can clear it.
+		const vec3_t mins = VEC3_INITA(self->mins, 0.0f, 0.0f, 24.0f); // Can clear it.
 
 		trace_t trace;
 		gi.trace(self->s.origin, mins, self->maxs, end_pos, self, MASK_SOLID, &trace);
