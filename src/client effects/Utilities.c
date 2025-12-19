@@ -169,8 +169,7 @@ int GetFallTime(vec3_t origin, const float velocity, const float acceleration, c
 	const vec3_t mins = { -radius, -radius, -1.0f };
 	const vec3_t maxs = {  radius,  radius,  1.0f };
 
-	vec3_t end;
-	VectorCopy(origin, end);
+	vec3_t end = VEC3_INIT(origin);
 	end[2] += (velocity * maxtime) + acceleration * (maxtime * maxtime) * 0.5f; // From s = ut + 0.5at^2
 
 	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CEF_CLIP_TO_WORLD, trace);
@@ -185,9 +184,7 @@ int GetWaterNormal(const vec3_t origin, const float radius, const float maxdist,
 	const vec3_t mins = { -radius, -radius, -1.0f };
 	const vec3_t maxs = {  radius,  radius,  1.0f };
 
-	vec3_t end;
-	VectorCopy(origin, end);
-	end[2] -= maxdist;
+	const vec3_t end = VEC3_INITA(origin, 0.0f, 0.0f, -maxdist);
 
 	trace_t trace;
 	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CEF_CLIP_TO_WORLD, &trace);
@@ -203,8 +200,6 @@ int GetWaterNormal(const vec3_t origin, const float radius, const float maxdist,
 
 static void FizzleEffect(const client_entity_t* self, vec3_t surface_top, vec3_t normal)
 {
-	vec3_t spot;
-
 	if (self != NULL && self->dlight != NULL)
 		self->dlight->intensity = 0; // Lights out.
 
@@ -219,6 +214,7 @@ static void FizzleEffect(const client_entity_t* self, vec3_t surface_top, vec3_t
 	const int num_puffs = GetScaledCount(irand(2, 5), 0.3f);
 	for (int i = 0; i < num_puffs; i++)
 	{
+		vec3_t spot;
 		spot[0] = surface_top[0] + flrand(-3.0f, 3.0f);
 		spot[1] = surface_top[1] + flrand(-3.0f, 3.0f);
 		spot[2] = surface_top[2] + flrand(0.0f, 3.0f);
