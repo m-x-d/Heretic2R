@@ -179,14 +179,12 @@ static void SV_WriteServerFile(const SavegameType_t save_type) //mxd. qboolean a
 #define SAVE_ENTERING	"Entering" //mxd
 #define SAVE_QUICK		"Quicksave" //mxd
 
-	FILE* f;
-	struct tm newtime;
-	time_t aclock;
-	char comment[64]; // Q2: [32]
-	char name[MAX_OSPATH];
+	static const char* month_names[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }; //mxd
 
+	char name[MAX_OSPATH];
 	Com_sprintf(name, sizeof(name), "%s/save/current/server.ssv", FS_Userdir()); // Q2: FS_Gamedir
 
+	FILE* f;
 	if (fopen_s(&f, name, "wb") != 0) //mxd. fopen -> fopen_s
 	{
 		Com_Printf("Couldn't write %s\n", name);
@@ -194,7 +192,7 @@ static void SV_WriteServerFile(const SavegameType_t save_type) //mxd. qboolean a
 	}
 
 	// Write the comment field.
-	memset(comment, 0, sizeof(comment));
+	char comment[64] = { 0 }; // Q2: [32]
 
 	if (save_type == SGT_AUTOSAVE)
 	{
@@ -206,11 +204,15 @@ static void SV_WriteServerFile(const SavegameType_t save_type) //mxd. qboolean a
 	}
 	else
 	{
+		time_t aclock;
 		time(&aclock);
+
+		struct tm newtime;
 		localtime_s(&newtime, &aclock); //mxd. localtime -> localtime_s
 
-		Com_sprintf(comment, sizeof(comment), "%2i:%i%i %2i/%2i\n",
-			newtime.tm_hour, newtime.tm_min / 10, newtime.tm_min % 10, newtime.tm_mon + 1, newtime.tm_mday);
+		//mxd. Changed to more commonly used datetime format.
+		Com_sprintf(comment, sizeof(comment), "%s %i, %i %i:%02i:%02i\n",
+			month_names[newtime.tm_mon], newtime.tm_mday, newtime.tm_year + 1900, newtime.tm_hour, newtime.tm_min, newtime.tm_sec);
 
 		strncat_s(comment, sizeof(comment), sv.configstrings[CS_NAME], sizeof(comment) - 1 - strlen(comment));
 	}
