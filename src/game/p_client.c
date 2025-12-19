@@ -1536,6 +1536,45 @@ static void InitClientPersistant(const edict_t* player)
 	info->pers.connected = true;
 }
 
+//mxd. Replicates PM_UpdateWaterLevel() logic...
+static void SetInitialWaterLevel(edict_t* ent)
+{
+	const vec3_t bottom_pos = VEC3_INITA(ent->s.origin, 0.0f, 0.0f, ent->mins[2] + 1.0f);
+
+	int contents = gi.pointcontents(bottom_pos);
+	if (!(contents & MASK_WATER)) // Not submerged.
+	{
+		ent->watertype = 0;
+		ent->waterlevel = 0;
+
+		return;
+	}
+
+	ent->watertype = contents;
+	ent->waterlevel = 1;
+
+	const vec3_t top_pos = VEC3_INITA(ent->s.origin, 0.0f, 0.0f, ent->maxs[2]);
+
+	contents = gi.pointcontents(top_pos);
+	if (!(contents & MASK_WATER)) // Partially submerged.
+	{
+		trace_t trace;
+		gi.trace(top_pos, NULL, NULL, bottom_pos, ent, MASK_PLAYERSOLID, &trace);
+
+		if (trace.fraction < 1.0f)
+			ent->waterlevel = 2;
+	}
+	else // Fully submerged.
+	{
+		ent->waterlevel = 3;
+	}
+
+	ent->client->old_waterlevel = ent->waterlevel;
+
+	if (ent->waterlevel > 0)
+		ent->flags |= FL_INWATER;
+}
+
 // Called when a player connects to a server or respawns in a deathmatch.
 static void PutClientInServer(edict_t* ent)
 {
@@ -1634,8 +1673,6 @@ static void PutClientInServer(edict_t* ent)
 
 	ent->pain = PlayerPain;
 	ent->die = PlayerDie;
-	ent->waterlevel = 0;
-	ent->watertype = 0;
 	ent->flags &= ~FL_NO_KNOCKBACK;
 	ent->svflags &= ~SVF_DEADMONSTER;
 
@@ -1644,6 +1681,9 @@ static void PutClientInServer(edict_t* ent)
 	VectorCopy(player_mins, ent->intentMins);
 	VectorCopy(player_maxs, ent->intentMaxs);
 	VectorClear(ent->velocity);
+
+	//mxd. Set initial waterlevel (to prevent spawning water splash FX and playing splash sound in P_WorldEffects() if spawned underwater).
+	SetInitialWaterLevel(ent);
 
 	// Initialize the player's gclient_t and playerstate_t.
 
