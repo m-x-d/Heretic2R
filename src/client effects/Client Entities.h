@@ -142,6 +142,7 @@ typedef struct client_entity_s
 		int NoOfAnimFrames;
 		int SpawnInfo;
 		float yaw;
+		int puzzle_pickup_tag; //mxd
 	};
 
 	// For spritelines.
