@@ -138,10 +138,7 @@ void BecomeStatic(client_entity_t* self)
 // If max_dist > 0 returns distance to ceiling.
 float GetSolidDist(const vec3_t origin, const float radius, const float max_dist) //mxd. 'int' return type in original logic, distance was returned via 'float* dist' arg.
 {
-	vec3_t end;
-	VectorCopy(origin, end);
-	end[2] += max_dist;
-
+	const vec3_t end = VEC3_INITA(origin, 0.0f, 0.0f, max_dist);
 	const vec3_t mins = { -radius, -radius, -radius }; //mxd. Original logic sets mins[2] to -1.0.
 	const vec3_t maxs = {  radius,  radius,  radius }; //mxd. Original logic sets maxs[2] to 1.0.
 
@@ -149,12 +146,12 @@ float GetSolidDist(const vec3_t origin, const float radius, const float max_dist
 	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CEF_CLIP_TO_WORLD, &trace);
 
 	//mxd. Initial bbox stuck in a floor (or ceiling). Let's try to recover...
-	if (trace.startsolid)
+	if (trace.startsolid && (trace.fraction == 0.0f || !(trace.contents & CONTENTS_WATER))) // If origin is underwater, we'll get startsolid with valid fraction and endpos, hence extra contents and fraction checks --mxd.
 	{
 		fxi.Trace(origin, vec3_origin, vec3_origin, end, MASK_DRIP, CEF_CLIP_TO_WORLD, &trace);
 
 		// No dice. Origin stuck in a floor (or ceiling) too...
-		if (trace.startsolid) //TODO: we could move some distance in direction opposite to 'dist' and retry. Not sure if needed, though.
+		if (trace.startsolid && trace.fraction == 0.0f) //TODO: we could move some distance in direction opposite to 'dist' and retry. Not sure if needed, though.
 			return 0.0f;
 
 		return trace.endpos[2] - origin[2] - radius;
