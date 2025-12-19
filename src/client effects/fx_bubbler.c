@@ -53,15 +53,9 @@ static qboolean BubbleThink(client_entity_t* bubble, centity_t* owner)
 
 static qboolean BubblerParticleSpawner(client_entity_t* spawner, centity_t* owner)
 {
-	vec3_t origin;
-	VectorCopy(spawner->r.origin, origin);
-
-	origin[0] += flrand(0.0f, 5.0f);
-	origin[1] += flrand(0.0f, 5.0f);
-	origin[2] += flrand(0.0f, 5.0f);
-
 	spawner->updateTime = irand(spawner->SpawnDelay / 2, spawner->SpawnDelay * 2);
 
+	const vec3_t origin = VEC3_INITA(spawner->r.origin, flrand(-5.0f, 5.0f), flrand(-5.0f, 5.0f), flrand(0.0f, 5.0f)); //mxd. XY: flrand(0.0f, 5.0f) in original logic.
 	client_entity_t* bubble = ClientEntity_new(-1, 0, origin, NULL, (int)spawner->SpawnData);
 
 	bubble->radius = flrand(0.5f, 1.5f);
@@ -80,10 +74,7 @@ void FXBubbler(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	const float up = GetSolidDist(origin, 1.0f, 1000.0f);
 
-	vec3_t dest;
-	VectorCopy(origin, dest);
-	dest[2] += up;
-
+	const vec3_t dest = VEC3_INITA(origin, 0.0f, 0.0f, up);
 	const float down = GetSolidDist(dest, 1.0f, -1000.0f);
 	const float time = GetTimeToReachDistance(0.0f, 100.0f, fabsf(up + down));
 
@@ -106,10 +97,7 @@ void FXBubble(centity_t* owner, int type, const int flags, vec3_t origin)
 {
 	const float up = GetSolidDist(origin, 1.0f, 1000.0f);
 
-	vec3_t dest;
-	VectorCopy(origin, dest);
-	dest[2] += up;
-
+	const vec3_t dest = VEC3_INITA(origin, 0.0f, 0.0f, up);
 	const float down = GetSolidDist(dest, 1.0f, -1000.0f);
 	const int time = (int)(GetTimeToReachDistance(0.0f, BUBBLE_ACCELERATION, fabsf(up + down)));
 
@@ -161,7 +149,7 @@ static qboolean CreateBubble(client_entity_t* self, centity_t* owner)
 // Create a constant client effect attached to something in water that releases bubbles.
 void FXRandWaterBubble(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	flags |= CEF_NO_DRAW | CEF_ABSOLUTE_PARTS | CEF_CHECK_OWNER;
+	flags |= (CEF_NO_DRAW | CEF_ABSOLUTE_PARTS | CEF_CHECK_OWNER);
 	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, irand(50, 500));
 
 	self->radius = 20.0f;
