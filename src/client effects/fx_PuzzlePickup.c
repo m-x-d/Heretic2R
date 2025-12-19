@@ -52,11 +52,16 @@ void PreCachePuzzleItems(void)
 
 static qboolean PuzzlePickupThink(struct client_entity_s* self, centity_t* owner)
 {
+	VectorCopy(owner->origin, self->r.origin); //mxd. Use interpolated origin (to make items dropped by Drop_Item() fly smoothly).
+
+	//mxd. Some puzzle items require exact positioning...
+	if (self->SpawnInfo == ITEM_SHIELD)
+		return true;
+
 	// Bob, but don't rotate.
 	const int step = fx_time - self->nextThinkTime; //mxd
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
 
-	VectorCopy(owner->origin, self->r.origin); //mxd. Use interpolated origin (to make items dropped by Drop_Item() fly smoothly).
 	self->r.origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
 	self->SpawnData += BOB_SPEED * lerp;
 
@@ -82,7 +87,7 @@ void FXPuzzlePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	if (tag == ITEM_CRYSTAL || tag == ITEM_GEM || tag == ITEM_POTION || tag == ITEM_CONT || tag == ITEM_SLUMCONT) //mxd
 	{
-		ce->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD;
+		ce->r.flags |= (RF_TRANSLUCENT | RF_TRANS_ADD);
 		ce->alpha = 0.7f;
 	}
 
@@ -90,6 +95,8 @@ void FXPuzzlePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		ce->r.skinnum = 1;
 
 	VectorDegreesToRadians(angles, ce->r.angles);
+
+	ce->SpawnInfo = tag; //mxd
 	ce->SpawnData = GetPickupBobPhase(origin); //mxd
 	ce->Update = PuzzlePickupThink;
 
