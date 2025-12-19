@@ -6,6 +6,7 @@
 
 #include "Client Effects.h"
 #include "fx_WaterSplash.h"
+#include "g_playstats.h"
 #include "Motion.h"
 #include "Particle.h"
 #include "Vector.h"
@@ -58,10 +59,11 @@ static qboolean BubblerParticleSpawner(client_entity_t* spawner, centity_t* owne
 	const vec3_t origin = VEC3_INITA(spawner->r.origin, flrand(-5.0f, 5.0f), flrand(-5.0f, 5.0f), flrand(0.0f, 5.0f)); //mxd. XY: flrand(0.0f, 5.0f) in original logic.
 	client_entity_t* bubble = ClientEntity_new(-1, 0, origin, NULL, (int)spawner->SpawnData);
 
+	const int r_flags = (R_DETAIL > DETAIL_HIGH ? RF_LM_COLOR : 0); //mxd
 	bubble->radius = flrand(0.5f, 1.5f);
 	bubble->r.model = &bubble_model;
 	bubble->r.scale = flrand(0.1f, 0.2f);
-	bubble->r.flags = RF_TRANSLUCENT;
+	bubble->r.flags = (RF_TRANSLUCENT | r_flags);
 	VectorCopy(spawner->acceleration, bubble->acceleration);
 	bubble->Update = BubbleThink;
 
@@ -72,11 +74,11 @@ static qboolean BubblerParticleSpawner(client_entity_t* spawner, centity_t* owne
 
 void FXBubbler(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	const float up = GetSolidDist(origin, 1.0f, 1000.0f);
+	const float up = GetSolidDist(origin, BUBBLE_RADIUS * 0.5f, 1000.0f);
 
 	const vec3_t dest = VEC3_INITA(origin, 0.0f, 0.0f, up);
-	const float down = GetSolidDist(dest, 1.0f, -1000.0f);
-	const float time = GetTimeToReachDistance(0.0f, 100.0f, fabsf(up + down));
+	const float down = GetSolidDist(dest, BUBBLE_RADIUS * 0.5f, -1000.0f);
+	const float time = GetTimeToReachDistance(0.0f, BUBBLE_ACCELERATION, fabsf(up + down));
 
 	char bubbles_per_min;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_BUBBLER].formatString, &bubbles_per_min);
@@ -103,10 +105,11 @@ void FXBubble(centity_t* owner, int type, const int flags, vec3_t origin)
 
 	client_entity_t* bubble = ClientEntity_new(FX_BUBBLE, flags, origin, NULL, time);
 
+	const int r_flags = (R_DETAIL > DETAIL_HIGH ? RF_LM_COLOR : 0); //mxd
 	bubble->radius = BUBBLE_RADIUS * 2;
 	bubble->r.model = &bubble_model;
 	bubble->r.scale = flrand(0.025f, 0.1f);
-	bubble->r.flags = RF_TRANSLUCENT;
+	bubble->r.flags = RF_TRANSLUCENT | r_flags;
 	bubble->acceleration[2] = BUBBLE_ACCELERATION;
 	bubble->Update = BubbleThink;
 
@@ -115,7 +118,8 @@ void FXBubble(centity_t* owner, int type, const int flags, vec3_t origin)
 
 void MakeBubble(vec3_t loc, client_entity_t* spawner)
 {
-	client_particle_t* bubble = ClientParticle_new(PART_32x32_BUBBLE, color_white, 1000);
+	const int extra_flags = (R_DETAIL > DETAIL_HIGH ? PFL_LM_COLOR : 0); //mxd
+	client_particle_t* bubble = ClientParticle_new(PART_32x32_BUBBLE | extra_flags, color_white, 1000);
 
 	VectorCopy(loc, bubble->origin);
 	bubble->d_alpha = 0;
