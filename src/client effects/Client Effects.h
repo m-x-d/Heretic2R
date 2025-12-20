@@ -47,7 +47,7 @@ extern void RegisterSounds(void); //mxd
 extern void RegisterModels(void); //mxd
 extern void RemoveEffects(centity_t* owner, int type, int flags, vec3_t origin);
 
-extern void MakeBubble(vec3_t loc, client_entity_t* spawner); //mxd
+extern void MakeBubble(const vec3_t origin, client_entity_t* spawner); //mxd
 extern void DoWaterEntrySplash(int type, int flags, vec3_t origin, byte splash_size, vec3_t dir); //mxd
 
 extern void FXExplosion1(centity_t* owner, int type, int flags, vec3_t origin);

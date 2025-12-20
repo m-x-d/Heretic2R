@@ -121,13 +121,13 @@ void FXBubble(centity_t* owner, int type, const int flags, vec3_t origin)
 	AddEffect(NULL, bubble);
 }
 
-void MakeBubble(vec3_t loc, client_entity_t* spawner)
+void MakeBubble(const vec3_t origin, client_entity_t* spawner)
 {
 	const int extra_flags = (R_DETAIL > DETAIL_HIGH ? PFL_LM_COLOR : 0); //mxd
 	client_particle_t* bubble = ClientParticle_new(PART_32x32_BUBBLE | extra_flags, color_white, 1000);
 
-	VectorCopy(loc, bubble->origin);
-	bubble->d_alpha = 0;
+	VectorCopy(origin, bubble->origin);
+	bubble->d_alpha = 0.0f;
 	bubble->scale = flrand(0.5f, 1.0f);
 	bubble->d_scale = -bubble->scale;
 	bubble->velocity[0] = flrand(-10.0f, 10.0f);
@@ -137,16 +137,16 @@ void MakeBubble(vec3_t loc, client_entity_t* spawner)
 	AddParticleToList(spawner, bubble);
 }
 
-static qboolean CreateBubble(client_entity_t* self, centity_t* owner)
+static qboolean RandWaterBubbleUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'Create_Bubble' in original logic.
 {
-	vec3_t loc;
+	vec3_t origin;
 
 	// Give us a random location.
-	VectorRandomSet(loc, 15.0f); //mxd
-	VectorAdd(loc, self->r.origin, loc);
+	VectorRandomSet(origin, 15.0f); //mxd
+	Vec3AddAssign(self->r.origin, origin);
 
 	// Create a bubble.
-	MakeBubble(loc, self);
+	MakeBubble(origin, self);
 
 	// Random time till next bubble.
 	self->updateTime = irand(50, 500);
@@ -159,11 +159,11 @@ static qboolean CreateBubble(client_entity_t* self, centity_t* owner)
 void FXRandWaterBubble(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	flags |= (CEF_NO_DRAW | CEF_ABSOLUTE_PARTS | CEF_CHECK_OWNER);
-	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, irand(50, 500));
+	client_entity_t* bubble = ClientEntity_new(type, flags, origin, NULL, irand(50, 500));
 
-	self->radius = 20.0f;
-	self->AddToView = LinkedEntityUpdatePlacement;
-	self->Update = CreateBubble;
+	bubble->radius = 20.0f;
+	bubble->AddToView = LinkedEntityUpdatePlacement;
+	bubble->Update = RandWaterBubbleUpdate;
 
-	AddEffect(owner, self);
+	AddEffect(owner, bubble);
 }
