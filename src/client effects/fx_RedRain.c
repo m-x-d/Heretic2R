@@ -100,7 +100,7 @@ static qboolean RedRainCloudUpdate(client_entity_t* self, centity_t* owner) //mx
 }
 
 // This is similar to the FXRedRainMissileExplode, except that the cloud needs knowledge of the rainfall height.
-static void SpawnRedRainClouds(vec3_t impact_pos, vec3_t rain_pos, const int duration, const qboolean powerup, centity_t* owner) //mxd. Named 'RedRainExplosion' in original logic.
+static void SpawnRedRainClouds(const vec3_t impact_pos, const vec3_t rain_pos, const int duration, const qboolean powerup, centity_t* owner) //mxd. Named 'RedRainExplosion' in original logic.
 {
 	client_entity_t* dlight = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE, impact_pos, NULL, 100);
 
@@ -266,10 +266,7 @@ void FXRedRain(centity_t* owner, const int type, int flags, vec3_t origin)
 	const float radius = (powerup ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS); //mxd
 
 	const float ceiling = GetSolidDist(origin, radius * 0.5f, MAX_REDRAINHEIGHT);
-
-	vec3_t ceil_origin;
-	VectorCopy(origin, ceil_origin);
-	ceil_origin[2] += ceiling;
+	const vec3_t ceil_origin = VEC3_INITA(origin, 0.0f, 0.0f, ceiling);
 
 	const float floor = GetSolidDist(origin, 1.0f, -MAX_FALL_DISTANCE);
 
