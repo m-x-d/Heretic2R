@@ -167,6 +167,10 @@ int GetFallTime(vec3_t origin, const float velocity, const float acceleration, c
 
 	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CEF_CLIP_TO_WORLD, trace);
 
+	//mxd. If origin is underwater, retry with MASK_SOLID. Otherwise, trace will stop when hitting adjacent water brushes (which is never what we expect).
+	if (trace->startsolid && (trace->contents & CONTENTS_WATER))
+		fxi.Trace(origin, mins, maxs, end, MASK_SOLID, CEF_CLIP_TO_WORLD, trace);
+
 	return (int)(GetTimeToReachDistance(velocity, acceleration, trace->endpos[2] - origin[2])); // In ms.
 }
 
