@@ -16,6 +16,7 @@
 #define BUBBLE_RADIUS			2.0f
 #define BUBBLE_NUM_SPLASHES		8
 #define BUBBLE_ACCELERATION		100.0f
+#define BUBBLE_CHECK_DISTANCE	1000.0f //mxd
 
 static struct model_s* bubble_model;
 static struct sfx_s* bubble_sounds[3]; //mxd
@@ -74,10 +75,10 @@ static qboolean BubblerParticleSpawner(client_entity_t* spawner, centity_t* owne
 
 void FXBubbler(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	const float up = GetSolidDist(origin, BUBBLE_RADIUS * 0.5f, 1000.0f);
+	const float up = GetSolidDist(origin, BUBBLE_RADIUS * 0.5f, BUBBLE_CHECK_DISTANCE, false);
 
 	const vec3_t dest = VEC3_INITA(origin, 0.0f, 0.0f, up);
-	const float down = GetSolidDist(dest, BUBBLE_RADIUS * 0.5f, -1000.0f);
+	const float down = GetSolidDist(dest, BUBBLE_RADIUS * 0.5f, -BUBBLE_CHECK_DISTANCE, true);
 	const float time = GetTimeToReachDistance(0.0f, BUBBLE_ACCELERATION, fabsf(up + down));
 
 	char bubbles_per_min;
@@ -97,10 +98,10 @@ void FXBubbler(centity_t* owner, const int type, int flags, vec3_t origin)
 
 void FXBubble(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	const float up = GetSolidDist(origin, 1.0f, 1000.0f);
+	const float up = GetSolidDist(origin, 1.0f, BUBBLE_CHECK_DISTANCE, false);
 
 	const vec3_t dest = VEC3_INITA(origin, 0.0f, 0.0f, up);
-	const float down = GetSolidDist(dest, 1.0f, -1000.0f);
+	const float down = GetSolidDist(dest, 1.0f, -BUBBLE_CHECK_DISTANCE, true);
 	const int time = (int)(GetTimeToReachDistance(0.0f, BUBBLE_ACCELERATION, fabsf(up + down)));
 
 	client_entity_t* bubble = ClientEntity_new(FX_BUBBLE, flags, origin, NULL, time);

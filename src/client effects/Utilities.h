@@ -22,7 +22,7 @@ extern qboolean ReferenceLinkedEntityUpdatePlacement(struct client_entity_s* sel
 extern void BecomeStatic(client_entity_t* self);
 
 // Physics functions.
-extern float GetSolidDist(const vec3_t origin, float radius, float max_dist);
+extern float GetSolidDist(const vec3_t origin, float radius, float max_dist, qboolean check_water); //mxd. +check_water arg.
 extern int GetFallTime(vec3_t origin, float velocity, float acceleration, float radius, float, trace_t* trace);
 extern void AdvanceParticle(struct client_particle_s* p, int ms);
 extern qboolean GetWaterNormal(const vec3_t origin, float radius, float maxdist, vec3_t normal, float* dist); //mxd. Returns int in original logic.
