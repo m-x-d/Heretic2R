@@ -25,7 +25,7 @@ extern void BecomeStatic(client_entity_t* self);
 extern float GetSolidDist(const vec3_t origin, float radius, float max_dist);
 extern int GetFallTime(vec3_t origin, float velocity, float acceleration, float radius, float, trace_t* trace);
 extern void AdvanceParticle(struct client_particle_s* p, int ms);
-extern int GetWaterNormal(const vec3_t origin, float radius, float maxdist, vec3_t normal, float* dist);
+extern qboolean GetWaterNormal(const vec3_t origin, float radius, float maxdist, vec3_t normal, float* dist); //mxd. Returns int in original logic.
 extern qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, trace_t* trace, qboolean update_velocity); //mxd. +update_velocity arg.
 
 extern int GetScaledCount(int count, float refdepend);

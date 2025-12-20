@@ -176,7 +176,7 @@ int GetFallTime(vec3_t origin, const float velocity, const float acceleration, c
 
 // Returns false if no plane found before maxdist traveled, or non-water plane hit.
 // Returns true, the plane normal of plane hit and the distance to the plane if a plane hit.
-int GetWaterNormal(const vec3_t origin, const float radius, const float maxdist, vec3_t normal, float* dist)
+qboolean GetWaterNormal(const vec3_t origin, const float radius, const float maxdist, vec3_t normal, float* dist)
 {
 	const vec3_t mins = { -radius, -radius, -1.0f };
 	const vec3_t maxs = {  radius,  radius,  1.0f };
