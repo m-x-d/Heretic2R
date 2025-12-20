@@ -46,9 +46,10 @@ static qboolean BubbleExpireUpdate(client_entity_t* self, centity_t* owner) //mx
 	{
 		// Delay the death of this entity by 500 ms. (to allow splash sound to play --mxd).
 		self->nextThinkTime = fx_time + 500;
-		
+
+		vec3_t ripple_org = VEC3_INITA(self->r.origin, 0.0f, 0.0f, self->radius + 1.5f); //mxd. Add z-offset, because we may've expired a bit below water surface...
+		FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, ripple_org);
 		DoWaterSplash(self, color_white, BUBBLE_NUM_SPLASHES, false);
-		FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, self->r.origin);
 
 		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, bubble_sounds[irand(0, 2)], 1.0f, ATTN_STATIC, 0.0f);
 	}
