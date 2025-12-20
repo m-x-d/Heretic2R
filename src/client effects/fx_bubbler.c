@@ -33,27 +33,34 @@ void PreCacheBubblerSFX(void) //mxd
 	bubble_sounds[2] = fxi.S_RegisterSound("ambient/waterdrop3.wav");
 }
 
-static qboolean BubbleThink(client_entity_t* bubble, centity_t* owner)
+static qboolean BubbleExpireUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXBubbleThink' in original logic.
 {
-	bubble->d_scale = -2.0f;
-	bubble->d_alpha = -8.0f;
-	bubble->velocity[2] = 0.0f;
-	bubble->acceleration[2] = 0.0f;
-	bubble->r.origin[2] += 1.0f;
+	self->d_scale = -1.0f;
+	self->d_alpha = -8.0f;
+	self->velocity[2] = 0.0f;
+	self->acceleration[2] = 0.0f;
+	self->Update = RemoveSelfAI;
 
-	// Delay the death of this entity by 500 ms.
-	bubble->nextThinkTime = fx_time + 500;
-	bubble->Update = RemoveSelfAI;
+	//mxd. Don't spawn splash/ripple effects when expired underwater.
+	if (self->SpawnInfo)
+	{
+		// Delay the death of this entity by 500 ms. (to allow splash sound to play --mxd).
+		self->nextThinkTime = fx_time + 500;
+		
+		DoWaterSplash(self, color_white, BUBBLE_NUM_SPLASHES, false);
+		FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, self->r.origin);
 
-	DoWaterSplash(bubble, color_white, BUBBLE_NUM_SPLASHES, false);
-	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, bubble->r.origin);
-
-	fxi.S_StartSound(bubble->r.origin, -1, CHAN_AUTO, bubble_sounds[irand(0, 2)], 1.0f, ATTN_STATIC, 0.0f);
+		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, bubble_sounds[irand(0, 2)], 1.0f, ATTN_STATIC, 0.0f);
+	}
+	else
+	{
+		self->nextThinkTime = fx_time;
+	}
 
 	return true;
 }
 
-static qboolean BubblerParticleSpawner(client_entity_t* spawner, centity_t* owner)
+static qboolean BubblerUpdate(client_entity_t* spawner, centity_t* owner) //mxd. Named 'FXBubblerParticleSpawner' in original logic.
 {
 	spawner->updateTime = irand(spawner->SpawnDelay / 2, spawner->SpawnDelay * 2);
 
@@ -67,8 +74,9 @@ static qboolean BubblerParticleSpawner(client_entity_t* spawner, centity_t* owne
 	bubble->r.flags = (RF_TRANSLUCENT | r_flags);
 	bubble->alpha = 0.01f; //mxd. Added subtle fade-in effect.
 	bubble->d_alpha = 1.5f; //mxd
+	bubble->SpawnInfo = spawner->SpawnInfo; //mxd
 	VectorCopy(spawner->acceleration, bubble->acceleration);
-	bubble->Update = BubbleThink;
+	bubble->Update = BubbleExpireUpdate;
 
 	AddEffect(NULL, bubble);
 
@@ -93,7 +101,8 @@ void FXBubbler(centity_t* owner, const int type, int flags, vec3_t origin)
 	self->SpawnDelay = 60 * 1000 / bubbles_per_min;
 	self->acceleration[2] = BUBBLE_ACCELERATION;
 	self->SpawnData = time;
-	self->Update = BubblerParticleSpawner;
+	self->SpawnInfo = (down < 0.0f); //mxd. down 0 means dest pos is underwater.
+	self->Update = BubblerUpdate;
 
 	AddEffect(owner, self);
 }
@@ -116,7 +125,8 @@ void FXBubble(centity_t* owner, int type, const int flags, vec3_t origin)
 	bubble->alpha = 0.01f; //mxd. Added subtle fade-in effect.
 	bubble->d_alpha = 1.5f; //mxd
 	bubble->acceleration[2] = BUBBLE_ACCELERATION;
-	bubble->Update = BubbleThink;
+	bubble->SpawnInfo = (down < 0.0f); //mxd. down 0 means dest pos is underwater.
+	bubble->Update = BubbleExpireUpdate;
 
 	AddEffect(NULL, bubble);
 }
