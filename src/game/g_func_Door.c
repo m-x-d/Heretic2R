@@ -236,10 +236,8 @@ void FuncDoorSpawnDoorTriggerThink(edict_t* self) //mxd. Named 'Think_SpawnDoorT
 	if (self->flags & FL_TEAMSLAVE)
 		return; // Only the team leader spawns a trigger.
 
-	vec3_t mins;
-	vec3_t maxs;
-	VectorCopy(self->absmin, mins);
-	VectorCopy(self->absmax, maxs);
+	vec3_t mins = VEC3_INIT(self->absmin);
+	vec3_t maxs = VEC3_INIT(self->absmax);
 
 	for (const edict_t* ent = self->teamchain; ent != NULL; ent = ent->teamchain)
 	{
