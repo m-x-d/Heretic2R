@@ -480,8 +480,6 @@ static void Cmd_Noclip_f(edict_t* ent)
 
 static void Cmd_Powerup_f(const edict_t* ent)
 {
-	char* msg;
-
 	if (DEATHMATCH && !SV_CHEATS)
 	{
 		gi.gamemsg_centerprintf(ent, GM_NOCHEATS);
@@ -493,15 +491,13 @@ static void Cmd_Powerup_f(const edict_t* ent)
 	if (ent->client->playerinfo.powerup_timer > level.time)
 	{
 		ent->client->playerinfo.powerup_timer = level.time - 0.1f;
-		msg = "Powerup OFF\n";
+		gi.cprintf(ent, PRINT_HIGH, "Powerup OFF\n");
 	}
 	else
 	{
-		ent->client->playerinfo.powerup_timer = level.time + (60 * 60 * 24); // One full day.
-		msg = "Powerup ON\n";
+		ent->client->playerinfo.powerup_timer = level.time + (60.0f * 60.0f * 24.0f); // One full day.
+		gi.cprintf(ent, PRINT_HIGH, "Powerup ON\n");
 	}
-
-	gi.cprintf(ent, PRINT_HIGH, msg);
 }
 
 // Use an inventory item.
