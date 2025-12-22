@@ -188,7 +188,7 @@ static void Cmd_Give_f(edict_t* ent)
 		return;
 	}
 
-	const char* name = gi.args();
+	const char* name = gi.argv(1); //H2_BUGFIX: mxd. gi.args() in original logic (so "give health NNN" didn't work).
 
 	// FOR TESTING ONLY!
 	if (Q_stricmp(name, "level") == 0)
@@ -246,7 +246,7 @@ static void Cmd_Give_f(edict_t* ent)
 		else
 			ent->health = ent->max_health;
 
-		if (give_all || ent->health == ent->max_health)
+		if (give_all || ent->health >= ent->max_health) //mxd. 'ent->health == ent->max_health' in original logic.
 			ResetPlayerBaseNodes(ent); // Put back all your limbs!
 
 		if (!give_all)
