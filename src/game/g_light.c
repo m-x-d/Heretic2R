@@ -370,12 +370,24 @@ void SP_light_gem2(edict_t* self)
 	VectorSet(self->maxs, 4.0f, 6.0f, 8.0f);
 
 	if (self->style == 1)
-		self->s.skinnum = 1;
+		self->s.skinnum = 1; //TODO: matching green halo?..
 
 	LightInit(self);
 
 	if (!(self->spawnflags & SF_TORCH_NOHALO))
-		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, CEF_FLAG6 | CEF_FLAG8, self->s.origin, "");
+	{
+		//mxd. Offset halo origin a bit. Fixes halo not appearing, because light_gem2 origin is in solid when properly aligned to world geometry.
+		vec3_t angles = VEC3_INIT(self->s.angles);
+		angles[PITCH] *= -1.0f; // UGH...
+
+		vec3_t forward;
+		AngleVectors(angles, forward, NULL, NULL);
+
+		vec3_t origin;
+		VectorMA(self->s.origin, 3.5f, forward, origin);
+
+		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, CEF_FLAG6 | CEF_FLAG8, origin, "");
+	}
 
 	TorchInit(self);
 }
