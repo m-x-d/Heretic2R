@@ -398,28 +398,21 @@ static void Cmd_Give_f(edict_t* ent)
 		return;
 	}
 
-	// Give puzzle items (?).
-	if (give_all)
+	// Give puzzle items.
+	if (give_all || Q_stricmp(name, "puzzle") == 0) //mxd. +give puzzle option.
 	{
 		for (int i = 0; i < game.num_items; i++)
 		{
 			const gitem_t* item = &playerExport.p_itemlist[i];
-
-			if (item->pickup == NULL && !(item->flags & IT_PUZZLE))
-				continue;
-
-			if (item->flags & (IT_ARMOR | IT_WEAPON | IT_AMMO | IT_DEFENSE)) //TODO: should skip IT_HEALTH items too?
-				continue;
-
-			pers->inventory.Items[i] = 1;
+			if (item->pickup != NULL && (item->flags & IT_PUZZLE))
+				pers->inventory.Items[i] = 1;
 		}
 
 		return;
 	}
 
 	// Give specific item by name, with optional count.
-	const char* item_name = gi.argv(1); //mxd
-	gitem_t* item = P_FindItem(item_name);
+	gitem_t* item = P_FindItem(name);
 	if (item == NULL)
 	{
 		gi.dprintf("Unknown item\n");
