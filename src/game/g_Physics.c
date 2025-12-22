@@ -1031,8 +1031,7 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 	}
 
 	// We need this for pushing things later.
-	vec3_t org;
-	VectorCopy(pusher->s.angles, org);
+	vec3_t org = VEC3_INIT(pusher->s.angles);
 	Vec3AddAssign(amove, org);
 
 	vec3_t forward;
@@ -1091,8 +1090,7 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 	pushed_p++;
 
 	// Move the pusher to it's final position.
-	vec3_t pusher_org;
-	VectorCopy(pusher->s.origin, pusher_org);
+	const vec3_t pusher_org = VEC3_INIT(pusher->s.origin);
 	Vec3AddAssign(move, pusher->s.origin);
 	Vec3AddAssign(amove, pusher->s.angles);
 
@@ -1145,10 +1143,7 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 			// Figure movement due to the pusher's amove.
 			for (int test = 0; test < 4; test++)
 			{
-				vec3_t test_point;
-				VectorCopy(hold_org, test_point);
-				test_point[2] += check->mins[2];
-
+				vec3_t test_point = VEC3_INITA(hold_org, 0.0f, 0.0f, check->mins[2]);
 				VectorCopy(hold_org, check->s.origin);
 
 				if (test & 1)
@@ -1262,8 +1257,8 @@ static void Physics_Push(edict_t* self)
 		}
 	}
 
-	if (pushed_p > &pushed[MAX_EDICTS])
-		gi.error(ERR_FATAL, "pushed_p > &pushed[MAX_EDICTS], memory corrupted");
+	if (pushed_p > &pushed[MAX_EDICTS - 1]) //mxd. 'pushed_p > &pushed[MAX_EDICTS]' in original logic.
+		gi.error(ERR_FATAL, "pushed_p > &pushed[MAX_EDICTS - 1], memory corrupted");
 
 	if (pusher != NULL)
 	{
