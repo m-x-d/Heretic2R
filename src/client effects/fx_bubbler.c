@@ -86,7 +86,8 @@ static qboolean BubblerUpdate(client_entity_t* spawner, centity_t* owner) //mxd.
 
 void FXBubbler(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	const float up = GetSolidDist(origin, BUBBLE_RADIUS * 0.5f, BUBBLE_CHECK_DISTANCE, false);
+	const vec3_t check_pos = VEC3_INITA(origin, 0.0f, 0.0f, 1.0f); //mxd. Add small z-offset (many FXBubblers are placed with origins in solid in vanilla maps and updated GetSolidDist() logic returns 0 in such cases).
+	const float up = GetSolidDist(check_pos, BUBBLE_RADIUS * 0.5f, BUBBLE_CHECK_DISTANCE, false) - 1.0f;
 
 	const vec3_t dest = VEC3_INITA(origin, 0.0f, 0.0f, up);
 	const float down = GetSolidDist(dest, BUBBLE_RADIUS * 0.5f, -BUBBLE_CHECK_DISTANCE, true);
