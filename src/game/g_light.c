@@ -370,7 +370,7 @@ void SP_light_gem2(edict_t* self)
 	VectorSet(self->maxs, 4.0f, 6.0f, 8.0f);
 
 	if (self->style == 1)
-		self->s.skinnum = 1; //TODO: matching green halo?..
+		self->s.skinnum = 1;
 
 	LightInit(self);
 
@@ -386,7 +386,10 @@ void SP_light_gem2(edict_t* self)
 		vec3_t origin;
 		VectorMA(self->s.origin, 3.5f, forward, origin);
 
-		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, CEF_FLAG6 | CEF_FLAG8, origin, "");
+		int fx_flags = CEF_FLAG6; // Use 2-nd halo sprite.
+		fx_flags |= ((self->style == 1 ? CEF_FLAG7 : 0) | CEF_FLAG8); //mxd. Green or yellow tint.
+
+		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, fx_flags, origin, "");
 	}
 
 	TorchInit(self);

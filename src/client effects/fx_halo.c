@@ -84,9 +84,9 @@ void FXHalo(centity_t* owner, int type, int flags, vec3_t origin)
 	halo->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST);
 
 	// To figure out tint, we only want the top two bits of flags.
-	flags &= (CEF_FLAG7 | CEF_FLAG8);
+	const int tint_flags = flags & (CEF_FLAG7 | CEF_FLAG8);
 
-	switch (flags)
+	switch (tint_flags)
 	{
 		case CEF_FLAG7: // Blue-ish halo.
 			COLOUR_SET(halo->r.color, 90, 90, 175); //mxd. Use macro.
@@ -96,7 +96,8 @@ void FXHalo(centity_t* owner, int type, int flags, vec3_t origin)
 			COLOUR_SET(halo->r.color, 190, 180, 16); //mxd. Use macro.
 			break;
 
-		case CEF_FLAG7 | CEF_FLAG8: // White halo. mxd. halo->r.color is already white.
+		case CEF_FLAG7 | CEF_FLAG8: //mxd. Green halo (white halo in original logic (unused) - changed to better match light color of light_gem2).
+			COLOUR_SET(halo->r.color, 115, 222, 115);
 			break;
 
 		default: // Orange-brown-ish halo.
