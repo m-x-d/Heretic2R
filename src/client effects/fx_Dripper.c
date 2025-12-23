@@ -35,6 +35,7 @@ enum DripSoundID_e //mxd
 };
 
 static struct sfx_s* drip_sounds[NUM_SOUNDS]; //mxd
+static const paletteRGBA_t drip_yellow = { .c = 0xff09daf0 }; //mxd
 
 void PreCacheDripper(void)
 {
@@ -68,6 +69,7 @@ static qboolean DripSolidUpdate(client_entity_t* self, centity_t* owner)
 	mist->r.model = &drip_models[0];
 	mist->r.scale = 0.5f;
 	mist->r.flags = RF_TRANSLUCENT;
+	mist->r.color = self->r.color; //mxd. Colorize by drip type.
 
 	if (R_DETAIL >= DETAIL_HIGH) //mxd. +RF_LM_COLOR.
 		mist->r.flags |= RF_LM_COLOR;
@@ -75,7 +77,7 @@ static qboolean DripSolidUpdate(client_entity_t* self, centity_t* owner)
 	mist->alpha = 0.4f;
 	mist->d_alpha = -0.8f;
 
-	DoWaterSplash(mist, color_white, DRIP_NUM_SPLASHES, true);
+	DoWaterSplash(mist, self->r.color, DRIP_NUM_SPLASHES, true); //mxd. Colorize by drip type.
 
 	AddEffect(NULL, mist);
 
@@ -97,12 +99,14 @@ static qboolean DripWaterUpdate(client_entity_t* self, centity_t* owner)
 	mist->r.model = &drip_models[0];
 	mist->r.scale = 0.5f;
 	mist->r.flags = RF_TRANSLUCENT;
+	mist->r.color = self->r.color; //mxd. Colorize by drip type.
+
 	mist->d_scale = -2.0f;
 	mist->d_alpha = -8.0f;
 
 	AddEffect(NULL, mist);
 
-	DoWaterSplash(mist, color_white, DRIP_NUM_SPLASHES, false);
+	DoWaterSplash(mist, self->r.color, DRIP_NUM_SPLASHES, false); //mxd. Colorize by drip type.
 	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, self->r.origin);
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_WATERDROP1, SND_WATERDROP3)], 1.0f, ATTN_STATIC, 0.0f);
@@ -151,7 +155,7 @@ static qboolean DripperUpdate(client_entity_t* self, centity_t* owner) //mxd. Na
 	drip->r.model = &drip_models[2];
 	drip->r.scale = 0.1f;
 	drip->r.flags = RF_TRANSLUCENT; //mxd. Original logic also adds RF_ALPHA_TEXTURE flag, which is used only in conjunction with RF_TRANS_ADD flag in ref_gl1...
-	//drip->r.frame = spawner->r.frame; //mxd. waterdrop.sp2 has single frame...
+	drip->r.color = self->r.color; //mxd. Colorize by drip type.
 
 	if (R_DETAIL >= DETAIL_HIGH) //mxd. +RF_LM_COLOR.
 		drip->r.flags |= RF_LM_COLOR;
@@ -189,12 +193,12 @@ void FXDripper(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	byte drips_per_min;
 	byte frame;
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_DRIPPER].formatString, &drips_per_min, &frame); //TODO: 'frame' param is unused.
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_DRIPPER].formatString, &drips_per_min, &frame);
 
 	flags |= (CEF_NO_DRAW | CEF_NOMOVE | CEF_VIEWSTATUSCHANGED);
 	client_entity_t* spawner = ClientEntity_new(type, flags, origin, NULL, 1000);
 
-	//spawner->r.frame = frame; //mxd. waterdrop.sp2 has single frame...
+	spawner->r.color = (frame == 1 ? drip_yellow : color_white); //mxd. Original logic sets spawner->r.frame instead (but waterdrop.sp2 has single frame).
 
 	spawner->LifeTime = 60 * 1000 / drips_per_min;
 	spawner->Update = DripperUpdate;

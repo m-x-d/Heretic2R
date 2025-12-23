@@ -15,8 +15,8 @@
 
 void EnvWaterDripThink(edict_t* self) //mxd. Named 'waterdrip_go' in original logic.
 {
-	//const byte b_frame = ((self->spawnflags & SF_YELLOW) ? 1 : 0); //mxd
-	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_DRIPPER, CEF_BROADCAST, self->s.origin, "bb", self->count, 0); //mxd. Last arg was 0 or 1 (when SF_YELLOW) in original logic (but waterdrop.sp2 only has single frame...).
+	const byte b_frame = ((self->spawnflags & SF_YELLOW) ? 1 : 0); //mxd
+	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_DRIPPER, CEF_BROADCAST, self->s.origin, "bb", self->count, b_frame);
 	self->think = NULL;
 }
 
