@@ -58,10 +58,10 @@ void PreCacheDripperSFX(void) //mxd
 	drip_sounds[SND_LAVADROP3] = fxi.S_RegisterSound("ambient/lavadrop3.wav");
 }
 
-static qboolean DripSolidUpdate(client_entity_t* drip, centity_t* owner)
+static qboolean DripSolidUpdate(client_entity_t* self, centity_t* owner)
 {
-	vec3_t origin = VEC3_INIT(drip->r.origin);
-	origin[2] = drip->SpawnData;
+	vec3_t origin = VEC3_INIT(self->r.origin);
+	origin[2] = self->SpawnData;
 
 	client_entity_t* mist = ClientEntity_new(-1, 0, origin, NULL, 500);
 
@@ -82,15 +82,15 @@ static qboolean DripSolidUpdate(client_entity_t* drip, centity_t* owner)
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_SOLIDDROP1, SND_SOLIDDROP3)], 1.0f, ATTN_STATIC, 0.0f);
 
 	//FIXME: Returning false here doesn't work.
-	drip->Update = RemoveSelfAI;
+	self->Update = RemoveSelfAI;
 
 	return true;
 }
 
-static qboolean DripWaterUpdate(client_entity_t* drip, centity_t* owner)
+static qboolean DripWaterUpdate(client_entity_t* self, centity_t* owner)
 {
-	vec3_t origin = VEC3_INIT(drip->r.origin);
-	origin[2] = drip->SpawnData;
+	vec3_t origin = VEC3_INIT(self->r.origin);
+	origin[2] = self->SpawnData;
 
 	client_entity_t* mist = ClientEntity_new(-1, 0, origin, NULL, 500);
 
@@ -103,20 +103,20 @@ static qboolean DripWaterUpdate(client_entity_t* drip, centity_t* owner)
 	AddEffect(NULL, mist);
 
 	DoWaterSplash(mist, color_white, DRIP_NUM_SPLASHES, false);
-	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, drip->r.origin);
+	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, self->r.origin);
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_WATERDROP1, SND_WATERDROP3)], 1.0f, ATTN_STATIC, 0.0f);
 
 	//FIXME: Returning false here doesn't work.
-	drip->Update = RemoveSelfAI;
+	self->Update = RemoveSelfAI;
 
 	return true;
 }
 
-static qboolean DripLavaUpdate(client_entity_t* drip, centity_t* owner)
+static qboolean DripLavaUpdate(client_entity_t* self, centity_t* owner)
 {
-	vec3_t origin = VEC3_INIT(drip->r.origin);
-	origin[2] = drip->SpawnData;
+	vec3_t origin = VEC3_INIT(self->r.origin);
+	origin[2] = self->SpawnData;
 
 	client_entity_t* mist = ClientEntity_new(-1, 0, origin, NULL, 500);
 
@@ -135,18 +135,18 @@ static qboolean DripLavaUpdate(client_entity_t* drip, centity_t* owner)
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_LAVADROP1, SND_LAVADROP3)], 1.0f, ATTN_STATIC, 0.0f);
 
 	//FIXME: Returning false here doesn't work.
-	drip->Update = RemoveSelfAI;
+	self->Update = RemoveSelfAI;
 
 	return true;
 }
 
-static qboolean DripperParticleSpawner(client_entity_t* spawner, centity_t* owner)
+static qboolean DripperUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXDripperParticleSpawner' in original logic.
 {
 	// Refresh time so it gets updated a random amount.
-	spawner->updateTime = irand(spawner->LifeTime / 2, spawner->LifeTime * 2);
+	self->updateTime = irand(self->LifeTime / 2, self->LifeTime * 2);
 
 	// Spawn a drip to fall.
-	client_entity_t* drip = ClientEntity_new(-1, 0, spawner->r.origin, NULL, spawner->SpawnDelay);
+	client_entity_t* drip = ClientEntity_new(-1, 0, self->r.origin, NULL, self->SpawnDelay);
 
 	drip->r.model = &drip_models[2];
 	drip->r.scale = 0.1f;
@@ -161,10 +161,10 @@ static qboolean DripperParticleSpawner(client_entity_t* spawner, centity_t* owne
 	drip->d_alpha = 6.0f;
 
 	drip->radius = 2.0f;
-	drip->SpawnData = spawner->SpawnData;
-	VectorCopy(spawner->acceleration, drip->acceleration);
+	drip->SpawnData = self->SpawnData;
+	VectorCopy(self->acceleration, drip->acceleration);
 
-	switch (spawner->SpawnInfo & (CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_LAVA))
+	switch (self->SpawnInfo & (CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_LAVA))
 	{
 		case CONTENTS_WATER:
 			drip->Update = DripWaterUpdate;
@@ -197,7 +197,7 @@ void FXDripper(centity_t* owner, const int type, int flags, vec3_t origin)
 	//spawner->r.frame = frame; //mxd. waterdrop.sp2 has single frame...
 
 	spawner->LifeTime = 60 * 1000 / drips_per_min;
-	spawner->Update = DripperParticleSpawner;
+	spawner->Update = DripperUpdate;
 
 	spawner->acceleration[2] = GetGravity();
 	spawner->radius = DRIP_RADIUS;
