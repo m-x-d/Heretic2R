@@ -26,7 +26,7 @@
 typedef struct entity_s
 {
 	struct model_s** model; // Opaque type outside refresh. // Q2: struct model_s*
-	float angles[3];
+	float angles[3]; // In radians --mxd.
 	float origin[3];
 	int frame;
 

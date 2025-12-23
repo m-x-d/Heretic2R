@@ -56,14 +56,14 @@ void R_MatrixTranslate(matrix4_t* m, const vec3_t v)
 	m->m4x4[3][3] += v[0] * m->m4x4[0][3] + v[1] * m->m4x4[1][3] + v[2] * m->m4x4[2][3];
 }
 
-void R_MatrixRotate(matrix4_t* m, const vec3_t angles)
+void R_MatrixRotate(matrix4_t* m, const vec3_t angles_rad)
 {
-	const float sr = sinf(DEG2RAD(angles[ROLL]));
-	const float sp = sinf(DEG2RAD(angles[PITCH]));
-	const float sy = sinf(DEG2RAD(angles[YAW]));
-	const float cr = cosf(DEG2RAD(angles[ROLL]));
-	const float cp = cosf(DEG2RAD(angles[PITCH]));
-	const float cy = cosf(DEG2RAD(angles[YAW]));
+	const float sr = sinf(angles_rad[ROLL]);
+	const float sp = sinf(angles_rad[PITCH]);
+	const float sy = sinf(angles_rad[YAW]);
+	const float cr = cosf(angles_rad[ROLL]);
+	const float cp = cosf(angles_rad[PITCH]);
+	const float cy = cosf(angles_rad[YAW]);
 
 	const matrix4_t m1 =
 	{
