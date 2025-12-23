@@ -160,6 +160,12 @@ qboolean R_PointToScreen(const vec3_t pos, vec3_t screen_pos)
 	return true;
 }
 
+paletteRGBA_t R_ModulateRGBA(const paletteRGBA_t a, const paletteRGBA_t b) //mxd
+{
+	const paletteRGBA_t c = { .r = a.r * b.r / 255, .g = a.g * b.g / 255, .b = a.b * b.b / 255, .a = a.a * b.a / 255 };
+	return c;
+}
+
 paletteRGBA_t R_GetSpriteShadelight(const vec3_t origin, const byte alpha) //mxd
 {
 	static const vec3_t light_add = { 0.1f, 0.1f, 0.1f };
@@ -220,7 +226,7 @@ void R_HandleTransparency(const entity_t* e) // H2: HandleTrans().
 		{
 			if (e->flags & RF_LM_COLOR) //mxd
 			{
-				const paletteRGBA_t c = R_GetSpriteShadelight(e->origin, e->color.a);
+				const paletteRGBA_t c = R_ModulateRGBA(e->color, R_GetSpriteShadelight(e->origin, e->color.a));
 				glColor4ub(c.r, c.g, c.b, e->color.a);
 			}
 			else

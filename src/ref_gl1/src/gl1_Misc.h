@@ -17,6 +17,7 @@ extern void R_DrawNullModel(const entity_t* e);
 extern void R_TransformVector(const vec3_t v, vec3_t out);
 extern void R_RotateForEntity(const entity_t* e);
 extern qboolean R_PointToScreen(const vec3_t pos, vec3_t screen_pos); //mxd
+extern paletteRGBA_t R_ModulateRGBA(paletteRGBA_t a, paletteRGBA_t b); //mxd
 extern paletteRGBA_t R_GetSpriteShadelight(const vec3_t origin, byte alpha); //mxd
 
 extern void R_HandleTransparency(const entity_t* e);

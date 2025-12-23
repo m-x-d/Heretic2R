@@ -289,7 +289,7 @@ static void R_DrawParticles(const int num_particles, const particle_t* particles
 		paletteRGBA_t c;
 
 		if (p->type & PFL_LM_COLOR) //mxd
-			c = R_GetSpriteShadelight(p->origin, p->color.a);
+			c = R_ModulateRGBA(p->color, R_GetSpriteShadelight(p->origin, p->color.a));
 		else
 			c = p->color;
 
