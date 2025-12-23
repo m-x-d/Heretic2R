@@ -8,7 +8,6 @@
 
 #include <glad-GL1.3/glad.h> // Must be included before SDL.
 #include "gl1_Debug.h"
-#include "gl1_Matrix4.h"
 #include "ref.h"
 
 #define REF_TITLE			"OpenGL 1.3" // H2_1.07: "GL 2.1"; Q2: "GL 0.01".
@@ -159,7 +158,6 @@ extern vec3_t r_origin;
 
 extern float r_world_matrix[16];
 extern float r_projection_matrix[16]; //mxd
-extern matrix4_t r_bmodel_matrices[MAX_ENTITIES]; //mxd
 extern cplane_t frustum[4];
 
 extern refdef_t r_newrefdef;

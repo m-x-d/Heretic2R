@@ -44,7 +44,6 @@ vec3_t r_origin;
 
 float r_world_matrix[16];
 float r_projection_matrix[16]; //mxd
-matrix4_t r_bmodel_matrices[MAX_ENTITIES]; //mxd
 cplane_t frustum[4];
 
 refdef_t r_newrefdef; // Screen size info.
@@ -397,25 +396,6 @@ static void R_PolyBlend(void)
 		glEnable(GL_ALPHA_TEST);
 
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	}
-}
-
-//mxd. Update bmodel transform matrices.
-static void R_PrepareBmodels(void) //mxd
-{
-	if (!(int)r_drawentities->value)
-		return;
-
-	for (int i = 0; i < r_newrefdef.num_entities; i++)
-	{
-		const entity_t* e = r_newrefdef.entities[i];
-
-		if ((e->flags & RF_TRANSLUCENT) || e->model == NULL || *e->model == NULL || (*e->model)->type != mod_brush)
-			continue;
-
-		R_MatrixIdentity(&r_bmodel_matrices[i]);
-		R_MatrixTranslate(&r_bmodel_matrices[i], e->origin);
-		R_MatrixRotate(&r_bmodel_matrices[i], e->angles);
 	}
 }
 
@@ -936,7 +916,7 @@ static void R_RenderView(const refdef_t* fd)
 	R_SetFrustum();
 	R_SetupGL3D();
 	R_MarkLeaves(); // Done here so we know if we're in water.
-	R_PrepareBmodels(); //mxd
+	R_ResetBmodelTransforms(); //mxd
 	R_DrawWorld();
 	R_DrawEntitiesOnList();
 	R_RenderDlights();

@@ -5,6 +5,7 @@
 //
 
 #include "gl1_Light.h"
+#include "gl1_Matrix4.h"
 #include "Vector.h"
 
 #define DLIGHT_CUTOFF	64.0f
@@ -14,6 +15,14 @@ static float s_blocklights[34 * 34 * 3];
 
 static vec3_t pointcolor;
 static vec3_t lightspot; // DQII
+
+typedef struct BmodelTransform_s //mxd
+{
+	matrix4_t matrix;
+	qboolean updated;
+} BmodelTransform_t;
+
+static BmodelTransform_t r_bmodel_transforms[MAX_ENTITIES]; //mxd
 
 #pragma region ========================== DYNAMIC LIGHTS RENDERING ==========================
 
@@ -181,6 +190,12 @@ static void R_SetPointColor(const msurface_t* surf, const int ds, const int dt, 
 	Vec3ScaleAssign(gl_modulate->value, color);
 }
 
+void R_ResetBmodelTransforms(void) //mxd
+{
+	for (int i = 0; i < r_newrefdef.num_entities; i++)
+		r_bmodel_transforms[i].updated = false;
+}
+
 static int R_RecursiveLightPoint(const mnode_t* node, const vec3_t start, const vec3_t end)
 {
 	// Didn't hit anything.
@@ -283,21 +298,50 @@ void R_LightPoint(const vec3_t p, vec3_t color, const qboolean check_bmodels)
 			if ((e->flags & RF_TRANSLUCENT) || e->model == NULL || *e->model == NULL || (*e->model)->type != mod_brush)
 				continue;
 
+			const model_t* mdl = *e->model;
+
+			//mxd. For non-rotating bmodels, check bbox.
+			if (Vec3IsZero(e->origin) &&
+				p[0] < mdl->mins[0] || p[0] > mdl->maxs[0] ||
+				p[1] < mdl->mins[1] || p[1] > mdl->maxs[1] ||
+				p[2] < mdl->mins[2] || end[2] > mdl->maxs[2])
+			{
+				continue;
+			}
+
+			//mxd. For bmodels with defined origin, skip when not within model radius.
+			if (p[0] < e->origin[0] - mdl->radius || p[0] > e->origin[0] + mdl->radius ||
+				p[1] < e->origin[1] - mdl->radius || p[1] > e->origin[1] + mdl->radius ||
+				p[2] < e->origin[2] - mdl->radius || end[2] > e->origin[2] + mdl->radius)
+			{
+				continue;
+			}
+
+			//mxd. Lazily update bmodel transform...
+			BmodelTransform_t* t = &r_bmodel_transforms[i];
+			if (!t->updated)
+			{
+				R_MatrixIdentity(&t->matrix);
+				R_MatrixTranslate(&t->matrix, e->origin);
+				R_MatrixRotate(&t->matrix, e->angles);
+
+				t->updated = true;
+			}
+
 			// Move start and end points into the entity's frame of reference.
 			vec3_t e_start;
-			R_VectorInverseTransform(&r_bmodel_matrices[i], e_start, p);
+			R_VectorInverseTransform(&t->matrix, e_start, p);
 
 			vec3_t e_end;
-			R_VectorInverseTransform(&r_bmodel_matrices[i], e_end, end);
+			R_VectorInverseTransform(&t->matrix, e_end, end);
 
 			// And run the recursive light point on it too.
-			const model_t* mdl = *e->model;
 			if (R_RecursiveLightPoint(mdl->nodes + mdl->firstnode, e_start, e_end) == -1)
 				continue;
 
 			// A bmodel under a valid world hit will hit here too, so take the highest lightspot on all hits.
 			vec3_t cur_spot;
-			R_VectorTransform(&r_bmodel_matrices[i], cur_spot, lightspot); // Move lightspot back to world space.
+			R_VectorTransform(&t->matrix, cur_spot, lightspot); // Move lightspot back to world space.
 
 			if (cur_spot[2] > dist_z)
 			{
