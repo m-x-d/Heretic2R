@@ -5,6 +5,7 @@
 //
 
 #include "gl1_Light.h"
+#include "gl1_Matrix4.h"
 #include "Vector.h"
 
 #define DLIGHT_CUTOFF	64.0f
@@ -13,6 +14,7 @@ static int r_dlightframecount; //mxd. Made static.
 static float s_blocklights[34 * 34 * 3];
 
 static vec3_t pointcolor;
+static vec3_t lightspot; // DQII
 
 #pragma region ========================== DYNAMIC LIGHTS RENDERING ==========================
 
@@ -212,6 +214,8 @@ static int R_RecursiveLightPoint(const mnode_t* node, const vec3_t start, const 
 	if ((back < 0.0f) == side)
 		return -1;
 
+	VectorCopy(mid, lightspot); // DQII
+
 	// Check for impact on this node.
 	msurface_t* surf = &r_worldmodel->surfaces[node->firstsurface];
 	for (int i = 0; i < node->numsurfaces; i++, surf++)
@@ -253,13 +257,61 @@ void R_LightPoint(const vec3_t p, vec3_t color)
 		return;
 	}
 
-	const vec3_t end = { p[0], p[1], p[2] - 3072.0f }; // Q2: p[2] - 2048
+	float dist_z;
+	const vec3_t end = VEC3_INITA(p, 0.0f, 0.0f, -3072.0f); // Q2: p[2] - 2048
 	const int r = R_RecursiveLightPoint(r_worldmodel->nodes, p, end);
 
 	if (r == -1)
+	{
 		VectorSet(color, 0.25f, 0.25f, 0.25f); // Q2: VectorCopy(vec3_origin, color)
+		dist_z = end[2]; // DQII
+	}
 	else
+	{
 		VectorCopy(pointcolor, color);
+		dist_z = lightspot[2]; // DQII
+	}
+
+	//mxd. Ported DQII R_LightPoint logic (https://github.com/mhQuake/DirectQII/blob/4a2ae6383f74ae3deda327b19748f0924d212daf/DirectQII/r_light.c#L156).
+	// Find bmodels under the lightpoint - move the point to bmodel space, trace down, then check.
+	// If r < 0, it didn't find a bmodel, otherwise it did (a bmodel under a valid world hit will hit here too).
+	for (int i = 0; i < r_newrefdef.num_entities; i++)
+	{
+		const entity_t* e = r_newrefdef.entities[i];
+
+		if ((e->flags & RF_TRANSLUCENT) || e->model == NULL || *e->model == NULL || (*e->model)->type != mod_brush)
+			continue;
+
+		const model_t* mdl = *e->model;
+
+		//TODO: update each renderframe, not each R_LightPoint() call?
+		matrix4_t m;
+		R_MatrixIdentity(&m);
+		R_MatrixTranslate(&m, e->origin);
+		R_MatrixRotate(&m, e->angles);
+
+		// Move start and end points into the entity's frame of reference.
+		vec3_t e_start;
+		R_VectorInverseTransform(&m, e_start, p);
+
+		vec3_t e_end;
+		R_VectorInverseTransform(&m, e_end, end);
+
+		// And run the recursive light point on it too.
+		if (R_RecursiveLightPoint(mdl->nodes + mdl->firstnode, e_start, e_end) == -1)
+			continue;
+
+		// A bmodel under a valid world hit will hit here too, so take the highest lightspot on all hits.
+		vec3_t cur_spot;
+		R_VectorTransform(&m, cur_spot, lightspot); // Move lightspot back to world space.
+
+		if (cur_spot[2] > dist_z)
+		{
+			// Found a bmodel so copy it over.
+			VectorCopy(pointcolor, color);
+			dist_z = cur_spot[2];
+		}
+	}
 
 	// Add dynamic lights.
 	dlight_t* dl = &r_newrefdef.dlights[0];

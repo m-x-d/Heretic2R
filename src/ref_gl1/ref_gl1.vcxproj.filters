@@ -102,6 +102,9 @@
     <ClCompile Include="src\gl1_Sprite.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\gl1_Matrix4.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\gl1_Draw.h">
@@ -201,6 +204,9 @@
       <Filter>game</Filter>
     </ClInclude>
     <ClInclude Include="src\gl1_Sprite.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl1_Matrix4.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
