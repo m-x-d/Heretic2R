@@ -300,21 +300,25 @@ void R_LightPoint(const vec3_t p, vec3_t color, const qboolean check_bmodels)
 
 			const model_t* mdl = *e->model;
 
-			//mxd. For non-rotating bmodels, check bbox.
-			if (Vec3IsZero(e->origin) &&
-				p[0] < mdl->mins[0] || p[0] > mdl->maxs[0] ||
-				p[1] < mdl->mins[1] || p[1] > mdl->maxs[1] ||
-				p[2] < mdl->mins[2] || end[2] > mdl->maxs[2])
+			if (Vec3IsZero(e->origin))
 			{
-				continue;
+				//mxd. For non-rotating bmodels, check bbox.
+				if (p[0] < mdl->mins[0] || p[0] > mdl->maxs[0] ||
+					p[1] < mdl->mins[1] || p[1] > mdl->maxs[1] ||
+					p[2] < mdl->mins[2] || end[2] > mdl->maxs[2])
+				{
+					continue;
+				}
 			}
-
-			//mxd. For bmodels with defined origin, skip when not within model radius.
-			if (p[0] < e->origin[0] - mdl->radius || p[0] > e->origin[0] + mdl->radius ||
-				p[1] < e->origin[1] - mdl->radius || p[1] > e->origin[1] + mdl->radius ||
-				p[2] < e->origin[2] - mdl->radius || end[2] > e->origin[2] + mdl->radius)
+			else
 			{
-				continue;
+				//mxd. For bmodels with defined origin, skip when not within model radius.
+				if (p[0] < e->origin[0] - mdl->radius || p[0] > e->origin[0] + mdl->radius ||
+					p[1] < e->origin[1] - mdl->radius || p[1] > e->origin[1] + mdl->radius ||
+					p[2] < e->origin[2] - mdl->radius || end[2] > e->origin[2] + mdl->radius)
+				{
+					continue;
+				}
 			}
 
 			//mxd. Lazily update bmodel transform...
