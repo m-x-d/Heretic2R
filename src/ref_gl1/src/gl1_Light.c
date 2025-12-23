@@ -5,7 +5,6 @@
 //
 
 #include "gl1_Light.h"
-#include "gl1_Matrix4.h"
 #include "Vector.h"
 
 #define DLIGHT_CUTOFF	64.0f
@@ -249,7 +248,7 @@ static int R_RecursiveLightPoint(const mnode_t* node, const vec3_t start, const 
 	return R_RecursiveLightPoint(node->children[!side], mid, end);
 }
 
-void R_LightPoint(const vec3_t p, vec3_t color)
+void R_LightPoint(const vec3_t p, vec3_t color, const qboolean check_bmodels)
 {
 	if (r_worldmodel->lightdata == NULL)
 	{
@@ -273,43 +272,39 @@ void R_LightPoint(const vec3_t p, vec3_t color)
 	}
 
 	//mxd. Ported DQII R_LightPoint logic (https://github.com/mhQuake/DirectQII/blob/4a2ae6383f74ae3deda327b19748f0924d212daf/DirectQII/r_light.c#L156).
-	// Find bmodels under the lightpoint - move the point to bmodel space, trace down, then check.
-	// If r < 0, it didn't find a bmodel, otherwise it did (a bmodel under a valid world hit will hit here too).
-	for (int i = 0; i < r_newrefdef.num_entities; i++)
+	if (check_bmodels)
 	{
-		const entity_t* e = r_newrefdef.entities[i];
-
-		if ((e->flags & RF_TRANSLUCENT) || e->model == NULL || *e->model == NULL || (*e->model)->type != mod_brush)
-			continue;
-
-		const model_t* mdl = *e->model;
-
-		//TODO: update each renderframe, not each R_LightPoint() call?
-		matrix4_t m;
-		R_MatrixIdentity(&m);
-		R_MatrixTranslate(&m, e->origin);
-		R_MatrixRotate(&m, e->angles);
-
-		// Move start and end points into the entity's frame of reference.
-		vec3_t e_start;
-		R_VectorInverseTransform(&m, e_start, p);
-
-		vec3_t e_end;
-		R_VectorInverseTransform(&m, e_end, end);
-
-		// And run the recursive light point on it too.
-		if (R_RecursiveLightPoint(mdl->nodes + mdl->firstnode, e_start, e_end) == -1)
-			continue;
-
-		// A bmodel under a valid world hit will hit here too, so take the highest lightspot on all hits.
-		vec3_t cur_spot;
-		R_VectorTransform(&m, cur_spot, lightspot); // Move lightspot back to world space.
-
-		if (cur_spot[2] > dist_z)
+		// Find bmodels under the lightpoint - move the point to bmodel space, trace down, then check.
+		// If r < 0, it didn't find a bmodel, otherwise it did (a bmodel under a valid world hit will hit here too).
+		for (int i = 0; i < r_newrefdef.num_entities; i++)
 		{
-			// Found a bmodel so copy it over.
-			VectorCopy(pointcolor, color);
-			dist_z = cur_spot[2];
+			const entity_t* e = r_newrefdef.entities[i];
+
+			if ((e->flags & RF_TRANSLUCENT) || e->model == NULL || *e->model == NULL || (*e->model)->type != mod_brush)
+				continue;
+
+			// Move start and end points into the entity's frame of reference.
+			vec3_t e_start;
+			R_VectorInverseTransform(&r_bmodel_matrices[i], e_start, p);
+
+			vec3_t e_end;
+			R_VectorInverseTransform(&r_bmodel_matrices[i], e_end, end);
+
+			// And run the recursive light point on it too.
+			const model_t* mdl = *e->model;
+			if (R_RecursiveLightPoint(mdl->nodes + mdl->firstnode, e_start, e_end) == -1)
+				continue;
+
+			// A bmodel under a valid world hit will hit here too, so take the highest lightspot on all hits.
+			vec3_t cur_spot;
+			R_VectorTransform(&r_bmodel_matrices[i], cur_spot, lightspot); // Move lightspot back to world space.
+
+			if (cur_spot[2] > dist_z)
+			{
+				// Found a bmodel so copy it over.
+				VectorCopy(pointcolor, color);
+				dist_z = cur_spot[2];
+			}
 		}
 	}
 

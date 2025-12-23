@@ -78,7 +78,7 @@ void R_DrawNullModel(const entity_t* e) //mxd. Original logic uses 'currententit
 	if (e->flags & RF_FULLBRIGHT)
 		VectorSet(shadelight, 1.0f, 1.0f, 1.0f);
 	else
-		R_LightPoint(e->origin, shadelight);
+		R_LightPoint(e->origin, shadelight, false);
 
 	glPushMatrix();
 	R_RotateForEntity(e);
@@ -165,7 +165,7 @@ paletteRGBA_t R_GetSpriteShadelight(const vec3_t origin, const byte alpha) //mxd
 	static const vec3_t light_add = { 0.1f, 0.1f, 0.1f };
 
 	vec3_t c;
-	R_LightPoint(origin, c);
+	R_LightPoint(origin, c, false);
 	Vec3AddAssign(light_add, c); // Make it slightly brighter than lightmap color.
 	Vec3ScaleAssign(255.0f, c);
 

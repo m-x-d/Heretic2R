@@ -725,7 +725,7 @@ void R_DrawFlexModel(entity_t* e)
 	}
 	else if (!(e->flags & RF_GLOW)) //mxd. Skip when result is going to be ignored.
 	{
-		R_LightPoint(e->origin, shadelight); //mxd. Skip RF_WEAPONMODEL logic (never set in H2), skip gl_monolightmap logic.
+		R_LightPoint(e->origin, shadelight, true); //mxd. Skip RF_WEAPONMODEL logic (never set in H2), skip gl_monolightmap logic.
 	}
 
 	shadelight[0] *= (float)e->color.r / 255.0f;
