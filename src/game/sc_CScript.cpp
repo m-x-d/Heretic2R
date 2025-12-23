@@ -1071,7 +1071,8 @@ void CScript::HandlePlaySound()
 	//mxd. Remap non-existing sounds used in H2 scripts... //TODO: un-hardcode?
 	static const std::map<std::string, std::string> snd_remap =
 	{
-		{ "elves/diep.wav", "Monsters/plagueElf/voices/diep.wav" }, // Used in crane.ds
+		{ "elves/diep.wav",			"Monsters/plagueElf/voices/diep.wav" },	// Used in silverspring/crane.ds.
+		{ "doors/stonestop.wav",	"Doors/stoneend.wav" },					// Used in andoria/watrrr.ds.
 	};
 
 	const Variable* time_delay_var = nullptr;
