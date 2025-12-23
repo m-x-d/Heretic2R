@@ -6,7 +6,6 @@
 
 #include "gl1_Matrix4.h"
 #include "Vector.h"
-#include "q_shared.h"
 
 static void R_MatrixLoadf(matrix4_t* m, const float _11, const float _12, const float _13, const float _14, const float _21, const float _22, const float _23, const float _24, const float _31, const float _32, const float _33, const float _34, const float _41, const float _42, const float _43, const float _44)
 {
