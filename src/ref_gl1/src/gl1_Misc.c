@@ -176,9 +176,9 @@ paletteRGBA_t R_GetSpriteShadelight(const vec3_t origin, const byte alpha) //mxd
 	Vec3ScaleAssign(255.0f, c);
 
 	// Make sure light color is valid...
-	const float len = VectorLength(c);
-	if (len > 255.0f)
-		Vec3ScaleAssign(255.0f / len, c);
+	const float max = max(c[0], max(c[1], c[2]));
+	if (max > 255.0f)
+		Vec3ScaleAssign(255.0f / max, c);
 
 	const paletteRGBA_t color = { .r = (byte)c[0], .g = (byte)c[1], .b = (byte)c[2], alpha };
 
