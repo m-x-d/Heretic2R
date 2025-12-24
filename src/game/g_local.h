@@ -667,6 +667,7 @@ extern void G_TouchTriggers(edict_t* ent);
 extern void G_LinkMissile(edict_t* self);
 extern char* vtos(const vec3_t v);
 extern float VectorYaw(const vec3_t v);
+extern void VectorRotate(const vec3_t in, float yaw_deg, vec3_t out); //mxd
 
 // g_svcmds.c
 extern void ServerCommand(void);

@@ -697,15 +697,6 @@ void SP_obj_sign4(edict_t* self)
 #define SF_DRIP		1 //mxd
 #define SF_DARKSKIN	2 //mxd
 
-static void VectorRotate(const vec3_t in, const float yaw_deg, vec3_t out) //mxd. There's already VectorYaw() out there (which should probably be renamed to GetVectorYaw())...
-{
-	const float angle = yaw_deg * ANGLE_TO_RAD;
-
-	out[0] = in[0] * cosf(angle) - in[1] * sinf(angle);
-	out[1] = in[0] * sinf(angle) + in[1] * cosf(angle);
-	out[2] = in[2];
-}
-
 static void StalactiteInitDripper(edict_t* self, const vec3_t tip) //mxd. Added to reduce code duplication.
 {
 	if (!(self->spawnflags & SF_DRIP))

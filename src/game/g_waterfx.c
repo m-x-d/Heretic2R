@@ -8,6 +8,7 @@
 #include "g_obj.h" //mxd
 #include "Vector.h"
 #include "g_local.h"
+#include "Random.h"
 
 #pragma region ========================== env_water_drip ==========================
 
@@ -134,26 +135,20 @@ void SP_env_waterfall_base(edict_t* self)
 
 #define SF_NODRIP	1 //mxd
 
-static void SpawnDrippers(edict_t* self) //mxd. Added to reduce code duplication.
+static void SpawnFishheadDrippers(const edict_t* self, const vec3_t start, const vec3_t end) //mxd. Added to reduce code duplication.
 {
-	static const vec3_t offsets[] = //mxd
-	{
-		{ -20.0f, -60.0f, -50.0f },
-		{  55.0f,  30.0f, -70.0f },
-		{  0.0f,   60.0f, -70.0f },
-		{  65.0f, -7.0f,  -60.0f },
-	};
+	static const float lerp_mins[] = { 0.45f, 0.7f };
+	static const float lerp_maxs[] = { 0.65f, 1.0f };
 
-	if (self->spawnflags & SF_NODRIP)
-		return;
-
-	if (self->count == 0)
-		self->count = 20;
-
-	for (uint i = 0; i < ARRAY_SIZE(offsets); i++)
+	for (int i = 0; i < 2; i++)
 	{
 		vec3_t origin;
-		VectorAdd(self->s.origin, offsets[i], origin);
+		VectorLerp(start, flrand(lerp_mins[i], lerp_maxs[i]), end, origin);
+
+		VectorRotate(origin, self->s.angles[YAW], origin);
+		Vec3ScaleAssign(self->s.scale, origin);
+		Vec3AddAssign(self->s.origin, origin);
+
 		gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 0); //mxd. Last arg was 2 in original logic (but waterdrop.sp2 only has single frame...).
 	}
 }
@@ -166,7 +161,19 @@ static void SpawnDrippers(edict_t* self) //mxd. Added to reduce code duplication
 // count - number of drips per minute (default 20).
 void SP_obj_fishhead1(edict_t* self)
 {
-	SpawnDrippers(self); //mxd
+	static const vec3_t jaw_ls = VEC3_SET(-2.59204f, -50.1f, -42.2f); // Jaw back, left side.
+	static const vec3_t jaw_le = VEC3_SET(92.4f, -12.46f, -86.8f); // Jaw front, left side.
+	static const vec3_t jaw_rs = VEC3_SET(-2.59204f, 50.0f, -42.2f); // Jaw back, right side.
+	static const vec3_t jaw_re = VEC3_SET(92.4f, 12.41f, -86.8f); // Jaw front, right side.
+
+	if (!(self->spawnflags & SF_NODRIP))
+	{
+		if (self->count == 0)
+			self->count = 20;
+
+		SpawnFishheadDrippers(self, jaw_ls, jaw_le); //mxd
+		SpawnFishheadDrippers(self, jaw_rs, jaw_re); //mxd
+	}
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/fishheads/fishhead1/tris.fm");
 	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
@@ -185,7 +192,19 @@ void SP_obj_fishhead1(edict_t* self)
 // count - number of drips per minute (default 20).
 void SP_obj_fishhead2(edict_t* self)
 {
-	SpawnDrippers(self); //mxd
+	static const vec3_t jaw_ls = VEC3_SET(-2.49532f, -72.6f, -61.8f); // Jaw back, left side.
+	static const vec3_t jaw_le = VEC3_SET(106.8f, -31.1f, -112.5f); // Jaw front, left side.
+	static const vec3_t jaw_rs = VEC3_SET(-2.49532f, 72.6f, -61.8f); // Jaw back, right side.
+	static const vec3_t jaw_re = VEC3_SET(106.8f, 32.8f, -112.5f); // Jaw front, right side.
+
+	if (!(self->spawnflags & SF_NODRIP))
+	{
+		if (self->count == 0)
+			self->count = 20;
+
+		SpawnFishheadDrippers(self, jaw_ls, jaw_le); //mxd
+		SpawnFishheadDrippers(self, jaw_rs, jaw_re); //mxd
+	}
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/fishheads/fishhead2/tris.fm");
 	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.

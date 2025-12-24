@@ -353,6 +353,18 @@ float VectorYaw(const vec3_t v) //mxd. Named 'vectoyaw' in original version.
 	return yaw;
 }
 
+void VectorRotate(const vec3_t in, const float yaw_deg, vec3_t out) //mxd. There's already VectorYaw() out there (which should probably be renamed to GetVectorYaw())...
+{
+	const float angle = yaw_deg * ANGLE_TO_RAD;
+
+	const float x = in[0] * cosf(angle) - in[1] * sinf(angle);
+	const float y = in[0] * sinf(angle) + in[1] * cosf(angle);
+
+	out[0] = x;
+	out[1] = y;
+	out[2] = in[2];
+}
+
 void G_InitEdict(edict_t* self)
 {
 	self->s.clientEffects.buf = NULL;
