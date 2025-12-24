@@ -95,7 +95,7 @@ static qboolean FountainUpdate(client_entity_t* spawner, centity_t* owner) //mxd
 
 		const float accel = GetGravity();
 		const float dist = spawner->SpawnData - origin[2];
-		time = (int)(GetTimeToReachDistance(velocity[2], fabsf(accel), fabsf(dist))); //BUGFIX: mxd. GetTimeToReachDistance() expects positive acceleration and distance...
+		time = (int)(GetTimeToReachDistance(velocity[2], accel, dist));
 
 		drop = ClientParticle_new((int)(PART_32x32_WFALL | PFL_NEARCULL), spawner->color, time);
 
