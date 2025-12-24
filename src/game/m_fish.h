@@ -12,5 +12,5 @@ extern void SP_monster_fish(edict_t* self);
 extern void FishStaticsInit(void);
 
 //mxd. Required by save system...
-extern void FishIsBlocked(edict_t* self, struct trace_s* trace);
+extern void FishIsBlocked(edict_t* self, trace_t* trace);
 extern void FishThink(edict_t* self);

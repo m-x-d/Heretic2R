@@ -343,55 +343,58 @@ void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic.
 }
 
 // The fish hit something.
-void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fish_blocked' in original logic.
+void FishIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'fish_blocked' in original logic.
 {
 	// Dead fish don't rebound off stuff.
 	if (self->dead_state == DEAD_DEAD)
 		return;
 
-	// Did we hit a monster or player?
-	if (trace->ent != NULL && ((trace->ent->svflags & SVF_MONSTER) || trace->ent->client != NULL))
-	{
-		// Hit another fish - send us on our way. //mxd. Also bounce off ambushing monsters (to avoid breaking ambush setups) and non-targetable players.
-		if (trace->ent->classID == CID_FISH || (trace->ent->spawnflags & MSF_AMBUSH) || (trace->ent->flags & FL_NOTARGET))
-		{
-			FishPickBounceDirection(self);
-			return;
-		}
-
-		// Check if this guy is dead.
-		if (trace->ent->dead_state == DEAD_DEAD)
-		{
-			FishPickBounceDirection(self);
-			self->enemy = NULL;
-
-			return;
-		}
-
-		// Not dead, so lets BITE THE BASTARD :)
-		self->enemy = trace->ent;
-
-		vec3_t diff;
-		VectorSubtract(self->s.origin, trace->ent->s.origin, diff);
-		const float dist = VectorLength(diff);
-
-		if (dist < self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE + 50.0f && self->fish_max_pitch_speed == 4.0f) // Within 20 of bounding box & not out of water.
-		{
-			SetAnim(self, ANIM_BITE);
-			self->ai_mood = AI_MOOD_ATTACK;
-		}
-		else
-		{
-			FishMoveToTarget(self);
-		}
-
-		return;
-	}
-
-	// Did we hit a model of some type?
+	// We hit something, which is not world geometry.
 	if (trace->ent != NULL)
 	{
-		FishPickBounceDirection(self);
+		// Did we hit a monster or player?
+		if ((trace->ent->svflags & SVF_MONSTER) || trace->ent->client != NULL)
+		{
+			// Hit another fish - send us on our way. //mxd. Also bounce off plague ssithras (biting them seem to greatly confuse them), ambushing monsters (to avoid breaking ambush setups) and non-targetable players.
+			if (trace->ent->classID == CID_FISH || trace->ent->classID == CID_SSITHRA || (trace->ent->spawnflags & MSF_AMBUSH) || (trace->ent->flags & FL_NOTARGET))
+			{
+				FishPickBounceDirection(self);
+				return;
+			}
+
+			// Check if this guy is dead.
+			if (trace->ent->dead_state == DEAD_DEAD)
+			{
+				FishPickBounceDirection(self);
+
+				if (self->enemy == trace->ent) //mxd. Original logic unconditionally clears enemy (which is kinda strange).
+					self->enemy = NULL;
+
+				return;
+			}
+
+			// Not dead, so lets BITE THE BASTARD :)
+			self->enemy = trace->ent;
+
+			vec3_t diff;
+			VectorSubtract(self->s.origin, trace->ent->s.origin, diff);
+			const float dist = VectorLength(diff);
+
+			if (dist < self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE + 50.0f && self->fish_max_pitch_speed == 4.0f) // Within 20 of bounding box & not out of water.
+			{
+				SetAnim(self, ANIM_BITE);
+				self->ai_mood = AI_MOOD_ATTACK;
+			}
+			else
+			{
+				FishMoveToTarget(self);
+			}
+		}
+		else // Did we hit a model of some type?
+		{
+			FishPickBounceDirection(self);
+		}
+
 		return;
 	}
 
