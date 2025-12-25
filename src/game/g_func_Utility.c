@@ -52,8 +52,7 @@ void MoveCalc(edict_t* ent, const vec3_t dest, void (*func)(edict_t*)) //mxd. Na
 
 	if (ent->moveinfo.speed == ent->moveinfo.accel && ent->moveinfo.speed == ent->moveinfo.decel)
 	{
-		// H2_BUGFIX: mxd. For FL_TEAMSLAVEs, call MoveBegin() without delay. Fixes off-by-1-frame animation of FL_TEAMSLAVE dunc_door ents.
-		if ((ent->flags & FL_TEAMSLAVE) || level.current_entity == ((ent->flags & FL_TEAMSLAVE) ? ent->teammaster : ent))
+		if (level.current_entity == ((ent->flags & FL_TEAMSLAVE) ? ent->teammaster : ent))
 		{
 			MoveBegin(ent);
 		}

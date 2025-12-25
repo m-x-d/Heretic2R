@@ -1243,6 +1243,10 @@ static void Physics_Push(edict_t* self)
 	edict_t* pusher;
 	for (pusher = self; pusher != NULL; pusher = pusher->teamchain)
 	{
+		//mxd. For linked pushers, call think function BEFORE moving (fixes off-by-1-frame animation of linked doors). //TODO: check plats and trains...
+		if (pusher != self && ThinkTime(pusher))
+			pusher->think(pusher);
+
 		if (Vec3NotZero(pusher->velocity) || Vec3NotZero(pusher->avelocity))
 		{
 			// Object is moving.
@@ -1270,13 +1274,6 @@ static void Physics_Push(edict_t* self)
 		// If the pusher has a "blocked" function, call it.	Otherwise, just stay in place until the obstacle is gone.
 		if (pusher->blocked != NULL)
 			pusher->blocked(pusher, obstacle);
-	}
-	else
-	{
-		// The move succeeded, so call all think functions.
-		for (edict_t* moved = self; moved != NULL; moved = moved->teamchain)
-			if (ThinkTime(moved))
-				moved->think(moved);
 	}
 }
 
