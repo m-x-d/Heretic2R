@@ -84,6 +84,8 @@ void FuncPlatBlocked(edict_t* self, edict_t* other) //mxd. Named 'plat_blocked' 
 	if (self->spawnflags & SF_DOOR_CRUSHER)
 	{
 		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg * 10, 1, 0, MOD_CRUSH);
+		FuncHandleCrushingSounds(self, other); //mxd
+
 		return;
 	}
 

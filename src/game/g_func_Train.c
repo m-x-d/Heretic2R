@@ -55,7 +55,7 @@ void FuncTrainBlocked(edict_t* self, edict_t* other) //mxd. Named 'train_blocked
 {
 	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_BOSS))
 	{
-		// Give it a chance to go away on it's own terms (like gibs).
+		// Give it a chance to go away on its own terms (like gibs).
 		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, 3000, 1, DAMAGE_AVOID_ARMOR, MOD_CRUSH);
 
 		// If it's still there, nuke it.

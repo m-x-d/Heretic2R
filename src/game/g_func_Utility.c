@@ -316,4 +316,18 @@ void FuncPlayMoveEndSound(edict_t* ent) //mxd. Added to reduce code duplication.
 	}
 }
 
+void FuncHandleCrushingSounds(const edict_t* ent, const edict_t* other) //mxd
+{
+	edict_t* master = ent->teammaster;
+
+	// When crushed player, stop movement sound (because player's entity won't be despawned in SP and will linger until respawned in COOP/DM).
+	if (other->client != NULL && other->health < 1 && master->s.sound == master->moveinfo.sound_middle)
+	{
+		if (master->moveinfo.sound_end > 0)
+			gi.sound(ent, CHAN_NO_PHS_ADD + CHAN_VOICE, master->moveinfo.sound_end, 1.0f, ATTN_IDLE, 0.0f);
+
+		master->s.sound = 0;
+	}
+}
+
 #pragma endregion

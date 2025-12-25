@@ -271,9 +271,9 @@ void FuncDoorSpawnDoorTriggerThink(edict_t* self) //mxd. Named 'Think_SpawnDoorT
 
 void FuncDoorBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_blocked' in original logic.
 {
-	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_BOSS))
+	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_BOSS)) //TODO: client check not needed (can't have client with SVF_MONSTER flag)?
 	{
-		// Give it a chance to go away on it's own terms (like gibs).
+		// Give it a chance to go away on its own terms (like gibs).
 		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, 3000, 1, DAMAGE_AVOID_ARMOR, MOD_CRUSH);
 
 		// If it's still there, nuke it.
@@ -286,6 +286,8 @@ void FuncDoorBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_blocked' 
 	if (self->spawnflags & SF_DOOR_CRUSHER)
 	{
 		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg * 10, 1, 0, MOD_CRUSH);
+		FuncHandleCrushingSounds(self, other); //mxd
+
 		return;
 	}
 
@@ -304,6 +306,10 @@ void FuncDoorBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_blocked' 
 			for (edict_t* ent = self->teammaster; ent != NULL; ent = ent->teamchain)
 				FuncDoorGoDown(ent);
 		}
+	}
+	else // We are blocked and aren't going to move.
+	{
+		FuncHandleCrushingSounds(self, other); //mxd
 	}
 }
 
