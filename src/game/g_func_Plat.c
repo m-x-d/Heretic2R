@@ -69,10 +69,9 @@ static void FuncPlatGoUp(edict_t* ent) //mxd. Named 'plat_go_up' in original log
 
 void FuncPlatBlocked(edict_t* self, edict_t* other) //mxd. Named 'plat_blocked' in original logic.
 {
-	//TODO: invalid logic? Checks for both presence and absence of SVF_MONSTER flag! Last check is '!(other->svflags & SVF_BOSS)' in FuncDoorBlocked().
-	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_MONSTER))
+	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_BOSS)) //H2_BUGFIX: mxd. Original logic checks for SVF_MONSTER instead of SVF_BOSS (unlike FuncTrainBlocked() and FuncDoorBlocked()).
 	{
-		// Give it a chance to go away on it's own terms (like gibs).
+		// Give it a chance to go away on its own terms (like gibs).
 		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, 3000, 1, DAMAGE_AVOID_ARMOR, MOD_CRUSH);
 
 		// If it's still there, nuke it.
