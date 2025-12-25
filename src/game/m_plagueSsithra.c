@@ -780,8 +780,7 @@ qboolean SsithraAlert(edict_t* self, alertent_t* alerter, edict_t* enemy) //mxd.
 			else
 				self->alert_time = alerter->lifetime; // Be alert as long as the alert sticks around.
 
-			vec3_t save_angles;
-			VectorCopy(self->v_angle_ofs, save_angles);
+			const vec3_t save_angles = VEC3_INIT(self->v_angle_ofs);
 			VectorSet(self->v_angle_ofs, 0.0f, -90.0f, 0.0f);
 
 			// Fancy way of seeing if explosion was to right.
@@ -802,8 +801,7 @@ qboolean SsithraAlert(edict_t* self, alertent_t* alerter, edict_t* enemy) //mxd.
 			// Startle me, but don't wake up just yet.
 			self->alert_time = level.time + 4.0f; // Be ready to wake up for next 4 seconds.
 
-			vec3_t save_angles;
-			VectorCopy(self->v_angle_ofs, save_angles);
+			const vec3_t save_angles = VEC3_INIT(self->v_angle_ofs);
 			VectorSet(self->v_angle_ofs, 0.0f, -90.0f, 0.0f);
 
 			// Fancy way of seeing if explosion was to right.
@@ -1191,8 +1189,7 @@ void SsithraBlocked(edict_t* self, trace_t* trace) //mxd. Named 'ssithra_blocked
 	if (strength < 50.0f)
 		return;
 
-	vec3_t hit_dir;
-	VectorCopy(self->velocity, hit_dir);
+	vec3_t hit_dir = VEC3_INIT(self->velocity);
 	hit_dir[2] = max(0.0f, hit_dir[2]);
 
 	VectorNormalize(hit_dir);
@@ -1544,13 +1541,7 @@ void SsithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_
 
 	if (other->takedamage != DAMAGE_NO)
 	{
-		vec3_t normal;
-
-		if (plane != NULL)
-			VectorCopy(plane->normal, normal);
-		else
-			VectorCopy(vec3_up, normal);
-
+		const vec3_t normal = VEC3_INIT((plane != NULL) ? plane->normal : vec3_up);
 		const int damage = irand(SSITHRA_DMG_MIN, SSITHRA_DMG_MAX); //mxd. flrand() in original logic.
 		T_Damage(other, self, self->owner, self->movedir, self->s.origin, normal, damage, 0, 0, MOD_DIED);
 	}
@@ -1703,8 +1694,7 @@ void ssithra_check_bound(edict_t* self) //mxd. Named 'ssithraBoundCheck' in orig
 	vec3_t up;
 	AngleVectors(self->s.angles, forward, NULL, up);
 
-	vec3_t start_pos;
-	VectorCopy(self->s.origin, start_pos);
+	vec3_t start_pos = VEC3_INIT(self->s.origin);
 
 	vec3_t end_pos;
 	VectorMA(start_pos, 48.0f, forward, end_pos); // Forward.
@@ -1792,8 +1782,7 @@ void ssithra_check_dive(edict_t* self) //mxd. Named 'ssithraDiveCheck' in origin
 	vec3_t up;
 	AngleVectors(self->s.angles, forward, NULL, up);
 
-	vec3_t start_pos;
-	VectorCopy(self->s.origin, start_pos);
+	vec3_t start_pos = VEC3_INIT(self->s.origin);
 
 	vec3_t end_pos;
 	VectorMA(start_pos, 48.0f, forward, end_pos); // Forward.
@@ -1868,9 +1857,7 @@ void ssithra_out_of_water_jump(edict_t* self) //mxd. Named 'ssithraNamorJump' in
 	//FIXME: jumps too high sometimes?
 	self->ssithra_watersplash_spawned = false;
 
-	vec3_t top;
-	VectorCopy(self->s.origin, top);
-	top[2] += 512.0f;
+	vec3_t top = VEC3_INITA(self->s.origin, 0.0f, 0.0f, 512.0f);
 
 	trace_t trace;
 	gi.trace(self->s.origin, vec3_origin, vec3_origin, top, self, MASK_SOLID, &trace);
@@ -1916,8 +1903,7 @@ void ssithra_try_spawn_water_exit_splash(edict_t* self) //mxd. Named 'ssithraChe
 	if (self->ssithra_watersplash_spawned || SsithraCheckInWater(self))
 		return;
 
-	vec3_t dir;
-	VectorCopy(self->velocity, dir);
+	vec3_t dir = VEC3_INIT(self->velocity);
 	VectorNormalize(dir);
 
 	vec3_t end_pos;
@@ -1945,9 +1931,7 @@ void ssithra_try_spawn_water_entry_splash(edict_t* self) //mxd. Named 'ssithraCh
 
 	if (fabsf(self->velocity[0]) + fabsf(self->velocity[1]) < 200.0f)
 	{
-		vec3_t end_pos;
-		VectorCopy(self->s.origin, end_pos);
-		end_pos[2] -= 128.0f;
+		const vec3_t end_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -128.0f);
 
 		trace_t trace;
 		gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_ALL, &trace);
@@ -2046,11 +2030,8 @@ void ssithra_collapse(edict_t* self) //mxd. Named 'ssithraCollapse' in original 
 		self->svflags &= ~SVF_DEADMONSTER; // Now treat as a different content type.
 		self->msgHandler = DefaultMsgHandler;
 
-		vec3_t gore_spot;
-		VectorCopy(self->s.origin, gore_spot);
-		gore_spot[2] += self->maxs[2] * 0.75f;
-
 		self->health = 1;
+		const vec3_t gore_spot = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2] * 0.75f);
 		T_Damage(self, self, self, vec3_origin, gore_spot, vec3_origin, 10, 20, 0, MOD_DIED);
 		self->health = -33;
 	}
@@ -2062,11 +2043,8 @@ void ssithra_kill_self(edict_t* self) //mxd. Named 'ssithraKillSelf' in original
 	self->msgHandler = DefaultMsgHandler;
 	self->dead_state = DEAD_NO;
 
-	vec3_t gore_spot;
-	VectorCopy(self->s.origin, gore_spot);
-	gore_spot[2] += 12.0f;
-
 	self->health = 1;
+	const vec3_t gore_spot = VEC3_INITA(self->s.origin, 0.0f, 0.0f, 12.0f);
 	T_Damage(self, self, self, vec3_origin, gore_spot, vec3_origin, 10, 20, 0, MOD_DIED);
 	self->health = -69;
 }
