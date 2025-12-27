@@ -902,6 +902,10 @@ static void SsithraRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 		return;
 	}
 
+	//mxd. When in "jump down" animation, hold it until we reach the ground.
+	if (self->groundentity == NULL && self->curAnimID == ANIM_BOUND)
+		return;
+
 	SetAnim(self, ANIM_RUN1);
 }
 
@@ -1655,6 +1659,17 @@ void ssithra_ai_run(edict_t* self, float distance) //mxd. Originally defined in 
 	}
 	else
 	{
+		//mxd. When in "jump down" animation, hold frame until we reach the ground.
+		if (self->groundentity == NULL && self->curAnimID == ANIM_BOUND && self->monsterinfo.currframeindex > 3)
+		{
+			trace_t trace;
+			const vec3_t bottom = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -96.0f);
+			gi.trace(self->s.origin, self->mins, self->maxs, bottom, self, MASK_DRIP, &trace);
+
+			if (trace.fraction == 1.0f)
+				self->monsterinfo.currframeindex = 3;
+		}
+
 		MG_AI_Run(self, distance);
 	}
 }
