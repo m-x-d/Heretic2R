@@ -204,10 +204,10 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 	// Jumping down?
 	if (target_origin[2] < self->s.origin[2] - 28.0f)
 	{
-		// Setup the trace
-		if (SsithraCheckInWater(self))
+		if (SsithraCheckInWater(self) || self->groundentity == NULL) //H2_BUGFIX: mxd. Also don't try jumping while in the air.
 			return;
 
+		// Setup the trace.
 		const vec3_t s_maxs = VEC3_INITA(self->maxs, 0.0f, 0.0f, 32.0f);
 		vec3_t source = VEC3_INIT(self->s.origin);
 
