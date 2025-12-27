@@ -809,7 +809,7 @@ static const animframe_t ssithra_frames_lookright[] =
 };
 const animmove_t ssithra_move_lookright = ANIMMOVE(ssithra_frames_lookright, ssithra_check_mood);
 
-// Plague Ssithra Yrans Up.
+// Plague Ssithra Trans Up.
 static const animframe_t ssithra_frames_transup[] =
 {
 	{ FRAME_Water_trans1, NULL, 0, 0, 0, NULL, 0, NULL },
