@@ -2481,6 +2481,7 @@ void SP_monster_plague_ssithra(edict_t* self)
 
 	self->s.modelindex = (byte)classStatics[CID_SSITHRA].resInfo->modelIndex;
 	self->s.skinnum = ((self->spawnflags & MSF_SSITHRA_CLOTHED) ? 2 : 0);
+	self->s.effects |= EF_FAST_MOVER; //mxd. Velocity can exceed default cl_lerpdist2 value when set by ssithra_out_of_water_jump()).
 
 	// Turn off dismemberment caps, can't see them, so save some polys.
 	self->s.fmnodeinfo[MESH__CAPLOWERTORSO].flags |= FMNI_NO_DRAW;
