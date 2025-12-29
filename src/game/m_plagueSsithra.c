@@ -164,6 +164,10 @@ static void SsithraTryJump(edict_t* self) //mxd. Named 'ssithraWhichJump' in ori
 		return;
 	}
 
+	//H2_BUGFIX: mxd. Don't try jumping while in the air.
+	if (self->groundentity == NULL)
+		return;
+
 	SetAnim(self, ANIM_BOUND);
 
 	vec3_t forward;
@@ -204,7 +208,7 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 	// Jumping down?
 	if (target_origin[2] < self->s.origin[2] - 28.0f)
 	{
-		if (SsithraCheckInWater(self) || self->groundentity == NULL) //H2_BUGFIX: mxd. Also don't try jumping while in the air.
+		if (SsithraCheckInWater(self))
 			return;
 
 		// Setup the trace.
