@@ -1311,7 +1311,7 @@ void SP_obj_pottedplant(edict_t* self)
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/plant/tris.fm");
 
-	ObjectInit(self, 20, 50, MAT_POTTERY, SOLID_BBOX);
+	ObjectInit(self, 10, 50, MAT_POTTERY, SOLID_BBOX); //mxd. health:20 in original logic.
 }
 
 // QUAKED obj_plant1 (1 .5 0) (-8 -8 -24) (8 8 24) INVULNERABLE
@@ -1637,7 +1637,7 @@ void SP_obj_urn(edict_t* self)
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/urn/tris.fm");
 
-	ObjectInit(self, 50, 100, MAT_POTTERY, SOLID_BBOX);
+	ObjectInit(self, 10, 100, MAT_POTTERY, SOLID_BBOX); //mxd. health:50 in original logic.
 }
 
 // QUAKED obj_bigcrystal (1 .5 0) (-35 -35 -50) (35 35 50)
@@ -2041,7 +2041,7 @@ void SP_obj_basket(edict_t* self)
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/basket/tris.fm");
 
-	ObjectInit(self, 50, 70, MAT_WOOD, SOLID_BBOX);
+	ObjectInit(self, 10, 70, MAT_WOOD, SOLID_BBOX); //mxd. health:50 in original logic.
 }
 
 // QUAKED obj_claybowl (1 .5 0) (-6 -6 -2) (6 6 2) INVULNERABLE x x NOPUSH
@@ -2071,7 +2071,7 @@ void SP_obj_clayjar(edict_t* self)
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/clayjar/tris.fm");
 
-	ObjectInit(self, 25, 125, MAT_POTTERY, SOLID_BBOX);
+	ObjectInit(self, 10, 125, MAT_POTTERY, SOLID_BBOX); //mxd. health:25 in original logic.
 }
 
 // QUAKED obj_gorgonbones (1 .5 0) (-18 -38 -9) (18 38 1) INVULNERABLE
@@ -2764,7 +2764,7 @@ void SP_obj_pot1(edict_t* self)
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/pot/tris.fm");
 	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
-	ObjectInit(self, 75, 125, MAT_POTTERY, SOLID_BBOX);
+	ObjectInit(self, 5, 125, MAT_POTTERY, SOLID_BBOX); //mxd. health:75 in original logic.
 }
 
 // QUAKED obj_pot2 (1 .5 0) ( -7 -7 -3) (7 7 3) INVULNERABLE x x NOPUSH
@@ -2779,7 +2779,7 @@ void SP_obj_pot2(edict_t* self)
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/pot2/tris.fm");
 
-	ObjectInit(self, 75, 125, MAT_POTTERY, SOLID_BBOX);
+	ObjectInit(self, 5, 125, MAT_POTTERY, SOLID_BBOX); //mxd. health:75 in original logic.
 }
 
 // QUAKED obj_bottle1 (1 .5 0) ( -3 -3 -7) (3 3 7) INVULNERABLE x x NOPUSH
@@ -2794,7 +2794,7 @@ void SP_obj_bottle1(edict_t* self)
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/jars/bottle/tris.fm");
 
-	ObjectInit(self, 75, 125, MAT_POTTERY, SOLID_BBOX);
+	ObjectInit(self, 5, 125, MAT_POTTERY, SOLID_BBOX); //mxd. health:75 in original logic.
 }
 
 // QUAKED obj_jug1 (1 .5 0) ( -6 -6 -6) (6 6 6) INVULNERABLE x x NOPUSH
@@ -2809,7 +2809,7 @@ void SP_obj_jug1(edict_t* self)
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/jars/jug/tris.fm");
 
-	ObjectInit(self, 75, 125, MAT_POTTERY, SOLID_BBOX);
+	ObjectInit(self, 5, 125, MAT_POTTERY, SOLID_BBOX); //mxd. health:75 in original logic.
 }
 
 #pragma endregion
