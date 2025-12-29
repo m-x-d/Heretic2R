@@ -90,12 +90,12 @@ static DebrisChunk_t debris_chunks[] =
 	{ "models/debris/pottery/pot3/tris.fm", 0, NULL, 2.5f },
 	{ "models/debris/pottery/pot4/tris.fm", 0, NULL, 1.4f },
 
-	// Glass - models need different skins.
-	{ "models/debris/wood/splinter1/tris.fm", 0, NULL, 1.8f },	// 26
-	{ "models/debris/wood/splinter2/tris.fm", 0, NULL, 2.0f },
-	{ "models/debris/wood/splinter3/tris.fm", 0, NULL, 1.9f },
-	{ "models/debris/wood/splinter4/tris.fm", 0, NULL, 1.6f },
-	{ "models/debris/wood/splinter1/tris.fm", 0, NULL, 1.8f },
+	// Glass. //mxd. Set skinNum here, instead of in FXDebris_Throw().
+	{ "models/debris/wood/splinter1/tris.fm", 1, NULL, 1.8f },	// 26
+	{ "models/debris/wood/splinter2/tris.fm", 1, NULL, 2.0f },
+	{ "models/debris/wood/splinter3/tris.fm", 1, NULL, 1.9f },
+	{ "models/debris/wood/splinter4/tris.fm", 1, NULL, 1.6f },
+	{ "models/debris/wood/splinter1/tris.fm", 1, NULL, 1.4f }, //mxd. mass:1.8 (same as 1-st entry) in original logic.
 
 	// Leaf - invalid debris type.
 	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },	// 31
@@ -593,10 +593,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	else
 	{
 		if (material == MAT_GLASS)
-		{
-			debris->r.skinnum = 1;
 			debris->r.flags |= RF_TRANSLUCENT;
-		}
 
 		debris->Update = Debris_Update;
 	}
