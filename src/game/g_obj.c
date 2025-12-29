@@ -2213,9 +2213,8 @@ void SP_obj_gascan(edict_t* self)
 	VectorSet(self->maxs, 8.0f, 9.0f, 13.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/barrel/gascan/tris.fm");
-	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
-	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
+	ObjectInit(self, 75, 125, MAT_METAL, SOLID_BBOX); //mxd. Uses MAT_WOOD in original logic.
 }
 
 // QUAKED obj_pipe1 (1 .5 0) (-11 -24 -7) (11 24 7) INVULNERABLE x x NOPUSH
@@ -2229,9 +2228,8 @@ void SP_obj_pipe1(edict_t* self)
 	VectorSet(self->maxs, 11.0f, 24.0f, 7.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pipes/pipe1/tris.fm");
-	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
-	ObjectInit(self, 50, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
+	ObjectInit(self, 50, 125, MAT_METAL, SOLID_BBOX); //mxd. Uses MAT_WOOD in original logic.
 }
 
 // QUAKED obj_pipe2 (1 .5 0) (-6 -25 -4) (6 25 4) INVULNERABLE x x NOPUSH
@@ -2245,9 +2243,8 @@ void SP_obj_pipe2(edict_t* self)
 	VectorSet(self->maxs, 6.0f, 25.0f, 4.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pipes/pipe2/tris.fm");
-	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
-	ObjectInit(self, 50, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
+	ObjectInit(self, 50, 125, MAT_METAL, SOLID_BBOX); //mxd. Uses MAT_WOOD in original logic.
 }
 
 // QUAKED obj_pipewheel (1 .5 0) (-14 -14 -12) (14 14 12) INVULNERABLE
@@ -2261,9 +2258,8 @@ void SP_obj_pipewheel(edict_t* self)
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pipes/pipewheel/tris.fm");
 	self->spawnflags |= SF_OBJ_NOPUSH;
-	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
-	ObjectInit(self, 50, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
+	ObjectInit(self, 50, 125, MAT_METAL, SOLID_BBOX); //mxd. Uses MAT_WOOD in original logic.
 }
 
 #pragma endregion
@@ -2282,7 +2278,7 @@ void SP_obj_minecart(edict_t* self)
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/carts/mine/tris.fm");
 
-	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
+	ObjectInit(self, 75, 125, MAT_METAL, SOLID_BBOX); //mxd. Uses MAT_WOOD in original logic.
 }
 
 // QUAKED obj_minecart2 (1 .5 0) (-18 -29 -20) (18 29 20) INVULNERABLE x x NOPUSH
@@ -2298,7 +2294,7 @@ void SP_obj_minecart2(edict_t* self)
 	self->s.modelindex = (byte)gi.modelindex("models/objects/carts/mine/tris.fm");
 	self->s.frame = 20;
 
-	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
+	ObjectInit(self, 75, 125, MAT_METAL, SOLID_BBOX); //mxd. Uses MAT_WOOD in original logic.
 }
 
 // QUAKED obj_minecart3 (1 .5 0) (-18 -29 -15) (18 29 20) INVULNERABLE x x NOPUSH
@@ -2314,7 +2310,7 @@ void SP_obj_minecart3(edict_t* self)
 	self->s.modelindex = (byte)gi.modelindex("models/objects/carts/mine/tris.fm");
 	self->s.frame = 40;
 
-	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
+	ObjectInit(self, 75, 125, MAT_METAL, SOLID_BBOX); //mxd. Uses MAT_WOOD in original logic.
 }
 
 #pragma endregion
@@ -2399,7 +2395,7 @@ void SP_obj_metalchunk3(edict_t* self)
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pipes/metalchunks/tris.fm");
 	self->s.frame = 2;
 
-	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
+	ObjectInit(self, 75, 125, MAT_METAL, SOLID_BBOX); //mxd. Uses MAT_WOOD in original logic.
 }
 
 #pragma endregion
