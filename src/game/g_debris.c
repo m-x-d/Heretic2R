@@ -17,7 +17,7 @@
 
 #pragma region ========================== Spawn debris logic ==========================
 
-static void SpawnDebris(edict_t* self, float size, vec3_t origin)
+static void SpawnDebris(edict_t* self, float size, const vec3_t origin)
 {
 	static const char* debris_sounds[NUM_MAT] = //mxd. Made local static.
 	{
@@ -75,8 +75,9 @@ static void SpawnDebris(edict_t* self, float size, vec3_t origin)
 		gi.CreateEffect(NULL, FX_DEBRIS, fx_flags, origin, "bbdb", (byte)debris_size, (byte)self->materialtype, half_size, b_mag);
 	}
 
+	// Play different debris sound.
 	if (self->classID == CID_OBJECT && (strcmp(self->classname, "obj_larvabrokenegg") == 0 || strcmp(self->classname, "obj_larvaegg") == 0))
-		self->materialtype = MAT_POTTERY; //TODO: set this on obj_larvabrokenegg and obj_larvaegg instead?
+		self->materialtype = MAT_POTTERY;
 
 	if (debris_sounds[self->materialtype] != NULL)
 		gi.sound(self, CHAN_VOICE, gi.soundindex(debris_sounds[self->materialtype]), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
@@ -109,7 +110,7 @@ void BecomeDebris(edict_t* self)
 	// Set my message handler to the special message handler for dead entities.
 	self->msgHandler = DeadMsgHandler;
 
-	// What the hell is this??? //TODO: when is this used?
+	// What the hell is this??? //TODO: explosion logic for func_train with wait:-3 (see FuncTrainWait())? Then why spawnflags check?..
 	if (self->spawnflags & 4 && !(self->svflags & SVF_MONSTER))
 	{
 		// Need to create an explosion effect for this.
