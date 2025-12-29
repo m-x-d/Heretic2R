@@ -1048,17 +1048,16 @@ void SP_obj_firepot(edict_t* self)
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/firepot/tris.fm");
 	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
-	self->s.sound = (byte)gi.soundindex("ambient/fireplace.wav"); //TODO: play only when OBJ_ANIMATE is set?
-	self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
 
 	ObjectInit(self, 140, 100, MAT_GREYSTONE, SOLID_BBOX);
 
-	if (self->spawnflags & SF_OBJ_ANIMATE)	// Animate it.
+	if (self->spawnflags & SF_OBJ_ANIMATE) // Animate it.
 	{
-		vec3_t hold_origin;
-		VectorCopy(self->s.origin, hold_origin);
-		hold_origin[2] += 30.0f; //TODO: hovers above firepot. Spawn a bit lower?
+		//mxd. Original logic plays sound regardless of SF_OBJ_ANIMATE flag.
+		self->s.sound = (byte)gi.soundindex("ambient/fireplace.wav");
+		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
 
+		const vec3_t hold_origin = VEC3_INITA(self->s.origin, 0.0f, 0.0f, 25.0f); //mxd. hold_origin[2] += 30 in original logic. Lowered to better align with the model.
 		SpawnFlame(self, hold_origin);
 	}
 }
