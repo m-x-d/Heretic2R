@@ -1687,50 +1687,41 @@ void SP_obj_moss2(edict_t* self)
 	ObjectInit(self, 10, 10, MAT_LEAF, SOLID_NOT);
 }
 
-// QUAKED obj_moss3 (1 .5 0) (-4 -15 -40) (4 15 40) INVULNERABLE
-// Spawnflags:
-// INVULNERABLE	- It can't be hurt.
+// QUAKED obj_moss3 (1 .5 0) (-4 -15 -40) (4 15 40)
 void SP_obj_moss3(edict_t* self)
 {
 	VectorSet(self->mins, -1.0f, -15.0f, -40.0f);
 	VectorSet(self->maxs, 1.0f, 15.0f, 40.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
-	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed. //mxd. +SF_OBJ_INVULNERABLE.
 	self->s.skinnum = 2;
-	self->s.renderfx |= RF_TRANSLUCENT; //TODO: not needed? Makes fx effects and transparent surfaces visible through non-transparent parts.
 
 	ObjectInit(self, 10, 10, MAT_LEAF, SOLID_NOT);
 }
 
-// QUAKED obj_moss4 (1 .5 0) (-4 -12 -40) (4 12 40) INVULNERABLE
-// Spawnflags:
-// INVULNERABLE	- It can't be hurt.
+// QUAKED obj_moss4 (1 .5 0) (-4 -12 -40) (4 12 40)
 void SP_obj_moss4(edict_t* self)
 {
 	VectorSet(self->mins, -1.0f, -12.0f, -40.0f);
 	VectorSet(self->maxs, 1.0f, 12.0f, 40.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
-	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed. //mxd. +SF_OBJ_INVULNERABLE.
 	self->s.skinnum = 3;
-	self->s.renderfx |= RF_TRANSLUCENT; //TODO: not needed? Makes fx effects and transparent surfaces visible through non-transparent parts.
 
 	ObjectInit(self, 10, 10, MAT_LEAF, SOLID_NOT);
 }
 
-// QUAKED obj_moss5 (1 .5 0) (-4 -10 -40) (4 10 40) INVULNERABLE
-// Spawnflags:
-// INVULNERABLE	- It can't be hurt.
+// QUAKED obj_moss5 (1 .5 0) (-4 -10 -40) (4 10 40)
 void SP_obj_moss5(edict_t* self)
 {
 	VectorSet(self->mins, -1.0f, -10.0f, -40.0f);
 	VectorSet(self->maxs, 1.0f, 10.0f, 40.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
-	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed. //mxd. +SF_OBJ_INVULNERABLE.
 	self->s.skinnum = 4;
-	self->s.renderfx |= RF_TRANSLUCENT; //TODO: not needed? Makes fx effects and transparent surfaces visible through non-transparent parts.
 
 	ObjectInit(self, 10, 10, MAT_LEAF, SOLID_NOT);
 }
