@@ -115,7 +115,7 @@ static qboolean LensFlareUpdateOrigin(struct client_entity_s* self)
 }
 
 // FIXME: These need to interpolate their movement so as to not do snap position changes.
-static qboolean LensFlareThink(struct client_entity_s* self, centity_t* owner)
+static qboolean LensFlareUpdate(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXFlareThink' in original logic.
 {
 	if (self->LifeTime > 0 && self->LifeTime < fx_time)
 		return false;
@@ -123,7 +123,7 @@ static qboolean LensFlareThink(struct client_entity_s* self, centity_t* owner)
 	return LensFlareUpdateOrigin(self); //mxd
 }
 
-static qboolean LensFlareThinkAttached(struct client_entity_s* self, centity_t* owner)
+static qboolean LensFlareAttachedUpdate(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXFlareThinkAttached' in original logic.
 {
 	if (self->LifeTime > 0 && self->LifeTime < fx_time)
 		return false;
@@ -195,7 +195,7 @@ void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 		flare->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST);
 		flare->Scale = flare_scale[i];
 		flare->NoOfAnimFrames = 1;
-		flare->Update = LensFlareThink;
+		flare->Update = LensFlareUpdate;
 		VectorCopy(origin, flare->direction);
 
 		if (flags & CEF_FLAG7)
@@ -208,10 +208,10 @@ void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 			AddEffect(owner, flare);
 
 			flare->extra = (centity_t*)owner;
-			flare->Update = LensFlareThinkAttached;
+			flare->Update = LensFlareAttachedUpdate;
 			flare->updateTime = MIN_UPDATE_TIME;
 
-			LensFlareThinkAttached(flare, owner);
+			LensFlareAttachedUpdate(flare, owner);
 
 			VectorCopy(flare->direction, flare->startpos2);
 			VectorCopy(flare->direction, flare->endpos2);
@@ -221,7 +221,7 @@ void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 		else
 		{
 			AddEffect(NULL, flare);
-			LensFlareThink(flare, NULL);
+			LensFlareUpdate(flare, NULL);
 		}
 	}
 }
