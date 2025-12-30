@@ -16,11 +16,7 @@ void PreCacheFlare(void)
 	flare_models[0] = fxi.RegisterModel("sprites/lens/blind1.sp2");
 
 	for (int i = 1; i < NUM_LENS_MODELS; i++)
-	{
-		char model[128];
-		sprintf_s(model, sizeof(model), "sprites/lens/flare%i.sp2", i); //mxd. sprintf -> sprintf_s.
-		flare_models[i] = fxi.RegisterModel(model);
-	}
+		flare_models[i] = fxi.RegisterModel(va("sprites/lens/flare%i.sp2", i));
 }
 
 //mxd. Added to reduce code duplication. //TODO: the logic is kinda broken, at least for env_sun1 entity...
@@ -28,7 +24,7 @@ static qboolean LensFlareUpdateOrigin(struct client_entity_s* self)
 {
 	// Determine visibility.
 	trace_t tr;
-	const int brushmask = CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER;
+	const int brushmask = (CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER);
 	fxi.Trace(fxi.cl->refdef.vieworg, vec3_origin, vec3_origin, self->direction, brushmask, CEF_CLIP_TO_WORLD, &tr);
 
 	if (tr.fraction < 1.0f && !(tr.surface->flags & SURF_SKY))
