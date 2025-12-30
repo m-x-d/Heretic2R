@@ -608,12 +608,12 @@ qboolean FindTarget(edict_t* self)
 			if (ANARCHY)
 			{
 				// Crazy monsters mode.
-				int	check_count = 0;
+				int check_count = 0;
 				client = self;
 
 				while ((client == NULL || !client->inuse || !(client->svflags & SVF_MONSTER) || client->health <= 0 || client == self) && check_count < globals.num_edicts)
 				{
-					client = &g_edicts[irand(0, globals.num_edicts)];
+					client = &g_edicts[irand(1, globals.num_edicts - 1)]; //mxd. 'irand(0, globals.num_edicts)' in original logic.
 					check_count++;
 				}
 			}
