@@ -676,7 +676,7 @@ static void PlayerLeaderEffect(void) //mxd. Named 'player_leader_effect' in orig
 	// First, search through all clients and see what the leading score is.
 	for (int i = 0; i < game.maxclients; i++)
 	{
-		const edict_t* ent = &g_edicts[i];
+		const edict_t* ent = &g_edicts[i + 1]; //mxd. '&g_edicts[i]' in original logic.
 
 		// Are we a player that's playing?
 		if (!ent->inuse || ent->client == NULL)
@@ -703,7 +703,7 @@ static void PlayerLeaderEffect(void) //mxd. Named 'player_leader_effect' in orig
 	// And turn it on for anyone that does have it, if its not already turned on.
 	for (int i = 0; i < game.maxclients; i++)
 	{
-		edict_t* ent = &g_edicts[i];
+		edict_t* ent = &g_edicts[i + 1]; //mxd. '&g_edicts[i]' in original logic.
 
 		// Are we a player that's playing?
 		if (ent->client == NULL)
