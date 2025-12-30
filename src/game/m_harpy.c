@@ -25,6 +25,7 @@
 #define HARPY_MIN_HOVER_DIST	128.0f
 #define HARPY_MAX_HOVER_DIST	512.0f
 #define HARPY_MAX_DIVE_DIST		108.0f //mxd. Named 'HARPY_MIN_SWOOP_DIST' in original logic.
+#define HARPY_CIRCLING_CHECK_DIST	768.0f //mxd. Stop circling if enemy is closer than this distance.
 
 #define HARPY_DRIFT_AMOUNT_X	128.0f
 #define HARPY_DRIFT_AMOUNT_Y	128.0f
@@ -842,16 +843,32 @@ void harpy_pause(edict_t* self)
 {
 	if (M_ValidTarget(self, self->enemy))
 	{
-		G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+		//mxd. If we are circling, give us a chance to stop circling.
+		if ((self->spawnflags & MSF_SPECIAL1) && irand(0, 8) == 0)
+		{
+			vec3_t dist;
+			VectorSubtract(self->s.origin, self->enemy->s.origin, dist);
+
+			if (VectorLength(dist) < HARPY_CIRCLING_CHECK_DIST && AI_IsInfrontOf(self, self->enemy))
+				self->spawnflags &= ~MSF_SPECIAL1;
+		}
+
+		if (!(self->spawnflags & MSF_SPECIAL1))
+		{
+			G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			return;
+		}
 	}
-	else if (self->curAnimID == ANIM_CIRCLING)
+
+	if (self->curAnimID == ANIM_CIRCLING)
 	{
 		if (irand(0, 6) == 0)
 			SetAnim(self, ANIM_CIRCLING_FLAP);
 	}
-	else if (self->curAnimID == ANIM_CIRCLING_FLAP && irand(0, 1) == 1)
+	else if (self->curAnimID == ANIM_CIRCLING_FLAP)
 	{
-		SetAnim(self, ANIM_CIRCLING);
+		if (irand(0, 1) == 0)
+			SetAnim(self, ANIM_CIRCLING);
 	}
 }
 
