@@ -401,11 +401,8 @@ void M_TriggeredSpawnThink(edict_t* self) //mxd. Named 'monster_triggered_spawn'
 	{
 		AI_FoundTarget(self, true);
 
-		vec3_t pos;
-		VectorCopy(self->s.origin, pos);
-		pos[2] += self->mins[2];
-
-		gi.CreateEffect(NULL, FX_TPORTSMOKE, 0, pos, "");
+		const vec3_t smoke_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2]);
+		gi.CreateEffect(NULL, FX_TPORTSMOKE, 0, smoke_pos, "");
 	}
 	else if (self->enemy != NULL && !(self->spawnflags & MSF_AMBUSH) && !(self->enemy->flags & FL_NOTARGET))
 	{
