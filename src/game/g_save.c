@@ -133,9 +133,12 @@ static field_t savefields[] =
 	{ "", FOFS(pathtarget),					F_LSTRING,	FFL_NONE, NULL },
 	{ "", FOFS(deathtarget),				F_LSTRING,	FFL_NONE, NULL },
 	{ "", FOFS(combattarget),				F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(pain_target),				F_LSTRING,	FFL_NONE, NULL }, //H2_BUGFIX: mxd. Missing in original logic.
+	{ "", FOFS(wakeup_target),				F_LSTRING,	FFL_NONE, NULL }, //H2_BUGFIX: mxd. Missing in original logic.
 	{ "", FOFS(model),						F_LSTRING,	FFL_NONE, NULL },
 	{ "", FOFS(map),						F_LSTRING,	FFL_NONE, NULL },
 	{ "", FOFS(message),					F_LSTRING,	FFL_NONE, NULL },
+	{ "", FOFS(text_msg),					F_LSTRING,	FFL_NONE, NULL }, //H2_BUGFIX: mxd. Missing in original logic.
 	{ "", FOFS(monsterinfo.otherenemyname),	F_LSTRING,	FFL_NONE, NULL }, //H2_BUGFIX: mxd. Missing in original logic.
 	{ "", FOFS(client),						F_CLIENT,	FFL_NONE, NULL },
 	{ "", FOFS(item),						F_ITEM,		FFL_NONE, NULL },
