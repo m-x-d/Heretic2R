@@ -642,10 +642,7 @@ void FXDebris_SpawnChunks(int type, int flags, const vec3_t origin, const int nu
 	for (int i = 0; i < num; i++)
 	{
 		vec3_t hold_origin;
-		VectorCopy(origin, hold_origin);
-
-		for (int c = 0; c < 3; c++)
-			hold_origin[c] += flrand(-mins[c], mins[c]);
+		VectorRandomAdd(origin, mins, hold_origin);
 
 		if (material != MAT_NONE)
 		{
