@@ -750,10 +750,11 @@ void M_WalkmonsterStartGo(edict_t* self) //mxd. Named 'walkmonster_start_go' in 
 
 	self->viewheight = 25; //TODO: should set only when self->viewheight == 0 (like in M_FlymonsterStartGo())?
 
-	M_MonsterStartGo(self);
-
+	//H2_BUGFIX: mxd. Original logic calls M_MonsterStartGo() regardless of MSF_ASLEEP flag, which results in M_BBoxAndOriginAdjustForScale() called twice for triggered monsters, resulting in incorrect bbox size.
 	if (self->spawnflags & MSF_ASLEEP)
-		M_TriggeredStart(self);
+		M_TriggeredStart(self); // M_MonsterStartGo() will be called by M_TriggeredSpawnThink() --mxd.
+	else
+		M_MonsterStartGo(self);
 }
 
 qboolean M_WalkmonsterStart(edict_t* self) //mxd. Named 'walkmonster_start' in original logic.
@@ -773,10 +774,11 @@ void M_FlymonsterStartGo(edict_t* self) //mxd. Named 'flymonster_start_go' in or
 	if (self->viewheight == 0)
 		self->viewheight = 25;
 
-	M_MonsterStartGo(self);
-
+	//H2_BUGFIX: mxd. Original logic calls M_MonsterStartGo() regardless of MSF_ASLEEP flag, which results in M_BBoxAndOriginAdjustForScale() called twice for triggered monsters, resulting in incorrect bbox size.
 	if (self->spawnflags & MSF_ASLEEP)
-		M_TriggeredStart(self);
+		M_TriggeredStart(self); // M_MonsterStartGo() will be called by M_TriggeredSpawnThink() --mxd.
+	else
+		M_MonsterStartGo(self);
 }
 
 qboolean M_FlymonsterStart(edict_t* self) //mxd. Named 'flymonster_start' in original logic.
