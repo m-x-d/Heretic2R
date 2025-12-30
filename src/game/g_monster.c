@@ -1072,9 +1072,9 @@ qboolean M_ValidTarget(edict_t* self, const edict_t* target)
 		// Only do this check once a second per monster.
 		self->monsterinfo.coop_check_debounce_time = level.time + 1.0f;
 
-		for (int i = 0; i <= game.maxclients; i++)
+		for (int i = 0; i < game.maxclients; i++) //mxd. 'i <= game.maxclients' in original logic.
 		{
-			const edict_t* client = &g_edicts[i];
+			const edict_t* client = &g_edicts[i + 1]; //mxd. '&g_edicts[i]' in original logic.
 
 			if (client->client != NULL && client->health > 0)
 				c_dist[i] = M_DistanceToTarget(self, client);
@@ -1085,11 +1085,11 @@ qboolean M_ValidTarget(edict_t* self, const edict_t* target)
 		edict_t* new_enemy = NULL;
 		float enemy_dist = M_DistanceToTarget(self, self->enemy);
 
-		for (int i = 0; i <= game.maxclients; i++)
+		for (int i = 0; i < game.maxclients; i++) //mxd. 'i <= game.maxclients' in original logic.
 		{
 			if (c_dist[i] < enemy_dist)
 			{
-				edict_t* client = &g_edicts[i];
+				edict_t* client = &g_edicts[i + 1]; //mxd. '&g_edicts[i]' in original logic.
 
 				if (AI_IsVisible(self, client))
 				{
