@@ -564,7 +564,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	debris->msgHandler = CE_DefaultMsgHandler;
 
 	debris->r.model = &debris_chunks[chunk_index].model;
-	debris->r.scale = scale;
+	debris->r.scale = scale + flrand(-scale * 0.35f, scale * 0.15f); //mxd. Randomize scale a bit.
 	debris->r.angles[0] = flrand(-ANGLE_180, ANGLE_180);
 	debris->r.angles[1] = flrand(-ANGLE_90, ANGLE_90);
 
@@ -573,7 +573,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	debris->debris_avelocity[1] = ANGLE_360 + flrand(0.0f, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
 
 	debris->flags |= (CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS);
-	debris->radius = 5.0f;
+	debris->radius = debris->r.scale * 5.0f; //mxd. Scale by r.scale.
 
 	VectorRandomCopy(dir, debris->velocity, 0.5f);
 	Vec3ScaleAssign(sqrtf(ke / debris_chunks[chunk_index].mass), debris->velocity);
