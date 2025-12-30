@@ -459,9 +459,10 @@ void CalculatePIV(const edict_t* player)
 	VectorScale(player->maxs, 0.25f, maxs);
 
 	//FIXME: need some way of knowing whether client is valid or not.
-	edict_t* target = &g_edicts[1];
-	for (int i = 0; i < game.maxclients; i++, target++)
+	for (int i = 0; i < game.maxclients; i++)
 	{
+		const edict_t* target = &g_edicts[i + 1];
+
 		assert(target->client != NULL);
 
 		// Don`t do an in-view check on yourself.
