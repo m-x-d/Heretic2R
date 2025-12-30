@@ -387,8 +387,7 @@ void HarpyIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'harpy_blocked' 
 	AngleVectors(self->s.angles, forward, NULL, NULL);
 
 	vec3_t dir;
-	VectorCopy(self->velocity, dir);
-	VectorNormalize(dir);
+	VectorNormalize2(self->velocity, dir);
 
 	const float dot = DotProduct(dir, forward);
 
