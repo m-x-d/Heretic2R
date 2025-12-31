@@ -247,13 +247,17 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 			}
 		}
 
-		// If no part of our radius is in the field of view or we aren't within the current PVS, cull us.
-		if (dot + (current->radius / dist) < view_fov || !fxi.InCameraPVS(current->r.origin) ||
-			// If we have an owner, and its server culled, and we want to check against it then do so.
-			(owner != NULL && (owner->flags & CF_SERVER_CULLED) && (current->flags & CEF_CHECK_OWNER)))
-		{
+		// If no part of our radius is in the field of view, cull us.
+		if (dot + (current->radius / dist) < view_fov)
 			continue;
-		}
+
+		// If we aren't within the current PVS, cull us. //mxd. Skip when RF_NODEPTHTEST is set (fixes lensflares disappearing when clipped by world geometry).
+		if (!(current->r.flags & RF_NODEPTHTEST) && !fxi.InCameraPVS(current->r.origin))
+			continue;
+
+		// If we have an owner, and its server culled, and we want to check against it, cull us.
+		if ((current->flags & CEF_CHECK_OWNER) && owner != NULL && (owner->flags & CF_SERVER_CULLED))
+			continue;
 
 		// We do this here because we don't have an owner - only do the update if we haven't already been culled.
 		if (owner == NULL && current->AddToView != NULL)
