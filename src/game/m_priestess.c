@@ -991,7 +991,7 @@ void priestess_pause(edict_t* self)
 
 void priestess_dead(edict_t* self)
 {
-	self->mood_nextthink = -1.0f; // Never mood_think again.
+	self->mood_nextthink = THINK_NEVER; // Never mood_think again.
 	self->maxs[2] = self->mins[2] + 16.0f;
 
 	if (self->PersistantCFX > 0)

@@ -1203,7 +1203,7 @@ void M_StartDeath(edict_t* self, int animID) //TODO: remove unused arg.
 // The monster is dead completely. Set all information to reflect this.
 void M_EndDeath(edict_t* self)
 {
-	self->mood_nextthink = -1.0f; // Never mood_think again.
+	self->mood_nextthink = THINK_NEVER; // Never mood_think again.
 	self->maxs[2] = min(self->maxs[2], self->mins[2] + 16.0f); //mxd. Some monsters (e.g. harpy) may've already adjusted maxs[2] to be lower than mins[2] + 16.
 
 	if (self->s.effects & EF_ON_FIRE)

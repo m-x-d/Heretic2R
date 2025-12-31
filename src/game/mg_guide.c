@@ -1760,10 +1760,7 @@ void MG_InitMoods(edict_t* self)
 		self->mintel = MaxBuoysForClass[self->classID];
 
 	self->mood_think = MG_GenericMoodSet; // We'll re-specialize these soon.
-	self->mood_nextthink = level.time + 0.1f;
-
-	if (self->mood_nextthink <= 0.0f) //TODO: when level.time + 0.1f can be < 0?..
-		self->mood_nextthink = 0.1f;
+	self->mood_nextthink = level.time + FRAMETIME;
 
 	// Setup attack ranges for the mood functions to use.
 	// These can be set by the designer if desired and can be affected later by the loss of a weapon or limb...

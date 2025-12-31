@@ -362,7 +362,7 @@ static void TriggerGotoBuoyExecute(const edict_t* self, edict_t* monster, edict_
 	else
 	{
 		// No MSG_CHECK_MOOD message handler, just send a run and let him wait, I guess!
-		monster->mood_nextthink = 0;
+		monster->mood_nextthink = THINK_NEVER; //mxd. 0 in original logic. Use define instead.
 		G_PostMessage(monster, MSG_RUN, PRI_DIRECTIVE, NULL);
 	}
 }
