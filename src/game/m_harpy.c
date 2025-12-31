@@ -73,8 +73,8 @@ static const animmove_t* animations[NUM_ANIMS] =
 
 static int sounds[NUM_SOUNDS];
 
-static const vec3_t dead_harpy_mins = { -16.0f, -16.0f, 0.0f }; //mxd
-static const vec3_t dead_harpy_maxs = {  16.0f,  16.0f, 12.0f }; //mxd
+static const vec3_t dead_harpy_mins = { -8.0f, -8.0f, 0.0f }; //mxd. { -16.0f, -16.0f, 0.0f } in original logic. Reduced XY size to avoid dead harpies hanging on wing tips (or empty space) on world geometry.
+static const vec3_t dead_harpy_maxs = {  8.0f,  8.0f, 12.0f }; //mxd. { 16.0f, 16.0f, 12.0f } in original logic.
 
 #pragma endregion
 
