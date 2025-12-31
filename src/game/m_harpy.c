@@ -786,9 +786,7 @@ void harpy_tumble_move(edict_t* self) //mxd. Named 'move_harpy_tumble' in origin
 	VectorCopy(dead_harpy_mins, self->mins); //mxd
 	VectorCopy(dead_harpy_maxs, self->maxs); //mxd
 
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-	end_pos[2] -= 32.0f;
+	const vec3_t end_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -32.0f);
 
 	trace_t trace;
 	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
