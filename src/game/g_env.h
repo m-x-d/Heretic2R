@@ -16,3 +16,4 @@ extern void SP_env_sun1(edict_t* self);
 //mxd. Required by save system...
 extern void EnvDustUse(edict_t* self, edict_t* other, edict_t* activator);
 extern void EnvSmokeUse(edict_t* self, edict_t* other, edict_t* activator);
+extern void EnvSunInitThink(edict_t* self);

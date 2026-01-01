@@ -19,18 +19,16 @@ void PreCacheFlare(void)
 		flare_models[i] = fxi.RegisterModel(va("sprites/lens/flare%i.sp2", i));
 }
 
-//mxd. Added to reduce code duplication. //TODO: the logic is kinda broken, at least for env_sun1 entity...
-static qboolean LensFlareUpdateOrigin(struct client_entity_s* self)
+//mxd. Added to reduce code duplication.
+static qboolean LensFlareUpdateOrigin(struct client_entity_s* self, const qboolean check_sky)
 {
 	// Determine visibility.
-	trace_t tr;
-	const int brushmask = (CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER);
-	fxi.Trace(fxi.cl->refdef.vieworg, vec3_origin, vec3_origin, self->direction, brushmask, CEF_CLIP_TO_WORLD, &tr);
+	trace_t trace;
 
-	if (tr.fraction < 1.0f && !(tr.surface->flags & SURF_SKY))
+	if (check_sky)
 	{
-		self->flags |= CEF_NO_DRAW;
-		return true;
+		const int brushmask = (CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER);
+		fxi.Trace(fxi.cl->refdef.vieworg, vec3_origin, vec3_origin, self->direction, brushmask, CEF_CLIP_TO_WORLD, &trace);
 	}
 
 	vec3_t view_fwd;
@@ -40,24 +38,31 @@ static qboolean LensFlareUpdateOrigin(struct client_entity_s* self)
 	VectorSubtract(self->direction, fxi.cl->refdef.vieworg, halo_dir);
 	VectorNormalize(halo_dir);
 
+	float alpha_scaler;
 	const float view_dot = DotProduct(view_fwd, halo_dir);
 
-	if (view_dot < 0.75f)
+	if (view_dot < 0.75f || (check_sky && trace.fraction < 1.0f && !(trace.surface->flags & SURF_SKY)))
 	{
-		self->flags |= CEF_NO_DRAW;
-		return true;
+		alpha_scaler = self->alpha / self->up[2];
+		self->alpha = max(0.01f, self->alpha * 0.8f);
+
+		if (self->alpha <= 0.01f)
+		{
+			self->flags |= CEF_NO_DRAW;
+			return true;
+		}
+	}
+	else
+	{
+		alpha_scaler = (view_dot - 0.75f) * 4.0f;
+		self->alpha = LerpFloat(self->alpha, self->up[2] * alpha_scaler, 0.2f);
 	}
 
-	if (self->flags & CEF_NO_DRAW)
-		self->flags &= ~CEF_NO_DRAW;
+	self->flags &= ~CEF_NO_DRAW;
 
-	if (self->up[1] != 0.0f) // Halo sprite.
+	if (self->up[1] == 0.0f) // Halo sprite.
 	{
-		self->alpha = self->up[2] - ((1.0f - view_dot) * 2.0f);
-		Clamp(self->alpha, 0.1f, 1.0f);
-
-		VectorMA(fxi.cl->refdef.vieworg, 16.0f, halo_dir, self->r.origin);
-
+		VectorMA(fxi.cl->refdef.vieworg, 16.0f + 20.0f * (1.0f - alpha_scaler), halo_dir, self->r.origin);
 		return true;
 	}
 
@@ -79,7 +84,7 @@ static qboolean LensFlareUpdateOrigin(struct client_entity_s* self)
 	VectorAdd(view_offset, fwd_offset, light_offset);
 
 	const float near_clip = 1.01f;
-	VectorScale(view_dir, near_clip, view_dir);
+	Vec3ScaleAssign(near_clip, view_dir);
 
 	vec3_t center;
 	VectorAdd(view_offset, view_dir, center);
@@ -100,13 +105,6 @@ static qboolean LensFlareUpdateOrigin(struct client_entity_s* self)
 	vec3_t axis;
 	VectorSubtract(light_pos, center, axis);
 
-	vec3_t dx;
-	VectorCopy(axis, dx);
-	VectorNormalize(dx);
-
-	vec3_t dy;
-	CrossProduct(dx, view_dir, dy);
-
 	vec3_t t_axis;
 	VectorScale(axis, self->up[0] * 1000.0f, t_axis);
 	VectorAdd(center, t_axis, self->r.origin);
@@ -120,7 +118,7 @@ static qboolean LensFlareUpdate(struct client_entity_s* self, centity_t* owner) 
 	if (self->LifeTime > 0 && self->LifeTime < fx_time)
 		return false;
 
-	return LensFlareUpdateOrigin(self); //mxd
+	return LensFlareUpdateOrigin(self, true); //mxd
 }
 
 static qboolean LensFlareAttachedUpdate(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXFlareThinkAttached' in original logic.
@@ -149,15 +147,15 @@ static qboolean LensFlareAttachedUpdate(struct client_entity_s* self, centity_t*
 	VectorSubtract(self->endpos2, self->startpos2, diff); // Diff between last updated spot and where to be.
 	VectorMA(self->startpos2, lerp, diff, self->direction);
 
-	return LensFlareUpdateOrigin(self); //mxd
+	return LensFlareUpdateOrigin(self, false); //mxd
 }
 
 void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	static const int sprite_indices[] = { 1, 2, 4, 3, 6, 3 }; //mxd //TODO: index 5 is unused.
+	static const int sprite_indices[] = { 1, 2, 4, 3, 6, 3, 0 }; //mxd
 	static const float flare1_pos[] =  { 1.0f, 0.7f,  0.3f, 0.1f,  0.0f, -0.2f, -0.5f };
 	static const float flare2_pos[] =  { 1.0f, 0.8f,  0.6f, 0.2f,  0.0f, -0.4f, -0.9f }; //mxd. Split into 2 arrays, added 7-th value.
-	static const float flare_scale[] = { 2.0f, 1.75f, 1.5f, 1.25f, 1.5f,  1.75f, 2.0f }; //mxd. Removed 8-th value.
+	static const float flare_scale[] = { 1.5f, 1.75f, 1.5f, 1.25f, 1.5f,  1.75f, 1.0f }; //mxd. Removed 8-th value.
 
 	float alpha;
 	paletteRGBA_t tint;
@@ -167,39 +165,33 @@ void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 	if (R_DETAIL < DETAIL_NORMAL) //mxd. '<= DETAIL_NORMAL' in original logic.
 		return;
 
+	//mxd. Normalize and rescale sun direction.
+	vec3_t direction;
+	VectorNormalize2(origin, direction);
+	Vec3ScaleAssign(4096.0f, direction);
+
 	for (int i = 0; i < NUM_LENS_MODELS; i++)
 	{
 		client_entity_t* flare = ClientEntity_new(FX_LENSFLARE, 0, origin, NULL, 0); //mxd. next_think_time:17 in original logic.
 
 		COLOUR_COPY(tint, flare->r.color); //mxd. Use macro.
-		flare->alpha = alpha;
-
-		if (i == NUM_LENS_MODELS - 1)
-		{
-			flare->r.model = &flare_models[0]; // Halo sprite.
-			flare->up[1] = 1.0f;
-			flare->up[2] = alpha;
-
-			if (flags & CEF_FLAG8)
-				COLOUR_SET(flare->r.color, 255, 255, 255);
-		}
-		else
-		{
-			const int sprite_index = sprite_indices[i]; // Lens flare sprite.
-			flare->r.model = &flare_models[sprite_index];
-		}
-
-		if (flags & CEF_FLAG8)
-			flare->LifeTime = fx_time + 4000;
-
 		flare->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST);
-		flare->Scale = flare_scale[i];
-		VectorCopy(origin, flare->direction);
-
-		if (flags & CEF_FLAG7)
-			Vec3ScaleAssign(4.0f, flare->direction);
+		flare->r.scale = flare_scale[i]; //mxd. Original logic sets flare->Scale, which is not used for anything.
+		
+		const int sprite_index = sprite_indices[i];
+		flare->r.model = &flare_models[sprite_index];
 
 		flare->up[0] = ((flags & CEF_FLAG6) ? flare2_pos[i] : flare1_pos[i]);
+		flare->up[1] = (float)sprite_index;
+		flare->up[2] = alpha; //mxd. Store initial alpha for all lensflare sprites.
+
+		if (sprite_index == 6 && (flags & CEF_FLAG7)) //mxd. Sun sprite.
+			COLOUR_SET(flare->r.color, 255, 255, 255);
+
+		if (sprite_index == 0 && (flags & CEF_FLAG8)) // Halo sprite.
+			COLOUR_SET(flare->r.color, 255, 255, 255);
+
+		VectorCopy(direction, flare->direction);
 
 		if (owner != NULL)
 		{
@@ -213,6 +205,7 @@ void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 			VectorCopy(flare->direction, flare->startpos2);
 			VectorCopy(flare->direction, flare->endpos2);
 
+			flare->LifeTime = fx_time + 4000;
 			flare->lastThinkTime = fx_time;
 		}
 		else

@@ -137,6 +137,7 @@ const func_map_t funcs_list[] =
 	// g_env.c:
 	{ "EnvDustUse",							(byte*)EnvDustUse },
 	{ "EnvSmokeUse",						(byte*)EnvSmokeUse },
+	{ "EnvSunInitThink",					(byte*)EnvSunInitThink },
 
 	// g_field.c:
 	{ "FogDensityTouch",					(byte*)FogDensityTouch },
