@@ -663,8 +663,7 @@ qboolean G_PlayerActionCheckPushButton(const playerinfo_t* info)
 		return false; // No button, so return.
 
 	// A button is nearby, so look to see if it's in reach.
-	edict_t* button = NULL;
-	button = G_Find(button, FOFS(targetname), self->target);
+	const edict_t* button = G_Find(NULL, FOFS(targetname), self->target);
 
 	if (button == NULL || button->classID != CID_BUTTON)
 		return false;
@@ -710,8 +709,7 @@ qboolean G_PlayerActionCheckPushLever(const playerinfo_t* info)
 		return false; // No level, so return.
 
 	// A level is nearby, so look to see if it's in reach.
-	edict_t* lever = NULL;
-	lever = G_Find(lever, FOFS(targetname), self->target);
+	const edict_t* lever = G_Find(NULL, FOFS(targetname), self->target);
 
 	if (lever == NULL || lever->classID != CID_LEVER)
 		return false;

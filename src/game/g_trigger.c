@@ -273,8 +273,7 @@ void TriggerPuzzleUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. 
 	{
 		if (COOP) // If COOP, remove model from world if puzzle item is used.
 		{
-			edict_t* puzzle = NULL;
-			puzzle = G_Find(puzzle, FOFS(classname), self->item->classname);
+			edict_t* puzzle = G_Find(NULL, FOFS(classname), self->item->classname);
 
 			if (puzzle != NULL)
 			{

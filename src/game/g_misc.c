@@ -632,8 +632,7 @@ void MiscMagicPortalTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfa
 	if (level.time < self->touch_debounce_time || other->client == NULL) // Not a player.
 		return;
 
-	edict_t* ent = NULL;
-	ent = G_Find(ent, FOFS(targetname), self->target);
+	edict_t* ent = G_Find(NULL, FOFS(targetname), self->target);
 
 	if (ent != NULL)
 		TargetChangelevelUse(ent, self, other);

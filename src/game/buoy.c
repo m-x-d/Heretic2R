@@ -137,8 +137,7 @@ void LinkBuoyInfo(edict_t* self) //mxd. Named 'info_buoy_link' in original versi
 	// Make sure we have a target to link to.
 	if (self->target != NULL)
 	{
-		edict_t* ent = NULL;
-		ent = G_Find(ent, FOFS(targetname), self->target);
+		edict_t* ent = G_Find(NULL, FOFS(targetname), self->target);
 
 		if (ent == NULL)
 		{
@@ -171,8 +170,7 @@ void LinkBuoyInfo(edict_t* self) //mxd. Named 'info_buoy_link' in original versi
 		}
 		else
 		{
-			edict_t* ent = NULL;
-			ent = G_Find(ent, FOFS(targetname), self->target2);
+			edict_t* ent = G_Find(NULL, FOFS(targetname), self->target2);
 
 			if (ent == NULL)
 			{
@@ -206,8 +204,7 @@ void LinkBuoyInfo(edict_t* self) //mxd. Named 'info_buoy_link' in original versi
 		}
 		else
 		{
-			edict_t* ent = NULL;
-			ent = G_Find(ent, FOFS(targetname), self->jumptarget);
+			const edict_t* ent = G_Find(NULL, FOFS(targetname), self->jumptarget);
 
 			if (ent != NULL)
 			{

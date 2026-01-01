@@ -1311,8 +1311,8 @@ void ogle_push(edict_t* self, float distance)
 {
 	qboolean done = false;
 
-	edict_t* found = NULL;
-	if ((found = G_Find(found, FOFS(targetname), self->target)) != NULL)
+	edict_t* found = G_Find(NULL, FOFS(targetname), self->target);
+	if (found != NULL)
 	{
 		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);

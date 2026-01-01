@@ -1078,9 +1078,9 @@ void tcheckrik_pause(edict_t* self) //mxd. Named 'insect_pause' in original logi
 {
 	if (self->spawnflags & MSF_INSECT_BEAST_FODDER)
 	{
-		edict_t* tbeast = NULL;
+		edict_t* tbeast = G_Find(NULL, FOFS(classname), "monster_trial_beast");
 
-		if ((tbeast = G_Find(tbeast, FOFS(classname), "monster_trial_beast")) != NULL && tbeast->health > 0)
+		if (tbeast != NULL && tbeast->health > 0)
 		{
 			self->enemy = tbeast;
 			tbeast->oldenemy = tbeast->enemy;

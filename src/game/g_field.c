@@ -404,8 +404,7 @@ void TriggerGotoBuoyTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfa
 
 void TriggerGotoBuoyUseThink(edict_t* self) //mxd. Named 'trigger_goto_buoy_use_go' in original logic.
 {
-	edict_t* monster = NULL;
-	monster = G_Find(monster, FOFS(targetname), self->target);
+	edict_t* monster = G_Find(NULL, FOFS(targetname), self->target);
 
 	if (monster != NULL && monster->health > 0 && (monster->svflags & SVF_MONSTER) && (monster->monsterinfo.aiflags & AI_USING_BUOYS))
 		TriggerGotoBuoyExecute(self, monster, self->activator);
