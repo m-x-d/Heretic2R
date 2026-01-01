@@ -2549,8 +2549,8 @@ void SP_obj_cocoon(edict_t* self)
 
 	// Always animate and can't be pushed.
 	self->spawnflags |= (SF_OBJ_NOPUSH | SF_OBJ_ANIMATE);
-	SpawnClientAnim(self, FX_ANIM_COCOON, NULL);
 
+	SpawnClientAnim(self, FX_ANIM_COCOON, NULL);
 	ObjectInit(self, 75, 125, MAT_INSECT, SOLID_BBOX);
 }
 
@@ -3367,7 +3367,7 @@ void SP_obj_eyeball_jar(edict_t* self)
 	self->spawnflags |= (SF_OBJ_NOPUSH | SF_OBJ_ANIMATE);
 
 	SpawnClientAnim(self, FX_ANIM_EYEBALLJAR, NULL);
-	ObjectInit(self, 50, 200, MAT_GLASS, SOLID_BBOX);
+	ObjectInit(self, 15, 200, MAT_GLASS, SOLID_BBOX); //mxd. health:50 in original logic. Reduced to make more... smashable.
 }
 
 // QUAKED obj_lab_tray (1 .5 0) (-8 -8 -5) (8 8 5) INVULNERABLE
