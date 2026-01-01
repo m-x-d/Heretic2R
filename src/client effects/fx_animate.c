@@ -177,6 +177,21 @@ static qboolean AnimationUpdate(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
+//mxd. Added to fix FXAnimate entities lingering for ~1 second after their associated edict was destroyed.
+static qboolean AnimationAddToView(struct client_entity_s* self, centity_t* owner)
+{
+	// Our owner was destroyed, so disappear as well. //TODO: GROSS HACK: relies on the fact that all FXAnimate edicts are spawned as SOLID_BBOX in g.obj.c. 
+	if (owner->current.solid == 0)
+	{
+		self->Update = RemoveSelfAI;
+		self->updateTime = 0;
+
+		return false;
+	}
+
+	return true;
+}
+
 void FXAnimate(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	byte anim;
@@ -200,6 +215,7 @@ void FXAnimate(centity_t* owner, const int type, const int flags, vec3_t origin)
 	self->NoOfAnimFrames = anim_settings->num_frames;
 	self->r.frame = anim_settings->default_frame;
 	self->r.oldframe = self->r.frame; //mxd
+	self->AddToView = AnimationAddToView; //mxd
 
 	if (anim & 0x80)
 	{
