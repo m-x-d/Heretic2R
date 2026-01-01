@@ -155,7 +155,6 @@ void BecomeDebris(edict_t* self)
 	self->dead_state = DEAD_DEAD;
 
 	G_SetToFree(self);
-	self->nextthink = level.time + 2.0f;
 }
 
 void SprayDebris(const edict_t* self, const vec3_t spot, int num_chunks, float damage) //mxd. 'byte num_chunks' in original logic. //TODO: remove unused arg.
