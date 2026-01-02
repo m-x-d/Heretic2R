@@ -346,6 +346,36 @@ static void GrabPalette(paletteRGB_t* src, paletteRGB_t* dst) // H2
 	}
 }
 
+//mxd. Gross hack to fix lensflare sprites. //TODO: fix image files instead?
+static void FixPalette(const image_t* image)
+{
+	if (image->type != it_sprite || strstr(image->name, "Sprites/lens/flare") == NULL)
+		return;
+
+	if (strstr(image->name, "flare1_0.m8") != NULL) // Remap BG color from [7 7 5] to [0 0 0].
+	{
+		memset(&image->palette[192], 0, sizeof(paletteRGB_t));
+	}
+	else if (strstr(image->name, "flare2_0.m8") != NULL) // Remap BG colors from [5 5 3] and [20 20 12] to [0 0 0].
+	{
+		memset(&image->palette[187], 0, sizeof(paletteRGB_t));
+		memset(&image->palette[188], 0, sizeof(paletteRGB_t));
+	}
+	else if (strstr(image->name, "flare3_0.m8") != NULL) // Remap BG color from [6 6 4] to [0 0 0].
+	{
+		memset(&image->palette[208], 0, sizeof(paletteRGB_t));
+	}
+	else if (strstr(image->name, "flare4_0.m8") != NULL) // Remap BG color from [7 7 5] to [0 0 0].
+	{
+		memset(&image->palette[198], 0, sizeof(paletteRGB_t));
+	}
+	else if (strstr(image->name, "flare5_0.m8") != NULL) // Remap BG colors from [20 20 16] and [22 22 18] to [0 0 0].
+	{
+		memset(&image->palette[184], 0, sizeof(paletteRGB_t));
+		memset(&image->palette[185], 0, sizeof(paletteRGB_t));
+	}
+}
+
 static void R_UploadM8(miptex_t* mt, const image_t* image) // H2: GL_Upload8M().
 {
 	for (int mip = 0; mip < MIPLEVELS && mt->width[mip] > 0 && mt->height[mip] > 0; mip++)
@@ -395,6 +425,8 @@ static image_t* R_LoadM8(const char* name, const imagetype_t type) // H2: GL_Loa
 	image->has_alpha = false;
 	image->texnum = TEXNUM_IMAGES + (image - gltextures);
 	image->num_frames = (byte)mt->value;
+
+	FixPalette(image); //mxd
 
 	R_BindImage(image);
 	R_UploadM8(mt, image);
@@ -645,6 +677,8 @@ static void R_RefreshImage(image_t* image) // H2
 		ri.FS_LoadFile(image->name, (void**)&mt);
 
 		GrabPalette(mt->palette, image->palette);
+		FixPalette(image); //mxd
+
 		R_BindImage(image);
 		R_UploadM8(mt, image);
 
