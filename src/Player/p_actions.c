@@ -140,55 +140,14 @@ void PlayerActionCheckVaultKick(playerinfo_t* info)
 		info->G_PlayerVaultKick(info);
 }
 
-//mxd. Added to reduce code duplication.
-static qboolean CheckCreepMove(const playerinfo_t* info, const float creep_stepdist)
-{
-	// Scan out and down from the player.
-
-	// Ignore the pitch of the player, we only want the yaw.
-	const vec3_t ang = { 0.0f, info->angles[YAW], 0.0f };
-
-	vec3_t forward;
-	AngleVectors(ang, forward, NULL, NULL);
-
-	// Trace ahead about one step.
-	vec3_t start_pos;
-	VectorMA(info->origin, creep_stepdist, forward, start_pos);
-
-	// Account for stepheight.
-	vec3_t mins;
-	VectorCopy(info->mins, mins);
-	mins[2] += CREEP_MAXFALL;
-
-	// Trace forward to see if the path is clear.
-	trace_t trace;
-	P_Trace(info, info->origin, mins, info->maxs, start_pos, &trace); //mxd
-
-	// If it is...
-	if (trace.fraction == 1.0f)
-	{
-		// Move the endpoint down the maximum amount.
-		vec3_t endpos;
-		VectorCopy(start_pos, endpos);
-		endpos[2] += info->mins[2] - CREEP_MAXFALL;
-
-		// Trace down.
-		P_Trace(info, start_pos, mins, info->maxs, endpos, &trace); //mxd
-
-		return (trace.fraction < 1.0f && !trace.startsolid && !trace.allsolid);
-	}
-
-	return false;
-}
-
 static qboolean PlayerActionCheckCreepMoveForward(const playerinfo_t* info)
 {
-	return CheckCreepMove(info, CREEP_STEPDIST);
+	return CheckCreep(info, true);
 }
 
 static qboolean PlayerActionCheckCreepMoveBack(const playerinfo_t *info)
 {
-	return CheckCreepMove(info, -CREEP_STEPDIST);
+	return CheckCreep(info, false);
 }
 
 void PlayerActionSetCrouchHeight(playerinfo_t* info)
@@ -1814,7 +1773,7 @@ void PlayerActionCheckCreep(playerinfo_t* info)
 		return;
 	}
 
-	// If we're pressing forward, and nothing else is happening, then we're walking forward.
+	// If we're pressing forward, and nothing else is happening, then we're creeping forward.
 	if (info->seqcmd[ACMDL_CREEP_F] && !info->seqcmd[ACMDL_STRAFE_L] && !info->seqcmd[ACMDL_STRAFE_R])
 	{
 		const qboolean can_move = PlayerActionCheckCreepMoveForward(info); //mxd
@@ -1832,7 +1791,7 @@ void PlayerActionCheckCreep(playerinfo_t* info)
 		}
 	}
 
-	// If we're pressing backward, and nothing else is happening, then we're walking backward.
+	// If we're pressing backward, and nothing else is happening, then we're creeping backward.
 	if (info->seqcmd[ACMDL_CREEP_B] && !info->seqcmd[ACMDL_STRAFE_L] && !info->seqcmd[ACMDL_STRAFE_R])
 	{
 		const qboolean can_move = PlayerActionCheckCreepMoveBack(info); //mxd

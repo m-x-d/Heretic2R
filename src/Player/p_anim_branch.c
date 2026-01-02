@@ -40,40 +40,40 @@ qboolean CheckUncrouch(const playerinfo_t* info)
 	return (trace.fraction == 1.0f && !trace.startsolid && !trace.allsolid);
 }
 
-static qboolean CheckCreep(const playerinfo_t* info, const int dir)
+qboolean CheckCreep(const playerinfo_t* info, const qboolean check_forward) //mxd. changed 2-nd arg from dir to check_forward.
 {
-	vec3_t vf;
-
 	// Scan out and down from the player.
-	vec3_t startpos;
-	VectorCopy(info->origin, startpos);
 
 	// Ignore the pitch of the player, we only want the yaw.
-	const vec3_t ang = { 0.0f, info->angles[YAW], 0.0f };
-	AngleVectors(ang, vf, NULL, NULL);
+	const vec3_t angles = { 0.0f, info->angles[YAW], 0.0f };
 
-	// Trace ahead about one step (dir is 1 for forward, -1 for back).
-	VectorMA(info->origin, (float)(dir * CREEP_STEPDIST), vf, startpos);
+	vec3_t forward;
+	AngleVectors(angles, forward, NULL, NULL);
+
+	// Trace ahead about one step.
+	vec3_t start_pos;
+	const float step_dist = (float)(check_forward ? CREEP_STEPDIST : -CREEP_STEPDIST);
+	VectorMA(info->origin, step_dist, forward, start_pos);
 
 	// Account for stepheight.
-	vec3_t mins;
-	VectorCopy(info->mins, mins);
-	mins[2] += CREEP_MAXFALL;
+	const vec3_t mins = VEC3_INITA(info->mins, 0.0f, 0.0f, CREEP_MAXFALL);
 
 	// Trace forward to see if the path is clear.
 	trace_t trace;
-	P_Trace(info, info->origin, mins, info->maxs, startpos, &trace); //mxd
+	P_Trace(info, info->origin, mins, info->maxs, start_pos, &trace); //mxd
 
 	// If it is...
 	if (trace.fraction == 1.0f)
 	{
 		// Move the endpoint down the maximum amount.
-		vec3_t endpos;
-		VectorCopy(startpos, endpos);
-		endpos[2] += info->mins[2] - CREEP_MAXFALL;
+		const vec3_t end_pos = VEC3_INITA(start_pos, 0.0f, 0.0f, -CREEP_MAXFALL * 2.0f); //mxd. 'end_pos[2] += info->mins[2] - CREEP_MAXFALL' in original logic.
+
+		//mxd. Reduce mins/maxs XY size by half. Fixes player stopping only when both of his legs are above potential chasm when trying to creep off a diagonal brush edge.
+		const vec3_t mins_dn = VEC3_SET(mins[0] * 0.5f, mins[1] * 0.5f, mins[2]);
+		const vec3_t maxs_dn = VEC3_SET(info->maxs[0] * 0.5f, info->maxs[1] * 0.5f, info->maxs[2]);
 
 		// Trace down.
-		P_Trace(info, startpos, mins, info->maxs, endpos, &trace);
+		P_Trace(info, start_pos, mins_dn, maxs_dn, end_pos, &trace);
 
 		return (trace.fraction < 1.0f && !trace.startsolid && !trace.allsolid);
 	}
@@ -379,13 +379,13 @@ int BranchLwrStanding(playerinfo_t* info)
 
 	// Check for creep start.
 	if (info->seqcmd[ACMDL_CREEP_F])
-		return (CheckCreep(info, 1) ? ASEQ_CREEPF : ASEQ_STAND);
+		return (CheckCreep(info, true) ? ASEQ_CREEPF : ASEQ_STAND);
 
 	// BACKWARD
 
 	// Check for a creepback.
 	if (info->seqcmd[ACMDL_CREEP_B])
-		return (CheckCreep(info, -1) ? ASEQ_CREEPB : ASEQ_STAND);
+		return (CheckCreep(info, false) ? ASEQ_CREEPB : ASEQ_STAND);
 
 	// Check for a walk back.
 	if (info->seqcmd[ACMDL_WALK_B])

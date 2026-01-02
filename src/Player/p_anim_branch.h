@@ -37,5 +37,6 @@ extern int BranchCheckMana(playerinfo_t *info);
 //mxd. Utility
 extern qboolean CheckFall(const playerinfo_t* info);
 extern qboolean CheckUncrouch(const playerinfo_t* info);
+extern qboolean CheckCreep(const playerinfo_t* info, qboolean check_forward);
 
 extern PLAYER_API qboolean BranchCheckDismemberAction(const playerinfo_t *info, int weapon);
