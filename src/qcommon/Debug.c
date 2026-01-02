@@ -6,7 +6,7 @@
 
 #include "Debug.h"
 #include "client.h"
-#include "vid.h"
+#include "Vector.h"
 
 #if _DEBUG
 	#include <windows.h>
@@ -132,10 +132,15 @@ Q2DLL_DECLSPEC void DBG_AddBox(const vec3_t center, const float size, const pale
 #endif
 }
 
-Q2DLL_DECLSPEC void DBG_AddBbox(const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime)
+Q2DLL_DECLSPEC void DBG_AddBbox(const vec3_t center, const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime)
 {
 #if _DEBUG
-	re.AddDebugBbox(mins, maxs, color, lifetime);
+	vec3_t abs_mins;
+	vec3_t abs_maxs;
+	VectorAdd(center, mins, abs_mins);
+	VectorAdd(center, maxs, abs_maxs);
+
+	re.AddDebugBbox(abs_mins, abs_maxs, color, lifetime);
 #endif
 }
 
