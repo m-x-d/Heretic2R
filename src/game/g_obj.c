@@ -1651,6 +1651,10 @@ void SP_obj_bigcrystal(edict_t* self)
 	self->s.modelindex = (byte)gi.modelindex("models/objects/crystals/bigcrystal/tris.fm");
 	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
+	//mxd. Match item_puzzle_crystal rendering settings.
+	self->s.renderfx |= (RF_TRANSLUCENT | RF_TRANS_ADD);
+	COLOUR_SETA(self->s.color, 255, 255, 255, 178);
+
 	ObjectInit(self, 350, 200, MAT_GREYSTONE, SOLID_BBOX);
 
 	self->avelocity[YAW] = self->speed;
