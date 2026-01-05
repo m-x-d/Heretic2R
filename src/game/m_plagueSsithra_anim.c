@@ -968,7 +968,7 @@ static const animframe_t ssithra_frames_sliced[] =
 	{ FRAME_death_b35,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_death_b36,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t ssithra_move_sliced = ANIMMOVE(ssithra_frames_sliced, ssithra_kill_self);
+const animmove_t ssithra_move_sliced = ANIMMOVE(ssithra_frames_sliced, ssithra_dead); //mxd. endfunc:ssithra_kill_self in original logic (caused already dead ssithra to play different death animation again).
 
 // Plague Ssithra Delay - stop and look around.
 static const animframe_t ssithra_frames_delay[] =
