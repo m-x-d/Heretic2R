@@ -327,6 +327,25 @@ static void DropWeapons(edict_t* self, const int damage, const int which_weapons
 
 #pragma region ========================== PlayerDismember() logic ==========================
 
+//mxd. Added to avoid code duplication.
+static void PlayerSetDamagedSkin(edict_t* self, const int body_part)
+{
+	const uint part_id = (1 << body_part);
+
+	//mxd. Damaged skin already set.
+	if (self->client->playerinfo.pers.altparts & part_id)
+		return;
+
+	self->client->playerinfo.pers.altparts |= part_id;
+	self->s.fmnodeinfo[body_part].flags |= FMNI_USE_SKIN;
+
+	//H2_BUGFIX: mxd. When player's front torso (MESH_BASE2) is already damaged, self->s.skinnum already holds index of damaged skin.
+	if (part_id != MESH_BASE2 && (self->client->playerinfo.pers.altparts & (1 << MESH_BASE2)))
+		self->s.fmnodeinfo[body_part].skin = self->s.skinnum;
+	else
+		self->s.fmnodeinfo[body_part].skin = self->s.skinnum + 1;
+}
+
 static void PlayerThrowHead(edict_t* self, edict_t* other, float damage, const qboolean dismember_ok) //mxd
 {
 	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
@@ -355,9 +374,7 @@ static void PlayerThrowHead(edict_t* self, edict_t* other, float damage, const q
 	}
 	else
 	{
-		self->client->playerinfo.pers.altparts |= (1 << MESH__HEAD);
-		self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_USE_SKIN;
-		self->s.fmnodeinfo[MESH__HEAD].skin = self->s.skinnum + 1;
+		PlayerSetDamagedSkin(self, MESH__HEAD); //mxd
 	}
 }
 
@@ -396,9 +413,7 @@ static void PlayerThrowTorso(edict_t* self, edict_t* other, float damage, const 
 	}
 	else
 	{
-		self->client->playerinfo.pers.altparts |= (1 << node_index);
-		self->s.fmnodeinfo[node_index].flags |= FMNI_USE_SKIN;
-		self->s.fmnodeinfo[node_index].skin = self->s.skinnum + 1;
+		PlayerSetDamagedSkin(self, node_index); //mxd
 	}
 }
 
@@ -435,9 +450,7 @@ static int PlayerThrowLeftArm(edict_t* self, edict_t* other, float damage, const
 	}
 	else
 	{
-		self->client->playerinfo.pers.altparts |= (1 << MESH__LARM);
-		self->s.fmnodeinfo[MESH__LARM].flags |= FMNI_USE_SKIN;
-		self->s.fmnodeinfo[MESH__LARM].skin = self->s.skinnum + 1;
+		PlayerSetDamagedSkin(self, MESH__LARM); //mxd
 	}
 
 	return thrown_nodes;
@@ -480,9 +493,7 @@ static int PlayerThrowRightArm(edict_t* self, edict_t* other, float damage, cons
 	}
 	else
 	{
-		self->client->playerinfo.pers.altparts |= (1 << MESH__RARM);
-		self->s.fmnodeinfo[MESH__RARM].flags |= FMNI_USE_SKIN;
-		self->s.fmnodeinfo[MESH__RARM].skin = self->s.skinnum + 1;
+		PlayerSetDamagedSkin(self, MESH__RARM); //mxd
 	}
 
 	return thrown_nodes;
@@ -498,9 +509,7 @@ static int PlayerThrowLeg(edict_t* self, const float damage, const int node_inde
 		if (self->s.fmnodeinfo[node_index].flags & FMNI_USE_SKIN)
 			return thrown_nodes;
 
-		self->client->playerinfo.pers.altparts |= (1 << node_index);
-		self->s.fmnodeinfo[node_index].flags |= FMNI_USE_SKIN;
-		self->s.fmnodeinfo[node_index].skin = self->s.skinnum + 1;
+		PlayerSetDamagedSkin(self, node_index); //mxd
 	}
 	else
 	{
