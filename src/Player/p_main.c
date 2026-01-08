@@ -296,7 +296,7 @@ PLAYER_API void PlayerUpdateModelAttributes(playerinfo_t* info)
 
 		// No pain or power skins if alttex (metal texture).
 		// Also, make sure that the alternate skin is not used when the reflection map is on.
-		for (int i = 1; i < 16; i++)
+		for (int i = 1; i < MAX_FM_MESH_NODES; i++)
 			info->fmnodeinfo[i].flags &= ~FMNI_USE_SKIN;
 	}
 	else
@@ -334,7 +334,7 @@ PLAYER_API void PlayerUpdateModelAttributes(playerinfo_t* info)
 		info->fmnodeinfo[MESH_BASE2].skin = info->skinnum;
 
 		// Set appropriate textures and pain skins for fifteen other body parts.
-		for (int i = 1; i < 16; i++)
+		for (int i = 1; i < MAX_FM_MESH_NODES; i++)
 		{
 			if (info->pers.altparts & (1 << i))
 			{
