@@ -867,29 +867,25 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 		}
 	}
 
-	if ((target->svflags & SVF_MONSTER) && SV_FREEZEMONSTERS)
+	if (target->svflags & SVF_MONSTER)
 	{
-		// Do do anything. Frozen monsters take no damage, don't die.
-	}
-	else if (target->svflags & SVF_MONSTER)
-	{
-		target->spawnflags &= ~MSF_AMBUSH;
-		target->targetname = NULL;
-
-		M_ReactToDamage(target, attacker);
-
-		if (!(target->monsterinfo.aiflags & AI_DUCKED) && dmg_take > 0 && target->pain_debounce_time < level.time)
+		if (!SV_FREEZEMONSTERS) // Frozen monsters take no damage, don't die.
 		{
-			const qboolean force_pain = (target->enemy == NULL); //mxd
+			target->spawnflags &= ~MSF_AMBUSH;
+			target->targetname = NULL;
 
-			if (target->classID == CID_ASSASSIN)
-				G_PostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", inflictor, attacker, force_pain, dmg_take, hl);
-			else
-				G_PostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", target, attacker, force_pain, dmg_take, hl);
+			M_ReactToDamage(target, attacker);
 
-			// In Nightmare skill-level, monsters don't go into pain frames often.
-			if (SKILL >= 3)
-				target->pain_debounce_time = level.time + 5;
+			if (!(target->monsterinfo.aiflags & AI_DUCKED) && dmg_take > 0 && target->pain_debounce_time < level.time)
+			{
+				const edict_t* pain_target = ((target->classID == CID_ASSASSIN) ? inflictor : target); //mxd
+				const qboolean force_pain = (target->enemy == NULL); //mxd
+				G_PostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", pain_target, attacker, force_pain, dmg_take, hl);
+
+				// In Nightmare skill-level, monsters don't go into pain frames often.
+				if (SKILL >= 3)
+					target->pain_debounce_time = level.time + 5.0f;
+			}
 		}
 	}
 	else if (client != NULL)
