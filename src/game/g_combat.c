@@ -505,25 +505,11 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 	const int orig_dmg = damage;
 
 	// Copy passed-in vectors, so we don't overwrite them.
-	vec3_t dir;
-	if (p_dir != NULL && Vec3NotZero(p_dir))
-		VectorCopy(p_dir, dir);
-	else
-		VectorSet(dir, 0.0f, 0.0f, -1.0f);
-
+	vec3_t dir = VEC3_INIT((p_dir != NULL && Vec3NotZero(p_dir)) ? p_dir : vec3_down);
 	VectorNormalize(dir);
 
-	vec3_t normal;
-	if (p_normal != NULL && Vec3NotZero(p_normal))
-		VectorCopy(p_normal, normal);
-	else
-		VectorSet(normal, 0.0f, 0.0f, 1.0f);
-
-	vec3_t point;
-	if (p_point != NULL)
-		VectorCopy(p_point, point);
-	else
-		VectorCopy(inflictor->s.origin, point);
+	const vec3_t normal = VEC3_INIT((p_normal != NULL && Vec3NotZero(p_normal)) ? p_normal : vec3_up);
+	const vec3_t point = VEC3_INIT((p_point != NULL ? p_point : inflictor->s.origin));
 
 	// Deal with player armor - if we have any.
 	if (target->client != NULL && target->client->playerinfo.pers.armor_count > 0.0f && !(dflags & DAMAGE_BLEEDING))
@@ -803,11 +789,7 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 
 		if (target != attacker && BLOOD_LEVEL > VIOLENCE_BLOOD) // Can't dismember yourself.
 		{
-			vec3_t hit_spot;
-			if (attacker == inflictor)
-				VectorCopy(point, hit_spot);
-			else
-				VectorCopy(inflictor->s.origin, hit_spot);
+			const vec3_t hit_spot = VEC3_INIT(attacker == inflictor ? point : inflictor->s.origin);
 
 			//TODO: 2-nd case never used (harpy is monster)? Why CID_HARPY needs separate GetHitLocation() logic?
 			if (target->classID != CID_HARPY) // Use new hitlocation function.
