@@ -109,7 +109,7 @@ void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int num
 {
 	assert(from != NULL); //mxd
 
-	// Set everything to the state we are delta'ing from
+	// Set everything to the state we are delta-ing from.
 	*to = *from;
 
 	// H2: missing VectorCopy(from->origin, to->old_origin);
@@ -139,12 +139,19 @@ void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int num
 			cl.frame.playerstate.frame = to->frame;
 	}
 
-	if (GetB(bits, U_SKIN8) && GetB(bits, U_SKIN16))
-		to->skinnum = MSG_ReadLong(&net_message);
-	else if (GetB(bits, U_SKIN16))
-		to->skinnum = MSG_ReadShort(&net_message);
-	else if (GetB(bits, U_SKIN8))
-		to->skinnum = MSG_ReadByte(&net_message);
+	if (GetB(bits, U_SKIN8) || GetB(bits, U_SKIN16))
+	{
+		if (GetB(bits, U_SKIN8) && GetB(bits, U_SKIN16))
+			to->skinnum = MSG_ReadLong(&net_message);
+		else if (GetB(bits, U_SKIN16))
+			to->skinnum = MSG_ReadShort(&net_message);
+		else // U_SKIN8
+			to->skinnum = MSG_ReadByte(&net_message);
+
+		//H2_BUGFIX: mxd. Not set in original logic.
+		if (number == cl.playernum + 1)
+			cl.frame.playerstate.skinnum = to->skinnum;
+	}
 
 	if (GetB(bits, U_CLIENTNUM))
 	{
