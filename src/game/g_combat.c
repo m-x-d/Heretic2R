@@ -191,7 +191,7 @@ static void SpawnReward(const edict_t* self, const edict_t* attacker)
 	gi.CreateEffect(NULL, FX_PICKUP, 0, ed->s.origin, NULL);
 }
 
-void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int damage, vec3_t point, const int mod)
+void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int damage, const vec3_t point, const int mod)
 {
 	if (target->classID == CID_MORK)
 	{
