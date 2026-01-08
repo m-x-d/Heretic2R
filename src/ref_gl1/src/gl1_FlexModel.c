@@ -506,15 +506,15 @@ static image_t* R_GetSkin(const entity_t* ent) //mxd. Rewrote to use entity_t* a
 	return r_notexture;
 }
 
-static image_t* R_GetSkinFromNode(const entity_t* ent, const int index) //mxd. Rewrote to use entity_t* arg instead of 'currententity'.
+static image_t* R_GetSkinFromNode(const entity_t* ent, const int skin_index) //mxd. Rewrote to use entity_t* arg instead of 'currententity'.
 {
 	image_t* skin;
 	const model_t* mdl = *ent->model;
 
 	if (ent->skin != NULL && ent->skins != NULL)
-		skin = ent->skins[ent->fmnodeinfo[index].skin];
+		skin = ent->skins[skin_index];
 	else
-		skin = mdl->skins[ent->fmnodeinfo[index].skin];
+		skin = mdl->skins[skin_index];
 
 	if (skin != NULL)
 		return skin;
@@ -608,7 +608,7 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 			else if (nodeinfo->flags & FMNI_USE_SKIN)
 			{
 				use_skin = true;
-				R_BindImage(R_GetSkinFromNode(e, i));
+				R_BindImage(R_GetSkinFromNode(e, nodeinfo->skin));
 			}
 		}
 
