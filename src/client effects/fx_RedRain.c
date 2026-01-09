@@ -265,7 +265,9 @@ void FXRedRain(centity_t* owner, const int type, int flags, vec3_t origin)
 	const qboolean powerup = (flags & CEF_FLAG6); //mxd
 	const float radius = (powerup ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS); //mxd
 
-	const float ceiling = GetSolidDist(origin, radius * 0.5f, MAX_REDRAINHEIGHT, false);
+	//mxd. Original logic uses 'radius * 0.5f' as GetSolidDist() radius arg. Changed to avoid clouds getting stuck near impact point
+	//when arrow direction was nearly parallel to a wall (so applying ARROW_BACKUP in RedRainMissileTouch() doesn't move origin enough away from it).
+	const float ceiling = GetSolidDist(origin, 1.0f, MAX_REDRAINHEIGHT, false) - radius * 0.5f;
 	const vec3_t ceil_origin = VEC3_INITA(origin, 0.0f, 0.0f, ceiling);
 
 	const float floor = GetSolidDist(origin, 1.0f, -MAX_FALL_DISTANCE, false);
