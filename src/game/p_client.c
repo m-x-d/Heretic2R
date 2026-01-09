@@ -1234,8 +1234,7 @@ void PlayerBodyDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int dam
 {
 	gi.sound(self, CHAN_BODY, gi.soundindex("misc/fleshbreak.wav"), 1.0f, ATTN_NORM, 0.0f);
 
-	vec3_t mins;
-	VectorCopy(self->mins, mins);
+	vec3_t mins = VEC3_INIT(self->mins);
 	mins[2] = -30.0f;
 
 	const byte mag = (byte)(Clamp(VectorLength(mins), 1.0f, 255.0f));
