@@ -1203,14 +1203,12 @@ void SelectSpawnPoint(const edict_t* ent, vec3_t origin, vec3_t angles)
 	}
 
 	// Do a trace to the floor to find where to put player.
-	vec3_t end_pos;
-	VectorCopy(spot->s.origin, end_pos);
-	end_pos[2] -= 1000.0f;
+	const vec3_t end_pos = VEC3_INITA(spot->s.origin, 0.0f, 0.0f, -1000.0f);
 
-	trace_t tr;
-	gi.trace(spot->s.origin, vec3_origin, vec3_origin, end_pos, NULL, CONTENTS_WORLD_ONLY | MASK_PLAYERSOLID, &tr);
+	trace_t trace;
+	gi.trace(spot->s.origin, vec3_origin, vec3_origin, end_pos, NULL, CONTENTS_WORLD_ONLY | MASK_PLAYERSOLID, &trace);
 
-	VectorCopy(tr.endpos, origin);
+	VectorCopy(trace.endpos, origin);
 	origin[2] -= player_mins[2];
 
 	// ???
