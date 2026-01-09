@@ -103,7 +103,7 @@ void BleederThink(edict_t* self)
 	self->nextthink = level.time + flrand(0.1f, 0.5f);
 }
 
-static void SpawnBleeder(edict_t* self, edict_t* other, vec3_t bleed_dir, vec3_t bleed_spot)
+static void SpawnBleeder(edict_t* self, edict_t* other, const vec3_t bleed_dir, const vec3_t bleed_spot)
 {
 	self->client->playerinfo.flags |= PLAYER_FLAG_BLEED;
 
@@ -443,8 +443,8 @@ static int PlayerThrowLeftArm(edict_t* self, edict_t* other, float damage, const
 			VectorMA(gore_spot, -10.0f, right, gore_spot);
 			ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 0);
 
-			vec3_t blood_dir = { 0.0f, -1.0f,  0.0f };
-			vec3_t blood_spot = { 0.0f, -12.0f, 10.0f };
+			const vec3_t blood_dir = { 0.0f, -1.0f, 0.0f };
+			const vec3_t blood_spot = { 0.0f, -12.0f, 10.0f };
 			SpawnBleeder(self, other, blood_dir, blood_spot);
 		}
 	}
@@ -483,8 +483,8 @@ static int PlayerThrowRightArm(edict_t* self, edict_t* other, float damage, cons
 			VectorMA(gore_spot, 10.0f, right, gore_spot);
 			ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 0);
 
-			vec3_t blood_dir = { 0.0f, 1.0f,  0.0f };
-			vec3_t blood_spot = { 0.0f, 12.0f, 10.0f };
+			const vec3_t blood_dir = { 0.0f, 1.0f, 0.0f };
+			const vec3_t blood_spot = { 0.0f, 12.0f, 10.0f };
 			SpawnBleeder(self, other, blood_dir, blood_spot);
 
 			if (in_polevault) // Oops! No staff! Fall down!
