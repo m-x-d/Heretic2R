@@ -223,7 +223,7 @@ void RedRainMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfac
 
 	damage_area->delay = level.time + RED_RAIN_DURATION;
 	if (DEATHMATCH)
-		damage_area->delay -= 2; // 5 seconds in DM.
+		damage_area->delay -= 2.0f; // 5 seconds in DM. //TODO: actually, 6 seconds in DM. Adjust to match comment?..
 
 	damage_area->owner = self->owner;
 	damage_area->red_rain_count = self->owner->red_rain_count;
@@ -239,9 +239,7 @@ void RedRainMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfac
 	VectorSet(damage_area->mins, -radius * 0.5f, -radius * 0.5f, -1.0f);
 	VectorSet(damage_area->maxs, radius * 0.5f, radius * 0.5f, 1.0f);
 
-	vec3_t end;
-	VectorCopy(origin, end);
-	end[2] += MAX_REDRAINHEIGHT;
+	vec3_t end = VEC3_INITA(origin, 0.0f, 0.0f, MAX_REDRAINHEIGHT);
 
 	trace_t trace;
 	gi.trace(origin, damage_area->mins, damage_area->maxs, end, damage_area, MASK_SOLID, &trace);
