@@ -1268,11 +1268,8 @@ static void CopyToBodyQue(edict_t* ent)
 
 	if (level.body_que == -1)
 	{
-		vec3_t origin;
-		VectorCopy(ent->s.origin, origin);
-		origin[2] += ent->mins[2] + 8.0f;
-
 		// Put in the pretty effect when removing the corpse first.
+		const vec3_t origin = VEC3_INITA(ent->s.origin, 0.0f, 0.0f, ent->mins[2] + 8.0f);
 		gi.CreateEffect(NULL, FX_CORPSE_REMOVE, 0, origin, "");
 
 		// No body que on this level.
@@ -1288,10 +1285,7 @@ static void CopyToBodyQue(edict_t* ent)
 	// If the body was being used, then lets put an effect on it before removing it.
 	if (body->inuse && body->s.modelindex != 0)
 	{
-		vec3_t origin;
-		VectorCopy(body->s.origin, origin);
-		origin[2] += body->mins[2] + 8.0f;
-
+		const vec3_t origin = VEC3_INITA(body->s.origin, 0.0f, 0.0f, body->mins[2] + 8.0f);
 		gi.CreateEffect(NULL, FX_CORPSE_REMOVE, 0, origin, "");
 	}
 
