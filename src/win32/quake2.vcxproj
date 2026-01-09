@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\include\libsmacker\smacker.c" />
+    <ClCompile Include="..\client\cl_camera.c" />
     <ClCompile Include="..\client\cl_demo.c" />
     <ClCompile Include="..\client\cl_effects.c" />
     <ClCompile Include="..\client\cl_entities.c" />
@@ -100,6 +101,7 @@
     <ClInclude Include="..\..\include\libsmacker\smacker.h" />
     <ClInclude Include="..\..\include\libsmacker\smk_malloc.h" />
     <ClInclude Include="..\client\client.h" />
+    <ClInclude Include="..\client\cl_camera.h" />
     <ClInclude Include="..\client\cl_effects.h" />
     <ClInclude Include="..\client\cl_messages.h" />
     <ClInclude Include="..\client\cl_skeletons.h" />

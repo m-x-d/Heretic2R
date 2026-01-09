@@ -603,8 +603,6 @@ extern qboolean ignored_players[MAX_CLIENTS]; //mxd
 #define NUM_ENTITY_HEADER_BITS		5 //mxd
 
 extern struct ResourceManager_s cl_FXBufMngr;
-extern int camera_timer; //mxd
-extern qboolean offsetangles_changed; //mxd
 
 extern void DrawString(int x, int y, const char* s, paletteRGBA_t color, int maxlen);
 extern qboolean CL_CheckOrDownloadFile(const char* filename);

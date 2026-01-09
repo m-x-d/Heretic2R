@@ -279,6 +279,9 @@
     <ClCompile Include="..\qcommon\turbsin.c">
       <Filter>qcommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\cl_camera.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -538,6 +541,9 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\turbsin.h">
       <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\cl_camera.h">
+      <Filter>client</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
