@@ -118,17 +118,18 @@ static qboolean DripLavaUpdate(client_entity_t* self, centity_t* owner)
 	vec3_t origin = VEC3_INIT(self->r.origin);
 	origin[2] = self->SpawnData;
 
-	client_entity_t* mist = ClientEntity_new(-1, 0, origin, NULL, 500);
+	client_entity_t* mist = ClientEntity_new(-1, 0, origin, NULL, 1000);
 
 	mist->r.model = &drip_models[1];
-	mist->r.scale = 0.5f;
 	mist->r.flags = RF_TRANSLUCENT;
-	mist->alpha = 0.4f;
-	mist->d_alpha = -0.8f;
+	mist->r.scale = flrand(0.15f, 0.3f); //mxd. Randomize scale a bit.
+	mist->d_scale = flrand(0.25f, 0.35f); //mxd. Add d_scale.
+	mist->alpha = flrand(0.4f, 0.55f); //mxd. Randomize alpha a bit.
+	mist->d_alpha = flrand(-0.85f, -0.65f); //mxd. Randomize d_alpha a bit.
 
-	mist->velocity[0] = flrand(-10.0f, 10.0f);
-	mist->velocity[1] = flrand(-10.0f, 10.0f);
-	mist->velocity[2] = flrand(20.0f, 30.0f);
+	mist->velocity[0] = flrand(-6.0f, 6.0f);
+	mist->velocity[1] = flrand(-6.0f, 6.0f);
+	mist->velocity[2] = flrand(10.0f, 20.0f);
 
 	AddEffect(NULL, mist);
 
