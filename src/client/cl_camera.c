@@ -13,6 +13,17 @@
 int camera_timer; // H2
 qboolean offsetangles_changed; // H2
 
+typedef enum
+{
+	CM_NONE,			//mxd. Initial state.
+	CM_DEFAULT,			// When on land.
+	CM_DIVE,			// When swimming underwater.
+	CM_SWIM,			// When swimming on water surface.
+	CM_LIQUID_DEATH,	// When died in lava/slime (but not in water).
+} cam_mode_e;
+
+static cam_mode_e cam_mode;
+
 // Q2 counterpart
 static void vectoangles2(const vec3_t value1, vec3_t angles)
 {
@@ -105,20 +116,21 @@ static void CL_UpdateWallDistances(void) // H2
 	cl.wall_check = (cl.wall_check + 1) % (int)ARRAY_SIZE(cl.wall_dist);
 }
 
+void CL_ResetCamera(void) //mxd
+{
+	cam_mode = CM_NONE;
+}
+
 static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheight, const qboolean interpolate, const qboolean noclip_mode) // H2 //mxd. Add 'look_angles' arg, flip 'interpolate' arg logic, add 'noclip_mode' arg.
 {
 #define MAX_CAMERA_TIMER	500
 #define MASK_CAMERA			(CONTENTS_SOLID | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK)
 
-	typedef enum
-	{
-		CM_DEFAULT,			// When on land.
-		CM_DIVE,			// When swimming underwater.
-		CM_SWIM,			// When swimming on water surface.
-		CM_LIQUID_DEATH,	// When died in lava/slime (but not in water).
-	} cam_mode_e;
+	static const vec3_t mins = { -1.0f, -1.0f, -1.0f };
+	static const vec3_t maxs = {  1.0f,  1.0f,  1.0f };
+	static const vec3_t mins_2 = { -3.0f, -3.0f, -3.0f };
+	static const vec3_t maxs_2 = {  3.0f,  3.0f,  3.0f };
 
-	static cam_mode_e cam_mode;
 	static qboolean cam_timer_reset;
 	static vec3_t old_vieworg;
 	static vec3_t old_viewangles;
@@ -129,11 +141,6 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 
 	if (cls.state != ca_active)
 		return;
-
-	const vec3_t mins = { -1.0f, -1.0f, -1.0f };
-	const vec3_t maxs = {  1.0f,  1.0f,  1.0f };
-	const vec3_t mins_2 = { -3.0f, -3.0f, -3.0f };
-	const vec3_t maxs_2 = {  3.0f,  3.0f,  3.0f };
 
 	const int water_flags = ((int)cl_predict->value ? cl.playerinfo.pm_w_flags : cl.frame.playerstate.pmove.w_flags);
 	const int waterlevel = ((int)cl_predict->value ? cl.playerinfo.waterlevel : cl.frame.playerstate.waterlevel);
@@ -155,9 +162,11 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 
 	const cam_mode_e prev_cam_mode = cam_mode;
 
-	vec3_t start;
+	if (cam_mode == CM_NONE) //mxd
+		cam_mode = CM_DEFAULT;
+
+	vec3_t start = VEC3_INIT(PlayerEntPtr->origin);
 	vec3_t end;
-	VectorCopy(PlayerEntPtr->origin, start);
 
 	if (water_flags != 0)
 	{
@@ -199,8 +208,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 
 		if (!noclip_mode && (CL_PMpointcontents(end) & MASK_WATER))
 		{
-			vec3_t tmp_end;
-			VectorCopy(start, tmp_end);
+			vec3_t tmp_end = VEC3_INIT(start);
 
 			start[2] += 100.0f;
 			tmp_end[2] -= 100.0f;
@@ -223,7 +231,9 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 	}
 
 	// Interpolate position when switching camera mode.
-	if (prev_cam_mode != cam_mode)
+	//H2_BUGFIX: mxd. Don't interpolate when switching from CM_NONE (state not present in original logic)
+	// - disables camera interpolation when camera mode was switched because of map switching / game loading.
+	if (prev_cam_mode != cam_mode && prev_cam_mode != CM_NONE)
 	{
 		if (!cam_timer_reset)
 		{

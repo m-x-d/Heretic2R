@@ -1072,6 +1072,7 @@ void CL_ParseFrame(void)
 				SCR_EndLoadingPlaque(); // Get rid of loading plaque.
 
 			CL_ResetPlayerInfo(); // H2
+			CL_ResetCamera(); //mxd
 			Reset_Screen_Shake(); // H2
 
 			//mxd. Un-pause the game (game will still be paused when loading map from console) (Q1-style behaviour).

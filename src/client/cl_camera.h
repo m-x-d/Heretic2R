@@ -11,4 +11,5 @@
 extern int camera_timer; //mxd
 extern qboolean offsetangles_changed; //mxd
 
+extern void CL_ResetCamera(void); //mxd
 extern void CL_CalcViewValues(void);
