@@ -15,11 +15,11 @@ qboolean offsetangles_changed; // H2
 
 typedef enum
 {
-	CM_NONE,			//mxd. Initial state.
-	CM_DEFAULT,			// When on land.
-	CM_DIVE,			// When swimming underwater.
-	CM_SWIM,			// When swimming on water surface.
-	CM_LIQUID_DEATH,	// When died in lava/slime (but not in water).
+	CMODE_NONE,			//mxd. Initial state.
+	CMODE_DEFAULT,		// When on land.
+	CMODE_DIVE,			// When swimming underwater.
+	CMODE_SWIM,			// When swimming on water surface.
+	CMODE_LIQUID_DEATH,	// When died in lava/slime (but not in water).
 } cam_mode_e;
 
 static cam_mode_e cam_mode;
@@ -118,7 +118,7 @@ static void CL_UpdateWallDistances(void) // H2
 
 void CL_ResetCamera(void) //mxd
 {
-	cam_mode = CM_NONE;
+	cam_mode = CMODE_NONE;
 }
 
 static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheight, const qboolean interpolate, const qboolean noclip_mode) // H2 //mxd. Add 'look_angles' arg, flip 'interpolate' arg logic, add 'noclip_mode' arg.
@@ -162,8 +162,8 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 
 	const cam_mode_e prev_cam_mode = cam_mode;
 
-	if (cam_mode == CM_NONE) //mxd
-		cam_mode = CM_DEFAULT;
+	if (cam_mode == CMODE_NONE) //mxd
+		cam_mode = CMODE_DEFAULT;
 
 	vec3_t start = VEC3_INIT(PlayerEntPtr->origin);
 	vec3_t end;
@@ -185,13 +185,13 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 				start[2] = tr.endpos[2];
 				VectorMA(start, viewheight - 9.5f, up, end);
 
-				cam_mode = CM_SWIM;
+				cam_mode = CMODE_SWIM;
 			}
 		}
 		else // WF_SWIMFREE | WF_SINK
 		{
 			VectorMA(start, viewheight, forward, end);
-			cam_mode = CM_DIVE;
+			cam_mode = CMODE_DIVE;
 		}
 	}
 	else
@@ -220,20 +220,20 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 				start[2] = tr.endpos[2] * 2.0f - end[2] + 4.0f;
 				VectorMA(start, viewheight, up, end);
 
-				cam_mode = CM_LIQUID_DEATH;
+				cam_mode = CMODE_LIQUID_DEATH;
 			}
 		}
 		else
 		{
 			VectorMA(start, viewheight, up, end);
-			cam_mode = CM_DEFAULT;
+			cam_mode = CMODE_DEFAULT;
 		}
 	}
 
 	// Interpolate position when switching camera mode.
 	//H2_BUGFIX: mxd. Don't interpolate when switching from CM_NONE (state not present in original logic)
 	// - disables camera interpolation when camera mode was switched because of map switching / game loading.
-	if (prev_cam_mode != cam_mode && prev_cam_mode != CM_NONE)
+	if (prev_cam_mode != cam_mode && prev_cam_mode != CMODE_NONE)
 	{
 		if (!cam_timer_reset)
 		{
