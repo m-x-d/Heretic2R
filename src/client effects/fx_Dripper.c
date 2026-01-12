@@ -105,7 +105,7 @@ static qboolean DripWaterUpdate(client_entity_t* self, centity_t* owner)
 	AddEffect(NULL, mist);
 
 	DoWaterSplash(mist, self->r.color, DRIP_NUM_SPLASHES, false); //mxd. Colorize by drip type.
-	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, self->r.origin);
+	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, origin); //mxd. Original logic uses self->r.origin (which may already be below water surface).
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_WATERDROP1, SND_WATERDROP3)], 1.0f, ATTN_STATIC, 0.0f);
 
