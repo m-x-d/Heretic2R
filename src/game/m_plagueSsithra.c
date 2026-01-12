@@ -1861,9 +1861,16 @@ void ssithra_jump(edict_t* self, float up_speed, float forward_speed, float righ
 	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
 
-	VectorMA(self->velocity, up_speed, up, self->velocity);
 	VectorMA(self->velocity, forward_speed, forward, self->velocity);
 	VectorMA(self->velocity, right_speed, right, self->velocity);
+	VectorMA(self->velocity, up_speed, up, self->velocity);
+
+	//mxd. Limit maximum velocity to avoid exceeding maximum interpolation distance (see cl_lerpdist2 logic in AddServerEntities()).
+	if (VectorLength(self->velocity) > SSITHRA_MAX_JUMP_VELOCITY)
+	{
+		VectorNormalize(self->velocity);
+		Vec3ScaleAssign(SSITHRA_MAX_JUMP_VELOCITY, self->velocity);
+	}
 }
 
 void ssithra_out_of_water_jump(edict_t* self) //mxd. Named 'ssithraNamorJump' in original logic.
@@ -2481,7 +2488,6 @@ void SP_monster_plague_ssithra(edict_t* self)
 
 	self->s.modelindex = (byte)classStatics[CID_SSITHRA].resInfo->modelIndex;
 	self->s.skinnum = ((self->spawnflags & MSF_SSITHRA_CLOTHED) ? 2 : 0);
-	self->s.effects |= EF_FAST_MOVER; //mxd. Velocity can exceed default cl_lerpdist2 value when set by ssithra_out_of_water_jump()).
 
 	// Turn off dismemberment caps, can't see them, so save some polys.
 	self->s.fmnodeinfo[MESH__CAPLOWERTORSO].flags |= FMNI_NO_DRAW;

@@ -249,6 +249,7 @@ typedef struct EvadeChance_s //mxd
 #define SSITHRA_DMG_MAX				8
 #define SSITHRA_DMG_ARROW_RADIUS	50
 #define SSITHRA_JUMP_VELOCITY		300.0f //TODO: unused.
+#define SSITHRA_MAX_JUMP_VELOCITY	750.0f //mxd
 #define SSITHRA_HOP_VELOCITY		128.0f
 #define SSITHRA_SPOO_SPEED			450.0f //TODO: rename to SSITHRA_ARROW_SPEED.
 #define SSITHRA_BIGARROW_DMG_MIN	16
