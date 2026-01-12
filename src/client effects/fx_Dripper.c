@@ -83,10 +83,8 @@ static qboolean DripSolidUpdate(client_entity_t* self, centity_t* owner)
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_SOLIDDROP1, SND_SOLIDDROP3)], 1.0f, ATTN_STATIC, 0.0f);
 
-	//FIXME: Returning false here doesn't work.
-	self->Update = RemoveSelfAI;
-
-	return true;
+	//mxd. Original logic sets self->Update to RemoveSelfAI and returns true here (which results in waterdrop lingering for another updateTime).
+	return false;
 }
 
 static qboolean DripWaterUpdate(client_entity_t* self, centity_t* owner)
@@ -111,10 +109,8 @@ static qboolean DripWaterUpdate(client_entity_t* self, centity_t* owner)
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_WATERDROP1, SND_WATERDROP3)], 1.0f, ATTN_STATIC, 0.0f);
 
-	//FIXME: Returning false here doesn't work.
-	self->Update = RemoveSelfAI;
-
-	return true;
+	//mxd. Original logic sets self->Update to RemoveSelfAI and returns true here (which results in waterdrop lingering for another updateTime).
+	return false;
 }
 
 static qboolean DripLavaUpdate(client_entity_t* self, centity_t* owner)
@@ -138,10 +134,8 @@ static qboolean DripLavaUpdate(client_entity_t* self, centity_t* owner)
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_LAVADROP1, SND_LAVADROP3)], 1.0f, ATTN_STATIC, 0.0f);
 
-	//FIXME: Returning false here doesn't work.
-	self->Update = RemoveSelfAI;
-
-	return true;
+	//mxd. Original logic sets self->Update to RemoveSelfAI and returns true here (which results in waterdrop lingering for another updateTime).
+	return false;
 }
 
 static qboolean DripperUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXDripperParticleSpawner' in original logic.
@@ -207,7 +201,7 @@ void FXDripper(centity_t* owner, const int type, int flags, vec3_t origin)
 	spawner->radius = DRIP_RADIUS;
 
 	trace_t trace;
-	spawner->SpawnDelay = GetFallTime(origin, 0, spawner->acceleration[2], DRIP_RADIUS, DRIP_MAX_DURATION, &trace);
+	spawner->SpawnDelay = GetFallTime(origin, 0.0f, spawner->acceleration[2], DRIP_RADIUS, DRIP_MAX_DURATION, &trace);
 	spawner->SpawnData = trace.endpos[2] + 4.0f;
 	spawner->SpawnInfo = trace.contents;
 
