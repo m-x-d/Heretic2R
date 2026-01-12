@@ -522,7 +522,9 @@ static void AddServerEntities(const frame_t* frame)
 			// Interpolate origin.
 			vec3_t dist;
 			VectorSubtract(cent->current.origin, cent->prev.origin, dist);
-			const float lerpdist_scaler = (effects & EF_FAST_MOVER ? 2.0f : 1.0f); //mxd. Special handling for monster_harpy. Can exceed cl_lerpdist2 during harpy_dive_end_move()... 
+
+			//mxd. Special handling for monster_harpy. Can exceed cl_lerpdist2 during harpy_dive_end_move(), so allow it to move 200 units per frame instead of default 100.
+			const float lerpdist_scaler = (effects & EF_FAST_MOVER ? 4.0f : 1.0f); 
 
 			if (VectorLengthSquared(dist) <= cl_lerpdist2->value * lerpdist_scaler)
 				VectorMA(cent->prev.origin, 1.0f - ent->backlerp, dist, ent->origin);
