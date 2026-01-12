@@ -336,6 +336,11 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 			const qboolean is_culled = (current->flags & CEF_VIEWSTATUSCHANGED) && (current->flags & CEF_CULLED); //mxd
 			if (!is_culled && !current->Update(current, owner))
 			{
+				//mxd. If 'current->Update()' added new entities to current list and 'current' was the first entry in the list,
+				// '*prev' no longer points to it (because new entries are added to the front of the list). In this case we need to re-aquire '*prev' pointer.
+				while (*prev != current)
+					prev = &(*prev)->next;
+
 				RemoveEffectFromList(prev, owner);
 
 				// current = current->next is still valid in the for loop.
