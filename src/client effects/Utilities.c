@@ -16,6 +16,7 @@
 #include "fx_debris.h" //mxd
 #include "fx_smoke.h" //mxd
 #include "fx_sparks.h" //mxd
+#include "q_Sprite.h" //mxd
 #include "g_playstats.h"
 
 // Setup for circular list.
@@ -459,6 +460,44 @@ void AdvanceParticle(client_particle_t* p, const int ms)
 float GetGravity(void)
 {
 	return -clfx_gravity->value;
+}
+
+#pragma endregion
+
+#pragma region ========================== r_entity sprite setup functions ==========================
+
+//mxd. Expects square texture. Roll is in degrees.
+void RE_SetupRollSprite(entity_t* ent, const float size, const float roll)
+{
+	ent->spriteType = SPRITE_DYNAMIC;
+
+	const float radius = size * 0.5f;
+	const float roll_sin = radius * sinf(roll * ANGLE_TO_RAD);
+	const float roll_cos = radius * cosf(roll * ANGLE_TO_RAD);
+
+	// Top-left vert [xl yt].
+	ent->verts[0][0] = -roll_cos + roll_sin; // x
+	ent->verts[0][1] = -roll_sin - roll_cos; // y
+	ent->verts[0][2] = 0.0f; // s
+	ent->verts[0][3] = 1.0f; // t
+
+	// Bottom-left vert [xl yb].
+	ent->verts[1][0] = -roll_cos - roll_sin; // x
+	ent->verts[1][1] = -roll_sin + roll_cos; // y
+	ent->verts[1][2] = 0.0f; // s
+	ent->verts[1][3] = 0.0f; // t
+
+	// Bottom-right vert [xr yb].
+	ent->verts[2][0] = roll_cos - roll_sin; // x
+	ent->verts[2][1] = roll_sin + roll_cos; // y
+	ent->verts[2][2] = 1.0f; // s
+	ent->verts[2][3] = 0.0f; // t
+
+	// Top-right vert [xr yt].
+	ent->verts[3][0] = roll_cos + roll_sin; // x
+	ent->verts[3][1] = roll_sin - roll_cos; // y
+	ent->verts[3][2] = 1.0f; // s
+	ent->verts[3][3] = 1.0f; // t
 }
 
 #pragma endregion

@@ -31,6 +31,10 @@ extern qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_tim
 extern int GetScaledCount(int count, float refdepend);
 extern float GetGravity(void);
 
+//mxd. r_entity sprite setup functions.
+extern void RE_SetupRollSprite(entity_t* ent, float size, float roll);
+
+// Misc functions.
 extern qboolean ReferencesInitialized(const centity_t* owner);
 extern qboolean RefPointsValid(const centity_t* owner);
 

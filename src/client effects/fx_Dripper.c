@@ -131,6 +131,7 @@ static qboolean DripLavaUpdate(client_entity_t* self, centity_t* owner)
 	mist->velocity[1] = flrand(-6.0f, 6.0f);
 	mist->velocity[2] = flrand(10.0f, 20.0f);
 
+	RE_SetupRollSprite(&mist->r, 32.0f, flrand(0.0f, 359.0f)); //mxd
 	AddEffect(NULL, mist);
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, drip_sounds[irand(SND_LAVADROP1, SND_LAVADROP3)], 1.0f, ATTN_STATIC, 0.0f);
