@@ -5,12 +5,14 @@
 //
 
 #include "Client Effects.h"
-#include "Vector.h"
 #include "g_playstats.h"
+#include "Vector.h"
+#include "Random.h"
+#include "Utilities.h"
 
 #define HALO_MAX_CAMERA_DISTANCE	2048.0f //mxd
 #define HALO_MIN_CAMERA_DISTANCE	512.0f //mxd
-#define HALO_MAX_ALPHA				1.0f //mxd
+#define HALO_MAX_ALPHA				0.7f //mxd
 #define HALO_MIN_ALPHA				0.01f //mxd
 
 static struct model_s* halo_models[2];
@@ -109,5 +111,6 @@ void FXHalo(centity_t* owner, int type, int flags, vec3_t origin)
 	halo->alpha = HALO_MIN_ALPHA; //mxd. 0.6 in original logic.
 	halo->Update = HaloUpdate;
 
+	RE_SetupFlipSprite(&halo->r, halo->radius, halo->radius, halo->radius * 2.0f, halo->radius * 2.0f, irand(0, 1), irand(0, 1)); //mxd
 	AddEffect(owner, halo);
 }
