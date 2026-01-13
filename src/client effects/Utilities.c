@@ -535,7 +535,7 @@ void InsertInCircularList(client_entity_t* self)
 		{
 			if (current == circular_list[circular_list_index])
 			{
-				RemoveEffectFromList(prev, NULL);
+				RemoveEffectFromList(prev);
 				break;
 			}
 

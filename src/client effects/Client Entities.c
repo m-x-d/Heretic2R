@@ -101,7 +101,7 @@ client_entity_t* ClientEntity_new(const int type, const int flags, const vec3_t 
 	return new_ent;
 }
 
-static void ClientEntity_delete(client_entity_t* to_delete, const centity_t* owner) //TODO: remove 'owner' arg (unused). 
+static void ClientEntity_delete(client_entity_t* to_delete) //mxd. Removed unused 'owner' arg. 
 {
 	if (to_delete->p_root != NULL)
 		RemoveParticleList(&to_delete->p_root);
@@ -133,7 +133,7 @@ void AddEffectToList(client_entity_t** root, client_entity_t* fx)
 	*root = fx;
 }
 
-void RemoveEffectFromList(client_entity_t** root, const centity_t* owner)
+void RemoveEffectFromList(client_entity_t** root) //mxd. Removed unused 'owner' arg. 
 {
 	assert(root);
 	assert(*root);
@@ -141,7 +141,7 @@ void RemoveEffectFromList(client_entity_t** root, const centity_t* owner)
 	client_entity_t* to_free = *root;
 	*root = to_free->next;
 
-	ClientEntity_delete(to_free, owner);
+	ClientEntity_delete(to_free);
 }
 
 void RemoveEffectList(client_entity_t** root)
@@ -150,7 +150,7 @@ void RemoveEffectList(client_entity_t** root)
 	assert(*root);
 
 	while (*root != NULL)
-		RemoveEffectFromList(root, NULL);
+		RemoveEffectFromList(root);
 }
 
 void RemoveOwnedEffectList(centity_t* owner)
@@ -161,11 +161,11 @@ void RemoveOwnedEffectList(centity_t* owner)
 	assert(*root);
 
 	while (*root != NULL)
-		RemoveEffectFromList(root, owner);
+		RemoveEffectFromList(root);
 }
 
 // fx = type of effect to remove; 0 - remove all effects.
-void RemoveEffectTypeList(client_entity_t** root, const FX_Type_t fx, const centity_t* owner)
+void RemoveEffectTypeList(client_entity_t** root, const FX_Type_t fx) //mxd. Removed unused 'owner' arg.
 {
 	client_entity_t** prev;
 	client_entity_t* current;
@@ -176,7 +176,7 @@ void RemoveEffectTypeList(client_entity_t** root, const FX_Type_t fx, const cent
 	for (prev = root, current = *root; current != NULL; current = current->next)
 	{
 		if (fx == FX_REMOVE_EFFECTS || current->effectID == fx)
-			RemoveEffectFromList(prev, owner);
+			RemoveEffectFromList(prev);
 		else
 			prev = &(*prev)->next;
 	}
@@ -341,7 +341,7 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 				while (*prev != current)
 					prev = &(*prev)->next;
 
-				RemoveEffectFromList(prev, owner);
+				RemoveEffectFromList(prev);
 
 				// current = current->next is still valid in the for loop.
 				// A deallocated resource is guaranteed not to be changed until it is reallocated, when the manager is not shared between threads.

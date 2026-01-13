@@ -185,10 +185,10 @@ extern void ReleaseFMNodeInfoMngr(void); //mxd
 extern fmnodeinfo_t* FMNodeInfo_new(void);
 
 extern void AddEffectToList(client_entity_t** root, client_entity_t* fx);
-extern void RemoveEffectFromList(client_entity_t** root, const centity_t* owner); //mxd
+extern void RemoveEffectFromList(client_entity_t** root); //mxd
 extern void RemoveEffectList(client_entity_t** root);
 extern void RemoveOwnedEffectList(centity_t* owner);
-extern void RemoveEffectTypeList(client_entity_t** root, FX_Type_t fx, const centity_t* owner);
+extern void RemoveEffectTypeList(client_entity_t** root, FX_Type_t fx);
 extern void PrepAddEffectsToView(void);
 extern int AddEffectsToView(client_entity_t** root, centity_t* owner);
 extern void AddEffect(centity_t* owner, client_entity_t* fx);
