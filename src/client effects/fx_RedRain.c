@@ -28,7 +28,7 @@
 // Mutant Ssithra arrow - uses red-rain arrow.
 #define MSSITHRA_FX_ARROW_SPEED		750.0f
 
-static struct model_s* rain_models[5];
+static struct model_s* rain_models[7];
 static struct sfx_s* rain_sounds[2]; //mxd
 
 void PreCacheRedrain(void)
@@ -38,6 +38,8 @@ void PreCacheRedrain(void)
 	rain_models[2] = fxi.RegisterModel("sprites/spells/rsteam.sp2");
 	rain_models[3] = fxi.RegisterModel("sprites/fx/redraindrop.sp2");
 	rain_models[4] = fxi.RegisterModel("sprites/spells/spark_green.sp2");
+	rain_models[5] = fxi.RegisterModel("sprites/fx/halored.sp2"); //mxd
+	rain_models[6] = fxi.RegisterModel("sprites/fx/halogreen.sp2"); //mxd
 }
 
 void PreCacheRedrainSFX(void) //mxd
@@ -126,7 +128,7 @@ static void SpawnRedRainClouds(const vec3_t impact_pos, const vec3_t rain_pos, c
 		cloud->radius = 16.0f;
 		cloud->r.model = &rain_models[2]; // rsteam sprite (32x32).
 		cloud->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
-		cloud->alpha = 0.3f;
+		cloud->alpha = flrand(0.2f, 0.4f); //mxd. Randomize alpha a bit.
 		cloud->LifeTime = duration;
 
 		if (powerup)
@@ -147,19 +149,22 @@ static void SpawnRedRainClouds(const vec3_t impact_pos, const vec3_t rain_pos, c
 
 		cloud->Update = RedRainCloudUpdate;
 
+		RE_SetupRollSprite(&cloud->r, 32.0f, flrand(0.0f, 359.0f)); //mxd
 		AddEffect(owner, cloud);
 	}
 
 	// Add a big red flash at impact of course.
 	client_entity_t* flash = ClientEntity_new(-1, 0, impact_pos, NULL, 500);
 
-	flash->r.model = &rain_models[powerup ? 4 : 0]; // spark_green sprite when powered, spark_red when not.
-	flash->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
-	flash->radius = 16.0f;
-	flash->r.scale = 8.0f;
-	flash->d_scale = -16.0f;
-	flash->d_alpha = -2.0f;
+	flash->r.model = &rain_models[powerup ? 6 : 5]; //mxd. Use halogreen/halored sprites (original logic uses spark_green/spark_red -- too low res).
+	flash->r.flags = (RF_NODEPTHTEST | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA); //mxd. +RF_NODEPTHTEST.
+	flash->radius = 10.0f;
+	flash->r.scale = 5.0f;
+	flash->d_scale = -4.0f;
+	flash->alpha = 0.3f; //mxd
+	flash->d_alpha = -1.0f;
 
+	RE_SetupFlipSprite(&flash->r, 32.0f, 32.0f, 64.0f, 64.0f, irand(0, 1), irand(0, 1)); //mxd
 	AddEffect(NULL, flash);
 
 	fxi.S_StartSound(impact_pos, -1, CHAN_AUTO, rain_sounds[powerup ? 1 : 0], 1.0f, ATTN_NORM, 0.0f);
