@@ -129,12 +129,12 @@ static qboolean MagicPortalThink(client_entity_t* self, centity_t* owner)
 
 		for (int i = 0; i < 4; i++)
 		{
-			self->r.verts[i][0] += flrand(-1.0f, 1.0f);
-			self->r.verts[i][1] += flrand(-1.0f, 1.0f);
+			self->r.verts[i].x += flrand(-1.0f, 1.0f);
+			self->r.verts[i].y += flrand(-1.0f, 1.0f);
 
 			//FIXME: scroll based on viewangle to camera viewport - but what about alpha channel???
-			self->r.verts[i][2] += flrand(-0.001f, 0.001f);
-			self->r.verts[i][3] += flrand(-0.001f, 0.001f);
+			self->r.verts[i].s += flrand(-0.001f, 0.001f);
+			self->r.verts[i].t += flrand(-0.001f, 0.001f);
 		}
 	}
 

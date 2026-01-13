@@ -52,24 +52,24 @@ static void R_DrawDynamicSprite(const entity_t* e, const vec3_t up, const vec3_t
 
 	glBegin(GL_QUADS);
 
-	glTexCoord2f(e->verts[0][2], e->verts[0][3]);
-	VectorMA(e->origin, e->scale * e->verts[0][1], up, point);
-	VectorMA(point, e->scale * e->verts[0][0], right, point);
+	glTexCoord2f(e->verts[0].s, e->verts[0].t);
+	VectorMA(e->origin, e->scale * e->verts[0].y, up, point);
+	VectorMA(point, e->scale * e->verts[0].x, right, point);
 	glVertex3fv(point);
 
-	glTexCoord2f(e->verts[1][2], e->verts[1][3]);
-	VectorMA(e->origin, e->scale * e->verts[1][1], up, point);
-	VectorMA(point, e->scale * e->verts[1][0], right, point);
+	glTexCoord2f(e->verts[1].s, e->verts[1].t);
+	VectorMA(e->origin, e->scale * e->verts[1].y, up, point);
+	VectorMA(point, e->scale * e->verts[1].x, right, point);
 	glVertex3fv(point);
 
-	glTexCoord2f(e->verts[2][2], e->verts[2][3]);
-	VectorMA(e->origin, e->scale * e->verts[2][1], up, point);
-	VectorMA(point, e->scale * e->verts[2][0], right, point);
+	glTexCoord2f(e->verts[2].s, e->verts[2].t);
+	VectorMA(e->origin, e->scale * e->verts[2].y, up, point);
+	VectorMA(point, e->scale * e->verts[2].x, right, point);
 	glVertex3fv(point);
 
-	glTexCoord2f(e->verts[3][2], e->verts[3][3]);
-	VectorMA(e->origin, e->scale * e->verts[3][1], up, point);
-	VectorMA(point, e->scale * e->verts[3][0], right, point);
+	glTexCoord2f(e->verts[3].s, e->verts[3].t);
+	VectorMA(e->origin, e->scale * e->verts[3].y, up, point);
+	VectorMA(point, e->scale * e->verts[3].x, right, point);
 	glVertex3fv(point);
 
 	glEnd();
@@ -82,12 +82,12 @@ static void R_DrawVariableSprite(const entity_t* e, const vec3_t up, const vec3_
 
 	glBegin(GL_POLYGON);
 
-	float (*v)[4] = e->verts_p;
+	svertex_t* v = &e->verts_p[0];
 	for (int i = 0; i < e->numVerts; i++, v++)
 	{
-		glTexCoord2f(*v[2], *v[3]);
-		VectorMA(e->origin, e->scale * *v[1], up, point);
-		VectorMA(point, e->scale * *v[0], right, point);
+		glTexCoord2f(v->s, v->t);
+		VectorMA(e->origin, e->scale * v->y, up, point);
+		VectorMA(point, e->scale * v->x, right, point);
 		glVertex3fv(point);
 	}
 

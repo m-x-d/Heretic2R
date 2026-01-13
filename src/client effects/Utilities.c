@@ -475,29 +475,10 @@ void RE_SetupRollSprite(entity_t* ent, const float size, const float roll)
 	const float roll_sin = radius * sinf(roll * ANGLE_TO_RAD);
 	const float roll_cos = radius * cosf(roll * ANGLE_TO_RAD);
 
-	// Top-left vert [xl yt].
-	ent->verts[0][0] = -roll_cos + roll_sin; // x
-	ent->verts[0][1] = -roll_sin - roll_cos; // y
-	ent->verts[0][2] = 0.0f; // s
-	ent->verts[0][3] = 1.0f; // t
-
-	// Bottom-left vert [xl yb].
-	ent->verts[1][0] = -roll_cos - roll_sin; // x
-	ent->verts[1][1] = -roll_sin + roll_cos; // y
-	ent->verts[1][2] = 0.0f; // s
-	ent->verts[1][3] = 0.0f; // t
-
-	// Bottom-right vert [xr yb].
-	ent->verts[2][0] = roll_cos - roll_sin; // x
-	ent->verts[2][1] = roll_sin + roll_cos; // y
-	ent->verts[2][2] = 1.0f; // s
-	ent->verts[2][3] = 0.0f; // t
-
-	// Top-right vert [xr yt].
-	ent->verts[3][0] = roll_cos + roll_sin; // x
-	ent->verts[3][1] = roll_sin - roll_cos; // y
-	ent->verts[3][2] = 1.0f; // s
-	ent->verts[3][3] = 1.0f; // t
+	SVERTEX_SET(ent->verts[0], -roll_cos + roll_sin, -roll_sin - roll_cos, 0.0f, 1.0f); // Top-left.
+	SVERTEX_SET(ent->verts[1], -roll_cos - roll_sin, -roll_sin + roll_cos, 0.0f, 0.0f); // Bottom-left.
+	SVERTEX_SET(ent->verts[2],  roll_cos - roll_sin,  roll_sin + roll_cos, 1.0f, 0.0f); // Bottom-right.
+	SVERTEX_SET(ent->verts[3],  roll_cos + roll_sin,  roll_sin - roll_cos, 1.0f, 1.0f); // Top-right.
 }
 
 //mxd
@@ -518,29 +499,10 @@ void RE_SetupFlipSprite(entity_t* ent, const float origin_x, const float origin_
 	const float tt = (flip_y ? 1.0f : 0.0f);
 	const float tb = 1.0f - tt;
 
-	// Top-left vert [xl yt].
-	ent->verts[0][0] = xl; // x
-	ent->verts[0][1] = yt; // y
-	ent->verts[0][2] = sl; // s
-	ent->verts[0][3] = tb; // t
-
-	// Bottom-left vert [xl yb].
-	ent->verts[1][0] = xl; // x
-	ent->verts[1][1] = yb; // y
-	ent->verts[1][2] = sl; // s
-	ent->verts[1][3] = tt; // t
-
-	// Bottom-right vert [xr yb].
-	ent->verts[2][0] = xr; // x
-	ent->verts[2][1] = yb; // y
-	ent->verts[2][2] = sr; // s
-	ent->verts[2][3] = tt; // t
-
-	// Top-right vert [xr yt].
-	ent->verts[3][0] = xr; // x
-	ent->verts[3][1] = yt; // y
-	ent->verts[3][2] = sr; // s
-	ent->verts[3][3] = tb; // t
+	SVERTEX_SET(ent->verts[0], xl, yt, sl, tb); // Top-left.
+	SVERTEX_SET(ent->verts[1], xl, yb, sl, tt); // Bottom-left.
+	SVERTEX_SET(ent->verts[2], xr, yb, sr, tt); // Bottom-right.
+	SVERTEX_SET(ent->verts[3], xr, yt, sr, tb); // Top-right.
 }
 
 #pragma endregion

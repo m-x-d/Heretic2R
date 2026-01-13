@@ -23,6 +23,16 @@
 #define CONCHAR_SIZE		8 //mxd. Conchars char size. Each char is 8x8 pixels.
 #define CONCHAR_LINE_HEIGHT	10 //mxd. Not a console line height!
 
+typedef struct svertex_s //mxd. Sprite vertex definition.
+{
+	float x;
+	float y;
+	float s;
+	float t;
+} svertex_t;
+
+#define SVERTEX_SET(v, cx, cy, cs, ct)	((v).x = (cx), (v).y = (cy), (v).s = (cs), (v).t = (ct))
+
 typedef struct entity_s
 {
 	struct model_s** model; // Opaque type outside refresh. // Q2: struct model_s*
@@ -84,12 +94,12 @@ typedef struct entity_s
 		};
 
 		// Info for dynamic sprites.
-		float verts[4][4];			// verts for dynamic sprites [x, y, s, t].
+		svertex_t verts[4];			// verts for dynamic sprites [x, y, s, t].
 
 		// Info for variable sprites.
 		struct
 		{
-			float (*verts_p)[4];		// Pointer to verts for variable sprites.
+			svertex_t* verts_p;			// Pointer to verts for variable sprites.
 			int numVerts;
 			int padToUnionSize2[11];	// Use this space up to add any more variable sprite fields.
 		};
