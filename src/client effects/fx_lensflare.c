@@ -22,13 +22,20 @@ void PreCacheFlare(void)
 //mxd. Added to reduce code duplication.
 static qboolean LensFlareUpdateOrigin(struct client_entity_s* self, const qboolean check_sky)
 {
+#define LF_BRUSHMASK		(CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER)
+#define LF_DOT_THRESHHOLD	0.8f
+#define LF_DOT_SCALER		(1.0f / (1.0f - LF_DOT_THRESHHOLD))
+
+	static float old_view_dot;
+
 	// Determine visibility.
-	trace_t trace;
+	qboolean sight_blocked = false;
 
 	if (check_sky)
 	{
-		const int brushmask = (CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER);
-		fxi.Trace(fxi.cl->refdef.vieworg, vec3_origin, vec3_origin, self->direction, brushmask, CEF_CLIP_TO_WORLD, &trace);
+		trace_t trace;
+		fxi.Trace(fxi.cl->refdef.vieworg, vec3_origin, vec3_origin, self->direction, LF_BRUSHMASK, CEF_CLIP_TO_WORLD, &trace);
+		sight_blocked = (trace.fraction < 1.0f && !(trace.surface->flags & SURF_SKY));
 	}
 
 	vec3_t view_fwd;
@@ -38,31 +45,36 @@ static qboolean LensFlareUpdateOrigin(struct client_entity_s* self, const qboole
 	VectorSubtract(self->direction, fxi.cl->refdef.vieworg, halo_dir);
 	VectorNormalize(halo_dir);
 
-	float alpha_scaler;
-	const float view_dot = DotProduct(view_fwd, halo_dir);
+	float view_dot = DotProduct(view_fwd, halo_dir) + 0.15f; //mxd. Offset a bit, so effect stays at max alpha even when not looking exactly in self->direction.
+	view_dot = min(1.0f, view_dot);
 
-	if (view_dot < 0.75f || (check_sky && trace.fraction < 1.0f && !(trace.surface->flags & SURF_SKY)))
+	if (sight_blocked || view_dot < LF_DOT_THRESHHOLD)
 	{
-		alpha_scaler = self->alpha / self->up[2];
-		self->alpha = max(0.01f, self->alpha * 0.8f);
+		self->alpha *= (self->up[1] == 0.0f ? 0.95f : 0.7f); // Fade-out halo sprite slower.
+		view_dot = min(LF_DOT_THRESHHOLD, view_dot);
 
-		if (self->alpha <= 0.01f)
+		if (self->alpha < 0.01f)
 		{
+			self->alpha = 0.01f;
 			self->flags |= CEF_NO_DRAW;
+
 			return true;
 		}
 	}
 	else
 	{
-		alpha_scaler = (view_dot - 0.75f) * 4.0f;
-		self->alpha = LerpFloat(self->alpha, self->up[2] * alpha_scaler, 0.2f);
+		const float alpha_scaler = (view_dot - LF_DOT_THRESHHOLD) * LF_DOT_SCALER;
+		const float frac = (old_view_dot > view_dot ? 0.1f : 0.2f); // Fade-out slower.
+		self->alpha = LerpFloat(self->alpha, alpha_scaler * self->up[2], frac);
+		self->alpha = max(0.01f, self->alpha);
 	}
 
+	old_view_dot = view_dot;
 	self->flags &= ~CEF_NO_DRAW;
 
 	if (self->up[1] == 0.0f) // Halo sprite.
 	{
-		VectorMA(fxi.cl->refdef.vieworg, 16.0f + 20.0f * (1.0f - alpha_scaler), halo_dir, self->r.origin);
+		VectorMA(fxi.cl->refdef.vieworg, 10.0f + 16.0f * (1.0f - self->alpha / self->up[2]), halo_dir, self->r.origin);
 		return true;
 	}
 
@@ -177,7 +189,10 @@ void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 		COLOUR_COPY(tint, flare->r.color); //mxd. Use macro.
 		flare->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST);
 		flare->r.scale = flare_scale[i]; //mxd. Original logic sets flare->Scale, which is not used for anything.
-		
+		flare->radius = 256.0f; //mxd. Make sure it's not culled.
+		flare->flags |= CEF_NO_DRAW; //mxd. Start invisible.
+		flare->alpha = 0.01f; //mxd. Start in fade-out state.
+
 		const int sprite_index = sprite_indices[i];
 		flare->r.model = &flare_models[sprite_index];
 
