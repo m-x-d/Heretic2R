@@ -500,6 +500,49 @@ void RE_SetupRollSprite(entity_t* ent, const float size, const float roll)
 	ent->verts[3][3] = 1.0f; // t
 }
 
+//mxd
+void RE_SetupFlipSprite(entity_t* ent, const float origin_x, const float origin_y, const float width, const float height, const qboolean flip_x, const qboolean flip_y)
+{
+	if (!flip_x && !flip_y)
+		return;
+
+	ent->spriteType = SPRITE_DYNAMIC;
+
+	const float xl = -origin_x;
+	const float xr = width - origin_x;
+	const float yt = -origin_y;
+	const float yb = height - origin_y;
+
+	const float sl = (flip_x ? 1.0f : 0.0f);
+	const float sr = 1.0f - sl;
+	const float tt = (flip_y ? 1.0f : 0.0f);
+	const float tb = 1.0f - tt;
+
+	// Top-left vert [xl yt].
+	ent->verts[0][0] = xl; // x
+	ent->verts[0][1] = yt; // y
+	ent->verts[0][2] = sl; // s
+	ent->verts[0][3] = tb; // t
+
+	// Bottom-left vert [xl yb].
+	ent->verts[1][0] = xl; // x
+	ent->verts[1][1] = yb; // y
+	ent->verts[1][2] = sl; // s
+	ent->verts[1][3] = tt; // t
+
+	// Bottom-right vert [xr yb].
+	ent->verts[2][0] = xr; // x
+	ent->verts[2][1] = yb; // y
+	ent->verts[2][2] = sr; // s
+	ent->verts[2][3] = tt; // t
+
+	// Top-right vert [xr yt].
+	ent->verts[3][0] = xr; // x
+	ent->verts[3][1] = yt; // y
+	ent->verts[3][2] = sr; // s
+	ent->verts[3][3] = tb; // t
+}
+
 #pragma endregion
 
 // Tells if we have not rendered this reference point for a while.

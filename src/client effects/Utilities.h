@@ -33,6 +33,7 @@ extern float GetGravity(void);
 
 //mxd. r_entity sprite setup functions.
 extern void RE_SetupRollSprite(entity_t* ent, float size, float roll);
+extern void RE_SetupFlipSprite(entity_t* ent, float origin_x, float origin_y, float width, float height, qboolean flip_x, qboolean flip_y);
 
 // Misc functions.
 extern qboolean ReferencesInitialized(const centity_t* owner);
