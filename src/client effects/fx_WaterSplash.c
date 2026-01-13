@@ -10,17 +10,19 @@
 #include "Particle.h"
 #include "Random.h"
 
-void DoWaterSplash(client_entity_t* effect, const paletteRGBA_t color, int count, const qboolean use_lightmap_color)
+void DoWaterSplash(client_entity_t* effect, paletteRGBA_t color, int count, const qboolean use_lightmap_color)
 {
 	count = min(500, count);
 	const int extra_flags = ((use_lightmap_color && R_DETAIL > DETAIL_HIGH) ? PFL_LM_COLOR : 0); //mxd
 
 	for (int i = 0; i < count; i++)
 	{
-		client_particle_t* p = ClientParticle_new(PART_16x16_WATERDROP | extra_flags, color, 1000);
+		color.a = (byte)irand(164, 240); //mxd. Randomize alpha a bit.
+		client_particle_t* p = ClientParticle_new(PART_8x8_BUBBLE | extra_flags, color, 1000); //mxd. Use smaller sprite to better match drips size (original logic uses PART_16x16_WATERDROP).
 
-		p->d_alpha = 0.0f;
-		p->d_scale = -1.0f;
+		p->d_alpha = flrand(-128.0f, -96.0f); //mxd. Randomize d_alpha a bit.
+		p->scale = flrand(0.7f, 1.2f); //mxd. Randomize scale a bit.
+		p->d_scale = flrand(-1.1f, -0.8f); //mxd. Randomize d_scale a bit.
 		p->velocity[0] = flrand(-20.0f, 20.0f);
 		p->velocity[1] = flrand(-20.0f, 20.0f);
 		p->velocity[2] = flrand(20.0f, 30.0f);
