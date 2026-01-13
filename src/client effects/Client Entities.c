@@ -167,18 +167,16 @@ void RemoveOwnedEffectList(centity_t* owner)
 // fx = type of effect to remove; 0 - remove all effects.
 void RemoveEffectTypeList(client_entity_t** root, const FX_Type_t fx) //mxd. Removed unused 'owner' arg.
 {
-	client_entity_t** prev;
-	client_entity_t* current;
-
 	assert(root);
 	assert(*root); // FIXME: This shouldn't fire, but it does. The result is more or less harmless.
 
-	for (prev = root, current = *root; current != NULL; current = current->next)
+	client_entity_t** current_p = root;
+	for (const client_entity_t* current = *root; current != NULL; current = current->next)
 	{
 		if (fx == FX_REMOVE_EFFECTS || current->effectID == fx)
-			RemoveEffectFromList(prev);
+			RemoveEffectFromList(current_p);
 		else
-			prev = &(*prev)->next;
+			current_p = &(*current_p)->next;
 	}
 }
 
@@ -312,9 +310,6 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 	static trace_t traces[NUM_TRACES];
 	static int trace_index = 0;
 
-	client_entity_t** prev;
-	client_entity_t* current;
-
 	const float d_time = fxi.cls->rframetime;
 	const float d_time2 = d_time * d_time * 0.5f;
 	int cur_trace = 0;
@@ -323,7 +318,8 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 	assert(root);
 	assert(*root);
 
-	for (prev = root, current = *root; current != NULL; current = current->next)
+	client_entity_t** current_p = root;
+	for (client_entity_t* current = *root; current != NULL; current = current->next)
 	{
 		num_fx++;
 
@@ -338,10 +334,10 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 			{
 				//mxd. If 'current->Update()' added new entities to current list and 'current' was the first entry in the list,
 				// '*prev' no longer points to it (because new entries are added to the front of the list). In this case we need to re-aquire '*prev' pointer.
-				while (*prev != current)
-					prev = &(*prev)->next;
+				while (*current_p != current)
+					current_p = &(*current_p)->next;
 
-				RemoveEffectFromList(prev);
+				RemoveEffectFromList(current_p);
 
 				// current = current->next is still valid in the for loop.
 				// A deallocated resource is guaranteed not to be changed until it is reallocated, when the manager is not shared between threads.
@@ -462,7 +458,7 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 			}
 		}
 
-		prev = &(*prev)->next;
+		current_p = &(*current_p)->next;
 	}
 
 	return num_fx;

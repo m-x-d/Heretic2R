@@ -522,24 +522,22 @@ qboolean ReferencesInitialized(const centity_t* owner) //TODO: no longer needed?
 // Add a blood splat or a scorchmark to the circular list - removing an entity that's next in the list if there is one.
 void InsertInCircularList(client_entity_t* self)
 {
-	client_entity_t** prev;
-	client_entity_t* current;
-
 	client_entity_t** root = &clientEnts;
 
 	// If we have an entry already - delete it.
 	if (circular_list[circular_list_index] != NULL)
 	{
 		// Search for this client entities entry in the client entity list.
-		for (prev = root, current = *root; current != NULL; current = current->next)
+		client_entity_t** current_p = root;
+		for (const client_entity_t* current = *root; current != NULL; current = current->next)
 		{
 			if (current == circular_list[circular_list_index])
 			{
-				RemoveEffectFromList(prev);
+				RemoveEffectFromList(current_p);
 				break;
 			}
 
-			prev = &(*prev)->next;
+			current_p = &(*current_p)->next;
 		}
 	}
 
