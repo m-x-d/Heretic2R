@@ -17,7 +17,7 @@ void PreCacheHPStaff(void)
 	hpstaff_model = fxi.RegisterModel("sprites/fx/hpproj1_2.sp2"); // Staff Trail.
 }
 
-static qboolean HPStaffTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean HPStaffTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'HPStaffTrailThink' in original logic.
 {
 	const centity_t* actual_owner = (centity_t*)self->extra;
 
@@ -28,7 +28,7 @@ static qboolean HPStaffTrailThink(struct client_entity_s* self, centity_t* owner
 	client_entity_t* trail = ClientEntity_new(FX_HP_STAFF, CEF_DONT_LINK, self->r.origin, NULL, 2000);
 
 	trail->radius = 500.0f;
-	trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	trail->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	trail->r.model = &hpstaff_model;
 	trail->r.scale = 0.75f;
 	trail->alpha = 0.5f;
@@ -47,12 +47,12 @@ static qboolean HPStaffTrailThink(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-static qboolean PriestessFirstSeenInit(struct client_entity_s* self, centity_t* owner)
+static qboolean PriestessFirstSeenInit(client_entity_t* self, centity_t* owner)
 {
 	self->AddToView = NULL;
-	self->Update = HPStaffTrailThink;
+	self->Update = HPStaffTrailUpdate;
 
-	HPStaffTrailThink(self, owner);
+	HPStaffTrailUpdate(self, owner);
 
 	return true;
 }
@@ -66,7 +66,7 @@ void FXHPStaff(centity_t* owner, const int type, int flags, vec3_t origin)
 	switch (fx_type)
 	{
 		case HP_STAFF_INIT:
-			flags |= CEF_NO_DRAW | CEF_ABSOLUTE_PARTS;
+			flags |= (CEF_NO_DRAW | CEF_ABSOLUTE_PARTS);
 			client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 17);
 
 			self->AddToView = PriestessFirstSeenInit;
