@@ -499,7 +499,7 @@ void FXBlood(centity_t* owner, int type, const int flags, vec3_t origin)
 	VectorCopy(velocity, spawner->velocity);
 }
 
-static qboolean LinkedBloodThink(client_entity_t* spawner, centity_t* owner)
+static qboolean LinkedBloodUpdate(client_entity_t* spawner, centity_t* owner) //mxd. Named 'LinkedBloodThink' in original logic.
 {
 #define NUM_BLOOD_PARTS		3
 
@@ -557,7 +557,7 @@ void FXLinkedBlood(centity_t* owner, const int type, const int flags, vec3_t ori
 	spawner->flags |= CEF_NO_DRAW;
 	spawner->color = color_white; //mxd
 	spawner->AddToView = OffsetLinkedEntityUpdatePlacement;
-	spawner->Update = LinkedBloodThink;
+	spawner->Update = LinkedBloodUpdate;
 
 	AddEffect(owner, spawner);
 }
