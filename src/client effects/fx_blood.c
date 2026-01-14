@@ -499,24 +499,24 @@ void FXBlood(centity_t* owner, int type, const int flags, vec3_t origin)
 	VectorCopy(velocity, spawner->velocity);
 }
 
-static qboolean LinkedBloodUpdate(client_entity_t* spawner, centity_t* owner) //mxd. Named 'LinkedBloodThink' in original logic.
+static qboolean LinkedBloodUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'LinkedBloodThink' in original logic.
 {
 #define NUM_BLOOD_PARTS		3
 
-	spawner->updateTime = irand(40, 60);
-	spawner->LifeTime -= 50;
+	self->updateTime = irand(40, 60);
+	self->LifeTime -= 50;
 
-	if (spawner->LifeTime < 0 || !RefPointsValid(owner)) // Effect finished or reference points are culled.
+	if (self->LifeTime < 0 || !RefPointsValid(owner)) // Effect finished or reference points are culled.
 		return false;
 
-	if (spawner->LifeTime < 800) // Effect needs to stay alive until particles die.
+	if (self->LifeTime < 800) // Effect needs to stay alive until particles die.
 		return true;
 
-	const qboolean yellow_blood = (spawner->flags & CEF_FLAG8);
+	const qboolean yellow_blood = (self->flags & CEF_FLAG8);
 	const int extra_flags = (R_DETAIL > DETAIL_HIGH ? PFL_LM_COLOR : 0); //mxd
 
 	vec3_t org;
-	VectorGetOffsetOrigin(owner->referenceInfo->references[spawner->SpawnInfo].placement.origin, owner->current.origin, owner->current.angles[YAW], org);
+	VectorGetOffsetOrigin(owner->referenceInfo->references[self->SpawnInfo].placement.origin, owner->current.origin, owner->current.angles[YAW], org);
 
 	client_entity_t* ce = ClientEntity_new(-1, 0, org, NULL, 800);
 	ce->flags |= CEF_NO_DRAW | CEF_NOMOVE;
@@ -524,13 +524,13 @@ static qboolean LinkedBloodUpdate(client_entity_t* spawner, centity_t* owner) //
 	AddEffect(NULL, ce);
 
 	vec3_t vel;
-	VectorSubtract(org, spawner->origin, vel);
+	VectorSubtract(org, self->origin, vel);
 	Vec3ScaleAssign(5.0f, vel);
 
 	for (int i = 0; i < NUM_BLOOD_PARTS; i++)
 	{
 		const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2));
-		client_particle_t* p = ClientParticle_new(bpart | extra_flags, spawner->color, 800); //mxd. +extra_flags.
+		client_particle_t* p = ClientParticle_new(bpart | extra_flags, self->color, 800); //mxd. +extra_flags.
 		VectorCopy(vel, p->velocity);
 		p->acceleration[2] = GetGravity();
 		p->d_alpha = 0.0f;
@@ -540,7 +540,7 @@ static qboolean LinkedBloodUpdate(client_entity_t* spawner, centity_t* owner) //
 	}
 
 	// Remember current origin for calc of velocity.
-	VectorCopy(org, spawner->origin);
+	VectorCopy(org, self->origin);
 	return true;
 }
 
