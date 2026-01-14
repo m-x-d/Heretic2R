@@ -130,15 +130,12 @@ static void LightningBolt(const int model, const float width, const vec3_t start
 	VectorScale(diff_pos, seg_mult, diff_pos);
 	const float variance = length * seg_mult * 0.4f;
 
-	vec3_t last_pos;
-	VectorCopy(start_pos, last_pos);
-
-	vec3_t ref_point;
-	VectorCopy(start_pos, ref_point);
+	vec3_t last_pos = VEC3_INIT(start_pos);
+	vec3_t ref_point = VEC3_INIT(start_pos);
 
 	for (int i = 0; i < segments - 1; i++)
 	{
-		VectorAdd(ref_point, diff_pos, ref_point);
+		Vec3AddAssign(diff_pos, ref_point);
 
 		vec3_t rand;
 		VectorScale(up, flrand(-variance, variance), rand);
@@ -155,11 +152,11 @@ static void LightningBolt(const int model, const float width, const vec3_t start
 	MakeLightningPiece(model, width, end_pos, last_pos, variance);
 }
 
-static qboolean LightningThink(client_entity_t* thinker, centity_t* owner)
+static qboolean LightningUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXLightningThink' in original logic.
 {
-	if (fx_time - thinker->lastThinkTime < thinker->LifeTime)
+	if (fx_time - self->lastThinkTime < self->LifeTime)
 	{
-		LightningBolt(thinker->SpawnInfo, thinker->xscale, thinker->r.startpos, thinker->r.endpos);
+		LightningBolt(self->SpawnInfo, self->xscale, self->r.startpos, self->r.endpos);
 		return true;
 	}
 
@@ -188,7 +185,7 @@ void FXLightning(centity_t* owner, int type, const int flags, vec3_t origin)
 		lightning->LifeTime = duration * 100 + 250;
 		lightning->SpawnInfo = ((flags & CEF_FLAG6) ? LIGHTNING_TYPE_RED : LIGHTNING_TYPE_BLUE);
 		lightning->xscale = (float)width;
-		lightning->Update = LightningThink;
+		lightning->Update = LightningUpdate;
 
 		AddEffect(NULL, lightning);
 	}
