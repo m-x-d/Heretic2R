@@ -19,7 +19,7 @@ static void CreateFountainSplash(client_entity_t* owner, const float xspread, co
 	CreateYawMatrix(mat, angle);
 
 	vec3_t offset;
-	const vec3_t work = { flrand(-xspread, xspread), flrand(-yspread, yspread), 0.0f };
+	const vec3_t work = VEC3_SET(flrand(-xspread, xspread), flrand(-yspread, yspread), 0.0f);
 	Matrix3MultByVec3(mat, work, offset);
 
 	const paletteRGBA_t color = { .c = 0x40ffffff };
@@ -68,11 +68,11 @@ void FXWaterfallBase(centity_t* owner, const int type, int flags, vec3_t origin)
 	AddEffect(owner, wfb);
 }
 
-static qboolean WaterDropEnd(client_entity_t* waterdrop, centity_t* owner) //mxd. Named 'FXWaterDropEnd' in original logic.
+static qboolean WaterDropEndUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXWaterDropEnd' in original logic.
 {
-	CreateFountainSplash(waterdrop, 10.0f, 10.0f, 0.0f);
-	waterdrop->nextThinkTime = fx_time + 500;
-	waterdrop->Update = RemoveSelfAI;
+	CreateFountainSplash(self, 10.0f, 10.0f, 0.0f);
+	self->nextThinkTime = fx_time + 500;
+	self->Update = RemoveSelfAI;
 
 	return true;
 }
@@ -116,7 +116,7 @@ static qboolean FountainUpdate(client_entity_t* spawner, centity_t* owner) //mxd
 
 		client_entity_t* splash = ClientEntity_new(-1, 0, origin, NULL, time);
 		splash->flags |= (CEF_NOMOVE | CEF_NO_DRAW);
-		splash->Update = WaterDropEnd;
+		splash->Update = WaterDropEndUpdate;
 
 		AddEffect(NULL, splash);
 	}
