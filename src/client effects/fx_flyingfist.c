@@ -38,7 +38,7 @@ void PreCacheFistSFX(void) //mxd
 	fxi.S_RegisterSound("weapons/FireballNoMana.wav");
 }
 
-static qboolean FlyingFistTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean FlyingFistTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFlyingFistTrailThink' in original logic.
 {
 	self->updateTime = 20;
 
@@ -62,8 +62,7 @@ static qboolean FlyingFistTrailThink(struct client_entity_s* self, centity_t* ow
 		trail_ent->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
 		vec3_t accel_dir;
-		VectorCopy(self->velocity, accel_dir);
-		VectorNormalize(accel_dir);
+		VectorNormalize2(self->velocity, accel_dir);
 
 		if (self->flags & CEF_FLAG7)
 		{
@@ -81,7 +80,7 @@ static qboolean FlyingFistTrailThink(struct client_entity_s* self, centity_t* ow
 		}
 
 		if (is_wimpy) // Wimpy shot, because no mana.
-			VectorScale(trail_ent->velocity, 0.5f, trail_ent->velocity);
+			Vec3ScaleAssign(0.5f, trail_ent->velocity);
 
 		trail_ent->d_alpha = flrand(-1.5f, -2.0f);
 		trail_ent->d_scale = flrand(-1.0f, -1.25f);
@@ -96,10 +95,6 @@ static qboolean FlyingFistTrailThink(struct client_entity_s* self, centity_t* ow
 
 void FXFlyingFist(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t dir;
-	paletteRGBA_t light_color;
-	float lightsize;
-
 	vec3_t vel;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_FLYINGFIST].formatString, vel);
 
@@ -107,6 +102,9 @@ void FXFlyingFist(centity_t* owner, const int type, const int flags, vec3_t orig
 	Vec3ScaleAssign(vel_scaler, vel);
 
 	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
+
+	paletteRGBA_t light_color;
+	float light_size;
 
 	if (flags & CEF_FLAG7)
 	{
@@ -116,23 +114,23 @@ void FXFlyingFist(centity_t* owner, const int type, const int flags, vec3_t orig
 		missile->r.scale = ((flags & CEF_FLAG8) ? 1.0f : 1.5f); // Wimpy shot?
 
 		light_color = color_red; //mxd. Red light
-		lightsize = 160.0f;
+		light_size = 160.0f;
 	}
 	else
 	{
 		// Just a normal fireball.
 		missile->flags |= CEF_NO_DRAW;
 		light_color = color_orange; //mxd. Orange light
-		lightsize = 120.0f;
+		light_size = 120.0f;
 	}
 
 	VectorCopy(vel, missile->velocity);
-	VectorNormalize2(vel, dir);
-	AnglesFromDir(dir, missile->r.angles);
+	VectorNormalize(vel);
+	AnglesFromDir(vel, missile->r.angles);
 
 	missile->radius = 128.0f;
-	missile->dlight = CE_DLight_new(light_color, lightsize, 0.0f);
-	missile->Update = FlyingFistTrailThink;
+	missile->dlight = CE_DLight_new(light_color, light_size, 0.0f);
+	missile->Update = FlyingFistTrailUpdate;
 
 	missile->SpawnInfo = 32;
 
@@ -141,12 +139,6 @@ void FXFlyingFist(centity_t* owner, const int type, const int flags, vec3_t orig
 
 void FXFlyingFistExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	int count;
-	paletteRGBA_t light_color;
-
-	float light_radius;
-	float blastvel;
-
 	vec3_t dir;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_FLYINGFISTEXPLODE].formatString, dir);
 
@@ -158,6 +150,10 @@ void FXFlyingFistExplode(centity_t* owner, const int type, const int flags, vec3
 	const float volume = (is_wimpy ? 0.75f : 1.0f);
 
 	Vec3ScaleAssign(32.0f, dir);
+
+	int count;
+	paletteRGBA_t light_color;
+	float light_radius;
 
 	if (is_powered)
 	{
@@ -183,11 +179,11 @@ void FXFlyingFistExplode(centity_t* owner, const int type, const int flags, vec3
 		if (is_powered)
 		{
 			// Meteor impact!
-			blastvel = FIST_POWER_BLAST_VEL;
+			float blast_vel = FIST_POWER_BLAST_VEL;
 
 			if (is_wimpy)
 			{
-				blastvel *= 0.3f;
+				blast_vel *= 0.3f;
 				smoke_puff->r.scale = flrand(0.8f, 1.4f);
 			}
 			else
@@ -195,18 +191,18 @@ void FXFlyingFistExplode(centity_t* owner, const int type, const int flags, vec3
 				smoke_puff->r.scale = flrand(1.2f, 2.0f);
 			}
 
-			VectorRandomCopy(dir, smoke_puff->velocity, blastvel);
+			VectorRandomCopy(dir, smoke_puff->velocity, blast_vel);
 			smoke_puff->velocity[2] += 100.0f;
 			smoke_puff->acceleration[2] = -400.0f;
 		}
 		else
 		{
 			// Non-powered up.
-			blastvel = FIST_BLAST_VEL;
+			float blast_vel = FIST_BLAST_VEL;
 
 			if (is_wimpy)
 			{
-				blastvel *= 0.5f;
+				blast_vel *= 0.5f;
 				smoke_puff->r.scale = flrand(0.5f, 1.0f);
 			}
 			else
@@ -214,7 +210,7 @@ void FXFlyingFistExplode(centity_t* owner, const int type, const int flags, vec3
 				smoke_puff->r.scale = flrand(0.8f, 1.6f);
 			}
 
-			VectorRandomCopy(dir, smoke_puff->velocity, blastvel);
+			VectorRandomCopy(dir, smoke_puff->velocity, blast_vel);
 			smoke_puff->acceleration[0] = flrand(-200.0f, 200.0f);
 			smoke_puff->acceleration[1] = flrand(-200.0f, 200.0f);
 			smoke_puff->acceleration[2] = flrand(-40.0f, -60.0f);
