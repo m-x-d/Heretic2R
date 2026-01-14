@@ -28,7 +28,7 @@ void PreCacheHitPuff(void) //mxd
 	halo_model = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-static qboolean PebbleUpdate(struct client_entity_s* self, centity_t* owner)
+static qboolean PebbleUpdate(client_entity_t* self, centity_t* owner)
 {
 	const int cur_time = fx_time;
 	const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
