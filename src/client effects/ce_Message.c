@@ -24,7 +24,7 @@ void CE_ReleaseMsgMngr(void) //mxd. Named 'ReleaseMsgMngr' in original logic.
 	ResMngr_Des(&ce_messages_manager);
 }
 
-void CE_PostMessage(client_entity_t* to, const CE_MsgID_t id, char* format, ...) //mxd. Named 'QPostMessage' in original logic.
+void CE_PostMessage(client_entity_t* to, const CE_MsgID_t id, const char* format, ...) //mxd. Named 'QPostMessage' in original logic.
 {
 	assert(to->msgHandler != NULL); //mxd. Changed from check to assert.
 
@@ -47,7 +47,7 @@ void CE_PostMessage(client_entity_t* to, const CE_MsgID_t id, char* format, ...)
 	MSG_Queue(&to->msgQ, msg);
 }
 
-int CE_ParseMsgParms(CE_Message_t* msg, char* format, ...) //mxd. Named 'ParseMsgParms' in original logic.
+int CE_ParseMsgParms(CE_Message_t* msg, const char* format, ...) //mxd. Named 'ParseMsgParms' in original logic.
 {
 	assert(msg != NULL);
 

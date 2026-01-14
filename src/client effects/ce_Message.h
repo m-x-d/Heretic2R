@@ -26,7 +26,7 @@ typedef void (*CE_MsgReceiver_t)(struct client_entity_s* self, CE_Message_t* msg
 extern void CE_InitMsgMngr(void);
 extern void CE_ReleaseMsgMngr(void);
 
-extern void CE_PostMessage(struct client_entity_s* to, CE_MsgID_t id, char* format, ...);
-extern int CE_ParseMsgParms(CE_Message_t* msg, char* format, ...);
+extern void CE_PostMessage(struct client_entity_s* to, CE_MsgID_t id, const char* format, ...);
+extern int CE_ParseMsgParms(CE_Message_t* msg, const char* format, ...);
 extern void CE_ProcessMessages(struct client_entity_s* self);
 extern void CE_ClearMessageQueue(struct client_entity_s* self);
