@@ -453,7 +453,7 @@ void FXBodyPart(centity_t* owner, const int type, const int flags, vec3_t origin
 
 #pragma region ========================== Debris update ==========================
 
-qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner)
+qboolean FXDebris_Vanish(client_entity_t* self, centity_t* owner)
 {
 	if (self->SpawnInfo & SIF_INLAVA)
 		FXDarkSmoke(self->r.origin, flrand(0.2f, 0.5f), flrand(30.0f, 50.0f));
