@@ -24,7 +24,7 @@ void PreCacheHealth(void)
 	health_models[1] = fxi.RegisterModel("models/items/health/healthbig/tris.fm");
 }
 
-static qboolean HealthPickupThink(struct client_entity_s* self, centity_t* owner)
+static qboolean HealthPickupUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXHealthPickupThink' in original logic.
 {
 	// Rotate and bob.
 	const int step = fx_time - self->nextThinkTime; //mxd
@@ -98,7 +98,7 @@ void FXHealthPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		ce->r.scale = 1.5f;
 
 	ce->SpawnData = GetPickupBobPhase(origin); //mxd
-	ce->Update = HealthPickupThink;
+	ce->Update = HealthPickupUpdate;
 
 	AddEffect(owner, ce);
 }
