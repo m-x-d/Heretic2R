@@ -38,7 +38,7 @@ void PreCacheItemDefense(void)
 	defense_sparks[5] = fxi.RegisterModel("sprites/spells/spark_ind.sp2");					// Indigo spark. //mxd. spark_blue.sp2 in original logic. Changed to differentiate from ITEM_DEFENSE_SHIELD fx.
 }
 
-static qboolean DefensePickupSparkThink(struct client_entity_s* self, centity_t* owner) //mxd. FXEggSparkThink in original version.
+static qboolean DefensePickupSparkUpdate(client_entity_t* self, centity_t* owner) //mxd. FXEggSparkThink in original version.
 {
 	const int step = fx_time - self->nextThinkTime; //mxd
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
@@ -64,7 +64,7 @@ static qboolean DefensePickupSparkThink(struct client_entity_s* self, centity_t*
 	return true;
 }
 
-static qboolean DefensePickupThink(struct client_entity_s* self, centity_t* owner)
+static qboolean DefensePickupUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXDefensePickupThink' in original logic.
 {
 	// Rotate and bob.
 	const int step = fx_time - self->nextThinkTime; //mxd
@@ -101,7 +101,7 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		ce->r.scale = 1.25f;
 
 	ce->SpawnData = GetPickupBobPhase(origin); //mxd
-	ce->Update = DefensePickupThink;
+	ce->Update = DefensePickupUpdate;
 
 	AddEffect(owner, ce);
 
@@ -119,7 +119,7 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		spark->alpha = 0.65f; //mxd. 0.1 in original logic, but with d_alpha 0.5.
 		spark->SpawnInfo = tag;
 
-		spark->Update = DefensePickupSparkThink;
+		spark->Update = DefensePickupSparkUpdate;
 		VectorCopy(spark->r.origin, spark->origin);
 
 		VectorClear(spark->direction);
