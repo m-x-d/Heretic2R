@@ -42,7 +42,7 @@ void PreCacheCWSFX(void) //mxd
 	cw_impact_sound = fxi.S_RegisterSound("Monsters/elflord/impact.wav");
 }
 
-static qboolean CWBeamUpdate(struct client_entity_s* self, centity_t* owner)
+static qboolean CWBeamAddToView(client_entity_t* self, centity_t* owner) //mxd. Named 'FXCWBeamUpdate' in original logic.
 {
 	const vec3_t vel = { 0.0f, 0.0f, 1.0f };
 
@@ -88,7 +88,7 @@ static qboolean CWBeamUpdate(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-static qboolean CWBeamThink(struct client_entity_s* self, centity_t* owner)
+static qboolean CWBeamUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXCWBeamThink' in original logic.
 {
 	if (self->LifeTime >= fx_time)
 	{
@@ -99,7 +99,7 @@ static qboolean CWBeamThink(struct client_entity_s* self, centity_t* owner)
 	return false;
 }
 
-static qboolean CWBeamThink2(struct client_entity_s* self, centity_t* owner)
+static qboolean CWHaloUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXCWBeamThink2' in original logic.
 {
 	if (self->LifeTime >= fx_time)
 	{
@@ -110,7 +110,7 @@ static qboolean CWBeamThink2(struct client_entity_s* self, centity_t* owner)
 	return false;
 }
 
-static qboolean CWStarThink(struct client_entity_s* self, centity_t* owner)
+static qboolean CWStarUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXCWStarThink' in original logic.
 {
 	self->r.scale = flrand(0.3f, 0.5f);
 	return true;
@@ -154,7 +154,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 			halo->alpha = 0.75f;
 			halo->dlight = CE_DLight_new(light, 100.0f, 0.0f);
 
-			halo->Update = CWStarThink;
+			halo->Update = CWStarUpdate;
 			halo->AddToView = LinkedEntityUpdatePlacement;
 
 			AddEffect(owner, halo);
@@ -226,8 +226,8 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 			VectorCopy(origin, beam->r.endpos);
 			beam->LifeTime = fx_time + 3100;
 
-			beam->Update = CWBeamThink;
-			beam->AddToView = CWBeamUpdate;
+			beam->Update = CWBeamUpdate;
+			beam->AddToView = CWBeamAddToView;
 
 			AddEffect(owner, beam);
 
@@ -242,7 +242,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 			halo->LifeTime = fx_time + 3100;
 			halo->dlight = CE_DLight_new(white_light, 200.0f, 0.0f);
 
-			halo->Update = CWBeamThink2;
+			halo->Update = CWHaloUpdate;
 			halo->AddToView = LinkedEntityUpdatePlacement;
 
 			fxi.Activate_Screen_Shake(8.0f, 4000.0f, (float)fxi.cl->time, SHAKE_ALL_DIR); // 'current_time' MUST be cl.time, because that's what used by Perform_Screen_Shake() to calculate effect intensity/timing... --mxd.
