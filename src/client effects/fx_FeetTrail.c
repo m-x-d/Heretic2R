@@ -13,7 +13,7 @@
 #include "Matrix.h"
 #include "Reference.h"
 
-static qboolean FXFeetTrailUpdate(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXFeetTrailThink' in original logic.
+static qboolean FeetTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFeetTrailThink' in original logic.
 {
 #define FOOTTRAIL_RADIUS	2.0f
 #define FOOTTRAIL_SCALE		8.0f
@@ -61,8 +61,8 @@ static qboolean FXFeetTrailUpdate(struct client_entity_s* self, centity_t* owner
 			client_particle_t* flame = ClientParticle_new(PART_32x32_STEAM, color, hand_flame_dur);
 
 			VectorRandomSet(flame->origin, FOOTTRAIL_RADIUS); //mxd
-			VectorAdd(flame->origin, self->origin, flame->origin);
-			VectorAdd(flame->origin, cur_pos, flame->origin);
+			Vec3AddAssign(self->origin, flame->origin);
+			Vec3AddAssign(cur_pos, flame->origin);
 
 			flame->scale = FOOTTRAIL_SCALE;
 			VectorSet(flame->velocity, flrand(-5.0f, 5.0f), flrand(-5.0f, 5.0f), flrand(5.0f, 15.0f));
@@ -102,7 +102,7 @@ void FXFeetTrail(centity_t* owner, const int type, const int flags, vec3_t origi
 		trail->refPoint = (short)i;
 		trail->color.c = 0xe5007fff; //TODO: unused?
 		trail->AddToView = LinkedEntityUpdatePlacement;
-		trail->Update = FXFeetTrailUpdate;
+		trail->Update = FeetTrailUpdate;
 
 		AddEffect(owner, trail);
 	}
