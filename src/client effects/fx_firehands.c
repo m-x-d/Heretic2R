@@ -17,7 +17,7 @@
 #define HANDFIRE_SCALE	8.0f
 #define HANDFIRE_ACCEL	32.0f
 
-static qboolean FireHandsThink(struct client_entity_s* self, centity_t* owner)
+static qboolean FireHandsUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFireHandsThink' in original logic.
 {
 #define FH_PARTICLE_DURATION	1000 //mxd
 
@@ -35,15 +35,14 @@ static qboolean FireHandsThink(struct client_entity_s* self, centity_t* owner)
 		return false; // Remove the effect in this case.
 
 	// Let's take the origin and transform it to the proper coordinate offset from the owner's origin.
-	vec3_t firestart;
-	VectorCopy(owner->referenceInfo->references[self->refPoint].placement.origin, firestart);
+	const vec3_t fire_start = VEC3_INIT(owner->referenceInfo->references[self->refPoint].placement.origin);
 
 	// Create a rotation matrix.
 	matrix3_t rotation;
 	Matrix3FromAngles(owner->lerp_angles, rotation);
 
 	vec3_t origin;
-	Matrix3MultByVec3(rotation, firestart, origin);
+	Matrix3MultByVec3(rotation, fire_start, origin);
 
 	client_particle_t* flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), self->color, FH_PARTICLE_DURATION);
 
@@ -96,7 +95,7 @@ void FXFireHands(centity_t* owner, const int type, const int flags, vec3_t origi
 		trail->refPoint = p;
 		trail->color.c = 0xe5007fff; // Used to color flame particles in FireHandsThink() --mxd.
 		trail->AddToView = LinkedEntityUpdatePlacement;
-		trail->Update = FireHandsThink;
+		trail->Update = FireHandsUpdate;
 
 		AddEffect(owner, trail);
 	}
