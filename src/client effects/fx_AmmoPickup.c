@@ -148,7 +148,7 @@ static client_particle_t* InitHellstaffAmmoParticle(void) //mxd
 	return p;
 }
 
-static qboolean AmmoPickupThink(struct client_entity_s* self, centity_t* owner)
+static qboolean AmmoPickupUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXAmmoPickupThink' in original logic.
 {
 	// Rotate and bob.
 	const int step = fx_time - self->nextThinkTime; //mxd
@@ -224,7 +224,7 @@ void FXAmmoPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		ce->r.scale = 1.25f;
 
 	ce->SpawnData = GetPickupBobPhase(origin); //mxd
-	ce->Update = AmmoPickupThink;
+	ce->Update = AmmoPickupUpdate;
 
 	AddEffect(owner, ce);
 }
