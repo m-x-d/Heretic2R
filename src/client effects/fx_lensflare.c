@@ -20,7 +20,7 @@ void PreCacheFlare(void)
 }
 
 //mxd. Added to reduce code duplication.
-static qboolean LensFlareUpdateOrigin(struct client_entity_s* self, const qboolean check_sky)
+static qboolean LensFlareUpdateOrigin(client_entity_t* self, const qboolean check_sky)
 {
 #define LF_BRUSHMASK		(CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER)
 #define LF_DOT_THRESHHOLD	0.8f
@@ -125,7 +125,7 @@ static qboolean LensFlareUpdateOrigin(struct client_entity_s* self, const qboole
 }
 
 // FIXME: These need to interpolate their movement so as to not do snap position changes.
-static qboolean LensFlareUpdate(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXFlareThink' in original logic.
+static qboolean LensFlareUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFlareThink' in original logic.
 {
 	if (self->LifeTime > 0 && self->LifeTime < fx_time)
 		return false;
@@ -133,7 +133,7 @@ static qboolean LensFlareUpdate(struct client_entity_s* self, centity_t* owner) 
 	return LensFlareUpdateOrigin(self, true); //mxd
 }
 
-static qboolean LensFlareAttachedUpdate(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXFlareThinkAttached' in original logic.
+static qboolean LensFlareAttachedUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFlareThinkAttached' in original logic.
 {
 	if (self->LifeTime > 0 && self->LifeTime < fx_time)
 		return false;
