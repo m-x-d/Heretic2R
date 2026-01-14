@@ -469,14 +469,11 @@ void CheckContinuousAutomaticEffects(edict_t* self)
 	// Only used for fire damage for now.
 	if (self->fire_damage_time > level.time)
 	{
-		vec3_t check_point;
-		VectorCopy(self->s.origin, check_point);
-		check_point[2] += self->mins[2] + self->size[2] * 0.5f;
+		const vec3_t check_point = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2] + self->size[2] * 0.5f);
 
 		if (gi.pointcontents(check_point) & (CONTENTS_WATER | CONTENTS_SLIME)) // Not lava.
 		{
 			//FIXME: make hiss and smoke too.
-			gi.dprintf("%s fire doused\n", self->classname);
 			self->fire_damage_time = 0.0f;
 			self->s.effects &= ~EF_ON_FIRE; // Use this to instead notify the fire to stop.
 			gi.CreateEffect(NULL, FX_ENVSMOKE, CEF_FLAG6, check_point, "");
