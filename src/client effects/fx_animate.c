@@ -163,7 +163,7 @@ void PreCacheFXAnimate(void)
 			fx_anim_models[i].model = fxi.RegisterModel(fx_anim_models[i].model_name);
 }
 
-static qboolean AnimationUpdate(struct client_entity_s* self, centity_t* owner)
+static qboolean AnimationUpdate(client_entity_t* self, centity_t* owner)
 {
 	//mxd. Update frame interpolation settings.
 	self->framelerp_time = fx_time;
