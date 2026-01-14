@@ -10,7 +10,7 @@
 #include "Utilities.h"
 
 // Create the two circles that ring the player.
-static qboolean FXLeaderUpdate(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXLeaderThink' in original logic.
+static qboolean LeaderGlowUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXLeaderThink' in original logic.
 {
 #define LEADER_RAD				12
 #define TOTAL_LEADER_EFFECTS	30
@@ -54,7 +54,7 @@ void FXLeader(centity_t* owner, const int type, int flags, vec3_t origin)
 	glow->LifeTime = TOTAL_LEADER_EFFECTS;
 	glow->Scale = 0.0f;
 	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = FXLeaderUpdate;
+	glow->Update = LeaderGlowUpdate;
 
 	AddEffect(owner, glow);
 }
