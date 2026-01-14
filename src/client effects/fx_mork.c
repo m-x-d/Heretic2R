@@ -955,7 +955,7 @@ static void GroundAttack(vec3_t origin)
 	spawner->radius = 100.0f;
 	spawner->LifeTime = fx_time + 1000;
 	VectorScale(vec3_up, 50.0f, spawner->direction);
-	spawner->Update = FXFlamethrowerTrail;
+	spawner->Update = FlamethrowerUpdate;
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/flamethrow.wav"), 1.0f, ATTN_NORM, 0.0f);
 

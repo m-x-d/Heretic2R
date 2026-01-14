@@ -24,7 +24,7 @@ void PreCacheFlamethrowerSFX(void) //mxd
 	flamethrower_sound = fxi.S_RegisterSound("misc/flamethrow.wav");
 }
 
-qboolean FXFlamethrowerTrail(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFlamethrower_trail' in original logic.
+qboolean FlamethrowerUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFlamethrower_trail' in original logic.
 {
 	if (self->LifeTime < fx_time)
 	{
@@ -71,7 +71,7 @@ qboolean FXFlamethrowerTrail(client_entity_t* self, centity_t* owner) //mxd. Nam
 	return true;
 }
 
-static qboolean FlamethrowerSteamTrail(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFlamethrower_steam_trail' in original logic.
+static qboolean SteamjetUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFlamethrower_steam_trail' in original logic.
 {
 	if (self->LifeTime < fx_time)
 	{
@@ -124,29 +124,29 @@ void FXFlamethrower(centity_t* owner, const int type, const int flags, vec3_t or
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_FLAMETHROWER].formatString, &dir, &distance);
 
 	// Create the dummy entity, so particles can be attached.
-	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 17);
+	client_entity_t* spawner = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 17);
 
-	VectorScale(dir, distance, glow->direction);
-	glow->radius = 100.0f;
-	glow->LifeTime = fx_time + 1000;
+	VectorScale(dir, distance, spawner->direction);
+	spawner->radius = 100.0f;
+	spawner->LifeTime = fx_time + 1000;
 
 	// Steam?
 	if (flags & CEF_FLAG6)
 	{
 		if (flags & CEF_FLAG7)
-			glow->LifeTime = fx_time + 200;
+			spawner->LifeTime = fx_time + 200;
 		else
 			fxi.S_StartSound(origin, -1, CHAN_AUTO, steamjet_sound, 1.0f, ATTN_NORM, 0.0f);
 
-		glow->Update = FlamethrowerSteamTrail;
+		spawner->Update = SteamjetUpdate;
 	}
 	else
 	{
 		fxi.S_StartSound(origin, -1, CHAN_AUTO, flamethrower_sound, 1.0f, ATTN_NORM, 0.0f);
-		glow->Update = FXFlamethrowerTrail;
+		spawner->Update = FlamethrowerUpdate;
 	}
 
-	AddEffect(NULL, glow);
+	AddEffect(NULL, spawner);
 }
 
 // Put out there just so we can make the real effect match this.
