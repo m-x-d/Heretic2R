@@ -10,7 +10,7 @@
 #include "g_playstats.h"
 #include "q_Physics.h"
 
-static qboolean PlayerFirstSeenInit(struct client_entity_s* self, centity_t* owner)
+static qboolean PlayerFirstSeenInit(client_entity_t* self, centity_t* owner)
 {
 	// Is the modelindex valid? E.g. when a player is dead, his modelindex is 0, hence his referenceInfo will be invalid.
 	if (owner->current.modelindex != 255)
@@ -37,8 +37,8 @@ void FXPlayerPersistant(centity_t* owner, const int type, int flags, vec3_t orig
 
 	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 17);
 
-	self->Update = NULL;
 	self->AddToView = PlayerFirstSeenInit;
+	self->Update = NULL;
 
 	AddEffect(owner, self);
 
