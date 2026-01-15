@@ -27,7 +27,7 @@ void PreCacheMeteor(void)
 	meteor_model = fxi.RegisterModel("models/spells/meteorbarrier/tris.fm");
 }
 
-static qboolean MeteorBarrierTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean MeteorUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXMeteorBarriertrailThink' in original logic.
 {
 	// We theoretically shouldn't need to do this. Just in case.
 	if (!(owner->flags & CF_INUSE))
@@ -45,16 +45,14 @@ static qboolean MeteorBarrierTrailThink(struct client_entity_s* self, centity_t*
 	const float delta_scaler = (R_DETAIL >= DETAIL_HIGH ? 1.0f : 1.5f);
 	const float length = VectorLength(delta) / (METEOR_DELTA_FORWARD * delta_scaler);
 
-	// Set start
-	vec3_t org;
-	VectorCopy(self->r.origin, org);
+	// Set start.
+	vec3_t org = VEC3_INIT(self->r.origin);
 
 	// Work out increment between trails.
 	Vec3ScaleAssign(1.0f / length, delta);
 
 	// Work out number of bits.
-	int num_trails = (int)length;
-	num_trails = max(1, num_trails);
+	const int num_trails = max(1, (int)length);
 	float alpha = METEOR_TRAIL_ALPHA;
 
 	VectorCopy(self->r.origin, self->origin);
@@ -92,7 +90,7 @@ static qboolean MeteorAddToView(client_entity_t* current, centity_t* owner)
 	current->r.origin[1] = sinf(angle) * 30.0f;
 	current->r.origin[2] = cosf(angle / (M_PI / 5.0f)) * 10.0f;
 
-	VectorAdd(owner->origin, current->r.origin, current->r.origin);
+	Vec3AddAssign(owner->origin, current->r.origin);
 
 	return true;
 }
@@ -100,34 +98,34 @@ static qboolean MeteorAddToView(client_entity_t* current, centity_t* owner)
 void FXMeteorBarrier(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	// Add a fiery trail effect.
-	client_entity_t* trail = ClientEntity_new(type, flags | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS | CEF_VIEWSTATUSCHANGED, origin, NULL, 50);
+	client_entity_t* meteor = ClientEntity_new(type, flags | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS | CEF_VIEWSTATUSCHANGED, origin, NULL, 50);
 
-	trail->r.model = &meteor_model;
-	trail->SpawnData = (float)((flags & (CEF_FLAG6 | CEF_FLAG7)) >> 5);
-	trail->radius = 10.0f;
-	trail->AddToView = MeteorAddToView;
-	trail->Update = MeteorBarrierTrailThink;
+	meteor->r.model = &meteor_model;
+	meteor->SpawnData = (float)((flags & (CEF_FLAG6 | CEF_FLAG7)) >> 5);
+	meteor->radius = 10.0f;
+	meteor->AddToView = MeteorAddToView;
+	meteor->Update = MeteorUpdate;
 
 	if (R_DETAIL >= DETAIL_NORMAL)
-		trail->dlight = CE_DLight_new(meteor_dlight_color, 150.0f, 0.0f);
+		meteor->dlight = CE_DLight_new(meteor_dlight_color, 150.0f, 0.0f);
 
-	AddEffect(owner, trail);
+	AddEffect(owner, meteor);
 }
 
 void FXMeteorBarrierTravel(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	// Add a fiery trail effect.
-	client_entity_t* trail = ClientEntity_new(type, flags | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS | CEF_VIEWSTATUSCHANGED, origin, NULL, 50);
+	client_entity_t* meteor = ClientEntity_new(type, flags | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS | CEF_VIEWSTATUSCHANGED, origin, NULL, 50);
 
-	trail->r.model = &meteor_model;
-	trail->radius = 10.0f;
-	trail->AddToView = LinkedEntityUpdatePlacement;
-	trail->Update = MeteorBarrierTrailThink;
+	meteor->r.model = &meteor_model;
+	meteor->radius = 10.0f;
+	meteor->AddToView = LinkedEntityUpdatePlacement;
+	meteor->Update = MeteorUpdate;
 
 	if (R_DETAIL >= DETAIL_NORMAL)
-		trail->dlight = CE_DLight_new(meteor_dlight_color, 150.0f, 0.0f);
+		meteor->dlight = CE_DLight_new(meteor_dlight_color, 150.0f, 0.0f);
 
-	AddEffect(owner, trail);
+	AddEffect(owner, meteor);
 }
 
 void FXMeteorBarrierExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
@@ -136,14 +134,12 @@ void FXMeteorBarrierExplode(centity_t* owner, const int type, const int flags, v
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_METEORBARRIEREXPLODE].formatString, dir);
 	Vec3ScaleAssign(32.0f, dir);
 
+	// Impact explosion: throw off chunks of glowing meteor-rock and puffs of green smoke.
 	if (flags & CEF_FLAG6)
 	{
-		// Impact explosion: throw off chunks of glowing meteor-rock and puffs of green smoke.
-		const vec3_t debris_dir = { 0.0f, 0.0f, 1.0f };
+		// Clear out CEF_FLAG# stuff, means different stuff to debris.
 		const vec3_t mins = { 2.0f, 2.0f, 2.0f }; // Because SpawnChunks needs a value for bounding box.
-
-		// Clear out cef_flag# stuff, means different stuff to debris.
-		FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6 | CEF_FLAG7 | CEF_FLAG8), origin, 5, MAT_GREYSTONE, debris_dir, 80000.0f, mins, 1.0f, false);
+		FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6 | CEF_FLAG7 | CEF_FLAG8), origin, 5, MAT_GREYSTONE, vec3_up, 80000.0f, mins, 1.0f, false);
 	}
 
 	client_entity_t* smoke_puff = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 500);
