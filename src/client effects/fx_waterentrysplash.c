@@ -28,7 +28,7 @@ void PreCacheWaterSplashSFX(void) //mxd
 	water_sounds[1] = fxi.S_RegisterSound("misc/splish3.wav");
 }
 
-static qboolean WaterEntrySplashThinkerThink(struct client_entity_s* self, centity_t* owner)
+static qboolean WaterEntryRippleSpawnerUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXWaterEntrySplashThinkerThink' in original logic.
 {
 	// Have enough ripples been created yet? If not, create one, else free myself.
 	if (self->NoOfAnimFrames < 1)
@@ -39,7 +39,7 @@ static qboolean WaterEntrySplashThinkerThink(struct client_entity_s* self, centi
 	client_entity_t* ripple = ClientEntity_new(FX_WATER_ENTRYSPLASH, flags, self->origin, self->direction, 1200);
 
 	ripple->r.model = &water_models[0]; // waterentryripple sprite.
-	ripple->r.flags = RF_FIXED | RF_TRANSLUCENT | RF_ALPHA_TEXTURE;
+	ripple->r.flags = (RF_FIXED | RF_TRANSLUCENT | RF_ALPHA_TEXTURE);
 	ripple->alpha = 0.6f;
 	ripple->d_alpha = self->d_alpha;
 
@@ -81,14 +81,14 @@ void DoWaterEntrySplash(const int type, const int flags, vec3_t origin, const by
 		fxi.S_StartSound(origin, -1, CHAN_AUTO, water_sounds[irand(0, 1)], 1.0f, ATTN_STATIC, 0.0f);
 
 	// Create a water entry ripple THINKER that will create the actual water entry ripples.
-	client_entity_t* entry_ripple_thinker = ClientEntity_new(type, flags, origin, dir, 200);
+	client_entity_t* entry_ripple_spawner = ClientEntity_new(type, flags, origin, dir, 200);
 
-	entry_ripple_thinker->flags |= CEF_NO_DRAW;
-	entry_ripple_thinker->NoOfAnimFrames = ripples_count;
-	entry_ripple_thinker->Update = WaterEntrySplashThinkerThink;
-	entry_ripple_thinker->d_alpha = -0.8f - (0.2f - (0.2f * (1.0f / 127.0f * (float)(splash_size & 127))));
+	entry_ripple_spawner->flags |= CEF_NO_DRAW;
+	entry_ripple_spawner->NoOfAnimFrames = ripples_count;
+	entry_ripple_spawner->d_alpha = -0.8f - (0.2f - (0.2f * (1.0f / 127.0f * (float)(splash_size & 127))));
+	entry_ripple_spawner->Update = WaterEntryRippleSpawnerUpdate;
 
-	AddEffect(NULL, entry_ripple_thinker);
+	AddEffect(NULL, entry_ripple_spawner);
 
 	// Create water entry particle splash if required.
 	if (splash_size & 128)
@@ -157,11 +157,11 @@ void DoWaterEntrySplash(const int type, const int flags, vec3_t origin, const by
 		client_entity_t* entry_ripple = ClientEntity_new(FX_WATER_ENTRYSPLASH, flags & (~CEF_OWNERS_ORIGIN), origin, dir, 1200);
 
 		entry_ripple->r.model = &water_models[0]; // waterentryripple sprite.
-		entry_ripple->r.flags = RF_FIXED | RF_TRANSLUCENT | RF_ALPHA_TEXTURE;
+		entry_ripple->r.flags = (RF_FIXED | RF_TRANSLUCENT | RF_ALPHA_TEXTURE);
 		entry_ripple->r.scale = WATER_SPLASH_SCALE * 2.0f;
 		entry_ripple->d_scale = 2.0f;
 		entry_ripple->alpha = 0.6f;
-		entry_ripple->d_alpha = entry_ripple_thinker->d_alpha;
+		entry_ripple->d_alpha = entry_ripple_spawner->d_alpha;
 
 		AddEffect(NULL, entry_ripple);
 	}
@@ -171,11 +171,11 @@ void DoWaterEntrySplash(const int type, const int flags, vec3_t origin, const by
 		client_entity_t* splash = ClientEntity_new(FX_WATER_ENTRYSPLASH, flags & (~CEF_OWNERS_ORIGIN), origin, dir, 1200);
 
 		splash->r.model = &water_models[0]; // waterentryripple sprite.
-		splash->r.flags |= RF_FIXED | RF_TRANSLUCENT | RF_ALPHA_TEXTURE;
+		splash->r.flags |= (RF_FIXED | RF_TRANSLUCENT | RF_ALPHA_TEXTURE);
 		splash->r.scale = WATER_SPLASH_SCALE;
 		splash->alpha = 0.6f;
 		splash->d_scale = 1.0f;
-		splash->d_alpha = entry_ripple_thinker->d_alpha;
+		splash->d_alpha = entry_ripple_spawner->d_alpha;
 
 		AddEffect(NULL, splash);
 
@@ -200,7 +200,7 @@ void DoWaterEntrySplash(const int type, const int flags, vec3_t origin, const by
 	}
 	else
 	{
-		entry_ripple_thinker->flags &= ~CEF_FLAG7; // Remove splooshy flag.
+		entry_ripple_spawner->flags &= ~CEF_FLAG7; // Remove splooshy flag.
 	}
 }
 
