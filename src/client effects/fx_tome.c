@@ -39,10 +39,10 @@ void PreCacheTomeSFX(void) //mxd
 }
 
 // Update the position of the Tome of Power relative to its owner.
-static void TomeOfPowerAnimate(client_entity_t* tome, const centity_t* owner)
+static void TomeOfPowerAnimate(client_entity_t* self, const centity_t* owner)
 {
 	const float time = (float)fx_time; //mxd
-	const float step = time - (float)tome->nextThinkTime;
+	const float step = time - (float)self->nextThinkTime;
 
 	vec3_t pos =
 	{
@@ -52,55 +52,55 @@ static void TomeOfPowerAnimate(client_entity_t* tome, const centity_t* owner)
 	};
 
 	//mxd. Update dynamic light.
-	tome->dlight->intensity = 150.0f + cosf(time * 0.01f) * 20.0f;
+	self->dlight->intensity = 150.0f + cosf(time * 0.01f) * 20.0f;
 
 	//mxd. Book appear animation.
-	if (fx_time < tome->tome_fadein_end_time)
+	if (fx_time < self->tome_fadein_end_time)
 	{
-		const float lerp = (float)(tome->tome_fadein_end_time - fx_time) / TOME_FADEIN_ANIM_LENGTH; // [1.0 .. 0.0]
+		const float lerp = (float)(self->tome_fadein_end_time - fx_time) / TOME_FADEIN_ANIM_LENGTH; // [1.0 .. 0.0]
 		const float scaler = 1.0f + (1.0f - cosf(lerp * ANGLE_90)) * 2.0f;
 		pos[0] *= scaler;
 		pos[1] *= scaler;
 
 		// Rotate the book.
-		tome->r.angles[YAW] += step * max(0.01f * lerp, TOME_SPIN_FACTOR);
+		self->r.angles[YAW] += step * max(0.01f * lerp, TOME_SPIN_FACTOR);
 
 		// Scale-in the book.
-		if (tome->r.scale < TOME_SCALE)
-			tome->r.scale += step * 0.002f;
+		if (self->r.scale < TOME_SCALE)
+			self->r.scale += step * 0.002f;
 
-		tome->dlight->intensity *= 1.0f - lerp;
+		self->dlight->intensity *= 1.0f - lerp;
 	}
-	else if (fx_time < tome->tome_fadeout_end_time) //mxd. Book disappear animation.
+	else if (fx_time < self->tome_fadeout_end_time) //mxd. Book disappear animation.
 	{
-		const float lerp = 1.0f - (float)(tome->tome_fadeout_end_time - fx_time) / TOME_FADEOUT_ANIM_LENGTH; // [0.0 .. 1.0]
+		const float lerp = 1.0f - (float)(self->tome_fadeout_end_time - fx_time) / TOME_FADEOUT_ANIM_LENGTH; // [0.0 .. 1.0]
 		const float oz = 25.0f + (1.0f - cosf(lerp * ANGLE_90)) * 32.0f;
 		pos[2] = LerpFloat(pos[2], oz, lerp);
 
 		// Rotate the book.
-		tome->r.angles[YAW] += step * max(lerp * 0.02f, TOME_SPIN_FACTOR);
+		self->r.angles[YAW] += step * max(lerp * 0.02f, TOME_SPIN_FACTOR);
 
 		// Scale-out the book.
 		if (lerp > 0.75f)
-			tome->r.scale = max(0.001f, tome->r.scale - step * 0.002f);
+			self->r.scale = max(0.001f, self->r.scale - step * 0.002f);
 
-		tome->dlight->intensity *= 1.0f - lerp;
+		self->dlight->intensity *= 1.0f - lerp;
 	}
 	else
 	{
 		// Rotate the book.
-		tome->r.angles[YAW] += step * TOME_SPIN_FACTOR;
+		self->r.angles[YAW] += step * TOME_SPIN_FACTOR;
 	}
 
-	VectorAdd(owner->origin, pos, tome->r.origin);
+	VectorAdd(owner->origin, pos, self->r.origin);
 }
 
 // Spawn Tome of Power sparks. Disabled in original logic --mxd.
-static void TomeOfPowerSpawnSparks(client_entity_t* tome)
+static void TomeOfPowerSpawnSparks(client_entity_t* self)
 {
-	const float radius = TOME_RADIUS * tome->r.scale;
-	const float vradius = TOME_VRADIUS * tome->r.scale;
-	const vec3_t right = { sinf(tome->r.angles[YAW]), -cosf(tome->r.angles[YAW]), 0.0f };
+	const float radius = TOME_RADIUS * self->r.scale;
+	const float vradius = TOME_VRADIUS * self->r.scale;
+	const vec3_t right = VEC3_SET(sinf(self->r.angles[YAW]), -cosf(self->r.angles[YAW]), 0.0f);
 
 	vec3_t p1;
 	VectorScale(right, radius, p1);
@@ -112,10 +112,10 @@ static void TomeOfPowerSpawnSparks(client_entity_t* tome)
 	{
 		const paletteRGBA_t color = //mxd. Randomize color a bit.
 		{
-			.r = (byte)(tome->color.r + irand(-16, 16)),
-			.g = (byte)(tome->color.g + irand(-16, 16)),
-			.b = (byte)(tome->color.b + irand(-32, 0)),
-			.a = (byte)(tome->color.a + irand(-16, 16)),
+			.r = (byte)(self->color.r + irand(-16, 16)),
+			.g = (byte)(self->color.g + irand(-16, 16)),
+			.b = (byte)(self->color.b + irand(-32, 0)),
+			.a = (byte)(self->color.a + irand(-16, 16)),
 		};
 
 		client_particle_t* spark = ClientParticle_new(PART_16x16_STAR, color, 1000);
@@ -125,40 +125,40 @@ static void TomeOfPowerSpawnSparks(client_entity_t* tome)
 		const float lerp = (float)i / (TOME_NUM_SPARKS - 1);
 		VectorLerp(p1, lerp, p2, offset);
 
-		spark->origin[0] = tome->r.origin[0] + offset[0];
-		spark->origin[1] = tome->r.origin[1] + offset[1];
-		spark->origin[2] = tome->r.origin[2] - vradius - 1.0f;
+		spark->origin[0] = self->r.origin[0] + offset[0];
+		spark->origin[1] = self->r.origin[1] + offset[1];
+		spark->origin[2] = self->r.origin[2] - vradius - 1.0f;
 
-		spark->scale = TOME_SPARK_SCALE * flrand(0.75f, 1.25f) * tome->r.scale; //mxd. Randomize scale a bit.
+		spark->scale = TOME_SPARK_SCALE * flrand(0.75f, 1.25f) * self->r.scale; //mxd. Randomize scale a bit.
 		VectorSet(spark->velocity, flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f), flrand(-10.0f, 10.0f));
 		spark->acceleration[2] = TOME_SPARK_ACCELERATION + flrand(-8.0f, 8.0f); //mxd. Randomize acceleration a bit.
 		spark->d_scale = flrand(-20.0f, -15.0f);
 		spark->d_alpha = flrand(-500.0f, -400.0f);
 
-		AddParticleToList(tome, spark);
+		AddParticleToList(self, spark);
 	}
 }
 
 // Update the Tome of power, so that more sparkles zip out of it, and the light casts pulses.
-static qboolean TomeOfPowerThink(client_entity_t* tome, centity_t* owner)
+static qboolean TomeOfPowerUpdate(client_entity_t* self, centity_t* owner)
 {
 	//mxd. Fade-out effect ended, remove entity.
-	if (tome->tome_fadeout_end_time > 0 && tome->tome_fadeout_end_time <= fx_time)
+	if (self->tome_fadeout_end_time > 0 && self->tome_fadeout_end_time <= fx_time)
 		return false;
 
 	//mxd. Start fade-out effect?
-	if (!(owner->current.effects & EF_POWERUP_ENABLED) && tome->tome_fadeout_end_time == 0)
+	if (!(owner->current.effects & EF_POWERUP_ENABLED) && self->tome_fadeout_end_time == 0)
 	{
-		fxi.S_StartSound(tome->r.origin, -1, CHAN_ITEM, tome_expired_sound, 1.0f, ATTN_NORM, 0.0f); //mxd. Add expire sound.
-		tome->tome_fadeout_end_time = fx_time + (int)TOME_FADEOUT_ANIM_LENGTH;
+		fxi.S_StartSound(self->r.origin, -1, CHAN_ITEM, tome_expired_sound, 1.0f, ATTN_NORM, 0.0f); //mxd. Add expire sound.
+		self->tome_fadeout_end_time = fx_time + (int)TOME_FADEOUT_ANIM_LENGTH;
 	}
 
-	TomeOfPowerAnimate(tome, owner);
+	TomeOfPowerAnimate(self, owner);
 
-	if (tome->lastThinkTime < fx_time)
+	if (self->lastThinkTime < fx_time)
 	{
-		TomeOfPowerSpawnSparks(tome);
-		tome->lastThinkTime = fx_time + TOME_SPARKS_SPAWN_RATE;
+		TomeOfPowerSpawnSparks(self);
+		self->lastThinkTime = fx_time + TOME_SPARKS_SPAWN_RATE;
 	}
 
 	return true;
@@ -179,7 +179,7 @@ void FXTomeOfPower(centity_t* owner, const int type, const int flags, vec3_t ori
 	tome->tome_fadein_end_time = fx_time + (int)TOME_FADEIN_ANIM_LENGTH; //mxd
 
 	tome->dlight = CE_DLight_new(tome->color, 150.0f, 0.0f);
-	tome->Update = TomeOfPowerThink;
+	tome->Update = TomeOfPowerUpdate;
 
 	AddEffect(owner, tome);
 }
