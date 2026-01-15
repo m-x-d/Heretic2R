@@ -9,7 +9,7 @@
 #include "Vector.h"
 #include "q_Sprite.h"
 
-#define ROPE_SEGMENT_LENGTH		64.0f
+#define ROPE_SEGMENT_LENGTH		64.0f // Rope texture height --mxd.
 #define ROPE_BOTTOM_SEGMENTS	4.0f
 
 static struct model_s* rope_models[4];
@@ -48,13 +48,13 @@ static qboolean RopeTopAttachedAddToView(client_entity_t* self, centity_t* owner
 		return false;
 	}
 
-	// Get our tile rate.
-	vec3_t diff;
-	VectorSubtract(self->direction, owner->origin, diff);
-	self->r.tile = VectorLength(diff) / ROPE_SEGMENT_LENGTH;
-
 	// This places us at the player's top most hand.
 	VectorSet(self->r.endpos, owner->origin[0], owner->origin[1], owner->origin[2] + 32.0f);
+
+	// Get our tile rate.
+	vec3_t diff;
+	VectorSubtract(self->direction, self->r.endpos, diff); //mxd. vecb:owner->origin in original logic.
+	self->r.tile = VectorLength(diff) / ROPE_SEGMENT_LENGTH;
 
 	return true;
 }
@@ -69,13 +69,12 @@ static qboolean RopeMiddleAttachedAddToView(client_entity_t* self, centity_t* ow
 
 	// These magic numbers place the rope at his hands.
 	VectorSet(self->r.startpos, owner->origin[0], owner->origin[1], owner->origin[2] + 32.0f);
-	VectorSet(self->r.endpos, owner->origin[0], owner->origin[1], owner->origin[2] + 8.0f);
+	VectorSet(self->r.endpos,   owner->origin[0], owner->origin[1], owner->origin[2] + 8.0f);
 
-	// Get the tile rate.
-	self->r.tile = 24.0f / ROPE_SEGMENT_LENGTH;
-
-	// Offset the sprite's tile so that there's no visible gap between the top section and the grab section (slight imprecision).
-	self->r.tileoffset = fmodf(self->direction[2] - owner->origin[2], ROPE_SEGMENT_LENGTH) / ROPE_SEGMENT_LENGTH;
+	//mxd. Offset the sprite's tile so that there's no visible gap between the top section and the grab section (slight imprecision).
+	vec3_t diff;
+	VectorSubtract(self->direction, self->r.startpos, diff);
+	self->r.tileoffset = fmodf(VectorLength(diff), ROPE_SEGMENT_LENGTH) / ROPE_SEGMENT_LENGTH;
 
 	return true;
 }
@@ -249,8 +248,7 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 		VectorCopy(rope->startpos, rope->endpos);
 		VectorCopy(top, rope->direction);
 
-		rope->AddToView = RopeUpdate;
-		rope->Update = RopeUpdate;
+		rope->Update = RopeUpdate; //mxd. Original logic assigns RopeUpdate to rope->AddToView as well.
 
 		AddEffect(NULL, rope);
 	}
@@ -288,9 +286,11 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 		rope_mid->r.spriteType = SPRITE_LINE;
 		rope_mid->r.flags = r_flags; //mxd
 		rope_mid->r.scale = 3.0f;
-		rope_mid->r.tile = 1.0f;
+		rope_mid->r.tile = 24.0f / ROPE_SEGMENT_LENGTH; //mxd. Set here instead of in RopeMiddleAttachedAddToView(), because the value doesn't change.
 		rope_mid->LifeTime = grab_id;
 		rope_mid->SpawnInfo = fx_time + 1000;
+
+		VectorCopy(top, rope_mid->direction); //mxd. Not set (but used!) in original logic.
 
 		rope_mid->AddToView = RopeMiddleAttachedAddToView;
 		rope_mid->Update = RopeAttachedUpdate;
