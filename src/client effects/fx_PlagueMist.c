@@ -10,20 +10,20 @@
 #include "Vector.h"
 #include "g_playstats.h"
 
-#define NUM_MIST_PARTS	7
+#define MAX_MIST_PARTICLES	7 //mxd. Named 'NUM_MIST_PARTS' in original logic.
 
-static qboolean PlagueMistParticleSpawner(client_entity_t* spawner, centity_t* owner)
+static qboolean PlagueMistUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXPlagueMistParticleSpawner' in original logic.
 {
 	int duration;
 	float mist_scale;
 	float mist_d_scale;
 
-	spawner->LifeTime -= 100;
-	if (spawner->LifeTime < 0)
+	self->LifeTime -= 100;
+	if (self->LifeTime < 0)
 		return false;
 
-	int count = (spawner->LifeTime - 1600) / 150;
-	count = min(NUM_MIST_PARTS, count);
+	int count = (self->LifeTime - 1600) / 150;
+	count = min(MAX_MIST_PARTICLES, count);
 
 	if (count < 1)
 		return true;
@@ -55,13 +55,13 @@ static qboolean PlagueMistParticleSpawner(client_entity_t* spawner, centity_t* o
 		client_particle_t* p = ClientParticle_new((int)(PART_16x16_MIST | PFL_NEARCULL), color, duration);
 
 		VectorRandomSet(p->origin, 2.0f);
-		VectorRandomCopy(spawner->direction, p->velocity, 20.0f);
-		VectorScale(spawner->direction, -1.0f, p->acceleration);
+		VectorRandomCopy(self->direction, p->velocity, 20.0f);
+		VectorScale(self->direction, -1.0f, p->acceleration);
 		p->acceleration[2] += flrand(20.0f, 30.0f);
 		p->scale = flrand(mist_scale, mist_scale + 3.0f);
 		p->d_scale = flrand(mist_d_scale, mist_d_scale + 3.0f);
 
-		AddParticleToList(spawner, p);
+		AddParticleToList(self, p);
 	}
 
 	return true;
@@ -83,9 +83,9 @@ void FXPlagueMist(centity_t* owner, const int type, const int flags, vec3_t orig
 	byte lifetime;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_PLAGUEMIST].formatString, pm->direction, &lifetime);
 
-	pm->flags = CEF_NO_DRAW | CEF_NOMOVE;
+	pm->flags = (CEF_NO_DRAW | CEF_NOMOVE);
 	pm->LifeTime = lifetime * 50;
-	pm->Update = PlagueMistParticleSpawner;
+	pm->Update = PlagueMistUpdate;
 
 	AddEffect(owner, pm);
 }
