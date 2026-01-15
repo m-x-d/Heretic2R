@@ -26,30 +26,30 @@ void PreCachePortal(void)
 	portal_models[2] = fxi.RegisterModel("sprites/spells/patball.sp2");
 }
 
-#define NUM_SPARK_TYPES		(sizeof(random_spark_types) / sizeof(random_spark_types[0]) - 1) //mxd
-
-static int random_spark_types[9] =
+static qboolean MagicPortalUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXMagicPortalThink' in original logic.
 {
-	PART_4x4_WHITE,
-	PART_4x4_BLUE,
-	PART_4x4_BLUE2,
-	PART_4x4_BLUE3,
-	PART_8x8_BLUE_X,
-	PART_8x8_BLUE_CIRCLE,
-	PART_8x8_BLUE_DIAMOND,
-	PART_16x16_STAR,
-	PART_16x16_SPARK_B,
-};
+#define NUM_SPARK_TYPES		(ARRAY_SIZE(random_spark_types) - 1) //mxd
 
-static qboolean MagicPortalThink(client_entity_t* self, centity_t* owner)
-{
+	static const int random_spark_types[] =
+	{
+		PART_4x4_WHITE,
+		PART_4x4_BLUE,
+		PART_4x4_BLUE2,
+		PART_4x4_BLUE3,
+		PART_8x8_BLUE_X,
+		PART_8x8_BLUE_CIRCLE,
+		PART_8x8_BLUE_DIAMOND,
+		PART_16x16_STAR,
+		PART_16x16_SPARK_B,
+	};
+
 	// Already disabled?
 	if (self->LifeTime == 1)
 		return fx_time <= self->lastThinkTime;
 
 	if ((owner->current.effects & EF_DISABLE_EXTRA_FX) || (self->SpawnDelay > 0 && self->SpawnDelay < fx_time))
 	{
-		// Start disabling it, but give it a couple of seconds to fitz out.
+		// Start disabling it, but give it a couple of seconds to fizz out.
 		self->LifeTime = 1;
 		self->lastThinkTime = fx_time + 2000;
 
@@ -72,7 +72,7 @@ static qboolean MagicPortalThink(client_entity_t* self, centity_t* owner)
 			vel[2] = 1.0f; // Safety in case flrand gens all zeros (VERY unlikely).
 
 		VectorNormalize(vel);
-		VectorScale(vel, PORTAL_RADIUS, vel);
+		Vec3ScaleAssign(PORTAL_RADIUS, vel);
 
 		client_particle_t* ce = ClientParticle_new(random_spark_types[irand(0, NUM_SPARK_TYPES)], color_white, 3000);
 
@@ -99,7 +99,7 @@ static qboolean MagicPortalThink(client_entity_t* self, centity_t* owner)
 		client_entity_t* ripple = ClientEntity_new(FX_WATER_ENTRYSPLASH, 0, owner->current.origin, self->direction, 4000);
 
 		ripple->r.model = &portal_models[0]; // ripple_add sprite.
-		ripple->r.flags = RF_TRANS_ADD_ALPHA | RF_TRANS_ADD | RF_FIXED | RF_TRANS_GHOST;
+		ripple->r.flags = (RF_TRANS_ADD_ALPHA | RF_TRANS_ADD | RF_FIXED | RF_TRANS_GHOST);
 		ripple->r.scale = 0.1f;
 		ripple->d_scale = 1.0f;
 
@@ -150,7 +150,7 @@ static qboolean MagicPortalThink(client_entity_t* self, centity_t* owner)
 			line->r.model = &portal_models[2]; // patball sprite.
 			line->r.spriteType = SPRITE_LINE;
 
-			line->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			line->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 			line->r.scale = flrand(1.0f, 2.5f);
 			line->alpha = flrand(0.75f, 1.0f);
 			line->d_alpha = -2.0f;
@@ -186,7 +186,7 @@ void FXMagicPortal(centity_t* owner, const int type, const int flags, vec3_t ori
 	client_entity_t* portal = ClientEntity_new(type, flags & ~CEF_NOMOVE, origin, forward, 110);
 
 	portal->radius = 1000.0f;
-	portal->flags |= CEF_NO_DRAW | CEF_PULSE_ALPHA;
+	portal->flags |= (CEF_NO_DRAW | CEF_PULSE_ALPHA);
 	portal->SpawnInfo = 2;
 
 	if (duration != 0)
@@ -195,7 +195,7 @@ void FXMagicPortal(centity_t* owner, const int type, const int flags, vec3_t ori
 	VectorScale(forward, -1.0f, portal->direction);
 	VectorCopy(dir, portal->r.angles);
 
-	portal->Update = MagicPortalThink;
+	portal->Update = MagicPortalUpdate;
 
 	AddEffect(owner, portal);
 }
