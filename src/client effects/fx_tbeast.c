@@ -15,7 +15,7 @@ void PreCacheTB(void)
 	tb_dustpuff_model = fxi.RegisterModel("sprites/fx/steam_add.sp2");
 }
 
-static qboolean TBDustPuffThink(client_entity_t* puff, centity_t* owner)
+static qboolean TBDustPuffUpdate(client_entity_t* puff, centity_t* owner) //mxd. Named 'FXTBDustPuffThink' in original logic.
 {
 	puff->flags &= ~CEF_DISAPPEARED;
 	return puff->alpha > 0.0f;
@@ -27,21 +27,21 @@ static void TBDustPuff(const int type, const int flags, vec3_t origin, const flo
 
 	puff->radius = 1.0f;
 	puff->r.model = &tb_dustpuff_model; // steam_add sprite.
-	puff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	puff->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	puff->r.scale = flrand(0.15f, 0.3f);
 	puff->d_scale = 0.75f;
 	puff->alpha = 0.5f;
 	puff->d_alpha = -1.0f;
 
 	vec3_t forward;
-	const vec3_t angles = { 0.0f, in_angle, 0.0f };
+	const vec3_t angles = VEC3_SET(0.0f, in_angle, 0.0f);
 	AngleVectors(angles, forward, NULL, NULL);
 
 	VectorScale(forward, flrand(30.0f, 100.0f), puff->velocity);
 	puff->velocity[2] = flrand(25.0f, 75.0f);
 	puff->acceleration[2] = puff->velocity[2] * -1.23f;
 
-	puff->Update = TBDustPuffThink;
+	puff->Update = TBDustPuffUpdate;
 
 	AddEffect(NULL, puff);
 }
