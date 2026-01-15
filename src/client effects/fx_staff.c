@@ -39,7 +39,7 @@ void PreCacheStaff(void)
 	staff_models[4] = fxi.RegisterModel("sprites/fx/haloblue.sp2");
 }
 
-static qboolean StaffElementThink(struct client_entity_s* self, centity_t* owner)
+static qboolean StaffElementUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXStaffElementThink' in original logic.
 {
 	float frac = (float)(fx_time - self->startTime) / 100.0f;
 
@@ -60,15 +60,15 @@ static qboolean StaffElementThink(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
+static qboolean StaffLevel3Update(client_entity_t* self, centity_t* owner) //mxd. Named 'FXStaffLevel2Think' in original logic.
 {
-#define TRAIL_LVL2_LIFETIME	2000 //mxd
+#define TRAIL_LVL3_LIFETIME	2000 //mxd
 
 	// If we've timed out, stop the effect (allow for fading).
 	if (self->LifeTime > 0 && self->LifeTime < fx_time)
 	{
 		self->Update = RemoveSelfAI;
-		self->updateTime = TRAIL_LVL2_LIFETIME; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+		self->updateTime = TRAIL_LVL3_LIFETIME; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}
@@ -90,33 +90,30 @@ static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
 		return false;
 
 	// Average out the two right hand positions to get a pivot point.
-	vec3_t cur_pivot;
-	VectorCopy(owner->referenceInfo->oldReferences[CORVUS_RIGHTHAND].placement.origin, cur_pivot);
+	vec3_t cur_pivot = VEC3_INIT(owner->referenceInfo->oldReferences[CORVUS_RIGHTHAND].placement.origin);
 
 	vec3_t delta_pivot;
 	VectorSubtract(owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, cur_pivot, delta_pivot);
-	VectorScale(delta_pivot, 1.0f / (float)num_of_intervals, delta_pivot);
+	Vec3ScaleAssign(1.0f / (float)num_of_intervals, delta_pivot);
 
-	vec3_t cur_normal;
-	VectorCopy(owner->referenceInfo->oldReferences[ref_index].placement.direction, cur_normal);
+	vec3_t cur_normal = VEC3_INIT(owner->referenceInfo->oldReferences[ref_index].placement.direction);
 
 	vec3_t delta_normal;
 	VectorSubtract(owner->referenceInfo->references[ref_index].placement.direction, cur_normal, delta_normal);
-	VectorScale(delta_normal, 1.0f / (float)num_of_intervals, delta_normal);
+	Vec3ScaleAssign(1.0f / (float)num_of_intervals, delta_normal);
 
 	vec3_t dir;
-	VectorCopy(cur_normal, dir);
-	VectorNormalize(dir);
+	VectorNormalize2(cur_normal, dir);
 
 	for (int i = 0; i < num_of_intervals; i++)
 	{
 		vec3_t trail_org;
 		VectorMA(cur_pivot, STAFF_LENGTH, dir, trail_org);
 
-		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, TRAIL_LVL2_LIFETIME);
+		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, TRAIL_LVL3_LIFETIME);
 
 		trail->r.model = &staff_models[STAFF_TRAIL2];
-		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		trail->r.scale = flrand(0.2f, 0.3f);
 		trail->d_scale = flrand(-1.0f, -0.5f);
 		trail->d_alpha = -2.0f;
@@ -149,7 +146,7 @@ static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
 			client_entity_t* smoke = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, 5000);
 
 			smoke->r.model = &staff_models[STAFF_TRAIL_SMOKE];
-			smoke->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			smoke->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 			smoke->r.scale = flrand(0.1f, 0.15f);
 			smoke->d_scale = 1.0f;
 			smoke->alpha = 0.75f;
@@ -175,23 +172,23 @@ static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
 			AddEffect(NULL, smoke);
 		}
 
-		VectorAdd(cur_pivot, delta_pivot, cur_pivot);
-		VectorAdd(cur_normal, delta_normal, cur_normal);
+		Vec3AddAssign(delta_pivot, cur_pivot);
+		Vec3AddAssign(delta_normal, cur_normal);
 		VectorNormalize2(cur_normal, dir);
 	}
 
 	return true;
 }
 
-static qboolean StaffLevel3Think(struct client_entity_s* self, centity_t* owner)
+static qboolean StaffLevel2Update(client_entity_t* self, centity_t* owner) //mxd. Named 'FXStaffLevel3Think' in original logic.
 {
-#define TRAIL_LVL3_LIFETIME	500 //mxd
+#define TRAIL_LVL2_LIFETIME	500 //mxd
 
 	// If we've timed out, stop the effect (allow for fading).
 	if (self->LifeTime > 0 && self->LifeTime < fx_time)
 	{
 		self->Update = RemoveSelfAI;
-		self->updateTime = TRAIL_LVL3_LIFETIME; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+		self->updateTime = TRAIL_LVL2_LIFETIME; //BUGFIX: mxd. 'fxi.cl->time + 500' in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}
@@ -215,33 +212,30 @@ static qboolean StaffLevel3Think(struct client_entity_s* self, centity_t* owner)
 	// Take the before and after points and try to draw an arc.
 
 	// Average out the two right hand positions to get a pivot point.
-	vec3_t cur_pivot;
-	VectorCopy(owner->referenceInfo->oldReferences[CORVUS_RIGHTHAND].placement.origin, cur_pivot);
+	vec3_t cur_pivot = VEC3_INIT(owner->referenceInfo->oldReferences[CORVUS_RIGHTHAND].placement.origin);
 
 	vec3_t delta_pivot;
 	VectorSubtract(owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, cur_pivot, delta_pivot);
-	VectorScale(delta_pivot, 1.0f / (float)num_of_intervals, delta_pivot);
+	Vec3ScaleAssign(1.0f / (float)num_of_intervals, delta_pivot);
 
-	vec3_t cur_normal;
-	VectorCopy(owner->referenceInfo->oldReferences[ref_index].placement.direction, cur_normal);
+	vec3_t cur_normal = VEC3_INIT(owner->referenceInfo->oldReferences[ref_index].placement.direction);
 
 	vec3_t delta_normal;
 	VectorSubtract(owner->referenceInfo->references[ref_index].placement.direction, cur_normal, delta_normal);
-	VectorScale(delta_normal, 1.0f / (float)num_of_intervals, delta_normal);
+	Vec3ScaleAssign(1.0f / (float)num_of_intervals, delta_normal);
 
 	vec3_t dir;
-	VectorCopy(cur_normal, dir);
-	VectorNormalize(dir);
+	VectorNormalize2(cur_normal, dir);
 
 	for (int i = 0; i < num_of_intervals; i++)
 	{
 		vec3_t trail_org;
 		VectorMA(cur_pivot, STAFF_LENGTH, dir, trail_org);
 
-		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, TRAIL_LVL3_LIFETIME);
+		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, TRAIL_LVL2_LIFETIME);
 
 		trail->r.model = &staff_models[STAFF_TRAIL3];
-		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+		trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD);
 		trail->r.scale = 0.3f;
 		trail->d_scale = -0.75f;
 		trail->alpha = 0.75f;
@@ -261,15 +255,15 @@ static qboolean StaffLevel3Think(struct client_entity_s* self, centity_t* owner)
 
 		AddEffect(owner, trail);
 
-		VectorAdd(cur_pivot, delta_pivot, cur_pivot);
-		VectorAdd(cur_normal, delta_normal, cur_normal);
+		Vec3AddAssign(delta_pivot, cur_pivot);
+		Vec3AddAssign(delta_normal, cur_normal);
 		VectorNormalize2(cur_normal, dir);
 	}
 
 	return true;
 }
 
-static qboolean StaffLevel1Think(struct client_entity_s* self, centity_t* owner)
+static qboolean StaffLevel1Update(client_entity_t* self, centity_t* owner) //mxd. Named 'FXStaffThink' in original logic.
 {
 #define TRAIL_LVL1_LIFETIME	1500 //mxd
 
@@ -301,23 +295,21 @@ static qboolean StaffLevel1Think(struct client_entity_s* self, centity_t* owner)
 	// Take the before and after points and try to draw an arc.
 
 	// Average out the two right hand positions to get a pivot point.
-	vec3_t cur_pivot;
-	VectorCopy(owner->referenceInfo->oldReferences[CORVUS_RIGHTHAND].placement.origin, cur_pivot);
+	vec3_t cur_pivot = VEC3_INIT(owner->referenceInfo->oldReferences[CORVUS_RIGHTHAND].placement.origin);
 
 	vec3_t delta_pivot;
 	VectorSubtract(owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, cur_pivot, delta_pivot);
-	VectorScale(delta_pivot, 1.0f / (float)num_of_intervals, delta_pivot);
+	Vec3ScaleAssign(1.0f / (float)num_of_intervals, delta_pivot);
 
 	vec3_t cur_normal;
 	VectorCopy(owner->referenceInfo->oldReferences[ref_index].placement.direction, cur_normal);
 
 	vec3_t delta_normal;
 	VectorSubtract(owner->referenceInfo->references[ref_index].placement.direction, cur_normal, delta_normal);
-	VectorScale(delta_normal, 1.0f / (float)num_of_intervals, delta_normal);
+	Vec3ScaleAssign(1.0f / (float)num_of_intervals, delta_normal);
 
 	vec3_t dir;
-	VectorCopy(cur_normal, dir);
-	VectorNormalize(dir);
+	VectorNormalize2(cur_normal, dir);
 
 	for (int i = 0; i < num_of_intervals; i++)
 	{
@@ -328,7 +320,7 @@ static qboolean StaffLevel1Think(struct client_entity_s* self, centity_t* owner)
 		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, TRAIL_LVL1_LIFETIME);
 
 		trail->r.model = &staff_models[STAFF_TRAIL]; // patball sprite.
-		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		trail->r.frame = 1;
 		trail->d_scale = -0.5f;
 		trail->alpha = 0.5f;
@@ -339,8 +331,8 @@ static qboolean StaffLevel1Think(struct client_entity_s* self, centity_t* owner)
 
 		AddEffect(owner, trail);
 
-		VectorAdd(cur_pivot, delta_pivot, cur_pivot);
-		VectorAdd(cur_normal, delta_normal, cur_normal);
+		Vec3AddAssign(delta_pivot, cur_pivot);
+		Vec3AddAssign(delta_normal, cur_normal);
 		VectorNormalize2(cur_normal, dir);
 	}
 
@@ -368,21 +360,21 @@ void FXStaff(centity_t* owner, const int type, const int flags, vec3_t origin)
 	{
 		case 1: // Blue.
 		default:
-			trail->Update = StaffLevel1Think;
+			trail->Update = StaffLevel1Update;
 			trail->color.c = 0x02201010;
 			trail->xscale = 0.175f;
 			break;
 
 		//NOTE: These were swapped after the functions were created.
 		case 2: // Fire.
-			trail->Update = StaffLevel3Think;
+			trail->Update = StaffLevel2Update;
 			trail->color = color_white;
 			trail->xscale = 0.2f;
 			break;
 
 		case 3: // Energy blast.
 		case 4:
-			trail->Update = StaffLevel2Think;
+			trail->Update = StaffLevel3Update;
 			trail->color = color_white;
 			trail->xscale = 0.225f;
 			break;
@@ -391,24 +383,24 @@ void FXStaff(centity_t* owner, const int type, const int flags, vec3_t origin)
 	AddEffect(owner, trail);
 }
 
-static qboolean StaffCreateThink(struct client_entity_s* self, centity_t* owner)
+static qboolean StaffCreateUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXStaffCreateThink' in original logic.
 {
-	vec3_t start_pt;
-	vec3_t end_pt;
-	uint color;
-
 	self->updateTime = MIN_UPDATE_TIME; //FIXME: with a next think time this effect does not look right.
 
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
 		return false; // Remove the effect in this case.
 
+	vec3_t start_pt;
+	vec3_t end_pt;
+	uint color;
+
 	// If this reference point hasn't changed since the last frame, return.
 	switch (self->refPoint)
 	{
 		case STAFF_TYPE_HELL:
 			VectorAdd(owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, owner->referenceInfo->references[CORVUS_STAFF].placement.origin, start_pt);
-			VectorScale(start_pt, 0.5f, start_pt);
+			Vec3ScaleAssign(0.5f, start_pt);
 			VectorCopy(owner->referenceInfo->references[CORVUS_HELL_HEAD].placement.origin, end_pt);
 			color = 0xff2020ff;
 			break;
@@ -428,10 +420,9 @@ static qboolean StaffCreateThink(struct client_entity_s* self, centity_t* owner)
 	if (num_of_intervals > 40)
 		return false;
 
-	VectorScale(diff, 1.0f / (float)num_of_intervals, diff);
+	Vec3ScaleAssign(1.0f / (float)num_of_intervals, diff);
 
-	vec3_t trail_org;
-	VectorCopy(start_pt, trail_org); // This rides on the assumption that the normal given is already a unit norm. //TODO: the normal given is NOT a unit norm!
+	vec3_t trail_org = VEC3_INIT(start_pt); // This rides on the assumption that the normal given is already a unit norm. //TODO: the normal given is NOT a unit norm!
 
 	for (int i = 0; i < num_of_intervals; i++)
 	{
@@ -451,10 +442,10 @@ static qboolean StaffCreateThink(struct client_entity_s* self, centity_t* owner)
 			trail->r.scale = (float)self->NoOfAnimFrames * 0.05f;
 			trail->AnimSpeed = 0.2f;
 			trail->NoOfAnimFrames = 2;
-			trail->Update = StaffElementThink;
+			trail->Update = StaffElementUpdate;
 
 			AddEffect(owner, trail);
-			StaffElementThink(trail, owner);
+			StaffElementUpdate(trail, owner);
 		}
 		else if (self->classID == STAFF_TRAIL2)
 		{
@@ -490,7 +481,7 @@ static qboolean StaffCreateThink(struct client_entity_s* self, centity_t* owner)
 			AddEffect(owner, trail);
 		}
 
-		VectorAdd(trail_org, diff, trail_org);
+		Vec3AddAssign(diff, trail_org);
 	}
 
 	self->NoOfAnimFrames--;
@@ -516,7 +507,7 @@ void FXStaffCreate(centity_t* owner, const int type, const int flags, vec3_t ori
 	staff_fx->flags |= CEF_NO_DRAW;
 	staff_fx->NoOfAnimFrames = 7;
 	staff_fx->refPoint = (short)((flags & CEF_FLAG6) ? STAFF_TYPE_HELL : STAFF_TYPE_SWORD);
-	staff_fx->Update = StaffCreateThink;
+	staff_fx->Update = StaffCreateUpdate;
 
 	AddEffect(owner, staff_fx);
 }
@@ -527,7 +518,7 @@ static void CreatePuff(centity_t* owner, const int flags, vec3_t origin)
 	client_entity_t* puff = ClientEntity_new(FX_SPELLHANDS, (int)(flags & ~CEF_NO_DRAW), origin, NULL, 100);
 
 	puff->r.model = &staff_models[STAFF_HALO];
-	puff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	puff->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	puff->r.frame = 1;
 	puff->r.scale = 0.5f;
 	puff->d_scale = -0.3f;
@@ -535,11 +526,12 @@ static void CreatePuff(centity_t* owner, const int flags, vec3_t origin)
 	puff->d_alpha = -0.2f;
 	puff->AnimSpeed = 0.2f;
 	puff->NoOfAnimFrames = 2;
-	puff->Update = StaffElementThink;
+
 	puff->AddToView = OffsetLinkedEntityUpdatePlacement;
+	puff->Update = StaffElementUpdate;
 
 	AddEffect(owner, puff);
-	StaffElementThink(puff, owner);
+	StaffElementUpdate(puff, owner);
 }
 
 void FXStaffCreatePoof(centity_t* owner, int type, const int flags, vec3_t origin)
@@ -548,39 +540,31 @@ void FXStaffCreatePoof(centity_t* owner, int type, const int flags, vec3_t origi
 	if (!RefPointsValid(owner))
 		return; // Remove the effect in this case.
 
-	vec3_t spawn_pt;
 	const int ref_id = ((flags & CEF_FLAG6) ? CORVUS_HELL_HEAD : CORVUS_BLADE); //mxd
-	VectorCopy(owner->referenceInfo->references[ref_id].placement.origin, spawn_pt);
-	CreatePuff(owner, flags, spawn_pt); //mxd
+	CreatePuff(owner, flags, owner->referenceInfo->references[ref_id].placement.origin); //mxd
 
 	if (!(flags & CEF_FLAG6)) // Just for the sword staff.
-	{
-		vec3_t halo_org;
-		VectorCopy(owner->referenceInfo->references[CORVUS_STAFF].placement.origin, halo_org);
-		CreatePuff(owner, flags, halo_org); //mxd
-	}
+		CreatePuff(owner, flags, owner->referenceInfo->references[CORVUS_STAFF].placement.origin); //mxd
 }
 
-static qboolean StaffRemoveThink(struct client_entity_s* self, centity_t* owner)
+static qboolean StaffRemoveUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXStaffRemoveThink' in original logic.
 {
-	vec3_t start_pt;
-	vec3_t end_pt;
-
-	vec3_t trail_org;
-	uint color;
-
 	self->updateTime = MIN_UPDATE_TIME; //FIXME: with a next think time this effect does not look right.
 
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
 		return false; // Remove the effect in this case.
 
+	vec3_t start_pt;
+	vec3_t end_pt;
+	uint color;
+
 	// If this reference point hasn't changed since the last frame, return.
 	switch (self->refPoint)
 	{
 		case STAFF_TYPE_HELL:
 			VectorAdd(owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, owner->referenceInfo->references[CORVUS_STAFF].placement.origin, start_pt);
-			VectorScale(start_pt, 0.5f, start_pt);
+			Vec3ScaleAssign(0.5f, start_pt);
 			VectorCopy(owner->referenceInfo->references[CORVUS_HELL_HEAD].placement.origin, end_pt);
 			color = 0xff2020ff;
 			break;
@@ -600,8 +584,9 @@ static qboolean StaffRemoveThink(struct client_entity_s* self, centity_t* owner)
 	if (num_of_intervals > 40)
 		return false;
 
-	VectorScale(diff, 1.0f / (float)num_of_intervals, diff);
-	VectorCopy(start_pt, trail_org); // This rides on the assumption that the normal given is already a unit norm. //TODO: the normal given is NOT a unit norm!
+	Vec3ScaleAssign(1.0f / (float)num_of_intervals, diff);
+
+	vec3_t trail_org = VEC3_INIT(start_pt); // This rides on the assumption that the normal given is already a unit norm. //TODO: the normal given is NOT a unit norm!
 
 	for (int i = 0; i < num_of_intervals; i++)
 	{
@@ -621,10 +606,10 @@ static qboolean StaffRemoveThink(struct client_entity_s* self, centity_t* owner)
 			trail->r.scale = (float)self->NoOfAnimFrames * 0.05f;
 			trail->AnimSpeed = 0.2f;
 			trail->NoOfAnimFrames = 2;
-			trail->Update = StaffElementThink;
+			trail->Update = StaffElementUpdate;
 
 			AddEffect(owner, trail);
-			StaffElementThink(trail, owner);
+			StaffElementUpdate(trail, owner);
 		}
 		else if (self->classID == STAFF_TRAIL2)
 		{
@@ -660,7 +645,7 @@ static qboolean StaffRemoveThink(struct client_entity_s* self, centity_t* owner)
 			AddEffect(owner, trail);
 		}
 
-		VectorAdd(trail_org, diff, trail_org);
+		Vec3AddAssign(diff, trail_org);
 	}
 
 	self->NoOfAnimFrames++;
@@ -685,7 +670,7 @@ void FXStaffRemove(centity_t* owner, const int type, const int flags, vec3_t ori
 	staff_fx->flags |= CEF_NO_DRAW;
 	staff_fx->NoOfAnimFrames = 1;
 	staff_fx->refPoint = (short)((flags & CEF_FLAG6) ? STAFF_TYPE_HELL : STAFF_TYPE_SWORD);
-	staff_fx->Update = StaffRemoveThink;
+	staff_fx->Update = StaffRemoveUpdate;
 
 	AddEffect(owner, staff_fx);
 }
