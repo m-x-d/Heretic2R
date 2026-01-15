@@ -27,12 +27,12 @@ static int circular_list_index = 0;
 
 #pragma region ========================== Update functions ==========================
 
-qboolean RemoveSelfAI(client_entity_t* this, centity_t* owner)
+qboolean RemoveSelfAI(client_entity_t* self, centity_t* owner)
 {
 	return false; // Removed after one think (nextThinkTime is lifetime).
 }
 
-qboolean KeepSelfAI(client_entity_t* this, centity_t* owner)
+qboolean KeepSelfAI(client_entity_t* self, centity_t* owner)
 {
 	return true; // Remain alive forever.
 }
@@ -54,59 +54,61 @@ qboolean AttemptRemoveSelf(client_entity_t* self, centity_t* owner)
 
 #pragma region ========================== AddToView functions ==========================
 
-qboolean LinkedEntityUpdatePlacement(client_entity_t* current, centity_t* owner)
+qboolean LinkedEntityUpdatePlacement(client_entity_t* self, centity_t* owner)
 {
-	if (current->r.flags & RF_FIXED)
+	if (self->r.flags & RF_FIXED)
 	{
 		matrix3_t rotation;
 		Matrix3FromAngles(owner->lerp_angles, rotation);
 
 		vec3_t direction;
-		Matrix3MultByVec3(rotation, current->direction, direction);
+		Matrix3MultByVec3(rotation, self->direction, direction);
 
 		vec3_t up;
-		Matrix3MultByVec3(rotation, current->up, up);
+		Matrix3MultByVec3(rotation, self->up, up);
 
-		AnglesFromDirAndUp(direction, up, current->r.angles);
+		AnglesFromDirAndUp(direction, up, self->r.angles);
 	}
 
-	VectorCopy(owner->origin, current->r.origin);
+	VectorCopy(owner->origin, self->r.origin);
 
 	return true;
 }
 
-qboolean OffsetLinkedEntityUpdatePlacement(client_entity_t* current, centity_t* owner)
+qboolean OffsetLinkedEntityUpdatePlacement(client_entity_t* self, centity_t* owner)
 {
 	matrix3_t rotation;
-	vec3_t up;
-	vec3_t direction;
-	vec3_t up2;
-	vec3_t direction2;
-	vec3_t origin;
-
 	Matrix3FromAngles(owner->lerp_angles, rotation);
-	Matrix3MultByVec3(rotation, current->origin, origin);
 
-	if (current->r.flags & RF_FIXED)
+	vec3_t origin;
+	Matrix3MultByVec3(rotation, self->origin, origin);
+
+	if (self->r.flags & RF_FIXED)
 	{
-		VectorAdd(current->origin, current->direction, direction);
-		VectorAdd(current->origin, current->up, up);
+		vec3_t direction;
+		VectorAdd(self->origin, self->direction, direction);
 
+		vec3_t up;
+		VectorAdd(self->origin, self->up, up);
+
+		vec3_t direction2;
 		Matrix3MultByVec3(rotation, direction, direction2);
+
+		vec3_t up2;
 		Matrix3MultByVec3(rotation, up, up2);
 
 		Vec3SubtractAssign(origin, direction2);
 		Vec3SubtractAssign(origin, up2);
 
-		AnglesFromDirAndUp(direction2, up2, current->r.angles);
+		AnglesFromDirAndUp(direction2, up2, self->r.angles);
 	}
 
-	VectorAdd(owner->origin, origin, current->r.origin);
+	VectorAdd(owner->origin, origin, self->r.origin);
 
 	return true;
 }
 
-qboolean ReferenceLinkedEntityUpdatePlacement(struct client_entity_s* self, centity_t* owner)
+qboolean ReferenceLinkedEntityUpdatePlacement(client_entity_t* self, centity_t* owner)
 {
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
