@@ -22,7 +22,9 @@ void PreCacheRope(void)
 	rope_models[3] = fxi.RegisterModel("sprites/fx/segment_tendril.sp2");
 }
 
-static qboolean RopeCheckToHide(struct client_entity_s* self, centity_t* owner)
+#pragma region ========================== ATTACHED ROPE SEGMENTS ==========================
+
+static qboolean RopeAttachedUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'RopeCheckToHide' in original logic.
 {
 	// Get the entity.
 	const centity_t* grab = &fxi.server_entities[self->LifeTime];
@@ -38,20 +40,18 @@ static qboolean RopeCheckToHide(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-#pragma region ========================== ATTACHED ROPE SEGMENTS ==========================
-
-static qboolean RopeTopDrawAttached(struct client_entity_s* self, centity_t* owner)
+static qboolean RopeTopAttachedAddToView(client_entity_t* self, centity_t* owner) //mxd. Named 'FXRopeTopDrawAttached' in original logic.
 {
-	if (!RopeCheckToHide(self, owner))
+	if (!RopeAttachedUpdate(self, owner))
 	{
 		self->flags |= CEF_NO_DRAW;
 		return false;
 	}
 
 	// Get our tile rate.
-	vec3_t vec;
-	VectorSubtract(self->direction, owner->origin, vec);
-	self->r.tile = VectorLength(vec) / ROPE_SEGMENT_LENGTH;
+	vec3_t diff;
+	VectorSubtract(self->direction, owner->origin, diff);
+	self->r.tile = VectorLength(diff) / ROPE_SEGMENT_LENGTH;
 
 	// This places us at the player's top most hand.
 	VectorSet(self->r.endpos, owner->origin[0], owner->origin[1], owner->origin[2] + 32.0f);
@@ -59,9 +59,9 @@ static qboolean RopeTopDrawAttached(struct client_entity_s* self, centity_t* own
 	return true;
 }
 
-static qboolean RopeMiddleDrawAttached(struct client_entity_s* self, centity_t* owner)
+static qboolean RopeMiddleAttachedAddToView(client_entity_t* self, centity_t* owner) //mxd. Named 'FXRopeMiddleDrawAttached' in original logic.
 {
-	if (!RopeCheckToHide(self, owner))
+	if (!RopeAttachedUpdate(self, owner))
 	{
 		self->flags |= CEF_NO_DRAW;
 		return false;
@@ -80,9 +80,9 @@ static qboolean RopeMiddleDrawAttached(struct client_entity_s* self, centity_t* 
 	return true;
 }
 
-static qboolean RopeBottomDrawAttached(struct client_entity_s* self, centity_t* owner)
+static qboolean RopeBottomAttachedAddToView(client_entity_t* self, centity_t* owner) //mxd. Named 'FXRopeBottomDrawAttached' in original logic.
 {
-	if (!RopeCheckToHide(self, owner))
+	if (!RopeAttachedUpdate(self, owner))
 	{
 		self->flags |= CEF_NO_DRAW;
 		return false;
@@ -100,7 +100,7 @@ static qboolean RopeBottomDrawAttached(struct client_entity_s* self, centity_t* 
 
 	if ((int)old_time < (int)new_time)
 	{
-		// Adjust the start and endpos for a new interpolation interval.		
+		// Adjust the start and endpos for a new interpolation interval.
 		VectorCopy(self->endpos2, self->startpos2);
 		VectorCopy(end->current.origin, self->endpos2);
 	}
@@ -109,16 +109,16 @@ static qboolean RopeBottomDrawAttached(struct client_entity_s* self, centity_t* 
 	const float lerp = new_time - floorf(new_time); //mxd. (int) -> floorf().
 
 	// Find the difference in position for lerping.
-	vec3_t diff_pos2;
-	VectorSubtract(self->endpos2, self->startpos2, diff_pos2);
+	vec3_t diff2;
+	VectorSubtract(self->endpos2, self->startpos2, diff2);
 
 	// Now apply the lerp value to get the new endpos.
-	VectorMA(self->startpos2, lerp, diff_pos2, self->r.endpos);
+	VectorMA(self->startpos2, lerp, diff2, self->r.endpos);
 
 	// Setup the vector to the current position to the goal position.
-	vec3_t vec;
-	VectorSubtract(self->r.endpos, self->r.startpos, vec);
-	const float dist = VectorNormalize(vec);
+	vec3_t diff;
+	VectorSubtract(self->r.endpos, self->r.startpos, diff);
+	const float dist = VectorNormalize(diff);
 
 	// Find the number of segments, and their lengths
 	const float c_length = dist / ROPE_BOTTOM_SEGMENTS; //FIXME: Find the actual length with curving
@@ -128,9 +128,9 @@ static qboolean RopeBottomDrawAttached(struct client_entity_s* self, centity_t* 
 	VectorSet(self->r.endpos, owner->origin[0], owner->origin[1], owner->origin[2] + 8.0f);
 
 	// Find the vector pointing down through the upper portion of the rope from the connect point of the rope to the player.
-	vec3_t c_down;
-	VectorSubtract(self->direction, owner->origin, c_down);
-	VectorNormalize(c_down);
+	vec3_t dir_down;
+	VectorSubtract(self->direction, owner->origin, dir_down);
+	VectorNormalize(dir_down);
 
 	// Set through the curve till we find this segment's position in it.
 	for (int i = 0; i <= self->SpawnDelay; i++)
@@ -140,10 +140,10 @@ static qboolean RopeBottomDrawAttached(struct client_entity_s* self, centity_t* 
 
 		// Find the angle increment for this segment.
 		vec3_t c_vec;
-		VectorScale(c_down, (float)i / (ROPE_BOTTOM_SEGMENTS + 1.0f) / 2.0f, c_vec);
+		VectorScale(dir_down, (float)i / (ROPE_BOTTOM_SEGMENTS + 1.0f) / 2.0f, c_vec);
 
 		// Get the new vector.
-		VectorAdd(c_vec, vec, c_vec);
+		Vec3AddAssign(diff, c_vec);
 
 		// Find where this segment will end.
 		VectorMA(self->r.startpos, c_length, c_vec, self->r.endpos);
@@ -157,9 +157,9 @@ static qboolean RopeBottomDrawAttached(struct client_entity_s* self, centity_t* 
 
 #pragma endregion
 
-#pragma region ========================== UNATTACHED ROPE SEGMENTS ==========================
+#pragma region ========================== UNATTACHED ROPE ==========================
 
-static qboolean RopeTopDraw(struct client_entity_s* self, centity_t* owner)
+static qboolean RopeUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXRopeTopDraw' in original logic.
 {
 	const centity_t* end = (centity_t*)self->extra;
 	const centity_t* grab = &fxi.server_entities[self->LifeTime];
@@ -195,15 +195,15 @@ static qboolean RopeTopDraw(struct client_entity_s* self, centity_t* owner)
 	const float lerp = new_time - floorf(new_time); //mxd. (int) -> floorf().
 
 	// Find the difference in position for lerping.
-	vec3_t diff_pos;
-	VectorSubtract(self->endpos, self->startpos, diff_pos);
+	vec3_t diff;
+	VectorSubtract(self->endpos, self->startpos, diff);
 
 	// Now apply the lerp value to get the new endpos.
-	VectorMA(self->startpos, lerp, diff_pos, self->r.endpos);
+	VectorMA(self->startpos, lerp, diff, self->r.endpos);
 
 	// Get our tile rate.
-	VectorSubtract(self->origin, self->r.endpos, diff_pos);
-	self->r.tile = VectorLength(diff_pos) / ROPE_SEGMENT_LENGTH;
+	VectorSubtract(self->origin, self->r.endpos, diff);
+	self->r.tile = VectorLength(diff) / ROPE_SEGMENT_LENGTH;
 
 	// Store for lerping.
 	self->lastThinkTime = fx_time;
@@ -249,8 +249,8 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 		VectorCopy(rope->startpos, rope->endpos);
 		VectorCopy(top, rope->direction);
 
-		rope->AddToView = RopeTopDraw;
-		rope->Update = RopeTopDraw;
+		rope->AddToView = RopeUpdate;
+		rope->Update = RopeUpdate;
 
 		AddEffect(NULL, rope);
 	}
@@ -270,15 +270,15 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 		VectorCopy(top, rope_top->direction);
 		VectorCopy(top, rope_top->r.startpos);
 
-		vec3_t vec;
-		VectorSubtract(owner->origin, end_pos, vec);
-		rope_top->r.tile = VectorLength(vec);
+		vec3_t diff;
+		VectorSubtract(owner->origin, end_pos, diff);
+		rope_top->r.tile = VectorLength(diff);
 
-		rope_top->AddToView = RopeTopDrawAttached;
-		rope_top->Update = RopeCheckToHide;
+		rope_top->AddToView = RopeTopAttachedAddToView;
+		rope_top->Update = RopeAttachedUpdate;
 
 		AddEffect(owner, rope_top);
-		RopeTopDrawAttached(rope_top, owner);
+		RopeTopAttachedAddToView(rope_top, owner);
 
 		// Middle of the rope.
 		client_entity_t* rope_mid = ClientEntity_new(FX_ROPE, CEF_OWNERS_ORIGIN, origin, NULL, 1000);
@@ -292,11 +292,11 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 		rope_mid->LifeTime = grab_id;
 		rope_mid->SpawnInfo = fx_time + 1000;
 
-		rope_mid->AddToView = RopeMiddleDrawAttached;
-		rope_mid->Update = RopeCheckToHide;
+		rope_mid->AddToView = RopeMiddleAttachedAddToView;
+		rope_mid->Update = RopeAttachedUpdate;
 
 		AddEffect(owner, rope_mid);
-		RopeMiddleDrawAttached(rope_mid, owner);
+		RopeMiddleAttachedAddToView(rope_mid, owner);
 
 		// Bottom of the rope.
 		for (int i = 0; i < (int)ROPE_BOTTOM_SEGMENTS; i++)
@@ -324,11 +324,11 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 
 			VectorCopy(top, rope_bottom->direction);
 
-			rope_bottom->AddToView = RopeBottomDrawAttached;
-			rope_bottom->Update = RopeCheckToHide;
+			rope_bottom->AddToView = RopeBottomAttachedAddToView;
+			rope_bottom->Update = RopeAttachedUpdate;
 
 			AddEffect(owner, rope_bottom);
-			RopeBottomDrawAttached(rope_bottom, owner);
+			RopeBottomAttachedAddToView(rope_bottom, owner);
 		}
 	}
 }
