@@ -49,10 +49,10 @@ void PreCacheRedrainSFX(void) //mxd
 }
 
 // Thinker for the explosion, just fades the light.
-static qboolean RedRainDLightUpdate(client_entity_t* dlight, centity_t* owner) //mxd. Named 'FXRedRainDLightThink' in original logic.
+static qboolean RedRainDLightUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXRedRainDLightThink' in original logic.
 {
-	dlight->dlight->intensity -= 10.0f;
-	return dlight->dlight->intensity > 0.0f;
+	self->dlight->intensity -= 10.0f;
+	return self->dlight->intensity > 0.0f;
 }
 
 static qboolean RedRainCloudUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'RedRainExplosionThink' in original logic.
@@ -80,11 +80,11 @@ static qboolean RedRainCloudUpdate(client_entity_t* self, centity_t* owner) //mx
 
 	const float radius = ((self->SpawnInfo == 1) ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS); //mxd
 
-	vec3_t dir;
-	AngleVectors(self->r.angles, dir, NULL, NULL);
+	vec3_t forward;
+	AngleVectors(self->r.angles, forward, NULL, NULL);
 
 	vec3_t target_pos;
-	VectorMA(self->direction, radius * 1.5f, dir, target_pos);
+	VectorMA(self->direction, radius * 1.5f, forward, target_pos);
 
 	vec3_t random_vect;
 	VectorRandomSet(random_vect, radius);
@@ -95,7 +95,7 @@ static qboolean RedRainCloudUpdate(client_entity_t* self, centity_t* owner) //mx
 	VectorSubtract(target_pos, self->r.origin, diff_pos);
 
 	// Average this velocity with the current one.
-	VectorAdd(self->velocity, diff_pos, diff_pos);
+	Vec3AddAssign(self->velocity, diff_pos);
 	VectorScale(diff_pos, 0.5f, self->velocity);
 
 	return true;
@@ -171,16 +171,16 @@ static void SpawnRedRainClouds(const vec3_t impact_pos, const vec3_t rain_pos, c
 }
 
 // This is a delayed effect which creates a splash out of red sparks.
-static qboolean RedRainSplashThink(client_entity_t* splash, centity_t* owner)
+static qboolean RedRainSplashUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXRedRainSplashThink' in original logic.
 {
-	client_entity_t* mist = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, splash->r.origin, NULL, 500);
+	client_entity_t* mist = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, self->r.origin, NULL, 500);
 	AddEffect(NULL, mist);
 
-	const int sparktype = ((splash->SpawnInfo == 1) ? PART_16x16_SPARK_G : PART_16x16_SPARK_R); // Green spark when powered.
+	const int spark_type = ((self->SpawnInfo == 1) ? PART_16x16_SPARK_G : PART_16x16_SPARK_R); // Green spark when powered.
 
 	for (int i = 0; i < 4; i++)
 	{
-		client_particle_t* spark = ClientParticle_new(sparktype, color_white, 500);
+		client_particle_t* spark = ClientParticle_new(spark_type, color_white, 500);
 
 		VectorSet(spark->velocity, flrand(-48.0f, 48.0f), flrand(-48.0f, 48.0f), flrand(48.0f, 96.0f));
 		spark->acceleration[2] = -PARTICLE_GRAVITY * 3.0f;
@@ -194,35 +194,33 @@ static qboolean RedRainSplashThink(client_entity_t* splash, centity_t* owner)
 }
 
 // The drops need to update as they're added to the view, because velocity doesn't update the sprite line's start and endpoint.
-static qboolean RedRainDropAddToView(client_entity_t* drop, centity_t* owner) //mxd. Named 'FXRedRainDropUpdate' in original logic.
+static qboolean RedRainDropAddToView(client_entity_t* self, centity_t* owner) //mxd. Named 'FXRedRainDropUpdate' in original logic.
 {
 	// Make sure that the top of the drop doesn't go higher that the spawn height.
-	drop->r.startpos[2] = min(drop->SpawnData, drop->r.origin[2] + RAIN_HEIGHT);
-	drop->r.endpos[2] = drop->r.origin[2] - RAIN_HEIGHT;
+	self->r.startpos[2] = min(self->SpawnData, self->r.origin[2] + RAIN_HEIGHT);
+	self->r.endpos[2] = self->r.origin[2] - RAIN_HEIGHT;
 
 	return true; //mxd. Returns 'false' in original logic.
 }
 
 // This constantly starts new drops up at the top. It also spawns a splash, which is set to go off at the appropriate fall time.
-static qboolean RedRainDropSpawnerUpdate(client_entity_t* rain, centity_t* owner) //mxd. Named 'FXRedRainThink' in original logic.
+static qboolean RedRainDropSpawnerUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXRedRainThink' in original logic.
 {
-	if (rain->nextEventTime <= fx_time)
+	if (self->nextEventTime <= fx_time)
 		return false; // In case we lose the packet that tells us to remove.
 
-	if (rain->SpawnData < 0.0f)
-		rain->SpawnData = min(0.0f, rain->SpawnData + 8.0f);
+	if (self->SpawnData < 0.0f)
+		self->SpawnData = min(0.0f, self->SpawnData + 8.0f);
 
 	if (owner->current.effects & EF_DISABLE_EXTRA_FX)
 		return true;
 
-	const float radius = ((rain->SpawnInfo == 1) ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS);
-	const float width = ((rain->SpawnInfo == 1) ? POWER_RAIN_WIDTH : RED_RAIN_WIDTH);
+	const float radius = ((self->SpawnInfo == 1) ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS);
+	const float width = ((self->SpawnInfo == 1) ? POWER_RAIN_WIDTH : RED_RAIN_WIDTH);
 
 	for (int i = 0; i < NUM_DROPS; i++)
 	{
-		vec3_t origin;
-		VectorSet(origin, flrand(-radius, radius), flrand(-radius, radius), rain->SpawnData + flrand(-8.0f, 8.0f));
-		Vec3AddAssign(rain->origin, origin);
+		vec3_t origin = VEC3_INITA(self->origin, flrand(-radius, radius), flrand(-radius, radius), self->SpawnData + flrand(-8.0f, 8.0f));
 
 		trace_t trace;
 		const int duration = GetFallTime(origin, RAIN_INITIAL_VELOCITY, -PARTICLE_GRAVITY, DROP_RADIUS, 3.0f, &trace);
@@ -231,7 +229,7 @@ static qboolean RedRainDropSpawnerUpdate(client_entity_t* rain, centity_t* owner
 
 		drop->radius = RAIN_HEIGHT;
 		drop->r.model = &rain_models[3]; // redraindrop sprite.
-		drop->r.frame = rain->SpawnInfo;
+		drop->r.frame = self->SpawnInfo;
 		drop->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		drop->r.spriteType = SPRITE_LINE;
 		drop->r.scale = width;
@@ -242,7 +240,7 @@ static qboolean RedRainDropSpawnerUpdate(client_entity_t* rain, centity_t* owner
 		drop->r.endpos[2] -= RAIN_HEIGHT;
 		drop->velocity[2] = RAIN_INITIAL_VELOCITY;
 
-		drop->SpawnInfo = rain->SpawnInfo;
+		drop->SpawnInfo = self->SpawnInfo;
 		drop->SpawnData = origin[2]; // This allows the drop to remember its top position, so the top doesn't go higher than it.
 		drop->AddToView = RedRainDropAddToView;
 
@@ -254,8 +252,8 @@ static qboolean RedRainDropSpawnerUpdate(client_entity_t* rain, centity_t* owner
 
 			client_entity_t* splash = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE, origin, NULL, duration);
 
-			splash->SpawnInfo = rain->SpawnInfo;
-			splash->Update = RedRainSplashThink;
+			splash->SpawnInfo = self->SpawnInfo;
+			splash->Update = RedRainSplashUpdate;
 
 			AddEffect(NULL, splash);
 		}
@@ -298,26 +296,26 @@ void FXRedRain(centity_t* owner, const int type, int flags, vec3_t origin)
 }
 
 // The red rain projectile's trail of red sparks.
-static qboolean RedRainMissileThink(client_entity_t* missile, centity_t* owner)
+static qboolean RedRainMissileUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXRedRainMissileThink' in original logic.
 {
 	vec3_t diff;
-	VectorSubtract(missile->r.origin, missile->origin, diff);
+	VectorSubtract(self->r.origin, self->origin, diff);
 	Vec3ScaleAssign(1.0f / NUM_TRAIL_PARTICLES, diff);
 
 	vec3_t cur_pos = { 0 };
-	const qboolean powerup = (missile->SpawnInfo == 1); //mxd
+	const qboolean powerup = (self->SpawnInfo == 1); //mxd
 
 	for (int i = 0; i < NUM_TRAIL_PARTICLES; i++)
 	{
 		vec3_t origin;
-		VectorRandomCopy(missile->origin, origin, PARTICLE_OFFSET);
+		VectorRandomCopy(self->origin, origin, PARTICLE_OFFSET);
 		Vec3AddAssign(cur_pos, origin);
 
 		client_entity_t* ce = ClientEntity_new(-1, 0, origin, NULL, 500);
 
 		ce->radius = 16.0f;
 		ce->r.model = &rain_models[powerup ? 4 : 0]; // spark_green sprite when powered, spark_red when not.
-		ce->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		ce->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		ce->d_scale = 2.0f;
 		ce->d_alpha = -2.2f;
 
@@ -327,7 +325,7 @@ static qboolean RedRainMissileThink(client_entity_t* missile, centity_t* owner)
 	}
 
 	// Remember for even spread of particles.
-	VectorCopy(missile->r.origin, missile->origin);
+	VectorCopy(self->r.origin, self->origin);
 
 	return true;
 }
@@ -354,8 +352,7 @@ void FXRedRainMissile(centity_t* owner, const int type, const int flags, vec3_t 
 	Vec3ScaleAssign(arrow_speed, missile->velocity);
 
 	vec3_t temp;
-	VectorCopy(missile->velocity, temp);
-	VectorNormalize(temp);
+	VectorNormalize2(missile->velocity, temp);
 	AnglesFromDir(temp, missile->r.angles);
 
 	missile->radius = 32.0f;
@@ -373,7 +370,7 @@ void FXRedRainMissile(centity_t* owner, const int type, const int flags, vec3_t 
 	}
 
 	missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
-	missile->Update = RedRainMissileThink;
+	missile->Update = RedRainMissileUpdate;
 
 	AddEffect(owner, missile);
 }
