@@ -29,7 +29,7 @@ void PreCacheItemWeapons(void)
 	weapon_models[6] = fxi.RegisterModel("models/items/weapons/firewall/tris.fm");	// ITEM_WEAPON_FIREWALL
 }
 
-static qboolean WeaponPickupThink(struct client_entity_s* self, centity_t* owner)
+static qboolean WeaponPickupUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXWeaponPickupThink' in original logic.
 {
 	// Rotate and bob.
 	const int step = fx_time - self->nextThinkTime; //mxd
@@ -129,7 +129,7 @@ void FXWeaponPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	ce->r.skinnum = ((tag == ITEM_WEAPON_PHOENIXBOW) ? 1 : 0);
 
 	ce->SpawnData = GetPickupBobPhase(origin); //mxd
-	ce->Update = WeaponPickupThink;
+	ce->Update = WeaponPickupUpdate;
 
 	AddEffect(owner, ce);
 }
