@@ -15,7 +15,7 @@
 #define SH_MAX_TRAIL_SCALE			8.0f //mxd
 #define SH_TRAIL_SCALE_INCREMENT	0.35f //mxd
 
-static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SpellHandsTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSpellHandsThink' in original logic.
 {
 #define SH_PARTICLE_DURATION	400 //mxd
 
@@ -37,11 +37,8 @@ static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 		return true;
 
 	// Calculate start and end positions of the trail.
-	vec3_t trail_start;
-	VectorCopy(owner->referenceInfo->oldReferences[self->refPoint].placement.origin, trail_start);
-
-	vec3_t trail_end;
-	VectorCopy(owner->referenceInfo->references[self->refPoint].placement.origin, trail_end);
+	const vec3_t trail_start = VEC3_INIT(owner->referenceInfo->oldReferences[self->refPoint].placement.origin);
+	const vec3_t trail_end = VEC3_INIT(owner->referenceInfo->references[self->refPoint].placement.origin);
 
 	// Create a rotation matrix.
 	matrix3_t rotation;
@@ -137,7 +134,7 @@ void FXSpellHands(centity_t* owner, const int type, const int flags, vec3_t orig
 		trail->refPoint = p;
 		trail->Scale = 3.0f; //mxd
 		trail->AddToView = LinkedEntityUpdatePlacement;
-		trail->Update = SpellHandsThink;
+		trail->Update = SpellHandsTrailUpdate;
 
 		AddEffect(owner, trail);
 	}
