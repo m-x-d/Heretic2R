@@ -53,13 +53,13 @@ void FXSmoke(const vec3_t origin, const float scale, const float range)
 	SpawnSmoke(origin, scale, range, color_white.c); //mxd
 }
 
-static qboolean EnvSmokeSpawner(struct client_entity_s* self, centity_t* owner)
+static qboolean EnvSmokeSpawnerUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSmokeSpawner' in original logic.
 {
 	FXSmoke(self->r.origin, self->r.scale, self->Scale);
 	return true;
 }
 
-static qboolean EnvSmokeSpawner2(struct client_entity_s* self, centity_t* owner)
+static qboolean EnvTimedSmokeSpawnerUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSmokeSpawner2' in original logic.
 {
 	if (self->LifeTime-- > 0)
 	{
@@ -74,17 +74,17 @@ static qboolean EnvSmokeSpawner2(struct client_entity_s* self, centity_t* owner)
 
 void FXEnvSmoke(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	flags |= CEF_NO_DRAW | CEF_NOMOVE;
+	flags |= (CEF_NO_DRAW | CEF_NOMOVE);
 	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 17);
 
-	if (flags & CEF_FLAG6)
+	if (flags & CEF_FLAG6) // Used when burning entity was doused --mxd.
 	{
 		// Just a hiss and steam.
 		FXSmoke(origin, flrand(0.5f, 1.0f), flrand(32.0f, 64.0f));
 		fxi.S_StartSound(origin, -1, CHAN_AUTO, smoke_sound, 1.0f, ATTN_NORM, 0.0f);
 
 		self->LifeTime = 33;
-		self->Update = EnvSmokeSpawner2;
+		self->Update = EnvTimedSmokeSpawnerUpdate;
 
 		AddEffect(NULL, self);
 	}
@@ -102,7 +102,7 @@ void FXEnvSmoke(centity_t* owner, const int type, int flags, vec3_t origin)
 		self->Scale = maxrange;
 		self->r.scale = 32.0f / (float)scale;
 		self->updateTime = wait * 1000;
-		self->Update = EnvSmokeSpawner;
+		self->Update = EnvSmokeSpawnerUpdate;
 
 		AddEffect(owner, self);
 	}
