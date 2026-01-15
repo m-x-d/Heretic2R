@@ -17,7 +17,7 @@ void PreCacheSpoo(void)
 	spoo_models[1] = fxi.RegisterModel("sprites/fx/spoo2.sp2");
 }
 
-static qboolean SpooTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SpooTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSpooTrailThink' in original logic.
 {
 	const int count = GetScaledCount(8, 0.85f);
 
@@ -27,7 +27,7 @@ static qboolean SpooTrailThink(struct client_entity_s* self, centity_t* owner)
 
 		trail->radius = 20.0f;
 		trail->r.model = &spoo_models[irand(0, 1)];
-		trail->r.flags = RF_TRANSLUCENT | RF_FULLBRIGHT;
+		trail->r.flags = (RF_TRANSLUCENT | RF_FULLBRIGHT);
 		trail->r.scale = 0.65f;
 		trail->d_scale = flrand(-4.0f, -3.5f);
 		trail->d_alpha = -2.0f;
@@ -52,10 +52,10 @@ void FXSpoo(centity_t* owner, const int type, const int flags, vec3_t origin)
 
 	trail->flags |= CEF_NO_DRAW;
 	VectorCopy(origin, trail->startpos);
-	trail->Update = SpooTrailThink;
+	trail->Update = SpooTrailUpdate;
 
 	AddEffect(owner, trail);
-	SpooTrailThink(trail, owner);
+	SpooTrailUpdate(trail, owner);
 }
 
 void FXSpooSplat(centity_t* owner, int type, const int flags, vec3_t origin)
@@ -79,7 +79,7 @@ void FXSpooSplat(centity_t* owner, int type, const int flags, vec3_t origin)
 
 		VectorRandomCopy(dir, trail->velocity, 16.0f);
 		VectorNormalize(trail->velocity);
-		VectorScale(trail->velocity, flrand(100.0f, 200.0f), trail->velocity);
+		Vec3ScaleAssign(flrand(100.0f, 200.0f), trail->velocity);
 
 		VectorSet(trail->acceleration, 0.0f, 0.0f, -128.0f);
 
