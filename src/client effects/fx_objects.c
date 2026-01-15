@@ -34,6 +34,8 @@ void PreCacheBarrelExplodeSFX(void) //mxd
 // Create Effect FX_BARREL_EXPLODE
 void FXBarrelExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
+	static const paletteRGBA_t explosion_color = { .c = 0xff00ffff };
+
 	// Create three smaller explosion spheres.
 	for (int i = 0; i < BARREL_EXPLODE_BALLS; i++)
 	{
@@ -53,8 +55,8 @@ void FXBarrelExplode(centity_t* owner, const int type, const int flags, vec3_t o
 
 	explosion->radius = 128.0f;
 	explosion->r.model = &explosion_models[0]; // Explosion model.
-	explosion->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
-	explosion->flags |= CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA;
+	explosion->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
+	explosion->flags |= (CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA);
 	explosion->alpha = 0.1f;
 	explosion->r.scale = 0.1f;
 	explosion->d_alpha = 3.0f;
@@ -64,21 +66,20 @@ void FXBarrelExplode(centity_t* owner, const int type, const int flags, vec3_t o
 	explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
 	explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
 
-	const paletteRGBA_t color = { .c = 0xff00ffff };
-	explosion->dlight = CE_DLight_new(color, 150.0f, 0.0f);
+	explosion->dlight = CE_DLight_new(explosion_color, 150.0f, 0.0f);
 	explosion->Update = PhoenixExplosionBallThink;
 	AddEffect(NULL, explosion);
 
 	// Add some glowing blast particles.
-	vec3_t dir = { 0.0f, 0.0f, 1.0f };
-	VectorScale(dir, BARREL_EXPLODE_SPEED, dir);
+	vec3_t dir;
+	VectorScale(vec3_up, BARREL_EXPLODE_SPEED, dir);
 
 	for (int i = 0; i < BARREL_EXPLODE_BITS; i++)
 	{
-		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color, 2000);
+		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), explosion_color, 2000);
 
 		VectorRandomSet(spark->velocity, BARREL_EXPLODE_SPEED);
-		VectorAdd(spark->velocity, dir, spark->velocity);
+		Vec3AddAssign(dir, spark->velocity);
 		spark->acceleration[2] = BARREL_EXPLODE_GRAVITY;
 
 		spark->scale = BARREL_EXPLODE_SCALE;
@@ -94,7 +95,7 @@ void FXBarrelExplode(centity_t* owner, const int type, const int flags, vec3_t o
 
 	halo->radius = 128.0f;
 	halo->r.model = &explosion_models[1]; // Halo sprite.
-	halo->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	halo->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 	halo->r.frame = 1;
 	halo->r.scale = 2.0f;
 	halo->d_alpha = -4.0f;
