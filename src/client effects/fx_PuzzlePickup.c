@@ -1,5 +1,5 @@
 //
-// fx_PuzzlePickup.c
+// fx_PuzzlePickup.c -- Named 'fx_pickuppuzzle.c' in original logic --mxd.
 //
 // Copyright 1998 Raven Software
 //
@@ -56,7 +56,7 @@ void PreCachePuzzleItems(void)
 	pickup_halo_model = fxi.RegisterModel("sprites/Spells/bluball.sp2"); //mxd
 }
 
-static qboolean PuzzlePickupThink(struct client_entity_s* self, centity_t* owner)
+static qboolean PuzzlePickupUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXPuzzlePickupThink' in original logic.
 {
 	VectorCopy(owner->origin, self->r.origin); //mxd. Use interpolated origin (to make items dropped by Drop_Item() fly smoothly).
 
@@ -107,7 +107,7 @@ void FXPuzzlePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	ce->puzzle_pickup_tag = tag; //mxd
 	ce->SpawnData = bob_phase;
-	ce->Update = PuzzlePickupThink;
+	ce->Update = PuzzlePickupUpdate;
 
 	AddEffect(owner, ce);
 
@@ -122,7 +122,7 @@ void FXPuzzlePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	halo->puzzle_pickup_tag = tag;
 	halo->SpawnData = bob_phase;
-	halo->Update = PuzzlePickupThink;
+	halo->Update = PuzzlePickupUpdate;
 
 	AddEffect(owner, halo);
 }
