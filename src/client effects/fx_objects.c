@@ -67,7 +67,7 @@ void FXBarrelExplode(centity_t* owner, const int type, const int flags, vec3_t o
 	explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
 
 	explosion->dlight = CE_DLight_new(explosion_color, 150.0f, 0.0f);
-	explosion->Update = PhoenixExplosionBallThink;
+	explosion->Update = PhoenixExplosionBallUpdate;
 	AddEffect(NULL, explosion);
 
 	// Add some glowing blast particles.

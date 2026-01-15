@@ -52,8 +52,10 @@ void PreCachePhoenixExplodeSFX(void) //mxd
 
 #pragma region ========================== PHOENIX EXPLOSION ==========================
 
-static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
+static qboolean PhoenixMissileUpdate(client_entity_t* missile, centity_t* owner) //mxd. Named 'FXPhoenixMissileThink' in original logic.
 {
+	static const paletteRGBA_t light_color = { .r = 0xff, .g = 0x7f, .b = 0x00, .a = 0xe5 };
+
 	int duration;
 
 	if (R_DETAIL == DETAIL_LOW)
@@ -67,29 +69,25 @@ static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 	vec3_t angles;
 	VectorScale(missile->r.angles, RAD_TO_ANGLE, angles);
 
-	vec3_t fwd;
+	vec3_t forward;
 	vec3_t right;
-	AngleVectors(angles, fwd, right, NULL);
-	VectorScale(fwd, -4.0f * FIRETRAIL_SPEED, fwd);
-	VectorScale(right, FIRETRAIL_SPEED, right);
+	AngleVectors(angles, forward, right, NULL);
+	Vec3ScaleAssign(-4.0f * FIRETRAIL_SPEED, forward);
+	Vec3ScaleAssign(FIRETRAIL_SPEED, right);
 
 	// Throw smoke to each side, alternating.
 	const float side = ((missile->LifeTime-- & 1) ? 1.0f : -1.0f); //mxd. 1.0 - right, -1.0 - left.
-
-	vec3_t smoke_origin;
-	VectorSet(smoke_origin,
+	const vec3_t smoke_origin = VEC3_INITA(missile->origin, 
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
 		flrand(-SMOKETRAIL_RADIUS / 2.0f, SMOKETRAIL_RADIUS / 2.0f));
-
-	VectorAdd(smoke_origin, missile->origin, smoke_origin);
 
 	client_entity_t* smoke = ClientEntity_new(-1, CEF_DONT_LINK, smoke_origin, NULL, duration);
 
 	smoke->radius = 64.0f; //BUGFIX: 128.0 for the left side in original version. Why?..
 	smoke->r.model = &phoenix_models[0]; // steam_add sprite.
-	smoke->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	smoke->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS;
+	smoke->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
+	smoke->flags |= (CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS);
 	smoke->alpha = SMOKETRAIL_ALPHA;
 	smoke->r.scale = SMOKETRAIL_SCALE;
 	VectorScale(right, 2.0f * side, smoke->velocity);
@@ -101,7 +99,6 @@ static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 	// Add fire to the tail. Attach it to the smoke because it doesn't get out of the fx radius so quickly.
 	for (int i = 0; i < FIRETRAIL_PARTS; i++)
 	{
-		const paletteRGBA_t light_color = { .r = 0xff, .g = 0x7f, .b = 0x00, .a = 0xe5 };
 		client_particle_t* flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), light_color, duration);
 
 		VectorSet(flame->origin,
@@ -117,14 +114,14 @@ static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 			flrand(-FIRETRAIL_SPEED, FIRETRAIL_SPEED),
 			flrand(-1.0f, 1.0f));
 
-		// Make the fire shoot out the back and to the side
-		VectorAdd(flame->velocity, fwd, flame->velocity);
+		// Make the fire shoot out the back and to the side.
+		Vec3AddAssign(forward, flame->velocity);
 
 		// Alternate left and right side of phoenix.
 		if (i & 1)
-			VectorAdd(flame->velocity, right, flame->velocity);
+			Vec3AddAssign(right, flame->velocity);
 		else
-			VectorSubtract(flame->velocity, right, flame->velocity);
+			Vec3SubtractAssign(right, flame->velocity);
 
 		flame->acceleration[2] = FIRETRAIL_ACCEL;
 		flame->d_scale = flrand(-15.0f, -10.0f);
@@ -153,7 +150,7 @@ static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 			missile->r.frame = 3;
 		}
 
-		missile->Scale = -1;
+		missile->Scale = -1.0f;
 		missile->lastThinkTime = fx_time + (4 * 50);
 	}
 	else
@@ -167,7 +164,7 @@ static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 	return true;
 }
 
-static qboolean PhoenixExplosionSmallBallThink(client_entity_t* ball, centity_t* owner) //mxd. Moved above FXPhoenixExplosionBallThink.
+static qboolean PhoenixExplosionSmallBallUpdate(client_entity_t* ball, centity_t* owner) //mxd. Named 'FXPhoenixExplosionSmallBallThink' in original logic. Moved above FXPhoenixExplosionBallThink.
 {
 	if (fx_time - ball->startTime > EXPLODE_TIME_MAX)
 		return false;
@@ -182,10 +179,10 @@ static qboolean PhoenixExplosionSmallBallThink(client_entity_t* ball, centity_t*
 	return true;
 }
 
-// This is also exported for use in FXBarrelExplode.
-qboolean PhoenixExplosionBallThink(client_entity_t* ball, centity_t* owner)
+// Exported for use in FXBarrelExplode().
+qboolean PhoenixExplosionBallUpdate(client_entity_t* ball, centity_t* owner) //mxd. Named 'FXPhoenixExplosionBallThink' in original logic.
 {
-	if (!PhoenixExplosionSmallBallThink(ball, owner))
+	if (!PhoenixExplosionSmallBallUpdate(ball, owner))
 		return false;
 
 	if (ball->dlight->intensity > 0.0f)
@@ -194,7 +191,7 @@ qboolean PhoenixExplosionBallThink(client_entity_t* ball, centity_t* owner)
 	return true;
 }
 
-static qboolean PhoenixExplosionBirdThink(client_entity_t* bird, centity_t* owner)
+static qboolean PhoenixExplosionBirdUpdate(client_entity_t* bird, centity_t* owner) //mxd. Named 'FXPhoenixExplosionBirdThink' in original logic.
 {
 	bird->LifeTime--;
 
@@ -212,7 +209,7 @@ static qboolean PhoenixExplosionBirdThink(client_entity_t* bird, centity_t* owne
 	// Spawn another trail bird.
 	vec3_t pos;
 	VectorRandomSet(pos, 8.0f);
-	VectorAdd(pos, bird->r.origin, pos);
+	Vec3AddAssign(bird->r.origin, pos);
 
 	client_entity_t* new_bird = ClientEntity_new(-1, bird->r.flags, pos, NULL, duration);
 
@@ -231,19 +228,19 @@ static qboolean PhoenixExplosionBirdThink(client_entity_t* bird, centity_t* owne
 	return true;
 }
 
-// This is also exported for use in FXBarrelExplode.
+// Exported for use in FXBarrelExplode().
 client_entity_t* CreatePhoenixSmallExplosion(const vec3_t ball_origin) //TODO: rename to FXPhoenixCreateSmallExplosion?
 {
 	client_entity_t* sub_explosion = ClientEntity_new(FX_WEAPON_PHOENIXEXPLODE, CEF_BROADCAST, ball_origin, NULL, 17);
 
 	sub_explosion->radius = 128.0f;
 	sub_explosion->r.model = &phoenix_models[4]; // Inner explosion model.
-	sub_explosion->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	sub_explosion->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 	sub_explosion->startTime = fx_time;
 	sub_explosion->lastThinkTime = fx_time;
 	sub_explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
 	sub_explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
-	sub_explosion->Update = PhoenixExplosionSmallBallThink;
+	sub_explosion->Update = PhoenixExplosionSmallBallUpdate;
 
 	return sub_explosion;
 }
@@ -252,18 +249,20 @@ client_entity_t* CreatePhoenixSmallExplosion(const vec3_t ball_origin) //TODO: r
 
 #pragma region ========================== POWERED PHOENIX EXPLOSION ==========================
 
-static qboolean PhoenixExplosionBirdPowerThink(client_entity_t* bird, centity_t* owner)
+static qboolean PhoenixExplosionPowerBirdUpdate(client_entity_t* bird, centity_t* owner) //mxd. Named 'FXPhoenixExplosionBirdThinkPower' in original logic.
 {
 	bird->LifeTime--;
 	return (bird->LifeTime > 0);
 }
 
-static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, const vec3_t dir)
+static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, const vec3_t dir) //mxd. Named 'FXPhoenixExplodePower' in original logic.
 {
 #define PHOENIXPOWER_NUMTRAILS			11
 #define PHOENIXPOWER_PARTS_PER_TRAIL	8
 #define PHOENIXPOWER_RADIUS				72.0f
 #define PHOENIXPOWER_TRAIL_SCALER		(18.0f / 8.0f) //mxd
+
+	static const paletteRGBA_t light_color = { .c = 0xff00ffff };
 
 	flags |= CEF_OWNERS_ORIGIN;
 
@@ -272,15 +271,14 @@ static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, 
 
 	explosion->radius = 128.0f;
 	explosion->r.model = &phoenix_models[5]; // Outer explosion model.
-	explosion->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	explosion->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 	explosion->flags |= CEF_ADDITIVE_PARTS;
 	explosion->r.scale = 0.1f;
 	explosion->d_alpha = -2.0f / 1.5f;
 	explosion->LifeTime = EXPLODE_LIFETIME;
 
-	const paletteRGBA_t light_color = { .c = 0xff00ffff };
 	explosion->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
-	explosion->Update = PhoenixExplosionBallThink;
+	explosion->Update = PhoenixExplosionBallUpdate;
 
 	AddEffect(NULL, explosion);
 
@@ -293,10 +291,7 @@ static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, 
 		const float cos_val = cosf(angle);
 		const float sin_val = sinf(angle);
 
-		vec3_t phoenix_origin;
-		VectorCopy(origin, phoenix_origin);
-		phoenix_origin[0] += cos_val * PHOENIXPOWER_RADIUS;
-		phoenix_origin[1] += sin_val * PHOENIXPOWER_RADIUS;
+		const vec3_t phoenix_origin = VEC3_INITA(origin, cos_val * PHOENIXPOWER_RADIUS, sin_val * PHOENIXPOWER_RADIUS, 0.0f);
 
 		vec3_t end_pos;
 		VectorCopy(phoenix_origin, end_pos);
@@ -310,7 +305,7 @@ static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, 
 
 		halo->radius = 128.0f;
 		halo->r.model = &phoenix_models[2]; // Halo sprite.
-		halo->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+		halo->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 		halo->r.frame = 1;
 		halo->r.scale = 1.5f;
 		halo->d_alpha = -1.0f;
@@ -340,20 +335,18 @@ static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, 
 		}
 	}
 
-	const float detail_scale = ((R_DETAIL == DETAIL_LOW) ? 1.5f : 2.0f);
-
 	// ...and draw the phoenix rising from the explosion.
 	client_entity_t* phoenix_outer = ClientEntity_new(type, flags, origin, NULL, 100);
 
 	phoenix_outer->radius = 128.0f;
 	phoenix_outer->r.model = &phoenix_models[3]; // Phoenix sprite.
-	phoenix_outer->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	phoenix_outer->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 	VectorScale(dir, 192.0f, phoenix_outer->velocity);
 	phoenix_outer->acceleration[2] = 256.0f;
 	phoenix_outer->d_alpha = -1.5f;
-	phoenix_outer->d_scale = detail_scale;
+	phoenix_outer->d_scale = ((R_DETAIL == DETAIL_LOW) ? 1.5f : 2.0f);
 	phoenix_outer->LifeTime = 6;
-	phoenix_outer->Update = PhoenixExplosionBirdPowerThink;
+	phoenix_outer->Update = PhoenixExplosionPowerBirdUpdate;
 
 	AddEffect(NULL, phoenix_outer);
 
@@ -362,20 +355,22 @@ static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, 
 
 	phoenix_inner->radius = 128.0f;
 	phoenix_inner->r.model = &phoenix_models[3]; // Phoenix sprite.
-	phoenix_inner->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	phoenix_inner->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 	VectorScale(dir, 192.0f, phoenix_inner->velocity);
 	phoenix_inner->acceleration[2] = 256.0f;
 	phoenix_inner->d_scale = -1.0f / 0.6f;
 	phoenix_inner->LifeTime = 6;
-	phoenix_inner->Update = PhoenixExplosionBirdPowerThink;
+	phoenix_inner->Update = PhoenixExplosionPowerBirdUpdate;
 
 	AddEffect(NULL, phoenix_inner);
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, phoenix_explode_sounds[1], 1.0f, ATTN_NORM, 0.0f);
 }
 
-static qboolean PhoenixMissilePowerThink(client_entity_t* missile, centity_t* owner)
+static qboolean PhoenixMissilePowerUpdate(client_entity_t* missile, centity_t* owner) //mxd. Named 'FXPhoenixMissilePowerThink' in original logic.
 {
+	static const paletteRGBA_t light_color = { .r = 0xff, .g = 0x7f, .b = 0x00, .a = 0xe5 };
+
 	int duration;
 
 	if (R_DETAIL == DETAIL_LOW)
@@ -389,29 +384,25 @@ static qboolean PhoenixMissilePowerThink(client_entity_t* missile, centity_t* ow
 	vec3_t angles;
 	VectorScale(missile->r.angles, RAD_TO_ANGLE, angles);
 
-	vec3_t fwd;
+	vec3_t forward;
 	vec3_t right;
-	AngleVectors(angles, fwd, right, NULL);
-	VectorScale(fwd, -4.0f * FIRETRAIL_SPEED, fwd);
-	VectorScale(right, FIRETRAIL_SPEED, right);
+	AngleVectors(angles, forward, right, NULL);
+	Vec3ScaleAssign(-4.0f * FIRETRAIL_SPEED, forward);
+	Vec3ScaleAssign(FIRETRAIL_SPEED, right);
 
 	// Throw smoke to each side, alternating.
 	const float side = ((missile->LifeTime-- & 1) ? 1.0f : -1.0f); //mxd. 1.0 - right, -1.0 - left.
-
-	vec3_t smoke_origin;
-	VectorSet(smoke_origin,
+	const vec3_t smoke_origin = VEC3_INITA(missile->origin,
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
 		flrand(-SMOKETRAIL_RADIUS / 2.0f, SMOKETRAIL_RADIUS / 2.0f));
-
-	VectorAdd(smoke_origin, missile->origin, smoke_origin);
 
 	client_entity_t* smoke = ClientEntity_new(-1, CEF_DONT_LINK, smoke_origin, NULL, duration);
 
 	smoke->radius = 64.0f;
 	smoke->r.model = &phoenix_models[0]; // steam_add sprite.
-	smoke->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	smoke->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS;
+	smoke->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
+	smoke->flags |= (CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS);
 	smoke->alpha = SMOKETRAIL_ALPHA;
 	smoke->r.scale = SMOKETRAIL_SCALE * 2.5f;
 	VectorScale(right, 2.0f * side, smoke->velocity);
@@ -426,23 +417,22 @@ static qboolean PhoenixMissilePowerThink(client_entity_t* missile, centity_t* ow
 
 	for (int i = 0; i < FIRETRAIL_PARTS; i++)
 	{
-		const paletteRGBA_t light_color = { .r = 0xff, .g = 0x7f, .b = 0x00, .a = 0xe5 };
 		client_particle_t* flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), light_color, duration);
 
 		VectorRandomSet(flame->origin, trail_offset);
-		VectorAdd(missile->origin, flame->origin, flame->origin);
+		Vec3AddAssign(missile->origin, flame->origin);
 		flame->scale = FIRETRAIL_SCALE;
 
 		VectorSet(flame->velocity, flrand(-trail_speed, trail_speed), flrand(-trail_speed, trail_speed), flrand(-1.0f, 1.0f));
 
 		// Make the fire shoot out the back and to the side.
-		VectorAdd(flame->velocity, fwd, flame->velocity);
+		Vec3AddAssign(forward, flame->velocity);
 
-		// Alternate left and right side of phoenix
+		// Alternate left and right side of phoenix.
 		if (i & 1)
-			VectorAdd(flame->velocity, right, flame->velocity);
+			Vec3AddAssign(right, flame->velocity);
 		else
-			VectorSubtract(flame->velocity, right, flame->velocity);
+			Vec3SubtractAssign(right, flame->velocity);
 
 		flame->acceleration[2] = FIRETRAIL_ACCEL;
 		flame->d_scale = flrand(-15.0f, -10.0f);
@@ -468,8 +458,7 @@ void FXPhoenixMissile(centity_t* owner, const int type, const int flags, vec3_t 
 	const float velocity = PHOENIX_ARROW_SPEED * ((flags & CEF_FLAG8) ? 0.5f : 1.0f);
 	Vec3ScaleAssign(velocity, missile->velocity);
 
-	vec3_t dir;
-	VectorCopy(missile->velocity, dir);
+	vec3_t dir = VEC3_INIT(missile->velocity);
 	VectorNormalize(dir);
 	AnglesFromDir(dir, missile->r.angles);
 
@@ -487,15 +476,17 @@ void FXPhoenixMissile(centity_t* owner, const int type, const int flags, vec3_t 
 		missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
 
 	if (flags & CEF_FLAG6)
-		missile->Update = PhoenixMissilePowerThink;
+		missile->Update = PhoenixMissilePowerUpdate;
 	else
-		missile->Update = PhoenixMissileThink;
+		missile->Update = PhoenixMissileUpdate;
 
 	AddEffect(owner, missile);
 }
 
 void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin)
 {
+	static const paletteRGBA_t light_color = { .c = 0xff00ffff };
+
 	vec3_t dir;
 	vec3_t scorch_dir;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_PHOENIXEXPLODE].formatString, dir, scorch_dir);
@@ -549,10 +540,8 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 	explosion->lastThinkTime = fx_time;
 	explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
 	explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
-
-	const paletteRGBA_t light_color = { .c = 0xff00ffff };
 	explosion->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
-	explosion->Update = PhoenixExplosionBallThink;
+	explosion->Update = PhoenixExplosionBallUpdate;
 
 	AddEffect(NULL, explosion);
 
@@ -609,7 +598,7 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 	phoenix->d_alpha = -1.0f;
 	phoenix->d_scale = 1.25f;
 	phoenix->LifeTime = 10;
-	phoenix->Update = PhoenixExplosionBirdThink;
+	phoenix->Update = PhoenixExplosionBirdUpdate;
 
 	AddEffect(NULL, phoenix);
 

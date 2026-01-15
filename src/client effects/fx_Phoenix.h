@@ -8,5 +8,5 @@
 
 #include "Client Effects.h"
 
-extern qboolean PhoenixExplosionBallThink(client_entity_t* ball, centity_t* owner);
+extern qboolean PhoenixExplosionBallUpdate(client_entity_t* ball, centity_t* owner);
 extern client_entity_t* CreatePhoenixSmallExplosion(const vec3_t ball_origin);
