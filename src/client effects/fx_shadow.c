@@ -23,7 +23,7 @@ void PreCacheShadow(void) //mxd. Named 'PrecacheShadow' in original logic.
 	shadow_model = fxi.RegisterModel("models/fx/shadow/tris.fm");
 }
 
-static qboolean ShadowAddToView(struct client_entity_s* self, centity_t* owner)
+static qboolean ShadowAddToView(client_entity_t* self, centity_t* owner)
 {
 	VectorCopy(owner->origin, self->r.origin);
 
@@ -64,7 +64,7 @@ static float GetPlayerShadowAlphaScaler(const centity_t* player) //mxd
 	return alpha_scaler;
 }
 
-static qboolean PlayerShadowAddToView(struct client_entity_s* self, centity_t* owner) //mxd
+static qboolean PlayerShadowAddToView(client_entity_t* self, centity_t* owner) //mxd
 {
 	// Too dark. Show no shadows.
 	if (fxi.cl->cmd.lightlevel < SHADOW_MIN_LIGHTLEVEL)
@@ -82,7 +82,7 @@ static qboolean PlayerShadowAddToView(struct client_entity_s* self, centity_t* o
 	return true;
 }
 
-static qboolean ShadowReferenceAddToView(struct client_entity_s* self, centity_t* owner)
+static qboolean ShadowReferenceAddToView(client_entity_t* self, centity_t* owner)
 {
 	VectorCopy(owner->origin, self->r.origin);
 
@@ -102,7 +102,7 @@ static qboolean ShadowReferenceAddToView(struct client_entity_s* self, centity_t
 	Vec3AddAssign(owner->origin, start_pos);
 
 	// Now trace from the start_pos down.
-	const vec3_t end_pos = { start_pos[0], start_pos[1], start_pos[2] - SHADOW_REF_CHECK_DIST };
+	const vec3_t end_pos = VEC3_INITA(start_pos, 0.0f, 0.0f, -SHADOW_REF_CHECK_DIST);
 
 	// Determine visibility.
 	trace_t trace;
