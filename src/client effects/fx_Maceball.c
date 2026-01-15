@@ -47,7 +47,7 @@ void PreCacheRipperSFX(void) //mxd
 
 #pragma region ========================== MACE BALL ==========================
 
-static qboolean MaceballThink(struct client_entity_s* self, centity_t* owner)
+static qboolean MaceballUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXMaceballThink' in original logic.
 {
 	self->dlight->intensity = 150.0f + cosf((float)fx_time * 0.01f) * 20.0f;
 	self->r.angles[2] += ANGLE_30;
@@ -67,7 +67,7 @@ void FXMaceball(centity_t* owner, const int type, const int flags, vec3_t origin
 	ball->d_scale = BALL_GROWTH;
 	ball->color.c = 0xff00ffff;
 	ball->dlight = CE_DLight_new(ball->color, 150.0f, 0.0f);
-	ball->Update = MaceballThink;
+	ball->Update = MaceballUpdate;
 
 	AddEffect(owner, ball);
 }
@@ -85,13 +85,14 @@ void FXMaceballBounce(centity_t* owner, const int type, const int flags, vec3_t 
 	CrossProduct(up, normal, right);
 
 	client_entity_t* hit_fx = ClientEntity_new(type, flags, origin, NULL, BALL_BOUNCE_LIFETIME);
-	hit_fx->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	hit_fx->flags |= CEF_NO_DRAW | CEF_ADDITIVE_PARTS;
+
+	hit_fx->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
+	hit_fx->flags |= (CEF_NO_DRAW | CEF_ADDITIVE_PARTS);
 	hit_fx->radius = BALL_RADIUS;
 	VectorScale(normal, MACEBALL_SPARK_VEL, hit_fx->velocity); // This velocity is used by the sparks.
 	AddEffect(NULL, hit_fx);
 
-	VectorScale(normal, 8.0f, normal);
+	Vec3ScaleAssign(8.0f, normal);
 
 	// Draw a circle of expanding lines.
 	vec3_t last_vel;
@@ -104,6 +105,7 @@ void FXMaceballBounce(centity_t* owner, const int type, const int flags, vec3_t 
 		cur_yaw += RIPPER_PUFF_ANGLE;
 
 		client_entity_t* ring = ClientEntity_new(type, ring_flags, origin, NULL, 500);
+
 		ring->r.model = &mace_models[2]; // Neon-green sprite.
 		ring->r.frame = 1;
 		ring->r.spriteType = SPRITE_LINE;
@@ -129,13 +131,14 @@ void FXMaceballBounce(centity_t* owner, const int type, const int flags, vec3_t 
 		VectorCopy(ring->velocity2, last_vel);
 
 		// NOW apply the extra directional velocity to force it slightly away from the surface.
-		VectorAdd(ring->velocity, normal, ring->velocity);
-		VectorAdd(ring->velocity2, normal, ring->velocity2);
+		Vec3AddAssign(normal, ring->velocity);
+		Vec3AddAssign(normal, ring->velocity2);
 
 		AddEffect(NULL, ring);
 
 		// Now spawn a particle quick to save against the nasty joints (ugh).
 		client_particle_t* p = ClientParticle_new(PART_16x16_SPARK_G, color_white, 500);
+
 		VectorCopy(ring->r.startpos, p->origin);
 		VectorCopy(ring->velocity, p->velocity);
 		VectorCopy(ring->acceleration, p->acceleration);
@@ -169,6 +172,7 @@ void FXMaceballExplode(centity_t* owner, const int type, const int flags, vec3_t
 
 	// Create an expanding ball of gre.
 	client_entity_t* explosion = ClientEntity_new(type, CEF_DONT_LINK | CEF_ADDITIVE_PARTS, origin, dir, 750);
+
 	explosion->r.model = &mace_models[3]; // Maceball model.
 	explosion->r.flags |= RF_TRANSLUCENT;
 	explosion->r.scale = 0.17f;
@@ -177,6 +181,7 @@ void FXMaceballExplode(centity_t* owner, const int type, const int flags, vec3_t
 	explosion->radius = 64.0f;
 	VectorScale(dir, 8.0f, explosion->velocity);
 	explosion->color = color_white;
+
 	AddEffect(NULL, explosion);
 
 	for (int i = 0; i < 32; i++)
@@ -205,21 +210,20 @@ void FXMaceballExplode(centity_t* owner, const int type, const int flags, vec3_t
 
 #pragma region ========================== RIPPER BALL ==========================
 
-static qboolean RipperExplodeBallThink(struct client_entity_s* self, centity_t* owner)
+static qboolean RipperExplodeBallUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXRipperExplodeBallThink' in original logic.
 {
 	vec3_t diff;
-	vec3_t curpos;
-
 	VectorScale(self->direction, -6.0f, diff);
-	VectorCopy(self->r.origin, curpos);
+
+	vec3_t cur_pos = VEC3_INIT(self->r.origin);
 	float scale = 0.8f;
 
 	for (int i = 0; i < 4; i++)
 	{
-		client_entity_t* trail = ClientEntity_new(FX_WEAPON_RIPPEREXPLODE, 0, curpos, NULL, 500);
+		client_entity_t* trail = ClientEntity_new(FX_WEAPON_RIPPEREXPLODE, 0, cur_pos, NULL, 500);
 
 		trail->r.model = &mace_models[6]; // Green spark sprite.
-		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		VectorCopy(self->velocity, trail->velocity);
 		VectorScale(trail->velocity, -1.0f, trail->acceleration);
 		trail->r.scale = scale;
@@ -230,7 +234,7 @@ static qboolean RipperExplodeBallThink(struct client_entity_s* self, centity_t* 
 
 		AddEffect(NULL, trail);
 
-		VectorAdd(curpos, diff, curpos);
+		Vec3AddAssign(diff, cur_pos);
 		scale -= 0.12f;
 	}
 
@@ -267,7 +271,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 		ripper->r.scale = 0.25f;
 		ripper->r.color = color_white;
 		ripper->radius = 10.0f;
-		ripper->Update = RipperExplodeBallThink;
+		ripper->Update = RipperExplodeBallUpdate;
 
 		// Add to the entity passed in, not the "owner".
 		assert(ball_array[i]);
@@ -281,7 +285,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 
 	halo->r.model = &mace_models[1]; // Halo sprite.
 	halo->r.frame = 1;
-	halo->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	halo->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	halo->radius = 20.0f;
 	halo->r.scale = 0.75f;
 	halo->d_scale = -1.0f;
@@ -294,8 +298,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 	AddEffect(NULL, halo);
 
 	// Draw a circle of expanding lines.
-	vec3_t last_vel;
-	VectorSet(last_vel, RIPPER_RING_VEL, 0.0f, 0.0f);
+	vec3_t last_vel = VEC3_SET(RIPPER_RING_VEL, 0.0f, 0.0f);
 	const int ring_flags = CEF_PULSE_ALPHA | CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS; //mxd
 	cur_yaw = 0.0f;
 
@@ -308,7 +311,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 		ring->r.model = &mace_models[2]; // Neon-green sprite.
 		ring->r.frame = 1;
 		ring->r.spriteType = SPRITE_LINE;
-		ring->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		ring->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		ring->radius = 64.0f;
 		ring->r.scale = 0.5f;
 		ring->d_scale = 32.0f;
@@ -329,8 +332,8 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 		VectorCopy(ring->velocity2, last_vel);
 
 		// NOW apply the extra directional velocity.
-		VectorAdd(ring->velocity, halo->velocity, ring->velocity);
-		VectorAdd(ring->velocity2, halo->velocity, ring->velocity2);
+		Vec3AddAssign(halo->velocity, ring->velocity);
+		Vec3AddAssign(halo->velocity, ring->velocity2);
 
 		AddEffect(NULL, ring);
 
@@ -360,7 +363,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 
 		flash->r.model = &mace_models[4]; // Ballstreak sprite.
 		flash->r.spriteType = SPRITE_LINE;
-		flash->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		flash->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		flash->r.scale = 8.0f;
 		flash->d_scale = -8.0f;
 		flash->alpha = 0.5f;
@@ -375,8 +378,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 		// Draw some flashy bits along the line for thickness.
 		int num = (int)(length / 32.0f);
 
-		vec3_t cur_pos;
-		VectorCopy(caster_pos, cur_pos);
+		vec3_t cur_pos = VEC3_INIT(caster_pos);
 		VectorScale(diff, 1.0f / (float)num, diff);
 
 		num = min(40, num);
@@ -387,7 +389,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 
 			flash->r.model = &mace_models[5]; // Patball sprite.
 			flash->r.frame = 1;
-			flash->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			flash->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 			flash->r.scale = 0.16f;
 			flash->d_scale = -0.16f;
 			flash->alpha = 0.5f;
@@ -395,7 +397,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 
 			AddEffect(NULL, flash);
 
-			VectorAdd(cur_pos, diff, cur_pos);
+			Vec3AddAssign(diff, cur_pos);
 		}
 	}
 }
