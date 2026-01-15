@@ -22,17 +22,16 @@ void PreCacheSsithraArrow(void) //mxd. Named 'PrecacheSsithraArrow' in original 
 	arrow_models[2] = fxi.RegisterModel("models/objects/projectiles/sitharrow/tris.fm"); // Projectile model.
 }
 
-static qboolean SsithraArrowTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SsithraArrowTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSsithraArrowTrailThink' in original logic.
 {
 	self->updateTime = 20;
-	self->r.angles[ROLL] += 10;
+	self->r.angles[ROLL] += 10.0f;
 
 	if (self->SpawnInfo > 9)
 		self->SpawnInfo--;
 
 	vec3_t trail_vel;
-	VectorCopy(self->velocity, trail_vel);
-	VectorNormalize(trail_vel);
+	VectorNormalize2(self->velocity, trail_vel);
 
 	const int count = GetScaledCount(irand(self->SpawnInfo >> 3, self->SpawnInfo >> 2), 0.8f);
 
@@ -44,7 +43,7 @@ static qboolean SsithraArrowTrailThink(struct client_entity_s* self, centity_t* 
 		{
 			// Powered.
 			trail->r.model = &arrow_models[1]; // fire sprite.
-			trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			trail->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 			trail->r.scale = SSARROW_TRAIL_SCALE + flrand(0.0f, 0.05f);
 
 			VectorRandomCopy(self->r.origin, trail->r.origin, flrand(-8.0f, 8.0f));
@@ -73,7 +72,7 @@ static qboolean SsithraArrowTrailThink(struct client_entity_s* self, centity_t* 
 	return true;
 }
 
-static void DoSsithraArrow(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t velocity)
+static void SpawnSsithraArrow(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t velocity) //mxd. Named 'FXDoSsithraArrow' in original logic.
 {
 	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 
@@ -89,12 +88,12 @@ static void DoSsithraArrow(centity_t* owner, const int type, const int flags, co
 
 	missile->dlight = CE_DLight_new(color_orange, 120.0f, 0.0f);
 	missile->SpawnInfo = 32;
-	missile->Update = SsithraArrowTrailThink;
+	missile->Update = SsithraArrowTrailUpdate;
 
 	AddEffect(owner, missile);
 }
 
-static void DoSsithraArrow2(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t velocity)
+static void SpawnSsithraArrow2(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t velocity) //mxd. Named 'FXDoSsithraArrow2' in original logic.
 {
 	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 
@@ -112,12 +111,12 @@ static void DoSsithraArrow2(centity_t* owner, const int type, const int flags, c
 
 	missile->dlight = CE_DLight_new(color_red, 160.0f, 0.0f);
 	missile->SpawnInfo = 32;
-	missile->Update = SsithraArrowTrailThink;
+	missile->Update = SsithraArrowTrailUpdate;
 
 	AddEffect(owner, missile);
 }
 
-static void SsithraArrowBoom(centity_t* owner, const int type, const int flags, const vec3_t origin, vec3_t direction)
+static void SpawnSsithraArrowExplosion(centity_t* owner, const int type, const int flags, const vec3_t origin, vec3_t direction) //mxd. Named 'FXSsithraArrowBoom' in original logic.
 {
 	Vec3ScaleAssign(32.0f, direction);
 
@@ -154,7 +153,7 @@ static void SsithraArrowBoom(centity_t* owner, const int type, const int flags, 
 	}
 }
 
-static void SsithraArrow2Boom(centity_t* owner, const int type, const int flags, const vec3_t origin, vec3_t direction)
+static void SpawnSsithraArrow2Explosion(centity_t* owner, const int type, const int flags, const vec3_t origin, vec3_t direction) //mxd. Named 'FXSsithraArrow2Boom' in original logic.
 {
 	Vec3ScaleAssign(32.0f, direction);
 
@@ -169,7 +168,7 @@ static void SsithraArrow2Boom(centity_t* owner, const int type, const int flags,
 
 		smoke_puff->radius = 20.0f;
 		smoke_puff->r.model = &arrow_models[1]; // fire sprite.
-		smoke_puff->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		smoke_puff->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		smoke_puff->r.scale = flrand(1.2f, 2.0f);
 		smoke_puff->d_scale = -2.0f;
 		smoke_puff->d_alpha = -0.4f;
@@ -191,7 +190,7 @@ static void SsithraArrow2Boom(centity_t* owner, const int type, const int flags,
 
 	// Clear out cef_flag# stuff, means different stuff to debris.
 	const vec3_t mins = { 2.0f, 2.0f, 2.0f }; // Because SpawnChunks needs a value for bounding box.
-	FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6 | CEF_FLAG7 | CEF_FLAG8), origin, 5, MAT_GREYSTONE, vec3_up, 80000.0f, mins, 1.0f, false);
+	FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6 | CEF_FLAG7 | CEF_FLAG8), origin, 5, MAT_GREYSTONE, vec3_up, 80000.0f, mins, 1.0f, false); //TODO: pass material based on surface hit?
 }
 
 void FXSsithraArrow(centity_t* owner, const int type, const int flags, vec3_t origin)
@@ -203,19 +202,19 @@ void FXSsithraArrow(centity_t* owner, const int type, const int flags, vec3_t or
 	switch (effect)
 	{
 		case FX_SS_MAKE_ARROW:
-			DoSsithraArrow(owner, type, flags, origin, vel);
+			SpawnSsithraArrow(owner, type, flags, origin, vel);
 			break;
 
 		case FX_SS_MAKE_ARROW2:
-			DoSsithraArrow2(owner, type, flags, origin, vel);
+			SpawnSsithraArrow2(owner, type, flags, origin, vel);
 			break;
 
 		case FX_SS_EXPLODE_ARROW:
-			SsithraArrowBoom(owner, type, flags, origin, vel);
+			SpawnSsithraArrowExplosion(owner, type, flags, origin, vel);
 			break;
 
 		case FX_SS_EXPLODE_ARROW2:
-			SsithraArrow2Boom(owner, type, flags, origin, vel);
+			SpawnSsithraArrow2Explosion(owner, type, flags, origin, vel);
 			break;
 
 		default:
