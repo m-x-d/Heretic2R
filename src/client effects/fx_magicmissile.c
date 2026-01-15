@@ -35,11 +35,10 @@ void PreCacheArray(void)
 }
 
 // These need to be converted to particles.
-static qboolean MagicMissileTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean MagicMissileTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXMagicMissileTrailThink' in original logic.
 {
 	vec3_t vel_normal;
-	VectorCopy(self->velocity, vel_normal);
-	VectorNormalize(vel_normal);
+	VectorNormalize2(self->velocity, vel_normal);
 
 	for (int i = 0; i < 2; i++)	// Each cardinal direction.
 	{
@@ -79,13 +78,13 @@ static qboolean MagicMissileTrailThink(struct client_entity_s* self, centity_t* 
 	return true;
 }
 
-static qboolean MagicMissileModelThink(struct client_entity_s* self, centity_t* owner)
+static qboolean MagicMissileUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXMagicMissileModelThink1' in original logic.
 {
 	self->d_scale = 0.0f;
 	self->r.scale = 0.8f;
 
-	self->Update = MagicMissileTrailThink;
-	MagicMissileTrailThink(self, owner);
+	self->Update = MagicMissileTrailUpdate;
+	MagicMissileTrailUpdate(self, owner);
 
 	return true;
 }
@@ -103,10 +102,10 @@ void FXMagicMissile(centity_t* owner, const int type, const int flags, vec3_t or
 	angles[PITCH] = (float)shortpitch * SHORT_TO_ANGLE;
 	angles[ROLL] = 0.0f;
 
-	vec3_t fwd;
+	vec3_t forward;
 	vec3_t right;
 	vec3_t up;
-	AngleVectors(angles, fwd, right, up);
+	AngleVectors(angles, forward, right, up);
 
 	// Add the magic-missile model.
 	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
@@ -115,7 +114,7 @@ void FXMagicMissile(centity_t* owner, const int type, const int flags, vec3_t or
 	missile->r.frame = 1;
 
 	const float speed = MAGICMISSILE_SPEED * ((flags & CEF_FLAG6) ? 0.5f : 1.0f); //mxd
-	VectorScale(fwd, speed, missile->velocity);
+	VectorScale(forward, speed, missile->velocity);
 
 	VectorCopy(angles, missile->r.angles);
 
@@ -123,11 +122,11 @@ void FXMagicMissile(centity_t* owner, const int type, const int flags, vec3_t or
 	VectorMA(up, 2.0f, right, missile->up);
 	VectorScale(missile->up, MISSILE_TRAIL_SPEED, missile->up);
 
-	missile->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+	missile->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD);
 	missile->r.scale = 0.4f;
 	missile->d_scale = 4.0f;
 	missile->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
-	missile->Update = MagicMissileModelThink;
+	missile->Update = MagicMissileUpdate;
 
 	AddEffect(owner, missile);
 }
