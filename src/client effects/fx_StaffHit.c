@@ -32,7 +32,7 @@ static void StaffStrikeLevel2(const int flags, const vec3_t origin, const vec3_t
 	client_entity_t* flash = ClientEntity_new(FX_WEAPON_STAFF_STRIKE, (int)(flags & ~CEF_NO_DRAW), origin, NULL, 1000);
 
 	flash->r.model = &staffhit_models[1]; // halo sprite.
-	flash->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	flash->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	flash->r.scale = flrand(0.75f, 1.0f);
 	flash->alpha = 0.75f;
 	flash->d_alpha = -2.0f;
@@ -52,7 +52,7 @@ static void StaffStrikeLevel2(const int flags, const vec3_t origin, const vec3_t
 
 		streak->r.model = &staffhit_models[0]; // patball sprite.
 		streak->r.spriteType = SPRITE_LINE;
-		streak->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		streak->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		streak->r.scale = flrand(1.0f, 2.5f);
 		streak->alpha = flrand(0.75f, 1.0f);
 		streak->d_alpha = -2.0f;
@@ -66,8 +66,8 @@ static void StaffStrikeLevel2(const int flags, const vec3_t origin, const vec3_t
 		VectorCopy(origin, streak->r.startpos);
 		VectorMA(streak->r.startpos, flrand(16.0f, 48.0f), streak->velocity, streak->r.endpos); //mxd. Original logic uses irand() here.
 
-		VectorScale(streak->velocity, flrand(200.0f, 300.0f), streak->velocity);
-		VectorSet(streak->acceleration, streak->velocity[0] * 0.1f, streak->velocity[1] * 0.1f, 0); //mxd. Original logic uses irand() here.
+		Vec3ScaleAssign(flrand(200.0f, 300.0f), streak->velocity);
+		VectorSet(streak->acceleration, streak->velocity[0] * 0.1f, streak->velocity[1] * 0.1f, 0.0f); //mxd. Original logic uses irand() here.
 
 		AddEffect(NULL, streak);
 	}
@@ -80,7 +80,7 @@ static void StaffStrikeLevel3(const int flags, const vec3_t origin, const vec3_t
 	client_entity_t* flash = ClientEntity_new(FX_WEAPON_STAFF_STRIKE, (int)(flags & ~CEF_NO_DRAW), origin, NULL, 1000);
 
 	flash->r.model = &staffhit_models[1]; // Halo sprite.
-	flash->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	flash->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	flash->r.scale = flrand(0.75f, 1.0f);
 	flash->alpha = 0.75f;
 	flash->d_alpha = -2.0f;
@@ -103,7 +103,7 @@ static void StaffStrikeLevel3(const int flags, const vec3_t origin, const vec3_t
 
 		streak->r.model = &staffhit_models[2]; // firestreak sprite.
 		streak->r.spriteType = SPRITE_LINE;
-		streak->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		streak->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		streak->r.scale = flrand(1.0f, 2.5f);
 		streak->d_alpha = -1.0f;
 		streak->d_scale = -1.0f;
@@ -116,7 +116,7 @@ static void StaffStrikeLevel3(const int flags, const vec3_t origin, const vec3_t
 		VectorCopy(origin, streak->r.endpos);
 		VectorMA(streak->r.endpos, flrand(8.0f, 16.0f), streak->velocity, streak->r.startpos); //mxd. Original logic uses irand() here.
 
-		VectorScale(streak->velocity, flrand(100.0f, 200.0f), streak->velocity); //mxd. Original logic uses irand() here.
+		Vec3ScaleAssign(flrand(100.0f, 200.0f), streak->velocity); //mxd. Original logic uses irand() here.
 
 		AddEffect(NULL, streak);
 	}
@@ -129,7 +129,7 @@ static void StaffStrikeLevel3(const int flags, const vec3_t origin, const vec3_t
 		client_entity_t* steam = ClientEntity_new(FX_WEAPON_STAFF_STRIKE, (int)(flags & ~CEF_NO_DRAW), origin, NULL, 1000);
 
 		steam->r.model = &staffhit_models[3]; // steam sprite.
-		steam->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		steam->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		steam->r.scale = flrand(0.25f, 0.5f);
 		steam->alpha = 0.9f;
 		steam->d_alpha = -2.0f;
@@ -143,7 +143,7 @@ static void StaffStrikeLevel3(const int flags, const vec3_t origin, const vec3_t
 		VectorCopy(origin, steam->r.endpos);
 		VectorMA(steam->r.endpos, flrand(16.0f, 48.0f), steam->velocity, steam->r.startpos); //mxd. Original logic uses irand() here.
 
-		VectorScale(steam->velocity, flrand(10.0f, 50.0f), steam->velocity); //mxd. Original logic uses irand() here.
+		Vec3ScaleAssign(flrand(10.0f, 50.0f), steam->velocity); //mxd. Original logic uses irand() here.
 		steam->velocity[2] += 64.0f;
 
 		AddEffect(NULL, steam);
