@@ -31,12 +31,12 @@ void PreCacheTeleport(void)
 
 void FXPlayerTeleportIn(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
+	// Create the teleport effect around the player to begin with.
+	client_entity_t* teleport_fx = ClientEntity_new(type, flags, origin, NULL, 410);
+
 	paletteRGBA_t color;
 	byte* col1;
 	byte* col2;
-
-	// Create the teleport effect around the player to begin with.
-	client_entity_t* teleport_fx = ClientEntity_new(type, flags, origin, NULL, 410);
 
 	// Determine if this teleport is a spell, or a pad. Set up our colors appropriately.
 	if (!(flags & CEF_FLAG6))
@@ -53,7 +53,7 @@ void FXPlayerTeleportIn(centity_t* owner, const int type, const int flags, vec3_
 	}
 
 	teleport_fx->radius = 20.0f;
-	teleport_fx->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	teleport_fx->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	teleport_fx->r.scale = 1.8f;
 	teleport_fx->d_scale = -3.0f;
 	teleport_fx->AddToView = LinkedEntityUpdatePlacement;
@@ -74,7 +74,7 @@ void FXPlayerTeleportIn(centity_t* owner, const int type, const int flags, vec3_
 		// Use single point particles if we are in software.
 		client_particle_t* p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 400);
 
-		const vec3_t angles = { flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360) };
+		const vec3_t angles = VEC3_SET(flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360));
 		DirFromAngles(angles, p->velocity);
 		Vec3ScaleAssign(flrand(PARTICLE_VELOCITY_IN - 30.0f, PARTICLE_VELOCITY_IN), p->velocity);
 		VectorScale(p->velocity, -PARTICLE_ACCELERATION_SCALE_IN, p->acceleration);
@@ -85,12 +85,12 @@ void FXPlayerTeleportIn(centity_t* owner, const int type, const int flags, vec3_
 
 void FXPlayerTeleportOut(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
+	// Create the teleport effect around the player to begin with.
+	client_entity_t* teleport_fx = ClientEntity_new(type, flags, origin, NULL, 410);
+
 	paletteRGBA_t color;
 	byte* col1;
 	byte* col2;
-
-	// Create the teleport effect around the player to begin with.
-	client_entity_t* teleport_fx = ClientEntity_new(type, flags, origin, NULL, 410);
 
 	// Determine if this teleport is a spell, or a pad. Set up our colors appropriately.
 	if (!(flags & CEF_FLAG6))
@@ -107,7 +107,7 @@ void FXPlayerTeleportOut(centity_t* owner, const int type, const int flags, vec3
 	}
 
 	teleport_fx->radius = 20.0f;
-	teleport_fx->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	teleport_fx->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	teleport_fx->r.scale = 0.5f;
 	teleport_fx->d_scale = 3.0f;
 	teleport_fx->AddToView = LinkedEntityUpdatePlacement;
@@ -131,7 +131,7 @@ void FXPlayerTeleportOut(centity_t* owner, const int type, const int flags, vec3
 		p->d_alpha = 300.0f;
 		VectorSet(p->origin, 1.0f, 1.0f, 1.0f);
 
-		const vec3_t angles = { flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360) };
+		const vec3_t angles = VEC3_SET(flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360));
 		DirFromAngles(angles, p->origin);
 		Vec3ScaleAssign(flrand(PARTICLE_VELOCITY_OUT - 10.0f, PARTICLE_VELOCITY_OUT), p->origin);
 		VectorScale(p->origin, -PARTICLE_ACCELERATION_SCALE_OUT, p->acceleration);
@@ -140,7 +140,7 @@ void FXPlayerTeleportOut(centity_t* owner, const int type, const int flags, vec3
 	}
 }
 
-static qboolean TeleportPadThink(struct client_entity_s* self, centity_t* owner)
+static qboolean TeleportPadUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXteleportPadThink' in original logic.
 {
 	const int count = GetScaledCount(NUM_TELEPORT_PAD_PARTICLES, 0.7f);
 
@@ -203,12 +203,12 @@ static qboolean TeleportPadThink(struct client_entity_s* self, centity_t* owner)
 // This is the persistent effect for the teleport pad.
 void FXTeleportPad(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	flags |= CEF_NO_DRAW | CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA | CEF_VIEWSTATUSCHANGED | CEF_NOMOVE;
+	flags |= (CEF_NO_DRAW | CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA | CEF_VIEWSTATUSCHANGED | CEF_NOMOVE);
 	client_entity_t* glow = ClientEntity_new(type, flags, origin, NULL, 110);
 
 	glow->radius = 100.0f;
 	glow->r.origin[2] += TELEPORT_PAD_HEIGHT;
-	glow->Update = TeleportPadThink;
+	glow->Update = TeleportPadUpdate;
 
 	AddEffect(owner, glow);
 }
