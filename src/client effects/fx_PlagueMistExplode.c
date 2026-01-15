@@ -10,16 +10,16 @@
 #include "Vector.h"
 #include "g_playstats.h"
 
-#define NUM_MIST_EXPLODE_PARTS	7
+#define MAX_MIST_EXPLODE_PARTICLES	7 //mxd. Named 'NUM_MIST_EXPLODE_PARTS' in original logic.
 
-static qboolean PlagueMistExplodeSpawn(client_entity_t* spawner, centity_t* owner)
+static qboolean PlagueMistExplodeUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXPlagueMistExplodeSpawn' in original logic.
 {
-	spawner->LifeTime -= spawner->SpawnInfo;
-	if (spawner->LifeTime < 0)
+	self->LifeTime -= self->SpawnInfo;
+	if (self->LifeTime < 0)
 		return false;
 
-	int count = (spawner->LifeTime - 1600) / 200;
-	count = min(NUM_MIST_EXPLODE_PARTS, count);
+	int count = (self->LifeTime - 1600) / 200;
+	count = min(MAX_MIST_EXPLODE_PARTICLES, count);
 
 	if (count < 1)
 		return true;
@@ -59,7 +59,7 @@ static qboolean PlagueMistExplodeSpawn(client_entity_t* spawner, centity_t* owne
 		p->scale = mist_scale;
 		p->d_scale = mist_d_scale;
 
-		AddParticleToList(spawner, p);
+		AddParticleToList(self, p);
 	}
 
 	return true;
@@ -95,7 +95,7 @@ void FXPlagueMistExplode(centity_t* owner, const int type, int flags, vec3_t ori
 	spawner->radius = 20.0f;
 	spawner->SpawnInfo = mist_life;
 	spawner->LifeTime = lifetime * mist_life;
-	spawner->Update = PlagueMistExplodeSpawn;
+	spawner->Update = PlagueMistExplodeUpdate;
 
 	AddEffect(owner, spawner);
 }
