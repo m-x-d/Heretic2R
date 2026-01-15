@@ -36,7 +36,7 @@ void PreCacheSphere(void)
 	sphere_models[7] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");
 }
 
-static qboolean SphereOfAnnihilationSphereThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SphereOfAnnihilationSphereUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSphereOfAnnihilationSphereThink' in original logic.
 {
 	float detail_scale;
 	if (R_DETAIL == DETAIL_LOW)
@@ -51,14 +51,13 @@ static qboolean SphereOfAnnihilationSphereThink(struct client_entity_s* self, ce
 	return true;
 }
 
-static qboolean SphereOfAnnihilationAuraThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SphereOfAnnihilationAuraUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSphereOfAnnihilationAuraThink' in original logic.
 {
 	// No aura trail on low level.
 	if (R_DETAIL == DETAIL_LOW)
 		return true;
 
-	vec3_t trail_start;
-	VectorCopy(owner->origin, trail_start);
+	vec3_t trail_start = VEC3_INIT(owner->origin);
 
 	vec3_t trail_pos;
 	VectorSubtract(owner->lerp_origin, owner->origin, trail_pos);
@@ -70,13 +69,7 @@ static qboolean SphereOfAnnihilationAuraThink(struct client_entity_s* self, cent
 	if (trail_length < 0.001f)
 		trail_length += 2.0f;
 
-	vec3_t right;
-	PerpendicularVector(right, trail_pos);
-
-	vec3_t up;
-	CrossProduct(trail_pos, right, up);
-
-	VectorScale(trail_pos, FX_SPHERE_FLY_SPEED, trail_pos);
+	Vec3ScaleAssign(FX_SPHERE_FLY_SPEED, trail_pos);
 
 	const int duration = ((R_DETAIL > DETAIL_NORMAL) ? 500 : 400);
 	const int flags = (int)(self->flags & ~(CEF_OWNERS_ORIGIN | CEF_NO_DRAW)); //mxd
@@ -87,7 +80,7 @@ static qboolean SphereOfAnnihilationAuraThink(struct client_entity_s* self, cent
 
 		trail->radius = 70.0f;
 		trail->r.model = &sphere_models[0]; // shboom sprite.
-		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		trail->Scale = FX_SPHERE_AURA_SCALE + flrand(0.0f, 0.1f);
 		COLOUR_SET(trail->color, irand(128, 180), irand(128, 180), irand(64, 80)); //mxd. Use macro.
 		trail->alpha = 0.7f;
@@ -97,7 +90,7 @@ static qboolean SphereOfAnnihilationAuraThink(struct client_entity_s* self, cent
 		AddEffect(NULL, trail);
 
 		trail_length -= FX_SPHERE_FLY_SPEED;
-		VectorAdd(trail_start, trail_pos, trail_start);
+		Vec3AddAssign(trail_pos, trail_start);
 	}
 
 	return true;
@@ -105,6 +98,8 @@ static qboolean SphereOfAnnihilationAuraThink(struct client_entity_s* self, cent
 
 void FXSphereOfAnnihilation(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
+	static const paletteRGBA_t light_color = { .r = 0, .g = 0, .b = 255, .a = 255 };
+
 	short caster_entnum;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_SPHERE].formatString, &caster_entnum);
 
@@ -114,32 +109,29 @@ void FXSphereOfAnnihilation(centity_t* owner, const int type, const int flags, v
 
 	aura_thinker->flags |= CEF_NO_DRAW;
 	if (R_DETAIL > DETAIL_LOW)
-	{
-		const paletteRGBA_t light_color = { .r = 0, .g = 0, .b = 255, .a = 255 };
 		aura_thinker->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
-	}
 
 	aura_thinker->extra = (void*)(&fxi.server_entities[caster_entnum]); // The caster's centity_t.
 	aura_thinker->AddToView = LinkedEntityUpdatePlacement;
-	aura_thinker->Update = SphereOfAnnihilationAuraThink;
+	aura_thinker->Update = SphereOfAnnihilationAuraUpdate;
 
 	AddEffect(owner, aura_thinker);
-	SphereOfAnnihilationAuraThink(aura_thinker, owner);
+	SphereOfAnnihilationAuraUpdate(aura_thinker, owner);
 
 	// Create the sphere of annihilation itself.
-	client_entity_t* sphere_thinker = ClientEntity_new(type, flags, origin, NULL, 100);
+	client_entity_t* sphere = ClientEntity_new(type, flags, origin, NULL, 100);
 
-	sphere_thinker->radius = 70.0f;
-	sphere_thinker->r.model = &sphere_models[1]; // bluball sprite.
-	sphere_thinker->r.flags = RF_TRANSLUCENT;
-	sphere_thinker->r.scale = owner->current.scale;
-	sphere_thinker->AddToView = LinkedEntityUpdatePlacement;
-	sphere_thinker->Update = SphereOfAnnihilationSphereThink;
+	sphere->radius = 70.0f;
+	sphere->r.model = &sphere_models[1]; // bluball sprite.
+	sphere->r.flags = RF_TRANSLUCENT;
+	sphere->r.scale = owner->current.scale;
+	sphere->AddToView = LinkedEntityUpdatePlacement;
+	sphere->Update = SphereOfAnnihilationSphereUpdate;
 
-	AddEffect(owner, sphere_thinker);
+	AddEffect(owner, sphere);
 }
 
-static qboolean SphereOfAnnihilationGlowballThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SphereOfAnnihilationGlowballUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSphereOfAnnihilationGlowballThink' in original logic.
 {
 	if (owner->current.effects & EF_MARCUS_FLAG1)
 		self->color.r++;
@@ -159,7 +151,7 @@ static qboolean SphereOfAnnihilationGlowballThink(struct client_entity_s* self, 
 
 		spark->radius = 20.0f;
 		spark->r.model = &sphere_models[2]; // glowball sprite.
-		spark->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+		spark->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD);
 		COLOUR_SET(spark->r.color, irand(128, 180), irand(128, 180), irand(180, 255)); //mxd. Use macro.
 		spark->Scale = flrand(0.8f, 1.0f);
 		spark->d_scale = -1.5f;
@@ -182,7 +174,7 @@ static qboolean SphereOfAnnihilationGlowballThink(struct client_entity_s* self, 
 	return false;
 }
 
-static qboolean SphereOfAnnihilationGlowballSpawnerThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SphereOfAnnihilationGlowballSpawnerUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSphereOfAnnihilationGlowballSpawnerThink' in original logic.
 {
 	// 'Self->extra' refers to the caster's centity_t.
 	const centity_t* controller = (centity_t*)self->extra;
@@ -195,27 +187,19 @@ static qboolean SphereOfAnnihilationGlowballSpawnerThink(struct client_entity_s*
 		return true;
 
 	// If the spell is still building, create some swirling blue Glowballs.
-	vec3_t temp_origin;
+	vec3_t ball_origin;
 	if (controller != NULL)
-		VectorCopy(controller->origin, temp_origin);
+		VectorCopy(controller->origin, ball_origin);
 	else
-		VectorCopy(self->r.origin, temp_origin);
+		VectorCopy(self->r.origin, ball_origin);
 
-	client_entity_t* glowball = ClientEntity_new(FX_WEAPON_SPHEREGLOWBALLS, (int)(self->flags & ~(CEF_NO_DRAW | CEF_OWNERS_ORIGIN)), temp_origin, NULL, 50);
+	client_entity_t* glowball = ClientEntity_new(FX_WEAPON_SPHEREGLOWBALLS, (int)(self->flags & ~(CEF_NO_DRAW | CEF_OWNERS_ORIGIN)), ball_origin, NULL, 50);
 
 	glowball->flags |= CEF_DONT_LINK;
 
 	// Make me spawn from my caster's left / right hands (alternating). Assuming we aren't a reflection type glowball.
 	if (controller != NULL)
 	{
-		vec3_t angles;
-		VectorCopy(controller->current.angles, angles);
-		VectorScale(angles, RAD_TO_ANGLE, angles);
-
-		vec3_t forward;
-		vec3_t right;
-		AngleVectors(angles, forward, right, NULL);
-
 		matrix3_t rotation;
 		Matrix3FromAngles(controller->lerp_angles, rotation);
 
@@ -226,38 +210,33 @@ static qboolean SphereOfAnnihilationGlowballSpawnerThink(struct client_entity_s*
 		}
 		else
 		{
-			vec3_t fwd_ofs;
-			VectorScale(forward, 16.0f, fwd_ofs); // Hard-coded for Celestial Watcher (monster_elflord). 
-			Matrix3MultByVec3(rotation, fwd_ofs, glowball->r.origin);
+			vec3_t angles = VEC3_INIT(controller->current.angles);
+			Vec3ScaleAssign(RAD_TO_ANGLE, angles);
+
+			vec3_t forward;
+			AngleVectors(angles, forward, NULL, NULL);
+
+			Vec3ScaleAssign(16.0f, forward); // Hard-coded for Celestial Watcher (monster_elflord). 
+			Matrix3MultByVec3(rotation, forward, glowball->r.origin);
 		}
 
 		VectorAdd(controller->origin, glowball->r.origin, glowball->r.origin);
 	}
 	else
 	{
-		vec3_t angles;
-		VectorCopy(self->r.angles, angles);
-		VectorScale(angles, RAD_TO_ANGLE, angles);
-
-		vec3_t forward;
-		vec3_t right;
-		AngleVectors(angles, forward, right, NULL);
-
 		for (int i = 0; i < 3; i++)
 			glowball->r.origin[i] = self->r.origin[i] + flrand(-10.0f, 10.0f);
 	}
 
-	vec3_t angles2;
-	VectorCopy(owner->current.angles, angles2);
-	VectorScale(angles2, RAD_TO_ANGLE, angles2);
+	vec3_t owner_angles;
+	VectorScale(owner->current.angles, RAD_TO_ANGLE, owner_angles);
 
-	vec3_t forward2;
-	vec3_t right2;
-	AngleVectors(angles2, forward2, right2, NULL);
+	vec3_t owner_forward;
+	AngleVectors(owner_angles, owner_forward, NULL, NULL);
 
 	// Set my velocity and acceleration.
-	glowball->velocity[0] = forward2[0] * 175.0f + flrand(-25.0f, 25.0f);
-	glowball->velocity[1] = forward2[1] * 175.0f + flrand(-25.0f, 25.0f);
+	glowball->velocity[0] = owner_forward[0] * 175.0f + flrand(-25.0f, 25.0f);
+	glowball->velocity[1] = owner_forward[1] * 175.0f + flrand(-25.0f, 25.0f);
 	glowball->velocity[2] = flrand(-200.0f, 100.0f);
 
 	const int axis = ((self->color.g & 1) ? 0 : 1); //mxd
@@ -268,14 +247,14 @@ static qboolean SphereOfAnnihilationGlowballSpawnerThink(struct client_entity_s*
 	// Fill in the rest of my info.
 	glowball->radius = 20.0f;
 	glowball->r.model = &sphere_models[2]; // glowball sprite.
-	glowball->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+	glowball->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD);
 	COLOUR_SET(glowball->r.color, irand(128, 180), irand(128, 180), irand(180, 255)); //mxd. Use macro.
 	glowball->color.r = 1;
 	glowball->extra = (void*)owner;
-	glowball->Update = SphereOfAnnihilationGlowballThink;
+	glowball->Update = SphereOfAnnihilationGlowballUpdate;
 
 	AddEffect(owner, glowball);
-	SphereOfAnnihilationGlowballThink(glowball, owner);
+	SphereOfAnnihilationGlowballUpdate(glowball, owner);
 
 	self->color.g++;
 
@@ -300,12 +279,12 @@ void FXSphereOfAnnihilationGlowballs(centity_t* owner, const int type, const int
 		glowball_spawner->extra = (void*)&fxi.server_entities[caster_entnum];
 
 	glowball_spawner->AddToView = LinkedEntityUpdatePlacement;
-	glowball_spawner->Update = SphereOfAnnihilationGlowballSpawnerThink;
+	glowball_spawner->Update = SphereOfAnnihilationGlowballSpawnerUpdate;
 
 	AddEffect(owner, glowball_spawner);
 }
 
-static qboolean SphereOfAnnihilationSphereExplodeThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SphereOfAnnihilationSphereExplosionUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSphereOfAnnihilationSphereExplodeThink' in original logic.
 {
 	float frac = (float)(fx_time - self->startTime) / 100.0f;
 	if (self->AnimSpeed > 0.0f)
@@ -343,16 +322,16 @@ void FXSphereOfAnnihilationExplode(centity_t* owner, const int type, const int f
 
 	explosion->radius = FX_SPHERE_EXPLOSION_BASE_RADIUS * explosion->r.scale;
 	explosion->r.model = &sphere_models[3]; // Sphere model.
-	explosion->r.flags = RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	explosion->r.flags = (RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	explosion->r.scale = 0.01f;
 	explosion->d_scale = 2.5f;
 	explosion->NoOfAnimFrames = (int)size;
 	explosion->AnimSpeed = 1.0f;
 	explosion->dlight = CE_DLight_new(color_white, explosion->radius / 0.7f, 0.0f);
-	explosion->Update = SphereOfAnnihilationSphereExplodeThink;
+	explosion->Update = SphereOfAnnihilationSphereExplosionUpdate;
 
 	AddEffect(NULL, explosion);
-	SphereOfAnnihilationSphereExplodeThink(explosion, NULL);
+	SphereOfAnnihilationSphereExplosionUpdate(explosion, NULL);
 
 	// Add some glowing blast particles.
 	VectorScale(dir, FX_SPHERE_EXPLOSION_SMOKE_SPEED, dir);
@@ -384,14 +363,13 @@ void FXSphereOfAnnihilationPower(centity_t* owner, const int type, const int fla
 	vectoangles(dir, angles);
 	angles[PITCH] *= -1.0f;// something's broken with angle signs somewhere ;(
 
-	vec3_t fwd;
+	vec3_t forward;
 	vec3_t right;
 	vec3_t up;
-	AngleVectors(angles, fwd, right, up);
+	AngleVectors(angles, forward, right, up);
 
 	// Only one beam.
-	vec3_t beam_start;
-	VectorCopy(origin, beam_start);
+	const vec3_t beam_start = VEC3_INIT(origin);
 
 	// When CEF_FLAG8 is set, move to the left. Otherwise to the right.
 	const float vel_scaler = SPHERE_LASER_SPEED * ((flags & CEF_FLAG8) ? -0.4f : 0.4f); //mxd
@@ -402,7 +380,7 @@ void FXSphereOfAnnihilationPower(centity_t* owner, const int type, const int fla
 
 	flare_start->radius = 128.0f;
 	flare_start->r.model = &sphere_models[6]; // Blue halo sprite.
-	flare_start->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	flare_start->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 	flare_start->d_alpha = -4.0f;
 	flare_start->r.scale = 0.25f;
 	flare_start->d_scale = -0.5f;
@@ -416,7 +394,7 @@ void FXSphereOfAnnihilationPower(centity_t* owner, const int type, const int fla
 	const float size = b_size; //mxd
 
 	vec3_t beam_end;
-	VectorMA(beam_start, len, fwd, beam_end);
+	VectorMA(beam_start, len, forward, beam_end);
 
 	// Make the line beam down the side.
 	client_entity_t* beam = ClientEntity_new(-1, CEF_DONT_LINK, beam_start, NULL, 200);
@@ -424,7 +402,7 @@ void FXSphereOfAnnihilationPower(centity_t* owner, const int type, const int fla
 	beam->radius = 256.0f;
 	beam->r.model = &sphere_models[5]; // Glowbeam sprite.
 	beam->r.spriteType = SPRITE_LINE;
-	beam->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	beam->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	beam->r.scale = (size - 3.0f) * 6.0f;
 	beam->alpha = 0.95f;
 	beam->d_alpha = -5.0f;
@@ -447,7 +425,7 @@ void FXSphereOfAnnihilationPower(centity_t* owner, const int type, const int fla
 		ce->scale *= 0.4f;
 		ce->acceleration[2] = 0.0f;
 		ce->d_alpha = -768.0f;
-		VectorMA(ce->origin, flrand(0.0f, len), fwd, ce->origin);
+		VectorMA(ce->origin, flrand(0.0f, len), forward, ce->origin);
 		VectorMA(ce->velocity, flrand(-15.0f, 15.0f), right, ce->velocity);
 		VectorMA(ce->velocity, flrand(-15.0f, 15.0f), up, ce->velocity);
 		VectorMA(ce->origin, flrand(-size * 0.4f, size * 0.4f), right, ce->origin);
@@ -463,7 +441,7 @@ void FXSphereOfAnnihilationPower(centity_t* owner, const int type, const int fla
 
 		flare_end->radius = 128.0f;
 		flare_end->r.model = &sphere_models[6]; // Blue halo sprite.
-		flare_end->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+		flare_end->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 		flare_end->d_scale = 1.0f;
 		flare_end->d_alpha = -2.0f;
 
@@ -471,7 +449,7 @@ void FXSphereOfAnnihilationPower(centity_t* owner, const int type, const int fla
 	}
 }
 
-static qboolean SpherePlayerExplodeUpdate(struct client_entity_s* self, centity_t* owner) //mxd. Named 'FXSpherePlayerExplodeThink' in original logic.
+static qboolean SpherePlayerExplosionUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSpherePlayerExplodeThink' in original logic.
 {
 	if (fx_time > self->nextEventTime)
 	{
@@ -489,7 +467,7 @@ static qboolean SpherePlayerExplodeUpdate(struct client_entity_s* self, centity_
 	return true;
 }
 
-static qboolean SpherePlayerExplodeAddToView(struct client_entity_s* self, centity_t* owner)
+static qboolean SpherePlayerExplosionAddToView(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSpherePlayerExplodeAddToView' in original logic.
 {
 	self->r.angles[0] += FX_SPHERE_EXPLOSION_PITCH_INCREMENT * (float)(fx_time - self->lastThinkTime) / 50.0f;
 	self->r.angles[1] += FX_SPHERE_EXPLOSION_YAW_INCREMENT *   (float)(fx_time - self->lastThinkTime) / 50.0f;
@@ -499,7 +477,7 @@ static qboolean SpherePlayerExplodeAddToView(struct client_entity_s* self, centi
 	return true;
 }
 
-static qboolean SpherePlayerExplodeGlowballThink(client_entity_t* glowball, centity_t* owner)
+static qboolean SpherePlayerExplosionGlowballAddToView(client_entity_t* glowball, centity_t* owner) //mxd. Named 'FXSpherePlayerExplodeGlowballThink' in original logic.
 {
 	// Update the angle of the spark.
 	VectorMA(glowball->direction, (float)(fx_time - glowball->lastThinkTime) / 1000.0f, glowball->velocity2, glowball->direction);
@@ -507,16 +485,16 @@ static qboolean SpherePlayerExplodeGlowballThink(client_entity_t* glowball, cent
 	glowball->radius = (SPHERE_RADIUS_MAX - SPHERE_RADIUS_MIN) * ((float)(fx_time - glowball->SpawnDelay) / 100.0f) / (SPHERE_MAX_CHARGES + 2);
 
 	// Update the position of the spark.
-	vec3_t dir;
-	AngleVectors(glowball->direction, dir, NULL, NULL);
-	VectorMA(glowball->origin, glowball->radius, dir, glowball->r.origin);
+	vec3_t forward;
+	AngleVectors(glowball->direction, forward, NULL, NULL);
+	VectorMA(glowball->origin, glowball->radius, forward, glowball->r.origin);
 
 	glowball->lastThinkTime = fx_time;
 
 	return true;
 }
 
-static qboolean SpherePlayerExplodeGlowballTerminate(client_entity_t* glowball, centity_t* owner)
+static qboolean SpherePlayerExplosionGlowballUpdate(client_entity_t* glowball, centity_t* owner) //mxd. Named 'FXSpherePlayerExplodeGlowballTerminate' in original logic.
 {
 	// Don't instantly delete yourself. Don't accept any more updates and die out within a second.
 	glowball->d_alpha = -5.0f; // Fade out.
@@ -547,11 +525,11 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 	explosion->lastThinkTime = fx_time;
 	explosion->dlight = CE_DLight_new(color_white, explosion->radius / 0.7f, 0);
 
-	explosion->AddToView = SpherePlayerExplodeAddToView;
-	explosion->Update = SpherePlayerExplodeUpdate;
+	explosion->AddToView = SpherePlayerExplosionAddToView;
+	explosion->Update = SpherePlayerExplosionUpdate;
 
 	AddEffect(NULL, explosion);
-	SpherePlayerExplodeUpdate(explosion, NULL);
+	SpherePlayerExplosionUpdate(explosion, NULL);
 
 	// Add some glowing blast particles.
 	VectorScale(dir, FX_SPHERE_EXPLOSION_SMOKE_SPEED, dir);
@@ -563,7 +541,7 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 		client_entity_t* glowball = ClientEntity_new(type, flags & ~CEF_OWNERS_ORIGIN, origin, NULL, 5000);
 
 		glowball->r.model = &sphere_models[7]; // spark_blue sprite.
-		glowball->r.flags = RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		glowball->r.flags = (RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		glowball->d_scale = 3.0f;
 		glowball->lastThinkTime = fx_time;
 		glowball->SpawnDelay = fx_time;
@@ -579,8 +557,8 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 			glowball->velocity2[c] += 90.0f * Q_signf(glowball->velocity2[c]); // Assure that the sparks are moving around at a pretty good clip.
 		}
 
-		glowball->AddToView = SpherePlayerExplodeGlowballThink;
-		glowball->Update = SpherePlayerExplodeGlowballTerminate;
+		glowball->AddToView = SpherePlayerExplosionGlowballAddToView;
+		glowball->Update = SpherePlayerExplosionGlowballUpdate;
 
 		AddEffect(NULL, glowball);
 	}
@@ -590,7 +568,7 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 
 	flash->radius = 128.0f;
 	flash->r.model = &sphere_models[4]; // halo sprite.
-	flash->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	flash->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 	flash->r.frame = 1;
 	flash->d_alpha = -4.0f;
 	flash->d_scale = -4.0f;
