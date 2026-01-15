@@ -13,7 +13,7 @@
 #define NUM_SPELL_BITS	12
 #define LIGHT_LIFETIME	1000
 
-static qboolean SpellChangeDlightThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SpellChangePuffUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSpellChangeLightThink' in original logic.
 {
 	if (fx_time - self->startTime <= LIGHT_LIFETIME)
 	{
@@ -26,12 +26,12 @@ static qboolean SpellChangeDlightThink(struct client_entity_s* self, centity_t* 
 
 void FXSpellChange(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	paletteRGBA_t color;
-	int part;
-
 	vec3_t dir;
 	int spell_type = 0;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_CHANGE].formatString, dir, &spell_type);
+
+	paletteRGBA_t color;
+	int part;
 
 	switch (spell_type)
 	{
@@ -77,7 +77,7 @@ void FXSpellChange(centity_t* owner, const int type, const int flags, vec3_t ori
 			break;
 	}
 
-	VectorScale(dir, -32.0f, dir);
+	Vec3ScaleAssign(-32.0f, dir);
 
 	// Create the new effect.
 	client_entity_t* spell_puff = ClientEntity_new(type, (int)(flags | CEF_OWNERS_ORIGIN | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 100);
@@ -85,7 +85,7 @@ void FXSpellChange(centity_t* owner, const int type, const int flags, vec3_t ori
 	spell_puff->radius = 32.0f;
 	spell_puff->dlight = CE_DLight_new(color, 150.0f, 0.0f);
 	spell_puff->startTime = fx_time;
-	spell_puff->Update = SpellChangeDlightThink;
+	spell_puff->Update = SpellChangePuffUpdate;
 
 	// Attach some particles to it.
 	for (int i = 0; i < NUM_SPELL_BITS; i++)
