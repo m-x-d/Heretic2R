@@ -25,54 +25,54 @@ void PreCacheTorch(void)
 }
 
 // Update the position of the torch relative to its owner.
-static qboolean PlayerTorchAddToView(client_entity_t* tome, centity_t* owner)
+static qboolean PlayerTorchAddToView(client_entity_t* self, centity_t* owner) //mxd. Named 'FXROTTorchAddToView' in original logic.
 {
 	const float time = (float)fx_time; //mxd
 
-	VectorSet(tome->r.origin,
+	VectorSet(self->r.origin,
 		cosf(time * TORCH_ORBIT_SCALE) * TORCH_ORBIT_DIST,
 		sinf(time * TORCH_ORBIT_SCALE) * TORCH_ORBIT_DIST,
 		25.0f + sinf(time * 0.0015f) * 16.0f);
 
-	VectorAdd(owner->origin, tome->r.origin, tome->r.origin);
-	VectorCopy(tome->r.origin, tome->origin);
+	Vec3AddAssign(owner->origin, self->r.origin);
+	VectorCopy(self->r.origin, self->origin);
 
 	// Set up the last think time.
-	const float diff_time = time - tome->SpawnData;
-	tome->SpawnData = time;
+	const float diff_time = time - self->SpawnData;
+	self->SpawnData = time;
 
 	// Rotate the torch.
-	tome->r.angles[YAW] += diff_time * TORCH_SPIN_FACTOR;
+	self->r.angles[YAW] += diff_time * TORCH_SPIN_FACTOR;
 
 	return true;
 }
 
 // Update the position of the torch relative to its owner.
-static qboolean PlayerTorchFadeInAddToView(client_entity_t* tome, centity_t* owner)
+static qboolean PlayerTorchFadeInAddToView(client_entity_t* self, centity_t* owner)
 {
-	const float tome_orbit = (float)tome->SpawnInfo * TORCH_INCOMING_ORBIT;
+	const float tome_orbit = (float)self->SpawnInfo * TORCH_INCOMING_ORBIT;
 	const float time = (float)fx_time; //mxd
 
-	VectorSet(tome->r.origin,
+	VectorSet(self->r.origin,
 		cosf(time * TORCH_ORBIT_SCALE) * tome_orbit,
 		sinf(time * TORCH_ORBIT_SCALE) * tome_orbit,
-		(25.0f + sinf(time * 0.0015f) * 16.0f) * (float)tome->SpawnInfo / TIME_TO_FADE_TORCH);
+		(25.0f + sinf(time * 0.0015f) * 16.0f) * (float)self->SpawnInfo / TIME_TO_FADE_TORCH);
 
-	VectorAdd(owner->origin, tome->r.origin, tome->r.origin);
-	VectorCopy(tome->r.origin, tome->origin);
+	Vec3AddAssign(owner->origin, self->r.origin);
+	VectorCopy(self->r.origin, self->origin);
 
 	// Set up the last think time.
-	const float diff_time = time - tome->SpawnData;
-	tome->SpawnData = time;
+	const float diff_time = time - self->SpawnData;
+	self->SpawnData = time;
 
 	// Rotate the torch.
-	tome->r.angles[YAW] += diff_time * TORCH_SPIN_FACTOR;
+	self->r.angles[YAW] += diff_time * TORCH_SPIN_FACTOR;
 
 	return true;
 }
 
 // Make the light follow us.
-static qboolean PlayerTorchThink(struct client_entity_s* self, centity_t* owner)
+static qboolean PlayerTorchUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXplayertorch_think' in original logic.
 {
 	// Kill us if we are done.
 	if (owner->current.effects & EF_LIGHT_ENABLED)
@@ -100,17 +100,17 @@ static qboolean PlayerTorchThink(struct client_entity_s* self, centity_t* owner)
 // Light that the player gives off when he has this powerup.
 void FXPlayerTorch(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t* effect = ClientEntity_new(type, flags, origin, NULL, 100);
+	client_entity_t* torch = ClientEntity_new(type, flags, origin, NULL, 100);
 
-	effect->r.model = &torch_model;
-	effect->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	effect->r.scale = 0.35f;
-	effect->color = color_white; //mxd. 0xffffff in original version.
-	effect->SpawnData = (float)fx_time;
-	effect->alpha = 0.7f;
-	effect->dlight = CE_DLight_new(effect->color, 250.0f, 0.0f);
-	effect->AddToView = PlayerTorchAddToView;
-	effect->Update = PlayerTorchThink;
+	torch->r.model = &torch_model;
+	torch->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
+	torch->r.scale = 0.35f;
+	torch->color = color_white; //mxd. 0xffffff in original version.
+	torch->SpawnData = (float)fx_time;
+	torch->alpha = 0.7f;
+	torch->dlight = CE_DLight_new(torch->color, 250.0f, 0.0f);
+	torch->AddToView = PlayerTorchAddToView;
+	torch->Update = PlayerTorchUpdate;
 
-	AddEffect(owner, effect);
+	AddEffect(owner, torch);
 }
