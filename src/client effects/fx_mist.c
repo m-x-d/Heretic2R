@@ -18,7 +18,7 @@ void PreCacheMist(void)
 	mist_model = fxi.RegisterModel("sprites/fx/mist.sp2");
 }
 
-static qboolean MistThink(client_entity_t* mist, centity_t* owner)
+static qboolean MistUpdate(client_entity_t* mist, centity_t* owner) //mxd. Named 'FXMistThink' in original logic.
 {
 	mist->flags &= ~CEF_DISAPPEARED;
 
@@ -49,12 +49,12 @@ void FXMist(centity_t* owner, const int type, const int flags, vec3_t origin)
 	mist->SpawnData = scale;
 
 	mist->r.model = &mist_model;
-	mist->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	mist->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	mist->r.scale = scale;
 
 	mist->flags |= CEF_NOMOVE;
 	mist->alpha = 0.5f;
-	mist->Update = MistThink;
+	mist->Update = MistUpdate;
 
 	AddEffect(NULL, mist);
 }
