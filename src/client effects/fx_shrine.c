@@ -119,7 +119,6 @@ void FXShrineManaEffect(centity_t* owner, const int type, const int flags, vec3_
 {
 	client_entity_t* fx_spawner = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 100);
 
-	VectorClear(fx_spawner->origin);
 	fx_spawner->SpawnInfo = 17;
 	fx_spawner->AddToView = LinkedEntityUpdatePlacement;
 	fx_spawner->Update = ShrineManaUpdate;
@@ -172,14 +171,13 @@ static qboolean ShrineArmorUpdate(client_entity_t* self, centity_t* owner) //mxd
 
 void FXShrineArmorEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 100);
+	client_entity_t* fx_spawner = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 100);
 
-	VectorClear(glow->origin);
-	glow->SpawnInfo = 18;
-	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = ShrineArmorUpdate;
+	fx_spawner->SpawnInfo = 18;
+	fx_spawner->AddToView = LinkedEntityUpdatePlacement;
+	fx_spawner->Update = ShrineArmorUpdate;
 
-	AddEffect(owner, glow);
+	AddEffect(owner, fx_spawner);
 }
 
 #pragma endregion
@@ -221,14 +219,13 @@ static qboolean ShrineLungsUpdate(client_entity_t* self, centity_t* owner) //mxd
 
 void FXShrineLungsEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW), origin, NULL, 50);
+	client_entity_t* fx_spawner = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW), origin, NULL, 50);
 
-	VectorClear(glow->origin);
-	glow->SpawnInfo = 40;
-	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = ShrineLungsUpdate;
+	fx_spawner->SpawnInfo = 40;
+	fx_spawner->AddToView = LinkedEntityUpdatePlacement;
+	fx_spawner->Update = ShrineLungsUpdate;
 
-	AddEffect(owner, glow);
+	AddEffect(owner, fx_spawner);
 }
 
 #pragma endregion
@@ -240,8 +237,7 @@ void FXShrineLightEffect(centity_t* owner, const int type, const int flags, vec3
 {
 	client_entity_t* glow = ClientEntity_new(type, flags, origin, NULL, 2000);
 
-	VectorClear(glow->origin);
-	glow->r.model = &shrine_models[0];
+	glow->r.model = &shrine_models[0]; // sprites/lens/halo1.sp2
 	glow->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	glow->d_scale = 5.0f;
 	glow->r.scale = 0.1f;
@@ -327,17 +323,16 @@ void FXShrineStaffEffect(centity_t* owner, const int type, const int flags, vec3
 		particle_life = 1500;
 	}
 
-	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 50);
+	client_entity_t* fx_spawner = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 50);
 
-	VectorClear(glow->origin);
-	glow->SpawnInfo = TOTAL_STAFF_EFFECTS;
-	glow->SpawnData = STAFF_EFFECTS_START_HEIGHT;
-	glow->SpawnDelay = line_count;
-	glow->LifeTime = particle_life;
-	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = ShrineStaffUpdate;
+	fx_spawner->SpawnInfo = TOTAL_STAFF_EFFECTS;
+	fx_spawner->SpawnData = STAFF_EFFECTS_START_HEIGHT;
+	fx_spawner->SpawnDelay = line_count;
+	fx_spawner->LifeTime = particle_life;
+	fx_spawner->AddToView = LinkedEntityUpdatePlacement;
+	fx_spawner->Update = ShrineStaffUpdate;
 
-	AddEffect(owner, glow);
+	AddEffect(owner, fx_spawner);
 }
 
 #pragma endregion
@@ -545,15 +540,14 @@ static qboolean ShrineReflectUpdate(client_entity_t* self, centity_t* owner) //m
 // Create the entity the flight loops are on.
 void FXShrineReflectEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 25);
+	client_entity_t* fx_spawner = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 25);
 
-	VectorClear(glow->origin);
-	glow->SpawnInfo = TOTAL_FLIGHT_EFFECTS;
-	glow->SpawnData = FLIGHT_EFFECTS_START_HEIGHT;
-	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = ShrineReflectUpdate;
+	fx_spawner->SpawnInfo = TOTAL_FLIGHT_EFFECTS;
+	fx_spawner->SpawnData = FLIGHT_EFFECTS_START_HEIGHT;
+	fx_spawner->AddToView = LinkedEntityUpdatePlacement;
+	fx_spawner->Update = ShrineReflectUpdate;
 
-	AddEffect(owner, glow);
+	AddEffect(owner, fx_spawner);
 }
 
 #pragma endregion
@@ -667,16 +661,15 @@ static qboolean ShrineSpeedUpdate(client_entity_t* self, centity_t* owner) //mxd
 
 void FXShrineSpeedEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW), origin, NULL, 30);
+	client_entity_t* fx_spawner = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW), origin, NULL, 30);
 
-	VectorClear(glow->origin);
-	glow->SpawnInfo = TOTAL_REFLECT_EFFECTS;
-	glow->SpawnData = REFLECT_EFFECTS_START_HEIGHT;
-	glow->r.color.c = 0x604040ff;
-	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = ShrineSpeedUpdate;
+	fx_spawner->SpawnInfo = TOTAL_REFLECT_EFFECTS;
+	fx_spawner->SpawnData = REFLECT_EFFECTS_START_HEIGHT;
+	fx_spawner->r.color.c = 0x604040ff;
+	fx_spawner->AddToView = LinkedEntityUpdatePlacement;
+	fx_spawner->Update = ShrineSpeedUpdate;
 
-	AddEffect(owner, glow);
+	AddEffect(owner, fx_spawner);
 }
 
 #pragma endregion
