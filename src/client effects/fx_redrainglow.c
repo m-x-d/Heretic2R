@@ -14,9 +14,9 @@
 #include "ce_Dlight.h"
 #include "g_playstats.h"
 
-#define CLOUD_GEN_RAD	30.0f
+#define GLOW_SPAWN_RADIUS	30.0f //mxd. Named 'CLOUD_GEN_RAD' in original logic.
 
-static qboolean RedRainGlowThink(struct client_entity_s* self, centity_t* owner)
+static qboolean RedRainGlowUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXRedRainGlowThink' in original logic.
 {
 	// If we've timed out, stop the effect (allow for fading). If we're not on a time limit, check the EF flag.
 	if ((self->LifeTime > 0 && self->LifeTime < fx_time) || (self->LifeTime <= 0 && !(owner->current.effects & EF_TRAILS_ENABLED)))
@@ -70,12 +70,12 @@ static qboolean RedRainGlowThink(struct client_entity_s* self, centity_t* owner)
 			vel[2] = 1.0f; // Safety in case flrand gens all zeros (VERY unlikely).
 
 		VectorNormalize(vel);
-		VectorScale(vel, CLOUD_GEN_RAD, vel);
-		VectorSubtract(vel, attack_dir, vel);
+		Vec3ScaleAssign(GLOW_SPAWN_RADIUS, vel);
+		Vec3SubtractAssign(attack_dir, vel);
 
 		client_particle_t* spark = ClientParticle_new(spark_type, color_white, 500);
-		VectorAdd(vel, org_left, spark->origin);
 
+		VectorAdd(vel, org_left, spark->origin);
 		VectorScale(vel, -0.125f, spark->velocity);
 		VectorScale(vel, -6.0f, spark->acceleration);
 
@@ -90,6 +90,7 @@ static qboolean RedRainGlowThink(struct client_entity_s* self, centity_t* owner)
 
 	// Add the core to the effect.
 	client_particle_t* core = ClientParticle_new(spark_type, color_white, 500);
+
 	VectorCopy(org_left, core->origin);
 	VectorSet(core->velocity, flrand(-16.0f, 16.0f), flrand(-16.0f, 16.0f), flrand(-8.0f, 24.0f));
 	VectorMA(core->velocity, -1.75f, attack_dir, core->velocity);
@@ -110,7 +111,7 @@ void FXRedRainGlow(centity_t* owner, const int type, const int flags, vec3_t ori
 	client_entity_t* glow = ClientEntity_new(type, flags, vec3_origin, NULL, (int)(fxi.cls->rframetime * 2000.0f));
 
 	glow->radius = 128.0f;
-	glow->flags |= CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ADDITIVE_PARTS;
+	glow->flags |= (CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ADDITIVE_PARTS);
 	glow->LifeTime = ((lifetime > 0) ? fx_time + lifetime * 100 : -1);
 
 	if (flags & CEF_FLAG6)
@@ -128,7 +129,7 @@ void FXRedRainGlow(centity_t* owner, const int type, const int flags, vec3_t ori
 		glow->dlight = CE_DLight_new(glow->color, 150.0f, 0.0f);
 
 	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = RedRainGlowThink;
+	glow->Update = RedRainGlowUpdate;
 
 	AddEffect(owner, glow);
 }
