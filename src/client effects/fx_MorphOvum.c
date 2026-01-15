@@ -38,7 +38,7 @@ void PreCacheMorphSFX(void) //mxd
 	morph_fire_sound = fxi.S_RegisterSound("weapons/OvumFire.wav");
 }
 
-static qboolean MorphMissileThink(client_entity_t* missile, centity_t* owner)
+static qboolean MorphMissileUpdate(client_entity_t* missile, centity_t* owner) //mxd. Named 'FXMorphMissileThink' in original logic.
 {
 	// Create a new entity for these particles to attach to.
 	const int flags = (int)(missile->flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS); //mxd
@@ -124,7 +124,7 @@ void FXMorphMissile(centity_t* owner, const int type, const int flags, vec3_t or
 	missile->r.angles[PITCH] = -ANGLE_90; // Set the pitch AGAIN.
 	missile->color.c = MORPH_COLOR;
 	missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
-	missile->Update = MorphMissileThink;
+	missile->Update = MorphMissileUpdate;
 
 	AddEffect(owner, missile);
 
@@ -159,22 +159,21 @@ void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, ve
 
 		missile->color.c = MORPH_COLOR;
 		missile->dlight = CE_DLight_new(missile->color, 110.0f, 0.0f);
-		missile->Update = MorphMissileThink;
+		missile->Update = MorphMissileUpdate;
 
 		AddEffect(&fxi.server_entities[morph_array[i]], missile);
 
 		yaw_rad += MORPH_ANGLE_INC;
-
-		if (i == 0)
-			fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, morph_fire_sound, 1.0f, ATTN_NORM, 0.0f);
 	}
+
+	fxi.S_StartSound(origin, -1, CHAN_WEAPON, morph_fire_sound, 1.0f, ATTN_NORM, 0.0f);
 
 	if (R_DETAIL >= DETAIL_HIGH)
 	{
 		client_entity_t* glow = ClientEntity_new(type, flags, origin, NULL, 800);
 
 		glow->r.model = &morph_models[0]; // Halo1 sprite.
-		glow->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		glow->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 
 		glow->color.c = MORPH_COLOR;
 		glow->r.color.c = MORPH_COLOR;
@@ -244,7 +243,7 @@ void FXMorphExplode(centity_t* owner, int type, const int flags, vec3_t origin)
 }
 
 // Make the feather float down.
-static qboolean FeatherThink(client_entity_t* self, centity_t* owner)
+static qboolean FeatherUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFeatherThink' in original logic.
 {
 	if (--self->SpawnInfo == 0)
 		return false;
@@ -335,7 +334,7 @@ void FXChickenExplode(centity_t* owner, const int type, const int flags, vec3_t 
 			feather->yscale = flrand(0.05f, 0.2f);
 			feather->xscale = flrand(-0.2f, 0.2f);
 			feather->SpawnInfo = 170;
-			feather->Update = FeatherThink;
+			feather->Update = FeatherUpdate;
 
 			AddEffect(NULL, feather);
 		}
@@ -357,7 +356,7 @@ void FXChickenExplode(centity_t* owner, const int type, const int flags, vec3_t 
 			feather->yscale = flrand(0.1f, 0.3f);
 			feather->xscale = flrand(-0.3f, 0.3f);
 			feather->SpawnInfo = 170;
-			feather->Update = FeatherThink;
+			feather->Update = FeatherUpdate;
 
 			AddEffect(NULL, feather);
 		}
