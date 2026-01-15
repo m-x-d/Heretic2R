@@ -158,7 +158,7 @@ void PreCacheFXSoundSFX(void) //mxd
 	fx_sounds[SND_CAVECREAK3] = fxi.S_RegisterSound("ambient/cavecreak3.wav");
 }
 
-static qboolean SoundThink(struct client_entity_s* self, centity_t* owner)
+static qboolean AmbientSoundUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSoundthink' in original logic.
 {
 	static cvar_t* cinematicfreeze = NULL; //mxd
 
@@ -224,14 +224,14 @@ void FXSound(centity_t* owner, const int type, const int flags, vec3_t origin)
 	byte wait;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SOUND].formatString, &style, &attenuation, &volume, &wait);
 
-	client_entity_t* self = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_NOMOVE), origin, NULL, 20);
+	client_entity_t* snd_src = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_NOMOVE), origin, NULL, 20);
 
-	self->flags &= ~CEF_OWNERS_ORIGIN;
-	self->snd_info.style = style; //mxd. Avoid TagMalloc (causes 'use-after-free' address sanitizer error after loading game/changing level).
-	self->snd_info.attenuation = attenuation;
-	self->snd_info.volume = (float)volume / 255.0f;
-	self->snd_info.wait = (float)wait * 1000.0f;
-	self->Update = SoundThink;
+	snd_src->flags &= ~CEF_OWNERS_ORIGIN;
+	snd_src->snd_info.style = style; //mxd. Avoid TagMalloc (causes 'use-after-free' address sanitizer error after loading game/changing level).
+	snd_src->snd_info.attenuation = attenuation;
+	snd_src->snd_info.volume = (float)volume / 255.0f;
+	snd_src->snd_info.wait = (float)wait * 1000.0f;
+	snd_src->Update = AmbientSoundUpdate;
 
-	AddEffect(owner, self);
+	AddEffect(owner, snd_src);
 }
