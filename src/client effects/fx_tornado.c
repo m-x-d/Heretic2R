@@ -28,7 +28,7 @@ void PreCacheTornado(void)
 }
 
 // Make the tornado ball spark.
-static qboolean TornadoBallThink(struct client_entity_s* self, centity_t* owner)
+static qboolean TornadoBallUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXTornadoBallThink' in original logic.
 {
 	if (owner->current.effects & EF_SPEED_ACTIVE)
 	{
@@ -50,12 +50,9 @@ static qboolean TornadoBallThink(struct client_entity_s* self, centity_t* owner)
 		ce->scale = BALL_PARTICLE_SCALE;
 		ce->d_scale = -0.5f * BALL_PARTICLE_SCALE;
 
-		const vec3_t angles = { flrand(180.0f, 360.0f), flrand(0.0f, 360.0f), 0.0f };
-
-		vec3_t fwd;
-		AngleVectors(angles, fwd, NULL, NULL);
-		VectorScale(fwd, BALL_RADIUS, ce->velocity);
-
+		const vec3_t angles = VEC3_SET(flrand(180.0f, 360.0f), flrand(0.0f, 360.0f), 0.0f);
+		AngleVectors(angles, ce->velocity, NULL, NULL);
+		Vec3ScaleAssign(BALL_RADIUS, ce->velocity);
 		VectorScale(ce->velocity, -1.0f, ce->acceleration);
 
 		AddParticleToList(self, ce);
@@ -76,13 +73,15 @@ void FXTornadoBall(centity_t* owner, const int type, const int flags, vec3_t ori
 	glow->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	glow->r.scale = 0.4f;
 	glow->LifeTime = fx_time + (int)(TORNADO_DURATION * 1000.0f) + 200;
-	glow->Update = TornadoBallThink;
+	glow->Update = TornadoBallUpdate;
 
 	AddEffect(owner, glow);
 }
 
-static qboolean TornadoThink(struct client_entity_s* self, centity_t* owner)
+static qboolean TornadoUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXTornadoThink' in original logic.
 {
+	static const paletteRGBA_t particle_color = { .c = 0xc0ffffff };
+
 	// If the effect is dead, just return.
 	if (!(owner->current.effects & EF_SPEED_ACTIVE))
 	{
@@ -90,7 +89,6 @@ static qboolean TornadoThink(struct client_entity_s* self, centity_t* owner)
 		return true;
 	}
 
-	const paletteRGBA_t color = { .c = 0xc0ffffff };
 	const int count = GetScaledCount(5, 0.8f);
 
 	for (int i = 0; i < count; i++)
@@ -109,7 +107,7 @@ static qboolean TornadoThink(struct client_entity_s* self, centity_t* owner)
 			scale = flrand(4.0f, 5.0f);
 		}
 
-		client_particle_t* ce = ClientParticle_new((int)(part | PFL_NEARCULL | PFL_MOVE_CYL_Z), color, 1750);
+		client_particle_t* ce = ClientParticle_new((int)(part | PFL_NEARCULL | PFL_MOVE_CYL_Z), particle_color, 1750);
 
 		ce->scale = scale;
 		ce->d_scale = (r_detail->value + 1.0f) * 2.0f;
@@ -139,13 +137,15 @@ static qboolean TornadoThink(struct client_entity_s* self, centity_t* owner)
 		AddParticleToList(self, ce);
 	}
 
-	TornadoBallThink(self, owner);
+	TornadoBallUpdate(self, owner);
 
 	return true;
 }
 
 void FXTornado(centity_t* owner, const int type, int flags, vec3_t origin)
 {
+	static const paletteRGBA_t dlight_color = { .c = 0xffff4444 };
+
 	int duration;
 	if (R_DETAIL == DETAIL_LOW)
 		duration = 150;
@@ -159,13 +159,10 @@ void FXTornado(centity_t* owner, const int type, int flags, vec3_t origin)
 	client_entity_t* base = ClientEntity_new(type, flags, origin, NULL, duration);
 
 	base->radius = 50.0f;
-	base->Update = TornadoThink;
+	base->Update = TornadoUpdate;
 
 	if (R_DETAIL >= DETAIL_HIGH)
-	{
-		const paletteRGBA_t color = { .c = 0xffff4444 };
-		base->dlight = CE_DLight_new(color, 170.0f, 0.0f);
-	}
+		base->dlight = CE_DLight_new(dlight_color, 170.0f, 0.0f);
 
 	AddEffect(owner, base);
 }
@@ -191,11 +188,9 @@ void FXTornadoBallExplode(centity_t* owner, const int type, const int flags, vec
 		ce->scale = BALL_PARTICLE_SCALE;
 		ce->d_scale = -0.5f * BALL_PARTICLE_SCALE;
 
-		const vec3_t angles = { flrand(0.0f, 360.0f), flrand(0.0f, 360.0f), 0.0f };
-
-		vec3_t fwd;
-		AngleVectors(angles, fwd, NULL, NULL);
-		VectorScale(fwd, BALL_RADIUS, ce->velocity);
+		const vec3_t angles = VEC3_SET(flrand(0.0f, 360.0f), flrand(0.0f, 360.0f), 0.0f);
+		AngleVectors(angles, ce->velocity, NULL, NULL);
+		Vec3ScaleAssign(BALL_RADIUS, ce->velocity);
 		VectorScale(ce->velocity, -0.7f, ce->acceleration);
 
 		AddParticleToList(base, ce);
@@ -211,11 +206,8 @@ void FXTornadoBallExplode(centity_t* owner, const int type, const int flags, vec
 
 		client_particle_t* ce = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 400);
 
-		VectorSet(ce->origin, 1.0f, 1.0f, 1.0f);
-
-		const vec3_t angles = { flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360) };
+		const vec3_t angles = VEC3_SET(flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360));
 		DirFromAngles(angles, ce->origin);
-
 		Vec3ScaleAssign(flrand(40.0f, 50.0f), ce->origin);
 		VectorScale(ce->origin, -15.1f, ce->acceleration);
 
@@ -227,7 +219,7 @@ void FXTornadoBallExplode(centity_t* owner, const int type, const int flags, vec
 
 	flash->radius = 64.0f;
 	flash->r.model = &tornado_models[1]; // Halo sprite.
-	flash->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	flash->r.flags |= (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT);
 	flash->r.frame = 1;
 	flash->d_alpha = -4.0f;
 	flash->d_scale = -4.0f;
