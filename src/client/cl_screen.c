@@ -386,7 +386,7 @@ static void SCR_DrawPause(void)
 	if (!(int)scr_showpause->value || !(int)cl_paused->value || cls.key_dest == key_console) // Turn off for screenshots. //mxd. Also turn off when console is opened.
 		return;
 
-	if (Cvar_VariableValue("maxclients") < 2 && Com_ServerState() != 0)
+	if (Cvar_VariableValue("maxclients") < 2 && Com_ServerState())
 	{
 		char pause_pic[MAX_QPATH];
 		Com_sprintf(pause_pic, sizeof(pause_pic), "\x03%s", scr_item_paused->string);
