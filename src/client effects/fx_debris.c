@@ -39,15 +39,15 @@ static int debris_chunk_offsets[NUM_MAT + 1] =
 	8,	// Cloth.
 	12,	// Metal.
 	16,	// Flesh.
-	22,	// Pottery.
-	26,	// Glass.
-	31,	// Leaf.
-	34,	// Wood.
-	38,	// Brown Stone.
-	42,	// Nothing - just smoke.
-	43,	// Insect chunks.
+	29,	// Pottery.
+	33,	// Glass.
+	38,	// Leaf.
+	41,	// Wood.
+	45,	// Brown Stone.
+	49,	// Nothing - just smoke.
+	50,	// Insect chunks.
 
-	51	// Total debris_chunks count.
+	58	// Total debris_chunks count.
 };
 
 static DebrisChunk_t debris_chunks[] =
@@ -58,7 +58,7 @@ static DebrisChunk_t debris_chunks[] =
 	{ "models/debris/stone/schunk3/tris.fm", 0, NULL, 3.0f },
 	{ "models/debris/stone/schunk4/tris.fm", 0, NULL, 3.0f },
 
-	// Grey stone.
+	// Grey stone. //TODO: same as Stone...
 	{ "models/debris/stone/schunk1/tris.fm", 0, NULL, 3.0f },	// 4
 	{ "models/debris/stone/schunk2/tris.fm", 0, NULL, 3.0f },
 	{ "models/debris/stone/schunk3/tris.fm", 0, NULL, 3.0f },
@@ -83,42 +83,50 @@ static DebrisChunk_t debris_chunks[] =
 	{ "models/debris/meat/chunk4/tris.fm", 0, NULL, 3.0f },
 	{ "models/debris/meat/chunk5/tris.fm", 0, NULL, 3.0f },
 	{ "models/debris/meat/chunk6/tris.fm", 0, NULL, 3.0f },
+	//mxd. Use unused flesh chunks (chunk4's skin 1 is unfinished).
+	{ "models/debris/flesh/chunk1/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/flesh/chunk2/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/flesh/chunk3/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/flesh/chunk4/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/flesh/chunk1/tris.fm", 1, NULL, 3.0f },
+	{ "models/debris/flesh/chunk2/tris.fm", 1, NULL, 3.0f },
+	{ "models/debris/flesh/chunk3/tris.fm", 1, NULL, 3.0f },
 
 	// Pottery.
-	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },	// 22
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },	// 29
 	{ "models/debris/pottery/pot2/tris.fm", 0, NULL, 3.0f },
 	{ "models/debris/pottery/pot3/tris.fm", 0, NULL, 2.5f },
 	{ "models/debris/pottery/pot4/tris.fm", 0, NULL, 1.4f },
 
 	// Glass. //mxd. Set skinNum here, instead of in FXDebris_Throw().
-	{ "models/debris/wood/splinter1/tris.fm", 1, NULL, 1.8f },	// 26
+	{ "models/debris/wood/splinter1/tris.fm", 1, NULL, 1.8f },	// 33
 	{ "models/debris/wood/splinter2/tris.fm", 1, NULL, 2.0f },
 	{ "models/debris/wood/splinter3/tris.fm", 1, NULL, 1.9f },
 	{ "models/debris/wood/splinter4/tris.fm", 1, NULL, 1.6f },
 	{ "models/debris/wood/splinter1/tris.fm", 1, NULL, 1.4f }, //mxd. mass:1.8 (same as 1-st entry) in original logic.
 
 	// Leaf - invalid debris type.
-	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },	// 31
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },	// 38
 	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },
 	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },
 
 	// Wood chunks.
-	{ "models/debris/wood/splinter1/tris.fm", 0, NULL, 1.8f },	// 34
+	{ "models/debris/wood/splinter1/tris.fm", 0, NULL, 1.8f },	// 41
 	{ "models/debris/wood/splinter2/tris.fm", 0, NULL, 2.0f },
 	{ "models/debris/wood/splinter3/tris.fm", 0, NULL, 1.9f },
 	{ "models/debris/wood/splinter4/tris.fm", 0, NULL, 1.6f },
 
 	// Brown stone.
-	{ "models/debris/stone/schunk1/tris.fm", 1, NULL, 3.0f },	// 38
+	{ "models/debris/stone/schunk1/tris.fm", 1, NULL, 3.0f },	// 45
 	{ "models/debris/stone/schunk2/tris.fm", 1, NULL, 3.0f },
 	{ "models/debris/stone/schunk3/tris.fm", 1, NULL, 3.0f },
 	{ "models/debris/stone/schunk4/tris.fm", 1, NULL, 3.0f },
 
 	// Nothing - just smoke.
-	{ "models/debris/meat/chunk6/tris.fm", 0, NULL, 3.0f },		// 42
+	{ "models/debris/meat/chunk6/tris.fm", 0, NULL, 3.0f },		// 49
 
 	// Insect Chunks - fixme, use diff skins for diff bugs...
-	{ "models/debris/pottery/pot1/tris.fm",  2, NULL, 2.0f },	// 43
+	{ "models/debris/pottery/pot1/tris.fm",  2, NULL, 2.0f },	// 50
 	{ "models/debris/pottery/pot2/tris.fm",  2, NULL, 3.0f },
 	{ "models/debris/pottery/pot3/tris.fm",  2, NULL, 2.5f },
 	{ "models/debris/pottery/pot4/tris.fm",  2, NULL, 1.4f },
