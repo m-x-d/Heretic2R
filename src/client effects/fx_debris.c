@@ -64,11 +64,11 @@ static DebrisChunk_t debris_chunks[] =
 	{ "models/debris/stone/schunk3/tris.fm", 0, NULL, 3.0f },
 	{ "models/debris/stone/schunk4/tris.fm", 0, NULL, 3.0f },
 
-	// Cloth.
-	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 0.2f },	// 8
-	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 0.2f },
-	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 0.3f },
-	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 0.4f },
+	// Cloth. Original logic uses skinNum:0 for these --mxd.
+	{ "models/debris/pottery/pot1/tris.fm", 1, NULL, 0.2f },	// 8
+	{ "models/debris/pottery/pot1/tris.fm", 1, NULL, 0.2f },
+	{ "models/debris/pottery/pot1/tris.fm", 1, NULL, 0.3f },
+	{ "models/debris/pottery/pot1/tris.fm", 1, NULL, 0.4f },
 
 	// Metal.
 	{ "models/debris/metal/mchunk1/tris.fm", 0, NULL, 2.0f },	// 12
