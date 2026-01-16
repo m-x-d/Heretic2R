@@ -553,9 +553,12 @@ static qboolean FleshDebris_Update(client_entity_t* self, centity_t* owner)
 
 client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const vec3_t dir, const float ke, const float scale, const int flags, const qboolean altskin)
 {
+	static const paletteRGBA_t fire_color = { .c = 0xe5007fff };
+
 	const int chunk_index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
 
 	client_entity_t* debris = ClientEntity_new(-1, 0, origin, NULL, 0); //mxd. next_think_time:50 in original logic (20 FPS). Update every frame instead.
+
 	debris->SpawnInfo = material;
 	debris->classID = CID_DEBRIS;
 	debris->msgHandler = CE_DefaultMsgHandler;
@@ -602,10 +605,8 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	{
 		if (flags & CEF_FLAG7) // High detail, non-ref_soft?
 		{
-			const paletteRGBA_t color = { .c = 0xe5007fff };
-
 			debris->flags |= CEF_FLAG7; // Spawn blood too, not just flames.
-			debris->dlight = CE_DLight_new(color, 50.0f, -5.0f);
+			debris->dlight = CE_DLight_new(fire_color, 50.0f, -5.0f);
 		}
 
 		debris->flags |= CEF_FLAG6;
