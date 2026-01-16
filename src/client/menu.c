@@ -1285,7 +1285,10 @@ void Menu_DrawBG(const char* bk_path, const float scale) //mxd
 menucommon_t* Menu_ItemAtCursor(const menuframework_t* menu)
 {
 	if (menu->cursor >= 0 && menu->cursor < menu->nitems)
-		return menu->items[menu->cursor];
+	{
+		menucommon_t* item = menu->items[menu->cursor];
+		return ((item->flags & QMF_GRAYED) ? NULL : item); //mxd. Skip disabled items.
+	}
 
 	return NULL;
 }
