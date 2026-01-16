@@ -495,6 +495,9 @@ qboolean FXDebris_Vanish(client_entity_t* self, centity_t* owner)
 		}
 	}
 
+	//mxd. Gradually set pitch so that chunk lies flat on ground.
+	self->r.angles[PITCH] = LerpFloat(self->r.angles[PITCH], self->debris_rest_pitch, 0.1f);
+
 	return true;
 }
 
@@ -854,8 +857,10 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 	// Don't bounce if velocity is small.
 	if (trace->plane.normal[2] > GROUND_NORMAL && (fabsf(self->velocity[2]) < 100.0f || VectorLength(self->velocity) < 100.0f || trace->fraction < 0.075f))
 	{
-		// Set pitch so that chunks lie flat on ground.
-		self->r.angles[PITCH] = self->debris_rest_pitch; //mxd
+		//mxd. Clamp pitch to [-180 .. 180] range, centered on debris_rest_pitch. Original logic sets pitch to ANGLE_90;
+		self->r.angles[PITCH] = fmodf(self->r.angles[PITCH], ANGLE_360);
+		if (self->r.angles[PITCH] > ANGLE_180 + self->debris_rest_pitch)
+			self->r.angles[PITCH] -= ANGLE_360;
 
 		//mxd. Inline BecomeStatic().
 		VectorClear(self->velocity);
