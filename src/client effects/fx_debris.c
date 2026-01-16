@@ -30,6 +30,7 @@ typedef struct DebrisChunk
 	int skinNum;
 	struct model_s* model;
 	float mass;
+	float rest_pitch; //mxd. Pitch of chunk laying flat on ground. Original logic uses ANGLE_90.
 } DebrisChunk_t;
 
 static int debris_chunk_offsets[NUM_MAT + 1] =
@@ -53,87 +54,87 @@ static int debris_chunk_offsets[NUM_MAT + 1] =
 static DebrisChunk_t debris_chunks[] =
 {
 	// Stone.
-	{ "models/debris/stone/schunk1/tris.fm", 0, NULL, 3.0f },	// 0
-	{ "models/debris/stone/schunk2/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/stone/schunk3/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/stone/schunk4/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/stone/schunk1/tris.fm", 0, NULL, 3.0f, ANGLE_90 },	// 0
+	{ "models/debris/stone/schunk2/tris.fm", 0, NULL, 3.0f, ANGLE_90 },
+	{ "models/debris/stone/schunk3/tris.fm", 0, NULL, 3.0f, ANGLE_90 },
+	{ "models/debris/stone/schunk4/tris.fm", 0, NULL, 3.0f, ANGLE_90 },
 
 	// Grey stone. //TODO: same as Stone...
-	{ "models/debris/stone/schunk1/tris.fm", 0, NULL, 3.0f },	// 4
-	{ "models/debris/stone/schunk2/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/stone/schunk3/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/stone/schunk4/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/stone/schunk1/tris.fm", 0, NULL, 3.0f, ANGLE_90 },	// 4
+	{ "models/debris/stone/schunk2/tris.fm", 0, NULL, 3.0f, ANGLE_90 },
+	{ "models/debris/stone/schunk3/tris.fm", 0, NULL, 3.0f, ANGLE_90 },
+	{ "models/debris/stone/schunk4/tris.fm", 0, NULL, 3.0f, ANGLE_90 },
 
 	// Cloth. Original logic uses skinNum:0 for these --mxd.
-	{ "models/debris/pottery/pot1/tris.fm", 1, NULL, 0.2f },	// 8
-	{ "models/debris/pottery/pot1/tris.fm", 1, NULL, 0.2f },
-	{ "models/debris/pottery/pot1/tris.fm", 1, NULL, 0.3f },
-	{ "models/debris/pottery/pot1/tris.fm", 1, NULL, 0.4f },
+	{ "models/debris/pottery/pot1/tris.fm", 1, NULL, 0.2f, ANGLE_90 },	// 8
+	{ "models/debris/pottery/pot1/tris.fm", 1, NULL, 0.2f, ANGLE_90 },
+	{ "models/debris/pottery/pot1/tris.fm", 1, NULL, 0.3f, ANGLE_90 },
+	{ "models/debris/pottery/pot1/tris.fm", 1, NULL, 0.4f, ANGLE_90 },
 
 	// Metal.
-	{ "models/debris/metal/mchunk1/tris.fm", 0, NULL, 2.0f },	// 12
-	{ "models/debris/metal/mchunk2/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/metal/mchunk3/tris.fm", 0, NULL, 4.0f },
-	{ "models/debris/metal/mchunk4/tris.fm", 0, NULL, 5.0f },
+	{ "models/debris/metal/mchunk1/tris.fm", 0, NULL, 2.0f, ANGLE_90 },	// 12
+	{ "models/debris/metal/mchunk2/tris.fm", 0, NULL, 3.0f, ANGLE_90 },
+	{ "models/debris/metal/mchunk3/tris.fm", 0, NULL, 4.0f, ANGLE_90 },
+	{ "models/debris/metal/mchunk4/tris.fm", 0, NULL, 5.0f, ANGLE_90 },
 
 	// Flesh.
-	{ "models/debris/meat/chunk1/tris.fm", 0, NULL, 3.0f },		// 16
-	{ "models/debris/meat/chunk2/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/meat/chunk3/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/meat/chunk4/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/meat/chunk5/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/meat/chunk6/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/meat/chunk1/tris.fm", 0, NULL, 3.0f, ANGLE_180 },	// 16
+	{ "models/debris/meat/chunk2/tris.fm", 0, NULL, 3.0f, ANGLE_0 },
+	{ "models/debris/meat/chunk3/tris.fm", 0, NULL, 3.0f, ANGLE_0 },
+	{ "models/debris/meat/chunk4/tris.fm", 0, NULL, 3.0f, ANGLE_0 },
+	{ "models/debris/meat/chunk5/tris.fm", 0, NULL, 3.0f, ANGLE_0 },
+	{ "models/debris/meat/chunk6/tris.fm", 0, NULL, 3.0f, ANGLE_0 },
 	//mxd. Use unused flesh chunks (chunk4's skin 1 is unfinished).
-	{ "models/debris/flesh/chunk1/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/flesh/chunk2/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/flesh/chunk3/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/flesh/chunk4/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/flesh/chunk1/tris.fm", 1, NULL, 3.0f },
-	{ "models/debris/flesh/chunk2/tris.fm", 1, NULL, 3.0f },
-	{ "models/debris/flesh/chunk3/tris.fm", 1, NULL, 3.0f },
+	{ "models/debris/flesh/chunk1/tris.fm", 0, NULL, 3.0f, ANGLE_0 },
+	{ "models/debris/flesh/chunk2/tris.fm", 0, NULL, 3.0f, ANGLE_0 },
+	{ "models/debris/flesh/chunk3/tris.fm", 0, NULL, 3.0f, ANGLE_0 },
+	{ "models/debris/flesh/chunk4/tris.fm", 0, NULL, 3.0f, ANGLE_0 },
+	{ "models/debris/flesh/chunk1/tris.fm", 1, NULL, 3.0f, ANGLE_0 },
+	{ "models/debris/flesh/chunk2/tris.fm", 1, NULL, 3.0f, ANGLE_0 },
+	{ "models/debris/flesh/chunk3/tris.fm", 1, NULL, 3.0f, ANGLE_0 },
 
 	// Pottery.
-	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },	// 29
-	{ "models/debris/pottery/pot2/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/pottery/pot3/tris.fm", 0, NULL, 2.5f },
-	{ "models/debris/pottery/pot4/tris.fm", 0, NULL, 1.4f },
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f, ANGLE_90 },	// 29
+	{ "models/debris/pottery/pot2/tris.fm", 0, NULL, 3.0f, ANGLE_90 },
+	{ "models/debris/pottery/pot3/tris.fm", 0, NULL, 2.5f, ANGLE_90 },
+	{ "models/debris/pottery/pot4/tris.fm", 0, NULL, 1.4f, ANGLE_90 },
 
 	// Glass. //mxd. Set skinNum here, instead of in FXDebris_Throw().
-	{ "models/debris/wood/splinter1/tris.fm", 1, NULL, 1.8f },	// 33
-	{ "models/debris/wood/splinter2/tris.fm", 1, NULL, 2.0f },
-	{ "models/debris/wood/splinter3/tris.fm", 1, NULL, 1.9f },
-	{ "models/debris/wood/splinter4/tris.fm", 1, NULL, 1.6f },
-	{ "models/debris/wood/splinter1/tris.fm", 1, NULL, 1.4f }, //mxd. mass:1.8 (same as 1-st entry) in original logic.
+	{ "models/debris/wood/splinter1/tris.fm", 1, NULL, 1.8f, ANGLE_90 },	// 33
+	{ "models/debris/wood/splinter2/tris.fm", 1, NULL, 2.0f, ANGLE_90 },
+	{ "models/debris/wood/splinter3/tris.fm", 1, NULL, 1.9f, ANGLE_90 },
+	{ "models/debris/wood/splinter4/tris.fm", 1, NULL, 1.6f, ANGLE_90 },
+	{ "models/debris/wood/splinter1/tris.fm", 1, NULL, 1.4f, ANGLE_90 }, //mxd. mass:1.8 (same as 1-st entry) in original logic.
 
 	// Leaf - invalid debris type.
-	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },	// 38
-	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },
-	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f, ANGLE_90 },	// 38
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f, ANGLE_90 },
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f, ANGLE_90 },
 
 	// Wood chunks.
-	{ "models/debris/wood/splinter1/tris.fm", 0, NULL, 1.8f },	// 41
-	{ "models/debris/wood/splinter2/tris.fm", 0, NULL, 2.0f },
-	{ "models/debris/wood/splinter3/tris.fm", 0, NULL, 1.9f },
-	{ "models/debris/wood/splinter4/tris.fm", 0, NULL, 1.6f },
+	{ "models/debris/wood/splinter1/tris.fm", 0, NULL, 1.8f, ANGLE_90 },	// 41
+	{ "models/debris/wood/splinter2/tris.fm", 0, NULL, 2.0f, ANGLE_90 },
+	{ "models/debris/wood/splinter3/tris.fm", 0, NULL, 1.9f, ANGLE_90 },
+	{ "models/debris/wood/splinter4/tris.fm", 0, NULL, 1.6f, ANGLE_90 },
 
 	// Brown stone.
-	{ "models/debris/stone/schunk1/tris.fm", 1, NULL, 3.0f },	// 45
-	{ "models/debris/stone/schunk2/tris.fm", 1, NULL, 3.0f },
-	{ "models/debris/stone/schunk3/tris.fm", 1, NULL, 3.0f },
-	{ "models/debris/stone/schunk4/tris.fm", 1, NULL, 3.0f },
+	{ "models/debris/stone/schunk1/tris.fm", 1, NULL, 3.0f, ANGLE_90 },	// 45
+	{ "models/debris/stone/schunk2/tris.fm", 1, NULL, 3.0f, ANGLE_90 },
+	{ "models/debris/stone/schunk3/tris.fm", 1, NULL, 3.0f, ANGLE_90 },
+	{ "models/debris/stone/schunk4/tris.fm", 1, NULL, 3.0f, ANGLE_90 },
 
 	// Nothing - just smoke.
-	{ "models/debris/meat/chunk6/tris.fm", 0, NULL, 3.0f },		// 49
+	{ "models/debris/meat/chunk6/tris.fm", 0, NULL, 3.0f, ANGLE_0 },		// 49
 
 	// Insect Chunks - fixme, use diff skins for diff bugs...
-	{ "models/debris/pottery/pot1/tris.fm",  2, NULL, 2.0f },	// 50
-	{ "models/debris/pottery/pot2/tris.fm",  2, NULL, 3.0f },
-	{ "models/debris/pottery/pot3/tris.fm",  2, NULL, 2.5f },
-	{ "models/debris/pottery/pot4/tris.fm",  2, NULL, 1.4f },
-	{ "models/debris/insect/chunk1/tris.fm", 0, NULL, 2.0f },
-	{ "models/debris/insect/chunk2/tris.fm", 0, NULL, 3.0f },
-	{ "models/debris/insect/chunk3/tris.fm", 0, NULL, 2.5f },
-	{ "models/debris/insect/chunk4/tris.fm", 0, NULL, 1.4f },
+	{ "models/debris/pottery/pot1/tris.fm",  2, NULL, 2.0f, ANGLE_90 },	// 50
+	{ "models/debris/pottery/pot2/tris.fm",  2, NULL, 3.0f, ANGLE_90 },
+	{ "models/debris/pottery/pot3/tris.fm",  2, NULL, 2.5f, ANGLE_90 },
+	{ "models/debris/pottery/pot4/tris.fm",  2, NULL, 1.4f, ANGLE_90 },
+	{ "models/debris/insect/chunk1/tris.fm", 0, NULL, 2.0f, ANGLE_0 },
+	{ "models/debris/insect/chunk2/tris.fm", 0, NULL, 3.0f, ANGLE_0 },
+	{ "models/debris/insect/chunk3/tris.fm", 0, NULL, 2.5f, ANGLE_0 },
+	{ "models/debris/insect/chunk4/tris.fm", 0, NULL, 1.4f, ANGLE_0 },
 };
 
 static float debris_elasticity[NUM_MAT] =
@@ -366,6 +367,7 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	gib->flags |= (CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS);
 	gib->r.skinnum = (owner->entity != NULL ? owner->entity->skinnum : 0);
 	gib->radius = 2.0f;
+	gib->debris_rest_pitch = ANGLE_90 + flrand(-ANGLE_10, ANGLE_10); //mxd. //TODO: is this always correct?
 
 	if (harpy != NULL) //HACK: harpy took it!
 	{
@@ -590,6 +592,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 
 	debris->elasticity = debris_elasticity[material];
 	debris->r.skinnum = debris_chunks[chunk_index].skinNum;
+	debris->debris_rest_pitch = debris_chunks[chunk_index].rest_pitch + flrand(-ANGLE_10, ANGLE_10); //mxd
 
 	if (material == MAT_FLESH || material == MAT_INSECT) // Flesh need a different update for blood.
 	{
@@ -852,7 +855,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 	if (trace->plane.normal[2] > GROUND_NORMAL && (fabsf(self->velocity[2]) < 100.0f || VectorLength(self->velocity) < 100.0f || trace->fraction < 0.075f))
 	{
 		// Set pitch so that chunks lie flat on ground.
-		self->r.angles[PITCH] = ANGLE_90;
+		self->r.angles[PITCH] = self->debris_rest_pitch; //mxd
 
 		//mxd. Inline BecomeStatic().
 		VectorClear(self->velocity);

@@ -104,6 +104,7 @@ typedef struct client_entity_s
 	int debris_last_bounce_time; // Last time debris bounced in Debris_Collision().
 	int debris_last_trail_update_time;
 	float debris_avelocity[2]; // Angular velocity (only PITCH and YAW are used).
+	float debris_rest_pitch; // Pitch of chunk laying flat on ground. Original logic uses ANGLE_90.
 
 	//mxd. Extra bloodsplat props...
 	int bloodsplat_max_particles;
