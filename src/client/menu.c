@@ -6,7 +6,6 @@
 
 #include <ctype.h>
 #include "client.h"
-#include "cl_messages.h"
 #include "vid_dll.h"
 #include "Vector.h"
 #include "menu.h"
@@ -852,18 +851,20 @@ qboolean Menu_SlideItem(const menuframework_t* menu, const int dir) //mxd. Retur
 // the menu's cursor so that it's at the next available slot.
 void Menu_AdjustCursor(menuframework_t* menu, const int dir)
 {
-	// See if it's in a valid spot.
-	if (menu->cursor >= 0 && menu->cursor < menu->nitems && Menu_ItemAtCursor(menu) != NULL)
-		return;
+	const int initial_cursor = menu->cursor; //mxd
 
-	// It's not in a valid spot, so crawl in the direction indicated until we find a valid spot.
+	// Crawl in the direction indicated until we find a valid spot.
 	if (dir == 1)
 	{
 		while (Menu_ItemAtCursor(menu) == NULL)
 		{
 			menu->cursor += dir;
+
 			if (menu->cursor >= menu->nitems)
 				menu->cursor = 0;
+
+			if (menu->cursor == initial_cursor) //mxd. Avoid infinite loops.
+				break;
 		}
 	}
 	else
@@ -871,8 +872,12 @@ void Menu_AdjustCursor(menuframework_t* menu, const int dir)
 		while (Menu_ItemAtCursor(menu) == NULL)
 		{
 			menu->cursor += dir;
+
 			if (menu->cursor < 0)
 				menu->cursor = menu->nitems - 1;
+
+			if (menu->cursor == initial_cursor) //mxd. Avoid infinite loops.
+				break;
 		}
 	}
 }
