@@ -204,7 +204,6 @@ extern void M_PopMenu(void);
 extern char* Default_MenuKey(menuframework_t* menu, int key);
 extern const char* Generic_MenuKey(int key);
 extern qboolean Field_Key(menufield_t* field, int key);
-extern float M_GetMenuAlpha(void); // H2
 extern int M_GetMenuLabelX(int text_width); // H2
 extern int M_GetMenuOffsetY(const menuframework_t* menu); // H2
 

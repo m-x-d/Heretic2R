@@ -724,9 +724,10 @@ void M_Init(void)
 	Com_sprintf(m_text_high, sizeof(m_text_high), "\x02%s", m_generic_high->string);
 }
 
-float M_GetMenuAlpha(void) // H2
+//mxd. Replaces M_GetMenuAlpha() from original H2 logic (which just returned cls.m_menualpha).
+static float M_GetMenuItemAlpha(const menucommon_t* item)
 {
-	return cls.m_menualpha;
+	return cls.m_menualpha * ((item->flags & QMF_GRAYED) ? 0.7f : 1.0f);
 }
 
 int M_GetMenuLabelX(const int text_width) // H2
@@ -898,7 +899,7 @@ static void Slider_Draw(menuslider_t* slider, const qboolean selected)
 {
 #define SLIDER_RANGE	10
 
-	const float alpha = M_GetMenuAlpha();
+	const float alpha = M_GetMenuItemAlpha(&slider->generic);
 	const paletteRGBA_t color = { .r = 255, .g = 255, .b = 255, .a = (byte)(alpha * 255.0f) };
 
 	// Draw slider name.
@@ -931,7 +932,7 @@ static void Slider_Draw(menuslider_t* slider, const qboolean selected)
 
 static void Field_Draw(const menufield_t* field, const qboolean selected)
 {
-	const float alpha = M_GetMenuAlpha();
+	const float alpha = M_GetMenuItemAlpha(&field->generic);
 	const paletteRGBA_t color = { .r = 255, .g = 255, .b = 255, .a = (byte)(alpha * 255.0f) };
 
 	int y = field->generic.y + field->generic.parent->y;
@@ -982,7 +983,7 @@ static void Action_Draw(const menuaction_t* action, const qboolean selected)
 	int x;
 	char name[MAX_QPATH];
 
-	const float alpha = M_GetMenuAlpha();
+	const float alpha = M_GetMenuItemAlpha(&action->generic);
 	const int y = action->generic.y + action->generic.parent->y;
 
 	if (action->generic.flags & QMF_MULTILINE && strchr(action->generic.name, '\n') != NULL)
@@ -1017,7 +1018,7 @@ static void InputKey_Draw(const menuinputkey_t* key, const qboolean selected) //
 	// Draw key label (eg. "Attack").
 	Com_sprintf(key_label, sizeof(key_label), "%s", key->generic.name);
 
-	float alpha = M_GetMenuAlpha();
+	float alpha = M_GetMenuItemAlpha(&key->generic);
 	int x = M_GetMenuLabelX(re.BF_Strlen(key_label));
 	const int y = key->generic.y + key->generic.parent->y;
 	Menu_DrawString(x, y, key_label, alpha, selected);
@@ -1054,7 +1055,7 @@ static void SpinControl_Draw(const menulist_t* list, const qboolean selected)
 	int x;
 	char buffer[MAX_QPATH];
 
-	const float alpha = M_GetMenuAlpha();
+	const float alpha = M_GetMenuItemAlpha(&list->generic);
 	int y = list->generic.y + list->generic.parent->y;
 
 	// Draw as single line?
