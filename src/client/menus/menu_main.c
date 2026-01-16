@@ -100,6 +100,10 @@ static void Main_MenuInit(void)
 	s_info_action.generic.width = re.BF_Strlen(name_info);
 	s_info_action.generic.callback = MainInfoFunc;
 
+	// Disable when not in-game.
+	if (!Com_ServerState())
+		s_info_action.generic.flags |= QMF_GRAYED;
+
 	Com_sprintf(name_quit, sizeof(name_quit), "\x02%s", m_banner_quit->string);
 	s_quit_action.generic.type = MTYPE_ACTION;
 	s_quit_action.generic.flags = (QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND);
