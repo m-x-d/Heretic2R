@@ -848,7 +848,10 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 		// Set pitch so that chunks lie flat on ground.
 		self->r.angles[PITCH] = ANGLE_90;
 
-		BecomeStatic(self);
+		//mxd. Inline BecomeStatic().
+		VectorClear(self->velocity);
+		VectorClear(self->acceleration);
+		self->flags &= ~CEF_CLIP_TO_WORLD;
 
 		self->d_alpha = flrand(-0.1f, -0.25f);
 		self->Update = FXDebris_Vanish;

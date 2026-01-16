@@ -18,9 +18,6 @@ extern qboolean LinkedEntityUpdatePlacement(client_entity_t* self, centity_t* ow
 extern qboolean OffsetLinkedEntityUpdatePlacement(client_entity_t* self, centity_t* owner);
 extern qboolean ReferenceLinkedEntityUpdatePlacement(client_entity_t* self, centity_t* owner);
 
-// Message response helper functions.
-extern void BecomeStatic(client_entity_t* self);
-
 // Physics functions.
 extern float GetSolidDist(const vec3_t origin, float radius, float max_dist, qboolean check_water); //mxd. +check_water arg.
 extern int GetFallTime(vec3_t origin, float velocity, float acceleration, float radius, float, trace_t* trace);

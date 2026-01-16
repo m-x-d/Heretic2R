@@ -121,18 +121,6 @@ qboolean ReferenceLinkedEntityUpdatePlacement(client_entity_t* self, centity_t* 
 
 #pragma endregion
 
-#pragma region ========================== Message response helper functions ==========================
-
-void BecomeStatic(client_entity_t* self)
-{
-	VectorClear(self->velocity);
-	VectorClear(self->acceleration);
-
-	self->flags &= ~CEF_CLIP_TO_WORLD;
-}
-
-#pragma endregion
-
 #pragma region ========================== Physics functions ==========================
 
 // Returns vertical distance to solid world / water surface or max_dist if no solid.
