@@ -596,7 +596,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	}
 
 	// Debris lasts 10 seconds before it slowly goes away.
-	debris->LifeTime = fx_time + 1000;
+	debris->LifeTime = fx_time + 10000; //mxd. 1000 (1 second) in original logic. 
 
 	if (flags & CEF_FLAG6) // On fire - add dynamic light.
 	{
