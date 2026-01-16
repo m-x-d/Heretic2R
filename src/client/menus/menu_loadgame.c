@@ -122,7 +122,7 @@ static void LoadGameCallback(void* self)
 static void LoadGame_MenuInit(void)
 {
 	s_loadgame_menu.nitems = 0;
-	InitSaveLoadActions(s_loadgame_actions, ARRAY_SIZE(s_loadgame_actions));
+	InitSaveLoadActions(s_loadgame_actions, MAX_SAVEGAMES);
 
 	int y = 0;
 	menu_saveload_action_t* item = &s_loadgame_actions[0];

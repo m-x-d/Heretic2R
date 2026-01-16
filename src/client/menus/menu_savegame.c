@@ -24,7 +24,7 @@ static void SaveGameCallback(void* self)
 static void SaveGame_MenuInit(void)
 {
 	s_savegame_menu.nitems = 0;
-	InitSaveLoadActions(s_savegame_actions, ARRAY_SIZE(s_savegame_actions));
+	InitSaveLoadActions(s_savegame_actions, MAX_SAVEGAMES);
 
 	int y = 0;
 	menu_saveload_action_t* item = &s_savegame_actions[0];
