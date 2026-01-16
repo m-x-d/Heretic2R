@@ -41,7 +41,7 @@ void Con_ToggleConsole_f(void)
 {
 	if (cl.frame.playerstate.cinematicfreeze) // H2
 	{
-		cls.esc_cinematic = 1;
+		cls.esc_cinematic = true;
 		return;
 	}
 
