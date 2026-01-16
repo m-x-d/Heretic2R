@@ -570,7 +570,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	debris->debris_avelocity[1] = ANGLE_360 + flrand(0.0f, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
 
 	debris->flags |= (CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS);
-	debris->radius = debris->r.scale * 5.0f; //mxd. Scale by r.scale.
+	debris->radius = max(1.0f, debris->r.scale); //mxd. 5.0 in original logic.
 
 	VectorRandomCopy(dir, debris->velocity, 0.5f);
 	Vec3ScaleAssign(sqrtf(ke / debris_chunks[chunk_index].mass), debris->velocity);
