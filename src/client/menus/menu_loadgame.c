@@ -48,6 +48,32 @@ static void CheckSavegameDir(char* save_dir)
 	}
 }
 
+//mxd. Returns true if at least 1 savegame exists. For menu_game logic. Stripped version of InitSaveLoadActions()...
+qboolean CanShowLoadgameMenu(void)
+{
+	char save_dir[64];
+
+	for (int i = 0; i < MAX_SAVEGAMES; i++)
+	{
+		if (i == 0) // QUICKSAVE.
+			sprintf_s(save_dir, sizeof(save_dir), "quick");
+		else
+			sprintf_s(save_dir, sizeof(save_dir), "save%i", i - 1);
+
+		char file_name[MAX_OSPATH];
+		Com_sprintf(file_name, sizeof(file_name), "%s/save/%s/server.ssv", FS_Userdir(), save_dir);
+
+		FILE* f;
+		if (fopen_s(&f, file_name, "rb") == 0)
+		{
+			fclose(f);
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void InitSaveLoadActions(menu_saveload_action_t* items, const int num_items)
 {
 	menu_saveload_action_t* item = &items[0];
@@ -158,6 +184,9 @@ static const char* LoadGame_MenuKey(const int key)
 // Q2 counterpart
 void M_Menu_Loadgame_f(void)
 {
+	if (!CanShowLoadgameMenu()) //mxd. No savegames to load.
+		return;
+
 	LoadGame_MenuInit();
 	M_PushMenu(LoadGame_MenuDraw, LoadGame_MenuKey);
 }

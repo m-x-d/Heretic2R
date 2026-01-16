@@ -154,6 +154,10 @@ static void Game_MenuInit(void)
 	s_load_game_action.generic.width = re.BF_Strlen(name_load);
 	s_load_game_action.generic.callback = LoadGameFunc;
 
+	//mxd. Disable when noting to load.
+	if (!CanShowLoadgameMenu())
+		s_load_game_action.generic.flags |= QMF_GRAYED;
+
 	Com_sprintf(name_save, sizeof(name_save), "\x02%s", m_banner_save->string);
 	s_save_game_action.generic.type = MTYPE_ACTION;
 	s_save_game_action.generic.flags = QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND; //mxd. Added QMF_SELECT_SOUND flag.
@@ -162,6 +166,10 @@ static void Game_MenuInit(void)
 	s_save_game_action.generic.name = name_save;
 	s_save_game_action.generic.width = re.BF_Strlen(name_save);
 	s_save_game_action.generic.callback = SaveGameFunc;
+
+	//mxd. Disable when not in-game.
+	if (!Com_ServerState() || cl.frame.playerstate.cinematicfreeze) 
+		s_save_game_action.generic.flags |= QMF_GRAYED;
 
 	Com_sprintf(name_credits, sizeof(name_credits), "\x02%s", m_banner_credits->string);
 	s_credits_action.generic.type = MTYPE_ACTION;
