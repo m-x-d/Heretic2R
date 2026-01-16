@@ -222,11 +222,8 @@ static void DoFireTrail(client_entity_t* spawner)
 static qboolean IsInWater(const vec3_t origin)
 {
 	// Not-very-perfect way of doing a pointcontents from the FX dll.
-	vec3_t start;
-	VectorCopy(origin, start);
-	start[2] += 1.0f;
-
 	trace_t trace;
+	const vec3_t start = VEC3_INITA(origin, 0.0f, 0.0f, 1.0f);
 	fxi.Trace(start, vec3_origin, vec3_origin, origin, 0, 0, &trace);
 
 	return (trace.contents & MASK_WATER);
@@ -877,7 +874,7 @@ void InitDebrisStatics(void)
 
 void PreCacheDebris(void)
 {
-	for (uint i = 0; i < sizeof(debris_chunks) / sizeof(debris_chunks[0]); i++)
+	for (uint i = 0; i < ARRAY_SIZE(debris_chunks); i++)
 		debris_chunks[i].model = fxi.RegisterModel(debris_chunks[i].modelName);
 }
 
