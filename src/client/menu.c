@@ -42,7 +42,7 @@
 #include "menus/menu_worldmap.h"
 
 cvar_t* menus_active;
-cvar_t* quick_menus; //TODO: add UI control (in menu_misc.c menu?).
+static cvar_t* quick_menus; //TODO: add UI control (in menu_misc.c menu?).
 
 cvar_t* m_item_defaults;
 
@@ -852,7 +852,7 @@ qboolean Menu_SlideItem(const menuframework_t* menu, const int dir) //mxd. Retur
 // the menu's cursor so that it's at the next available slot.
 void Menu_AdjustCursor(menuframework_t* menu, const int dir)
 {
-	const int initial_cursor = menu->cursor; //mxd
+	const int initial_cursor = ClampI(menu->cursor, 0, menu->nitems - 1); //mxd
 
 	// Crawl in the direction indicated until we find a valid spot.
 	if (dir == 1)
