@@ -102,17 +102,23 @@ static void LoadGame_MenuInit(void)
 	menu_saveload_action_t* item = &s_loadgame_actions[0];
 	for (int i = 0; i < MAX_SAVEGAMES; i++, item++)
 	{
-		//mxd. Skip empty slots.
-		if (!item->is_valid)
-			continue;
-
 		item->generic.name = item->save_name;
 		item->generic.type = MTYPE_ACTION;
 		item->generic.x = 0;
 		item->generic.y = y;
 		item->generic.width = re.BF_Strlen(item->save_name);
 		item->generic.flags = (QMF_LEFT_JUSTIFY | QMF_MULTILINE | QMF_SELECT_SOUND);
-		item->generic.callback = LoadGameCallback;
+
+		//mxd. Make empty slots grayed (and unselectable).
+		if (item->is_valid)
+		{
+			item->generic.callback = LoadGameCallback;
+		}
+		else
+		{
+			item->generic.callback = NULL;
+			item->generic.flags |= QMF_GRAYED;
+		}
 
 		Menu_AddItem(&s_loadgame_menu, item);
 		y += 20;
