@@ -84,12 +84,10 @@ void FXMaceballBounce(centity_t* owner, const int type, const int flags, vec3_t 
 	vec3_t right;
 	CrossProduct(up, normal, right);
 
-	client_entity_t* hit_fx = ClientEntity_new(type, flags, origin, NULL, BALL_BOUNCE_LIFETIME);
+	client_entity_t* hit_fx = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, BALL_BOUNCE_LIFETIME);
 
-	hit_fx->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
-	hit_fx->flags |= (CEF_NO_DRAW | CEF_ADDITIVE_PARTS);
 	hit_fx->radius = BALL_RADIUS;
-	VectorScale(normal, MACEBALL_SPARK_VEL, hit_fx->velocity); // This velocity is used by the sparks.
+	VectorScale(normal, MACEBALL_SPARK_VEL, hit_fx->velocity); // This velocity is used by the sparks (to be more precise, hit_fx->r.origin is used to update particles position --mxd).
 	AddEffect(NULL, hit_fx);
 
 	Vec3ScaleAssign(8.0f, normal);
@@ -97,7 +95,7 @@ void FXMaceballBounce(centity_t* owner, const int type, const int flags, vec3_t 
 	// Draw a circle of expanding lines.
 	vec3_t last_vel;
 	VectorScale(right, MACEBALL_RING_VEL, last_vel);
-	const int ring_flags = CEF_PULSE_ALPHA | CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS; //mxd
+	const int ring_flags = (CEF_PULSE_ALPHA | CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS); //mxd
 	float cur_yaw = 0.0f;
 
 	for (int i = 0; i < NUM_RIPPER_PUFFS; i++)
@@ -109,7 +107,7 @@ void FXMaceballBounce(centity_t* owner, const int type, const int flags, vec3_t 
 		ring->r.model = &mace_models[2]; // Neon-green sprite.
 		ring->r.frame = 1;
 		ring->r.spriteType = SPRITE_LINE;
-		ring->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		ring->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		ring->radius = 64.0f;
 		ring->r.scale = 0.5f;
 		ring->d_scale = 16.0f;
@@ -153,7 +151,7 @@ void FXMaceballBounce(centity_t* owner, const int type, const int flags, vec3_t 
 	// Add a few sparks to the impact.
 	for (int i = 0; i < 8; i++)
 	{
-		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_G, color_white, 500);
+		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_G, color_white, BALL_BOUNCE_LIFETIME); //mxd. Use BALL_BOUNCE_LIFETIME define.
 
 		VectorRandomSet(spark->velocity, MACEBALL_SPARK_VEL);
 		spark->d_alpha = flrand(-768.0f, -512.0f);
