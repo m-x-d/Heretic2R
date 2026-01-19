@@ -24,7 +24,6 @@ void PreCacheWall(void)
 #pragma region =========================== FIRE WALL (POWERED) ===========================
 
 #define FIREWORM_LIFETIME			1.0f
-#define FIREWORM_BLASTLIFE			0.25f
 #define FIREWORM_LIFETIME_MS		(FIREWORM_LIFETIME * 1000.0f)
 #define FIREWORM_ACCELERATION		(-1000.0f)
 #define FIREWORM_INITIAL_VELOCITY	(-0.5f * FIREWORM_LIFETIME * FIREWORM_ACCELERATION)
@@ -33,96 +32,155 @@ void PreCacheWall(void)
 #define FIREWORM_BLAST_NUM			12
 #define FIREWORM_BLAST_RADIUS		32
 
+#define FIREWAVE_TRACEDIST			64.0f //mxd
+#define FIREWAVE_WORM_TIME			500.0f //mxd. Was int.
+#define FIREWAVE_BLAST_NUM			4
+
+static client_entity_t* FireWormBlastInit(const vec3_t origin, const float scale) //mxd
+{
+	client_entity_t* blast = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_ADDITIVE_PARTS, origin, NULL, 500);
+
+	blast->radius = flrand(1.5f, 2.5f) * scale; //mxd
+	blast->r.model = &wall_models[2]; // Halo sprite.
+	blast->r.frame = 2; // Circular halo for blast.
+	blast->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
+	blast->alpha = 0.65f;
+	blast->d_alpha = -2.0f;
+	blast->r.scale = blast->radius;
+	blast->d_scale = 3.0f * scale;
+
+	RE_SetupRollSprite(&blast->r, 64.0f, flrand(0.0f, 359.0f));
+
+	return blast;
+}
+
+static void FireWormSpawnAirBlast(const client_entity_t* self) //mxd. Separate effect for in-air blast...
+{
+	client_entity_t* blast = FireWormBlastInit(self->r.origin, self->r.scale); //mxd
+	AddEffect(NULL, blast);
+
+	const float worm_scale = FIREWORM_BLAST_VELOCITY * self->r.scale; //mxd
+
+	// Create particle explosion.
+	for (int i = 0; i < 16; i++)
+	{
+		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color_white, 500);
+
+		VectorRandomSet(spark->velocity, 2.5f * worm_scale);
+
+		spark->color.a = 254;
+		spark->d_alpha = flrand(-768.0f, -512.0f);
+		spark->scale = flrand(28.0f, 36.0f) * self->r.scale;
+		spark->d_scale = flrand(-48.0f, -32.0f);
+
+		AddParticleToList(blast, spark);
+	}
+}
+
+static void FireWormSpawnImpactBlast(const client_entity_t* self, const vec3_t origin, const vec3_t normal) //mxd. Split from FireWormUpdate() to simplify logic.
+{
+	const float worm_scale = FIREWORM_BLAST_VELOCITY * self->r.scale; //mxd
+	const float vel_max = worm_scale * 0.25f; //mxd
+
+	client_entity_t* blast = FireWormBlastInit(origin, self->r.scale);
+	VectorSet(blast->velocity, flrand(-vel_max, vel_max), flrand(-vel_max, vel_max), flrand(0.0f, vel_max));
+
+	AddEffect(NULL, blast);
+
+	// Spray out in a big ring.
+	float angle = flrand(0.0f, ANGLE_360);
+	const float angle_increment = ANGLE_360 / FIREWORM_BLAST_NUM;
+
+	//mxd. Take the normal and find two "axis" vectors that are in the plane the normal defines.
+	vec3_t up;
+	PerpendicularVector(up, normal);
+
+	vec3_t right;
+	CrossProduct(up, normal, right);
+
+	for (int i = 0; i < FIREWORM_BLAST_NUM; i++) //mxd. Original logic counts to 8 instead.
+	{
+		vec3_t diff_pos;
+		VectorScale(up, sinf(angle), diff_pos);
+		VectorMA(diff_pos, cosf(angle), right, diff_pos);
+
+		angle += angle_increment;
+
+		// Higher particle.
+		client_particle_t* spark_hi = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color_white, 500);
+
+		VectorScale(diff_pos, FIREWORM_BLAST_RADIUS * self->r.scale, spark_hi->origin);
+		VectorScale(diff_pos, flrand(0.45f, 0.5f) * worm_scale, spark_hi->velocity);
+		spark_hi->velocity[2] += flrand(0.8f, 1.0f) * worm_scale;
+
+		spark_hi->color.a = 254;
+		spark_hi->d_alpha = flrand(-768.0f, -512.0f);
+		spark_hi->scale = 16.0f * self->r.scale;
+		spark_hi->d_scale = flrand(8.0f, 16.0f) * self->r.scale;
+
+		AddParticleToList(blast, spark_hi);
+
+		// Lower to ground particle.
+		client_particle_t* spark_low = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), color_white, 500);
+
+		VectorCopy(spark_hi->origin, spark_low->origin);
+		VectorCopy(spark_hi->velocity, spark_low->velocity);
+		spark_low->velocity[2] *= 0.33f;
+
+		spark_low->color.a = 254;
+		spark_low->d_alpha = flrand(-768.0f, -512.0f);
+		spark_low->scale = 16.0f * self->r.scale;
+		spark_low->d_scale = flrand(8.0f, 16.0f) * self->r.scale;
+
+		AddParticleToList(blast, spark_low);
+	}
+
+	// Spray up in a little fountain too.
+	for (int i = 0; i < 4; i++)
+	{
+		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color_white, 500);
+
+		VectorSet(spark->velocity,
+			flrand(-0.1f * worm_scale, 0.1f * worm_scale),
+			flrand(-0.1f * worm_scale, 0.1f * worm_scale),
+			flrand(-0.2f * worm_scale, 0.2f * worm_scale));
+		spark->velocity[2] += FIREWORM_BLAST_VELOCITY;
+
+		spark->color.a = 254;
+		spark->d_alpha = flrand(-768.0f, -512.0f);
+		spark->scale = 16.0f * self->r.scale;
+		spark->d_scale = flrand(-16.0f, -8.0f);
+
+		AddParticleToList(blast, spark);
+	}
+}
+
 static qboolean FireWormUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFireWormThink' in original logic.
 {
 	const float delta_time = (float)(fx_time - self->startTime) / FIREWORM_LIFETIME_MS;
-	const float worm_scale = FIREWORM_BLAST_VELOCITY * self->r.scale; //mxd
 
+	//mxd. Our lifetime expired in the air. Create fireblast and remove us.
 	if (delta_time > FIREWORM_LIFETIME)
 	{
-		// Impact at the centerpoint.
-		if (self->SpawnInfo == 0 || delta_time > FIREWORM_LIFETIME + FIREWORM_BLASTLIFE)
-		{
-			// Do nothing, wait for blast to expire.
-			self->nextThinkTime = fx_time + 500;
-			self->Update = RemoveSelfAI;
+		FireWormSpawnAirBlast(self);
+		return false;
+	}
 
-			return true;
-		}
+	//mxd. Check for impact (original logic does this in FXFireWaveWorm() / FireWaveUpdate()).
+	vec3_t end_pos;
+	VectorNormalize2(self->velocity, end_pos);
+	VectorMA(self->r.origin, FIREWAVE_TRACEDIST, end_pos, end_pos);
 
-		client_entity_t* blast = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_ADDITIVE_PARTS, self->endpos, NULL, 500);
+	trace_t trace;
+	fxi.Trace(self->r.origin, vec3_origin, vec3_origin, end_pos, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
 
-		blast->r.model = &wall_models[2]; // Halo sprite.
-		blast->r.frame = 2; // Circular halo for blast.
-		blast->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
-		blast->alpha = 0.95f;
-		blast->d_alpha = -0.5f;
-		blast->r.scale = 0.25f * self->r.scale;
-		blast->d_scale = -3.0f * self->r.scale;
+	if (trace.fraction < 1.0f)
+	{
+		vec3_t blast_pos; // Offset from hit surface a bit.
+		VectorMA(trace.endpos, 8.0f, trace.plane.normal, blast_pos);
+		FireWormSpawnImpactBlast(self, blast_pos, trace.plane.normal);
 
-		const float vel_max = worm_scale * 0.25f; //mxd
-		VectorSet(blast->velocity, flrand(-vel_max, vel_max), flrand(-vel_max, vel_max), flrand(0.0f, vel_max));
-
-		AddEffect(NULL, blast);
-
-		// Spray out in a big ring.
-		float angle = flrand(0.0f, ANGLE_360);
-		const float angle_increment = ANGLE_360 / FIREWORM_BLAST_NUM;
-
-		for (int i = 0; i < 8; i++) //TODO: shouldn't this count to FIREWORM_BLAST_NUM?..
-		{
-			const vec3_t diff_pos = VEC3_SET(cosf(angle), sinf(angle), 0.0f);
-			angle += angle_increment;
-
-			// Higher particle.
-			client_particle_t* spark_hi = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color_white, 500);
-
-			VectorScale(diff_pos, FIREWORM_BLAST_RADIUS * self->r.scale, spark_hi->origin);
-			VectorScale(diff_pos, flrand(0.45f, 0.5f) * worm_scale, spark_hi->velocity);
-			spark_hi->velocity[2] += flrand(0.8f, 1.0f) * worm_scale;
-
-			spark_hi->color.a = 254;
-			spark_hi->d_alpha = flrand(-768.0f, -512.0f);
-			spark_hi->scale = 16.0f * self->r.scale;
-			spark_hi->d_scale = flrand(8.0f, 16.0f) * self->r.scale;
-
-			AddParticleToList(blast, spark_hi);
-
-			// Lower to ground particle.
-			client_particle_t* spark_low = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), color_white, 500);
-
-			VectorCopy(spark_hi->origin, spark_low->origin);
-			VectorCopy(spark_hi->velocity, spark_low->velocity);
-			spark_low->velocity[2] *= 0.33f;
-
-			spark_low->color.a = 254;
-			spark_low->d_alpha = flrand(-768.0f, -512.0f);
-			spark_low->scale = 16.0f * self->r.scale;
-			spark_low->d_scale = flrand(8.0f, 16.0f) * self->r.scale;
-
-			AddParticleToList(blast, spark_low);
-		}
-
-		// Spray up in a little fountain too.
-		for (int i = 0; i < 4; i++)
-		{
-			client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color_white, 500);
-
-			VectorSet(spark->velocity,
-				flrand(-0.1f * worm_scale, 0.1f * worm_scale),
-				flrand(-0.1f * worm_scale, 0.1f * worm_scale),
-				flrand(-0.2f * worm_scale, 0.2f * worm_scale));
-			spark->velocity[2] += FIREWORM_BLAST_VELOCITY;
-
-			spark->color.a = 254;
-			spark->d_alpha = flrand(-768.0f, -512.0f);
-			spark->scale = 16.0f * self->r.scale;
-			spark->d_scale = flrand(-16.0f, -8.0f);
-
-			AddParticleToList(blast, spark);
-		}
-
-		return true;
+		return false; // Remove us.
 	}
 
 	// Add a trail entity and particle trail segment.
@@ -148,10 +206,6 @@ static qboolean FireWormUpdate(client_entity_t* self, centity_t* owner) //mxd. N
 
 	return true;
 }
-
-#define FIREWAVE_TRACEDOWN		128.0f //mxd. Was int.
-#define FIREWAVE_WORM_TIME		500.0f //mxd. Was int.
-#define FIREWAVE_BLAST_NUM		4
 
 static void FireWaveImpact(const client_entity_t* wall)
 {
@@ -340,10 +394,9 @@ static qboolean FireWaveUpdate(client_entity_t* wall, centity_t* owner) //mxd. N
 		AddEffect(NULL, blast_bottom);
 	}
 
+	// Spawn a worm.
 	if (fx_time >= wall->nextEventTime)
 	{
-		// Spawn a worm.
-
 		// Find a random spot somewhere to have a fire worm hit.
 		vec3_t dest_pt;
 		VectorMA(wall->r.origin, flrand(-1.0f, 1.0f) * wall->radius, wall->right, dest_pt);
@@ -352,34 +405,20 @@ static qboolean FireWaveUpdate(client_entity_t* wall, centity_t* owner) //mxd. N
 		vec3_t spawn_pt;
 		VectorMA(dest_pt, -0.5f * FIREWORM_LIFETIME, wall->velocity, spawn_pt);
 
-		// Trace down a bit to look for a nice place to spawn stuff.
-		trace_t trace;
-		const vec3_t bottom = VEC3_INITA(dest_pt, 0.0f, 0.0f, -FIREWAVE_TRACEDOWN);
-		fxi.Trace(dest_pt, vec3_origin, vec3_origin, bottom, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
-
-		const qboolean hitground = (trace.fraction < 0.99f);
-		if (hitground)
-			VectorCopy(trace.endpos, dest_pt); // Hit the ground, smack it!!!
-
+		// New worm, but a small one.
 		client_entity_t* worm = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_ADDITIVE_PARTS, spawn_pt, NULL, 75);
 
 		worm->radius = 64.0f;
 		worm->r.model = &wall_models[2]; // halo sprite.
 		worm->r.frame = 2;
 		worm->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
-
-		VectorCopy(spawn_pt, worm->startpos);
-		VectorCopy(dest_pt, worm->endpos);
-		worm->alpha = 0.95f;
-
-		// New worm, but a small one.
+		worm->alpha = 0.75f;
 		worm->r.scale = 0.5f * detail_scale;
 		worm->color.c = 0xff0080ff;
 		worm->dlight = CE_DLight_new(worm->color, 128.0f, 0.0f);
 		VectorCopy(wall->velocity, worm->velocity);
 		worm->velocity[2] += FIREWORM_INITIAL_VELOCITY;
 		worm->acceleration[2] = FIREWORM_ACCELERATION;
-		worm->SpawnInfo = (hitground ? 1 : 0);
 		worm->Update = FireWormUpdate;
 
 		RE_SetupRollSprite(&worm->r, 64.0f, flrand(0.0f, 359.0f)); //mxd
@@ -470,14 +509,6 @@ void FXFireWaveWorm(centity_t* owner, int type, const int flags, vec3_t origin)
 	vec3_t spawn_pt;
 	VectorMA(origin, -0.5f * FIREWORM_LIFETIME * FIREWAVE_SPEED, dir, spawn_pt);
 
-	// Trace down a bit to look for a nice place to spawn stuff.
-	trace_t trace;
-	const vec3_t bottom = VEC3_INITA(spawn_pt, 0.0f, 0.0f, -FIREWAVE_TRACEDOWN);
-	fxi.Trace(spawn_pt, vec3_origin, vec3_origin, bottom, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
-
-	if (trace.fraction < 0.99f)
-		VectorCopy(trace.endpos, spawn_pt); // Hit the ground.
-
 	client_entity_t* worm = ClientEntity_new(FX_WEAPON_FIREWAVE, flags | CEF_ADDITIVE_PARTS, spawn_pt, NULL, 75);
 
 	worm->radius = 64.0f;
@@ -485,13 +516,8 @@ void FXFireWaveWorm(centity_t* owner, int type, const int flags, vec3_t origin)
 	worm->r.frame = 2;
 	worm->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	worm->r.scale = 1.5f * detail_scale;
-
-	VectorCopy(spawn_pt, worm->startpos);
-	VectorCopy(origin, worm->endpos);
 	worm->alpha = 0.95f;
 	worm->color.c = 0xff0080ff;
-	worm->SpawnInfo = 1;
-
 	VectorScale(dir, FIREWAVE_SPEED, worm->velocity);
 	worm->velocity[2] += FIREWORM_INITIAL_VELOCITY;
 	worm->acceleration[2] = FIREWORM_ACCELERATION;
