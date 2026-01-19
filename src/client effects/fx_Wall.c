@@ -285,6 +285,7 @@ static qboolean FireWaveUpdate(client_entity_t* wall, centity_t* owner) //mxd. N
 		blast_top->r.scale = scale * detail_scale;
 		blast_top->d_scale = scale * detail_scale * flrand(-1.5f, -1.0f);
 
+		RE_SetupRollSprite(&blast_top->r, 128.0f, flrand(0.0f, 359.0f)); //mxd
 		AddEffect(NULL, blast_top);
 
 		// Spawn along the bottom line of the wall
@@ -335,6 +336,7 @@ static qboolean FireWaveUpdate(client_entity_t* wall, centity_t* owner) //mxd. N
 		blast_bottom->r.scale = scale * detail_scale;
 		blast_bottom->d_scale = scale * detail_scale * flrand(-1.5f, -1.0f);
 
+		RE_SetupRollSprite(&blast_bottom->r, 128.0f, flrand(0.0f, 359.0f)); //mxd
 		AddEffect(NULL, blast_bottom);
 	}
 
@@ -380,6 +382,7 @@ static qboolean FireWaveUpdate(client_entity_t* wall, centity_t* owner) //mxd. N
 		worm->SpawnInfo = (hitground ? 1 : 0);
 		worm->Update = FireWormUpdate;
 
+		RE_SetupRollSprite(&worm->r, 64.0f, flrand(0.0f, 359.0f)); //mxd
 		AddEffect(NULL, worm);
 		FireWormUpdate(worm, NULL);
 
@@ -625,6 +628,7 @@ static qboolean FireBurstUpdate(client_entity_t* self, centity_t* owner) //mxd. 
 		burst->acceleration[2] = flrand(16.0f, 64.0f);
 		burst->velocity[2] += flrand(16.0f, 64.0f);
 
+		RE_SetupRollSprite(&burst->r, 64.0f, flrand(0.0f, 359.0f)); //mxd
 		AddEffect(NULL, burst);
 
 		if (i == 0 || i == num_flame_columns - 1)
