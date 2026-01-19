@@ -42,7 +42,7 @@
 #include "menus/menu_worldmap.h"
 
 cvar_t* menus_active;
-cvar_t* quick_menus; //TODO: add UI control (in menu_misc.c menu?).
+static cvar_t* quick_menus; //TODO: add UI control (in menu_misc.c menu?).
 
 cvar_t* m_item_defaults;
 
@@ -727,7 +727,7 @@ void M_Init(void)
 //mxd. Replaces M_GetMenuAlpha() from original H2 logic (which just returned cls.m_menualpha).
 static float M_GetMenuItemAlpha(const menucommon_t* item)
 {
-	return cls.m_menualpha * ((item->flags & QMF_GRAYED) ? 0.7f : 1.0f);
+	return cls.m_menualpha * ((item->flags & QMF_GRAYED) ? 0.5f : 1.0f);
 }
 
 int M_GetMenuLabelX(const int text_width) // H2
@@ -852,7 +852,7 @@ qboolean Menu_SlideItem(const menuframework_t* menu, const int dir) //mxd. Retur
 // the menu's cursor so that it's at the next available slot.
 void Menu_AdjustCursor(menuframework_t* menu, const int dir)
 {
-	const int initial_cursor = menu->cursor; //mxd
+	const int initial_cursor = ClampI(menu->cursor, 0, menu->nitems - 1); //mxd
 
 	// Crawl in the direction indicated until we find a valid spot.
 	if (dir == 1)

@@ -134,7 +134,7 @@ enum menuitem_type_e
 enum menuitem_flags_e
 {
 	QMF_LEFT_JUSTIFY	= 1,
-	QMF_GRAYED			= 2,
+	QMF_GRAYED			= 2, // Unused in original logic --mxd.
 	QMF_NUMBERSONLY		= 4,
 	QMF_SINGLELINE		= 8,
 	QMF_MULTILINE		= 16,
