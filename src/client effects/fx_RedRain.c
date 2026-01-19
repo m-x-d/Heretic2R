@@ -157,12 +157,19 @@ static void SpawnRedRainClouds(const vec3_t impact_pos, const vec3_t rain_pos, c
 	client_entity_t* flash = ClientEntity_new(-1, 0, impact_pos, NULL, 500);
 
 	flash->r.model = &rain_models[powerup ? 6 : 5]; //mxd. Use halogreen/halored sprites (original logic uses spark_green/spark_red -- too low res).
-	flash->r.flags = (RF_NODEPTHTEST | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA); //mxd. +RF_NODEPTHTEST.
+	flash->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	flash->radius = 10.0f;
 	flash->r.scale = 5.0f;
 	flash->d_scale = -4.0f;
 	flash->alpha = 0.3f; //mxd
 	flash->d_alpha = -1.0f;
+
+	//mxd. If visible, add RF_NODEPTHTEST flag.
+	trace_t trace;
+	fxi.Trace(flash->r.origin, vec3_origin, vec3_origin, fxi.cl->refdef.vieworg, (CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER), CEF_CLIP_TO_ALL, &trace);
+
+	if (trace.fraction == 1.0f)
+		flash->r.flags |= RF_NODEPTHTEST;
 
 	RE_SetupFlipSprite(&flash->r, 32.0f, 32.0f, 64.0f, 64.0f, irand(0, 1), irand(0, 1)); //mxd
 	AddEffect(NULL, flash);
