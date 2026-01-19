@@ -389,6 +389,24 @@ static qboolean FireWaveUpdate(client_entity_t* wall, centity_t* owner) //mxd. N
 	return true;
 }
 
+static client_entity_t* FireWaveFlashInit(const int type, const int flags, const vec3_t origin) //mxd
+{
+	client_entity_t* flash = ClientEntity_new(type, flags, origin, NULL, 1000);
+
+	flash->radius = 64.0f;
+	flash->r.model = &wall_models[2]; // halo sprite.
+	flash->r.frame = 2; //mxd. Use red halo.
+	flash->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
+	flash->r.scale = 1.2f;
+	flash->d_scale = -2.5f;
+	flash->alpha = 0.9f;
+	flash->d_alpha = -1.5f;
+
+	RE_SetupRollSprite(&flash->r, 64.0f, flrand(0.0f, 359.0f));
+
+	return flash;
+}
+
 void FXFireWave(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	short short_yaw;
@@ -418,6 +436,15 @@ void FXFireWave(centity_t* owner, const int type, const int flags, vec3_t origin
 	wall->Update = FireWaveUpdate;
 
 	AddEffect(owner, wall);
+
+	//mxd. Add flash.
+	vec3_t flash_org;
+	VectorMA(origin, 18.0f, vec3_up, flash_org); // Offset a bit (so its spawned at chest height instead of pelvis height).
+
+	client_entity_t* flash = FireWaveFlashInit(type, flags, flash_org);
+	VectorScale(wall->direction, FIREBLAST_SPEED * 0.15f, flash->velocity);
+
+	AddEffect(NULL, flash);
 }
 
 void FXFireWaveWorm(centity_t* owner, int type, const int flags, vec3_t origin)
@@ -639,15 +666,10 @@ void FXFireBurst(centity_t* owner, const int type, const int flags, vec3_t origi
 	AddEffect(owner, wall);
 
 	// Okay, this weapon feels REALLY weak at launch, so I'm going to add a little punch to it.
-	client_entity_t* flash = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, origin, NULL, 1000);
+	vec3_t flash_org;
+	VectorMA(origin, 18.0f, vec3_up, flash_org); //mxd. Offset a bit (so its spawned at chest height instead of pelvis height).
 
-	flash->radius = 64.0f;
-	flash->r.model = &wall_models[2]; // The starry halo.
-	flash->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
-	flash->r.scale = 0.1f;
-	flash->d_scale = 4.0f;
-	flash->alpha = 0.95f;
-	flash->d_alpha = -2.0f;
+	client_entity_t* flash = FireWaveFlashInit(type, flags | CEF_ADDITIVE_PARTS, flash_org);
 	VectorScale(forward, FIREBLAST_SPEED * 0.15f, flash->velocity);
 
 	AddEffect(NULL, flash);
