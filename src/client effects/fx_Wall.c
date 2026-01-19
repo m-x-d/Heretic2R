@@ -16,7 +16,7 @@ static struct model_s* wall_models[3];
 
 void PreCacheWall(void)
 {
-	wall_models[0] = fxi.RegisterModel("sprites/spells/wflame.sp2"); //TODO: wflame.m8 is missing from Htic2-0.pak!
+	wall_models[0] = fxi.RegisterModel("sprites/spells/wflame.sp2");
 	wall_models[1] = fxi.RegisterModel("sprites/spells/wflame2.sp2");
 	wall_models[2] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
@@ -201,12 +201,12 @@ static qboolean FireWaveUpdate(client_entity_t* wall, centity_t* owner) //mxd. N
 	if (owner->current.effects & EF_ALTCLIENTFX)
 	{
 		// Time for this wall to die.
-		if (wall->SpawnInfo != 1)
+		if (!wall->firewavewall_expired)
 		{
 			// Wait one second before disappearing.
 			VectorClear(wall->velocity);
 			wall->lastThinkTime = fx_time + 1000;
-			wall->SpawnInfo = 1;
+			wall->firewavewall_expired = true;
 			FireWaveImpact(wall);
 
 			return true;
@@ -257,14 +257,14 @@ static qboolean FireWaveUpdate(client_entity_t* wall, centity_t* owner) //mxd. N
 				break;
 
 			case 2: // Blast about at the center.
-				spawn_pt[2] -= flrand(0.0f, 0.2f) * FIREWAVE_DOWN; //TODO: shouldn't this use FIREWAVE_UP?..
+				spawn_pt[2] -= flrand(0.0f, 0.2f) * FIREWAVE_DOWN;
 				scale = 0.8f;
 				break;
 
 			case 3:
 			default: // Throw blast down.
 				VectorMA(spawn_pt, flrand(-0.4f, 0.4f) * wall->radius, wall->right, spawn_pt);
-				spawn_pt[2] -= flrand(0.3f, 0.6f) * FIREWAVE_DOWN; //TODO: shouldn't this use FIREWAVE_UP?..
+				spawn_pt[2] -= flrand(0.3f, 0.6f) * FIREWAVE_DOWN;
 				scale = 0.8f;
 				break;
 		}
@@ -518,13 +518,13 @@ static qboolean FireBurstUpdate(client_entity_t* self, centity_t* owner) //mxd. 
 
 	if (owner->current.effects & EF_ALTCLIENTFX)
 	{
-		// Time for this wall to die.
-		if (self->SpawnInfo != 1)
+		// Time for this burst to die.
+		if (!self->firewaveburst_expired)
 		{
 			// Wait one second before disappearing.
 			VectorClear(self->velocity);
 			self->lastThinkTime = fx_time + 1000;
-			self->SpawnInfo = 1;
+			self->firewaveburst_expired = true;
 			FireBurstImpact(self);
 
 			return true;

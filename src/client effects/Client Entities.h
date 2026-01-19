@@ -144,6 +144,8 @@ typedef struct client_entity_s
 		int SpawnInfo;
 		float yaw;
 		int puzzle_pickup_tag; //mxd
+		qboolean firewavewall_expired; //mxd
+		qboolean firewaveburst_expired; //mxd
 	};
 
 	// For spritelines.
