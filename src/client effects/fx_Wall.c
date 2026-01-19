@@ -431,7 +431,7 @@ static qboolean FireWaveUpdate(client_entity_t* wall, centity_t* owner) //mxd. N
 	return true;
 }
 
-static client_entity_t* FireWaveFlashInit(const int type, const int flags, const vec3_t origin) //mxd
+static client_entity_t* FireWaveFlashInit(const int type, const int flags, const vec3_t origin) //mxd. Added to avoid code duplication.
 {
 	client_entity_t* flash = ClientEntity_new(type, flags, origin, NULL, 1000);
 
@@ -480,8 +480,7 @@ void FXFireWave(centity_t* owner, const int type, const int flags, vec3_t origin
 	AddEffect(owner, wall);
 
 	//mxd. Add flash.
-	vec3_t flash_org;
-	VectorMA(origin, 18.0f, vec3_up, flash_org); // Offset a bit (so its spawned at chest height instead of pelvis height).
+	const vec3_t flash_org = VEC3_INITA(origin, 0.0f, 0.0f, 18.0f); // Offset a bit, so it's spawned at chest height instead of pelvis height.
 
 	client_entity_t* flash = FireWaveFlashInit(type, flags, flash_org);
 	VectorScale(wall->direction, FIREBLAST_SPEED * 0.15f, flash->velocity);
@@ -696,8 +695,7 @@ void FXFireBurst(centity_t* owner, const int type, const int flags, vec3_t origi
 	AddEffect(owner, wall);
 
 	// Okay, this weapon feels REALLY weak at launch, so I'm going to add a little punch to it.
-	vec3_t flash_org;
-	VectorMA(origin, 18.0f, vec3_up, flash_org); //mxd. Offset a bit (so its spawned at chest height instead of pelvis height).
+	const vec3_t flash_org = VEC3_INITA(origin, 0.0f, 0.0f, 18.0f); //mxd. Offset a bit, so it's spawned at chest height instead of pelvis height.
 
 	client_entity_t* flash = FireWaveFlashInit(type, flags | CEF_ADDITIVE_PARTS, flash_org);
 	VectorScale(forward, FIREBLAST_SPEED * 0.15f, flash->velocity);
