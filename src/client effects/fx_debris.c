@@ -233,7 +233,7 @@ static qboolean IsInWater(const vec3_t origin)
 	// Not-very-perfect way of doing a pointcontents from the FX dll.
 	trace_t trace;
 	const vec3_t start = VEC3_INITA(origin, 0.0f, 0.0f, 1.0f);
-	fxi.Trace(start, vec3_origin, vec3_origin, origin, 0, 0, &trace);
+	fxi.Trace(start, vec3_origin, vec3_origin, origin, CONTENTS_EMPTY, 0, &trace);
 
 	return (trace.contents & MASK_WATER);
 }
