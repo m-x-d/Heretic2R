@@ -590,9 +590,10 @@ static qboolean FireBurstUpdate(client_entity_t* self, centity_t* owner) //mxd. 
 		if (i & 1)
 			burst->velocity[2] *= 0.5f;
 
-		burst->origin[0] += flrand(-32.0f, 32.0f); //mxd. irand() in original logic.
-		burst->origin[1] += flrand(-32.0f, 32.0f); //mxd. irand() in original logic.
-		burst->origin[2] += flrand(-16.0f, 16.0f); //mxd. irand() in original logic.
+		//mxd. Original logic sets burst->origin instead (didn't affect burst position).
+		burst->r.origin[0] += flrand(-32.0f, 32.0f); //mxd. irand() in original logic.
+		burst->r.origin[1] += flrand(-32.0f, 32.0f); //mxd. irand() in original logic.
+		burst->r.origin[2] += flrand(-16.0f, 16.0f); //mxd. irand() in original logic.
 
 		burst->acceleration[2] = flrand(16.0f, 64.0f);
 		burst->velocity[2] += flrand(16.0f, 64.0f);
