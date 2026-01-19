@@ -32,7 +32,7 @@ static qboolean ShadowAddToView(client_entity_t* self, centity_t* owner)
 
 	// Determine visibility.
 	trace_t trace;
-	fxi.Trace(start_pos, vec3_origin, vec3_origin, end_pos, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
+	fxi.Trace(start_pos, vec3_origin, vec3_origin, end_pos, CONTENTS_SOLID, CEF_CLIP_TO_ALL, &trace); //mxd. CEF_CLIP_TO_WORLD in original logic. Fixes shadows disappearing when standing on brush entities (like func_wall or func_breakable).
 
 	// In air or in solid, so no shadow.
 	if (trace.startsolid || trace.fraction == 1.0f)
