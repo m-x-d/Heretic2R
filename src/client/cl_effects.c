@@ -168,7 +168,7 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 
 	trace_ignore_player = true;
 	trace_t trace;
-	CL_Trace(start, vec3_origin, vec3_origin, end, MASK_SHOT | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+	CL_Trace(start, vec3_origin, vec3_origin, end, MASK_SHOT | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK, CEF_CLIP_TO_ALL, &trace);
 	trace_ignore_player = false;
 
 	//mxd. Do free aim <-> autoaim crosshair animation.

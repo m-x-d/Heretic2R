@@ -1128,7 +1128,7 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 	if (maxs == NULL)
 		maxs = vec3_origin;
 
-	if (flags & CONTENTS_DETAIL)
+	if (flags & CEF_CLIP_TO_WORLD)
 	{
 		CM_BoxTrace(start, end, mins, maxs, 0, brushmask, t);
 
@@ -1143,7 +1143,7 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 		memset(t, 0, sizeof(trace_t));
 	}
 
-	if (flags & CONTENTS_TRANSLUCENT)
+	if (flags & CEF_CLIP_TO_ENTITIES)
 	{
 		if (brushmask & CONTENTS_CAMERABLOCK)
 			trace_ignore_camera = true;
