@@ -43,8 +43,8 @@ typedef struct client_entity_s
 
 	struct client_entity_s* next; // Next client entity, if any.
 
-	// Note: since a client_entity's origin (inside the entity e field) is controlled solely by it's velocity and acceleration,
-	// it doesn't need to have it's origin lerped by the renderer.
+	// NOTE: since a client_entity's origin (inside the entity e field) is controlled solely by its velocity and acceleration,
+	// it doesn't need to have its origin lerped by the renderer.
 
 	vec3_t origin; // Used by (non-world) effects that have an owning centity_t.
 	vec3_t velocity;
@@ -59,7 +59,7 @@ typedef struct client_entity_s
 	union
 	{
 		vec3_t up;
-		vec3_t right; // This means you can't have a right AND up, but both usually aren't needed..
+		vec3_t right; // This means you can't have a right AND up, but both usually aren't needed.
 		vec3_t endpos;
 	};
 
@@ -79,7 +79,7 @@ typedef struct client_entity_s
 
 	int startTime; // Time the client_entity_t was created.
 
-	int nextThinkTime; // Next time Update will be run.
+	int nextThinkTime; // Next time Update will be run. //NOTE: should not be modified in Update() function (because UpdateEffects() will override the value), updateTime should be used instead --mxd.
 	int updateTime;
 
 	UpdateEffect_t Update; // Run every nextThinkTime. If it returns false the entity will be removed.

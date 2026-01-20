@@ -71,7 +71,8 @@ void FXWaterfallBase(centity_t* owner, const int type, int flags, vec3_t origin)
 static qboolean WaterDropEndUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXWaterDropEnd' in original logic.
 {
 	CreateFountainSplash(self, 10.0f, 10.0f, 0.0f);
-	self->nextThinkTime = fx_time + 500;
+
+	self->updateTime = 500; //mxd. Original logic sets nextThinkTime (gets overwritten in UpdateEffects()).
 	self->Update = RemoveSelfAI;
 
 	return true;
