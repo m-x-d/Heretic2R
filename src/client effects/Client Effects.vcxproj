@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\anorms.h" />
+    <ClInclude Include="..\qcommon\EffectFlags.h" />
     <ClInclude Include="..\qcommon\FX.h" />
     <ClInclude Include="..\qcommon\items.h" />
     <ClInclude Include="..\qcommon\LevelMaps.h" />
