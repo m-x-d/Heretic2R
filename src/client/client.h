@@ -706,6 +706,8 @@ extern int pred_pm_flags; //mxd
 extern int pred_pm_w_flags; //mxd
 extern qboolean trace_ignore_player; //mxd
 extern qboolean trace_ignore_camera; //mxd
+extern qboolean trace_ignore_bmodels; //mxd
+extern qboolean trace_ignore_entities; //mxd
 
 extern void CL_CheckPredictionError(void);
 extern int CL_PMpointcontents(const vec3_t point); //mxd

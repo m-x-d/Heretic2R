@@ -98,7 +98,7 @@ static void CL_UpdateWallDistances(void) // H2
 	}
 
 	trace_t trace;
-	CL_Trace(start, NULL, NULL, end, MASK_PLAYERSOLID | CONTENTS_WORLD_ONLY, CEF_CLIP_TO_WORLD, &trace);
+	CL_Trace(start, NULL, NULL, end, MASK_PLAYERSOLID | CONTENTS_WORLD_ONLY, CTF_CLIP_TO_WORLD, &trace);
 	Vec3SubtractAssign(start, trace.endpos);
 	cl.wall_dist[cl.wall_check] = VectorLength(trace.endpos);
 
@@ -179,7 +179,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 			end[2] -= 100.0f;
 
 			trace_t tr;
-			CL_Trace(start, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CEF_CLIP_TO_ALL, &tr);
+			CL_Trace(start, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CTF_CLIP_TO_ALL, &tr);
 
 			if (tr.fraction < 1.0f)
 			{
@@ -200,7 +200,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 		VectorMA(start, viewheight, up, end);
 
 		trace_t tr;
-		CL_Trace(start, mins_2, maxs_2, end, MASK_CAMERA, CEF_CLIP_TO_ALL, &tr);
+		CL_Trace(start, mins_2, maxs_2, end, MASK_CAMERA, CTF_CLIP_TO_ALL, &tr);
 
 		if (!noclip_mode && tr.fraction != 1.0f)
 			VectorCopy(tr.endpos, end);
@@ -214,7 +214,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 			start[2] += 100.0f;
 			tmp_end[2] -= 100.0f;
 
-			CL_Trace(start, mins, maxs, tmp_end, MASK_WATER | CONTENTS_CAMERABLOCK, CEF_CLIP_TO_ALL, &tr);
+			CL_Trace(start, mins, maxs, tmp_end, MASK_WATER | CONTENTS_CAMERABLOCK, CTF_CLIP_TO_ALL, &tr);
 
 			if (tr.fraction != 1.0f)
 			{
@@ -269,7 +269,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 	}
 
 	trace_t trace;
-	CL_Trace(start, mins_2, maxs_2, end, MASK_CAMERA, CEF_CLIP_TO_ALL, &trace);
+	CL_Trace(start, mins_2, maxs_2, end, MASK_CAMERA, CTF_CLIP_TO_ALL, &trace);
 
 	if (!noclip_mode && trace.fraction != 1.0f)
 		VectorCopy(trace.endpos, end);
@@ -285,7 +285,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 
 	if ((water_flags & WF_SWIMFREE) && (CL_PMpointcontents(end) & MASK_WATER))
 	{
-		CL_Trace(end_2, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CEF_CLIP_TO_ALL, &trace);
+		CL_Trace(end_2, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CTF_CLIP_TO_ALL, &trace);
 
 		if (!trace.startsolid && trace.fraction != 1.0f)
 			VectorLerp(end, 0.9f, trace.endpos, end_2);
@@ -306,7 +306,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 	}
 
 	// Check against world --mxd.
-	CL_Trace(end, mins, maxs, end_2, MASK_CAMERA, CEF_CLIP_TO_ALL, &trace);
+	CL_Trace(end, mins, maxs, end_2, MASK_CAMERA, CTF_CLIP_TO_ALL, &trace);
 
 	if (!noclip_mode && trace.fraction != 1.0f)
 	{
@@ -318,7 +318,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 		{
 			VectorCopy(end_3, end_2);
 
-			CL_Trace(end, mins, maxs, end_2, MASK_CAMERA, CEF_CLIP_TO_ALL, &trace);
+			CL_Trace(end, mins, maxs, end_2, MASK_CAMERA, CTF_CLIP_TO_ALL, &trace);
 
 			if (trace.fraction != 1.0f)
 				VectorCopy(trace.endpos, end_2);
@@ -331,7 +331,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 		const vec3_t v = { mins[0], mins[1], -1.0f - roll_scaler * 2.0f };
 
 		// Check against bmodels / solid entities --mxd.
-		CL_Trace(end, v, maxs, end_2, MASK_WATER | CONTENTS_CAMERABLOCK, CEF_CLIP_TO_ALL, &trace);
+		CL_Trace(end, v, maxs, end_2, MASK_WATER | CONTENTS_CAMERABLOCK, CTF_CLIP_TO_ALL, &trace);
 
 		if (!noclip_mode && trace.fraction != 1.0f)
 			VectorCopy(trace.endpos, end_2);

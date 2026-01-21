@@ -17,6 +17,8 @@ int pred_pm_flags;
 int pred_pm_w_flags;
 qboolean trace_ignore_player;
 qboolean trace_ignore_camera;
+qboolean trace_ignore_bmodels; //mxd
+qboolean trace_ignore_entities; //mxd (except bmodels).
 
 static int pred_effects = 0;
 static int pred_clientnum = 0;
@@ -105,7 +107,15 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 		if (trace_ignore_camera && (ent->effects & EF_CAMERA_NO_CLIP)) // H2
 			continue;
 
-		if (ent->solid == 31)
+		const qboolean ent_is_bmodel = (ent->solid == 31); //mxd
+
+		if (trace_ignore_bmodels && ent_is_bmodel) //mxd
+			continue;
+
+		if (trace_ignore_entities && !ent_is_bmodel) //mxd
+			continue;
+
+		if (ent_is_bmodel)
 		{
 			// Special value for bmodel.
 			const cmodel_t* cmodel = cl.model_clip[ent->modelindex];
@@ -135,7 +145,7 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 			headnode = cmodel->headnode;
 			angles = ent->angles;
 		}
-		else
+		else // Regular entity.
 		{
 			// Encoded bbox.
 			const float x =  8.0f * (float)(ent->solid & 31);

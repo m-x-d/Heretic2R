@@ -62,7 +62,7 @@ static qboolean HaloUpdate(client_entity_t* self, centity_t* owner)
 	{
 		// Determine visibility.
 		trace_t trace;
-		fxi.Trace(self->r.origin, vec3_origin, vec3_origin, fxi.cl->refdef.vieworg, (CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER), CEF_CLIP_TO_ALL, &trace);
+		fxi.Trace(self->r.origin, vec3_origin, vec3_origin, fxi.cl->refdef.vieworg, (CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER), CTF_CLIP_TO_ALL, &trace);
 
 		HaloUpdateVisibility(self, cam_dist, trace.fraction == 1.0f); //mxd
 	}

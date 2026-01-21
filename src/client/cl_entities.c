@@ -1118,7 +1118,7 @@ Q2DLL_DECLSPEC void CL_GetEntitySoundOrigin(const int ent, vec3_t org) //mxd. No
 	// FIXME: bmodel issues...
 }
 
-void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const int brushmask, const int flags, trace_t* t) // H2
+void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const int brushmask, int flags, trace_t* t) // H2
 {
 	t->ent = NULL;
 
@@ -1128,7 +1128,14 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 	if (maxs == NULL)
 		maxs = vec3_origin;
 
-	if (flags & CEF_CLIP_TO_WORLD)
+	//mxd. Convert legacy CTE_ flags...
+	if (flags & CTF_CLIP_TO_WORLD_LEGACY)
+		flags |= CTF_CLIP_TO_WORLD;
+
+	if (flags & CTF_CLIP_TO_ENTITIES_LEGACY)
+		flags |= (CTF_CLIP_TO_BMODELS | CTF_CLIP_TO_ENTITIES);
+
+	if (flags & CTF_CLIP_TO_WORLD)
 	{
 		CM_BoxTrace(start, end, mins, maxs, 0, brushmask, t);
 
@@ -1143,13 +1150,19 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 		memset(t, 0, sizeof(trace_t));
 	}
 
-	if (flags & CEF_CLIP_TO_ENTITIES)
+	if (flags & (CTF_CLIP_TO_BMODELS | CTF_CLIP_TO_ENTITIES))
 	{
 		if (brushmask & CONTENTS_CAMERABLOCK)
 			trace_ignore_camera = true;
 
 		if (brushmask & CONTENTS_WATER)
 			trace_check_water = true;
+
+		if (!(flags & CTF_CLIP_TO_BMODELS)) //mxd
+			trace_ignore_bmodels = true;
+
+		if (!(flags & CTF_CLIP_TO_ENTITIES)) //mxd
+			trace_ignore_entities = true;
 
 		CL_ClipMoveToEntities(start, mins, maxs, end, t);
 
@@ -1158,5 +1171,11 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 
 		if (brushmask & CONTENTS_WATER)
 			trace_check_water = false;
+
+		if (!(flags & CTF_CLIP_TO_BMODELS)) //mxd
+			trace_ignore_bmodels = false;
+
+		if (!(flags & CTF_CLIP_TO_ENTITIES)) //mxd
+			trace_ignore_entities = false;
 	}
 }

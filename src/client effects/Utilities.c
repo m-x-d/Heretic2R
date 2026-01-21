@@ -135,7 +135,7 @@ float GetSolidDist(const vec3_t origin, const float radius, const float max_dist
 	const int brushmask = (MASK_SOLID | (check_water ? CONTENTS_WATER : 0)); //mxd. Check for water specifically, not slime or lava.
 
 	trace_t trace;
-	fxi.Trace(origin, mins, maxs, end, brushmask, CEF_CLIP_TO_WORLD, &trace); //mxd. Original logic uses MASK_DRIP (resulted in trace.startsolid when origin was underwater).
+	fxi.Trace(origin, mins, maxs, end, brushmask, CTF_CLIP_TO_WORLD, &trace); //mxd. Original logic uses MASK_DRIP (resulted in trace.startsolid when origin was underwater).
 
 	//mxd. Bbox stuck in a floor (or ceiling).
 	if (trace.startsolid)
@@ -156,11 +156,11 @@ int GetFallTime(vec3_t origin, const float velocity, const float acceleration, c
 	vec3_t end = VEC3_INIT(origin);
 	end[2] += (velocity * maxtime) + acceleration * (maxtime * maxtime) * 0.5f; // From s = ut + 0.5at^2
 
-	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CEF_CLIP_TO_WORLD, trace);
+	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CTF_CLIP_TO_WORLD, trace);
 
 	//mxd. If origin is underwater, retry with MASK_SOLID. Otherwise, trace will stop when hitting adjacent water brushes (which is never what we expect).
 	if (trace->startsolid && (trace->contents & CONTENTS_WATER))
-		fxi.Trace(origin, mins, maxs, end, MASK_SOLID, CEF_CLIP_TO_WORLD, trace);
+		fxi.Trace(origin, mins, maxs, end, MASK_SOLID, CTF_CLIP_TO_WORLD, trace);
 
 	return (int)(GetTimeToReachDistance(velocity, acceleration, trace->endpos[2] - origin[2])); // In ms.
 }
@@ -175,7 +175,7 @@ qboolean GetWaterNormal(const vec3_t origin, const float radius, const float max
 	const vec3_t end = VEC3_INITA(origin, 0.0f, 0.0f, -maxdist);
 
 	trace_t trace;
-	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CEF_CLIP_TO_WORLD, &trace);
+	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CTF_CLIP_TO_WORLD, &trace);
 
 	if (trace.fraction == 1.0f || (trace.contents & MASK_SOLID))
 		return false;
@@ -575,7 +575,7 @@ qboolean GetTruePlane(vec3_t origin, vec3_t direction, const float direction_sca
 	VectorMA(origin, direction_scale, direction, end);
 
 	trace_t trace;
-	fxi.Trace(origin, vec3_origin, vec3_origin, end, MASK_DRIP, CEF_CLIP_TO_WORLD, &trace);
+	fxi.Trace(origin, vec3_origin, vec3_origin, end, MASK_DRIP, CTF_CLIP_TO_WORLD, &trace);
 
 	if (trace.fraction != 1.0f)
 	{

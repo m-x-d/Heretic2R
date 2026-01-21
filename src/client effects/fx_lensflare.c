@@ -34,7 +34,7 @@ static qboolean LensFlareUpdateOrigin(client_entity_t* self, const qboolean chec
 	if (check_sky)
 	{
 		trace_t trace;
-		fxi.Trace(fxi.cl->refdef.vieworg, vec3_origin, vec3_origin, self->direction, LF_BRUSHMASK, CEF_CLIP_TO_WORLD, &trace);
+		fxi.Trace(fxi.cl->refdef.vieworg, vec3_origin, vec3_origin, self->direction, LF_BRUSHMASK, CTF_CLIP_TO_WORLD, &trace);
 		sight_blocked = (trace.fraction < 1.0f && !(trace.surface->flags & SURF_SKY));
 	}
 

@@ -429,7 +429,7 @@ void ThrowBlood(const vec3_t torigin, const vec3_t tnormal, const qboolean dark,
 		VectorMA(origin, 256.0f, vec3_down, end_pos); //mxd. Original logic adds scaled normal instead (which is strange).
 
 		trace_t tr;
-		fxi.Trace(origin, vec3_origin, vec3_origin, end_pos, MASK_DRIP, CEF_CLIP_TO_WORLD, &tr);
+		fxi.Trace(origin, vec3_origin, vec3_origin, end_pos, MASK_DRIP, CTF_CLIP_TO_WORLD, &tr);
 
 		if (tr.fraction < 1.0f && tr.fraction > 0.0625f) // Between 16 and 256.
 		{

@@ -172,7 +172,7 @@ static qboolean FireWormUpdate(client_entity_t* self, centity_t* owner) //mxd. N
 	VectorMA(self->r.origin, FIREWAVE_TRACEDIST, end_pos, end_pos);
 
 	trace_t trace;
-	fxi.Trace(self->r.origin, vec3_origin, vec3_origin, end_pos, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
+	fxi.Trace(self->r.origin, vec3_origin, vec3_origin, end_pos, CONTENTS_SOLID, CTF_CLIP_TO_WORLD, &trace);
 
 	if (trace.fraction < 1.0f)
 	{

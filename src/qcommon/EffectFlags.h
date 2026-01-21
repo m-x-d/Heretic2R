@@ -87,9 +87,7 @@
 #define CEF_CLIP_TO_WORLD		0x08000000	// Turns on collision detection with the world. Additionally, the
 											// entity needs to have a message handler in order to receive MSG_COLLISION.
 
-#define CEF_CLIP_TO_ENTITIES	0x10000000	// Turn on collision detection with server entities (not client only entities)
-											// requires CEF_CLIP_TO_WORLD to be turned on as well.
-											// NOTE: This only clip against entities in the current frame, not all entities in the world.
+//mxd. Free slot at 0x10000000 (originally CEF_CLIP_TO_ENTITIES).
 
 #define CEF_DISAPPEARED			0x20000000	// Alpha faded out, or scaled to nothing needs to be turned off if entity
 											// later scales up or fades back in.
@@ -97,7 +95,18 @@
 #define CEF_CHECK_OWNER			0x40000000	// If we are owned, then check to see if our owner has been server culled before it gets to the client.
 #define CEF_NO_DRAW				0x80000000	// Doesn't get added to the render list.
 
-#define CEF_CLIP_TO_ALL			(CEF_CLIP_TO_WORLD | CEF_CLIP_TO_ENTITIES)
-
 #define EFFECT_PRED_INFO		0x4000
 #define EFFECT_FLAGS			0x8000 //mxd
+
+//mxd. Trace flags (used by fxi.Trace() / CL_Trace()). Part of CEF_ flags in original logic.
+
+#define CTF_CLIP_TO_WORLD		0x00000001	// Turns on collision detection with the world model.
+#define CTF_CLIP_TO_BMODELS		0x00000002	// Turns on collision detection with brush models. 
+#define CTF_CLIP_TO_ENTITIES	0x00000004	// Turns on collision detection with server entities (not client-only entities).
+// NOTE: CTF_CLIP_TO_BMODELS / CTF_CLIP_TO_ENTITIES only clip against entities in the current frame, not all entities in the world.											 
+
+//mxd. Legacy flags for compatibility reasons.
+#define CTF_CLIP_TO_WORLD_LEGACY	0x08000000 // CEF_CLIP_TO_WORLD in original logic. Converted to CTF_CLIP_TO_WORLD in CL_Trace().
+#define CTF_CLIP_TO_ENTITIES_LEGACY	0x10000000 // CEF_CLIP_TO_ENTITIES in original logic. Converted to (CTF_CLIP_TO_BMODELS | CTF_CLIP_TO_ENTITIES) in CL_Trace().
+
+#define CTF_CLIP_TO_ALL			(CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS | CTF_CLIP_TO_ENTITIES)
