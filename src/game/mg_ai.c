@@ -134,7 +134,7 @@ static qboolean MG_CheckBottom(edict_t* ent)
 
 	// Check it for real...
 	vec3_t start = { 0.0f, 0.0f, mins[2] }; // Bottom.
-	vec3_t stop = { 0.0f, 0.0f, start[2] - step_size + 1.0f };
+	vec3_t stop =  { 0.0f, 0.0f, mins[2] - step_size + 1.0f };
 
 	// The corners must be within 16 of the midpoint.
 	corner_index = 0;
@@ -330,10 +330,11 @@ static trace_t MG_MoveStep_Walk(edict_t* self, const vec3_t move, const qboolean
 
 	const qboolean is_amphibian = ((contents & MASK_WATER) && (self->flags & FL_AMPHIBIAN)); //mxd
 
+	// Too long of a step down.
 	if (trace.fraction == 1.0f)
 	{
-		// Too long of a step down.
-		if ((self->flags & FL_PARTIALGROUND) || (self->svflags & SVF_FLOAT) || self->classID == CID_TBEAST || self->classID == CID_RAT || is_amphibian) // Allow amphibian monsters to step off ledges into water. //mxd. +CID_RAT check.
+		// Allow amphibian monsters to step off ledges into water. //mxd. Allow rats to fall from high places.
+		if ((self->flags & FL_PARTIALGROUND) || (self->svflags & SVF_FLOAT) || self->classID == CID_TBEAST || self->classID == CID_RAT || is_amphibian)
 		{
 			// If monster had the ground pulled out, go ahead and fall.
 			Vec3AddAssign(move, self->s.origin);
