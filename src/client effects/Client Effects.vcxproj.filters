@@ -359,9 +359,6 @@
     <ClInclude Include="fx_mork.h">
       <Filter>src\Effects</Filter>
     </ClInclude>
-    <ClInclude Include="fx_Phoenix.h">
-      <Filter>src\Effects</Filter>
-    </ClInclude>
     <ClInclude Include="fx_smoke.h">
       <Filter>src\Effects</Filter>
     </ClInclude>
