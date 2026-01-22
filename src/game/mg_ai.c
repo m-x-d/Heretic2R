@@ -305,7 +305,9 @@ static trace_t MG_MoveStep_Walk(edict_t* self, const vec3_t move, const qboolean
 
 		if (trace.allsolid || trace.startsolid)
 		{
-			const qboolean slip_under = (trace.ent != NULL && trace.ent->client != NULL); // Lets rats walk between legs. //TODO: do only for CID_RAT?
+			// Lets rats walk between player's legs.
+			//mxd. Do only when we ARE a rat. And those legs aren't our target.
+			const qboolean slip_under = (self->classID == CID_RAT && trace.ent != NULL && trace.ent->client != NULL && trace.ent != self->enemy);
 
 			if (!slip_under)
 			{
