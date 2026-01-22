@@ -366,7 +366,7 @@ static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, phoenix_explode_sounds[1], 1.0f, ATTN_NORM, 0.0f);
 }
 
-static qboolean PhoenixMissilePowerUpdate(client_entity_t* missile, centity_t* owner) //mxd. Named 'FXPhoenixMissilePowerThink' in original logic.
+static qboolean PhoenixMissilePowerUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXPhoenixMissilePowerThink' in original logic.
 {
 	static const paletteRGBA_t light_color = { .r = 0xff, .g = 0x7f, .b = 0x00, .a = 0xe5 };
 
@@ -381,7 +381,7 @@ static qboolean PhoenixMissilePowerUpdate(client_entity_t* missile, centity_t* o
 
 	// Here we want to shoot out flame to either side.
 	vec3_t angles;
-	VectorScale(missile->r.angles, RAD_TO_ANGLE, angles);
+	VectorScale(self->r.angles, RAD_TO_ANGLE, angles);
 
 	vec3_t forward;
 	vec3_t right;
@@ -390,8 +390,8 @@ static qboolean PhoenixMissilePowerUpdate(client_entity_t* missile, centity_t* o
 	Vec3ScaleAssign(FIRETRAIL_SPEED, right);
 
 	// Throw smoke to each side, alternating.
-	const float side = ((missile->LifeTime-- & 1) ? 1.0f : -1.0f); //mxd. 1.0 - right, -1.0 - left.
-	const vec3_t smoke_origin = VEC3_INITA(missile->origin,
+	const float side = ((self->LifeTime-- & 1) ? 1.0f : -1.0f); //mxd. 1.0 - right, -1.0 - left.
+	const vec3_t smoke_origin = VEC3_INITA(self->origin,
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
 		flrand(-SMOKETRAIL_RADIUS / 2.0f, SMOKETRAIL_RADIUS / 2.0f));
@@ -408,6 +408,7 @@ static qboolean PhoenixMissilePowerUpdate(client_entity_t* missile, centity_t* o
 	smoke->d_scale = 2.0f; // Rate of change in scale.
 	smoke->d_alpha = -1.0f;
 
+	RE_SetupRollSprite(&smoke->r, 32.0f, flrand(0.0f, 360.0f)); //mxd
 	AddEffect(NULL, smoke);	// Add the smoke as independent world smoke.
 
 	// Add fire to the tail. Attach it to the smoke because it doesn't get out of the fx radius so quickly.
@@ -419,7 +420,7 @@ static qboolean PhoenixMissilePowerUpdate(client_entity_t* missile, centity_t* o
 		client_particle_t* flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), light_color, duration);
 
 		VectorRandomSet(flame->origin, trail_offset);
-		Vec3AddAssign(missile->origin, flame->origin);
+		Vec3AddAssign(self->origin, flame->origin);
 		flame->scale = FIRETRAIL_SCALE;
 
 		VectorSet(flame->velocity, flrand(-trail_speed, trail_speed), flrand(-trail_speed, trail_speed), flrand(-1.0f, 1.0f));
@@ -442,7 +443,7 @@ static qboolean PhoenixMissilePowerUpdate(client_entity_t* missile, centity_t* o
 	}
 
 	// Remember for even spread of particles.
-	VectorCopy(missile->r.origin, missile->origin);
+	VectorCopy(self->r.origin, self->origin);
 
 	return true;
 }
