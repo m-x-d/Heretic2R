@@ -910,6 +910,8 @@ static void CM_ClipBoxToBrush(const vec3_t mins, const vec3_t maxs, const vec3_t
 	{
 		// Original point was inside brush.
 		trace->startsolid = true;
+		trace->fraction = 0.0f; //mxd. Because we DON'T want to end up with trace.startsolid AND trace.fraction:1 at the same time.
+
 		if (!getout)
 			trace->allsolid = true;
 	}
