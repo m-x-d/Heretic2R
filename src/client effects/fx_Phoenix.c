@@ -52,7 +52,7 @@ void PreCachePhoenixExplodeSFX(void) //mxd
 
 #pragma region ========================== PHOENIX EXPLOSION ==========================
 
-static qboolean PhoenixMissileUpdate(client_entity_t* missile, centity_t* owner) //mxd. Named 'FXPhoenixMissileThink' in original logic.
+static qboolean PhoenixMissileUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXPhoenixMissileThink' in original logic.
 {
 	static const paletteRGBA_t light_color = { .r = 0xff, .g = 0x7f, .b = 0x00, .a = 0xe5 };
 
@@ -66,8 +66,7 @@ static qboolean PhoenixMissileUpdate(client_entity_t* missile, centity_t* owner)
 		duration = 2000; //TODO: even longer duration for DETAIL_UBERHIGH?
 
 	// Here we want to shoot out flame to either side.
-	vec3_t angles;
-	VectorScale(missile->r.angles, RAD_TO_ANGLE, angles);
+	const vec3_t angles = VEC3_INITS(self->r.angles, RAD_TO_ANGLE);
 
 	vec3_t forward;
 	vec3_t right;
@@ -76,8 +75,8 @@ static qboolean PhoenixMissileUpdate(client_entity_t* missile, centity_t* owner)
 	Vec3ScaleAssign(FIRETRAIL_SPEED, right);
 
 	// Throw smoke to each side, alternating.
-	const float side = ((missile->LifeTime-- & 1) ? 1.0f : -1.0f); //mxd. 1.0 - right, -1.0 - left.
-	const vec3_t smoke_origin = VEC3_INITA(missile->origin, 
+	const float side = ((self->LifeTime-- & 1) ? 1.0f : -1.0f); //mxd. 1.0 - right, -1.0 - left.
+	const vec3_t smoke_origin = VEC3_INITA(self->origin, 
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
 		flrand(-SMOKETRAIL_RADIUS / 2.0f, SMOKETRAIL_RADIUS / 2.0f));
@@ -106,7 +105,7 @@ static qboolean PhoenixMissileUpdate(client_entity_t* missile, centity_t* owner)
 			flrand(-FIRETRAIL_RADIUS, FIRETRAIL_RADIUS),
 			flrand(-FIRETRAIL_RADIUS / 3.0f, FIRETRAIL_RADIUS / 3.0f));
 
-		VectorAdd(missile->origin, flame->origin, flame->origin);
+		VectorAdd(self->origin, flame->origin, flame->origin);
 		flame->scale = FIRETRAIL_SCALE;
 
 		VectorSet(flame->velocity,
@@ -134,32 +133,32 @@ static qboolean PhoenixMissileUpdate(client_entity_t* missile, centity_t* owner)
 	// Update animation frame.
 
 	// Check if the time is up.
-	if (fx_time >= missile->lastThinkTime)
+	if (fx_time >= self->lastThinkTime)
 	{
 		// Set up animations to go the other direction.
-		if (missile->NoOfAnimFrames == 7)
+		if (self->NoOfAnimFrames == 7)
 		{
 			// Set to go backwards to 3.
-			missile->NoOfAnimFrames = 3;
-			missile->r.frame = 7;
+			self->NoOfAnimFrames = 3;
+			self->r.frame = 7;
 		}
 		else
 		{
 			// Set to go forward to 7
-			missile->NoOfAnimFrames = 7;
-			missile->r.frame = 3;
+			self->NoOfAnimFrames = 7;
+			self->r.frame = 3;
 		}
 
-		missile->Scale = -1.0f;
-		missile->lastThinkTime = fx_time + (4 * 50);
+		self->Scale = -1.0f;
+		self->lastThinkTime = fx_time + (4 * 50);
 	}
 	else
 	{
-		missile->r.frame = missile->NoOfAnimFrames - (int)(missile->Scale * ((float)(missile->lastThinkTime - fx_time) / 50.0f)) - 1;
+		self->r.frame = self->NoOfAnimFrames - (int)(self->Scale * ((float)(self->lastThinkTime - fx_time) / 50.0f)) - 1;
 	}
 
 	// Remember for even spread of particles.
-	VectorCopy(missile->r.origin, missile->origin);
+	VectorCopy(self->r.origin, self->origin);
 
 	return true;
 }
