@@ -1,5 +1,5 @@
 //
-// fx_Phoenix.c
+// fx_PhoenixExplode.c -- Part of 'fx_Phoenix.c' in original logic --mxd.
 //
 // Copyright 1998 Raven Software
 //

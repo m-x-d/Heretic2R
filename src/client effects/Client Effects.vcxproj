@@ -62,7 +62,7 @@
     <ClCompile Include="fx_mist.c" />
     <ClCompile Include="fx_mork.c" />
     <ClCompile Include="fx_MorphOvum.c" />
-    <ClCompile Include="fx_Phoenix.c" />
+    <ClCompile Include="fx_PhoenixExplode.c" />
     <ClCompile Include="fx_pickup.c" />
     <ClCompile Include="fx_PuzzlePickup.c" />
     <ClCompile Include="fx_PlagueElfSpells.c" />
