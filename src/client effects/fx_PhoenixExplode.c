@@ -56,6 +56,16 @@ static qboolean PhoenixExplosionBallUpdate(client_entity_t* self, centity_t* own
 {
 	if (self->alpha < 0.01f)
 	{
+		//mxd. Fade-out dlight first...
+		if (self->dlight->color.r > 16)
+		{
+			self->dlight->color.r = (byte)((float)self->dlight->color.r * 0.95f);
+			self->dlight->color.g = (byte)((float)self->dlight->color.g * 0.85f);
+			self->dlight->intensity *= 0.99f;
+
+			return true;
+		}
+
 		//mxd. Allow lingering smoke to expire...
 		self->Update = RemoveSelfAI;
 		self->updateTime = EXPLODE_SMOKE_LIFETIME;
@@ -227,10 +237,23 @@ static qboolean PhoenixExplosionPowerBirdUpdate(client_entity_t* self, centity_t
 
 static qboolean PhoenixExplosionPowerUpdate(client_entity_t* self, centity_t* owner) //mxd
 {
-	self->LifeTime--;
-
-	if (self->LifeTime == 0)
+	if (self->LifeTime > 0)
 	{
+		self->LifeTime--;
+	}
+	else
+	{
+		//mxd. Fade-out dlight first...
+		if (self->dlight->color.r > 16)
+		{
+			self->dlight->color.r = (byte)((float)self->dlight->color.r * 0.97f);
+			self->dlight->color.g = (byte)((float)self->dlight->color.g * 0.92f);
+			self->dlight->intensity *= 0.995f;
+
+			return true;
+		}
+
+		//mxd. Allow lingering smoke to expire...
 		self->updateTime = POWEREXPLODE_SMOKE_LIFETIME; // Wait 4 seconds to allow attached particles to expire.
 		self->Update = RemoveSelfAI;
 		self->dlight->intensity = 0.0f;
