@@ -66,17 +66,16 @@ static qboolean PhoenixMissileUpdate(client_entity_t* self, centity_t* owner) //
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
 		flrand(-SMOKETRAIL_RADIUS / 2.0f, SMOKETRAIL_RADIUS / 2.0f));
 
-	client_entity_t* smoke = ClientEntity_new(-1, CEF_DONT_LINK, smoke_origin, NULL, duration);
+	client_entity_t* smoke = ClientEntity_new(-1, CEF_DONT_LINK | CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS, smoke_origin, NULL, duration);
 
 	smoke->radius = 64.0f; //BUGFIX: 128.0 for the left side in original version. Why?..
 	smoke->r.model = &phoenix_missile_models[PAMDL_STEAM]; // steam_add sprite.
 	smoke->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
-	smoke->flags |= (CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS);
 	smoke->alpha = SMOKETRAIL_ALPHA;
-	smoke->r.scale = SMOKETRAIL_SCALE;
-	VectorScale(right, 2.0f * side, smoke->velocity);
-	smoke->d_scale = 2.0f; // Rate of change in scale.
 	smoke->d_alpha = -1.0f;
+	smoke->r.scale = SMOKETRAIL_SCALE;
+	smoke->d_scale = 2.0f; // Rate of change in scale.
+	VectorScale(right, 2.0f * side, smoke->velocity);
 
 	AddEffect(NULL, smoke);	// Add the smoke as independent world smoke.
 
@@ -90,7 +89,7 @@ static qboolean PhoenixMissileUpdate(client_entity_t* self, centity_t* owner) //
 			flrand(-FIRETRAIL_RADIUS, FIRETRAIL_RADIUS),
 			flrand(-FIRETRAIL_RADIUS / 3.0f, FIRETRAIL_RADIUS / 3.0f));
 
-		VectorAdd(self->origin, flame->origin, flame->origin);
+		Vec3AddAssign(self->origin, flame->origin);
 		flame->scale = FIRETRAIL_SCALE;
 
 		VectorSet(flame->velocity,
@@ -157,11 +156,10 @@ static qboolean PhoenixMissilePowerUpdate(client_entity_t* self, centity_t* owne
 	else if (R_DETAIL == DETAIL_NORMAL)
 		duration = 1700;
 	else
-		duration = 2000; //TODO: DETAIL_UBERHIGH.
+		duration = 2000; //TODO: even longer duration for DETAIL_UBERHIGH?
 
 	// Here we want to shoot out flame to either side.
-	vec3_t angles;
-	VectorScale(self->r.angles, RAD_TO_ANGLE, angles);
+	const vec3_t angles = VEC3_INITS(self->r.angles, RAD_TO_ANGLE);
 
 	vec3_t forward;
 	vec3_t right;
@@ -176,17 +174,16 @@ static qboolean PhoenixMissilePowerUpdate(client_entity_t* self, centity_t* owne
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
 		flrand(-SMOKETRAIL_RADIUS / 2.0f, SMOKETRAIL_RADIUS / 2.0f));
 
-	client_entity_t* smoke = ClientEntity_new(-1, CEF_DONT_LINK, smoke_origin, NULL, duration);
+	client_entity_t* smoke = ClientEntity_new(-1, CEF_DONT_LINK | CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS, smoke_origin, NULL, duration);
 
 	smoke->radius = 64.0f;
 	smoke->r.model = &phoenix_missile_models[PAMDL_STEAM]; // steam_add sprite.
 	smoke->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
-	smoke->flags |= (CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS);
 	smoke->alpha = SMOKETRAIL_ALPHA;
-	smoke->r.scale = SMOKETRAIL_SCALE * 2.5f;
-	VectorScale(right, 2.0f * side, smoke->velocity);
-	smoke->d_scale = 2.0f; // Rate of change in scale.
 	smoke->d_alpha = -1.0f;
+	smoke->r.scale = SMOKETRAIL_SCALE * 2.5f;
+	smoke->d_scale = 2.0f; // Rate of change in scale.
+	VectorScale(right, 2.0f * side, smoke->velocity);
 
 	RE_SetupRollSprite(&smoke->r, 32.0f, flrand(0.0f, 360.0f)); //mxd
 	AddEffect(NULL, smoke);	// Add the smoke as independent world smoke.
@@ -230,7 +227,7 @@ static qboolean PhoenixMissilePowerUpdate(client_entity_t* self, centity_t* owne
 
 void FXPhoenixMissile(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 25);
+	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK | CEF_ADDITIVE_PARTS, origin, NULL, 25);
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_PHOENIXMISSILE].formatString, missile->velocity);
 
 	const float velocity = PHOENIX_ARROW_SPEED * ((flags & CEF_FLAG8) ? 0.5f : 1.0f);
@@ -242,7 +239,6 @@ void FXPhoenixMissile(centity_t* owner, const int type, const int flags, vec3_t 
 
 	missile->radius = 256.0f;
 	missile->r.model = &phoenix_missile_models[PAMDL_ARROW]; // Phoenix arrow model.
-	missile->flags |= CEF_ADDITIVE_PARTS;
 	missile->lastThinkTime = fx_time + (50 * 7); // Time to play last frame.
 	missile->NoOfAnimFrames = 7; // End on frame number 7.
 	missile->Scale = 1.0f; // Positive frame count.
