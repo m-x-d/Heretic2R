@@ -293,14 +293,14 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 
 	{ // FX_WEAPON_PHOENIXMISSILE
 		.SpawnCFX = FXPhoenixMissile,
-		.PrecacheCFX = PreCachePhoenix,
+		.PrecacheCFX = PreCachePhoenixMissile, //mxd
 		.PrecacheSFX = NULL,
 		.formatString = "t"
 	},
 
 	{ // FX_WEAPON_PHOENIXEXPLODE
 		.SpawnCFX = FXPhoenixExplode,
-		.PrecacheCFX = NULL,
+		.PrecacheCFX = PreCachePhoenixExplode, //mxd
 		.PrecacheSFX = PreCachePhoenixExplodeSFX, //mxd
 		.formatString = "td"
 	},

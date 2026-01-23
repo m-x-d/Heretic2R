@@ -211,8 +211,9 @@ extern void PreCacheHellstaff(void);
 extern void PreCacheHellstaffSFX(void); //mxd
 extern void PreCacheMorph(void);
 extern void PreCacheMorphSFX(void); //mxd
-extern void PreCachePhoenix(void);
+extern void PreCachePhoenixExplode(void);
 extern void PreCachePhoenixExplodeSFX(void); //mxd
+extern void PreCachePhoenixMissile(void); //mxd
 extern void PreCacheRedrain(void);
 extern void PreCacheRedrainSFX(void); //mxd
 extern void PreCacheRipples(void);

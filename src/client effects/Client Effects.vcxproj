@@ -21,6 +21,7 @@
     <ClCompile Include="fx_GibTrail.c" />
     <ClCompile Include="fx_HitPuffs.c" />
     <ClCompile Include="fx_Leader.c" />
+    <ClCompile Include="fx_PhoenixMissile.c" />
     <ClCompile Include="fx_WaterParticles.c" />
     <ClCompile Include="fx_WaterSplash.c" />
     <ClCompile Include="ce_DefaultMessageHandler.c" />
