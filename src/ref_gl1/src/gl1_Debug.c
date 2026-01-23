@@ -70,10 +70,13 @@ static DebugPrimitive_t* InitDebugPrimitive(const struct edict_s* ent, const vec
 
 	for (int i = 0; i < MAX_DEBUG_PRIMITIVES; i++)
 	{
-		p = &dbg_primitives[i];
+		DebugPrimitive_t* cp = &dbg_primitives[i];
 
-		if (p->type == DPT_NONE || (p->lifetime != -1.0f && p->lifetime < r_newrefdef.time) || (ent != NULL && p->ent == ent))
+		if (cp->type == DPT_NONE || (cp->lifetime != -1.0f && cp->lifetime < r_newrefdef.time) || (ent != NULL && cp->ent == ent))
+		{
+			p = cp;
 			break;
+		}
 	}
 
 	// Init primitive.
