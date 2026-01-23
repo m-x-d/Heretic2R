@@ -37,16 +37,27 @@ static DebugPrimitive_t dbg_primitives[MAX_DEBUG_PRIMITIVES];
 
 typedef struct DebugLabelInfo_s
 {
-	char label[64];
-	const struct edict_s* ent;
-	vec3_t cur_origin;
-	vec3_t old_origin;
-	float last_update;
+	char label[DEBUG_LABEL_SIZE];
+	vec3_t origin;
 	paletteRGBA_t color;
+	float lifetime;
 } DebugLabel_t;
 
 #define MAX_DEBUG_LABELS		128
 static DebugLabel_t dbg_labels[MAX_DEBUG_LABELS];
+
+typedef struct DebugEntityLabelInfo_s
+{
+	char label[DEBUG_LABEL_SIZE];
+	const struct edict_s* ent;
+	vec3_t cur_origin;
+	vec3_t old_origin;
+	paletteRGBA_t color;
+	float last_update;
+} DebugEntityLabel_t;
+
+#define MAX_DEBUG_ENTITY_LABELS		128
+static DebugEntityLabel_t dbg_ent_labels[MAX_DEBUG_ENTITY_LABELS];
 
 static void SetDebugBoxVerts(DebugPrimitive_t* box, const vec3_t mins, const vec3_t maxs)
 {
@@ -98,30 +109,62 @@ static DebugPrimitive_t* InitDebugPrimitive(const struct edict_s* ent, const vec
 	return p;
 }
 
-// Assumes ent exists.
-static DebugLabel_t* InitDebugLabel(const struct edict_s* ent, const paletteRGBA_t color)
+static DebugLabel_t* InitDebugLabel(const vec3_t origin, const paletteRGBA_t color, const float lifetime)
 {
 	// Find free slot...
 	DebugLabel_t* l = NULL;
 
-	// First, look for label attached to the same entity...
+	// Look for free label or label at the same position...
 	for (int i = 0; i < MAX_DEBUG_LABELS; i++)
 	{
-		if (dbg_labels[i].ent == ent)
+		DebugLabel_t* cl = &dbg_labels[i];
+
+		if (VectorCompare(cl->origin, origin) || (cl->lifetime != -1.0f && cl->lifetime < r_newrefdef.time))
 		{
-			l = &dbg_labels[i];
+			l = cl;
 			break;
 		}
 	}
-	
+
+	// Init primitive.
+	if (l == NULL)
+		return NULL;
+
+	l->color = color;
+	VectorCopy(origin, l->origin);
+
+	if (lifetime == -1.0f)
+		l->lifetime = lifetime;
+	else
+		l->lifetime = r_newrefdef.time + max(lifetime, 0.025f); // Convert to absolute time, make sure it lives for at least a frame...
+
+	return l;
+}
+
+// Assumes ent exists.
+static DebugEntityLabel_t* InitDebugEntityLabel(const struct edict_s* ent, const paletteRGBA_t color)
+{
+	// Find free slot...
+	DebugEntityLabel_t* l = NULL;
+
+	// First, look for label attached to the same entity...
+	for (int i = 0; i < MAX_DEBUG_ENTITY_LABELS; i++)
+	{
+		if (dbg_ent_labels[i].ent == ent)
+		{
+			l = &dbg_ent_labels[i];
+			break;
+		}
+	}
+
 	// Then, look for a free label...
 	if (l == NULL)
 	{
-		for (int i = 0; i < MAX_DEBUG_LABELS; i++)
+		for (int i = 0; i < MAX_DEBUG_ENTITY_LABELS; i++)
 		{
-			if (dbg_labels[i].ent == NULL)
+			if (dbg_ent_labels[i].ent == NULL)
 			{
-				l = &dbg_labels[i];
+				l = &dbg_ent_labels[i];
 				break;
 			}
 		}
@@ -182,13 +225,24 @@ void RI_AddDebugEntityBbox(const struct edict_s* ent, const paletteRGBA_t color)
 		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugEntityBbox: failed to add entity bbox at %s...", pv(ent->s.origin));
 }
 
+void RI_AddDebugLabel(const vec3_t origin, const paletteRGBA_t color, const float lifetime, const char* label)
+{
+	// Find free slot...
+	DebugLabel_t* l = InitDebugLabel(origin, color, lifetime);
+
+	if (l != NULL)
+		strcpy_s(l->label, sizeof(l->label), label);
+	else
+		ri.Con_Printf(PRINT_DEVELOPER, "RI_AddDebugLabel: failed to add label at %s...", pv(origin));
+}
+
 void RI_AddDebugEntityLabel(const struct edict_s* ent, const paletteRGBA_t color, const char* label)
 {
 	if (ent == NULL)
 		return;
 
 	// Find free slot...
-	DebugLabel_t* l = InitDebugLabel(ent, color);
+	DebugEntityLabel_t* l = InitDebugEntityLabel(ent, color);
 
 	if (l != NULL)
 		strcpy_s(l->label, sizeof(l->label), label);
@@ -358,7 +412,41 @@ static void DrawDebugMarker(const DebugPrimitive_t* marker)
 	glEnd();
 }
 
-static void DrawDebugEntityLabel(DebugLabel_t* l)
+static void DrawLabelAt(const vec3_t pos, const paletteRGBA_t color, const char* label)
+{
+	vec3_t screen_pos; // Valid z-coord is in [0.0 .. 1.0] range.
+	if (!R_PointToScreen(pos, screen_pos) || screen_pos[2] <= 0.0f || screen_pos[2] > 1.0f)
+		return; // Can't project or not within frustum.
+
+	// Replicate SCR_UpdateUIScale() logic...
+	const int ui_scale = min((int)(roundf((float)viddef.width / DEF_WIDTH)), (int)(roundf((float)viddef.height / DEF_HEIGHT)));
+	const int ui_char_size = CONCHAR_SIZE * ui_scale;
+
+	// Setup label coords.
+	const int len = (int)strlen(label);
+	const int ui_len = len * ui_char_size;
+
+	const int sx = (int)screen_pos[0] - ui_len / 2;
+	const int ex = (int)screen_pos[0] + ui_len / 2;
+	const int sy = (int)screen_pos[1] - ui_char_size / 2;
+	const int ey = (int)screen_pos[1] + ui_char_size / 2;
+
+	// Not on screen.
+	if (sx >= viddef.width || ex <= 0 || sy >= viddef.height || ey <= 0)
+		return;
+
+	// Draw label.
+	int x = sx;
+	for (int i = 0; i < len; i++, x += ui_char_size)
+		Draw_Char(x, sy, ui_scale, label[i], color, true);
+}
+
+static void DrawDebugLabel(const DebugLabel_t* l)
+{
+	DrawLabelAt(l->origin, l->color, l->label);
+}
+
+static void DrawDebugEntityLabel(DebugEntityLabel_t* l)
 {
 	// Interpolate label pos (too twitchy on moving entities otherwise...).
 	float delta = r_newrefdef.time - l->last_update;
@@ -375,31 +463,8 @@ static void DrawDebugEntityLabel(DebugLabel_t* l)
 	VectorLerp(l->old_origin, delta * 5.0f, l->cur_origin, label_pos);
 	label_pos[2] += 32.0f;
 
-	vec3_t screen_pos; // Valid z-coord is in [0.0 .. 1.0] range.
-	if (!R_PointToScreen(label_pos, screen_pos) || screen_pos[2] <= 0.0f || screen_pos[2] > 1.0f)
-		return; // Can't project or not within frustum.
-
-	// Replicate SCR_UpdateUIScale() logic...
-	const int ui_scale = min((int)(roundf((float)viddef.width / DEF_WIDTH)), (int)(roundf((float)viddef.height / DEF_HEIGHT)));
-	const int ui_char_size = CONCHAR_SIZE * ui_scale;
-
-	// Setup label coords.
-	const int len = (int)strlen(l->label);
-	const int ui_len = len * ui_char_size;
-
-	const int sx = (int)screen_pos[0] - ui_len / 2;
-	const int ex = (int)screen_pos[0] + ui_len / 2;
-	const int sy = (int)screen_pos[1] - ui_char_size / 2;
-	const int ey = (int)screen_pos[1] + ui_char_size / 2;
-
-	// Not on screen.
-	if (sx >= viddef.width || ex <= 0 || sy >= viddef.height || ey <= 0)
-		return;
-
 	// Draw label.
-	int x = sx;
-	for (int i = 0; i < len; i++, x += ui_char_size)
-		Draw_Char(x, sy, ui_scale, l->label[i], l->color, true);
+	DrawLabelAt(label_pos, l->color, l->label);
 }
 
 // Draw all debug primitives.
@@ -468,13 +533,19 @@ void R_DrawDebugPrimitives(void)
 void R_DrawDebugLabels(void) // Needs to be called AFTER R_SetupGL2D()...
 {
 	// Draw labels...
-	DebugLabel_t* l = &dbg_labels[0];
+	const DebugLabel_t* l = &dbg_labels[0];
 	for (int i = 0; i < MAX_DEBUG_LABELS; i++, l++)
+		if (l->lifetime == -1.0f || l->lifetime >= r_newrefdef.time)
+			DrawDebugLabel(l);
+
+	// Draw entity labels...
+	DebugEntityLabel_t* el = &dbg_ent_labels[0];
+	for (int i = 0; i < MAX_DEBUG_ENTITY_LABELS; i++, el++)
 	{
-		if (l->ent != NULL && l->ent->inuse)
-			DrawDebugEntityLabel(l);
+		if (el->ent != NULL && el->ent->inuse)
+			DrawDebugEntityLabel(el);
 		else
-			l->ent = NULL;
+			el->ent = NULL;
 	}
 }
 
@@ -482,4 +553,5 @@ void R_FreeDebugPrimitives(void)
 {
 	memset(dbg_primitives, 0, sizeof(dbg_primitives));
 	memset(dbg_labels, 0, sizeof(dbg_labels));
+	memset(dbg_ent_labels, 0, sizeof(dbg_ent_labels));
 }

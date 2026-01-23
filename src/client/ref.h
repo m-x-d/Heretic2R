@@ -23,6 +23,10 @@
 #define CONCHAR_SIZE		8 //mxd. Conchars char size. Each char is 8x8 pixels.
 #define CONCHAR_LINE_HEIGHT	10 //mxd. Not a console line height!
 
+#ifdef _DEBUG
+	#define DEBUG_LABEL_SIZE	64 //mxd
+#endif
+
 typedef struct svertex_s //mxd. Sprite vertex definition.
 {
 	float x;
@@ -258,6 +262,8 @@ typedef struct refexport_s
 	void (*AddDebugBox)(const vec3_t center, float size, paletteRGBA_t color, float lifetime);
 	void (*AddDebugBbox)(const vec3_t mins, const vec3_t maxs, paletteRGBA_t color, float lifetime);
 	void (*AddDebugEntityBbox)(const edict_t* ent, paletteRGBA_t color);
+
+	void (*AddDebugLabel)(const vec3_t origin, paletteRGBA_t color, float lifetime, const char* label);
 	void (*AddDebugEntityLabel)(const edict_t* ent, paletteRGBA_t color, const char* label);
 
 	void (*AddDebugLine)(const vec3_t start, const vec3_t end, paletteRGBA_t color, float lifetime);

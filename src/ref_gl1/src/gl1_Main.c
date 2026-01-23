@@ -1057,6 +1057,8 @@ REF_DECLSPEC refexport_t GetRefAPI(const refimport_t rimp)
 	re.AddDebugBox = RI_AddDebugBox;
 	re.AddDebugBbox = RI_AddDebugBbox;
 	re.AddDebugEntityBbox = RI_AddDebugEntityBbox;
+
+	re.AddDebugLabel = RI_AddDebugLabel;
 	re.AddDebugEntityLabel = RI_AddDebugEntityLabel;
 
 	re.AddDebugLine = RI_AddDebugLine;
