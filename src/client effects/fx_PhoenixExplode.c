@@ -12,16 +12,19 @@
 #include "ce_Dlight.h"
 #include "g_playstats.h"
 
-#define EXPLODE_SPEED				220.0f // H2: 160
-#define EXPLODE_GRAVITY				(-320.0f)
-#define EXPLODE_SCALE				18.0f // H2: 14
-#define EXPLODE_NUM_BITS			64 // H2: 32
-#define EXPLODE_NUM_SHOCKWAVE_BITS	24 //mxd
-#define EXPLODE_TIME_MAX			750
-#define EXPLODE_SMOKE_LIFETIME		2000 //mxd
+#define EXPLODE_SPEED					220.0f // H2: 160
+#define EXPLODE_GRAVITY					(-320.0f)
+#define EXPLODE_SCALE					18.0f // H2: 14
+#define EXPLODE_NUM_BITS				64 // H2: 32
+#define EXPLODE_NUM_SHOCKWAVE_BITS		24 //mxd
+#define EXPLODE_SMOKE_LIFETIME			2000 //mxd
+#define EXPLODE_INITIAL_DLIGHT_RADIUS	86.0f //mxd
 
-#define PHOENIXPOWER_NUM_RINGS		16 //mxd
-#define PHOENIXPOWER_PARTS_PER_RING	32 //mxd
+#define POWEREXPLODE_SMOKE_LIFETIME			4000 //mxd
+#define POWEREXPLODE_INITIAL_DLIGHT_RADIUS	100.0f //mxd
+
+#define PHOENIXPOWER_NUM_RINGS			16 //mxd
+#define PHOENIXPOWER_PARTS_PER_RING		32 //mxd
 
 enum //mxd
 {
@@ -33,6 +36,7 @@ enum //mxd
 
 static struct model_s* phoenix_explode_models[PEMDL_NUM_MODELS];
 static struct sfx_s* phoenix_explode_sounds[2]; //mxd
+static const paletteRGBA_t pe_dlight_color = { .c = 0xff00ffff };
 
 void PreCachePhoenixExplode(void)
 {
@@ -50,11 +54,12 @@ void PreCachePhoenixExplodeSFX(void) //mxd
 
 static qboolean PhoenixExplosionBallUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXPhoenixExplosionBallThink' in original logic.
 {
-	if (fx_time - self->startTime > EXPLODE_TIME_MAX)
+	if (self->alpha < 0.01f)
 	{
-		//mxd. Allow lingering smoke to expire... 
+		//mxd. Allow lingering smoke to expire...
 		self->Update = RemoveSelfAI;
 		self->updateTime = EXPLODE_SMOKE_LIFETIME;
+		self->dlight->intensity = 0.0f;
 		self->flags |= CEF_NO_DRAW;
 
 		return true;
@@ -67,16 +72,14 @@ static qboolean PhoenixExplosionBallUpdate(client_entity_t* self, centity_t* own
 	self->r.angles[YAW] += self->velocity2[YAW] * vel_factor;
 	self->r.angles[PITCH] += self->velocity2[PITCH] * vel_factor;
 
-	if (self->dlight->intensity > 0.0f)
-		self->dlight->intensity -= 5.0f;
+	const float dlight_lerp = (self->r.scale - 1.0f) / 2.6f; // r.scale: [1.0 .. 3.57].
+	self->dlight->intensity = EXPLODE_INITIAL_DLIGHT_RADIUS + PHOENIX_EXPLODE_RADIUS * dlight_lerp;
 
 	return true;
 }
 
 void PhoenixExplode(const int type, int flags, const vec3_t origin, const vec3_t dir)
 {
-	static const paletteRGBA_t light_color = { .c = 0xff00ffff };
-
 	// Create the main big explosion sphere.
 	client_entity_t* explosion = ClientEntity_new(type, flags, origin, NULL, 0); //mxd. Update each frame.
 
@@ -87,12 +90,13 @@ void PhoenixExplode(const int type, int flags, const vec3_t origin, const vec3_t
 	explosion->alpha = 0.1f;
 	explosion->d_alpha = 5.0f;
 	explosion->d_scale = 7.0f;
-	explosion->lastThinkTime = fx_time;
 	explosion->r.angles[YAW] = flrand(-ANGLE_180, ANGLE_180); //mxd
 	explosion->r.angles[PITCH] = flrand(-ANGLE_180, ANGLE_180); //mxd
 	explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
 	explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
-	explosion->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
+	explosion->dlight = CE_DLight_new(pe_dlight_color, EXPLODE_INITIAL_DLIGHT_RADIUS, 0.0f);
+
+	explosion->lastThinkTime = fx_time;
 	explosion->Update = PhoenixExplosionBallUpdate;
 
 	AddEffect(NULL, explosion);
@@ -104,7 +108,7 @@ void PhoenixExplode(const int type, int flags, const vec3_t origin, const vec3_t
 
 	for (int i = 0; i < count; i++)
 	{
-		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), light_color, 1000);
+		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color_white, 1000);
 
 		VectorRandomSet(spark->velocity, EXPLODE_SPEED);
 		Vec3AddAssign(vel, spark->velocity);
@@ -227,14 +231,16 @@ static qboolean PhoenixExplosionPowerUpdate(client_entity_t* self, centity_t* ow
 
 	if (self->LifeTime == 0)
 	{
-		self->updateTime = 4000; // Wait 4 seconds to allow attached particles to expire.
+		self->updateTime = POWEREXPLODE_SMOKE_LIFETIME; // Wait 4 seconds to allow attached particles to expire.
 		self->Update = RemoveSelfAI;
+		self->dlight->intensity = 0.0f;
+		self->flags |= CEF_NO_DRAW;
 
 		return true;
 	}
 
-	if (self->dlight->intensity > 0.0f)
-		self->dlight->intensity -= 37.5f;
+	const float dlight_lerp = (float)(PHOENIXPOWER_NUM_RINGS - self->LifeTime) / (float)PHOENIXPOWER_NUM_RINGS;
+	self->dlight->intensity = POWEREXPLODE_INITIAL_DLIGHT_RADIUS + PHOENIX_EXPLODE_RADIUS_POWER * dlight_lerp;
 
 	// Spawn current particles ring.
 	vec3_t up;
@@ -297,7 +303,7 @@ static qboolean PhoenixExplosionPowerUpdate(client_entity_t* self, centity_t* ow
 		// Current smoke ring...
 		if (i % 4 == 0 && irand(0, 1))
 		{
-			client_particle_t* smoke = ClientParticle_new(PART_32x32_STEAM, color_white, 4000);
+			client_particle_t* smoke = ClientParticle_new(PART_32x32_STEAM, color_white, POWEREXPLODE_SMOKE_LIFETIME);
 
 			VectorRandomSet(smoke->origin, 16.0f);
 			Vec3AddAssign(spark->origin, smoke->origin);
@@ -323,14 +329,12 @@ static qboolean PhoenixExplosionPowerUpdate(client_entity_t* self, centity_t* ow
 
 static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, const vec3_t dir) //mxd. Named 'FXPhoenixExplodePower' in original logic.
 {
-	static const paletteRGBA_t light_color = { .c = 0xff00ffff };
-
 	// Create the explosion core (so we can attach dlight and particles to it).
 	client_entity_t* core = ClientEntity_new(type, (int)(flags | CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_NO_DRAW), origin, NULL, 25);
 
 	core->radius = 128.0f;
 	core->LifeTime = PHOENIXPOWER_NUM_RINGS;
-	core->dlight = CE_DLight_new(light_color, 300.0f, 0.0f);
+	core->dlight = CE_DLight_new(pe_dlight_color, POWEREXPLODE_INITIAL_DLIGHT_RADIUS, 0.0f);
 	VectorCopy(dir, core->direction);
 	core->Update = PhoenixExplosionPowerUpdate;
 
