@@ -41,6 +41,8 @@ void PreCachePhoenixMissile(void)
 
 static qboolean PhoenixMissileUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXPhoenixMissileThink' in original logic.
 {
+	static const int flap_frames[] = { 3, 4, 5, 6, 7, 7, 7, 6, 6, 5, 5, 4, 4, 3 }; //mxd. Raise wings slower, flap faster.
+
 	int duration;
 
 	if (R_DETAIL == DETAIL_LOW)
@@ -60,7 +62,7 @@ static qboolean PhoenixMissileUpdate(client_entity_t* self, centity_t* owner) //
 	Vec3ScaleAssign(FIRETRAIL_SPEED, right);
 
 	// Throw smoke to each side, alternating.
-	const float side = ((self->LifeTime-- & 1) ? 1.0f : -1.0f); //mxd. 1.0 - right, -1.0 - left.
+	const float side = ((self->LifeTime++ & 1) ? 1.0f : -1.0f); //mxd. 1.0 - right, -1.0 - left.
 	const vec3_t smoke_origin = VEC3_INITA(self->origin,
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
@@ -116,30 +118,17 @@ static qboolean PhoenixMissileUpdate(client_entity_t* self, centity_t* owner) //
 	}
 
 	// Update animation frame.
-
-	// Check if the time is up.
-	if (fx_time >= self->lastThinkTime)
+	if (self->LifeTime > 14) // Wait 350 ms. (25 * 14) before starting animation.
 	{
-		// Set up animations to go the other direction.
-		if (self->NoOfAnimFrames == 7)
+		if (self->r.frame < flap_frames[0] - 1)
 		{
-			// Set to go backwards to 3.
-			self->NoOfAnimFrames = 3;
-			self->r.frame = 7;
+			self->r.frame++;
 		}
 		else
 		{
-			// Set to go forward to 7
-			self->NoOfAnimFrames = 7;
-			self->r.frame = 3;
+			self->r.frame = flap_frames[self->phoenixmissile_frame_index % ARRAY_SIZE(flap_frames)];
+			self->phoenixmissile_frame_index++;
 		}
-
-		self->Scale = -1.0f;
-		self->lastThinkTime = fx_time + (4 * 50);
-	}
-	else
-	{
-		self->r.frame = self->NoOfAnimFrames - (int)(self->Scale * ((float)(self->lastThinkTime - fx_time) / 50.0f)) - 1;
 	}
 
 	// Remember for even spread of particles.
@@ -169,7 +158,7 @@ static qboolean PhoenixMissilePowerUpdate(client_entity_t* self, centity_t* owne
 	Vec3ScaleAssign(FIRETRAIL_SPEED, right);
 
 	// Throw smoke to each side, alternating.
-	const float side = ((self->LifeTime-- & 1) ? 1.0f : -1.0f); //mxd. 1.0 - right, -1.0 - left.
+	const float side = ((self->LifeTime++ & 1) ? 1.0f : -1.0f); //mxd. 1.0 - right, -1.0 - left.
 	const vec3_t smoke_origin = VEC3_INITA(self->origin,
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
 		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
@@ -240,20 +229,21 @@ void FXPhoenixMissile(centity_t* owner, const int type, const int flags, vec3_t 
 
 	missile->radius = 256.0f;
 	missile->r.model = &phoenix_missile_models[PAMDL_ARROW]; // Phoenix arrow model.
-	missile->lastThinkTime = fx_time + (50 * 7); // Time to play last frame.
-	missile->NoOfAnimFrames = 7; // End on frame number 7.
-	missile->Scale = 1.0f; // Positive frame count.
-	missile->r.scale = 0.8f;
 	missile->color.c = 0xff00ffff;
-	missile->LifeTime = 1000;
 
 	if (R_DETAIL > DETAIL_LOW)
 		missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
 
 	if (flags & CEF_FLAG6)
+	{
+		missile->r.frame = 1; //mxd. Use frame with expanded wings (also use 1.0 scale).
 		missile->Update = PhoenixMissilePowerUpdate;
+	}
 	else
+	{
+		missile->r.scale = 0.8f;
 		missile->Update = PhoenixMissileUpdate;
+	}
 
 	AddEffect(owner, missile);
 }
