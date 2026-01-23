@@ -78,7 +78,7 @@ static qboolean PhoenixExplosionBallUpdate(client_entity_t* self, centity_t* own
 	return true;
 }
 
-void PhoenixExplode(const int type, int flags, const vec3_t origin, const vec3_t dir)
+static void PhoenixExplode(const int type, int flags, const vec3_t origin, const vec3_t dir)
 {
 	// Create the main big explosion sphere.
 	client_entity_t* explosion = ClientEntity_new(type, flags, origin, NULL, 0); //mxd. Update each frame.
