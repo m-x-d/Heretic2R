@@ -77,6 +77,7 @@ static qboolean PhoenixMissileUpdate(client_entity_t* self, centity_t* owner) //
 	smoke->d_scale = 2.0f; // Rate of change in scale.
 	VectorScale(right, 2.0f * side, smoke->velocity);
 
+	RE_SetupRollSprite(&smoke->r, 32.0f, flrand(0.0f, 360.0f)); //mxd
 	AddEffect(NULL, smoke);	// Add the smoke as independent world smoke.
 
 	// Add fire to the tail. Attach it to the smoke because it doesn't get out of the fx radius so quickly.
