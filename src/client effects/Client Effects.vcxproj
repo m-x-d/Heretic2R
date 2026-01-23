@@ -15,6 +15,7 @@
     <ClCompile Include="..\qcommon\Message.c" />
     <ClCompile Include="..\qcommon\netmsg_read.c" />
     <ClCompile Include="..\qcommon\turbsin.c" />
+    <ClCompile Include="fx_BarrelExplode.c" />
     <ClCompile Include="fx_CorpseRemove.c" />
     <ClCompile Include="fx_Explosion.c" />
     <ClCompile Include="fx_GibTrail.c" />
@@ -60,7 +61,6 @@
     <ClCompile Include="fx_mist.c" />
     <ClCompile Include="fx_mork.c" />
     <ClCompile Include="fx_MorphOvum.c" />
-    <ClCompile Include="fx_objects.c" />
     <ClCompile Include="fx_Phoenix.c" />
     <ClCompile Include="fx_pickup.c" />
     <ClCompile Include="fx_PuzzlePickup.c" />

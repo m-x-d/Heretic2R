@@ -141,9 +141,6 @@
     <ClCompile Include="fx_MorphOvum.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="fx_objects.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
     <ClCompile Include="fx_Phoenix.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
@@ -299,6 +296,9 @@
     </ClCompile>
     <ClCompile Include="Client Effects.c">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_BarrelExplode.c">
+      <Filter>src\Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

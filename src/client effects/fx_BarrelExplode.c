@@ -1,5 +1,5 @@
 //
-// fx_objects.c -- //TODO: Rename to fx_BarrelExplode?
+// fx_BarrelExplode.c -- Named 'fx_objects.c' in original logic --mxd.
 //
 // Copyright 1998 Raven Software
 //
