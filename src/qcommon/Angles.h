@@ -20,12 +20,13 @@
 #define ANGLE_20		0.392699081f
 #define ANGLE_30		0.523598775f
 #define ANGLE_35		0.610865238f //mxd
-#define ANGLE_40		0.6981317f //mxd
+#define ANGLE_40		0.698131701f //mxd
 #define ANGLE_45		0.785398163f
 #define ANGLE_50		0.872664626f //mxd
 #define ANGLE_60		1.047197551f
 #define ANGLE_72		1.256637061f //mxd. Unused.
 #define ANGLE_75		1.308996939f //mxd.
+#define ANGLE_85		1.483529864f //mxd.
 #define ANGLE_90		1.570796327f
 #define ANGLE_120		2.094395102f
 #define ANGLE_135		2.35619449f
