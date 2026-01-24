@@ -16,26 +16,20 @@
 
 qboolean CheckFall(const playerinfo_t* info)
 {
-#define FALL_MINHEIGHT	34
-
-	vec3_t endpos;
-	VectorCopy(info->origin, endpos);
-	endpos[2] -= FALL_MINHEIGHT;
+#define FALL_MINHEIGHT	34.0f
 
 	trace_t trace;
-	P_Trace(info, info->origin, info->mins, info->maxs, endpos, &trace); //mxd
+	const vec3_t end_pos = VEC3_INITA(info->origin, 0.0f, 0.0f, -FALL_MINHEIGHT);
+	P_Trace(info, info->origin, info->mins, info->maxs, end_pos, &trace); //mxd
 
 	return (trace.fraction == 1.0f); //TODO: '>= 1' in original version. Can trace.fraction be > 1?
 }
 
 qboolean CheckUncrouch(const playerinfo_t* info)
 {
-	vec3_t v;
-	VectorCopy(info->origin, v);
-	v[2] += 25.0f - info->maxs[2];
-
 	trace_t trace;
-	P_Trace(info, info->origin, info->mins, info->maxs, v, &trace); //mxd
+	const vec3_t end_pos = VEC3_INITA(info->origin, 0.0f, 0.0f, 25.0f - info->maxs[2]);
+	P_Trace(info, info->origin, info->mins, info->maxs, end_pos, &trace); //mxd
 
 	return (trace.fraction == 1.0f && !trace.startsolid && !trace.allsolid);
 }
@@ -45,7 +39,7 @@ qboolean CheckCreep(const playerinfo_t* info, const qboolean check_forward) //mx
 	// Scan out and down from the player.
 
 	// Ignore the pitch of the player, we only want the yaw.
-	const vec3_t angles = { 0.0f, info->angles[YAW], 0.0f };
+	const vec3_t angles = VEC3_SET(0.0f, info->angles[YAW], 0.0f);
 
 	vec3_t forward;
 	AngleVectors(angles, forward, NULL, NULL);
@@ -84,8 +78,8 @@ qboolean CheckCreep(const playerinfo_t* info, const qboolean check_forward) //mx
 
 static int CheckSlopedStand(const playerinfo_t* info) //TODO: it would be nice to use inverse kinematics for this...
 {
-	static const vec3_t foot_mins = { -1.0f, -1.0f, 0.0f }; //mxd. Made local static.
-	static const vec3_t foot_maxs = {  1.0f,  1.0f, 1.0f }; //mxd. Made local static.
+	static const vec3_t foot_mins = VEC3_SET(-1.0f, -1.0f, 0.0f); //mxd. Made local static.
+	static const vec3_t foot_maxs = VEC3_SET( 1.0f,  1.0f, 1.0f); //mxd. Made local static.
 
 	//mxd. Check for noclip, just to make things more robust.
 	if (info->movetype == PHYSICSTYPE_NOCLIP)
@@ -93,15 +87,12 @@ static int CheckSlopedStand(const playerinfo_t* info) //TODO: it would be nice t
 
 	vec3_t forward;
 	vec3_t right;
-	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f };
+	const vec3_t player_facing = VEC3_SET(0.0f, info->angles[YAW], 0.0f);
 	AngleVectors(player_facing, forward, right, NULL);
 
 	// Get player origin.
-	vec3_t lspotmax;
-	VectorCopy(info->origin, lspotmax);
-
-	vec3_t rspotmax;
-	VectorCopy(info->origin, rspotmax);
+	vec3_t lspotmax = VEC3_INIT(info->origin);
+	vec3_t rspotmax = VEC3_INIT(info->origin);
 
 	// Magic number calc for foot placement.
 	VectorMA(lspotmax, -9.8f, right, lspotmax);
@@ -111,8 +102,8 @@ static int CheckSlopedStand(const playerinfo_t* info) //TODO: it would be nice t
 	VectorMA(rspotmax, -2.6f, forward, rspotmax);
 
 	// Go half player height below player.
-	const vec3_t lspotmin = { lspotmax[0], lspotmax[1], lspotmax[2] + info->mins[2] * 2.0f };
-	const vec3_t rspotmin = { rspotmax[0], rspotmax[1], rspotmax[2] + info->mins[2] * 2.0f };
+	const vec3_t lspotmin = VEC3_INITA(lspotmax, 0.0f, 0.0f, info->mins[2] * 2.0f);
+	const vec3_t rspotmin = VEC3_INITA(rspotmax, 0.0f, 0.0f, info->mins[2] * 2.0f);
 
 	trace_t rightfoot;
 	P_Trace(info, rspotmax, foot_mins, foot_maxs, rspotmin, &rightfoot); //mxd
