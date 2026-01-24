@@ -166,10 +166,8 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 		VectorMA(view_pos, CROSSHAIR_FORWARD_OFFSET, forward, end);
 	}
 
-	trace_ignore_player = true;
 	trace_t trace;
-	CL_Trace(start, vec3_origin, vec3_origin, end, MASK_SHOT | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK, CTF_CLIP_TO_ALL, &trace);
-	trace_ignore_player = false;
+	CL_Trace(start, vec3_origin, vec3_origin, end, MASK_SHOT | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK, CTF_CLIP_TO_ALL | CTF_IGNORE_PLAYER, &trace);
 
 	//mxd. Do free aim <-> autoaim crosshair animation.
 	UpdateAutoaimCrosshairAnimation(trace.endpos, do_autoaim);

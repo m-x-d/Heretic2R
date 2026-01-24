@@ -15,7 +15,7 @@ void P_Trace(const playerinfo_t* info, const vec3_t start, const vec3_t mins, co
 	{
 		//H2_BUGFIX: mxd. CEF_CLIP_TO_WORLD in original logic.
 		// Fixes broken animations when failing to un-crouch while below a func_ brush or rotating in place while standing on a func_ brush.
-		info->CL_Trace(start, mins, maxs, end, MASK_PLAYERSOLID, CTF_CLIP_TO_ALL, trace);
+		info->CL_Trace(start, mins, maxs, end, MASK_PLAYERSOLID, CTF_CLIP_TO_ALL | CTF_IGNORE_PLAYER, trace);
 	}
 	else
 	{

@@ -1118,6 +1118,24 @@ Q2DLL_DECLSPEC void CL_GetEntitySoundOrigin(const int ent, vec3_t org) //mxd. No
 	// FIXME: bmodel issues...
 }
 
+static void CL_SetupClipMoveToEntities(const int brushmask, const int flags, const qboolean set) //mxd. Added to make code a bit less awkward...
+{
+	if (brushmask & CONTENTS_CAMERABLOCK)
+		trace_ignore_camera = set;
+
+	if (brushmask & CONTENTS_WATER)
+		trace_check_water = set;
+
+	if (!(flags & CTF_CLIP_TO_BMODELS)) //mxd
+		trace_ignore_bmodels = set;
+
+	if (!(flags & CTF_CLIP_TO_ENTITIES)) //mxd
+		trace_ignore_entities = set;
+
+	if (flags & CTF_IGNORE_PLAYER) //mxd
+		trace_ignore_player = set;
+}
+
 void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const int brushmask, int flags, trace_t* t) // H2
 {
 	t->ent = NULL;
@@ -1152,30 +1170,8 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 
 	if (flags & (CTF_CLIP_TO_BMODELS | CTF_CLIP_TO_ENTITIES))
 	{
-		if (brushmask & CONTENTS_CAMERABLOCK)
-			trace_ignore_camera = true;
-
-		if (brushmask & CONTENTS_WATER)
-			trace_check_water = true;
-
-		if (!(flags & CTF_CLIP_TO_BMODELS)) //mxd
-			trace_ignore_bmodels = true;
-
-		if (!(flags & CTF_CLIP_TO_ENTITIES)) //mxd
-			trace_ignore_entities = true;
-
+		CL_SetupClipMoveToEntities(brushmask, flags, true); //mxd
 		CL_ClipMoveToEntities(start, mins, maxs, end, t);
-
-		if (brushmask & CONTENTS_CAMERABLOCK)
-			trace_ignore_camera = false;
-
-		if (brushmask & CONTENTS_WATER)
-			trace_check_water = false;
-
-		if (!(flags & CTF_CLIP_TO_BMODELS)) //mxd
-			trace_ignore_bmodels = false;
-
-		if (!(flags & CTF_CLIP_TO_ENTITIES)) //mxd
-			trace_ignore_entities = false;
+		CL_SetupClipMoveToEntities(brushmask, flags, false); //mxd
 	}
 }

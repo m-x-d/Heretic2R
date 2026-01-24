@@ -103,6 +103,7 @@
 #define CTF_CLIP_TO_WORLD		0x00000001	// Turns on collision detection with the world model.
 #define CTF_CLIP_TO_BMODELS		0x00000002	// Turns on collision detection with brush models. 
 #define CTF_CLIP_TO_ENTITIES	0x00000004	// Turns on collision detection with server entities (not client-only entities).
+#define CTF_IGNORE_PLAYER		0x00000008	//mxd. Turns off collision detection with player.
 // NOTE: CTF_CLIP_TO_BMODELS / CTF_CLIP_TO_ENTITIES only clip against entities in the current frame, not all entities in the world.											 
 
 //mxd. Legacy flags for compatibility reasons.
