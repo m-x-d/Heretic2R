@@ -63,10 +63,10 @@ void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfac
 
 	AlertMonsters(self, self->owner, 3.0f, false);
 
-	// Attempt to apply a scorchmark decal to the thing I hit.
+	// Attempt to apply a scorchmark decal to the thing I hit. //TODO: mxd. Disabled (too SMOL & looks silly). Will need much bigger explosion decal graphic (and decal clipping logic as well)...
 	int fx_flags = CEF_BROADCAST;
-	if (IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
-		fx_flags |= CEF_FLAG8;
+	//if (IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
+		//fx_flags |= CEF_FLAG8;
 
 	VectorNormalize2(self->velocity, self->movedir);
 
