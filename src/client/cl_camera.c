@@ -396,7 +396,7 @@ void CL_CalcViewValues(void)
 	player_state_t* ops = &oldframe->playerstate;
 
 	// Calculate the origin.
-	if (ps->remote_id < 0 && ps->pmove.pm_type != PM_INTERMISSION)
+	if (ps->remote_id == REMOTE_ID_NONE && ps->pmove.pm_type != PM_INTERMISSION) //mxd. Use REMOTE_ID_NONE define.
 	{
 		if ((int)cl_predict->value)
 		{
@@ -463,7 +463,7 @@ void CL_CalcViewValues(void)
 			VectorCopy(cl.predicted_angles, look_angles);
 		}
 
-		if (ps->remote_id < 0) // When not looking through a remote camera.
+		if (ps->remote_id == REMOTE_ID_NONE) // When not looking through a remote camera.
 		{
 			const float viewheight = (float)ops->viewheight + (float)(ps->viewheight - ops->viewheight) * lerp;
 			const qboolean noclip_mode = (ps->pmove.pm_type == PM_SPECTATOR); //mxd

@@ -1706,7 +1706,7 @@ static void PutClientInServer(edict_t* ent)
 		client->ps.pmove.camera_delta_angles[i] = 0;
 	}
 
-	client->ps.remote_id = -1;
+	client->ps.remote_id = REMOTE_ID_NONE; //mxd. Use define.
 
 	// Initialize the player's entity_state_t.
 

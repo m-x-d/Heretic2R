@@ -630,7 +630,7 @@ void ClientEndServerFrame(edict_t* player)
 	if (cl->RemoteCameraLockCount > 0)
 		cl->ps.remote_id = cl->RemoteCameraNumber;
 	else
-		cl->ps.remote_id = -1;
+		cl->ps.remote_id = REMOTE_ID_NONE; //mxd. Use define.
 
 	// Reflect inventory changes in the client's playetstate.
 	cl->ps.NoOfItems = 0;

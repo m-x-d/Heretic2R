@@ -851,7 +851,7 @@ void SV_BuildClientFrame(client_t* client)
 	frame->senttime = svs.realtime;
 
 	// Find the client's PVS.
-	if (cl_ent->client->ps.remote_id >= 0) // H2
+	if (cl_ent->client->ps.remote_id != REMOTE_ID_NONE) // H2. When looking through remote camera.
 	{
 		for (int i = 0; i < 3; i++)
 			org[i] = cl_ent->client->ps.remote_vieworigin[i] * 0.125f;

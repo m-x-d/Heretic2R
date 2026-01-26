@@ -6,6 +6,9 @@
 
 #pragma once
 
+//mxd. Default remote camera ID.
+#define REMOTE_ID_NONE	(-1)
+
 // EF_XXX
 // Effects (held by entity_state_t.effects) are things that are handled on the client side.
 // (lights, particles, frame animations) and happen constantly on the given entity.

@@ -88,7 +88,7 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 		II_WEAPON_MACEBALLS
 	};
 
-	if (cl.time < 1001 || !(int)crosshair->value || PlayerEntPtr == NULL || (int)cl_cinematicfreeze->value || cl.frame.playerstate.remote_id != -1) //mxd. Also hide crosshair when looking through remote camera.
+	if (cl.time < 1001 || !(int)crosshair->value || PlayerEntPtr == NULL || (int)cl_cinematicfreeze->value || cl.frame.playerstate.remote_id != REMOTE_ID_NONE) //mxd. Also hide crosshair when looking through remote camera.
 		return false;
 
 	vec3_t angles;
