@@ -99,10 +99,7 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 	vec3_t right;
 	AngleVectors(angles, forward, right, NULL);
 
-	vec3_t start;
-	VectorCopy(PlayerEntPtr->origin, start);
-	start[2] += cl.playerinfo.viewheight;
-
+	vec3_t start = VEC3_INITA(PlayerEntPtr->origin, 0.0f, 0.0f, cl.playerinfo.viewheight);
 	const uint weapon = cl.frame.playerstate.weapon;
 
 	switch (weapon)
@@ -162,7 +159,7 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 	{
 		//mxd. Setup end pos from view_pos. This way projectiles fired by player will always hit end position, regardless of distance to it (has to be setup the same way in projectile firing logic).
 		//mxd. view_pos has to be above player's head, otherwise crosshair will be obscured by it...
-		const vec3_t view_pos = { PlayerEntPtr->origin[0], PlayerEntPtr->origin[1], start[2] }; 
+		const vec3_t view_pos = VEC3_SET(PlayerEntPtr->origin[0], PlayerEntPtr->origin[1], start[2]);
 		VectorMA(view_pos, CROSSHAIR_FORWARD_OFFSET, forward, end);
 	}
 
