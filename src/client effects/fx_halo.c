@@ -60,11 +60,15 @@ static qboolean HaloUpdate(client_entity_t* self, centity_t* owner)
 	}
 	else
 	{
-		// Determine visibility.
+		// Determine visibility. //mxd. Trace from camera origin to our origin (otherwise we'll get startsolid/fraction:0 trace).
 		trace_t trace;
-		fxi.Trace(self->r.origin, vec3_origin, vec3_origin, fxi.cl->refdef.vieworg, (CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER), CTF_CLIP_TO_ALL, &trace);
+		fxi.Trace(fxi.cl->refdef.vieworg, vec3_origin, vec3_origin, self->r.origin, (CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER), CTF_CLIP_TO_ALL, &trace);
 
-		HaloUpdateVisibility(self, cam_dist, trace.fraction == 1.0f); //mxd
+		//mxd. Because all FX_HALOs are attached to SOLID_BBOX entities, trace will stop at said entity, not at self->r.origin, so assume visible when trace hits closer than our radius...
+		vec3_t diff;
+		VectorSubtract(self->r.origin, trace.endpos, diff);
+
+		HaloUpdateVisibility(self, cam_dist, VectorLengthSquared(diff) < self->radius * self->radius); //mxd
 	}
 
 	return true;
