@@ -35,13 +35,10 @@ void CreateSinglePuff(vec3_t origin, const float scale)
 
 void FXDustPuffOnGround(centity_t* owner, int type, int flags, vec3_t origin)
 {
-	vec3_t endpos;
-	VectorCopy(origin, endpos);
-	endpos[2] -= 128.0f;
-
 	// Find out where the ground is.
 	trace_t trace;
-	fxi.Trace(origin, vec3_origin, vec3_origin, endpos, CONTENTS_SOLID, CTF_CLIP_TO_WORLD, &trace);
+	const vec3_t end_pos = VEC3_INITA(origin, 0.0f, 0.0f, -128.0f);
+	fxi.Trace(origin, vec3_origin, vec3_origin, end_pos, CONTENTS_SOLID, CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS, &trace); //mxd. +CTF_CLIP_TO_BMODELS flag.
 
 	if (trace.fraction < 1.0f)
 	{
