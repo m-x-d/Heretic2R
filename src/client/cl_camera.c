@@ -330,7 +330,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 		// Check against bmodels / solid entities --mxd.
 		CL_Trace(end, v, maxs, end_2, MASK_WATER | CONTENTS_CAMERABLOCK, CTF_CLIP_TO_ALL, &trace);
 
-		if (!noclip_mode && trace.fraction != 1.0f)
+		if (!noclip_mode && !trace.startsolid && trace.fraction != 1.0f) //mxd. Added trace.startsolid check (because now startsolid trace has fraction 0 instead of 1 in original logic).
 			VectorCopy(trace.endpos, end_2);
 	}
 
