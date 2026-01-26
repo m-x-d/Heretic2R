@@ -37,12 +37,12 @@
 
 #define EF_MACE_ROTATE			0x00010000	// Make the mace ball model rotate around its axes - save network traffic.
 #define EF_CLIENT_DEAD			0x00020000	// This client on the server is dead. Easiest way to get this flag to CFX.
-#define EF_POWERUP_ENABLED		0x00040000	// Tells the client effects that corvus powerup is enabled
-#define EF_SPEED_ACTIVE			0x00080000	// Tells the client effects that corvus speedup is enabled
-#define EF_HIGH_MAX				0x00100000	// Tells the client effects that corvus speedup is enabled
-#define EF_LIGHT_ENABLED		0x00200000	// Tells the client effects that corvus' personal torch is activated.
+#define EF_POWERUP_ENABLED		0x00040000	// Tells the client effects that Corvus powerup is enabled.
+#define EF_SPEED_ACTIVE			0x00080000	// Tells the client effects that Corvus speedup is enabled.
+#define EF_HIGH_MAX				0x00100000	// Tells the client effects that Corvus speedup is enabled.
+#define EF_LIGHT_ENABLED		0x00200000	// Tells the client effects that Corvus' personal torch is activated.
 
-#define EF_CHICKEN				0x00400000	// The flag that tells the system that the player is a chicken, and not corvus.
+#define EF_CHICKEN				0x00400000	// The flag that tells the system that the player is a chicken, and not Corvus.
 #define EF_ANIM_ALL				0x00800000	// Automatically cycle through all frames at 2hz.
 #define EF_ANIM_ALLFAST			0x01000000	// Automatically cycle through all frames at 10hz.
 
@@ -103,8 +103,8 @@
 #define CTF_CLIP_TO_WORLD		0x00000001	// Turns on collision detection with the world model.
 #define CTF_CLIP_TO_BMODELS		0x00000002	// Turns on collision detection with brush models. 
 #define CTF_CLIP_TO_ENTITIES	0x00000004	// Turns on collision detection with server entities (not client-only entities).
-#define CTF_IGNORE_PLAYER		0x00000008	//mxd. Turns off collision detection with player.
-// NOTE: CTF_CLIP_TO_BMODELS / CTF_CLIP_TO_ENTITIES only clip against entities in the current frame, not all entities in the world.											 
+#define CTF_IGNORE_PLAYER		0x00000008	// Turns off collision detection with player.
+// NOTE: CTF_CLIP_TO_BMODELS / CTF_CLIP_TO_ENTITIES only clip against entities in the current frame, not all entities in the world.
 
 //mxd. Legacy flags for compatibility reasons.
 #define CTF_CLIP_TO_WORLD_LEGACY	0x08000000 // CEF_CLIP_TO_WORLD in original logic. Converted to CTF_CLIP_TO_WORLD in CL_Trace().

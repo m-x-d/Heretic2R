@@ -32,7 +32,7 @@ void PreCacheFistSFX(void) //mxd
 	fist_impact_sounds[0] = fxi.S_RegisterSound("weapons/FlyingFistImpact.wav");
 	fist_impact_sounds[1] = fxi.S_RegisterSound("weapons/FireballPowerImpact.wav");
 
-	//mxd. Precache weapon sounds as well. Not the best place to do this, but since weapons have no precace logic at all...
+	//mxd. Precache weapon sounds as well. Not the best place to do this, but since weapons have no precache logic at all...
 	fxi.S_RegisterSound("weapons/FlyingFistCast.wav");
 	fxi.S_RegisterSound("weapons/FireballPowerCast.wav");
 	fxi.S_RegisterSound("weapons/FireballNoMana.wav");
@@ -59,7 +59,7 @@ static qboolean FlyingFistTrailUpdate(client_entity_t* self, centity_t* owner) /
 	for (int i = 0; i < count; i++)
 	{
 		client_entity_t* trail_ent = ClientEntity_new(FX_WEAPON_FLYINGFIST, 0, self->r.origin, NULL, 1000);
-		trail_ent->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail_ent->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 
 		vec3_t accel_dir;
 		VectorNormalize2(self->velocity, accel_dir);
