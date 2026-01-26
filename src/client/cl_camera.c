@@ -281,10 +281,15 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 	// If player is in "swim underwater" mode, block camera by water surface.
 	if ((water_flags & WF_SWIMFREE) && (CL_PMpointcontents(end) & MASK_WATER))
 	{
-		CL_Trace(end_2, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CTF_CLIP_TO_ALL, &trace);
+		//mxd. Use separate mins/maxs (to avoid trace.endpos ending up on/slightly above water surface).
+		static const vec3_t uw_mins = VEC3_SET(-1.0f, -1.0f, 4.0f);
+		static const vec3_t uw_maxs = VEC3_SET( 1.0f,  1.0f, 8.0f);
 
-		if (!trace.startsolid && trace.fraction != 1.0f)
-			VectorLerp(end, 0.9f, trace.endpos, end_2);
+		CL_Trace(end_2, uw_mins, uw_maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CTF_CLIP_TO_ALL, &trace);
+
+		// When both 'end' and 'end_2' are underwater, we end up with startsolid/allsolid/fraction:0 trace --mxd.
+		if (!trace.startsolid && trace.fraction < 1.0f)
+			VectorCopy(trace.endpos, end_2); //mxd. H2: VectorLerp(end, 0.9f, trace.endpos, end_2). Removed to avoid noticeable camera position change when hitting water surface.
 	}
 
 	vec3_t end_3;
