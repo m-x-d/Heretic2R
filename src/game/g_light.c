@@ -341,13 +341,11 @@ void SP_light_torch1(edict_t* self)
 
 	if (!(self->spawnflags & SF_TORCH_NOHALO))
 	{
-		vec3_t origin = VEC3_INIT(self->s.origin);
-
 		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
-		VectorMA(origin, 2.0f, forward, origin);
 
-		origin[2] += 16.0f;
+		vec3_t origin = VEC3_INITA(self->s.origin, 0.0f, 0.0f, 16.0f);
+		VectorMA(origin, 2.0f, forward, origin);
 
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, CEF_FLAG6 | CEF_FLAG7, origin, "");
 	}
