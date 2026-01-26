@@ -274,15 +274,11 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 	if (!noclip_mode && trace.fraction != 1.0f)
 		VectorCopy(trace.endpos, end);
 
-	float viewdist;
-	if ((int)cl_camera_fpmode->value)
-		viewdist = -cl_camera_fpdist->value;
-	else
-		viewdist = -cl_camera_viewdist->value;
-
 	vec3_t end_2;
-	VectorMA(end, viewdist, forward, end_2);
+	const float viewdist = (((int)cl_camera_fpmode->value) ? cl_camera_fpdist->value : cl_camera_viewdist->value);
+	VectorMA(end, -viewdist, forward, end_2);
 
+	// If player is in "swim underwater" mode, block camera by water surface.
 	if ((water_flags & WF_SWIMFREE) && (CL_PMpointcontents(end) & MASK_WATER))
 	{
 		CL_Trace(end_2, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CTF_CLIP_TO_ALL, &trace);
@@ -325,10 +321,11 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 		}
 	}
 
+	//TODO: check if 'water_flags & ~WF_SWIMFREE' (e.g. true when water_flags has any flags other than WF_SWIMFREE) check is correct.
 	if (waterlevel == 0 || (water_flags & ~WF_SWIMFREE) || (water_flags == 0 && in_down.state == KS_NONE))
 	{
 		const float roll_scaler = 1.0f - fabsf(look_angles[PITCH] / 89.0f);
-		const vec3_t v = { mins[0], mins[1], -1.0f - roll_scaler * 2.0f };
+		const vec3_t v = VEC3_SET(mins[0], mins[1], -1.0f - roll_scaler * 2.0f);
 
 		// Check against bmodels / solid entities --mxd.
 		CL_Trace(end, v, maxs, end_2, MASK_WATER | CONTENTS_CAMERABLOCK, CTF_CLIP_TO_ALL, &trace);
