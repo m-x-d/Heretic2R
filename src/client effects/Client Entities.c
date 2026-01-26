@@ -334,8 +334,16 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 			{
 				//mxd. If 'current->Update()' added new entities to current list and 'current' was the first entry in the list,
 				// '*prev' no longer points to it (because new entries are added to the front of the list). In this case we need to re-aquire '*prev' pointer.
-				while (*current_p != current)
-					current_p = &(*current_p)->next;
+				if (*current_p != current)
+				{
+					current_p = root;
+
+					while (*current_p != current)
+					{
+						assert((*current_p)->next != NULL);
+						current_p = &(*current_p)->next;
+					}
+				}
 
 				RemoveEffectFromList(current_p);
 
