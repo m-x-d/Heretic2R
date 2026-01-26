@@ -17,7 +17,6 @@ void FXRemoteCamera(centity_t* owner, const int type, const int flags, vec3_t or
 
 	remote_camera->radius = 10.0f;
 	VectorCopy(owner->origin, fxi.cl->refdef.vieworg);
-	remote_camera->Update = RemoveSelfAI;
 
 	AddEffect(NULL, remote_camera);
 }
