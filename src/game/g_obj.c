@@ -133,6 +133,9 @@ void ObjectInit(edict_t* self, const int health, const int mass, const MaterialI
 	if (self->health == 0)
 		self->health = health;
 
+	if (self->max_health == 0) //mxd
+		self->max_health = health;
+
 	if (self->mass == 0)
 		self->mass = ((mass == 0) ? 10 : mass); // Needs a mass if it breaks up.
 
@@ -604,6 +607,10 @@ void ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damage) //mx
 {
 	self->think = ObjDyingElfReachAnimThink;
 	self->nextthink = level.time + FRAMETIME;
+
+	//mxd. Switch to pain skin?
+	if ((float)self->health < (float)self->max_health * 0.75f && (self->s.skinnum % 2) == 0)
+		self->s.skinnum++;
 
 	if ((other->client != NULL || (other->svflags & SVF_MONSTER)) && self->pain_debounce_time < level.time) //mxd. Add pain_debounce_time check.
 	{
