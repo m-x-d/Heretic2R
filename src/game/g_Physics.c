@@ -870,7 +870,7 @@ static edict_t* TestEntityPosition(const edict_t* self)
 	gi.TraceBoundingForm(&form);
 
 	if (form.trace.startsolid)
-		return world;
+		return ((form.trace.ent != NULL) ? form.trace.ent : world); //mxd. If we have trace.ent, return it.
 
 	return NULL;
 }
@@ -1117,7 +1117,7 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 				continue;
 
 			// See if the self's bbox is inside the pusher's final position.
-			if (!TestEntityPosition(check))
+			if (TestEntityPosition(check) != pusher) //mxd. Original logic checks for NULL (can result in incorrect behaviour if 'check' is colliding with unrelated entity (e.g. player) at the same time).
 				continue;
 		}
 
