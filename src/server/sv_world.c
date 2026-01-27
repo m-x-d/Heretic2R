@@ -84,12 +84,6 @@ static void InsertLinkBefore(link_t* l, link_t* before)
 // Builds a uniformly subdivided tree for the given world size.
 static areanode_t* SV_CreateAreaNode(const int depth, vec3_t mins, vec3_t maxs)
 {
-	vec3_t size;
-	vec3_t mins1;
-	vec3_t maxs1;
-	vec3_t mins2;
-	vec3_t maxs2;
-
 	areanode_t* anode = &sv_areanodes[sv_numareanodes];
 	sv_numareanodes++;
 
@@ -105,17 +99,20 @@ static areanode_t* SV_CreateAreaNode(const int depth, vec3_t mins, vec3_t maxs)
 		return anode;
 	}
 
+	vec3_t size;
 	VectorSubtract(maxs, mins, size);
+
 	if (size[0] > size[1])
 		anode->axis = 0;
 	else
 		anode->axis = 1;
 
 	anode->dist = (maxs[anode->axis] + mins[anode->axis]) * 0.5f;
-	VectorCopy(mins, mins1);
-	VectorCopy(mins, mins2);
-	VectorCopy(maxs, maxs1);
-	VectorCopy(maxs, maxs2);
+
+	vec3_t mins1 = VEC3_INIT(mins);
+	vec3_t maxs1 = VEC3_INIT(maxs);
+	vec3_t mins2 = VEC3_INIT(mins);
+	vec3_t maxs2 = VEC3_INIT(maxs);
 
 	maxs1[anode->axis] = anode->dist;
 	mins2[anode->axis] = anode->dist;
