@@ -857,19 +857,19 @@ static void SetGroundEntFromTrace(edict_t* self, const trace_t* trace)
 
 static edict_t* TestEntityPosition(const edict_t* self)
 {
-	FormMove_t form_move;
+	FormMove_t form;
 
-	VectorCopy(self->mins, form_move.mins);
-	VectorCopy(self->maxs, form_move.maxs);
+	VectorCopy(self->mins, form.mins);
+	VectorCopy(self->maxs, form.maxs);
 
-	form_move.start = self->s.origin;
-	form_move.end = self->s.origin;
-	form_move.pass_entity = self;
-	form_move.clipmask = self->clipmask;
+	form.start = self->s.origin;
+	form.end = self->s.origin;
+	form.pass_entity = self;
+	form.clipmask = self->clipmask;
 
-	gi.TraceBoundingForm(&form_move);
+	gi.TraceBoundingForm(&form);
 
-	if (form_move.trace.startsolid)
+	if (form.trace.startsolid)
 		return world;
 
 	return NULL;
