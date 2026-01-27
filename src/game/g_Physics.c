@@ -1030,14 +1030,14 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 		}
 	}
 
-	// We need this for pushing things later.
-	vec3_t org = VEC3_INIT(pusher->s.angles);
-	Vec3AddAssign(amove, org);
+	vec3_t angles;
+	VectorAdd(pusher->s.angles, amove, angles);
 
+	// We need these for pushing things later.
 	vec3_t forward;
 	vec3_t right;
 	vec3_t up;
-	AngleVectors(org, forward, right, up);
+	AngleVectors(angles, forward, right, up);
 
 	float a[3][3];
 	a[0][0] = forward[0];
@@ -1089,7 +1089,7 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 
 	pushed_p++;
 
-	// Move the pusher to it's final position.
+	// Move the pusher to its final position.
 	const vec3_t pusher_org = VEC3_INIT(pusher->s.origin);
 	Vec3AddAssign(move, pusher->s.origin);
 	Vec3AddAssign(amove, pusher->s.angles);
@@ -1129,8 +1129,7 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 			VectorCopy(check->s.origin, pushed_p->origin);
 			VectorCopy(check->s.angles, pushed_p->angles);
 
-			vec3_t hold_org;
-			VectorCopy(check->s.origin, hold_org);
+			const vec3_t hold_org = VEC3_INIT(check->s.origin);
 
 			pushed_p++;
 
@@ -1156,18 +1155,19 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 				else
 					test_point[1] += check->maxs[1];
 
-				VectorSubtract(test_point, pusher_org, org);
+				vec3_t diff;
+				VectorSubtract(test_point, pusher_org, diff);
 				Vec3AddAssign(move, check->s.origin);
 
 				vec3_t org2;
-				org2[0] = DotProduct(org, forward);
-				org2[1] = -DotProduct(org, right);
-				org2[2] = DotProduct(org, up);
+				org2[0] = DotProduct(diff, forward);
+				org2[1] = -DotProduct(diff, right);
+				org2[2] = DotProduct(diff, up);
 
 				vec3_t move2;
-				move2[0] = DotProduct(org2, forward_inv) - org[0];
-				move2[1] = DotProduct(org2, right_inv) - org[1];
-				move2[2] = DotProduct(org2, up_inv) - org[2];
+				move2[0] = DotProduct(org2, forward_inv) - diff[0];
+				move2[1] = DotProduct(org2, right_inv) - diff[1];
+				move2[2] = DotProduct(org2, up_inv) - diff[2];
 
 				Vec3AddAssign(move2, check->s.origin);
 
