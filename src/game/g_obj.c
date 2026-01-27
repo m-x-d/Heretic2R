@@ -623,11 +623,18 @@ void ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int da
 // Spawnflags:
 // INVULNERABLE	- It can't be hurt.
 // Variables:
-// style - Skin to use.
+// style - skin to use (not implemented in original logic --mxd):
+// 0 - Randomly pick between !skin.m8 and !skin1.m8.
+// 1 - Use !skin.m8.
+// 2 - Use !skindmg.m8.
+// 3 - Use !skin1.m8.
+// 4 - Use !skin1dmg.m8.
+// 5 - Use !skin2.m8 (palace guard elf).
+// 6 - Use !skin2dmg.m8.
 void SP_obj_dying_elf(edict_t* self)
 {
 	VectorSet(self->mins, -32.0f, -32.0f, -2.0f);
-	VectorSet(self->maxs, 32.0f, 32.0f, 6.0f);
+	VectorSet(self->maxs,  32.0f,  32.0f,  6.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/monsters/plaguelf/tris.fm");
 	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
@@ -645,6 +652,12 @@ void SP_obj_dying_elf(edict_t* self)
 	self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
+
+	//mxd. Set skin.
+	if (self->style == 0)
+		self->s.skinnum = (irand(0, 1) ? 0 : 2);
+	else
+		self->s.skinnum = ClampI(self->style - 1, 0, 5);
 
 	self->s.frame = FRAME_fetal1;
 	self->think = ObjDyingElfIdleThink;
