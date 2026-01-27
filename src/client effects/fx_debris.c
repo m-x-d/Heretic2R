@@ -192,6 +192,8 @@ static struct sfx_s* debris_sounds[NUM_SOUNDS]; //mxd
 
 static void DoFireTrail(client_entity_t* spawner)
 {
+	static const paletteRGBA_t fire_color = { .c = 0xe5007fff };
+
 	if (spawner->flags & CEF_FLAG7 && spawner->dlight != NULL && spawner->dlight->intensity <= 0.0f)
 	{
 		// Flame out.
@@ -199,7 +201,6 @@ static void DoFireTrail(client_entity_t* spawner)
 		return;
 	}
 
-	const paletteRGBA_t color = { .c = 0xe5007fff };
 	const int material = (spawner->SpawnInfo & SIF_FLAG_MASK);
 	const qboolean is_flesh = (material == MAT_FLESH || material == MAT_INSECT || spawner->effectID == FX_BODYPART); //mxd
 	const float master_scale = spawner->r.scale * (is_flesh ? 3.33f : 1.0f);
@@ -208,18 +209,20 @@ static void DoFireTrail(client_entity_t* spawner)
 
 	for (int i = 0; i < count; i++)
 	{
-		client_particle_t* flame = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), color, flame_duration);
+		if (irand(0, 3) == 0) //mxd. Randomly skip particle.
+			continue;
+
+		client_particle_t* flame = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), fire_color, flame_duration);
 
 		const float radius = spawner->r.scale * 2.0f;
-		VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-4.0f, -2.0f) * spawner->r.scale);
-		VectorAdd(flame->origin, spawner->r.origin, flame->origin);
+		VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(0.0f, 2.0f) * spawner->r.scale);
+		Vec3AddAssign(spawner->r.origin, flame->origin);
 
-		flame->scale = master_scale;
-		VectorSet(flame->velocity, flrand(-1.0f, 1.0f), flrand(-1.0f, 1.0f), flrand(17.0f, 20.0f));
-		flame->acceleration[2] = 32.0f * spawner->r.scale;
-		flame->d_scale = flrand(-5.0f, -2.5f);
-		flame->d_alpha = flrand(-200.0f, -160.0f);
-		flame->duration = (int)((255.0f * (float)flame_duration) / -flame->d_alpha); // Time taken to reach zero alpha.
+		flame->scale = master_scale * flrand(1.0f, 1.4f); //mxd. Randomize scale.
+		VectorSet(flame->velocity, flrand(-8.0f, 8.0f), flrand(-8.0f, 8.0f), flrand(16.0f, 32.0f)); //mxd. Randomize velocity... more!
+		flame->acceleration[2] = flrand(32.0f, 64.0f) * spawner->r.scale; //mxd. Randomize acceleration.
+		flame->d_scale = flrand(2.5f, 7.5f); // H2: (-5.0f, -2.5f).
+		flame->d_alpha = flrand(-800.0f, -320.0f); // H2: (-200.0f, -160.0f).
 		flame->startTime = fx_time;
 		flame->type |= PFL_ADDITIVE;
 
