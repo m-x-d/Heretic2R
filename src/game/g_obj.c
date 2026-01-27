@@ -522,6 +522,7 @@ static void ObjCorpseInit(edict_t* self) //mxd. Named 'SpawnCorpse' in original 
 void SP_obj_corpse1(edict_t* self)
 {
 	ObjCorpseInit(self);
+	self->s.skinnum = irand(0, 1) * 2; //mxd. Randomly select !skin.m8 or !skin1.m8.
 }
 
 // QUAKED obj_corpse2 (1 .5 0) (-30 -12 0) (30 12 5) INVULNERABLE
@@ -538,7 +539,7 @@ void SP_obj_corpse1(edict_t* self)
 void SP_obj_corpse2(edict_t* self)
 {
 	ObjCorpseInit(self);
-	self->s.skinnum = 1;
+	self->s.skinnum = irand(0, 1) * 2 + 1; //H2: 1. //mxd. Randomly select !skindmg.m8 or !skin1dmg.m8.
 }
 
 #pragma endregion
