@@ -312,7 +312,7 @@ static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. 
 static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t origin, float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy) //mxd. Named 'FXBodyPart_Throw' in original logic.
 {
 	//FIXME: make sure parts have correct skins, even node 0!
-	client_entity_t* gib = ClientEntity_new(type, 0, origin, NULL, 0); //flags sent as 0 //mxd. next_think_time:17 in original logic (was always re-assigned to 50 below).
+	client_entity_t* gib = ClientEntity_new(type, CEF_ABSOLUTE_PARTS, origin, NULL, 0); //flags sent as 0 //mxd. next_think_time:17 in original logic (was always re-assigned to 50 below).
 
 	int material;
 	if (type == FX_THROWWEAPON) // Not elastic enough for effect?
@@ -367,7 +367,7 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 		gib->r.fmnodeinfo[0].flags &= ~FMNI_NO_DRAW;
 	}
 
-	gib->flags |= (CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS);
+	gib->clip_flags |= (CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS); //mxd. Use separate flags.
 	gib->r.skinnum = (owner->entity != NULL ? owner->entity->skinnum : 0);
 	gib->radius = 2.0f;
 	gib->debris_rest_pitch = ANGLE_90 + flrand(-ANGLE_10, ANGLE_10); //mxd. //TODO: is this always correct?
@@ -573,7 +573,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 
 	const int chunk_index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
 
-	client_entity_t* debris = ClientEntity_new(-1, 0, origin, NULL, 0); //mxd. next_think_time:50 in original logic (20 FPS). Update every frame instead.
+	client_entity_t* debris = ClientEntity_new(-1, CEF_ABSOLUTE_PARTS, origin, NULL, 0); //mxd. next_think_time:50 in original logic (20 FPS). Update every frame instead.
 
 	debris->SpawnInfo = material;
 	debris->classID = CID_DEBRIS;
@@ -588,7 +588,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	debris->debris_avelocity[0] = ANGLE_360 + flrand(0.0f, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
 	debris->debris_avelocity[1] = ANGLE_360 + flrand(0.0f, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
 
-	debris->flags |= (CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS);
+	debris->clip_flags |= (CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS); //mxd. Use separate flags.
 	debris->radius = max(1.0f, debris->r.scale); //mxd. 5.0 in original logic.
 
 	VectorRandomCopy(dir, debris->velocity, 0.5f);
@@ -781,14 +781,14 @@ void FXFleshDebris(centity_t* owner, const int type, int flags, vec3_t origin)
 
 static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 {
-	if (!(self->flags & CEF_CLIP_TO_WORLD))
+	if (!(self->clip_flags & (CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS))) //mxd. Use clip_flags.
 		return;
 
 	trace_t* trace;
 	CE_ParseMsgParms(msg, "g", &trace);
 
 	// Invalid trace or didn't hit the world?
-	if (trace->startsolid || trace->allsolid || Vec3IsZeroEpsilon(trace->plane.normal) || trace->ent != (struct edict_s*)-1)
+	if (trace->startsolid || trace->allsolid || Vec3IsZeroEpsilon(trace->plane.normal))
 		return;
 
 	if ((trace->contents & CONTENTS_SOLID) && fx_time - self->debris_last_bounce_time > 250) //mxd. Added debris_last_bounce_time check.
@@ -868,7 +868,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 		//mxd. Inline BecomeStatic().
 		VectorClear(self->velocity);
 		VectorClear(self->acceleration);
-		self->flags &= ~CEF_CLIP_TO_WORLD;
+		self->clip_flags &= ~(CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS); //mxd. Use clip_flags.
 
 		self->d_alpha = flrand(-0.1f, -0.25f);
 		self->Update = FXDebris_Vanish;

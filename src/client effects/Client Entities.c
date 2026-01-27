@@ -392,7 +392,7 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 
 		if (!(current->flags & CEF_NOMOVE) && (owner == NULL || (current->flags & CEF_DONT_LINK)))
 		{
-			if (current->flags & CEF_CLIP_TO_WORLD)
+			if (current->clip_flags & CTF_CLIP_TO_ALL) // When any CTF_CLIP_ flag is set --mxd.
 			{
 				if (cur_trace < NUM_TRACES - 1) // Leave one at the end to continue checking collisions.
 				{

@@ -250,9 +250,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	const vec3_t mins = { -self->radius, -self->radius, -self->radius };
 	const vec3_t maxs = {  self->radius,  self->radius,  self->radius };
 
-	//mxd. Convert CEF_CLIP_TO_WORLD trace flag (CEF_CLIP_TO_ENTITIES was never used)...
-	const int trace_flags = ((self->flags & CEF_CLIP_TO_WORLD) ? CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS : 0);
-	fxi.Trace(r->origin, mins, maxs, end, MASK_SHOT | MASK_WATER, trace_flags, trace);
+	fxi.Trace(r->origin, mins, maxs, end, MASK_SHOT | MASK_WATER, self->clip_flags, trace); //mxd. Use clip_flags.
 
 	//mxd. Update velocity regardless of trace results (but only when called from UpdateEffects()).
 	if (update_velocity)
@@ -325,7 +323,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/splish1.wav"), 1.0f, ATTN_STATIC, 0.0f);
 			}
 
-			fxi.Trace(trace->endpos, mins, maxs, end, MASK_SHOT, trace_flags, trace); //mxd. Use converted trace flags...
+			fxi.Trace(trace->endpos, mins, maxs, end, MASK_SHOT, self->clip_flags, trace); //mxd. Use clip_flags.
 
 			if (trace->fraction < 1.0f)
 			{

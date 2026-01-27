@@ -75,7 +75,8 @@ typedef struct client_entity_s
 	float alpha; 
 	float d_alpha;
 	int effectID;
-	int flags;
+	int flags; // CEF_ flags.
+	int clip_flags; //mxd. CTF_CLIP_ flags. Used by Physics_MoveEnt() / fxi.Trace().
 
 	int startTime; // Time the client_entity_t was created.
 

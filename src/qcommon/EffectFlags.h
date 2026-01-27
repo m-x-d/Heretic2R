@@ -87,9 +87,8 @@
 											// Allows vel and accel to be used for something else for static entities.
 
 #define CEF_CULLED				0x04000000	// Culled from view this frame (set or unset) in AddEffectsToView().
-#define CEF_CLIP_TO_WORLD		0x08000000	// Turns on collision detection with the world. Additionally, the
-											// entity needs to have a message handler in order to receive MSG_COLLISION.
 
+//mxd. Free slot at 0x08000000 (originally CEF_CLIP_TO_WORLD).
 //mxd. Free slot at 0x10000000 (originally CEF_CLIP_TO_ENTITIES).
 
 #define CEF_DISAPPEARED			0x20000000	// Alpha faded out, or scaled to nothing needs to be turned off if entity
@@ -103,11 +102,11 @@
 
 //mxd. Trace flags (used by fxi.Trace() / CL_Trace()). Part of CEF_ flags in original logic.
 
-#define CTF_CLIP_TO_WORLD		0x00000001	// Turns on collision detection with the world model.
+// NOTE: CTF_CLIP_TO_BMODELS / CTF_CLIP_TO_ENTITIES only clip against entities in the current frame, not all entities in the world.
+#define CTF_CLIP_TO_WORLD		0x00000001	// Turns on collision detection with the world model. Entity needs to have a message handler in order to receive MSG_COLLISION.
 #define CTF_CLIP_TO_BMODELS		0x00000002	// Turns on collision detection with brush models. 
 #define CTF_CLIP_TO_ENTITIES	0x00000004	// Turns on collision detection with server entities (not client-only entities).
 #define CTF_IGNORE_PLAYER		0x00000008	// Turns off collision detection with player.
-// NOTE: CTF_CLIP_TO_BMODELS / CTF_CLIP_TO_ENTITIES only clip against entities in the current frame, not all entities in the world.
 
 //mxd. Legacy flags for compatibility reasons.
 #define CTF_CLIP_TO_WORLD_LEGACY	0x08000000 // CEF_CLIP_TO_WORLD in original logic. Converted to CTF_CLIP_TO_WORLD in CL_Trace().
