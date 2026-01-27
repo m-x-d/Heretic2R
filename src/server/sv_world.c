@@ -786,18 +786,12 @@ qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
 
 int SV_GetContentsAtPoint(const vec3_t point) // H2
 {
-	vec3_t mins;
-	vec3_t maxs;
-	SinglyLinkedList_t list;
-
 	int contents = CM_PointContents(point, sv.models[1]->headnode);
 
-	VectorCopy(point, mins);
-	VectorCopy(mins, maxs);
-
+	SinglyLinkedList_t list;
 	SLList_DefaultCon(&list);
-	SV_FindEntitiesInBounds(mins, maxs, &list, AREA_SOLID);
-  
+	SV_FindEntitiesInBounds(point, point, &list, AREA_SOLID);
+
 	while (!SLList_IsEmpty(&list))
 	{
 		const edict_t* ent = SLList_Pop(&list).t_edict_p;
