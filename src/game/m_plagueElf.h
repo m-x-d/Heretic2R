@@ -12,7 +12,7 @@ extern void SP_monster_plagueElf(edict_t* self);
 extern void SP_monster_palace_plague_guard(edict_t* self);
 extern void SP_monster_palace_plague_guard_invisible(edict_t* self);
 extern void PlagueElfStaticsInit(void);
-extern void PlagueElfDyingSound(edict_t* self, int type);
+extern void PlagueElfDyingSound(const edict_t* self, int type);
 
 //mxd. Required by save system...
 extern void PlagueElfDismember(edict_t* self, int damage, HitLocation_t hl);

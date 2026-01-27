@@ -147,32 +147,31 @@ static const float plague_elf_voice_times[] = //mxd. Named 'pelf_VoiceTimes' in 
 
 #pragma region ========================== Utility functions =========================
 
-void PlagueElfDyingSound(edict_t* self, const int type) //mxd. Named 'dying_elf_sounds' in original logic. Originally defined in g_obj.c.
+void PlagueElfDyingSound(const edict_t* self, const int type) //mxd. Named 'dying_elf_sounds' in original logic. Originally defined in g_obj.c.
 {
-#define PELF_NUM_PAIN_VOICES	4
-#define PELF_NUM_IDLE_VOICES	4
-#define PELF_NUM_TOUCH_VOICES	7
-
-	static const char* dying_pelf_touch_voices[PELF_NUM_TOUCH_VOICES] =
+	static const char* dying_pelf_touch_voices[] =
 	{
 		"voices/helpe.wav",
 		"voices/helpk.wav",
 		"voices/helpm.wav",
 		"voices/getawayb.wav",
+		"voices/goawayb.wav", //mxd. Unused in original logic.
 		"voices/leavemeb.wav",
 		"voices/mercyp.wav",
 		"voices/nomrj.wav",
 	};
 
-	static const char* dying_pelf_pain_voices[PELF_NUM_PAIN_VOICES] =
+	static const char* dying_pelf_pain_voices[] =
 	{
 		"voices/getawayb.wav",
 		"voices/leavemeb.wav",
 		"voices/mercyp.wav",
 		"voices/nomrj.wav",
+		"pelfgrn1.wav", //mxd
+		"pelfgron.wav", //mxd
 	};
 
-	static const char* dying_pelf_idle_voices[PELF_NUM_IDLE_VOICES] =
+	static const char* dying_pelf_idle_voices[] =
 	{
 		"pelfgasp.wav",
 		"pelfpant.wav",
@@ -180,26 +179,31 @@ void PlagueElfDyingSound(edict_t* self, const int type) //mxd. Named 'dying_elf_
 		"pelfsigh.wav",
 	};
 
-	char sound_string[1024];
-	strcpy_s(sound_string, sizeof(sound_string), "monsters/plagueElf/"); //mxd. strcpy -> strcpy_s
+#define PELF_NUM_PAIN_VOICES	ARRAY_SIZE(dying_pelf_pain_voices)
+#define PELF_NUM_IDLE_VOICES	ARRAY_SIZE(dying_pelf_idle_voices)
+#define PELF_NUM_TOUCH_VOICES	ARRAY_SIZE(dying_pelf_touch_voices)
+
+	char sound_string[MAX_OSPATH] = { "monsters/plagueElf/" };
 
 	switch (type)
 	{
 		case DYING_ELF_PAIN_VOICE:
 			strcat_s(sound_string, sizeof(sound_string), dying_pelf_pain_voices[irand(0, PELF_NUM_PAIN_VOICES - 1)]); //mxd. strcat -> strcat_s
-			gi.sound(self, CHAN_VOICE, gi.soundindex(sound_string), 1.0f, ATTN_NORM, 0.0f);
 			break;
 
 		case DYING_ELF_IDLE_VOICE:
 			strcat_s(sound_string, sizeof(sound_string), dying_pelf_idle_voices[irand(0, PELF_NUM_IDLE_VOICES - 1)]); //mxd. strcat -> strcat_s
-			gi.sound(self, CHAN_VOICE, gi.soundindex(sound_string), 1.0f, ATTN_IDLE, 0.0f);
 			break;
 
 		case DYING_ELF_TOUCH_VOICE:
 			strcat_s(sound_string, sizeof(sound_string), dying_pelf_touch_voices[irand(0, PELF_NUM_TOUCH_VOICES - 1)]); //mxd. strcat -> strcat_s
-			gi.sound(self, CHAN_VOICE, gi.soundindex(sound_string), 1.0f, ATTN_NORM, 0.0f);
 			break;
+
+		default:
+			return;
 	}
+
+	gi.sound(self, CHAN_VOICE, gi.soundindex(sound_string), 1.0f, ATTN_NORM, 0.0f);
 }
 
 static void PlagueElfSpellInit(edict_t* spell) //mxd. Named 'create_pe_spell' in original logic.
