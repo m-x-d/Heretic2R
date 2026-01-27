@@ -1146,12 +1146,19 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 	if (maxs == NULL)
 		maxs = vec3_origin;
 
-	//mxd. Convert legacy CTE_ flags...
-	if (flags & CTF_CLIP_TO_WORLD_LEGACY)
-		flags |= CTF_CLIP_TO_WORLD;
+	//mxd. Convert CEF_CLIP_ flags. If we have them, we don't want any other CEF_ flags.
+	if (flags & (CTF_CLIP_TO_WORLD_LEGACY | CTF_CLIP_TO_ENTITIES_LEGACY))
+	{
+		int flags_conv = 0;
 
-	if (flags & CTF_CLIP_TO_ENTITIES_LEGACY)
-		flags |= (CTF_CLIP_TO_BMODELS | CTF_CLIP_TO_ENTITIES);
+		if (flags & CTF_CLIP_TO_WORLD_LEGACY) // Convert CEF_CLIP_TO_WORLD.
+			flags_conv |= CTF_CLIP_TO_WORLD;
+
+		if (flags & CTF_CLIP_TO_ENTITIES_LEGACY) // Convert CEF_CLIP_TO_ENTITIES.
+			flags_conv |= (CTF_CLIP_TO_BMODELS | CTF_CLIP_TO_ENTITIES);
+
+		flags = flags_conv;
+	}
 
 	if (flags & CTF_CLIP_TO_WORLD)
 	{
