@@ -542,7 +542,7 @@ void SP_obj_corpse2(edict_t* self)
 
 #pragma region ========================== obj_dying_elf ==========================
 
-void ObjDyingElfIdle(edict_t* self) //mxd. Named 'dying_elf_idle' in original logic.
+void ObjDyingElfIdleThink(edict_t* self) //mxd. Named 'dying_elf_idle' in original logic.
 {
 	if (++self->s.frame > FRAME_fetal26)
 		self->s.frame = FRAME_fetal1;
@@ -553,7 +553,7 @@ void ObjDyingElfIdle(edict_t* self) //mxd. Named 'dying_elf_idle' in original lo
 	self->nextthink = level.time + FRAMETIME;
 }
 
-void ObjDyingElfReachAnim(edict_t* self) //mxd. Named 'dying_elf_reach_anim' in original logic.
+void ObjDyingElfReachAnimThink(edict_t* self) //mxd. Named 'dying_elf_reach_anim' in original logic.
 {
 	if (self->touch_debounce_time < level.time) // First time through reach anim.
 	{
@@ -563,13 +563,13 @@ void ObjDyingElfReachAnim(edict_t* self) //mxd. Named 'dying_elf_reach_anim' in 
 	else if (self->count == 0) // Reaching.
 	{
 		self->s.frame++;
-		self->think = ObjDyingElfIdle;
+		self->think = ObjDyingElfIdleThink;
 	}
 
 	if (self->s.frame > FRAME_reach38) // All done, stay down for a bit.
 	{
 		self->s.frame = FRAME_fetal1;
-		self->think = ObjDyingElfIdle;
+		self->think = ObjDyingElfIdleThink;
 	}
 
 	self->nextthink = level.time + FRAMETIME;
@@ -582,7 +582,7 @@ void ObjDyingElfTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t
 		if (irand(1, 3) == 1 || self->touch_debounce_time == -1.0f)
 		{
 			self->enemy = other;
-			self->think = ObjDyingElfReachAnim;
+			self->think = ObjDyingElfReachAnimThink;
 			self->nextthink = level.time + FRAMETIME;
 
 			if (self->enemy->client != NULL || (self->enemy->svflags & SVF_MONSTER))
@@ -598,7 +598,7 @@ void ObjDyingElfTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t
 void ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'dying_elf_pain' in original logic.
 {
 	self->enemy = other;
-	self->think = ObjDyingElfReachAnim;
+	self->think = ObjDyingElfReachAnimThink;
 	self->nextthink = level.time + FRAMETIME;
 
 	if (self->enemy->client != NULL || (self->enemy->svflags & SVF_MONSTER))
@@ -640,7 +640,7 @@ void SP_obj_dying_elf(edict_t* self)
 	self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 
 	self->s.frame = FRAME_fetal1;
-	self->think = ObjDyingElfIdle;
+	self->think = ObjDyingElfIdleThink;
 	self->nextthink = level.time + FRAMETIME;
 }
 
