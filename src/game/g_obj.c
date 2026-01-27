@@ -547,8 +547,11 @@ void ObjDyingElfIdleThink(edict_t* self) //mxd. Named 'dying_elf_idle' in origin
 	if (++self->s.frame > FRAME_fetal26)
 		self->s.frame = FRAME_fetal1;
 
-	if (irand(0, 50) == 0)
+	if (irand(0, 50) == 0 && self->pain_debounce_time < level.time) //mxd. Add pain_debounce_time check.
+	{
+		self->pain_debounce_time = level.time + (FRAMETIME * flrand(20.0f, 30.0f));
 		PlagueElfDyingSound(self, DYING_ELF_IDLE_VOICE);
+	}
 
 	self->nextthink = level.time + FRAMETIME;
 }
@@ -581,12 +584,14 @@ void ObjDyingElfTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t
 	{
 		if (irand(1, 3) == 1 || self->touch_debounce_time == -1.0f)
 		{
-			self->enemy = other;
 			self->think = ObjDyingElfReachAnimThink;
 			self->nextthink = level.time + FRAMETIME;
 
-			if (self->enemy->client != NULL || (self->enemy->svflags & SVF_MONSTER))
+			if ((other->client != NULL || (other->svflags & SVF_MONSTER)) && self->pain_debounce_time < level.time) //mxd. Add pain_debounce_time check.
+			{
+				self->pain_debounce_time = level.time + (FRAMETIME * flrand(20.0f, 30.0f));
 				PlagueElfDyingSound(self, DYING_ELF_TOUCH_VOICE);
+			}
 		}
 		else
 		{
@@ -597,12 +602,14 @@ void ObjDyingElfTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t
 
 void ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'dying_elf_pain' in original logic.
 {
-	self->enemy = other;
 	self->think = ObjDyingElfReachAnimThink;
 	self->nextthink = level.time + FRAMETIME;
 
-	if (self->enemy->client != NULL || (self->enemy->svflags & SVF_MONSTER))
+	if ((other->client != NULL || (other->svflags & SVF_MONSTER)) && self->pain_debounce_time < level.time) //mxd. Add pain_debounce_time check.
+	{
+		self->pain_debounce_time = level.time + (FRAMETIME * flrand(20.0f, 30.0f));
 		PlagueElfDyingSound(self, DYING_ELF_PAIN_VOICE);
+	}
 }
 
 void ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, const vec3_t point) //mxd. Named 'dying_elf_die' in original logic.
