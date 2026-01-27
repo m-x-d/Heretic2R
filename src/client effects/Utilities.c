@@ -213,7 +213,7 @@ static void FizzleEffect(const client_entity_t* self, vec3_t surface_top, vec3_t
 	FireSparks(NULL, FX_SPARKS, 0, surface_top, normal);
 }
 
-qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, trace_t* trace, qboolean update_velocity) //mxd. +update_velocity arg.
+qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, trace_t* trace, const qboolean update_velocity) //mxd. +update_velocity arg.
 {
 	entity_t* r = &self->r;
 
@@ -250,7 +250,9 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	const vec3_t mins = { -self->radius, -self->radius, -self->radius };
 	const vec3_t maxs = {  self->radius,  self->radius,  self->radius };
 
-	fxi.Trace(r->origin, mins, maxs, end, MASK_SHOT | MASK_WATER, self->flags, trace);
+	//mxd. Convert CEF_CLIP_TO_WORLD trace flag (CEF_CLIP_TO_ENTITIES was never used)...
+	const int trace_flags = ((self->flags & CEF_CLIP_TO_WORLD) ? CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS : 0);
+	fxi.Trace(r->origin, mins, maxs, end, MASK_SHOT | MASK_WATER, trace_flags, trace);
 
 	//mxd. Update velocity regardless of trace results (but only when called from UpdateEffects()).
 	if (update_velocity)
@@ -287,7 +289,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	const qboolean do_splash_effect = (irand(DETAIL_LOW, DETAIL_UBERHIGH) <= R_DETAIL); //mxd. 'r_detail->value < DETAIL_UBERHIGH || irand(0, 1)' in original logic.
 
 	// When in water.
-	if (trace->contents & CONTENTS_WATER && !(self->SpawnInfo & SIF_INWATER))
+	if ((trace->contents & CONTENTS_WATER) && !(self->SpawnInfo & SIF_INWATER))
 	{
 		if (self->flags & CEF_FLAG6)
 		{
@@ -323,7 +325,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/splish1.wav"), 1.0f, ATTN_STATIC, 0.0f);
 			}
 
-			fxi.Trace(trace->endpos, mins, maxs, end, MASK_SHOT, self->flags, trace);
+			fxi.Trace(trace->endpos, mins, maxs, end, MASK_SHOT, trace_flags, trace); //mxd. Use converted trace flags...
 
 			if (trace->fraction < 1.0f)
 			{
