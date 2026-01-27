@@ -8,7 +8,7 @@
 #include "p_utility.h"
 #include "EffectFlags.h"
 
-//mxd. 'contantmask', 'flags' and 'passent' args are always the same in Player.dll, so...
+//mxd. 'contentmask', 'flags' and 'passent' args are always the same in Player.dll, so...
 void P_Trace(const playerinfo_t* info, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* trace)
 {
 	if (info->isclient)
