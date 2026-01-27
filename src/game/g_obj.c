@@ -551,25 +551,27 @@ void ObjDyingElfIdleThink(edict_t* self) //mxd. Named 'dying_elf_idle' in origin
 		self->s.frame = FRAME_fetal1;
 
 	if (irand(0, 50) == 0 && self->pain_debounce_time < level.time) //mxd. Add pain_debounce_time check.
-	{
-		self->pain_debounce_time = level.time + (FRAMETIME * flrand(20.0f, 30.0f));
 		PlagueElfDyingSound(self, DYING_ELF_IDLE_VOICE);
-	}
 
 	self->nextthink = level.time + FRAMETIME;
 }
 
 void ObjDyingElfReachAnimThink(edict_t* self) //mxd. Named 'dying_elf_reach_anim' in original logic.
 {
-	if (self->touch_debounce_time < level.time) // First time through reach anim.
+	if (self->touch_debounce_time < level.time) // First time through 'reach' animation.
 	{
 		self->s.frame = FRAME_reach1;
 		self->touch_debounce_time = level.time + (FRAMETIME * 60.0f);
+		self->count = 0; //mxd
 	}
-	else if (self->count == 0) // Reaching.
+	else if (self->s.frame == FRAME_reach20 && self->count < 9 && irand(0, 8)) //mxd. Randomly hold 'hand stretched out' frame for a bit (each cycle lasts 2 frames!).
+	{
+		self->s.frame--;
+		self->count++;
+	}
+	else // Play 'reach' animation.
 	{
 		self->s.frame++;
-		self->think = ObjDyingElfIdleThink;
 	}
 
 	if (self->s.frame > FRAME_reach38) // All done, stay down for a bit.
@@ -583,30 +585,33 @@ void ObjDyingElfReachAnimThink(edict_t* self) //mxd. Named 'dying_elf_reach_anim
 
 void ObjDyingElfTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'dying_elf_touch' in original logic.
 {
-	if (self->touch_debounce_time < level.time) // First time through reach anim.
+	if (self->touch_debounce_time < level.time) // First time through 'reach' animation.
 	{
-		if (irand(1, 3) == 1 || self->touch_debounce_time == -1.0f)
+		if (irand(0, 1) || self->touch_debounce_time == -1.0f) //mxd. Increase triggering chance a bit (33% -> 50%).
 		{
 			self->think = ObjDyingElfReachAnimThink;
-			self->nextthink = level.time + FRAMETIME;
+			ObjDyingElfReachAnimThink(self); // Call immediately to avoid triggering ObjDyingElfTouch() logic next frame --mxd.
 
 			if ((other->client != NULL || (other->svflags & SVF_MONSTER)) && self->pain_debounce_time < level.time) //mxd. Add pain_debounce_time check.
 			{
-				self->pain_debounce_time = level.time + (FRAMETIME * flrand(20.0f, 30.0f));
+				self->pain_debounce_time = level.time + (FRAMETIME * flrand(10.0f, 20.0f));
 				PlagueElfDyingSound(self, DYING_ELF_TOUCH_VOICE);
 			}
 		}
 		else
 		{
-			self->touch_debounce_time = level.time + (FRAMETIME * 20.0f);
+			self->touch_debounce_time = level.time + (FRAMETIME * 10.0f);
 		}
 	}
 }
 
 void ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'dying_elf_pain' in original logic.
 {
-	self->think = ObjDyingElfReachAnimThink;
-	self->nextthink = level.time + FRAMETIME;
+	if (self->touch_debounce_time < level.time) //mxd. Add touch_debounce_time check (to make sure 'reach' anim initialization works correctly in ObjDyingElfReachAnimThink() when switching from ObjDyingElfIdleThink()).
+	{
+		self->think = ObjDyingElfReachAnimThink;
+		self->nextthink = level.time + FRAMETIME;
+	}
 
 	//mxd. Switch to pain skin?
 	if ((float)self->health < (float)self->max_health * 0.75f && (self->s.skinnum % 2) == 0)
