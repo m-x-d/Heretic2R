@@ -334,11 +334,11 @@ static void SV_AreaEdicts_r(areanode_t* node)
 		edict_t* check = EDICT_FROM_AREA(l);
 
 		if (check->solid == SOLID_NOT)
-			continue; // Deactivated
+			continue; // Deactivated.
 
 		if (check->absmin[0] > area_maxs[0] || check->absmin[1] > area_maxs[1] || check->absmin[2] > area_maxs[2] || 
 			check->absmax[0] < area_mins[0] || check->absmax[1] < area_mins[1] || check->absmax[2] < area_mins[2])
-			continue; // Not touching
+			continue; // Not touching.
 
 		if (area_count == area_maxcount)
 		{
@@ -394,11 +394,11 @@ static void SV_FindEntitiesInBounds_r(areanode_t* node)
 		edict_t* check = EDICT_FROM_AREA(l);
 
 		if (check->solid == SOLID_NOT)
-			continue; // Deactivated
+			continue; // Deactivated.
 
 		if (check->absmin[0] > area_maxs[0] || check->absmin[1] > area_maxs[1] || check->absmin[2] > area_maxs[2] ||
 			check->absmax[0] < area_mins[0] || check->absmax[1] < area_mins[1] || check->absmax[2] < area_mins[2])
-			continue; // Not touching
+			continue; // Not touching.
 
 		if (area_count >= MAX_NETWORKABLE_EDICTS)
 		{
@@ -649,11 +649,8 @@ static void SV_FindCosestEntity(const moveclip_t* clip) // H2
 
 void SV_TraceBoundingForm(FormMove_t* formMove) // H2
 {
-	vec3_t start;
-	vec3_t end;
-	
-	VectorCopy(formMove->start, start);
-	VectorCopy(formMove->end, end);
+	const vec3_t start = VEC3_INIT(formMove->start);
+	const vec3_t end = VEC3_INIT(formMove->end);
 
 	moveclip_t clip;
 	clip.trace = &formMove->trace;
