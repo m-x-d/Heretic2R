@@ -678,20 +678,18 @@ void SV_TraceBoundingForm(FormMove_t* formMove) // H2
 qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
 {
 	FormMove_t form;
-	vec3_t start;
-	vec3_t end;
-	vec3_t intent_mins;
-	vec3_t intent_maxs;
 	vec3_t* v_src;
 	vec3_t* v_dst;
 	int axis;
 	float sign;
 
-	VectorCopy(self->intentMins, intent_mins);
-	VectorCopy(self->intentMaxs, intent_maxs);
+	vec3_t start = VEC3_INIT(self->s.origin);
+	vec3_t end;
+	vec3_t intent_mins = VEC3_INIT(self->intentMins);
+	vec3_t intent_maxs = VEC3_INIT(self->intentMaxs);
+
 	VectorCopy(self->mins, form.mins);
 	VectorCopy(self->maxs, form.maxs);
-	VectorCopy(self->s.origin, start);
 
 	form.pass_entity = self;
 	form.clipmask = self->clipmask;
