@@ -244,7 +244,7 @@ static void PlagueElfReflectSpellInit(edict_t* self, edict_t* spell) //mxd. Name
 	G_LinkMissile(spell);
 }
 
-static void PlagueElfDismemberSound(edict_t* self) //mxd. Named 'pelf_dismember_sound' in original logic.
+static void PlagueElfDismemberSound(const edict_t* self) //mxd. Named 'pelf_dismember_sound' in original logic.
 {
 	if (self->health > 0)
 		gi.sound(self, CHAN_BODY, sounds[irand(SND_DISMEMBER1, SND_DISMEMBER2)], 1.0f, ATTN_NORM, 0.0f);
