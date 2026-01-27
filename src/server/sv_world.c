@@ -240,7 +240,7 @@ void SV_LinkEdict(edict_t* ent)
 			if (ent->areanum != 0 && ent->areanum != area)
 			{
 				if (ent->areanum2 != 0 && ent->areanum2 != area && sv.state == ss_loading)
-					Com_DPrintf("Object touching 3 areas at %f %f %f\n", ent->absmin[0], ent->absmin[1], ent->absmin[2]);
+					Com_DPrintf("Object touching 3 areas at %s\n", pv(ent->absmin));
 
 				ent->areanum2 = area;
 			}
@@ -264,7 +264,7 @@ void SV_LinkEdict(edict_t* ent)
 		for (int i = 0; i < num_leafs; i++)
 		{
 			if (clusters[i] == -1)
-				continue; // Not a visible leaf
+				continue; // Not a visible leaf.
 
 			int j;
 			for (j = 0; j < i; j++)
@@ -308,7 +308,7 @@ void SV_LinkEdict(edict_t* ent)
 		else if (ent->absmax[node->axis] < node->dist)
 			node = node->children[1];
 		else
-			break; // Crosses the node
+			break; // Crosses the node.
 	}
 
 	// Link it in.
