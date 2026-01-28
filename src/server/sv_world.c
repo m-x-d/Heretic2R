@@ -647,37 +647,37 @@ static void SV_FindCosestEntity(const moveclip_t* clip) // H2
 	}
 }
 
-void SV_TraceBoundingForm(FormMove_t* formMove) // H2
+void SV_TraceBoundingForm(FormMove_t* form) // H2
 {
-	const vec3_t start = VEC3_INIT(formMove->start);
-	const vec3_t end = VEC3_INIT(formMove->end);
+	const vec3_t start = VEC3_INIT(form->start);
+	const vec3_t end = VEC3_INIT(form->end);
 
 	moveclip_t clip;
-	clip.trace = &formMove->trace;
+	clip.trace = &form->trace;
 
-	CM_BoxTrace(start, end, formMove->mins, formMove->maxs, 0, formMove->clipmask, clip.trace);
-	formMove->trace.ent = ge->edicts;
+	CM_BoxTrace(start, end, form->mins, form->maxs, 0, form->clipmask, clip.trace);
+	form->trace.ent = ge->edicts;
 
 	if (clip.trace->fraction == 0.0f)
 		return;
 
-	clip.passedict = formMove->pass_entity;
-	clip.contentmask = formMove->clipmask;
+	clip.passedict = form->pass_entity;
+	clip.contentmask = form->clipmask;
 	clip.start = start;
 	clip.end = end;
-	clip.mins = formMove->mins;
-	clip.maxs = formMove->maxs;
+	clip.mins = form->mins;
+	clip.maxs = form->maxs;
 
-	VectorCopy(formMove->mins, clip.mins2);
-	VectorCopy(formMove->maxs, clip.maxs2);
+	VectorCopy(form->mins, clip.mins2);
+	VectorCopy(form->maxs, clip.maxs2);
 
 	SV_TraceBounds(start, clip.mins2, clip.maxs2, end, clip.boxmins, clip.boxmaxs);
 	SV_FindCosestEntity(&clip);
 }
 
-qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
+qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* form) // H2
 {
-	FormMove_t form;
+	FormMove_t fm;
 	vec3_t* v_src;
 	vec3_t* v_dst;
 	int axis;
@@ -688,19 +688,19 @@ qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
 	vec3_t intent_mins = VEC3_INIT(self->intentMins);
 	vec3_t intent_maxs = VEC3_INIT(self->intentMaxs);
 
-	VectorCopy(self->mins, form.mins);
-	VectorCopy(self->maxs, form.maxs);
+	VectorCopy(self->mins, fm.mins);
+	VectorCopy(self->maxs, fm.maxs);
 
-	form.pass_entity = self;
-	form.clipmask = self->clipmask;
-	form.start = start;
-	form.end = end; //mxd. 'end' is uninitialized here.
+	fm.pass_entity = self;
+	fm.clipmask = self->clipmask;
+	fm.start = start;
+	fm.end = end; //mxd. 'end' is uninitialized here.
 
 	for (int i = 0; i < 6; i++)
 	{
 		if (i & 1)
 		{
-			v_src = &form.maxs;
+			v_src = &fm.maxs;
 			v_dst = &intent_maxs;
 
 			if (i & 4)
@@ -714,7 +714,7 @@ qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
 		}
 		else
 		{
-			v_src = &form.mins;
+			v_src = &fm.mins;
 			v_dst = &intent_mins;
 
 			if (i & 4)
@@ -735,35 +735,35 @@ qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
 
 			if (i == 4 && self->groundentity != NULL)
 			{
-				form.trace.fraction = 0.0f;
+				fm.trace.fraction = 0.0f;
 			}
 			else
 			{
 				end[axis] += offset;
-				SV_TraceBoundingForm(&form);
+				SV_TraceBoundingForm(&fm);
 
-				if (form.trace.startsolid || form.trace.allsolid)
+				if (fm.trace.startsolid || fm.trace.allsolid)
 				{
-					if (form.trace.allsolid)
+					if (fm.trace.allsolid)
 						Com_Printf("self %d, trace allsolid in Box_BoundingForm_Resize\n", self->s.number);
-					else if (form.trace.startsolid)
+					else if (fm.trace.startsolid)
 						Com_Printf("self %d, trace startsolid in Box_BoundingForm_Resize\n", self->s.number);
 
-					memcpy(&formMove->trace, &form.trace, sizeof(trace_t));
+					memcpy(&form->trace, &fm.trace, sizeof(trace_t));
 					return false;
 				}
 			}
 
-			if (form.trace.fraction < 1.0f)
+			if (fm.trace.fraction < 1.0f)
 			{
-				offset = (1.0f - form.trace.fraction) * offset;
+				offset = (1.0f - fm.trace.fraction) * offset;
 				end[axis] = start[axis] - offset;
 
-				SV_TraceBoundingForm(&form);
+				SV_TraceBoundingForm(&fm);
 
-				if (form.trace.fraction != 1.0f)
+				if (fm.trace.fraction != 1.0f)
 				{
-					memcpy(&formMove->trace, &form.trace, sizeof(trace_t));
+					memcpy(&form->trace, &fm.trace, sizeof(trace_t));
 					return false;
 				}
 
@@ -779,7 +779,7 @@ qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
 	VectorCopy(intent_maxs, self->maxs);
 
 	SV_LinkEdict(self);
-	memcpy(&formMove->trace, &form.trace, sizeof(trace_t));
+	memcpy(&form->trace, &fm.trace, sizeof(trace_t));
 
 	return true;
 }

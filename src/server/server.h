@@ -236,7 +236,7 @@ extern int SV_AreaEdicts(const vec3_t mins, const vec3_t maxs, edict_t** list, i
 extern int SV_FindEntitiesInBounds(const vec3_t mins, const vec3_t maxs, struct SinglyLinkedList_s* list, int areatype); // H2
 extern int SV_PointContents(const vec3_t p);
 extern void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, uint contentmask, trace_t* tr); // H2: different definition
-extern void SV_TraceBoundingForm(struct FormMove_s* formMove); // H2
-extern qboolean SV_ResizeBoundingForm(edict_t* self, struct FormMove_s* formMove); // H2
+extern void SV_TraceBoundingForm(struct FormMove_s* form); // H2
+extern qboolean SV_ResizeBoundingForm(edict_t* self, struct FormMove_s* form); // H2
 extern int SV_GetContentsAtPoint(const vec3_t point); // H2
 extern qboolean SV_CheckDistances(const vec3_t origin, float dist); // H2

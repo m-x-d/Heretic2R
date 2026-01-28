@@ -61,11 +61,11 @@ static void Physics_NoclipMove(edict_t* self)
 
 static void Physics_FlyMove(edict_t* self)
 {
-	FormMove_t form_move;
+	FormMove_t form;
 
 	if (self->physicsFlags & PF_RESIZE)
 	{
-		if (!gi.ResizeBoundingForm(self, &form_move))
+		if (!gi.ResizeBoundingForm(self, &form))
 			return; // If an ent can't be resized, then it probably can't be moved either.
 
 		self->physicsFlags &= ~PF_RESIZE;
@@ -82,13 +82,13 @@ static void Physics_FlyMove(edict_t* self)
 	else if (self->groundentity != NULL)
 		return; // On ground, return without moving.
 
-	VectorCopy(self->mins, form_move.mins);
-	VectorCopy(self->maxs, form_move.maxs);
+	VectorCopy(self->mins, form.mins);
+	VectorCopy(self->maxs, form.maxs);
 
-	form_move.pass_entity = self;
-	form_move.clipmask = self->clipmask;
+	form.pass_entity = self;
+	form.clipmask = self->clipmask;
 
-	MoveEntity_Bounce(self, &form_move);
+	MoveEntity_Bounce(self, &form);
 	PhysicsCheckWaterTransition(self);
 
 	gi.linkentity(self);
@@ -114,8 +114,8 @@ static void Physics_StepMove(edict_t* self)
 		VectorMA(self->s.angles, FRAMETIME, self->avelocity, self->s.angles);
 	}
 
-	FormMove_t form_move;
-	if ((self->physicsFlags & PF_RESIZE) && gi.ResizeBoundingForm(self, &form_move))
+	FormMove_t form;
+	if ((self->physicsFlags & PF_RESIZE) && gi.ResizeBoundingForm(self, &form))
 		self->physicsFlags &= ~PF_RESIZE;
 
 	const float gravity = self->gravity * sv_gravity->value;
@@ -138,13 +138,13 @@ static void Physics_StepMove(edict_t* self)
 		if (!has_velocity)
 			return; // Not going anywhere without velocity.
 
-		VectorCopy(self->mins, form_move.mins);
-		VectorCopy(self->maxs, form_move.maxs);
+		VectorCopy(self->mins, form.mins);
+		VectorCopy(self->maxs, form.maxs);
 
-		form_move.pass_entity = self;
-		form_move.clipmask = self->clipmask;
+		form.pass_entity = self;
+		form.clipmask = self->clipmask;
 
-		MoveEntity_Bounce(self, &form_move);
+		MoveEntity_Bounce(self, &form);
 	}
 
 	if (!BoundVelocity(self->velocity))
@@ -217,28 +217,28 @@ void CheckEntityOn(edict_t* self)
 	vec3_t point = VEC3_INIT(self->s.origin);
 	point[2] -= PHYSICS_Z_FUDGE + CHECK_BELOW_DIST;
 
-	FormMove_t form_move;
-	VectorCopy(self->mins, form_move.mins);
-	VectorCopy(self->maxs, form_move.maxs);
+	FormMove_t form;
+	VectorCopy(self->mins, form.mins);
+	VectorCopy(self->maxs, form.maxs);
 
-	form_move.start = self->s.origin;
-	form_move.end = point;
-	form_move.pass_entity = self;
-	form_move.clipmask = MASK_MONSTERSOLID;
+	form.start = self->s.origin;
+	form.end = point;
+	form.pass_entity = self;
+	form.clipmask = MASK_MONSTERSOLID;
 
-	gi.TraceBoundingForm(&form_move);
+	gi.TraceBoundingForm(&form);
 
 	// Check steepness.
-	if (form_move.trace.ent == NULL || (form_move.trace.plane.normal[2] < GROUND_NORMAL && !form_move.trace.startsolid))
+	if (form.trace.ent == NULL || (form.trace.plane.normal[2] < GROUND_NORMAL && !form.trace.startsolid))
 	{
 		self->groundentity = NULL;
 		return;
 	}
 
-	if (!form_move.trace.startsolid && !form_move.trace.allsolid)
+	if (!form.trace.startsolid && !form.trace.allsolid)
 	{
-		VectorCopy(form_move.trace.endpos, self->s.origin);
-		SetGroundEntFromTrace(self, &form_move.trace);
+		VectorCopy(form.trace.endpos, self->s.origin);
+		SetGroundEntFromTrace(self, &form.trace);
 	}
 }
 
@@ -423,7 +423,7 @@ static void HandleForcefulCollision(edict_t* forcer, edict_t* forcee, const vec3
 }
 
 // Takes into account gravity, and bounces an ent away from impacts based on elasticity. Friction is ignored.
-static void MoveEntity_Bounce(edict_t* self, FormMove_t* form_move)
+static void MoveEntity_Bounce(edict_t* self, FormMove_t* form)
 {
 	vec3_t move;
 	VectorScale(self->velocity, FRAMETIME, move);
@@ -435,27 +435,27 @@ static void MoveEntity_Bounce(edict_t* self, FormMove_t* form_move)
 	vec3_t end;
 	VectorAdd(self->s.origin, move, end);
 
-	form_move->start = self->s.origin;
-	form_move->end = end;
+	form->start = self->s.origin;
+	form->end = end;
 
-	gi.TraceBoundingForm(form_move);
+	gi.TraceBoundingForm(form);
 
-	VectorCopy(form_move->trace.endpos, self->s.origin);
+	VectorCopy(form->trace.endpos, self->s.origin);
 
 	// Handle bouncing and sliding.
-	if (form_move->trace.fraction < 1.0f)
+	if (form->trace.fraction < 1.0f)
 	{
-		BounceVelocity(self->velocity, form_move->trace.plane.normal, self->velocity, self->elasticity);
+		BounceVelocity(self->velocity, form->trace.plane.normal, self->velocity, self->elasticity);
 
-		if (self->elasticity > ELASTICITY_SLIDE && self->velocity[2] < 60.0f && form_move->trace.plane.normal[2] > GROUND_NORMAL)
+		if (self->elasticity > ELASTICITY_SLIDE && self->velocity[2] < 60.0f && form->trace.plane.normal[2] > GROUND_NORMAL)
 		{
-			SetGroundEntFromTrace(self, &form_move->trace);
+			SetGroundEntFromTrace(self, &form->trace);
 
 			VectorClear(self->velocity);
 			VectorClear(self->avelocity);
 		}
 
-		HandleCollision(self, &form_move->trace, move, (self->physicsFlags & PF_FORCEFUL_COLLISIONS), CH_STANDARD);
+		HandleCollision(self, &form->trace, move, (self->physicsFlags & PF_FORCEFUL_COLLISIONS), CH_STANDARD);
 	}
 }
 
@@ -485,13 +485,13 @@ static void MoveEntity_Slide(edict_t* self)
 	if (self->groundentity == NULL)
 		ground_normal[2] = 0.0f;
 
-	FormMove_t form_move;
-	VectorCopy(self->mins, form_move.mins);
-	VectorCopy(self->maxs, form_move.maxs);
+	FormMove_t form;
+	VectorCopy(self->mins, form.mins);
+	VectorCopy(self->maxs, form.maxs);
 
-	form_move.start = self->s.origin;
-	form_move.pass_entity = self;
-	form_move.clipmask = self->clipmask;
+	form.start = self->s.origin;
+	form.pass_entity = self;
+	form.clipmask = self->clipmask;
 
 	int cur_plane = 0; //mxd. Initialize.
 	int num_planes = 0;
@@ -608,11 +608,11 @@ static void MoveEntity_Slide(edict_t* self)
 		vec3_t end = VEC3_INIT(self->s.origin);
 		Vec3AddAssign(delta, end);
 
-		form_move.end = end;
+		form.end = end;
 
-		gi.TraceBoundingForm(&form_move);
+		gi.TraceBoundingForm(&form);
 
-		if (form_move.trace.startsolid)
+		if (form.trace.startsolid)
 		{
 			if (fudge_index != -1)
 			{
@@ -625,7 +625,7 @@ static void MoveEntity_Slide(edict_t* self)
 			return;
 		}
 
-		if (form_move.trace.allsolid)
+		if (form.trace.allsolid)
 		{
 			// Entity is trapped in another solid.
 			VectorClear(self->velocity);
@@ -634,12 +634,12 @@ static void MoveEntity_Slide(edict_t* self)
 			return;
 		}
 
-		const float time_moved = time_remaining * form_move.trace.fraction;
+		const float time_moved = time_remaining * form.trace.fraction;
 
-		if (form_move.trace.fraction > 0.0f)
+		if (form.trace.fraction > 0.0f)
 		{
 			// Actually covered some distance.
-			VectorCopy(form_move.trace.endpos, self->s.origin);
+			VectorCopy(form.trace.endpos, self->s.origin);
 
 			if (slide)
 			{
@@ -654,7 +654,7 @@ static void MoveEntity_Slide(edict_t* self)
 				self->velocity[2] -= gravity * time_moved;
 			}
 
-			if (form_move.trace.fraction == 1.0f)
+			if (form.trace.fraction == 1.0f)
 				break; // Moved the entire distance.
 
 			VectorCopy(self->velocity, original_velocity);
@@ -669,13 +669,13 @@ static void MoveEntity_Slide(edict_t* self)
 
 		// Results in isBlocked being called on the last bounced.
 		const int flags = CH_BOUNCED | ((bumpcount == MAX_BUMPS - 1) ? CH_STANDARD : CH_ISBLOCKING); //mxd
-		HandleCollision(self, &form_move.trace, delta, false, flags);
+		HandleCollision(self, &form.trace, delta, false, flags);
 
-		VectorCopy(form_move.trace.plane.normal, ground_normal);
+		VectorCopy(form.trace.plane.normal, ground_normal);
 
-		if (ground_normal[2] > 0.0f && form_move.trace.ent->solid == SOLID_BSP) // Hit the floor.
+		if (ground_normal[2] > 0.0f && form.trace.ent->solid == SOLID_BSP) // Hit the floor.
 		{
-			self->groundentity = form_move.trace.ent;
+			self->groundentity = form.trace.ent;
 		}
 		else
 		{
@@ -688,9 +688,9 @@ static void MoveEntity_Slide(edict_t* self)
 		// Clipped to another plane.
 		assert(num_planes < MAX_CLIP_PLANES);
 
-		if (num_planes == 0 || !VectorCompare(form_move.trace.plane.normal, planes[num_planes - 1]))
+		if (num_planes == 0 || !VectorCompare(form.trace.plane.normal, planes[num_planes - 1]))
 		{
-			VectorCopy(form_move.trace.plane.normal, planes[num_planes]);
+			VectorCopy(form.trace.plane.normal, planes[num_planes]);
 			num_planes++;
 		}
 		else
@@ -792,14 +792,14 @@ static void MoveEntity_Slide(edict_t* self)
 		}
 	}
 
-	if (form_move.trace.fraction < 1.0f)
+	if (form.trace.fraction < 1.0f)
 	{
-		HandleCollision(self, &form_move.trace, delta, false, CH_STANDARD);
+		HandleCollision(self, &form.trace, delta, false, CH_STANDARD);
 		VectorClear(self->velocity);
 
-		if (form_move.trace.plane.normal[2] > GROUND_NORMAL) // Hit the floor.
+		if (form.trace.plane.normal[2] > GROUND_NORMAL) // Hit the floor.
 		{
-			SetGroundEntFromTrace(self, &form_move.trace);
+			SetGroundEntFromTrace(self, &form.trace);
 			return;
 		}
 	}
