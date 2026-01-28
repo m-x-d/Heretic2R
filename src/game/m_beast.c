@@ -2013,8 +2013,7 @@ void tbeast_gore_toy(edict_t* self, float jump_height)
 			self->tbeast_grabbed_toy = true;
 
 		vec3_t dir;
-		VectorCopy(self->velocity, dir);
-		VectorNormalize(dir);
+		VectorNormalize2(self->velocity, dir);
 
 		const int num_chunks = min(15, self->targetEnt->health / 4);
 		SprayDebris(self->targetEnt, self->targetEnt->s.origin, num_chunks);

@@ -1320,8 +1320,7 @@ void gorgon_gore_toy(edict_t* self, float jump_height)
 			self->gorgon_grabbed_toy_shake_mode = 1;
 
 		vec3_t dir;
-		VectorCopy(self->velocity, dir);
-		VectorNormalize(dir);
+		VectorNormalize2(self->velocity, dir);
 
 		self->enemy->materialtype = MAT_FLESH;
 

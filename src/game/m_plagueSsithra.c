@@ -1308,8 +1308,6 @@ static qboolean SsithraThrowHead(edict_t* self, float damage, const qboolean dis
 
 static void SsithraThrowTorso(edict_t* self, float damage, const qboolean dismember_ok, int* throw_nodes) //mxd. Added to simplify logic.
 {
-	vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
-
 	if (self->s.fmnodeinfo[MESH__UPPERTORSO].flags & FMNI_NO_DRAW)
 		return;
 
@@ -1339,6 +1337,7 @@ static void SsithraThrowTorso(edict_t* self, float damage, const qboolean dismem
 		}
 		else
 		{
+			vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
 			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_partrest1);
 
 			Vec3AddAssign(self->s.origin, gore_spot);
