@@ -75,11 +75,8 @@ static qboolean SpreaderCheckUncrouch(edict_t* self) //mxd. Named 'spreader_chec
 	const vec3_t maxs = { self->maxs[0], self->maxs[1], 1.0f };
 	const float desired_height = STDMaxsForClass[CID_SPREADER][2] * self->s.scale;
 
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-	end_pos[2] += desired_height;
-
 	trace_t trace;
+	const vec3_t end_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, desired_height);
 	gi.trace(self->s.origin, mins, maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
 	if (trace.fraction < 1.0f)
@@ -130,8 +127,8 @@ static void SpreaderDropWeapon(edict_t* self) //mxd. Named 'spreader_dropweapon'
 	vec3_t right;
 	AngleVectors(self->s.angles, NULL, right, NULL);
 
-	vec3_t hand_pos = { 0 };
-	VectorMA(hand_pos, -12.0f, right, hand_pos);
+	vec3_t hand_pos;
+	VectorScale(right, -12.0f, hand_pos);
 
 	ThrowWeapon(self, &hand_pos, BIT_BOMB, 0, 0);
 	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW;
@@ -666,10 +663,7 @@ void SpreaderIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreader_isb
 	// When crushed, enter headless mode...
 	self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_NO_DRAW;
 
-	vec3_t gore_spot;
-	VectorCopy(self->s.origin, gore_spot);
-	gore_spot[2] += self->maxs[2] - 8.0f;
-
+	const vec3_t gore_spot = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2] - 8.0f);
 	SprayDebris(self, gore_spot, 8, 100);
 
 	self->health = 1;
@@ -784,11 +778,8 @@ void spreader_flyback_move(edict_t* self)
 {
 	M_ChangeYaw(self);
 
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-	end_pos[2] -= 48.0f;
-
 	trace_t trace;
+	const vec3_t end_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -48.0f);
 	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
 	if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
@@ -796,7 +787,7 @@ void spreader_flyback_move(edict_t* self)
 		if (trace.fraction < 1.0f)
 		{
 			const int fx_flags = (irand(0, 1) == 1 ? CEF_FLAG6 : 0);
-			const vec3_t bottom = { trace.endpos[0] + flrand(-4.0f, 4.0f), trace.endpos[1] + flrand(-4.0f, 4.0f), trace.endpos[2] + self->mins[2] };
+			const vec3_t bottom = VEC3_INITA(trace.endpos, flrand(-4.0f, 4.0f), flrand(-4.0f, 4.0f), self->mins[2]);
 			gi.CreateEffect(NULL, FX_BLOOD_TRAIL, fx_flags, bottom, "d", trace.plane.normal);
 		}
 
@@ -909,11 +900,8 @@ void spreader_deadloop_go(edict_t* self) //mxd. Named 'spreader_go_deadloop' in 
 
 void spreader_become_solid(edict_t* self) //mxd. Named 'spreaderSolidAgain' in original logic.
 {
-	vec3_t org;
-	VectorCopy(self->s.origin, org);
-	org[2] += self->maxs[2];
-
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+	const vec3_t org = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2]);
 
 	if (gi.pointcontents(org) == CONTENTS_EMPTY)
 	{
@@ -1098,7 +1086,7 @@ void SP_monster_spreader(edict_t* self)
 	self->materialtype = MAT_FLESH;
 	self->yaw_speed = 20.0f;
 
-	self->s.origin[2] += 40.0f;
+	self->s.origin[2] += 40.0f; //TODO: known to break stuff. Adjust in SpawnEntities() instead (like monster_plagueElf)?..
 	self->movetype = PHYSICSTYPE_STEP;
 
 	self->solid = SOLID_BBOX;
