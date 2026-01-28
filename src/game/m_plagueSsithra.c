@@ -439,7 +439,7 @@ static void SsithraSplit(edict_t* self, const int body_part) //mxd. Named 'ssith
 	gi.CreateEffect(&self->s, FX_BLOOD, 0, p1, "ub", dir, 20);
 
 	Vec3AddAssign(self->s.origin, p2);
-	SprayDebris(self, p2, 6, 200);
+	SprayDebris(self, p2, 6);
 
 	// Spawn top part.
 	edict_t* top_half = G_Spawn();
@@ -1266,7 +1266,7 @@ static qboolean SsithraThrowHead(edict_t* self, float damage, const qboolean dis
 		ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
 
 		Vec3AddAssign(self->s.origin, gore_spot);
-		SprayDebris(self, gore_spot, 8, damage);
+		SprayDebris(self, gore_spot, 8);
 
 		if (self->health > 0 && irand(0, 10) < 3 && !(self->s.fmnodeinfo[MESH__RIGHTARM].flags & FMNI_NO_DRAW))
 		{
@@ -1342,7 +1342,7 @@ static void SsithraThrowTorso(edict_t* self, float damage, const qboolean dismem
 			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_partrest1);
 
 			Vec3AddAssign(self->s.origin, gore_spot);
-			SprayDebris(self, gore_spot, 12, damage);
+			SprayDebris(self, gore_spot, 12);
 			SetAnim(self, ANIM_SLICED);
 		}
 

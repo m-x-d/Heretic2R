@@ -364,7 +364,7 @@ static void PlayerThrowHead(edict_t* self, edict_t* other, float damage, const q
 		ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 0);
 
 		VectorAdd(self->s.origin, gore_spot, gore_spot);
-		SprayDebris(self, gore_spot, 8, damage);
+		SprayDebris(self, gore_spot, 8);
 
 		if (self->health > 0)
 		{
@@ -403,7 +403,7 @@ static void PlayerThrowTorso(edict_t* self, edict_t* other, float damage, const 
 		ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 1);
 
 		VectorAdd(self->s.origin, gore_spot, gore_spot);
-		SprayDebris(self, gore_spot, 12, damage);
+		SprayDebris(self, gore_spot, 12);
 
 		if (self->health > 0)
 		{
@@ -659,7 +659,7 @@ void PlayerDecapitate(edict_t* self, edict_t* other) //mxd. Named 'player_decap'
 	ThrowBodyPart(self, &gore_spot, throw_nodes, 0, 0);
 
 	VectorAdd(self->s.origin, gore_spot, gore_spot);
-	SprayDebris(self, gore_spot, 8, 100);
+	SprayDebris(self, gore_spot, 8);
 
 	if (self->health > 0)
 	{

@@ -157,7 +157,7 @@ void BecomeDebris(edict_t* self)
 	G_SetToFree(self);
 }
 
-void SprayDebris(const edict_t* self, const vec3_t spot, int num_chunks, float damage) //mxd. 'byte num_chunks' in original logic. //TODO: remove unused arg.
+void SprayDebris(const edict_t* self, const vec3_t spot, int num_chunks) //mxd. 'byte num_chunks' in original logic. Removed unused 'damage' arg.
 {
 	byte b_mat = (byte)self->materialtype;
 	const byte b_mag = (byte)(Clamp(VectorLength(self->mins), 1.0f, 255.0f));
@@ -221,7 +221,7 @@ void ThrowBodyPart(edict_t* self, const vec3_t* spot, const int body_part, float
 	if (harpy_head_carrier != NULL && harpy_head_source == self)
 	{
 		HarpyTakeHead(harpy_head_carrier, self, body_part, frame, fx_flags);
-		SprayDebris(self, *spot, 5, damage);
+		SprayDebris(self, *spot, 5);
 	}
 	else
 	{

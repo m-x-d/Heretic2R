@@ -430,7 +430,7 @@ static qboolean SeraphGuardThrowHead(edict_t* self, float damage, const qboolean
 		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
 
 		Vec3AddAssign(self->s.origin, gore_spot);
-		SprayDebris(self, gore_spot, 8, damage);
+		SprayDebris(self, gore_spot, 8);
 
 		if (self->health > 0)
 		{

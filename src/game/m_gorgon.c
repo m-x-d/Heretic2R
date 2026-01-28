@@ -1326,7 +1326,7 @@ void gorgon_gore_toy(edict_t* self, float jump_height)
 		self->enemy->materialtype = MAT_FLESH;
 
 		const int num_chunks = min(15, self->enemy->health / 4);
-		SprayDebris(self->enemy, self->enemy->s.origin, num_chunks, (float)self->enemy->health * 4.0f); //self->enemy is thingtype wood?!
+		SprayDebris(self->enemy, self->enemy->s.origin, num_chunks);
 
 		if (Q_stricmp(self->enemy->classname, "player") != 0) //mxd. stricmp -> Q_stricmp //TODO: check for enemy->client instead?
 		{

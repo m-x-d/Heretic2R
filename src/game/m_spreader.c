@@ -460,7 +460,7 @@ static qboolean SpreaderThrowHead(edict_t* self, float damage, const qboolean di
 		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
 
 		Vec3AddAssign(self->s.origin, gore_spot);
-		SprayDebris(self, gore_spot, 8, damage);
+		SprayDebris(self, gore_spot, 8);
 
 		if (self->health > 0)
 		{
@@ -664,7 +664,7 @@ void SpreaderIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreader_isb
 	self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_NO_DRAW;
 
 	const vec3_t gore_spot = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2] - 8.0f);
-	SprayDebris(self, gore_spot, 8, 100);
+	SprayDebris(self, gore_spot, 8);
 
 	self->health = 1;
 	T_Damage(self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20, 0, MOD_DIED);

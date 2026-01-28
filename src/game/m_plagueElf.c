@@ -920,7 +920,7 @@ static qboolean PlagueElfThrowHead(edict_t* self, float damage, const qboolean d
 		ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
 
 		Vec3AddAssign(self->s.origin, gore_spot);
-		SprayDebris(self, gore_spot, 8, damage);
+		SprayDebris(self, gore_spot, 8);
 
 		if (self->health > 0)
 		{
@@ -959,7 +959,7 @@ static qboolean PlagueElfThrowTorso(edict_t* self, float damage, const qboolean 
 		ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_torsooff);
 
 		Vec3AddAssign(self->s.origin, gore_spot);
-		SprayDebris(self, gore_spot, 12, damage);
+		SprayDebris(self, gore_spot, 12);
 
 		if (self->health > 0)
 		{

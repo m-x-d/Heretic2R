@@ -1233,7 +1233,7 @@ static qboolean AssassinThrowHead(edict_t* self, float damage, const qboolean di
 		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
 
 		VectorAdd(self->s.origin, gore_spot, gore_spot);
-		SprayDebris(self, gore_spot, 8, damage);
+		SprayDebris(self, gore_spot, 8);
 
 		if (self->health > 0)
 		{
@@ -1277,7 +1277,7 @@ static qboolean AssassinThrowTorso(edict_t* self, float damage, const int mesh_p
 		vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
 		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_torsofly);
 		VectorAdd(self->s.origin, gore_spot, gore_spot);
-		SprayDebris(self, gore_spot, 12, damage);
+		SprayDebris(self, gore_spot, 12);
 
 		if (self->health > 0)
 		{
@@ -1836,7 +1836,7 @@ static void AssassinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 			self->s.fmnodeinfo[MESH__LKNIFE].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__RKNIFE].flags |= FMNI_NO_DRAW;
 
-			SprayDebris(self, self->s.origin, 12, 100.0f);
+			SprayDebris(self, self->s.origin, 12);
 		}
 		else
 		{
