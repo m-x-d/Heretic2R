@@ -34,6 +34,7 @@ typedef struct FormMove_s
 	const float* start;
 	const float* end;
 	const edict_t* pass_entity; //mxd. void* in original logic.
+	const edict_t* check_entity; //mxd. If not NULL, check collision with this edict ONLY.
 	int clipmask;
 	trace_t trace;
 

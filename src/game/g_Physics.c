@@ -86,6 +86,7 @@ static void Physics_FlyMove(edict_t* self)
 	VectorCopy(self->maxs, form.maxs);
 
 	form.pass_entity = self;
+	form.check_entity = NULL; //mxd
 	form.clipmask = self->clipmask;
 
 	MoveEntity_Bounce(self, &form);
@@ -142,6 +143,7 @@ static void Physics_StepMove(edict_t* self)
 		VectorCopy(self->maxs, form.maxs);
 
 		form.pass_entity = self;
+		form.check_entity = NULL; //mxd
 		form.clipmask = self->clipmask;
 
 		MoveEntity_Bounce(self, &form);
@@ -224,6 +226,7 @@ void CheckEntityOn(edict_t* self)
 	form.start = self->s.origin;
 	form.end = point;
 	form.pass_entity = self;
+	form.check_entity = NULL; //mxd
 	form.clipmask = MASK_MONSTERSOLID;
 
 	gi.TraceBoundingForm(&form);
@@ -490,6 +493,7 @@ static void MoveEntity_Slide(edict_t* self)
 
 	form.start = self->s.origin;
 	form.pass_entity = self;
+	form.check_entity = NULL; //mxd
 	form.clipmask = self->clipmask;
 
 	int cur_plane = 0; //mxd. Initialize.
@@ -862,7 +866,7 @@ static void SetGroundEntFromTrace(edict_t* self, const trace_t* trace)
 	VectorCopy(trace->plane.normal, self->groundNormal);
 }
 
-static edict_t* TestEntityPosition(const edict_t* self)
+static qboolean EntityIsBlocked(const edict_t* self, const edict_t* blocker) //mxd. Named 'TestEntityPosition' in original logic. Changed return type to qboolean, added 'blocker' arg.
 {
 	FormMove_t form;
 
@@ -872,14 +876,20 @@ static edict_t* TestEntityPosition(const edict_t* self)
 	form.start = self->s.origin;
 	form.end = self->s.origin;
 	form.pass_entity = self;
+	form.check_entity = blocker; //mxd
 	form.clipmask = self->clipmask;
 
 	gi.TraceBoundingForm(&form);
 
 	if (form.trace.startsolid)
-		return ((form.trace.ent != NULL) ? form.trace.ent : world); //mxd. If we have trace.ent, return it.
+	{
+		if (blocker != NULL) //mxd
+			return form.trace.ent == blocker; // Otherwise we were blocked by world.
 
-	return NULL;
+		return true;
+	}
+
+	return false;
 }
 
 typedef struct
@@ -1124,7 +1134,7 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 				continue;
 
 			// See if the self's bbox is inside the pusher's final position.
-			if (TestEntityPosition(check) != pusher) //mxd. Original logic checks for NULL (can result in incorrect behaviour if 'check' is colliding with unrelated entity (e.g. player) at the same time).
+			if (!EntityIsBlocked(check, pusher)) //mxd. Specifically check for collision with pusher (otherwise we can get incorrect behaviour if 'check' is colliding with unrelated entity (e.g. player) at the same time).
 				continue;
 		}
 
@@ -1144,7 +1154,7 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 			if (check->client != NULL)
 				check->client->ps.pmove.delta_angles[YAW] += (short)amove[YAW]; // FIXME: doesn't rotate monsters?
 
-			const edict_t* block = NULL;
+			qboolean is_blocked = true;
 
 			// Figure movement due to the pusher's amove.
 			for (int test = 0; test < 4; test++)
@@ -1182,12 +1192,25 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 				if (check->groundentity != pusher)
 					check->groundentity = NULL;
 
-				block = TestEntityPosition(check);
-				if (block == NULL)
+				if (!EntityIsBlocked(check, NULL)) //mxd. +blocker arg.
+				{
+					is_blocked = false;
 					break;
+				}
 			}
 
-			if (block == NULL)
+			if (is_blocked)
+			{
+				// If it is ok to leave in the old position, do it.	This is only relevant for riding entities, not pushed.
+				VectorCopy(hold_org, check->s.origin);
+
+				if (!EntityIsBlocked(check, NULL)) //mxd. +blocker arg.
+				{
+					pushed_p--;
+					continue;
+				}
+			}
+			else
 			{
 				// Pushed ok.
 				gi.linkentity(check);
@@ -1196,16 +1219,6 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 					check->client->playerinfo.flags |= PLAYER_FLAG_USE_ENT_POS;
 
 				// Impact?
-				continue;
-			}
-
-			// If it is ok to leave in the old position, do it.	This is only relevant for riding entities, not pushed.
-			VectorCopy(hold_org, check->s.origin);
-			block = TestEntityPosition(check);
-
-			if (block == NULL)
-			{
-				pushed_p--;
 				continue;
 			}
 		}

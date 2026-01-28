@@ -53,6 +53,7 @@ typedef struct
 
 	trace_t* trace; // Q2: trace_t
 	const edict_t* passedict;
+	const edict_t* checkedict; //mxd. If not NULL, check collision with this edict ONLY.
 	uint contentmask; //mxd. int -> uint
 } moveclip_t;
 
@@ -555,8 +556,6 @@ static void SV_TraceBounds(const vec3_t start, const vec3_t mins, const vec3_t m
 // passedict is explicitly excluded from clipping checks (normally NULL).
 void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, const uint contentmask, trace_t* tr)
 {
-	moveclip_t clip;
-
 	if (mins == NULL)
 		mins = vec3_origin;
 
@@ -572,6 +571,8 @@ void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 	// H2: New 'contentmask' check.
 	if ((contentmask & CONTENTS_WORLD_ONLY) == 0)
 	{
+		moveclip_t clip;
+
 		//mxd. Original logic makes copies of start/end vectors and assigns those to clip.start/clip.end.
 		//mxd. Not needed, because clip.start/clip.end are never modified.
 		clip.trace = tr;
@@ -581,6 +582,7 @@ void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 		clip.mins = mins;
 		clip.maxs = maxs;
 		clip.passedict = passent;
+		clip.checkedict = NULL; //mxd
 
 		VectorCopy(mins, clip.mins2);
 		VectorCopy(maxs, clip.maxs2);
@@ -606,7 +608,7 @@ static void SV_FindCosestEntity(const moveclip_t* clip) // H2
 	{
 		edict_t* touch = touchlist[i];
 
-		if (touch->solid == SOLID_NOT || touch == clip->passedict)
+		if (touch->solid == SOLID_NOT || touch == clip->passedict || (clip->checkedict != NULL && touch != clip->checkedict)) //mxd. Add checkedict check.
 			continue;
 
 		// Don't clip against own missiles or owner.
@@ -656,12 +658,13 @@ void SV_TraceBoundingForm(FormMove_t* form) // H2
 	clip.trace = &form->trace;
 
 	CM_BoxTrace(start, end, form->mins, form->maxs, 0, form->clipmask, clip.trace);
-	form->trace.ent = ge->edicts;
+	form->trace.ent = &ge->edicts[0];
 
 	if (clip.trace->fraction == 0.0f)
 		return;
 
 	clip.passedict = form->pass_entity;
+	clip.checkedict = form->check_entity; //mxd
 	clip.contentmask = form->clipmask;
 	clip.start = start;
 	clip.end = end;
@@ -692,6 +695,7 @@ qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* form) // H2
 	VectorCopy(self->maxs, fm.maxs);
 
 	fm.pass_entity = self;
+	fm.check_entity = NULL; //mxd
 	fm.clipmask = self->clipmask;
 	fm.start = start;
 	fm.end = end; //mxd. 'end' is uninitialized here.
