@@ -468,7 +468,6 @@ static void MoveEntity_Slide(edict_t* self)
 
 	static vec3_t planes[MAX_CLIP_PLANES];
 
-	vec3_t dir;
 	vec3_t gravity_dir;
 	vec3_t new_velocity;
 	vec3_t delta;
@@ -505,6 +504,8 @@ static void MoveEntity_Slide(edict_t* self)
 	{
 		const float friction = base_friction;
 		const float time_remaining_sq = time_remaining * time_remaining;
+
+		vec3_t slide_dir;
 		qboolean slide = false;
 
 		VectorScale(self->velocity, time_remaining, delta);
@@ -535,17 +536,18 @@ static void MoveEntity_Slide(edict_t* self)
 					VectorMA(self->s.origin, PHYSICS_Z_FUDGE, planes[cur_plane], self->s.origin);
 				}
 
+				VectorClear(slide_dir); //mxd. Initialize.
 				dist = 0.0f;
 				slide = true;
 			}
 			else
 			{
-				dist = VectorNormalize2(delta, dir);
+				dist = VectorNormalize2(delta, slide_dir);
 
 				// dot < -0.05f: the trace will fail, try to restructure in order to skip it.
 				// dot <  0.05f: parallel to ground.
 				// dot >= 0.05f: pulling away from ground.
-				const float dot = DotProduct(dir, ground_normal);
+				const float dot = DotProduct(slide_dir, ground_normal);
 				slide = (fabsf(dot) < 0.05f); // Parallel to ground.
 			}
 		}
@@ -573,7 +575,7 @@ static void MoveEntity_Slide(edict_t* self)
 				fwd_accel = 0.0f;
 			}
 
-			VectorScale(dir, dist, delta);
+			VectorScale(slide_dir, dist, delta);
 
 			const float dot = DotProduct(gravity_dir, ground_normal);
 
@@ -643,10 +645,11 @@ static void MoveEntity_Slide(edict_t* self)
 
 			if (slide)
 			{
-				float speed = VectorNormalize2(self->velocity, dir);
+				vec3_t vel_dir;
+				float speed = VectorNormalize2(self->velocity, vel_dir);
 				speed += fwd_accel * time_moved;
 
-				VectorScale(dir, speed, self->velocity);
+				VectorScale(vel_dir, speed, self->velocity);
 				VectorMA(self->velocity, grav_accel * time_moved, gravity_dir, self->velocity);
 			}
 			else
@@ -704,7 +707,9 @@ static void MoveEntity_Slide(edict_t* self)
 		{
 			assert(Vec3NotZero(planes[cur_plane]));
 			BounceVelocity(original_velocity, planes[cur_plane], new_velocity, self->elasticity);
-			const float dir_mag = VectorNormalize2(new_velocity, dir);
+
+			vec3_t vel_dir;
+			const float dir_mag = VectorNormalize2(new_velocity, vel_dir);
 
 			if (FloatIsZeroEpsilon(dir_mag))
 			{
@@ -712,20 +717,20 @@ static void MoveEntity_Slide(edict_t* self)
 				if (planes[cur_plane][2] > 0.0f)
 				{
 					// Slide down slope.
-					dir[0] = -planes[cur_plane][0] * planes[cur_plane][2];
-					dir[1] = -planes[cur_plane][1] * planes[cur_plane][2];
-					dir[2] = planes[cur_plane][0] * planes[cur_plane][0] + planes[cur_plane][1] * planes[cur_plane][1];
+					vel_dir[0] = -planes[cur_plane][0] * planes[cur_plane][2];
+					vel_dir[1] = -planes[cur_plane][1] * planes[cur_plane][2];
+					vel_dir[2] = planes[cur_plane][0] * planes[cur_plane][0] + planes[cur_plane][1] * planes[cur_plane][1];
 
-					VectorNormalize(dir);
+					VectorNormalize(vel_dir);
 				}
 				else
 				{
 					// Drop straight down.
-					dir[2] = -1.0f;
+					vel_dir[2] = -1.0f;
 				}
 			}
 
-			const float dot = DotProduct(dir, planes[cur_plane]);
+			const float dot = DotProduct(vel_dir, planes[cur_plane]);
 
 			if (dot < -FLOAT_ZERO_EPSILON)
 			{
@@ -768,26 +773,28 @@ static void MoveEntity_Slide(edict_t* self)
 				return;
 			}
 
-			CrossProduct(planes[0], planes[1], dir);
-			VectorScale(dir, VectorLength(self->velocity), self->velocity);
+			vec3_t crease_dir;
+			CrossProduct(planes[0], planes[1], crease_dir);
+			VectorScale(crease_dir, VectorLength(self->velocity), self->velocity);
 
-			if (dir[2] <= 0.0f)
+			if (crease_dir[2] <= 0.0f)
 				slide = true;
 		}
 
-		float speed = VectorNormalize2(self->velocity, dir);
+		vec3_t vel_dir;
+		float speed = VectorNormalize2(self->velocity, vel_dir);
 
 		if (slide)
 		{
 			// Moving along ground, apply gravity and friction.
-			const float accel = -friction * (1.0f - dir[2]) - gravity * dir[2];
+			const float accel = -friction * (1.0f - vel_dir[2]) - gravity * vel_dir[2];
 			speed += accel * time_remaining;
-			VectorScale(dir, speed, new_velocity);
+			VectorScale(vel_dir, speed, new_velocity);
 		}
 		else
 		{
 			// Apply gravity straight down, no friction.
-			VectorScale(dir, speed, new_velocity);
+			VectorScale(vel_dir, speed, new_velocity);
 			new_velocity[2] -= gravity * time_remaining;
 		}
 	}
