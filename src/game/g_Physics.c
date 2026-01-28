@@ -28,7 +28,8 @@ void PhysicsCheckWaterTransition(edict_t* self)
 		return;
 
 	// Check for water transition.
-	const qboolean wasinwater = (self->watertype & MASK_WATER);
+	const int old_watertype = gi.pointcontents(self->s.old_origin); //mxd. Don't rely on self->watertype -- we may've been just spawned...
+	const qboolean wasinwater = (old_watertype & MASK_WATER);
 
 	self->watertype = gi.pointcontents(self->s.origin);
 	const qboolean isinwater = (self->watertype & MASK_WATER);
