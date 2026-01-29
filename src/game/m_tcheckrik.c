@@ -119,7 +119,7 @@ static void TcheckrikDropWeapon(edict_t* self, const int weapon_id) //mxd. Named
 		VectorMA(hand_spot, 5.0f, right, hand_spot);
 		VectorMA(hand_spot, 12.0f, up, hand_spot);
 
-		ThrowWeapon(self, &hand_spot, BIT_STAFF, 0, FRAME_partfly);
+		ThrowWeapon(self, hand_spot, BIT_STAFF, 0, FRAME_partfly);
 
 		self->s.fmnodeinfo[MESH__STAFF].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__GEM].flags |= FMNI_NO_DRAW;
@@ -133,7 +133,7 @@ static void TcheckrikDropWeapon(edict_t* self, const int weapon_id) //mxd. Named
 		VectorMA(hand_spot, 6.0f, forward, hand_spot);
 		VectorMA(hand_spot, 4.0f, right, hand_spot);
 
-		ThrowWeapon(self, &hand_spot, BIT_SPEAR, 0, FRAME_partfly);
+		ThrowWeapon(self, hand_spot, BIT_SPEAR, 0, FRAME_partfly);
 
 		self->s.fmnodeinfo[MESH__SPEAR].flags |= FMNI_NO_DRAW;
 
@@ -147,7 +147,7 @@ static void TcheckrikDropWeapon(edict_t* self, const int weapon_id) //mxd. Named
 		VectorMA(hand_spot, -6.0f, right, hand_spot);
 		VectorMA(hand_spot, -6.0f, up, hand_spot);
 
-		ThrowWeapon(self, &hand_spot, BIT_SWORD, 0, FRAME_partfly);
+		ThrowWeapon(self, hand_spot, BIT_SWORD, 0, FRAME_partfly);
 
 		self->s.fmnodeinfo[MESH__MALEHAND].flags |= FMNI_NO_DRAW;
 	}

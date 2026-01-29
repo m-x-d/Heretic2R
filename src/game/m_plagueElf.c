@@ -318,13 +318,13 @@ static void PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropweapo
 		if (irand(0, 10) < chance)
 		{
 			// Just take off top.
-			ThrowWeapon(self, &hand_spot, BIT_HOE, 0.0f, FRAME_torsooff);
+			ThrowWeapon(self, hand_spot, BIT_HOE, 0, FRAME_torsooff);
 			self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
 			PlagueElfTryFlee(self, 2, 5, flrand(2.0f, 7.0f));
 		}
 		else
 		{
-			ThrowWeapon(self, &hand_spot, BIT_HANDLE | BIT_HOE, 0.0f, FRAME_partfly);
+			ThrowWeapon(self, hand_spot, BIT_HANDLE | BIT_HOE, 0, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 			PlagueElfTryFlee(self, 4, 8, flrand(3.0f, 8.0f));
@@ -338,13 +338,13 @@ static void PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropweapo
 		if (irand(0, 10) < chance)
 		{
 			// Just take off top.
-			ThrowWeapon(self, &hand_spot, BIT_GAFF, 0.0f, FRAME_partfly);
+			ThrowWeapon(self, hand_spot, BIT_GAFF, 0, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
 			PlagueElfTryFlee(self, 2, 6, flrand(2.0f, 7.0f));
 		}
 		else
 		{
-			ThrowWeapon(self, &hand_spot, BIT_HANDLE | BIT_GAFF, 0.0f, FRAME_partfly);
+			ThrowWeapon(self, hand_spot, BIT_HANDLE | BIT_GAFF, 0, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 			PlagueElfTryFlee(self, 4, 8, flrand(3.0f, 8.0f));
@@ -358,13 +358,13 @@ static void PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropweapo
 		if (irand(0, 10) < chance)
 		{
 			// Just take off top.
-			ThrowWeapon(self, &hand_spot, BIT_HAMMER, 0.0f, FRAME_partfly);
+			ThrowWeapon(self, hand_spot, BIT_HAMMER, 0, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 			PlagueElfTryFlee(self, 2, 6, flrand(2.0f, 7.0f));
 		}
 		else
 		{
-			ThrowWeapon(self, &hand_spot, BIT_HANDLE | BIT_HAMMER, 0.0f, FRAME_partfly);
+			ThrowWeapon(self, hand_spot, BIT_HANDLE | BIT_HAMMER, 0, FRAME_partfly);
 			self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 			PlagueElfTryFlee(self, 4, 8, flrand(3.0f, 8.0f));
@@ -373,7 +373,7 @@ static void PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropweapo
 		return;
 	}
 
-	ThrowWeapon(self, &hand_spot, BIT_HANDLE, 0.0f, FRAME_partfly);
+	ThrowWeapon(self, hand_spot, BIT_HANDLE, 0, FRAME_partfly);
 	self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 
 	if (self->dead_state != DEAD_DEAD)

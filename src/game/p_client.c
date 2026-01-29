@@ -299,7 +299,7 @@ static void DropWeapons(edict_t* self, const int damage, const int which_weapons
 	//TODO: can these 3 cases happen on the same call?
 	if ((which_weapons & BIT_BLADSTF) && !(self->s.fmnodeinfo[MESH__BLADSTF].flags & FMNI_NO_DRAW))
 	{
-		ThrowWeapon(self, &hand_spot, BIT_BLADSTF, (float)damage, 0);
+		ThrowWeapon(self, hand_spot, BIT_BLADSTF, damage, FRAME_partfly);
 
 		self->s.fmnodeinfo[MESH__BLADSTF].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__STAFACTV].flags |= FMNI_NO_DRAW;
@@ -308,7 +308,7 @@ static void DropWeapons(edict_t* self, const int damage, const int which_weapons
 
 	if ((which_weapons & BIT_HELSTF) && !(self->s.fmnodeinfo[MESH__HELSTF].flags & FMNI_NO_DRAW))
 	{
-		ThrowWeapon(self, &hand_spot, BIT_HELSTF, (float)damage, 0);
+		ThrowWeapon(self, hand_spot, BIT_HELSTF, damage, FRAME_partfly);
 
 		self->s.fmnodeinfo[MESH__HELSTF].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__STAFACTV].flags |= FMNI_NO_DRAW;
@@ -317,7 +317,7 @@ static void DropWeapons(edict_t* self, const int damage, const int which_weapons
 
 	if (which_weapons & BIT_BOWACTV && !(self->s.fmnodeinfo[MESH__BOWACTV].flags & FMNI_NO_DRAW))
 	{
-		ThrowWeapon(self, &hand_spot, BIT_BOFF, (float)damage, 0);
+		ThrowWeapon(self, hand_spot, BIT_BOFF, damage, FRAME_partfly);
 
 		self->s.fmnodeinfo[MESH__BOFF].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__BOWACTV].flags |= FMNI_NO_DRAW;

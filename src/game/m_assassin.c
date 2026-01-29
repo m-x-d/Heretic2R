@@ -1159,7 +1159,7 @@ static void AssassinDropWeapon(edict_t* self, const int knife_flags) //mxd. Name
 		vec3_t hand_spot;
 		VectorScale(right, -12.0f, hand_spot);
 
-		ThrowWeapon(self, &hand_spot, BIT_LKNIFE, 0, FRAME_prtfly);
+		ThrowWeapon(self, hand_spot, BIT_LKNIFE, 0, FRAME_prtfly);
 		self->s.fmnodeinfo[MESH__LKNIFE].flags |= FMNI_NO_DRAW;
 	}
 
@@ -1168,7 +1168,7 @@ static void AssassinDropWeapon(edict_t* self, const int knife_flags) //mxd. Name
 		vec3_t hand_spot;
 		VectorScale(right, 12.0f, hand_spot);
 
-		ThrowWeapon(self, &hand_spot, BIT_RKNIFE, 0, FRAME_prtfly);
+		ThrowWeapon(self, hand_spot, BIT_RKNIFE, 0, FRAME_prtfly);
 		self->s.fmnodeinfo[MESH__RKNIFE].flags |= FMNI_NO_DRAW;
 	}
 }

@@ -227,14 +227,13 @@ void ThrowBodyPart(edict_t* self, const vec3_t spot, const int body_part, const 
 	}
 }
 
-void ThrowWeapon(const edict_t* self, const vec3_t* spot, const int body_part, float damage, const int frame) //TODO: change 'damage' arg type to int.
+void ThrowWeapon(const edict_t* self, const vec3_t spot, const int body_part, const int damage, const int frame) //mxd. Changed 'spot' arg type (from vec3_t*), changed 'damage' arg type (from float).
 {
-	damage = min(255.0f, damage);
-
 	vec3_t origin;
-	VectorAdd(self->s.origin, *spot, origin);
+	VectorAdd(self->s.origin, spot, origin);
 
-	gi.CreateEffect(NULL, FX_THROWWEAPON, 0, origin, "ssbbb", (short)frame, (short)body_part, (byte)damage, self->s.modelindex, self->s.number);
+	const byte b_damage = (byte)min(255, damage);
+	gi.CreateEffect(NULL, FX_THROWWEAPON, 0, origin, "ssbbb", (short)frame, (short)body_part, b_damage, self->s.modelindex, self->s.number);
 }
 
 #pragma endregion

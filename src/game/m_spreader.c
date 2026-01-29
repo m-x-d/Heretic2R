@@ -130,7 +130,7 @@ static void SpreaderDropWeapon(edict_t* self) //mxd. Named 'spreader_dropweapon'
 	vec3_t hand_pos;
 	VectorScale(right, -12.0f, hand_pos);
 
-	ThrowWeapon(self, &hand_pos, BIT_BOMB, 0, 0);
+	ThrowWeapon(self, hand_pos, BIT_BOMB, 0, FRAME_atacka1);
 	self->s.fmnodeinfo[MESH__BOMB].flags |= FMNI_NO_DRAW;
 }
 
@@ -492,7 +492,7 @@ static qboolean SpreaderThrowTorso(edict_t* self, float damage, const float dama
 		SpreaderCanThrowNode(self, MESH__HOSE, &throw_nodes);
 
 		const vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
-		ThrowWeapon(self, &gore_spot, throw_nodes, 0, FRAME_death17);
+		ThrowWeapon(self, gore_spot, throw_nodes, 0, FRAME_death17);
 
 		if (self->health > 0)
 			SpreaderTakeOff(self);

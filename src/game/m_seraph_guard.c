@@ -167,7 +167,7 @@ static void SeraphGuardDropWeapon(edict_t* self) //mxd. Named 'seraph_guard_drop
 	VectorMA(hand_pos, 5.0f, right, hand_pos);
 	VectorMA(hand_pos, 12.0f, up, hand_pos);
 
-	ThrowWeapon(self, &hand_pos, BIT_AXE, 0, FRAME_partfly);
+	ThrowWeapon(self, hand_pos, BIT_AXE, 0, FRAME_partfly);
 	self->s.fmnodeinfo[MESH__AXE].flags |= FMNI_NO_DRAW;
 }
 

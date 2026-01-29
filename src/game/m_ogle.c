@@ -173,12 +173,12 @@ static void OgleDropTools(edict_t* self) //mxd. Named 'ogle_cast_off_tools_of_op
 	{
 		// Cast off the hammer and nail.
 		self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
-		ThrowWeapon(self, &vec3_origin, BPN_NAIL, 0, 0);
+		ThrowWeapon(self, vec3_origin, BPN_NAIL, 0, FRAME_prtfly);
 
 		self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 
-		ThrowWeapon(self, &vec3_origin, BPN_HAMMER | BPN_HANDLE, 0, 0);
+		ThrowWeapon(self, vec3_origin, BPN_HAMMER | BPN_HANDLE, 0, FRAME_prtfly);
 	}
 	else if (!(self->s.fmnodeinfo[MESH__PICK].flags & FMNI_NO_DRAW))
 	{
@@ -186,7 +186,7 @@ static void OgleDropTools(edict_t* self) //mxd. Named 'ogle_cast_off_tools_of_op
 		self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 
-		ThrowWeapon(self, &vec3_origin, BPN_PICK | BPN_HANDLE, 0, 0);
+		ThrowWeapon(self, vec3_origin, BPN_PICK | BPN_HANDLE, 0, FRAME_prtfly);
 	}
 	else if (!(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW))
 	{
@@ -194,7 +194,7 @@ static void OgleDropTools(edict_t* self) //mxd. Named 'ogle_cast_off_tools_of_op
 		self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 
-		ThrowWeapon(self, &vec3_origin, BPN_HAMMER | BPN_HANDLE, 0, 0);
+		ThrowWeapon(self, vec3_origin, BPN_HAMMER | BPN_HANDLE, 0, FRAME_prtfly);
 	}
 
 	self->monsterinfo.aiflags |= AI_NO_MELEE;
