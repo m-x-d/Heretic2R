@@ -363,7 +363,7 @@ static void PlayerThrowHead(edict_t* self, edict_t* other, float damage, const q
 		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
 		ThrowBodyPart(self, gore_spot, thrown_nodes, (int)damage, FRAME_partfly);
 
-		VectorAdd(self->s.origin, gore_spot, gore_spot);
+		Vec3AddAssign(self->s.origin, gore_spot);
 		SprayDebris(self, gore_spot, 8);
 
 		if (self->health > 0)
@@ -402,7 +402,7 @@ static void PlayerThrowTorso(edict_t* self, edict_t* other, float damage, const 
 		vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
 		ThrowBodyPart(self, gore_spot, thrown_nodes, (int)damage, 1); //TODO: shouldn't this use FRAME_partfly (0)?
 
-		VectorAdd(self->s.origin, gore_spot, gore_spot);
+		Vec3AddAssign(self->s.origin, gore_spot);
 		SprayDebris(self, gore_spot, 12);
 
 		if (self->health > 0)
@@ -660,7 +660,7 @@ void PlayerDecapitate(edict_t* self, edict_t* other) //mxd. Named 'player_decap'
 	vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
 	ThrowBodyPart(self, gore_spot, throw_nodes, 0, FRAME_partfly);
 
-	VectorAdd(self->s.origin, gore_spot, gore_spot);
+	Vec3AddAssign(self->s.origin, gore_spot);
 	SprayDebris(self, gore_spot, 8);
 
 	if (self->health > 0)
