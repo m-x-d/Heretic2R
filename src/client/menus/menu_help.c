@@ -21,7 +21,6 @@ static void Help_MenuDraw(void) // H2
 	if (cls.m_menualpha == 0.0f)
 		return;
 
-	const int line_length = viddef.width * 18 / DEF_WIDTH + 8;
 	const uint menu_side = m_menu_side; //mxd
 
 	// Draw left page.
@@ -33,7 +32,7 @@ static void Help_MenuDraw(void) // H2
 	if (help_msg != NULL)
 	{
 		Menu_DrawTitle(m_item_helpscreen);
-		Menu_DrawObjectives(help_msg, line_length);
+		Menu_DrawTextBlock(help_msg, TB_MAX_LINE_LENGTH);
 	}
 
 	if (help_snd != NULL)
@@ -46,7 +45,7 @@ static void Help_MenuDraw(void) // H2
 	help_snd = CL_GetGameWav(GM_HELP2);
 
 	if (help_msg != NULL)
-		Menu_DrawObjectives(help_msg, line_length);
+		Menu_DrawTextBlock(help_msg, TB_MAX_LINE_LENGTH);
 
 	if (help_snd != NULL)
 		se.StartLocalSound(help_snd);

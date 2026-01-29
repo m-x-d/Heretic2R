@@ -23,8 +23,6 @@ static void Objectives_MenuDraw(void)
 	if (cls.m_menualpha == 0.0f)
 		return;
 
-	const int max_line_length = viddef.width * 18 / DEF_WIDTH + 8;
-
 	// Draw first objective?
 	if (cl.frame.playerstate.mission_num1 != 0)
 	{
@@ -34,7 +32,7 @@ static void Objectives_MenuDraw(void)
 		if (message1 != NULL)
 		{
 			Menu_DrawTitle(m_banner_objectives);
-			Menu_DrawObjectives(message1, max_line_length /*/ DEF_WIDTH + 8*/);
+			Menu_DrawTextBlock(message1, TB_MAX_LINE_LENGTH);
 		}
 
 		if (sound1 != NULL)
@@ -52,7 +50,7 @@ static void Objectives_MenuDraw(void)
 		if (message2 != NULL)
 		{
 			Menu_DrawTitle(m_banner_objectives);
-			Menu_DrawObjectives(message2, max_line_length);
+			Menu_DrawTextBlock(message2, TB_MAX_LINE_LENGTH);
 		}
 
 		if (sound1 == NULL && sound2 != NULL)
@@ -65,7 +63,7 @@ static void Objectives_MenuDraw(void)
 	if (message1 == NULL && message2 == NULL)
 	{
 		Menu_DrawTitle(m_banner_objectives);
-		Menu_DrawObjectives(m_item_none->string, max_line_length);
+		Menu_DrawTextBlock(m_item_none->string, TB_MAX_LINE_LENGTH);
 	}
 }
 

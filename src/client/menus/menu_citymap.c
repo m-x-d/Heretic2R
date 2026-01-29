@@ -56,7 +56,7 @@ static void CityMap_DefaultDraw(void) // H2
 	const level_map_info_t* map_infos = fxe.GetLMI();
 	const char* message = CL_GetGameString(map_infos[level_num].message);
 	if (message != NULL)
-		Menu_DrawObjectives(message, viddef.width * 18 / DEF_WIDTH + 8);
+		Menu_DrawTextBlock(message, TB_MAX_LINE_LENGTH);
 }
 
 static void CityMap_MenuDraw(void) // H2

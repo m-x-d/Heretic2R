@@ -1218,7 +1218,7 @@ static int GetLineLength(const char* text, int* text_len) // H2
 	return str_len;
 }
 
-void Menu_DrawObjectives(const char* message, const int max_line_length) // H2
+void Menu_DrawTextBlock(const char* message, const int max_line_length) // H2
 {
 	char buffer[1024];
 

@@ -19,6 +19,9 @@
 #define SND_MENU_CLOSE	"misc/menu3.wav" // Go to parent menu / close menu. (Esc key).
 #define SND_MENU_TOGGLE	"misc/menu4.wav" // Toggle selected item value (left/right keys).
 
+//mxd. Max. line length for Help / City Map / Objectives menus.
+#define TB_MAX_LINE_LENGTH	(viddef.width * 18 / DEF_WIDTH + 8)
+
 extern cvar_t* menus_active;
 
 extern cvar_t* m_item_defaults;
@@ -214,7 +217,7 @@ extern void Menu_AdjustCursor(menuframework_t* menu, int dir);
 extern void Menu_Center(menuframework_t* menu);
 extern void Menu_Draw(const menuframework_t* menu);
 extern void Menu_DrawString(int x, int y, const char* name, float alpha, qboolean selected);
-extern void Menu_DrawObjectives(const char* message, int max_line_length); // H2
+extern void Menu_DrawTextBlock(const char* message, int max_line_length); // H2
 extern void Menu_DrawTitle(const cvar_t* title); // H2
 extern void Menu_DrawBG(const char* bk_path, float scale); //mxd
 extern menucommon_t* Menu_ItemAtCursor(const menuframework_t* menu);
