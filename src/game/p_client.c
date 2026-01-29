@@ -522,7 +522,9 @@ static int PlayerThrowLeg(edict_t* self, const float damage, const int node_inde
 			AngleVectors(self->s.angles, NULL, right, NULL);
 
 			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
-			VectorMA(gore_spot, -10.0f, right, gore_spot); //TODO: shouldn't this offset to the left instead for MESH__LLEG?
+			const float side = ((node_index == MESH__LLEG) ? -1.0f : 1.0f); //mxd. Original logic uses -10.0f scaler for both legs.
+			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
+
 			ThrowBodyPart(self, gore_spot, thrown_nodes, (int)damage, FRAME_partfly);
 		}
 	}
