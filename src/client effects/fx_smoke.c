@@ -25,32 +25,44 @@ void PreCacheSmokeSFX(void) //mxd
 }
 
 //mxd. Added to reduce code duplication.
-static void SpawnSmoke(const vec3_t origin, const float scale, const float range, const uint color)
+static void SpawnSmoke(const vec3_t origin, const float scale, const float range, const paletteRGBA_t color)
 {
-	const int duration = (int)(GetTimeToReachDistance(50.0f, 0.0f, range));
-	client_entity_t* smoke = ClientEntity_new(-1, RF_TRANSLUCENT, origin, NULL, 500);
+	const float vel_z = flrand(46.0f, 52.0f); //mxd. Randomize z-velocity a bit.
+	const float duration = GetTimeToReachDistance(vel_z, 0.0f, range);
+	client_entity_t* smoke = ClientEntity_new(-1, RF_TRANSLUCENT, origin, NULL, (int)duration);
 
 	smoke->r.model = &smoke_model;
 	smoke->r.scale = scale;
-	smoke->r.color.c = color;
-	VectorSet(smoke->velocity, flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), 50.0f);
-	smoke->alpha = 0.5f;
-	smoke->d_alpha = -smoke->alpha * 1000.0f / (float)duration; // Rate of change in transparency.
-	smoke->d_scale = 1.0f; // Rate of change in scale.
-	smoke->nextThinkTime = smoke->startTime + duration;
-	smoke->Update = KeepSelfAI;
+	smoke->r.color = color;
+	VectorSet(smoke->velocity, flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), vel_z);
+	smoke->acceleration[0] = -smoke->velocity[0] / duration; //mxd. Gravitate towards 0 XY velocity.
+	smoke->acceleration[1] = -smoke->velocity[1] / duration; //mxd
+	smoke->alpha = flrand(0.4f, 0.7f); //mxd. Randomize alpha a bit.
+	smoke->d_alpha = -smoke->alpha * 1000.0f / duration; // Rate of change in transparency.
+	smoke->d_scale = flrand(0.7f, 1.0f); // Rate of change in scale. //H2: 1.0 //mxd. Randomize a bit.
 
+	RE_SetupRollSprite(&smoke->r, 32.0f, flrand(0.0f, 359.0f)); //mxd
 	AddEffect(NULL, smoke); // Add the effect as independent world effect.
 }
 
 void FXDarkSmoke(const vec3_t origin, const float scale, const float range)
 {
-	SpawnSmoke(origin, scale, range, 0xaa777777); //mxd
+	//mxd. Randomize color a bit (original logic uses 0xaa777777).
+	paletteRGBA_t color;
+	const byte c = (byte)irand(100, 140);
+	COLOUR_SETA(color, c, c, c, 170);
+
+	SpawnSmoke(origin, scale, range, color); //mxd
 }
 
 void FXSmoke(const vec3_t origin, const float scale, const float range)
 {
-	SpawnSmoke(origin, scale, range, color_white.c); //mxd
+	//mxd. Randomize color a bit (original logic uses 0xffffffff).
+	paletteRGBA_t color;
+	const byte c = (byte)irand(200, 255);
+	COLOUR_SET(color, c, c, c);
+
+	SpawnSmoke(origin, scale, range, color); //mxd
 }
 
 static qboolean EnvSmokeSpawnerUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSmokeSpawner' in original logic.
