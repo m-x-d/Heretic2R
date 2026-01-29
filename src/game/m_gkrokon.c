@@ -476,8 +476,11 @@ static qboolean GkrokonThrowTorsoFront(edict_t* self, const float damage) //mxd.
 		MESH__LPINCHERB_P1
 	};
 
-	vec3_t gore_spot = { 0 };
 	int throw_nodes = 0;
+
+	vec3_t forward; //mxd
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
 	for (uint i = 0; i < ARRAY_SIZE(mesh_ids); i++)
 	{
@@ -493,11 +496,9 @@ static qboolean GkrokonThrowTorsoFront(edict_t* self, const float damage) //mxd.
 		}
 		else if (GkrokonCanThrowNode(self, mesh_id, &throw_nodes))
 		{
-			vec3_t right;
-			AngleVectors(self->s.angles, NULL, right, NULL);
-
-			gore_spot[2] += self->maxs[2] * 0.3f; //TODO: gore_spot[2] is incremented every time this is called. Is that intentional?
-			VectorMA(gore_spot, -10.0f, right, gore_spot); //TODO: use different offsets for each mesh part?
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f }; //mxd. In original logic, gore_spot[2] is incremented every time this branch is executed in for loop.
+			VectorMA(gore_spot, flrand( -10.0f, 10.0f), forward, gore_spot); //mxd
+			VectorMA(gore_spot, flrand( -10.0f, 10.0f), right, gore_spot); //mxd. Randomize position.
 
 			ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_birth1);
 
