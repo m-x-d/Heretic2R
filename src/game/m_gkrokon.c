@@ -518,9 +518,7 @@ static void GkrokonThrowArm(edict_t* self, float damage, const int mesh_part, co
 	if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
 		return;
 
-	const qboolean is_left_arm = (mesh_part == MESH__LARM_P1); //mxd
-
-	if (is_left_arm && (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN))
+	if (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN) // Original logic does this only for left arm --mxd.
 		damage *= 1.5f; // Greater chance to cut off if previously damaged.
 
 	if (dismember_ok && flrand(0, (float)self->health) < damage * 0.75f)
@@ -533,7 +531,7 @@ static void GkrokonThrowArm(edict_t* self, float damage, const int mesh_part, co
 			AngleVectors(self->s.angles, NULL, right, NULL);
 
 			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
-			const float side = (is_left_arm ? -1.0f : 1.0f);
+			const float side = ((mesh_part == MESH__LARM_P1) ? -1.0f : 1.0f);
 			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
 
 			ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_birth1);
