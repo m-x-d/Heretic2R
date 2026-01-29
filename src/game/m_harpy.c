@@ -528,7 +528,7 @@ void HarpyDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'h
 		const vec3_t gore_spot = { 0.0f, 0.0f, 10.0f };
 		const int throw_nodes = bones_per_node_for_hitloc[hl];
 
-		ThrowBodyPart(self, &gore_spot, throw_nodes, (float)damage, FRAME_partfly1);
+		ThrowBodyPart(self, gore_spot, throw_nodes, damage, FRAME_partfly1);
 
 		switch (mesh_loc)
 		{

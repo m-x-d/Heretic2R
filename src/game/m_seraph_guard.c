@@ -427,7 +427,7 @@ static qboolean SeraphGuardThrowHead(edict_t* self, float damage, const qboolean
 		SeraphGuardCanThrowNode(self, MESH__GUARDHEAD, &throw_nodes);
 
 		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
-		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
+		ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_partfly);
 
 		Vec3AddAssign(self->s.origin, gore_spot);
 		SprayDebris(self, gore_spot, 8);
@@ -483,7 +483,7 @@ static void SeraphGuardThrowArmUpper(edict_t* self, const float damage, const in
 			VectorMA(gore_spot, 10 * side, right, gore_spot);
 
 			SeraphGuardDropWeapon(self);
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
+			ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_partfly);
 		}
 	}
 }
@@ -515,7 +515,7 @@ static void SeraphGuardThrowArmLower(edict_t* self, float damage, const int mesh
 			VectorMA(gore_spot, 10 * side, right, gore_spot);
 
 			SeraphGuardDropWeapon(self);
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly);
+			ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_partfly);
 		}
 	}
 	else

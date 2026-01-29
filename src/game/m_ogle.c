@@ -822,7 +822,7 @@ static void OgleThrowArmUpperLeft(edict_t* self, const float damage, const qbool
 			self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
 		}
 
-		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+		ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_prtfly);
 	}
 	else
 	{
@@ -853,7 +853,7 @@ static void OgleThrowArmLowerLeft(edict_t* self, const float damage, const qbool
 			self->s.fmnodeinfo[MESH__NAIL].flags |= FMNI_NO_DRAW;
 		}
 
-		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+		ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_prtfly);
 	}
 	else
 	{
@@ -902,7 +902,7 @@ static void OgleThrowArmUpperRight(edict_t* self, const float damage, const qboo
 			self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
 		}
 
-		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+		ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_prtfly);
 
 		self->monsterinfo.aiflags |= AI_NO_MELEE;
 		self->monsterinfo.aiflags |= AI_COWARD;
@@ -948,7 +948,7 @@ static void OgleThrowArmLowerRight(edict_t* self, const float damage, const qboo
 			self->s.fmnodeinfo[MESH__PICK].flags |= FMNI_NO_DRAW;
 		}
 
-		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+		ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_prtfly);
 
 		self->monsterinfo.aiflags |= AI_NO_MELEE;
 		self->monsterinfo.aiflags |= AI_COWARD;

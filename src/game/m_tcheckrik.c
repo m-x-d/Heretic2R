@@ -486,7 +486,7 @@ static qboolean TcheckrikThrowHead(edict_t* self, float damage, const qboolean d
 		TcheckrikCanThrowNode(self, MESH__RMANDIBLE, throw_nodes);
 
 		vec3_t gore_spot = { 0.0f, 0.0f, 24.0f };
-		ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_partfly);
+		ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_partfly);
 
 		Vec3AddAssign(self->s.origin, gore_spot);
 		SprayDebris(self, gore_spot, 8);
@@ -572,7 +572,7 @@ static qboolean TcheckrikThrowArmLowerLeft(edict_t* self, float damage, const qb
 				vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
 				VectorMA(gore_spot, -10.0f, right, gore_spot);
 
-				ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_partfly);
+				ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_partfly);
 
 				if ((self->s.fmnodeinfo[MESH__R2NDARM].flags & FMNI_NO_DRAW) && !(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
 					TcheckrikDropWeapon(self, BIT_SPEAR);
@@ -647,7 +647,7 @@ static void TcheckrikThrowArmLowerRight(edict_t* self, float damage, const qbool
 				vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
 				VectorMA(gore_spot, 10.0f, right, gore_spot); //mxd. -10 (same as left arm) in original logic.
 
-				ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_partfly);
+				ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_partfly);
 
 				if ((self->s.fmnodeinfo[MESH__L2NDARM].flags & FMNI_NO_DRAW) && !(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
 					TcheckrikDropWeapon(self, BIT_SPEAR);
@@ -702,7 +702,8 @@ static void TcheckrikThrowLeg(edict_t* self, const float damage, const int mesh_
 			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
 			const float side = (mesh_part == MESH__LLEG ? -1.0f : 1.0f); //mxd. Original logic throws both legs in the same direction.
 			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
-			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_partfly);
+
+			ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_partfly);
 		}
 	}
 }

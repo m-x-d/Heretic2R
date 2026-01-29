@@ -1263,7 +1263,7 @@ static qboolean SsithraThrowHead(edict_t* self, float damage, const qboolean dis
 
 		self->s.fmnodeinfo[MESH__CAPTOPUPPERTORSO].flags &= ~FMNI_NO_DRAW;
 
-		ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+		ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_Part_fly1);
 
 		Vec3AddAssign(self->s.origin, gore_spot);
 		SprayDebris(self, gore_spot, 8);
@@ -1291,16 +1291,16 @@ static qboolean SsithraThrowHead(edict_t* self, float damage, const qboolean dis
 	{
 		// No red spray with these, particles?
 		if (irand(0, 10) < 3 && SsithraCanThrowNode(self, MESH__CENTERSPIKE, throw_nodes))
-			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_Part_fly1);
 
 		if (irand(0, 10) < 3 && SsithraCanThrowNode(self, MESH__RIGHT1SPIKE, throw_nodes))
-			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_Part_fly1);
 
 		if (irand(0, 10) < 3 && SsithraCanThrowNode(self, MESH__RIGHT2SPIKE, throw_nodes))
-			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_Part_fly1);
 
 		if (irand(0, 10) < 3 && SsithraCanThrowNode(self, MESH__LEFT1SPIKE, throw_nodes))
-			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_Part_fly1);
 	}
 
 	return false;
@@ -1338,7 +1338,7 @@ static void SsithraThrowTorso(edict_t* self, float damage, const qboolean dismem
 		else
 		{
 			vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
-			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_partrest1);
+			ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_partrest1);
 
 			Vec3AddAssign(self->s.origin, gore_spot);
 			SprayDebris(self, gore_spot, 12);
@@ -1373,7 +1373,8 @@ static void SsithraThrowArm(edict_t* self, float damage, const qboolean dismembe
 			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
 			const float side = ((mesh_part == MESH__LEFTARM) ? -1.0f : 1.0f);
 			VectorMA(gore_spot, 10 * side, right, gore_spot);
-			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+
+			ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_Part_fly1);
 		}
 	}
 	else
@@ -1408,7 +1409,8 @@ static void SsithraThrowLeg(edict_t* self, const float damage, int* throw_nodes,
 			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
 			const float side = ((mesh_part == MESH__LEFTLEG) ? -1.0f : 1.0f); //BUGFIX: original logic uses -10 for both legs.
 			VectorMA(gore_spot, 10 * side, right, gore_spot);
-			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+
+			ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_Part_fly1);
 		}
 	}
 }

@@ -47,8 +47,7 @@ void elflord_c_throwhead(edict_t* self)
 {
 	mist_yaw = 0;
 
-	vec3_t gore_spot = { 0 };
-	ThrowBodyPart(self, &gore_spot, 8, 15, FRAME_idle1);
+	ThrowBodyPart(self, vec3_origin, 8, 15, FRAME_idle1);
 	gi.sound(self, CHAN_BODY, gi.soundindex("monsters/elflord/death1.wav"), 2, ATTN_NORM, 0);
 }
 

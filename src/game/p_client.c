@@ -361,7 +361,7 @@ static void PlayerThrowHead(edict_t* self, edict_t* other, float damage, const q
 		PlayerCanThrowNode(self, MESH__HEAD, &thrown_nodes);
 
 		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
-		ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 0);
+		ThrowBodyPart(self, gore_spot, thrown_nodes, (int)damage, FRAME_partfly);
 
 		VectorAdd(self->s.origin, gore_spot, gore_spot);
 		SprayDebris(self, gore_spot, 8);
@@ -400,7 +400,7 @@ static void PlayerThrowTorso(edict_t* self, edict_t* other, float damage, const 
 		PlayerCanThrowNode(self, MESH__RHANDHI, &thrown_nodes);
 
 		vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
-		ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 1);
+		ThrowBodyPart(self, gore_spot, thrown_nodes, (int)damage, 1); //TODO: shouldn't this use FRAME_partfly (0)?
 
 		VectorAdd(self->s.origin, gore_spot, gore_spot);
 		SprayDebris(self, gore_spot, 12);
@@ -441,7 +441,7 @@ static int PlayerThrowLeftArm(edict_t* self, edict_t* other, float damage, const
 
 			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
 			VectorMA(gore_spot, -10.0f, right, gore_spot);
-			ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, thrown_nodes, (int)damage, FRAME_partfly);
 
 			const vec3_t blood_dir = { 0.0f, -1.0f, 0.0f };
 			const vec3_t blood_spot = { 0.0f, -12.0f, 10.0f };
@@ -481,7 +481,7 @@ static int PlayerThrowRightArm(edict_t* self, edict_t* other, float damage, cons
 
 			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
 			VectorMA(gore_spot, 10.0f, right, gore_spot);
-			ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, thrown_nodes, (int)damage, FRAME_partfly);
 
 			const vec3_t blood_dir = { 0.0f, 1.0f, 0.0f };
 			const vec3_t blood_spot = { 0.0f, 12.0f, 10.0f };
@@ -523,7 +523,7 @@ static int PlayerThrowLeg(edict_t* self, const float damage, const int node_inde
 
 			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
 			VectorMA(gore_spot, -10.0f, right, gore_spot); //TODO: shouldn't this offset to the left instead for MESH__LLEG?
-			ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, thrown_nodes, (int)damage, FRAME_partfly);
 		}
 	}
 
@@ -656,7 +656,7 @@ void PlayerDecapitate(edict_t* self, edict_t* other) //mxd. Named 'player_decap'
 	PlayerCanThrowNode(self, MESH__HEAD, &throw_nodes);
 
 	vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
-	ThrowBodyPart(self, &gore_spot, throw_nodes, 0, 0);
+	ThrowBodyPart(self, gore_spot, throw_nodes, 0, FRAME_partfly);
 
 	VectorAdd(self->s.origin, gore_spot, gore_spot);
 	SprayDebris(self, gore_spot, 8);

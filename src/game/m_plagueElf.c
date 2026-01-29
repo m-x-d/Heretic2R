@@ -917,7 +917,7 @@ static qboolean PlagueElfThrowHead(edict_t* self, float damage, const qboolean d
 		PlagueElfDismemberSound(self);
 
 		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
-		ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+		ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_partfly);
 
 		Vec3AddAssign(self->s.origin, gore_spot);
 		SprayDebris(self, gore_spot, 8);
@@ -956,7 +956,7 @@ static qboolean PlagueElfThrowTorso(edict_t* self, float damage, const qboolean 
 		PlagueElfDismemberSound(self);
 
 		vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
-		ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, FRAME_torsooff);
+		ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_torsooff);
 
 		Vec3AddAssign(self->s.origin, gore_spot);
 		SprayDebris(self, gore_spot, 12);
@@ -1003,7 +1003,7 @@ static void PlagueElfThrowLeftArm(edict_t* self, float damage, const qboolean di
 			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
 			VectorMA(gore_spot, -10.0f, right, gore_spot);
 
-			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_partfly);
 		}
 	}
 	else
@@ -1034,7 +1034,7 @@ static void PlagueElfThrowRightArm(edict_t* self, float damage, const qboolean d
 			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
 			VectorMA(gore_spot, 10.0f, right, gore_spot);
 
-			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_partfly);
 		}
 	}
 	else
@@ -1072,7 +1072,7 @@ static void PlagueElfThrowLeg(edict_t* self, const float damage, const int mesh_
 			const float side = (mesh_part == MESH__L_LEG ? -1.0f : 1.0f); //BUGFIX: original logic scales both legs by -10.
 			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
 
-			ThrowBodyPart(self, &gore_spot, *throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, *throw_nodes, (int)damage, FRAME_partfly);
 		}
 	}
 }

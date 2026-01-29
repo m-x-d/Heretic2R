@@ -198,17 +198,14 @@ void SprayDebris(const edict_t* self, const vec3_t spot, int num_chunks) //mxd. 
 
 #pragma region ========================== Body part / weapon throw logic ==========================
 
-void ThrowBodyPart(edict_t* self, const vec3_t* spot, const int body_part, float damage, const int frame) //TODO: change 'damage' arg type to int.
+void ThrowBodyPart(edict_t* self, const vec3_t spot, const int body_part, const int damage, const int frame) //mxd. Changed 'spot' arg type (from vec3_t*), changed 'damage' arg type (from float).
 {
 	// Add blood spew to sever loc and blood trail on flying part.
-	if (damage > 0.0f)
-	{
-		damage = min(255.0f, damage);
+	if (damage > 0)
 		gi.sound(self, CHAN_VOICE, gi.soundindex("misc/fleshbreak.wav"), 1.0f, ATTN_NORM, 0.0f);
-	}
 
 	vec3_t origin;
-	VectorAdd(self->s.origin, *spot, origin);
+	VectorAdd(self->s.origin, spot, origin);
 
 	int	fx_flags = 0;
 
@@ -221,11 +218,12 @@ void ThrowBodyPart(edict_t* self, const vec3_t* spot, const int body_part, float
 	if (harpy_head_carrier != NULL && harpy_head_source == self)
 	{
 		HarpyTakeHead(harpy_head_carrier, self, body_part, frame, fx_flags);
-		SprayDebris(self, *spot, 5);
+		SprayDebris(self, spot, 5);
 	}
 	else
 	{
-		gi.CreateEffect(NULL, FX_BODYPART, fx_flags, origin, "ssbbb", (short)frame, (short)body_part, (byte)damage, self->s.modelindex, self->s.number);
+		const byte b_damage = (byte)min(255, damage);
+		gi.CreateEffect(NULL, FX_BODYPART, fx_flags, origin, "ssbbb", (short)frame, (short)body_part, b_damage, self->s.modelindex, self->s.number);
 	}
 }
 

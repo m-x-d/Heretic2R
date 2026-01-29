@@ -499,7 +499,7 @@ static qboolean GkrokonThrowTorsoFront(edict_t* self, const float damage) //mxd.
 			gore_spot[2] += self->maxs[2] * 0.3f; //TODO: gore_spot[2] is incremented every time this is called. Is that intentional?
 			VectorMA(gore_spot, -10.0f, right, gore_spot); //TODO: use different offsets for each mesh part?
 
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_birth1);
 
 			if (mesh_id == MESH__HEAD_P1)
 			{
@@ -535,7 +535,7 @@ static void GkrokonThrowArm(edict_t* self, float damage, const int mesh_part, co
 			const float side = (is_left_arm ? -1.0f : 1.0f);
 			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
 
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_birth1);
 		}
 	}
 	else
@@ -571,7 +571,7 @@ static void GkrokonThrowLeg(edict_t* self, const float damage, const int mesh_pa
 			const float side = ((mesh_part == MESH__LTHIGH_P1) ? -1.0f : 1.0f);
 			VectorMA(gore_spot, 10.0f * side, right, gore_spot); //BUGFIX: mxd. scaled by -10 for both legs in original logic.
 
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_birth1);
 		}
 	}
 }

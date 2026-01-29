@@ -1230,9 +1230,9 @@ static qboolean AssassinThrowHead(edict_t* self, float damage, const qboolean di
 		AssassinCanThrowNode(self, MESH__HEAD, &throw_nodes);
 
 		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
-		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
+		ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_prtfly);
 
-		VectorAdd(self->s.origin, gore_spot, gore_spot);
+		Vec3AddAssign(self->s.origin, gore_spot);
 		SprayDebris(self, gore_spot, 8);
 
 		if (self->health > 0)
@@ -1275,8 +1275,8 @@ static qboolean AssassinThrowTorso(edict_t* self, float damage, const int mesh_p
 		AssassinDropWeapon(self, BIT_LKNIFE | BIT_RKNIFE);
 
 		vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
-		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_torsofly);
-		VectorAdd(self->s.origin, gore_spot, gore_spot);
+		ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_torsofly);
+		Vec3AddAssign(self->s.origin, gore_spot);
 		SprayDebris(self, gore_spot, 12);
 
 		if (self->health > 0)
@@ -1323,7 +1323,7 @@ static void AssassinThrowUpperArm(edict_t* self, float damage, const int mesh_pa
 
 			const int knife_flag = (is_left_arm ? BIT_LKNIFE : BIT_RKNIFE); //mxd
 			AssassinDropWeapon(self, knife_flag);
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
+			ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_prtfly);
 		}
 	}
 	else
@@ -1359,7 +1359,7 @@ static void AssassinThrowLowerArm(edict_t* self, float damage, const int mesh_pa
 
 			const int knife_flag = (is_left_arm ? BIT_LKNIFE : BIT_RKNIFE); //mxd
 			AssassinDropWeapon(self, knife_flag);
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
+			ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_prtfly);
 		}
 	}
 	else
@@ -1400,7 +1400,7 @@ static void AssassinThrowUpperLeg(edict_t* self, const float damage, const int m
 			const float side = (is_left_leg ? -1.0f : 1.0f);
 			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
 
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_prtfly);
 		}
 	}
 }
@@ -1431,7 +1431,7 @@ static void AssassinThrowLowerLeg(edict_t* self, const float damage, const int m
 			const float side = (mesh_part == MESH__LCALF ? -1.0f : 1.0f);
 			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
 
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_prtfly);
 		}
 	}
 }

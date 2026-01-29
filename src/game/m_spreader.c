@@ -457,7 +457,7 @@ static qboolean SpreaderThrowHead(edict_t* self, float damage, const qboolean di
 		SpreaderCanThrowNode(self, MESH__HEAD, &throw_nodes);
 
 		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
-		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+		ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_atacka1);
 
 		Vec3AddAssign(self->s.origin, gore_spot);
 		SprayDebris(self, gore_spot, 8);
@@ -532,7 +532,7 @@ static void SpreaderThrowArm(edict_t* self, float damage, const int mesh_part, c
 			const float side = (is_left_arm ? -1.0f : 1.0f);
 			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
 
-			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+			ThrowBodyPart(self, gore_spot, throw_nodes, (int)damage, FRAME_atacka1);
 		}
 	}
 	else
