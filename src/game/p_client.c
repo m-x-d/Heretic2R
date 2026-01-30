@@ -1572,9 +1572,7 @@ static void SetInitialWaterLevel(edict_t* ent)
 	}
 
 	ent->client->old_waterlevel = ent->waterlevel;
-
-	if (ent->waterlevel > 0)
-		ent->flags |= FL_INWATER;
+	ent->flags |= FL_INWATER;
 }
 
 // Called when a player connects to a server or respawns in a deathmatch.
