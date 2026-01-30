@@ -348,11 +348,11 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 	}
 
 	// Copy calculated angles and vieworg to refdef.
-	vec3_t viewangles;
-	VectorSubtract(end, end_2, viewangles);
-	VectorNormalize(viewangles);
+	vec3_t view_dir;
+	VectorSubtract(end, end_2, view_dir);
+	VectorNormalize(view_dir);
 
-	vectoangles2(viewangles, cl.refdef.viewangles);
+	vectoangles2(view_dir, cl.refdef.viewangles);
 	VectorCopy(end_2, cl.refdef.vieworg);
 
 	if ((int)cl_camera_freeze->value)
