@@ -268,7 +268,7 @@ void RI_AddDebugLine(const vec3_t start, const vec3_t end, const paletteRGBA_t c
 
 void RI_AddDebugArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
 {
-#define ARROWHEAD_SIZE	16.0f
+#define ARROWHEAD_SIZE	8.0f
 
 	// Find free slot...
 	DebugPrimitive_t* arrow = InitDebugPrimitive(NULL, start, end, color, lifetime, DPT_ARROW);
@@ -284,19 +284,24 @@ void RI_AddDebugArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t 
 		float len = VectorNormalize(dir) * 0.5f;
 		len = min(len, ARROWHEAD_SIZE);
 
-		vec3_t arrowhead_dir;
-		VectorGetOffsetOrigin(dir, vec3_origin, 30.0f, arrowhead_dir);
-		VectorNormalize(arrowhead_dir);
+		vec3_t up;
+		PerpendicularVector(up, dir);
 
-		float angle = 45.0f;
+		vec3_t right;
+		CrossProduct(up, dir, right);
+
+		vec3_t arrowhead_pos;
+		VectorMA(end, -len, dir, arrowhead_pos);
+
+		float angle = ANGLE_45;
 		for (int i = 0; i < 4; i++)
 		{
 			vec3_t v;
-			RotatePointAroundVector(v, dir, arrowhead_dir, angle);
-			Vec3ScaleAssign(len, v);
-			VectorSubtract(end, v, arrow->verts[i + 2]);
+			VectorScale(up, sinf(angle) * len * 0.5f, v);
+			VectorMA(v, cosf(angle) * len * 0.5f, right, v);
+			VectorSubtract(arrowhead_pos, v, arrow->verts[i + 2]);
 
-			angle += 90.0f;
+			angle += ANGLE_90;
 		}
 	}
 	else
