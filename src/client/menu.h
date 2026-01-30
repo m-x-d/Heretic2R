@@ -20,7 +20,7 @@
 #define SND_MENU_TOGGLE	"misc/menu4.wav" // Toggle selected item value (left/right keys).
 
 //mxd. Max. line length for Help / City Map / Objectives menus.
-#define TB_MAX_LINE_LENGTH	(viddef.width * 18 / DEF_WIDTH + 8)
+#define TB_MAX_LINE_LENGTH	(8 + (18 * viddef.width / DEF_WIDTH / ui_scale))
 
 extern cvar_t* menus_active;
 

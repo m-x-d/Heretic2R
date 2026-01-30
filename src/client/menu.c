@@ -1218,7 +1218,7 @@ void Menu_DrawTextBlock(const char* message, const int max_line_length) // H2
 
 	int color_index = P_OBJ_NORMAL;
 	const int num_lines = SplitLines(buffer, sizeof(buffer), message, max_line_length);
-	int y = viddef.height * 80 / DEF_HEIGHT;
+	int y = 80 * viddef.height / DEF_HEIGHT;
 	char* s = buffer;
 
 	for (int i = 0; i < num_lines; i++, s++, y += ui_char_size)
