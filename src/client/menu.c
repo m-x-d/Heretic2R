@@ -1153,26 +1153,20 @@ void Menu_DrawString(const int x, const int y, const char* name, const float alp
 	}
 }
 
-static char* FindNewline(char* start, char* end)
+static char* FindNewline(char* start, const char* end) // H2
 {
-	if (start < end)
-	{
-		char* s = start;
-		while (s++ < end)
-		{
-			if (*s == '\n')
-				return s;
-		}
-	}
-	else
-	{
-		char* e = end;
-		while (e-- >= start)
-		{
-			if (strchr("$% \n", *e) != NULL)
-				return e;
-		}
-	}
+	assert(start != NULL && end != NULL && start < end); //mxd
+
+	// Try to find newline char.
+	char* s = start;
+	while (s++ < end)
+		if (*s == '\n')
+			return s;
+
+	// If that fails, trek back until we find either space or special char.
+	while (s-- >= start)
+		if (strchr("$% ", *s) != NULL)
+			return s;
 
 	return NULL;
 }
@@ -1180,23 +1174,23 @@ static char* FindNewline(char* start, char* end)
 //mxd. Added 'dst_size' arg.
 static int SplitLines(char* dst, const int dst_size, const char* src, const int line_length) // H2
 {
-	int src_len = (int)strlen(src);
+	int text_length = (int)strlen(src);
+	assert(text_length < dst_size); //mxd
+
 	strcpy_s(dst, dst_size, src);
 	int num_lines = 1;
 
-	if (src_len < line_length)
-		return num_lines;
-
-	do
+	while (text_length >= line_length)
 	{
-		char* cur_end = &dst[min(line_length, src_len)];
-		char* newline = FindNewline(dst, cur_end);
+		const char* line_end = &dst[line_length];
+		char* newline = FindNewline(dst, line_end);
 
-		src_len += dst - newline;
+		text_length -= newline - dst;
 		dst = newline;
 		*dst = 0;
+
 		num_lines++;
-	} while (src_len >= line_length);
+	}
 
 	return num_lines;
 }
