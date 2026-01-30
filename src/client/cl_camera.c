@@ -338,20 +338,15 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 			VectorCopy(trace.endpos, end_2);
 	}
 
-	vec3_t diff;
-	VectorSubtract(end, end_2, diff);
-
-	if (cl_camera_viewmax->value < VectorLength(diff))
-	{
-		VectorNormalize(diff);
-		VectorMA(end, -cl_camera_viewmax->value, diff, end_2);
-	}
-
-	// Copy calculated angles and vieworg to refdef.
 	vec3_t view_dir;
 	VectorSubtract(end, end_2, view_dir);
-	VectorNormalize(view_dir);
+	const float view_dist = VectorNormalize(view_dir);
 
+	// Clamp to maximum camera distance?
+	if (cl_camera_viewmax->value < view_dist)
+		VectorMA(end, -cl_camera_viewmax->value, view_dir, end_2);
+
+	// Copy calculated angles and vieworg to refdef.
 	vectoangles2(view_dir, cl.refdef.viewangles);
 	VectorCopy(end_2, cl.refdef.vieworg);
 
