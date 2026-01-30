@@ -93,17 +93,16 @@ void ClearSkeleton(ModelSkeleton_t* skel, const int root)
 
 static void RotateModelSegment(const M_SkeletalJoint_t* joint, vec3_t* modelVerticies, const vec3_t angles, const M_SkeletalCluster_t* modelCluster)
 {
-	matrix3_t rotation;
-	matrix3_t rotation2;
 	matrix3_t toWorld;
 	matrix3_t partialBackToLocal;
-	vec3_t localAngles;
 
-	VectorCopy(angles, localAngles);
+	vec3_t localAngles = VEC3_INIT(angles);
 	localAngles[ROLL] += (float)Matricies3FromDirAndUp(joint->model.direction, joint->model.up, toWorld, partialBackToLocal);
 
-	memset(rotation, 0, sizeof(rotation));
+	matrix3_t rotation;
 	Matrix3FromAngles(localAngles, rotation);
+
+	matrix3_t rotation2;
 	Matrix3MultByMatrix3(rotation, toWorld, rotation2);
 	Matrix3MultByMatrix3(partialBackToLocal, rotation2, rotation);
 
