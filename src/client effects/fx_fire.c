@@ -25,6 +25,7 @@
 #define FIRE_ACCEL			32.0f
 
 static struct model_s* flareup_model;
+static const paletteRGBA_t fire_color = { .c = 0xe5007fff };
 
 void PreCacheFlareup(void)
 {
@@ -71,7 +72,7 @@ void FXFlareup(centity_t* owner, const int type, const int flags, vec3_t origin)
 static qboolean FireSpawnerUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXFireThink' in original logic.
 {
 	int count = GetScaledCount(FLAME_COUNT, 0.9f);
-	count = min(FLAME_COUNT, count); // Don't go over flame count
+	count = min(FLAME_COUNT, count); // Don't go over flame count.
 
 	for (int i = 0; i < count; i++)
 	{
@@ -114,7 +115,11 @@ static qboolean FireSpawnerUpdate(client_entity_t* self, centity_t* owner) //mxd
 	}
 
 	if (self->dlight != NULL)
-		self->dlight->intensity = 150.0f + flrand(-8.0f, 8.0f);
+	{
+		//mxd. Randomize color instead of intensity.
+		self->dlight->color.r = (byte)((float)fire_color.r * flrand(0.6f, 1.0f));
+		self->dlight->color.g = (byte)((float)fire_color.g * flrand(0.8f, 1.2f));
+	}
 
 	return true;
 }
@@ -127,14 +132,14 @@ void FXFire(centity_t* owner, const int type, const int flags, vec3_t origin)
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_FIRE].formatString, &scale);
 	spawner->r.scale = (float)scale / 32.0f;
 
-	spawner->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	spawner->flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED;
-	spawner->color.c = 0xe5007fff;
+	spawner->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
+	spawner->flags |= (CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED);
+	spawner->color = fire_color;
 	spawner->radius = 96.0f;
 	spawner->Update = FireSpawnerUpdate;
 
 	if (flags & CEF_FLAG6)
-		spawner->dlight = CE_DLight_new(spawner->color, 150.0f, 0.0f);
+		spawner->dlight = CE_DLight_new(spawner->color, 110.0f, 0.0f); //mxd. intensity:150 in original logic.
 
 	AddEffect(owner, spawner);
 }
@@ -280,9 +285,9 @@ void FXFireOnEntity(centity_t* owner, const int type, const int flags, vec3_t or
 	spawner->r.scale = sqrtf(scale) * 0.5f;
 	spawner->nextEventTime = fx_time + (int)lifetime * 100; // How long to last. Lifetime was in 10th secs.
 
-	spawner->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	spawner->flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_CULLED | CEF_CHECK_OWNER;
-	spawner->color.c = 0xe5007fff;
+	spawner->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
+	spawner->flags |= (CEF_NO_DRAW | CEF_NOMOVE | CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_CULLED | CEF_CHECK_OWNER);
+	spawner->color = fire_color;
 	spawner->radius = 128.0f;
 
 	if (style == 0) // Fire fades out - for things that catch fire.
