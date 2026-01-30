@@ -35,7 +35,7 @@ static PuzzleModel_t puzzle_models[] =
 	{ "models/items/puzzles/crystalshard/tris.fm",	NULL, 1.75f, 1.75f, true },	// ITEM_CRYSTAL
 	{ "models/items/puzzles/hivekey/tris.fm",		NULL, 1.0f,  1.0f, true },	// ITEM_CANKEY
 	{ "models/items/puzzles/amulet/tris.fm",		NULL, 1.5f,  1.5f, true },	// ITEM_AMULET
-	{ "models/items/puzzles/spear/tris.fm",			NULL, 1.0f,  1.2f, true },	// ITEM_SPEAR
+	{ "models/items/puzzles/spear/tris.fm",			NULL, 1.0f,  1.2f, false },	// ITEM_SPEAR
 	{ "models/items/puzzles/tcheckrikgem/tris.fm",	NULL, 1.5f,  1.5f, true },	// ITEM_GEM
 	{ "models/items/puzzles/wheel/tris.fm",			NULL, 1.75f, 1.75f, true },	// ITEM_WHEEL
 	{ "models/items/puzzles/oreunrefined/tris.fm",	NULL, 0.5f,  1.0f, true },	// ITEM_ORE
