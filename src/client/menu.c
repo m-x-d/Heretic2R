@@ -1153,7 +1153,7 @@ void Menu_DrawString(const int x, const int y, const char* name, const float alp
 	}
 }
 
-static char* FindNewline(char* start, const char* end) // H2
+static char* FindNewline(char* start, char* end) // H2
 {
 	assert(start != NULL && end != NULL && start < end); //mxd
 
@@ -1168,7 +1168,7 @@ static char* FindNewline(char* start, const char* end) // H2
 		if (strchr("$% ", *s) != NULL)
 			return s;
 
-	return NULL;
+	return end; //mxd. Not ideal (will result in replacing 'end' char with '0'), but better than returning NULL (unhandled by SplitLines()).
 }
 
 //mxd. Added 'dst_size' arg.
@@ -1182,7 +1182,7 @@ static int SplitLines(char* dst, const int dst_size, const char* src, const int 
 
 	while (text_length >= line_length)
 	{
-		const char* line_end = &dst[line_length];
+		char* line_end = &dst[line_length];
 		char* newline = FindNewline(dst, line_end);
 
 		text_length -= newline - dst;
