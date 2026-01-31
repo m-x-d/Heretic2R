@@ -452,14 +452,13 @@ static void P_WorldEffects(edict_t* player) //mxd. +player arg.
 			// FIXME: Doing more work than we need to here???
 			// How about re-writing this so that it is always active on the client and does water tests itself?
 			// We'll see - currently not enough info is available on the client to try this.
-			vec3_t dir = VEC3_INIT(player->velocity);
-			VectorNormalize(dir);
+			vec3_t dir;
+			VectorNormalize2(player->velocity, dir);
 
 			vec3_t angles;
 			vectoangles(dir, angles);
 
-			vec3_t origin = VEC3_INIT(player->s.origin);
-			origin[2] += player->client->playerinfo.waterheight;
+			const vec3_t origin = VEC3_INITA(player->s.origin, 0.0f, 0.0f, player->client->playerinfo.waterheight);
 
 			const byte angle_byte = (byte)((angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
 			gi.CreateEffect(NULL, FX_WATER_WAKE, 0, origin, "sbv", player->s.number, angle_byte, player->velocity);
