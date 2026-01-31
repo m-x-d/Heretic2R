@@ -337,6 +337,8 @@ static void P_DamageFeedback(edict_t* player)
 
 static void P_WorldEffects(edict_t* player) //mxd. +player arg.
 {
+#define WATERSPLASH_TRACE_DIST	56.0f //mxd
+
 	if (player->client->playerinfo.deadflag != DEAD_NO)
 		return;
 
@@ -374,12 +376,22 @@ static void P_WorldEffects(edict_t* player) //mxd. +player arg.
 
 		player->flags |= FL_INWATER;
 
-		const vec3_t origin = VEC3_INITA(player->s.origin, 0.0f, 0.0f, player->client->playerinfo.waterheight);
-		VectorCopy(origin, player->client->playerinfo.LastWatersplashPos);
+		//mxd. Get water surface direction (because there are enterable horizontal water surfaces in the game).
+		const vec3_t origin = VEC3_INITA(player->s.origin, 0.0f, 0.0f, player->client->playerinfo.waterheight - 1.0f); // Reduce waterheight a bit to make sure origin is underwater...
+
+		vec3_t dir;
+		VectorSubtract(player->client->playerinfo.LastWatersplashPos, player->s.origin, dir);
+		VectorNormalize(dir);
+
+		vec3_t old_origin;
+		VectorMA(origin, WATERSPLASH_TRACE_DIST, dir, old_origin);
+
+		trace_t trace;
+		gi.trace(old_origin, vec3_origin, vec3_origin, origin, player, MASK_WATER, &trace);
 
 		//TODO: different entry splashes for lava and slime.
-		// Fixme: Need to determine the actual water surface normal - if we have any sloping water??
-		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7, origin, "bd", 128 | 96, vec3_up); // FIXME: Size propn. to entry velocity?
+		if (!trace.startsolid && trace.fraction < 1.0f)
+			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7, trace.endpos, "bd", 128 | 96, trace.plane.normal); // FIXME: Size propn. to entry velocity?
 	}
 	else if (old_waterlevel > 0 && waterlevel == 0)
 	{
@@ -403,12 +415,27 @@ static void P_WorldEffects(edict_t* player) //mxd. +player arg.
 
 		player->flags &= ~FL_INWATER;
 
-		player->client->playerinfo.LastWatersplashPos[0] = player->s.origin[0];
-		player->client->playerinfo.LastWatersplashPos[1] = player->s.origin[1];
+		//mxd. Get water surface direction (because there are enterable horizontal water surfaces in the game).
+		const vec3_t origin = VEC3_INIT(player->s.origin);
+
+		vec3_t dir;
+		VectorSubtract(player->client->playerinfo.LastWatersplashPos, player->s.origin, dir);
+		VectorNormalize(dir);
+
+		vec3_t old_origin;
+		VectorMA(origin, WATERSPLASH_TRACE_DIST, dir, old_origin);
+
+		trace_t trace;
+		gi.trace(origin, vec3_origin, vec3_origin, old_origin, player, MASK_WATER, &trace);
 
 		//TODO: different entry splashes for lava and slime.
-		// Fixme: Need to determine the actual water surface normal - if we have any sloping water??
-		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, player->client->playerinfo.LastWatersplashPos, "bd", 96, vec3_up); // FIXME: Size propn. to exit velocity.
+		if (!trace.startsolid && trace.fraction < 1.0f)
+			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, trace.endpos, "bd", 96, trace.plane.normal); // FIXME: Size propn. to exit velocity.
+	}
+	else
+	{
+		//mxd. Store position when we weren't breaking water surface.
+		VectorCopy(player->s.origin, player->client->playerinfo.LastWatersplashPos);
 	}
 
 	//TODO: move 'Handle lava sizzle damage' block here, abort when in lava?
