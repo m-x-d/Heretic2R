@@ -1930,8 +1930,8 @@ void ssithra_try_spawn_water_exit_splash(edict_t* self) //mxd. Named 'ssithraChe
 	if (self->ssithra_watersplash_spawned || SsithraCheckInWater(self))
 		return;
 
-	vec3_t dir = VEC3_INIT(self->velocity);
-	VectorNormalize(dir);
+	vec3_t dir;
+	VectorNormalize2(self->velocity, dir);
 
 	vec3_t end_pos;
 	VectorMA(self->s.origin, -256.0f, dir, end_pos);
@@ -1939,13 +1939,10 @@ void ssithra_try_spawn_water_exit_splash(edict_t* self) //mxd. Named 'ssithraChe
 	trace_t trace;
 	gi.trace(self->s.origin, vec3_origin, vec3_origin, end_pos, self, MASK_WATER, &trace);
 
-	if (trace.fraction < 1.0f)
+	if (!trace.startsolid && trace.fraction < 1.0f) //mxd. +startsolid check.
 	{
 		gi.sound(self, CHAN_BODY, sounds[SND_NAMOR], 1.0f, ATTN_NORM, 0.0f);
-
-		// FIXME: Size proportional to exit velocity.
-		const vec3_t fx_dir = { 0.0f, 0.0f, 300.0f }; //TODO: normalized in ssithra_try_spawn_water_entry_splash(). Which is correct?
-		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, trace.endpos, "bd", 128 | 96, fx_dir);
+		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, trace.endpos, "bd", 128 | 96, trace.plane.normal); //mxd. Pass plane.normal instead of unrelated vector.
 
 		self->ssithra_watersplash_spawned = true;
 	}
@@ -1980,19 +1977,13 @@ void ssithra_try_spawn_water_entry_splash(edict_t* self) //mxd. Named 'ssithraCh
 		VectorMA(self->s.origin, -256.0f, dir, end_pos);
 
 		trace_t trace;
-		gi.trace(self->s.origin, vec3_origin, vec3_origin, end_pos, self, MASK_WATER, &trace);
+		gi.trace(self->s.origin, vec3_origin, vec3_origin, end_pos, self, MASK_SOLID, &trace); //mxd. Original logic uses MASK_WATER here (which results in startsolid/fraction:0 trace, because we are underwater).
 		gi.trace(trace.endpos, vec3_origin, vec3_origin, self->s.origin, self, MASK_WATER, &trace);
 
-		if (trace.fraction < 1.0f)
+		if (!trace.startsolid && trace.fraction < 1.0f) //mxd. +startsolid check.
 		{
-			gi.sound(self, CHAN_BODY, sounds[SND_INWATER], 1.0f, ATTN_NORM, 0.0f);
-			gi.sound(self, CHAN_BODY, gi.soundindex("player/Water Enter.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: why 2 similar sounds? Use SND_INWATER only?
-
-			vec3_t fx_dir = { 0.0f, 0.0f, self->velocity[2] };
-			VectorNormalize(fx_dir);
-
-			// FIXME: Size proportional to entry velocity.
-			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7, trace.endpos, "bd", 128 | 96, fx_dir);
+			gi.sound(self, CHAN_BODY, sounds[SND_INWATER], 1.0f, ATTN_NORM, 0.0f); //mxd. Original logic also plays "player/Water Enter.wav" on the same channel here...
+			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7, trace.endpos, "bd", 128 | 96, trace.plane.normal); //mxd. Pass plane.normal instead of unrelated vector.
 
 			self->ssithra_watersplash_spawned = true;
 		}
