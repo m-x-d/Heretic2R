@@ -24,7 +24,7 @@
 // - maybe a flag for client to take care of disabling for now since it might cause too much net traffic.
 void PhysicsCheckWaterTransition(edict_t* self)
 {
-	if (DEATHMATCH || COOP)
+	if (DEATHMATCH || COOP || self->classID == CID_SSITHRA) //mxd. Ssithras do their own water transition checks (in ssithra_try_spawn_water_entry_splash() / ssithra_try_spawn_water_exit_splash()).
 		return;
 
 	// Check for water transition.
@@ -42,14 +42,12 @@ void PhysicsCheckWaterTransition(edict_t* self)
 	else // wasinwater == isinwater.
 		return;
 
-	if (trace.fraction == 1.0f)
-		return;
-
-	//FIXME: just put a flag on them and do the effect on the other side?
-	int size = (int)(ceilf(VectorLength(self->size) + VectorLength(self->velocity) / 10.0f));
-	size = ClampI(size, 10, 255);
-
-	gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG6 | CEF_FLAG7, trace.endpos, "bd", size, trace.plane.normal);
+	if (!trace.startsolid && trace.fraction < 1.0f)
+	{
+		//FIXME: just put a flag on them and do the effect on the other side?
+		const int size = (int)(ceilf(VectorLength(self->size) + VectorLength(self->velocity) / 10.0f));
+		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG6 | CEF_FLAG7, trace.endpos, "bd", ClampI(size, 10, 255), trace.plane.normal);
+	}
 }
 
 static void Physics_NoclipMove(edict_t* self)
