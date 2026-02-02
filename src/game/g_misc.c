@@ -1432,7 +1432,7 @@ void SP_misc_fire_sparker(edict_t* self)
 	self->svflags |= SVF_ALWAYS_SEND;
 	self->solid = SOLID_NOT;
 	self->movetype = PHYSICSTYPE_NOCLIP;
-	self->clipmask = 0;
+	self->clipmask = CONTENTS_EMPTY; //mxd. Use define.
 
 	self->use = MiscFireSparkerUse;
 }

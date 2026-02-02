@@ -1121,7 +1121,7 @@ void TBeastDieUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Name
 	self->takedamage = DAMAGE_NO;
 	self->solid = SOLID_NOT;
 	self->movetype = PHYSICSTYPE_NONE;
-	self->clipmask = 0;
+	self->clipmask = CONTENTS_EMPTY; //mxd. Use define.
 	self->health = 0;
 	self->post_think = NULL;
 	self->next_post_think = -1.0f;

@@ -1252,7 +1252,7 @@ void PlayerBodyDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int dam
 
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_NOT;
-	self->clipmask = 0;
+	self->clipmask = CONTENTS_EMPTY; //mxd. Use define.
 	self->takedamage = DAMAGE_NO;
 	self->materialtype = MAT_NONE;
 	self->health = 0;

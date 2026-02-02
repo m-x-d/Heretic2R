@@ -133,7 +133,7 @@ void HarpyTakeHead(edict_t* self, edict_t* victim, const int bodypart_node_id, c
 	head->solid = SOLID_NOT;
 	head->movetype = PHYSICSTYPE_NOCLIP;
 	head->gravity = 0.0f;
-	head->clipmask = 0;
+	head->clipmask = CONTENTS_EMPTY; //mxd. Use define.
 	head->materialtype = victim->materialtype;
 
 	head->owner = self;
