@@ -64,16 +64,16 @@ client_entity_t* ClientEntity_new(const int type, const int flags, const vec3_t 
 		VectorCopy(direction, new_ent->direction);
 
 		if (new_ent->direction[2] == 0.0f)
-			VectorSet(new_ent->up, 0.0f, 0.0f, 1.0f); // Vertical wall.
+			VectorCopy(vec3_up, new_ent->up); // Vertical wall.
 		else if (new_ent->direction[0] == 0.0f && new_ent->direction[1] == 0.0f)
-			VectorSet(new_ent->up, 1.0f, 0.0f, 0.0f); // Ceiling or floor.
+			VectorCopy(vec3_right, new_ent->up); // Ceiling or floor.
 		else
 			PerpendicularVector(new_ent->up, new_ent->direction);
 	}
 	else
 	{
-		VectorSet(new_ent->direction, 1.0f, 0.0f, 0.0f);
-		VectorSet(new_ent->up, 0.0f, 0.0f, 1.0f);
+		VectorCopy(vec3_right, new_ent->direction);
+		VectorCopy(vec3_up, new_ent->up);
 	}
 
 	//TODO: currently either AnglesFromDirAndUp or PerpendicularVector isn't working properly. This will need to be fixed at some point.
