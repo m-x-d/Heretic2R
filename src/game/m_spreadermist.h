@@ -17,5 +17,6 @@ extern edict_t* CreateRadiusDamageEnt(edict_t* position_owner, edict_t* damage_o
 //mxd. Required by save system...
 extern void RadiusDamageEntThink(edict_t* self);
 extern void SpreaderGrenadeBounced(edict_t* self, trace_t* trace);
+extern void SpreaderGrenadeAppearThink(edict_t* self);
 extern void SpreaderGrenadeThink(edict_t* self);
 extern void SpreaderGrenadeDieThink(edict_t* self);

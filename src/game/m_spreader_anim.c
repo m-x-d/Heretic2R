@@ -25,8 +25,8 @@ static const animframe_t spreader_frames_attack1[] =
 	{ FRAME_atacka9,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atacka10,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atacka11,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_atacka12,	NULL, 0, 0, 0, ai_charge2, 0, spreader_hide_grenade },
-	{ FRAME_atacka13,	NULL, 0, 0, 0, ai_charge2, 0, spreader_toss_grenade },
+	{ FRAME_atacka12,	NULL, 0, 0, 0, ai_charge2, 0, spreader_toss_grenade }, //mxd. Swapped hide() and toss() calls, because grenade is now spawns invisible.
+	{ FRAME_atacka13,	NULL, 0, 0, 0, ai_charge2, 0, spreader_hide_grenade },
 	{ FRAME_atacka14,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atacka15,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_atacka16,	NULL, 0, 0, 0, ai_charge2, 0, NULL },

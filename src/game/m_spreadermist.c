@@ -148,6 +148,12 @@ void RadiusDamageEntThink(edict_t* self) //mxd. Named 'GenericRadiusDamageEntThi
 	self->nextthink = level.time + self->wait;
 }
 
+void SpreaderGrenadeAppearThink(edict_t* self) //mxd
+{
+	self->s.scale = self->owner->s.scale;
+	self->think = NULL;
+}
+
 void SpreaderGrenadeDieThink(edict_t* self) //mxd. Named 'spreader_grenade_die' in original logic. //TODO: replace with G_FreeEdict()?
 {
 	G_FreeEdict(self);
@@ -230,7 +236,8 @@ void spreader_toss_grenade(edict_t* self) // Self is the tosser.
 	AngleVectors(self->s.angles, forward, right, NULL);
 
 	vec3_t start;
-	const vec3_t offset = { 12.0f, 10.0f, 68.0f };
+	vec3_t offset = { 10.0f, 6.0f, 27.0f }; //mxd. Adjusted offset to better match with spreader's model.
+	Vec3ScaleAssign(self->s.scale, offset); //mxd. Apply self scale.
 	G_ProjectSource(self->s.origin, offset, forward, right, start);
 
 	edict_t* grenade = G_Spawn();
@@ -257,11 +264,13 @@ void spreader_toss_grenade(edict_t* self) // Self is the tosser.
 	VectorMA(grenade->velocity, flrand(100.0f, 125.0f), up, grenade->velocity);
 	VectorMA(grenade->velocity, flrand(-10.0f, 10.0f), right, grenade->velocity); //TODO: scale velocity by difficulty?
 
-	VectorSet(grenade->avelocity, flrand(300.0f, 600.0f), flrand(300.0f, 600.0f), flrand(300.0f, 600.0f)); //TODO: randomly pick negative value?
+	for (int i = 0; i < 3; i++)
+		grenade->avelocity[i] = flrand(300.0f, 600.0f) * (float)(Q_sign(irand(-1, 0))); //mxd. Randomly pick negative value.
 
 	grenade->owner = self;
 	grenade->classname = "spreader_grenade";
 	grenade->s.modelindex = (byte)gi.modelindex("models/monsters/spreader/bomb/tris.fm");
+	grenade->s.scale = 0.01f; //mxd. Hide 1-st frame (so grenade is already in motion when it becomes visible next frame).
 	grenade->s.effects |= EF_CAMERA_NO_CLIP;
 	grenade->movetype = PHYSICSTYPE_STEP;
 	grenade->elasticity = 1.0f;
@@ -276,6 +285,10 @@ void spreader_toss_grenade(edict_t* self) // Self is the tosser.
 
 	grenade->bounced = SpreaderGrenadeBounced;
 	grenade->isBlocked = SpreaderGrenadeBounced;
+
+	//mxd. Make grenade appear next frame.
+	grenade->think = SpreaderGrenadeAppearThink;
+	grenade->nextthink = level.time + FRAMETIME;
 
 	gi.linkentity(grenade);
 

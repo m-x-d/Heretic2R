@@ -531,6 +531,7 @@ const func_map_t funcs_list[] =
 	// m_spreadermist.c:
 	{ "RadiusDamageEntThink",				(byte*)RadiusDamageEntThink },
 	{ "SpreaderGrenadeBounced",				(byte*)SpreaderGrenadeBounced },
+	{ "SpreaderGrenadeAppearThink",			(byte*)SpreaderGrenadeAppearThink }, //mxd
 	{ "SpreaderGrenadeDieThink",			(byte*)SpreaderGrenadeDieThink },
 	{ "SpreaderGrenadeThink",				(byte*)SpreaderGrenadeThink },
 
