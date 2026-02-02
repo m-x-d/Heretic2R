@@ -748,7 +748,8 @@ void M_WalkmonsterStartGo(edict_t* self) //mxd. Named 'walkmonster_start_go' in 
 	if (self->yaw_speed == 0.0f)
 		self->yaw_speed = 20.0f;
 
-	self->viewheight = 25; //TODO: should set only when self->viewheight == 0 (like in M_FlymonsterStartGo())?
+	if (self->viewheight == 0) //mxd. Set without this check in original logic (so for some monsters viewheight was way above their heads).
+		self->viewheight = 25;
 
 	//H2_BUGFIX: mxd. Original logic calls M_MonsterStartGo() regardless of MSF_ASLEEP flag, which results in M_BBoxAndOriginAdjustForScale() called twice for triggered monsters, resulting in incorrect bbox size.
 	if (self->spawnflags & MSF_ASLEEP)
