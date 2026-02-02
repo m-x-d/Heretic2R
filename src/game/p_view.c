@@ -428,9 +428,9 @@ static void P_WorldEffects(edict_t* player) //mxd. +player arg.
 		trace_t trace;
 		gi.trace(origin, vec3_origin, vec3_origin, old_origin, player, MASK_WATER, &trace);
 
-		//TODO: different entry splashes for lava and slime.
+		//TODO: different exit splashes for lava and slime.
 		if (!trace.startsolid && trace.fraction < 1.0f)
-			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, trace.endpos, "bd", 96, trace.plane.normal); // FIXME: Size propn. to exit velocity.
+			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7, trace.endpos, "bd", 128 | 96, trace.plane.normal); // FIXME: Size propn. to exit velocity.
 	}
 	else
 	{
