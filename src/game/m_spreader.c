@@ -1085,10 +1085,7 @@ void SP_monster_spreader(edict_t* self)
 	self->mass = SPREADER_MASS;
 	self->materialtype = MAT_FLESH;
 	self->yaw_speed = 20.0f;
-
-	self->s.origin[2] += 40.0f; //TODO: known to break stuff. Adjust in SpawnEntities() instead (like monster_plagueElf)?..
 	self->movetype = PHYSICSTYPE_STEP;
-
 	self->solid = SOLID_BBOX;
 
 	VectorCopy(STDMinsForClass[self->classID], self->mins);

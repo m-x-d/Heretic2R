@@ -356,6 +356,10 @@ void SpawnEntities(const char* map_name, char* entities, const char* spawn_point
 			{
 				ent->s.origin[2] += 32.0f;
 			}
+			else if (strcmp(ent->classname, "monster_spreader") == 0) //mxd. Same, but for spreader...
+			{
+				ent->s.origin[2] += 40.0f;
+			}
 
 			ent->spawnflags &= ~(SPAWNFLAG_NOT_EASY | SPAWNFLAG_NOT_MEDIUM | SPAWNFLAG_NOT_HARD | SPAWNFLAG_NOT_COOP | SPAWNFLAG_NOT_DEATHMATCH);
 		}
