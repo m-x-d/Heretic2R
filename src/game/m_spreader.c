@@ -1093,7 +1093,14 @@ void SP_monster_spreader(edict_t* self)
 
 	VectorCopy(STDMinsForClass[self->classID], self->mins);
 	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
-	self->viewheight = 36; //TODO: set to '(int)(self->maxs[2] - 8.0f * self->s.scale)' in SpreaderCheckUncrouch().
+
+	if (self->s.scale == 0.0f) //mxd. 's.scale' not checked/set in original logic.
+	{
+		self->s.scale = MODEL_SCALE;
+		self->monsterinfo.scale = self->s.scale;
+	}
+
+	self->viewheight = (int)((self->maxs[2] - 8.0f) * self->s.scale); // H2: 36. Changed to match logic in SpreaderCheckUncrouch() --mxd.
 
 	self->s.modelindex = (byte)classStatics[CID_SPREADER].resInfo->modelIndex;
 
@@ -1102,12 +1109,6 @@ void SP_monster_spreader(edict_t* self)
 
 	self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
 	self->monsterinfo.otherenemyname = "monster_box"; //TODO: 'monster_box' is not defined anywhere.
-
-	if (self->s.scale == 0.0f) //mxd. 's.scale' not checked/set in original logic.
-	{
-		self->s.scale = MODEL_SCALE;
-		self->monsterinfo.scale = self->s.scale;
-	}
 
 	MG_InitMoods(self);
 	self->min_melee_range = 24.0f;
