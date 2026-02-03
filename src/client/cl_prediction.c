@@ -215,7 +215,8 @@ static void CL_PMTrace(const vec3_t start, const vec3_t mins, const vec3_t maxs,
 	if (tr->fraction < 1.0f)
 		tr->ent = (struct edict_s*)(-1); // Hit the world. // Q2: 1
 
-	if (!tr->startsolid && !tr->allsolid)
+	//mxd. Don't clip dead players against entities (to avoid monsters pushing player's body (client-side only) when walking over it).
+	if (!tr->startsolid && !tr->allsolid && cl.frame.playerstate.pmove.pm_type != PM_DEAD)
 	{
 		// Check all other solid models.
 		trace_ignore_player = true;
