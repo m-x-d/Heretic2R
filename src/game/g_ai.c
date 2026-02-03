@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include <float.h> //mxd
 #include "g_ai.h" //mxd
 #include "g_ai_local.h" //mxd
 #include "m_move.h" //mxd
@@ -934,7 +935,7 @@ static qboolean AI_CheckAttack(edict_t* self) //mxd. Removed unused 'dist' arg. 
 			{
 				// We need the pausetime, otherwise the stand code will just revert to walking with no target
 				// and the monsters will wonder around aimlessly trying to hunt the world entity.
-				self->monsterinfo.pausetime = level.time + 100000000.0f;
+				self->monsterinfo.pausetime = FLT_MAX; //mxd. 'level.time + 100000000.0f' in original logic.
 				G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			}
 
