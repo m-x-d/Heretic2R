@@ -12,13 +12,13 @@
 #include "q_Physics.h"
 #include "SinglyLinkedList.h"
 
-#define MAX_MASTERS	8 // Max. recipients for heartbeat packets
+#define MAX_MASTERS	8 // Max. recipients for heartbeat packets.
 
 typedef enum
 {
-	ss_dead,	// No map loaded
-	ss_loading,	// Spawning level edicts
-	ss_game,	// Actively running
+	ss_dead,	// No map loaded.
+	ss_loading,	// Spawning level edicts.
+	ss_game,	// Actively running.
 	ss_cinematic,
 	ss_demo,
 	ss_pic
@@ -26,15 +26,15 @@ typedef enum
 
 typedef struct
 {
-	server_state_t state;	// Precache commands are only valid during load
+	server_state_t state;	// Precache commands are only valid during load.
 
-	qboolean attractloop;	// Running cinematics and demos for the local system only
-	qboolean loadgame;		// Client begins should reuse existing entity
+	qboolean attractloop;	// Running cinematics and demos for the local system only.
+	qboolean loadgame;		// Client begins should reuse existing entity.
 
-	uint time; // Always sv.framenum * 100 msec
+	uint time; // Always sv.framenum * 100 msec.
 	int framenum;
 
-	char name[MAX_QPATH]; // Map or cinematic name
+	char name[MAX_QPATH]; // Map or cinematic name.
 	struct cmodel_s* models[MAX_MODELS];
 
 	char configstrings[MAX_CONFIGSTRINGS][MAX_QPATH];
@@ -45,9 +45,9 @@ typedef struct
 	sizebuf_t multicast;
 	byte multicast_buf[MAX_MSGLEN];
 
-	// Demo server information
+	// Demo server information.
 	FILE* demofile;
-	qboolean timedemo; // Don't time sync
+	qboolean timedemo; // Don't time sync.
 } server_t;
 
 #define EDICT_NUM(n)		((edict_t *)((byte *)ge->edicts + ge->edict_size * (n)))
@@ -60,7 +60,7 @@ typedef enum
 	cs_zombie,		// Client has been disconnected, but don't reuse connection for a couple seconds.
 	cs_connected,	// Has been assigned to a client_t, but not in game yet.
 	cs_spawned		// Client is fully in game.
-} client_state_e; //mxd. Renamed to avoid confusion with client_state_t struct
+} client_state_e; //mxd. Renamed to avoid confusion with client_state_t struct.
 
 typedef enum
 {
@@ -69,16 +69,16 @@ typedef enum
 	cst_unknown2,
 	cst_cinematic_freeze,	// 3
 	cst_coop_timeout,		// 4
-} coop_state_e; // H2 //TODO: remove unknown entries
+} coop_state_e; // H2 //TODO: remove unknown entries.
 
 typedef struct
 {
 	int areabytes;
-	byte areabits[MAX_MAP_AREAS / 8]; // portalarea visibility bits
+	byte areabits[MAX_MAP_AREAS / 8]; // portalarea visibility bits.
 	player_state_t ps;
 	int num_entities;
-	int first_entity; // Into the circular sv_packet_entities[]
-	int senttime; // For ping calculations
+	int first_entity; // Into the circular sv_packet_entities[].
+	int senttime; // For ping calculations.
 } client_frame_t;
 
 #define LATENCY_COUNTS	32 // Q2: 16
@@ -87,20 +87,20 @@ typedef struct
 typedef struct client_s
 {
 	client_state_e state;
-	char userinfo[MAX_INFO_STRING]; // name, etc
+	char userinfo[MAX_INFO_STRING]; // name, etc.
 
-	int lastframe; // For delta compression
-	usercmd_t lastcmd; // For filling in big drops
+	int lastframe; // For delta compression.
+	usercmd_t lastcmd; // For filling in big drops.
 
 	int commandMsec; // Every ?? seconds this is reset, if user commands exhaust it, assume time cheating.
 	int frame_latency[LATENCY_COUNTS];
 
 	int ping;
-	int message_size[RATE_MESSAGES]; // Used to rate drop packets
+	int message_size[RATE_MESSAGES]; // Used to rate drop packets.
 	int rate;
 
-	edict_t* edict; // EDICT_NUM(clientnum+1)
-	char name[32]; // Extracted from userinfo, high bits masked
+	edict_t* edict; // EDICT_NUM(clientnum + 1)
+	char name[32]; // Extracted from userinfo, high bits masked.
 	int messagelevel; // For filtering printed messages
 
 	// The datagram is written to by sound calls, prints, temp ents, etc.
@@ -108,13 +108,13 @@ typedef struct client_s
 	sizebuf_t datagram;
 	byte datagram_buf[MAX_MSGLEN];
 
-	client_frame_t frames[UPDATE_BACKUP]; // Updates can be delta'd from here
+	client_frame_t frames[UPDATE_BACKUP]; // Updates can be delta'd from here.
 
-	byte* download; // File being downloaded
-	int downloadsize; // Total bytes (can't use EOF because of paks)
-	int downloadcount; // Bytes sent
+	byte* download; // File being downloaded.
+	int downloadsize; // Total bytes (can't use EOF because of paks).
+	int downloadcount; // Bytes sent.
 
-	int lastmessage; // sv.framenum when packet was last received
+	int lastmessage; // sv.framenum when packet was last received.
 	int lastconnect;
 
 	netchan_t netchan;
@@ -136,29 +136,29 @@ typedef struct
 
 typedef struct
 {
-	qboolean initialized; // sv_init has completed
-	int realtime; // always increasing, no clamping, etc
+	qboolean initialized; // sv_init has completed.
+	int realtime; // always increasing, no clamping, etc.
 
-	char mapcmd[MAX_TOKEN_CHARS]; // ie: *intro.cin+base 
+	char mapcmd[MAX_TOKEN_CHARS]; // ie: *intro.cin+base
 
 	int spawncount; // Incremented each server start. Used to check late spawns.
 
-	client_t* clients;					// [maxclients->value];
-	int num_client_entities;			// maxclients->value*UPDATE_BACKUP*MAX_PACKET_ENTITIES
-	int next_client_entities;			// Next client_entity to use
+	client_t* clients;					// [maxclients->value]
+	int num_client_entities;			// maxclients->value * UPDATE_BACKUP * MAX_PACKET_ENTITIES
+	int next_client_entities;			// Next client_entity to use.
 	entity_state_t* client_entities;	// [num_client_entities]
 
 	int last_heartbeat;
 
-	challenge_t challenges[MAX_CHALLENGES]; // To prevent invalid IPs from connecting
+	challenge_t challenges[MAX_CHALLENGES]; // To prevent invalid IPs from connecting.
 
 	qboolean have_current_save; // H2. More members after this in Q2!
 } server_static_t;
 
-extern netadr_t master_adr[MAX_MASTERS]; // Address of the master server
+extern netadr_t master_adr[MAX_MASTERS]; // Address of the master server.
 
-extern server_static_t svs; // Persistent server info
-extern server_t sv; // Local server
+extern server_static_t svs; // Persistent server info.
+extern server_t sv; // Local server.
 
 extern cvar_t* sv_paused;
 extern cvar_t* dmflags; // H2
@@ -221,7 +221,7 @@ extern void SV_BroadcastCommand(const char* fmt, ...);
 extern void SV_Multicast(const vec3_t origin, multicast_t to);
 extern void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
 extern void SV_StartEventSound(byte event_id, float leveltime, const vec3_t origin, const edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs); // H2
-extern void SV_SendClientMessages(qboolean send_client_data); // H2: + 'send_client_data' arg
+extern void SV_SendClientMessages(qboolean send_client_data); // H2: + 'send_client_data' arg.
 extern void SV_SendPrepClientMessages(void); // YQ2
 
 // sv_user.c
@@ -235,7 +235,7 @@ extern void SV_UnlinkEdict(edict_t* ent);
 extern int SV_AreaEdicts(const vec3_t mins, const vec3_t maxs, edict_t** list, int maxcount, int areatype);
 extern int SV_FindEntitiesInBounds(const vec3_t mins, const vec3_t maxs, struct SinglyLinkedList_s* list, int areatype); // H2
 extern int SV_PointContents(const vec3_t p);
-extern void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, uint contentmask, trace_t* tr); // H2: different definition
+extern void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, uint contentmask, trace_t* tr); // H2: different definition.
 extern void SV_TraceBoundingForm(struct FormMove_s* form); // H2
 extern qboolean SV_ResizeBoundingForm(edict_t* self, struct FormMove_s* form); // H2
 extern int SV_GetContentsAtPoint(const vec3_t point); // H2
