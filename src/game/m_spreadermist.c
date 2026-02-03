@@ -85,7 +85,7 @@ static void SpreaderGrenadeExplode(edict_t* self) //mxd. Named 'spreader_grenade
 	self->nextthink = level.time + 0.2f;
 }
 
-static void SpreaderMistInit(edict_t* self, float x, float y, float z, float velocity_scaler) //mxd. Added to reduce code duplication.
+static void SpreaderMistInit(edict_t* self, const float x, const float y, const float z, const float velocity_scaler) //mxd. Added to reduce code duplication.
 {
 	// Converts degrees to radians for use with trig and matrix functions.
 	const float yaw_rad = self->s.angles[YAW] * ANGLE_TO_RAD;
@@ -103,7 +103,7 @@ static void SpreaderMistInit(edict_t* self, float x, float y, float z, float vel
 	Vec3AddAssign(self->s.origin, rotated_offset);
 
 	// Get direction vector scaled by speed.
-	vec3_t velocity = { cosf(yaw_rad) * velocity_scaler, sinf(yaw_rad) * velocity_scaler, 0.0f };
+	const vec3_t velocity = { cosf(yaw_rad) * velocity_scaler, sinf(yaw_rad) * velocity_scaler, 0.0f };
 	gi.CreateEffect(NULL, FX_PLAGUEMIST, 0, rotated_offset, "vb", velocity, 41);
 
 	// Create the volume effect for the damage.
@@ -175,10 +175,7 @@ void SpreaderGrenadeThink(edict_t* self) //mxd. Named 'spreader_grenade_think' i
 		{
 			if (ent->classID != CID_SPREADER && gi.inPVS(self->s.origin, ent->s.origin)) //mxd. classname -> classID check.
 			{
-				vec3_t attack_dir;
-				VectorCopy(ent->s.origin, attack_dir);
-				attack_dir[2] += 5.0f;
-
+				const vec3_t attack_dir = VEC3_INITA(ent->s.origin, 0.0f, 0.0f, 5.0f);
 				T_Damage(ent, self, self->owner, attack_dir, self->s.origin, vec3_origin, self->dmg, 0, DAMAGE_NO_BLOOD | DAMAGE_NO_KNOCKBACK | DAMAGE_ALIVE_ONLY | DAMAGE_AVOID_ARMOR, MOD_DIED);
 			}
 		}
