@@ -533,7 +533,7 @@ const func_map_t funcs_list[] =
 	{ "SpreaderGrenadeBounced",				(byte*)SpreaderGrenadeBounced },
 	{ "SpreaderGrenadeAppearThink",			(byte*)SpreaderGrenadeAppearThink }, //mxd
 	{ "SpreaderGrenadeDieThink",			(byte*)SpreaderGrenadeDieThink },
-	{ "SpreaderGrenadeThink",				(byte*)SpreaderGrenadeThink },
+	{ "SpreaderGrenadeExplodeThink",		(byte*)SpreaderGrenadeExplodeThink },
 
 	// m_tcheckrik.c:
 	{ "TcheckrikDismember",					(byte*)TcheckrikDismember },

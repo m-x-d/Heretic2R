@@ -18,5 +18,5 @@ extern edict_t* CreateRadiusDamageEnt(edict_t* position_owner, edict_t* damage_o
 extern void RadiusDamageEntThink(edict_t* self);
 extern void SpreaderGrenadeBounced(edict_t* self, trace_t* trace);
 extern void SpreaderGrenadeAppearThink(edict_t* self);
-extern void SpreaderGrenadeThink(edict_t* self);
+extern void SpreaderGrenadeExplodeThink(edict_t* self);
 extern void SpreaderGrenadeDieThink(edict_t* self);

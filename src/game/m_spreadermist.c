@@ -14,7 +14,7 @@
 
 #pragma region ========================== Utility functions =========================
 
-static void RadiusDamageEntUpdateAttachPosition(edict_t* self) //mxd. Added to reduce code duplication
+static void RadiusDamageEntUpdateAttachPosition(edict_t* self) //mxd. Added to reduce code duplication.
 {
 	vec3_t forward;
 	vec3_t right;
@@ -76,12 +76,12 @@ static void SpreaderGrenadeExplode(edict_t* self) //mxd. Named 'spreader_grenade
 	gi.sound(self, CHAN_AUTO, classStatics[CID_SPREADER].resInfo->sounds[SND_BOMB], 1.0f, ATTN_IDLE, 0.0f);
 
 	self->monsterinfo.pausetime = level.time + SPREADER_GRENADE_TIME; //mxd. Inlined PauseTime() logic.
-	self->monsterinfo.thinkinc = 0.2f;
+	self->monsterinfo.thinkinc = 0.2f; //TODO: unused?
 
 	self->bounced = NULL;
 	self->isBlocked = NULL;
 
-	self->think = SpreaderGrenadeThink;
+	self->think = SpreaderGrenadeExplodeThink;
 	self->nextthink = level.time + 0.2f;
 }
 
@@ -159,10 +159,15 @@ void SpreaderGrenadeDieThink(edict_t* self) //mxd. Named 'spreader_grenade_die' 
 	G_FreeEdict(self);
 }
 
-void SpreaderGrenadeThink(edict_t* self) //mxd. Named 'spreader_grenade_think' in original logic.
+void SpreaderGrenadeExplodeThink(edict_t* self) //mxd. Named 'spreader_grenade_think' in original logic.
 {
-	self->movetype = PHYSICSTYPE_NONE;
-	self->solid = SOLID_NOT;
+	if (self->solid != SOLID_NOT)
+	{
+		self->movetype = PHYSICSTYPE_NONE;
+		self->solid = SOLID_NOT;
+
+		gi.linkentity(self); //mxd. Not called in original logic (fixes grenade staying solid client-side).
+	}
 
 	if (self->monsterinfo.pausetime < level.time)
 	{
