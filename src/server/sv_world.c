@@ -45,9 +45,6 @@ typedef struct
 	const float* mins; // Size of the moving object.
 	const float* maxs;
 
-	vec3_t mins2; // Size when clipping against monsters. //TODO: always the same values as mins/maxs? Remove?
-	vec3_t maxs2;
-
 	const float* start;
 	const float* end;
 
@@ -509,11 +506,9 @@ static void SV_ClipMoveToEntities(const moveclip_t* clip)
 		const int headnode = SV_HullForEntity(touch);
 		const float* angles = ((touch->solid == SOLID_BSP) ? touch->s.angles : vec3_origin); // Boxes don't rotate.
 
+		//mxd. Original logic uses clip->mins2 and clip->maxs2 when 'touch' is monster. clip->mins2 and clip->maxs2 were always the same as clip->mins and clip->maxs...
 		trace_t trace;
-		if (touch->svflags & SVF_MONSTER)
-			CM_TransformedBoxTrace(clip->start, clip->end, clip->mins2, clip->maxs2, headnode, clip->contentmask, touch->s.origin, angles, &trace);
-		else
-			CM_TransformedBoxTrace(clip->start, clip->end, clip->mins, clip->maxs, headnode, clip->contentmask, touch->s.origin, angles, &trace);
+		CM_TransformedBoxTrace(clip->start, clip->end, clip->mins, clip->maxs, headnode, clip->contentmask, touch->s.origin, angles, &trace);
 
 		if (trace.startsolid || trace.allsolid || trace.fraction < clip->trace->fraction)
 		{
@@ -584,11 +579,8 @@ void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 		clip.passedict = passent;
 		clip.checkedict = NULL; //mxd
 
-		VectorCopy(mins, clip.mins2);
-		VectorCopy(maxs, clip.maxs2);
-
 		// Create the bounding box of the entire move.
-		SV_TraceBounds(start, clip.mins2, clip.maxs2, end, clip.boxmins, clip.boxmaxs);
+		SV_TraceBounds(start, clip.mins, clip.maxs, end, clip.boxmins, clip.boxmaxs);
 
 		// Clip to other solid entities (including brush entities).
 		SV_ClipMoveToEntities(&clip);
@@ -628,10 +620,8 @@ static void SV_FindCosestEntity(const moveclip_t* clip) // H2
 		const int headnode = SV_HullForEntity(touch);
 		const float* angles = ((touch->solid == SOLID_BSP) ? touch->s.angles : vec3_origin); // Boxes don't rotate.
 
-		if (touch->svflags & SVF_MONSTER)
-			CM_TransformedBoxTrace(clip->start, clip->end, clip->mins2, clip->maxs2, headnode, clip->contentmask, touch->s.origin, angles, &trace);
-		else
-			CM_TransformedBoxTrace(clip->start, clip->end, clip->mins, clip->maxs, headnode, clip->contentmask, touch->s.origin, angles, &trace);
+		//mxd. Original logic uses clip->mins2 and clip->maxs2 when 'touch' is monster. clip->mins2 and clip->maxs2 were always the same as clip->mins and clip->maxs...
+		CM_TransformedBoxTrace(clip->start, clip->end, clip->mins, clip->maxs, headnode, clip->contentmask, touch->s.origin, angles, &trace);
 
 		if (trace.startsolid || trace.allsolid || trace.fraction < clip->trace->fraction)
 		{
@@ -671,10 +661,7 @@ void SV_TraceBoundingForm(FormMove_t* form) // H2
 	clip.mins = form->mins;
 	clip.maxs = form->maxs;
 
-	VectorCopy(form->mins, clip.mins2);
-	VectorCopy(form->maxs, clip.maxs2);
-
-	SV_TraceBounds(start, clip.mins2, clip.maxs2, end, clip.boxmins, clip.boxmaxs);
+	SV_TraceBounds(start, clip.mins, clip.maxs, end, clip.boxmins, clip.boxmaxs);
 	SV_FindCosestEntity(&clip);
 }
 
