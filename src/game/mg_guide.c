@@ -792,7 +792,7 @@ qboolean MG_MakeConnection(edict_t* self, const buoy_t* first_buoy, const qboole
 
 		if (result == 0 && self->ai_mood == AI_MOOD_WANDER)
 		{
-			self->monsterinfo.pausetime = 0;
+			self->monsterinfo.pausetime = 0.0f;
 			self->ai_mood = AI_MOOD_STAND;
 		}
 
