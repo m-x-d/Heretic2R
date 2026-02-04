@@ -202,8 +202,7 @@ void SP_obj_banneronpole(edict_t* self)
 
 void ObjBarrelExplodeThink(edict_t* self) //mxd. Named 'barrel_explode_think' in original logic.
 {
-	vec3_t origin;
-	VectorCopy(self->s.origin, origin);
+	const vec3_t origin = VEC3_INIT(self->s.origin);
 
 	AlertMonsters(self, self->owner, 3.0f, false);
 
