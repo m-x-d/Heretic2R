@@ -1242,11 +1242,7 @@ void PlayerActionVaultSound(const playerinfo_t* info, float value)
 	const char* material = GetClientGroundSurfaceMaterialName(info);
 
 	if (material != NULL)
-	{
-		char vault_sound[64];
-		strcpy_s(vault_sound, sizeof(vault_sound), va("player/%svault.wav", material));
-		P_Sound(info, SND_PRED_ID21, CHAN_WEAPON, vault_sound, 1.0f);
-	}
+		P_Sound(info, SND_PRED_ID21, CHAN_WEAPON, va("player/%svault.wav", material), 1.0f);
 }
 
 //mxd. Added to reduce code repetition.
@@ -1259,8 +1255,8 @@ static qboolean CanJump(const playerinfo_t* info)
 		return true;
 
 	trace_t trace;
-	const vec3_t endpos = { info->origin[0], info->origin[1], info->origin[2] + info->mins[2] - 2.0f };
-	P_Trace(info, info->origin, info->mins, info->maxs, endpos, &trace);
+	const vec3_t end_pos = VEC3_INITA(info->origin, 0.0f, 0.0f, info->mins[2] - 2.0f);
+	P_Trace(info, info->origin, info->mins, info->maxs, end_pos, &trace);
 
 	return trace.fraction < 0.2f;
 }
