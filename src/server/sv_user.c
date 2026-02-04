@@ -48,7 +48,7 @@ static void SV_New_f(void)
 
 	// Send the serverdata.
 	MSG_WriteByte(&sv_client->netchan.message, svc_serverdata);
-	MSG_WriteLong(&sv_client->netchan.message, PROTOCOL_VERSION);
+	MSG_WriteLong(&sv_client->netchan.message, SV_PROTOCOL); // H2: PROTOCOL_VERSION.
 	MSG_WriteLong(&sv_client->netchan.message, svs.spawncount);
 	MSG_WriteByte(&sv_client->netchan.message, sv.attractloop);
 	MSG_WriteString(&sv_client->netchan.message, Cvar_VariableString("gamedir"));

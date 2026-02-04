@@ -113,7 +113,8 @@ extern void Info_Print(const char* s);
 
 // Communications protocols.
 
-#define PROTOCOL_VERSION	51
+#define PROTOCOL_VERSION		51
+#define H2R_PROTOCOL_VERSION	55 //mxd
 
 #define PORT_MASTER			28900
 #define PORT_CLIENT			28901

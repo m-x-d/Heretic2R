@@ -150,6 +150,17 @@ static void ClearIgnoredPlayersList(void)
 	memset(ignored_players, 0, sizeof(ignored_players));
 }
 
+//mxd. Get current network protocol version.
+int CL_GetProtocolVersion(void)
+{
+	const int protocol = (int)(Cvar_VariableValue("protocol"));
+
+	if (protocol != PROTOCOL_VERSION && protocol != H2R_PROTOCOL_VERSION)
+		return H2R_PROTOCOL_VERSION;
+
+	return protocol;
+}
+
 // Goes from a connected state to full screen console state.
 // Sends a disconnect message to the server.
 // This is also called on Com_Error, so it shouldn't cause any errors.
@@ -263,6 +274,7 @@ void CL_PingServers_f(void)
 	// Send a broadcast packet.
 	Com_Printf("pinging broadcast...\n");
 
+	const int protocol = CL_GetProtocolVersion(); //mxd. Get current protocol...
 	netadr_t adr = { .type = NA_LOOPBACK }; //mxd. Initialize.
 
 	const cvar_t* noudp = Cvar_Get("noudp", "0", CVAR_NOSET);
@@ -270,7 +282,7 @@ void CL_PingServers_f(void)
 	{
 		adr.type = NA_BROADCAST;
 		adr.port = BigShort(PORT_SERVER);
-		Netchan_OutOfBandPrint(NS_CLIENT, &adr, va("info %i", PROTOCOL_VERSION));
+		Netchan_OutOfBandPrint(NS_CLIENT, &adr, va("info %i", protocol));
 	}
 
 	const cvar_t* noipx = Cvar_Get("noipx", "0", CVAR_NOSET);
@@ -278,7 +290,7 @@ void CL_PingServers_f(void)
 	{
 		adr.type = NA_BROADCAST_IPX;
 		adr.port = BigShort(PORT_SERVER);
-		Netchan_OutOfBandPrint(NS_CLIENT, &adr, va("info %i", PROTOCOL_VERSION));
+		Netchan_OutOfBandPrint(NS_CLIENT, &adr, va("info %i", protocol));
 	}
 
 	//mxd. Added sanity check.
@@ -303,10 +315,10 @@ void CL_PingServers_f(void)
 			continue;
 		}
 
-		if (!adr.port)
+		if (adr.port == 0)
 			adr.port = BigShort(PORT_SERVER);
 
-		Netchan_OutOfBandPrint(NS_CLIENT, &adr, va("info %i", PROTOCOL_VERSION));
+		Netchan_OutOfBandPrint(NS_CLIENT, &adr, va("info %i", protocol));
 	}
 }
 
@@ -474,10 +486,11 @@ static void CL_SendConnectPacket(void)
 		if (adr.port == 0)
 			adr.port = BigShort(PORT_SERVER);
 
-		const int port = (int)Cvar_VariableValue("qport");
+		const int port = (int)(Cvar_VariableValue("qport"));
+		const int protocol = CL_GetProtocolVersion(); //mxd. Original logic uses PROTOCOL_VERSION.
 		userinfo_modified = false;
 
-		Netchan_OutOfBandPrint(NS_CLIENT, &adr, "connect %i %i %i \"%s\"\n", PROTOCOL_VERSION, port, cls.challenge, Cvar_Userinfo());
+		Netchan_OutOfBandPrint(NS_CLIENT, &adr, "connect %i %i %i \"%s\"\n", protocol, port, cls.challenge, Cvar_Userinfo());
 	}
 	else
 	{

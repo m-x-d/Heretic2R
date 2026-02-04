@@ -14,6 +14,7 @@ netadr_t master_adr[MAX_MASTERS]; // Address of group servers
 
 client_t* sv_client; // Current client
 
+cvar_t* sv_protocol; //mxd. Server protocol version.
 cvar_t* sv_paused;
 
 static cvar_t* rcon_password; // Password for remote server commands
@@ -189,9 +190,9 @@ static void SVC_Info(void)
 
 	const int version = Q_atoi(Cmd_Argv(1));
 
-	if (version != PROTOCOL_VERSION)
+	if (version != SV_PROTOCOL) // H2: PROTOCOL_VERSION.
 	{
-		Com_sprintf(string, sizeof(string), "%s: wrong version\n", hostname->string);
+		Com_sprintf(string, sizeof(string), "%s: wrong version (%i)\n", hostname->string, version);
 	}
 	else
 	{
@@ -259,9 +260,9 @@ static void SVC_DirectConnect(void)
 	Com_DPrintf("SVC_DirectConnect()\n");
 
 	const int version = Q_atoi(Cmd_Argv(1));
-	if (version != PROTOCOL_VERSION)
+	if (version != SV_PROTOCOL) // H2: PROTOCOL_VERSION.
 	{
-		Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nServer is version %d.\n", PROTOCOL_VERSION); // Q2 uses VERSION macro here.
+		Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nServer is version %i.\n", SV_PROTOCOL); // Q2 uses VERSION macro here.
 		Com_DPrintf("	rejected connect from version %i\n", version);
 
 		return;
@@ -804,7 +805,11 @@ void SV_Init(void)
 	Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
 	Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
 	Cvar_Get("cheats", "0", CVAR_SERVERINFO | CVAR_LATCH);
-	Cvar_Get("protocol", va("%i", PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_NOSET);
+	sv_protocol = Cvar_Get("protocol", va("%i", H2R_PROTOCOL_VERSION), CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_NOSET); // H2: defaults to PROTOCOL_VERSION, never used. //mxd. +CVAR_ARCHIVE flag.
+
+	//mxd. Make sure protocol is valid.
+	if (SV_PROTOCOL != H2R_PROTOCOL_VERSION && SV_PROTOCOL != PROTOCOL_VERSION)
+		sv_protocol->value = H2R_PROTOCOL_VERSION;
 
 	// H2:
 	Cvar_Get("flood_msgs", "4", 0);

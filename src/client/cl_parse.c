@@ -361,8 +361,8 @@ static void CL_ParseServerData(void)
 
 	// Parse protocol version number.
 	cls.serverProtocol = MSG_ReadLong(&net_message);
-	if (cls.serverProtocol != PROTOCOL_VERSION)
-		Com_Error(ERR_DROP, "Server returned version %i, not %i", cls.serverProtocol, PROTOCOL_VERSION);
+	if (cls.serverProtocol != PROTOCOL_VERSION && cls.serverProtocol != H2R_PROTOCOL_VERSION) //mxd. +H2R_PROTOCOL_VERSION.
+		Com_Error(ERR_DROP, "Server returned unsupported protocol version %i (expected %i or %i)", cls.serverProtocol, PROTOCOL_VERSION, H2R_PROTOCOL_VERSION);
 
 	cl.servercount = MSG_ReadLong(&net_message);
 	cl.attractloop = MSG_ReadByte(&net_message);

@@ -629,6 +629,7 @@ extern refexport_t re; // Interface to refresh DLL.
 extern char* CL_GetConfigPath(void); //mxd
 extern void CL_SaveConfig_f(void); //mxd
 extern void CL_RequestNextDownload(void);
+extern int CL_GetProtocolVersion(void); //mxd
 
 extern void CL_Disconnect(void);
 H2R_NORETURN extern void CL_Disconnect_f(void);

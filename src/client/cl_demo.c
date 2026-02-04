@@ -58,7 +58,7 @@ void CL_Record_f(void)
 
 	// Send the serverdata.
 	MSG_WriteByte(&buf, svc_serverdata);
-	MSG_WriteLong(&buf, PROTOCOL_VERSION);
+	MSG_WriteLong(&buf, H2R_PROTOCOL_VERSION); // H2: PROTOCOL_VERSION.
 	MSG_WriteLong(&buf, 0x10000 + cl.servercount);
 	MSG_WriteByte(&buf, 1); // Demos are always attract loops.
 	MSG_WriteString(&buf, cl.gamedir);
