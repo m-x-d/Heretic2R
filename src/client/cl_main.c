@@ -258,13 +258,12 @@ static void CL_FreezeWorld_f(void) // H2
 // Q2 counterpart
 void CL_PingServers_f(void)
 {
-	netadr_t adr;
-	char name[32];
-
-	NET_Config(true); // Allow remote
+	NET_Config(true); // Allow remote.
 
 	// Send a broadcast packet.
 	Com_Printf("pinging broadcast...\n");
+
+	netadr_t adr = { .type = NA_LOOPBACK }; //mxd. Initialize.
 
 	const cvar_t* noudp = Cvar_Get("noudp", "0", CVAR_NOSET);
 	if (!(int)noudp->value)
@@ -282,12 +281,17 @@ void CL_PingServers_f(void)
 		Netchan_OutOfBandPrint(NS_CLIENT, &adr, va("info %i", PROTOCOL_VERSION));
 	}
 
+	//mxd. Added sanity check.
+	if (adr.type == NA_LOOPBACK)
+	{
+		Com_Printf("...failed: no communication protocols enabled!\n");
+		return;
+	}
+
 	// Send a packet to each address book entry.
 	for (int i = 0; i < 16; i++)
 	{
-		Com_sprintf(name, sizeof(name), "adr%i", i);
-
-		char* adrstring = Cvar_VariableString(name);
+		char* adrstring = Cvar_VariableString(va("adr%i", i));
 		if (adrstring == NULL || adrstring[0] == 0)
 			continue;
 
