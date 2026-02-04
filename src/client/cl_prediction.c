@@ -73,6 +73,54 @@ void CL_CheckPredictionError(void) //mxd. Called on packetframe.
 	}
 }
 
+//mxd. Split from CL_ClipMoveToEntities().
+static qboolean CL_BmodelInMovebox(const entity_state_t* ent, const vec3_t mb_mins, const vec3_t mb_maxs, int* headnode, const float** angles)
+{
+	// Special value for bmodel.
+	const cmodel_t* cmodel = cl.model_clip[ent->modelindex];
+	if (cmodel == NULL)
+		return false;
+
+	// H2: check if inside move box...
+	float max_size = 0.0f;
+	for (int c = 0; c < 3; c++)
+		max_size = max(cmodel->maxs[c] - cmodel->mins[c], max_size);
+
+	max_size *= 1.75f;
+
+	// Check if inside movebox.
+	for (int c = 0; c < 3; c++)
+		if (cmodel->mins[c] + ent->origin[c] - max_size > mb_maxs[c] || cmodel->maxs[c] + ent->origin[c] + max_size < mb_mins[c])
+			return false;
+
+	*headnode = cmodel->headnode;
+	*angles = ent->angles;
+
+	return true;
+}
+
+//mxd. Split from CL_ClipMoveToEntities().
+static qboolean CL_EntityInMovebox(const entity_state_t* ent, const vec3_t mb_mins, const vec3_t mb_maxs, int* headnode, const float** angles)
+{
+	// Encoded bbox.
+	const float x =  8.0f * (float)(ent->solid & 31);
+	const float zd = 8.0f * (float)((ent->solid >> 5) & 31);
+	const float zu = 8.0f * (float)((ent->solid >> 10) & 63) - 32;
+
+	const vec3_t bmins = { -x, -x, -zd };
+	const vec3_t bmaxs = {  x,  x,  zu };
+
+	// Check if inside movebox.
+	for (int c = 0; c < 3; c++)
+		if (ent->origin[c] + bmins[c] > mb_maxs[c] || ent->origin[c] + bmaxs[c] < mb_mins[c])
+			return false;
+
+	*headnode = CM_HeadnodeForBox(bmins, bmaxs);
+	*angles = vec3_origin; // Boxes don't rotate.
+
+	return true;
+}
+
 void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr)
 {
 	int headnode;
@@ -98,7 +146,7 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 		const int num = (cl.frame.parse_entities + i) & (MAX_PARSE_ENTITIES - 1);
 		entity_state_t* ent = &cl_parse_entities[num];
 
-		if (!ent->solid)
+		if (ent->solid == 0) // SOLID_NOT
 			continue;
 
 		if (trace_ignore_player && (ent->number == cl.playernum + 1)) // H2: extra trace_ignore_player check.
@@ -115,62 +163,16 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 		if (trace_ignore_entities && !ent_is_bmodel) //mxd
 			continue;
 
+		// Check if ent collides with movebox.
 		if (ent_is_bmodel)
 		{
-			// Special value for bmodel.
-			const cmodel_t* cmodel = cl.model_clip[ent->modelindex];
-			if (cmodel == NULL)
+			if (!CL_BmodelInMovebox(ent, mb_mins, mb_maxs, &headnode, &angles))
 				continue;
-
-			// H2: check if inside move box...
-			float max_size = 0.0f;
-			for (int c = 0; c < 3; c++)
-				max_size = max(cmodel->maxs[c] - cmodel->mins[c], max_size);
-
-			max_size *= 1.75f;
-
-			qboolean in_movebox = true;
-			for (int c = 0; c < 3; c++)
-			{
-				if (cmodel->mins[c] + ent->origin[c] - max_size > mb_maxs[c] || cmodel->maxs[c] + ent->origin[c] + max_size < mb_mins[c])
-				{
-					in_movebox = false;
-					break;
-				}
-			}
-
-			if (!in_movebox)
-				continue;
-
-			headnode = cmodel->headnode;
-			angles = ent->angles;
 		}
 		else // Regular entity.
 		{
-			// Encoded bbox.
-			const float x =  8.0f * (float)(ent->solid & 31);
-			const float zd = 8.0f * (float)((ent->solid >> 5) & 31);
-			const float zu = 8.0f * (float)((ent->solid >> 10) & 63) - 32;
-
-			const vec3_t bmins = { -x, -x, -zd };
-			const vec3_t bmaxs = {  x,  x,  zu };
-
-			// H2: check if inside move box...
-			qboolean in_movebox = true;
-			for (int c = 0; c < 3; c++)
-			{
-				if (ent->origin[c] + bmins[c] > mb_maxs[c] || ent->origin[c] + bmaxs[c] < mb_mins[c])
-				{
-					in_movebox = false;
-					break;
-				}
-			}
-			
-			if (!in_movebox)
+			if (!CL_EntityInMovebox(ent, mb_mins, mb_maxs, &headnode, &angles))
 				continue;
-
-			headnode = CM_HeadnodeForBox(bmins, bmaxs);
-			angles = vec3_origin; // Boxes don't rotate.
 		}
 
 		int brushmask = MASK_PLAYERSOLID;
