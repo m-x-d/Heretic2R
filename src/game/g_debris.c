@@ -85,20 +85,17 @@ static void SpawnDebris(edict_t* self, float size, const vec3_t origin)
 
 void BecomeDebris(edict_t* self)
 {
-	const int violence = ((blood_level != NULL) ? (int)blood_level->value : VIOLENCE_DEFAULT); //TODO: why blood_level NULL check? Inited in InitGame(), accessed without NULL check in G_RunFrame()...
-
 	// Haven't yet thrown parts?
-	if (violence > VIOLENCE_BLOOD && !(self->svflags & SVF_PARTS_GIBBED) && self->monsterinfo.dismember != NULL)
+	if (BLOOD_LEVEL > VIOLENCE_BLOOD && !(self->svflags & SVF_PARTS_GIBBED) && self->monsterinfo.dismember != NULL)
 	{
 		//FIXME: have a generic GibParts effect that throws flesh and several body parts - much cheaper?
 		int num_limbs = irand(3, 10);
 
-		if (violence > VIOLENCE_NORMAL)
-			num_limbs *= (violence - VIOLENCE_NORMAL); //TODO: doesn't make much sense. Max violence configurable via menus is 3. Should be (violence - VIOLENCE_NORMAL + 1)?
+		if (BLOOD_LEVEL > VIOLENCE_NORMAL)
+			num_limbs *= (BLOOD_LEVEL - VIOLENCE_NORMAL + 1); //mxd. Original logic multiplies by 'BLOOD_LEVEL - VIOLENCE_NORMAL' (e.g. by 1 for ULTRAVIOLENT).
 
-		for (int i = 0; i < num_limbs; i++)
-			if (self->svflags & SVF_MONSTER)
-				self->monsterinfo.dismember(self, irand(80, 160), hl_MeleeHit | irand(hl_Head, hl_LegLowerRight)); //mxd. flrand() -> irand()
+		for (int i = 0; i < num_limbs; i++) //mxd. Removed SVF_MONSTER check (if we have self->monsterinfo.dismember, we may as well call it).
+			self->monsterinfo.dismember(self, irand(80, 160), hl_MeleeHit | irand(hl_Head, hl_LegLowerRight)); //mxd. flrand() -> irand()
 
 		self->svflags |= SVF_PARTS_GIBBED;
 		self->think = BecomeDebris;
@@ -111,7 +108,7 @@ void BecomeDebris(edict_t* self)
 	self->msgHandler = DeadMsgHandler;
 
 	// What the hell is this??? //TODO: explosion logic for func_train with wait:-3 (see FuncTrainWait())? Then why spawnflags check?..
-	if (self->spawnflags & 4 && !(self->svflags & SVF_MONSTER))
+	if ((self->spawnflags & 4) && !(self->svflags & SVF_MONSTER))
 	{
 		// Need to create an explosion effect for this.
 		edict_t* attacker = ((self->owner != NULL) ? self->owner : self); //mxd
@@ -120,7 +117,10 @@ void BecomeDebris(edict_t* self)
 
 	// A zero mass is well and truly illegal!
 	if (self->mass < 0)
+	{
 		gi.dprintf("ERROR: %s needs a mass to generate debris", self->classname);
+		return; //mxd
+	}
 
 	// Create a chunk-spitting client effect and remove me now that I've been chunked.
 	float size;
