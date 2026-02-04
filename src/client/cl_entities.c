@@ -115,11 +115,7 @@ void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int num
 		to->modelindex = (byte)MSG_ReadByte(&net_message);
 
 	if (GetB(bits, U_BMODEL))
-	{
-		to->bmodel_origin[0] = MSG_ReadCoord(&net_message);
-		to->bmodel_origin[1] = MSG_ReadCoord(&net_message);
-		to->bmodel_origin[2] = MSG_ReadCoord(&net_message);
-	}
+		MSG_ReadPos(&net_message, to->bmodel_origin);
 
 	if (GetB(bits, U_FRAME8))
 	{

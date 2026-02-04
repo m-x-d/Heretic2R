@@ -553,11 +553,7 @@ void MSG_WriteDeltaEntity(const entity_state_t* from, entity_state_t* to, sizebu
 		MSG_WriteByte(msg, to->modelindex);
 
 	if (GetB(bits, U_BMODEL))
-	{
-		MSG_WriteCoord(msg, to->bmodel_origin[0]);
-		MSG_WriteCoord(msg, to->bmodel_origin[1]);
-		MSG_WriteCoord(msg, to->bmodel_origin[2]);
-	}
+		MSG_WritePos(msg, to->bmodel_origin);
 
 	if (GetB(bits, U_FRAME8))
 		MSG_WriteByte(msg, to->frame);
@@ -610,11 +606,7 @@ void MSG_WriteDeltaEntity(const entity_state_t* from, entity_state_t* to, sizebu
 		MSG_WriteAngle(msg, to->angles[2]);
 
 	if (GetB(bits, U_OLDORIGIN))
-	{
-		MSG_WriteCoord(msg, to->old_origin[0]);
-		MSG_WriteCoord(msg, to->old_origin[1]);
-		MSG_WriteCoord(msg, to->old_origin[2]);
-	}
+		MSG_WritePos(msg, to->old_origin);
 
 	if (GetB(bits, U_SOUND))
 	{
