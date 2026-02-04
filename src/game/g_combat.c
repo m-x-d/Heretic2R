@@ -1000,7 +1000,7 @@ void T_DamageRadius(edict_t* inflictor, edict_t* attacker, const edict_t* ignore
 }
 
 // Same function, except the origin point of the damage doesn't have to be the same as the inflictor's.
-void T_DamageRadiusFromLoc(vec3_t origin, edict_t* inflictor, edict_t* attacker, const edict_t* ignore, const float radius, const float maxdamage, const float mindamage, const int dflags, const int mod)
+void T_DamageRadiusFromLoc(const vec3_t origin, edict_t* inflictor, edict_t* attacker, const edict_t* ignore, const float radius, const float maxdamage, const float mindamage, const int dflags, const int mod)
 {
 	assert(radius > 0.0f);
 
