@@ -9,8 +9,6 @@
 
 cvar_t* m_banner_address;
 
-#define NUM_ADDRESSBOOK_ENTRIES	9 // H2: 8
-
 static menuframework_t s_addressbook_menu;
 static menufield_t s_addressbook_fields[NUM_ADDRESSBOOK_ENTRIES];
 
@@ -20,10 +18,7 @@ static void AddressBook_MenuInit(void)
 
 	for (int i = 0; i < NUM_ADDRESSBOOK_ENTRIES; i++)
 	{
-		char buffer[20];
-		Com_sprintf(buffer, sizeof(buffer), "adr%d", i);
-
-		const cvar_t* adr = Cvar_Get(buffer, "", CVAR_ARCHIVE);
+		const cvar_t* adr = Cvar_Get(va("adr%i", i), "", CVAR_ARCHIVE);
 
 		s_addressbook_fields[i].generic.type = MTYPE_FIELD;
 		s_addressbook_fields[i].generic.name = NULL;

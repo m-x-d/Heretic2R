@@ -715,6 +715,8 @@ extern void CL_PredictMovement(void);
 extern void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr);
 
 // Menus.
+#define NUM_ADDRESSBOOK_ENTRIES	9 // H2: 8
+
 extern void M_Init(void);
 extern void M_Keydown(int key);
 extern void M_Draw(void);

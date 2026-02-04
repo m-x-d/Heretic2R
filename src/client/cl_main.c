@@ -289,7 +289,7 @@ void CL_PingServers_f(void)
 	}
 
 	// Send a packet to each address book entry.
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < NUM_ADDRESSBOOK_ENTRIES; i++) //mxd. Counts to 16 in original logic.
 	{
 		char* adrstring = Cvar_VariableString(va("adr%i", i));
 		if (adrstring == NULL || adrstring[0] == 0)
@@ -1123,15 +1123,8 @@ static void CL_InitLocal(void)
 	ClearIgnoredPlayersList();
 
 	// Used in AddressBook_MenuInit() --mxd.
-	Cvar_Get("adr0", "", CVAR_ARCHIVE);
-	Cvar_Get("adr1", "", CVAR_ARCHIVE);
-	Cvar_Get("adr2", "", CVAR_ARCHIVE);
-	Cvar_Get("adr3", "", CVAR_ARCHIVE);
-	Cvar_Get("adr4", "", CVAR_ARCHIVE);
-	Cvar_Get("adr5", "", CVAR_ARCHIVE);
-	Cvar_Get("adr6", "", CVAR_ARCHIVE);
-	Cvar_Get("adr7", "", CVAR_ARCHIVE);
-	Cvar_Get("adr8", "", CVAR_ARCHIVE);
+	for (int i = 0; i < NUM_ADDRESSBOOK_ENTRIES; i++)
+		Cvar_Get(va("adr%i", i), "", CVAR_ARCHIVE); // adr0 .. adr8.
 
 	// Register our variables.
 	cl_stereo_separation = Cvar_Get("cl_stereo_separation", "0.4", CVAR_ARCHIVE);
