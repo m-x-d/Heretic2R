@@ -757,8 +757,12 @@ typedef struct entity_state_s
 	paletteRGB_t absLight;	// Entire absLight gets sent if any component changes.
 	
 	// Client prediction: 8*(bits 0-4) is x/y radius, 8*(bits 5-9) is z min, 8*(bits 10-15) is z max.
-	// Note that gi.linkentity() sets this up.
+	// Note that gi.linkentity() sets this up (original logic, used when PROTOCOL_VERSION --mxd).
 	short solid;
+
+	//mxd. More precise bbox for client prediction (requires H2R_PROTOCOL_VERSION).
+	vec3_t mins;
+	vec3_t maxs;
 
 	byte sound;				// For looping sounds, to guarantee shutoff.
 	byte sound_data;		// For looping sounds, so we can set volume and attenuation.

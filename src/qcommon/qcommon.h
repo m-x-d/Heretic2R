@@ -338,6 +338,7 @@ enum clc_ops_e
 #define U_BMODEL			31
 
 #define U_CLIENTNUM			32
+#define U_BBOX				33 //mxd. Requires H2R_PROTOCOL_VERSION!
 
 #define U_FM_HIGH			(1 << 7) // Means more then the first 7 updates.
 

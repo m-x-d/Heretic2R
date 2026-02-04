@@ -146,14 +146,25 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 	if (do_autoaim && cl.frame.playerstate.AutotargetEntityNum > 0)
 	{
 		const centity_t* target_ent = &cl_entities[cl.frame.playerstate.AutotargetEntityNum];
-		VectorCopy(target_ent->origin, end);
 
-		//mxd. Reconstruct ent's bbox (replicate CL_ClipMoveToEntities() logic)...
-		const float zd = 8.0f * (float)((target_ent->current.solid >> 5) & 31);
-		const float zu = 8.0f * (float)((target_ent->current.solid >> 10) & 63) - 32;
+		//mxd. Replicate GetAimVelocity() logic.
+		if (cls.serverProtocol == H2R_PROTOCOL_VERSION)
+		{
+			VectorAverage(target_ent->current.mins, target_ent->current.maxs, end); // Get center of model.
+			end[2] += target_ent->current.maxs[2] / 2.0f;
+		}
+		else
+		{
+			// Reconstruct ent's bbox (replicate CL_ClipMoveToEntities() logic)...
+			const float zd = 8.0f * (float)((target_ent->current.solid >> 5) & 31);
+			const float zu = 8.0f * (float)((target_ent->current.solid >> 10) & 63) - 32;
 
-		//mxd. Aim at ent's vertical center (replicate GetAimVelocity() logic)...
-		end[2] += -zd * 0.5f + zu;
+			// Aim at ent's vertical center.
+			VectorSet(end, 0.0f, 0.0f, -zd * 0.5f + zu);
+		}
+
+		// Make it absolute.
+		Vec3AddAssign(target_ent->origin, end);
 	}
 	else
 	{

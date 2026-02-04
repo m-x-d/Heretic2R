@@ -456,6 +456,10 @@ void MSG_WriteDeltaEntity(const entity_state_t* from, entity_state_t* to, sizebu
 	if (to->solid != from->solid)
 		SetB(bits, U_SOLID);
 
+	//mxd. Bounding box.
+	if (SV_PROTOCOL == H2R_PROTOCOL_VERSION && (!VectorCompare(to->mins, from->mins) || !VectorCompare(to->maxs, from->maxs)))
+		SetB(bits, U_BBOX);
+
 	// Modleindex
 	if (to->modelindex != from->modelindex)
 		SetB(bits, U_MODEL);
@@ -616,6 +620,12 @@ void MSG_WriteDeltaEntity(const entity_state_t* from, entity_state_t* to, sizebu
 
 	if (GetB(bits, U_SOLID))
 		MSG_WriteShort(msg, to->solid);
+
+	if (GetB(bits, U_BBOX)) //mxd
+	{
+		MSG_WritePos(msg, to->mins);
+		MSG_WritePos(msg, to->maxs);
+	}
 
 	if (GetB(bits, U_FM_INFO))
 	{

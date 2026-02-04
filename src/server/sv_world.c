@@ -166,18 +166,26 @@ void SV_LinkEdict(edict_t* ent)
 	// Encode the size into the entity_state for client prediction.
 	if (ent->solid == SOLID_BBOX && !(ent->svflags & SVF_DEADMONSTER))
 	{
-		//TODO: H2 uses non-square bboxes on XY axis (like obj_biotank)!
+		if (SV_PROTOCOL == H2R_PROTOCOL_VERSION) //mxd. Because H2 uses non-square bboxes on XY axis.
+		{
+			VectorCopy(ent->mins, ent->s.mins);
+			VectorCopy(ent->maxs, ent->s.maxs);
 
-		// Assume that x/y are equal and symmetric.
-		const int x = ClampI((int)(ent->maxs[0] / 8), 1, 31);
+			ent->s.solid = SOLID_BBOX;
+		}
+		else // Original logic / PROTOCOL_VERSION.
+		{
+			// Assume that x/y are equal and symmetric.
+			const int x = ClampI((int)(ent->maxs[0] / 8), 1, 31);
 
-		// Z is not symmetric.
-		const int zd = ClampI((int)(-ent->mins[2] / 8), 1, 31);
+			// Z is not symmetric.
+			const int zd = ClampI((int)(-ent->mins[2] / 8), 1, 31);
 
-		// And z maxs can be negative...
-		const int zu = ClampI((int)((ent->maxs[2] + 32) / 8), 1, 63);
+			// And z maxs can be negative...
+			const int zu = ClampI((int)((ent->maxs[2] + 32) / 8), 1, 63);
 
-		ent->s.solid = (short)((zu << 10) | (zd << 5) | x);
+			ent->s.solid = (short)((zu << 10) | (zd << 5) | x);
+		}
 	}
 	else if (ent->solid == SOLID_BSP)
 	{

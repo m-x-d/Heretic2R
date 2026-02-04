@@ -100,6 +100,25 @@ static qboolean CL_BmodelInMovebox(const entity_state_t* ent, const vec3_t mb_mi
 }
 
 //mxd. Split from CL_ClipMoveToEntities().
+static qboolean CL_EntityInMovebox_H2R(const entity_state_t* ent, const vec3_t mb_mins, const vec3_t mb_maxs, int* headnode, const float** angles)
+{
+	// Greedily check for ent bbox intersection (max_size bbox is expected to encompass ent bbox rotated by any angle).
+	float max_size = 0.0f;
+	for (int c = 0; c < 3; c++)
+		max_size = max((ent->maxs[c] - ent->mins[c]) * 0.5f, max_size);
+
+	// Check if inside movebox.
+	for (int c = 0; c < 3; c++)
+		if (ent->origin[c] - max_size > mb_maxs[c] || ent->origin[c] + max_size < mb_mins[c])
+			return false;
+
+	*headnode = CM_HeadnodeForBox(ent->mins, ent->maxs);
+	*angles = ent->angles;
+
+	return true;
+}
+
+//mxd. Split from CL_ClipMoveToEntities().
 static qboolean CL_EntityInMovebox(const entity_state_t* ent, const vec3_t mb_mins, const vec3_t mb_maxs, int* headnode, const float** angles)
 {
 	// Encoded bbox.
@@ -169,7 +188,12 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 			if (!CL_BmodelInMovebox(ent, mb_mins, mb_maxs, &headnode, &angles))
 				continue;
 		}
-		else // Regular entity.
+		else if (cls.serverProtocol == H2R_PROTOCOL_VERSION) //mxd. Regular entity / H2R_PROTOCOL_VERSION.
+		{
+			if (!CL_EntityInMovebox_H2R(ent, mb_mins, mb_maxs, &headnode, &angles))
+				continue;
+		}
+		else // Regular entity / PROTOCOL_VERSION (original logic).
 		{
 			if (!CL_EntityInMovebox(ent, mb_mins, mb_maxs, &headnode, &angles))
 				continue;

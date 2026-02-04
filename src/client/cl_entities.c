@@ -223,6 +223,13 @@ void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int num
 	if (GetB(bits, U_SOLID))
 		to->solid = (short)MSG_ReadShort(&net_message);
 
+	//mxd. Requires H2R_PROTOCOL_VERSION.
+	if (GetB(bits, U_BBOX))
+	{
+		MSG_ReadPos(&net_message, to->mins);
+		MSG_ReadPos(&net_message, to->maxs);
+	}
+
 	if (GetB(bits, U_FM_INFO))
 	{
 		int fmnodeinfo_usage_flags = MSG_ReadByte(&net_message);
