@@ -766,12 +766,17 @@ static void CM_DecompressVis(const byte* in, byte* out)
 // Q2 counterpart
 byte* CM_ClusterPVS(const int cluster)
 {
-	static byte	pvsrow[MAX_MAP_LEAFS / 8]; //mxd. Made local static.
+	static byte pvsrow[MAX_MAP_LEAFS / 8]; //mxd. Made local static.
 
 	if (cluster == -1)
+	{
 		memset(pvsrow, 0, (numclusters + 7) >> 3);
+	}
 	else
-		CM_DecompressVis(map_visibility + map_vis->bitofs[cluster][DVIS_PVS], pvsrow);
+	{
+		const int bit_offset = map_vis->bitofs[cluster][DVIS_PVS];
+		CM_DecompressVis(&map_visibility[bit_offset], pvsrow);
+	}
 
 	return pvsrow;
 }
@@ -779,12 +784,17 @@ byte* CM_ClusterPVS(const int cluster)
 // Q2 counterpart
 byte* CM_ClusterPHS(const int cluster)
 {
-	static byte	phsrow[MAX_MAP_LEAFS / 8]; //mxd. Made local static.
+	static byte phsrow[MAX_MAP_LEAFS / 8]; //mxd. Made local static.
 
 	if (cluster == -1)
+	{
 		memset(phsrow, 0, (numclusters + 7) >> 3);
+	}
 	else
-		CM_DecompressVis(map_visibility + map_vis->bitofs[cluster][DVIS_PHS], phsrow);
+	{
+		const int bit_offset = map_vis->bitofs[cluster][DVIS_PHS];
+		CM_DecompressVis(&map_visibility[bit_offset], phsrow);
+	}
 
 	return phsrow;
 }
