@@ -141,7 +141,7 @@ char* MSG_ReadStringLine(sizebuf_t* sb)
 
 float MSG_ReadCoord(sizebuf_t* sb)
 {
-	return (float)MSG_ReadShort(sb) * (1.0f / 8.0f);
+	return SHORT2POS(MSG_ReadShort(sb)); //mxd. Use define.
 }
 
 void MSG_ReadPos(sizebuf_t* sb, vec3_t pos)
@@ -149,9 +149,9 @@ void MSG_ReadPos(sizebuf_t* sb, vec3_t pos)
 	if (sb->readcount + 6 > sb->cursize)
 		assert(0);
 
-	pos[0] = (float)MSG_ReadShort(sb) * (1.0f / 8.0f);
-	pos[1] = (float)MSG_ReadShort(sb) * (1.0f / 8.0f);
-	pos[2] = (float)MSG_ReadShort(sb) * (1.0f / 8.0f);
+	pos[0] = SHORT2POS(MSG_ReadShort(sb)); //mxd. Use define.
+	pos[1] = SHORT2POS(MSG_ReadShort(sb)); //mxd. Use define.
+	pos[2] = SHORT2POS(MSG_ReadShort(sb)); //mxd. Use define.
 }
 
 float MSG_ReadAngle(sizebuf_t* sb)
@@ -257,17 +257,14 @@ void MSG_ReadDirMag(sizebuf_t* sb, vec3_t dir)
 
 void MSG_ReadShortYawPitch(sizebuf_t* sb, vec3_t dir)
 {
-	vec3_t angles;
-
 	if (sb->readcount + 4 > sb->cursize)
 		assert(0);
 
-	angles[0] = (float)MSG_ReadShort(sb) / 8.0f;
-	angles[1] = (float)MSG_ReadShort(sb) / 8.0f;
-	angles[2] = 0.0f;
+	const float pitch = SHORT2POS(MSG_ReadShort(sb)); //mxd. Use define.
+	const float yaw = SHORT2POS(MSG_ReadShort(sb)); //mxd. Use define.
 
-	angles[YAW] *= ANGLE_TO_RAD;
-	angles[PITCH] *= ANGLE_TO_RAD;
+	// Convert to radians.
+	const vec3_t angles = { pitch * ANGLE_TO_RAD, yaw * ANGLE_TO_RAD, 0.0f };
 	DirFromAngles(angles, dir);
 }
 

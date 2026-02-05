@@ -434,7 +434,7 @@ void CL_CalcViewValues(void)
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			cl.refdef.vieworg[i] = (float)ps->pmove.origin[i] * 0.125f;
+			cl.refdef.vieworg[i] = SHORT2POS(ps->pmove.origin[i]); //mxd. Use define.
 			cl.refdef.viewangles[i] = ps->viewangles[i];
 		}
 	}
@@ -452,7 +452,7 @@ void CL_CalcViewValues(void)
 		else if ((in_lookaround.state & KS_DOWN))
 		{
 			for (int i = 0; i < 3; i++)
-				look_angles[i] = cl.lookangles[i] + (float)ps->pmove.delta_angles[i] * SHORT_TO_ANGLE;
+				look_angles[i] = cl.lookangles[i] + SHORT2ANGLE(ps->pmove.delta_angles[i]);
 		}
 		else
 		{

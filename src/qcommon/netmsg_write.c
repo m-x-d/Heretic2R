@@ -78,15 +78,15 @@ void MSG_WriteString(sizebuf_t* sb, const char* s)
 // Q2 counterpart
 void MSG_WriteCoord(sizebuf_t* sb, const float f)
 {
-	MSG_WriteShort(sb, (int)(f * 8.0f));
+	MSG_WriteShort(sb, POS2SHORT(f)); //mxd. Use define.
 }
 
 // Q2 counterpart
 void MSG_WritePos(sizebuf_t* sb, const vec3_t pos)
 {
-	MSG_WriteShort(sb, (int)(pos[0] * 8.0f));
-	MSG_WriteShort(sb, (int)(pos[1] * 8.0f));
-	MSG_WriteShort(sb, (int)(pos[2] * 8.0f));
+	MSG_WriteShort(sb, POS2SHORT(pos[0])); //mxd. Use define.
+	MSG_WriteShort(sb, POS2SHORT(pos[1])); //mxd. Use define.
+	MSG_WriteShort(sb, POS2SHORT(pos[2])); //mxd. Use define.
 }
 
 // Q2 counterpart
@@ -810,8 +810,8 @@ void MSG_WriteShortYawPitch(sizebuf_t* sb, const vec3_t vector) // H2
 		vec3_t angles;
 		vectoangles(vector, angles);
 
-		MSG_WriteShort(sb, (int)(angles[0] * 8.0f));
-		MSG_WriteShort(sb, (int)(angles[1] * 8.0f));
+		MSG_WriteShort(sb, POS2SHORT(angles[0])); //mxd. Use define.
+		MSG_WriteShort(sb, POS2SHORT(angles[1])); //mxd. Use define.
 	}
 	else
 	{

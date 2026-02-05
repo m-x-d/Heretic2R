@@ -189,7 +189,7 @@ static void PM_StepSlideFinishMove(const qboolean clear_velocity) //mxd. Split f
 	if (clear_velocity)
 		VectorClear(pml.velocity);
 
-	CheckCollision((float)pm->cmd.aimangles[YAW] * SHORT_TO_ANGLE * ANGLE_TO_RAD);
+	CheckCollision(SHORT2ANGLE(pm->cmd.aimangles[YAW]) * ANGLE_TO_RAD);
 }
 
 static qboolean PM_StepSlideSetupMove(ssm_settings_t* ssm, vec3_t velocity_step, const qboolean add_velocity_step) //mxd. Split from PM_StepSlideMove().
@@ -1102,7 +1102,7 @@ static qboolean PM_GoodPosition(void)
 	vec3_t origin;
 
 	for (int i = 0; i < 3; i++)
-		origin[i] = (float)pml.snapped_origin[i] * 0.125f;
+		origin[i] = SHORT2POS(pml.snapped_origin[i]); //mxd. Use define.
 
 	pm->trace(origin, pm->mins, pm->maxs, origin, &trace);
 
@@ -1124,13 +1124,13 @@ static void PM_SnapPosition(void)
 
 	// Snap velocity to eights.
 	for (int i = 0; i < 3; i++)
-		pm->s.velocity[i] = (short)(pml.velocity[i] * 8.0f);
+		pm->s.velocity[i] = POS2SHORT(pml.velocity[i]); //mxd. Use define.
 
 	for (int i = 0; i < 3; i++)
 	{
-		pml.snapped_origin[i] = (short)(pml.origin[i] * 8.0f);
+		pml.snapped_origin[i] = POS2SHORT(pml.origin[i]); //mxd. Use define.
 
-		if (!FloatIsZeroEpsilon((float)pml.snapped_origin[i] * 0.125f - pml.origin[i])) // H2: FloatIsZeroEpsilon() instead of direct comparison.
+		if (!FloatIsZeroEpsilon(SHORT2POS(pml.snapped_origin[i]) - pml.origin[i])) // H2: FloatIsZeroEpsilon() instead of direct comparison.
 			offset[i] = (short)(Q_signf(pml.origin[i]));
 	}
 
@@ -1180,7 +1180,7 @@ static void PM_InitialSnapPosition(void)
 				{
 					for (int i = 0; i < 3; i++)
 					{
-						pml.origin[i] = (float)pml.snapped_origin[i] * 0.125f;
+						pml.origin[i] = SHORT2POS(pml.snapped_origin[i]); //mxd. Use define.
 						pml.previous_origin[i] = pml.snapped_origin[i];
 					}
 
@@ -1293,8 +1293,8 @@ void Pmove(pmove_t* pmove, const qboolean server)
 		// Convert origin and velocity to float values.
 		for (int i = 0; i < 3; i++)
 		{
-			pml.origin[i] = (float)pm->s.origin[i] * 0.125f;
-			pml.velocity[i] = (float)pm->s.velocity[i] * 0.125f;
+			pml.origin[i] = SHORT2POS(pm->s.origin[i]); //mxd. Use define.
+			pml.velocity[i] = SHORT2POS(pm->s.velocity[i]); //mxd. Use define.
 			pml.previous_origin[i] = pm->s.origin[i]; // H2
 			pml.snapped_origin[i] = pm->s.origin[i]; // H2
 		}
@@ -1315,14 +1315,14 @@ void Pmove(pmove_t* pmove, const qboolean server)
 		vec3_t aimangles;
 
 		for (int i = 0; i < 3; i++)
-			aimangles[i] = (float)pm->cmd.aimangles[i] * SHORT_TO_ANGLE;
+			aimangles[i] = SHORT2ANGLE(pm->cmd.aimangles[i]);
 
 		AngleVectors(aimangles, pml.forward, pml.right, pml.up);
 		PM_SpectatorMove();
 
 		for (int i = 0; i < 3; i++)
 		{
-			pml.snapped_origin[i] = (short)(pml.origin[i] * 8.0f);
+			pml.snapped_origin[i] = POS2SHORT(pml.origin[i]); //mxd. Use define.
 			pm->s.origin[i] = pml.snapped_origin[i];
 			pm->origin[i] = pml.origin[i];
 		}
@@ -1434,8 +1434,8 @@ void Pmove(pmove_t* pmove, const qboolean server)
 
 		for (int i = 0; i < 3; i++)
 		{
-			pm->s.velocity[i] = (short)(pml.velocity[i] * 8.0f);
-			pm->s.origin[i] = (short)(pml.origin[i] * 8.0f);
+			pm->s.origin[i] = POS2SHORT(pml.origin[i]); //mxd. Use define.
+			pm->s.velocity[i] = POS2SHORT(pml.velocity[i]); //mxd. Use define.
 		}
 	}
 	else

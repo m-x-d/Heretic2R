@@ -150,7 +150,7 @@ void MoveClientToIntermission(edict_t* client, const qboolean log_file)
 	VectorCopy(level.intermission_origin, client->s.origin);
 
 	for (int i = 0; i < 3; i++)
-		client->client->ps.pmove.origin[i] = (short)(level.intermission_origin[i] * 8.0f);
+		client->client->ps.pmove.origin[i] = POS2SHORT(level.intermission_origin[i]); //mxd. Use define.
 
 	VectorCopy(level.intermission_angle, client->client->ps.viewangles);
 

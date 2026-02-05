@@ -287,8 +287,8 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 
 	for (int i = 0; i < 3; i++)
 	{
-		cl.playerinfo.origin[i] =   (float)pm.s.origin[i] * 0.125f;
-		cl.playerinfo.velocity[i] = (float)pm.s.velocity[i] * 0.125f;
+		cl.playerinfo.origin[i] = SHORT2POS(pm.s.origin[i]); //mxd. Use define.
+		cl.playerinfo.velocity[i] = SHORT2POS(pm.s.velocity[i]); //mxd. Use define.
 	}
 
 	VectorCopy(cl.frame.playerstate.mins, pm.mins);
@@ -489,8 +489,8 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 
 		for (int i = 0; i < 3; i++)
 		{
-			cl.playerinfo.origin[i] = (float)pm.s.origin[i] * 0.125f;
-			cl.playerinfo.velocity[i] = (float)pm.s.velocity[i] * 0.125f;
+			cl.playerinfo.origin[i] = SHORT2POS(pm.s.origin[i]); //mxd. Use define.
+			cl.playerinfo.velocity[i] = SHORT2POS(pm.s.velocity[i]); //mxd. Use define.
 		}
 
 		VectorCopy(pm.intentMins, cl.playerinfo.mins);
@@ -597,8 +597,8 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 
 			for (int i = 0; i < 3; i++)
 			{
-				pm.s.origin[i] = (short)(cl.playerinfo.origin[i] * 8.0f);
-				pm.s.velocity[i] = (short)(cl.playerinfo.velocity[i] * 8.0f);
+				pm.s.origin[i] = POS2SHORT(cl.playerinfo.origin[i]); //mxd. Use define.
+				pm.s.velocity[i] = POS2SHORT(cl.playerinfo.velocity[i]); //mxd. Use define.
 			}
 
 			pm.s.pm_type = cl.playerinfo.movetype;

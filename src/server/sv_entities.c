@@ -544,16 +544,16 @@ static void SV_WritePlayerstateToClient(const client_frame_t* from, const client
 	for (int i = 0; i < MAX_STATS; i++)
 		if (GetB(flags, PS_STAT_BIT_0 + i))
 			MSG_WriteShort(msg, ps->stats[i]);
- 
+
 	if (GetB(flags, PS_MINSMAXS))
 	{
-		MSG_WriteShort(msg, (int)(ps->mins[0] * 8.0f));
-		MSG_WriteShort(msg, (int)(ps->mins[1] * 8.0f));
-		MSG_WriteShort(msg, (int)(ps->mins[2] * 8.0f));
+		MSG_WriteShort(msg, POS2SHORT(ps->mins[0])); //mxd. Use define.
+		MSG_WriteShort(msg, POS2SHORT(ps->mins[1])); //mxd. Use define.
+		MSG_WriteShort(msg, POS2SHORT(ps->mins[2])); //mxd. Use define.
 
-		MSG_WriteShort(msg, (int)(ps->maxs[0] * 8.0f));
-		MSG_WriteShort(msg, (int)(ps->maxs[1] * 8.0f));
-		MSG_WriteShort(msg, (int)(ps->maxs[2] * 8.0f));
+		MSG_WriteShort(msg, POS2SHORT(ps->maxs[0])); //mxd. Use define.
+		MSG_WriteShort(msg, POS2SHORT(ps->maxs[1])); //mxd. Use define.
+		MSG_WriteShort(msg, POS2SHORT(ps->maxs[2])); //mxd. Use define.
 	}
 
 	if (GetB(flags, PS_INVENTORY))

@@ -1066,9 +1066,9 @@ void CL_ParseFrame(void)
 
 			for (int i = 0; i < 3; i++)
 			{
-				cl.predicted_origin[i] = (float)cl.frame.playerstate.pmove.origin[i] * 0.125f;
+				cl.predicted_origin[i] = SHORT2POS(cl.frame.playerstate.pmove.origin[i]); //mxd. Use define.
 				cl.predicted_angles[i] = cl.frame.playerstate.viewangles[i];
-				cl.viewangles[i] = (float)cl.frame.playerstate.pmove.camera_delta_angles[i] * SHORT_TO_ANGLE; // H2
+				cl.viewangles[i] = SHORT2ANGLE(cl.frame.playerstate.pmove.camera_delta_angles[i]); // H2
 			}
 
 			if (cl.refresh_prepped && cls.disable_servercount != cl.servercount)

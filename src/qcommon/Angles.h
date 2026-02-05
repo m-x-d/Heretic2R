@@ -23,7 +23,7 @@
 #define ANGLE_40		0.698131701f //mxd
 #define ANGLE_45		0.785398163f
 #define ANGLE_60		1.047197551f
-#define ANGLE_85		1.483529864f //mxd.
+#define ANGLE_85		1.483529864f //mxd
 #define ANGLE_90		1.570796327f
 #define ANGLE_120		2.094395102f
 #define ANGLE_135		2.35619449f
@@ -36,8 +36,6 @@
 // Conversion routines.
 #define ANGLE_TO_RAD	ANGLE_1
 #define RAD_TO_ANGLE	(180.0f / ANGLE_180)
-
-#define SHORT_TO_ANGLE	(360.0f / 65536.0f)
 
 #define BYTEANGLE_TO_RAD	(ANGLE_360 / 255.0f) //mxd
 #define DEG_TO_BYTEANGLE	(255.0f / 360.0f) //mxd

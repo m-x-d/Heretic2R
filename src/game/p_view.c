@@ -679,8 +679,8 @@ void ClientEndServerFrame(edict_t* player)
 	// Reflect changes to the client's origin and velocity due to the current player animation, in the client's playerstate.
 	for (int i = 0; i < 3; i++)
 	{
-		cl->ps.pmove.origin[i] = (short)(player->s.origin[i] * 8.0f);
-		cl->ps.pmove.velocity[i] = (short)(player->velocity[i] * 8.0f);
+		cl->ps.pmove.origin[i] = POS2SHORT(player->s.origin[i]); //mxd. Use define.
+		cl->ps.pmove.velocity[i] = POS2SHORT(player->velocity[i]); //mxd. Use define.
 	}
 
 	// Reflect viewheight changes in client's playerstate.

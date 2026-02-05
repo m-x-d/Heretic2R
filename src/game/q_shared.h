@@ -673,7 +673,10 @@ typedef struct
 #pragma region ========================== ELEMENTS COMMUNICATED ACROSS THE NET ==========================
 
 #define ANGLE2SHORT(x)	((int)((x) * 65536.0f / 360.0f) & 65535)
-#define SHORT2ANGLE(x)	((x) * 360.0f / 65536.0f)
+#define SHORT2ANGLE(x)	((float)(x) * 360.0f / 65536.0f)
+
+#define POS2SHORT(x)	((short)((x) * 8.0f)) //mxd
+#define SHORT2POS(x)	((float)(x) * (1.0f / 8.0f)) //mxd
 
 // Config strings are a general means of communication from the server to all connected clients.
 // Each config string can be at most MAX_QPATH characters.
