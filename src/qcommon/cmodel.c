@@ -1157,7 +1157,6 @@ void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const 
 	// Check for position test special case.
 	if (VectorCompare(trace_start, trace_end))
 	{
-		int leafs[1024];
 		vec3_t c1;
 		vec3_t c2;
 		
@@ -1168,6 +1167,7 @@ void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const 
 		}
 
 		int topnode;
+		int leafs[1024];
 		const int num_leafs = CM_BoxLeafnums_headnode(c1, c2, leafs, 1024, headnode, &topnode);
 
 		for (int i = 0; i < num_leafs; i++)
