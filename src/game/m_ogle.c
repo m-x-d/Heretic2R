@@ -1325,7 +1325,7 @@ void ogle_push(edict_t* self, float distance)
 
 		if (trace.ent != NULL && trace.ent == found)
 		{
-			const float yaw = DEG2RAD(self->s.angles[YAW]);
+			const float yaw = self->s.angles[YAW] * ANGLE_TO_RAD;
 			vec3_t move = { cosf(yaw) * distance, sinf(yaw) * distance, 0.0f };
 
 			if (SV_movestep(found, move, true))

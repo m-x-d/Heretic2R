@@ -633,14 +633,14 @@ Variable* CScript::HandleBuiltinFunction()
 		case FUNC_SIN:
 		{
 			const Variable* value = PopStack();
-			var = new FloatVar("", sinf(DEG2RAD(value->GetFloatValue())));
+			var = new FloatVar("", sinf(value->GetFloatValue() * ANGLE_TO_RAD));
 			delete value;
 		} break;
 
 		case FUNC_COS:
 		{
 			const Variable* value = PopStack();
-			var = new FloatVar("", cosf(DEG2RAD(value->GetFloatValue())));
+			var = new FloatVar("", cosf(value->GetFloatValue() * ANGLE_TO_RAD));
 			delete value;
 		} break;
 
