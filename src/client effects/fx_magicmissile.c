@@ -93,14 +93,12 @@ void FXMagicMissile(centity_t* owner, const int type, const int flags, vec3_t or
 {
 	const paletteRGBA_t	light_color = { .r = 128, .g = 64, .b = 96, .a = 255 };
 
-	short shortyaw;
-	short shortpitch;
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_MAGICMISSILE].formatString, &shortyaw, &shortpitch);
+	short s_yaw;
+	short s_pitch;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_MAGICMISSILE].formatString, &s_yaw, &s_pitch);
 
-	vec3_t angles;
-	angles[YAW] = (float)shortyaw * SHORT_TO_ANGLE;
-	angles[PITCH] = (float)shortpitch * SHORT_TO_ANGLE;
-	angles[ROLL] = 0.0f;
+	// Decompress the angles.
+	const vec3_t angles = { SHORT2ANGLE(s_pitch), SHORT2ANGLE(s_yaw), 0.0f };
 
 	vec3_t forward;
 	vec3_t right;
@@ -189,11 +187,8 @@ void FXBlast(centity_t* owner, const int type, const int flags, vec3_t origin)
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_BLAST].formatString, &s_yaw, &s_pitch, 
 		&s_length[0], &s_length[1], &s_length[2], &s_length[3], &s_length[4]);
 
-	// Compress the angles into two shorts.
-	vec3_t angles;
-	angles[YAW] = (float)s_yaw * SHORT_TO_ANGLE;
-	angles[PITCH] = (float)s_pitch * SHORT_TO_ANGLE;
-	angles[ROLL] = 0.0f;
+	// Decompress the angles.
+	vec3_t angles = { SHORT2ANGLE(s_pitch), SHORT2ANGLE(s_yaw), 0.0f };
 
 	// Set up for array.
 	angles[YAW] -= BLAST_ANGLE_INC * (BLAST_NUM_SHOTS - 1) * 0.5f;
