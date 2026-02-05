@@ -196,7 +196,7 @@ static void CMod_LoadLeafs(const lump_t* l)
 	if (count >= MAX_MAP_PLANES) //mxd. '>' in Q2 and original logic.
 		Com_Error(ERR_DROP, "Map has too many planes");
 
-	cleaf_t* out = map_leafs;
+	cleaf_t* out = &map_leafs[0];
 	numclusters = 0;
 	numleafs = count;
 
@@ -248,7 +248,7 @@ static void CMod_LoadLeafBrushes(const lump_t* l)
 	if (count >= MAX_MAP_LEAFBRUSHES) //mxd. '>' in Q2 and original logic.
 		Com_Error(ERR_DROP, "Map has too many leafbrushes");
 
-	ushort* out = map_leafbrushes;
+	ushort* out = &map_leafbrushes[0];
 	numleafbrushes = count;
 
 	for (int i = 0; i < count; i++, in++, out++)
@@ -272,7 +272,7 @@ static void CMod_LoadPlanes(const lump_t* l)
 	if (count >= MAX_MAP_PLANES) //mxd. '>' in Q2 and original logic.
 		Com_Error(ERR_DROP, "Map has too many planes");
 
-	cplane_t* out = map_planes;
+	cplane_t* out = &map_planes[0];
 	numplanes = count;
 
 	for (int i = 0; i < count; i++, in++, out++)
@@ -304,7 +304,7 @@ static void CMod_LoadBrushes(const lump_t* l)
 	if (count >= MAX_MAP_BRUSHES) //mxd. '>' in Q2 and original logic.
 		Com_Error(ERR_DROP, "Map has too many brushes");
 
-	cbrush_t* out = map_brushes;
+	cbrush_t* out = &map_brushes[0];
 	numbrushes = count;
 
 	for (int i = 0; i < count; i++, out++, in++)
@@ -360,7 +360,7 @@ static void CMod_LoadSubmodels(const lump_t* l)
 		Com_Error(ERR_DROP, "Map has too many models");
 
 	numcmodels = count;
-	cmodel_t* out = map_cmodels;
+	cmodel_t* out = &map_cmodels[0];
 
 	for (int i = 0; i < count; i++, in++, out++)
 	{
@@ -416,7 +416,7 @@ static void CMod_LoadAreas(const lump_t* l)
 	if (count >= MAX_MAP_AREAS) //mxd. '>' in Q2 and original logic.
 		Com_Error(ERR_DROP, "Map has too many areas");
 
-	carea_t* out = map_areas;
+	carea_t* out = &map_areas[0];
 	numareas = count;
 
 	for (int i = 0; i < count; i++, in++, out++)
@@ -441,7 +441,7 @@ static void CMod_LoadAreaPortals(const lump_t* l)
 	if (count >= MAX_MAP_AREAS) //mxd. '>' in Q2 and original logic.
 		Com_Error(ERR_DROP, "Map has too many areas");
 
-	dareaportal_t* out = map_areaportals;
+	dareaportal_t* out = &map_areaportals[0];
 	numareaportals = count;
 
 	for (int i = 0; i < count; i++, in++, out++)
