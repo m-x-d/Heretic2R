@@ -460,8 +460,8 @@ static void P_WorldEffects(edict_t* player) //mxd. +player arg.
 
 			const vec3_t origin = VEC3_INITA(player->s.origin, 0.0f, 0.0f, player->client->playerinfo.waterheight);
 
-			const byte angle_byte = (byte)((angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
-			gi.CreateEffect(NULL, FX_WATER_WAKE, 0, origin, "sbv", player->s.number, angle_byte, player->velocity);
+			const byte b_yaw = (byte)((angles[YAW] + 180.0f) * DEG_TO_BYTEANGLE);
+			gi.CreateEffect(NULL, FX_WATER_WAKE, 0, origin, "sbv", player->s.number, b_yaw, player->velocity);
 		}
 	}
 

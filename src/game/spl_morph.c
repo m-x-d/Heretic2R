@@ -185,6 +185,7 @@ edict_t* MorphReflect(edict_t* self, edict_t* other, const vec3_t vel)
 	VectorCopy(vel, egg->velocity);
 	VectorNormalize2(egg->velocity, egg->movedir);
 	AnglesFromDir(egg->movedir, egg->s.angles);
+	Vec3ScaleAssign(RAD_TO_ANGLE, egg->s.angles); //mxd. Convert to degrees (not done in original logic).
 	egg->owner = other;
 	egg->enemy = self->enemy;
 	egg->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
@@ -193,9 +194,9 @@ edict_t* MorphReflect(edict_t* self, edict_t* other, const vec3_t vel)
 	G_LinkMissile(egg);
 
 	// Create new trails for the new missile.
-	const byte yaw = (byte)(egg->s.angles[YAW] / ANGLE_360 * 255.0f);
-	const byte pitch = (byte)(egg->s.angles[PITCH] / ANGLE_360 * 255.0f);
-	gi.CreateEffect(&egg->s, FX_SPELL_MORPHMISSILE, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "bb", yaw, pitch);
+	const byte b_yaw = (byte)(egg->s.angles[YAW] * DEG_TO_BYTEANGLE);
+	const byte b_pitch = (byte)(egg->s.angles[PITCH] * DEG_TO_BYTEANGLE);
+	gi.CreateEffect(&egg->s, FX_SPELL_MORPHMISSILE, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "bb", b_yaw, b_pitch);
 
 	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it.
 	G_SetToFree(self);
@@ -209,7 +210,7 @@ edict_t* MorphReflect(edict_t* self, edict_t* other, const vec3_t vel)
 void SpellCastMorph(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
 	short morph_array[NUM_OF_OVUMS];
-	byte yaw = 0;
+	byte b_yaw = 0;
 
 	// First ovum gets sent out along our aiming angle.
 	float current_ang = aim_angles[YAW];
@@ -236,7 +237,7 @@ void SpellCastMorph(edict_t* caster, const vec3_t start_pos, const vec3_t aim_an
 
 		// If we are the first effect, calculate our yaw.
 		if (i == 0)
-			yaw = (byte)(egg->s.angles[YAW] / 360.0f * 255.0f);
+			b_yaw = (byte)(egg->s.angles[YAW] * DEG_TO_BYTEANGLE);
 
 		morph_array[i] = egg->s.number; // Store the entity numbers for sending with the effect.
 		current_ang += ANGLE_INC; // Increment current angle to get circular radius of ovums.
@@ -244,5 +245,5 @@ void SpellCastMorph(edict_t* caster, const vec3_t start_pos, const vec3_t aim_an
 
 	// Create the client effect that gets seen on screen.
 	gi.CreateEffect(&caster->s, FX_SPELL_MORPHMISSILE_INITIAL, CEF_OWNERS_ORIGIN, NULL, "bssssss",
-		yaw, morph_array[0], morph_array[1], morph_array[2], morph_array[3], morph_array[4], morph_array[5]);
+		b_yaw, morph_array[0], morph_array[1], morph_array[2], morph_array[3], morph_array[4], morph_array[5]);
 }

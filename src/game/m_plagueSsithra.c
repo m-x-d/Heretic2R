@@ -1650,8 +1650,8 @@ void ssithra_check_ripple(edict_t* self) //mxd. Named 'ssithraCheckRipple' in or
 		AngleVectors(self->s.angles, forward, NULL, NULL);
 		Vec3ScaleAssign(200.0f, forward);
 
-		const byte b_angle = (byte)((self->s.angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
-		gi.CreateEffect(NULL, FX_WATER_WAKE, 0, trace.endpos, "sbv", self->s.number, b_angle, forward);
+		const byte b_yaw = (byte)((self->s.angles[YAW] + 180.0f) * DEG_TO_BYTEANGLE);
+		gi.CreateEffect(NULL, FX_WATER_WAKE, 0, trace.endpos, "sbv", self->s.number, b_yaw, forward);
 	}
 }
 
