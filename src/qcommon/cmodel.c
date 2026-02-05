@@ -1032,19 +1032,10 @@ static void CM_TestInLeaf(const int leafnum)
 // Q2 counterpart
 static void CM_RecursiveHullCheck(const int num, const float p1f, const float p2f, const vec3_t p1, const vec3_t p2)
 {
-	float t1;
-	float t2;
-	float offset;
-	float frac;
-	float frac2;
-	float idist;
-	vec3_t mid;
-	int side;
-
 	if (trace_trace->fraction <= p1f)
-		return; // Already hit something nearer
+		return; // Already hit something nearer.
 
-	// If < 0, we are in a leaf node
+	// If < 0, we are in a leaf node.
 	if (num < 0)
 	{
 		CM_TraceToLeaf(-1 - num);
@@ -1052,8 +1043,12 @@ static void CM_RecursiveHullCheck(const int num, const float p1f, const float p2
 	}
 
 	// Find the point distances to the separating plane and the offset for the size of the box.
-	const cnode_t* node = map_nodes + num;
+	const cnode_t* node = &map_nodes[num];
 	const cplane_t* plane = node->plane;
+
+	float t1;
+	float t2;
+	float offset;
 
 	if (plane->type < 3)
 	{
@@ -1092,6 +1087,11 @@ static void CM_RecursiveHullCheck(const int num, const float p1f, const float p2
 	}
 
 	// Put the crosspoint DIST_EPSILON pixels on the near side.
+	float idist;
+	int side;
+	float frac;
+	float frac2;
+
 	if (t1 < t2)
 	{
 		idist = 1.0f / (t1 - t2);
@@ -1109,14 +1109,16 @@ static void CM_RecursiveHullCheck(const int num, const float p1f, const float p2
 	else
 	{
 		side = 0;
-		frac = 1;
-		frac2 = 0;
+		frac = 1.0f;
+		frac2 = 0.0f;
 	}
 
 	// Move up to the node.
 	frac = Clamp(frac, 0.0f, 1.0f);
 
 	float midf = p1f + (p2f - p1f) * frac;
+
+	vec3_t mid;
 	for (int i = 0; i < 3; i++)
 		mid[i] = p1[i] + frac * (p2[i] - p1[i]);
 
