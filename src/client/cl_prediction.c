@@ -709,6 +709,10 @@ void CL_PredictMovement(void)
 		}
 	}
 
+	//mxd. Snap to network precision (fixes slight player model / camera jittering when standing on certain slopes (caused by offsetting player's origin in PM_SnapPosition()?)).
+	for (int i = 0; i < 3; i++)
+		cl.predicted_origin[i] = SHORT2POS(POS2SHORT(cl.predicted_origin[i]));
+
 	if (VectorCompare(cl.playerinfo.offsetangles, cl.frame.playerstate.offsetangles))
 	{
 		VectorClear(cl.playerinfo.offsetangles);
