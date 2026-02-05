@@ -196,7 +196,7 @@ typedef struct
 typedef struct //mxd
 {
 	menucommon_t generic;
-	char save_name[64];	// "Quicksave mapname", "Entering mapname", "11:11 01/31 mapname".
+	char save_name[64];	// "Quicksave mapname", "Entering mapname", "May 4, 1999 19:59:03 mapname".
 	char save_dir[64];	// "quick", "save0", "save1" etc.
 	qboolean load_only;	// When true, show only in Load Game menu.
 	qboolean is_valid;	// When false, save_dir does not exist. 
