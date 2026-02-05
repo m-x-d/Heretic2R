@@ -310,9 +310,8 @@ void mssithra_swipe(edict_t* self) //mxd. Named 'mssithraSwipe' in original logi
 		vec3_t origin;
 		VectorGetOffsetOrigin(offset, self->s.origin, self->s.angles[YAW], origin);
 
-		vec3_t angles;
-		VectorCopy(self->s.angles, angles);
-		angles[YAW] += DEGREE_90;
+		vec3_t angles = VEC3_INIT(self->s.angles);
+		angles[YAW] += 90.0f;
 
 		vec3_t forward;
 		AngleVectors(angles, forward, NULL, NULL);
@@ -351,13 +350,11 @@ void mssithra_arrow(edict_t* self) //mxd. Named 'mssithraArrow' in original logi
 	gi.sound(self, CHAN_WEAPON, sounds[SND_ARROW], 1.0f, ATTN_NORM, 0.0f);
 	self->monsterinfo.attack_finished = level.time + 0.4f;
 
-	vec3_t firing_pos;
-	VectorCopy(self->s.origin, firing_pos);
-	firing_pos[2] += self->maxs[2] * 0.5f;
-
 	vec3_t forward;
 	vec3_t right;
 	AngleVectors(self->s.angles, forward, right, NULL);
+
+	vec3_t firing_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2] * 0.5f);
 
 	VectorMA(firing_pos, 72.0f, forward, firing_pos);
 	VectorMA(firing_pos, 16.0f, right, firing_pos);

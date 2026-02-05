@@ -685,9 +685,8 @@ void assassin_attack(edict_t* self, const float flags) //mxd. Named 'assassindag
 			const vec3_t offset = { 35.0f, 0.0f, 32.0f };
 			VectorGetOffsetOrigin(offset, self->s.origin, self->s.angles[YAW], origin);
 
-			vec3_t angles;
-			VectorCopy(self->s.angles, angles);
-			angles[YAW] += DEGREE_90;
+			vec3_t angles = VEC3_INIT(self->s.angles);
+			angles[YAW] += 90.0f;
 
 			vec3_t forward;
 			AngleVectors(angles, forward, NULL, NULL);
