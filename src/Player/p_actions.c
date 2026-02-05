@@ -1369,12 +1369,10 @@ void PlayerJumpNudge(playerinfo_t* info, const float fwd, const float right, con
 	vec3_t vf;
 	vec3_t vr;
 	vec3_t vu;
-	vec3_t vel;
-
 	AngleVectors(info->angles, vf, vr, vu);
 
-	VectorCopy(info->velocity, vel);
-	VectorNormalize(vel);
+	vec3_t vel;
+	VectorNormalize2(info->velocity, vel);
 
 	// Get the dot products of the main directions
 	const float df = DotProduct(vf, vel);
@@ -1418,8 +1416,9 @@ void PlayerMoveALittle(playerinfo_t* info, const float fwd, float right, float u
 	else
 		return;
 
-	vec3_t fwdv;
 	info->flags |= PLAYER_FLAG_USE_ENT_POS;
+
+	vec3_t fwdv;
 	AngleVectors(info->angles, fwdv, NULL, NULL);
 	VectorMA(info->velocity, scaler, fwdv, info->velocity);
 }
