@@ -93,7 +93,7 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 
 	vec3_t angles;
 	for (int i = 0; i < 3; i++)
-		angles[i] = cl.viewangles[i] + (float)cl.frame.playerstate.pmove.delta_angles[i] * SHORT_TO_ANGLE;
+		angles[i] = cl.viewangles[i] + SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[i]);
 
 	vec3_t forward;
 	vec3_t right;

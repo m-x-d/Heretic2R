@@ -518,7 +518,7 @@ static void CL_UpdateClientAngles(void)
 			if (st_unknown2)
 			{
 				st_unknown2 = false;
-				cl.inputangles[PITCH] = -((float)cl.frame.playerstate.pmove.delta_angles[PITCH] * SHORT_TO_ANGLE);
+				cl.inputangles[PITCH] = -SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[PITCH]);
 				cl.viewangles[PITCH] = cl.inputangles[PITCH];
 				cl.delta_inputangles[PITCH] = 0.0f;
 			}
@@ -608,8 +608,8 @@ static void CL_UpdateClientAngles(void)
 	if (st_unknown5)
 	{
 		st_unknown5 = false;
+		cl.inputangles[PITCH] = -SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[PITCH]);
 		cl.inputangles[YAW] = cl.viewangles[YAW];
-		cl.inputangles[PITCH] = -((float)cl.frame.playerstate.pmove.delta_angles[PITCH] * SHORT_TO_ANGLE);
 	}
 
 	if (!do_lookaround)
