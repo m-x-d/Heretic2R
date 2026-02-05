@@ -156,7 +156,7 @@ void MSG_ReadPos(sizebuf_t* sb, vec3_t pos)
 
 float MSG_ReadAngle(sizebuf_t* sb)
 {
-	return (float)MSG_ReadChar(sb) * (360.0f / 256);
+	return (float)MSG_ReadChar(sb) * 360.0f / 256.0f;
 }
 
 float MSG_ReadAngle16(sizebuf_t* sb)

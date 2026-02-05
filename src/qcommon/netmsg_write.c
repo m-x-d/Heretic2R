@@ -33,7 +33,7 @@ static void UnsetB(byte* buf, const int bit)
 void MSG_WriteChar(sizebuf_t* sb, const int c)
 {
 	byte* buf = SZ_GetSpace(sb, 1);
-	*buf = (char)c;
+	buf[0] = (char)c;
 }
 
 // Q2 counterpart
