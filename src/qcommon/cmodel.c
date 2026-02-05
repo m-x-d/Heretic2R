@@ -1328,25 +1328,22 @@ static void BackSub(const matrix3_t m, const int* axis_arr, vec3_t normal)
 // Handles offsetting and rotation of the end points for moving and rotating entities.
 void CM_TransformedBoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, const int headnode, const uint brushmask, const vec3_t origin, const vec3_t angles, trace_t* return_trace)
 {
-	vec3_t forward;
-	vec3_t right;
-	vec3_t up;
-	vec3_t start_l;
-	vec3_t end_l;
-	vec3_t mins_l;
-	vec3_t maxs_l;
-	vec3_t diff;
-	vec3_t temp;
-
 	// Subtract origin offset.
+	vec3_t start_l;
 	VectorSubtract(start, origin, start_l);
+
+	vec3_t end_l;
 	VectorSubtract(end, origin, end_l);
 
 	// Rotate start and end into the models frame of reference.
 	if (headnode != box_headnode && Vec3NotZero(angles))
 	{
+		vec3_t forward;
+		vec3_t right;
+		vec3_t up;
 		AngleVectors(angles, forward, right, up);
 
+		vec3_t temp;
 		VectorCopy(start_l, temp);
 		start_l[0] = DotProduct(temp, forward);
 		start_l[1] = -DotProduct(temp, right);
@@ -1357,12 +1354,16 @@ void CM_TransformedBoxTrace(const vec3_t start, const vec3_t end, const vec3_t m
 		end_l[1] = -DotProduct(temp, right);
 		end_l[2] = DotProduct(temp, up);
 
+		vec3_t mins_l;
+		vec3_t maxs_l;
+
 		for (int i = 0; i < 8; i++) // H2 //TODO: I've definitely seen similar logic somewhere in this project. But where?..
 		{
 			temp[0] = ((i & 1) != 0 ? mins[0] : maxs[0]);
 			temp[1] = ((i & 2) != 0 ? mins[1] : maxs[1]);
 			temp[2] = ((i & 4) != 0 ? mins[2] : maxs[2]);
 
+			vec3_t diff;
 			diff[0] = DotProduct(temp, forward);
 			diff[1] = -DotProduct(temp, right);
 			diff[2] = DotProduct(temp, up);
