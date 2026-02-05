@@ -28,7 +28,7 @@ static int numnodes;
 static cnode_t map_nodes[MAX_MAP_NODES + 6]; // Extra for box hull. 524336 bytes.
 
 static int numleafs = 1; // Allow leaf funcs to be called without a map.
-static cleaf_t map_leafs[MAX_MAP_LEAFS]; // 1048576 bytes
+static cleaf_t map_leafs[MAX_MAP_LEAFS]; // 1048576 bytes.
 static int emptyleaf;
 
 static int numleafbrushes;
@@ -169,7 +169,7 @@ static void CMod_LoadSurfaces(const lump_t* l)
 		Com_Error(ERR_DROP, "Map has too many surfaces");
 
 	numtexinfo = count;
-	csurface_t* out = map_surfaces; // Q2: mapsurface_t.
+	csurface_t* out = &map_surfaces[0]; // Q2: mapsurface_t.
 
 	for (int i = 0; i < count; i++, in++, out++)
 	{
@@ -329,7 +329,7 @@ static void CMod_LoadBrushSides(const lump_t* l)
 	if (count >= MAX_MAP_BRUSHSIDES) //mxd. '>' in Q2 and original logic.
 		Com_Error(ERR_DROP, "Map has too many planes");
 
-	cbrushside_t* out = map_brushsides;
+	cbrushside_t* out = &map_brushsides[0];
 	numbrushsides = count;
 
 	for (int i = 0; i < count; i++, in++, out++)
