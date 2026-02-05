@@ -971,7 +971,7 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 	P_Trace(info, info->origin, info->mins, maxs, endpoint, &swingtrace); //mxd
 
 	// Did we hit a wall underneath?
-	const qboolean swingable = (swingtrace.fraction == 1.0f && (!swingtrace.startsolid || !swingtrace.allsolid));
+	const qboolean swingable = (!swingtrace.startsolid && !swingtrace.allsolid && swingtrace.fraction == 1.0f); //mxd. 'swingtrace.fraction == 1.0f && (!swingtrace.startsolid || !swingtrace.allsolid)' in original logic.
 
 	// Save the intended grab location (the endpoint).
 	for (int i = 0; i < 3; i++)
