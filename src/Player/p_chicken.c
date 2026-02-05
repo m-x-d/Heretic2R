@@ -52,12 +52,9 @@ void PlayerChickenJump(playerinfo_t* info)
 {
 	if (info->waterlevel < 2)
 	{
-		vec3_t endpos;
-		VectorCopy(info->origin, endpos);
-		endpos[2] += (info->mins[2] - 2.0f);
-
 		trace_t trace;
-		P_Trace(info, info->origin, info->mins, info->maxs, endpos, &trace); //mxd
+		const vec3_t end_pos = VEC3_INITA(info->origin, 0.0f, 0.0f, info->mins[2] - 2.0f);
+		P_Trace(info, info->origin, info->mins, info->maxs, end_pos, &trace); //mxd
 
 		if (info->groundentity != NULL || trace.fraction < 0.2f)
 			info->upvel = 200.0f;
