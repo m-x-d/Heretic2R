@@ -191,22 +191,23 @@ static qboolean SV_MoveStep_Walk(edict_t* ent, const vec3_t move, const qboolean
 // The move will be adjusted for slopes and stairs, but if the move isn't possible, no move is done, false is returned,
 // and pr_global_struct->trace_normal is set to the normal of the blocking wall.
 // FIXME since we need to test end position contents here, can we avoid doing it again later in categorize position?
-//TODO: modifies 'move' vector. Is that intentional?
-qboolean SV_movestep(edict_t* ent, vec3_t move, const qboolean relink)
+qboolean SV_movestep(edict_t* ent, const vec3_t move, const qboolean relink)
 {
+	vec3_t v_move = VEC3_INIT(move); //mxd. Avoid modifying 'move' vector.
+
 	// Scale here, not before!
 	if (ent->monsterinfo.scale > 0.0f && ent->monsterinfo.scale != 1.0f) //TODO: check cases when ent->monsterinfo.scale == 0.
-		Vec3ScaleAssign(ent->monsterinfo.scale, move);
+		Vec3ScaleAssign(ent->monsterinfo.scale, v_move);
 
 	// Swim and fly monsters. Flying monsters don't step up.
 	if (ent->flags & (FL_SWIM | FL_FLY))
 	{
-		const trace_t tr = MG_MoveStep_SwimOrFly(ent, move, relink); //mxd. Reuse MG_MoveStep_SwimOrFly() logic.
+		const trace_t tr = MG_MoveStep_SwimOrFly(ent, v_move, relink); //mxd. Reuse MG_MoveStep_SwimOrFly() logic.
 		return tr.succeeded;
 	}
 
 	// Walk monsters.
-	return SV_MoveStep_Walk(ent, move, relink); //mxd
+	return SV_MoveStep_Walk(ent, v_move, relink); //mxd
 }
 
 float M_ChangeYaw(edict_t* ent) //TODO: VERY similar to MG_ChangeYaw() (the only difference is anglemod() / anglemod_old() usage). Use MG_ChangeYaw() instead?
@@ -240,7 +241,7 @@ qboolean M_walkmove(edict_t* ent, float yaw, const float dist)
 	if (ent->groundentity != NULL || (ent->flags & (FL_FLY | FL_SWIM)))
 	{
 		yaw *= ANGLE_TO_RAD;
-		vec3_t move = VEC3_SET(cosf(yaw) * dist, sinf(yaw) * dist, 0.0f);
+		const vec3_t move = VEC3_SET(cosf(yaw) * dist, sinf(yaw) * dist, 0.0f);
 
 		return SV_movestep(ent, move, true);
 	}
