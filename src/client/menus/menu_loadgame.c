@@ -13,41 +13,6 @@ cvar_t* m_banner_load;
 static menuframework_t s_loadgame_menu;
 static menu_saveload_action_t s_loadgame_actions[MAX_SAVEGAMES];
 
-static void CheckSavegameDir(char* save_dir)
-{
-	char search_path[MAX_OSPATH];
-	FILE* f;
-
-	qboolean is_valid = true;
-	Com_sprintf(search_path, sizeof(search_path), "%s/save/%s/*.*", FS_Userdir(), save_dir);
-
-	const char* file_path = Sys_FindFirst(search_path, 0, 0);
-	while (file_path != NULL)
-	{
-		if (fopen_s(&f, file_path, "rb") == 0) //mxd. fopen -> fopen_s
-		{
-			const int len = FS_FileLength(f);
-			fclose(f);
-
-			if (len == 0)
-			{
-				is_valid = false;
-				break;
-			}
-		}
-
-		file_path = Sys_FindNext(0, 0);
-	}
- 
-	Sys_FindClose();
-
-	if (!is_valid)
-	{
-		Com_Printf("Folder %s contains invalid files... deleting\n", save_dir);
-		SV_WipeSavegame(save_dir);
-	}
-}
-
 //mxd. Returns true if at least 1 savegame exists. For menu_game logic. Stripped version of InitSaveLoadActions()...
 qboolean CanShowLoadgameMenu(void)
 {
@@ -88,22 +53,31 @@ void InitSaveLoadActions(menu_saveload_action_t* items, const int num_items)
 			item->load_only = (i == 1); // save0 is ENTERING save.
 		}
 
-		CheckSavegameDir(item->save_dir); //TODO: vanilla logic skips ENTERING save check. Why?
+		// Pre-init savegame slot as empty.
+		strcpy_s(item->save_name, sizeof(item->save_name), MENU_EMPTY); //mxd. strcpy -> strcpy_s
+		item->is_valid = false;
 
-		char file_name[MAX_OSPATH];
-		Com_sprintf(file_name, sizeof(file_name), "%s/save/%s/server.ssv", FS_Userdir(), item->save_dir);
-
+		// Check savegame slot.
 		FILE* f;
-		if (fopen_s(&f, file_name, "rb") == 0) //mxd. fopen -> fopen_s
+		if (fopen_s(&f, va("%s/save/%s/server.ssv", FS_Userdir(), item->save_dir), "rb") == 0) //mxd. fopen -> fopen_s
 		{
-			FS_Read(item->save_name, sizeof(item->save_name), f);
+			//mxd. Check file length. Original logic does this check for every file in current save folder.
+			// Removed to fix noticeable delay when opening Save/Load menus while having lots of endgame saves (which can take up to 100 Mb in total).
+			// I guess this logic was needed because of much smaller HDD sizes back in late 90's (so running out of free space while saving was much less
+			// of a hypothetical problem than it is nowadays).
+			if (FS_FileLength(f) > (int)sizeof(item->save_name))
+			{
+				FS_Read(item->save_name, sizeof(item->save_name), f);
+				item->is_valid = true;
+			}
+			
 			fclose(f);
-			item->is_valid = true;
-		}
-		else
-		{
-			strcpy_s(item->save_name, sizeof(item->save_name), MENU_EMPTY); //mxd. strcpy -> strcpy_s
-			item->is_valid = false;
+
+			if (!item->is_valid)
+			{
+				Com_Printf("Savegame folder '%s' contains invalid files. Deleting...\n", item->save_dir);
+				SV_WipeSavegame(item->save_dir);
+			}
 		}
 	}
 }
