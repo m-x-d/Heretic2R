@@ -665,7 +665,7 @@ void CL_PredictMovement(void)
 		for (int i = 0; i < 3; i++)
 		{
 			const float val = cl.playerinfo.origin[i] - cl.prediction_error[i] * backlerp;
-			cl.predicted_origins[frame][i] = (short)(val * 8.0f);
+			cl.predicted_origins[frame][i] = POS2SHORT(val);
 		}
 
 		//mxd. Setup origin interpolation...
@@ -686,7 +686,7 @@ void CL_PredictMovement(void)
 
 	int delta[3];
 	for (int i = 0; i < 3; i++)
-		delta[i] = cl.predicted_origins[frame][i] - (int)(cl.predicted_origin[i] * 8.0f);
+		delta[i] = cl.predicted_origins[frame][i] - POS2SHORT(cl.predicted_origin[i]);
 
 	const int dist = abs(delta[0]) + abs(delta[1]) + abs(delta[2]);
 
@@ -704,7 +704,7 @@ void CL_PredictMovement(void)
 		//mxd. So, we now need to interpolate cl.predicted_origin across such calls...
 		for (int i = 0; i < 3; i++)
 		{
-			const float new_pos = (float)cl.predicted_origins[frame][i] * 0.125f;
+			const float new_pos = SHORT2POS(cl.predicted_origins[frame][i]);
 			cl.predicted_origin[i] = prev_predicted_origin[i] + (new_pos - prev_predicted_origin[i]) * origin_lerp;
 		}
 	}
