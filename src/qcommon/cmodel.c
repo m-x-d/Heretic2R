@@ -14,7 +14,7 @@ static int checkcount;
 static char map_name[MAX_QPATH];
 
 static int numbrushsides;
-static cbrushside_t map_brushsides[MAX_MAP_BRUSHSIDES]; // 524288 bytes
+static cbrushside_t map_brushsides[MAX_MAP_BRUSHSIDES]; // 524288 bytes.
 
 int numtexinfo;
 csurface_t map_surfaces[MAX_MAP_TEXINFO];
@@ -25,37 +25,37 @@ static cplane_t map_planes[MAX_MAP_PLANES + 12]; // Extra for box hull. 1310840 
 static int numplanes;
 
 static int numnodes;
-static cnode_t map_nodes[MAX_MAP_NODES + 6]; // Extra for box hull. 524336 bytes
+static cnode_t map_nodes[MAX_MAP_NODES + 6]; // Extra for box hull. 524336 bytes.
 
 static int numleafs = 1; // Allow leaf funcs to be called without a map.
 static cleaf_t map_leafs[MAX_MAP_LEAFS]; // 1048576 bytes
 static int emptyleaf;
 
 static int numleafbrushes;
-static ushort map_leafbrushes[MAX_MAP_LEAFBRUSHES]; // 131072 bytes
+static ushort map_leafbrushes[MAX_MAP_LEAFBRUSHES]; // 131072 bytes.
 
 static int numcmodels;
-static cmodel_t map_cmodels[MAX_MAP_MODELS]; // 40960 bytes
+static cmodel_t map_cmodels[MAX_MAP_MODELS]; // 40960 bytes.
 
 static int numbrushes;
-static cbrush_t map_brushes[MAX_MAP_BRUSHES]; // 163840 bytes
+static cbrush_t map_brushes[MAX_MAP_BRUSHES]; // 163840 bytes.
 
 static int numvisibility;
-static byte map_visibility[MAX_MAP_VISIBILITY]; // 1048576 bytes
+static byte map_visibility[MAX_MAP_VISIBILITY]; // 1048576 bytes.
 static dvis_t* map_vis = (dvis_t*)map_visibility;
 
 static int numentitychars;
-static char map_entitystring[MAX_MAP_ENTSTRING]; // 262144 bytes
+static char map_entitystring[MAX_MAP_ENTSTRING]; // 262144 bytes.
 
 static int numareas = 1;
-static carea_t map_areas[MAX_MAP_AREAS]; // 4096 bytes
+static carea_t map_areas[MAX_MAP_AREAS]; // 4096 bytes.
 
 static int numareaportals;
-static dareaportal_t map_areaportals[MAX_MAP_AREAPORTALS]; // 8192 bytes
+static dareaportal_t map_areaportals[MAX_MAP_AREAPORTALS]; // 8192 bytes.
 
 static int numclusters = 1;
 
-static qboolean portalopen[MAX_MAP_AREAPORTALS]; // 4096 bytes
+static qboolean portalopen[MAX_MAP_AREAPORTALS]; // 4096 bytes.
 
 static cvar_t* map_noareas;
 
@@ -64,7 +64,7 @@ int c_traces;
 int c_brush_traces;
 
 //mxd. Used by CM_BoxLeafnums logic.
-#define DIST_EPSILON	0.03125f // 1/32 epsilon to keep floating point happy
+#define DIST_EPSILON	0.03125f // 1/32 epsilon to keep floating point happy.
 
 static int leaf_count;
 static int leaf_maxcount;
@@ -125,12 +125,12 @@ static void CM_InitBoxHull(void)
 
 		// Brush sides.
 		cbrushside_t* s = &map_brushsides[numbrushsides + i];
-		s->plane = map_planes + (numplanes + i * 2 + side);
+		s->plane = &map_planes[numplanes + i * 2 + side];
 		s->surface = &nullsurface;
 
 		// Nodes.
 		cnode_t* c = &map_nodes[box_headnode + i];
-		c->plane = map_planes + (numplanes + i * 2);
+		c->plane = &map_planes[numplanes + i * 2];
 		c->children[side] = -1 - emptyleaf;
 
 		if (i != 5)
