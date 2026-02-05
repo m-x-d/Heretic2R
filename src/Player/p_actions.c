@@ -913,17 +913,13 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 
 	// Now finally, if we try tracing the player blocking forward a tad, we should be hitting an obstruction.
 
-	vec3_t playermin;
-	vec3_t playermax;
-	VectorCopy(info->mins, playermin);
-	VectorCopy(info->maxs, playermax);
-
 	// We need to take the player limits and extend them up to 83 in height.
+	vec3_t player_maxs = VEC3_INIT(info->maxs);
+	player_maxs[2] = GRAB_HAND_HEIGHT;
 
-	playermax[2] = GRAB_HAND_HEIGHT;
 	VectorMA(info->origin, GRAB_HAND_HORZONE, forward, endpoint);
 
-	P_Trace(info, info->origin, playermin, playermax, endpoint, &grabtrace); //mxd
+	P_Trace(info, info->origin, info->mins, player_maxs, endpoint, &grabtrace); //mxd
 
 	// Player body did not connect with a flat surface.
 	if (grabtrace.fraction == 1.0f || grabtrace.startsolid || grabtrace.allsolid)
@@ -952,8 +948,7 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 	// One more check, make sure we can fit in there, so we don't start climbing then fall back down.
 
 	// Get the z height
-	vec3_t lastcheck_start;
-	VectorCopy(info->origin, lastcheck_start);
+	vec3_t lastcheck_start = VEC3_INIT(info->origin);
 	lastcheck_start[2] = max(lefthand[2], righthand[2]) - info->mins[2];
 
 	vec3_t lastcheck_end;
@@ -966,18 +961,14 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 		return GT_NONE;
 
 	// Now see if the surface is eligible for a overhanging swing vault.
-	// Trace from about the player's waist to his feet to determine this.
-	vec3_t mins;
-	vec3_t maxs;
-	VectorCopy(info->mins, mins);
-	VectorCopy(info->maxs, maxs);
-	maxs[2] -= 48.0f;
 
+	// Trace from about the player's waist to his feet to determine this.
 	AngleVectors(info->angles, forward, NULL, NULL);
 	VectorMA(info->origin, 32.0f, forward, endpoint);
 
 	trace_t swingtrace;
-	P_Trace(info, info->origin, mins, maxs, endpoint, &swingtrace); //mxd
+	const vec3_t maxs = VEC3_INITA(info->maxs, 0.0f, 0.0f, -48.0f);
+	P_Trace(info, info->origin, info->mins, maxs, endpoint, &swingtrace); //mxd
 
 	// Did we hit a wall underneath?
 	const qboolean swingable = (swingtrace.fraction == 1.0f && (!swingtrace.startsolid || !swingtrace.allsolid));
