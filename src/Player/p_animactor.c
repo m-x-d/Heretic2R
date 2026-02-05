@@ -22,7 +22,7 @@
 static void SnapJointAnglesToNetworkPrecision(vec3_t angles)
 {
 	for (int i = 0; i < 3; i++)
-		angles[i] = (float)((int)(angles[i] * RAD_TO_BYTEANGLE)) / RAD_TO_BYTEANGLE;
+		angles[i] = (float)((int)(angles[i] * JOINT_TO_BYTEANGLE)) * BYTEANGLE_TO_JOINT;
 }
 
 static void CalcJointAngles(playerinfo_t* info)

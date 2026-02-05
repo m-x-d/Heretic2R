@@ -347,7 +347,7 @@ static void MSG_WriteJoints(sizebuf_t* sb, const int joint_index) // H2
 		if (joint->changed[i])
 		{
 			const float angle = ClampAngleRad(joint->destAngles[i]);
-			const int byteangle = ClampI((int)(angle * RAD_TO_BYTEANGLE + 128.0f), 0, 255);
+			const int byteangle = ClampI((int)(angle * JOINT_TO_BYTEANGLE + 128.0f), 0, 255);
 			MSG_WriteByte(sb, byteangle);
 		}
 	}

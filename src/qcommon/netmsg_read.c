@@ -344,7 +344,7 @@ void MSG_ReadJoints(sizebuf_t* sb, entity_state_t* ent)
 		if ((flags & JN_YAW_CHANGED) != 0)
 		{
 			const int val = MSG_ReadByte(sb);
-			skeletal_joints[index].destAngles[0] = (float)(val - 128) / RAD_TO_BYTEANGLE;
+			skeletal_joints[index].destAngles[0] = (float)(val - 128) * BYTEANGLE_TO_JOINT;
 
 			const int dir = (flags >> 3) % 3;
 			if (dir == 1)
@@ -352,13 +352,13 @@ void MSG_ReadJoints(sizebuf_t* sb, entity_state_t* ent)
 			else if (dir == 2)
 				skeletal_joints[index].angVels[0] = -ANGLE_45;
 			else
-				skeletal_joints[index].angVels[0] = 0.0f;
+				skeletal_joints[index].angVels[0] = ANGLE_0;
 		}
 
 		if ((flags & JN_PITCH_CHANGED) != 0)
 		{
 			const int val = MSG_ReadByte(sb);
-			skeletal_joints[index].destAngles[1] = (float)(val - 128) / RAD_TO_BYTEANGLE;
+			skeletal_joints[index].destAngles[1] = (float)(val - 128) * BYTEANGLE_TO_JOINT;
 
 			const int dir = (flags >> 3) / 3 % 3;
 			if (dir == 1)
@@ -366,13 +366,13 @@ void MSG_ReadJoints(sizebuf_t* sb, entity_state_t* ent)
 			else if (dir == 2)
 				skeletal_joints[index].angVels[1] = -ANGLE_45;
 			else
-				skeletal_joints[index].angVels[1] = 0.0f;
+				skeletal_joints[index].angVels[1] = ANGLE_0;
 		}
 
 		if ((flags & JN_ROLL_CHANGED) != 0)
 		{
 			const int val = MSG_ReadByte(sb);
-			skeletal_joints[index].destAngles[2] = (float)(val - 128) / RAD_TO_BYTEANGLE;
+			skeletal_joints[index].destAngles[2] = (float)(val - 128) * BYTEANGLE_TO_JOINT;
 
 			const int dir = (flags >> 3) / 9;
 			if (dir == 1)
@@ -380,7 +380,7 @@ void MSG_ReadJoints(sizebuf_t* sb, entity_state_t* ent)
 			else if (dir == 2)
 				skeletal_joints[index].angVels[2] = -ANGLE_45;
 			else
-				skeletal_joints[index].angVels[2] = 0.0f;
+				skeletal_joints[index].angVels[2] = ANGLE_0;
 		}
 	}
 }

@@ -59,14 +59,14 @@
 #define DEGREE_15		(DEGREE_180 / 12.0f)
 #define DEGREE_20		(DEGREE_180 / 8.0f)
 
-// Conversion routines
+// Conversion routines.
 #define ANGLE_TO_RAD	ANGLE_1
 #define RAD_TO_ANGLE	(180.0f / ANGLE_180)
 
 #define SHORT_TO_ANGLE	(360.0f / 65536.0f)
 
-//mxd. Used by skeletal joints logic.
-#define RAD_TO_BYTEANGLE (161.7014176816138f) //TODO: == 254 / ANGLE_90? Why 254?..
+#define BYTEANGLE_TO_RAD	(ANGLE_360 / 255.0f) //mxd
 
-//mxd
-#define BYTEANGLE_TO_RAD	(ANGLE_360 / 255.0f)
+//mxd. Used by skeletal joints logic.
+#define JOINT_TO_BYTEANGLE	(254.0f / ANGLE_90)
+#define BYTEANGLE_TO_JOINT	(ANGLE_90 / 254.0f)
