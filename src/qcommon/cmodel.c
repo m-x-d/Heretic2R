@@ -392,7 +392,7 @@ static void CMod_LoadNodes(const lump_t* l)
 	if (count >= MAX_MAP_NODES) //mxd. '>' in Q2 and original logic.
 		Com_Error(ERR_DROP, "Map has too many nodes");
 
-	cnode_t* out = map_nodes;
+	cnode_t* out = &map_nodes[0];
 	numnodes = count;
 
 	for (int i = 0; i < count; i++, out++, in++)
