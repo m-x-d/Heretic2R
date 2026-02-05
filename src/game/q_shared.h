@@ -672,8 +672,8 @@ typedef struct
 
 #pragma region ========================== ELEMENTS COMMUNICATED ACROSS THE NET ==========================
 
-#define ANGLE2SHORT(x)	((int)((x) * 65536 / 360) & 65535)
-#define SHORT2ANGLE(x)	((x) * (360.0f / 65536.0f))
+#define ANGLE2SHORT(x)	((int)((x) * 65536.0f / 360.0f) & 65535)
+#define SHORT2ANGLE(x)	((x) * 360.0f / 65536.0f)
 
 #define DEG2RAD(a) (((a) * M_PI) / 180.0f)
 
