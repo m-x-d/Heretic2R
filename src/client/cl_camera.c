@@ -66,7 +66,7 @@ static void CL_UpdateWallDistances(void) // H2
 
 	const vec3_t start = VEC3_INIT(PlayerEntPtr->origin);
 	vec3_t end = VEC3_INIT(PlayerEntPtr->origin);
-	
+
 	switch (cl.wall_check)
 	{
 		case 0:
@@ -400,8 +400,8 @@ void CL_CalcViewValues(void)
 		}
 		else
 		{
-			for (int c = 0; c < 3; c++)
-				PlayerEntPtr->origin[c] = ((float)ops->pmove.origin[c] + (float)(ps->pmove.origin[c] - ops->pmove.origin[c]) * lerp) * 0.125f;
+			for (int i = 0; i < 3; i++)
+				PlayerEntPtr->origin[i] = ((float)ops->pmove.origin[i] + (float)(ps->pmove.origin[i] - ops->pmove.origin[i]) * lerp) * 0.125f;
 		}
 
 		VectorCopy(PlayerEntPtr->origin, PlayerEntPtr->oldorigin);
