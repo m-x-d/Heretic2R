@@ -172,11 +172,8 @@ void MorphPlayerToChickenEnd(edict_t* self) //mxd. Named 'Perform_Morph' in orig
 	// Check if super-chicken can fit here.
 	if (super_chicken)
 	{
-		vec3_t pos;
-		VectorCopy(self->s.origin, pos);
-		pos[2] += 2.0f;
-
 		trace_t trace;
+		const vec3_t pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, 2.0f);
 		gi.trace(pos, mins, maxs, pos, self, MASK_PLAYERSOLID, &trace);
 
 		if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
