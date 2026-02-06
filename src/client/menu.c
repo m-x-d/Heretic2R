@@ -597,6 +597,7 @@ void M_Init(void)
 	m_item_gamma = Cvar_Get("m_item_gamma", "Gamma", 0);
 	m_item_brightness = Cvar_Get("m_item_brightness", "Brightness", 0);
 	m_item_contrast = Cvar_Get("m_item_contrast", "Contrast", 0);
+	m_item_minlight = Cvar_Get("m_item_minlight", "Min. light level", 0); //mxd
 	m_item_detail = Cvar_Get("m_item_detail", "Detail Level", 0);
 
 	// Options / Video Settings menus.

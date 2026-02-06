@@ -6,6 +6,7 @@
 
 #include "gl1_Image.h"
 #include "gl1_Draw.h"
+#include "gl1_Light.h"
 
 image_t gltextures[MAX_GLTEXTURES];
 int numgltextures;
@@ -653,6 +654,8 @@ void R_InitImages(void) // Q2: GL_InitImages()
 {
 	registration_sequence = 1;
 	gl_state.inverse_intensity = 1.0f;
+
+	R_InitMinlight(); // YQ2
 }
 
 void R_ShutdownImages(void) // Q2: GL_ShutdownImages()

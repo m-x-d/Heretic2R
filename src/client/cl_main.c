@@ -66,7 +66,8 @@ cvar_t* cl_lightlevel;
 
 // H2:
 cvar_t* shownames;
-cvar_t* r_detail;
+cvar_t* m_r_detail;
+cvar_t* m_gl_minlight; // YQ2
 cvar_t* cl_showcaptions;
 cvar_t* cl_autoaim;
 
@@ -1184,7 +1185,8 @@ static void CL_InitLocal(void)
 
 	// H2:
 	shownames = Cvar_Get("shownames", "0", CVAR_ARCHIVE);
-	r_detail = Cvar_Get("r_detail", DETAIL_DEFAULT, CVAR_ARCHIVE); // H2_1.07: "2.0" -> "3".
+	m_r_detail = Cvar_Get("r_detail", DETAIL_DEFAULT, CVAR_ARCHIVE); // H2_1.07: "2.0" -> "3".
+	m_gl_minlight = Cvar_Get("gl_minlight", "0", CVAR_ARCHIVE); // YQ2
 	cl_showcaptions = Cvar_Get("cl_showcaptions", "1", 0);
 	cl_autoaim = Cvar_Get("cl_autoaim", "0.8", CVAR_ARCHIVE); //mxd. "0" -> "0.5"; H2: "cl_doautoaim"
 	cl_camera_clipdamp = Cvar_Get("cl_camera_clipdamp", "1.0", 0);

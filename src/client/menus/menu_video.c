@@ -16,11 +16,13 @@ cvar_t* m_item_target_fps; //mxd. "Target FPS"
 cvar_t* m_item_gamma;
 cvar_t* m_item_brightness;
 cvar_t* m_item_contrast;
+cvar_t* m_item_minlight; // YQ2
 cvar_t* m_item_detail;
 
 static float m_gamma;
 static float m_brightness;
 static float m_contrast;
+static float m_minlight; //mxd. gl_minlight when entering menu.
 
 static menuframework_t s_video_menu;
 
@@ -30,6 +32,7 @@ static menulist_t s_target_fps_list; //mxd
 static menuslider_t s_gamma_slider;
 static menuslider_t s_brightness_slider;
 static menuslider_t s_contrast_slider;
+static menuslider_t s_minlight_slider; // YQ2
 static menuslider_t s_detail_slider;
 
 static char* ref_list_titles[MAX_REFLIBS];
@@ -65,6 +68,12 @@ static void UpdateContrastFunc(void* self) // H2
 	Cvar_SetValue("vid_contrast", slider->curvalue / 16.0f);
 }
 
+static void UpdateMinlightFunc(void* self) // YQ2
+{
+	const menuslider_t* slider = (menuslider_t*)self;
+	Cvar_SetValue("gl_minlight", slider->curvalue * 4.0f);
+}
+
 static void UpdateDetailFunc(void* self) // H2
 {
 	const menuslider_t* slider = (menuslider_t*)self;
@@ -86,6 +95,9 @@ static void ApplyChanges(const qboolean close_menu) //mxd. +close_menu arg.
 		initial_reflib_index = s_ref_list.curvalue;
 		vid_restart_required = true;
 	}
+
+	if ((int)m_minlight != (int)m_gl_minlight->value) // YQ2
+		vid_restart_required = true;
 
 	if (vid_restart_required)
 	{
@@ -150,6 +162,7 @@ static void VID_MenuInit(void)
 	static char name_gamma[MAX_QPATH];
 	static char name_brightness[MAX_QPATH];
 	static char name_contrast[MAX_QPATH];
+	static char name_minlight[MAX_QPATH]; // YQ2
 	static char name_detail[MAX_QPATH];
 
 	VID_PreMenuInit();
@@ -157,10 +170,12 @@ static void VID_MenuInit(void)
 	m_gamma = Cvar_VariableValue("vid_gamma");
 	m_brightness = Cvar_VariableValue("vid_brightness");
 	m_contrast = Cvar_VariableValue("vid_contrast");
+	m_minlight = Cvar_VariableValue("gl_minlight"); // YQ2
 
 	s_video_menu.nitems = 0;
 
-	Cvar_SetValue("r_detail", Clamp(r_detail->value, 0.0f, 3.0f));
+	Cvar_SetValue("r_detail", Clamp(m_r_detail->value, 0.0f, 3.0f));
+	Cvar_SetValue("gl_minlight", Clamp(m_gl_minlight->value, 0.0f, 32.0f)); //mxd
 	Cvar_SetValue("vid_maxfps", Clamp(vid_maxfps->value, 30.0f, 240.0f)); //mxd
 
 	Com_sprintf(name_driver, sizeof(name_driver), "\x02%s", m_item_driver->string);
@@ -228,17 +243,30 @@ static void VID_MenuInit(void)
 	s_contrast_slider.maxvalue = 14.4f;
 	s_contrast_slider.curvalue = vid_contrast->value * 16.0f;
 
+	// YQ2
+	Com_sprintf(name_minlight, sizeof(name_minlight), "\x02%s", m_item_minlight->string);
+	s_minlight_slider.generic.type = MTYPE_SLIDER;
+	s_minlight_slider.generic.flags = QMF_SELECT_SOUND;
+	s_minlight_slider.generic.x = 0;
+	s_minlight_slider.generic.y = 220;
+	s_minlight_slider.generic.name = name_minlight;
+	s_minlight_slider.generic.width = re.BF_Strlen(name_minlight);
+	s_minlight_slider.generic.callback = UpdateMinlightFunc;
+	s_minlight_slider.minvalue = 0.0f;
+	s_minlight_slider.maxvalue = 8.0f;
+	s_minlight_slider.curvalue = m_gl_minlight->value * 0.25f;
+
 	Com_sprintf(name_detail, sizeof(name_detail), "\x02%s", m_item_detail->string);
 	s_detail_slider.generic.type = MTYPE_SLIDER;
 	s_detail_slider.generic.flags = QMF_SELECT_SOUND; //mxd. QMF_SELECT_SOUND flag was missing in original version.
 	s_detail_slider.generic.x = 0;
-	s_detail_slider.generic.y = 220;
+	s_detail_slider.generic.y = 260;
 	s_detail_slider.generic.name = name_detail;
 	s_detail_slider.generic.width = re.BF_Strlen(name_detail);
 	s_detail_slider.generic.callback = UpdateDetailFunc;
 	s_detail_slider.minvalue = 0.0f;
 	s_detail_slider.maxvalue = 3.0f;
-	s_detail_slider.curvalue = r_detail->value; //mxd. Original version used Cvar_VariableValue("r_detail") here.
+	s_detail_slider.curvalue = m_r_detail->value; //mxd. Original version used Cvar_VariableValue("r_detail") here.
 
 	Menu_AddItem(&s_video_menu, &s_ref_list);
 	Menu_AddItem(&s_video_menu, &s_mode_list);
@@ -246,6 +274,7 @@ static void VID_MenuInit(void)
 	Menu_AddItem(&s_video_menu, &s_gamma_slider);
 	Menu_AddItem(&s_video_menu, &s_brightness_slider);
 	Menu_AddItem(&s_video_menu, &s_contrast_slider);
+	Menu_AddItem(&s_video_menu, &s_minlight_slider); // YQ2
 	Menu_AddItem(&s_video_menu, &s_detail_slider);
 
 	Menu_Center(&s_video_menu);

@@ -31,6 +31,7 @@ extern cvar_t* m_item_target_fps; //mxd
 extern cvar_t* m_item_gamma;
 extern cvar_t* m_item_brightness;
 extern cvar_t* m_item_contrast;
+extern cvar_t* m_item_minlight; // YQ2
 extern cvar_t* m_item_detail;
 
 // Controls.

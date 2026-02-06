@@ -703,13 +703,15 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 //mxd. Somewhat similar to R_DrawAliasModel from Q2. Original code used 'currententity' global var instead of 'e' arg.
 void R_DrawFlexModel(entity_t* e)
 {
-	vec3_t shadelight;
 	const fmdl_t* fmdl = (fmdl_t*)(*e->model)->extradata; //mxd. Original code used 'currentmodel' global var here.
 
 	if (R_CullFlexModel(fmdl, e))
 		return;
 
 	// Get lighting information.
+	vec3_t shadelight;
+	qboolean apply_minlight = false; //mxd
+
 	if (e->flags & RF_TRANS_ADD_ALPHA)
 	{
 		const float alpha = (float)e->color.a / 255.0f;
@@ -722,15 +724,26 @@ void R_DrawFlexModel(entity_t* e)
 	else if (e->absLight.r != 0 || e->absLight.g != 0 || e->absLight.b != 0)
 	{
 		VectorSet(shadelight, (float)e->absLight.r / 255.0f, (float)e->absLight.g / 255.0f, (float)e->absLight.b / 255.0f);
+		apply_minlight = true; //mxd
 	}
 	else if (!(e->flags & RF_GLOW)) //mxd. Skip when result is going to be ignored.
 	{
 		R_LightPoint(e->origin, shadelight, true); //mxd. Skip RF_WEAPONMODEL logic (never set in H2), skip gl_monolightmap logic.
+		apply_minlight = true; //mxd
 	}
 
-	shadelight[0] *= (float)e->color.r / 255.0f;
-	shadelight[1] *= (float)e->color.g / 255.0f;
-	shadelight[2] *= (float)e->color.b / 255.0f;
+	// YQ2. Apply minlight?
+	if (apply_minlight && gl_state.minlight_set)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			const int ñ = (int)(shadelight[i] * 255.0f);
+			shadelight[i] = (float)minlight[ñ] / 255.0f;
+		}
+	}
+
+	for (int i = 0; i < 3; i++)
+		shadelight[i] *= (float)e->color.c_array[i] / 255.0f;
 
 	if ((e->flags & RF_MINLIGHT) && shadelight[0] <= 0.1f && shadelight[1] <= 0.1f && shadelight[2] <= 0.1f)
 		VectorSet(shadelight, 0.1f, 0.1f, 0.1f);

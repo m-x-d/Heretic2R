@@ -56,6 +56,7 @@ extern cvar_t* gl_showtris;
 extern cvar_t* gl_flashblend;
 extern cvar_t* gl_texturemode;
 extern cvar_t* gl_lockpvs;
+extern cvar_t* gl_minlight; // YQ2
 
 extern cvar_t* gl_drawflat;
 extern cvar_t* gl_trans33;
@@ -141,6 +142,7 @@ typedef struct
 {
 	float inverse_intensity;
 	qboolean fullscreen;
+	qboolean minlight_set; // YQ2. True when gl_minlight > 0.
 
 	int prev_mode;
 	int lightmap_textures;

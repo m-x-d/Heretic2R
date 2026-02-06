@@ -10,6 +10,8 @@
 
 #define DLIGHT_CUTOFF	64.0f
 
+byte minlight[256]; // YQ2
+
 static int r_dlightframecount; //mxd. Made static.
 static float s_blocklights[34 * 34 * 3];
 
@@ -440,6 +442,26 @@ void R_SetCacheState(msurface_t* surf)
 		surf->cached_light[maps] = r_newrefdef.lightstyles[surf->styles[maps]].white;
 }
 
+void R_InitMinlight(void) //mxd
+{
+	const float ml = Clamp(gl_minlight->value, 0.0f, 255.0f);
+	gl_state.minlight_set = (ml != 0.0f);
+
+	if (gl_state.minlight_set)
+	{
+		for (int i = 0; i < 256; i++)
+		{
+			const int inf = (int)((255.0f - ml) * (float)i / 255.0f + ml);
+			minlight[i] = (byte)ClampI(inf, 0, 255);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 256; i++)
+			minlight[i] = (byte)i;
+	}
+}
+
 // Q2 counterpart (in H2, except for extra SURF_TALL_WALL flag).
 void R_BuildLightMap(const msurface_t* surf, byte* dest, int stride)
 {
@@ -517,6 +539,13 @@ void R_BuildLightMap(const msurface_t* surf, byte* dest, int stride)
 				r = (int)((float)r * t);
 				g = (int)((float)g * t);
 				b = (int)((float)b * t);
+			}
+
+			if (gl_state.minlight_set) // YQ2
+			{
+				r = minlight[r];
+				g = minlight[g];
+				b = minlight[b];
 			}
 
 			dest[0] = (byte)r;

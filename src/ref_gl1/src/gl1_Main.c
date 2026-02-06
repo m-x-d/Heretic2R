@@ -113,6 +113,7 @@ static cvar_t* gl_polyblend;
 cvar_t* gl_flashblend;
 cvar_t* gl_texturemode;
 cvar_t* gl_lockpvs;
+cvar_t* gl_minlight; // YQ2
 
 cvar_t* gl_drawflat;
 cvar_t* gl_trans33;
@@ -682,6 +683,7 @@ static void R_Register(void)
 	gl_flashblend = ri.Cvar_Get("gl_flashblend", "0", 0);
 	gl_texturemode = ri.Cvar_Get("gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE);
 	gl_lockpvs = ri.Cvar_Get("gl_lockpvs", "0", 0);
+	gl_minlight = ri.Cvar_Get("gl_minlight", "0", CVAR_ARCHIVE); // YQ2
 
 	// H2:
 	gl_drawflat = ri.Cvar_Get("gl_drawflat", "0", 0);
