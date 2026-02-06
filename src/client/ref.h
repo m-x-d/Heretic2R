@@ -79,7 +79,7 @@ typedef struct entity_s
 			struct image_s** skins;		// Pointer to the list of clientinfo skins.
 			char skinname[MAX_QPATH];	// For specific path to skin. //TODO: unused.
 
-			paletteRGB_t absLight;
+			paletteRGB_t absLight; //TODO: never set?
 			byte padFor_3byte_absLight;
 
 			// Client entities which use a flexible model will need to fill this in, and then release it when they die.
