@@ -509,10 +509,6 @@ void R_BuildLightMap(const msurface_t* surf, byte* dest, int stride)
 			// Determine the brightest of the three color components.
 			const int max = max(r, max(g, b));
 
-			// Alpha is ONLY used for the mono lightmap case.
-			// For this reason we set it to the brightest of the color components so that things don't get too dim.
-			int a = max;
-
 			// Rescale all the color components if the intensity of the greatest channel exceeds 1.0.
 			if (max > 255)
 			{
@@ -521,13 +517,12 @@ void R_BuildLightMap(const msurface_t* surf, byte* dest, int stride)
 				r = (int)((float)r * t);
 				g = (int)((float)g * t);
 				b = (int)((float)b * t);
-				a = (int)((float)a * t);
 			}
 
 			dest[0] = (byte)r;
 			dest[1] = (byte)g;
 			dest[2] = (byte)b;
-			dest[3] = (byte)a;
+			dest[3] = 255; //mxd. Alpha was ONLY used for the mono lightmap case.
 		}
 	}
 }
