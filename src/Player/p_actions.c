@@ -22,11 +22,6 @@
 #include "p_utility.h" //mxd
 #include "q_shared.h"
 
-#define GRAB_HAND_HEIGHT	41
-#define GRAB_HAND_WIDTH		8
-#define GRAB_HAND_HORZONE	22
-#define GRAB_HAND_VERTZONE	15
-
 typedef enum //mxd
 {
 	GT_NONE,
@@ -34,8 +29,8 @@ typedef enum //mxd
 	GT_SWING
 } grabtype_e;
 
-static const vec3_t handmins = { -2.0f, -2.0f, 0.0f };
-static const vec3_t handmaxs = {  2.0f,  2.0f, 2.0f };
+static const vec3_t hand_mins = { -2.0f, -2.0f, 0.0f };
+static const vec3_t hand_maxs = {  2.0f,  2.0f, 2.0f };
 
 void PlayerActionCheckBranchRunningStrafe(playerinfo_t* info)
 {
@@ -816,12 +811,12 @@ void PlayerActionClimbFinishSound(const playerinfo_t* info, float value)
 	P_Sound(info, SND_PRED_ID19, CHAN_VOICE, "player/pullup 2.wav", 1.0f); //mxd
 }
 
-static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
+static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust) //mxd. Named 'PlayerActionCheckGrab_' in original logic. 
 {
-	trace_t grabtrace;
-	vec3_t forward;
-	vec3_t right;
-	vec3_t endpoint;
+#define GRAB_HAND_WIDTH		8.0f
+#define GRAB_HAND_HEIGHT	41.0f
+#define GRAB_HAND_HORZONE	22.0f
+#define GRAB_HAND_VERTZONE	15.0f
 
 	assert(info);
 
@@ -836,38 +831,43 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 	// Now we want to cast some rays. If the two rays moving from the player's hands at "grab" width
 	// successfully clear any surface, then at least his hands are free enough to make the grab.
 
-	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f};
+	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f };
+
+	vec3_t forward;
+	vec3_t right;
 	AngleVectors(player_facing, forward, right, NULL);
 
 	// Check right hand position.
-	vec3_t righthand;
-	VectorMA(info->origin, GRAB_HAND_WIDTH, right, righthand);
-	righthand[2] += v_adjust;
+	vec3_t rhand_pos;
+	VectorMA(info->origin, GRAB_HAND_WIDTH, right, rhand_pos);
+	rhand_pos[2] += v_adjust;
 
-	VectorMA(righthand, GRAB_HAND_HORZONE, forward, endpoint);
+	vec3_t end_pos;
+	VectorMA(rhand_pos, GRAB_HAND_HORZONE, forward, end_pos);
 
-	P_Trace(info, righthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+	trace_t trace;
+	P_Trace(info, rhand_pos, hand_mins, hand_maxs, end_pos, &trace); //mxd
 
 	// Right hand is not clear.
-	if (grabtrace.fraction != 1.0f || grabtrace.startsolid || grabtrace.allsolid)
+	if (trace.fraction != 1.0f || trace.startsolid || trace.allsolid)
 		return GT_NONE;
 
-	VectorCopy(grabtrace.endpos, righthand);
+	VectorCopy(trace.endpos, rhand_pos);
 
 	// Check left hand position.
-	vec3_t lefthand;
-	VectorMA(info->origin, -GRAB_HAND_WIDTH, right, lefthand);
-	lefthand[2] += v_adjust;
+	vec3_t lhand_pos;
+	VectorMA(info->origin, -GRAB_HAND_WIDTH, right, lhand_pos);
+	lhand_pos[2] += v_adjust;
 
-	VectorMA(lefthand, GRAB_HAND_HORZONE, forward, endpoint);
+	VectorMA(lhand_pos, GRAB_HAND_HORZONE, forward, end_pos);
 
-	P_Trace(info, lefthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+	P_Trace(info, lhand_pos, hand_mins, hand_maxs, end_pos, &trace); //mxd
 
 	// Left hand is not clear.
-	if (grabtrace.fraction != 1.0f || grabtrace.startsolid || grabtrace.allsolid)
+	if (trace.fraction != 1.0f || trace.startsolid || trace.allsolid)
 		return GT_NONE;
 
-	VectorCopy(grabtrace.endpos, lefthand);
+	VectorCopy(trace.endpos, lhand_pos);
 
 	// If the clear rays from the player's hands, traced down, should hit a legal (almost level)
 	// surface within a certain distance, then a grab is possible!
@@ -880,36 +880,28 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 	vertlength = max(GRAB_HAND_VERTZONE, vertlength);
 
 	// Check right hand position.
-	VectorCopy(righthand, endpoint);
-	endpoint[2] -= vertlength;
+	VectorCopy(rhand_pos, end_pos);
+	end_pos[2] -= vertlength;
 
-	P_Trace(info, righthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+	P_Trace(info, rhand_pos, hand_mins, hand_maxs, end_pos, &trace); //mxd
 
-	// Right hand did not connect with a flat surface.
-	if (grabtrace.fraction == 1.0f || grabtrace.plane.normal[2] < 0.8f || grabtrace.startsolid || grabtrace.allsolid) //mxd. Original logic doesn't check plane.normal for this hand...
+	// Right hand did not connect with a flat surface, or stopped, but not on a grabbable surface.
+	if (trace.fraction == 1.0f || trace.plane.normal[2] < 0.8f || trace.startsolid || trace.allsolid || !(trace.contents & MASK_SOLID)) //mxd. Original logic doesn't check plane.normal for this hand...
 		return GT_NONE;
 
-	// Hand stopped, but not on a grabbable surface.
-	if (!(grabtrace.contents & MASK_SOLID))
-		return GT_NONE;
-
-	VectorCopy(grabtrace.endpos, righthand);
+	VectorCopy(trace.endpos, rhand_pos);
 
 	// Check left hand position.
-	VectorCopy(lefthand, endpoint);
-	endpoint[2] -= vertlength;
+	VectorCopy(lhand_pos, end_pos);
+	end_pos[2] -= vertlength;
 
-	P_Trace(info, lefthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+	P_Trace(info, lhand_pos, hand_mins, hand_maxs, end_pos, &trace); //mxd
 
-	// Left hand did not connect with a flat surface.
-	if (grabtrace.fraction == 1.0f || grabtrace.plane.normal[2] < 0.8f || grabtrace.startsolid || grabtrace.allsolid)
+	// Left hand did not connect with a flat surface, or stopped, but not on a grabbable surface.
+	if (trace.fraction == 1.0f || trace.plane.normal[2] < 0.8f || trace.startsolid || trace.allsolid || !(trace.contents & MASK_SOLID))
 		return GT_NONE;
 
-	// Hand stopped, but not on a grabbable surface.
-	if (!(grabtrace.contents & MASK_SOLID))
-		return GT_NONE;
-
-	VectorCopy(grabtrace.endpos, lefthand);
+	VectorCopy(trace.endpos, lhand_pos);
 
 	// Now finally, if we try tracing the player blocking forward a tad, we should be hitting an obstruction.
 
@@ -917,29 +909,29 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 	vec3_t player_maxs = VEC3_INIT(info->maxs);
 	player_maxs[2] = GRAB_HAND_HEIGHT;
 
-	VectorMA(info->origin, GRAB_HAND_HORZONE, forward, endpoint);
+	VectorMA(info->origin, GRAB_HAND_HORZONE, forward, end_pos);
 
-	P_Trace(info, info->origin, info->mins, player_maxs, endpoint, &grabtrace); //mxd
+	P_Trace(info, info->origin, info->mins, player_maxs, end_pos, &trace); //mxd
 
 	// Player body did not connect with a flat surface.
-	if (grabtrace.fraction == 1.0f || grabtrace.startsolid || grabtrace.allsolid)
+	if (trace.fraction == 1.0f || trace.startsolid || trace.allsolid)
 		return GT_NONE;
 
 	// Body stopped, but not on a grabbable surface.
-	if (!(grabtrace.contents & MASK_SOLID) || grabtrace.plane.normal[2] > 0.0f)
+	if (!(trace.contents & MASK_SOLID) || trace.plane.normal[2] > 0.0f) //TODO: plane.normal[2] check seems strange. What if plane.normal[2] = -1?..
 		return GT_NONE;
 
 	// Don't grab buttons!
-	if (grabtrace.ent != NULL && !info->isclient && info->G_EntIsAButton(grabtrace.ent))
+	if (trace.ent != NULL && !info->isclient && info->G_EntIsAButton(trace.ent))
 		return GT_NONE;
 
 	// Now check the angle. It should be pretty much opposite the player's yaw.
 
-	vec3_t planedir;
-	vectoangles(grabtrace.plane.normal, planedir);
-	info->grabangle = anglemod(planedir[YAW] - 180.0f);
+	vec3_t plane_dir;
+	vectoangles(trace.plane.normal, plane_dir);
+	info->grabangle = anglemod(plane_dir[YAW] - 180.0f);
 
-	const float yaw = anglemod(planedir[YAW] - info->angles[YAW]) - 180.0f;
+	const float yaw = anglemod(plane_dir[YAW] - info->angles[YAW]) - 180.0f;
 
 	// Bad angle. Player should bounce.
 	if (yaw > 30.0f || yaw < -30.0f)
@@ -947,45 +939,45 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 
 	// One more check, make sure we can fit in there, so we don't start climbing then fall back down.
 
-	// Get the z height
+	// Get the z height.
 	vec3_t lastcheck_start = VEC3_INIT(info->origin);
-	lastcheck_start[2] = max(lefthand[2], righthand[2]) - info->mins[2];
+	lastcheck_start[2] = max(lhand_pos[2], rhand_pos[2]) - info->mins[2];
 
 	vec3_t lastcheck_end;
 	VectorAdd(lastcheck_start, forward, lastcheck_end);
 
-	trace_t lasttrace;
-	P_Trace(info, lastcheck_start, info->mins, info->maxs, lastcheck_end, &lasttrace); //mxd
+	trace_t last_trace;
+	P_Trace(info, lastcheck_start, info->mins, info->maxs, lastcheck_end, &last_trace); //mxd
 
-	if (lasttrace.fraction < 1.0f || lasttrace.startsolid || lasttrace.allsolid)
+	if (last_trace.fraction < 1.0f || last_trace.startsolid || last_trace.allsolid)
 		return GT_NONE;
 
 	// Now see if the surface is eligible for a overhanging swing vault.
 
 	// Trace from about the player's waist to his feet to determine this.
 	AngleVectors(info->angles, forward, NULL, NULL);
-	VectorMA(info->origin, 32.0f, forward, endpoint);
+	VectorMA(info->origin, 32.0f, forward, end_pos);
 
-	trace_t swingtrace;
+	trace_t swing_trace;
 	const vec3_t maxs = VEC3_INITA(info->maxs, 0.0f, 0.0f, -48.0f);
-	P_Trace(info, info->origin, info->mins, maxs, endpoint, &swingtrace); //mxd
+	P_Trace(info, info->origin, info->mins, maxs, end_pos, &swing_trace); //mxd
 
 	// Did we hit a wall underneath?
-	const qboolean swingable = (!swingtrace.startsolid && !swingtrace.allsolid && swingtrace.fraction == 1.0f); //mxd. 'swingtrace.fraction == 1.0f && (!swingtrace.startsolid || !swingtrace.allsolid)' in original logic.
+	const qboolean swingable = (!swing_trace.startsolid && !swing_trace.allsolid && swing_trace.fraction == 1.0f); //mxd. 'swingtrace.fraction == 1.0f && (!swingtrace.startsolid || !swingtrace.allsolid)' in original logic.
 
 	// Save the intended grab location (the endpoint).
 	for (int i = 0; i < 3; i++)
-		info->grabloc[i] = (lefthand[i] + righthand[i]) / 2.0f;
+		info->grabloc[i] = (lhand_pos[i] + rhand_pos[i]) / 2.0f;
 
-	endpoint[0] = grabtrace.endpos[0];
-	endpoint[1] = grabtrace.endpos[1];
-	endpoint[2] = info->grabloc[2] - v_adjust;
+	end_pos[0] = trace.endpos[0];
+	end_pos[1] = trace.endpos[1];
+	end_pos[2] = info->grabloc[2] - v_adjust;
 
-	P_Trace(info, info->origin, info->mins, info->maxs, endpoint, &grabtrace); //mxd. Original logic uses NULL as mins/maxs (which in some specific cases may push player into the ground when trace succeeds).
+	P_Trace(info, info->origin, info->mins, info->maxs, end_pos, &trace); //mxd. Original logic uses NULL for mins/maxs (which in some specific cases may push us into the ground when trace succeeds).
 
-	if (grabtrace.fraction == 1.0f)
+	if (trace.fraction == 1.0f)
 	{
-		VectorCopy(endpoint, info->origin);
+		VectorCopy(end_pos, info->origin);
 		info->offsetangles[YAW] = -(ClampAngleDeg(info->angles[YAW]) - info->grabangle);
 		info->angles[YAW] = info->grabangle;
 
@@ -1117,7 +1109,7 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 	vec3_t endpoint;
 	VectorMA(righthand, VAULT_HAND_HORZONE, forward, endpoint);
 
-	P_Trace(info, righthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+	P_Trace(info, righthand, hand_mins, hand_maxs, endpoint, &grabtrace); //mxd
 
 	// Right hand is not clear.
 	if (grabtrace.fraction != 1.0f || grabtrace.startsolid || grabtrace.allsolid)
@@ -1132,7 +1124,7 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 
 	VectorMA(lefthand, VAULT_HAND_HORZONE, forward, endpoint);
 
-	P_Trace(info, lefthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+	P_Trace(info, lefthand, hand_mins, hand_maxs, endpoint, &grabtrace); //mxd
 
 	// Left hand is not clear.
 	if (grabtrace.fraction != 1.0f || grabtrace.startsolid || grabtrace.allsolid)
@@ -1148,7 +1140,7 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 	VectorCopy(righthand, endpoint);
 	endpoint[2] -= VAULT_HAND_VERTZONE;
 
-	P_Trace(info, righthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+	P_Trace(info, righthand, hand_mins, hand_maxs, endpoint, &grabtrace); //mxd
 
 	// Right hand did not connect with a flat surface.
 	if (grabtrace.fraction == 1.0f || grabtrace.plane.normal[2] < 0.8f || grabtrace.startsolid || grabtrace.allsolid)
@@ -1164,7 +1156,7 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 	VectorCopy(lefthand, endpoint);
 	endpoint[2] -= VAULT_HAND_VERTZONE;
 
-	P_Trace(info, lefthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+	P_Trace(info, lefthand, hand_mins, hand_maxs, endpoint, &grabtrace); //mxd
 
 	// Left hand did not connect with a flat surface.
 	if (grabtrace.fraction == 1.0f || grabtrace.plane.normal[2] < 0.8f || grabtrace.startsolid || grabtrace.allsolid)
