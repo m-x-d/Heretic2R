@@ -514,33 +514,32 @@ qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) // Cal
 	if (info->origin[2] > rope_top[2])
 		return false;
 
-	vec3_t vec;
-	VectorSubtract(info->origin, rope_top, vec);
-	const float len = VectorLength(vec);
+	vec3_t diff;
+	VectorSubtract(info->origin, rope_top, diff);
+	const float rope_player_z = VectorLength(diff);
 
-	VectorSubtract(rope_end, rope_top, vec);
-	float dist = VectorNormalize(vec);
+	vec3_t rope_dir;
+	VectorSubtract(rope_end, rope_top, rope_dir);
+	const float rope_length = VectorNormalize(rope_dir);
 
 	// Player is below the rope's length.
-	if (len > dist)
+	if (rope_player_z > rope_length)
 		return false;
 
 	vec3_t rope_check;
-	VectorMA(rope_top, len, vec, rope_check);
+	VectorMA(rope_top, rope_player_z, rope_dir, rope_check);
 
-	dist = vhlen(info->origin, rope_check);
-	const float check_dist = ((info->groundentity != NULL) ? 48.0f : 64.0f);
+	const float rope_check_dist = vhlen(info->origin, rope_check);
+	const float max_check_dist = ((info->groundentity != NULL) ? 48.0f : 64.0f);
 
-	if (dist >= check_dist)
+	if (rope_check_dist >= max_check_dist)
 		return false;
 
 	//mxd. When chicken, disturb the rope, but don't grab it.
 	if (info->edictflags & FL_CHICKEN)
 	{
 		VectorScale(info->velocity, 0.5f, rope->rope_grab->velocity);
-
-		VectorSubtract(info->origin, rope_top, vec);
-		rope->rope_grab->rope_player_z = VectorLength(vec);
+		rope->rope_grab->rope_player_z = rope_player_z;
 
 		edict_t* self = info->self;
 		self->monsterinfo.rope_jump_debounce_time = info->leveltime + ROPE_JUMP_DEBOUNCE_DELAY;
@@ -555,8 +554,7 @@ qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) // Cal
 		VectorClear(info->velocity);
 
 		VectorCopy(info->origin, rope->rope_grab->s.origin);
-		VectorSubtract(info->origin, rope_top, vec);
-		rope->rope_grab->rope_player_z = VectorLength(vec);
+		rope->rope_grab->rope_player_z = rope_player_z;
 
 		monsterinfo_t* rope_info = &rope->rope_grab->monsterinfo; //mxd
 		rope_info->rope_player_initial_swing_speed = 0.0f;
