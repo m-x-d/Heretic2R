@@ -981,7 +981,7 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 	endpoint[1] = grabtrace.endpos[1];
 	endpoint[2] = info->grabloc[2] - v_adjust;
 
-	P_Trace(info, info->origin, NULL, NULL, endpoint, &grabtrace); //mxd
+	P_Trace(info, info->origin, info->mins, info->maxs, endpoint, &grabtrace); //mxd. Original logic uses NULL as mins/maxs (which in some specific cases may push player into the ground when trace succeeds).
 
 	if (grabtrace.fraction == 1.0f)
 	{
