@@ -1049,15 +1049,16 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 {
 #define VAULT_HAND_WIDTH	4.0f
 #define VAULT_HAND_HEIGHT	32.0f
-#define VAULT_HAND_VERTZONE	48.0f
 #define VAULT_HAND_HORZONE	24.0f
+#define VAULT_HAND_VERTZONE	48.0f
 
 	assert(info);
 
 	// Check in front of the player, and decide if there is a suitable wall here.
+	const vec3_t player_facing = VEC3_SET(0.0f, info->angles[YAW], 0.0f);
+
 	vec3_t forward;
 	vec3_t right;
-	const vec3_t player_facing = VEC3_SET(0.0f, info->angles[YAW], 0.0f);
 	AngleVectors(player_facing, forward, right, NULL);
 
 	const vec3_t vaultcheck_mins = VEC3_INITA(info->mins, 0.0f, 0.0f, STEP_SIZE); // Don't try to vault stairs.
@@ -1068,30 +1069,30 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 	vec3_t end;
 	VectorMA(start, VAULT_HAND_HORZONE, forward, end);
 
-	trace_t grabtrace;
-	P_Trace(info, start, vaultcheck_mins, vaultcheck_maxs, end, &grabtrace); //mxd
+	trace_t trace;
+	P_Trace(info, start, vaultcheck_mins, vaultcheck_maxs, end, &trace); //mxd
 
 	// Body stopped, but not on a grabbable surface.
-	if (grabtrace.fraction == 1.0f || !(grabtrace.contents & MASK_SOLID))
+	if (trace.fraction == 1.0f || !(trace.contents & MASK_SOLID))
 		return false;
 
 	// Sloped surfaces are not grabbable. Question: sloped away or towards? //TODO: check this.
-	if (grabtrace.plane.normal[2] > 0.3f)
+	if (trace.plane.normal[2] > 0.3f)
 		return false;
 
 	// Don't grab buttons.
-	if (grabtrace.ent != NULL && !info->isclient && info->G_EntIsAButton(grabtrace.ent))
+	if (trace.ent != NULL && !info->isclient && info->G_EntIsAButton(trace.ent))
 		return false;
 
 	// Now check the angle. It should be pretty much opposite the player's yaw.
-	vec3_t planedir;
-	vectoangles(grabtrace.plane.normal, planedir);
-	info->grabangle = anglemod(planedir[YAW] - 180.0f);
+	vec3_t plane_dir;
+	vectoangles(trace.plane.normal, plane_dir);
+	info->grabangle = anglemod(plane_dir[YAW] - 180.0f);
 
 	//mxd. Skip yaw check when surface-swimming (fixes inability to climb up when swimming into a climbable corner).
 	if (!(info->pm_w_flags & WF_SURFACE))
 	{
-		const float yaw = anglemod(planedir[YAW] - info->angles[YAW]) - 180.0f;
+		const float yaw = anglemod(plane_dir[YAW] - info->angles[YAW]) - 180.0f;
 
 		// Bad angle. Player should bounce.
 		if (fabsf(yaw) > 30.0f)
@@ -1102,71 +1103,63 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 	// successfully clear any surface, then at least his hands are free enough to make the grab.
 
 	// Check right hand position.
-	vec3_t righthand;
-	VectorMA(info->origin, VAULT_HAND_WIDTH, right, righthand);
-	righthand[2] += VAULT_HAND_HEIGHT;
+	vec3_t rhand_pos;
+	VectorMA(info->origin, VAULT_HAND_WIDTH, right, rhand_pos);
+	rhand_pos[2] += VAULT_HAND_HEIGHT;
 
-	vec3_t endpoint;
-	VectorMA(righthand, VAULT_HAND_HORZONE, forward, endpoint);
+	vec3_t end_pos;
+	VectorMA(rhand_pos, VAULT_HAND_HORZONE, forward, end_pos);
 
-	P_Trace(info, righthand, hand_mins, hand_maxs, endpoint, &grabtrace); //mxd
+	P_Trace(info, rhand_pos, hand_mins, hand_maxs, end_pos, &trace); //mxd
 
 	// Right hand is not clear.
-	if (grabtrace.fraction != 1.0f || grabtrace.startsolid || grabtrace.allsolid)
+	if (trace.fraction != 1.0f || trace.startsolid || trace.allsolid)
 		return false;
 
-	VectorCopy(grabtrace.endpos, righthand);
+	VectorCopy(trace.endpos, rhand_pos);
 
 	// Check left hand position.
-	vec3_t lefthand;
-	VectorMA(info->origin, -VAULT_HAND_WIDTH, right, lefthand);
-	lefthand[2] += VAULT_HAND_HEIGHT;
+	vec3_t lhand_pos;
+	VectorMA(info->origin, -VAULT_HAND_WIDTH, right, lhand_pos);
+	lhand_pos[2] += VAULT_HAND_HEIGHT;
 
-	VectorMA(lefthand, VAULT_HAND_HORZONE, forward, endpoint);
+	VectorMA(lhand_pos, VAULT_HAND_HORZONE, forward, end_pos);
 
-	P_Trace(info, lefthand, hand_mins, hand_maxs, endpoint, &grabtrace); //mxd
+	P_Trace(info, lhand_pos, hand_mins, hand_maxs, end_pos, &trace); //mxd
 
 	// Left hand is not clear.
-	if (grabtrace.fraction != 1.0f || grabtrace.startsolid || grabtrace.allsolid)
+	if (trace.fraction != 1.0f || trace.startsolid || trace.allsolid)
 		return false;
 
-	VectorCopy(grabtrace.endpos, lefthand);
+	VectorCopy(trace.endpos, lhand_pos);
 
 	// If the clear rays from the player's hands, traced down, should hit a legal (almost level) surface
 	// within a certain distance, then a grab is possible! First we must figure out how low to look.
 	// If the player is going down, then check his intended speed over the next .1 sec.
 
 	// Check right hand position.
-	VectorCopy(righthand, endpoint);
-	endpoint[2] -= VAULT_HAND_VERTZONE;
+	VectorCopy(rhand_pos, end_pos);
+	end_pos[2] -= VAULT_HAND_VERTZONE;
 
-	P_Trace(info, righthand, hand_mins, hand_maxs, endpoint, &grabtrace); //mxd
+	P_Trace(info, rhand_pos, hand_mins, hand_maxs, end_pos, &trace); //mxd
 
-	// Right hand did not connect with a flat surface.
-	if (grabtrace.fraction == 1.0f || grabtrace.plane.normal[2] < 0.8f || grabtrace.startsolid || grabtrace.allsolid)
+	// Right hand did not connect with a flat surface, or stopped, but not on a grabbable surface.
+	if (trace.fraction == 1.0f || trace.plane.normal[2] < 0.8f || trace.startsolid || trace.allsolid || !(trace.contents & MASK_SOLID))
 		return false;
 
-	// Right hand stopped, but not on a grabbable surface.
-	if (!(grabtrace.contents & MASK_SOLID))
-		return false;
-
-	VectorCopy(grabtrace.endpos, righthand);
+	VectorCopy(trace.endpos, rhand_pos);
 
 	// Check left hand position.
-	VectorCopy(lefthand, endpoint);
-	endpoint[2] -= VAULT_HAND_VERTZONE;
+	VectorCopy(lhand_pos, end_pos);
+	end_pos[2] -= VAULT_HAND_VERTZONE;
 
-	P_Trace(info, lefthand, hand_mins, hand_maxs, endpoint, &grabtrace); //mxd
+	P_Trace(info, lhand_pos, hand_mins, hand_maxs, end_pos, &trace); //mxd
 
-	// Left hand did not connect with a flat surface.
-	if (grabtrace.fraction == 1.0f || grabtrace.plane.normal[2] < 0.8f || grabtrace.startsolid || grabtrace.allsolid)
+	// Left hand did not connect with a flat surface, or stopped, but not on a grabbable surface.
+	if (trace.fraction == 1.0f || trace.plane.normal[2] < 0.8f || trace.startsolid || trace.allsolid || !(trace.contents & MASK_SOLID))
 		return false;
 
-	// Left hand stopped, but not on a grabbable surface.
-	if (!(grabtrace.contents & MASK_SOLID))
-		return false;
-
-	VectorCopy(grabtrace.endpos, lefthand);
+	VectorCopy(trace.endpos, lhand_pos);
 
 	// The fit check doesn't work when you are in muck, so check if you are.
 	if (!(info->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)))
@@ -1175,26 +1168,26 @@ qboolean PlayerActionCheckVault(playerinfo_t* info) //mxd. Removed unused 'value
 
 		// Get the z height.
 		vec3_t lastcheck_start = VEC3_INIT(info->origin);
-		lastcheck_start[2] = max(lefthand[2], righthand[2]) - info->mins[2];
+		lastcheck_start[2] = max(lhand_pos[2], rhand_pos[2]) - info->mins[2];
 
 		vec3_t lastcheck_end;
 		VectorAdd(lastcheck_start, forward, lastcheck_end);
 
-		trace_t lasttrace;
-		P_Trace(info, lastcheck_start, info->mins, info->maxs, lastcheck_end, &lasttrace); //mxd
+		trace_t last_trace;
+		P_Trace(info, lastcheck_start, info->mins, info->maxs, lastcheck_end, &last_trace); //mxd
 
-		if (lasttrace.fraction < 1.0f || lasttrace.startsolid || lasttrace.allsolid)
+		if (last_trace.fraction < 1.0f || last_trace.startsolid || last_trace.allsolid)
 			return false;
 	}
 
 	//mxd. Removed unused overhanging swing vault check logic.
 
 	// Save the intended grab location (the endpoint).
-	info->grabloc[0] = (lefthand[0] + righthand[0]) / 2.0f;
-	info->grabloc[1] = (lefthand[1] + righthand[1]) / 2.0f;
-	info->grabloc[2] = max(lefthand[2], righthand[2]);
+	info->grabloc[0] = (lhand_pos[0] + rhand_pos[0]) / 2.0f;
+	info->grabloc[1] = (lhand_pos[1] + rhand_pos[1]) / 2.0f;
+	info->grabloc[2] = max(lhand_pos[2], rhand_pos[2]);
 
-	if (grabtrace.fraction < 0.5f)
+	if (trace.fraction < 0.5f)
 	{
 		if ((info->flags & PLAYER_FLAG_NO_LARM) && (info->flags & PLAYER_FLAG_NO_RARM))
 			return false; // Can't do half pull up with no arms.
