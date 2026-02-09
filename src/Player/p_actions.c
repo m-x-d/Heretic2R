@@ -886,7 +886,7 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 	P_Trace(info, righthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
 
 	// Right hand did not connect with a flat surface.
-	if (grabtrace.fraction == 1.0f || grabtrace.startsolid || grabtrace.allsolid)
+	if (grabtrace.fraction == 1.0f || grabtrace.plane.normal[2] < 0.8f || grabtrace.startsolid || grabtrace.allsolid) //mxd. Original logic doesn't check plane.normal for this hand...
 		return GT_NONE;
 
 	// Hand stopped, but not on a grabbable surface.
