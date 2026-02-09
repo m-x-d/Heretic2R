@@ -989,7 +989,7 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust) //mxd. N
 
 void PlayerActionCheckGrab(playerinfo_t* info, float value)
 {
-	static float v_adjusts[] = { GRAB_HAND_HEIGHT - 58, GRAB_HAND_HEIGHT - 29, GRAB_HAND_HEIGHT }; //mxd. Height adjusts for each height zone.
+	static float v_adjusts[] = { GRAB_HAND_HEIGHT - 58.0f, GRAB_HAND_HEIGHT - 29.0f, GRAB_HAND_HEIGHT }; //mxd. Height adjusts for each height zone.
 
 	if (!info->upperidle)
 		return;
