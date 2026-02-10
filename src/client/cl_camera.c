@@ -124,6 +124,21 @@ void CL_ResetCamera(void) //mxd
 	cam_mode = CMODE_NONE;
 }
 
+static void CL_InterpolateCameraViewAngles(const vec3_t look_angles, const vec3_t old_viewangles, vec3_t viewangles) //mxd
+{
+	// Lerp direction vectors instead of angles to avoid angle wrapping issues...
+	vec3_t forward;
+	AngleVectors(look_angles, forward, NULL, NULL);
+
+	vec3_t old_forward;
+	AngleVectors(old_viewangles, old_forward, NULL, NULL);
+
+	vec3_t lerped_dir;
+	VectorLerp(old_forward, 0.5f, forward, lerped_dir);
+
+	vectoangles2(lerped_dir, viewangles);
+}
+
 static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheight, const qboolean interpolate, const qboolean noclip_mode) // H2 //mxd. Add 'look_angles' arg, flip 'interpolate' arg logic, add 'noclip_mode' arg.
 {
 #define MAX_CAMERA_TIMER	500
@@ -159,9 +174,17 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 		cam_transparency = cl_playertrans->value;
 	}
 
+	vec3_t viewangles;
+
+	//mxd. Interpolate camera viewangles (to smooth sudden camera angle changes when camera is re-oriented during lockmove/PLAYER_FLAG_TURNLOCK player animations).
+	if (interpolate)
+		CL_InterpolateCameraViewAngles(look_angles, old_viewangles, viewangles);
+	else
+		VectorCopy(look_angles, viewangles);
+
 	vec3_t forward;
 	vec3_t up;
-	AngleVectors(look_angles, forward, NULL, up);
+	AngleVectors(viewangles, forward, NULL, up);
 
 	const cam_mode_e prev_cam_mode = cam_mode;
 
@@ -300,7 +323,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 	// Interpolate camera position when desired, not in fpmode and cl_camera_dampfactor vaues are sane.
 	if (interpolate && !(int)cl_camera_fpmode->value && cl_camera_dampfactor->value > 0.0f && cl_camera_dampfactor->value < 1.0f)
 	{
-		float damp_factor = fabsf(look_angles[PITCH]);
+		float damp_factor = fabsf(viewangles[PITCH]);
 		damp_factor = min(1.0f, damp_factor / 89.0f);
 		damp_factor = (1.0f - cl_camera_dampfactor->value) * damp_factor * damp_factor * damp_factor + cl_camera_dampfactor->value;
 
@@ -330,7 +353,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 	//TODO: check if 'water_flags & ~WF_SWIMFREE' (e.g. true when water_flags has any flags other than WF_SWIMFREE) check is correct.
 	if (waterlevel == 0 || (water_flags & ~WF_SWIMFREE) || (water_flags == 0 && in_down.state == KS_NONE))
 	{
-		const float roll_scaler = 1.0f - fabsf(look_angles[PITCH] / 89.0f);
+		const float roll_scaler = 1.0f - fabsf(viewangles[PITCH] / 89.0f);
 		const vec3_t v = VEC3_SET(mins[0], mins[1], -1.0f - roll_scaler * 2.0f);
 
 		// Check against bmodels / solid entities --mxd.
