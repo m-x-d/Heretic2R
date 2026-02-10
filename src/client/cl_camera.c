@@ -11,6 +11,8 @@
 #include "menu.h"
 #include "Vector.h"
 
+#define PLAYER_MIN_TELEPORT_DISTANCE	256.0f //mxd
+
 int camera_timer; // H2
 qboolean offsetangles_changed; // H2
 
@@ -380,9 +382,9 @@ void CL_CalcViewValues(void)
 		oldframe = &cl.frame; // Previous frame was dropped or invalid.
 
 	// See if the player entity was teleported this frame. //mxd. Original H2 logic doesn't seem to do abs() here. A bug? //TODO: value doesn't match MIN_TELEPORT_DISTANCE used in cl_prediction.c...
-	if (abs(oldframe->playerstate.pmove.origin[0] - ps->pmove.origin[0]) > 256 * 8 ||
-		abs(oldframe->playerstate.pmove.origin[1] - ps->pmove.origin[1]) > 256 * 8 ||
-		abs(oldframe->playerstate.pmove.origin[2] - ps->pmove.origin[2]) > 256 * 8)
+	if (abs(oldframe->playerstate.pmove.origin[0] - ps->pmove.origin[0]) > POS2SHORT(PLAYER_MIN_TELEPORT_DISTANCE) ||
+		abs(oldframe->playerstate.pmove.origin[1] - ps->pmove.origin[1]) > POS2SHORT(PLAYER_MIN_TELEPORT_DISTANCE) ||
+		abs(oldframe->playerstate.pmove.origin[2] - ps->pmove.origin[2]) > POS2SHORT(PLAYER_MIN_TELEPORT_DISTANCE))
 	{
 		// Don't interpolate.
 		oldframe = &cl.frame;
