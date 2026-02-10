@@ -9,11 +9,13 @@
 
 cvar_t* m_banner_cameracfg;
 cvar_t* m_item_cameradamp;
+cvar_t* m_item_camera_position_lerp; //mxd
 cvar_t* m_item_autoaim; //mxd
 
 static menuframework_t s_cameracfg_menu;
 static menulist_t s_options_lookspring_box; //mxd. Moved from Misc menu.
 static menuslider_t s_options_cameradamp_slider;
+static menuslider_t s_options_camposlerp_slider; //mxd
 static menuslider_t s_options_autoaim_slider; //mxd
 
 // Q2 counterpart
@@ -27,6 +29,11 @@ static void CameraDampFactorFunc(void* self) // H2
 	Cvar_SetValue("cl_camera_dampfactor", s_options_cameradamp_slider.curvalue * 0.01f);
 }
 
+static void CameraPosLerpFunc(void* self) //mxd
+{
+	Cvar_SetValue("cl_camera_position_lerp", s_options_camposlerp_slider.curvalue * 0.1f); // 0.0 .. 0.9
+}
+
 static void AutoAimFunc(void* self) //mxd
 {
 	Cvar_SetValue("cl_autoaim", s_options_autoaim_slider.curvalue / 5.0f);
@@ -37,14 +44,18 @@ static void CameraCfg_SetValues(void) // H2
 	Cvar_SetValue("lookspring", Clamp(lookspring->value, 0.0f, 1.0f));
 	s_options_lookspring_box.curvalue = (int)lookspring->value;
 
-	Cvar_SetValue("cl_camera_dampfactor", Clamp(cl_camera_dampfactor->value, 0, 1));
+	Cvar_SetValue("cl_camera_dampfactor", Clamp(cl_camera_dampfactor->value, 0.0f, 1.0f));
 	s_options_cameradamp_slider.curvalue = cl_camera_dampfactor->value * 100.0f;
+
+	Cvar_SetValue("cl_camera_position_lerp", Clamp(cl_camera_position_lerp->value, 0.0f, 0.9f)); //mxd
+	s_options_camposlerp_slider.curvalue = cl_camera_position_lerp->value * 10.0f;
 }
 
 static void CameraCfg_MenuInit(void) // H2
 {
 	static char name_lookspring[MAX_QPATH];
 	static char name_cameradamp[MAX_QPATH];
+	static char name_camposlerp[MAX_QPATH]; //mxd
 	static char name_autoaim[MAX_QPATH];
 
 	//mxd. Clamp autoaim amount.
@@ -72,11 +83,22 @@ static void CameraCfg_MenuInit(void) // H2
 	s_options_cameradamp_slider.minvalue = 0.0f;
 	s_options_cameradamp_slider.maxvalue = 100.0f;
 
+	//mxd
+	Com_sprintf(name_camposlerp, sizeof(name_camposlerp), "\x02%s", m_item_camera_position_lerp->string);
+	s_options_camposlerp_slider.generic.type = MTYPE_SLIDER;
+	s_options_camposlerp_slider.generic.x = 0;
+	s_options_camposlerp_slider.generic.y = 60;
+	s_options_camposlerp_slider.generic.name = name_camposlerp;
+	s_options_camposlerp_slider.generic.width = re.BF_Strlen(name_camposlerp);
+	s_options_camposlerp_slider.generic.callback = CameraPosLerpFunc;
+	s_options_camposlerp_slider.minvalue = 0.0f;
+	s_options_camposlerp_slider.maxvalue = 9.0f;
+
 	//mxd. Yes/No box in original logic.
 	Com_sprintf(name_autoaim, sizeof(name_autoaim), "\x02%s", m_item_autoaim->string);
 	s_options_autoaim_slider.generic.type = MTYPE_SLIDER;
 	s_options_autoaim_slider.generic.x = 0;
-	s_options_autoaim_slider.generic.y = 60;
+	s_options_autoaim_slider.generic.y = 100;
 	s_options_autoaim_slider.generic.name = name_autoaim;
 	s_options_autoaim_slider.generic.width = re.BF_Strlen(name_autoaim);
 	s_options_autoaim_slider.minvalue = 0.0f;
@@ -86,6 +108,7 @@ static void CameraCfg_MenuInit(void) // H2
 
 	Menu_AddItem(&s_cameracfg_menu, &s_options_lookspring_box);
 	Menu_AddItem(&s_cameracfg_menu, &s_options_cameradamp_slider);
+	Menu_AddItem(&s_cameracfg_menu, &s_options_camposlerp_slider); //mxd
 	Menu_AddItem(&s_cameracfg_menu, &s_options_autoaim_slider);
 
 	CameraCfg_SetValues();

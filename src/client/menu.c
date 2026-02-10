@@ -648,7 +648,8 @@ void M_Init(void)
 	// Camera cfg menu.
 	m_item_lookspring = Cvar_Get("m_item_lookspring", "Lookspring", 0);
 	m_item_cameradamp = Cvar_Get("m_item_cameradamp", "Camera Stiffness", 0);
-	m_item_autoaim = Cvar_Get("m_item_autoaim", "Autoaim amount", 0); //mxd
+	m_item_camera_position_lerp = Cvar_Get("m_item_camera_position_lerp", "Position Smoothing", 0); //mxd
+	m_item_autoaim = Cvar_Get("m_item_autoaim", "Autoaim Amount", 0); //mxd
 
 	// Keys menu.
 	m_item_helpscreen = Cvar_Get("m_item_helpscreen", "Help Screen", 0);
