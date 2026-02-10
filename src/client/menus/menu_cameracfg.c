@@ -8,7 +8,7 @@
 #include "menu_cameracfg.h"
 
 cvar_t* m_banner_cameracfg;
-cvar_t* m_item_cameradamp;
+cvar_t* m_item_camera_rotation_lerp;
 cvar_t* m_item_camera_position_lerp; //mxd
 cvar_t* m_item_autoaim; //mxd
 
@@ -26,7 +26,7 @@ static void LookspringFunc(void* self)
 
 static void CameraDampFactorFunc(void* self) // H2
 {
-	Cvar_SetValue("cl_camera_dampfactor", s_options_cameradamp_slider.curvalue * 0.01f);
+	Cvar_SetValue("cl_camera_dampfactor", 1.0f - s_options_cameradamp_slider.curvalue * 0.1f); //mxd. Inverted logic, because of menu item name change.
 }
 
 static void CameraPosLerpFunc(void* self) //mxd
@@ -45,7 +45,7 @@ static void CameraCfg_SetValues(void) // H2
 	s_options_lookspring_box.curvalue = (int)lookspring->value;
 
 	Cvar_SetValue("cl_camera_dampfactor", Clamp(cl_camera_dampfactor->value, 0.0f, 1.0f));
-	s_options_cameradamp_slider.curvalue = cl_camera_dampfactor->value * 100.0f;
+	s_options_cameradamp_slider.curvalue = (1.0f - cl_camera_dampfactor->value) * 10.0f; //mxd. Inverted logic, because of menu item name change.
 
 	Cvar_SetValue("cl_camera_position_lerp", Clamp(cl_camera_position_lerp->value, 0.0f, 0.9f)); //mxd
 	s_options_camposlerp_slider.curvalue = cl_camera_position_lerp->value * 10.0f;
@@ -54,7 +54,7 @@ static void CameraCfg_SetValues(void) // H2
 static void CameraCfg_MenuInit(void) // H2
 {
 	static char name_lookspring[MAX_QPATH];
-	static char name_cameradamp[MAX_QPATH];
+	static char name_camrotlerp[MAX_QPATH];
 	static char name_camposlerp[MAX_QPATH]; //mxd
 	static char name_autoaim[MAX_QPATH];
 
@@ -73,15 +73,15 @@ static void CameraCfg_MenuInit(void) // H2
 	s_options_lookspring_box.generic.callback = LookspringFunc;
 	s_options_lookspring_box.itemnames = yes_no_names;
 
-	Com_sprintf(name_cameradamp, sizeof(name_cameradamp), "\x02%s", m_item_cameradamp->string);
+	Com_sprintf(name_camrotlerp, sizeof(name_camrotlerp), "\x02%s", m_item_camera_rotation_lerp->string);
 	s_options_cameradamp_slider.generic.type = MTYPE_SLIDER;
 	s_options_cameradamp_slider.generic.x = 0;
 	s_options_cameradamp_slider.generic.y = 20;
-	s_options_cameradamp_slider.generic.name = name_cameradamp;
-	s_options_cameradamp_slider.generic.width = re.BF_Strlen(name_cameradamp);
+	s_options_cameradamp_slider.generic.name = name_camrotlerp;
+	s_options_cameradamp_slider.generic.width = re.BF_Strlen(name_camrotlerp);
 	s_options_cameradamp_slider.generic.callback = CameraDampFactorFunc;
 	s_options_cameradamp_slider.minvalue = 0.0f;
-	s_options_cameradamp_slider.maxvalue = 100.0f;
+	s_options_cameradamp_slider.maxvalue = 10.0f; //mxd. Number of steps reduced from 100 to 10.
 
 	//mxd
 	Com_sprintf(name_camposlerp, sizeof(name_camposlerp), "\x02%s", m_item_camera_position_lerp->string);
