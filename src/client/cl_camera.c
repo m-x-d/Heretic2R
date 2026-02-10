@@ -154,7 +154,7 @@ static void CL_InterpolateCameraOrigin(vec3_t cam_lerp_origin, const float yaw, 
 	VectorSubtract(cam_lerp_origin, PlayerEntPtr->origin, cam_lerp_dir);
 	float lerp_dist = VectorNormalize(cam_lerp_dir);
 
-	if (lerp_dist > 0.0f)
+	if (lerp_dist > 0.0f && cl_camera_position_lerp->value > 0.0f)
 	{
 		lerp_dist = min(CAM_MAX_LERP_DISTANCE, lerp_dist);
 		const vec3_t cam_angles = VEC3_SET(0.0f, yaw, 0.0f);
