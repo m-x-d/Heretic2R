@@ -73,6 +73,7 @@ cvar_t* cl_autoaim;
 
 cvar_t* cl_camera_clipdamp;
 cvar_t* cl_camera_dampfactor;
+cvar_t* cl_camera_position_lerp; //mxd
 cvar_t* cl_camera_fpoffs;
 cvar_t* cl_camera_freeze;
 cvar_t* cl_camera_under_surface;
@@ -1191,6 +1192,7 @@ static void CL_InitLocal(void)
 	cl_autoaim = Cvar_Get("cl_autoaim", "0.8", CVAR_ARCHIVE); //mxd. "0" -> "0.5"; H2: "cl_doautoaim"
 	cl_camera_clipdamp = Cvar_Get("cl_camera_clipdamp", "1.0", 0);
 	cl_camera_dampfactor = Cvar_Get("cl_camera_dampfactor", "1.0", CVAR_ARCHIVE); // H2_1.07: "0.2" -> "1.0".
+	cl_camera_position_lerp = Cvar_Get("cl_camera_position_lerp", "0.5", CVAR_ARCHIVE); //mxd
 	cl_camera_fpoffs = Cvar_Get("cl_camera_fpoffs", "0.0", 0);
 	cl_camera_freeze = Cvar_Get("cl_camera_freeze", "0.0", 0);
 	cl_camera_under_surface = Cvar_Get("cl_camera_under_surface", "0.0", 0);

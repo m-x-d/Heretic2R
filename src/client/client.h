@@ -556,13 +556,14 @@ extern cvar_t* cl_timedemo;
 
 extern cvar_t* cl_camera_clipdamp;
 extern cvar_t* cl_camera_dampfactor;
+extern cvar_t* cl_camera_position_lerp; //mxd
 extern cvar_t* cl_camera_fpoffs;
 extern cvar_t* cl_camera_freeze;
 extern cvar_t* cl_camera_under_surface;
 extern cvar_t* cl_camera_viewdist;
 extern cvar_t* cl_camera_viewmax;
 
-extern cvar_t* cl_camera_fpmode; // First person mode
+extern cvar_t* cl_camera_fpmode; // First-person mode.
 extern cvar_t* cl_camera_fptrans;
 extern cvar_t* cl_camera_fpdist;
 extern cvar_t* cl_camera_fpheight;

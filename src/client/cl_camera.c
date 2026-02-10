@@ -139,6 +139,45 @@ static void CL_InterpolateCameraViewAngles(const vec3_t look_angles, const vec3_
 	vectoangles2(lerped_dir, viewangles);
 }
 
+//mxd. Interpolate camera origin.
+static void CL_InterpolateCameraOrigin(vec3_t cam_lerp_origin, const float yaw, vec3_t cam_origin) //mxd
+{
+#define CAM_MAX_LERP_DISTANCE	64.0f
+
+	if (cl_camera_position_lerp->modified)
+	{
+		cl_camera_position_lerp->value = Clamp(cl_camera_position_lerp->value, 0.0f, 0.9f);
+		cl_camera_position_lerp->modified = false;
+	}
+
+	vec3_t cam_lerp_dir;
+	VectorSubtract(cam_lerp_origin, PlayerEntPtr->origin, cam_lerp_dir);
+	float lerp_dist = VectorNormalize(cam_lerp_dir);
+
+	if (lerp_dist > 0.0f)
+	{
+		lerp_dist = min(CAM_MAX_LERP_DISTANCE, lerp_dist);
+		const vec3_t cam_angles = VEC3_SET(0.0f, yaw, 0.0f);
+
+		vec3_t cam_forward;
+		vec3_t cam_right;
+		AngleVectors(cam_angles, cam_forward, cam_right, NULL);
+
+		VectorMA(PlayerEntPtr->origin, lerp_dist * DotProduct(cam_forward, cam_lerp_dir), cam_forward, cam_origin);
+		VectorMA(cam_origin, lerp_dist * 0.5f * DotProduct(cam_right, cam_lerp_dir), cam_right, cam_origin);
+
+		// Z-axis requires special handling (mainly because we want smoother camera movement on z-axis when walking up the stairs)...
+		const float frac_z = ((cam_lerp_origin[2] < PlayerEntPtr->origin[2]) ? 0.1f : 0.75f * cl_camera_position_lerp->value);
+		cam_origin[2] = LerpFloat(cam_lerp_origin[2], PlayerEntPtr->origin[2], frac_z);
+
+		VectorLerp(cam_lerp_origin, 1.0f - cl_camera_position_lerp->value, PlayerEntPtr->origin, cam_lerp_origin);
+	}
+	else
+	{
+		VectorCopy(PlayerEntPtr->origin, cam_origin);
+	}
+}
+
 static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheight, const qboolean interpolate, const qboolean noclip_mode) // H2 //mxd. Add 'look_angles' arg, flip 'interpolate' arg logic, add 'noclip_mode' arg.
 {
 #define MAX_CAMERA_TIMER	500
@@ -156,6 +195,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 	static vec3_t prev_prev_start;
 	static vec3_t prev_end;
 	static vec3_t prev_prev_end;
+	static vec3_t cam_lerp_origin; //mxd
 
 	if (cls.state != ca_active)
 		return;
@@ -188,11 +228,20 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 
 	const cam_mode_e prev_cam_mode = cam_mode;
 
+	if (cam_mode == CMODE_NONE || !interpolate) //mxd
+		VectorCopy(PlayerEntPtr->origin, cam_lerp_origin);
+
 	if (cam_mode == CMODE_NONE) //mxd
 		cam_mode = CMODE_DEFAULT;
 
-	vec3_t start = VEC3_INIT(PlayerEntPtr->origin);
+	vec3_t start;
 	vec3_t end;
+
+	//mxd. Interpolate camera origin.
+	if (interpolate)
+		CL_InterpolateCameraOrigin(cam_lerp_origin, look_angles[YAW], start);
+	else
+		VectorCopy(PlayerEntPtr->origin, start);
 
 	if (water_flags != 0)
 	{
