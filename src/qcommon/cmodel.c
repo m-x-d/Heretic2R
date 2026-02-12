@@ -815,21 +815,19 @@ int CM_PointContents(const vec3_t p, const int headnode)
 // Handles offsetting and rotation of the end points for moving and rotating entities.
 int CM_TransformedPointContents(const vec3_t p, const int headnode, const vec3_t origin, const vec3_t angles)
 {
-	vec3_t p_l;
-	vec3_t temp;
-	vec3_t forward;
-	vec3_t right;
-	vec3_t up;
-
 	// Subtract origin offset.
+	vec3_t p_l;
 	VectorSubtract(p, origin, p_l);
 
 	// Rotate start and end into the models frame of reference.
 	if (headnode != box_headnode && Vec3NotZero(angles))
 	{
+		vec3_t forward;
+		vec3_t right;
+		vec3_t up;
 		AngleVectors(angles, forward, right, up);
 
-		VectorCopy(p_l, temp);
+		const vec3_t temp = VEC3_INIT(p_l);
 		p_l[0] = DotProduct(temp, forward);
 		p_l[1] = -DotProduct(temp, right);
 		p_l[2] = DotProduct(temp, up);
