@@ -154,8 +154,7 @@ void TutorialChickenPain(edict_t* self, edict_t* other, float kick, int damage) 
 
 void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_think' in original logic.
 {
-	vec3_t vel_xy;
-	VectorCopy(self->targetEnt->velocity, vel_xy);
+	vec3_t vel_xy = VEC3_INIT(self->targetEnt->velocity);
 	vel_xy[2] = 0.0f;
 
 	if (VectorLength(vel_xy) > 100.0f)
@@ -206,7 +205,7 @@ void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_think' in
 		if ((k_diff[2] > -0.5f || trace.ent->groundentity != NULL) && k_vel[2] < upvel && force > 30.0f)
 			k_vel[2] = min(force, upvel); // Don't knock UP the player more than we do across...
 
-		VectorAdd(trace.ent->velocity, k_vel, trace.ent->velocity);
+		Vec3AddAssign(k_vel, trace.ent->velocity);
 
 		if (trace.ent->client != NULL) // If player, then set the player flag that will affect this.
 		{
@@ -245,11 +244,11 @@ void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_think' in
 		if (force > 100.0f)
 		{
 			VectorMA(trace.endpos, -force / 5.0f, k_diff, self->targetEnt->s.origin);
-			VectorScale(self->enemy->rope_end->velocity, -0.5f * force / 400.0f, self->enemy->rope_end->velocity);
+			Vec3ScaleAssign(-0.5f * force / 400.0f, self->enemy->rope_end->velocity);
 		}
 		else
 		{
-			VectorScale(self->enemy->rope_end->velocity, -0.5f, self->enemy->rope_end->velocity);
+			Vec3ScaleAssign(-0.5f, self->enemy->rope_end->velocity);
 		}
 	}
 
@@ -281,21 +280,17 @@ void TutorialChickenRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think2' i
 	edict_t* grab = self->rope_end;
 
 	vec3_t end_pos;
-	VectorCopy(grab->velocity, end_pos);
-	float mag = VectorNormalize(end_pos);
+	float mag = VectorNormalize2(grab->velocity, end_pos);
 	VectorMA(grab->s.origin, mag * FRAMETIME, end_pos, end_pos);
 
 	// Setup the top of the rope entity (the rope's attach point).
-	vec3_t rope_top;
-	VectorCopy(self->s.origin, rope_top);
+	const vec3_t rope_top = VEC3_INIT(self->s.origin);
 
 	// Find the length of the end segment.
 	const float grab_len = fabsf(self->maxs[2] + self->mins[2]);
 
 	// Find the vector to the rope's point of rest.
-	vec3_t end_rest;
-	VectorCopy(rope_top, end_rest);
-	end_rest[2] -= grab_len;
+	const vec3_t end_rest = VEC3_INITA(rope_top, 0.0f, 0.0f, -grab_len);
 
 	// Find the vector towards the middle, and that distance (disregarding height).
 	vec3_t end_vec;
@@ -304,24 +299,24 @@ void TutorialChickenRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think2' i
 	const float end_len = vhlen(end_rest, grab->s.origin);
 
 	// Subtract away from the rope's velocity based on that distance.
-	VectorScale(end_vec, -end_len * 0.75f, end_vec);
-	VectorSubtract(grab->velocity, end_vec, grab->velocity);
-	VectorScale(grab->velocity, 0.99f, grab->velocity);
+	Vec3ScaleAssign(-end_len * 0.75f, end_vec);
+	Vec3SubtractAssign(end_vec, grab->velocity);
+	Vec3ScaleAssign(0.99f, grab->velocity);
 
 	// Move the rope based on the new velocity.
-	vec3_t end_vel;
-	VectorCopy(grab->velocity, end_vel);
+	vec3_t end_vel = VEC3_INIT(grab->velocity);
 
 	vec3_t end_dest;
 	mag = VectorNormalize(end_vel);
 	VectorMA(grab->s.origin, FRAMETIME * mag, end_vel, end_dest);
 
 	// Find the angle between the top of the rope and the bottom.
-	VectorSubtract(end_dest, rope_top, end_vel);
-	VectorNormalize(end_vel);
+	vec3_t end_dir;
+	VectorSubtract(end_dest, rope_top, end_dir);
+	VectorNormalize(end_dir);
 
 	// Move the length of the rope in that direction from the top.
-	VectorMA(rope_top, grab_len, end_vel, grab->s.origin);
+	VectorMA(rope_top, grab_len, end_dir, grab->s.origin);
 
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
