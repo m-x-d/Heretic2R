@@ -53,7 +53,7 @@ void FXCorpseRemove(centity_t* owner, const int type, int flags, vec3_t origin)
 		sp->scale = 1.0f;
 		sp->d_scale = -1.0f;
 
-		const float angle = flrand(0, ANGLE_360);
+		const float angle = flrand(ANGLE_0, ANGLE_360);
 		const float vel = flrand(FLAME_ABSVEL, FLAME_ABSVEL * 2.5f);
 		VectorSet(sp->velocity, vel * cosf(angle), vel * sinf(angle), 0.0f);
 		VectorScale(sp->velocity, -0.3f, sp->acceleration);

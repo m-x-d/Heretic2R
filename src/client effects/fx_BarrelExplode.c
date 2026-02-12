@@ -88,7 +88,7 @@ void FXBarrelExplode(centity_t* owner, const int type, const int flags, vec3_t o
 
 	// Create smaller explosion spheres.
 	int count = irand(BARREL_EXPLODE_BALL_COLUMNS - 2, BARREL_EXPLODE_BALL_COLUMNS);
-	float angle = flrand(0.0f, ANGLE_360);
+	float angle = flrand(ANGLE_0, ANGLE_360);
 	float angle_increment = ANGLE_360 / (float)count;
 
 	for (int i = 0; i < count; i++)

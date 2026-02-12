@@ -360,7 +360,7 @@ static client_entity_t* InitFloorSplat(const vec3_t origin, const vec3_t normal,
 {
 	client_entity_t* floor_splat = ClientEntity_new(FX_BLOOD, CEF_NOMOVE | CEF_NO_DRAW, origin, normal, 1100);
 
-	floor_splat->r.angles[ROLL] = flrand(0.0f, ANGLE_360);
+	floor_splat->r.angles[ROLL] = flrand(ANGLE_0, ANGLE_360);
 	floor_splat->r.model = &splat_models[yellow ? 1 : 0];
 	floor_splat->r.frame = irand(0, 4);
 	floor_splat->r.flags = (RF_FIXED | RF_ALPHA_TEXTURE); 
@@ -403,7 +403,7 @@ void ThrowBlood(const vec3_t torigin, const vec3_t tnormal, const qboolean dark,
 
 	client_entity_t* bsplat = ClientEntity_new(FX_BLOOD, CEF_NOMOVE, origin, normal, 1000);
 
-	bsplat->r.angles[ROLL] = flrand(0.0f, ANGLE_360);
+	bsplat->r.angles[ROLL] = flrand(ANGLE_0, ANGLE_360);
 	bsplat->r.model = &splat_models[yellow ? 1 : 0];
 	bsplat->r.frame = irand(0, 4);
 	bsplat->r.flags = (RF_FIXED | RF_ALPHA_TEXTURE);
