@@ -902,11 +902,8 @@ static qboolean MG_CheckJump(edict_t* self)
 	if (DotProduct(jump_dir, forward) < 0.3f)
 		return false; // Jump direction more than 60 degrees off of forward.
 
-	vec3_t spot1;
-	VectorCopy(self->s.origin, spot1);
-
-	vec3_t spot2;
-	VectorCopy(targ_org, spot2);
+	const vec3_t spot1 = VEC3_INIT(self->s.origin);
+	const vec3_t spot2 = VEC3_INIT(targ_org);
 
 	vec3_t contents_spot;
 	VectorMA(spot1, 24.0f, forward, contents_spot);
@@ -952,13 +949,8 @@ static qboolean MG_CheckJump(edict_t* self)
 	if (!(self->monsterinfo.aiflags & AI_SWIM_OK) && (gi.pointcontents(spot2) & MASK_WATER))
 		return false; // Goalentity in water, slime or lava.
 
-	vec3_t start;
-	VectorCopy(self->s.origin, start);
-	start[2] += self->maxs[2];
-
-	vec3_t end;
-	VectorCopy(start, end);
-	end[2] += 36.0f;
+	vec3_t start = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2]);
+	const vec3_t end = VEC3_INITA(start, 0.0f, 0.0f, 36.0f);
 
 	trace_t trace;
 	gi.trace(start, self->mins, self->maxs, end, self, MASK_MONSTERSOLID, &trace);
@@ -968,10 +960,7 @@ static qboolean MG_CheckJump(edict_t* self)
 
 	VectorMA(start, (self->maxs[0] + self->maxs[1]) * 0.5f, jump_dir, start);
 
-	vec3_t end_spot;
-	VectorCopy(start, end_spot);
-	end_spot[2] += 36.0f;
-
+	vec3_t end_spot = VEC3_INITA(start, 0.0f, 0.0f, 36.0f);
 	gi.trace(self->s.origin, self->mins, self->maxs, end_spot, self, MASK_MONSTERSOLID, &trace);
 
 	if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
@@ -1046,8 +1035,7 @@ void MG_CheckEvade(edict_t* self)
 			continue; // Not an evadeable projectile.
 
 		vec3_t proj_dir;
-		VectorCopy(ent->velocity, proj_dir);
-		VectorNormalize(proj_dir);
+		VectorNormalize2(ent->velocity, proj_dir);
 
 		vec3_t end_pos;
 		VectorMA(ent->s.origin, 600.0f, proj_dir, end_pos);
@@ -1225,17 +1213,13 @@ void MG_PostDeathThink(edict_t* self)
 	vec3_t right;
 	AngleVectors(self->s.angles, forward, right, NULL);
 
-	vec3_t org;
-	VectorCopy(self->s.origin, org);
-	org[2] += self->mins[2];
+	vec3_t org = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2]);
 
 	// Trace forwards.
 	vec3_t start_pos;
 	VectorMA(org, self->dead_size, forward, start_pos);
 
-	vec3_t end_pos;
-	VectorCopy(start_pos, end_pos);
-	end_pos[2] -= 128.0f;
+	vec3_t end_pos = VEC3_INITA(start_pos, 0.0f, 0.0f, -128.0f);
 
 	trace_t trace1;
 	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, self, MASK_SOLID, &trace1);
@@ -1490,10 +1474,7 @@ void MG_CheckLanded(edict_t* self, const float next_anim)
 	}
 	else if (self->velocity[2] < 0.0f)
 	{
-		vec3_t pos;
-		VectorCopy(self->s.origin, pos);
-		pos[2] += self->mins[2];
-
+		vec3_t pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2]);
 		VectorMA(pos, 0.5f, self->velocity, pos);
 
 		if (gi.pointcontents(pos) & CONTENTS_SOLID)
