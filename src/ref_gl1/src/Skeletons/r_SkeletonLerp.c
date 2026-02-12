@@ -50,8 +50,8 @@ static void DoSkeletalRotations(const fmdl_t* fmdl, const entity_t* e) //mxd. Or
 		for (int i = 0; i < fmdl_cur_skeletal_cluster->numVerticies; i++)
 		{
 			vec3_t* v = &s_lerped[fmdl_cur_skeletal_cluster->verticies[i]];
-			VectorSubtract(*v, swap_skeleton.rootJoint->model.origin, *v);
-			VectorAdd(*v, cur_skeleton.rootJoint->model.origin, *v);
+			Vec3SubtractAssign(swap_skeleton.rootJoint->model.origin, *v);
+			Vec3AddAssign(cur_skeleton.rootJoint->model.origin, *v);
 		}
 	}
 	else
@@ -228,9 +228,9 @@ static void StandardFrameLerp(const fmdl_t* fmdl, entity_t* e) //mxd. Original l
 
 	if (e->scale != 1.0f)
 	{
-		VectorScale(cur_skel_move, e->scale, cur_skel_move);
-		VectorScale(sfl_cur_skel.front_vector, e->scale, sfl_cur_skel.front_vector);
-		VectorScale(sfl_cur_skel.back_vector, e->scale, sfl_cur_skel.back_vector);
+		Vec3ScaleAssign(e->scale, cur_skel_move);
+		Vec3ScaleAssign(e->scale, sfl_cur_skel.front_vector);
+		Vec3ScaleAssign(e->scale, sfl_cur_skel.back_vector);
 	}
 
 	LerpVerts(fmdl->header.num_xyz, sfl_cur_skel.verts, sfl_cur_skel.old_verts, s_lerped, cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
