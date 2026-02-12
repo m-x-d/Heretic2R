@@ -689,14 +689,11 @@ static void Debris_SpawnFleshChunks(int type, int flags, const vec3_t origin, co
 
 	for (int i = 0; i < num; i++)
 	{
-		vec3_t holdorigin;
-		VectorCopy(origin, holdorigin);
+		vec3_t hold_origin;
+		VectorRandomAdd(origin, mins, hold_origin);
 
-		for (int c = 0; c < 3; c++)
-			holdorigin[c] += flrand(-mins[c], mins[c]);
-
-		FXDebris_Throw(holdorigin, material, dir, ke, scale, flags, altskin);
-		DoBloodSplash(holdorigin, 5, material == MAT_INSECT);
+		FXDebris_Throw(hold_origin, material, dir, ke, scale, flags, altskin);
+		DoBloodSplash(hold_origin, 5, material == MAT_INSECT);
 	}
 }
 
