@@ -53,15 +53,15 @@ void FXWaterfallBase(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	byte xscale;
 	byte yscale;
-	byte yaw;
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WATERFALLBASE].formatString, &xscale, &yscale, &yaw);
+	byte b_yaw;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WATERFALLBASE].formatString, &xscale, &yscale, &b_yaw);
 
 	flags |= (CEF_NO_DRAW | CEF_NOMOVE | CEF_VIEWSTATUSCHANGED);
 	client_entity_t* wfb = ClientEntity_new(type, flags, origin, NULL, 100);
 
 	wfb->xscale = xscale;
 	wfb->yscale = yscale;
-	wfb->yaw = (float)yaw * ANGLE_360 / 256.0f;
+	wfb->yaw = (float)b_yaw * BYTEANGLE_TO_RAD; //mxd. '* ANGLE_360 / 256.0f' in original logic.
 	wfb->radius = wfb->xscale + wfb->yscale;
 	wfb->Update = WaterfallBaseUpdate;
 
