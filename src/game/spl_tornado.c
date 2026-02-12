@@ -62,7 +62,7 @@ void TornadoThink(edict_t* self)
 
 	if (self->jump_time < level.time)
 	{
-		const vec3_t angles = { flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360), 0.0f };
+		const vec3_t angles = { flrand(ANGLE_0, ANGLE_360), flrand(ANGLE_0, ANGLE_360), ANGLE_0 };
 
 		vec3_t end_pos;
 		DirFromAngles(angles, end_pos);

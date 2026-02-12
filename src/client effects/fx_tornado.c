@@ -127,7 +127,7 @@ static qboolean TornadoUpdate(client_entity_t* self, centity_t* owner) //mxd. Na
 		}
 
 		ce->origin[CYL_RADIUS] = 0.1f * TORNADO_RADIUS;
-		ce->origin[CYL_YAW] = flrand(0.0f, ANGLE_360);
+		ce->origin[CYL_YAW] = flrand(ANGLE_0, ANGLE_360);
 		ce->origin[CYL_Z] = 0.0f;
 
 		ce->acceleration[CYL_RADIUS] = TORNADO_RADIUS;
