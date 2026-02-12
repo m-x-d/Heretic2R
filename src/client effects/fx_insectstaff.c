@@ -306,12 +306,8 @@ static qboolean GlobeOfOuchinessGlowballSpawnerUpdate(client_entity_t* self, cen
 
 	self->flags |= CEF_DONT_LINK;
 
-	vec3_t temp;
-	VectorCopy(owner->current.angles, temp);
-	VectorScale(temp, 180.0f / ANGLE_180, temp);
-
 	vec3_t owner_fwd;
-	AngleVectors(temp, owner_fwd, NULL, NULL);
+	RealAngleVectors(owner->current.angles, owner_fwd, NULL, NULL); //mxd. Avoid RAD -> DEG -> RAD angle conversions.
 
 	// Make me spawn from my caster's left / right hands (alternating).
 	matrix3_t rotation;
