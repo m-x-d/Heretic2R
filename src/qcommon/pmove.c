@@ -676,19 +676,15 @@ static void PM_OnBboxSizeChanged(void) // H2 //mxd. Removed unused return value.
 	float sign;
 	float* v1;
 	float* v2;
-	vec3_t start;
-	vec3_t end;
-	vec3_t mins;
-	vec3_t maxs;
-	vec3_t intent_mins;
-	vec3_t intent_maxs;
 	trace_t trace;
 
-	VectorCopy(pm->intentMins, intent_mins);
-	VectorCopy(pm->intentMaxs, intent_maxs);
-	VectorCopy(pm->mins, mins);
-	VectorCopy(pm->maxs, maxs);
-	VectorCopy(pml.origin, start);
+	vec3_t intent_mins = VEC3_INIT(pm->intentMins);
+	vec3_t intent_maxs = VEC3_INIT(pm->intentMaxs);
+
+	vec3_t mins = VEC3_INIT(pm->mins);
+	vec3_t maxs = VEC3_INIT(pm->maxs);
+
+	vec3_t start = VEC3_INIT(pml.origin);
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -723,7 +719,7 @@ static void PM_OnBboxSizeChanged(void) // H2 //mxd. Removed unused return value.
 
 		if (diff * sign > 0.0f)
 		{
-			VectorCopy(start, end);
+			vec3_t end = VEC3_INIT(start);
 
 			if (i == 4 && pm->groundentity != NULL)
 			{
@@ -935,7 +931,7 @@ static qboolean PM_TryWaterMove(const float scaler) //TODO: scaler is always 0.5
 	if (VectorLength(pml.velocity) > max_swim_speed * 1.25f)
 	{
 		VectorNormalize(pml.velocity); // Can't use wishdir here - ignores vertical velocity... --mxd.
-		VectorScale(pml.velocity, max_swim_speed * 1.25f, pml.velocity);
+		Vec3ScaleAssign(max_swim_speed * 1.25f, pml.velocity);
 	}
 
 	if (pm->groundentity != NULL)
