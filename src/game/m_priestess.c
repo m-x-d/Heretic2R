@@ -200,8 +200,6 @@ static void PriestessFire4(edict_t* self) //mxd. Named 'priestess_fire4' in orig
 	AngleVectors(self->s.angles, forward, right, NULL);
 
 	vec3_t start_pos;
-	VectorCopy(self->s.origin, start_pos);
-
 	VectorMA(self->s.origin, 30.0f, forward, start_pos);
 	VectorMA(start_pos, 8.0f, right, start_pos);
 	start_pos[2] += 56.0f;
@@ -537,11 +535,8 @@ void priestess_teleport_move(edict_t* self)
 		if (enemy_dist < 64.0f || start_dist < 64.0f || enemy_dist >= best_dist || !AI_IsVisible(path_corner, self->enemy))
 			continue;
 
-		vec3_t test_pos;
-		VectorCopy(path_corner->s.origin, test_pos);
-		test_pos[2] += maxs[2];
-
-		trace_t	trace;
+		trace_t trace;
+		const vec3_t test_pos = VEC3_INITA(path_corner->s.origin, 0.0f, 0.0f, maxs[2]);
 		gi.trace(test_pos, mins, maxs, test_pos, self, MASK_MONSTERSOLID, &trace);
 
 		if (trace.startsolid || trace.allsolid)
@@ -605,18 +600,13 @@ void priestess_teleport_return(edict_t* self)
 	if (self->priestess_teleport_blocker != NULL && self->movetarget != self->enemy) // Free the teleport blocker entity.
 		G_FreeEdict(self->priestess_teleport_blocker);
 
-	vec3_t start;
-	VectorCopy(self->monsterinfo.nav_goal, start);
-	start[2] += 36.0f;
-
-	vec3_t end;
-	VectorCopy(self->monsterinfo.nav_goal, end);
-	end[2] -= 128.0f;
+	const vec3_t start = VEC3_INITA(self->monsterinfo.nav_goal, 0.0f, 0.0f, 36.0f);
+	const vec3_t end =   VEC3_INITA(self->monsterinfo.nav_goal, 0.0f, 0.0f, -128.0f);
 
 	trace_t trace;
 	gi.trace(start, self->mins, self->maxs, end, self, MASK_MONSTERSOLID, &trace);
 
-	if (trace.allsolid || trace.startsolid)
+	if (trace.startsolid || trace.allsolid)
 	{
 		// The priestess has become lodged in something!
 		assert(0); //TODO: handle this... somehow. Try picking different path corner?
@@ -667,11 +657,7 @@ void priestess_fire1(edict_t* self, float pitch_offset, float yaw_offset, float 
 
 		VectorCopy(proj_pos, proj->s.origin);
 
-		vec3_t angles;
-		VectorCopy(start_angles, angles);
-
-		angles[PITCH] += flrand(-4.0f, 4.0f);
-		angles[YAW] += flrand(-4.0f, 4.0f);
+		const vec3_t angles = VEC3_INITA(start_angles, flrand(-4.0f, 4.0f), flrand(-4.0f, 4.0f), 0.0f);
 
 		vec3_t vel;
 		AngleVectors(angles, vel, NULL, NULL);
@@ -707,8 +693,6 @@ void priestess_attack3_loop(edict_t* self)
 	AngleVectors(self->s.angles, forward, right, NULL);
 
 	vec3_t spawn_pos;
-	VectorCopy(self->s.origin, spawn_pos);
-
 	VectorMA(self->s.origin, 30.0f, forward, spawn_pos);
 	VectorMA(spawn_pos, 8.0f, right, spawn_pos);
 	spawn_pos[2] += 56.0f;
