@@ -650,7 +650,7 @@ void SpreaderIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'spreader_isb
 			return;
 
 		self->enemy = other;
-		VectorAdd(other->velocity, self->velocity, other->velocity);
+		Vec3AddAssign(self->velocity, other->velocity);
 
 		if (other->takedamage != DAMAGE_NO)
 			T_Damage(other, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20, 0, MOD_DIED);
