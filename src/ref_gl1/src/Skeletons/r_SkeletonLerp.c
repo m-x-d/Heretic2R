@@ -83,7 +83,7 @@ static void LerpStandardSkeleton(const fmdl_t* fmdl, entity_t* e) //mxd. Origina
 			sfl_swap_skel.front_vector[i] = lerp * pframe->scale[i];
 			sfl_swap_skel.back_vector[i] = e->backlerp * poldframe->scale[i];
 		}
-		
+
 		LerpVerts(fmdl->header.num_xyz, sfl_swap_skel.verts, sfl_swap_skel.old_verts, lerped, swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
 
 		for (int i = 0; i < fmdl_cur_skeletal_cluster->numVerticies; i++)
@@ -92,13 +92,13 @@ static void LerpStandardSkeleton(const fmdl_t* fmdl, entity_t* e) //mxd. Origina
 			VectorCopy(lerped[vert_index], s_lerped[vert_index]);
 		}
 
-		LinearllyInterpolateJoints(&fmdl->skeletons[e->swapFrame], 0, &fmdl->skeletons[e->oldSwapFrame], 0, &swap_skeleton, 0, swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
+		LinearlyInterpolateJoints(&fmdl->skeletons[e->swapFrame], 0, &fmdl->skeletons[e->oldSwapFrame], 0, &swap_skeleton, 0, swap_skel_move, sfl_swap_skel.front_vector, sfl_swap_skel.back_vector);
 	}
 
 	if (e->rootJoint != NULL_ROOT_JOINT || e->swapFrame != NO_SWAP_FRAME)
 	{
 		CreateSkeletonInPlace(fmdl->skeletalType, &cur_skeleton);
-		LinearllyInterpolateJoints(&fmdl->skeletons[e->frame], 0, &fmdl->skeletons[e->oldframe], 0, &cur_skeleton, 0, cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
+		LinearlyInterpolateJoints(&fmdl->skeletons[e->frame], 0, &fmdl->skeletons[e->oldframe], 0, &cur_skeleton, 0, cur_skel_move, sfl_cur_skel.front_vector, sfl_cur_skel.back_vector);
 	}
 
 	DoSkeletalRotations(fmdl, e);

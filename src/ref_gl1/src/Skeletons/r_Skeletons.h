@@ -20,5 +20,5 @@ extern void ClearSkeleton(ModelSkeleton_t* skel, int root);
 
 extern void SetupJointRotations(ModelSkeleton_t* skel, int jointIndex, int anglesIndex);
 extern void FinishJointRotations(ModelSkeleton_t* skel, int jointIndex);
-extern void LinearllyInterpolateJoints(ModelSkeleton_t* newSkel, int newIndex, ModelSkeleton_t* oldSkel, int oldIndex, ModelSkeleton_t* liSkel, int liIndex, float move[3], float frontv[3], float backv[3]);
+extern void LinearlyInterpolateJoints(ModelSkeleton_t* newSkel, int newIndex, ModelSkeleton_t* oldSkel, int oldIndex, ModelSkeleton_t* liSkel, int liIndex, float move[3], float frontv[3], float backv[3]);
 extern void RotateModelSegments(ModelSkeleton_t* skel, int jointIndex, int modelClusterIndex, int anglesIndex,	vec3_t* modelVerticies);

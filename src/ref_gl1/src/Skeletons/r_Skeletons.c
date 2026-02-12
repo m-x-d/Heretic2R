@@ -237,7 +237,7 @@ void FinishJointRotations(ModelSkeleton_t* skel, const int jointIndex)
 	Matrix3MultByMatrix3(partialBackToLocal, rotation2, joint->rotation);
 }
 
-void LinearllyInterpolateJoints(ModelSkeleton_t* newSkel, const int newIndex, ModelSkeleton_t* oldSkel, const int oldIndex, ModelSkeleton_t* liSkel, const int liIndex, float move[3], float frontv[3], float backv[3])
+void LinearlyInterpolateJoints(ModelSkeleton_t* newSkel, const int newIndex, ModelSkeleton_t* oldSkel, const int oldIndex, ModelSkeleton_t* liSkel, const int liIndex, float move[3], float frontv[3], float backv[3]) //mxd. Named 'LinearllyInterpolateJoints' in original logic.
 {
 	const M_SkeletalJoint_t* newJoint = &newSkel->rootJoint[newIndex];
 	const M_SkeletalJoint_t* oldJoint = &oldSkel->rootJoint[oldIndex];
@@ -259,7 +259,7 @@ void LinearllyInterpolateJoints(ModelSkeleton_t* newSkel, const int newIndex, Mo
 			assert(oldChild != ARRAYEDLISTNODE_NULL);
 			assert(liChild != ARRAYEDLISTNODE_NULL);
 
-			LinearllyInterpolateJoints(newSkel, newSkel->rootNode[newChild].data, oldSkel, oldSkel->rootNode[oldChild].data, liSkel, liSkel->rootNode[liChild].data, move, frontv, backv);
+			LinearlyInterpolateJoints(newSkel, newSkel->rootNode[newChild].data, oldSkel, oldSkel->rootNode[oldChild].data, liSkel, liSkel->rootNode[liChild].data, move, frontv, backv);
 		}
 	}
 
