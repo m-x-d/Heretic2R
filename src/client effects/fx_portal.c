@@ -162,7 +162,7 @@ static qboolean MagicPortalUpdate(client_entity_t* self, centity_t* owner) //mxd
 			VectorCopy(owner->current.origin, line->r.startpos);
 			VectorMA(line->r.startpos, flrand(16.0f, 48.0f), line->velocity, line->r.endpos); //mxd. Used irand() in original logic.
 
-			VectorScale(line->velocity, flrand(25.0f, 100.0f), line->velocity); //mxd. Used irand() in original logic.
+			Vec3ScaleAssign(flrand(25.0f, 100.0f), line->velocity); //mxd. Used irand() in original logic.
 			VectorSet(line->acceleration, line->velocity[0] * 0.1f, line->velocity[1] * 0.1f, 0.0f);
 
 			AddEffect(NULL, line);
