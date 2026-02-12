@@ -90,9 +90,7 @@ static qboolean SV_MoveStep_Walk(edict_t* ent, const vec3_t move, const qboolean
 	VectorAdd(ent->s.origin, move, new_org);
 	new_org[2] += step_size;
 
-	vec3_t end;
-	VectorCopy(new_org, end);
-	end[2] -= step_size * 2.0f;
+	const vec3_t end = VEC3_INITA(new_org, 0.0f, 0.0f, -step_size * 2.0f);
 
 	trace_t trace;
 	gi.trace(new_org, ent->mins, ent->maxs, end, ent, MASK_MONSTERSOLID, &trace);
