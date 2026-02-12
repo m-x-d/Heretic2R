@@ -92,7 +92,7 @@ void BleederThink(edict_t* self)
 	VectorScale(forward, self->movedir[0], bleed_dir);
 	VectorMA(bleed_dir, self->movedir[1], right, bleed_dir);
 	VectorMA(bleed_dir, self->movedir[2], up, bleed_dir);
-	VectorScale(bleed_dir, (float)damage * 3.0f, bleed_dir);
+	Vec3ScaleAssign((float)damage * 3.0f, bleed_dir);
 
 	const int flags = ((self->owner->materialtype == MAT_INSECT) ? CEF_FLAG8 : 0); //mxd
 	gi.CreateEffect(NULL, FX_BLOOD, flags, bleed_pos, "ub", bleed_dir, damage);
