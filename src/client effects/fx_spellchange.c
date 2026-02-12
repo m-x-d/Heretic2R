@@ -93,7 +93,7 @@ void FXSpellChange(centity_t* owner, const int type, const int flags, vec3_t ori
 		client_particle_t* spell_bit = ClientParticle_new(part, color_white, 500);
 
 		VectorSet(spell_bit->velocity, flrand(-32.0f, 32.0f), flrand(-32.0f, 32.0f), flrand(16.0f, 64.0f));
-		VectorAdd(dir, spell_bit->velocity, spell_bit->velocity);
+		Vec3AddAssign(dir, spell_bit->velocity);
 		spell_bit->d_scale = -2.0f;
 		spell_bit->scale = 6.0f;
 
