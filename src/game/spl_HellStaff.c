@@ -191,13 +191,11 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 	{
 		if (back_trace.ent != NULL && back_trace.ent->takedamage != DAMAGE_NO)
 		{
-			vec3_t fwd;
-			AngleVectors(aim_angles, fwd, NULL, NULL);
+			vec3_t forward;
+			AngleVectors(aim_angles, forward, NULL, NULL);
 
-			vec3_t angles;
-			VectorCopy(aim_angles, angles);
-
-			HellLaserDamage(caster, back_trace.endpos, angles, fwd, &back_trace);
+			vec3_t angles = VEC3_INIT(aim_angles);
+			HellLaserDamage(caster, back_trace.endpos, angles, forward, &back_trace);
 		}
 
 		return;
@@ -243,8 +241,7 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 	const float dot = Clamp(DotProduct(dir, forward), 0.0f, 1.0f);
 	LerpAngles(aim_angles, dot, cur_aim_angles, cur_aim_angles);
 
-	vec3_t cur_start_pos;
-	VectorCopy(start_pos, cur_start_pos);
+	vec3_t cur_start_pos = VEC3_INIT(start_pos);
 
 	//mxd. Don't forget to annoy monsters.
 	AlertMonstersAt(tr.endpos, caster, 1.0f, 0);
