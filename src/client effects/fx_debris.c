@@ -402,8 +402,8 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	gib->r.angles[1] = flrand(-ANGLE_90, ANGLE_90);
 
 	//mxd. Setup angular velocity.
-	gib->debris_avelocity[0] = ANGLE_360 + flrand(0.0f, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
-	gib->debris_avelocity[1] = ANGLE_360 + flrand(0.0f, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
+	gib->debris_avelocity[0] = ANGLE_360 + flrand(ANGLE_0, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
+	gib->debris_avelocity[1] = ANGLE_360 + flrand(ANGLE_0, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
 
 	gib->elasticity = debris_elasticity[MAT_FLESH];
 
@@ -585,8 +585,8 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	debris->r.angles[1] = flrand(-ANGLE_90, ANGLE_90);
 
 	//mxd. Setup angular velocity.
-	debris->debris_avelocity[0] = ANGLE_360 + flrand(0.0f, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
-	debris->debris_avelocity[1] = ANGLE_360 + flrand(0.0f, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
+	debris->debris_avelocity[0] = ANGLE_360 + flrand(ANGLE_0, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
+	debris->debris_avelocity[1] = ANGLE_360 + flrand(ANGLE_0, ANGLE_90) * Q_signf(flrand(-1.0f, 1.0f));
 
 	debris->clip_flags |= (CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS); //mxd. Use separate flags.
 	debris->radius = max(1.0f, debris->r.scale); //mxd. 5.0 in original logic.
