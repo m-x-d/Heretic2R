@@ -112,8 +112,7 @@ void MeteorBarrierHuntThink(edict_t* self)
 
 	if (self->enemy->inuse && self->enemy->health > 0 && self->targetname != NULL && strcmp(self->enemy->classname, self->targetname) == 0)
 	{
-		vec3_t dest;
-		VectorCopy(self->enemy->s.origin, dest);
+		vec3_t dest = VEC3_INIT(self->enemy->s.origin);
 
 		for (int i = 0; i < 3; i++)
 			dest[i] += (self->enemy->mins[i] + self->enemy->maxs[i]) * 0.5f;
