@@ -118,9 +118,9 @@ static void HellLaserBurn(vec3_t loc, vec3_t fwd, vec3_t right, vec3_t up)
 
 	const float delta_angle = ANGLE_360 / (float)HELLLASER_PARTS;
 	float cur_angle = flrand(0.0f, delta_angle);
-	VectorScale(fwd, -0.25f * HELLLASER_SPEED, fwd);
-	VectorScale(right, HELLLASER_SPEED, right);
-	VectorScale(up, HELLLASER_SPEED, up);
+	Vec3ScaleAssign(-0.25f * HELLLASER_SPEED, fwd);
+	Vec3ScaleAssign(HELLLASER_SPEED, right);
+	Vec3ScaleAssign(HELLLASER_SPEED, up);
 
 	for (int i = 0; i < HELLLASER_PARTS; i++)
 	{
@@ -214,8 +214,7 @@ void FXHellstaffPower(centity_t* owner, int type, const int flags, vec3_t origin
 	const int count = GetScaledCount((int)(len / 16.0f), 0.3f);
 	VectorScale(fwd, len / (float)count, delta_pos);
 
-	vec3_t cur_pos;
-	VectorCopy(origin, cur_pos);
+	vec3_t cur_pos = VEC3_INIT(origin);
 
 	// Make the particles along the beam.
 	for (int i = 0; i < count; i++)
@@ -229,7 +228,7 @@ void FXHellstaffPower(centity_t* owner, int type, const int flags, vec3_t origin
 		VectorRandomSet(spark->velocity, HELLLASER_SPEED); //mxd
 
 		AddParticleToList(beam, spark);
-		VectorAdd(cur_pos, delta_pos, cur_pos);
+		Vec3AddAssign(delta_pos, cur_pos);
 	}
 
 	VectorSubtract(beam->r.endpos, beam->r.startpos, dir);
