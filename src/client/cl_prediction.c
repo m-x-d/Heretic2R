@@ -294,12 +294,10 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 	VectorCopy(cl.frame.playerstate.mins, pm.mins);
 	VectorCopy(cl.frame.playerstate.maxs, pm.maxs);
 
-	vec3_t mins;
-	VectorCopy(cl.frame.playerstate.mins, mins);
+	vec3_t mins = VEC3_INIT(cl.frame.playerstate.mins);
 	pm.intentMins = mins;
 
-	vec3_t maxs;
-	VectorCopy(cl.frame.playerstate.maxs, maxs);
+	vec3_t maxs = VEC3_INIT(cl.frame.playerstate.maxs);
 	pm.intentMaxs = maxs;
 
 	cl.playerinfo.sv_gravity = cl.frame.playerstate.pmove.gravity;
@@ -567,8 +565,7 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 
 			for (int i = 0; i < steps; i++)
 			{
-				vec3_t old_origin;
-				VectorCopy(cl.playerinfo.origin, old_origin);
+				const vec3_t old_origin = VEC3_INIT(cl.playerinfo.origin);
 
 				cl.playerinfo.ishistory = (cl.playerinfo.leveltime <= cl.playerinfo.Highestleveltime);
 				if (!cl.playerinfo.ishistory)
