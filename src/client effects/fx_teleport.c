@@ -155,10 +155,10 @@ static qboolean TeleportPadUpdate(client_entity_t* self, centity_t* owner) //mxd
 		c1->d_scale = -12.0f;
 
 		c1->origin[SPH_RADIUS] = TELEPORT_PAD_RADIUS;
-		c1->origin[SPH_YAW] = flrand(0, ANGLE_360);
+		c1->origin[SPH_YAW] = flrand(ANGLE_0, ANGLE_360);
 		c1->origin[SPH_PITCH] = -ANGLE_90;
 
-		c1->velocity[SPH_YAW] = flrand(-2.0f * ANGLE_360, 2.0f * ANGLE_360);
+		c1->velocity[SPH_YAW] = ANGLE_360 * flrand(-2.0f, 2.0f);
 		c1->velocity[SPH_PITCH] = ANGLE_180;
 
 		c1->acceleration[SPH_RADIUS] = -2.0f * TELEPORT_PAD_RADIUS;
@@ -175,7 +175,7 @@ static qboolean TeleportPadUpdate(client_entity_t* self, centity_t* owner) //mxd
 
 		c2->origin[CYL_RADIUS] = TELEPORT_PAD_RADIUS * 0.5f;
 		c2->origin[CYL_Z] = -TELEPORT_PAD_RADIUS;
-		c2->origin[CYL_YAW] = flrand(0.0f, ANGLE_360);
+		c2->origin[CYL_YAW] = flrand(ANGLE_0, ANGLE_360);
 
 		c2->velocity[CYL_RADIUS] = TELEPORT_PAD_RADIUS * 0.5f;
 
