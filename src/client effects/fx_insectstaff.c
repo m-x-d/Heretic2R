@@ -56,12 +56,12 @@ void PreCacheInsectStaffSFX(void) //mxd
 
 static qboolean InsectStaffTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXInsectStaffTrailThink' in original logic.
 {
+	self->r.scale = flrand(0.8f, 1.3f);
+
 	vec3_t trail_start = VEC3_INIT(owner->origin);
 
 	vec3_t trail;
 	VectorSubtract(owner->origin, self->origin, trail);
-
-	self->r.scale = flrand(0.8f, 1.3f);
 	float trail_length = VectorNormalize(trail);
 
 	if (trail_length > 0.05f)
@@ -72,7 +72,7 @@ static qboolean InsectStaffTrailUpdate(client_entity_t* self, centity_t* owner) 
 		vec3_t up;
 		CrossProduct(trail, right, up);
 
-		VectorScale(trail, FIST_DELTA_FORWARD, trail);
+		Vec3ScaleAssign(FIST_DELTA_FORWARD, trail);
 
 		const int no_of_intervals = (int)(trail_length / FIST_DELTA_FORWARD);
 		if (no_of_intervals > 40)
@@ -104,7 +104,7 @@ static qboolean InsectStaffTrailUpdate(client_entity_t* self, centity_t* owner) 
 			trail_length -= FIST_DELTA_FORWARD;
 			theta += delta_theta;
 
-			VectorAdd(trail_start, trail, trail_start);
+			Vec3AddAssign(trail, trail_start);
 		}
 	}
 
@@ -141,7 +141,7 @@ static void InsectStaffExplode(const int type, const int flags, vec3_t origin, v
 	if (flags & CEF_FLAG6)
 		FXClientScorchmark(origin, dir);
 
-	VectorScale(dir, 32.0f, dir);
+	Vec3ScaleAssign(32.0f, dir);
 
 	const int count = GetScaledCount(irand(8, 12), 0.8f);
 
@@ -178,8 +178,7 @@ static qboolean GlobeOfOuchinessGlobeUpdate(client_entity_t* self, centity_t* ow
 
 static qboolean GlobeOfOuchinessAuraUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXGlobeOfOuchinessAuraThink' in original logic.
 {
-	vec3_t trail_start;
-	VectorCopy(owner->origin, trail_start);
+	vec3_t trail_start = VEC3_INIT(owner->origin);
 
 	vec3_t trail_dir;
 	VectorSubtract(owner->lerp_origin, owner->origin, trail_dir);
@@ -194,7 +193,7 @@ static qboolean GlobeOfOuchinessAuraUpdate(client_entity_t* self, centity_t* own
 	vec3_t up;
 	CrossProduct(trail_dir, right, up);
 
-	VectorScale(trail_dir, FX_GLOBE_FLY_SPEED, trail_dir);
+	Vec3ScaleAssign(FX_GLOBE_FLY_SPEED, trail_dir);
 
 	const int flags = (int)(self->flags & ~(CEF_OWNERS_ORIGIN | CEF_NO_DRAW));
 	const float base_scale = ((R_DETAIL < DETAIL_NORMAL) ? FX_SOFT_GLOBE_AURA_SCALE : FX_GLOBE_AURA_SCALE); //mxd
@@ -218,7 +217,7 @@ static qboolean GlobeOfOuchinessAuraUpdate(client_entity_t* self, centity_t* own
 
 		AddEffect(NULL, trail);
 
-		VectorAdd(trail_start, trail_dir, trail_start);
+		Vec3AddAssign(trail_dir, trail_start);
 		trail_length -= FX_GLOBE_FLY_SPEED;
 	}
 
@@ -322,7 +321,7 @@ static qboolean GlobeOfOuchinessGlowballSpawnerUpdate(client_entity_t* self, cen
 	const int ref_index = (is_sword_fx ? INSECT_SWORD : INSECT_STAFF); //mxd
 	Matrix3MultByVec3(rotation, caster->referenceInfo->references[ref_index].placement.origin, glowball->r.origin);
 
-	VectorAdd(caster->origin, glowball->r.origin, glowball->r.origin);
+	Vec3AddAssign(caster->origin, glowball->r.origin);
 
 	// Set my velocity.
 	glowball->velocity[0] = owner_fwd[0] * 175.0f + flrand(-25.0f, 25.0f) * (is_sword_fx ? -1.0f : 1.0f);
@@ -424,7 +423,7 @@ static qboolean InsectSpear2Update(client_entity_t* self, centity_t* owner)
 		COLOUR_SETA(spark->color, irand(240, 255), irand(240, 255), irand(240, 255), irand(64, 196)); //mxd. Use macro.
 		spark->d_alpha = -128.0f;
 
-		VectorAdd(self->startpos2, spark->origin, spark->origin);
+		Vec3AddAssign(self->startpos2, spark->origin);
 		VectorMA(spark->origin, dist / (float)i, dir, spark->origin);
 
 		for (int c = 0; c < 3; c++)
