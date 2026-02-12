@@ -75,7 +75,7 @@ void ai_c_move(edict_t* self, const float forward, float right, float up)
 	if (fabsf(dist) > fabsf((float)self->monsterinfo.c_dist))
 		dist = (float)self->monsterinfo.c_dist;
 
-	const float yaw = self->s.angles[YAW] * ANGLE_180 * 2.0f / 360.0f;
+	const float yaw = self->s.angles[YAW] * ANGLE_TO_RAD;
 	vec3_t move = { cosf(yaw) * dist, sinf(yaw) * dist, 0.0f };
 	MG_MoveStep(self, move, true);
 
