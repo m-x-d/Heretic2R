@@ -69,12 +69,6 @@ void elflord_c_mist(edict_t* self, float x, float y, float z) //mxd. Named 'elfl
 	vec3_t yaw_offset;
 	Matrix3MultByVec3(yaw_matrix, vec3_origin, yaw_offset);
 
-	// Get normalized offset.
-	vec3_t normalized;
-	VectorCopy(yaw_offset, normalized);
-	normalized[2] = 0.0f;
-	VectorNormalize(normalized);
-
 	// Add offset to owners origin.
 	Vec3AddAssign(self->s.origin, yaw_offset);
 
