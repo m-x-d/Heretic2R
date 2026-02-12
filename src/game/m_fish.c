@@ -597,8 +597,8 @@ void fish_bite(edict_t* self) //mxd. Named 'fishbite' in original logic.
 	{
 		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_BITEHIT1, SND_BITEHIT2)], 1.0f, ATTN_NORM, 0.0f);
 
-		VectorScale(diff, -3.0f, diff);
-		VectorAdd(self->enemy->velocity, diff, self->enemy->velocity);
+		Vec3ScaleAssign(-3.0f, diff);
+		Vec3AddAssign(diff, self->enemy->velocity);
 
 		T_Damage(self->enemy, self, self, vec3_origin, self->enemy->s.origin, vec3_origin, irand(FISH_DMG_BITE_MIN, FISH_DMG_BITE_MAX), 0, DAMAGE_DISMEMBER, MOD_DIED);
 
