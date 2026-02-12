@@ -68,8 +68,7 @@ static trace_t SV_PushEntity(edict_t* ent, vec3_t push) //mxd. Removed non-MOVET
 {
 	static trace_t trace; //mxd. Made local static.
 
-	vec3_t start;
-	VectorCopy(ent->s.origin, start);
+	const vec3_t start = VEC3_INIT(ent->s.origin);
 
 	vec3_t end;
 	VectorAdd(start, push, end);
