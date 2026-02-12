@@ -460,14 +460,13 @@ static qboolean R_CullFlexModel(const fmdl_t* fmdl, entity_t* e)
 
 	for (int i = 0; i < 8; i++)
 	{
-		vec3_t tmp;
-		VectorCopy(bbox[i], tmp);
+		const vec3_t tmp = VEC3_INIT(bbox[i]);
 
 		bbox[i][0] = DotProduct(vectors[0], tmp);
 		bbox[i][1] = -DotProduct(vectors[1], tmp);
 		bbox[i][2] = DotProduct(vectors[2], tmp);
 
-		VectorAdd(e->origin, bbox[i], bbox[i]);
+		Vec3AddAssign(e->origin, bbox[i]);
 	}
 
 	int aggregatemask = -1;
