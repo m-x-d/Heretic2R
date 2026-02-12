@@ -20,27 +20,29 @@ H2COMMON_API const vec3_t vec3_down =	{  0.0f, 0.0f, -1.0f }; // [0, 0, -1] //mx
 //mxd. Function logic does NOT match Q2 counterpart
 H2COMMON_API void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, const float degrees)
 {
-	vec3_t vf, vr, vup;
+	vec3_t forward = VEC3_INIT(dir);
 
-	VectorCopy(dir, vf);
-	PerpendicularVector(vr, dir);
-	CrossProduct(vr, vf, vup);
-	VectorNormalize(vup);
+	vec3_t right;
+	PerpendicularVector(right, forward);
 
-	const float x = DotProduct(point, vr);
-	const float y = DotProduct(point, vup);
-	const float z = DotProduct(point, vf);
+	vec3_t up;
+	CrossProduct(right, forward, up);
+	VectorNormalize(up);
+
+	const float x = DotProduct(point, right);
+	const float y = DotProduct(point, up);
+	const float z = DotProduct(point, forward);
 
 	const float a_cos = cosf(degrees * ANGLE_TO_RAD);
 	const float a_sin = sinf(degrees * ANGLE_TO_RAD);
 
-	VectorScale(vr,  a_cos * x - a_sin * y, vr);
-	VectorScale(vup, a_cos * y + a_sin * x, vup);
-	VectorScale(vf, z, vf);
+	Vec3ScaleAssign(a_cos * x - a_sin * y, right);
+	Vec3ScaleAssign(a_cos * y + a_sin * x, up);
+	Vec3ScaleAssign(z, forward);
 
-	dst[0] = vf[0] + vr[0] + vup[0];
-	dst[1] = vf[1] + vr[1] + vup[1];
-	dst[2] = vf[2] + vr[2] + vup[2];
+	dst[0] = forward[0] + right[0] + up[0];
+	dst[1] = forward[1] + right[1] + up[1];
+	dst[2] = forward[2] + right[2] + up[2];
 }
 
 // Q2 counterpart
@@ -51,7 +53,7 @@ H2COMMON_API void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t n
 
 	vec3_t n;
 	VectorScale(normal, inv_denom, n);
-	VectorScale(n, d, n);
+	Vec3ScaleAssign(d, n);
 	VectorSubtract(p, n, dst);
 }
 
@@ -259,7 +261,7 @@ H2COMMON_API float VectorNormalize(vec3_t v)
 	}
 
 	const float length = VectorLength(v);
-	VectorScale(v, 1.0f / length, v);
+	Vec3ScaleAssign(1.0f / length, v);
 
 	return length;
 }
@@ -331,7 +333,7 @@ H2COMMON_API void VectorGetOffsetOrigin(const vec3_t offset, const vec3_t origin
 
 	CreateYawMatrix(m_yaw, angle_deg * ANGLE_TO_RAD);
 	Matrix3MultByVec3(m_yaw, offset, out);
-	VectorAdd(out, origin, out);
+	Vec3AddAssign(origin, out);
 }
 
 H2COMMON_API float VectorSeparation(const vec3_t v1, const vec3_t v2)
