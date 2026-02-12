@@ -79,8 +79,7 @@ static void FindMoveTarget(edict_t* self) //mxd. Named 'elflord_FindMoveTarget' 
 	if (move_target != NULL)
 	{
 		//FIXME: Determine a velocity to get us here.
-		vec3_t target;
-		VectorCopy(move_target->s.origin, target);
+		vec3_t target = VEC3_INIT(move_target->s.origin);
 		target[2] = self->s.origin[2];
 
 		vec3_t vel;
@@ -106,8 +105,7 @@ static void MoveToFinalPosition(edict_t* self) //mxd. Named 'elflord_MoveToFinal
 		if (e->targetname == NULL || strcmp(e->targetname, "elflord_final") != 0) //BUGFIX: mxd. 'e->targetname && strcmp(...)' in original logic.
 			continue;
 
-		vec3_t target;
-		VectorCopy(e->s.origin, target);
+		vec3_t target = VEC3_INIT(e->s.origin);
 		target[2] = self->s.origin[2];
 
 		vec3_t vel;
@@ -373,8 +371,7 @@ void elflord_start_beam(edict_t* self)
 
 	edict_t* beam = G_Spawn();
 
-	vec3_t angles;
-	VectorCopy(self->s.angles, angles);
+	vec3_t angles = VEC3_INIT(self->s.angles);
 	angles[PITCH] *= -1.0f;
 
 	vec3_t right;
@@ -497,8 +494,8 @@ void elflord_track(edict_t* self)
 
 	vec3_t new_dir;
 	VectorScale(self->elflord_beam_direction, 3.0f - skill->value * 0.5f, new_dir);
-	VectorAdd(new_dir, dir, new_dir);
-	VectorScale(new_dir, 1.0f / ((3.0f - skill->value * 0.5f) + 1.0f), new_dir);
+	Vec3AddAssign(dir, new_dir);
+	Vec3ScaleAssign(1.0f / ((3.0f - skill->value * 0.5f) + 1.0f), new_dir);
 	VectorNormalize(new_dir);
 
 	vec3_t end_pos;
