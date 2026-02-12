@@ -75,11 +75,8 @@ static qboolean SeraphCheckScare(edict_t* self, edict_t* ogle) //mxd. Named 'ser
 	if (DotProduct(self_fwd, ogle_fwd) <= 0.0f)
 		return false;
 
-	vec3_t mins;
-	VectorCopy(self->mins, mins);
-	mins[2] += 18.0f; // Account for step ability.
-
 	trace_t trace;
+	const vec3_t mins = VEC3_INITA(self->mins, 0.0f, 0.0f, STEP_SIZE); // Account for step ability. //mxd. Use define.
 	gi.trace(self->s.origin, mins, self->maxs, ogle->s.origin, self, MASK_MONSTERSOLID, &trace);
 
 	if (trace.ent != ogle)
@@ -575,14 +572,15 @@ void seraph_check_land(edict_t* self)
 {
 	M_ChangeYaw(self);
 
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-	end_pos[2] -= 48.0f;
+	//mxd. Check animations BEFORE tracing.
+	if (self->curAnimID == ANIM_DEATH2_GO || self->curAnimID == ANIM_DEATH2_END)
+		return;
 
 	trace_t trace;
+	const vec3_t end_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -48.0f);
 	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
-	if ((trace.fraction < 1.0f || trace.allsolid || trace.startsolid) && self->curAnimID != ANIM_DEATH2_END && self->curAnimID != ANIM_DEATH2_GO)
+	if (trace.startsolid || trace.allsolid || trace.fraction < 1.0f)
 	{
 		self->elasticity = 1.25f;
 		self->friction = 0.5f;
