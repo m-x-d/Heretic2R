@@ -1064,7 +1064,7 @@ void ExtrapolateFireDirection(const edict_t* self, const vec3_t origin, const fl
 
 	// Modify by player's light level?
 	if (SKILL < SKILL_HARD && !(self->monsterinfo.aiflags & AI_NIGHTVISION) && target->client != NULL)
-		offset += (float)(target->light_level / 32);
+		offset += (float)target->light_level / 32.0f; //mxd. 'offset += targ->light_level/32' in original logic.
 
 	vec3_t target_pos = VEC3_INIT(target->s.origin);
 
