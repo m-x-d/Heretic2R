@@ -403,11 +403,11 @@ void mssithra_arrow(edict_t* self) //mxd. Named 'mssithraArrow' in original logi
 		switch (i)
 		{
 			case 2:
-				VectorScale(right, spread, right);
+				Vec3ScaleAssign(spread, right);
 				break;
 
 			case 0:
-				VectorScale(right, -spread, right);
+				Vec3ScaleAssign(-spread, right);
 				break;
 
 			case 1:
