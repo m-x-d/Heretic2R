@@ -153,15 +153,14 @@ static void RotateDecendents(ModelSkeleton_t* skel, M_SkeletalJoint_t* joint, M_
 	}
 }
 
-static void RotateJoint(ModelSkeleton_t* skel, M_SkeletalJoint_t* joint, vec3_t angles)
+static void RotateJoint(ModelSkeleton_t* skel, M_SkeletalJoint_t* joint, const vec3_t angles)
 {
 	matrix3_t rotation;
 	matrix3_t rotation2;
 	matrix3_t toWorld;
 	matrix3_t partialBackToLocal;
-	vec3_t localAngles;
 
-	VectorCopy(angles, localAngles);
+	vec3_t localAngles = VEC3_INIT(angles);
 	localAngles[ROLL] += (float)Matricies3FromDirAndUp(joint->model.direction, joint->model.up, toWorld, partialBackToLocal);
 
 	memset(rotation, 0, sizeof(rotation));
@@ -184,8 +183,8 @@ static void RotateJoint(ModelSkeleton_t* skel, M_SkeletalJoint_t* joint, vec3_t 
 
 void SetupJointRotations(ModelSkeleton_t* skel, const int jointIndex, const int anglesIndex)
 {
-	CL_SkeletalJoint_t* modelJointAngles = &ri.skeletalJoints[anglesIndex];
-	M_SkeletalJoint_t* joint = skel->rootJoint + jointIndex;
+	const CL_SkeletalJoint_t* modelJointAngles = &ri.skeletalJoints[anglesIndex];
+	M_SkeletalJoint_t* joint = &skel->rootJoint[jointIndex];
 
 	if (joint->children != ARRAYEDLISTNODE_NULL)
 	{
@@ -214,7 +213,7 @@ void FinishJointRotations(ModelSkeleton_t* skel, const int jointIndex)
 	matrix3_t partialBackToLocal;
 	vec3_t localAngles;
 
-	M_SkeletalJoint_t* joint = skel->rootJoint + jointIndex;
+	M_SkeletalJoint_t* joint = &skel->rootJoint[jointIndex];
 
 	for (int jointChild = joint->children; jointChild != ARRAYEDLISTNODE_NULL; jointChild = skel->rootNode[jointChild].next)
 		FinishJointRotations(skel, skel->rootNode[jointChild].data);
@@ -225,8 +224,8 @@ void FinishJointRotations(ModelSkeleton_t* skel, const int jointIndex)
 	VectorNormalize(joint->parent.direction);
 	VectorNormalize(joint->parent.up);
 
-	localAngles[YAW] = 0;
-	localAngles[PITCH] = 0;
+	localAngles[YAW] = 0.0f;
+	localAngles[PITCH] = 0.0f;
 	localAngles[ROLL] = (float)Matricies3FromDirAndUp(joint->parent.direction, joint->parent.up, toWorld, partialBackToLocal);
 
 	Matricies3FromDirAndUp(joint->model.direction, joint->model.up, toWorld, NULL);
@@ -240,9 +239,9 @@ void FinishJointRotations(ModelSkeleton_t* skel, const int jointIndex)
 
 void LinearllyInterpolateJoints(ModelSkeleton_t* newSkel, const int newIndex, ModelSkeleton_t* oldSkel, const int oldIndex, ModelSkeleton_t* liSkel, const int liIndex, float move[3], float frontv[3], float backv[3])
 {
-	M_SkeletalJoint_t* newJoint = newSkel->rootJoint + newIndex;
-	M_SkeletalJoint_t* oldJoint = oldSkel->rootJoint + oldIndex;
-	M_SkeletalJoint_t* liJoint = liSkel->rootJoint + liIndex;
+	const M_SkeletalJoint_t* newJoint = &newSkel->rootJoint[newIndex];
+	const M_SkeletalJoint_t* oldJoint = &oldSkel->rootJoint[oldIndex];
+	M_SkeletalJoint_t* liJoint = &liSkel->rootJoint[liIndex];
 
 	if (newJoint->children != ARRAYEDLISTNODE_NULL)
 	{
