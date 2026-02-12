@@ -55,11 +55,7 @@ void PathCornerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t*
 
 	if (next != NULL && (next->spawnflags & MSF_AMBUSH))
 	{
-		vec3_t v;
-		VectorCopy(next->s.origin, v);
-		v[2] += next->mins[2];
-		v[2] -= other->mins[2];
-
+		const vec3_t v = VEC3_INITA(next->s.origin, 0.0f, 0.0f, next->mins[2] - other->mins[2]);
 		VectorCopy(v, other->s.origin);
 
 		next = G_PickTarget(next->target);
@@ -1340,7 +1336,7 @@ void MiscRemoteCameraUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 	VectorSubtract(self->targetEnt->s.origin, self->s.origin, forward);
 	VectorNormalize(forward);
 	vectoangles(forward, self->s.angles);
-	self->s.angles[PITCH] = -self->s.angles[PITCH];
+	self->s.angles[PITCH] *= -1.0f;
 
 	// Update the angles on client(s).
 	MiscRemoteCameraUpdateViewangles(self); //mxd
