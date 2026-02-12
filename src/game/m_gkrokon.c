@@ -91,8 +91,7 @@ void GkrokonSpooTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t
 	gi.RemoveEffects(&self->s, FX_REMOVE_EFFECTS);
 
 	// Create decal?
-	vec3_t plane_dir;
-	VectorCopy(vec3_up, plane_dir); //mxd. Initialize, so we pass a valid vector when creating FX_SPOO_SPLAT even when IsDecalApplicable() returns false.
+	vec3_t plane_dir = VEC3_INIT(vec3_up); //mxd. Initialize, so we pass a valid vector when creating FX_SPOO_SPLAT even when IsDecalApplicable() returns false.
 
 	if (IsDecalApplicable(other, self->s.origin, surface, plane, plane_dir))
 		gi.CreateEffect(NULL, FX_SCORCHMARK, 0, self->s.origin, "d", plane_dir);
