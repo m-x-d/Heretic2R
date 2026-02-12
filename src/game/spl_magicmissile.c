@@ -38,9 +38,6 @@ void MagicMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_
 	if (other == self->owner || strcmp(self->classname, other->classname) == 0) // Don't collide with owner or other magic missiles.
 		return;
 
-	vec3_t scorch_origin;
-	VectorCopy(self->s.origin, scorch_origin);
-
 	// Calculate the position for the explosion entity.
 	vec3_t origin;
 	VectorMA(self->s.origin, -0.02f, self->velocity, origin);
