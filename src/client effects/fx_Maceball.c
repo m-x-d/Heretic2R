@@ -377,7 +377,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 		int num = (int)(length / 32.0f);
 
 		vec3_t cur_pos = VEC3_INIT(caster_pos);
-		VectorScale(diff, 1.0f / (float)num, diff);
+		Vec3ScaleAssign(1.0f / (float)num, diff);
 
 		num = min(40, num);
 
