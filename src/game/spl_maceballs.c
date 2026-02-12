@@ -203,7 +203,7 @@ void SpellCastMaceball(edict_t* caster, const vec3_t start_pos, const vec3_t aim
 
 	// Throw the ball down.
 	ball->velocity[2] = -MACEBALL_DOWNSPEED;
-	VectorAdd(ball->velocity, caster->velocity, ball->velocity);
+	Vec3AddAssign(caster->velocity, ball->velocity);
 
 	// If the caster has an enemy, then aim it at the enemy.
 	ball->enemy = caster->enemy;
