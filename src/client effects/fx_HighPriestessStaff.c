@@ -39,7 +39,7 @@ static qboolean HPStaffTrailUpdate(client_entity_t* self, centity_t* owner) //mx
 	Matrix3FromAngles(actual_owner->lerp_angles, rotation);
 	Matrix3MultByVec3(rotation, actual_owner->referenceInfo->references[PRIESTESS_STAFF].placement.origin, trail->r.origin);
 
-	VectorAdd(actual_owner->origin, trail->r.origin, trail->r.origin);
+	Vec3AddAssign(actual_owner->origin, trail->r.origin);
 	trail->r.origin[2] -= 36.0f;
 
 	AddEffect(NULL, trail);
