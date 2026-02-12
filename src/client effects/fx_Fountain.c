@@ -61,7 +61,7 @@ void FXWaterfallBase(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	wfb->xscale = xscale;
 	wfb->yscale = yscale;
-	wfb->yaw = (float)b_yaw * BYTEANGLE_TO_RAD; //mxd. '* ANGLE_360 / 256.0f' in original logic.
+	wfb->yaw = (float)b_yaw * BYTEANGLE_TO_RAD; //mxd. Use define.
 	wfb->radius = wfb->xscale + wfb->yscale;
 	wfb->Update = WaterfallBaseUpdate;
 

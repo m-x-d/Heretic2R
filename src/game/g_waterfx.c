@@ -125,7 +125,7 @@ void SP_env_waterfall_base(edict_t* self)
 
 	const short xrad = (short)self->s.angles[0];
 	const short yrad = (short)self->s.angles[2];
-	const byte b_yaw = (byte)(self->s.angles[1] * DEG_TO_BYTEANGLE); //mxd. '* 256.0f / 360.0f' in original logic.
+	const byte b_yaw = (byte)(self->s.angles[1] * DEG_TO_BYTEANGLE); //mxd. Use define.
 	gi.CreatePersistantEffect(&self->s, FX_WATERFALLBASE, CEF_BROADCAST, self->s.origin, "bbb", xrad, yrad, b_yaw);
 }
 
