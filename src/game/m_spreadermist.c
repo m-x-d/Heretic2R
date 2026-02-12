@@ -235,7 +235,8 @@ void spreader_toss_grenade(edict_t* self) // Self is the tosser.
 
 	vec3_t forward;
 	vec3_t right;
-	AngleVectors(self->s.angles, forward, right, NULL);
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
 	vec3_t start;
 	vec3_t offset = { 10.0f, 6.0f, 27.0f }; //mxd. Adjusted offset to better match with spreader's model.
@@ -252,17 +253,7 @@ void spreader_toss_grenade(edict_t* self) // Self is the tosser.
 	VectorSubtract(self->s.origin, pred_pos, diff);
 	const float distance = VectorLength(diff) * 1.25f;
 
-	vec3_t aim;
-	VectorCopy(forward, aim);
-
-	vec3_t dir;
-	vectoangles(aim, dir);
-
-	vec3_t up;
-	AngleVectors(dir, NULL, right, up);
-
-	VectorScale(aim, distance, grenade->velocity);
-
+	VectorScale(forward, distance, grenade->velocity);
 	VectorMA(grenade->velocity, flrand(100.0f, 125.0f), up, grenade->velocity);
 	VectorMA(grenade->velocity, flrand(-10.0f, 10.0f), right, grenade->velocity); //TODO: scale velocity by difficulty?
 
