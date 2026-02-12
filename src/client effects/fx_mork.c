@@ -435,7 +435,7 @@ static qboolean CWStarsUpdate(client_entity_t* self, centity_t* owner) //mxd. Na
 		client_particle_t* p = ClientParticle_new(star_particles[irand(0, 2)], color_white, 2000);
 
 		VectorRandomSet(p->origin, 4.0f); //mxd
-		VectorAdd(self->r.origin, p->origin, p->origin);
+		Vec3AddAssign(self->r.origin, p->origin);
 		p->scale = flrand(2.5f, 3.0f);
 
 		VectorSet(p->velocity, flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), flrand(-1.0f, 1.0f));
@@ -834,7 +834,7 @@ static qboolean UnderwaterWakeUpdate(client_entity_t* self, centity_t* owner)
 		client_particle_t* p = ClientParticle_new(particle_type, light_color, irand(1000, 1500));
 
 		VectorSet(p->origin, flrand(-8.0f, 8.0f), flrand(-8.0f, 8.0f), flrand(-4.0f, 4.0f));
-		VectorAdd(self->r.origin, p->origin, p->origin);
+		Vec3AddAssign(self->r.origin, p->origin);
 
 		p->scale = flrand(0.75f, 1.5f);
 		p->color.a = (byte)irand(100, 200);
@@ -1246,7 +1246,7 @@ static qboolean MSsithraExplosionUpdate(client_entity_t* self, centity_t* owner)
 
 			VectorRandomCopy(self->direction, rubble->velocity, 1.25f);
 
-			VectorScale(rubble->velocity, flrand(50.0f, 100.0f), rubble->velocity); //mxd. Was irand().
+			Vec3ScaleAssign(flrand(50.0f, 100.0f), rubble->velocity); //mxd. Was irand().
 			rubble->acceleration[2] -= 256.0f;
 
 			rubble->LifeTime = fx_time + 2000;
@@ -1280,7 +1280,7 @@ static qboolean MSsithraExplosionUpdate(client_entity_t* self, centity_t* owner)
 			VectorCopy(self->r.origin, fire_streak->r.endpos);
 			VectorMA(fire_streak->r.endpos, flrand(16.0f, 32.0f), fire_streak->velocity, fire_streak->r.startpos); //mxd. Was irand().
 
-			VectorScale(fire_streak->velocity, flrand(50.0f, 150.0f), fire_streak->velocity); //mxd. Was irand().
+			Vec3ScaleAssign(flrand(50.0f, 150.0f), fire_streak->velocity); //mxd. Was irand().
 
 			AddEffect(NULL, fire_streak);
 		}
@@ -1434,7 +1434,7 @@ static void MSsithraArrowCharge(vec3_t startpos)
 		const float length = flrand(24.0f, 32.0f); //mxd. Was int / irand().
 		VectorMA(firestreak->r.startpos, length, firestreak->velocity2, firestreak->r.endpos);
 
-		VectorScale(firestreak->velocity2, -(length * 2.0f), firestreak->velocity2);
+		Vec3ScaleAssign(-(length * 2.0f), firestreak->velocity2);
 		VectorClear(firestreak->velocity);
 
 		AddEffect(NULL, firestreak);
