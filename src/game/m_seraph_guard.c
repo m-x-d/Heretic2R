@@ -661,14 +661,15 @@ void seraph_guard_check_land(edict_t* self)
 {
 	M_ChangeYaw(self);
 
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-	end_pos[2] -= 48.0f;
+	//mxd. Check animations BEFORE tracing.
+	if (self->curAnimID == ANIM_DEATH2_GO || self->curAnimID == ANIM_DEATH2_END)
+		return;
 
 	trace_t trace;
+	const vec3_t end_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -48.0f);
 	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
-	if ((trace.fraction < 1.0f || trace.startsolid || trace.allsolid) && self->curAnimID != ANIM_DEATH2_END && self->curAnimID != ANIM_DEATH2_GO)
+	if (trace.startsolid || trace.allsolid || trace.fraction < 1.0f)
 	{
 		self->elasticity = 1.25f;
 		self->friction = 0.5f;
