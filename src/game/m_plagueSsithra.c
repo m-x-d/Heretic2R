@@ -213,12 +213,12 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 
 		// Setup the trace.
 		const vec3_t s_maxs = VEC3_INITA(self->maxs, 0.0f, 0.0f, 32.0f);
-		vec3_t source = VEC3_INIT(self->s.origin);
 
 		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
 
-		VectorMA(source, 128.0f, forward, source);
+		vec3_t source;
+		VectorMA(self->s.origin, 128.0f, forward, source);
 
 		trace_t trace;
 		gi.trace(self->s.origin, self->mins, s_maxs, source, self, MASK_MONSTERSOLID, &trace);
@@ -247,14 +247,13 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 					if (self->monsterinfo.jump_time < level.time)
 					{
 						// Check depth.
-						VectorCopy(trace.endpos, source);
-						VectorCopy(source, source2);
-						source2[2] -= 64.0f;
+						const vec3_t jump_start = VEC3_INIT(trace.endpos);
+						const vec3_t jump_end = VEC3_INITA(trace.endpos, 0.0f, 0.0f, -64.0f);
 
 						const vec3_t mins = { self->mins[0], self->mins[1], 0.0f };
 						const vec3_t maxs = { self->maxs[0], self->maxs[1], 1.0f };
 
-						gi.trace(source, mins, maxs, source2, self, MASK_SOLID, &trace);
+						gi.trace(jump_start, mins, maxs, jump_end, self, MASK_SOLID, &trace);
 
 						if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
 							SsithraTryJump(self);
@@ -310,27 +309,30 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 			// Check if water in front.
 			vec3_t forward;
 			AngleVectors(self->s.angles, forward, NULL, NULL);
-			VectorMA(self->s.origin, 48.0f, forward, source);
 
+			vec3_t end_pos;
+			VectorMA(self->s.origin, 48.0f, forward, end_pos);
+
+			// Trace forwards...
 			trace_t trace;
-			gi.trace(self->s.origin, self->mins, self->maxs, source, self, MASK_SOLID, &trace);
+			gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_SOLID, &trace);
 
-			VectorCopy(trace.endpos, source);
-			source[2] -= 128.0f;
+			// ... and down.
+			VectorCopy(trace.endpos, end_pos);
+			end_pos[2] -= 128.0f;
 
-			gi.trace(trace.endpos, self->mins, self->maxs, source, self, MASK_SOLID | MASK_WATER, &trace);
+			gi.trace(trace.endpos, self->mins, self->maxs, end_pos, self, MASK_SOLID | MASK_WATER, &trace);
 
+			// Hit water surface form the top. Check water depth at this point.
 			if (trace.fraction < 1.0f && (trace.contents & CONTENTS_WATER))
 			{
-				VectorCopy(trace.endpos, source);
-
-				const vec3_t source2 = VEC3_INIT(source);
-				source[2] -= 64.0f;
+				const vec3_t depth_check_start = VEC3_INIT(trace.endpos);
+				const vec3_t depth_check_end = VEC3_INITA(trace.endpos, 0.0f, 0.0f, -64.0f); //mxd. Original logic decrements start position instead.
 
 				const vec3_t mins = { self->mins[0], self->mins[1], 0.0f };
 				const vec3_t maxs = { self->maxs[0], self->maxs[1], 1.0f };
 
-				gi.trace(source, mins, maxs, source2, self, MASK_SOLID, &trace);
+				gi.trace(depth_check_start, mins, maxs, depth_check_end, self, MASK_SOLID, &trace);
 
 				if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
 					SsithraTryJump(self);
@@ -348,11 +350,10 @@ void SsithraCheckJump(edict_t* self) //mxd. Named 'ssithraCheckJump' in original
 	// Jumping up?
 	if (target_origin[2] > self->s.origin[2] + 28.0f || !(self->monsterinfo.aiflags & AI_FLEE))
 	{
-		vec3_t source = VEC3_INIT(self->s.origin);
-
 		//FIXME: what about if running away?
 		const float height_diff = (target_origin[2] + target_mins[2]) - (self->s.origin[2] + self->mins[2]) + 32.0f;
-		source[2] += height_diff;
+
+		vec3_t source = VEC3_INITA(self->s.origin, 0.0f, 0.0f, height_diff);
 
 		trace_t trace;
 		gi.trace(self->s.origin, self->mins, self->maxs, source, self, MASK_ALL, &trace);
@@ -1201,7 +1202,7 @@ void SsithraBlocked(edict_t* self, trace_t* trace) //mxd. Named 'ssithra_blocked
 	hit_dir[2] = max(0.0f, hit_dir[2]);
 
 	VectorNormalize(hit_dir);
-	VectorScale(hit_dir, strength, hit_dir);
+	Vec3ScaleAssign(strength, hit_dir);
 	VectorAdd(trace->ent->velocity, hit_dir, trace->ent->knockbackvel);
 
 	if (!(self->spawnflags & MSF_FIXED))
