@@ -676,8 +676,7 @@ qboolean G_PlayerActionCheckPushButton(const playerinfo_t* info)
 
 	if (range < MAX_PUSH_BUTTON_RANGE)
 	{
-		vec3_t dir;
-		VectorCopy(self->client->playerinfo.aimangles, dir);
+		vec3_t dir = VEC3_INIT(self->client->playerinfo.aimangles);
 		dir[PITCH] = 0.0f;
 
 		vec3_t forward;
@@ -719,17 +718,18 @@ qboolean G_PlayerActionCheckPushLever(const playerinfo_t* info)
 
 	if (range < MAX_PUSH_LEVER_RANGE)
 	{
-		vec3_t dir;
-		VectorCopy(self->client->playerinfo.aimangles, dir);
+		vec3_t dir = VEC3_INIT(self->client->playerinfo.aimangles);
 		dir[PITCH] = 0.0f;
 
 		vec3_t forward;
 		AngleVectors(dir, forward, NULL, NULL);
-		VectorSubtract(lever->s.origin, self->s.origin, v);
-		VectorNormalize(v);
+
+		vec3_t lever_dir;
+		VectorSubtract(lever->s.origin, self->s.origin, lever_dir);
+		VectorNormalize(lever_dir);
 
 		// Both these vectors are normalized so result is cos of angle.
-		return DotProduct(v, forward) > 0.7f; // 41 degree range either way.
+		return DotProduct(lever_dir, forward) > 0.7f; // 41 degree range either way.
 	}
 
 	return false;
