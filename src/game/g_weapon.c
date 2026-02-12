@@ -87,8 +87,7 @@ static void Weapon_CalcStartPos(const vec3_t origin_to_lower_joint, const vec3_t
 	VectorAdd(origin_to_lower_joint, start_pos, start_pos);
 
 	// Finally, add on the model's origin to give the correct start position for the flying-fist.
-	VectorAdd(start_pos, caster->s.origin, start_pos);
-	VectorCopy(start_pos, actual_start_pos);
+	VectorAdd(start_pos, caster->s.origin, actual_start_pos);
 }
 
 enum swordpos_e
@@ -171,8 +170,7 @@ void WeaponThink_SwordStaff(edict_t* caster, char* format, ...)
 	AngleVectors(caster->client->aimangles, fwd, right, up);
 
 	// Set up the area to check.
-	vec3_t attack_pos;
-	VectorCopy(sword_positions[loc_id], attack_pos);
+	vec3_t attack_pos = VEC3_INIT(sword_positions[loc_id]);
 
 	vec3_t end_pos;
 	VectorMA(caster->s.origin, attack_pos[0], fwd, end_pos);
