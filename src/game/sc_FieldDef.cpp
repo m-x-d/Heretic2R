@@ -235,7 +235,7 @@ void FieldDef::GetVectorValue(Variable* var, vec3_t& value) const
 	byte* dest = GetOffset(var);
 
 	if (field_type != F_VECTOR || dest == nullptr)
-		VectorCopy(vec3_origin, value);
+		VectorClear(value);
 	else
 		VectorCopy(*reinterpret_cast<vec3_t*>(dest), value);
 }
