@@ -575,12 +575,9 @@ static void SpawnHPMissile5(const int type, const vec3_t origin, vec3_t velocity
 		bolt_angle[PITCH] += flrand(-35.0f, 35.0f); //mxd. Was irand() in original logic.
 		bolt_angle[YAW] += flrand(-35.0f, 35.0f); //mxd. Was irand() in original logic.
 
-		vec3_t bolt_dest;
-		VectorCopy(bolt_dir, bolt_dest);
 		AngleVectors(bolt_angle, bolt_dir, NULL, NULL);
 
-		vec3_t old_pos;
-		VectorCopy(origin, old_pos);
+		vec3_t old_pos = VEC3_INIT(origin);
 
 		const float width = flrand(2.0f, 6.0f); //mxd. Was irand() in original logic.
 		const float alpha = flrand(-4.0f, -8.0f); //mxd. Was irand() in original logic.
@@ -618,8 +615,8 @@ static void SpawnHPMissile5(const int type, const vec3_t origin, vec3_t velocity
 				float bolt_step = VectorNormalize(hunt_dir);
 				bolt_step /= (float)(bends + 1 - j);
 
-				VectorScale(bolt_dir, 2.5f / (float)bends, bolt_dir);
-				VectorAdd(bolt_dir, hunt_dir, bolt_dir);
+				Vec3ScaleAssign(2.5f / (float)bends, bolt_dir);
+				Vec3AddAssign(hunt_dir, bolt_dir);
 				VectorNormalize(bolt_dir);
 
 				VectorCopy(old_pos, bolt->r.startpos);
