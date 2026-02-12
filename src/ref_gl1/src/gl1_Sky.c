@@ -37,12 +37,11 @@ static void R_DrawSkyPolygon(const int nump, vec3_t vecs)
 	};
 
 	// Decide which face it maps to.
-	vec3_t v;
-	VectorCopy(vec3_origin, v);
+	vec3_t v = { 0 };
 
 	float* vp = vecs;
 	for (int i = 0; i < nump; i++, vp += 3)
-		VectorAdd(vp, v, v);
+		Vec3AddAssign(vp, v);
 
 	vec3_t av;
 	VectorAbs(v, av);
