@@ -511,8 +511,7 @@ static void GorgonMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	if (dist < self->s.scale * GORGON_MAX_HOP_RANGE)
 	{
 		// Checks ahead to see if can hop at it.
-		vec3_t hop_pos;
-		VectorCopy(self->s.origin, hop_pos);
+		vec3_t hop_pos = VEC3_INIT(self->s.origin);
 		VectorMA(hop_pos, self->s.scale * 64.0f, forward, hop_pos);
 
 		trace_t	trace;
@@ -1221,8 +1220,7 @@ void gorgon_check_snatch(edict_t* self, float forward_offset, float right_offset
 	VectorMA(self->s.origin, self->maxs[0], forward, start_pos);
 	VectorMA(start_pos, self->maxs[2] * 0.5f, up, start_pos);
 
-	vec3_t end_pos;
-	VectorCopy(start_pos, end_pos);
+	vec3_t end_pos = VEC3_INIT(start_pos);
 	VectorMA(end_pos, forward_offset, forward, end_pos);
 	VectorMA(end_pos, right_offset, right, end_pos);
 	VectorMA(end_pos, up_offset, up, end_pos);
@@ -1496,7 +1494,7 @@ void gorgon_ai_swim(edict_t* self, float distance)
 	else
 		Vec3ScaleAssign(distance * 3.0f, dir);
 
-	VectorAdd(self->velocity, dir, self->velocity);
+	Vec3AddAssign(dir, self->velocity);
 	VectorNormalize(self->velocity);
 	Vec3ScaleAssign(200.0f, self->velocity);
 
