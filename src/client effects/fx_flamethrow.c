@@ -45,7 +45,7 @@ qboolean FlamethrowerUpdate(client_entity_t* self, centity_t* owner) //mxd. Name
 
 		VectorCopy(self->direction, flame->velocity);
 		VectorSet(flame->origin, (float)(irand(-2, 2)), (float)(irand(-2, 2)), (float)(irand(-2, 2))); //TODO: why irand?
-		VectorScale(flame->velocity, flrand(0.75f, 1.0f), flame->velocity);
+		Vec3ScaleAssign(flrand(0.75f, 1.0f), flame->velocity);
 
 		flame->scale = flrand(14.0f, 20.0f);
 		flame->velocity[2] += flrand(0.0f, 48.0f);
@@ -93,7 +93,7 @@ static qboolean SteamjetUpdate(client_entity_t* self, centity_t* owner) //mxd. N
 
 		VectorCopy(self->direction, flame->velocity);
 		VectorSet(flame->origin, (float)(irand(-2, 2)), (float)(irand(-2, 2)), (float)(irand(-2, 2))); //TODO: why irand?
-		VectorScale(flame->velocity, flrand(0.75f, 1.0f), flame->velocity);
+		Vec3ScaleAssign(flrand(0.75f, 1.0f), flame->velocity);
 
 		if (self->flags & CEF_FLAG7)
 		{
