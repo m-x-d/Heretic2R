@@ -175,12 +175,11 @@ void HarpyTakeHead(edict_t* self, edict_t* victim, const int bodypart_node_id, c
 
 static qboolean HarpyCanMove(const edict_t* self, const float distance) //mxd. Named 'harpy_check_move' in original logic.
 {
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorMA(end_pos, distance, forward, end_pos);
+
+	vec3_t end_pos;
+	VectorMA(self->s.origin, distance, forward, end_pos);
 
 	trace_t trace;
 	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_SHOT | MASK_WATER, &trace);
@@ -246,9 +245,7 @@ static qboolean HarpyCheckSwoop(const edict_t* self, const vec3_t goal_pos) //mx
 
 	z_diff -= z_diff / 4.0f;
 
-	vec3_t check_pos;
-	VectorCopy(self->s.origin, check_pos);
-	check_pos[2] -= z_diff;
+	const vec3_t check_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -z_diff);
 
 	// Trace down about that far and about one forth the distance to the target.
 	trace_t trace;
@@ -626,8 +623,7 @@ void harpy_ai_glide(edict_t* self, float forward_offset, float right_offset, flo
 	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
 
 	vec3_t dir;
-	VectorCopy(diff, dir);
-	VectorNormalize(dir);
+	VectorNormalize2(diff, dir);
 
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
