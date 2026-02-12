@@ -1229,11 +1229,8 @@ void plagueelf_knockback_death_check_land(edict_t* self) //mxd. Named 'plagueelf
 
 	M_ChangeYaw(self);
 
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-	end_pos[2] -= 48.0f;
-
 	trace_t trace;
+	const vec3_t end_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -48.0f);
 	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
 	if ((trace.fraction < 1.0f || trace.allsolid || trace.startsolid) && self->curAnimID != ANIM_KDEATH_END && self->curAnimID != ANIM_KDEATH_GO)
@@ -1437,8 +1434,8 @@ void plagueelf_cinematic_spell(edict_t* self) //mxd. Named 'plagueElf_c_spell' i
 	VectorCopy(self->movedir, spell->movedir);
 	vectoangles(forward, spell->s.angles);
 
-	vec3_t hold_pos;
-	VectorCopy(self->s.origin, hold_pos);
+	const vec3_t hold_pos = VEC3_INIT(self->s.origin);
+
 	VectorMA(spell->s.origin, 40.0f, forward, spell->s.origin);
 
 	vec3_t fire_dir;
