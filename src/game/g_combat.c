@@ -36,7 +36,7 @@ static qboolean CanDamageFromLoc(const edict_t* target, const edict_t* inflictor
 	{
 		vec3_t dest;
 		VectorAdd(target->absmin, target->absmax, dest);
-		VectorScale(dest, 0.5f, dest);
+		Vec3ScaleAssign(0.5f, dest);
 
 		trace_t trace;
 		gi.trace(origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID, &trace);
@@ -66,8 +66,7 @@ static qboolean CanDamageFromLoc(const edict_t* target, const edict_t* inflictor
 	// Check opposite edges.
 	for (int i = 0; i < 2; i++)
 	{
-		vec3_t dest;
-		VectorCopy(target->s.origin, dest);
+		vec3_t dest = VEC3_INIT(target->s.origin);
 		dest[axis] += (i == 0 ? target->mins[axis] : target->maxs[axis]);
 
 		gi.trace(origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID, &trace);
@@ -78,8 +77,7 @@ static qboolean CanDamageFromLoc(const edict_t* target, const edict_t* inflictor
 	// Since the side checks didn't work, check the top and bottom.
 	for (int i = 0; i < 2; i++)
 	{
-		vec3_t dest;
-		VectorCopy(target->s.origin, dest);
+		vec3_t dest = VEC3_INIT(target->s.origin);
 		dest[2] += (i == 0 ? target->mins[2] : target->maxs[2]);
 
 		gi.trace(origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID, &trace);
@@ -505,7 +503,12 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 	const int orig_dmg = damage;
 
 	// Copy passed-in vectors, so we don't overwrite them.
-	vec3_t dir = VEC3_INIT((p_dir != NULL && Vec3NotZero(p_dir)) ? p_dir : vec3_down);
+	vec3_t dir;
+	if (p_dir != NULL && Vec3NotZero(p_dir))
+		VectorCopy(p_dir, dir);
+	else
+		VectorCopy(vec3_down, dir);
+
 	VectorNormalize(dir);
 
 	const vec3_t normal = VEC3_INIT((p_normal != NULL && Vec3NotZero(p_normal)) ? p_normal : vec3_up);
@@ -622,7 +625,7 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 			if ((dir[2] > -0.5f || target->groundentity != NULL) && knockback_vel[2] < up_vel && force > 30.0f)
 				knockback_vel[2] = min(force, up_vel); // Don't knock UP the player more than we do across...
 
-			VectorAdd(target->velocity, knockback_vel, target->velocity);
+			Vec3AddAssign(knockback_vel, target->velocity);
 
 			if (target->client != NULL) // If player, then set the player flag that will affect this.
 			{
@@ -779,7 +782,7 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 		else if (dflags & DAMAGE_BUBBLE)
 		{
 			vec3_t bubble_pos = { flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), (float)target->viewheight };
-			VectorAdd(bubble_pos, target->s.origin, bubble_pos);
+			Vec3AddAssign(target->s.origin, bubble_pos);
 
 			gi.CreateEffect(NULL, FX_BUBBLE, 0, bubble_pos, NULL);
 		}
