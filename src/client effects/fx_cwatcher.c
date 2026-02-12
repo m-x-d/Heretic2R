@@ -58,7 +58,7 @@ static qboolean CWBeamAddToView(client_entity_t* self, centity_t* owner) //mxd. 
 		beam->r.model = &cwmodels[CWM_BEAM_LINE];
 		beam->radius = 400.0f;
 
-		beam->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		beam->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		beam->flags |= CEF_USE_VELOCITY2;
 
 		beam->r.spriteType = SPRITE_LINE;
@@ -74,7 +74,7 @@ static qboolean CWBeamAddToView(client_entity_t* self, centity_t* owner) //mxd. 
 		VectorRandomCopy(vel, beam->velocity2, 1.0f);
 		VectorCopy(beam->origin, beam->r.startpos);
 		VectorMA(beam->r.startpos, flrand(16.0f, 32.0f), beam->velocity2, beam->r.endpos);
-		VectorScale(beam->velocity2, flrand(50.0f, 100.0f), beam->velocity2);
+		Vec3ScaleAssign(flrand(50.0f, 100.0f), beam->velocity2);
 
 		AddEffect(NULL, beam);
 	}
@@ -134,7 +134,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 			spark->r.model = &cwmodels[CWM_STAR_HALO];
 			spark->radius = 400.0f;
 
-			spark->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			spark->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 			spark->r.scale = 0.8f;
 			spark->alpha = 0.5f;
 
@@ -149,7 +149,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 			halo->radius = 400.0f;
 
 			halo->r.frame = 1;
-			halo->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD;
+			halo->r.flags |= (RF_TRANSLUCENT | RF_TRANS_ADD);
 			halo->r.scale = 0.5f;
 			halo->alpha = 0.75f;
 			halo->dlight = CE_DLight_new(light, 100.0f, 0.0f);
@@ -172,14 +172,14 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 				halo->radius = 400.0f;
 
 				halo->r.frame = 1;
-				halo->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+				halo->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 				halo->r.scale = flrand(0.25f, 0.5f);
 				halo->alpha = 0.75f;
 				halo->d_alpha = -2.0f;
 				halo->d_scale = -0.5f;
 
 				VectorRandomCopy(vel, halo->velocity, 1.25f);
-				VectorScale(halo->velocity, flrand(100.0f, 200.0f), halo->velocity);
+				Vec3ScaleAssign(flrand(100.0f, 200.0f), halo->velocity);
 				halo->acceleration[2] = -128.0f;
 
 				AddEffect(NULL, halo);
@@ -192,7 +192,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 				trail->r.model = &cwmodels[CWM_STAR_TRAIL];
 				trail->radius = 400.0f;
 
-				trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+				trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 				trail->flags |= CEF_USE_VELOCITY2;
 				trail->r.spriteType = SPRITE_LINE;
 				trail->r.scale = flrand(2.0f, 1.5f);
@@ -203,7 +203,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 				VectorRandomCopy(vel, trail->velocity2, 1.0f);
 				VectorCopy(trail->origin, trail->r.startpos);
 				VectorMA(trail->r.startpos, flrand(16.0f, 32.0f), trail->velocity2, trail->r.endpos);
-				VectorScale(trail->velocity2, flrand(50.0f, 100.0f), trail->velocity2);
+				Vec3ScaleAssign(flrand(50.0f, 100.0f), trail->velocity2);
 
 				if (i == count - 1)
 					trail->dlight = CE_DLight_new(light, 200.0f, -400.0f);
@@ -218,7 +218,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 			beam->r.model = &cwmodels[CWM_BEAM];
 			beam->radius = 400.0f;
 
-			beam->r.flags = RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
+			beam->r.flags = (RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA);
 			beam->r.scale = 16.0f;
 			beam->r.color.c = 0xa0ffffff;
 			beam->r.spriteType = SPRITE_LINE;
@@ -236,7 +236,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 			halo->r.model = &cwmodels[CWM_BEAM_HALO];
 			halo->radius = 400.0f;
 
-			halo->r.flags = RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
+			halo->r.flags = (RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST);
 			halo->r.scale = 2.5f;
 			halo->r.color = color_white; //mxd
 			halo->LifeTime = fx_time + 3100;
@@ -256,7 +256,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 			beam->r.model = &cwmodels[CWM_BEAM_HALO];
 			beam->radius = 400.0f;
 
-			beam->r.flags = RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
+			beam->r.flags = (RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST);
 			beam->r.scale = 2.5f;
 			beam->r.color = color_white; //mxd
 			beam->LifeTime = fx_time + 3100;
