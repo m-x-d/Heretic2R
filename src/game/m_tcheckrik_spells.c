@@ -410,8 +410,7 @@ void InsectTrackingSpearProjectileThink(edict_t* self) //mxd. Named 'yellowjacke
 	}
 
 	vec3_t dir;
-	VectorCopy(self->velocity, dir);
-	VectorNormalize(dir);
+	VectorNormalize2(self->velocity, dir);
 
 	vec3_t enemy_dir;
 	VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
