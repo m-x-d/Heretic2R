@@ -455,7 +455,7 @@ void SP_func_door(edict_t* self)
 
 	VectorSubtract(self->maxs, self->mins, self->s.bmodel_origin);
 	Vec3ScaleAssign(0.5f, self->s.bmodel_origin);
-	VectorAdd(self->mins, self->s.bmodel_origin, self->s.bmodel_origin);
+	Vec3AddAssign(self->mins, self->s.bmodel_origin);
 
 	if (self->spawnflags & SF_DOOR_ANIMATED)
 		self->s.effects |= EF_ANIM_ALL;
@@ -608,7 +608,7 @@ void SP_func_door_rotating(edict_t* ent)
 
 	VectorSubtract(ent->maxs, ent->mins, ent->s.bmodel_origin);
 	Vec3ScaleAssign(0.5f, ent->s.bmodel_origin);
-	VectorAdd(ent->mins, ent->s.bmodel_origin, ent->s.bmodel_origin);
+	Vec3AddAssign(ent->mins, ent->s.bmodel_origin);
 
 	if (ent->spawnflags & SF_DOOR_ANIMATED)
 		ent->s.effects |= EF_ANIM_ALL;
@@ -669,7 +669,7 @@ void SP_func_water(edict_t* self)
 
 	VectorSubtract(self->maxs, self->mins, self->s.bmodel_origin);
 	Vec3ScaleAssign(0.5f, self->s.bmodel_origin);
-	VectorAdd(self->mins, self->s.bmodel_origin, self->s.bmodel_origin);
+	Vec3AddAssign(self->mins, self->s.bmodel_origin);
 
 	self->moveinfo.state = STATE_BOTTOM;
 
