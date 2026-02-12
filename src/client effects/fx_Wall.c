@@ -88,7 +88,7 @@ static void FireWormSpawnImpactBlast(const client_entity_t* self, const vec3_t o
 	AddEffect(NULL, blast);
 
 	// Spray out in a big ring.
-	float angle = flrand(0.0f, ANGLE_360);
+	float angle = flrand(ANGLE_0, ANGLE_360);
 	const float angle_increment = ANGLE_360 / FIREWORM_BLAST_NUM;
 
 	//mxd. Take the normal and find two "axis" vectors that are in the plane the normal defines.
