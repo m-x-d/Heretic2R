@@ -118,7 +118,7 @@ void FXMagicMissile(centity_t* owner, const int type, const int flags, vec3_t or
 
 	// Set up the direction we want the trail to fly from the missile.
 	VectorMA(up, 2.0f, right, missile->up);
-	VectorScale(missile->up, MISSILE_TRAIL_SPEED, missile->up);
+	Vec3ScaleAssign(MISSILE_TRAIL_SPEED, missile->up);
 
 	missile->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD);
 	missile->r.scale = 0.4f;
@@ -205,9 +205,8 @@ void FXBlast(centity_t* owner, const int type, const int flags, vec3_t origin)
 		int numpuffs = (int)(length / BLAST_DIFF);
 		numpuffs = min(40, numpuffs);
 
-		vec3_t cur_pos;
-		VectorCopy(origin, cur_pos);
-		VectorScale(unit, BLAST_DIFF, unit);
+		vec3_t cur_pos = VEC3_INIT(origin);
+		Vec3ScaleAssign(BLAST_DIFF, unit);
 
 		vec3_t back;
 		VectorScale(unit, BLAST_BACKSPEED, back);
@@ -219,17 +218,17 @@ void FXBlast(centity_t* owner, const int type, const int flags, vec3_t origin)
 			client_entity_t* puff = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, cur_pos, NULL, 750);
 
 			puff->r.model = &missile_models[1]; // Indigo spark sprite.
-			puff->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			puff->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 			puff->r.scale = scale;
 			puff->radius = 14.0f;
 			puff->alpha = 0.95f;
 			puff->d_scale = -1.4f * scale;
 			VectorRandomSet(puff->velocity, 8.0f);
-			VectorAdd(puff->velocity, back, puff->velocity);
+			Vec3AddAssign(back, puff->velocity);
 			puff->acceleration[2] = BLAST_GRAVITY;
 
 			AddEffect(NULL, puff);
-			VectorAdd(cur_pos, unit, cur_pos);
+			Vec3AddAssign(unit, cur_pos);
 
 			scale += 0.1f;
 		}
@@ -238,7 +237,7 @@ void FXBlast(centity_t* owner, const int type, const int flags, vec3_t origin)
 		// Big flash first...
 		client_entity_t* halo = ClientEntity_new(type, CEF_ADDITIVE_PARTS, end_pos, NULL, 1000);
 		halo->r.model = &missile_models[0]; // Indigo halo sprite.
-		halo->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		halo->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		halo->r.scale = 1.0f + length * 0.001f; // Bigger when further out.
 		halo->alpha = 0.95f;
 		halo->d_scale = -5.0f;
