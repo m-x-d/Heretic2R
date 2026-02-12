@@ -220,7 +220,7 @@ static qboolean SphereOfAnnihilationGlowballSpawnerUpdate(client_entity_t* self,
 			Matrix3MultByVec3(rotation, forward, glowball->r.origin);
 		}
 
-		VectorAdd(controller->origin, glowball->r.origin, glowball->r.origin);
+		Vec3AddAssign(controller->origin, glowball->r.origin);
 	}
 	else
 	{
@@ -334,7 +334,7 @@ void FXSphereOfAnnihilationExplode(centity_t* owner, const int type, const int f
 	SphereOfAnnihilationSphereExplosionUpdate(explosion, NULL);
 
 	// Add some glowing blast particles.
-	VectorScale(dir, FX_SPHERE_EXPLOSION_SMOKE_SPEED, dir);
+	Vec3ScaleAssign(FX_SPHERE_EXPLOSION_SMOKE_SPEED, dir);
 	const int count = GetScaledCount(40, 0.3f);
 
 	for (int i = 0; i < count; i++)
@@ -532,7 +532,7 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 	SpherePlayerExplosionUpdate(explosion, NULL);
 
 	// Add some glowing blast particles.
-	VectorScale(dir, FX_SPHERE_EXPLOSION_SMOKE_SPEED, dir);
+	Vec3ScaleAssign(FX_SPHERE_EXPLOSION_SMOKE_SPEED, dir);
 
 	const int count = GetScaledCount(40, 0.3f);
 
