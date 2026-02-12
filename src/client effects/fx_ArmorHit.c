@@ -48,7 +48,7 @@ void FXArmorHit(centity_t* owner, const int type, int flags, vec3_t origin) //mx
 		VectorCopy(origin, trail_fx->r.endpos);
 		VectorMA(trail_fx->r.endpos, flrand(6.0f, 8.0f), trail_fx->velocity, trail_fx->r.startpos); //mxd. Was irand().
 
-		VectorScale(trail_fx->velocity, flrand(50.0f, 100.0f), trail_fx->velocity); //mxd. Was irand().
+		Vec3ScaleAssign(flrand(50.0f, 100.0f), trail_fx->velocity); //mxd. Was irand().
 
 		AddEffect(NULL, trail_fx);
 	}
