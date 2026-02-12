@@ -65,8 +65,7 @@ void corvus3_visible(edict_t* self)
 
 void corvus3_teleportsmalleffect(edict_t* self)
 {
-	vec3_t hold_origin;
-	VectorCopy(self->s.origin, hold_origin);
+	vec3_t hold_origin = VEC3_INIT(self->s.origin);
 
 	vec3_t forward;
 	vec3_t right;
