@@ -144,10 +144,11 @@ void AssassinDaggerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfac
 
 	// Take into account if angle is within 45 of 0?
 	vec3_t normal;
-	VectorCopy(vec3_up, normal);
 
 	if (plane != NULL && Vec3NotZero(plane->normal)) //BUGFIX: mxd. Use Vec3NotZero() instead of always-true plane->normal NULL check.
 		VectorCopy(plane->normal, normal);
+	else
+		VectorCopy(vec3_up, normal);
 
 	if (other->takedamage != DAMAGE_NO)
 	{
@@ -319,22 +320,18 @@ void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThink' in o
 		// Pick either last buoy or my startspot.
 		vec3_t teleport_dest;
 
-		if (self->lastbuoy > NULL_BUOY && !(gi.pointcontents(level.buoy_list[self->lastbuoy].origin) & MASK_WATER))
+		if (self->lastbuoy != NULL_BUOY && !(gi.pointcontents(level.buoy_list[self->lastbuoy].origin) & MASK_WATER))
 			VectorCopy(level.buoy_list[self->lastbuoy].origin, teleport_dest);
 		else
 			VectorCopy(self->assassin_spawn_pos, teleport_dest);
 
-		vec3_t start_pos;
-		VectorCopy(teleport_dest, start_pos);
-
+		vec3_t start_pos = VEC3_INIT(teleport_dest);
 		vec3_t end_pos; //TODO: UNINITIALIZED! Should be self.origin?
 
-		vec3_t mins;
-		VectorCopy(self->mins, mins);
+		vec3_t mins = VEC3_INIT(self->mins);
 		mins[2] = 0.0f;
 
-		vec3_t maxs;
-		VectorCopy(self->maxs, maxs);
+		vec3_t maxs = VEC3_INIT(self->maxs);
 		maxs[2] = 1.0f;
 
 		start_pos[2] -= self->size[2];
@@ -519,10 +516,7 @@ static void AssassinInitDeCloak(edict_t* self) //mxd. Named 'assassinInitDeCloak
 
 static void AssassinSmoke(const edict_t* self) //mxd. Named 'assassinSmoke' in original logic.
 {
-	vec3_t pos;
-	VectorCopy(self->s.origin, pos);
-	pos[2] += self->mins[2];
-
+	const vec3_t pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2]);
 	gi.CreateEffect(NULL, FX_TPORTSMOKE, 0, pos, "");
 }
 
@@ -1069,9 +1063,7 @@ void assassin_gone(edict_t* self) //mxd. Named 'assassinGone' in original logic.
 
 	AssassinSmoke(self);
 
-	vec3_t pos;
-	VectorCopy(self->assassin_teleport_pos, pos);
-	pos[2] += 100.0f;
+	const vec3_t pos = VEC3_INITA(self->assassin_teleport_pos, 0.0f, 0.0f, 100.0f);
 
 	if (gi.pointcontents(pos) == CONTENTS_EMPTY && irand(0, 3) == 0)
 		SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
@@ -2068,8 +2060,7 @@ void AssassinBlocked(edict_t* self, trace_t* trace) //mxd. Named 'assassin_Touch
 
 			if (other->takedamage != DAMAGE_NO)
 			{
-				vec3_t dir;
-				VectorCopy(self->velocity, dir);
+				vec3_t dir = VEC3_INIT(self->velocity);
 				dir[2] = max(0.0f, dir[2]);
 				VectorNormalize(dir);
 
