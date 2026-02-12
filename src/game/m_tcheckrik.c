@@ -803,8 +803,7 @@ void tcheckrik_attack(edict_t* self, float attack_type) //mxd. Named 'insectCut'
 	vec3_t right;
 	AngleVectors(self->s.angles, forward, right, NULL);
 
-	vec3_t hit_start;
-	VectorCopy(self->s.origin, hit_start);
+	vec3_t hit_start = VEC3_INIT(self->s.origin);
 
 	vec3_t hit_end;
 	VectorMA(hit_start, 72.0f, forward, hit_end);
@@ -914,14 +913,15 @@ void tcheckrik_flyback_move(edict_t* self) //mxd. Named 'insect_flyback_move' in
 {
 	M_ChangeYaw(self);
 
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-	end_pos[2] -= 48.0f;
+	//mxd. Check animations BEFORE tracing.
+	if (self->curAnimID == ANIM_KNOCK1_GO || self->curAnimID == ANIM_KNOCK1_END)
+		return;
 
 	trace_t trace;
+	const vec3_t end_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -48.0f);
 	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
-	if ((trace.fraction < 1.0f || trace.startsolid || trace.allsolid) && self->curAnimID != ANIM_KNOCK1_END && self->curAnimID != ANIM_KNOCK1_GO)
+	if (trace.startsolid || trace.allsolid || trace.fraction < 1.0f)
 	{
 		self->elasticity = 1.1f;
 		self->friction = 0.5f;
@@ -934,10 +934,8 @@ void tcheckrik_growl(edict_t* self) //mxd. Named 'insectgrowl' in original logic
 	if (irand(0, 10) > 2)
 		return;
 
-	if (self->mass == MASS_TC_MALE)
-		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_GROWLM1, SND_GROWLM2)], 1.0f, ATTN_IDLE, 0.0f);
-	else
-		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_GROWLF1, SND_GROWLF2)], 1.0f, ATTN_IDLE, 0.0f);
+	const int snd_id = ((self->mass == MASS_TC_MALE) ? irand(SND_GROWLM1, SND_GROWLM2) : irand(SND_GROWLF1, SND_GROWLF2));
+	gi.sound(self, CHAN_WEAPON, sounds[snd_id], 1.0f, ATTN_IDLE, 0.0f);
 }
 
 void tcheckrik_sound(edict_t* self, float channel, float sound_num, float attenuation) //mxd. Named 'insect_sound' in original logic.
@@ -952,8 +950,7 @@ void tcheckrik_staff_attack(edict_t* self) //mxd. Named 'insectStaff' in origina
 	AngleVectors(self->s.angles, forward, right, NULL);
 
 	vec3_t org;
-	VectorCopy(self->s.origin, org);
-	VectorMA(org, 12.0f, forward, org);
+	VectorMA(self->s.origin, 12.0f, forward, org);
 	VectorMA(org, 4.0f, right, org);
 
 	if (self->spawnflags & MSF_INSECT_YELLOWJACKET)
@@ -995,8 +992,7 @@ void tcheckrik_spell_attack(edict_t* self, float spell_type) //mxd. Named 'insec
 	vec3_t right;
 	AngleVectors(self->s.angles, forward, right, NULL);
 
-	vec3_t org;
-	VectorCopy(self->s.origin, org);
+	vec3_t org = VEC3_INIT(self->s.origin);
 
 	switch ((int)spell_type)
 	{
