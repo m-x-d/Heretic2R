@@ -252,7 +252,7 @@ void SP_func_plat(edict_t* ent)
 
 	VectorSubtract(ent->maxs, ent->mins, ent->s.bmodel_origin);
 	Vec3ScaleAssign(0.5f, ent->s.bmodel_origin);
-	VectorAdd(ent->mins, ent->s.bmodel_origin, ent->s.bmodel_origin);
+	Vec3AddAssign(ent->mins, ent->s.bmodel_origin);
 
 	FuncDoorSetSounds(ent);
 
