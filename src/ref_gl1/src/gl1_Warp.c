@@ -215,7 +215,7 @@ static void R_SubdividePolygon(msurface_t* warpface, const int numverts, float* 
 
 		total_s += s;
 		total_t += t;
-		VectorAdd(total, verts, total);
+		Vec3AddAssign(verts, total);
 
 		poly->verts[i + 1][3] = s;
 		poly->verts[i + 1][4] = t;
