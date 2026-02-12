@@ -32,9 +32,7 @@ static BmodelTransform_t r_bmodel_transforms[MAX_ENTITIES]; //mxd
 static void R_RenderDlight(const dlight_t* light)
 {
 	vec3_t v;
-
 	const float rad = light->intensity * 0.35f;
-	VectorSubtract(light->origin, r_origin, v);
 
 	glBegin(GL_TRIANGLE_FAN);
 
@@ -47,9 +45,11 @@ static void R_RenderDlight(const dlight_t* light)
 	for (int i = 16; i >= 0; i--)
 	{
 		const float a = (float)i / 16.0f * ANGLE_360;
+		const float sin_a = sinf(a); //mxd. Avoid calculating the same value 3 times...
+		const float cos_a = cosf(a); //mxd. Avoid calculating the same value 3 times...
 
 		for (int j = 0; j < 3; j++)
-			v[j] = light->origin[j] + vright[j] * cosf(a) * rad + vup[j] * sinf(a) * rad;
+			v[j] = light->origin[j] + vright[j] * cos_a * rad + vup[j] * sin_a * rad;
 
 		glVertex3fv(v);
 	}
