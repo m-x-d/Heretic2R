@@ -117,8 +117,8 @@ static void RipperImpact(edict_t* caster, edict_t* other, const vec3_t start_pos
 	float cur_yaw = (angles[YAW] * ANGLE_TO_RAD) + (RIPPER_BALL_ANGLE * 0.5f);
 
 	// Store the current yaw in radians for sin/cos operations.
-	const byte b_yaw = (byte)(cur_yaw * (256.0f / ANGLE_360)); // Reduce precision to a 0-255 byte...
-	cur_yaw = (float)b_yaw * (ANGLE_360 / 256.0f); // ...and pass this imprecision back to the float yaw.
+	const byte b_yaw = (byte)(cur_yaw * RAD_TO_BYTEANGLE); // Reduce precision to a 0-255 byte...
+	cur_yaw = (float)b_yaw * BYTEANGLE_TO_RAD; // ...and pass this imprecision back to the float yaw.
 	edict_t* ripper = NULL;
 
 	for (int i = 0; i < RIPPER_BALLS; i++)

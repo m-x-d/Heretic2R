@@ -38,6 +38,7 @@
 #define RAD_TO_ANGLE	(180.0f / ANGLE_180)
 
 #define BYTEANGLE_TO_RAD	(ANGLE_360 / 256.0f) //mxd
+#define RAD_TO_BYTEANGLE	(256.0f / ANGLE_360) //mxd
 #define DEG_TO_BYTEANGLE	(256.0f / 360.0f) //mxd
 
 //mxd. Used by skeletal joints logic.

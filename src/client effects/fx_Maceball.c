@@ -248,7 +248,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 		&ball_array[0], &ball_array[1], &ball_array[2], &ball_array[3], &ball_array[4], &ball_array[5], &ball_array[6], &ball_array[7]);
 
 	// Convert from a byte back to radians.
-	float cur_yaw = (float)byte_yaw * (ANGLE_360 / 256.0f);
+	float cur_yaw = (float)byte_yaw * BYTEANGLE_TO_RAD; //mxd. Use define.
 
 	// Throw out a bunch o' balls.
 	for (int i = 0; i < RIPPER_BALLS; i++)
