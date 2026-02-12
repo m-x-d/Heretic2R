@@ -40,8 +40,7 @@ static void CalcJointAngles(playerinfo_t* info)
 	// We have a target and we aren't swimming, so calculate angles to target.
 	if (info->enemystate != NULL && info->pm_w_flags == 0)
 	{
-		vec3_t targetvector;
-		VectorCopy(info->enemystate->origin, targetvector);
+		vec3_t targetvector = VEC3_INIT(info->enemystate->origin);
 		Vec3SubtractAssign(info->origin, targetvector);
 		vectoangles(targetvector, info->targetjointangles);
 
@@ -495,11 +494,9 @@ PLAYER_API void PlayerFallingDamage(playerinfo_t* info) // Called by CL_PredictM
 	{
 		if (info->flags & PLAYER_FLAG_FALLING)
 		{
-			vec3_t endpos;
-			VectorCopy(info->origin, endpos);
-			endpos[2] += info->mins[2];
+			const vec3_t end_pos = VEC3_INITA(info->origin, 0.0f, 0.0f, info->mins[2]);
 
-			if (info->waterlevel == 3 || (info->waterlevel == 1 && (info->PointContents(endpos) & (CONTENTS_SLIME | CONTENTS_LAVA))))
+			if (info->waterlevel == 3 || (info->waterlevel == 1 && (info->PointContents(end_pos) & (CONTENTS_SLIME | CONTENTS_LAVA))))
 				PlayerIntLand(info, delta); // We were falling, and we're now underwater so we should STOP FALLING.
 		}
 
