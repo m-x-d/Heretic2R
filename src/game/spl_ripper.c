@@ -23,11 +23,8 @@ void RipperExplodeBallThink(edict_t* self)
 {
 	trace_t trace;
 
-	vec3_t start_pos;
-	VectorCopy(self->s.origin, start_pos);
-
-	vec3_t end_pos;
-	VectorCopy(self->last_org, end_pos);
+	vec3_t start_pos = VEC3_INIT(self->s.origin);
+	const vec3_t end_pos = VEC3_INIT(self->last_org);
 
 	const edict_t* trace_buddy = self;
 	int num_hit = 0; // Can't hit more than 6 guys...
