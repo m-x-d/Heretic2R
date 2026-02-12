@@ -420,8 +420,7 @@ static void R_SetupFrame(void)
 		r_viewcluster2 = r_viewcluster;
 
 		// Check above and below so crossing solid water doesn't draw wrong.
-		vec3_t temp;
-		VectorCopy(r_origin, temp);
+		vec3_t temp = VEC3_INIT(r_origin);
 
 		if (leaf->contents == 0)
 			temp[2] -= 16.0f; // Look down a bit.
