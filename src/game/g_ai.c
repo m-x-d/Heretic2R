@@ -1066,8 +1066,7 @@ void ExtrapolateFireDirection(const edict_t* self, const vec3_t origin, const fl
 	if (SKILL < SKILL_HARD && !(self->monsterinfo.aiflags & AI_NIGHTVISION) && target->client != NULL)
 		offset += (float)(target->light_level / 32);
 
-	vec3_t target_pos;
-	VectorCopy(target->s.origin, target_pos);
+	vec3_t target_pos = VEC3_INIT(target->s.origin);
 
 	if (offset > 0.0f)
 	{
@@ -1081,9 +1080,7 @@ void ExtrapolateFireDirection(const edict_t* self, const vec3_t origin, const fl
 
 	const float targ_dist1 = VectorNormalize(diff);
 
-	vec3_t targ_vel;
-	VectorCopy(target->velocity, targ_vel);
-
+	vec3_t targ_vel = VEC3_INIT(target->velocity);
 	const float targ_speed = VectorNormalize(targ_vel);
 	const float eta1 = targ_dist1 / proj_speed; // Estimated time of arrival of projectile to target_pos.
 
