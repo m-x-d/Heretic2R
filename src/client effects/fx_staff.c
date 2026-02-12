@@ -301,8 +301,7 @@ static qboolean StaffLevel1Update(client_entity_t* self, centity_t* owner) //mxd
 	VectorSubtract(owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, cur_pivot, delta_pivot);
 	Vec3ScaleAssign(1.0f / (float)num_of_intervals, delta_pivot);
 
-	vec3_t cur_normal;
-	VectorCopy(owner->referenceInfo->oldReferences[ref_index].placement.direction, cur_normal);
+	vec3_t cur_normal = VEC3_INIT(owner->referenceInfo->oldReferences[ref_index].placement.direction);
 
 	vec3_t delta_normal;
 	VectorSubtract(owner->referenceInfo->references[ref_index].placement.direction, cur_normal, delta_normal);
