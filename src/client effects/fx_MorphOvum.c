@@ -75,12 +75,12 @@ static qboolean MorphMissileUpdate(client_entity_t* missile, centity_t* owner) /
 
 		// Scale it and make it the origin.
 		VectorScale(ce->origin, -1.0f, ce->velocity);
-		VectorAdd(cur_pos, ce->origin, ce->origin);
+		Vec3AddAssign(cur_pos, ce->origin);
 
 		// Add a fraction of the missile velocity to this particle velocity.
 		vec3_t scaled_vel;
 		VectorScale(missile->velocity, 0.1f, scaled_vel);
-		VectorAdd(scaled_vel, ce->velocity, ce->velocity);
+		Vec3AddAssign(scaled_vel, ce->velocity);
 
 		ce->scale = flrand(3.0f, 6.0f);
 		AddParticleToList(trail, ce);
@@ -198,7 +198,7 @@ void FXMorphExplode(centity_t* owner, int type, const int flags, vec3_t origin)
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_MORPHEXPLODE].formatString, dir);
 
 	// Make a bunch of small particles explode out the wall / object.
-	VectorScale(dir, SMOKE_SPEED, dir);
+	Vec3ScaleAssign(SMOKE_SPEED, dir);
 	const int count = GetScaledCount(40, 0.3f);
 
 	if (R_DETAIL >= DETAIL_HIGH) //TODO: separate DETAIL_UBERHIGH.
