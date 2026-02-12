@@ -70,7 +70,7 @@ void TornadoThink(edict_t* self)
 		Vec3ScaleAssign(flrand(0.0f, 110.0f), end_pos);
 		end_pos[2] = 100.0f;
 
-		VectorAdd(end_pos, self->s.origin, end_pos);
+		Vec3AddAssign(self->s.origin, end_pos);
 
 		gi.CreateEffect(NULL, FX_LIGHTNING, 0, self->s.origin, "vbb", end_pos, (byte)RED_RAIN_LIGHTNING_WIDTH, (byte)0);
 		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/Lightning.wav"), 1.0f, ATTN_NORM, 0.0f);
