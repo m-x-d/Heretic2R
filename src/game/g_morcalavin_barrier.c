@@ -57,7 +57,7 @@ void MorcalavinBarrierTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 	VectorSubtract(self->s.origin, other->s.origin, vel);
 	VectorNormalize(vel);
 
-	VectorScale(vel, -1.0f, vel);
+	VectorInverse(vel);
 	VectorScale(vel, 512.0f, other->velocity);
 
 	other->velocity[2] = 128.0f;
