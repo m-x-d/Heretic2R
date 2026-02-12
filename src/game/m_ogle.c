@@ -1255,9 +1255,7 @@ void ogle_pick_dust(edict_t* self)
 	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
 
-	vec3_t dust_pos;
-	VectorCopy(self->s.origin, dust_pos);
-
+	vec3_t dust_pos = VEC3_INIT(self->s.origin);
 	byte fx_flags = 0;
 
 	switch (self->curAnimID)
@@ -1266,7 +1264,7 @@ void ogle_pick_dust(edict_t* self)
 			VectorMA(dust_pos, 38.0f, forward, dust_pos);
 			VectorMA(dust_pos, 6.0f, right, dust_pos);
 			VectorMA(dust_pos, -4.0f, up, dust_pos);
-			VectorScale(forward, -1.0f, forward);
+			VectorInverse(forward);
 			break;
 
 		case ANIM_WORK5:
@@ -1281,14 +1279,14 @@ void ogle_pick_dust(edict_t* self)
 			VectorMA(dust_pos, 42.0f, forward, dust_pos);
 			VectorMA(dust_pos, 4.0f, right, dust_pos);
 			VectorMA(dust_pos, 8.0f, up, dust_pos);
-			VectorScale(forward, -1.0f, forward);
+			VectorInverse(forward);
 			break;
 
 		default:
 			VectorMA(dust_pos, 32.0f, forward, dust_pos);
 			VectorMA(dust_pos, 4.0f, right, dust_pos);
 			VectorMA(dust_pos, 22.0f, up, dust_pos);
-			VectorScale(forward, -1.0f, forward);
+			VectorInverse(forward);
 			break;
 	}
 
