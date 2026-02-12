@@ -109,7 +109,7 @@ static qboolean LensFlareUpdateOrigin(client_entity_t* self, const qboolean chec
 
 	vec3_t tmp;
 	VectorScale(light_dir, near_clip, tmp);
-	VectorScale(tmp, 1.0f / light_dot, tmp);
+	Vec3ScaleAssign(1.0f / light_dot, tmp);
 
 	vec3_t light_pos;
 	VectorAdd(tmp, view_offset, light_pos);
