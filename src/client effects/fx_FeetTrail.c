@@ -32,15 +32,14 @@ static qboolean FeetTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. 
 	}
 
 	// Let's take the origin and transform it to the proper coordinate offset from the owner's origin.
-	vec3_t firestart;
-	VectorCopy(owner->referenceInfo->references[self->refPoint].placement.origin, firestart);
+	const vec3_t fire_start = VEC3_INIT(owner->referenceInfo->references[self->refPoint].placement.origin);
 
 	// Create a rotation matrix
 	matrix3_t rotation;
 	Matrix3FromAngles(owner->lerp_angles, rotation);
 
 	vec3_t origin;
-	Matrix3MultByVec3(rotation, firestart, origin);
+	Matrix3MultByVec3(rotation, fire_start, origin);
 	Vec3AddAssign(owner->origin, origin);
 
 	if (Vec3NotZero(self->origin))
