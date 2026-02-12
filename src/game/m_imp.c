@@ -61,12 +61,11 @@ static const vec3_t dead_imp_maxs = {  16.0f,  16.0f, 16.0f }; //mxd
 
 static qboolean ImpCanMove(const edict_t* self, const float dist) //mxd. Named 'imp_check_move' in original logic. //TODO: very similar to HarpyCanMove(). Move to m_move.c as M_FlyMonsterCanMove().
 {
-	vec3_t end_pos;
-	VectorCopy(self->s.origin, end_pos);
-
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorMA(end_pos, dist, forward, end_pos);
+
+	vec3_t end_pos;
+	VectorMA(self->s.origin, dist, forward, end_pos);
 
 	trace_t trace;
 	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_SHOT | MASK_WATER, &trace);
@@ -88,8 +87,7 @@ static void ImpAIGlide(edict_t* self) //mxd. Named 'imp_ai_glide' in original lo
 	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
 
 	vec3_t dir;
-	VectorCopy(diff, dir);
-	VectorNormalize(dir);
+	VectorNormalize2(diff, dir);
 
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
@@ -176,9 +174,7 @@ static qboolean ImpCheckSwoop(const edict_t* self, const vec3_t goal_pos) //mxd.
 
 	z_diff -= z_diff / 4.0f;
 
-	vec3_t check_pos;
-	VectorCopy(self->s.origin, check_pos);
-	check_pos[2] -= z_diff;
+	const vec3_t check_pos = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -z_diff);
 
 	// Trace down about that far and about one forth the distance to the target.
 	trace_t trace;
@@ -288,9 +284,8 @@ void ImpIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'imp_blocked' in o
 		if (Q_stricmp(trace->ent->classname, "player") == 0 && irand(0, 4) == 0) //mxd. stricmp -> Q_stricmp. //TODO: check ent->client instead?
 			P_KnockDownPlayer(&trace->ent->client->playerinfo);
 
-		vec3_t dir; //BUGFIX: mxd. Not initialized in original logic.
-		VectorCopy(self->velocity, dir);
-		VectorNormalize(dir);
+		vec3_t dir; 
+		VectorNormalize2(self->velocity, dir); //BUGFIX: mxd. Not initialized in original logic.
 
 		const int damage = irand(IMP_DMG_MIN, IMP_DMG_MAX);
 		T_Damage(trace->ent, self, self, dir, trace->ent->s.origin, trace->plane.normal, damage, damage * 2, 0, MOD_DIED);
@@ -568,9 +563,6 @@ void imp_check_dodge(edict_t* self)
 			vec3_t right;
 			AngleVectors(self->s.angles, NULL, right, up);
 
-			vec3_t goal_pos;
-			VectorCopy(self->s.origin, goal_pos);
-
 			// Pick horizontal or vertical dodge direction.
 			if (irand(0, 1) == 1)
 			{
@@ -582,7 +574,8 @@ void imp_check_dodge(edict_t* self)
 				vertical_dodge = true;
 			}
 
-			VectorMA(goal_pos, 100.0f, dodge_dir, goal_pos);
+			vec3_t goal_pos;
+			VectorMA(self->s.origin, 100.0f, dodge_dir, goal_pos);
 
 			trace_t trace;
 			gi.trace(self->s.origin, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
@@ -603,8 +596,8 @@ void imp_check_dodge(edict_t* self)
 
 						gi.trace(self->s.origin, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
-						if (trace.fraction < 1.0f)// What the hell? Just go the other way...
-							VectorScale(dodge_dir, -1, dodge_dir);
+						if (trace.fraction < 1.0f) // What the hell? Just go the other way...
+							VectorInverse(dodge_dir);
 					}
 				}
 			}
