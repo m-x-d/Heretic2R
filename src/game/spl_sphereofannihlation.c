@@ -189,20 +189,18 @@ void SpherePowerLaserThink(edict_t* self)
 	static const vec3_t min = { -16.0f, -16.0f, -16.0f }; //mxd. Made static.
 	static const vec3_t max = {  16.0f,  16.0f,  16.0f }; //mxd. Made static.
 
-	vec3_t start_pos;
-	VectorCopy(self->s.origin, start_pos);
-
 	const edict_t* trace_buddy = self;
 	float sphere_dist = 2048.0f;
 
-	vec3_t aim_angles;
-	VectorCopy(self->s.angles, aim_angles);
+	vec3_t aim_angles = VEC3_INIT(self->s.angles);
 
 	vec3_t shoot_dir;
 	AngleVectors(aim_angles, shoot_dir, NULL, NULL);
-	VectorMA(start_pos, 12.0f, shoot_dir, start_pos);
 
-	trace_t tr;
+	vec3_t start_pos;
+	VectorMA(self->s.origin, 12.0f, shoot_dir, start_pos);
+
+	trace_t trace;
 	int num_hit = 0; // Can't hit more than 8 guys...
 
 	do
@@ -210,27 +208,27 @@ void SpherePowerLaserThink(edict_t* self)
 		vec3_t end_pos;
 		VectorMA(start_pos, sphere_dist, shoot_dir, end_pos);
 
-		gi.trace(start_pos, min, max, end_pos, trace_buddy, MASK_SHOT, &tr);
+		gi.trace(start_pos, min, max, end_pos, trace_buddy, MASK_SHOT, &trace);
 
 		if (level.fighting_beast)
 		{
-			edict_t* ent = TBeastCheckHit(start_pos, tr.endpos);
+			edict_t* ent = TBeastCheckHit(start_pos, trace.endpos);
 
 			if (ent != NULL)
-				tr.ent = ent;
+				trace.ent = ent;
 		}
 
-		if (tr.ent != NULL && tr.ent->takedamage == DAMAGE_NO) //mxd. Added tr.ent NULL check.
+		if (trace.ent != NULL && trace.ent->takedamage == DAMAGE_NO) //mxd. Added tr.ent NULL check.
 			break;
 
-		if (tr.ent != NULL && (tr.startsolid || tr.fraction < 0.99f))
+		if (trace.ent != NULL && (trace.startsolid || trace.fraction < 0.99f))
 		{
 			// Reflect it off into space?
-			if (EntReflecting(tr.ent, true, true))
+			if (EntReflecting(trace.ent, true, true))
 			{
 				// Draw line to this point.
 				vec3_t diff;
-				VectorSubtract(tr.endpos, start_pos, diff);
+				VectorSubtract(trace.endpos, start_pos, diff);
 				const float trace_dist = VectorLength(diff);
 
 				gi.CreateEffect(NULL, FX_WEAPON_SPHEREPOWER, 0, start_pos, "xbb", shoot_dir, (byte)(self->s.scale * 7.5f), (byte)(trace_dist / 8.0f));
@@ -243,30 +241,30 @@ void SpherePowerLaserThink(edict_t* self)
 				break;
 			}
 
-			if (tr.ent->fire_timestamp < self->fire_timestamp)
+			if (trace.ent->fire_timestamp < self->fire_timestamp)
 			{
-				T_Damage(tr.ent, self, self->owner, shoot_dir, tr.endpos, shoot_dir, SPHERE_DAMAGE, SPHERE_DAMAGE, DAMAGE_SPELL, MOD_P_SPHERE);
-				tr.ent->fire_timestamp = self->fire_timestamp;
+				T_Damage(trace.ent, self, self->owner, shoot_dir, trace.endpos, shoot_dir, SPHERE_DAMAGE, SPHERE_DAMAGE, DAMAGE_SPELL, MOD_P_SPHERE);
+				trace.ent->fire_timestamp = self->fire_timestamp;
 			}
 		}
 
 		vec3_t diff;
-		VectorSubtract(tr.endpos, start_pos, diff);
+		VectorSubtract(trace.endpos, start_pos, diff);
 		sphere_dist -= VectorLength(diff);
 
-		VectorCopy(tr.endpos, start_pos);
+		VectorCopy(trace.endpos, start_pos);
 
 		// This seems to alleviate the problem of a trace hitting the same ent multiple times...
 		VectorSubtract(end_pos, start_pos, diff);
 		if (VectorLength(diff) > 16.0f)
 			VectorMA(start_pos, 16.0f, shoot_dir, start_pos);
 
-		trace_buddy = tr.ent;
+		trace_buddy = trace.ent;
 		num_hit++;
-	} while (tr.fraction < 0.99f && tr.contents != MASK_SOLID && num_hit < MAX_REFLECT);
+	} while (trace.fraction < 0.99f && trace.contents != MASK_SOLID && num_hit < MAX_REFLECT);
 
 	vec3_t temp;
-	VectorSubtract(tr.endpos, start_pos, temp);
+	VectorSubtract(trace.endpos, start_pos, temp);
 	const float trace_dist = VectorLength(temp);
 
 	// Set 'is powered' flag.
@@ -277,7 +275,7 @@ void SpherePowerLaserThink(edict_t* self)
 		fx_flags |= CEF_FLAG8;
 
 	// Decide if a decal is appropriate or not.
-	if (IsDecalApplicable(tr.ent, self->s.origin, tr.surface, &tr.plane, NULL))
+	if (IsDecalApplicable(trace.ent, self->s.origin, trace.surface, &trace.plane, NULL))
 		fx_flags |= CEF_FLAG6;
 
 	gi.CreateEffect(NULL, FX_WEAPON_SPHEREPOWER, fx_flags, start_pos, "xbb", shoot_dir, (byte)(self->s.scale * 7.5f), (byte)(trace_dist / 8.0f));
