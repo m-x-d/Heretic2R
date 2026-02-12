@@ -252,8 +252,7 @@ edict_t* TBeastCheckHit(const vec3_t start, vec3_t end) //mxd. Named 'check_hit_
 			continue;
 
 		// Beast closer than trace endpos, let's do an incremental check.
-		vec3_t check_pos;
-		VectorCopy(start, check_pos);
+		vec3_t check_pos = VEC3_INIT(start);
 
 		for (int i = 16; i < (int)shot_dist; i += 16)
 		{
@@ -521,11 +520,9 @@ static void LevelToGround(edict_t* self) //mxd. Removed unused args.
 	}
 
 	// Set pitch.
-	vec3_t bottom1;
-	VectorCopy(front_pos, bottom1);
-	bottom1[2] -= self->size[2] * 2.0f;
-
 	trace_t trace;
+
+	vec3_t bottom1 = VEC3_INITA(front_pos, 0.0f, 0.0f, -self->size[2] * 2.0f);
 	gi.trace(front_pos, vec3_origin, vec3_origin, bottom1, self, MASK_SOLID, &trace);
 
 	if (trace.fraction == 1.0f)
@@ -536,10 +533,7 @@ static void LevelToGround(edict_t* self) //mxd. Removed unused args.
 	{
 		VectorCopy(trace.endpos, bottom1);
 
-		vec3_t bottom2;
-		VectorCopy(back_pos, bottom2);
-		bottom2[2] -= self->size[2] * 2.0f;
-
+		vec3_t bottom2 = VEC3_INITA(back_pos, 0.0f, 0.0f, -self->size[2] * 2.0f);
 		gi.trace(back_pos, vec3_origin, vec3_origin, bottom2, self, MASK_SOLID, &trace);
 
 		if (trace.fraction == 1.0f)
@@ -574,10 +568,7 @@ static void LevelToGround(edict_t* self) //mxd. Removed unused args.
 	{
 		VectorCopy(trace.endpos, bottom1);
 
-		vec3_t bottom2;
-		VectorCopy(left_pos, bottom2);
-		bottom2[2] -= self->size[2] * 2.0f;
-
+		vec3_t bottom2 = VEC3_INITA(left_pos, 0.0f, 0.0f, -self->size[2] * 2.0f);
 		gi.trace(left_pos, vec3_origin, vec3_origin, bottom2, self, MASK_SOLID, &trace);
 
 		if (trace.fraction == 1.0f)
@@ -635,10 +626,7 @@ static void TBeastFakeImpact(edict_t* self, trace_t* trace, const qboolean crush
 
 	if (throw_them)
 	{
-		vec3_t bottom;
-		VectorCopy(self->s.origin, bottom);
-		bottom[2] += self->mins[2];
-
+		const vec3_t bottom = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2]);
 		VectorSubtract(trace->ent->s.origin, bottom, dir);
 		VectorNormalize(dir);
 	}
@@ -742,8 +730,7 @@ static void TBeastCheckImpacts(edict_t* self) //mxd. Named 'tbeast_check_impacts
 	AngleVectors(self->s.angles, forward, right, up);
 
 	// Setup body check.
-	vec3_t start;
-	VectorCopy(self->s.origin, start);
+	vec3_t start = VEC3_INIT(self->s.origin);
 	start[2] += 64.0f + TB_UP_OFFSET; // Bottom of torso.
 	start[2] += 61.0f; // Halfway up to the top of torso.
 
@@ -890,8 +877,7 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 	}
 
 	// Setup body check.
-	vec3_t start;
-	VectorCopy(self->s.origin, start);
+	vec3_t start = VEC3_INIT(self->s.origin);
 	start[2] += 64.0f + TB_UP_OFFSET; // Bottom of torso.
 	start[2] += 35.0f; // Halfway up to the top of torso.
 
@@ -1050,8 +1036,7 @@ void TBeastBlocked(edict_t* self, trace_t* trace) //mxd. Named 'tbeast_blocked' 
 		}
 		else
 		{
-			vec3_t start;
-			VectorCopy(self->s.origin, start);
+			vec3_t start = VEC3_INIT(self->s.origin);
 			start[2] = self->absmin[2] + self->size[2] * 0.8f + TB_UP_OFFSET;
 
 			vec3_t forward;
@@ -1189,9 +1174,7 @@ void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in original
 
 		if (mins_z != 0.0f)
 		{
-			vec3_t end;
-			VectorCopy(self->s.origin, end);
-			end[2] += mins_z;
+			const vec3_t end = VEC3_INITA(self->s.origin, 0.0f, 0.0f, mins_z);
 
 			trace_t trace;
 			gi.trace(self->s.origin, self->mins, self->maxs, end, self, MASK_SOLID, &trace);
@@ -1210,9 +1193,7 @@ void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in original
 			self->curAnimID == ANIM_WALKRT ||
 			self->curAnimID == ANIM_WALKATK)
 		{
-			vec3_t end;
-			VectorCopy(self->s.origin, end);
-			end[2] -= 64.0f;
+			const vec3_t end = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -64.0f);
 
 			const vec3_t mins = { -8.0f, -8.0f, 0.0f };
 			const vec3_t maxs = {  8.0f,  8.0f, 2.0f };
@@ -1532,9 +1513,7 @@ void tbeast_footstep(edict_t* self)
 			VectorMA(pos, 32.0f, right, pos);
 	}
 
-	vec3_t bottom;
-	VectorCopy(pos, bottom);
-	bottom[2] -= 128.0f;
+	const vec3_t bottom = VEC3_INITA(pos, 0.0f, 0.0f, -128.0f);
 
 	trace_t trace;
 	gi.trace(pos, vec3_origin, vec3_origin, bottom, self, MASK_SOLID, &trace);
@@ -1702,12 +1681,7 @@ void tbeast_land(edict_t* self)
 
 	for (int i = 0; i < 4; i++)
 	{
-		vec3_t pos;
-		VectorCopy(self->s.origin, pos);
-		pos[0] += flrand(-50.0f, 50.0f);
-		pos[1] += flrand(-50.0f, 50.0f);
-		pos[2] += self->mins[2];
-
+		const vec3_t pos = VEC3_INITA(self->s.origin, flrand(-50.0f, 50.0f), flrand(-50.0f, 50.0f), self->mins[2]);
 		gi.CreateEffect(NULL, FX_OGLE_HITPUFF, 0, pos, "v", up); //TODO: randomize 'up' vector on each iteration?
 	}
 
@@ -1786,9 +1760,7 @@ void tbeast_run(edict_t* self, float dist) //mxd. Named 'tbeast_run_think' in or
 	vec3_t end;
 	VectorMA(self->s.origin, 128.0f, forward, end);
 
-	vec3_t mins;
-	VectorCopy(self->mins, mins);
-	mins[2] += 54.0f; // His step height.
+	const vec3_t mins = VEC3_INITA(self->mins, 0.0f, 0.0f, 54.0f); // Add his step height.
 
 	trace_t trace;
 	gi.trace(self->s.origin, mins, self->maxs, end, self, MASK_SOLID, &trace);
