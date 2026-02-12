@@ -131,7 +131,7 @@ static void PhoenixExplode(const int type, int flags, const vec3_t origin, const
 	}
 
 	//mxd. Add shockwave ring particles (but only if hit surface is horizontal enough).
-	float angle = flrand(0.0f, ANGLE_360);
+	float angle = flrand(ANGLE_0, ANGLE_360);
 	const float angle_increment = ANGLE_360 / EXPLODE_NUM_SHOCKWAVE_BITS;
 
 	vec3_t up;
@@ -173,7 +173,7 @@ static void PhoenixExplode(const int type, int flags, const vec3_t origin, const
 	}
 
 	//mxd. Add lingering smoke.
-	angle = flrand(0.0f, ANGLE_360);
+	angle = flrand(ANGLE_0, ANGLE_360);
 
 	for (int i = 0; i < EXPLODE_NUM_SHOCKWAVE_BITS; i++)
 	{
@@ -277,7 +277,7 @@ static qboolean PhoenixExplosionPowerUpdate(client_entity_t* self, centity_t* ow
 	int count = (int)((float)PHOENIXPOWER_PARTS_PER_RING * (1.0f - lerp * 0.5f));
 	count = GetScaledCount(count, 0.3f);
 
-	float angle = flrand(0.0f, ANGLE_360);
+	float angle = flrand(ANGLE_0, ANGLE_360);
 	const float angle_increment = ANGLE_360 / (float)count;
 
 	//mxd. Create current step of fire ring particle effect.
