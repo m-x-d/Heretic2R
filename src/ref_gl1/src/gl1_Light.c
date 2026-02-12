@@ -216,8 +216,7 @@ static int R_RecursiveLightPoint(const mnode_t* node, const vec3_t start, const 
 	const float frac = front / (front - back);
 
 	vec3_t mid;
-	for (int c = 0; c < 3; c++)
-		mid[c] = start[c] + (end[c] - start[c]) * frac;
+	VectorLerp(start, frac, end, mid);
 
 	// Go down front side.
 	const int r = R_RecursiveLightPoint(node->children[side], start, mid);
