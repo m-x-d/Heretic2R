@@ -799,9 +799,7 @@ void M_GetSlopePitchRoll(edict_t* ent, vec3_t pass_slope) //mxd. Named 'pitch_ro
 
 	if (pass_slope == NULL)
 	{
-		vec3_t end;
-		VectorCopy(ent->s.origin, end);
-		end[2] += ent->mins[2] - 300.0f;
+		const vec3_t end = VEC3_INITA(ent->s.origin, 0.0f, 0.0f, ent->mins[2] - 300.0f);
 
 		trace_t trace;
 		gi.trace(ent->s.origin, vec3_origin, vec3_origin, end, ent, MASK_SOLID, &trace);
@@ -846,21 +844,15 @@ void M_Touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf)
 	if (!(other->svflags & SVF_MONSTER) && Q_stricmp(other->classname, "player") != 0) //mxd. stricmp -> Q_stricmp
 		return;
 
-	vec3_t other_bottom;
-	VectorCopy(other->s.origin, other_bottom);
-	other_bottom[2] += other->mins[2];
-
-	vec3_t self_top;
-	VectorCopy(self->s.origin, self_top);
-	self_top[2] += self->maxs[2];
+	const vec3_t other_bottom = VEC3_INITA(other->s.origin, 0.0f, 0.0f, other->mins[2]);
+	const vec3_t self_top = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->maxs[2]);
 
 	// Not on top?
 	if (other_bottom[2] - self_top[2] < 0.0f)
 		return;
 
 	vec3_t dir;
-	VectorCopy(other->velocity, dir);
-	VectorNormalize(dir);
+	VectorNormalize2(other->velocity, dir);
 
 	// 10% chance to do damage.
 	if (irand(0, 9) == 0)
@@ -876,7 +868,7 @@ void M_Touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf)
 
 	// Randomly reverse those random numbers. //TODO: don't reverse Z-axis?
 	if (irand(0, 1) == 1)
-		VectorScale(other->velocity, -1.0f, other->velocity);
+		VectorInverse(other->velocity);
 }
 
 // Test a melee strike to see if it has hit its target.
@@ -1131,11 +1123,8 @@ qboolean M_ValidTarget(edict_t* self, const edict_t* target)
 int M_PredictTargetEvasion(const edict_t* attacker, const edict_t* target, const vec3_t pursue_vel, const vec3_t evade_vel, const float strike_dist, const float pred_frames) //TODO: change return type to qboolean?
 {
 	// Setup the movement directions.
-	vec3_t attack_dir;
-	VectorCopy(pursue_vel, attack_dir);
-
-	vec3_t target_dir;
-	VectorCopy(evade_vel, target_dir);
+	vec3_t attack_dir = VEC3_INIT(pursue_vel);
+	vec3_t target_dir = VEC3_INIT(evade_vel);
 
 	// Setup the distances of attack.
 	float attack_dist = VectorNormalize(attack_dir);
@@ -1170,8 +1159,7 @@ int M_PredictTargetEvasion(const edict_t* attacker, const edict_t* target, const
 void M_PredictTargetPosition(const edict_t* target, const vec3_t evade_vel, const float pred_frames, vec3_t pred_target_pos)
 {
 	// Setup the movement directions.
-	vec3_t target_dir;
-	VectorCopy(evade_vel, target_dir);
+	vec3_t target_dir = VEC3_INIT(evade_vel);
 
 	// Setup the distances of attack.
 	float target_dist = VectorNormalize(target_dir);
