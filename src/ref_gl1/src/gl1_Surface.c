@@ -896,8 +896,7 @@ void R_DrawBrushModel(entity_t* ent)
 		vec3_t angles;
 		VectorScale(ent->angles, RAD_TO_ANGLE, angles); // H2: new RAD_TO_ANGLE rescale.
 
-		vec3_t temp;
-		VectorCopy(modelorg, temp);
+		const vec3_t temp = VEC3_INIT(modelorg);
 
 		vec3_t forward;
 		vec3_t right;
