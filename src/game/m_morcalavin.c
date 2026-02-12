@@ -225,10 +225,7 @@ void MorcalavinLightning2Think(edict_t* self) //mxd. Named 'morcalavin_check_lig
 		vec3_t lightning_start;
 		VectorMA(self->s.origin, 600.0f * FRAMETIME, vel, lightning_start);
 
-		vec3_t lightning_end;
-		VectorCopy(self->owner->enemy->s.origin, lightning_end);
-		lightning_end[2] += flrand(-16.0f, 32.0f); //mxd. irand() in original logic.
-
+		const vec3_t lightning_end = VEC3_INITA(self->owner->enemy->s.origin, 0.0f, 0.0f, flrand(-16.0f, 32.0f)); //mxd. irand() in original logic.
 		gi.CreateEffect(NULL, FX_LIGHTNING, 0, lightning_start, "vbb", lightning_end, irand(2, 4), 0); //TODO: play SND_LGHTNGHIT sound?
 	}
 
@@ -301,8 +298,7 @@ void MorcalavinTrackingProjectileThink(edict_t* self) //mxd. Named 'morcalavin_p
 	}
 
 	vec3_t old_dir;
-	VectorCopy(self->velocity, old_dir);
-	VectorNormalize(old_dir);
+	VectorNormalize2(self->velocity, old_dir);
 
 	vec3_t hunt_dir;
 	VectorSubtract(self->enemy->s.origin, self->s.origin, hunt_dir);
@@ -317,20 +313,20 @@ void MorcalavinTrackingProjectileThink(edict_t* self) //mxd. Named 'morcalavin_p
 	const float old_vel_mult = self->delay;
 	float new_vel_div = 1.0f / (old_vel_mult + 1.0f);
 
-	VectorScale(old_dir, old_vel_mult, old_dir);
+	Vec3ScaleAssign(old_vel_mult, old_dir);
 
 	vec3_t new_dir;
 	VectorAdd(old_dir, hunt_dir, new_dir);
-	VectorScale(new_dir, new_vel_div, new_dir);
+	Vec3ScaleAssign(new_vel_div, new_dir);
 
 	float speed_mod = DotProduct(old_dir, new_dir);
 	speed_mod = max(0.05f, speed_mod);
 
 	new_vel_div *= self->ideal_yaw * speed_mod;
 
-	VectorScale(old_dir, old_vel_mult, old_dir);
+	Vec3ScaleAssign(old_vel_mult, old_dir);
 	VectorAdd(old_dir, hunt_dir, new_dir);
-	VectorScale(new_dir, new_vel_div, new_dir);
+	Vec3ScaleAssign(new_vel_div, new_dir);
 
 	VectorCopy(new_dir, self->velocity);
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
@@ -360,12 +356,7 @@ void morcalavin_tracking_projectile(edict_t* self, float pitch, float yaw, float
 	VectorCopy(self->s.origin, proj->s.origin);
 
 	// Determine the starting velocity of the ball.
-	vec3_t angles;
-	VectorCopy(self->s.angles, angles);
-
-	angles[PITCH] += pitch;
-	angles[YAW] += yaw;
-	angles[ROLL] += roll;
+	const vec3_t angles = VEC3_INITA(self->s.angles, pitch, yaw, roll);
 
 	vec3_t forward;
 	vec3_t right;
@@ -522,9 +513,7 @@ void MorcalavinLightningThink(edict_t* self) //mxd. Named 'morcalavin_check_ligh
 		vec3_t lightning_start;
 		VectorMA(self->s.origin, 400.0f * FRAMETIME, vel, lightning_start);
 
-		vec3_t lightning_end;
-		VectorCopy(self->owner->enemy->s.origin, lightning_end);
-		lightning_end[2] += flrand(-16.0f, 32.0f); //mxd. irand() in original logic.
+		vec3_t lightning_end = VEC3_INITA(self->owner->enemy->s.origin, 0.0f, 0.0f, flrand(-16.0f, 32.0f)); //mxd. irand() in original logic.
 
 		gi.CreateEffect(NULL, FX_LIGHTNING, 0, lightning_start, "vbb", lightning_end, irand(2, 4), 0); //TODO: play SND_LGHTNGHIT sound?
 
@@ -779,9 +768,7 @@ static void MorcalavinChooseTeleportDestination(edict_t* self) //mxd. Removed un
 		vec3_t forward;
 		AngleVectors(teleport_angles, forward, NULL, NULL);
 
-		vec3_t start_pos;
-		VectorCopy(self->enemy->s.origin, start_pos);
-		start_pos[2] += self->enemy->mins[2] - self->mins[2];
+		vec3_t start_pos = VEC3_INITA(self->enemy->s.origin, 0.0f, 0.0f, self->enemy->mins[2] - self->mins[2]);
 
 		const float trace_dist = flrand(self->min_missile_range, self->missile_range); //mxd. irand() in original logic.
 
@@ -1275,11 +1262,8 @@ void morcalavin_ai_hover(edict_t* self, float distance) //mxd. Named 'mork_ai_ho
 
 	if (distance > 0.0f)
 	{
-		vec3_t bottom;
-		VectorCopy(self->s.origin, bottom);
-		bottom[2] -= distance;
-
 		trace_t trace;
+		const vec3_t bottom = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -distance);
 		gi.trace(self->s.origin, self->mins, self->maxs, bottom, self, MASK_SOLID, &trace);
 
 		if (trace.fraction < 1.0f)
