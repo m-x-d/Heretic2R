@@ -127,7 +127,7 @@ static void LightningBolt(const int model, const float width, const vec3_t start
 	vec3_t right;
 	CrossProduct(up, fwd, right); //TODO: can't fwd/up/right be initialized using AngleVectors() instead?
 
-	VectorScale(diff_pos, seg_mult, diff_pos);
+	Vec3ScaleAssign(seg_mult, diff_pos);
 	const float variance = length * seg_mult * 0.4f;
 
 	vec3_t last_pos = VEC3_INIT(start_pos);
@@ -347,8 +347,8 @@ void FXPowerLightning(centity_t* owner, int type, const int flags, vec3_t origin
 		VectorCopy(glow->velocity2, last_vel);
 
 		// Now, add the additional velocity upwards.
-		VectorAdd(glow->velocity, up_vel, glow->velocity);
-		VectorAdd(glow->velocity2, up_vel, glow->velocity2);
+		Vec3AddAssign(up_vel, glow->velocity);
+		Vec3AddAssign(up_vel, glow->velocity2);
 
 		AddEffect(NULL, glow);
 
