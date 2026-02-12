@@ -130,8 +130,7 @@ static void DoWake(client_entity_t* self, const centity_t* owner, const int refp
 	num_parts = min(6, num_parts);
 
 	// Let's take the origin and transform it to the proper coordinate offset from the owner's origin.
-	vec3_t org;
-	VectorCopy(owner->referenceInfo->references[refpt].placement.origin, org);
+	const vec3_t org = VEC3_INIT(owner->referenceInfo->references[refpt].placement.origin);
 
 	// Create a rotation matrix.
 	matrix3_t rotation;
@@ -153,7 +152,7 @@ static void DoWake(client_entity_t* self, const centity_t* owner, const int refp
 		client_particle_t* p = ClientParticle_new(type, light_color, irand(1000, 2000));
 
 		VectorRandomSet(p->origin, 4.0f); //mxd
-		VectorAdd(handpt, p->origin, p->origin);
+		Vec3AddAssign(handpt, p->origin);
 
 		p->scale = flrand(0.75f, 1.5f);
 		p->color.a = (byte)irand(100, 200);
