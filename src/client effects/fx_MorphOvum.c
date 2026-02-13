@@ -54,8 +54,7 @@ static qboolean MorphMissileUpdate(client_entity_t* missile, centity_t* owner) /
 	VectorSubtract(missile->r.origin, missile->origin, diff);
 	Vec3ScaleAssign(1.0f / (float)count, diff);
 
-	vec3_t cur_pos;
-	VectorClear(cur_pos);
+	vec3_t cur_pos = VEC3_ZERO;
 
 	int duration;
 	if (R_DETAIL >= DETAIL_HIGH) //TODO: 800 on DETAIL_UBERHIGH.
