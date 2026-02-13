@@ -32,8 +32,8 @@ static int pred_prevFrame = 0;
 static int pred_currSwapFrame = 0;
 static int pred_prevSwapFrame = 0;
 
-static vec3_t pred_currAngles = { 0 };
-static vec3_t pred_prevAngles = { 0 };
+static vec3_t pred_currAngles = VEC3_ZERO;
+static vec3_t pred_prevAngles = VEC3_ZERO;
 
 void CL_CheckPredictionError(void) //mxd. Called on packetframe.
 {
