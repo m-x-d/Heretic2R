@@ -176,9 +176,7 @@ void FXLightning(centity_t* owner, int type, const int flags, vec3_t origin)
 		// Create a client effect to zap over time.
 		client_entity_t* lightning = ClientEntity_new(FX_LIGHTNING, (int)(flags | CEF_NO_DRAW), origin, NULL, LIGHTNING_INTERVAL);
 
-		vec3_t diff_pos;
-		VectorSubtract(target, origin, diff_pos);
-		lightning->radius = VectorLength(diff_pos) * 0.5f;
+		lightning->radius = VectorSeparation(target, origin) * 0.5f;
 		VectorCopy(origin, lightning->r.startpos);
 		VectorCopy(target, lightning->r.endpos);
 		lightning->lastThinkTime = fx_time;
@@ -207,10 +205,7 @@ void FXPowerLightning(centity_t* owner, int type, const int flags, vec3_t origin
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_POWER_LIGHTNING].formatString, target, &b_width);
 
 	const float width = b_width; //mxd
-
-	vec3_t diff_pos;
-	VectorSubtract(target, origin, diff_pos);
-	const float length = VectorLength(diff_pos);
+	const float length = VectorSeparation(target, origin);
 
 	// Big ol' monster zapper.
 	client_entity_t* lightning = ClientEntity_new(FX_POWER_LIGHTNING, CEF_AUTO_ORIGIN, origin, NULL, 750);
