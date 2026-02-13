@@ -52,9 +52,7 @@ static qboolean RopeTopAttachedAddToView(client_entity_t* self, centity_t* owner
 	VectorSet(self->r.endpos, owner->origin[0], owner->origin[1], owner->origin[2] + 32.0f);
 
 	// Get our tile rate.
-	vec3_t diff;
-	VectorSubtract(self->direction, self->r.endpos, diff); //mxd. vecb:owner->origin in original logic.
-	self->r.tile = VectorLength(diff) / ROPE_SEGMENT_LENGTH;
+	self->r.tile = VectorSeparation(self->direction, self->r.endpos) / ROPE_SEGMENT_LENGTH; //mxd. v2:owner->origin in original logic.
 
 	return true;
 }
@@ -72,9 +70,7 @@ static qboolean RopeMiddleAttachedAddToView(client_entity_t* self, centity_t* ow
 	VectorSet(self->r.endpos,   owner->origin[0], owner->origin[1], owner->origin[2] + 8.0f);
 
 	//mxd. Offset the sprite's tile so that there's no visible gap between the top section and the grab section (slight imprecision).
-	vec3_t diff;
-	VectorSubtract(self->direction, self->r.startpos, diff);
-	self->r.tileoffset = fmodf(VectorLength(diff), ROPE_SEGMENT_LENGTH) / ROPE_SEGMENT_LENGTH;
+	self->r.tileoffset = fmodf(VectorSeparation(self->direction, self->r.startpos), ROPE_SEGMENT_LENGTH) / ROPE_SEGMENT_LENGTH;
 
 	return true;
 }
@@ -201,8 +197,7 @@ static qboolean RopeUpdate(client_entity_t* self, centity_t* owner) //mxd. Named
 	VectorMA(self->startpos, lerp, diff, self->r.endpos);
 
 	// Get our tile rate.
-	VectorSubtract(self->origin, self->r.endpos, diff);
-	self->r.tile = VectorLength(diff) / ROPE_SEGMENT_LENGTH;
+	self->r.tile = VectorSeparation(self->origin, self->r.endpos) / ROPE_SEGMENT_LENGTH;
 
 	// Store for lerping.
 	self->lastThinkTime = fx_time;
@@ -262,15 +257,12 @@ void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 		rope_top->r.spriteType = SPRITE_LINE;
 		rope_top->r.flags = r_flags; //mxd
 		rope_top->r.scale = 3.0f;
+		rope_top->r.tile = VectorSeparation(owner->origin, end_pos);
 		rope_top->SpawnInfo = fx_time + 1000;
 		rope_top->LifeTime = grab_id;
 
 		VectorCopy(top, rope_top->direction);
 		VectorCopy(top, rope_top->r.startpos);
-
-		vec3_t diff;
-		VectorSubtract(owner->origin, end_pos, diff);
-		rope_top->r.tile = VectorLength(diff);
 
 		rope_top->AddToView = RopeTopAttachedAddToView;
 		rope_top->Update = RopeAttachedUpdate;
