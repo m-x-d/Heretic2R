@@ -259,9 +259,7 @@ static int CategorizeRange(const edict_t* self, const edict_t* other, const floa
 // RANGE_FAR (3)	- Only triggered by damage.
 static int GetRange(const edict_t* self, const edict_t* other) //mxd. Named 'range' in original logic.
 {
-	vec3_t diff;
-	VectorSubtract(self->s.origin, other->s.origin, diff);
-	return CategorizeRange(self, other, VectorLength(diff));
+	return CategorizeRange(self, other, VectorSeparation(self->s.origin, other->s.origin));
 }
 
 // Returns true if the entity is visible to self, even if not infront().
@@ -394,16 +392,14 @@ static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original l
 		if (!AI_OkToWake(self, false, true))
 			continue;
 
-		vec3_t dir;
-		VectorSubtract(self->s.origin, alerter->origin, dir);
-		const float dist = VectorLength(dir);
+		const float alerter_dist = VectorSeparation(self->s.origin, alerter->origin);
 
 		// If monster's wakeup_distance is shorter than distance to alerter, leave it alone.
-		if (dist > self->wakeup_distance)
+		if (alerter_dist > self->wakeup_distance)
 			continue;
 
 		// Closer means better chance to alert. Problem: different alerts might be more likely to be heard/seen...
-		if (dist > flrand(100.0f, self->wakeup_distance)) // If within 100 always wake up?
+		if (alerter_dist > flrand(100.0f, self->wakeup_distance)) // If within 100 always wake up?
 			continue;
 
 		// Break the loop?
@@ -728,14 +724,12 @@ qboolean FindTarget(edict_t* self)
 		if (!enemy_infront && client->client != NULL && PlayerIsCreeping(&client->client->playerinfo))
 			continue;
 
-		vec3_t diff;
-		VectorSubtract(client->s.origin, self->s.origin, diff);
-		const float dist = VectorLength(diff);
+		const float player_dist = VectorSeparation(client->s.origin, self->s.origin);
 
-		if (dist > self->wakeup_distance)
+		if (player_dist > self->wakeup_distance)
 			continue;
 
-		const int r = CategorizeRange(self, client, dist);
+		const int r = CategorizeRange(self, client, player_dist);
 
 		if (r == RANGE_FAR)
 		{
@@ -1087,10 +1081,7 @@ void ExtrapolateFireDirection(const edict_t* self, const vec3_t origin, const fl
 	vec3_t expected_pos;
 	VectorMA(target_pos, targ_speed * eta1, targ_vel, expected_pos);
 
-	vec3_t targ_dir;
-	VectorSubtract(expected_pos, origin, targ_dir);
-
-	const float dist2 = VectorNormalize(targ_dir);
+	const float dist2 = VectorSeparation(expected_pos, origin);
 	const float eta2 = dist2 / proj_speed; // Estimated time of arrival of projectile to expected_pos.
 	const float eta_delta = eta2 - eta1; // Change in ETA's.
 
