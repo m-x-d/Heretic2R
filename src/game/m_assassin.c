@@ -288,6 +288,81 @@ static qboolean AssassinCheckDeCloak(const edict_t* self) //mxd. Named 'assassin
 	return (irand(0, 10 + SKILL * 2 + chance) <= 0);
 }
 
+static qboolean AssassinIsPotentiallyMeleeAttackedByPlayer(const playerinfo_t* info) //mxd. Split from AssassinCloakPreThink() to simplify logic.
+{
+	// Is he using his staff or jumping into me?
+	switch (info->upperseq)
+	{
+		case ASEQ_WSWORD_STEP2:
+		case ASEQ_WSWORD_STEP:
+			return true;
+
+		default:
+			break;
+	}
+
+	switch (info->lowerseq)
+	{
+		case ASEQ_WSWORD_SPIN:
+		case ASEQ_WSWORD_SPIN2:
+		case ASEQ_POLEVAULT1_W:
+		case ASEQ_POLEVAULT1_R:
+		case ASEQ_POLEVAULT2:
+			return true;
+
+		default:
+			break;
+	}
+
+	return false;
+}
+
+static qboolean AssassinTryEvasiveTeleport(edict_t* self, const edict_t* target) //mxd. Split from AssassinCloakPreThink() to simplify logic.
+{
+	if (Q_stricmp(target->classname, "Spell_Maceball") == 0) //mxd. stricmp -> Q_stricmp
+	{
+		if (self->enemy == NULL && target->owner != NULL)
+		{
+			self->enemy = target->owner;
+			AI_FoundTarget(self, false);
+		}
+
+		if (AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
+			return true;
+	}
+	else if (Q_stricmp(target->classname, "Spell_RedRain") == 0 || Q_stricmp(target->classname, "Spell_PhoenixArrow") == 0 ||
+			 Q_stricmp(target->classname, "Spell_FireWall") == 0 || Q_stricmp(target->classname, "Spell_SphereOfAnnihilation") == 0) //mxd. stricmp -> Q_stricmp
+	{
+		if (self->enemy == NULL && target->owner != NULL)
+		{
+			self->enemy = target->owner;
+			AI_FoundTarget(self, false);
+		}
+
+		if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
+			return true;
+	}
+
+	if (target == self->enemy && target->client != NULL && M_DistanceToTarget(self, self->enemy) < 128.0f)
+	{
+		// Is player using his staff or jumping into me?
+		if (AI_IsInfrontOf(self->enemy, self) && AssassinIsPotentiallyMeleeAttackedByPlayer(&target->client->playerinfo))
+		{
+			if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
+				return true;
+		}
+
+		// Avoid shielded player?
+		if (target->client->playerinfo.shield_timer > level.time)
+		{
+			if (AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
+				return true;
+		}
+	}
+
+	return false;
+}
+
 static qboolean AssassinTryOutOfWaterTeleport(edict_t* self, const vec3_t teleport_dest) //mxd. Split from AssassinCloakPreThink() to simplify logic.
 {
 	//mxd. Original logic traces (from 'teleport_dest' to uninitialized position) and triggers teleport logic only when it succeeds (e.g. never). 
@@ -349,6 +424,7 @@ void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThink' in o
 	if (SKILL == SKILL_EASY && self->assassin_teleport_debounce_time > level.time) // Was skill->value < 2.
 		return;
 
+	// Try to teleport out of danger.
 	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
 	{
 		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
@@ -357,74 +433,8 @@ void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThink' in o
 			// Easy is 40% chance per second, hard is 60% chance to check per second.
 			edict_t* found = NULL;
 			while ((found = FindInRadius(found, self->s.origin, 200.0f + skill->value * 50.0f)) != NULL)
-			{
-				if (Q_stricmp(found->classname, "Spell_Maceball") == 0) //mxd. stricmp -> Q_stricmp
-				{
-					if (self->enemy == NULL && found->owner != NULL)
-					{
-						self->enemy = found->owner;
-						AI_FoundTarget(self, false);
-					}
-
-					if (AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
-						return;
-				}
-				else if (Q_stricmp(found->classname, "Spell_RedRain") == 0 || Q_stricmp(found->classname, "Spell_PhoenixArrow") == 0 ||
-					Q_stricmp(found->classname, "Spell_FireWall") == 0 || Q_stricmp(found->classname, "Spell_SphereOfAnnihilation") == 0) //mxd. stricmp -> Q_stricmp
-				{
-					if (self->enemy == NULL && found->owner != NULL)
-					{
-						self->enemy = found->owner;
-						AI_FoundTarget(self, false);
-					}
-
-					if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
-						return;
-				}
-
-				if (found == self->enemy && found->client != NULL && M_DistanceToTarget(self, self->enemy) < 128.0f)
-				{
-					if (AI_IsInfrontOf(self->enemy, self))
-					{
-						// Is he using his staff or jumping into me?
-						switch (found->client->playerinfo.lowerseq)
-						{
-							case ASEQ_WSWORD_SPIN:
-							case ASEQ_WSWORD_SPIN2:
-							case ASEQ_WSWORD_STEP2:
-							case ASEQ_WSWORD_STEP:
-							case ASEQ_POLEVAULT2:
-							case ASEQ_POLEVAULT1_W:
-							case ASEQ_POLEVAULT1_R:
-								if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
-									return;
-								break;
-							default:
-								break;
-						}
-
-						switch (found->client->playerinfo.upperseq) //TODO: why do we need to check both lowerseq and upperseq?..
-						{
-							case ASEQ_WSWORD_SPIN:
-							case ASEQ_WSWORD_SPIN2:
-							case ASEQ_WSWORD_STEP2:
-							case ASEQ_WSWORD_STEP:
-							case ASEQ_POLEVAULT2:
-							case ASEQ_POLEVAULT1_W:
-							case ASEQ_POLEVAULT1_R:
-								if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
-									return;
-								break;
-
-							default:
-								break;
-						}
-					}
-
-					if (found->client->playerinfo.shield_timer > level.time && AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
-						return;
-				}
-			} // while loop end.
+				if (AssassinTryEvasiveTeleport(self, found))
+					return;
 		}
 	}
 
@@ -523,7 +533,7 @@ void AssassinPrepareTeleportDestination(edict_t* self, const vec3_t spot, const 
 		self->monsterinfo.misc_debounce_time = level.time + 3.0f;
 	}
 
-	VectorCopy(spot, self->assassin_teleport_pos); //TODO: pos2/assassin_teleport_pos is not a saveable field!
+	VectorCopy(spot, self->assassin_teleport_pos);
 
 	self->placeholder = G_Spawn();
 	VectorCopy(self->assassin_teleport_pos, self->placeholder->s.origin);
@@ -2257,5 +2267,5 @@ void SP_monster_assassin(edict_t* self)
 	self->svflags |= SVF_WAIT_NOTSOLID;
 	self->s.fmnodeinfo[MESH__KNIFES].flags |= FMNI_NO_DRAW;
 
-	VectorCopy(self->s.origin, self->assassin_spawn_pos); //TODO: pos1/assassin_spawn_pos is not a saveable field!
+	VectorCopy(self->s.origin, self->assassin_spawn_pos);
 }
