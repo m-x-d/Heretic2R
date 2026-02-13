@@ -158,6 +158,29 @@ void Keys_MenuInit(void)
 	Menu_Center(&s_keys_menu);
 }
 
+void Keys_MenuDraw(const char* menu_title) //mxd. Added to reduce code duplication.
+{
+	char title[MAX_QPATH];
+
+	// Draw menu BG.
+	Menu_DrawBG("book/back/b_conback8.bk", cls.m_menuscale);
+
+	if (cls.m_menualpha == 0.0f)
+		return;
+
+	// Draw menu title.
+	m_menu_side = 0;
+	Com_sprintf(title, sizeof(title), "\x03%s", menu_title);
+	const int x = M_GetMenuLabelX(re.BF_Strlen(title));
+	const int y = M_GetMenuOffsetY(&s_keys_menu);
+	re.DrawBigFont(x, y, title, cls.m_menualpha);
+
+	// Draw menu items.
+	s_keys_menu.x = M_GetMenuLabelX(0);
+	Menu_AdjustCursor(&s_keys_menu, 1);
+	Menu_Draw(&s_keys_menu);
+}
+
 const char* Keys_MenuKey(const int key)
 {
 	char cmd[1024];
