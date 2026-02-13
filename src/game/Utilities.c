@@ -398,10 +398,7 @@ edict_t* FindSpellTargetInRadius(const edict_t* search_ent, const float radius, 
 		// Ok, we can see the entity (or don't care whether we can or can't) so make the checks to
 		// see if it lies within the specified frustum parameters.
 
-		vec3_t ent_dist;
-		VectorSubtract(ent_pos, search_pos, ent_dist);
-
-		const float cur_dist_sq = VectorLengthSquared(ent_dist);
+		const float cur_dist_sq = VectorSeparationSquared(ent_pos, search_pos);
 
 		if (cur_dist_sq > best_dist_sq || !gi.inPVS(search_pos, ent_pos)) // Cheaper than a trace.
 			continue;
