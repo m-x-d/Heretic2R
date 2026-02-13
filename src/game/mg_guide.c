@@ -968,7 +968,7 @@ qboolean MG_MonsterAttemptTeleport(edict_t* self, const vec3_t destination, cons
 
 			vec3_t cam_vieworg;
 			for (int c = 0; c < 3; c++)
-				cam_vieworg[c] = (float)ent->client->playerinfo.pcmd.camera_vieworigin[c] * 0.125f;
+				cam_vieworg[c] = SHORT2POS(ent->client->playerinfo.pcmd.camera_vieworigin[c]);
 
 			// Can't teleport if our position or destination is visible to any player.
 			if (gi.inPVS(cam_vieworg, self->s.origin) || gi.inPVS(cam_vieworg, destination))
