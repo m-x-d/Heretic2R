@@ -666,11 +666,9 @@ void assassin_attack(edict_t* self, const float flags) //mxd. Named 'assassindag
 		return;
 	}
 
-	vec3_t diff;
-	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
-	const float dist = VectorLength(diff);
+	const float enemy_dist = VectorSeparation(self->s.origin, self->enemy->s.origin);
 
-	if (dist <= (self->maxs[0] + self->enemy->maxs[0] + 56.0f)) // Do melee attack?
+	if (enemy_dist <= (self->maxs[0] + self->enemy->maxs[0] + 56.0f)) // Do melee attack?
 	{
 		if (AI_IsInfrontOf(self, self->enemy))
 		{
@@ -783,10 +781,8 @@ void assassin_pause(edict_t* self)
 		{
 			if (FindTarget(self))
 			{
-				vec3_t diff;
-				VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
-
-				const int anim_id = ((VectorLength(diff) > 80.0f || (self->monsterinfo.aiflags & AI_FLEE)) ? MSG_RUN : MSG_MELEE);
+				const float enemy_dist = VectorSeparation(self->s.origin, self->enemy->s.origin);
+				const int anim_id = ((enemy_dist > 80.0f || (self->monsterinfo.aiflags & AI_FLEE)) ? MSG_RUN : MSG_MELEE);
 				G_PostMessage(self, anim_id, PRI_DIRECTIVE, NULL);
 			}
 		} break;
@@ -1031,19 +1027,16 @@ void assassin_check_loop(edict_t* self, float frame) //mxd. Named 'assassin_go_b
 	if (self->ai_mood_flags & AI_MOOD_FLAG_BACKSTAB)
 		return;
 
-	vec3_t diff;
-	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
-
-	const float dist = VectorLength(diff);
+	const float enemy_dist = VectorSeparation(self->s.origin, self->enemy->s.origin);
 	const float min_separation = self->maxs[0] + self->enemy->maxs[0];
 
 	//mxd. Skip unnecessary AI_IsInfrontOf() check (already checked above).
 
 	// Don't loop if enemy close enough.
-	if (dist < min_separation + MELEE_RANGE)
+	if (enemy_dist < min_separation + MELEE_RANGE)
 		return;
 
-	if (dist < min_separation + JUMP_RANGE && irand(0, 10) < 3)
+	if (enemy_dist < min_separation + JUMP_RANGE && irand(0, 10) < 3)
 		return;
 
 	self->monsterinfo.currframeindex = (int)frame;
