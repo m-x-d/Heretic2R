@@ -534,9 +534,7 @@ void ObjRopeThink(edict_t* self) //mxd. Named 'rope_sway' in original logic.
 	}
 
 	// Find the length of the grab.
-	vec3_t v_grab;
-	VectorSubtract(rope_top, grab->s.origin, v_grab);
-	const float grab_len = VectorLength(v_grab);
+	const float grab_len = VectorSeparation(rope_top, grab->s.origin);
 
 	// Find the vector to the rope's point of rest.
 	const vec3_t rope_rest = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -grab_len);
