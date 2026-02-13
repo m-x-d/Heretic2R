@@ -288,6 +288,24 @@ static qboolean AssassinCheckDeCloak(const edict_t* self) //mxd. Named 'assassin
 	return (irand(0, 10 + SKILL * 2 + chance) <= 0);
 }
 
+static qboolean AssassinTryOutOfWaterTeleport(edict_t* self, const vec3_t teleport_dest) //mxd. Split from AssassinCloakPreThink() to simplify logic.
+{
+	//mxd. Original logic traces (from 'teleport_dest' to uninitialized position) and triggers teleport logic only when it succeeds (e.g. never). 
+	//mxd. Skip that, because we are attempting to TELEPORT, not physically move there.
+	if ((gi.pointcontents(teleport_dest) & MASK_WATER) || !gi.inPVS(self->s.origin, teleport_dest))
+		return false;
+
+	// Check if we can fit there...
+	trace_t trace;
+	gi.trace(teleport_dest, self->mins, self->maxs, teleport_dest, self, MASK_MONSTERSOLID, &trace);
+
+	if (trace.startsolid || trace.allsolid)
+		return false;
+
+	AssassinPrepareTeleportDestination(self, teleport_dest, false);
+	return true;
+}
+
 void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThink' in original logic.
 {
 	self->next_pre_think = level.time + FRAMETIME;
@@ -315,45 +333,22 @@ void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThink' in o
 	if (SKILL == SKILL_EASY && self->touch_debounce_time > level.time) // Was skill->value < 2.
 		return;
 
-	if (self->waterlevel == 3 && self->air_finished <= level.time) // Going to drown!
+	// Try to teleport out of water when drowning.
+	if (self->waterlevel == 3 && self->air_finished <= level.time)
 	{
-		// Pick either last buoy or my startspot.
-		vec3_t teleport_dest;
+		// Try to teleport to last visited buoy.
+		const buoy_t* buoy = ((self->lastbuoy != NULL_BUOY) ? &level.buoy_list[self->lastbuoy] : NULL); //mxd
 
-		if (self->lastbuoy != NULL_BUOY && !(gi.pointcontents(level.buoy_list[self->lastbuoy].origin) & MASK_WATER))
-			VectorCopy(level.buoy_list[self->lastbuoy].origin, teleport_dest);
-		else
-			VectorCopy(self->assassin_spawn_pos, teleport_dest);
-
-		vec3_t start_pos = VEC3_INIT(teleport_dest);
-		vec3_t end_pos; //TODO: UNINITIALIZED! Should be self.origin?
-
-		vec3_t mins = VEC3_INIT(self->mins);
-		mins[2] = 0.0f;
-
-		vec3_t maxs = VEC3_INIT(self->maxs);
-		maxs[2] = 1.0f;
-
-		start_pos[2] -= self->size[2];
-
-		trace_t trace;
-		gi.trace(start_pos, mins, maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
-
-		if (!trace.allsolid && !trace.startsolid)
+		if (buoy != NULL)
 		{
-			VectorCopy(trace.endpos, start_pos);
-			start_pos[2] += self->size[2];
-
-			VectorCopy(trace.endpos, end_pos);
-
-			gi.trace(start_pos, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
-
-			if (trace.fraction == 1.0f && !trace.allsolid && !trace.startsolid)
-			{
-				AssassinPrepareTeleportDestination(self, trace.endpos, false);
+			const vec3_t teleport_dest = VEC3_INITA(buoy->origin, 0.0f, 0.0f, -BUOY_RADIUS - self->mins[2]); //mxd. Adjust for buoy/assassin mins differences...
+			if (AssassinTryOutOfWaterTeleport(self, teleport_dest))
 				return;
-			}
 		}
+
+		// Try to teleport to our spawn position.
+		if (AssassinTryOutOfWaterTeleport(self, self->assassin_spawn_pos))
+			return;
 	}
 
 	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
