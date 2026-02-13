@@ -50,9 +50,7 @@ static void HaloUpdateVisibility(client_entity_t* self, const float cam_dist, co
 
 static qboolean HaloUpdate(client_entity_t* self, centity_t* owner)
 {
-	vec3_t dir;
-	VectorSubtract(self->r.origin, fxi.cl->refdef.vieworg, dir);
-	const float cam_dist = VectorNormalize(dir);
+	const float cam_dist = VectorSeparation(self->r.origin, fxi.cl->refdef.vieworg);
 
 	if (cam_dist > HALO_MAX_CAMERA_DISTANCE) // Too far from camera.
 	{
@@ -65,10 +63,8 @@ static qboolean HaloUpdate(client_entity_t* self, centity_t* owner)
 		fxi.Trace(fxi.cl->refdef.vieworg, vec3_origin, vec3_origin, self->r.origin, (CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER), CTF_CLIP_TO_ALL, &trace);
 
 		//mxd. Because all FX_HALOs are attached to SOLID_BBOX entities, trace will stop at said entity, not at self->r.origin, so assume visible when trace hits closer than our radius...
-		vec3_t diff;
-		VectorSubtract(self->r.origin, trace.endpos, diff);
-
-		HaloUpdateVisibility(self, cam_dist, VectorLengthSquared(diff) < self->radius * self->radius); //mxd
+		const float trace_dist = VectorSeparation(self->r.origin, trace.endpos);
+		HaloUpdateVisibility(self, cam_dist, trace_dist < self->radius); //mxd
 	}
 
 	return true;
