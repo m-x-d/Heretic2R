@@ -571,10 +571,9 @@ static void UpdatePlayerBuoys(void)
 				continue;
 
 			// If player hasn't moved, don't clear this.
-			vec3_t v;
-			VectorSubtract(level.buoy_list[level.player_buoy[i]].origin, ent->s.origin, v);
+			const float buoy_dist_sq = VectorSeparationSquared(level.buoy_list[level.player_buoy[i]].origin, ent->s.origin);
 
-			if (VectorLengthSquared(v) > 576) // 24 squared.
+			if (buoy_dist_sq > 576.0f) // 24 squared.
 			{
 				// Save it so monsters can check this first- FIXME: should this expire?
 				level.player_last_buoy[i] = level.player_buoy[i];
