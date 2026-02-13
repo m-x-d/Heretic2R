@@ -382,7 +382,7 @@ void FXStaff(centity_t* owner, const int type, const int flags, vec3_t origin)
 	AddEffect(owner, trail);
 }
 
-static qboolean StaffCreateUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXStaffCreateThink' in original logic.
+static qboolean StaffCreateOrRemoveUpdate(client_entity_t* self, centity_t* owner, const qboolean create) //mxd. Added to reduce code duplication.
 {
 	self->updateTime = MIN_UPDATE_TIME; //FIXME: with a next think time this effect does not look right.
 
@@ -422,13 +422,14 @@ static qboolean StaffCreateUpdate(client_entity_t* self, centity_t* owner) //mxd
 	Vec3ScaleAssign(1.0f / (float)num_of_intervals, diff);
 
 	vec3_t trail_org = VEC3_INIT(start_pt); // This rides on the assumption that the normal given is already a unit norm. //TODO: the normal given is NOT a unit norm!
+	const float trail_alpha = (create ? 0.8f : 0.6f); //mxd
 
 	for (int i = 0; i < num_of_intervals; i++)
 	{
 		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, 100);
 
 		trail->r.model = &staff_models[self->classID];
-		trail->alpha = 0.8f - (float)self->NoOfAnimFrames * 0.1f;
+		trail->alpha = trail_alpha - (float)self->NoOfAnimFrames * 0.1f;
 		trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 		trail->AddToView = OffsetLinkedEntityUpdatePlacement;
 
@@ -449,7 +450,7 @@ static qboolean StaffCreateUpdate(client_entity_t* self, centity_t* owner) //mxd
 		else if (self->classID == STAFF_TRAIL2)
 		{
 			trail->r.scale = flrand(0.1f, 0.2f);
-			trail->d_scale = flrand(-0.5f, -0.25f);
+			trail->d_scale = (create ? flrand(-0.5f, -0.25f) : flrand(-1.0f, -0.5f));
 			trail->d_alpha = -2.0f;
 
 			VectorSet(trail->velocity, flrand(-8.0f, 8.0f), flrand(-8.0f, 8.0f), flrand(64.0f, 128.0f)); //mxd. Original logic uses irand() here.
@@ -483,8 +484,15 @@ static qboolean StaffCreateUpdate(client_entity_t* self, centity_t* owner) //mxd
 		Vec3AddAssign(diff, trail_org);
 	}
 
-	self->NoOfAnimFrames--;
+	return true;
+}
 
+static qboolean StaffCreateUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXStaffCreateThink' in original logic.
+{
+	if (!StaffCreateOrRemoveUpdate(self, owner, true)) //mxd
+		return false;
+
+	self->NoOfAnimFrames--;
 	return self->NoOfAnimFrames > 0;
 }
 
@@ -548,107 +556,10 @@ void FXStaffCreatePoof(centity_t* owner, int type, const int flags, vec3_t origi
 
 static qboolean StaffRemoveUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXStaffRemoveThink' in original logic.
 {
-	self->updateTime = MIN_UPDATE_TIME; //FIXME: with a next think time this effect does not look right.
-
-	// This tells if we are wasting our time, because the reference points are culled.
-	if (!RefPointsValid(owner))
-		return false; // Remove the effect in this case.
-
-	vec3_t start_pt;
-	vec3_t end_pt;
-	uint color;
-
-	// If this reference point hasn't changed since the last frame, return.
-	switch (self->refPoint)
-	{
-		case STAFF_TYPE_HELL:
-			VectorAdd(owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, owner->referenceInfo->references[CORVUS_STAFF].placement.origin, start_pt);
-			Vec3ScaleAssign(0.5f, start_pt);
-			VectorCopy(owner->referenceInfo->references[CORVUS_HELL_HEAD].placement.origin, end_pt);
-			color = 0xff2020ff;
-			break;
-
-		case STAFF_TYPE_SWORD:
-		default:
-			VectorCopy(owner->referenceInfo->references[CORVUS_STAFF].placement.origin, start_pt);
-			VectorCopy(owner->referenceInfo->references[CORVUS_BLADE].placement.origin, end_pt);
-			color = 0xff20ff20;
-			break;
-	}
-
-	vec3_t diff;
-	VectorSubtract(end_pt, start_pt, diff);
-
-	const int num_of_intervals = (int)(VectorLength(diff) * 0.5f);
-	if (num_of_intervals > 40)
+	if (!StaffCreateOrRemoveUpdate(self, owner, false)) //mxd
 		return false;
 
-	Vec3ScaleAssign(1.0f / (float)num_of_intervals, diff);
-
-	vec3_t trail_org = VEC3_INIT(start_pt); // This rides on the assumption that the normal given is already a unit norm. //TODO: the normal given is NOT a unit norm!
-
-	for (int i = 0; i < num_of_intervals; i++)
-	{
-		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, 100);
-
-		trail->r.model = &staff_models[self->classID];
-		trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
-		trail->alpha = 0.6f - (float)self->NoOfAnimFrames * 0.1f;
-		trail->AddToView = OffsetLinkedEntityUpdatePlacement;
-
-		if (self->classID == STAFF_TRAIL || self->refPoint == STAFF_TYPE_HELL)
-		{
-			trail->r.frame = 1;
-			trail->d_scale = -0.25f;
-			trail->d_alpha = -0.1f;
-			trail->color.c = color;
-			trail->r.scale = (float)self->NoOfAnimFrames * 0.05f;
-			trail->AnimSpeed = 0.2f;
-			trail->NoOfAnimFrames = 2;
-			trail->Update = StaffElementUpdate;
-
-			AddEffect(owner, trail);
-			StaffElementUpdate(trail, owner);
-		}
-		else if (self->classID == STAFF_TRAIL2)
-		{
-			trail->r.scale = flrand(0.1f, 0.2f);
-			trail->d_scale = flrand(-1.0f, -0.5f);
-			trail->d_alpha = -2.0f;
-
-			VectorSet(trail->velocity, flrand(-8.0f, 8.0f), flrand(-8.0f, 8.0f), flrand(64.0f, 128.0f)); //mxd. Original logic uses irand() here.
-
-			for (int c = 0; c < 3; c++)
-				trail->origin[c] += flrand(-1.0f, 1.0f); //mxd. Original logic uses irand() here.
-
-			AddEffect(owner, trail);
-		}
-		else if (self->classID == STAFF_TRAIL3)
-		{
-			trail->r.flags = (RF_TRANSLUCENT | RF_TRANS_ADD);
-			trail->r.scale = 0.2f;
-			trail->d_scale = -0.35f;
-			trail->alpha = 0.75f;
-			trail->d_alpha = -4.0f;
-
-			if (owner->current.effects & EF_BLOOD_ENABLED)
-			{
-				trail->r.color.c = 0x50000018;
-			}
-			else
-			{
-				const int c = irand(128, 208);
-				COLOUR_SETA(trail->r.color, c, c, irand(236, 255), irand(80, 192)); //mxd. Use macro.
-			}
-
-			AddEffect(owner, trail);
-		}
-
-		Vec3AddAssign(diff, trail_org);
-	}
-
 	self->NoOfAnimFrames++;
-
 	return self->NoOfAnimFrames < 6;
 }
 
