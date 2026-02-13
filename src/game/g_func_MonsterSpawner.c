@@ -195,10 +195,9 @@ void FuncMonsterSpawnerGo(edict_t* self) //mxd. Named 'monsterspawner_go' in ori
 			const buoy_t* start_buoy = &level.buoy_list[irand(0, level.active_buoys - 1)];
 
 			// STEP 2: Make sure the buoy is within a certain range of the player (500).
-			vec3_t buoy_dist;
-			VectorSubtract(start_buoy->origin, victim->s.origin, buoy_dist);
+			const float buoy_dist_sq = VectorSeparationSquared(start_buoy->origin, victim->s.origin);
 
-			if (VectorLengthSquared(buoy_dist) > 250000) // More than 500 away.
+			if (buoy_dist_sq > 250000.0f) // More than 500 away.
 				continue;
 
 			// STEP 3: Make sure the buoy is not visible to the player (unless assassin).
