@@ -51,7 +51,7 @@ static qboolean FeetTrailUpdate(client_entity_t* self, centity_t* owner) //mxd. 
 		VectorSubtract(self->origin, origin, diff);
 		Vec3ScaleAssign(1.0f / (float)count, diff);
 
-		vec3_t cur_pos = { 0 };
+		vec3_t cur_pos = VEC3_ZERO;
 		const int hand_flame_dur = (R_DETAIL < DETAIL_NORMAL ? 1500 : 2000);
 		const paletteRGBA_t color = { .c = 0xffffff40 };
 
