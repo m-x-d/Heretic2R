@@ -1009,8 +1009,7 @@ void Key_Init(void)
 
 	menubound[K_ESCAPE] = true;
 
-	for (int i = 0; i < 12; i++)
-		menubound[K_F1 + i] = true;
+	//mxd. Don't menubind F1 - F12 keys (because "Help Screen" (bound to F1) is a "Shortcut Keys" menu item in H2).
 
 	// Register our functions.
 	Cmd_AddCommand("bind", Key_Bind_f);
