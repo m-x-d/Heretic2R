@@ -975,23 +975,13 @@ edict_t* M_CheckMeleeLineHit(edict_t* attacker, const vec3_t start, const vec3_t
 }
 
 // Make sure we have a live enemy, and then return a distance to him. Returns distance to target.
-// Args:
-// self		- What's attacking.
-// target	- What we're looking for.
 float M_DistanceToTarget(const edict_t* self, const edict_t* target)
 {
 	assert(target != NULL);
-
-	vec3_t diff;
-	VectorSubtract(target->s.origin, self->s.origin, diff);
-
-	return VectorLength(diff);
+	return VectorSeparation(target->s.origin, self->s.origin);
 }
 
 // Make sure we have a live enemy, and then return a distance to it. Returns true if the enemy is valid, false if it is dead.
-// Args:
-// self		- What's attacking.
-// target	- What we're looking for.
 qboolean M_ValidOldEnemy(edict_t* self)
 {
 	if (self->oldenemy == NULL || self->oldenemy->health <= 0 || self->oldenemy == self)
@@ -1140,12 +1130,8 @@ int M_PredictTargetEvasion(const edict_t* attacker, const edict_t* target, const
 	vec3_t pred_target_pos;
 	VectorMA(target->s.origin, target_dist, target_dir, pred_target_pos);
 
-	// Find the distance between them.
-	vec3_t diff;
-	VectorSubtract(pred_attack_pos, pred_target_pos, diff);
-
 	// If dist is too far, we won't hit.
-	return VectorLength(diff) <= strike_dist;
+	return (VectorSeparation(pred_attack_pos, pred_target_pos) <= strike_dist);
 }
 
 // Predicts where the target will be a few frames later based on current velocity and facing.
