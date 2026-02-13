@@ -8,6 +8,7 @@
 //FIXME: when you get to a buoy, do a trace to the next. If it's blocked, you need to find another way...
 //FIXME: way to handle lots of monsters gathered around the same buoy... The one that is at it can't get out, the others can't get to it, they just crowd it.
 
+#include <float.h>
 #include "mg_guide.h"
 #include "mg_ai.h" //mxd
 #include "g_monster.h"
@@ -112,7 +113,7 @@ int MG_SetFirstBuoy(edict_t* self)
 
 	const float search_pass_interval = MAX_BUOY_DIST / BUOY_SEARCH_PASSES;
 	const buoy_t* best_buoy = NULL;
-	float best_dist = 9999999.0f; //TODO: use FLT_MAX instead?
+	float best_dist = FLT_MAX; //mxd. 9999999.0f in original logic.
 
 	// Now, do all the passes, going from closest to farthest.
 	for (int i = 0; i < BUOY_SEARCH_PASSES && best_buoy == NULL; i++)
@@ -327,7 +328,7 @@ static qboolean MG_MakeStartForcedConnection(edict_t* self, const int forced_buo
 	const vec3_t goal_pos = VEC3_INITA(self->enemy->s.origin, 0.0f, 0.0f, (float)self->viewheight);
 
 	const buoy_t* e_best_buoy = NULL;
-	float e_best_dist = 9999999.0f;
+	float e_best_dist = FLT_MAX; //mxd. 9999999.0f in original logic.
 	const float e_radius = BUOY_RADIUS + max(16.0f, self->enemy->maxs[0]);
 
 	// First, pre-calculate all distances.
@@ -433,7 +434,7 @@ static qboolean MG_MakeForcedConnection(edict_t* self, const int forced_buoy, co
 	const vec3_t goal_pos = VEC3_INIT(e_best_buoy->origin);
 
 	const buoy_t* best_buoy = NULL;
-	float best_dist = 9999999.0f; //TODO: use FLT_MAX instead?
+	float best_dist = FLT_MAX; //mxd. 9999999.0f in original logic.
 	const float radius = BUOY_RADIUS + max(16.0f, self->maxs[0]);
 
 	// First, pre-calculate all distances.
@@ -508,11 +509,11 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 	const vec3_t goal_pos = VEC3_INITA(self->enemy->s.origin, 0.0f, 0.0f, (float)self->viewheight);
 
 	const buoy_t* best_buoy = NULL;
-	float best_dist = 9999999.0f;
+	float best_dist = FLT_MAX; //mxd. 9999999.0f in original logic.
 	const float radius = BUOY_RADIUS + max(16.0f, self->maxs[0]);
 
 	const buoy_t* e_best_buoy = NULL;
-	float e_best_dist = 9999999.0f;
+	float e_best_dist = FLT_MAX; //mxd. 9999999.0f in original logic.
 	const float e_radius = BUOY_RADIUS + max(16.0f, self->enemy->maxs[0]);
 
 	// First, pre-calculate all distances.
