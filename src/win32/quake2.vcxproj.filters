@@ -99,9 +99,6 @@
     <ClCompile Include="..\client\cl_smk.c">
       <Filter>client</Filter>
     </ClCompile>
-    <ClCompile Include="..\client\menus\menu_actionkeys.c">
-      <Filter>client\menus</Filter>
-    </ClCompile>
     <ClCompile Include="..\client\menus\menu_addressbook.c">
       <Filter>client\menus</Filter>
     </ClCompile>
@@ -115,9 +112,6 @@
       <Filter>client\menus</Filter>
     </ClCompile>
     <ClCompile Include="..\client\menus\menu_dmoptions.c">
-      <Filter>client\menus</Filter>
-    </ClCompile>
-    <ClCompile Include="..\client\menus\menu_doubletapkeys.c">
       <Filter>client\menus</Filter>
     </ClCompile>
     <ClCompile Include="..\client\menus\menu_downloadoptions.c">
@@ -150,9 +144,6 @@
     <ClCompile Include="..\client\menus\menu_mousecfg.c">
       <Filter>client\menus</Filter>
     </ClCompile>
-    <ClCompile Include="..\client\menus\menu_movekeys.c">
-      <Filter>client\menus</Filter>
-    </ClCompile>
     <ClCompile Include="..\client\menus\menu_multiplayer.c">
       <Filter>client\menus</Filter>
     </ClCompile>
@@ -169,9 +160,6 @@
       <Filter>client\menus</Filter>
     </ClCompile>
     <ClCompile Include="..\client\menus\menu_savegame.c">
-      <Filter>client\menus</Filter>
-    </ClCompile>
-    <ClCompile Include="..\client\menus\menu_shortkeys.c">
       <Filter>client\menus</Filter>
     </ClCompile>
     <ClCompile Include="..\client\menus\menu_sound.c">
@@ -282,9 +270,6 @@
     <ClCompile Include="..\client\cl_camera.c">
       <Filter>client</Filter>
     </ClCompile>
-    <ClCompile Include="..\client\menus\menu_systemkeys.c">
-      <Filter>client\menus</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -368,9 +353,6 @@
     <ClInclude Include="..\client\cl_skeletons.h">
       <Filter>client</Filter>
     </ClInclude>
-    <ClInclude Include="..\client\menus\menu_actionkeys.h">
-      <Filter>client\menus</Filter>
-    </ClInclude>
     <ClInclude Include="..\client\menus\menu_addressbook.h">
       <Filter>client\menus</Filter>
     </ClInclude>
@@ -384,9 +366,6 @@
       <Filter>client\menus</Filter>
     </ClInclude>
     <ClInclude Include="..\client\menus\menu_dmoptions.h">
-      <Filter>client\menus</Filter>
-    </ClInclude>
-    <ClInclude Include="..\client\menus\menu_doubletapkeys.h">
       <Filter>client\menus</Filter>
     </ClInclude>
     <ClInclude Include="..\client\menus\menu_downloadoptions.h">
@@ -419,9 +398,6 @@
     <ClInclude Include="..\client\menus\menu_mousecfg.h">
       <Filter>client\menus</Filter>
     </ClInclude>
-    <ClInclude Include="..\client\menus\menu_movekeys.h">
-      <Filter>client\menus</Filter>
-    </ClInclude>
     <ClInclude Include="..\client\menus\menu_multiplayer.h">
       <Filter>client\menus</Filter>
     </ClInclude>
@@ -438,9 +414,6 @@
       <Filter>client\menus</Filter>
     </ClInclude>
     <ClInclude Include="..\client\menus\menu_savegame.h">
-      <Filter>client\menus</Filter>
-    </ClInclude>
-    <ClInclude Include="..\client\menus\menu_shortkeys.h">
       <Filter>client\menus</Filter>
     </ClInclude>
     <ClInclude Include="..\client\menus\menu_sound.h">
@@ -547,9 +520,6 @@
     </ClInclude>
     <ClInclude Include="..\client\cl_camera.h">
       <Filter>client</Filter>
-    </ClInclude>
-    <ClInclude Include="..\client\menus\menu_systemkeys.h">
-      <Filter>client\menus</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

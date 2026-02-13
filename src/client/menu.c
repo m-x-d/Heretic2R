@@ -10,13 +10,11 @@
 #include "Vector.h"
 #include "menu.h"
 
-#include "menus/menu_actionkeys.h"
 #include "menus/menu_addressbook.h"
 #include "menus/menu_cameracfg.h"
 #include "menus/menu_citymap.h"
 #include "menus/menu_credits.h"
 #include "menus/menu_dmoptions.h"
-#include "menus/menu_doubletapkeys.h"
 #include "menus/menu_downloadoptions.h"
 #include "menus/menu_game.h"
 #include "menus/menu_help.h"
@@ -28,17 +26,14 @@
 #include "menus/menu_main.h"
 #include "menus/menu_misc.h"
 #include "menus/menu_mousecfg.h"
-#include "menus/menu_movekeys.h"
 #include "menus/menu_multiplayer.h"
 #include "menus/menu_objectives.h"
 #include "menus/menu_options.h"
 #include "menus/menu_playerconfig.h"
 #include "menus/menu_quit.h"
 #include "menus/menu_savegame.h"
-#include "menus/menu_shortkeys.h"
 #include "menus/menu_sound.h"
 #include "menus/menu_startserver.h"
-#include "menus/menu_systemkeys.h"
 #include "menus/menu_video.h"
 #include "menus/menu_worldmap.h"
 
@@ -1059,9 +1054,9 @@ static void InputKey_Draw(const menuinputkey_t* key, const qboolean selected) //
 	// Draw keybind name(s) (eg. "Mouse1").
 	M_FindKeysForCommand(key->generic.localdata[0], keys);
 
-	if (keys[0] == -1)
+	if (keys[0] == MENUKEY_NONE)
 		Com_sprintf(key_name, sizeof(key_name), "???");
-	else if (keys[1] == -1)
+	else if (keys[1] == MENUKEY_NONE)
 		Com_sprintf(key_name, sizeof(key_name), "%s", Key_KeynumToString(keys[0]));
 	else
 		Com_sprintf(key_name, sizeof(key_name), "%s or %s", Key_KeynumToString(keys[0]), Key_KeynumToString(keys[1]));

@@ -17,9 +17,7 @@ typedef struct
 	cvar_t** label;
 } BindData_s;
 
-#define NUM_BINDS	59
-
-static BindData_s bindnames[NUM_BINDS] =
+static BindData_s bindnames[] =
 {
 	// Action keys.
 	{ "+attack",			&m_item_attack },
@@ -91,10 +89,17 @@ static BindData_s bindnames[NUM_BINDS] =
 	{ "toggleconsole",		&m_item_toggleconsole },
 };
 
-int keys_count;
-int keys_category_offset;
-qboolean use_doublebind;
+static int keys_count;
+static int keys_category_offset;
+static qboolean use_doublebind;
 qboolean bind_grab;
+
+// Key section titles.
+cvar_t* m_banner_action_keys;
+cvar_t* m_banner_move_keys;
+cvar_t* m_banner_short_keys;
+cvar_t* m_banner_dt_keys;
+cvar_t* m_banner_system_keys;
 
 menuframework_t s_keys_menu;
 static menuinputkey_t s_keys_items[14];
@@ -125,15 +130,15 @@ static void KeyBindingFunc(const void* self)
 	const menuinputkey_t* key = self;
 	M_FindKeysForCommand(key->generic.localdata[0], keys);
 
-	if (keys[1] != -1)
+	if (keys[1] != MENUKEY_NONE)
 		UnbindCommand(bindnames[key->generic.localdata[0] + keys_category_offset].command);
 
 	bind_grab = true;
 }
 
-void Keys_MenuInit(void)
+static void Keys_MenuInit(void)
 {
-	static char key_labels[NUM_BINDS][MAX_QPATH];
+	static char key_labels[ARRAY_SIZE(bindnames)][MAX_QPATH];
 
 	s_keys_menu.nitems = 0;
 
@@ -158,7 +163,7 @@ void Keys_MenuInit(void)
 	Menu_Center(&s_keys_menu);
 }
 
-void Keys_MenuDraw(const char* menu_title) //mxd. Added to reduce code duplication.
+static void Keys_MenuDraw(const char* menu_title) //mxd. Added to reduce code duplication.
 {
 	char title[MAX_QPATH];
 
@@ -181,7 +186,7 @@ void Keys_MenuDraw(const char* menu_title) //mxd. Added to reduce code duplicati
 	Menu_Draw(&s_keys_menu);
 }
 
-const char* Keys_MenuKey(const int key)
+static const char* Keys_MenuKey(const int key)
 {
 	char cmd[1024];
 
@@ -221,8 +226,8 @@ const char* Keys_MenuKey(const int key)
 
 void M_FindKeysForCommand(const int command_index, int* twokeys)
 {
-	twokeys[0] = -1;
-	twokeys[1] = -1;
+	twokeys[0] = MENUKEY_NONE;
+	twokeys[1] = MENUKEY_NONE;
 
 	const char* command = bindnames[keys_category_offset + command_index].command;
 	const int len = (int)strlen(command);
@@ -242,3 +247,72 @@ void M_FindKeysForCommand(const int command_index, int* twokeys)
 		}
 	}
 }
+
+static void Menu_Keys_f(const m_drawfunc_t draw, const int category_offset, const int num_keys, const qboolean doublebind) //mxd. Added to reduce code duplication.
+{
+	keys_count = num_keys;
+	keys_category_offset = category_offset;
+	use_doublebind = doublebind;
+
+	Keys_MenuInit();
+	M_PushMenu(draw, Keys_MenuKey);
+}
+
+#pragma region ========================== KEY SECTION MENUS ==========================
+
+// Action keys.
+static void ActionKeys_MenuDraw(void) // H2
+{
+	Keys_MenuDraw(m_banner_action_keys->string);
+}
+
+void M_Menu_ActionKeys_f(void) // H2
+{
+	Menu_Keys_f(ActionKeys_MenuDraw, 0, 14, false);
+}
+
+// Move keys.
+static void MoveKeys_MenuDraw(void)
+{
+	Keys_MenuDraw(m_banner_move_keys->string);
+}
+
+void M_Menu_MoveKeys_f(void)
+{
+	Menu_Keys_f(MoveKeys_MenuDraw, 14, 12, false);
+}
+
+// Shortcut keys.
+static void ShortKeys_MenuDraw(void)
+{
+	Keys_MenuDraw(m_banner_short_keys->string);
+}
+
+void M_Menu_ShortKeys_f(void)
+{
+	Menu_Keys_f(ShortKeys_MenuDraw, 26, 14, false);
+}
+
+// Doubletap keys.
+static void DoubletapKeys_MenuDraw(void)
+{
+	Keys_MenuDraw(m_banner_dt_keys->string);
+}
+
+void M_Menu_DoubletapKeys_f(void)
+{
+	Menu_Keys_f(DoubletapKeys_MenuDraw, 40, 10, true);
+}
+
+// System keys.
+static void SystemKeys_MenuDraw(void)
+{
+	Keys_MenuDraw(m_banner_system_keys->string);
+}
+
+void M_Menu_SystemKeys_f(void)
+{
+	Menu_Keys_f(SystemKeys_MenuDraw, 50, 9, false);
+}
+
+#pragma endregion

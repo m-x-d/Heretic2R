@@ -6,15 +6,11 @@
 
 #include "client.h"
 #include "menu_options.h"
-#include "menu_actionkeys.h"
 #include "menu_cameracfg.h"
-#include "menu_doubletapkeys.h"
+#include "menu_keys.h"
 #include "menu_loadcfg.h"
 #include "menu_misc.h"
 #include "menu_mousecfg.h"
-#include "menu_movekeys.h"
-#include "menu_shortkeys.h"
-#include "menu_systemkeys.h"
 
 cvar_t* m_banner_options;
 cvar_t* m_banner_savecfg;
