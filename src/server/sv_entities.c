@@ -58,20 +58,7 @@ static void SV_EmitPacketEntities(const client_frame_t* from, const client_frame
 			if ((ent->client_sent & ent_id) && ent->just_deleted) // H2
 			{
 				// Remove old entity.
-				byte header;
-				byte header_bits[NUM_ENTITY_HEADER_BITS] = { 0 };
-
-				SetB(header_bits, U_REMOVE);
-				if (oldnum > 255)
-					SetB(header_bits, U_NUMBER16);
-
-				SetB(header_bits, U_ENT_FREED);
-				MSG_WriteEntityHeaderBits(msg, header_bits, &header);
-
-				if (GetB(header_bits, U_NUMBER16))
-					MSG_WriteShort(msg, oldnum);
-				else
-					MSG_WriteByte(msg, oldnum);
+				MSG_WriteRemoveEntity(msg, oldnum, true);
 			}
 			else
 			{
@@ -91,20 +78,7 @@ static void SV_EmitPacketEntities(const client_frame_t* from, const client_frame
 			if ((ent->client_sent & ent_id) && ent->just_deleted) // H2
 			{
 				// Remove new entity.
-				byte header;
-				byte header_bits[NUM_ENTITY_HEADER_BITS] = { 0 };
-
-				SetB(header_bits, U_REMOVE);
-				if (newnum > 255)
-					SetB(header_bits, U_NUMBER16);
-
-				SetB(header_bits, U_ENT_FREED);
-				MSG_WriteEntityHeaderBits(msg, header_bits, &header);
-
-				if (GetB(header_bits, U_NUMBER16))
-					MSG_WriteShort(msg, newnum);
-				else
-					MSG_WriteByte(msg, newnum);
+				MSG_WriteRemoveEntity(msg, newnum, true);
 			}
 			else
 			{
@@ -121,19 +95,7 @@ static void SV_EmitPacketEntities(const client_frame_t* from, const client_frame
 			if (ent->inuse) // H2
 			{
 				// The old entity isn't present in the new message.
-				byte header;
-				byte header_bits[NUM_ENTITY_HEADER_BITS] = { 0 };
-
-				SetB(header_bits, U_REMOVE);
-				if (oldnum > 255)
-					SetB(header_bits, U_NUMBER16);
-
-				MSG_WriteEntityHeaderBits(msg, header_bits, &header);
-
-				if (GetB(header_bits, U_NUMBER16))
-					MSG_WriteShort(msg, oldnum);
-				else
-					MSG_WriteByte(msg, oldnum);
+				MSG_WriteRemoveEntity(msg, oldnum, false);
 			}
 
 			oldindex++;

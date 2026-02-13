@@ -729,6 +729,26 @@ void MSG_WriteDeltaEntity(const entity_state_t* from, entity_state_t* to, sizebu
 		MSG_WriteByte(msg, to->usageCount);
 }
 
+void MSG_WriteRemoveEntity(sizebuf_t* sb, const int ent_num, const qboolean write_ent_freed_flag) //mxd. Added to reduce code duplication.
+{
+	byte header;
+	byte header_bits[NUM_ENTITY_HEADER_BITS] = { 0 };
+
+	SetB(header_bits, U_REMOVE);
+	if (ent_num > 255)
+		SetB(header_bits, U_NUMBER16);
+
+	if (write_ent_freed_flag)
+		SetB(header_bits, U_ENT_FREED);
+
+	MSG_WriteEntityHeaderBits(sb, header_bits, &header);
+
+	if (GetB(header_bits, U_NUMBER16))
+		MSG_WriteShort(sb, ent_num);
+	else
+		MSG_WriteByte(sb, ent_num);
+}
+
 void MSG_WriteDir(sizebuf_t* sb, const vec3_t dir)
 {
 	if (dir == NULL)
