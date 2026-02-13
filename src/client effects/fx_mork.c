@@ -140,18 +140,13 @@ static client_entity_t* MorkMakeLightningPiece(const vec3_t start, const vec3_t 
 #define M_LIGHTNING_WIDTH	6.0f
 #define M_LIGHTNING_WIDTH2	8.0f
 
-	vec3_t dir;
-	VectorSubtract(end, start, dir);
-	const float dist = VectorNormalize(dir);
-	const float tile_num = dist / 32.0f;
-
 	// Blue lightning.
 	client_entity_t* lightning_b = ClientEntity_new(-1, CEF_DONT_LINK, start, NULL, lifetime);
 
 	lightning_b->r.model = &mork_lightning_models[0]; // Blue lightning sprite.
 	lightning_b->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 	lightning_b->r.scale = M_LIGHTNING_WIDTH;
-	lightning_b->r.tile = tile_num;
+	lightning_b->r.tile = VectorSeparation(end, start) / 32.0f;
 	lightning_b->r.spriteType = SPRITE_LINE;
 
 	lightning_b->radius = radius;
@@ -702,10 +697,7 @@ static qboolean BuoyPathDelayedStart(client_entity_t* self, centity_t* owner)
 	buoy->r.model = &buoy_model; //TODO: fully transparent sprite! Use segment_trail_wt.sp2 instead?
 	buoy->r.spriteType = SPRITE_LINE;
 	buoy->r.scale = 7.0f;
-
-	vec3_t v;
-	VectorSubtract(self->startpos, self->endpos, v);
-	buoy->r.tile = (VectorLength(v) < 64.0f ? 1.0f : 3.0f);
+	buoy->r.tile = (VectorSeparation(self->startpos, self->endpos) < 64.0f ? 1.0f : 3.0f);
 
 	VectorCopy(self->startpos, buoy->r.startpos);
 	VectorCopy(self->endpos, buoy->r.endpos);
