@@ -57,14 +57,14 @@ H2COMMON_API void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t n
 	VectorSubtract(p, n, dst);
 }
 
-// Q2 counterpart. Assumes "src" is normalized
+// Q2 counterpart. Assumes "src" is normalized.
 H2COMMON_API void PerpendicularVector(vec3_t dst, const vec3_t src)
 {
-	int	pos, i;
 	float minelem = 1.0f;
-	
-	// Find the smallest magnitude axially aligned vector
-	for (pos = 0, i = 0; i < 3; i++)
+
+	// Find the smallest magnitude axially aligned vector.
+	int pos = 0;
+	for (int i = 0; i < 3; i++)
 	{
 		if (fabsf(src[i]) < minelem)
 		{
@@ -73,14 +73,13 @@ H2COMMON_API void PerpendicularVector(vec3_t dst, const vec3_t src)
 		}
 	}
 
-	vec3_t tempvec;
-	VectorClear(tempvec);
+	vec3_t tempvec = VEC3_ZERO;
 	tempvec[pos] = 1.0f;
 
-	// Project the point onto the plane defined by src
+	// Project the point onto the plane defined by src.
 	ProjectPointOnPlane(dst, tempvec, src);
 
-	// Normalize the result
+	// Normalize the result.
 	VectorNormalize(dst);
 }
 
