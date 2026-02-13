@@ -332,7 +332,7 @@ void WeaponThink_SwordStaff(edict_t* caster, char* format, ...)
 		{
 			vec3_t hit_dir;
 			VectorSubtract(end_pos, start_pos, hit_dir);
-			VectorNormalize2(hit_dir, hit_dir);
+			VectorNormalize(hit_dir);
 
 			float damage = (float)(irand(sword_damage[power_level][0], sword_damage[power_level][1]));
 
