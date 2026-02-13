@@ -309,7 +309,7 @@ static qboolean RedRainMissileUpdate(client_entity_t* self, centity_t* owner) //
 	VectorSubtract(self->r.origin, self->origin, diff);
 	Vec3ScaleAssign(1.0f / NUM_TRAIL_PARTICLES, diff);
 
-	vec3_t cur_pos = { 0 };
+	vec3_t cur_pos = VEC3_ZERO;
 	const qboolean powerup = (self->SpawnInfo == 1); //mxd
 
 	for (int i = 0; i < NUM_TRAIL_PARTICLES; i++)
