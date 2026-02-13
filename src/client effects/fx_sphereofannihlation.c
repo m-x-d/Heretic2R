@@ -59,17 +59,17 @@ static qboolean SphereOfAnnihilationAuraUpdate(client_entity_t* self, centity_t*
 
 	vec3_t trail_start = VEC3_INIT(owner->origin);
 
-	vec3_t trail_pos;
-	VectorSubtract(owner->lerp_origin, owner->origin, trail_pos);
+	vec3_t trail_offset;
+	VectorSubtract(owner->lerp_origin, owner->origin, trail_offset);
 
 	// Copy the real origin to the entity origin, so the light will follow us.
 	VectorCopy(self->r.origin, self->origin);
 
-	float trail_length = VectorNormalize(trail_pos);
+	float trail_length = VectorNormalize(trail_offset);
 	if (trail_length < 0.001f)
 		trail_length += 2.0f;
 
-	Vec3ScaleAssign(FX_SPHERE_FLY_SPEED, trail_pos);
+	Vec3ScaleAssign(FX_SPHERE_FLY_SPEED, trail_offset);
 
 	const int duration = ((R_DETAIL > DETAIL_NORMAL) ? 500 : 400);
 	const int flags = (int)(self->flags & ~(CEF_OWNERS_ORIGIN | CEF_NO_DRAW)); //mxd
@@ -90,7 +90,7 @@ static qboolean SphereOfAnnihilationAuraUpdate(client_entity_t* self, centity_t*
 		AddEffect(NULL, trail);
 
 		trail_length -= FX_SPHERE_FLY_SPEED;
-		Vec3AddAssign(trail_pos, trail_start);
+		Vec3AddAssign(trail_offset, trail_start);
 	}
 
 	return true;
