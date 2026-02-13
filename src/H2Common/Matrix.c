@@ -188,7 +188,7 @@ H2COMMON_API void RotatePointAboutLocalOrigin(const matrix3_t rotation, const ve
 {
 	vec3_t temp;
 
-	VectorSubtract(point, origin, point);
+	Vec3SubtractAssign(origin, point);
 	Matrix3MultByVec3(rotation, point, temp);
 	VectorAdd(temp, origin, point);
 }
@@ -197,7 +197,7 @@ H2COMMON_API void TransformPoint(const matrix3_t rotation, const vec3_t origin, 
 {
 	vec3_t temp;
 
-	VectorSubtract(point, origin, point);
+	Vec3SubtractAssign(origin, point);
 	Matrix3MultByVec3(rotation, point, temp);
 	VectorAdd(temp, newOrigin, point);
 }
