@@ -34,33 +34,37 @@ extern cvar_t* m_item_contrast;
 extern cvar_t* m_item_minlight; // YQ2
 extern cvar_t* m_item_detail;
 
-// Controls.
+// Action keys.
 extern cvar_t* m_item_attack;
 extern cvar_t* m_item_defend;
 extern cvar_t* m_item_action;
+extern cvar_t* m_item_nextweapon;
+extern cvar_t* m_item_prevweapon;
+extern cvar_t* m_item_nextdef;
+extern cvar_t* m_item_prevdef;
+extern cvar_t* m_item_lookaround;
+extern cvar_t* m_item_doautoaim; //mxd
 extern cvar_t* m_item_lookup;
 extern cvar_t* m_item_lookdown;
 extern cvar_t* m_item_centerview;
 extern cvar_t* m_item_mouselook;
 extern cvar_t* m_item_keyboardlook;
-extern cvar_t* m_item_lookaround;
-extern cvar_t* m_item_doautoaim; //mxd
-extern cvar_t* m_item_nextweapon;
-extern cvar_t* m_item_prevweapon;
-extern cvar_t* m_item_nextdef;
-extern cvar_t* m_item_prevdef;
+
+// Move keys.
 extern cvar_t* m_item_walkforward;
 extern cvar_t* m_item_backpedal;
-extern cvar_t* m_item_turnleft;
-extern cvar_t* m_item_turnright;
-extern cvar_t* m_item_creep;
-extern cvar_t* m_item_run;
 extern cvar_t* m_item_stepleft;
 extern cvar_t* m_item_stepright;
-extern cvar_t* m_item_sidestep;
 extern cvar_t* m_item_up;
 extern cvar_t* m_item_down;
+extern cvar_t* m_item_run;
+extern cvar_t* m_item_creep;
+extern cvar_t* m_item_turnleft;
+extern cvar_t* m_item_turnright;
+extern cvar_t* m_item_sidestep;
 extern cvar_t* m_item_quickturn;
+
+// Shortcut keys.
 extern cvar_t* m_item_powerup;
 extern cvar_t* m_item_bluering;
 extern cvar_t* m_item_meteor;
@@ -71,6 +75,8 @@ extern cvar_t* m_item_tornado;
 extern cvar_t* m_item_inventory;
 extern cvar_t* m_item_messagemode;
 extern cvar_t* m_item_frags;
+
+// Double-tap keys.
 extern cvar_t* m_item_flipleft;
 extern cvar_t* m_item_flipright;
 extern cvar_t* m_item_flipforward;
@@ -80,6 +86,17 @@ extern cvar_t* m_item_rollright;
 extern cvar_t* m_item_rollforward;
 extern cvar_t* m_item_rollback;
 extern cvar_t* m_item_spinattack;
+
+//mxd. System keys.
+extern cvar_t* m_item_quicksave;
+extern cvar_t* m_item_quickload;
+extern cvar_t* m_item_savegame;
+extern cvar_t* m_item_loadgame;
+extern cvar_t* m_item_options;
+extern cvar_t* m_item_screenshot;
+extern cvar_t* m_item_pause;
+extern cvar_t* m_item_quit;
+extern cvar_t* m_item_toggleconsole;
 
 // Generic menu labels.
 extern cvar_t* m_generic_yes;

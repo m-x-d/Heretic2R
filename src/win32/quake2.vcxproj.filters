@@ -282,6 +282,9 @@
     <ClCompile Include="..\client\cl_camera.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\menus\menu_systemkeys.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -544,6 +547,9 @@
     </ClInclude>
     <ClInclude Include="..\client\cl_camera.h">
       <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_systemkeys.h">
+      <Filter>client\menus</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

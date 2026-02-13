@@ -14,6 +14,7 @@
 #include "menu_mousecfg.h"
 #include "menu_movekeys.h"
 #include "menu_shortkeys.h"
+#include "menu_systemkeys.h"
 
 cvar_t* m_banner_options;
 cvar_t* m_banner_savecfg;
@@ -24,6 +25,7 @@ static menuaction_t s_action_keys_action;
 static menuaction_t s_move_keys_action;
 static menuaction_t s_short_keys_action;
 static menuaction_t s_dt_keys_action;
+static menuaction_t s_system_keys_action; //mxd
 static menuaction_t s_mousecfg_action;
 static menuaction_t s_cameracfg_action;
 static menuaction_t s_misc_action;
@@ -55,6 +57,11 @@ static void ShortKeysFunc(void* self)
 static void DoubletapKeysFunc(void* self)
 {
 	M_Menu_DoubletapKeys_f();
+}
+
+static void SystemKeysFunc(void* self) //mxd
+{
+	M_Menu_SystemKeys_f();
 }
 
 static void MouseConfigFunc(void* self)
@@ -98,6 +105,7 @@ static void Options_MenuInit(void)
 	static char name_move_keys[MAX_QPATH];
 	static char name_short_keys[MAX_QPATH];
 	static char name_dt_keys[MAX_QPATH];
+	static char name_system_keys[MAX_QPATH]; //mxd
 	static char name_mousecfg[MAX_QPATH];
 	static char name_cameracfg[MAX_QPATH];
 	static char name_misc[MAX_QPATH];
@@ -143,11 +151,21 @@ static void Options_MenuInit(void)
 	s_dt_keys_action.generic.width = re.BF_Strlen(name_dt_keys);
 	s_dt_keys_action.generic.callback = DoubletapKeysFunc;
 
+	//mxd. System keys section.
+	Com_sprintf(name_system_keys, sizeof(name_system_keys), "\x02%s", m_banner_system_keys->string);
+	s_system_keys_action.generic.type = MTYPE_ACTION;
+	s_system_keys_action.generic.flags = QMF_SELECT_SOUND;
+	s_system_keys_action.generic.x = 0;
+	s_system_keys_action.generic.y = 80;
+	s_system_keys_action.generic.name = name_system_keys;
+	s_system_keys_action.generic.width = re.BF_Strlen(name_system_keys);
+	s_system_keys_action.generic.callback = SystemKeysFunc;
+
 	Com_sprintf(name_mousecfg, sizeof(name_mousecfg), "\x02%s", m_banner_mousecfg->string);
 	s_mousecfg_action.generic.type = MTYPE_ACTION;
 	s_mousecfg_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_mousecfg_action.generic.x = 0;
-	s_mousecfg_action.generic.y = 80;
+	s_mousecfg_action.generic.y = 100;
 	s_mousecfg_action.generic.name = name_mousecfg;
 	s_mousecfg_action.generic.width = re.BF_Strlen(name_mousecfg);
 	s_mousecfg_action.generic.callback = MouseConfigFunc;
@@ -156,7 +174,7 @@ static void Options_MenuInit(void)
 	s_cameracfg_action.generic.type = MTYPE_ACTION;
 	s_cameracfg_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_cameracfg_action.generic.x = 0;
-	s_cameracfg_action.generic.y = 100;
+	s_cameracfg_action.generic.y = 120;
 	s_cameracfg_action.generic.name = name_cameracfg;
 	s_cameracfg_action.generic.width = re.BF_Strlen(name_cameracfg);
 	s_cameracfg_action.generic.callback = CameraConfigFunc;
@@ -165,7 +183,7 @@ static void Options_MenuInit(void)
 	s_misc_action.generic.type = MTYPE_ACTION;
 	s_misc_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_misc_action.generic.x = 0;
-	s_misc_action.generic.y = 120;
+	s_misc_action.generic.y = 140;
 	s_misc_action.generic.name = name_misc;
 	s_misc_action.generic.width = re.BF_Strlen(name_misc);
 	s_misc_action.generic.callback = MiscFunc;
@@ -174,7 +192,7 @@ static void Options_MenuInit(void)
 	s_loadcfg_action.generic.type = MTYPE_ACTION;
 	s_loadcfg_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_loadcfg_action.generic.x = 0;
-	s_loadcfg_action.generic.y = 180;
+	s_loadcfg_action.generic.y = 200;
 	s_loadcfg_action.generic.name = name_loadcfg;
 	s_loadcfg_action.generic.width = re.BF_Strlen(name_loadcfg);
 	s_loadcfg_action.generic.callback = LoadConfigFunc;
@@ -183,7 +201,7 @@ static void Options_MenuInit(void)
 	s_savecfg_action.generic.type = MTYPE_ACTION;
 	s_savecfg_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_savecfg_action.generic.x = 0;
-	s_savecfg_action.generic.y = 200;
+	s_savecfg_action.generic.y = 220;
 	s_savecfg_action.generic.name = name_savecfg;
 	s_savecfg_action.generic.width = re.BF_Strlen(name_savecfg);
 	s_savecfg_action.generic.callback = SaveConfigFunc;
@@ -192,7 +210,7 @@ static void Options_MenuInit(void)
 	s_defaults_action.generic.type = MTYPE_ACTION;
 	s_defaults_action.generic.flags = QMF_SELECT_SOUND; //mxd
 	s_defaults_action.generic.x = 0;
-	s_defaults_action.generic.y = 220;
+	s_defaults_action.generic.y = 240;
 	s_defaults_action.generic.name = name_defaults;
 	s_defaults_action.generic.width = re.BF_Strlen(name_defaults);
 	s_defaults_action.generic.callback = ControlsResetToDefaultsFunc;
@@ -201,6 +219,7 @@ static void Options_MenuInit(void)
 	Menu_AddItem(&s_options_menu, &s_move_keys_action);
 	Menu_AddItem(&s_options_menu, &s_short_keys_action);
 	Menu_AddItem(&s_options_menu, &s_dt_keys_action);
+	Menu_AddItem(&s_options_menu, &s_system_keys_action); //mxd
 	Menu_AddItem(&s_options_menu, &s_mousecfg_action);
 	Menu_AddItem(&s_options_menu, &s_cameracfg_action);
 	Menu_AddItem(&s_options_menu, &s_misc_action);

@@ -60,6 +60,7 @@
     <ClCompile Include="..\client\menus\menu_shortkeys.c" />
     <ClCompile Include="..\client\menus\menu_sound.c" />
     <ClCompile Include="..\client\menus\menu_startserver.c" />
+    <ClCompile Include="..\client\menus\menu_systemkeys.c" />
     <ClCompile Include="..\client\menus\menu_video.c" />
     <ClCompile Include="..\client\menus\menu_worldmap.c" />
     <ClCompile Include="..\game\q_shared.c" />
@@ -138,6 +139,7 @@
     <ClInclude Include="..\client\menus\menu_shortkeys.h" />
     <ClInclude Include="..\client\menus\menu_sound.h" />
     <ClInclude Include="..\client\menus\menu_startserver.h" />
+    <ClInclude Include="..\client\menus\menu_systemkeys.h" />
     <ClInclude Include="..\client\menus\menu_video.h" />
     <ClInclude Include="..\client\menus\menu_worldmap.h" />
     <ClInclude Include="..\client\ref.h" />

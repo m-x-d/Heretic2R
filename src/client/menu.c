@@ -38,6 +38,7 @@
 #include "menus/menu_shortkeys.h"
 #include "menus/menu_sound.h"
 #include "menus/menu_startserver.h"
+#include "menus/menu_systemkeys.h"
 #include "menus/menu_video.h"
 #include "menus/menu_worldmap.h"
 
@@ -46,33 +47,37 @@ static cvar_t* quick_menus; //TODO: add UI control (in menu_misc.c menu?).
 
 cvar_t* m_item_defaults;
 
-// Controls
+// Action keys.
 cvar_t* m_item_attack;
 cvar_t* m_item_defend;
 cvar_t* m_item_action;
+cvar_t* m_item_nextweapon;
+cvar_t* m_item_prevweapon;
+cvar_t* m_item_nextdef;
+cvar_t* m_item_prevdef;
+cvar_t* m_item_lookaround;
+cvar_t* m_item_doautoaim;
 cvar_t* m_item_lookup;
 cvar_t* m_item_lookdown;
 cvar_t* m_item_centerview;
 cvar_t* m_item_mouselook;
 cvar_t* m_item_keyboardlook;
-cvar_t* m_item_lookaround;
-cvar_t* m_item_doautoaim;
-cvar_t* m_item_nextweapon;
-cvar_t* m_item_prevweapon;
-cvar_t* m_item_nextdef;
-cvar_t* m_item_prevdef;
+
+// Move keys.
 cvar_t* m_item_walkforward;
 cvar_t* m_item_backpedal;
-cvar_t* m_item_turnleft;
-cvar_t* m_item_turnright;
-cvar_t* m_item_creep;
-cvar_t* m_item_run;
 cvar_t* m_item_stepleft;
 cvar_t* m_item_stepright;
-cvar_t* m_item_sidestep;
 cvar_t* m_item_up;
 cvar_t* m_item_down;
+cvar_t* m_item_run;
+cvar_t* m_item_creep;
+cvar_t* m_item_turnleft;
+cvar_t* m_item_turnright;
+cvar_t* m_item_sidestep;
 cvar_t* m_item_quickturn;
+
+// Shortcut keys.
 cvar_t* m_item_powerup;
 cvar_t* m_item_bluering;
 cvar_t* m_item_meteor;
@@ -83,6 +88,8 @@ cvar_t* m_item_tornado;
 cvar_t* m_item_inventory;
 cvar_t* m_item_messagemode;
 cvar_t* m_item_frags;
+
+// Double-tap keys.
 cvar_t* m_item_flipleft;
 cvar_t* m_item_flipright;
 cvar_t* m_item_flipforward;
@@ -92,6 +99,17 @@ cvar_t* m_item_rollright;
 cvar_t* m_item_rollforward;
 cvar_t* m_item_rollback;
 cvar_t* m_item_spinattack;
+
+//mxd. System keys.
+cvar_t* m_item_quicksave;
+cvar_t* m_item_quickload;
+cvar_t* m_item_savegame;
+cvar_t* m_item_loadgame;
+cvar_t* m_item_options;
+cvar_t* m_item_screenshot;
+cvar_t* m_item_pause;
+cvar_t* m_item_quit;
+cvar_t* m_item_toggleconsole;
 
 // Generic menu labels
 cvar_t* m_generic_yes;
@@ -539,6 +557,7 @@ void M_Init(void)
 	m_banner_move_keys = Cvar_Get("m_banner_move_keys", "Move Keys", 0);
 	m_banner_short_keys = Cvar_Get("m_banner_short_keys", "Shortcut Keys", 0);
 	m_banner_dt_keys = Cvar_Get("m_banner_dt_keys", "Doubletap Keys", 0);
+	m_banner_system_keys = Cvar_Get("m_banner_system_keys", "System Keys", 0); //mxd
 	m_banner_credits = Cvar_Get("m_banner_credits", "Credits", 0);
 	m_banner_loadcfg = Cvar_Get("m_banner_loadcfg", "Load Config", 0);
 	m_banner_savecfg = Cvar_Get("m_banner_savecfg", "Save Config", 0);
@@ -698,6 +717,17 @@ void M_Init(void)
 	m_item_rollforward = Cvar_Get("m_item_rollforward", "Roll Forward", 0);
 	m_item_rollback = Cvar_Get("m_item_rollback", "Roll Back", 0);
 	m_item_spinattack = Cvar_Get("m_item_spinattack", "Spin Attack", 0);
+
+	//mxd. System keys.
+	m_item_quicksave = Cvar_Get("m_item_quicksave", "Quicksave", 0);
+	m_item_quickload = Cvar_Get("m_item_quickload", "Quickload", 0);
+	m_item_savegame = Cvar_Get("m_item_savegame", "Save Menu", 0);
+	m_item_loadgame = Cvar_Get("m_item_loadgame", "Load Menu", 0);
+	m_item_options = Cvar_Get("m_item_options", "Options Menu", 0);
+	m_item_screenshot = Cvar_Get("m_item_screenshot", "Screenshot", 0);
+	m_item_pause = Cvar_Get("m_item_pause", "Pause Game", 0);
+	m_item_quit = Cvar_Get("m_item_quit", "Quit Game", 0);
+	m_item_toggleconsole = Cvar_Get("m_item_toggleconsole", "Toggle Console", 0);
 
 	m_generic_yes = Cvar_Get("m_generic_yes", "Yes", 0);
 	m_generic_no = Cvar_Get("m_generic_no", "No", 0);

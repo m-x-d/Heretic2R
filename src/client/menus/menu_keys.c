@@ -6,13 +6,10 @@
 
 #include "client.h"
 #include "menu_keys.h"
-
 #include "menu_citymap.h"
 #include "menu_help.h"
-#include "menu_misc.h"
 #include "menu_objectives.h"
 #include "menu_worldmap.h"
-
 
 typedef struct
 {
@@ -20,7 +17,7 @@ typedef struct
 	cvar_t** label;
 } BindData_s;
 
-#define NUM_BINDS	50
+#define NUM_BINDS	59
 
 static BindData_s bindnames[NUM_BINDS] =
 {
@@ -80,7 +77,18 @@ static BindData_s bindnames[NUM_BINDS] =
 	{ "+roll_left",			&m_item_rollleft },
 	{ "+roll_right",		&m_item_rollright },
 	{ "+quickturn",			&m_item_quickturn },
-	{ "+spinattack",		&m_item_spinattack }
+	{ "+spinattack",		&m_item_spinattack },
+
+	//mxd. System keys.
+	{ "save quick",			&m_item_quicksave },
+	{ "load quick",			&m_item_quickload },
+	{ "menu_savegame",		&m_item_savegame },
+	{ "menu_loadgame",		&m_item_loadgame },
+	{ "menu_options",		&m_item_options },
+	{ "screenshot",			&m_item_screenshot },
+	{ "pause",				&m_item_pause },
+	{ "quit",				&m_item_quit },
+	{ "toggleconsole",		&m_item_toggleconsole },
 };
 
 int keys_count;
