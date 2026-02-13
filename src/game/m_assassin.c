@@ -327,12 +327,6 @@ void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThink' in o
 			AssassinInitDeCloak(self);
 	}
 
-	// Check to teleport.
-
-	// Dumbed down.
-	if (SKILL == SKILL_EASY && self->touch_debounce_time > level.time) // Was skill->value < 2.
-		return;
-
 	// Try to teleport out of water when drowning.
 	if (self->waterlevel == 3 && self->air_finished <= level.time)
 	{
@@ -350,6 +344,10 @@ void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThink' in o
 		if (AssassinTryOutOfWaterTeleport(self, self->assassin_spawn_pos))
 			return;
 	}
+
+	// Dumbed down. Done before 'teleport out of water when drowning' block in original logic --mxd. 
+	if (SKILL == SKILL_EASY && self->assassin_teleport_debounce_time > level.time) // Was skill->value < 2.
+		return;
 
 	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
 	{
@@ -1067,7 +1065,7 @@ void assassin_gone(edict_t* self) //mxd. Named 'assassinGone' in original logic.
 
 	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
 	self->svflags &= ~SVF_NO_AUTOTARGET;
-	self->touch_debounce_time = level.time + (10.0f - skill->value * 3.0f); // Dumbed down.
+	self->assassin_teleport_debounce_time = level.time + (10.0f - skill->value * 3.0f); // Dumbed down. //TODO: is set up for all skills, used only on SKILL_EASY.
 
 	// Should we clear velocity too?
 	gi.linkentity(self);

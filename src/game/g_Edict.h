@@ -395,7 +395,11 @@ struct edict_s
 	// Used by the Morph Ovum and Chicken.
 	void (*oldthink)(edict_t* self);
 
-	float touch_debounce_time;	// Used by polys and triggers.
+	union
+	{
+		float touch_debounce_time; // Used by polys and triggers.
+		float assassin_teleport_debounce_time; //mxd
+	};
 
 	union
 	{
