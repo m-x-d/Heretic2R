@@ -19,7 +19,7 @@
 #include "g_local.h"
 
 // 10 seconds between choosing a buoy and getting there.
-#define	BUOY_SEARCH_TIME	10	
+#define BUOY_SEARCH_TIME	10
 
 // Number of passes through buoy list when searching.
 // Only accept buoys closer than 1 / BUOY_SEARCH_PASSES * MAX_BUOY_DIST	for first pass, etc.
@@ -42,9 +42,9 @@ qboolean MG_ReachedBuoy(const edict_t* self, const vec3_t p_spot)
 		return false;
 
 	const float dist = vhlen(spot, self->s.origin);
-	const float radius = 24.0f + max(16.0f, self->maxs[0]);
+	const float radius = BUOY_RADIUS + max(16.0f, self->maxs[0]);
 
-	return (dist < radius + 24.0f);
+	return (dist < radius + BUOY_RADIUS);
 }
 
 static qboolean IsClearPath(const edict_t* self, const vec3_t end) //mxd. Named 'Clear_Path' in original version.
@@ -328,7 +328,7 @@ static qboolean MG_MakeStartForcedConnection(edict_t* self, const int forced_buo
 
 	const buoy_t* e_best_buoy = NULL;
 	float e_best_dist = 9999999.0f;
-	const float e_radius = 24.0f + max(16.0f, self->enemy->maxs[0]);
+	const float e_radius = BUOY_RADIUS + max(16.0f, self->enemy->maxs[0]);
 
 	// First, pre-calculate all distances.
 	for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
@@ -339,7 +339,7 @@ static qboolean MG_MakeStartForcedConnection(edict_t* self, const int forced_buo
 		VectorSubtract(goal_pos, buoy->origin, vec);
 		buoy->temp_e_dist = VectorLength(vec);
 
-		if (buoy->temp_e_dist < e_radius + 24.0f)
+		if (buoy->temp_e_dist < e_radius + BUOY_RADIUS)
 		{
 			e_best_buoy = buoy;
 			e_best_dist = buoy->temp_dist;
@@ -434,7 +434,7 @@ static qboolean MG_MakeForcedConnection(edict_t* self, const int forced_buoy, co
 
 	const buoy_t* best_buoy = NULL;
 	float best_dist = 9999999.0f; //TODO: use FLT_MAX instead?
-	const float radius = 24.0f + max(16.0f, self->maxs[0]);
+	const float radius = BUOY_RADIUS + max(16.0f, self->maxs[0]);
 
 	// First, pre-calculate all distances.
 	for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
@@ -445,7 +445,7 @@ static qboolean MG_MakeForcedConnection(edict_t* self, const int forced_buoy, co
 		VectorSubtract(self->s.origin, buoy->origin, vec);
 		buoy->temp_dist = VectorLength(vec);
 
-		if (buoy->temp_dist < radius + 24.0f)
+		if (buoy->temp_dist < radius + BUOY_RADIUS)
 		{
 			best_buoy = buoy;
 			best_dist = buoy->temp_dist;
@@ -509,11 +509,11 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 
 	const buoy_t* best_buoy = NULL;
 	float best_dist = 9999999.0f;
-	const float radius = 24.0f + max(16.0f, self->maxs[0]);
+	const float radius = BUOY_RADIUS + max(16.0f, self->maxs[0]);
 
 	const buoy_t* e_best_buoy = NULL;
 	float e_best_dist = 9999999.0f;
-	const float e_radius = 24.0f + max(16.0f, self->enemy->maxs[0]);
+	const float e_radius = BUOY_RADIUS + max(16.0f, self->enemy->maxs[0]);
 
 	// First, pre-calculate all distances.
 	for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
@@ -526,7 +526,7 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 			VectorSubtract(self->s.origin, buoy->origin, vec);
 			buoy->temp_dist = VectorLength(vec);
 
-			if (buoy->temp_dist < radius + 24.0f)
+			if (buoy->temp_dist < radius + BUOY_RADIUS)
 			{
 				best_buoy = buoy;
 				best_dist = buoy->temp_dist;
@@ -539,7 +539,7 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 			VectorSubtract(goal_pos, buoy->origin, vec);
 			buoy->temp_e_dist = VectorLength(vec);
 
-			if (buoy->temp_e_dist < e_radius + 24.0f)
+			if (buoy->temp_e_dist < e_radius + BUOY_RADIUS)
 			{
 				e_best_buoy = buoy;
 				e_best_dist = buoy->temp_dist;

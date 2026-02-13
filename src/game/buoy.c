@@ -271,8 +271,8 @@ Without this, the buoy WILL NOT MAKE MONSTERS JUMP!
 */
 void SP_info_buoy(edict_t* self)
 {
-	static const vec3_t mins = { -24.0f, -24.0f, 0.0f }; //mxd. Made local static.
-	static const vec3_t maxs = {  24.0f,  24.0f, 1.0f }; //mxd. Made local static.
+	static const vec3_t mins = { -BUOY_RADIUS, -BUOY_RADIUS, 0.0f }; //mxd. Made local static.
+	static const vec3_t maxs = {  BUOY_RADIUS,  BUOY_RADIUS, 1.0f }; //mxd. Made local static.
 
 	if (self->spawnflags & BUOY_JUMP)
 	{
@@ -300,8 +300,8 @@ void SP_info_buoy(edict_t* self)
 	else
 	{
 		// Check down against world. Does not check against entities! Does not check up against ceiling (why would they put one close to a ceiling???).
-		const vec3_t top =    VEC3_INITA(self->s.origin, 0.0f, 0.0f,  23.0f); //BUGFIX: mxd. Increments 'bottom' in original version.
-		const vec3_t bottom = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -24.0f);
+		const vec3_t top =    VEC3_INITA(self->s.origin, 0.0f, 0.0f, BUOY_RADIUS - maxs[2]); //BUGFIX: mxd. Increments 'bottom' in original version.
+		const vec3_t bottom = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -BUOY_RADIUS);
 
 		trace_t trace;
 		gi.trace(top, mins, maxs, bottom, self, MASK_SOLID, &trace);
@@ -314,7 +314,7 @@ void SP_info_buoy(edict_t* self)
 		else if (trace.fraction < 1.0f)
 		{
 			// Buoy is in the ground.
-			const vec3_t new_org = VEC3_INITA(trace.endpos, 0.0f, 0.0f, 24.0f);
+			const vec3_t new_org = VEC3_INITA(trace.endpos, 0.0f, 0.0f, BUOY_RADIUS);
 
 			if ((int)new_org[2] != (int)self->s.origin[2]) //mxd
 				gi.dprintf("Buoy %s at %s was in ground (%s), moved to %s!\n", self->targetname, vtos(self->s.origin), trace.ent->classname, vtos(new_org));

@@ -17,9 +17,11 @@
 #define SEARCH_COMMON		0
 #define SEARCH_BUOY			1
 
-#define MAX_BUOY_DIST		1024
+#define MAX_BUOY_DIST		1024.0f //mxd. int -> float.
 #define MAX_MAP_BUOYS		256
 #define MAX_BUOY_BRANCHES	3
+
+#define BUOY_RADIUS			24.0f //mxd
 
 #define NULL_BUOY			(-1)
 
