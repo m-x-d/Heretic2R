@@ -76,10 +76,9 @@ static qboolean WaterParticleGeneratorUpdate(client_entity_t* self, centity_t* o
 		// Update water particles.
 		for (client_particle_t* p = self->p_root; p != NULL; p = p->next)
 		{
-			vec3_t part_dist;
-			VectorSubtract(p->origin, fxi.cl->refdef.vieworg, part_dist);
+			const float part_dist_sq = VectorSeparationSquared(p->origin, fxi.cl->refdef.vieworg);
 
-			if (VectorLengthSquared(part_dist) >= WATERPARTICLE_CLIPDIST)
+			if (part_dist_sq >= WATERPARTICLE_CLIPDIST)
 			{
 				SetupWaterParticle(p, true);
 				continue;
