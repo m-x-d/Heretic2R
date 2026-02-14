@@ -175,20 +175,18 @@ static void MssithraDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 
 static void MssithraMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'mssithra_melee' in original logic.
 {
+#define MSSITHRA_MELEE_RANGE	64.0f //mxd
+
 	if (!M_ValidTarget(self, self->enemy))
 	{
 		G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	vec3_t diff;
-	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
-	const float dist = VectorLength(diff);
-	const float melee_range = 64.0f;
-
+	const float enemy_dist = VectorSeparation(self->s.origin, self->enemy->s.origin);
 	const float min_seperation = self->maxs[0] + self->enemy->maxs[0];
 
-	if (dist < min_seperation + melee_range) // A hit.
+	if (enemy_dist < min_seperation + MSSITHRA_MELEE_RANGE) // A hit.
 		SetAnim(self, ANIM_CLAW1);
 }
 
@@ -293,22 +291,20 @@ void mssithra_dead(edict_t* self)
 
 void mssithra_swipe(edict_t* self) //mxd. Named 'mssithraSwipe' in original logic.
 {
+	static const vec3_t swipe_offset = { 35.0f, 0.0f, 32.0f }; //mxd. Made local static.
+
 	if (self->enemy == NULL) // If the player gets gibbed, enemy can be NULL.
 		return;
 
-	vec3_t diff;
-	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
-	const float dist = VectorLength(diff);
-
+	const float enemy_dist = VectorSeparation(self->s.origin, self->enemy->s.origin);
 	const float min_seperation = self->maxs[0] + self->enemy->maxs[0] + 45.0f;
 
-	if (dist < min_seperation && AI_IsInfrontOf(self, self->enemy)) // A hit.
+	if (enemy_dist < min_seperation && AI_IsInfrontOf(self, self->enemy)) // A hit.
 	{
 		gi.sound(self, CHAN_WEAPON, sounds[SND_SWIPEHIT], 1.0f, ATTN_NORM, 0.0f);
 
-		const vec3_t offset = { 35.0f, 0.0f, 32.0f };
 		vec3_t origin;
-		VectorGetOffsetOrigin(offset, self->s.origin, self->s.angles[YAW], origin);
+		VectorGetOffsetOrigin(swipe_offset, self->s.origin, self->s.angles[YAW], origin);
 
 		vec3_t angles = VEC3_INIT(self->s.angles);
 		angles[YAW] += 90.0f;
@@ -363,11 +359,9 @@ void mssithra_arrow(edict_t* self) //mxd. Named 'mssithraArrow' in original logi
 	vec3_t target_pos;
 	VectorRandomCopy(self->enemy->s.origin, target_pos, 16.0f);
 
-	vec3_t diff;
-	VectorSubtract(target_pos, firing_pos, diff);
-
 	vec3_t fire_dir;
-	VectorNormalize2(diff, fire_dir);
+	VectorSubtract(target_pos, firing_pos, fire_dir);
+	VectorNormalize(fire_dir);
 
 	// Increase the spread for lower skill levels.
 	float spread;
