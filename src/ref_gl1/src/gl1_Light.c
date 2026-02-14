@@ -359,12 +359,11 @@ void R_LightPoint(const vec3_t p, vec3_t color, const qboolean check_bmodels)
 
 	// Add dynamic lights.
 	dlight_t* dl = &r_newrefdef.dlights[0];
-	vec3_t dl_color = { 0 }; //mxd
+	vec3_t dl_color = VEC3_ZERO; //mxd
 	for (int lnum = 0; lnum < r_newrefdef.num_dlights; lnum++, dl++)
 	{
-		vec3_t dist;
-		VectorSubtract(p, dl->origin, dist); //mxd. Original logic uses 'currententity->origin' instead of 'p' here.
-		const float add = (dl->intensity - VectorLength(dist)) / 256.0f;
+		const float dist = VectorSeparation(p, dl->origin); //mxd. Original logic uses 'currententity->origin' instead of 'p' here.
+		const float add = (dl->intensity - dist) / 256.0f;
 
 		if (add > 0.0f)
 			for (int i = 0; i < 3; i++)
