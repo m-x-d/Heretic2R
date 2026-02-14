@@ -131,9 +131,7 @@ static void HellLaserDamage(edict_t* caster, const vec3_t start_pos, vec3_t aim_
 		// Reflect it off into space - powerless now, so it won't hurt anyone it hits.
 
 		// Draw line to this point.
-		vec3_t vect;
-		VectorSubtract(trace->endpos, start_pos, vect);
-		const byte b_len = (byte)(VectorLength(vect) / 8.0f);
+		const byte b_len = (byte)(VectorSeparation(trace->endpos, start_pos) / 8.0f);
 
 		if (b_len > 0) //mxd. Avoid 0-length effects...
 			gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, 0, start_pos, "tb", forward, b_len);
@@ -275,17 +273,12 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 		if (trace.ent != caster)
 			HellLaserDamage(caster, cur_start_pos, cur_aim_angles, forward, &trace); //mxd. Modifies 'cur_aim_angles' when reflected!
 
-		vec3_t diff;
-		VectorSubtract(trace.endpos, cur_start_pos, diff);
-		laser_dist -= VectorLength(diff);
-
+		laser_dist -= VectorSeparation(trace.endpos, cur_start_pos);
 		VectorCopy(trace.endpos, cur_start_pos);
 		ignore_ent = trace.ent;
 	}
 
-	vec3_t diff;
-	VectorSubtract(trace.endpos, cur_start_pos, diff);
-	const byte b_len = (byte)(VectorLength(diff) / 8.0f);
+	const byte b_len = (byte)(VectorSeparation(trace.endpos, cur_start_pos) / 8.0f);
 
 	if (b_len > 0) //mxd. Avoid assert in GetTruePlane()...
 	{
