@@ -249,9 +249,7 @@ void spreader_toss_grenade(edict_t* self) // Self is the tosser.
 	vec3_t pred_pos;
 	M_PredictTargetPosition(self->enemy, self->enemy->velocity, 15.0f, pred_pos);
 
-	vec3_t diff;
-	VectorSubtract(self->s.origin, pred_pos, diff);
-	const float distance = VectorLength(diff) * 1.25f;
+	const float distance = VectorSeparation(self->s.origin, pred_pos) * 1.25f;
 
 	VectorScale(forward, distance, grenade->velocity);
 	VectorMA(grenade->velocity, flrand(100.0f, 125.0f), up, grenade->velocity);
