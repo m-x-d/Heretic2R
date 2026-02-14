@@ -58,10 +58,7 @@ void RipperExplodeBallThink(edict_t* self)
 		// This seems to alleviate the problem of a trace hitting the same ent multiple times...
 		VectorCopy(trace.endpos, start_pos);
 
-		vec3_t diff;
-		VectorSubtract(end_pos, start_pos, diff);
-
-		if (VectorLength(diff) > 16.0f)
+		if (VectorSeparation(end_pos, start_pos) > 16.0f)
 		{
 			vec3_t forward;
 			VectorSubtract(start_pos, end_pos, forward);
