@@ -638,12 +638,12 @@ void priestess_fire1(edict_t* self, float pitch_offset, float yaw_offset, float 
 	VectorMA(proj_pos, -16.0f, right, proj_pos);
 	proj_pos[2] += 32.0f;
 
-	vec3_t diff;
-	VectorSubtract(predicted_pos, proj_pos, diff);
-	VectorNormalize(diff);
+	vec3_t dir;
+	VectorSubtract(predicted_pos, proj_pos, dir);
+	VectorNormalize(dir);
 
 	vec3_t start_angles;
-	vectoangles(diff, start_angles);
+	vectoangles(dir, start_angles);
 
 	for (int i = 0; i < irand(2, 3); i++)
 	{
