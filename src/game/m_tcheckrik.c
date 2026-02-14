@@ -114,7 +114,7 @@ static void TcheckrikDropWeapon(edict_t* self, const int weapon_id) //mxd. Named
 
 	if ((weapon_id == 0 || (weapon_id & BIT_STAFF)) && !(self->s.fmnodeinfo[MESH__STAFF].flags & FMNI_NO_DRAW))
 	{
-		vec3_t hand_spot = { 0 };
+		vec3_t hand_spot = VEC3_ZERO;
 		VectorMA(hand_spot, 8.0f, forward, hand_spot);
 		VectorMA(hand_spot, 5.0f, right, hand_spot);
 		VectorMA(hand_spot, 12.0f, up, hand_spot);
@@ -129,7 +129,7 @@ static void TcheckrikDropWeapon(edict_t* self, const int weapon_id) //mxd. Named
 
 	if ((weapon_id == 0 || (weapon_id & BIT_SPEAR)) && !(self->s.fmnodeinfo[MESH__SPEAR].flags & FMNI_NO_DRAW))
 	{
-		vec3_t hand_spot = { 0 };
+		vec3_t hand_spot = VEC3_ZERO;
 		VectorMA(hand_spot, 6.0f, forward, hand_spot);
 		VectorMA(hand_spot, 4.0f, right, hand_spot);
 
@@ -142,7 +142,7 @@ static void TcheckrikDropWeapon(edict_t* self, const int weapon_id) //mxd. Named
 
 	if ((weapon_id == 0 || (weapon_id & BIT_SWORD)) && !(self->s.fmnodeinfo[MESH__MALEHAND].flags & FMNI_NO_DRAW))
 	{
-		vec3_t hand_spot = { 0 };
+		vec3_t hand_spot = VEC3_ZERO;
 		VectorMA(hand_spot, 6.0f, forward, hand_spot);
 		VectorMA(hand_spot, -6.0f, right, hand_spot);
 		VectorMA(hand_spot, -6.0f, up, hand_spot);
@@ -1119,10 +1119,9 @@ void tcheckrik_pause(edict_t* self) //mxd. Named 'insect_pause' in original logi
 
 		if (self->enemy != NULL)
 		{
-			vec3_t diff;
-			VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+			const float enemy_dist = VectorSeparation(self->s.origin, self->enemy->s.origin);
 
-			if (VectorLength(diff) > 80.0f || (self->monsterinfo.aiflags & AI_FLEE)) // Far enough to run after.
+			if (enemy_dist > 80.0f || (self->monsterinfo.aiflags & AI_FLEE)) // Far enough to run after.
 				G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			else // Close enough to attack.
 				G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
@@ -1212,16 +1211,14 @@ void tcheckrik_check_loop(edict_t* self, float frame) //mxd. Named 'insectCheckL
 
 	if (AI_IsInfrontOf(self, self->enemy))
 	{
-		vec3_t diff;
-		VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
-		const float len = VectorLength(diff);
+		const float enemy_dist = VectorSeparation(self->s.origin, self->enemy->s.origin);
 		const float min_seperation = self->maxs[0] + self->enemy->maxs[0];
 
 		// Don't loop if enemy close enough.
-		if (len < min_seperation + TCHECKRIK_MELEE_RANGE)
+		if (enemy_dist < min_seperation + TCHECKRIK_MELEE_RANGE)
 			return;
 
-		if (len < min_seperation + TCHECKRIK_MISSILE_RANGE && irand(0, 10) < 3)
+		if (enemy_dist < min_seperation + TCHECKRIK_MISSILE_RANGE && irand(0, 10) < 3)
 			return;
 	}
 
