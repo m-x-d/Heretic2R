@@ -323,19 +323,15 @@ void R_DrawSkyBox(void)
 
 void RI_SetSky(const char* name, const float rotate, const vec3_t axis)
 {
-	static char* surf[] = { "rt", "bk", "lf", "ft", "up", "dn" }; // 3dstudio environment map names. //mxd. Made local static.
-	char pathname[MAX_QPATH];
-	char skyname[MAX_QPATH];
+	static const char* surf[] = { "rt", "bk", "lf", "ft", "up", "dn" }; // 3dstudio environment map names. //mxd. Made local static.
 
-	strncpy_s(skyname, sizeof(skyname), name, sizeof(skyname) - 1); //mxd. strncpy -> strncpy_s
 	skyrotate = rotate;
 	VectorCopy(axis, skyaxis);
 
 	for (int i = 0; i < 6; i++)
 	{
 		// H2: missing gl_skymip and qglColorTableEXT logic, 'env/%s%s.pcx' / 'env/%s%s.tga' -> 'pics/skies/%s%s.m8'
-		Com_sprintf(pathname, sizeof(pathname), "pics/skies/%s%s.m8", skyname, surf[i]);
-		sky_images[i] = R_FindImage(pathname, it_sky);
+		sky_images[i] = R_FindImage(va("pics/skies/%s%s.m8", name, surf[i]), it_sky);
 
 		if (skyrotate != 0.0f) // H2: gl_skymip -> gl_picmip //mxd. Removed gl_picmip cvar.
 		{
