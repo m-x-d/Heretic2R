@@ -306,7 +306,7 @@ static void PlagueElfDropWeapon(edict_t* self) //mxd. Named 'plagueElf_dropweapo
 	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
 
-	vec3_t hand_spot = { 0 };
+	vec3_t hand_spot = VEC3_ZERO;
 	VectorMA(hand_spot, 5.0f, forward, hand_spot);
 	VectorMA(hand_spot, 8.0f, right, hand_spot);
 	VectorMA(hand_spot, -6.0f, up, hand_spot);
