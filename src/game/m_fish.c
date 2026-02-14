@@ -375,12 +375,9 @@ void FishIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'fish_blocked' in
 
 			// Not dead, so lets BITE THE BASTARD :)
 			self->enemy = trace->ent;
+			const float enemy_dist = VectorSeparation(self->s.origin, self->enemy->s.origin);
 
-			vec3_t diff;
-			VectorSubtract(self->s.origin, trace->ent->s.origin, diff);
-			const float dist = VectorLength(diff);
-
-			if (dist < self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE + 50.0f && self->fish_max_pitch_speed == 4.0f) // Within 20 of bounding box & not out of water.
+			if (enemy_dist < self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE + 50.0f && self->fish_max_pitch_speed == 4.0f) // Within 20 of bounding box & not out of water.
 			{
 				SetAnim(self, ANIM_BITE);
 				self->ai_mood = AI_MOOD_ATTACK;
@@ -591,9 +588,9 @@ void fish_bite(edict_t* self) //mxd. Named 'fishbite' in original logic.
 
 	vec3_t diff;
 	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
-	const float dist = VectorLength(diff);
+	const float enemy_dist = VectorLength(diff);
 
-	if (dist < self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE) // Within 20 of bounding box.
+	if (enemy_dist < self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE) // Within 20 of bounding box.
 	{
 		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_BITEHIT1, SND_BITEHIT2)], 1.0f, ATTN_NORM, 0.0f);
 
@@ -640,12 +637,10 @@ void fish_pause(edict_t* self)
 		return;
 	}
 
-	vec3_t diff;
-	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
-	const float dist = VectorLength(diff);
+	const float enemy_dist = VectorSeparation(self->s.origin, self->enemy->s.origin);
 
-	// We are close	enough to bite.
-	if (dist < (self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE))	// Within BITE_DIST of bounding box.
+	// We are close enough to bite.
+	if (enemy_dist < (self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE))	// Within BITE_DIST of bounding box.
 	{
 		VectorClear(self->velocity);
 
@@ -675,7 +670,7 @@ void fish_pause(edict_t* self)
 	}
 
 	// Close enough to just zoom in on.
-	if (dist < 120.0f)
+	if (enemy_dist < 120.0f)
 	{
 		FishMoveToTarget(self);
 		return;
