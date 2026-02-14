@@ -810,10 +810,7 @@ qboolean SV_CheckDistances(const vec3_t origin, const float dist) // H2
 		if (cl->state != cs_spawned)
 			continue;
 
-		vec3_t diff;
-		VectorSubtract(origin, cl->edict->s.origin, diff);
-
-		if (VectorLength(diff) < dist)
+		if (VectorSeparation(origin, cl->edict->s.origin) < dist)
 			return true;
 	}
 
