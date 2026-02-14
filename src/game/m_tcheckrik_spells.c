@@ -434,13 +434,9 @@ void SpellCastInsectSpear(edict_t* caster, const vec3_t start_pos, const vec3_t 
 		return;
 
 	edict_t* proj = G_Spawn();
-
 	VectorCopy(start_pos, proj->s.origin);
 
-	vec3_t diff;
-	VectorSubtract(caster->enemy->s.origin, start_pos, diff);
-
-	if (offset > 0 && VectorLength(diff) > 128.0f)
+	if (offset > 0 && VectorSeparation(caster->enemy->s.origin, start_pos) > 128.0f)
 	{
 		vec3_t forward;
 		vec3_t right;
