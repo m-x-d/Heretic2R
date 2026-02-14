@@ -619,7 +619,7 @@ static void PM_AddCurrents(vec3_t wishvel)
 	// Add water currents.
 	if (pm->watertype & MASK_CURRENT)
 	{
-		vec3_t v = { 0 };
+		vec3_t v = VEC3_ZERO;
 
 		if (pm->watertype & CONTENTS_CURRENT_0)
 			v[0] += 1.0f;
@@ -641,7 +641,7 @@ static void PM_AddCurrents(vec3_t wishvel)
 
 		float s = PM_WATER_CURRENT_SPEED;
 		if (pm->waterlevel == 1 && pm->groundentity != NULL) // Half speed when wading.
-			s /= 2;
+			s /= 2.0f;
 
 		VectorMA(wishvel, s, v, wishvel);
 	}
@@ -649,7 +649,7 @@ static void PM_AddCurrents(vec3_t wishvel)
 	// Add conveyor belt velocities.
 	if (pm->groundentity != NULL && (pml.groundcontents & MASK_CURRENT))
 	{
-		vec3_t v = { 0 };
+		vec3_t v = VEC3_ZERO;
 
 		if (pml.groundcontents & CONTENTS_CURRENT_0)
 			v[0] += 1.0f;
@@ -1403,14 +1403,18 @@ void Pmove(pmove_t* pmove, const qboolean server)
 		}
 	}
 
-	vec3_t mins_diff = { 0 };
-	vec3_t maxs_diff = { 0 };
+	vec3_t mins_diff;
+	vec3_t maxs_diff;
 
 	if (pm->intentMins != NULL)
 		VectorSubtract(pm->mins, pm->intentMins, mins_diff);
+	else
+		VectorClear(mins_diff);
 
 	if (pm->intentMaxs != NULL)
 		VectorSubtract(pm->maxs, pm->intentMaxs, maxs_diff);
+	else
+		VectorClear(maxs_diff);
 
 	if (!Vec3IsZeroEpsilon(mins_diff) || !Vec3IsZeroEpsilon(maxs_diff))
 		PM_OnBboxSizeChanged();
