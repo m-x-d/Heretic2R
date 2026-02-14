@@ -423,11 +423,11 @@ static void SsithraSplit(edict_t* self, const int body_part) //mxd. Named 'ssith
 	vec3_t up;
 	AngleVectors(self->s.angles, NULL, right, up);
 
-	vec3_t p1 = { 0 };
+	vec3_t p1 = VEC3_ZERO;
 	VectorMA(p1, 6.0f, up, p1);
 	VectorMA(p1, 10.0f, right, p1);
 
-	vec3_t p2 = { 0 };
+	vec3_t p2 = VEC3_ZERO;
 	VectorMA(p2, -6.0f, up, p2);
 	VectorMA(p2, -10.0f, right, p2);
 
@@ -658,7 +658,7 @@ static void SsithraDoArrow(edict_t* self) //mxd. Named 'ssithraDoArrow' in origi
 	VectorMA(arrow->s.origin, -4.0f, right, arrow->s.origin);
 	arrow->s.origin[2] += 16.0f;
 
-	vec3_t check_lead = { 0 };
+	vec3_t check_lead = VEC3_ZERO;
 
 	if (SKILL > SKILL_MEDIUM)
 	{
@@ -721,7 +721,7 @@ static void SsithraDoDuckArrow(edict_t* self, const float z_offs) //mxd. Named '
 
 	arrow->s.scale = 1.5f;
 
-	vec3_t check_lead = { 0 };
+	vec3_t check_lead = VEC3_ZERO;
 
 	if (SKILL > SKILL_MEDIUM)
 	{
@@ -1551,7 +1551,12 @@ void SsithraArrowTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_
 
 	if (other->takedamage != DAMAGE_NO)
 	{
-		const vec3_t normal = VEC3_INIT((plane != NULL) ? plane->normal : vec3_up);
+		vec3_t normal;
+		if (plane != NULL)
+			VectorCopy(plane->normal, normal);
+		else
+			VectorCopy(vec3_up, normal);
+
 		const int damage = irand(SSITHRA_DMG_MIN, SSITHRA_DMG_MAX); //mxd. flrand() in original logic.
 		T_Damage(other, self, self->owner, self->movedir, self->s.origin, normal, damage, 0, 0, MOD_DIED);
 	}
@@ -1894,9 +1899,7 @@ void ssithra_out_of_water_jump(edict_t* self) //mxd. Named 'ssithraNamorJump' in
 	gi.trace(top, vec3_origin, vec3_origin, self->s.origin, self, MASK_SOLID | MASK_WATER, &trace);
 
 	// How far above my feet is waterlevel?
-	vec3_t diff;
-	VectorSubtract(trace.endpos, self->s.origin, diff);
-	const float watersurf_zdist = VectorLength(diff) - self->mins[2]; // Adjust for my feet.
+	const float watersurf_zdist = VectorSeparation(trace.endpos, self->s.origin) - self->mins[2]; // Adjust for my feet.
 
 	// How high above water level is player?
 	const float enemy_zdiff = target_origin[2] - trace.endpos[2];
