@@ -244,9 +244,7 @@ edict_t* TBeastCheckHit(const vec3_t start, vec3_t end) //mxd. Named 'check_hit_
 	edict_t* found = NULL;
 	while ((found = G_Find(found, FOFS(classname), "monster_trial_beast")) != NULL)
 	{
-		vec3_t beast_dir;
-		VectorSubtract(found->s.origin, start, beast_dir);
-		const float beast_dist = VectorLength(beast_dir) - 128.0f;
+		const float beast_dist = VectorSeparation(found->s.origin, start) - 128.0f;
 
 		if (beast_dist > shot_dist)
 			continue;
@@ -256,11 +254,10 @@ edict_t* TBeastCheckHit(const vec3_t start, vec3_t end) //mxd. Named 'check_hit_
 
 		for (int i = 16; i < (int)shot_dist; i += 16)
 		{
-			vec3_t diff_vec;
 			VectorMA(check_pos, 16.0f, shot_dir, check_pos);
-			VectorSubtract(check_pos, found->s.origin, diff_vec);
+			const float dist_sq = VectorSeparationSquared(check_pos, found->s.origin);
 
-			if (VectorLengthSquared(diff_vec) < 16384) // 128 squared.
+			if (dist_sq < 16384.0f) // 128 squared.
 			{
 				// This spot is within 128 of beast origin, so you hit him, ok?
 				VectorCopy(check_pos, end);
@@ -1235,11 +1232,9 @@ static void TBeastStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	if (AI_IsClearlyVisible(self, self->enemy))
 		return;
 
-	vec3_t diff;
-	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
-	const float dist = VectorNormalize(diff);
+	const float enemy_dist = VectorSeparation(self->enemy->s.origin, self->s.origin);
 
-	if (dist < 200.0f)
+	if (enemy_dist < 200.0f)
 	{
 		self->wakeup_time = level.time + 1.0f; // Wake up other monsters.
 		G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
@@ -1256,7 +1251,7 @@ static void TBeastStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	}
 
 	//mxd. Moved below previous 'if' check to avoid a slight chance to play growl sound twice in the same call.
-	if (dist < 400.0f && irand(0, 3) == 0)
+	if (enemy_dist < 400.0f && irand(0, 3) == 0)
 		tbeast_growl(self);
 
 	if (self->monsterinfo.aiflags & AI_EATING)
@@ -1344,11 +1339,9 @@ static void TBeastMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	VectorMA(self->s.origin, self->maxs[2] * 0.5f + TB_UP_OFFSET, up, melee_point);
 	VectorMA(melee_point, 150.0f + TB_FWD_OFFSET, forward, melee_point);
 
-	vec3_t diff;
-	VectorSubtract(self->enemy->s.origin, melee_point, diff);
-	const float dist = VectorLength(diff);
+	const float melee_dist = VectorSeparation(self->enemy->s.origin, melee_point);
 
-	if ((dist > 250.0f || SKILL == SKILL_EASY) && self->monsterinfo.attack_finished > level.time)
+	if ((melee_dist > 250.0f || SKILL == SKILL_EASY) && self->monsterinfo.attack_finished > level.time)
 	{
 		// Too soon to attack again.
 		if (flrand(0.0f, 1.0f) < 0.9f && SKILL == SKILL_EASY)
@@ -1359,7 +1352,7 @@ static void TBeastMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 		return;
 	}
 
-	const float attack_range = dist - self->enemy->maxs[0]; //mxd
+	const float attack_range = melee_dist - self->enemy->maxs[0]; //mxd
 
 	// OK to attack.
 	if (attack_range < 100.0f)
@@ -1602,20 +1595,14 @@ void tbeast_pause(edict_t* self)
 	if (TBeastCheckMood(self) || !M_ValidTarget(self, self->enemy))
 		return;
 
-	float dist;
+	float enemy_dist;
 
 	if (AI_IsClearlyVisible(self, self->enemy))
-	{
-		vec3_t diff;
-		VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
-		dist = VectorLength(diff);
-	}
+		enemy_dist = VectorSeparation(self->s.origin, self->enemy->s.origin);
 	else
-	{
-		dist = FLT_MAX; //mxd. 999999 in original logic.
-	}
+		enemy_dist = FLT_MAX; //mxd. 999999 in original logic.
 
-	if (dist > 120.0f) // Far enough to run after.
+	if (enemy_dist > 120.0f) // Far enough to run after.
 		G_PostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 	else // Close enough to Attack or Hop.
 		G_PostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
