@@ -64,10 +64,7 @@ void SpellCastBlast(edict_t* caster, const vec3_t start_pos, const vec3_t aim_an
 
 		AlertMonstersAt(trace.endpos, caster, 1.0f, 0); //mxd. Don't forget to annoy enemies.
 
-		vec3_t diff;
-		VectorSubtract(trace.endpos, start_pos, diff);
-		distance[i] = (short)(VectorLength(diff));
-
+		distance[i] = (short)(VectorSeparation(trace.endpos, start_pos));
 		angles[YAW] += BLAST_ANGLE_INC;
 	}
 
