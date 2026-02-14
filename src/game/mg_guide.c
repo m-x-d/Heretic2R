@@ -105,10 +105,7 @@ int MG_SetFirstBuoy(edict_t* self)
 	for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
 	{
 		buoy_t* buoy = &level.buoy_list[i];
-
-		vec3_t vec;
-		VectorSubtract(self->s.origin, buoy->origin, vec);
-		buoy->temp_dist = VectorLength(vec);
+		buoy->temp_dist = VectorSeparation(self->s.origin, buoy->origin);
 	}
 
 	const float search_pass_interval = MAX_BUOY_DIST / BUOY_SEARCH_PASSES;
@@ -228,10 +225,9 @@ static void MG_AssignMonsterNextBuoy(edict_t* self, const buoy_t* start_buoy)
 // See if this entity and this buoy are ok to be associated (clear path, etc.).
 static qboolean MG_IsValidBestBuoyForEnt(const edict_t* ent, const buoy_t* test_buoy) //mxd. Named 'MG_ValidBestBuoyForEnt' in original version.
 {
-	vec3_t diff;
-	VectorSubtract(ent->s.origin, test_buoy->origin, diff);
+	const float buoy_dist_sq = VectorSeparationSquared(ent->s.origin, test_buoy->origin);
 
-	if (VectorLengthSquared(diff) <= 250000.0f) // 500 squared.
+	if (buoy_dist_sq <= 250000.0f) // 500 squared.
 		return MG_CheckClearPathToSpot(ent, test_buoy->origin);
 
 	return false; // Too far.
@@ -335,10 +331,7 @@ static qboolean MG_MakeStartForcedConnection(edict_t* self, const int forced_buo
 	for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
 	{
 		buoy_t* buoy = &level.buoy_list[i];
-
-		vec3_t vec;
-		VectorSubtract(goal_pos, buoy->origin, vec);
-		buoy->temp_e_dist = VectorLength(vec);
+		buoy->temp_e_dist = VectorSeparation(goal_pos, buoy->origin);
 
 		if (buoy->temp_e_dist < e_radius + BUOY_RADIUS)
 		{
@@ -405,9 +398,7 @@ static qboolean MG_MakeStartForcedConnection(edict_t* self, const int forced_buo
 	// Don't skip jump buoys, they're crucial.
 	if ((!(best_buoy->modflags & BUOY_JUMP) || skip_jump) && e_best_buoy != NULL)
 	{
-		vec3_t e_buoy_vec;
-		VectorSubtract(e_best_buoy->origin, self->s.origin, e_buoy_vec);
-		const float e_buoy_dist = VectorLength(e_buoy_vec);
+		const float e_buoy_dist = VectorSeparation(e_best_buoy->origin, self->s.origin);
 
 		// Enemy best buoy is farther away from me and not my buoy.
 		if (best_buoy != e_best_buoy && e_buoy_dist > 0.0f && IsClearPath(self, e_best_buoy->origin))
@@ -441,10 +432,7 @@ static qboolean MG_MakeForcedConnection(edict_t* self, const int forced_buoy, co
 	for (int i = 0; i < level.active_buoys; i++) //mxd. 'i <= level.active_buoys' in original logic.
 	{
 		buoy_t* buoy = &level.buoy_list[i];
-
-		vec3_t vec;
-		VectorSubtract(self->s.origin, buoy->origin, vec);
-		buoy->temp_dist = VectorLength(vec);
+		buoy->temp_dist = VectorSeparation(self->s.origin, buoy->origin);
 
 		if (buoy->temp_dist < radius + BUOY_RADIUS)
 		{
@@ -486,9 +474,7 @@ static qboolean MG_MakeForcedConnection(edict_t* self, const int forced_buoy, co
 	// Don't skip jump buoys, they're crucial.
 	if (skip_jump || (best_buoy != NULL && !(best_buoy->modflags & BUOY_JUMP)))
 	{
-		vec3_t e_buoy_vec;
-		VectorSubtract(e_best_buoy->origin, self->s.origin, e_buoy_vec);
-		const float e_buoy_dist = VectorLength(e_buoy_vec);
+		const float e_buoy_dist = VectorSeparation(e_best_buoy->origin, self->s.origin);
 
 		// Enemy best buoy is farther away from me and not my buoy.
 		if (best_buoy != e_best_buoy && e_buoy_dist > best_dist && IsClearPath(self, e_best_buoy->origin))
@@ -523,9 +509,7 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 
 		if (best_buoy == NULL)
 		{
-			vec3_t vec;
-			VectorSubtract(self->s.origin, buoy->origin, vec);
-			buoy->temp_dist = VectorLength(vec);
+			buoy->temp_dist = VectorSeparation(self->s.origin, buoy->origin);
 
 			if (buoy->temp_dist < radius + BUOY_RADIUS)
 			{
@@ -536,9 +520,7 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 
 		if (e_best_buoy == NULL)
 		{
-			vec3_t vec;
-			VectorSubtract(goal_pos, buoy->origin, vec);
-			buoy->temp_e_dist = VectorLength(vec);
+			buoy->temp_e_dist = VectorSeparation(goal_pos, buoy->origin);
 
 			if (buoy->temp_e_dist < e_radius + BUOY_RADIUS)
 			{
@@ -624,9 +606,7 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 	// Don't skip jump buoys, they're crucial.
 	if ((skip_jump || (best_buoy != NULL && !(best_buoy->modflags & BUOY_JUMP))) && e_best_buoy != NULL)
 	{
-		vec3_t e_buoy_vec;
-		VectorSubtract(e_best_buoy->origin, self->s.origin, e_buoy_vec);
-		const float e_buoy_dist = VectorLength(e_buoy_vec);
+		const float e_buoy_dist = VectorSeparation(e_best_buoy->origin, self->s.origin);
 
 		// Enemy best buoy is farther away from me and not my buoy.
 		if (best_buoy != e_best_buoy && e_buoy_dist > best_dist && IsClearPath(self, e_best_buoy->origin))
@@ -823,10 +803,9 @@ qboolean MG_CheckClearPathToEnemy(const edict_t* self)
 	if (trace.fraction < 1.0f)
 	{
 		// Couldn't get to enemy.
-		vec3_t enemy_diff;
-		VectorSubtract(self->enemy->s.origin, trace.endpos, enemy_diff);
+		const float enemy_dist = VectorSeparation(self->enemy->s.origin, trace.endpos);
 
-		if (VectorLength(enemy_diff) > 48.0f || !AI_IsVisible(self, self->enemy))
+		if (enemy_dist > 48.0f || !AI_IsVisible(self, self->enemy))
 			return false; // Couldn't even get close to a visible enemy.
 	}
 
@@ -885,10 +864,9 @@ static qboolean MG_CheckClearPathToSpot(const edict_t* self, const vec3_t spot)
 	if (trace.fraction < 1.0f)
 	{
 		// Couldn't get to enemy.
-		vec3_t enemy_diff;
-		VectorSubtract(spot, trace.endpos, enemy_diff);
+		const float enemy_dist = VectorSeparation(spot, trace.endpos);
 
-		if (VectorLength(enemy_diff) > 48.0f || !MG_IsVisiblePos(self, spot))
+		if (enemy_dist > 48.0f || !MG_IsVisiblePos(self, spot))
 			return false; // Couldn't even get close to a visible enemy.
 	}
 
