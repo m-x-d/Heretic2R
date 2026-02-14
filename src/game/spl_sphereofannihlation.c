@@ -227,10 +227,7 @@ void SpherePowerLaserThink(edict_t* self)
 			if (EntReflecting(trace.ent, true, true))
 			{
 				// Draw line to this point.
-				vec3_t diff;
-				VectorSubtract(trace.endpos, start_pos, diff);
-				const float trace_dist = VectorLength(diff);
-
+				const float trace_dist = VectorSeparation(trace.endpos, start_pos);
 				gi.CreateEffect(NULL, FX_WEAPON_SPHEREPOWER, 0, start_pos, "xbb", shoot_dir, (byte)(self->s.scale * 7.5f), (byte)(trace_dist / 8.0f));
 
 				// Re-constitute aim_angles.
@@ -248,24 +245,18 @@ void SpherePowerLaserThink(edict_t* self)
 			}
 		}
 
-		vec3_t diff;
-		VectorSubtract(trace.endpos, start_pos, diff);
-		sphere_dist -= VectorLength(diff);
-
+		sphere_dist -= VectorSeparation(trace.endpos, start_pos);
 		VectorCopy(trace.endpos, start_pos);
 
 		// This seems to alleviate the problem of a trace hitting the same ent multiple times...
-		VectorSubtract(end_pos, start_pos, diff);
-		if (VectorLength(diff) > 16.0f)
+		if (VectorSeparation(end_pos, start_pos) > 16.0f)
 			VectorMA(start_pos, 16.0f, shoot_dir, start_pos);
 
 		trace_buddy = trace.ent;
 		num_hit++;
 	} while (trace.fraction < 0.99f && trace.contents != MASK_SOLID && num_hit < MAX_REFLECT);
 
-	vec3_t temp;
-	VectorSubtract(trace.endpos, start_pos, temp);
-	const float trace_dist = VectorLength(temp);
+	const float trace_dist = VectorSeparation(trace.endpos, start_pos);
 
 	// Set 'is powered' flag.
 	int fx_flags = CEF_FLAG7;
