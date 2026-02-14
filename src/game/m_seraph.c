@@ -160,7 +160,7 @@ static void SeraphDropWeapon(edict_t* self) //mxd. Named 'seraph_dropweapon' in 
 	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
 
-	vec3_t hand_pos = { 0 };
+	vec3_t hand_pos = VEC3_ZERO;
 	VectorMA(hand_pos, 8.0f, forward, hand_pos);
 	VectorMA(hand_pos, 5.0f, right, hand_pos);
 	VectorMA(hand_pos, 12.0f, up, hand_pos);
