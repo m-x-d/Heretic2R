@@ -312,12 +312,11 @@ static int PlayerActionRopeClimbUpAnimation(const playerinfo_t* info) //mxd
 	const vec3_t end_point = VEC3_INITA(info->origin, 0.0f, 0.0f, 16.0f);
 	info->G_Trace(info->origin, info->mins, info->maxs, end_point, info->self, MASK_PLAYERSOLID, &trace);
 
-	vec3_t rope_top_dist;
-	VectorSubtract(player->rope->s.origin, info->origin, rope_top_dist);
+	const float rope_top_dist = VectorSeparation(player->rope->s.origin, info->origin);
 
-	if (trace.fraction == 1.0f && VectorLength(rope_top_dist) > info->maxs[2] + 32.0f)
+	if (trace.fraction == 1.0f && rope_top_dist > info->maxs[2] + 32.0f)
 	{
-		Vec3ScaleAssign(0.9f, rope->velocity); // Settle down the rope when climbing... 
+		Vec3ScaleAssign(0.9f, rope->velocity); // Settle down the rope when climbing...
 		const int chance = irand(1, 4);
 
 		switch (info->lowerseq)
@@ -514,9 +513,7 @@ qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) // Cal
 	if (info->origin[2] > rope_top[2])
 		return false;
 
-	vec3_t diff;
-	VectorSubtract(info->origin, rope_top, diff);
-	const float rope_player_z = VectorLength(diff);
+	const float rope_player_z = VectorSeparation(info->origin, rope_top);
 
 	vec3_t rope_dir;
 	VectorSubtract(rope_end, rope_top, rope_dir);
@@ -711,12 +708,10 @@ qboolean G_PlayerActionCheckPushLever(const playerinfo_t* info)
 	if (lever == NULL || lever->classID != CID_LEVER)
 		return false;
 
-	// Get distance from player origin to center of lever
-	vec3_t v;
-	VectorSubtract(info->origin, lever->s.origin, v);
-	const float range = VectorLength(v);
+	// Get distance from player origin to center of lever.
+	const float lever_dist = VectorSeparation(info->origin, lever->s.origin);
 
-	if (range < MAX_PUSH_LEVER_RANGE)
+	if (lever_dist < MAX_PUSH_LEVER_RANGE)
 	{
 		vec3_t dir = VEC3_INIT(self->client->playerinfo.aimangles);
 		dir[PITCH] = 0.0f;
