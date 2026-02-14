@@ -1565,10 +1565,9 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 		// We aren't really facing our ideal yet.
 		if (self->monsterinfo.searchType == SEARCH_BUOY || self->ai_mood == AI_MOOD_NAVIGATE)
 		{
-			vec3_t goal_dir;
-			VectorSubtract(self->monsterinfo.nav_goal, self->s.origin, goal_dir);
+			const float goal_dist = VectorSeparation(self->monsterinfo.nav_goal, self->s.origin);
 
-			if (VectorNormalize(goal_dir) < self->maxs[0] + dist + 24.0f)
+			if (goal_dist < self->maxs[0] + dist + BUOY_RADIUS) //mxd. Use define.
 			{
 				// We're close to our goal.
 				MG_ChangeWhichYaw(self, YAW_IDEAL);
@@ -1577,10 +1576,9 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 		}
 		else if (self->enemy != NULL)
 		{
-			vec3_t goal_dir;
-			VectorSubtract(self->monsterinfo.nav_goal, self->s.origin, goal_dir);
+			const float goal_dist = VectorSeparation(self->monsterinfo.nav_goal, self->s.origin);
 
-			if (VectorNormalize(goal_dir) < self->maxs[0] + self->enemy->maxs[0] + dist * 2.0f)
+			if (goal_dist < self->maxs[0] + self->enemy->maxs[0] + dist * 2.0f)
 			{
 				// We're close to our goal.
 				MG_ChangeWhichYaw(self, YAW_IDEAL);
@@ -1837,10 +1835,9 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 		// We aren't really facing our ideal yet.
 		if (self->monsterinfo.searchType == SEARCH_BUOY || self->ai_mood == AI_MOOD_NAVIGATE)
 		{
-			vec3_t goal_dir;
-			VectorSubtract(self->monsterinfo.nav_goal, self->s.origin, goal_dir);
+			const float goal_dist = VectorSeparation(self->monsterinfo.nav_goal, self->s.origin);
 
-			if (VectorNormalize(goal_dir) < self->maxs[0] + dist + 24.0f)
+			if (goal_dist < self->maxs[0] + dist + BUOY_RADIUS) //mxd. Use define.
 			{
 				// We're close to our goal.
 				MG_ChangeWhichYaw(self, YAW_IDEAL);
@@ -1849,10 +1846,9 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 		}
 		else if (self->enemy != NULL)
 		{
-			vec3_t goal_dir;
-			VectorSubtract(self->monsterinfo.nav_goal, self->s.origin, goal_dir);
+			const float goal_dist = VectorSeparation(self->monsterinfo.nav_goal, self->s.origin);
 
-			if (VectorNormalize(goal_dir) < self->maxs[0] + self->enemy->maxs[0] + dist * 2.0f)
+			if (goal_dist < self->maxs[0] + self->enemy->maxs[0] + dist * 2.0f)
 			{
 				// We're close to our goal.
 				MG_ChangeWhichYaw(self, YAW_IDEAL);
