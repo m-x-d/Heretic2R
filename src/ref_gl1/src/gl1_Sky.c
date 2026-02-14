@@ -24,7 +24,7 @@ static float sky_max;
 static void R_DrawSkyPolygon(const int nump, vec3_t vecs)
 {
 	// s = [0]/[2], t = [1]/[2]
-	static int vec_to_st[6][3] =
+	static const int vec_to_st[6][3] =
 	{
 		{ -2,  3,  1 },
 		{  2,  3, -1 },
@@ -37,7 +37,7 @@ static void R_DrawSkyPolygon(const int nump, vec3_t vecs)
 	};
 
 	// Decide which face it maps to.
-	vec3_t v = { 0 };
+	vec3_t v = VEC3_ZERO;
 
 	float* vp = vecs;
 	for (int i = 0; i < nump; i++, vp += 3)
@@ -232,7 +232,7 @@ void R_ClearSkyBox(void)
 static void R_MakeSkyVec(float s, float t, const int axis)
 {
 	// 1 = s, 2 = t, 3 = 2048
-	static int st_to_vec[6][3] =
+	static const int st_to_vec[6][3] =
 	{
 		{  3, -1,  2 },
 		{ -3,  1,  2 },
@@ -278,7 +278,7 @@ static void R_MakeSkyVec(float s, float t, const int axis)
 
 void R_DrawSkyBox(void)
 {
-	static int skytexorder[] = { 0, 2, 1, 3, 4, 5 }; //mxd. Made local static.
+	static const int skytexorder[] = { 0, 2, 1, 3, 4, 5 }; //mxd. Made local static.
 
 	if (skyrotate != 0.0f)
 	{
