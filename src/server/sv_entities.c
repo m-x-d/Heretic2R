@@ -869,9 +869,7 @@ void SV_BuildClientFrame(client_t* client)
 		if (!ent->s.modelindex && !ent->s.effects && !ent->s.sound)
 			continue;
 
-		vec3_t delta;
-		VectorSubtract(org, ent->s.origin, delta);
-		const float dist = VectorLength(delta);
+		const float dist = VectorSeparation(org, ent->s.origin);
 
 		// Ignore if not touching a PV leaf.
 		if (ent == cl_ent || dist <= 100.0f) // H2: extra 'delta' check.
