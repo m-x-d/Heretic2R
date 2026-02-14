@@ -839,10 +839,9 @@ void harpy_pause(edict_t* self)
 		//mxd. If we are circling, give us a chance to stop circling.
 		if ((self->spawnflags & MSF_SPECIAL1) && irand(0, 8) == 0)
 		{
-			vec3_t dist;
-			VectorSubtract(self->s.origin, self->enemy->s.origin, dist);
+			const float enemy_dist = VectorSeparation(self->s.origin, self->enemy->s.origin);
 
-			if (VectorLength(dist) < HARPY_CIRCLING_CHECK_DIST && AI_IsInfrontOf(self, self->enemy))
+			if (enemy_dist < HARPY_CIRCLING_CHECK_DIST && AI_IsInfrontOf(self, self->enemy))
 				self->spawnflags &= ~MSF_SPECIAL1;
 		}
 
