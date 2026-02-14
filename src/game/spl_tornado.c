@@ -159,10 +159,7 @@ void SpellCastDropTornado(edict_t* caster, const vec3_t start_pos)
 	while ((spot = G_Find(spot, FOFS(classname), spawn_checks[game_type])) != NULL)
 	{
 		// If we are over a spawn spot, explode the tornado immediately.
-		vec3_t diff;
-		VectorSubtract(spot->s.origin, tornado->s.origin, diff);
-
-		if (VectorLength(diff) < 80.0f)
+		if (VectorSeparation(spot->s.origin, tornado->s.origin) < 80.0f)
 		{
 			tornado->think = G_SetToFree;
 			tornado->nextthink = level.time + FRAMETIME; //mxd. Use define.
