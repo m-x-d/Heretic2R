@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include <float.h>
 #include "p_client.h" //mxd
 #include "cl_strings.h"
 #include "g_combat.h" //mxd
@@ -291,7 +292,7 @@ static void DropWeapons(edict_t* self, const int damage, const int which_weapons
 	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
 
-	vec3_t hand_spot = { 0 };
+	vec3_t hand_spot = VEC3_ZERO;
 	VectorMA(hand_spot, 5.0f, forward, hand_spot);
 	VectorMA(hand_spot, 8.0f, right, hand_spot);
 	VectorMA(hand_spot, -6.0f, up, hand_spot);
@@ -1102,7 +1103,7 @@ void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage,
 // Returns the distance to the nearest player from the given spot.
 static float PlayersRangeFromSpot(const edict_t* spot)
 {
-	float best_player_dist = 9999999.0f; //TODO: why not FLT_MAX?..
+	float best_player_dist = FLT_MAX; //mxd. 9999999.0f in original logic.
 
 	for (int i = 1; i <= MAXCLIENTS; i++)
 	{
@@ -1111,10 +1112,7 @@ static float PlayersRangeFromSpot(const edict_t* spot)
 		if (!player->inuse || player->health < 1)
 			continue;
 
-		vec3_t v;
-		VectorSubtract(spot->s.origin, player->s.origin, v);
-		const float player_dist = VectorLength(v);
-
+		const float player_dist = VectorSeparation(spot->s.origin, player->s.origin);
 		best_player_dist = min(player_dist, best_player_dist);
 	}
 
