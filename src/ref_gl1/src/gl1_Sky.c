@@ -93,7 +93,7 @@ static void R_DrawSkyPolygon(const int nump, vec3_t vecs)
 // Q2 counterpart
 static void R_ClipSkyPolygon(const int nump, vec3_t vecs, const int stage)
 {
-	static vec3_t skyclip[] =
+	static const vec3_t skyclip[] =
 	{
 		{  1.0f,  1.0f, 0.0f },
 		{  1.0f, -1.0f, 0.0f },
@@ -102,13 +102,6 @@ static void R_ClipSkyPolygon(const int nump, vec3_t vecs, const int stage)
 		{  1.0f,  0.0f, 1.0f },
 		{ -1.0f,  0.0f, 1.0f }
 	};
-
-	int i;
-	float* v;
-	float dists[MAX_CLIP_VERTS];
-	int sides[MAX_CLIP_VERTS];
-	vec3_t newv[2][MAX_CLIP_VERTS];
-	int newc[2];
 
 	if (nump > MAX_CLIP_VERTS - 2)
 		ri.Sys_Error(ERR_DROP, "R_ClipSkyPolygon: MAX_CLIP_VERTS");
@@ -123,8 +116,11 @@ static void R_ClipSkyPolygon(const int nump, vec3_t vecs, const int stage)
 	qboolean front = false;
 	qboolean back = false;
 	const float* norm = skyclip[stage];
+	float dists[MAX_CLIP_VERTS];
+	int sides[MAX_CLIP_VERTS];
 
-	for (i = 0, v = vecs; i < nump; i++, v += 3)
+	float* v = &vecs[0];
+	for (int i = 0; i < nump; i++, v += 3)
 	{
 		const float d = DotProduct(v, norm);
 
@@ -154,13 +150,15 @@ static void R_ClipSkyPolygon(const int nump, vec3_t vecs, const int stage)
 	}
 
 	// Clip it.
-	sides[i] = sides[0];
-	dists[i] = dists[0];
-	VectorCopy(vecs, vecs + i * 3);
-	newc[0] = 0;
-	newc[1] = 0;
+	sides[nump] = sides[0];
+	dists[nump] = dists[0];
+	VectorCopy(vecs, &vecs[nump * 3]);
 
-	for (i = 0, v = vecs; i < nump; i++, v += 3)
+	vec3_t newv[2][MAX_CLIP_VERTS];
+	int newc[2] = { 0 };
+
+	v = &vecs[0];
+	for (int i = 0; i < nump; i++, v += 3)
 	{
 		switch (sides[i])
 		{
