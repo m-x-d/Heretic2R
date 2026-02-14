@@ -224,10 +224,7 @@ static qboolean GorgonSetupJump(edict_t* self) //mxd. Named 'gorgon_check_jump' 
 	if (self->jump_chance < irand(0, 100) || !MG_TryGetTargetOrigin(self, landing_spot) || !MG_IsInforntPos(self, landing_spot))
 		return false;
 
-	vec3_t diff;
-	VectorSubtract(self->s.origin, landing_spot, diff);
-
-	if (VectorLength(diff) > 400.0f)
+	if (VectorSeparation(self->s.origin, landing_spot) > 400.0f)
 		return false;
 
 	vec3_t angles;
@@ -422,12 +419,10 @@ static void GorgonWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 
 	if (AI_IsClearlyVisible(self, self->enemy) && AI_IsInfrontOf(self, self->enemy))
 	{
-		vec3_t diff;
-		VectorSubtract(self->s.origin, target_origin, diff);
-		const float dist = VectorLength(diff);
+		const float target_dist = VectorSeparation(self->s.origin, target_origin);
 
 		// target_origin is within range and far enough above or below to warrant a jump.
-		if (dist > 40.0f && dist < 600.0f && (self->s.origin[2] < target_origin[2] - 18.0f || self->s.origin[2] > target_origin[2] + 18.0f) && GorgonSetupJump(self))
+		if (target_dist > 40.0f && target_dist < 600.0f && (self->s.origin[2] < target_origin[2] - 18.0f || self->s.origin[2] > target_origin[2] + 18.0f) && GorgonSetupJump(self))
 		{
 			SetAnim(self, ANIM_FJUMP);
 			return;
@@ -475,14 +470,11 @@ static void GorgonMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	VectorMA(self->s.origin, self->maxs[2] * 0.5f, up, melee_point);
 	VectorMA(melee_point, self->maxs[0], forward, melee_point);
 
-	vec3_t diff;
-	VectorSubtract(self->enemy->s.origin, melee_point, diff);
-	const float dist = VectorLength(diff);
-
+	const float enemy_dist = VectorSeparation(self->enemy->s.origin, melee_point);
 	const float separation = self->enemy->maxs[0];
 
 	// Ok to do a melee attack?
-	if (dist - separation < self->melee_range)
+	if (enemy_dist - separation < self->melee_range)
 	{
 		const float chance = flrand(0.0f, 1.0f);
 
@@ -501,14 +493,14 @@ static void GorgonMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	}
 
 	// Out of melee range?
-	if (dist < 150.0f)
+	if (enemy_dist < 150.0f)
 	{
 		SetAnim(self, ANIM_MELEE5);
 		return;
 	}
 
 	// Hop forward?
-	if (dist < self->s.scale * GORGON_MAX_HOP_RANGE)
+	if (enemy_dist < self->s.scale * GORGON_MAX_HOP_RANGE)
 	{
 		// Checks ahead to see if can hop at it.
 		vec3_t hop_pos = VEC3_INIT(self->s.origin);
@@ -581,11 +573,9 @@ static void GorgonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'g
 		// Enemy is within range and far enough above or below to warrant a jump.
 		if (MG_IsInforntPos(self, target_origin))
 		{
-			vec3_t diff;
-			VectorSubtract(self->s.origin, target_origin, diff);
-			const float dist = VectorLength(diff);
+			const float target_dist = VectorSeparation(self->s.origin, target_origin);
 
-			if (dist > 40.0f && dist < 600.0f && (self->s.origin[2] < target_origin[2] - 24.0f || self->s.origin[2] > target_origin[2] + 24.0f))
+			if (target_dist > 40.0f && target_dist < 600.0f && (self->s.origin[2] < target_origin[2] - 24.0f || self->s.origin[2] > target_origin[2] + 24.0f))
 			{
 				if (fabsf(self->s.origin[2] - target_origin[2] - 24.0f) < 200.0f) // Can't jump more than 200 high. //mxd. abs() -> fabsf().
 				{
@@ -1083,10 +1073,7 @@ void gorgon_jump(edict_t* self)
 		return;
 	}
 
-	vec3_t diff;
-	VectorSubtract(self->s.origin, landing_spot, diff);
-
-	if (VectorLength(diff) > 400.0f)
+	if (VectorSeparation(self->s.origin, landing_spot) > 400.0f)
 	{
 		SetAnim(self, ((irand(0, 3) == 0) ? ANIM_ROAR2 : ANIM_RUN1));
 		return;
@@ -1229,10 +1216,7 @@ void gorgon_check_snatch(edict_t* self, float forward_offset, float right_offset
 	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, self, MASK_SHOT, &trace);
 	VectorCopy(trace.endpos, end_pos);
 
-	vec3_t diff;
-	VectorSubtract(self->enemy->s.origin, end_pos, diff);
-
-	if (VectorLength(diff) > max_snatch_zdist)
+	if (VectorSeparation(self->enemy->s.origin, end_pos) > max_snatch_zdist)
 	{
 		self->msgHandler = DefaultMsgHandler;
 
@@ -1530,8 +1514,9 @@ void gorgon_ai_eat(edict_t* self, float switch_animation)
 	{
 		vec3_t diff;
 		VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+		const float enemy_dist = VectorNormalize(diff);
 
-		if (VectorNormalize(diff) < self->wakeup_distance)
+		if (enemy_dist < self->wakeup_distance)
 		{
 			if (AI_IsVisible(self, self->enemy))
 			{
