@@ -978,7 +978,7 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust) //mxd. N
 	if (trace.fraction == 1.0f)
 	{
 		VectorCopy(end_pos, info->origin);
-		info->offsetangles[YAW] = -(ClampAngleDeg(info->angles[YAW]) - info->grabangle);
+		info->offsetangles[YAW] = -ClampAngleDeg(info->angles[YAW] - info->grabangle); //mxd. '-(ClampAngleDeg(info->angles[YAW]) - info->grabangle)' in original logic (can result in angle outside of expected [-180 .. 180] range).
 		info->angles[YAW] = info->grabangle;
 
 		return (swingable ? GT_SWING : GT_GRAB);
