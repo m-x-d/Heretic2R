@@ -204,7 +204,7 @@ static qboolean SV_CheckForSavegame(void)
 	char temp[MAX_OSPATH];
 	char name[MAX_OSPATH];
 
-	if ((int)sv_noreload->value || (int)Cvar_VariableValue("deathmatch"))
+	if ((int)sv_noreload->value || Cvar_IsSet("deathmatch"))
 		return false;
 
 	// H2: strip directory path from sv.name... Checks only for '/' separator.
@@ -334,7 +334,7 @@ static void SV_SpawnServer(char* server, char* spawnpoint, const server_state_t 
 
 	if ((int)dedicated->value) // H2
 	{
-		const int cooptimeout = (int)(Cvar_VariableValue("sv_cooptimeout"));
+		const int cooptimeout = Cvar_VariableInt("sv_cooptimeout");
 		if (cooptimeout > 0)
 		{
 			char msg[MAX_OSPATH];
@@ -373,7 +373,7 @@ void SV_InitGame(void)
 
 	svs.initialized = true;
 
-	if ((int)Cvar_VariableValue("coop") && (int)Cvar_VariableValue("deathmatch"))
+	if (Cvar_IsSet("coop") && Cvar_IsSet("deathmatch"))
 	{
 		Com_Printf("Deathmatch and Coop both set, disabling Coop\n");
 		Cvar_FullSet("coop", "0", CVAR_SERVERINFO | CVAR_LATCH);
@@ -381,18 +381,18 @@ void SV_InitGame(void)
 
 	// Dedicated servers are can't be single player and are usually DM
 	// so unless they explicitly set coop, force them to deathmatch.
-	if ((int)dedicated->value && !(int)Cvar_VariableValue("coop"))
+	if ((int)dedicated->value && !Cvar_IsSet("coop"))
 		Cvar_FullSet("deathmatch", "1", CVAR_SERVERINFO | CVAR_LATCH);
 
 	// Init clients
-	if ((int)Cvar_VariableValue("deathmatch"))
+	if (Cvar_IsSet("deathmatch"))
 	{
 		if (maxclients->value <= 1)
 			Cvar_FullSet("maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH);
 		else if (maxclients->value > MAX_CLIENTS)
 			Cvar_FullSet("maxclients", va("%i", MAX_CLIENTS), CVAR_SERVERINFO | CVAR_LATCH);
 	}
-	else if ((int)Cvar_VariableValue("coop"))
+	else if (Cvar_IsSet("coop"))
 	{
 		if (maxclients->value <= 1 || maxclients->value > 4)
 			Cvar_FullSet("maxclients", "4", CVAR_SERVERINFO | CVAR_LATCH);
@@ -435,8 +435,7 @@ static void SetNextserver(char* levelstring)
 		*ch = 0;
 
 		// Skip intro/outro cinematics in multiplayer.
-		if (((int)Cvar_VariableValue("coop") || (int)Cvar_VariableValue("deathmatch")) && 
-			(strcmp(levelstring, "intro.smk") == 0 || strcmp(levelstring, "outro.smk") == 0))
+		if ((Cvar_IsSet("coop") || Cvar_IsSet("deathmatch")) && (strcmp(levelstring, "intro.smk") == 0 || strcmp(levelstring, "outro.smk") == 0))
 		{
 			// 'intro.smk+ssdocks' -> 'ssdocks'.
 			memmove(levelstring, levelstring + strlen(levelstring) + 1, strlen(ch + 1) + 1);
