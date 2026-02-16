@@ -185,7 +185,7 @@ static qboolean StartServer_MenuInit(void)
 
 	static char* dm_coop_names[] = { name_deathmatch, name_coop, 0 };
 
-	if (LoadMapnames(Cvar_VariableValue("coop")) == 0)
+	if (LoadMapnames(Cvar_IsSet("coop")) == 0)
 		return false;
 
 	Com_sprintf(name_deathmatch, sizeof(name_deathmatch), "\x02%s", m_item_deathmatch->string);
@@ -208,7 +208,7 @@ static qboolean StartServer_MenuInit(void)
 	s_rules_box.generic.name = name_rules;
 	s_rules_box.generic.width = re.BF_Strlen(name_rules);
 	s_rules_box.itemnames = dm_coop_names;
-	s_rules_box.curvalue = (int)(Cvar_VariableValue("coop") != 0.0f);
+	s_rules_box.curvalue = Cvar_IsSet("coop");
 	s_rules_box.generic.callback = RulesChangeFunc;
 
 	Com_sprintf(name_timelimit, sizeof(name_timelimit), "\x02%s", m_item_timelimit->string);
@@ -247,7 +247,7 @@ static qboolean StartServer_MenuInit(void)
 	s_maxclients_field.generic.y = 200;
 	s_maxclients_field.length = 3;
 	s_maxclients_field.visible_length = 3;
-	const char* val = ((int)(Cvar_VariableValue("maxclients")) == 1 ? "8" : Cvar_VariableString("maxclients"));
+	const char* val = (Cvar_VariableInt("maxclients") == 1 ? "8" : Cvar_VariableString("maxclients"));
 	strcpy_s(s_maxclients_field.buffer, sizeof(s_maxclients_field.buffer), val); //mxd. strcpy -> strcpy_s
 	s_maxclients_field.cursor = (int)strlen(s_maxclients_field.buffer);
 
