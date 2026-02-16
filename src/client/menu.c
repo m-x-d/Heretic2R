@@ -172,7 +172,7 @@ static void PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key)
 {
 	int depth;
 
-	if (Cvar_VariableValue("maxclients") == 1.0f && Com_ServerState())
+	if (Cvar_VariableInt("maxclients") == 1 && Com_ServerState())
 		Cvar_Set("paused", "1");
 
 	for (depth = 0; depth < m_menudepth; depth++)

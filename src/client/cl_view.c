@@ -271,7 +271,7 @@ void V_Init(void)
 
 void Activate_Screen_Flash(const int color)
 {
-	if ((int)Cvar_VariableValue("flash_screen"))
+	if (Cvar_IsSet("flash_screen"))
 		screen_flash_color = color;
 }
 
