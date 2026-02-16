@@ -467,20 +467,21 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 			VectorCopy_Macro(tmp_vel, pm.s.velocity);
 		}
 
+		// Set the player entity's model angles.
 		if (pm.s.w_flags & (WF_DIVING | WF_SWIMFREE))
 		{
-			if (pm.viewangles[0] > 180.0f)
-				cl.playerinfo.angles[0] = -(pm.viewangles[0] - 360.0f);
+			if (pm.viewangles[PITCH] > 180.0f)
+				cl.playerinfo.angles[PITCH] = -(pm.viewangles[PITCH] - 360.0f);
 			else
-				cl.playerinfo.angles[0] = -pm.viewangles[0];
+				cl.playerinfo.angles[PITCH] = -pm.viewangles[PITCH];
 		}
 		else
 		{
-			cl.playerinfo.angles[0] = 0.0f;
+			cl.playerinfo.angles[PITCH] = 0.0f;
 		}
 
-		cl.playerinfo.angles[1] = pm.viewangles[1];
-		cl.playerinfo.angles[2] = pm.viewangles[2];
+		cl.playerinfo.angles[YAW] =  pm.viewangles[YAW];
+		cl.playerinfo.angles[ROLL] = pm.viewangles[ROLL];
 
 		VectorCopy(pred_currAngles, pred_prevAngles);
 		VectorCopy(cl.playerinfo.angles, pred_currAngles);

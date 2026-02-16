@@ -573,7 +573,7 @@ void ClientEndServerFrame(edict_t* player)
 		if (cl->ps.pmove.w_flags & (WF_DIVING | WF_SWIMFREE))
 		{
 			if (cl->v_angle[PITCH] > 180.0f)
-				player->s.angles[PITCH] = -(-360.0f + cl->v_angle[PITCH]);
+				player->s.angles[PITCH] = -(cl->v_angle[PITCH] - 360.0f);
 			else
 				player->s.angles[PITCH] = -cl->v_angle[PITCH];
 		}
