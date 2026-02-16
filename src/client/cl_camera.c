@@ -475,7 +475,7 @@ void CL_CalcViewValues(void)
 		else
 		{
 			for (int i = 0; i < 3; i++)
-				PlayerEntPtr->origin[i] = ((float)ops->pmove.origin[i] + (float)(ps->pmove.origin[i] - ops->pmove.origin[i]) * lerp) * 0.125f;
+				PlayerEntPtr->origin[i] = SHORT2POS((float)ops->pmove.origin[i] + (float)(ps->pmove.origin[i] - ops->pmove.origin[i]) * lerp);
 		}
 
 		VectorCopy(PlayerEntPtr->origin, PlayerEntPtr->oldorigin);
