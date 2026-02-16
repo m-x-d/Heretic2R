@@ -404,18 +404,18 @@ H2COMMON_API float vhlen(const vec3_t v1, const vec3_t v2)
 }
 
 //TODO: Typo? "relect" -> "reflect"?
-//TODO: Modifies the in vector! Unintentional?
+//TODO: Modifies the 'in' vector! Unintentional?
 H2COMMON_API void Create_rand_relect_vect(vec3_t in, vec3_t out)
 {
-	vec3_t angles;
-
 	if (VectorNormalize(in) < FLOAT_ZERO_EPSILON)
 	{
-		VectorSet(out, 1.0f, 0.0f, 0.0f);
+		VectorCopy(vec3_right, out);
 		return;
 	}
 
 	VectorInverse(in);
+
+	vec3_t angles;
 	AnglesFromDir(in, angles);
 
 	angles[0] += flrand(-0.3f, 0.3f);
