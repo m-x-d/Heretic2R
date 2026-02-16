@@ -355,7 +355,7 @@ PLAYER_API void PlayerAnimSetVault(playerinfo_t* info, const int seq)
 	info->sidevel = 0.0f;
 	info->upvel = 0.0f;
 	info->edictflags |= (FL_FLY | FL_LOCKMOVE);
-	info->flags = (int)(PlayerSeqData[ASEQ_VAULT_LOW].playerflags | (info->flags & PLAYER_FLAG_PERSMASK));
+	info->flags = (int)(PlayerSeqData[seq].playerflags | (info->flags & PLAYER_FLAG_PERSMASK)); //mxd. Original logic always uses PlayerSeqData[ASEQ_VAULT_LOW].
 	info->pm_flags |= PMF_LOCKMOVE;
 	VectorClear(info->velocity);
 
