@@ -386,7 +386,7 @@ static void SCR_DrawPause(void)
 	if (!(int)scr_showpause->value || !CL_PAUSED || cls.key_dest == key_console) // Turn off for screenshots. //mxd. Also turn off when console is opened.
 		return;
 
-	if (Cvar_VariableValue("maxclients") < 2.0f && Com_ServerState())
+	if (Cvar_VariableInt("maxclients") < 2 && Com_ServerState())
 	{
 		char pause_pic[MAX_QPATH];
 		Com_sprintf(pause_pic, sizeof(pause_pic), "\x03%s", scr_item_paused->string);
@@ -405,7 +405,7 @@ static void SCR_DrawPause(void)
 
 static void SCR_DrawLoading(void)
 {
-	if (!scr_draw_loading || strcmp(cls.servername, "localhost") != 0 || (int)Cvar_VariableValue("coop") || (int)Cvar_VariableValue("deathmatch"))
+	if (!scr_draw_loading || strcmp(cls.servername, "localhost") != 0 || Cvar_IsSet("coop") || Cvar_IsSet("deathmatch"))
 		return;
 
 	// Draw map bg.
