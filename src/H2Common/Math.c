@@ -77,8 +77,6 @@ H2COMMON_API float LerpAngle(const float a1, float a2, const float frac)
 //mxd. Angles are expected to be in degrees.
 H2COMMON_API void LerpAngles(const vec3_t angle_a, const float frac, const vec3_t angle_b, vec3_t out)
 {
-	assert(out != vec3_origin);
-
 	out[0] = LerpAngle(angle_a[0], angle_b[0], frac);
 	out[1] = LerpAngle(angle_a[1], angle_b[1], frac);
 	out[2] = LerpAngle(angle_a[2], angle_b[2], frac);

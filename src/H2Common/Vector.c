@@ -300,8 +300,6 @@ H2COMMON_API void VectorClamp(vec3_t v, const float max_length) //mxd
 // out = veca + vecb * scale;
 H2COMMON_API void VectorMA(const vec3_t veca, const float scale, const vec3_t vecb, vec3_t out)
 {
-	assert(out != vec3_origin);
-
 	out[0] = veca[0] + scale * vecb[0];
 	out[1] = veca[1] + scale * vecb[1];
 	out[2] = veca[2] + scale * vecb[2];
@@ -310,8 +308,6 @@ H2COMMON_API void VectorMA(const vec3_t veca, const float scale, const vec3_t ve
 // out = (veca + vecb) * 0.5;
 H2COMMON_API void VectorAverage(const vec3_t veca, const vec3_t vecb, vec3_t out)
 {
-	assert(out != vec3_origin);
-
 	out[0] = (veca[0] + vecb[0]) * 0.5f;
 	out[1] = (veca[1] + vecb[1]) * 0.5f;
 	out[2] = (veca[2] + vecb[2]) * 0.5f;
@@ -320,8 +316,6 @@ H2COMMON_API void VectorAverage(const vec3_t veca, const vec3_t vecb, vec3_t out
 // out = veca + frac * (vecb - veca);
 H2COMMON_API void VectorLerp(const vec3_t veca, const float frac, const vec3_t vecb, vec3_t out) //mxd
 {
-	assert(out != vec3_origin);
-
 	out[0] = veca[0] + frac * (vecb[0] - veca[0]);
 	out[1] = veca[1] + frac * (vecb[1] - veca[1]);
 	out[2] = veca[2] + frac * (vecb[2] - veca[2]);
@@ -370,16 +364,12 @@ H2COMMON_API float VectorLengthSquared(const vec3_t v)
 
 H2COMMON_API void VectorRandomAdd(const vec3_t origin, const vec3_t random_amount, vec3_t out)
 {
-	assert(out != vec3_origin);
-	
 	for (int i = 0; i < 3; i++)
 		out[i] = origin[i] + flrand(-random_amount[i], random_amount[i]);
 }
 
 H2COMMON_API void VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t out)
 {
-	assert(out != vec3_origin);
-
 	out[0] = veca[0] - vecb[0];
 	out[1] = veca[1] - vecb[1];
 	out[2] = veca[2] - vecb[2];
@@ -387,8 +377,6 @@ H2COMMON_API void VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t ou
 
 H2COMMON_API void VectorAdd(const vec3_t veca, const vec3_t vecb, vec3_t out)
 {
-	assert(out != vec3_origin);
-
 	out[0] = veca[0] + vecb[0];
 	out[1] = veca[1] + vecb[1];
 	out[2] = veca[2] + vecb[2];
@@ -433,8 +421,6 @@ H2COMMON_API qboolean Vec3IsZeroEpsilon(const vec3_t v)
 
 H2COMMON_API void VectorAbs(const vec3_t in, vec3_t out)
 {
-	assert(out != vec3_origin);
-
 	out[0] = fabsf(in[0]);
 	out[1] = fabsf(in[1]);
 	out[2] = fabsf(in[2]);
@@ -442,8 +428,6 @@ H2COMMON_API void VectorAbs(const vec3_t in, vec3_t out)
 
 H2COMMON_API void VectorRound(vec3_t v)
 {
-	assert(v != vec3_origin);
-
 	v[0] = floorf(v[0] + 0.5f);
 	v[1] = floorf(v[1] + 0.5f);
 	v[2] = floorf(v[2] + 0.5f);
@@ -456,8 +440,6 @@ H2COMMON_API float DotProduct(const vec3_t v1, const vec3_t v2)
 
 H2COMMON_API void VectorDec(vec3_t v)
 {
-	assert(v != vec3_origin);
-
 	v[0] -= 1.0f;
 	v[1] -= 1.0f;
 	v[2] -= 1.0f;
@@ -465,8 +447,6 @@ H2COMMON_API void VectorDec(vec3_t v)
 
 H2COMMON_API void VectorInc(vec3_t v)
 {
-	assert(v != vec3_origin);
-
 	v[0] += 1.0f;
 	v[1] += 1.0f;
 	v[2] += 1.0f;
@@ -474,8 +454,6 @@ H2COMMON_API void VectorInc(vec3_t v)
 
 H2COMMON_API void VectorClear(vec3_t v)
 {
-	assert(v != vec3_origin);
-
 	v[0] = 0.0f;
 	v[1] = 0.0f;
 	v[2] = 0.0f;
@@ -483,8 +461,6 @@ H2COMMON_API void VectorClear(vec3_t v)
 
 H2COMMON_API void VectorSet(vec3_t v, const float x, const float y, const float z)
 {
-	assert(v != vec3_origin);
-
 	v[0] = x;
 	v[1] = y;
 	v[2] = z;
@@ -492,8 +468,6 @@ H2COMMON_API void VectorSet(vec3_t v, const float x, const float y, const float 
 
 H2COMMON_API void VectorRandomSet(vec3_t v, const float rand_val) //mxd
 {
-	assert(v != vec3_origin);
-
 	v[0] = flrand(-rand_val, rand_val);
 	v[1] = flrand(-rand_val, rand_val);
 	v[2] = flrand(-rand_val, rand_val);
@@ -501,8 +475,6 @@ H2COMMON_API void VectorRandomSet(vec3_t v, const float rand_val) //mxd
 
 H2COMMON_API void VectorCopy(const vec3_t in, vec3_t out)
 {
-	assert(out != vec3_origin);
-
 	out[0] = in[0];
 	out[1] = in[1];
 	out[2] = in[2];
@@ -510,8 +482,6 @@ H2COMMON_API void VectorCopy(const vec3_t in, vec3_t out)
 
 H2COMMON_API void VectorInverse(vec3_t v)
 {
-	assert(v != vec3_origin);
-
 	v[0] = -v[0];
 	v[1] = -v[1];
 	v[2] = -v[2];
@@ -519,8 +489,6 @@ H2COMMON_API void VectorInverse(vec3_t v)
 
 H2COMMON_API void VectorNegate(const vec3_t in, vec3_t out)
 {
-	assert(out != vec3_origin);
-
 	out[0] = -in[0];
 	out[1] = -in[1];
 	out[2] = -in[2];
@@ -529,8 +497,6 @@ H2COMMON_API void VectorNegate(const vec3_t in, vec3_t out)
 // out = in * scale;
 H2COMMON_API void VectorScale(const vec3_t in, const float scale, vec3_t out)
 {
-	assert(out != vec3_origin);
-
 	out[0] = in[0] * scale;
 	out[1] = in[1] * scale;
 	out[2] = in[2] * scale;
@@ -538,8 +504,6 @@ H2COMMON_API void VectorScale(const vec3_t in, const float scale, vec3_t out)
 
 H2COMMON_API void VectorRadiansToDegrees(const vec3_t in, vec3_t out)
 {
-	assert(out != vec3_origin);
-
 	out[0] = in[0] * RAD_TO_ANGLE;
 	out[1] = in[1] * RAD_TO_ANGLE;
 	out[2] = in[2] * RAD_TO_ANGLE;
@@ -547,8 +511,6 @@ H2COMMON_API void VectorRadiansToDegrees(const vec3_t in, vec3_t out)
 
 H2COMMON_API void VectorDegreesToRadians(const vec3_t in, vec3_t out)
 {
-	assert(out != vec3_origin);
-
 	out[0] = in[0] * ANGLE_TO_RAD;
 	out[1] = in[1] * ANGLE_TO_RAD;
 	out[2] = in[2] * ANGLE_TO_RAD;
@@ -556,8 +518,6 @@ H2COMMON_API void VectorDegreesToRadians(const vec3_t in, vec3_t out)
 
 H2COMMON_API void VectorScaleByVector(const vec3_t in, const vec3_t scale, vec3_t out)
 {
-	assert(out != vec3_origin);
-
 	out[0] = in[0] * scale[0];
 	out[1] = in[1] * scale[1];
 	out[2] = in[2] * scale[2];
@@ -573,8 +533,6 @@ H2COMMON_API float VectorSeparationSquared(const vec3_t va, const vec3_t vb)
 
 H2COMMON_API void Vec3SubtractAssign(const vec3_t value, vec3_t subFrom)
 {
-	assert(subFrom != vec3_origin);
-
 	subFrom[0] -= value[0];
 	subFrom[1] -= value[1];
 	subFrom[2] -= value[2];
@@ -582,8 +540,6 @@ H2COMMON_API void Vec3SubtractAssign(const vec3_t value, vec3_t subFrom)
 
 H2COMMON_API void Vec3AddAssign(const vec3_t value, vec3_t addTo)
 {
-	assert(addTo != vec3_origin);
-
 	addTo[0] += value[0];
 	addTo[1] += value[1];
 	addTo[2] += value[2];
@@ -591,8 +547,6 @@ H2COMMON_API void Vec3AddAssign(const vec3_t value, vec3_t addTo)
 
 H2COMMON_API void Vec3MultAssign(const vec3_t value, vec3_t multBy)
 {
-	assert(multBy != vec3_origin);
-
 	multBy[0] *= value[0];
 	multBy[1] *= value[1];
 	multBy[2] *= value[2];
@@ -601,8 +555,6 @@ H2COMMON_API void Vec3MultAssign(const vec3_t value, vec3_t multBy)
 // scaleBy *= value;
 H2COMMON_API void Vec3ScaleAssign(const float value, vec3_t scaleBy)
 {
-	assert(scaleBy != vec3_origin);
-
 	scaleBy[0] *= value;
 	scaleBy[1] *= value;
 	scaleBy[2] *= value;
