@@ -213,32 +213,33 @@ H2COMMON_API void vectoangles(const vec3_t in, vec3_t out)
 //mxd. Assumes "direction" is normalized
 H2COMMON_API void AnglesFromDirAndUp(vec3_t direction, vec3_t up, vec3_t angles)
 {
-	vec3_t v_dir, v_up;
-	matrix3_t m1, m2, m3;
-
 	angles[0] = asinf(direction[2]); //mxd. asinf expects value in [-1.0; 1.0] range.
 
 	assert(!isnan(angles[0])); //mxd
 
-	memset(m1, 0, sizeof(matrix3_t));
+	matrix3_t m1 = { 0 };
 	m1[2][0] = direction[2];
 	m1[1][1] = 1.0f;
 	m1[0][0] = cosf(angles[0]);
 	m1[2][2] = m1[0][0];
 	m1[0][2] = -m1[2][0];
 
+	vec3_t v_dir;
 	Matrix3MultByVec3(m1, direction, v_dir);
 
 	angles[1] = atan2f(v_dir[1], v_dir[0]);
 
-	memset(m2, 0, sizeof(matrix3_t));
+	matrix3_t m2 = { 0 };
 	m2[2][2] = 1.0f;
 	m2[0][0] = cosf(angles[1]);
 	m2[1][1] = m2[0][0];
 	m2[0][1] = sinf(angles[1]);
 	m2[1][0] = -sinf(angles[1]);
 
+	matrix3_t m3;
 	Matrix3MultByMatrix3(m1, m2, m3);
+
+	vec3_t v_up;
 	Matrix3MultByVec3(m3, up, v_up);
 	v_up[0] = 0.0f;
 	VectorNormalize(v_up);
