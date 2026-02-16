@@ -758,7 +758,7 @@ static void SV_Savegame_f(void)
 		return;
 	}
 
-	if ((int)Cvar_VariableValue("deathmatch"))
+	if (Cvar_IsSet("deathmatch"))
 	{
 		Com_Printf("Can't savegame in a deathmatch\n");
 		return;
