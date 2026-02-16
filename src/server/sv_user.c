@@ -52,7 +52,7 @@ static void SV_New_f(void)
 	MSG_WriteLong(&sv_client->netchan.message, svs.spawncount);
 	MSG_WriteByte(&sv_client->netchan.message, sv.attractloop);
 	MSG_WriteString(&sv_client->netchan.message, Cvar_VariableString("gamedir"));
-	MSG_WriteByte(&sv_client->netchan.message, (Cvar_VariableValue("deathmatch") != 0.0f)); // H2
+	MSG_WriteByte(&sv_client->netchan.message, Cvar_IsSet("deathmatch")); // H2
 	MSG_WriteString(&sv_client->netchan.message, client_string); // H2
 
 	const int playernum = (sv.state == ss_cinematic ? -1 : sv_client - svs.clients);
@@ -180,9 +180,9 @@ static void SV_Begin_f(void)
 		return;
 	}
 
-	if (Cvar_VariableValue("coop") != 0.0f) // H2
+	if (Cvar_IsSet("coop")) // H2
 	{
-		if (Cvar_VariableValue("sv_cinematicfreeze") != 0.0f)
+		if (Cvar_IsSet("sv_cinematicfreeze"))
 		{
 			if (sv_client->coop_state != cst_cinematic_freeze)
 			{
@@ -204,7 +204,7 @@ static void SV_Begin_f(void)
 			return;
 		}
 
-		if (Cvar_VariableValue("sv_cooptimeout") != 0.0f)
+		if (Cvar_IsSet("sv_cooptimeout"))
 		{
 			if (sv_client->coop_state != cst_coop_timeout)
 			{
@@ -217,7 +217,7 @@ static void SV_Begin_f(void)
 				if (svs.clients[c].coop_state < cst_coop_timeout)
 					break;
 
-			if (c < (int)maxclients->value && sv.time < (uint)Cvar_VariableValue("sv_cooptimeout") * 1000)
+			if (c < (int)maxclients->value && sv.time < (uint)Cvar_VariableInt("sv_cooptimeout") * 1000)
 			{
 				MSG_WriteByte(&sv_client->netchan.message, svc_stufftext);
 				MSG_WriteString(&sv_client->netchan.message, va("cmd begin %i\n", svs.spawncount));
