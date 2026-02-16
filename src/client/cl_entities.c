@@ -784,10 +784,10 @@ static qboolean CL_ParsePlayerstate(const frame_t* oldframe, frame_t* newframe)
 	if (GetB(flags, PS_MINSMAXS))
 	{
 		for (int i = 0; i < 3; i++)
-			state->mins[i] = (float)MSG_ReadShort(&net_message) * 0.125f;
+			state->mins[i] = SHORT2POS(MSG_ReadShort(&net_message)); //mxd. Use define.
 
 		for (int i = 0; i < 3; i++)
-			state->maxs[i] = (float)MSG_ReadShort(&net_message) * 0.125f;
+			state->maxs[i] = SHORT2POS(MSG_ReadShort(&net_message)); //mxd. Use define.
 	}
 
 	if (GetB(flags, PS_INVENTORY))
@@ -815,7 +815,7 @@ static qboolean CL_ParsePlayerstate(const frame_t* oldframe, frame_t* newframe)
 	}
 	else
 	{
-		VectorSet(state->GroundPlane.normal, 0, 0, 1);
+		VectorCopy(vec3_up, state->GroundPlane.normal);
 	}
 
 	if (GetB(flags, PS_GROUNDBITS_GC))
