@@ -155,7 +155,7 @@ static void ClearIgnoredPlayersList(void)
 //mxd. Get current network protocol version.
 int CL_GetProtocolVersion(void)
 {
-	const int protocol = (int)(Cvar_VariableValue("protocol"));
+	const int protocol = Cvar_VariableInt("protocol");
 
 	if (protocol != PROTOCOL_VERSION && protocol != H2R_PROTOCOL_VERSION)
 		return H2R_PROTOCOL_VERSION;
@@ -253,7 +253,7 @@ static void CL_ForwardToServer_f(void)
 static void CL_Pause_f(void)
 {
 	// Never pause in multiplayer.
-	if (Cvar_VariableValue("maxclients") > 1.0f || !Com_ServerState())
+	if (Cvar_VariableInt("maxclients") > 1 || !Com_ServerState())
 		Cvar_SetValue("paused", 0.0f);
 	else
 		Cvar_SetValue("paused", (CL_PAUSED ? 0.0f : 1.0f));
@@ -262,7 +262,7 @@ static void CL_Pause_f(void)
 static void CL_FreezeWorld_f(void) // H2
 {
 	// Never freeze world in multiplayer.
-	if (Cvar_VariableValue("maxclients") > 1.0f || !Com_ServerState())
+	if (Cvar_VariableInt("maxclients") > 1 || !Com_ServerState())
 		Cvar_SetValue("freezeworldset", 0.0f);
 	else
 		Cvar_SetValue("freezeworldset", (CL_FREEZEWORLD ? 0.0f : 1.0f));
@@ -488,7 +488,7 @@ static void CL_SendConnectPacket(void)
 		if (adr.port == 0)
 			adr.port = BigShort(PORT_SERVER);
 
-		const int port = (int)(Cvar_VariableValue("qport"));
+		const int port = Cvar_VariableInt("qport");
 		const int protocol = CL_GetProtocolVersion(); //mxd. Original logic uses PROTOCOL_VERSION.
 		userinfo_modified = false;
 
@@ -972,7 +972,7 @@ static void CL_Precache_f(void)
 {
 	precache_spawncount = Q_atoi(Cmd_Argv(1)); // H2
 
-	if (Cmd_Argc() < 2 || strcmp(cls.servername, "localhost") == 0 || game_downloadable_type->value == 0.0f || Cvar_VariableValue("server_machine") != 0.0f) // H2: extra checks
+	if (Cmd_Argc() < 2 || strcmp(cls.servername, "localhost") == 0 || game_downloadable_type->value == 0.0f || Cvar_IsSet("server_machine")) // H2: extra checks
 	{
 		cls.disable_screen = true;
 
