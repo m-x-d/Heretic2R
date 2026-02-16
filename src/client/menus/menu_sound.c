@@ -43,13 +43,13 @@ static void UpdateSoundQualityFunc(void* self)
 
 	if (s_sound_quality_list.curvalue == 0)
 	{
-		restart_sound = (Cvar_VariableValue("s_loadas8bit") == 0.0f);
+		restart_sound = !Cvar_IsSet("s_loadas8bit");
 		Cvar_SetValue("s_khz", 22.0f); // H2_1.07: 11.0f -> 22.0f.
 		Cvar_SetValue("s_loadas8bit", 1);
 	}
 	else
 	{
-		restart_sound = (Cvar_VariableValue("s_loadas8bit") != 0.0f);
+		restart_sound = Cvar_IsSet("s_loadas8bit");
 		Cvar_SetValue("s_khz", 44.0f); // H2_1.07: 22.0f -> 44.0f.
 		Cvar_SetValue("s_loadas8bit", 0);
 	}
@@ -132,7 +132,7 @@ static void Sound_MenuInit(void) // H2
 	s_sound_quality_list.generic.flags = QMF_SINGLELINE;
 	s_sound_quality_list.generic.callback = UpdateSoundQualityFunc;
 	s_sound_quality_list.itemnames = lowhigh_names;
-	s_sound_quality_list.curvalue = (int)(Cvar_VariableValue("s_loadas8bit") == 0.0f);
+	s_sound_quality_list.curvalue = !Cvar_IsSet("s_loadas8bit");
 
 	Menu_AddItem(&s_sound_menu, &s_sound_backend_list); //mxd
 	Menu_AddItem(&s_sound_menu, &s_sound_sfxvolume_slider);
