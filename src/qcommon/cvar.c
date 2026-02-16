@@ -37,6 +37,20 @@ float Cvar_VariableValue(const char* var_name)
 	return 0.0f;
 }
 
+int Cvar_VariableInt(const char* var_name) //mxd
+{
+	const cvar_t* var = Cvar_FindVar(var_name);
+	if (var != NULL)
+		return strtol(var->string, NULL, 10);
+
+	return 0;
+}
+
+qboolean Cvar_IsSet(const char* var_name) //mxd
+{
+	return (Cvar_VariableInt(var_name) != 0);
+}
+
 // Q2 counterpart
 char* Cvar_VariableString(const char* var_name)
 {

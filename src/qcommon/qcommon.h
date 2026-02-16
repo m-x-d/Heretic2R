@@ -462,8 +462,10 @@ extern cvar_t* Cvar_FullSet(const char* var_name, const char* value, int flags);
 // Expands value to a string and calls Cvar_Set.
 Q2DLL_DECLSPEC extern void Cvar_SetValue(const char* var_name, float value);
 
-// Returns 0 if not defined or non numeric.
+// Returns 0 if not defined or non-numeric.
 extern float Cvar_VariableValue(const char* var_name);
+extern int Cvar_VariableInt(const char* var_name); //mxd
+extern qboolean Cvar_IsSet(const char* var_name); //mxd
 
 // Returns an empty string if not defined.
 extern char* Cvar_VariableString(const char* var_name);
