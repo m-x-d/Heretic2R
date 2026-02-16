@@ -289,7 +289,7 @@ static void SVC_DirectConnect(void)
 	if (!NET_IsLocalAddress(adr))
 	{
 		// H2: check game type.
-		if ((int)Cvar_VariableValue("coop") && !(int)Cvar_VariableValue("dedicated") && !is_local_client)
+		if (Cvar_IsSet("coop") && !Cvar_IsSet("dedicated") && !is_local_client)
 			return;
 
 		int ci;
