@@ -613,7 +613,7 @@ static int NET_IPSocket(const char* net_interface, const int port)
 static void NET_OpenIP(void)
 {
 	const cvar_t* ip = Cvar_Get("ip", "localhost", CVAR_NOSET);
-	const qboolean is_dedicated = ((int)Cvar_VariableValue("dedicated") != 0);
+	const qboolean is_dedicated = Cvar_IsSet("dedicated");
 
 	if (ip_sockets[NS_SERVER] == 0)
 	{
@@ -703,7 +703,7 @@ static int NET_IPXSocket(const int port)
 
 static void NET_OpenIPX(void)
 {
-	const qboolean is_dedicated = ((int)(Cvar_VariableValue("dedicated")) != 0);
+	const qboolean is_dedicated = Cvar_IsSet("dedicated");
 
 	if (ipx_sockets[NS_SERVER] == 0)
 	{
