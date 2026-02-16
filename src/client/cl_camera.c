@@ -487,7 +487,7 @@ void CL_CalcViewValues(void)
 		vec3_t offsetangles;
 
 		if ((int)cl_predict->value)
-			VectorSubtract(cl.playerinfo.offsetangles, ps->offsetangles, offsetangles);
+			VectorCopy(cl.playerinfo.offsetangles, offsetangles); //mxd. Original logic does 'VectorSubtract(cl.playerinfo.offsetangles, ps->offsetangles, offsetangles)' instead (which nullifies offsetangles during client -> server update).
 		else
 			VectorSubtract(ps->offsetangles, ops->offsetangles, offsetangles);
 
