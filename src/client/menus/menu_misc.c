@@ -184,7 +184,7 @@ static void Misc_MenuInit(void) // H2
 	s_options_captions_box.generic.width = re.BF_Strlen(name_caption);
 	s_options_captions_box.generic.flags = QMF_SINGLELINE;
 	s_options_captions_box.generic.callback = ShowCaptionsFunc;
-	s_options_captions_box.curvalue = (int)(Cvar_VariableValue("cl_showcaptions") != 0.0f); //mxd. Original logic just sets curvalue to cl_showcaptions value.
+	s_options_captions_box.curvalue = Cvar_IsSet("cl_showcaptions"); //mxd. Original logic just sets curvalue to cl_showcaptions value.
 	s_options_captions_box.itemnames = yes_no_names;
 
 	//mxd. "Show Splash Movies" option.
@@ -196,7 +196,7 @@ static void Misc_MenuInit(void) // H2
 	s_options_show_splash_movies_box.generic.width = re.BF_Strlen(name_show_splash_movies);
 	s_options_show_splash_movies_box.generic.flags = QMF_SINGLELINE;
 	s_options_show_splash_movies_box.generic.callback = ShowSplashMoviesFunc;
-	s_options_show_splash_movies_box.curvalue = (int)(Cvar_VariableValue("show_splash_movies") != 0.0f);
+	s_options_show_splash_movies_box.curvalue = Cvar_IsSet("show_splash_movies");
 	s_options_show_splash_movies_box.itemnames = yes_no_names;
 
 	Com_sprintf(name_yawspeed, sizeof(name_yawspeed), "\x02%s", m_item_yawspeed->string);
@@ -218,7 +218,7 @@ static void Misc_MenuInit(void) // H2
 	s_options_violence_box.generic.width = re.BF_Strlen(name_violence);
 	s_options_violence_box.generic.flags = 0;
 	s_options_violence_box.generic.callback = ViolenceFunc;
-	s_options_violence_box.curvalue = (int)(Cvar_VariableValue("blood_level"));
+	s_options_violence_box.curvalue = Cvar_VariableInt("blood_level");
 	s_options_violence_box.itemnames = violence_refs;
 
 	Com_sprintf(name_console, sizeof(name_console), "\x02%s", m_item_console->string);
