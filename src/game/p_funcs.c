@@ -591,7 +591,7 @@ void G_PlayerClimbingMoveFunc(playerinfo_t* info, const float height, float var2
 qboolean G_PlayerActionCheckPuzzleGrab(playerinfo_t* info)
 {
 	vec3_t forward;
-	const vec3_t player_facing = { 0.0f, info->angles[1], 0.0f };
+	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f };
 	AngleVectors(player_facing, forward, NULL, NULL);
 
 	vec3_t end_point;
@@ -637,7 +637,7 @@ qboolean G_PlayerActionCheckPushPull_Ent(const edict_t* ent)
 void G_PlayerActionMoveItem(const playerinfo_t* info, const float distance) //TODO: unused
 {
 	vec3_t push_dir;
-	const vec3_t player_facing = { 0.0f, info->angles[1], 0.0f };
+	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f };
 	AngleVectors(player_facing, push_dir, NULL, NULL);
 
 	edict_t* item = info->target_ent; //mxd

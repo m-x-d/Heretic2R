@@ -1201,7 +1201,7 @@ static void PM_ClampAngles(void)
 		for (int i = 0; i < 3; i++)
 			pm->viewangles[i] = SHORT2ANGLE(pm->s.delta_angles[i] + pm->cmd.angles[i]);
 
-		// Don't let the player look up or down more than 90 degrees. //TODO: up/down is YAW (which is clamped somewhere else)!
+		// Don't let the player look up or down more than 90 degrees.
 		if (pm->viewangles[PITCH] > 89.0f && pm->viewangles[PITCH] < 180.0f)
 			pm->viewangles[PITCH] = 89.0f;
 		else if (pm->viewangles[PITCH] >= 180.0f && pm->viewangles[PITCH] < 271.0f)
