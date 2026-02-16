@@ -204,7 +204,7 @@ void V_RenderView(const float stereo_separation)
 	
 	CalcFov((float)scr_vrect.width, (float)scr_vrect.height);
 
-	if (!(int)cl_paused->value)
+	if (!CL_PAUSED)
 		cl.refdef.time = (float)cl.time * 0.001f;
 
 	cl.refdef.areabits = cl.frame.areabits;

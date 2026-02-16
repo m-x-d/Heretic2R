@@ -1083,7 +1083,9 @@ void CL_ParseFrame(void)
 		}
 
 		cl.sound_prepped = true; // Can start mixing ambient sounds.
-		CL_CheckPredictionError();
+
+		if (CL_PREDICT) // H2: no PMF_NO_PREDICTION check. //mxd. Check originally done at the start of CL_CheckPredictionError().
+			CL_CheckPredictionError();
 	}
 }
 
@@ -1104,7 +1106,7 @@ void CL_AddEntities(void)
 		cl.lerpfrac = 1.0f;
 
 	fxe.AddPacketEntities(&cl.frame);
-	fxe.AddEffects((qboolean)cl_freezeworld->value);
+	fxe.AddEffects(CL_FREEZEWORLD);
 
 	CL_CalcViewValues();
 }

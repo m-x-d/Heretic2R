@@ -582,7 +582,7 @@ static void CL_UpdateClientAngles(void)
 	}
 
 	// When executing quickturn.
-	const float quickturn_rate = (((int)cl_predict->value) ? cl.playerinfo.quickturn_rate : cl.frame.playerstate.quickturn_rate);
+	const float quickturn_rate = (CL_PREDICT ? cl.playerinfo.quickturn_rate : cl.frame.playerstate.quickturn_rate);
 
 	if (quickturn_time > 0.0f && quickturn_rate != 0.0f)
 	{

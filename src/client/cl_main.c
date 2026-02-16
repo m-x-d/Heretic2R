@@ -253,19 +253,19 @@ static void CL_ForwardToServer_f(void)
 static void CL_Pause_f(void)
 {
 	// Never pause in multiplayer.
-	if (Cvar_VariableValue("maxclients") > 1 || !Com_ServerState())
+	if (Cvar_VariableValue("maxclients") > 1.0f || !Com_ServerState())
 		Cvar_SetValue("paused", 0.0f);
 	else
-		Cvar_SetValue("paused", (cl_paused->value != 0.0f ? 0.0f : 1.0f));
+		Cvar_SetValue("paused", (CL_PAUSED ? 0.0f : 1.0f));
 }
 
 static void CL_FreezeWorld_f(void) // H2
 {
 	// Never freeze world in multiplayer.
-	if (Cvar_VariableValue("maxclients") > 1 || !Com_ServerState())
+	if (Cvar_VariableValue("maxclients") > 1.0f || !Com_ServerState())
 		Cvar_SetValue("freezeworldset", 0.0f);
 	else
-		Cvar_SetValue("freezeworldset", (cl_freezeworld->value != 0.0f ? 0.0f : 1.0f));
+		Cvar_SetValue("freezeworldset", (CL_FREEZEWORLD ? 0.0f : 1.0f));
 }
 
 // Q2 counterpart
@@ -1445,7 +1445,7 @@ void CL_Frame(const int packetdelta, const int renderdelta, const int timedelta,
 		// Fetch results from server.
 		CL_ReadPackets();
 
-		if ((int)cl_predict->value) // H2
+		if (CL_PREDICT) // H2
 			CL_StorePlayerInventoryInfo();
 
 		IN_Update(); // YQ2		// Run SDL3 message loop.
@@ -1488,7 +1488,7 @@ void CL_Frame(const int packetdelta, const int renderdelta, const int timedelta,
 		se.Update(cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up);
 
 		// Advance local effects for next frame.
-		if (cl.frame.valid && !(int)cl_paused->value && !(int)cl_freezeworld->value) // H2
+		if (cl.frame.valid && !CL_PAUSED && !CL_FREEZEWORLD) // H2
 		{
 			fxe.UpdateEffects();
 			SK_UpdateSkeletons();

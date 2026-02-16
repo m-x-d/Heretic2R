@@ -508,6 +508,10 @@ typedef snd_export_t (*GetSoundAPI_t)(snd_import_t);
 
 #pragma region ========================== CVARS ==========================
 
+#define CL_PREDICT		((qboolean)cl_predict->value) //mxd
+#define CL_FREEZEWORLD	((qboolean)cl_freezeworld->value) //mxd
+#define CL_PAUSED		((qboolean)cl_paused->value) //mxd
+
 extern cvar_t* cl_stereo_separation;
 extern cvar_t* cl_stereo;
 

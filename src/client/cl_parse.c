@@ -840,7 +840,7 @@ static void CL_ParseStartSoundPacket(void)
 	if (sfx == NULL)
 		return;
 
-	if (!(int)cl_predict->value || !have_prediction_info || sound_event_id_time_array[event_id] > leveltime || sound_event_id_time_array[event_id] == 0.0f)
+	if (!CL_PREDICT || !have_prediction_info || sound_event_id_time_array[event_id] > leveltime || sound_event_id_time_array[event_id] == 0.0f)
 		se.StartSound(pos, ent, channel, sfx, volume, attenuation, ofs);
 
 	if (have_prediction_info && sound_event_id_time_array[event_id] <= leveltime) // H2

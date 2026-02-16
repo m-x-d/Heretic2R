@@ -37,9 +37,6 @@ static vec3_t pred_prevAngles = VEC3_ZERO;
 
 void CL_CheckPredictionError(void) //mxd. Called on packetframe.
 {
-	if (!(int)cl_predict->value) // H2: no PMF_NO_PREDICTION check.
-		return;
-
 	// Calculate the last usercmd_t we sent that the server has processed.
 	const int frame = cls.netchan.incoming_acknowledged & (CMD_BACKUP - 1);
 
@@ -625,14 +622,14 @@ void CL_PredictMovement(void)
 	static float origin_lerp_increment;
 	static float player_lerp_increment;
 
-	if ((int)cl_paused->value || (int)cl_freezeworld->value || cl.cinematictime > 0 || cl.frame.playerstate.cinematicfreeze)
+	if (CL_PAUSED || CL_FREEZEWORLD || cl.cinematictime > 0 || cl.frame.playerstate.cinematicfreeze)
 		return;
 
 	// Set angles.
 	for (int i = 0; i < 3; i++)
 		cl.predicted_angles[i] = cl.viewangles[i] + SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[i]);
 
-	if (!(int)cl_predict->value || cls.state != ca_active)
+	if (!CL_PREDICT || cls.state != ca_active)
 		return;
 
 	const int ack = cls.netchan.incoming_acknowledged;

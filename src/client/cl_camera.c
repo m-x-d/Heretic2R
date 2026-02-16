@@ -185,8 +185,8 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 	if (cls.state != ca_active)
 		return;
 
-	const int water_flags = ((int)cl_predict->value ? cl.playerinfo.pm_w_flags : cl.frame.playerstate.pmove.w_flags);
-	const int waterlevel = ((int)cl_predict->value ? cl.playerinfo.waterlevel : cl.frame.playerstate.waterlevel);
+	const int water_flags = (CL_PREDICT ? cl.playerinfo.pm_w_flags : cl.frame.playerstate.pmove.w_flags);
+	const int waterlevel =  (CL_PREDICT ? cl.playerinfo.waterlevel : cl.frame.playerstate.waterlevel);
 
 	if ((int)cl_camera_fpmode->value)
 	{
@@ -447,7 +447,7 @@ void CL_CalcViewValues(void)
 	// Calculate the origin.
 	if (ps->remote_id == REMOTE_ID_NONE && ps->pmove.pm_type != PM_INTERMISSION) //mxd. Use REMOTE_ID_NONE define.
 	{
-		if ((int)cl_predict->value)
+		if (CL_PREDICT)
 		{
 			VectorCopy(cl.predicted_origin, PlayerEntPtr->origin);
 		}
@@ -462,7 +462,7 @@ void CL_CalcViewValues(void)
 
 	if (offsetangles_changed)
 	{
-		if ((int)cl_predict->value)
+		if (CL_PREDICT)
 			VectorCopy(cl.playerinfo.offsetangles, offsetangles); //mxd. Original logic does 'VectorSubtract(cl.playerinfo.offsetangles, ps->offsetangles, offsetangles)' instead (which nullifies offsetangles during client -> server update).
 		else
 			VectorSubtract(ps->offsetangles, ops->offsetangles, offsetangles);
