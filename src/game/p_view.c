@@ -653,10 +653,7 @@ void ClientEndServerFrame(edict_t* player)
 	}
 
 	// Reflect remote camera views(s) in the client's playerstate.
-	if (cl->RemoteCameraLockCount > 0)
-		cl->ps.remote_id = cl->RemoteCameraNumber;
-	else
-		cl->ps.remote_id = REMOTE_ID_NONE; //mxd. Use define.
+	cl->ps.remote_id = ((cl->RemoteCameraLockCount > 0) ? cl->RemoteCameraNumber : REMOTE_ID_NONE); //mxd. Use define.
 
 	// Reflect inventory changes in the client's playetstate.
 	cl->ps.NoOfItems = 0;
@@ -677,11 +674,8 @@ void ClientEndServerFrame(edict_t* player)
 	cl->ps.NoOfItems = (byte)items_count;
 
 	// Reflect changes to the client's origin and velocity due to the current player animation, in the client's playerstate.
-	for (int i = 0; i < 3; i++)
-	{
-		cl->ps.pmove.origin[i] = POS2SHORT(player->s.origin[i]); //mxd. Use define.
-		cl->ps.pmove.velocity[i] = POS2SHORT(player->velocity[i]); //mxd. Use define.
-	}
+	VEC2SHORT(player->s.origin, cl->ps.pmove.origin); //mxd. Use define.
+	VEC2SHORT(player->velocity, cl->ps.pmove.velocity); //mxd. Use define.
 
 	// Reflect viewheight changes in client's playerstate.
 	cl->ps.viewheight = (short)player->viewheight;
