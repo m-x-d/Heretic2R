@@ -429,9 +429,6 @@ void SV_ClearPersistantEffectBuffersArray(void)
 
 void SV_SendClientEffects(client_t* cl)
 {
-#define FOV_SCALER	(0.01047197543084621f) //TODO: what's this value?
-#define CAM_SCALER	(0.0000958738f) //TODO: what's this value?
-
 	static byte fx_send_buffer[2000];
 	static byte fx_demo_send_buffer[2000];
 
@@ -451,16 +448,16 @@ void SV_SendClientEffects(client_t* cl)
 
 	if (effects_buffer_index > 0)
 	{
-		const float fov = cosf(cl->frames[sv.framenum & UPDATE_MASK].ps.fov * FOV_SCALER);
+		const float fov = cosf(cl->frames[sv.framenum & UPDATE_MASK].ps.fov * ANGLE_TO_RAD * 0.6f); // Uses slightly bigger FOV than CalculatePIV() --mxd.
 
 		vec3_t cam_vieworg;
 		for (int i = 0; i < 3; i++)
 			cam_vieworg[i] = (float)cl->lastcmd.camera_vieworigin[i] * 0.125f;
 
 		vec3_t cam_viewangles;
-		cam_viewangles[0] = -(float)cl->lastcmd.camera_viewangles[0] * CAM_SCALER;
-		cam_viewangles[1] = (float)cl->lastcmd.camera_viewangles[1] * CAM_SCALER;
-		cam_viewangles[2] = (float)cl->lastcmd.camera_viewangles[2] * CAM_SCALER;
+		cam_viewangles[0] = -SHORT2ANGLE(cl->lastcmd.camera_viewangles[0]) * ANGLE_TO_RAD;
+		cam_viewangles[1] =  SHORT2ANGLE(cl->lastcmd.camera_viewangles[1]) * ANGLE_TO_RAD;
+		cam_viewangles[2] =  SHORT2ANGLE(cl->lastcmd.camera_viewangles[2]) * ANGLE_TO_RAD;
 
 		vec3_t direction;
 		DirFromAngles(cam_viewangles, direction);
