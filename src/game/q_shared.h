@@ -675,8 +675,14 @@ typedef struct
 #define ANGLE2SHORT(x)	((int)((x) * 65536.0f / 360.0f) & 65535)
 #define SHORT2ANGLE(x)	((float)(x) * 360.0f / 65536.0f)
 
+#define ANGLES2SHORT(in, out)	((out)[0] = ANGLE2SHORT((in)[0]), (out)[1] = ANGLE2SHORT((in)[1]), (out)[2] = ANGLE2SHORT((in)[2])) //mxd
+#define SHORT2ANGLES(in, out)	((out)[0] = SHORT2ANGLE((in)[0]), (out)[1] = SHORT2ANGLE((in)[1]), (out)[2] = SHORT2ANGLE((in)[2])) //mxd
+
 #define POS2SHORT(x)	((short)((x) * 8.0f)) //mxd
 #define SHORT2POS(x)	((float)(x) * (1.0f / 8.0f)) //mxd
+
+#define VEC2SHORT(in, out)	((out)[0] = POS2SHORT((in)[0]), (out)[1] = POS2SHORT((in)[1]), (out)[2] = POS2SHORT((in)[2])) //mxd
+#define SHORT2VEC(in, out)	((out)[0] = SHORT2POS((in)[0]), (out)[1] = SHORT2POS((in)[1]), (out)[2] = SHORT2POS((in)[2])) //mxd
 
 // Config strings are a general means of communication from the server to all connected clients.
 // Each config string can be at most MAX_QPATH characters.
