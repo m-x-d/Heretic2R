@@ -27,7 +27,7 @@ typedef enum //mxd
 	SSF_NUM_FORMATS
 } ScreenshotSaveFormat_t;
 
-extern const char* screenshot_formats[SSF_NUM_FORMATS]; //mxd
+extern const char* screenshot_formats[SSF_NUM_FORMATS + 1]; //mxd
 
 extern void M_Menu_Misc_f(void);
 extern ScreenshotSaveFormat_t M_GetCurrentScreenshotSaveFormat(void); //mxd

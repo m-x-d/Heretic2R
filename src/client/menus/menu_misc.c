@@ -31,7 +31,7 @@ static menulist_t s_options_violence_box;
 static menulist_t s_options_screenshot_format_box; //mxd
 static menuaction_t s_options_console_action;
 
-const char* screenshot_formats[SSF_NUM_FORMATS] = { "jpg", "png" };
+const char* screenshot_formats[SSF_NUM_FORMATS + 1] = { "jpg", "png", NULL }; // Menu logic requires NULL terminator... --mxd.
 
 // Q2 counterpart
 static void CrosshairFunc(void* self)

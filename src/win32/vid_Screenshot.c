@@ -42,7 +42,7 @@ static int VID_GetFreeScreenshotIndex(const char* screenshots_dir) //mxd
 		qboolean file_exists = false;
 
 		// Assume free only when no files with this index exist.
-		for (uint c = 0; c < ARRAY_SIZE(screenshot_formats); c++)
+		for (uint c = 0; c < SSF_NUM_FORMATS; c++)
 		{
 			if (Sys_IsFile(va(SCREENSHOT_FILENAME_FORMAT, screenshots_dir, i, screenshot_formats[c])))
 			{
