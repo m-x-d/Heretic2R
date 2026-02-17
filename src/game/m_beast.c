@@ -284,15 +284,8 @@ static qboolean IsVisibleToClient(const edict_t* self) //mxd. Named 'visible_to_
 
 		edict_t* temp = G_Spawn();
 
-		VectorSet(temp->s.origin,
-			(float)cl->client->playerinfo.pcmd.camera_vieworigin[0] * 0.125f,
-			(float)cl->client->playerinfo.pcmd.camera_vieworigin[1] * 0.125f,
-			(float)cl->client->playerinfo.pcmd.camera_vieworigin[2] * 0.125f);
-
-		VectorSet(temp->s.angles,
-			SHORT2ANGLE(cl->client->playerinfo.pcmd.camera_viewangles[0]),
-			SHORT2ANGLE(cl->client->playerinfo.pcmd.camera_viewangles[1]),
-			SHORT2ANGLE(cl->client->playerinfo.pcmd.camera_viewangles[2]));
+		SHORT2VEC(cl->client->playerinfo.pcmd.camera_vieworigin, temp->s.origin); //mxd. Use define.
+		SHORT2ANGLES(cl->client->playerinfo.pcmd.camera_viewangles, temp->s.angles); //mxd. Use define.
 
 		const qboolean is_visible = (MG_IsInforntPos(temp, self->s.origin) && gi.inPVS(temp->s.origin, self->s.origin));
 		G_FreeEdict(temp);
