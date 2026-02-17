@@ -703,7 +703,7 @@ void CL_RefreshCmd(void) // YQ2. Called on packetframe or renderframe.
 	{
 		cmd->angles[i] = ANGLE2SHORT(cl.inputangles[i]);
 		cmd->aimangles[i] = (short)(cl.frame.playerstate.pmove.delta_angles[i] - ANGLE2SHORT(-cl.viewangles[i]));
-		cmd->camera_vieworigin[i] = (short)(cl.camera_vieworigin[i] * 8.0f);
+		cmd->camera_vieworigin[i] = POS2SHORT(cl.camera_vieworigin[i]); //mxd. Use define.
 		cmd->camera_viewangles[i] = ANGLE2SHORT(cl.camera_viewangles[i]);
 	}
 
