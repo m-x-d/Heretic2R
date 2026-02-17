@@ -451,8 +451,7 @@ void SV_SendClientEffects(client_t* cl)
 		const float fov = cosf(cl->frames[sv.framenum & UPDATE_MASK].ps.fov * ANGLE_TO_RAD * 0.6f); // Uses slightly bigger FOV than CalculatePIV() --mxd.
 
 		vec3_t cam_vieworg;
-		for (int i = 0; i < 3; i++)
-			cam_vieworg[i] = (float)cl->lastcmd.camera_vieworigin[i] * 0.125f;
+		SHORT2VEC(cl->lastcmd.camera_vieworigin, cam_vieworg); //mxd. Use define.
 
 		vec3_t cam_viewangles;
 		cam_viewangles[0] = -SHORT2ANGLE(cl->lastcmd.camera_viewangles[0]) * ANGLE_TO_RAD;
@@ -463,8 +462,7 @@ void SV_SendClientEffects(client_t* cl)
 		DirFromAngles(cam_viewangles, direction);
 
 		vec3_t delta;
-		for (int i = 0; i < 3; i++)
-			delta[i] = cam_vieworg[i] - direction[i] * 200.0f;
+		VectorMA(cam_vieworg, -200.0f, direction, delta);
 
 		for (int i = 0; i < effects_buffer_index; i++)
 		{
@@ -506,7 +504,7 @@ void SV_SendClientEffects(client_t* cl)
 		if (pfx->numEffects == 0)
 			continue;
 
-		if ((send_mask & pfx->send_mask) == 0)
+		if (!(pfx->send_mask & send_mask))
 		{
 			if ((int)sv_pers_fx_send_cut_off->value <= send_size + send_buffer_offset + send_demo_buffer_offset)
 				break;
@@ -520,7 +518,7 @@ void SV_SendClientEffects(client_t* cl)
 			send_effects = true;
 		}
 
-		if ((send_mask & pfx->demo_send_mask) == 0)
+		if (!(pfx->demo_send_mask & send_mask))
 		{
 			if ((int)sv_pers_fx_send_cut_off->value <= send_size + send_buffer_offset + send_demo_buffer_offset)
 				break;
