@@ -65,8 +65,7 @@ void CL_CheckPredictionError(void) //mxd. Called on packetframe.
 			Com_Printf("prediction miss on %i: %i\n", cl.frame.serverframe, delta[0] + delta[1] + delta[2]);
 
 		// Save for error interpolation.
-		for (int i = 0; i < 3; i++)
-			cl.prediction_error[i] = (float)delta[i] * 0.125f;
+		SHORT2VEC(delta, cl.prediction_error); //mxd. Use define.
 	}
 }
 
@@ -282,12 +281,8 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 	vec3_t origin; // H2
 	pmove_t pm = { .trace = CL_PMTrace, .pointcontents = CL_PMpointcontents, .s = cl.frame.playerstate.pmove, .origin = origin };
 
-	for (int i = 0; i < 3; i++)
-	{
-		cl.playerinfo.origin[i] = SHORT2POS(pm.s.origin[i]); //mxd. Use define.
-		cl.playerinfo.velocity[i] = SHORT2POS(pm.s.velocity[i]); //mxd. Use define.
-	}
-
+	SHORT2VEC(pm.s.origin, cl.playerinfo.origin); //mxd. Use define.
+	SHORT2VEC(pm.s.velocity, cl.playerinfo.velocity); //mxd. Use define.
 	VectorCopy(cl.frame.playerstate.mins, pm.mins);
 	VectorCopy(cl.frame.playerstate.maxs, pm.maxs);
 
@@ -426,7 +421,7 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 		else
 		{
 			pm.s.pm_flags &= ~PMF_LOCKTURN;
-			cl.playerinfo.turncmd += SHORT2ANGLE(pm.cmd.angles[1] - old_cmd_angles[1]);
+			cl.playerinfo.turncmd += SHORT2ANGLE(pm.cmd.angles[YAW] - old_cmd_angles[YAW]);
 		}
 
 		VectorCopy_Macro(pm.cmd.angles, old_cmd_angles);
@@ -483,11 +478,8 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 		VectorCopy(pred_currAngles, pred_prevAngles);
 		VectorCopy(cl.playerinfo.angles, pred_currAngles);
 
-		for (int i = 0; i < 3; i++)
-		{
-			cl.playerinfo.origin[i] = SHORT2POS(pm.s.origin[i]); //mxd. Use define.
-			cl.playerinfo.velocity[i] = SHORT2POS(pm.s.velocity[i]); //mxd. Use define.
-		}
+		SHORT2VEC(pm.s.origin, cl.playerinfo.origin); //mxd. Use define.
+		SHORT2VEC(pm.s.velocity, cl.playerinfo.velocity); //mxd. Use define.
 
 		VectorCopy(pm.intentMins, cl.playerinfo.mins);
 		VectorCopy(pm.intentMaxs, cl.playerinfo.maxs);
@@ -558,8 +550,7 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 
 			cl.playerinfo.pcmd = pm.cmd;
 
-			for (int i = 0; i < 3; i++)
-				cl.playerinfo.aimangles[i] = SHORT2ANGLE(pm.cmd.aimangles[i]);
+			SHORT2ANGLES(pm.cmd.aimangles, cl.playerinfo.aimangles); //mxd. Use define.
 
 			for (int i = 0; i < steps; i++)
 			{
@@ -590,11 +581,8 @@ static void CL_PredictMovement_impl(void) //mxd. Surprisingly, NOT the biggest H
 				VectorCopy(cl.playerinfo.velocity, cl.playerinfo.oldvelocity);
 			}
 
-			for (int i = 0; i < 3; i++)
-			{
-				pm.s.origin[i] = POS2SHORT(cl.playerinfo.origin[i]); //mxd. Use define.
-				pm.s.velocity[i] = POS2SHORT(cl.playerinfo.velocity[i]); //mxd. Use define.
-			}
+			VEC2SHORT(cl.playerinfo.origin, pm.s.origin); //mxd. Use define.
+			VEC2SHORT(cl.playerinfo.velocity, pm.s.velocity); //mxd. Use define.
 
 			pm.s.pm_type = cl.playerinfo.movetype;
 			pm.s.pm_flags = (byte)cl.playerinfo.pm_flags;
