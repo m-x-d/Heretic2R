@@ -814,15 +814,9 @@ void SV_BuildClientFrame(client_t* client)
 
 	// Find the client's PVS.
 	if (cl_ent->client->ps.remote_id != REMOTE_ID_NONE) // H2. When looking through remote camera.
-	{
-		for (int i = 0; i < 3; i++)
-			org[i] = cl_ent->client->ps.remote_vieworigin[i] * 0.125f;
-	}
+		SHORT2VEC(cl_ent->client->ps.remote_vieworigin, org); //mxd. Use define.
 	else
-	{
-		for (int i = 0; i < 3; i++)
-			org[i] = (float)client->lastcmd.camera_vieworigin[i] * 0.125f;
-	}
+		SHORT2VEC(client->lastcmd.camera_vieworigin, org); //mxd. Use define.
 
 	const int leafnum = CM_PointLeafnum(org);
 	const int clientarea = CM_LeafArea(leafnum);
