@@ -1064,12 +1064,9 @@ void CL_ParseFrame(void)
 			cls.state = ca_active;
 			cl.force_refdef = true;
 
-			for (int i = 0; i < 3; i++)
-			{
-				cl.predicted_origin[i] = SHORT2POS(cl.frame.playerstate.pmove.origin[i]); //mxd. Use define.
-				cl.predicted_angles[i] = cl.frame.playerstate.viewangles[i];
-				cl.viewangles[i] = SHORT2ANGLE(cl.frame.playerstate.pmove.camera_delta_angles[i]); // H2
-			}
+			SHORT2VEC(cl.frame.playerstate.pmove.origin, cl.predicted_origin); //mxd. Use define.
+			VectorCopy(cl.frame.playerstate.viewangles, cl.predicted_angles);
+			SHORT2ANGLES(cl.frame.playerstate.pmove.camera_delta_angles, cl.viewangles); // H2
 
 			if (cl.refresh_prepped && cls.disable_servercount != cl.servercount)
 				SCR_EndLoadingPlaque(); // Get rid of loading plaque.
