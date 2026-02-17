@@ -148,10 +148,7 @@ char* dm_statusbar =
 void MoveClientToIntermission(edict_t* client, const qboolean log_file)
 {
 	VectorCopy(level.intermission_origin, client->s.origin);
-
-	for (int i = 0; i < 3; i++)
-		client->client->ps.pmove.origin[i] = POS2SHORT(level.intermission_origin[i]); //mxd. Use define.
-
+	VEC2SHORT(level.intermission_origin, client->client->ps.pmove.origin); //mxd. Use define.
 	VectorCopy(level.intermission_angle, client->client->ps.viewangles);
 
 	client->client->ps.pmove.pm_type = PM_INTERMISSION;
