@@ -439,21 +439,17 @@ void CalculatePIV(const edict_t* player)
 
 	// Grab camera angles.
 	vec3_t angles;
-	for (int i = 0; i < 3; i++)
-		angles[i] = SHORT2ANGLE(player->client->playerinfo.pcmd.camera_viewangles[i]);
+	SHORT2ANGLES(player->client->playerinfo.pcmd.camera_viewangles, angles); //mxd. Use define.
 
-	vec3_t move_dir;
-	AngleVectors(angles, move_dir, NULL, NULL);
+	vec3_t forward;
+	AngleVectors(angles, forward, NULL, NULL);
 
 	// Grab camera coords.
 	vec3_t org;
-	for (int i = 0; i < 3; i++)
-		org[i] = (float)player->client->playerinfo.pcmd.camera_vieworigin[i] / 8.0f;
+	SHORT2VEC(player->client->playerinfo.pcmd.camera_vieworigin, org); //mxd. Use define.
 
-	vec3_t mins;
-	vec3_t maxs;
-	VectorScale(player->mins, 0.25f, mins);
-	VectorScale(player->maxs, 0.25f, maxs);
+	const vec3_t mins = VEC3_INITS(player->mins, 0.25f);
+	const vec3_t maxs = VEC3_INITS(player->maxs, 0.25f);
 
 	//FIXME: need some way of knowing whether client is valid or not.
 	for (int i = 0; i < game.maxclients; i++)
@@ -482,7 +478,7 @@ void CalculatePIV(const edict_t* player)
 			continue;
 
 		// Check in players FOV.
-		if (DotProduct(dist, move_dir) < fov || !gi.inPVS(org, end_pos))
+		if (DotProduct(dist, forward) < fov || !gi.inPVS(org, end_pos))
 			continue;
 
 		trace_t trace;
