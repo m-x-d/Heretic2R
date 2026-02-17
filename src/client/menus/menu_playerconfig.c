@@ -25,7 +25,7 @@ typedef struct
 static int s_num_player_skins;
 static int s_current_skin_index;
 static qboolean current_skin_exists;
-static char* skin_names[MAX_PLAYER_SKINS];
+static const char* skin_names[MAX_PLAYER_SKINS];
 static cvar_t* skin;
 
 static menuframework_t s_player_config_menu;

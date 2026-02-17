@@ -144,7 +144,7 @@ static void DMFlagCallback(void* self)
 
 static void DMOptions_MenuInit(void)
 {
-	static char* teamplay_names[] = { "disabled", "by skin", "by model", 0 };
+	static const char* teamplay_names[] = { "disabled", "by skin", "by model", NULL };
 
 	static char name_weaponsstay[MAX_QPATH];
 	static char name_allowpowerup[MAX_QPATH];

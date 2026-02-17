@@ -35,11 +35,11 @@ static menuslider_t s_contrast_slider;
 static menuslider_t s_minlight_slider; // YQ2
 static menuslider_t s_detail_slider;
 
-static char* ref_list_titles[MAX_REFLIBS];
+static const char* ref_list_titles[MAX_REFLIBS];
 static int initial_reflib_index; // vid_ref index when entering menu.
 
 #define MAX_DISPLAYED_VIDMODES	64 //mxd. This is kinda ugly, since vid_modes array itself is dynamically allocated... 
-static char* vid_mode_titles[MAX_DISPLAYED_VIDMODES];
+static const char* vid_mode_titles[MAX_DISPLAYED_VIDMODES];
 static int initial_vid_mode; // vid_mode when entering menu.
 
 #pragma region ========================== MENU ITEM CALLBACKS ==========================
@@ -154,7 +154,7 @@ void VID_PreMenuInit(void)
 
 static void VID_MenuInit(void)
 {
-	static char* target_fps_names[] = { "30", "60", "90", "120", "240", 0 }; //mxd
+	static const char* target_fps_names[] = { "30", "60", "90", "120", "240", NULL }; //mxd
 
 	static char name_driver[MAX_QPATH];
 	static char name_vidmode[MAX_QPATH];

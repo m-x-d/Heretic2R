@@ -23,7 +23,7 @@ static menuslider_t s_sound_sfxvolume_slider;
 static menuslider_t s_sound_musicvolume_slider; //mxd
 static menulist_t s_sound_quality_list;
 
-static char* snd_list_titles[MAX_SNDLIBS]; //mxd
+static const char* snd_list_titles[MAX_SNDLIBS]; //mxd
 static int initial_sndlib_index; //mxd. snd_lib index when entering menu.
 
 // Q2 counterpart
@@ -64,7 +64,7 @@ static void UpdateSoundQualityFunc(void* self)
 
 static void Sound_MenuInit(void) // H2
 {
-	static char* lowhigh_names[] = { m_text_low, m_text_high, 0 };
+	static const char* lowhigh_names[] = { m_text_low, m_text_high, NULL };
 
 	static char name_sndbackend[MAX_QPATH]; //mxd
 	static char name_effectsvol[MAX_QPATH];

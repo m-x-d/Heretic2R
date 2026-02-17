@@ -32,7 +32,7 @@ static menuaction_t s_startserver_dmoptions_action;
 static menuaction_t s_startserver_start_action;
 
 #define NUM_MAPNAMES	128
-static char* mapnames[NUM_MAPNAMES];
+static const char* mapnames[NUM_MAPNAMES];
 
 //mxd. Returns the number of map names loaded.
 static int LoadMapnames(const qboolean is_coop)
@@ -183,7 +183,7 @@ static qboolean StartServer_MenuInit(void)
 	static char name_dmopt[MAX_QPATH];
 	static char name_begin[MAX_QPATH];
 
-	static char* dm_coop_names[] = { name_deathmatch, name_coop, 0 };
+	static const char* dm_coop_names[] = { name_deathmatch, name_coop, NULL };
 
 	if (LoadMapnames(Cvar_IsSet("coop")) == 0)
 		return false;

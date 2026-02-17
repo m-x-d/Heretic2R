@@ -124,7 +124,7 @@ extern char m_text_on[MAX_QPATH];
 extern char m_text_low[MAX_QPATH];
 extern char m_text_high[MAX_QPATH];
 
-extern char* yes_no_names[];
+extern const char* yes_no_names[];
 
 extern uint m_menu_side;
 
@@ -179,7 +179,7 @@ typedef struct
 {
 	menucommon_t generic;
 	int curvalue;
-	char** itemnames;
+	const char** itemnames;
 } menulist_t;
 
 typedef struct
