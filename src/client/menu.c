@@ -601,6 +601,7 @@ void M_Init(void)
 	m_item_caption = Cvar_Get("m_item_caption", "Captioning", 0);
 	m_item_show_splash_movies = Cvar_Get("m_item_show_splash_movies", "Show Splash Movies", 0); //mxd
 	m_item_violence = Cvar_Get("m_item_violence", "Violence Level", 0);
+	m_item_screenshot_format = Cvar_Get("m_item_screenshot_format", "Screenshots Format", 0); //mxd
 	m_item_yawspeed = Cvar_Get("m_item_yawspeed", "Key Turn Speed", 0);
 	m_item_console = Cvar_Get("m_item_console", "Go to console", 0);
 

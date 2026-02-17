@@ -92,7 +92,7 @@ cvar_t* cl_fx_dll;
 cvar_t* cl_cinematicfreeze;
 static cvar_t* sc_framerate;
 cvar_t* show_splash_movies; //mxd
-static cvar_t* screenshot_format; //mxd
+cvar_t* screenshot_format; //mxd
 
 // userinfo
 cvar_t* playerdir;

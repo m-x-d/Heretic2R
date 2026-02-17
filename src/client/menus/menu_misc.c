@@ -14,6 +14,7 @@ cvar_t* m_item_crosshair;
 cvar_t* m_item_caption;
 cvar_t* m_item_show_splash_movies; //mxd
 cvar_t* m_item_violence;
+cvar_t* m_item_screenshot_format; //mxd
 cvar_t* m_item_yawspeed;
 cvar_t* m_item_console;
 cvar_t* m_item_autoweapon;
@@ -27,7 +28,10 @@ static menulist_t s_options_captions_box;
 static menulist_t s_options_show_splash_movies_box; //mxd
 static menuslider_t s_options_yawspeed_slider;
 static menulist_t s_options_violence_box;
+static menulist_t s_options_screenshot_format_box; //mxd
 static menuaction_t s_options_console_action;
+
+const char* screenshot_formats[SSF_NUM_FORMATS] = { "jpg", "png" };
 
 // Q2 counterpart
 static void CrosshairFunc(void* self)
@@ -68,6 +72,12 @@ static void ViolenceFunc(void* self) // H2
 	Cvar_SetValue("blood_level", (float)l->curvalue);
 }
 
+static void ScreenshotSaveFormatFunc(void* self) //mxd
+{
+	const menulist_t* l = self;
+	Cvar_Set("screenshot_format", screenshot_formats[l->curvalue]);
+}
+
 // Q2 counterpart
 static void ConsoleFunc(void* self)
 {
@@ -100,10 +110,10 @@ static void Misc_MenuInit(void) // H2
 #define NUM_VIOLENCE_LEVELS	4
 
 	static char crosshair_names[NUM_CROSSHAIRS][MAX_QPATH];
-	static char* crosshair_refs[NUM_CROSSHAIRS + 1];
+	static const char* crosshair_refs[NUM_CROSSHAIRS + 1];
 
 	static char violence_names[NUM_VIOLENCE_LEVELS][MAX_QPATH];
-	static char* violence_refs[NUM_VIOLENCE_LEVELS + 1];
+	static const char* violence_refs[NUM_VIOLENCE_LEVELS + 1];
 
 	static char name_crosshair[MAX_QPATH];
 	static char name_alwaysrun[MAX_QPATH];
@@ -112,6 +122,7 @@ static void Misc_MenuInit(void) // H2
 	static char name_show_splash_movies[MAX_QPATH]; //mxd
 	static char name_yawspeed[MAX_QPATH];
 	static char name_violence[MAX_QPATH];
+	static char name_screenshot_format[MAX_QPATH]; //mxd
 	static char name_console[MAX_QPATH];
 
 	char cvar_name[MAX_QPATH];
@@ -221,6 +232,18 @@ static void Misc_MenuInit(void) // H2
 	s_options_violence_box.curvalue = Cvar_VariableInt("blood_level");
 	s_options_violence_box.itemnames = violence_refs;
 
+	//mxd
+	Com_sprintf(name_screenshot_format, sizeof(name_screenshot_format), "\x02%s", m_item_screenshot_format->string);
+	s_options_screenshot_format_box.generic.type = MTYPE_SPINCONTROL;
+	s_options_screenshot_format_box.generic.x = 0;
+	s_options_screenshot_format_box.generic.y = 180;
+	s_options_screenshot_format_box.generic.name = name_screenshot_format;
+	s_options_screenshot_format_box.generic.width = re.BF_Strlen(name_screenshot_format);
+	s_options_screenshot_format_box.generic.flags = QMF_SINGLELINE;
+	s_options_screenshot_format_box.generic.callback = ScreenshotSaveFormatFunc;
+	s_options_screenshot_format_box.curvalue = M_GetCurrentScreenshotSaveFormat();
+	s_options_screenshot_format_box.itemnames = screenshot_formats;
+
 	Com_sprintf(name_console, sizeof(name_console), "\x02%s", m_item_console->string);
 	s_options_console_action.generic.type = MTYPE_ACTION;
 	s_options_console_action.generic.y = 260;
@@ -236,6 +259,7 @@ static void Misc_MenuInit(void) // H2
 	Menu_AddItem(&s_misc_menu, &s_options_show_splash_movies_box); //mxd
 	Menu_AddItem(&s_misc_menu, &s_options_yawspeed_slider);
 	Menu_AddItem(&s_misc_menu, &s_options_violence_box);
+	Menu_AddItem(&s_misc_menu, &s_options_screenshot_format_box); //mxd
 	Menu_AddItem(&s_misc_menu, &s_options_console_action);
 
 	Misc_SetValues();
@@ -273,4 +297,13 @@ void M_Menu_Misc_f(void) // H2
 {
 	Misc_MenuInit();
 	M_PushMenu(Misc_MenuDraw, Misc_MenuKey);
+}
+
+ScreenshotSaveFormat_t M_GetCurrentScreenshotSaveFormat(void) //mxd
+{
+	for (int i = 0; i < SSF_NUM_FORMATS; i++)
+		if (Q_stricmp(screenshot_format->string, screenshot_formats[i]) == 0)
+			return i;
+
+	return SSF_JPG; // Default to JPG.
 }

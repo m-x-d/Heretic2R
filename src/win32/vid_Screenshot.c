@@ -10,14 +10,13 @@
 
 #include "vid_Screenshot.h"
 #include "qcommon.h"
+#include "menus/menu_misc.h"
 
 #define MAX_SCREENSHOTS				10000 // 100 in Q2/H2
 #define SCREENSHOT_FILENAME_FORMAT	"%sH2R-%04i.%s"
 
 #define PNG_COMPRESSION	5
 #define JPG_COMPRESSION	75
-
-static const char* screenshot_formats[] = { "jpg", "png" };
 
 typedef struct ScreenshotSaveBuffer_s
 {
@@ -60,17 +59,6 @@ static int VID_GetFreeScreenshotIndex(const char* screenshots_dir) //mxd
 	return -1;
 }
 
-static int VID_GetScreenshotSaveFormatIndex(void) //mxd
-{
-	const char* save_format = Cvar_VariableString("screenshot_format");
-
-	for (int i = 0; i < (int)ARRAY_SIZE(screenshot_formats); i++)
-		if (Q_stricmp(save_format, screenshot_formats[i]) == 0)
-			return i;
-
-	return 0; // Default to JPG.
-}
-
 // Writes a screenshot. This function is called with raw image data of width * height pixels, each pixel has 'comp' bytes.
 // Must be 3 or 4, for RGB or RGBA. The pixels must be given row-wise, stating at the top-left.
 void VID_WriteScreenshot(const int width, const int height, const int comp, const void* data)
@@ -90,7 +78,7 @@ void VID_WriteScreenshot(const int width, const int height, const int comp, cons
 	}
 
 	// Determine save format.
-	const int format_index = VID_GetScreenshotSaveFormatIndex();
+	const ScreenshotSaveFormat_t save_format = M_GetCurrentScreenshotSaveFormat();
 
 	// Convert it to target format.
 	stbi_flip_vertically_on_write(true);
@@ -99,21 +87,21 @@ void VID_WriteScreenshot(const int width, const int height, const int comp, cons
 	const int buf_size = width * height * comp; //mxd. Uncompressed data size SHOULD be enough to save compressed image, right?..
 	ScreenshotSaveBuffer_t buf = { .offset = 0, .size = buf_size, .data = malloc(buf_size) };
 
-	switch (format_index)
+	switch (save_format)
 	{
-		case 0: // jpg
+		case SSF_JPG:
 		default:
 			success = stbi_write_jpg_to_func(VID_WriteScreenshotCallback, &buf, width, height, comp, data, JPG_COMPRESSION);
 			break;
 
-		case 1: // png
+		case SSF_PNG: // png
 			stbi_write_png_compression_level = PNG_COMPRESSION;
 			success = stbi_write_png_to_func(VID_WriteScreenshotCallback, &buf, width, height, comp, data, 0);
 			break;
 	}
 
 	char scr_filepath[MAX_OSPATH];
-	Com_sprintf(scr_filepath, sizeof(scr_filepath), SCREENSHOT_FILENAME_FORMAT, scr_dir, screenshot_index, screenshot_formats[format_index]);
+	Com_sprintf(scr_filepath, sizeof(scr_filepath), SCREENSHOT_FILENAME_FORMAT, scr_dir, screenshot_index, screenshot_formats[save_format]);
 
 	// Save it.
 	if (success)
