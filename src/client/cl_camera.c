@@ -486,11 +486,8 @@ void CL_CalcViewValues(void)
 
 	if (ps->pmove.pm_type == PM_INTERMISSION)
 	{
-		for (int i = 0; i < 3; i++)
-		{
-			cl.refdef.vieworg[i] = SHORT2POS(ps->pmove.origin[i]); //mxd. Use define.
-			cl.refdef.viewangles[i] = ps->viewangles[i];
-		}
+		SHORT2VEC(ps->pmove.origin, cl.refdef.vieworg); //mxd. Use define.
+		VectorCopy(ps->viewangles, cl.refdef.viewangles);
 	}
 	else
 	{
