@@ -1655,13 +1655,13 @@ static void PutClientInServer(edict_t* ent)
 	ent->Leader_PersistantCFX = 0;
 
 	// Default to making us not invulnerable (may change later).
-	ent->client->shrine_framenum = 0;
+	ent->client->shrine_framenum = 0.0f;
 
 	// A few multiplayer reset safeguards... i.e. if we were teleporting when we died, we aren't now.
 	client->playerinfo.flags &= ~PLAYER_FLAG_TELEPORT;
 	VectorClear(client->tele_dest);
 	client->tele_count = 0;
-	ent->s.color.c = 0xFFFFFFFF; // Restore model visibility. //mxd. 0 in original logic. Changed, because ShadowAddToView() now checks owner alpha.
+	ent->s.color.c = 0xffffffff; // Restore model visibility. //mxd. 0 in original logic. Changed, because ShadowAddToView() now checks owner alpha.
 
 	ent->fire_damage_time = 0.0f;
 	ent->fire_timestamp = 0.0f;
@@ -1684,8 +1684,7 @@ static void PutClientInServer(edict_t* ent)
 
 	// Initialize the player's gclient_t and playerstate_t.
 
-	for (int i = 0; i < 3; i++)
-		client->ps.pmove.origin[i] = POS2SHORT(spawn_origin[i]); //mxd. Use define.
+	VEC2SHORT(spawn_origin, client->ps.pmove.origin); //mxd. Use define.
 
 	client->ps.fov = (float)(Q_atoi(Info_ValueForKey(client->playerinfo.pers.userinfo, "fov")));
 
@@ -2321,11 +2320,8 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 	pmove_t pm = { 0 };
 	pm.s = client->ps.pmove;
 
-	for (int i = 0; i < 3; i++)
-	{
-		pm.s.origin[i] = POS2SHORT(ent->s.origin[i]); //mxd. Use define.
-		pm.s.velocity[i] = POS2SHORT(ent->velocity[i]); //mxd. Use define.
-	}
+	VEC2SHORT(ent->s.origin, pm.s.origin); //mxd. Use define.
+	VEC2SHORT(ent->velocity, pm.s.velocity); //mxd. Use define.
 
 	pm.cmd = *ucmd;
 	client->pcmd = *ucmd;
@@ -2498,8 +2494,7 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 	VectorCopy(pm.mins, ent->mins);
 	VectorCopy(pm.maxs, ent->maxs);
 
-	for (int i = 0; i < 3; i++)
-		client->resp.cmd_angles[i] = SHORT2ANGLE(ucmd->angles[i]);
+	SHORT2ANGLES(ucmd->angles, client->resp.cmd_angles); //mxd. Use define.
 
 	client->playerinfo.waterlevel = pm.waterlevel;
 	client->playerinfo.waterheight = pm.waterheight;
@@ -2516,10 +2511,7 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 	if (ent->dead_state == DEAD_NO)
 	{
 		VectorCopy(pm.viewangles, client->v_angle);
-
-		for (int i = 0; i < 3; i++)
-			client->aimangles[i] = SHORT2ANGLE(ucmd->aimangles[i]);
-
+		SHORT2ANGLES(ucmd->aimangles, client->aimangles); //mxd. Use define.
 		VectorCopy(client->aimangles, client->ps.viewangles);
 	}
 
