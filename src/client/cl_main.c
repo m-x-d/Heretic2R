@@ -92,6 +92,7 @@ cvar_t* cl_fx_dll;
 cvar_t* cl_cinematicfreeze;
 static cvar_t* sc_framerate;
 cvar_t* show_splash_movies; //mxd
+static cvar_t* screenshot_format; //mxd
 
 // userinfo
 cvar_t* playerdir;
@@ -1210,6 +1211,7 @@ static void CL_InitLocal(void)
 	cl_cinematicfreeze = Cvar_Get("cl_cinematicfreeze", "0", 0);
 	sc_framerate = Cvar_Get("sc_framerate", "20", CVAR_ARCHIVE); // H2_1.07: "20" -> "60".
 	show_splash_movies = Cvar_Get("show_splash_movies", "1", CVAR_ARCHIVE); //mxd
+	screenshot_format = Cvar_Get("screenshot_format", "jpg", CVAR_ARCHIVE); //mxd
 
 	// userinfo
 	info_password = Cvar_Get("password", "", CVAR_USERINFO);

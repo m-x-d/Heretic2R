@@ -11,23 +11,64 @@
 #include "vid_Screenshot.h"
 #include "qcommon.h"
 
-#define MAX_SCREENSHOTS	10000 // 100 in Q2/H2
-#define PNG_COMPRESSION	5
+#define MAX_SCREENSHOTS				10000 // 100 in Q2/H2
+#define SCREENSHOT_FILENAME_FORMAT	"%sH2R-%04i.%s"
 
+#define PNG_COMPRESSION	5
+#define JPG_COMPRESSION	75
+
+static const char* screenshot_formats[] = { "jpg", "png" };
+
+typedef struct ScreenshotSaveBuffer_s
+{
+	byte* data;
+	int size;
+	int offset;
+} ScreenshotSaveBuffer_t;
+
+// Called for every new BYTE when saving JPG, hence extra save buffer... --mxd.
 static void VID_WriteScreenshotCallback(void* context, void* data, const int size)
 {
-	const char* scr_filepath = context;
-	int written_size = 0;
+	ScreenshotSaveBuffer_t* buf = context;
 
-	FILE* f;
-	if (fopen_s(&f, scr_filepath, "wb") == 0) //mxd. fopen -> fopen_s
+	memcpy_s(&buf->data[buf->offset], buf->size - buf->offset, data, size);
+	buf->offset += size;
+}
+
+static int VID_GetFreeScreenshotIndex(const char* screenshots_dir) //mxd
+{
+	// Find a free screenshot filename index.
+	for (int i = 0; i < MAX_SCREENSHOTS; i++)
 	{
-		written_size = (int)fwrite(data, 1, size, f);
-		fclose(f);
+		qboolean file_exists = false;
+
+		// Assume free only when no files with this index exist.
+		for (uint c = 0; c < ARRAY_SIZE(screenshot_formats); c++)
+		{
+			if (Sys_IsFile(va(SCREENSHOT_FILENAME_FORMAT, screenshots_dir, i, screenshot_formats[c])))
+			{
+				file_exists = true;
+				break;
+			}
+		}
+
+		if (!file_exists)
+			return i;
 	}
 
-	if (size != written_size) // H2: extra sanity check.
-		Com_Printf("Error writing '%s'!\n", scr_filepath);
+	// No dice...
+	return -1;
+}
+
+static int VID_GetScreenshotSaveFormatIndex(void) //mxd
+{
+	const char* save_format = Cvar_VariableString("screenshot_format");
+
+	for (int i = 0; i < (int)ARRAY_SIZE(screenshot_formats); i++)
+		if (Q_stricmp(save_format, screenshot_formats[i]) == 0)
+			return i;
+
+	return 0; // Default to JPG.
 }
 
 // Writes a screenshot. This function is called with raw image data of width * height pixels, each pixel has 'comp' bytes.
@@ -39,37 +80,61 @@ void VID_WriteScreenshot(const int width, const int height, const int comp, cons
 	Com_sprintf(scr_dir, sizeof(scr_dir), "%s/screenshots/", FS_Userdir()); // H2: FS_Gamedir -> FS_Userdir
 	FS_CreatePath(scr_dir);
 
-	char scr_filepath[MAX_OSPATH];
-	qboolean filename_found = false;
+	// Find a free screenshot filename index.
+	const int screenshot_index = VID_GetFreeScreenshotIndex(scr_dir);
 
-	// Find a file name to save it to.
-	for (int i = 0; i < MAX_SCREENSHOTS; i++)
-	{
-		Com_sprintf(scr_filepath, sizeof(scr_filepath), "%sH2R-%04i.png", scr_dir, i);
-
-		FILE* f;
-		if (fopen_s(&f, scr_filepath, "rb") != 0) //mxd. fopen -> fopen_s
-		{
-			filename_found = true;
-			break; // File doesn't exist.
-		}
-
-		fclose(f);
-	}
-
-	if (!filename_found)
+	if (screenshot_index == -1)
 	{
 		Com_Printf("VID_WriteScreenshot: couldn't create a file: too many screenshots!\n");
 		return;
 	}
 
-	// Now save it.
-	stbi_write_png_compression_level = PNG_COMPRESSION;
-	stbi_flip_vertically_on_write(true);
+	// Determine save format.
+	const int format_index = VID_GetScreenshotSaveFormatIndex();
 
-	if (stbi_write_png_to_func(VID_WriteScreenshotCallback, scr_filepath, width, height, comp, data, 0)) //mxd. stbi_write_png_to_func() frees 'data'.
+	// Convert it to target format.
+	stbi_flip_vertically_on_write(true);
+	qboolean success;
+
+	const int buf_size = width * height * comp; //mxd. Uncompressed data size SHOULD be enough to save compressed image, right?..
+	ScreenshotSaveBuffer_t buf = { .offset = 0, .size = buf_size, .data = malloc(buf_size) };
+
+	switch (format_index)
 	{
-		// H2: extra brightness check logic.
+		case 0: // jpg
+		default:
+			success = stbi_write_jpg_to_func(VID_WriteScreenshotCallback, &buf, width, height, comp, data, JPG_COMPRESSION);
+			break;
+
+		case 1: // png
+			stbi_write_png_compression_level = PNG_COMPRESSION;
+			success = stbi_write_png_to_func(VID_WriteScreenshotCallback, &buf, width, height, comp, data, 0);
+			break;
+	}
+
+	char scr_filepath[MAX_OSPATH];
+	Com_sprintf(scr_filepath, sizeof(scr_filepath), SCREENSHOT_FILENAME_FORMAT, scr_dir, screenshot_index, screenshot_formats[format_index]);
+
+	// Save it.
+	if (success)
+	{
+		FILE* f;
+		int written_size = -1;
+
+		if (fopen_s(&f, scr_filepath, "wb") == 0) //mxd. fopen -> fopen_s
+		{
+			written_size = (int)fwrite(buf.data, 1, buf.size, f);
+			fclose(f);
+		}
+
+		success = (buf.size == written_size);
+	}
+
+	free(buf.data);
+
+	if (success)
+	{
+		// H2: determine image brightness.
 		float brightness = 0.0f;
 		const int data_size = width * height * comp;
 		const byte* pixels = data;
