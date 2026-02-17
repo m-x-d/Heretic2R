@@ -1094,12 +1094,10 @@ static void PM_CheckJump(void)
 
 static qboolean PM_GoodPosition(void)
 {
-	static trace_t trace;
 	vec3_t origin;
+	SHORT2VEC(pml.snapped_origin, origin); //mxd. Use define.
 
-	for (int i = 0; i < 3; i++)
-		origin[i] = SHORT2POS(pml.snapped_origin[i]); //mxd. Use define.
-
+	trace_t trace;
 	pm->trace(origin, pm->mins, pm->maxs, origin, &trace);
 
 	if (trace.startsolid)
@@ -1116,19 +1114,15 @@ static void PM_SnapPosition(void)
 {
 	// Try all single bits first.
 	static const uint jitterbits[] = { 0, 4, 1, 2, 3, 5, 6, 7 };
-	short offset[3] = { 0 };
 
 	// Snap velocity to eights.
-	for (int i = 0; i < 3; i++)
-		pm->s.velocity[i] = POS2SHORT(pml.velocity[i]); //mxd. Use define.
+	VEC2SHORT(pml.velocity, pm->s.velocity); //mxd. Use define.
+	VEC2SHORT(pml.origin, pml.snapped_origin); //mxd. Use define.
 
+	short offset[3] = { 0 };
 	for (int i = 0; i < 3; i++)
-	{
-		pml.snapped_origin[i] = POS2SHORT(pml.origin[i]); //mxd. Use define.
-
 		if (!FloatIsZeroEpsilon(SHORT2POS(pml.snapped_origin[i]) - pml.origin[i])) // H2: FloatIsZeroEpsilon() instead of direct comparison.
 			offset[i] = (short)(Q_signf(pml.origin[i]));
-	}
 
 	short base[3];
 	VectorCopy_Macro(pml.snapped_origin, base); // Q2: pm->s.origin (here and below).
@@ -1156,8 +1150,8 @@ static void PM_SnapPosition(void)
 static void PM_InitialSnapPosition(void)
 {
 	static short offset[3] = { 0, 1, -1 }; // Q2: { 0, -1, 1 }
-	short base[3];
 
+	short base[3];
 	VectorCopy_Macro(pml.snapped_origin, base); // Q2: pm->s.origin (here and below).
 
 	for (int z = 0; z < 3; z++)
@@ -1174,11 +1168,8 @@ static void PM_InitialSnapPosition(void)
 
 				if (PM_GoodPosition())
 				{
-					for (int i = 0; i < 3; i++)
-					{
-						pml.origin[i] = SHORT2POS(pml.snapped_origin[i]); //mxd. Use define.
-						pml.previous_origin[i] = pml.snapped_origin[i];
-					}
+					SHORT2VEC(pml.snapped_origin, pml.origin); //mxd. Use define.
+					VectorCopy_Macro(pml.snapped_origin, pml.previous_origin);
 
 					return;
 				}
@@ -1287,13 +1278,10 @@ void Pmove(pmove_t* pmove, const qboolean server)
 	else
 	{
 		// Convert origin and velocity to float values.
-		for (int i = 0; i < 3; i++)
-		{
-			pml.origin[i] = SHORT2POS(pm->s.origin[i]); //mxd. Use define.
-			pml.velocity[i] = SHORT2POS(pm->s.velocity[i]); //mxd. Use define.
-			pml.previous_origin[i] = pm->s.origin[i]; // H2
-			pml.snapped_origin[i] = pm->s.origin[i]; // H2
-		}
+		SHORT2VEC(pm->s.origin, pml.origin); //mxd. Use define.
+		SHORT2VEC(pm->s.velocity, pml.velocity); //mxd. Use define.
+		VectorCopy_Macro(pm->s.origin, pml.previous_origin);
+		VectorCopy_Macro(pm->s.origin, pml.snapped_origin);
 	}
 
 	pml.desired_water_height = pm->desiredWaterHeight;
@@ -1309,19 +1297,14 @@ void Pmove(pmove_t* pmove, const qboolean server)
 	if (pm->s.pm_type == PM_SPECTATOR)
 	{
 		vec3_t aimangles;
-
-		for (int i = 0; i < 3; i++)
-			aimangles[i] = SHORT2ANGLE(pm->cmd.aimangles[i]);
+		SHORT2ANGLES(pm->cmd.aimangles, aimangles); //mxd. Use define.
 
 		AngleVectors(aimangles, pml.forward, pml.right, pml.up);
 		PM_SpectatorMove();
 
-		for (int i = 0; i < 3; i++)
-		{
-			pml.snapped_origin[i] = POS2SHORT(pml.origin[i]); //mxd. Use define.
-			pm->s.origin[i] = pml.snapped_origin[i];
-			pm->origin[i] = pml.origin[i];
-		}
+		VEC2SHORT(pml.origin, pml.snapped_origin); //mxd. Use define.
+		VectorCopy_Macro(pml.snapped_origin, pm->s.origin);
+		VectorCopy_Macro(pml.origin, pm->origin);
 
 		return;
 	}
@@ -1431,12 +1414,8 @@ void Pmove(pmove_t* pmove, const qboolean server)
 	{
 		VectorCopy(pml.origin, pm->origin);
 		VectorCopy(pml.velocity, pm->velocity);
-
-		for (int i = 0; i < 3; i++)
-		{
-			pm->s.origin[i] = POS2SHORT(pml.origin[i]); //mxd. Use define.
-			pm->s.velocity[i] = POS2SHORT(pml.velocity[i]); //mxd. Use define.
-		}
+		VEC2SHORT(pml.origin, pm->s.origin); //mxd. Use define.
+		VEC2SHORT(pml.velocity, pm->s.velocity); //mxd. Use define.
 	}
 	else
 	{
