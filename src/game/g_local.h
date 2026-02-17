@@ -78,6 +78,11 @@
 #define MONSTER_THINK_INC	0.099f
 #define FRAMES_PER_SECOND	10.0f
 
+//mxd. FOV defines.
+#define FOV_DEFAULT			75.0f // Originally defined in p_client.c
+#define FOV_MIN				1.0f //mxd
+#define FOV_MAX				160.0f //mxd
+
 // Memory tags to allow dynamic memory to be selectively cleaned up.
 #define TAG_GAME	765	// Clear when unloading the dll.
 #define TAG_LEVEL	766	// Clear when loading a savegame or a new level.

@@ -32,7 +32,6 @@
 
 #define SWIM_ADJUST_AMOUNT	16.0f
 #define DIVE_ADJUST_AMOUNT	150.0f //mxd
-#define FOV_DEFAULT			75.0f
 
 const vec3_t player_mins = { -14.0f, -14.0f, -34.0f };
 const vec3_t player_maxs = {  14.0f,  14.0f,  25.0f };
@@ -1690,10 +1689,10 @@ static void PutClientInServer(edict_t* ent)
 
 	client->ps.fov = (float)(Q_atoi(Info_ValueForKey(client->playerinfo.pers.userinfo, "fov")));
 
-	if (client->ps.fov < 1.0f)
+	if (client->ps.fov < FOV_MIN)
 		client->ps.fov = FOV_DEFAULT;
-	else if (client->ps.fov > 160.0f)
-		client->ps.fov = 160.0f;
+	else if (client->ps.fov > FOV_MAX)
+		client->ps.fov = FOV_MAX;
 
 	VectorClear(client->ps.offsetangles);
 
@@ -2135,10 +2134,10 @@ void ClientUserinfoChanged(edict_t* ent, char* userinfo) //TODO: add int userinf
 	// FOV.
 	ent->client->ps.fov = (float)(Q_atoi(Info_ValueForKey(userinfo, "fov")));
 
-	if (ent->client->ps.fov < 1.0f)
+	if (ent->client->ps.fov < FOV_MIN)
 		ent->client->ps.fov = FOV_DEFAULT;
-	else if (ent->client->ps.fov > 160.0f)
-		ent->client->ps.fov = 160.0f;
+	else if (ent->client->ps.fov > FOV_MAX)
+		ent->client->ps.fov = FOV_MAX;
 
 	// Autoweapon changeup.
 	const char* autoweapon = Info_ValueForKey(userinfo, "autoweapon");

@@ -557,7 +557,7 @@ void ClientEndServerFrame(edict_t* player)
 	// When in intermission, don't give the player any normal movement attributes.
 	if (level.intermissiontime > 0.0f)
 	{
-		cl->ps.fov = 75.0f;
+		cl->ps.fov = FOV_DEFAULT; //mxd. Use define.
 		G_SetStats(player);
 
 		return;
