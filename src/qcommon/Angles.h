@@ -42,5 +42,5 @@
 #define DEG_TO_BYTEANGLE	(256.0f / 360.0f) //mxd
 
 //mxd. Used by skeletal joints logic.
-#define JOINT_TO_BYTEANGLE	(254.0f / ANGLE_90)
-#define BYTEANGLE_TO_JOINT	(ANGLE_90 / 254.0f)
+#define JOINT_TO_BYTEANGLE	(127.0f / ANGLE_45)
+#define BYTEANGLE_TO_JOINT	(ANGLE_45 / 127.0f)
