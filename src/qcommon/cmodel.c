@@ -884,12 +884,13 @@ static void CM_ClipBoxToBrush(const vec3_t mins, const vec3_t maxs, const vec3_t
 			getout = true; // Endpoint is not in solid.
 
 		if (d1 > 0.0f)
-			startout = true;
+			startout = true; // Startpoint is not in solid.
 
 		// If completely in front of face, no intersection.
 		if (d1 > 0.0f && d2 >= d1)
 			return;
 
+		// If completely behind of face, check next face.
 		if (d1 <= 0.0f && d2 <= 0.0f)
 			continue;
 
@@ -1415,8 +1416,7 @@ void CM_TransformedBoxTrace(const vec3_t start, const vec3_t end, const vec3_t m
 		CM_BoxTrace(start_l, end_l, mins, maxs, headnode, brushmask, return_trace);
 	}
 
-	for (int i = 0; i < 3; i++)
-		return_trace->endpos[i] = start[i] + return_trace->fraction * (end[i] - start[i]);
+	VectorLerp(start, return_trace->fraction, end, return_trace->endpos);
 }
 
 #pragma region ========================== AREAPORTALS ==========================
