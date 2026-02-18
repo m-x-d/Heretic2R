@@ -44,8 +44,6 @@ void PreCacheCWSFX(void) //mxd
 
 static qboolean CWBeamAddToView(client_entity_t* self, centity_t* owner) //mxd. Named 'FXCWBeamUpdate' in original logic.
 {
-	const vec3_t vel = { 0.0f, 0.0f, 1.0f };
-
 	LinkedEntityUpdatePlacement(self, owner);
 	VectorCopy(self->r.origin, self->r.endpos);
 
@@ -71,7 +69,7 @@ static qboolean CWBeamAddToView(client_entity_t* self, centity_t* owner) //mxd. 
 		beam->r.origin[0] += (float)(irand(-2, 2)); //TODO: why not flrand?
 		beam->r.origin[1] += (float)(irand(-2, 2)); //TODO: why not flrand?
 
-		VectorRandomCopy(vel, beam->velocity2, 1.0f);
+		VectorRandomCopy(vec3_up, beam->velocity2, 1.0f);
 		VectorCopy(beam->origin, beam->r.startpos);
 		VectorMA(beam->r.startpos, flrand(16.0f, 32.0f), beam->velocity2, beam->r.endpos);
 		Vec3ScaleAssign(flrand(50.0f, 100.0f), beam->velocity2);
