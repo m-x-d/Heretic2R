@@ -210,9 +210,6 @@ edict_t* MorphReflect(edict_t* self, edict_t* other, const vec3_t vel)
 void SpellCastMorph(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
 	short morph_array[NUM_OF_OVUMS];
-	byte b_yaw = 0;
-
-	// First ovum gets sent out along our aiming angle.
 	float current_ang = aim_angles[YAW];
 
 	for (int i = 0; i < NUM_OF_OVUMS; i++)
@@ -235,15 +232,12 @@ void SpellCastMorph(edict_t* caster, const vec3_t start_pos, const vec3_t aim_an
 
 		G_LinkMissile(egg);
 
-		// If we are the first effect, calculate our yaw.
-		if (i == 0)
-			b_yaw = (byte)(egg->s.angles[YAW] * DEG_TO_BYTEANGLE);
-
 		morph_array[i] = egg->s.number; // Store the entity numbers for sending with the effect.
 		current_ang += ANGLE_INC; // Increment current angle to get circular radius of ovums.
 	}
 
 	// Create the client effect that gets seen on screen.
+	const byte b_yaw = (byte)(aim_angles[YAW] * DEG_TO_BYTEANGLE);
 	gi.CreateEffect(&caster->s, FX_SPELL_MORPHMISSILE_INITIAL, CEF_OWNERS_ORIGIN, NULL, "bssssss",
 		b_yaw, morph_array[0], morph_array[1], morph_array[2], morph_array[3], morph_array[4], morph_array[5]);
 }
