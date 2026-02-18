@@ -13,9 +13,10 @@
 #include "g_playstats.h"
 
 #define MORPH_PARTICLE_VEL		8
-#define MORPH_COLOR				0xff00ff00
+#define MORPH_COLOR				0xff00bbff //mxd. 0xff00ff00 (green) in original logic. Changed to yellow for more... eggish look.
 #define MORPH_ARROW_SPEED		400.0f
 #define MORPH_GLOW_INTENSITY	255
+#define MORPH_DLIGHT_INTENSITY	110.0f //mxd
 #define MORPH_ANGLE_INC			(ANGLE_360 / NUM_OF_OVUMS)
 
 #define FEATHER_VEL				50.0f
@@ -24,6 +25,7 @@
 
 static struct model_s* morph_models[4];
 static struct sfx_s* morph_fire_sound; //mxd
+static const paletteRGBA_t morph_dlight_color = { .c = MORPH_COLOR }; //mxd
 
 void PreCacheMorph(void)
 {
@@ -66,7 +68,7 @@ static qboolean MorphMissileUpdate(client_entity_t* missile, centity_t* owner) /
 
 	for (int i = 0; i < count; i++)
 	{
-		client_particle_t* ce = ClientParticle_new(PART_16x16_SPARK_G, color_white, duration);
+		client_particle_t* ce = ClientParticle_new(PART_16x16_SPARK_Y, color_white, duration); //mxd. PART_16x16_SPARK_G in original logic.
 		ce->acceleration[2] = 0.0f;
 
 		// Figure out our random velocity.
@@ -91,7 +93,7 @@ static qboolean MorphMissileUpdate(client_entity_t* missile, centity_t* owner) /
 	VectorCopy(missile->r.origin, missile->origin);
 
 	// Rotate the missile.
-	missile->r.angles[0] -= 0.7f;
+	missile->r.angles[PITCH] -= 0.7f; // ~= ANGLE_45 --mxd.
 
 	return true;
 }
@@ -99,18 +101,18 @@ static qboolean MorphMissileUpdate(client_entity_t* missile, centity_t* owner) /
 // We reflected, create a new missile.
 void FXMorphMissile(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	byte yaw;
-	byte pitch;
+	byte b_yaw;
+	byte b_pitch;
 
 	// Get the initial yaw.
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_MORPHMISSILE].formatString, &yaw, &pitch);
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_MORPHMISSILE].formatString, &b_yaw, &b_pitch);
 
 	// Create the client effect with the light on it.
 	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 
 	missile->radius = 32.0f;
-	missile->r.angles[YAW] = (float)yaw * BYTEANGLE_TO_RAD; //mxd. Use macro.
-	missile->r.angles[PITCH] = (float)pitch * BYTEANGLE_TO_RAD; //mxd. Use macro.
+	missile->r.angles[YAW] = (float)b_yaw * BYTEANGLE_TO_RAD; //mxd. Use macro.
+	missile->r.angles[PITCH] = (float)b_pitch * BYTEANGLE_TO_RAD; //mxd. Use macro.
 
 	// Figure out where we are going.
 	DirFromAngles(missile->r.angles, missile->velocity);
@@ -120,9 +122,9 @@ void FXMorphMissile(centity_t* owner, const int type, const int flags, vec3_t or
 
 	missile->r.model = &morph_models[1]; // Egg model.
 	missile->r.scale = 3.0f;
-	missile->r.angles[PITCH] = -ANGLE_90; // Set the pitch AGAIN.
-	missile->color.c = MORPH_COLOR;
-	missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
+	missile->r.angles[PITCH] = -ANGLE_90; // Set the pitch AGAIN. //TODO: should be '-='?
+
+	missile->dlight = CE_DLight_new(morph_dlight_color, MORPH_DLIGHT_INTENSITY, 0.0f); //mxd. intensity:150 in original logic. Changed to match value used in FXMorphMissileInitial().
 	missile->Update = MorphMissileUpdate;
 
 	AddEffect(owner, missile);
@@ -134,12 +136,12 @@ void FXMorphMissile(centity_t* owner, const int type, const int flags, vec3_t or
 void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	// Get the initial yaw.
-	byte yaw;
+	byte b_yaw;
 	short morph_array[NUM_OF_OVUMS];
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_MORPHMISSILE_INITIAL].formatString, &yaw,
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_MORPHMISSILE_INITIAL].formatString, &b_yaw,
 		&morph_array[0], &morph_array[1], &morph_array[2], &morph_array[3], &morph_array[4], &morph_array[5]);
 
-	float yaw_rad = (float)yaw * BYTEANGLE_TO_RAD; //mxd. Use macro.
+	float yaw_rad = (float)b_yaw * BYTEANGLE_TO_RAD; //mxd. Use macro.
 
 	for (int i = 0; i < NUM_OF_OVUMS; i++)
 	{
@@ -156,8 +158,7 @@ void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, ve
 		missile->r.scale = 3.0f;
 		missile->r.angles[PITCH] = -ANGLE_90;
 
-		missile->color.c = MORPH_COLOR;
-		missile->dlight = CE_DLight_new(missile->color, 110.0f, 0.0f);
+		missile->dlight = CE_DLight_new(morph_dlight_color, MORPH_DLIGHT_INTENSITY, 0.0f);
 		missile->Update = MorphMissileUpdate;
 
 		AddEffect(&fxi.server_entities[morph_array[i]], missile);
@@ -217,18 +218,15 @@ void FXMorphExplode(centity_t* owner, int type, const int flags, vec3_t origin)
 	}
 
 	// Create a light at the point of explosion.
-	const int dlight_flags = CEF_NO_DRAW | CEF_NOMOVE | CEF_ADDITIVE_PARTS; //mxd
+	const int dlight_flags = (CEF_NO_DRAW | CEF_NOMOVE | CEF_ADDITIVE_PARTS); //mxd
 	client_entity_t* dlight = ClientEntity_new(-1, dlight_flags, origin, NULL, duration);
-
-	paletteRGBA_t color = { .c = MORPH_COLOR };
-	dlight->dlight = CE_DLight_new(color, 110.0f, 100.0f); //TODO: make it fade-out?
+	dlight->dlight = CE_DLight_new(morph_dlight_color, MORPH_DLIGHT_INTENSITY, 100.0f); //TODO: make it fade-out?
 
 	AddEffect(NULL, dlight);
 
 	for (int i = 0; i < count; i++)
 	{
-		COLOUR_SET(color, irand(25, 50), irand(200, 255), color.r); //mxd. Use macro.
-		client_particle_t* ce = ClientParticle_new(PART_16x16_SPARK_G, color, duration);
+		client_particle_t* ce = ClientParticle_new(PART_16x16_SPARK_Y, color_white, duration); //mxd. PART_16x16_SPARK_G in original logic.
 
 		VectorCopy(dir, ce->velocity);
 
@@ -350,8 +348,8 @@ void FXChickenExplode(centity_t* owner, const int type, const int flags, vec3_t 
 
 			feather->acceleration[2] = -85.0f;
 			VectorSet(feather->velocity, flrand(-FEATHER_VEL, FEATHER_VEL), flrand(-FEATHER_VEL, FEATHER_VEL), flrand(80.0f, 140.0f));
-			feather->r.scale = flrand(0.5f, 2.5f);
 
+			feather->r.scale = flrand(0.5f, 2.5f);
 			feather->yscale = flrand(0.1f, 0.3f);
 			feather->xscale = flrand(-0.3f, 0.3f);
 			feather->SpawnInfo = 170;
