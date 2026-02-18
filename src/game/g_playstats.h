@@ -23,7 +23,6 @@
 #define SWORD_STAB_DMG_MOD				2.5f
 
 // Flying Fist.
-#define FIREBALL_MIN_FIZZLE_DAMAGE		5		// Least amount of damage it will do after flying.
 #define FIREBALL_DAMAGE_MIN				20	
 #define FIREBALL_DAMAGE_MAX				25
 #define FIREBALL_DAMAGE_MIN_POWER		30

@@ -567,8 +567,7 @@ const func_map_t funcs_list[] =
 	{ "RingThink",							(byte*)RingThink },
 
 	// spl_flyingfist.c:
-	{ "FlyingFistFizzleThink",				(byte*)FlyingFistFizzleThink },
-	{ "FlyingFistInitThink",				(byte*)FlyingFistInitThink },
+	{ "FlyingFistThink",					(byte*)FlyingFistThink },
 	{ "FlyingFistTouch",					(byte*)FlyingFistTouch },
 
 	// spl_HellStaff.c:

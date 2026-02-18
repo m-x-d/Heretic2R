@@ -12,6 +12,5 @@ extern void SpellCastFlyingFist(edict_t* caster, const vec3_t start_pos, const v
 extern edict_t* FlyingFistReflect(edict_t* self, edict_t* other, const vec3_t vel);
 
 //mxd. Required by save system...
-extern void FlyingFistFizzleThink(edict_t* self);
-extern void FlyingFistInitThink(edict_t* self);
+extern void FlyingFistThink(edict_t* self);
 extern void FlyingFistTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface);

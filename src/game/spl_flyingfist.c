@@ -17,22 +17,10 @@
 
 #define FIST_RADIUS		2.0f
 
-void FlyingFistFizzleThink(edict_t* self)
+void FlyingFistThink(edict_t* self) //mxd. Named 'FlyingFistInitThink' in original logic.
 {
-	// Don't fizzle in deathmatch, or if powered up.
-	if (!DEATHMATCH && self->health == 0)
-	{
-		self->dmg = max(FIREBALL_MIN_FIZZLE_DAMAGE, self->dmg - 2);
-		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
-	}
-}
-
-void FlyingFistInitThink(edict_t* self)
-{
-	self->svflags |= SVF_NOCLIENT;
-	self->think = FlyingFistFizzleThink;
-
-	FlyingFistFizzleThink(self);
+	self->svflags |= SVF_NOCLIENT; // No messages to client after it has received velocity.
+	self->think = NULL; // Not required to think anymore. //mxd. Removed FlyingFistFizzleThink() logic. 
 }
 
 void FlyingFistTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Moved to avoid forward declaration...
@@ -101,11 +89,7 @@ void FlyingFistTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t*
 
 			T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, damage, damage, DAMAGE_SPELL, MOD_FIREBALL);
 		}
-	}
-	else
-	{
-		VectorMA(self->s.origin, -8.0f, self->movedir, self->s.origin);
-	}
+	} //mxd. Otherwise, original logic offsets s.origin in -movedir by 8.
 
 	// Attempt to apply a scorchmark decal to the thing I hit.
 	if (IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
@@ -130,7 +114,7 @@ static edict_t* CreateFlyingFist(void)
 	VectorSet(flying_fist->maxs,  FIST_RADIUS,  FIST_RADIUS,  FIST_RADIUS);
 
 	flying_fist->touch = FlyingFistTouch;
-	flying_fist->think = FlyingFistInitThink;
+	flying_fist->think = FlyingFistThink;
 	flying_fist->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	return flying_fist;
