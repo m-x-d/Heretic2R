@@ -40,6 +40,13 @@ void PreCacheMorphSFX(void) //mxd
 	morph_fire_sound = fxi.S_RegisterSound("weapons/OvumFire.wav");
 }
 
+static qboolean MorphMissileAddToView(client_entity_t* missile, centity_t* owner) //mxd
+{
+	//mxd. Rotate the missile. Originally done in MorphMissileUpdate (at 100 ms. rate).
+	missile->r.angles[PITCH] -= fxi.cls->rframetime * ANGLE_45 * 10.0f;
+	return true;
+}
+
 static qboolean MorphMissileUpdate(client_entity_t* missile, centity_t* owner) //mxd. Named 'FXMorphMissileThink' in original logic.
 {
 	// Create a new entity for these particles to attach to.
@@ -92,9 +99,6 @@ static qboolean MorphMissileUpdate(client_entity_t* missile, centity_t* owner) /
 	// Remember for even spread of particles.
 	VectorCopy(missile->r.origin, missile->origin);
 
-	// Rotate the missile.
-	missile->r.angles[PITCH] -= 0.7f; // ~= ANGLE_45 --mxd.
-
 	return true;
 }
 
@@ -125,6 +129,7 @@ void FXMorphMissile(centity_t* owner, const int type, const int flags, vec3_t or
 	missile->r.angles[PITCH] = -ANGLE_90; // Set the pitch AGAIN. //TODO: should be '-='?
 
 	missile->dlight = CE_DLight_new(morph_dlight_color, MORPH_DLIGHT_INTENSITY, 0.0f); //mxd. intensity:150 in original logic. Changed to match value used in FXMorphMissileInitial().
+	missile->AddToView = MorphMissileAddToView; //mxd
 	missile->Update = MorphMissileUpdate;
 
 	AddEffect(owner, missile);
@@ -159,6 +164,7 @@ void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, ve
 		missile->r.angles[PITCH] = -ANGLE_90;
 
 		missile->dlight = CE_DLight_new(morph_dlight_color, MORPH_DLIGHT_INTENSITY, 0.0f);
+		missile->AddToView = MorphMissileAddToView; //mxd
 		missile->Update = MorphMissileUpdate;
 
 		AddEffect(&fxi.server_entities[morph_array[i]], missile);
