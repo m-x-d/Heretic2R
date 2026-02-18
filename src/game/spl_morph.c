@@ -216,15 +216,18 @@ void SpellCastMorph(edict_t* caster, const vec3_t start_pos, const vec3_t aim_an
 	{
 		// Create each of the server side entities that are the morph ovum spells.
 		edict_t* egg = G_Spawn();
-		VectorCopy(start_pos, egg->s.origin);
 
 		// Decide its direction.
 		egg->s.angles[YAW] = current_ang;
 
-		vec3_t temp_angles;
-		VectorScale(egg->s.angles, ANGLE_TO_RAD, temp_angles);
-		DirFromAngles(temp_angles, egg->velocity);
-		Vec3ScaleAssign(OVUM_SPEED, egg->velocity);
+		vec3_t angles_rad;
+		VectorScale(egg->s.angles, ANGLE_TO_RAD, angles_rad);
+
+		vec3_t direction;
+		DirFromAngles(angles_rad, direction);
+
+		VectorMA(start_pos, OVUM_RADIUS * 3.0f, direction, egg->s.origin); //mxd. Offset from start_pos to avoid eggs immediately touching each other...
+		VectorScale(direction, OVUM_SPEED, egg->velocity);
 
 		CreateMorphOvum(egg);
 		egg->reflect_debounce_time = MAX_REFLECT;
