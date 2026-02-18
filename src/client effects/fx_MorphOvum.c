@@ -173,14 +173,13 @@ void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, ve
 		client_entity_t* glow = ClientEntity_new(type, flags, origin, NULL, 800);
 
 		glow->r.model = &morph_models[0]; // Halo1 sprite.
-		glow->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
+		glow->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST); //mxd. +RF_NODEPTHTEST.
 
-		glow->color.c = MORPH_COLOR;
 		glow->r.color.c = MORPH_COLOR;
-		glow->d_scale = 1.8f;
 		glow->r.scale = 0.5f;
-		glow->d_alpha = -1.0f;
-		glow->dlight = CE_DLight_new(glow->color, MORPH_GLOW_INTENSITY, -MORPH_GLOW_INTENSITY);
+		glow->d_scale = 1.5f; // H2: 1.8
+		glow->d_alpha = -1.5f; // H2: -1.0
+		glow->dlight = CE_DLight_new(glow->r.color, MORPH_GLOW_INTENSITY, -MORPH_GLOW_INTENSITY);
 
 		AddEffect(NULL, glow);
 	}
