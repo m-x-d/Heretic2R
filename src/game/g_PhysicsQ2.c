@@ -64,7 +64,7 @@ static void ClipVelocity(const vec3_t in, const vec3_t normal, vec3_t out) //mxd
 }
 
 // Does not change the entities velocity at all.
-static trace_t SV_PushEntity(edict_t* ent, vec3_t push) //mxd. Removed non-MOVETYPE_FLYMISSILE logic.
+static trace_t* SV_PushEntity(edict_t* ent, const vec3_t push) //mxd. Removed non-MOVETYPE_FLYMISSILE logic. Return trace_t* instead of trace_t.
 {
 	static trace_t trace; //mxd. Made local static.
 
@@ -99,7 +99,7 @@ static trace_t SV_PushEntity(edict_t* ent, vec3_t push) //mxd. Removed non-MOVET
 		if (ent->inuse)
 			G_TouchTriggers(ent);
 
-		return trace;
+		return &trace;
 	}
 }
 
@@ -127,22 +127,21 @@ static void SV_Physics_Toss(edict_t* ent) //mxd. Removed non-MOVETYPE_FLYMISSILE
 	VectorMA(ent->s.angles, FRAMETIME, ent->avelocity, ent->s.angles);
 
 	// Move origin.
-	vec3_t move;
-	VectorScale(ent->velocity, FRAMETIME, move);
+	const vec3_t move = VEC3_INITS(ent->velocity, FRAMETIME);
+	const trace_t* trace = SV_PushEntity(ent, move);
 
-	const trace_t trace = SV_PushEntity(ent, move);
 	if (!ent->inuse)
 		return;
 
-	if (trace.fraction < 1.0f)
+	if (trace->fraction < 1.0f)
 	{
-		ClipVelocity(ent->velocity, trace.plane.normal, ent->velocity);
+		ClipVelocity(ent->velocity, trace->plane.normal, ent->velocity);
 
 		// Stop if on ground.
-		if (trace.plane.normal[2] > 0.7f)
+		if (trace->plane.normal[2] > 0.7f)
 		{
-			ent->groundentity = trace.ent;
-			ent->groundentity_linkcount = trace.ent->linkcount;
+			ent->groundentity = trace->ent;
+			ent->groundentity_linkcount = trace->ent->linkcount;
 			VectorCopy(vec3_origin, ent->velocity);
 			VectorCopy(vec3_origin, ent->avelocity);
 		}
