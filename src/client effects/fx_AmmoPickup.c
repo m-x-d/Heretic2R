@@ -148,12 +148,12 @@ static client_particle_t* InitHellstaffAmmoParticle(void) //mxd
 	return p;
 }
 
-static qboolean AmmoPickupUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXAmmoPickupThink' in original logic.
+static qboolean AmmoPickupAddToView(client_entity_t* self, centity_t* owner) //mxd. Split from AmmoPickupUpdate.
 {
 	// Rotate and bob.
-	const int step = fx_time - self->nextThinkTime; //mxd
+	const int step = fx_time - self->LastUpdateTime; //mxd. Use fx_time for timing, because it's not updated when the game is paused.
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
-	self->LifeTime += step; //mxd
+	self->LastUpdateTime += step;
 
 	self->r.angles[YAW] += ANGLE_5 * lerp;
 	VectorCopy(owner->origin, self->r.origin); //mxd. Use interpolated origin (to make items dropped by Drop_Item() fly smoothly).
@@ -163,12 +163,12 @@ static qboolean AmmoPickupUpdate(client_entity_t* self, centity_t* owner) //mxd.
 	if (self->SpawnData > ANGLE_360)
 		self->SpawnData = fmodf(self->SpawnData, ANGLE_360); //mxd. Otherwise SpawnData will eventually (in ~8 minutes of runtime) cause floating point precision errors...
 
-	//mxd. Spawn particles at original rate.
-	if (self->LifeTime < ANIMATION_SPEED)
-		return true;
+	return true;
+}
 
-	self->LifeTime %= ANIMATION_SPEED;
-
+static qboolean AmmoPickupUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXAmmoPickupThink' in original logic.
+{
+	// Spawn particles.
 	client_particle_t* p;
 
 	switch (self->SpawnInfo)
@@ -210,12 +210,13 @@ void FXAmmoPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	flags &= ~CEF_OWNERS_ORIGIN;
 	flags |= (CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED);
-	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 0); //mxd. next_think_time 50 in original logic. Set to 0, so self->nextThinkTime holds previous update time in AmmoPickupThink()...
+	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, ANIMATION_SPEED);
 
 	ce->radius = 10.0f;
 	ce->r.model = &ammo_models[tag];
 	ce->r.flags = RF_GLOW; //mxd. Remove RF_TRANSLUCENT flag and 0.8 alpha (looks broken with those enabled).
 	ce->SpawnInfo = tag;
+	ce->LastUpdateTime = fx_time; //mxd
 
 	if (tag == ITEM_AMMO_MANA_DEFENSIVE_HALF || tag == ITEM_AMMO_MANA_DEFENSIVE_FULL) // Blue stuff.
 		ce->r.skinnum = 1;
@@ -224,6 +225,7 @@ void FXAmmoPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		ce->r.scale = 1.25f;
 
 	ce->SpawnData = GetPickupBobPhase(origin); //mxd
+	ce->AddToView = AmmoPickupAddToView; //mxd
 	ce->Update = AmmoPickupUpdate;
 
 	AddEffect(owner, ce);
