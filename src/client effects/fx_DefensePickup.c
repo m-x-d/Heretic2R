@@ -14,7 +14,6 @@
 #define BOB_SPEED					ANGLE_10
 #define NUM_DEFENSE_PICKUPS			6 //mxd
 #define NUM_DEFENSE_PICKUP_SPARKS	4
-#define SPARK_TRAIL_DELAY			100
 #define SPARK_RADIUS				10.0f
 #define ANIMATION_SPEED				50 //mxd
 
@@ -38,10 +37,12 @@ void PreCacheItemDefense(void)
 	defense_sparks[5] = fxi.RegisterModel("sprites/spells/spark_ind.sp2");					// Indigo spark. //mxd. spark_blue.sp2 in original logic. Changed to differentiate from ITEM_DEFENSE_SHIELD fx.
 }
 
-static qboolean DefensePickupSparkUpdate(client_entity_t* self, centity_t* owner) //mxd. FXEggSparkThink in original version.
+static qboolean DefensePickupSparkAddToView(client_entity_t* self, centity_t* owner) //mxd. FXEggSparkThink in original version.
 {
-	const int step = fx_time - self->nextThinkTime; //mxd
+	// Rotate and bob.
+	const int step = fx_time - self->LastUpdateTime; // Use fx_time for timing, because it's not updated when the game is paused --mxd. 
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
+	self->LastUpdateTime += step;
 
 	vec3_t origin = VEC3_INIT(owner->current.origin); //mxd. VectorCopy(self->origin, origin) in original logic. Changed, so sparks move in synch with pickup model.
 	origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
@@ -54,9 +55,9 @@ static qboolean DefensePickupSparkUpdate(client_entity_t* self, centity_t* owner
 	VectorMA(self->direction, (float)step / 1000.0f, self->velocity2, self->direction);
 
 	// Update the position of the spark.
-	vec3_t angvect;
-	AngleVectors(self->direction, angvect, NULL, NULL);
-	VectorMA(origin, self->radius, angvect, self->r.origin);
+	vec3_t forward;
+	AngleVectors(self->direction, forward, NULL, NULL);
+	VectorMA(origin, self->radius, forward, self->r.origin);
 
 	if (self->SpawnInfo == ITEM_DEFENSE_METEORBARRIER) //mxd. Offset to better match with pickup model center.
 		self->r.origin[2] += 8.0f;
@@ -64,11 +65,12 @@ static qboolean DefensePickupSparkUpdate(client_entity_t* self, centity_t* owner
 	return true;
 }
 
-static qboolean DefensePickupUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXDefensePickupThink' in original logic.
+static qboolean DefensePickupAddToView(client_entity_t* self, centity_t* owner) //mxd. Named 'FXDefensePickupThink' in original logic.
 {
 	// Rotate and bob.
-	const int step = fx_time - self->nextThinkTime; //mxd
+	const int step = fx_time - self->LastUpdateTime; //mxd. Use fx_time for timing, because it's not updated when the game is paused. 
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
+	self->LastUpdateTime += step;
 
 	self->r.angles[YAW] += ANGLE_5 * lerp;
 	VectorCopy(owner->origin, self->r.origin); //mxd. Use interpolated origin (to make items dropped by Drop_Item() fly smoothly).
@@ -90,25 +92,27 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	flags &= ~CEF_OWNERS_ORIGIN;
 	flags |= (CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED);
-	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 0); //mxd. next_think_time 50 in original logic. Set to 0, so self->nextThinkTime holds previous update time in AmmoPickupThink()...
+	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 1000);
 
 	VectorCopy(ce->r.origin, ce->origin);
 	ce->radius = 10.0f;
 	ce->r.model = &defense_models[tag];
 	ce->r.flags = RF_GLOW; //mxd. Remove RF_TRANSLUCENT flag and 0.8 alpha (looks broken with those enabled).
+	ce->LastUpdateTime = fx_time; //mxd
 
 	if (tag == ITEM_DEFENSE_TELEPORT)
 		ce->r.scale = 1.25f;
 
 	ce->SpawnData = GetPickupBobPhase(origin); //mxd
-	ce->Update = DefensePickupUpdate;
+	ce->AddToView = DefensePickupAddToView;
+	ce->Update = KeepSelfAI;
 
 	AddEffect(owner, ce);
 
 	// Add spinning electrical sparks.
 	for (int i = 0; i < NUM_DEFENSE_PICKUP_SPARKS; i++)
 	{
-		client_entity_t* spark = ClientEntity_new(type, flags, origin, NULL, 0); //mxd. next_think_time 50 in original logic. Set to 0, so self->nextThinkTime holds previous update time in AmmoPickupThink()...
+		client_entity_t* spark = ClientEntity_new(type, flags, origin, NULL, 1000);
 
 		spark->flags |= (CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_VIEWSTATUSCHANGED);
 		spark->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
@@ -118,8 +122,8 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		spark->color = color_white; //mxd
 		spark->alpha = 0.65f; //mxd. 0.1 in original logic, but with d_alpha 0.5.
 		spark->SpawnInfo = tag;
+		spark->LastUpdateTime = fx_time; //mxd
 
-		spark->Update = DefensePickupSparkUpdate;
 		VectorCopy(spark->r.origin, spark->origin);
 
 		VectorClear(spark->direction);
@@ -130,8 +134,8 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		spark->velocity2[YAW] =   flrand(0.0f, 360.0f) * Q_signf(flrand(-1.0f, 0.0f));
 		spark->velocity2[PITCH] = flrand(0.0f, 360.0f) * Q_signf(flrand(-1.0f, 0.0f)); // This is a velocity around the sphere.
 
-		spark->SpawnDelay = fx_time + SPARK_TRAIL_DELAY;
-		spark->lastThinkTime = fx_time;
+		spark->AddToView = DefensePickupSparkAddToView;
+		spark->Update = KeepSelfAI;
 
 		AddEffect(owner, spark);
 	}
