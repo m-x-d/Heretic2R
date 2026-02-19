@@ -47,11 +47,11 @@ static qboolean MorphMissileAddToView(client_entity_t* missile, centity_t* owner
 	return true;
 }
 
-static qboolean MorphMissileUpdate(client_entity_t* missile, centity_t* owner) //mxd. Named 'FXMorphMissileThink' in original logic.
+static qboolean MorphMissileUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXMorphMissileThink' in original logic.
 {
 	// Create a new entity for these particles to attach to.
-	const int flags = (int)(missile->flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS); //mxd
-	client_entity_t* trail = ClientEntity_new(FX_SPELL_MORPHMISSILE, flags, missile->r.origin, NULL, 1000);
+	const int flags = (int)(self->flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS); //mxd
+	client_entity_t* trail = ClientEntity_new(FX_SPELL_MORPHMISSILE, flags, self->r.origin, NULL, 1000);
 
 	// And give it no owner, so its not deleted when the missile is.
 	AddEffect(NULL, trail);
@@ -60,7 +60,7 @@ static qboolean MorphMissileUpdate(client_entity_t* missile, centity_t* owner) /
 	const int count = GetScaledCount(7, 0.5f);
 
 	vec3_t diff;
-	VectorSubtract(missile->r.origin, missile->origin, diff);
+	VectorSubtract(self->r.origin, self->origin, diff);
 	Vec3ScaleAssign(1.0f / (float)count, diff);
 
 	vec3_t cur_pos = VEC3_ZERO;
@@ -87,7 +87,7 @@ static qboolean MorphMissileUpdate(client_entity_t* missile, centity_t* owner) /
 
 		// Add a fraction of the missile velocity to this particle velocity.
 		vec3_t scaled_vel;
-		VectorScale(missile->velocity, 0.1f, scaled_vel);
+		VectorScale(self->velocity, 0.1f, scaled_vel);
 		Vec3AddAssign(scaled_vel, ce->velocity);
 
 		ce->scale = flrand(3.0f, 6.0f);
@@ -97,7 +97,7 @@ static qboolean MorphMissileUpdate(client_entity_t* missile, centity_t* owner) /
 	}
 
 	// Remember for even spread of particles.
-	VectorCopy(missile->r.origin, missile->origin);
+	VectorCopy(self->r.origin, self->origin);
 
 	return true;
 }
