@@ -36,7 +36,7 @@ static void HaloUpdateVisibility(client_entity_t* self, const float cam_dist, co
 	}
 	else if (!(self->flags & CEF_NO_DRAW))
 	{
-		if (fx_time - self->halo_last_update_time > 100) // If we were culled for a bit AND we aren't visible now, skip fade-out.
+		if (fx_time - self->LastUpdateTime > 100) // If we were culled for a bit AND we aren't visible now, skip fade-out.
 			self->alpha = HALO_MIN_ALPHA;
 		else
 			self->alpha = max(HALO_MIN_ALPHA, self->alpha * 0.9f);
@@ -45,7 +45,7 @@ static void HaloUpdateVisibility(client_entity_t* self, const float cam_dist, co
 			self->flags |= CEF_NO_DRAW;
 	}
 
-	self->halo_last_update_time = fx_time;
+	self->LastUpdateTime = fx_time;
 }
 
 static qboolean HaloUpdate(client_entity_t* self, centity_t* owner)
