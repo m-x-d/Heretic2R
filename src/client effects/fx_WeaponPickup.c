@@ -29,12 +29,12 @@ void PreCacheItemWeapons(void)
 	weapon_models[6] = fxi.RegisterModel("models/items/weapons/firewall/tris.fm");	// ITEM_WEAPON_FIREWALL
 }
 
-static qboolean WeaponPickupUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXWeaponPickupThink' in original logic.
+static qboolean WeaponPickupAddToView(client_entity_t* self, centity_t* owner) //mxd. Split from WeaponPickupUpdate.
 {
 	// Rotate and bob.
-	const int step = fx_time - self->nextThinkTime; //mxd
+	const int step = fx_time - self->LastUpdateTime; //mxd. Use fx_time for timing, because it's not updated when the game is paused.
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
-	self->LifeTime += step; //mxd
+	self->LastUpdateTime += step; //mxd
 
 	self->r.angles[YAW] += ANGLE_15 * lerp;
 	VectorCopy(owner->origin, self->r.origin); //mxd. Use interpolated origin (to make items dropped by Drop_Item() fly smoothly).
@@ -44,12 +44,12 @@ static qboolean WeaponPickupUpdate(client_entity_t* self, centity_t* owner) //mx
 	if (self->SpawnData > ANGLE_360)
 		self->SpawnData = fmodf(self->SpawnData, ANGLE_360); //mxd. Otherwise SpawnData will eventually (in ~8 minutes of runtime) cause floating point precision errors...
 
-	//mxd. Spawn particles at original rate.
-	if (self->LifeTime < ANIMATION_SPEED)
-		return true;
+	return true;
+}
 
-	self->LifeTime %= ANIMATION_SPEED;
-
+static qboolean WeaponPickupUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXWeaponPickupThink' in original logic.
+{
+	// Spawn particles.
 	int part;
 	paletteRGBA_t color;
 
@@ -119,7 +119,7 @@ void FXWeaponPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	flags &= ~CEF_OWNERS_ORIGIN;
 	flags |= (CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_ADDITIVE_PARTS | CEF_VIEWSTATUSCHANGED);
-	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 0); //mxd. next_think_time 50 in original logic. Set to 0, so self->nextThinkTime holds previous update time in AmmoPickupThink()...
+	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, ANIMATION_SPEED);
 
 	ce->radius = 10.0f;
 	ce->SpawnInfo = tag;
@@ -127,8 +127,10 @@ void FXWeaponPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	ce->r.flags = RF_GLOW; //mxd. Remove RF_TRANSLUCENT flag and 0.8 alpha (looks broken with those enabled).
 	ce->r.scale = ((tag == ITEM_WEAPON_FIREWALL) ? 1.0f : 0.5f);
 	ce->r.skinnum = ((tag == ITEM_WEAPON_PHOENIXBOW) ? 1 : 0);
+	ce->LastUpdateTime = fx_time; //mxd
 
 	ce->SpawnData = GetPickupBobPhase(origin); //mxd
+	ce->AddToView = WeaponPickupAddToView; //mxd
 	ce->Update = WeaponPickupUpdate;
 
 	AddEffect(owner, ce);
