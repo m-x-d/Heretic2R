@@ -10,6 +10,7 @@
 #include "g_playstats.h"
 #include "p_morph.h" //mxd
 #include "FX.h"
+#include "Random.h"
 #include "Utilities.h" //mxd
 #include "Vector.h"
 #include "g_local.h"
@@ -139,6 +140,9 @@ void MorphMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_
 	}
 	else // We hit a wall or object.
 	{
+		//mxd. Play impact sound.
+		gi.sound(self, CHAN_VOICE, gi.soundindex(va("Monsters/chicken/bite%i.wav", irand(1, 2))), 1.0f, ATTN_IDLE, 0.0f);
+
 		// Start the explosion.
 		vec3_t* dir = (plane != NULL ? &plane->normal : &self->movedir); //mxd
 		gi.CreateEffect(NULL, FX_SPELL_MORPHEXPLODE, 0, self->s.origin, "d", *dir);
