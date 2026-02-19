@@ -56,7 +56,7 @@ void PreCachePuzzleItems(void)
 	pickup_halo_model = fxi.RegisterModel("sprites/Spells/bluball.sp2"); //mxd
 }
 
-static qboolean PuzzlePickupUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXPuzzlePickupThink' in original logic.
+static qboolean PuzzlePickupAddToView(client_entity_t* self, centity_t* owner) //mxd. Named 'FXPuzzlePickupThink' in original logic.
 {
 	VectorCopy(owner->origin, self->r.origin); //mxd. Use interpolated origin (to make items dropped by Drop_Item() fly smoothly).
 
@@ -65,8 +65,9 @@ static qboolean PuzzlePickupUpdate(client_entity_t* self, centity_t* owner) //mx
 		return true;
 
 	// Bob, but don't rotate.
-	const int step = fx_time - self->nextThinkTime; //mxd
+	const int step = fx_time - self->LastUpdateTime; //mxd
 	const float lerp = (float)step / ANIMATION_SPEED; //mxd
+	self->LastUpdateTime += step; //mxd
 
 	self->r.origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
 	self->SpawnData += BOB_SPEED * lerp;
@@ -87,12 +88,13 @@ void FXPuzzlePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	// Create pickup model.
 	flags &= ~CEF_OWNERS_ORIGIN;
-	client_entity_t* ce = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 0); //mxd. next_think_time 50 in original logic. Set to 0, so self->nextThinkTime holds previous update time in AmmoPickupThink()...
+	client_entity_t* ce = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 1000);
 
 	ce->radius = 10.0f;
 	ce->r.model = &puzzle_models[tag].model;
 	ce->r.scale = puzzle_models[tag].scale;
 	ce->r.flags = RF_GLOW; //mxd. Remove RF_TRANSLUCENT flag and 0.8 alpha (looks broken with those enabled).
+	ce->LastUpdateTime = fx_time; //mxd
 
 	if (tag == ITEM_CRYSTAL || tag == ITEM_GEM || tag == ITEM_POTION || tag == ITEM_CONT || tag == ITEM_SLUMCONT) //mxd
 	{
@@ -107,22 +109,25 @@ void FXPuzzlePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	ce->puzzle_pickup_tag = tag; //mxd
 	ce->SpawnData = bob_phase;
-	ce->Update = PuzzlePickupUpdate;
+	ce->AddToView = PuzzlePickupAddToView; //mxd
+	ce->Update = KeepSelfAI;
 
 	AddEffect(owner, ce);
 
 	//mxd. Create pickup halo.
-	client_entity_t* halo = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 0);
+	client_entity_t* halo = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 1000);
 
 	halo->radius = 10.0f;
 	halo->r.model = &pickup_halo_model;
 	halo->r.flags = RF_TRANSLUCENT;
 	halo->r.scale = puzzle_models[tag].halo_scale;
 	halo->alpha = 0.15f;
+	halo->LastUpdateTime = fx_time; //mxd
 
 	halo->puzzle_pickup_tag = tag;
 	halo->SpawnData = bob_phase;
-	halo->Update = PuzzlePickupUpdate;
+	halo->AddToView = PuzzlePickupAddToView; //mxd
+	halo->Update = KeepSelfAI;
 
 	AddEffect(owner, halo);
 }
