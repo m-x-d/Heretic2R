@@ -18,6 +18,7 @@
 #define MORPH_GLOW_INTENSITY	255
 #define MORPH_DLIGHT_INTENSITY	110.0f //mxd
 #define MORPH_ANGLE_INC			(ANGLE_360 / NUM_OF_OVUMS)
+#define ANIMATION_SPEED			100 //mxd
 
 #define FEATHER_VEL				50.0f
 #define FEATHER_FLOAT_TIME		15
@@ -40,10 +41,13 @@ void PreCacheMorphSFX(void) //mxd
 	morph_fire_sound = fxi.S_RegisterSound("weapons/OvumFire.wav");
 }
 
-static qboolean MorphMissileAddToView(client_entity_t* missile, centity_t* owner) //mxd
+static qboolean MorphMissileAddToView(client_entity_t* self, centity_t* owner) //mxd
 {
-	//mxd. Rotate the missile. Originally done in MorphMissileUpdate (at 100 ms. rate).
-	missile->r.angles[PITCH] -= fxi.cls->rframetime * ANGLE_45 * 10.0f;
+	const int step = fx_time - self->LastUpdateTime; //mxd. Use fx_time for timing, because it's not updated when the game is paused.
+	self->LastUpdateTime += step;
+
+	// Rotate the missile. Originally done in MorphMissileUpdate (at 100 ms. rate) --mxd.
+	self->r.angles[PITCH] -= (float)step * ANGLE_45 / ANIMATION_SPEED;
 	return true;
 }
 
@@ -112,9 +116,7 @@ void FXMorphMissile(centity_t* owner, const int type, const int flags, vec3_t or
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_MORPHMISSILE].formatString, &b_yaw, &b_pitch);
 
 	// Create the client effect with the light on it.
-	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
-
-	missile->radius = 32.0f;
+	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, ANIMATION_SPEED);
 	missile->r.angles[YAW] = (float)b_yaw * BYTEANGLE_TO_RAD; //mxd. Use macro.
 	missile->r.angles[PITCH] = (float)b_pitch * BYTEANGLE_TO_RAD; //mxd. Use macro.
 
@@ -124,9 +126,10 @@ void FXMorphMissile(centity_t* owner, const int type, const int flags, vec3_t or
 	const float arrow_speed = MORPH_ARROW_SPEED * ((flags & CEF_FLAG6) ? 0.5f : 1.0f); //mxd
 	Vec3ScaleAssign(arrow_speed, missile->velocity);
 
+	missile->radius = 32.0f;
 	missile->r.model = &morph_models[1]; // Egg model.
 	missile->r.scale = 3.0f;
-	missile->r.angles[PITCH] = -ANGLE_90; // Set the pitch AGAIN. //TODO: should be '-='?
+	missile->LastUpdateTime = fx_time; //mxd
 
 	missile->dlight = CE_DLight_new(morph_dlight_color, MORPH_DLIGHT_INTENSITY, 0.0f); //mxd. intensity:150 in original logic. Changed to match value used in FXMorphMissileInitial().
 	missile->AddToView = MorphMissileAddToView; //mxd
@@ -151,7 +154,7 @@ void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, ve
 	for (int i = 0; i < NUM_OF_OVUMS; i++)
 	{
 		// Create the client effect with the light on it.
-		client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
+		client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, ANIMATION_SPEED);
 		missile->r.angles[YAW] = yaw_rad;
 
 		// Figure out where we are going.
@@ -162,6 +165,7 @@ void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, ve
 		missile->r.model = &morph_models[1]; // Egg model.
 		missile->r.scale = 3.0f;
 		missile->r.angles[PITCH] = -ANGLE_90;
+		missile->LastUpdateTime = fx_time; //mxd
 
 		missile->dlight = CE_DLight_new(morph_dlight_color, MORPH_DLIGHT_INTENSITY, 0.0f);
 		missile->AddToView = MorphMissileAddToView; //mxd
