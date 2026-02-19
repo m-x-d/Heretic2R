@@ -9,7 +9,6 @@
 #include "menu.h"
 
 extern cvar_t* m_banner_citymap;
-
 extern cvar_t* m_item_nomap;
 
-void M_Menu_City_Map_f(void);
+extern void M_Menu_City_Map_f(void);

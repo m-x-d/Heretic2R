@@ -10,4 +10,4 @@
 
 extern cvar_t* m_banner_quit;
 
-void M_Menu_Quit_f(void);
+extern void M_Menu_Quit_f(void);

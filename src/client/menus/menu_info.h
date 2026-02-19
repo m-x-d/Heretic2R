@@ -10,4 +10,4 @@
 
 extern cvar_t* m_banner_info;
 
-void M_Menu_Info_f(void);
+extern void M_Menu_Info_f(void);

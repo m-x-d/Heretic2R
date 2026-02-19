@@ -15,4 +15,4 @@ extern cvar_t* m_item_mousespeedy;
 extern cvar_t* m_item_mouseinvert;
 extern cvar_t* m_item_freelook;
 
-void M_Menu_MouseCfg_f(void);
+extern void M_Menu_MouseCfg_f(void);

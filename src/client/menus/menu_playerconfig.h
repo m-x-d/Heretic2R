@@ -19,4 +19,4 @@ extern cvar_t* skin_temp;
 extern cvar_t* player_name;
 extern cvar_t* playerdir;
 
-void M_Menu_PlayerConfig_f(void);
+extern void M_Menu_PlayerConfig_f(void);

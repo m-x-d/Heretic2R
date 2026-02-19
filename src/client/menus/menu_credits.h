@@ -10,4 +10,4 @@
 
 extern cvar_t* m_banner_credits;
 
-void M_Menu_Credits_f(void);
+extern void M_Menu_Credits_f(void);

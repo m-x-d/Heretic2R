@@ -20,4 +20,4 @@ extern cvar_t* m_item_hostname;
 extern cvar_t* m_item_deathmatch;
 extern cvar_t* m_item_coop;
 
-void M_Menu_StartServer_f(void);
+extern void M_Menu_StartServer_f(void);

@@ -14,4 +14,4 @@ extern cvar_t* m_item_camera_rotation_lerp;
 extern cvar_t* m_item_camera_position_lerp; //mxd
 extern cvar_t* m_item_autoaim; //mxd
 
-void M_Menu_CameraCfg_f(void);
+extern void M_Menu_CameraCfg_f(void);

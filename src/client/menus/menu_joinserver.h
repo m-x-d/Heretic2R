@@ -9,7 +9,6 @@
 #include "menu.h"
 
 extern cvar_t* m_banner_join;
-
 extern cvar_t* m_item_refresh;
 
-void M_Menu_JoinServer_f(void);
+extern void M_Menu_JoinServer_f(void);

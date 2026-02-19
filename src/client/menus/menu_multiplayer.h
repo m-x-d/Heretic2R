@@ -10,4 +10,4 @@
 
 extern cvar_t* m_banner_multi;
 
-void M_Menu_Multiplayer_f(void);
+extern void M_Menu_Multiplayer_f(void);

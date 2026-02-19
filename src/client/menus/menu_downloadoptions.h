@@ -16,4 +16,4 @@ extern cvar_t* m_item_allowdownloadsound;
 extern cvar_t* m_item_allowdownloadplayer;
 extern cvar_t* m_item_allowdownloadmodel;
 
-void M_Menu_DownloadOptions_f(void);
+extern void M_Menu_DownloadOptions_f(void);

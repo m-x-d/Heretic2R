@@ -26,4 +26,4 @@ extern cvar_t* m_item_friendlyfire;
 extern cvar_t* m_item_dismember;
 extern cvar_t* m_item_nonames;
 
-void M_Menu_DMOptions_f(void);
+extern void M_Menu_DMOptions_f(void);
