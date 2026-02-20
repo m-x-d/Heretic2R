@@ -153,6 +153,8 @@ static float debris_elasticity[NUM_MAT] =
 	1.3f,	// Insect chunks.
 };
 
+const paletteRGBA_t fire_dlight_color = { .c = 0xff007fff }; //mxd
+
 #pragma endregion
 
 #pragma region ========================== Debris sounds ==========================
@@ -309,6 +311,18 @@ static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. 
 	return true;
 }
 
+static qboolean FireDLight_AddToView(client_entity_t* self, centity_t* owner) //mxd
+{
+	// Randomize fire color (255 127 0) a bit.
+	if (fx_time <= self->LifeTime && self->dlight != NULL && self->dlight->intensity > 0.0f)
+	{
+		self->dlight->color.r = (byte)(irand(220, 255));
+		self->dlight->color.g = (byte)(irand(107, 147));
+	}
+
+	return true;
+}
+
 static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t origin, float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy) //mxd. Named 'FXBodyPart_Throw' in original logic.
 {
 	//FIXME: make sure parts have correct skins, even node 0!
@@ -386,7 +400,7 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	if (ke == 0.0f)
 	{
 		ke = flrand(10.0f, 100.0f) * 10000.0f;
-		gib->color.c = 0x00000000;
+		gib->color.c = 0x00000000; //TODO: this makes gib invisible? Why?
 	}
 	else
 	{
@@ -422,10 +436,9 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	{
 		if (!ref_soft && R_DETAIL > DETAIL_NORMAL) //mxd. '== DETAIL_HIGH' in original logic (ignores DETAIL_UBERHIGH).
 		{
-			const paletteRGBA_t color = { .c = 0xe5007fff }; //TODO: randomize color a bit?
-
 			gib->flags |= CEF_FLAG7; // Don't spawn blood too, just flames.
-			gib->dlight = CE_DLight_new(color, 50.0f, -5.0f);
+			gib->dlight = CE_DLight_new(fire_dlight_color, 72.0f, -0.1f); //mxd. Intensity:50 (didn't affect lightmap), d_intensity:-5 (expired way before landing on ground) in original logic.
+			gib->AddToView = FireDLight_AddToView; //mxd
 		}
 
 		gib->flags |= CEF_FLAG6;
@@ -569,8 +582,6 @@ static qboolean FleshDebris_Update(client_entity_t* self, centity_t* owner)
 
 client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const vec3_t dir, const float ke, const float scale, const int flags, const qboolean altskin)
 {
-	static const paletteRGBA_t fire_color = { .c = 0xe5007fff };
-
 	const int chunk_index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
 
 	client_entity_t* debris = ClientEntity_new(-1, CEF_ABSOLUTE_PARTS, origin, NULL, 0); //mxd. next_think_time:50 in original logic (20 FPS). Update every frame instead.
@@ -623,7 +634,8 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 		if (flags & CEF_FLAG7) // High detail, non-ref_soft?
 		{
 			debris->flags |= CEF_FLAG7; // Spawn blood too, not just flames.
-			debris->dlight = CE_DLight_new(fire_color, 50.0f, -5.0f);
+			debris->dlight = CE_DLight_new(fire_dlight_color, 72.0f, -0.1f); //mxd. Intensity:50 (didn't affect lightmap), d_intensity:-5 (expired way before landing on ground) in original logic.
+			debris->AddToView = FireDLight_AddToView; //mxd
 		}
 
 		debris->flags |= CEF_FLAG6;
