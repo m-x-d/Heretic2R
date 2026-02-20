@@ -24,6 +24,8 @@
 static struct model_s* hell_models[2];
 static struct sfx_s* hell_hit_sound; //mxd
 
+const paletteRGBA_t hellbolt_dlight_color = { .r = 255, .g = 96, .b = 48, .a = 255 };
+
 void PreCacheHellstaff(void)
 {
 	hell_models[0] = fxi.RegisterModel("sprites/spells/hellstafproj.sp2");
@@ -51,25 +53,22 @@ void FXHellbolt(centity_t* owner, const int type, const int flags, vec3_t origin
 	vectoangles(vel, hellbolt->r.angles);
 	VectorCopy(vel, hellbolt->velocity);
 
-	const paletteRGBA_t light_color = { .r = 255, .g = 128, .b = 64, .a = 255 };
-
 	hellbolt->r.scale = 0.5f;
-	hellbolt->r.color = light_color;
+	hellbolt->r.color = hellbolt_dlight_color;
 	hellbolt->d_alpha = 0.0f;
 	hellbolt->radius = 10.0f;
-	hellbolt->dlight = CE_DLight_new(light_color, 120.0f, 0.0f);
+	hellbolt->dlight = CE_DLight_new(hellbolt_dlight_color, 120.0f, 0.0f);
 
 	AddEffect(owner, hellbolt);
 }
 
 static void HellboltExplode(const vec3_t loc, const vec3_t vel)
 {
-	const paletteRGBA_t light_color = { .r = 255, .g = 96, .b = 48, .a = 255 };
-
 	client_entity_t* blast = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, loc, NULL, 500);
 
 	blast->radius = 32.0f;
-	blast->dlight = CE_DLight_new(light_color, 150.0f, -200.0f);
+	blast->dlight = CE_DLight_new(hellbolt_dlight_color, 120.0f, -20.0f); //mxd. intensity:150, d_intensity:-200 in original logic.
+	CE_DLight_SetColorFade(blast->dlight, 0.0f, 0.0f, 0.0f, blast->updateTime); //mxd
 
 	fxi.S_StartSound(blast->r.origin, -1, CHAN_WEAPON, hell_hit_sound, 1.0f, ATTN_NORM, 0.0f);
 	AddEffect(NULL, blast);
@@ -77,7 +76,7 @@ static void HellboltExplode(const vec3_t loc, const vec3_t vel)
 	const int num_particles = irand(HELLBOLT_IMPACT_SPARKS_MIN, HELLBOLT_IMPACT_SPARKS_MAX); //mxd
 	for (int i = 0; i < num_particles; i++)
 	{
-		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_R, light_color, 500);
+		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_R, hellbolt_dlight_color, 500);
 
 		//mxd. Scale here instead of FXHellboltExplode() (was done before calling FXClientScorchmark(), which could re-normalize 'dir'...).
 		VectorRandomCopy(vel, spark->velocity, 0.65f); // Original logic scales vel by 32, then randomizes it by 64 --mxd.
@@ -106,13 +105,11 @@ void FXHellboltExplode(centity_t* owner, int type, const int flags, vec3_t origi
 
 static void HellLaserBurn(vec3_t loc, vec3_t fwd, vec3_t right, vec3_t up)
 {
-	const paletteRGBA_t light_color = { .r = 255, .g = 96, .b = 48, .a = 255 };
-
 	client_entity_t* blast = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, loc, NULL, 1000);
 
 	blast->radius = 32.0f;
-	blast->dlight = CE_DLight_new(light_color, 150.0f, -300.0f);
-	VectorClear(blast->velocity);
+	blast->dlight = CE_DLight_new(hellbolt_dlight_color, 120.0f, -30.0f); //mxd. intensity:150, d_intensity:-300 in original logic.
+	CE_DLight_SetColorFade(blast->dlight, 0.0f, 0.0f, 0.0f, blast->updateTime); //mxd
 
 	AddEffect(NULL, blast);
 
