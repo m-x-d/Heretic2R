@@ -32,7 +32,7 @@ static struct sfx_s* ripper_impact_sound; //mxd
 void PreCacheMaceball(void)
 {
 	mace_models[0] = fxi.RegisterModel("sprites/spells/maceball.sp2");
-	mace_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
+	mace_models[1] = fxi.RegisterModel("sprites/fx/halogreen.sp2"); //mxd. 'halo.sp2' in original logic.
 	mace_models[2] = fxi.RegisterModel("sprites/fx/neon.sp2");
 	mace_models[3] = fxi.RegisterModel("models/spells/maceball/tris.fm");
 	mace_models[4] = fxi.RegisterModel("sprites/fx/ballstreak.sp2");
@@ -241,6 +241,8 @@ static qboolean RipperExplodeBallUpdate(client_entity_t* self, centity_t* owner)
 
 void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
+	static const paletteRGBA_t halo_dlight_color = { .c = 0xff00e400 }; //mxd
+
 	vec3_t caster_pos;
 	byte byte_yaw;
 	short ball_array[8];
@@ -279,17 +281,17 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 	}
 
 	// Draw the impact graphic.
-	client_entity_t* halo = ClientEntity_new(type, 0, origin, NULL, 50);
+	client_entity_t* halo = ClientEntity_new(type, 0, origin, NULL, 750); //mxd. next_think_time:50 in original logic. Increased to allow proper halo/dlight fading.
 
-	halo->r.model = &mace_models[1]; // Halo sprite.
-	halo->r.frame = 1;
+	halo->r.model = &mace_models[1]; // Halogreen sprite.
 	halo->r.flags = (RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
-	halo->radius = 20.0f;
-	halo->r.scale = 0.75f;
-	halo->d_scale = -1.0f;
+	halo->radius = 32.0f; // H2: 20
+	halo->r.scale = 0.5f; //H2: 0.75
+	halo->d_scale = 1.25f; //H2: -1
 	halo->d_alpha = -1.4f;
-	halo->dlight = CE_DLight_new(color_white, 150.0f, -100.0f);
-	halo->lastThinkTime = fx_time + 750;
+
+	halo->dlight = CE_DLight_new(halo_dlight_color, 96.0f, 110.0f); //mxd. color:color_white, intensity:150, d_intensity:-100 in original logic.
+	CE_DLight_SetColorFade(halo->dlight, 0.0f, 0.0f, 0.0f, halo->updateTime); //mxd
 
 	fxi.S_StartSound(halo->r.origin, -1, CHAN_WEAPON, ripper_impact_sound, 1.0f, ATTN_NORM, 0.0f);
 
@@ -297,7 +299,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 
 	// Draw a circle of expanding lines.
 	vec3_t last_vel = VEC3_SET(RIPPER_RING_VEL, 0.0f, 0.0f);
-	const int ring_flags = CEF_PULSE_ALPHA | CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS; //mxd
+	const int ring_flags = (CEF_PULSE_ALPHA | CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS); //mxd
 	cur_yaw = 0.0f;
 
 	for (int i = 0; i < NUM_RIPPER_PUFFS; i++)
