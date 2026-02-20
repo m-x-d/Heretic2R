@@ -79,6 +79,15 @@ void RipperExplodeBallThink(edict_t* self)
 
 void RipperExplodeBallTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
+	//mxd. If hit world, play impact sound and create impact SFX.
+	if (plane != NULL)
+	{
+		const char* impact_snd = (irand(0, 1) ? "Misc/dropmetal.wav" : "Misc/dropmetal1.wav");
+		gi.sound(self, CHAN_WEAPON, gi.soundindex(impact_snd), 0.5f, ATTN_IDLE, 0.0f);
+
+		gi.CreateEffect(NULL, FX_ARMOR_HIT, 0, self->s.origin, "d", plane->normal);
+	}
+
 	G_SetToFree(self);
 }
 
