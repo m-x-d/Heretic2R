@@ -229,7 +229,8 @@ void FXMorphExplode(centity_t* owner, int type, const int flags, vec3_t origin)
 	// Create a light at the point of explosion.
 	const int dlight_flags = (CEF_NO_DRAW | CEF_NOMOVE | CEF_ADDITIVE_PARTS); //mxd
 	client_entity_t* dlight = ClientEntity_new(-1, dlight_flags, origin, NULL, duration);
-	dlight->dlight = CE_DLight_new(morph_dlight_color, MORPH_DLIGHT_INTENSITY, 100.0f); //TODO: make it fade-out?
+	dlight->dlight = CE_DLight_new(morph_dlight_color, MORPH_DLIGHT_INTENSITY * 1.2f, 0.0f);
+	CE_DLight_SetColorFade(dlight->dlight, 0.0f, 0.0f, 0.0f, duration); //mxd
 
 	AddEffect(NULL, dlight);
 
