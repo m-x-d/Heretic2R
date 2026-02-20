@@ -225,8 +225,11 @@ void FXFlyingFistExplode(centity_t* owner, const int type, const int flags, vec3
 		{
 			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fist_impact_sounds[is_powered ? 1 : 0], volume, ATTN_NORM, 0.0f);
 
-			smoke_puff->dlight = CE_DLight_new(light_color, light_radius, -50.0f);
+			smoke_puff->dlight = CE_DLight_new(light_color, light_radius, -25.0f); //mxd. d_intensity:-50 in original logic.
+			CE_DLight_SetColorFade(smoke_puff->dlight, 0.0f, 0.0f, 0.0f, smoke_puff->updateTime); //mxd
+
 			VectorClear(smoke_puff->velocity);
+			VectorClear(smoke_puff->acceleration); //mxd. Clear acceleration as well (to actually keep last puff in place)...
 		}
 
 		AddEffect(NULL, smoke_puff);
