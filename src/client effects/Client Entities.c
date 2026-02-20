@@ -385,7 +385,20 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 		}
 
 		if (current->dlight != NULL)
-			current->dlight->intensity += (d_time * current->dlight->d_intensity);
+		{
+			CE_DLight_t* dl = current->dlight;
+			dl->intensity += (d_time * dl->d_intensity);
+
+			//mxd. Apply color fading?
+			if (fx_time <= dl->fade_end_time && fx_time > dl->fade_start_time)
+			{
+				vec3_t cur_color;
+				const float lerp = (float)(fx_time - dl->fade_start_time) / (float)(dl->fade_end_time - dl->fade_start_time);
+				VectorLerp(dl->fade_color_start, lerp, dl->fade_color_end, cur_color);
+
+				COLOUR_SET(dl->color, cur_color[0], cur_color[1], cur_color[2]);
+			}
+		}
 
 		if (current->p_root != NULL)
 			numprocessedparticles += UpdateParticles(current);
