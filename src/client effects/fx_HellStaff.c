@@ -103,9 +103,9 @@ void FXHellboltExplode(centity_t* owner, int type, const int flags, vec3_t origi
 	HellboltExplode(origin, dir);
 }
 
-static void HellLaserBurn(vec3_t loc, vec3_t fwd, vec3_t right, vec3_t up)
+static void HellLaserBurn(const vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 {
-	client_entity_t* blast = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, loc, NULL, 1000);
+	client_entity_t* blast = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, origin, NULL, 1000);
 
 	blast->radius = 32.0f;
 	blast->dlight = CE_DLight_new(hellbolt_dlight_color, 120.0f, -30.0f); //mxd. intensity:150, d_intensity:-300 in original logic.
@@ -115,7 +115,7 @@ static void HellLaserBurn(vec3_t loc, vec3_t fwd, vec3_t right, vec3_t up)
 
 	const float delta_angle = ANGLE_360 / (float)HELLLASER_PARTS;
 	float cur_angle = flrand(0.0f, delta_angle);
-	Vec3ScaleAssign(-0.25f * HELLLASER_SPEED, fwd);
+	Vec3ScaleAssign(-0.25f * HELLLASER_SPEED, forward);
 	Vec3ScaleAssign(HELLLASER_SPEED, right);
 	Vec3ScaleAssign(HELLLASER_SPEED, up);
 
@@ -123,7 +123,7 @@ static void HellLaserBurn(vec3_t loc, vec3_t fwd, vec3_t right, vec3_t up)
 	{
 		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_R, color_white, 1000);
 
-		VectorMA(fwd, cosf(cur_angle), right, spark->velocity);
+		VectorMA(forward, cosf(cur_angle), right, spark->velocity);
 		VectorMA(spark->velocity, sinf(cur_angle), up, spark->velocity);
 		spark->acceleration[2] = 64.0f;
 		spark->scale = flrand(8.0f, 24.0f);
@@ -145,12 +145,12 @@ void FXHellstaffPowerBurn(centity_t* owner, int type, const int flags, vec3_t or
 	vectoangles(dir, angles);
 	angles[PITCH] *= -1.0f; // Something's broken with angle signs somewhere ;(
 
-	vec3_t fwd;
+	vec3_t forward;
 	vec3_t right;
 	vec3_t up;
-	AngleVectors(angles, fwd, right, up);
+	AngleVectors(angles, forward, right, up);
 
-	HellLaserBurn(origin, fwd, right, up);
+	HellLaserBurn(origin, forward, right, up);
 }
 
 void FXHellstaffPower(centity_t* owner, int type, const int flags, vec3_t origin)
@@ -163,14 +163,14 @@ void FXHellstaffPower(centity_t* owner, int type, const int flags, vec3_t origin
 	vectoangles(dir, angles);
 	angles[PITCH] *= -1.0f; // Something's broken with angle signs somewhere ;(
 
-	vec3_t fwd;
+	vec3_t forward;
 	vec3_t right;
 	vec3_t up;
-	AngleVectors(angles, fwd, right, up);
+	AngleVectors(angles, forward, right, up);
 
 	vec3_t endpos;
 	const float len = (float)beam_length * 8.0f;
-	VectorMA(origin, len, fwd, endpos);
+	VectorMA(origin, len, forward, endpos);
 
 	// Make the line beam.
 	client_entity_t* beam = ClientEntity_new(-1, CEF_DONT_LINK | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS, origin, NULL, 333);
@@ -209,7 +209,7 @@ void FXHellstaffPower(centity_t* owner, int type, const int flags, vec3_t origin
 
 	vec3_t delta_pos;
 	const int count = GetScaledCount((int)(len / 16.0f), 0.3f);
-	VectorScale(fwd, len / (float)count, delta_pos);
+	VectorScale(forward, len / (float)count, delta_pos);
 
 	vec3_t cur_pos = VEC3_INIT(origin);
 
@@ -235,5 +235,5 @@ void FXHellstaffPower(centity_t* owner, int type, const int flags, vec3_t origin
 		FXClientScorchmark(beam->r.endpos, dir);
 
 	if (flags & CEF_FLAG6)
-		HellLaserBurn(endpos, fwd, right, up);
+		HellLaserBurn(endpos, forward, right, up);
 }
