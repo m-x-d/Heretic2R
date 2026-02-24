@@ -249,6 +249,7 @@ struct edict_s
 		int morcalavin_healthbar_buildup; //mxd
 		int mssithra_healthbar_buildup; //mxd
 		int priestess_healthbar_buildup; //mxd
+		qboolean tbeast_is_charging; //mxd
 	};
 
 	union
@@ -315,7 +316,6 @@ struct edict_s
 	{
 		float attenuation;	// Used only by sound_ambient_nnn.
 		float maxrange;		// Used by env_smoke and func_monsterspawner.
-		int tbeast_pillars_destroyed; //mxd
 	};
 
 	// Timing variables.
@@ -525,6 +525,7 @@ struct edict_s
 	{
 		int red_rain_count; // Number of red rains you can have at once.
 		int plagueelf_spell_fx_type; //mxd
+		int tbeast_pillars_destroyed; //mxd
 	};
 	
 	int deathtype; // How you died. //mxd. Unused. Can't remove...

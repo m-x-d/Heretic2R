@@ -1113,7 +1113,7 @@ void TBeastUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named '
 {
 	self->enemy = activator; // Are we certain activator is client?
 	//FIXME: do a FoundTarget(self, false);?
-	self->dmg = true; // Activate charge mode.
+	self->tbeast_is_charging = true; // Activate charge mode.
 	SetAnim(self, ANIM_CHARGE);
 	self->use = TBeastDieUse;
 }
@@ -1283,9 +1283,9 @@ static void TBeastRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 't
 	if (!MG_TryGetTargetOrigin(self, target_origin))
 		return;
 
-	if (!self->dmg)
+	if (!self->tbeast_is_charging)
 	{
-		self->dmg = true;
+		self->tbeast_is_charging = true;
 		SetAnim(self, ANIM_CHARGE);
 
 		return;
@@ -2200,7 +2200,7 @@ void SP_monster_trial_beast(edict_t* self)
 	MG_InitMoods(self);
 	G_PostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
-	self->dmg = false; // Not in charge mode initially.
+	self->tbeast_is_charging = false; // Not in charge mode initially.
 	self->svflags |= (SVF_BOSS | SVF_NO_AUTOTARGET);
 
 	if (irand(0, 1) == 0)
@@ -2210,12 +2210,12 @@ void SP_monster_trial_beast(edict_t* self)
 
 	self->touch = TBeastTouch;
 	self->post_think = TBeastPostThink;
-	self->next_post_think = level.time + 0.1f;
+	self->next_post_think = level.time + FRAMETIME; //mxd. Use define.
 	self->elasticity = ELASTICITY_SLIDE;
 	self->tbeast_grabbed_toy = false;
 	self->clipmask = CONTENTS_SOLID;
 	self->solid = SOLID_TRIGGER; // WHY IS HE BEING PUSHED BY BSP ENTITIES NOW?!
-	self->tbeast_pillars_destroyed = 0; // Pillar init. //BUGFIX: mxd. Original logic stores this in 'red_rain_count', which is NOT a saveable field.
+	self->tbeast_pillars_destroyed = 0; // Pillar init.
 	self->use = TBeastUse;
 	self->delay = 1.0f;
 
@@ -2223,5 +2223,5 @@ void SP_monster_trial_beast(edict_t* self)
 	self->tbeast_healthbar_buildup = 0; // Initial healthbar buildup progress.
 	self->tbeast_toy_materialtype = 0; // Initialize material id.
 
-	level.fighting_beast = true; // Sorry, only one beast per level
+	level.fighting_beast = true; // Sorry, only one beast per level.
 }
