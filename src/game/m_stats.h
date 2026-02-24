@@ -8,11 +8,11 @@
 
 #include "g_ClassStatics.h"
 
-extern int AttackRangesForClass[NUM_ATTACK_RANGES];
-extern byte MaxBuoysForClass[NUM_CLASSIDS];
-extern int JumpChanceForClass[NUM_CLASSIDS];
-extern vec3_t STDMinsForClass[NUM_CLASSIDS];
-extern vec3_t STDMaxsForClass[NUM_CLASSIDS];
+extern const int AttackRangesForClass[NUM_ATTACK_RANGES];
+extern const byte MaxBuoysForClass[NUM_CLASSIDS];
+extern const int JumpChanceForClass[NUM_CLASSIDS];
+extern const vec3_t STDMinsForClass[NUM_CLASSIDS];
+extern const vec3_t STDMaxsForClass[NUM_CLASSIDS];
 
 typedef struct MonsterShadow_s
 {
@@ -20,7 +20,7 @@ typedef struct MonsterShadow_s
 	float scale;
 } MonsterShadow_t;
 
-extern struct MonsterShadow_s G_MonsterShadow[NUM_CLASSIDS];
+extern const struct MonsterShadow_s G_MonsterShadow[NUM_CLASSIDS];
 
 typedef struct EvadeChance_s //mxd
 {

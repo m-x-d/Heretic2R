@@ -12,7 +12,7 @@
 // missile_range			- Maximum distance a monster will try to attack	from using it's ranged attack.
 // min_missile_range		- Min range at which a monster will not use	it's missile attack (too close).
 // bypass_missile_chance	- 0 - 100 chance of a monster not taking a shot even when it can, otherwise it will close in.
-int AttackRangesForClass[NUM_ATTACK_RANGES] =
+const int AttackRangesForClass[NUM_ATTACK_RANGES] =
 {
 	// melee_rn	g,	missile_rng,	min_msl_rng,	bypass_missile_chance
 	0,				0,				0,				0,	// CID_NONE
@@ -73,7 +73,7 @@ int AttackRangesForClass[NUM_ATTACK_RANGES] =
 
 // This table determines how many buoys a monster will search through in a line before it goes back and tries a different buoy path.
 // Helps cut down the hit of searching through buoys and helps find the shorter path if there is one.
-byte MaxBuoysForClass[NUM_CLASSIDS] =
+const byte MaxBuoysForClass[NUM_CLASSIDS] =
 {
 	0,	// CID_NONE
 	8,	// CID_RAT
@@ -132,7 +132,7 @@ byte MaxBuoysForClass[NUM_CLASSIDS] =
 };
 
 // 0 - 100 chance that a monster will check and see if it can jump when it hits a ledge.
-int JumpChanceForClass[NUM_CLASSIDS] =
+const int JumpChanceForClass[NUM_CLASSIDS] =
 {
 	0,	// CID_NONE
 	100,// CID_RAT
@@ -190,7 +190,7 @@ int JumpChanceForClass[NUM_CLASSIDS] =
 	0,	// CID_CORVUS9
 };
 
-struct MonsterShadow_s G_MonsterShadow[NUM_CLASSIDS] =
+const struct MonsterShadow_s G_MonsterShadow[NUM_CLASSIDS] =
 {
 	// use_shadow	// scale
 	{ false,		0.0f },	// CID_NONE
@@ -249,7 +249,7 @@ struct MonsterShadow_s G_MonsterShadow[NUM_CLASSIDS] =
 	{ false,		0.0f },	// CID_CORVUS9
 };
 
-vec3_t STDMinsForClass[NUM_CLASSIDS] =
+const vec3_t STDMinsForClass[NUM_CLASSIDS] =
 {
 	{  0.0f,	 0.0f,	 0.0f },	// CID_NONE
 	{ -8.0f,	-8.0f,	 0.0f },	// CID_RAT
@@ -307,7 +307,7 @@ vec3_t STDMinsForClass[NUM_CLASSIDS] =
 	{ 0.0f, 0.0f, 0.0f },	// CID_CORVUS9
 };
 
-vec3_t STDMaxsForClass[NUM_CLASSIDS] =
+const vec3_t STDMaxsForClass[NUM_CLASSIDS] =
 {
 	{ 0.0f,		0.0f,	0.0f },	//	CID_NONE
 	{ 8.0f,		8.0f,	16.0f },//	CID_RAT
