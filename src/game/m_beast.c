@@ -370,7 +370,7 @@ static void TBeastInitCharge(edict_t* self) //mxd. Named 'tbeast_init_charge' in
 		SetAnim(self, ANIM_CHARGE);
 }
 
-static void TBeastChomp(edict_t* self, float forward_offset, float right_offset, float up_offset) //mxd. Named 'tbeast_chomp' in original logic.
+static void TBeastChomp(edict_t* self, const float forward_offset, const float right_offset, const float up_offset) //mxd. Named 'tbeast_chomp' in original logic.
 {
 	if (self->enemy == NULL)
 		return;
@@ -385,10 +385,10 @@ static void TBeastChomp(edict_t* self, float forward_offset, float right_offset,
 	VectorMA(start_pos, right_offset, right, start_pos);
 	VectorMA(start_pos, up_offset + TB_UP_OFFSET, up, start_pos);
 
-	vec3_t end_pos;
-	VectorSubtract(self->enemy->s.origin, start_pos, end_pos);
+	vec3_t enemy_diff;
+	VectorSubtract(self->enemy->s.origin, start_pos, enemy_diff);
 
-	const float enemy_dist = VectorLength(end_pos);
+	const float enemy_dist = VectorLength(enemy_diff);
 
 	if (enemy_dist <= MAX_CHOMP_DIST)
 	{
@@ -399,7 +399,7 @@ static void TBeastChomp(edict_t* self, float forward_offset, float right_offset,
 		VectorNormalize(normal);
 
 		const int damage = irand(TB_DMG_BITE_MIN, TB_DMG_BITE_MAX);
-		T_Damage(self->enemy, self, self, forward, end_pos, normal, damage, damage / 2, DAMAGE_DISMEMBER, MOD_DIED);
+		T_Damage(self->enemy, self, self, forward, enemy_diff, normal, damage, damage / 2, DAMAGE_DISMEMBER, MOD_DIED);
 	}
 	else if (enemy_dist + 64.0f < MAX_CHOMP_DIST)
 	{
@@ -416,7 +416,7 @@ static float LerpAngleChange(float cur_angle, float end_angle, const float step)
 
 	float diff = end_angle - cur_angle;
 
-	if (FloatIsZeroEpsilon(diff)) //mxd. Avoid direct floats comparison. 
+	if (FloatIsZeroEpsilon(diff)) //mxd. Avoid direct floats comparison.
 		return 0.0f;
 
 	diff = NormalizeAngleDeg(diff);
