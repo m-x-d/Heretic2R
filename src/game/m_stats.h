@@ -119,7 +119,7 @@ typedef struct EvadeChance_s //mxd
 
 #pragma region ========================== MONSTER STATS ==========================
 
-#define MAX_BLOCKING_THING_HEALTH	100 // Highest health some blocking ent can be and let a monster still hack away at it to clear it's path //TODO: unused.
+#define MAX_BLOCKING_THING_HEALTH	100 // Highest health some blocking ent can be and let a monster still hack away at it to clear its path //TODO: unused.
 
 // ASSASSIN
 #define ASSASSIN_HEALTH				250
@@ -230,9 +230,9 @@ typedef struct EvadeChance_s //mxd
 #define PLAGUEELF_MASS			150
 #define PLAGUEELF_DMG_MIN		2
 #define PLAGUEELF_DMG_MAX		4
-#define PLAGUEELF_DMG_HOE		1	// Modifiers to the min/max damage.
-#define PLAGUEELF_DMG_GAFF		2	// Modifiers to the min/max damage.
-#define PLAGUEELF_DMG_HAMMER	-1	// Modifiers to the min/max damage.
+#define PLAGUEELF_DMG_HOE		1		// Modifiers to the min/max damage.
+#define PLAGUEELF_DMG_GAFF		2		// Modifiers to the min/max damage.
+#define PLAGUEELF_DMG_HAMMER	(-1)	// Modifiers to the min/max damage.
 #define PLAGUEELF_DMG_SPELL_MIN	4
 #define PLAGUEELF_DMG_SPELL_MAX	8
 #define PLAGUEELF_GUARD_DMG_SPELL_MIN	5
@@ -247,7 +247,7 @@ typedef struct EvadeChance_s //mxd
 #define SSITHRA_MASS				200
 #define SSITHRA_DMG_MIN				6
 #define SSITHRA_DMG_MAX				8
-#define SSITHRA_DMG_ARROW_RADIUS	50
+#define SSITHRA_DMG_ARROW_RADIUS	50 //TODO: unused.
 #define SSITHRA_JUMP_VELOCITY		300.0f //TODO: unused.
 #define SSITHRA_MAX_JUMP_VELOCITY	750.0f //mxd
 #define SSITHRA_HOP_VELOCITY		128.0f

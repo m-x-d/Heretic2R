@@ -14,7 +14,7 @@
 // bypass_missile_chance	- 0 - 100 chance of a monster not taking a shot even when it can, otherwise it will close in.
 const int AttackRangesForClass[NUM_ATTACK_RANGES] =
 {
-	// melee_rn	g,	missile_rng,	min_msl_rng,	bypass_missile_chance
+	// melee_rng,	missile_rng,	min_msl_rng,	bypass_missile_chance
 	0,				0,				0,				0,	// CID_NONE
 	0,				0,				0,				0,	// CID_RAT
 	72,				150,			50,				20,	// CID_GORGON
