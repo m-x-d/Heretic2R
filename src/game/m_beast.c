@@ -908,16 +908,12 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 		const int other_clipmask = other->clipmask;
 		const int other_solid = other->solid;
 
-		vec3_t other_mins;
-		if (Vec3NotZero(other->mins))
-			VectorCopy(other->mins, other_mins);
-		else
+		const vec3_t other_mins = VEC3_INIT(other->mins);
+		if (Vec3IsZero(other->mins))
 			VectorSet(other->mins, -1.0f, -1.0f, -1.0f);
 
-		vec3_t other_maxs;
-		if (Vec3NotZero(other->maxs))
-			VectorCopy(other->maxs, other_maxs);
-		else
+		const vec3_t other_maxs = VEC3_INIT(other->maxs);
+		if (Vec3IsZero(other->maxs))
 			VectorSet(other->maxs, 1.0f, 1.0f, 1.0f);
 
 		other->solid = SOLID_BBOX;
@@ -956,10 +952,13 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 
 			if (!hit_me && leg_check_index > -1)
 			{
-				VectorAdd(other->s.origin, other->mins, other_mins);
-				VectorAdd(other->s.origin, other->maxs, other_maxs);
+				vec3_t other_abs_mins;
+				vec3_t other_abs_maxs;
+				VectorAdd(other->s.origin, other->mins, other_abs_mins);
+				VectorAdd(other->s.origin, other->maxs, other_abs_maxs);
 
-				hit_me = (BBoxesOverlap(other_mins, other_maxs, left_foot_mins, left_foot_maxs) || BBoxesOverlap(other_mins, other_maxs, right_foot_mins, right_foot_maxs));
+				hit_me = (BBoxesOverlap(other_abs_mins, other_abs_maxs, left_foot_mins, left_foot_maxs) || 
+						  BBoxesOverlap(other_abs_mins, other_abs_maxs, right_foot_mins, right_foot_maxs));
 			}
 
 			if (hit_me)
