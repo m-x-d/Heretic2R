@@ -223,7 +223,7 @@ const struct MonsterShadow_s G_MonsterShadow[NUM_CLASSIDS] =
 	{ false,		0.0f },	// CID_BEE
 	{ false,		0.0f },	// CID_CORVUS
 	{ true,			1.0f },	// CID_MORK
-	{ true,			1.0f },	// CID_TBEAST
+	{ true,			8.0f },	// CID_TBEAST //H2: 1.0
 	{ false,		0.0f },	// CID_IMP
 
 	{ false,		0.0f },	// CID_SSITHRA_VICTIM
