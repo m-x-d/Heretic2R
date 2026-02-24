@@ -982,7 +982,7 @@ float M_DistanceToTarget(const edict_t* self, const edict_t* target)
 }
 
 // Make sure we have a live enemy, and then return a distance to it. Returns true if the enemy is valid, false if it is dead.
-qboolean M_ValidOldEnemy(edict_t* self)
+static qboolean M_ValidOldEnemy(edict_t* self)
 {
 	if (self->oldenemy == NULL || self->oldenemy->health <= 0 || self->oldenemy == self)
 		return false;
