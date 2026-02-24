@@ -824,10 +824,10 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 	const int leg_check_index = TBeastGetWalkFrame(self);
 
 	vec3_t melee_point;
-	vec3_t left_foot_mins;
-	vec3_t left_foot_maxs;
-	vec3_t right_foot_mins;
-	vec3_t right_foot_maxs;
+	vec3_t left_foot_abs_mins;
+	vec3_t left_foot_abs_maxs;
+	vec3_t right_foot_abs_mins;
+	vec3_t right_foot_abs_maxs;
 
 	if (leg_check_index > -1)
 	{
@@ -849,9 +849,9 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 		VectorMA(left_end, foot_offset[1] + TB_RT_OFFSET, right, left_end);
 		VectorMA(left_end, foot_offset[2] + TB_UP_OFFSET, up, left_end);
 
-		VectorAdd(left_end, foot_mins, left_foot_mins);
-		VectorCopy(left_foot_mins, left_foot_maxs);
-		left_foot_maxs[2] += 64.0f;
+		VectorAdd(left_end, foot_mins, left_foot_abs_mins);
+		VectorCopy(left_foot_abs_mins, left_foot_abs_maxs);
+		left_foot_abs_maxs[2] += 64.0f;
 
 		// Right leg.
 		VectorCopy(right_foot_offset_for_frame_index[leg_check_index], foot_offset);
@@ -861,9 +861,9 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 		VectorMA(right_end, foot_offset[1] + TB_RT_OFFSET, right, right_end);
 		VectorMA(right_end, foot_offset[2] + TB_UP_OFFSET, up, right_end);
 
-		VectorAdd(right_end, foot_mins, right_foot_mins);
-		VectorCopy(right_foot_mins, right_foot_maxs);
-		right_foot_maxs[2] += 64.0f;
+		VectorAdd(right_end, foot_mins, right_foot_abs_mins);
+		VectorCopy(right_foot_abs_mins, right_foot_abs_maxs);
+		right_foot_abs_maxs[2] += 64.0f;
 	}
 
 	// Setup body check.
@@ -957,8 +957,8 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 				VectorAdd(other->s.origin, other->mins, other_abs_mins);
 				VectorAdd(other->s.origin, other->maxs, other_abs_maxs);
 
-				hit_me = (BBoxesOverlap(other_abs_mins, other_abs_maxs, left_foot_mins, left_foot_maxs) || 
-						  BBoxesOverlap(other_abs_mins, other_abs_maxs, right_foot_mins, right_foot_maxs));
+				hit_me = (BBoxesOverlap(other_abs_mins, other_abs_maxs, left_foot_abs_mins, left_foot_abs_maxs) || 
+						  BBoxesOverlap(other_abs_mins, other_abs_maxs, right_foot_abs_mins, right_foot_abs_maxs));
 			}
 
 			if (hit_me)
