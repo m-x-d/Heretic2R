@@ -25,7 +25,7 @@
 
 #define MAX_CHOMP_DIST	64.0f //mxd
 
-static vec3_t left_foot_offset_for_frame_index[18] = //mxd. Named 'GetLeftFootOffsetForFrameIndex' in original logic.
+static const vec3_t left_foot_offset_for_frame_index[18] = //mxd. Named 'GetLeftFootOffsetForFrameIndex' in original logic.
 {
 	{  160.0f, -64.0f,  0.0f },
 	{  144.0f, -60.0f,  0.0f },
@@ -47,7 +47,7 @@ static vec3_t left_foot_offset_for_frame_index[18] = //mxd. Named 'GetLeftFootOf
 	{  144.0f, -72.0f,  8.0f },
 };
 
-static vec3_t right_foot_offset_for_frame_index[18] = //mxd. Named 'GetRightFootOffsetForFrameIndex' in original logic.
+static const vec3_t right_foot_offset_for_frame_index[18] = //mxd. Named 'GetRightFootOffsetForFrameIndex' in original logic.
 {
 	{ -160.0f, 32.0f,  0.0f },
 	{ -144.0f, 32.0f,  12.0f },
@@ -109,7 +109,7 @@ static int sounds[NUM_SOUNDS];
 
 #pragma region ========================== Public utility functions ==========================
 
-qboolean TBeastCheckBottom(edict_t* self)
+qboolean TBeastCheckBottom(edict_t* self) //mxd. Named 'TB_CheckBottom' in original logic.
 {
 	trace_t trace;
 	const vec3_t end = VEC3_INITA(self->s.origin, 0.0f, 0.0f, -1.0f);
@@ -126,7 +126,7 @@ qboolean TBeastCheckBottom(edict_t* self)
 	return false;
 }
 
-qboolean TBeastCheckJump(edict_t* self)
+qboolean TBeastCheckJump(edict_t* self) //mxd. Named 'TB_CheckJump' in original logic.
 {
 	qboolean skip_low = false;
 
