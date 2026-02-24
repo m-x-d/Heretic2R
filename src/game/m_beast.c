@@ -1776,7 +1776,7 @@ void tbeast_throw_toy(edict_t* self)
 	if (self->targetEnt->movetype > NUM_PHYSICSTYPES) //TODO: Eh? Should check for PHYSICSTYPE_FLY instead?..
 		self->targetEnt->movetype = PHYSICSTYPE_STEP;
 
-	VectorRandomCopy(vec3_origin, self->targetEnt->avelocity, 300.0f);
+	VectorRandomSet(self->targetEnt->avelocity, 300.0f);
 
 	if (Q_stricmp(self->targetEnt->classname, "player") != 0) //TODO: strange way to check for non-players. Should check self->targetEnt->client instead?..
 		G_PostMessage(self->targetEnt, MSG_DEATH, PRI_DIRECTIVE, NULL);
