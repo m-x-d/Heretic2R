@@ -1770,12 +1770,8 @@ void tbeast_throw_toy(edict_t* self)
 	if (self->targetEnt == NULL)
 		return;
 
-	self->targetEnt->flags &= ~FL_FLY;
+	self->targetEnt->flags &= ~FL_FLY; //mxd. Original logic also changes movetype to PHYSICSTYPE_STEP when movetype > NUM_PHYSICSTYPES (doesn't seem to ever happen, there's assert for this in G_RunFrame()).
 	VectorSet(self->targetEnt->velocity, 0.0f, 0.0f, 500.0f);
-
-	if (self->targetEnt->movetype > NUM_PHYSICSTYPES) //TODO: Eh? Should check for PHYSICSTYPE_FLY instead?..
-		self->targetEnt->movetype = PHYSICSTYPE_STEP;
-
 	VectorRandomSet(self->targetEnt->avelocity, 300.0f);
 
 	if (Q_stricmp(self->targetEnt->classname, "player") != 0) //TODO: strange way to check for non-players. Should check self->targetEnt->client instead?..

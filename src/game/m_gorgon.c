@@ -1115,13 +1115,9 @@ void gorgon_throw_toy(edict_t* self)
 	if (self->enemy == NULL)
 		return;
 
-	self->enemy->flags &= ~FL_FLY;
+	self->enemy->flags &= ~FL_FLY; //mxd. Original logic also changes movetype to PHYSICSTYPE_STEP when movetype > NUM_PHYSICSTYPES (doesn't seem to ever happen, there's assert for this in G_RunFrame()).
 	VectorSet(self->enemy->velocity, 0.0f, 0.0f, 500.0f);
-
-	if (self->enemy->movetype > NUM_PHYSICSTYPES) //TODO: Eh? Should check for PHYSICSTYPE_FLY instead?..
-		self->enemy->movetype = PHYSICSTYPE_STEP;
-
-	VectorRandomCopy(vec3_origin, self->enemy->avelocity, 300.0f);
+	VectorRandomSet(self->enemy->avelocity, 300.0f);
 
 	if (Q_stricmp(self->enemy->classname, "player") != 0) //TODO: strange way to check for non-players. Should check self->targetEnt->client instead?..
 		G_PostMessage(self->enemy, MSG_DEATH, PRI_DIRECTIVE, NULL);
@@ -1235,10 +1231,7 @@ void gorgon_check_snatch(edict_t* self, float forward_offset, float right_offset
 	}
 
 	//FIXME: if health is low, just chomp it now.
-	self->enemy->flags |= FL_FLY;
-
-	if (self->enemy->movetype > NUM_PHYSICSTYPES) //TODO: why this check? tbeast_check_snatch() just assigns movetype.
-		self->enemy->movetype = PHYSICSTYPE_FLY;
+	self->enemy->flags |= FL_FLY; //mxd. Original logic also changes movetype to PHYSICSTYPE_FLY when movetype > NUM_PHYSICSTYPES (doesn't seem to ever happen, there's assert for this in G_RunFrame()).
 
 	if (Q_stricmp(self->enemy->classname, "player") != 0) //TODO: check for !self->enemy->client instead?
 	{
