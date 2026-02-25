@@ -590,7 +590,7 @@ void seraph_check_land(edict_t* self)
 
 void seraph_sound_startle(edict_t* self)
 {
-	gi.sound(self, CHAN_VOICE, sounds[SND_STARTLE], 1.0f, ATTN_NORM, 0.0f);
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_SIGHT1, SND_SIGHT2)], 1.0f, ATTN_NORM, 0.0f); //mxd. Original logic uses (non-existing) SND_STARTLE here.
 }
 
 void seraph_sound_slap(edict_t* self)
@@ -848,7 +848,7 @@ void SeraphOverlordStaticsInit(void)
 
 	sounds[SND_SCARE] = gi.soundindex("monsters/seraph/overlord/scare.wav"); // Hey!
 
-	sounds[SND_STARTLE] = gi.soundindex("monsters/seraph/overlord/startle.wav");
+	//sounds[SND_STARTLE] = gi.soundindex("monsters/seraph/overlord/startle.wav"); //mxd. Sound does not exist.
 	sounds[SND_SLAP] = gi.soundindex("monsters/seraph/overlord/slap.wav");
 
 	sounds[SND_DEATH1] = gi.soundindex("monsters/seraph/death1.wav");
@@ -861,8 +861,8 @@ void SeraphOverlordStaticsInit(void)
 	sounds[SND_PAIN3] = gi.soundindex("monsters/seraph/pain3.wav");
 	sounds[SND_PAIN4] = gi.soundindex("monsters/seraph/pain4.wav");
 
-	sounds[SND_SIGHT1] = gi.soundindex("monsters/seraph/overlord/sight1.wav");
-	sounds[SND_SIGHT2] = gi.soundindex("monsters/seraph/overlord/sight2.wav");
+	sounds[SND_SIGHT1] = gi.soundindex("monsters/seraph/overlord/sight1.wav"); // Who are you?
+	sounds[SND_SIGHT2] = gi.soundindex("monsters/seraph/overlord/sight2.wav"); // Huh?!
 	sounds[SND_SIGHT3] = gi.soundindex("monsters/seraph/overlord/scare.wav");
 
 	res_info.numSounds = NUM_SOUNDS;

@@ -48,7 +48,7 @@ typedef enum SoundID_e
 	SND_SCOLD1,
 	SND_SCOLD2,
 	SND_SCOLD3,
-	SND_STARTLE,
+	//SND_STARTLE, //mxd. Sound does not exist.
 	SND_SLAP,
 	SND_DEATH1,
 	SND_DEATH2,
