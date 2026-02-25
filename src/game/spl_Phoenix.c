@@ -71,11 +71,15 @@ void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfac
 	VectorNormalize2(self->velocity, self->movedir);
 
 	// Start the explosion effect.
-	const vec3_t* dir = (plane != NULL ? &plane->normal : &self->movedir); //BUGFIX: mxd. 'if (plane->normal)' in original version (always true).
+	vec3_t dir;
+	if (other != NULL && other->solid == SOLID_BSP && plane != NULL && !Vec3IsZeroEpsilon(plane->normal)) //BUGFIX: mxd. 'if (plane->normal)' in original version (always true).
+		VectorCopy(plane->normal, dir); // When hit world, use plane normal.
+	else
+		VectorCopy(vec3_up, dir); // Otherwise use up vector (so explosion FX is not aligned to touched monster). //mxd. Original logic uses 'self->movedir' here instead.
 
 	if (is_powered)
 		fx_flags |= CEF_FLAG6;
-	gi.CreateEffect(&self->s, FX_WEAPON_PHOENIXEXPLODE, fx_flags, self->s.origin, "td", *dir, self->movedir);
+	gi.CreateEffect(&self->s, FX_WEAPON_PHOENIXEXPLODE, fx_flags, self->s.origin, "td", dir, self->movedir);
 
 	VectorClear(self->velocity);
 
