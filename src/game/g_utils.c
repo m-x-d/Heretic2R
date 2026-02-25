@@ -523,15 +523,13 @@ edict_t* FindInRadius_Old(edict_t* from, vec3_t org, const float radius) //mxd. 
 
 // This is a way to kinda "cheat" the system.
 // We don't want missiles to be considered for collision, yet we want them to collide with other things.
-// So when we link the entity (for rendering, etc) we set SOLID_NOT so certain things don't happen.
-void G_LinkMissile(edict_t* self) //TODO: mxd. Non-functional? Replace with gi.linkentity(self)?
+// So when we link the entity (for rendering, etc.) we set SOLID_NOT so certain things don't happen.
+void G_LinkMissile(edict_t* self)
 {
-	const int oldsolid = self->solid;
-	//  self->solid=SOLID_NOT; // comment this line out for old behaviour
-	gi.linkentity(self); //mxd. SV_LinkEdict() doesn't seem to change 'solid' prop.
+	const solid_t old_solid = self->solid;
+	self->solid = SOLID_NOT; //mxd. Commented-out in original logic. Re-enabled to disable collisions between missiles (fixes rare (but very annoying) case of phoenix arrows exploding in player's face because of collisions with monster projectiles, fixes MutantSsithra arrows being stuck in each other after spawning).
 
-	//mxd. dbg
-	assert(oldsolid == self->solid);
+	gi.linkentity(self);
 
-	self->solid = oldsolid;
+	self->solid = old_solid;
 }
