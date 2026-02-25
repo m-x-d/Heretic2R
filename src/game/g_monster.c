@@ -271,7 +271,6 @@ void M_DropToFloor(edict_t* ent) //mxd. Named 'M_droptofloor' in original logic.
 // Execute any aifunction or think function specified with the given frame.
 void M_MoveFrame(edict_t* self)
 {
-	const qboolean was_new_phys = (self->movetype < NUM_PHYSICSTYPES);
 	const animmove_t* move = self->monsterinfo.currentmove;
 
 	if (move == NULL)
@@ -358,9 +357,6 @@ void M_MoveFrame(edict_t* self)
 		if (frame->thinkfunc != NULL)
 			frame->thinkfunc(self);
 	}
-
-	if (was_new_phys)
-		assert(self->movetype < NUM_PHYSICSTYPES);
 }
 
 void M_Think(edict_t* self) //mxd. Named 'monster_think' in original logic.
