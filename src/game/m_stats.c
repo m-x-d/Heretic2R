@@ -196,29 +196,29 @@ const struct MonsterShadow_s G_MonsterShadow[NUM_CLASSIDS] =
 	{ false,		0.0f },	// CID_NONE
 	{ true,			0.75f },// CID_RAT
 	{ true,			1.0f },	// CID_GORGON
-	{ true,			1.5f },	// CID_PLAGUEELF
+	{ true,			1.0f },	// CID_PLAGUEELF // H2: 1.5
 	{ true,			1.0f },	// CID_GKROKON
 	{ false,		0.0f },	// CID_FISH
 	{ false,		0.0f },	// CID_OBJECT
 	{ false,		0.0f },	// CID_LIGHT
 	{ false,		0.0f },	// CID_TRIGGER
 	{ false,		0.0f },	// CID_HARPY
-	{ true,			1.0f },	// CID_SPREADER
+	{ true,			1.5f },	// CID_SPREADER //H2: 1.0
 	{ false,		0.0f },	// CID_ELFLORD
 	{ false,		0.0f },	// CID_BBRUSH
 	{ false,		0.0f },	// CID_FUNC_ROTATE
 	{ false,		0.0f },	// CID_FUNC_DOOR
 	{ true,			1.0f },	// CID_CHICKEN
-	{ true,			1.0f },	// CID_SSITHRA
+	{ true,			1.2f },	// CID_SSITHRA //H2: 1.0
 	{ false,		0.0f },	// CID_SPELL
-	{ true,			1.0f },	// CID_MSSITHRA
+	{ true,			3.0f },	// CID_MSSITHRA //H2: 1.0
 	{ true,			1.0f },	// CID_OGLE
-	{ true,			1.0f },	// CID_SERAPH_OVERLORD
-	{ true,			1.0f },	// CID_SERAPH_GUARD
+	{ true,			1.5f },	// CID_SERAPH_OVERLORD //H2: 1.0
+	{ true,			1.5f },	// CID_SERAPH_GUARD //H2: 1.0
 	{ true,			1.0f },	// CID_ASSASSIN
 	{ false,		0.0f },	// CID_TELEPORTER
 	{ true,			1.0f },	// CID_HIGHPRIESTESS
-	{ true,			1.0f },	// CID_TCHECKRIK
+	{ true,			1.25f },	// CID_TCHECKRIK //H2: 1.0
 	{ false,		0.0f },	// CID_BUTTON
 	{ false,		0.0f },	// CID_BEE
 	{ false,		0.0f },	// CID_CORVUS
