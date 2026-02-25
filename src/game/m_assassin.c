@@ -1873,18 +1873,18 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 {
 	static const EvadeChance_t evade_chances[] = //mxd. Use struct.
 	{
-		{.duck_chance = 20, .dodgeleft_chance = 10, .dodgeright_chance = 10, .jump_chance = 10, .backflip_chance = 10, .frontflip_chance = 10 }, // hl_NoneSpecific
-		{.duck_chance = 95, .dodgeleft_chance = 50, .dodgeright_chance = 50, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_Head
-		{.duck_chance = 85, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 60, .frontflip_chance = 0  }, // hl_TorsoFront
-		{.duck_chance = 80, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 0,  .frontflip_chance = 60 }, // hl_TorsoBack
-		{.duck_chance = 75, .dodgeleft_chance = 0,  .dodgeright_chance = 90, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperLeft
-		{.duck_chance = 75, .dodgeleft_chance = 0,  .dodgeright_chance = 80, .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerLeft
-		{.duck_chance = 60, .dodgeleft_chance = 90, .dodgeright_chance = 0,  .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperRight
-		{.duck_chance = 20, .dodgeleft_chance = 80, .dodgeright_chance = 0,  .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerRight
-		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 60, .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperLeft
-		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 30, .jump_chance = 80, .backflip_chance = 40, .frontflip_chance = 40 }, // hl_LegLowerLeft
-		{.duck_chance = 0,  .dodgeleft_chance = 60, .dodgeright_chance = 0,  .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperRight
-		{.duck_chance = 0,  .dodgeleft_chance = 30, .dodgeright_chance = 0,  .jump_chance = 80, .backflip_chance = 40, .frontflip_chance = 40 }, // hl_LegLowerRight
+		{ .duck_chance = 20, .dodgeleft_chance = 10, .dodgeright_chance = 10, .jump_chance = 10, .backflip_chance = 10, .frontflip_chance = 10 }, // hl_NoneSpecific
+		{ .duck_chance = 95, .dodgeleft_chance = 50, .dodgeright_chance = 50, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_Head
+		{ .duck_chance = 85, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 60, .frontflip_chance = 0  }, // hl_TorsoFront
+		{ .duck_chance = 80, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 0,  .frontflip_chance = 60 }, // hl_TorsoBack
+		{ .duck_chance = 75, .dodgeleft_chance = 0,  .dodgeright_chance = 90, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperLeft
+		{ .duck_chance = 75, .dodgeleft_chance = 0,  .dodgeright_chance = 80, .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerLeft
+		{ .duck_chance = 60, .dodgeleft_chance = 90, .dodgeright_chance = 0,  .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperRight
+		{ .duck_chance = 20, .dodgeleft_chance = 80, .dodgeright_chance = 0,  .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerRight
+		{ .duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 60, .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperLeft
+		{ .duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 30, .jump_chance = 80, .backflip_chance = 40, .frontflip_chance = 40 }, // hl_LegLowerLeft
+		{ .duck_chance = 0,  .dodgeleft_chance = 60, .dodgeright_chance = 0,  .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperRight
+		{ .duck_chance = 0,  .dodgeleft_chance = 30, .dodgeright_chance = 0,  .jump_chance = 80, .backflip_chance = 40, .frontflip_chance = 40 }, // hl_LegLowerRight
 	};
 
 	if (self->groundentity == NULL)
