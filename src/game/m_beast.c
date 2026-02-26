@@ -1142,7 +1142,7 @@ void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in original
 		}
 	}
 
-	const qboolean moved = (FloatIsZeroEpsilon(self->s.origin[0] - self->s.old_origin[0]) || FloatIsZeroEpsilon(self->s.origin[1] - self->s.old_origin[1])); //mxd. Avoid direct floats comparison.
+	const qboolean moved = (!FloatIsZeroEpsilon(self->s.origin[0] - self->s.old_origin[0]) || !FloatIsZeroEpsilon(self->s.origin[1] - self->s.old_origin[1])); //mxd. Avoid direct floats comparison.
 
 	if (moved)
 		LevelToGround(self);
