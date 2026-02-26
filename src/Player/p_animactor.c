@@ -636,8 +636,16 @@ PLAYER_API void PlayerIntLand(playerinfo_t* info, const float landspeed) //mxd. 
 		}
 		else
 		{
-			// Drop straight into a run.
-			PlayerAnimSetLowerSeq(info, ASEQ_RUNF);
+			// Drop straight into a run. //mxd. Take fwd-left/fwd-right strafe-running into account.
+			int seq;
+			if (info->seqcmd[ACMDL_STRAFE_L])
+				seq = ((info->pcmd.buttons & BUTTON_RUN) ? ASEQ_RSTRAFE_LEFT : ASEQ_WSTRAFE_LEFT);
+			else if (info->seqcmd[ACMDL_STRAFE_R])
+				seq = ((info->pcmd.buttons & BUTTON_RUN) ? ASEQ_RSTRAFE_RIGHT : ASEQ_WSTRAFE_RIGHT);
+			else
+				seq = ASEQ_RUNF;
+
+			PlayerAnimSetLowerSeq(info, seq);
 			strcat_s(land_sound, sizeof(land_sound), "land1.wav"); //mxd. strcat -> strcat_s.
 		}
 	}
@@ -655,6 +663,50 @@ PLAYER_API void PlayerIntLand(playerinfo_t* info, const float landspeed) //mxd. 
 			// Drop straight into another jump.
 			PlayerAnimSetLowerSeq(info, ASEQ_JUMPSTD_GO);
 			strcat_s(land_sound, sizeof(land_sound), va("walk%i.wav", irand(1, 2))); //mxd. strcat -> strcat_s.
+		}
+	}
+	else if (info->seqcmd[ACMDL_STRAFE_L]) //mxd
+	{
+		if (landspeed > 600.0f)
+		{
+			// Can't avoid heavy fall/rolling.
+			PlayerInterruptAction(info);
+			PlayerAnimSetLowerSeq(info, ASEQ_ROLLDIVEF_W);
+			strcat_s(land_sound, sizeof(land_sound), "roll.wav"); //mxd. strcat -> strcat_s.
+		}
+		else
+		{
+			// Drop straight into strafe left.
+			int seq;
+			if (info->pcmd.buttons & BUTTON_RUN)
+				seq = ASEQ_DASH_LEFT_GO;
+			else
+				seq = (info->seqcmd[ACMDL_WALK_B] ? ASEQ_WSTRAFEB_LEFT : ASEQ_STRAFEL); // Forward-left strafe is handled by 'info->seqcmd[ACMDL_RUN_F]' if block.
+
+			PlayerAnimSetLowerSeq(info, seq);
+			strcat_s(land_sound, sizeof(land_sound), "land1.wav"); //mxd. strcat -> strcat_s.
+		}
+	}
+	else if (info->seqcmd[ACMDL_STRAFE_R]) //mxd
+	{
+		if (landspeed > 600.0f)
+		{
+			// Can't avoid heavy fall/rolling.
+			PlayerInterruptAction(info);
+			PlayerAnimSetLowerSeq(info, ASEQ_ROLLDIVEF_W);
+			strcat_s(land_sound, sizeof(land_sound), "roll.wav"); //mxd. strcat -> strcat_s.
+		}
+		else
+		{
+			// Drop straight into strafe right.
+			int seq;
+			if (info->pcmd.buttons & BUTTON_RUN)
+				seq = ASEQ_DASH_RIGHT_GO;
+			else
+				seq = (info->seqcmd[ACMDL_WALK_B] ? ASEQ_WSTRAFEB_RIGHT : ASEQ_STRAFER); // Forward-right strafe is handled by 'info->seqcmd[ACMDL_RUN_F]' if block.
+
+			PlayerAnimSetLowerSeq(info, seq);
+			strcat_s(land_sound, sizeof(land_sound), "land1.wav"); //mxd. strcat -> strcat_s.
 		}
 	}
 	else
