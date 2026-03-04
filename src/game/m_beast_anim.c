@@ -370,7 +370,7 @@ static const animframe_t tbeast_frames_charge[] =
 	{ FRAME_charge3,	NULL, 0, 0, 0, tbeast_charge, 32, NULL },
 	{ FRAME_charge4,	NULL, 0, 0, 0, tbeast_charge, 24, tbeast_growl },
 	{ FRAME_charge5,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
-	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
+	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 16, tbeast_footstep }, //mxd. +tbeast_footstep.
 	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
 	{ FRAME_charge8,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
@@ -380,38 +380,38 @@ static const animframe_t tbeast_frames_charge[] =
 	{ FRAME_charge3,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge4,	NULL, 0, 0, 0, tbeast_charge, 16, tbeast_growl },
 	{ FRAME_charge5,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
-	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
+	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 16, tbeast_footstep }, //mxd. +tbeast_footstep.
 	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge8,	NULL, 0, 0, 0, tbeast_charge, 24, NULL },
-	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 32, tbeast_footstep },
+	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 32, NULL }, //mxd. -tbeast_footstep.
 	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
-	{ FRAME_charge1,	NULL, 0, 0, 0, tbeast_charge, 32, NULL },
+	{ FRAME_charge1,	NULL, 0, 0, 0, tbeast_charge, 32, tbeast_footstep }, //mxd. +tbeast_footstep.
 	{ FRAME_charge2,	NULL, 0, 0, 0, tbeast_charge, 24, NULL },
 	{ FRAME_charge3,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
 	{ FRAME_charge4,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge5,	NULL, 0, 0, 0, tbeast_charge, 20, tbeast_growl },
-	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
+	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 16, tbeast_footstep }, //mxd. +tbeast_footstep.
 	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
 	{ FRAME_charge8,	NULL, 0, 0, 0, tbeast_charge, 32, tbeast_growl },
-	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 28, tbeast_footstep },
+	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 28, NULL }, //mxd. -tbeast_footstep.
 	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 12, NULL },
-	{ FRAME_charge1,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
+	{ FRAME_charge1,	NULL, 0, 0, 0, tbeast_charge, 16, tbeast_footstep }, //mxd. +tbeast_footstep.
 	{ FRAME_charge2,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge3,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge4,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge5,	NULL, 0, 0, 0, tbeast_charge, 16, tbeast_snort },
-	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 24, NULL },
-	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 32, tbeast_footstep },
+	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 24, tbeast_footstep }, //mxd. +tbeast_footstep.
+	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 32, NULL }, //mxd. -tbeast_footstep.
 	{ FRAME_charge8,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 32, NULL },
 	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 24, NULL },
-	{ FRAME_charge1,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
+	{ FRAME_charge1,	NULL, 0, 0, 0, tbeast_charge, 20, tbeast_footstep }, //mxd. +tbeast_footstep.
 	{ FRAME_charge2,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge3,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
 	{ FRAME_charge4,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
-	{ FRAME_charge5,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
-	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 32, tbeast_growl },
-	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 28, tbeast_footstep },
+	{ FRAME_charge5,	NULL, 0, 0, 0, tbeast_charge, 20, tbeast_growl }, //mxd. +tbeast_growl.
+	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 32, tbeast_footstep }, //mxd. tbeast_growl in original logic.
+	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 28, NULL }, //mxd. tbeast_footstep in original logic.
 	{ FRAME_charge8,	NULL, 0, 0, 0, tbeast_charge, 12, NULL },
 	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 24, tbeast_walk_order },
@@ -651,7 +651,7 @@ static const animframe_t tbeast_frames_quick_charge[] =
 	{ FRAME_charge3,	NULL, 0, 0, 0, tbeast_charge, 32, NULL },
 	{ FRAME_charge4,	NULL, 0, 0, 0, tbeast_charge, 24, tbeast_growl },
 	{ FRAME_charge5,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
-	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
+	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 16, tbeast_footstep }, //mxd. +tbeast_footstep.
 	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
 	{ FRAME_charge8,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
@@ -661,38 +661,38 @@ static const animframe_t tbeast_frames_quick_charge[] =
 	{ FRAME_charge3,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge4,	NULL, 0, 0, 0, tbeast_charge, 16, tbeast_growl },
 	{ FRAME_charge5,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
-	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
+	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 16, tbeast_footstep }, //mxd. +tbeast_footstep.
 	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge8,	NULL, 0, 0, 0, tbeast_charge, 24, NULL },
-	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 32, tbeast_footstep },
+	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 32, NULL }, //mxd. -tbeast_footstep.
 	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
-	{ FRAME_charge1,	NULL, 0, 0, 0, tbeast_charge, 32, NULL },
+	{ FRAME_charge1,	NULL, 0, 0, 0, tbeast_charge, 32, tbeast_footstep }, //mxd. +tbeast_footstep.
 	{ FRAME_charge2,	NULL, 0, 0, 0, tbeast_charge, 24, NULL },
 	{ FRAME_charge3,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
 	{ FRAME_charge4,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge5,	NULL, 0, 0, 0, tbeast_charge, 20, tbeast_growl },
-	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
+	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 16, tbeast_footstep }, //mxd. +tbeast_footstep.
 	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
 	{ FRAME_charge8,	NULL, 0, 0, 0, tbeast_charge, 32, tbeast_growl },
-	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 28, tbeast_footstep },
+	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 28, NULL }, //mxd. -tbeast_footstep.
 	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 12, NULL },
-	{ FRAME_charge1,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
+	{ FRAME_charge1,	NULL, 0, 0, 0, tbeast_charge, 16, tbeast_footstep }, //mxd. +tbeast_footstep.
 	{ FRAME_charge2,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge3,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge4,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge5,	NULL, 0, 0, 0, tbeast_charge, 16, tbeast_snort },
-	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 24, NULL },
-	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 32, tbeast_footstep },
+	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 24, tbeast_footstep }, //mxd. +tbeast_footstep.
+	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 32, NULL }, //mxd. -tbeast_footstep.
 	{ FRAME_charge8,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 32, NULL },
 	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 24, NULL },
-	{ FRAME_charge1,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
+	{ FRAME_charge1,	NULL, 0, 0, 0, tbeast_charge, 20, tbeast_footstep }, //mxd. +tbeast_footstep.
 	{ FRAME_charge2,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge3,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
 	{ FRAME_charge4,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
-	{ FRAME_charge5,	NULL, 0, 0, 0, tbeast_charge, 20, NULL },
-	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 32, tbeast_growl },
-	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 28, tbeast_footstep },
+	{ FRAME_charge5,	NULL, 0, 0, 0, tbeast_charge, 20, tbeast_growl }, //mxd. +tbeast_growl.
+	{ FRAME_charge6,	NULL, 0, 0, 0, tbeast_charge, 32, tbeast_footstep }, //mxd. tbeast_growl in original logic.
+	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 28, NULL }, //mxd. -tbeast_footstep.
 	{ FRAME_charge8,	NULL, 0, 0, 0, tbeast_charge, 12, NULL },
 	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
 	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 24, tbeast_walk_order },
