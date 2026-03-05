@@ -1095,20 +1095,12 @@ void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in original
 		}
 	}
 
-	const qboolean moved = (!FloatIsZeroEpsilon(self->s.origin[0] - self->s.old_origin[0]) || !FloatIsZeroEpsilon(self->s.origin[1] - self->s.old_origin[1])); //mxd. Avoid direct floats comparison.
+	TBeastLevelToGround(self); //mxd. Originally called only when tbeast moved.
+	qboolean go_jump = (fabsf(self->s.angles[PITCH]) > 45.0f || fabsf(self->s.angles[ROLL]) > 45.0f);
 
-	if (moved)
-		TBeastLevelToGround(self);
-
-	qboolean go_jump = false;
-
-	if (fabsf(self->s.angles[PITCH]) > 45.0f || fabsf(self->s.angles[ROLL]) > 45.0f)
+	// Raise him up if on flat ground, lower is on slope - to keep feet on ground!
+	if (!go_jump) //mxd. Originally called only when tbeast moved.
 	{
-		go_jump = true;
-	}
-	else if (moved)
-	{
-		// Raise him up if on flat ground, lower is on slope - to keep feet on ground!
 		//FIXME - use checkbottom plane instead?
 		float mins_z = self->mins[2];
 		self->mins[2] = ((fabsf(self->s.angles[PITCH]) + fabsf(self->s.angles[ROLL])) * 0.5f) / 45.0f * 144.0f - 6.0f + TB_UP_OFFSET;
@@ -1125,8 +1117,6 @@ void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in original
 
 		gi.linkentity(self);
 	}
-
-	VectorCopy(self->s.origin, self->s.old_origin);
 
 	if (irand(0, 10) == 0)
 	{
