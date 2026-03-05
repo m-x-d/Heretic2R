@@ -1829,21 +1829,79 @@ void tbeast_throw_toy(edict_t* self)
 	//TODO: play SND_THROW?
 }
 
-//mxd. Similar to gorgon_shake_toy().
-void tbeast_shake_toy(edict_t* self, float forward_offset, float right_offset, float up_offset) //mxd. Named 'tbeast_toy_ofs' in original logic.
+//mxd. Similar to gorgon_shake_toy()... in original logic.
+void tbeast_shake_toy(edict_t* self, float var1, float var2, float var3) //mxd. Named 'tbeast_toy_ofs' in original logic.
 {
 	if (self->enemy == NULL)
 		return;
+
+	static const TBeastRefPoint_t tbeast_mouth_origins[] = //mxd
+	{
+		{ FRAME_atka4,		{ 140.1f, -1.64f, 71.6f } },
+		{ FRAME_atka5,		{ 112.8f, -9.36f, 34.2f } },
+		{ FRAME_atka6,		{ 93.5f, -14.97f, 21.9f } },
+		{ FRAME_atka7,		{ 83.9f, -7.72f, 17.1f } },
+
+		{ FRAME_atkb5,		{ 150.5f, 0.38f, 6.77f } },
+		{ FRAME_atkb6,		{ 139.7f, 2.54f, 7.46f } },
+		{ FRAME_atkb7,		{ 127.1f, 2.66f, 5.17f } },
+		{ FRAME_atkb8,		{ 117.8f, 2.58f, 5.87f } },
+		{ FRAME_atkb9,		{ 108.6f, 4.94f, 8.56f } },
+		{ FRAME_atkb10,		{ 99.9f, 6.79f, 10.27f } },
+
+		{ FRAME_atkc4,		{ 179.3f, -1.41f, 148.9f } },
+		{ FRAME_atkc5,		{ 146.0f, -8.91f, 64.2f } },
+		{ FRAME_atkc6,		{ 116.5f, -14.48f, 35.0f } },
+		{ FRAME_atkc7,		{ 105.1f, -7.73f, 30.1f } },
+
+		{ FRAME_eatinga6,	{ 84.6f, -5.86f, 43.6f } },
+		{ FRAME_eatinga7,	{ 67.7f, -51.5f, 42.6f } },
+		{ FRAME_eatinga8,	{ 32.5f, -69.8f, 28.3f } },
+		{ FRAME_eatinga9,	{ 26.4f, -63.9f, 25.1f } },
+		{ FRAME_eatinga10,	{ 44.6f, -48.1f, 32.8f } },
+		{ FRAME_eatinga11,	{ 71.5f, -16.4f, 43.5f } },
+		{ FRAME_eatinga12,	{ 81.6f, 51.1f, 41.6f } },
+		{ FRAME_eatinga13,	{ 53.3f, 88.2f, 37.7f } },
+		{ FRAME_eatinga14,	{ 58.4f, 73.6f, 46.2f } },
+		{ FRAME_eatinga15,	{ 78.5f, 33.1f, 54.0f } },
+		{ FRAME_eatinga16,	{ 76.5f, -27.7f, 48.0f } },
+		{ FRAME_eatinga17,	{ 48.5f, -70.3f, 31.2f } },
+		{ FRAME_eatinga18,	{ 26.4f, -80.3f, 25.2f } },
+		{ FRAME_eatinga19,	{ 13.88f, -78.6f, 20.4f } },
+		{ FRAME_eatinga20,	{ 20.9f, -71.6f, 18.8f } },
+		{ FRAME_eatinga21,	{ 37.3f, -60.5f, 15.6f } },
+		{ FRAME_eatinga22,	{ 52.5f, -40.5f, 8.41f } },
+		{ FRAME_eatinga23,	{ 58.9f, -15.23f, -4.92f } },
+		{ FRAME_eatinga24,	{ 53.3f, 9.63f, -21.0f } },
+		{ FRAME_eatinga25,	{ 42.8f, 26.9f, -31.6f } },
+
+		{ FRAME_jumpb18,	{ 76.3f, 13.29f, 136.8f } },
+		{ FRAME_jumpb19,	{ 82.2f, -3.61f, 58.0f } },
+		{ FRAME_jumpb20,	{ 35.0f, -28.7f, -17.1f } },
+		{ FRAME_jumpb21,	{ 17.4f, -20.0f, -21.5f } },
+	};
 
 	vec3_t forward;
 	vec3_t right;
 	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
 
-	vec3_t enemy_offset;
-	VectorMA(self->s.origin, forward_offset + TB_FWD_OFFSET - 32.0f, forward, enemy_offset);
-	VectorMA(enemy_offset, right_offset, right, enemy_offset);
-	VectorMA(enemy_offset, up_offset + TB_UP_OFFSET, up, self->targetEnt->s.origin);
+	//mxd. Find grab origin...
+	vec3_t enemy_pos = VEC3_INIT(self->s.origin);
+
+	for (uint i = 0; i < ARRAY_SIZE(tbeast_mouth_origins); i++)
+	{
+		if (tbeast_mouth_origins[i].frame == self->s.frame)
+		{
+			VectorMA(enemy_pos, tbeast_mouth_origins[i].origin[0], forward, enemy_pos);
+			VectorMA(enemy_pos, tbeast_mouth_origins[i].origin[1], right, enemy_pos);
+			VectorMA(enemy_pos, tbeast_mouth_origins[i].origin[2], up, enemy_pos);
+			break;
+		}
+	}
+
+	assert(!VectorCompare(enemy_pos, self->s.origin));
+	VectorCopy(enemy_pos, self->targetEnt->s.origin);
 
 	vec3_t blood_dir;
 	VectorSubtract(self->targetEnt->s.origin, self->s.origin, blood_dir);
