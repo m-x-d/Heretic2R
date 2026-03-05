@@ -23,12 +23,11 @@
 
 #pragma region ========================== Trial Beast base info ==========================
 
-#define TB_MAX_CHOMP_DIST		64.0f //mxd
-#define TB_MELEE_RANGE			128.0f //mxd. Named 'TBEAST_STD_MELEE_RNG' in original logic.
+#define TB_MAX_CHOMP_DIST	64.0f //mxd
+#define TB_MELEE_RANGE		128.0f //mxd. Named 'TBEAST_STD_MELEE_RNG' in original logic.
 
-#define TB_FWD_OFFSET			(-64)
-#define TB_UP_OFFSET			(-32)
-#define TB_RT_OFFSET			(-24)
+#define TB_FWD_OFFSET		(-64)
+#define TB_UP_OFFSET		(-32)
 
 typedef struct TBeastRefPoint_s //mxd. These should've been stored as refpoints...
 {
@@ -36,49 +35,19 @@ typedef struct TBeastRefPoint_s //mxd. These should've been stored as refpoints.
 	const vec3_t origin;
 } TBeastRefPoint_t;
 
-static const vec3_t left_foot_offset_for_frame_index[18] = //mxd. Named 'GetLeftFootOffsetForFrameIndex' in original logic.
+typedef enum //mxd
 {
-	{  160.0f, -64.0f,  0.0f },
-	{  144.0f, -60.0f,  0.0f },
-	{  96.0f,  -56.0f,  0.0f },
-	{  64.0f,  -52.0f,  0.0f },
-	{  16.0f,  -48.0f, -2.0f },
-	{ -48.0f,  -44.0f, -4.0f },
-	{ -80.0f,  -40.0f, -2.0f },
-	{ -112.0f, -40.0f,  0.0f },
-	{ -160.0f, -40.0f, -4.0f },
-	{ -192.0f, -40.0f,  0.0f },
-	{ -120.0f, -42.0f,  2.0f },
-	{ -48.0f,  -44.0f,  6.0f },
-	{  0.0f,   -44.0f,  14.0f },
-	{  24.0f,  -42.0f,  10.0f },
-	{  28.0f,  -48.0f,  16.0f },
-	{  34.0f,  -48.0f,  14.0f },
-	{  110.0f, -58.0f,  0.0f },
-	{  144.0f, -72.0f,  8.0f },
-};
+	TB_FOOT_LEFT,
+	TB_FOOT_RIGHT,
+} TBeastFootID_s;
 
-static const vec3_t right_foot_offset_for_frame_index[18] = //mxd. Named 'GetRightFootOffsetForFrameIndex' in original logic.
+typedef struct TBeastFeetInfo_s //mxd
 {
-	{ -160.0f, 32.0f,  0.0f },
-	{ -144.0f, 32.0f,  12.0f },
-	{ -96.0f,  28.0f,  14.0f },
-	{ -64.0f,  28.0f,  18.0f },
-	{ -16.0f,  28.0f,  22.0f },
-	{  32.0f,  32.0f,  28.0f },
-	{  64.0f,  38.0f,  28.0f },
-	{  104.0f, 40.0f,  24.0f },
-	{  160.0f, 48.0f, -4.0f },
-	{  128.0f, 52.0f, -8.0f },
-	{  112.0f, 54.0f,  0.0f },
-	{  108.0f, 52.0f,  0.0f },
-	{  72.0f,  48.0f, -2.0f },
-	{  32.0f,  40.0f,  0.0f },
-	{ -4.0f,   36.0f,  0.0f },
-	{ -24.0f,  34.0f,  0.0f },
-	{ -80.0f,  32.0f,  2.0f },
-	{ -128.0f, 32.0f, -2.0f },
-};
+	const int frame;
+	const TBeastFootID_s front_foot_id;
+	const vec3_t left_org;
+	const vec3_t right_org;
+} TBeastFeetInfo_t;
 
 static const animmove_t* animations[NUM_ANIMS] =
 {
@@ -115,6 +84,12 @@ static const animmove_t* animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
+
+static const vec3_t tb_body_mins = VEC3_SET(-50.0f, -50.0f, -61.0f);
+static const vec3_t tb_body_maxs = VEC3_SET( 50.0f,  50.0f,  70.0f);
+
+static const vec3_t tb_foot_mins = VEC3_SET(-32.0f, -32.0f, 0.0f); //mxd. [-8, -8, 0] in original logic. Increased to increase player/leg collision chance.
+static const vec3_t tb_foot_maxs = VEC3_SET( 32.0f,  32.0f, 64.0f); //mxd. [8, 8, 1] in original logic. Increased to increase player/leg collision chance.
 
 #pragma endregion
 
@@ -433,42 +408,66 @@ static float LerpAngleChange(float cur_angle, float end_angle, const float step)
 	return NormalizeAngleDeg(anglemod(cur_angle + diff / step));
 }
 
-static int TBeastGetWalkFrame(const edict_t* self) //mxd. Named 'tbeast_inwalkframes' in original logic.
+static const TBeastFeetInfo_t* TBeastGetWalkFrameInfo(const edict_t* self) //mxd. Named 'tbeast_inwalkframes' in original logic. Returns int in original logic.
 {
-	if (self->curAnimID == ANIM_CHARGE || self->curAnimID == ANIM_QUICK_CHARGE)
+	static const TBeastFeetInfo_t tb_feet_offsets[] = //mxd
 	{
-		switch (self->s.frame)
-		{
-			case FRAME_charge1: return 2;
-			case FRAME_charge2: return 4;
-			case FRAME_charge3: return 6;
-			case FRAME_charge4: return 8;
-			case FRAME_charge5: return 9;
-			case FRAME_charge6: return 7;
-			case FRAME_charge7: return 13;
-			case FRAME_charge8: return 15;
-			case FRAME_charge9: return 1;
-			case FRAME_charge10: return 0;
-			default: return -1;
-		}
-	}
+		// walk:
+		{ FRAME_walk1,		TB_FOOT_LEFT,	{  76.2f,  -44.1f, -33.2f },	{ -187.3f, 26.1f, -22.0f  } }, // Left footstep.
+		{ FRAME_walk2,		TB_FOOT_LEFT,	{  60.9f,  -43.3f, -33.3f },	{ -177.1f, 27.2f, -15.53f } },
+		{ FRAME_walk3,		TB_FOOT_LEFT,	{  31.2f,  -42.4f, -31.1f },	{ -144.5f, 29.5f, -4.96f } },
+		{ FRAME_walk4,		TB_FOOT_LEFT,	{  1.82f,  -40.7f, -34.3f },	{ -112.0f, 31.7f, -3.78f } },
+		{ FRAME_walk5,		TB_FOOT_LEFT,	{ -27.2f,  -38.9f, -35.2f },	{ -79.5f,  30.6f, -0.79f } },
+		{ FRAME_walk6,		TB_FOOT_LEFT,	{ -56.6f,  -37.2f, -35.7f },	{ -44.8f,  26.0f,  0.79f } },
+		{ FRAME_walk7,		TB_FOOT_RIGHT,	{ -86.7f,  -37.2f, -33.7f },	{ -17.1f,  27.1f,  0.32f } },
+		{ FRAME_walk8,		TB_FOOT_RIGHT,	{ -115.7f, -36.9f, -33.9f },	{  16.3f,  26.9f, -11.96f } },
+		{ FRAME_walk9,		TB_FOOT_RIGHT,	{ -146.1f, -36.9f, -35.9f },	{  61.6f,  27.7f, -28.5f } },
+		{ FRAME_walk10,		TB_FOOT_RIGHT,	{ -188.1f, -37.4f, -23.0f },	{  93.8f,  29.6f, -33.2f } },
+		{ FRAME_walk11,		TB_FOOT_RIGHT,	{ -151.6f, -37.1f, -26.2f },	{  78.5f,  28.7f, -27.1f } }, // Right footstep.
+		{ FRAME_walk12,		TB_FOOT_RIGHT,	{ -102.1f, -37.7f, -23.1f },	{  63.0f,  27.7f, -31.6f } },
+		{ FRAME_walk13,		TB_FOOT_RIGHT,	{ -64.0f,  -37.4f, -19.7f },	{  34.9f,  27.5f, -32.2f } },
+		{ FRAME_walk14,		TB_FOOT_RIGHT,	{ -42.5f,  -34.7f, -22.0f },	{  5.66f,  27.1f, -31.7f } },
+		{ FRAME_walk15,		TB_FOOT_LEFT,	{ -24.6f,  -37.4f, -14.1f },	{ -24.0f,  27.2f, -30.9f } },
+		{ FRAME_walk16,		TB_FOOT_LEFT,	{ -17.1f,  -33.8f, -16.7f },	{ -54.3f,  27.5f, -30.5f } },
+		{ FRAME_walk17,		TB_FOOT_LEFT,	{  28.1f,  -39.3f, -23.1f },	{ -85.9f,  26.8f, -32.4f } },
+		{ FRAME_walk18,		TB_FOOT_LEFT,	{  61.4f,  -43.8f, -17.9f },	{ -119.1f, 26.5f, -33.3f } },
 
-	if (self->s.frame >= FRAME_walk1 && self->s.frame <= FRAME_walk18)
-		return self->monsterinfo.currframeindex;
+		// charge:
+		{ FRAME_charge1,	TB_FOOT_LEFT,	{  40.4f,  -26.3f, -35.6f },	{ -140.3f, 29.0f, -13.62f } }, // Left footstep.
+		{ FRAME_charge2,	TB_FOOT_LEFT,	{ -42.9f,  -9.49f, -36.6f },	{ -67.0f,  32.9f,  0.82f } },
+		{ FRAME_charge3,	TB_FOOT_RIGHT,	{ -126.2f, -12.4f, -38.9f },	{ -28.4f,  26.5f, -0.81f } },
+		{ FRAME_charge4,	TB_FOOT_RIGHT,	{ -191.3f, -25.7f, -39.5f },	{  7.96f,  32.0f,  1.92f } },
+		{ FRAME_charge5,	TB_FOOT_RIGHT,	{ -218.6f, -28.0f, -15.0f },	{  88.0f,  35.0f, -30.3f } },
+		{ FRAME_charge6,	TB_FOOT_RIGHT,	{ -129.9f, -23.4f, -45.9f },	{  50.1f,  32.5f, -37.0f } }, // Right footstep.
+		{ FRAME_charge7,	TB_FOOT_RIGHT,	{ -77.4f,  -27.9f, -7.56f },	{ -13.65f, 19.0f, -33.8f } },
+		{ FRAME_charge8,	TB_FOOT_LEFT,	{ -34.8f,  -28.0f,  7.26f },	{ -112.5f, 21.0f, -37.1f } },
+		{ FRAME_charge9,	TB_FOOT_LEFT,	{  22.3f,  -28.1f, -7.94f },	{ -187.7f, 25.2f, -34.4f } },
+		{ FRAME_charge10,	TB_FOOT_LEFT,	{  86.9f,  -34.1f,  0.09f },	{ -211.0f, 26.7f, -6.48f } },
 
-	if (self->s.frame >= FRAME_wlklft1 && self->s.frame <= FRAME_wlklft18)
-		return self->monsterinfo.currframeindex;
+		// wait:
+		{ FRAME_wait1,		TB_FOOT_LEFT,	{ 36.6f, -44.0f, -40.6f },		{ -88.0f, 28.7f, -38.7f } },
 
-	if (self->s.frame >= FRAME_wlkrt1 && self->s.frame <= FRAME_wlkrt18)
-		return self->monsterinfo.currframeindex;
+		// stun:
+		{ FRAME_stun3,		TB_FOOT_LEFT,	{ -11.76f, -42.5f, -27.2f },	{ -146.2f, 24.2f, -16.9f } },
+	};
 
-	if (self->s.frame >= FRAME_wlkatk1 && self->s.frame <= FRAME_wlkatk18)
-		return self->monsterinfo.currframeindex;
+	int frame = self->s.frame;
 
-	if (self->s.frame >= FRAME_wait1 && self->s.frame <= FRAME_wait14)
-		return 16;
+	//mxd. Same leg positions for walk, wlkatk, wlklft and wlkrt animations...
+	if (frame >= FRAME_wlkatk1 && frame <= FRAME_wlkatk18)
+		frame -= (FRAME_wlkatk1 - FRAME_walk1);
+	else if (frame >= FRAME_wlklft1 && frame <= FRAME_wlklft18)
+		frame -= (FRAME_wlklft1 - FRAME_walk1);
+	else if (frame >= FRAME_wlkrt1 && frame <= FRAME_wlkrt18)
+		frame -= (FRAME_wlkrt1 - FRAME_walk1);
+	else if (frame >= FRAME_wait1 && frame <= FRAME_wait14) // Legs don't move while waiting.
+		frame = FRAME_wait1;
 
-	return -1;
+	for (uint i = 0; i < ARRAY_SIZE(tb_feet_offsets); i++)
+		if (tb_feet_offsets[i].frame == frame)
+			return &tb_feet_offsets[i];
+
+	return NULL;
 }
 
 //mxd. Split from LevelToGround() to reduce code duplication.
@@ -679,79 +678,47 @@ static void TBeastCheckImpacts(edict_t* self) //mxd. Named 'tbeast_check_impacts
 
 	vec3_t end;
 	VectorMA(start, 150.0f + TB_FWD_OFFSET, forward, end);
-
 	VectorMA(start, -120.0f, forward, start); // + TB_FWD_OFFSET???
 
-	const int leg_check_index = TBeastGetWalkFrame(self);
-
-	vec3_t left_start;
-	vec3_t left_end;
-	vec3_t right_start;
-	vec3_t right_end;
-	vec3_t foot_mins;
-	vec3_t foot_maxs;
-
-	if (leg_check_index > -1)
-	{
-		vec3_t foot_offset;
-
-		// Setup leg checks - FIXME: trace from last footpos to current one.
-		VectorSet(foot_mins, -8.0f, -8.0f, 0.0f);
-		VectorSet(foot_maxs, 8.0f, 8.0f, 1.0f);
-
-		// Left leg.
-		VectorCopy(left_foot_offset_for_frame_index[leg_check_index], foot_offset);
-		VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, left_end);
-		VectorMA(left_end, foot_offset[1] + TB_RT_OFFSET, right, left_end);
-		VectorMA(left_end, foot_offset[2] + TB_UP_OFFSET, up, left_end);
-		VectorCopy(left_end, left_start);
-		left_start[2] += 63.0f;
-
-		// Right leg.
-		VectorCopy(right_foot_offset_for_frame_index[leg_check_index], foot_offset);
-		VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, right_end);
-		VectorMA(right_end, foot_offset[1] + TB_RT_OFFSET, right, right_end);
-		VectorMA(right_end, foot_offset[2] + TB_UP_OFFSET, up, right_end);
-		VectorCopy(right_end, right_start);
-		right_start[2] += 63.0f;
-	}
-
 	// Do body checks.
-
-	vec3_t mins = { -50.0f, -50.0f, -61.0f };
-	vec3_t maxs = {  50.0f,  50.0f,  70.0f };
-
 	trace_t trace;
-	gi.trace(start, mins, maxs, end, self, MASK_MONSTERSOLID, &trace); //FIXME: continue the trace if less than 1.0 or save for next touch?
+	gi.trace(start, tb_body_mins, tb_body_maxs, end, self, MASK_MONSTERSOLID, &trace); //FIXME: continue the trace if less than 1.0 or save for next touch?
 
 	// Check and see if they're close to my mouth and chomp 'em!
 	TBeastFakeImpact(self, &trace, false);
 
-	if (leg_check_index > -1)
-	{
-		// Do leg checks.
+	const TBeastFeetInfo_t* leg_check = TBeastGetWalkFrameInfo(self);
 
+	// Setup leg checks - FIXME: trace from last footpos to current one.
+	if (leg_check != NULL)
+	{
 		// Left leg.
-		gi.trace(left_start, foot_mins, foot_maxs, left_end, self, MASK_MONSTERSOLID, &trace); //FIXME: continue the trace if less than 1.0 or save for next touch?
+		vec3_t left_pos = VEC3_INIT(self->s.origin);
+		VectorMA(left_pos, leg_check->left_org[0], forward, left_pos);
+		VectorMA(left_pos, leg_check->left_org[1], right, left_pos);
+		VectorMA(left_pos, leg_check->left_org[2], up, left_pos);
+
+		gi.trace(left_pos, tb_foot_mins, tb_foot_maxs, left_pos, self, MASK_MONSTERSOLID, &trace); //FIXME: continue the trace if less than 1.0 or save for next touch?
 		TBeastFakeImpact(self, &trace, true);
 
 		// Right leg.
+		vec3_t right_pos = VEC3_INIT(self->s.origin);
+		VectorMA(right_pos, leg_check->right_org[0], forward, right_pos);
+		VectorMA(right_pos, leg_check->right_org[1], right, right_pos);
+		VectorMA(right_pos, leg_check->right_org[2], up, right_pos);
+
 		//FIXME: continue the trace if less than 1.0 or save for next touch?
-		gi.trace(right_start, foot_mins, foot_maxs, right_end, self, MASK_MONSTERSOLID, &trace); //FIXME: continue the trace if less than 1.0 or save for next touch?
+		gi.trace(right_pos, tb_foot_mins, tb_foot_maxs, right_pos, self, MASK_MONSTERSOLID, &trace); //FIXME: continue the trace if less than 1.0 or save for next touch?
 		TBeastFakeImpact(self, &trace, true);
 	}
 	else
 	{
-		VectorCopy(self->s.origin, end);
-		end[2] += self->mins[2];
+		const vec3_t legs_top =    VEC3_INITA(self->s.origin, 0.0f, 0.0f, 63.0f);
+		const vec3_t legs_bottom = VEC3_INITA(self->s.origin, 0.0f, 0.0f, self->mins[2]); //mxd. Original logic uses 'legs_start' instead of 'self->s.origin'.
+		const vec3_t legs_mins = VEC3_SET(-32.0f, -32.0f, 0.0f);
+		const vec3_t legs_maxs = VEC3_SET( 32.0f,  32.0f, 1.0f);
 
-		VectorCopy(end, start);
-		start[2] += 63.0f;
-
-		VectorSet(mins, -32.0f, -32.0f, 0.0f);
-		VectorSet(maxs,  32.0f,  32.0f, 1.0f);
-
-		gi.trace(start, mins, maxs, end, self, MASK_MONSTERSOLID, &trace);
+		gi.trace(legs_top, legs_mins, legs_maxs, legs_bottom, self, MASK_MONSTERSOLID, &trace);
 		TBeastFakeImpact(self, &trace, false);
 	}
 }
@@ -774,7 +741,7 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
 
-	const int leg_check_index = TBeastGetWalkFrame(self);
+	const TBeastFeetInfo_t* leg_check = TBeastGetWalkFrameInfo(self);
 
 	vec3_t melee_point;
 	vec3_t left_foot_abs_mins;
@@ -782,41 +749,30 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 	vec3_t right_foot_abs_mins;
 	vec3_t right_foot_abs_maxs;
 
-	if (leg_check_index > -1)
+	// Setup leg checks - FIXME: trace from last footpos to current one.
+	if (leg_check != NULL)
 	{
-		// Setup leg checks - FIXME: trace from last footpos to current one.
-
 		// Walking, check melee point in front.
 		VectorMA(self->s.origin, self->maxs[2] * 0.5f + TB_UP_OFFSET, up, melee_point);
 		VectorMA(melee_point, 150.0f + TB_FWD_OFFSET, forward, melee_point);
 
-		vec3_t foot_offset;
-		const vec3_t foot_mins = { -8.0f, -8.0f, 0.0f };
-		const vec3_t foot_maxs = {  8.0f,  8.0f, 1.0f }; //TODO: unused! Should add to left_foot_maxs / right_foot_maxs?..
-
 		// Left leg.
-		VectorCopy(left_foot_offset_for_frame_index[leg_check_index], foot_offset);
+		vec3_t left_pos = VEC3_INIT(self->s.origin);
+		VectorMA(left_pos, leg_check->left_org[0], forward, left_pos);
+		VectorMA(left_pos, leg_check->left_org[1], right, left_pos);
+		VectorMA(left_pos, leg_check->left_org[2], up, left_pos);
 
-		vec3_t left_end;
-		VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, left_end);
-		VectorMA(left_end, foot_offset[1] + TB_RT_OFFSET, right, left_end);
-		VectorMA(left_end, foot_offset[2] + TB_UP_OFFSET, up, left_end);
-
-		VectorAdd(left_end, foot_mins, left_foot_abs_mins);
-		VectorCopy(left_foot_abs_mins, left_foot_abs_maxs);
-		left_foot_abs_maxs[2] += 64.0f;
+		VectorAdd(left_pos, tb_foot_mins, left_foot_abs_mins);
+		VectorAdd(left_pos, tb_foot_maxs, left_foot_abs_maxs); //mxd. Original logic doesn't use 'foot_maxs'.
 
 		// Right leg.
-		VectorCopy(right_foot_offset_for_frame_index[leg_check_index], foot_offset);
+		vec3_t right_pos = VEC3_INIT(self->s.origin);
+		VectorMA(right_pos, leg_check->right_org[0], forward, right_pos);
+		VectorMA(right_pos, leg_check->right_org[1], right, right_pos);
+		VectorMA(right_pos, leg_check->right_org[2], up, right_pos);
 
-		vec3_t right_end;
-		VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, right_end);
-		VectorMA(right_end, foot_offset[1] + TB_RT_OFFSET, right, right_end);
-		VectorMA(right_end, foot_offset[2] + TB_UP_OFFSET, up, right_end);
-
-		VectorAdd(right_end, foot_mins, right_foot_abs_mins);
-		VectorCopy(right_foot_abs_mins, right_foot_abs_maxs);
-		right_foot_abs_maxs[2] += 64.0f;
+		VectorAdd(right_pos, tb_foot_mins, right_foot_abs_mins);
+		VectorAdd(right_pos, tb_foot_maxs, right_foot_abs_maxs); //mxd. Original logic doesn't use 'foot_maxs'.
 	}
 
 	// Setup body check.
@@ -828,9 +784,6 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 	VectorMA(start, 150.0f + TB_FWD_OFFSET, forward, end);
 	VectorMA(start, -120.0f, forward, start); // + TB_FWD_OFFSET???
 
-	const vec3_t mins = { -50.0f, -50.0f, -61.0f };
-	const vec3_t maxs = {  50.0f,  50.0f,  70.0f };
-
 	for (int i = 0; i < num_touching; i++)
 	{
 		edict_t* other = touch[i];
@@ -840,7 +793,7 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 
 		if (self->curAnimID != ANIM_CHARGE && self->curAnimID != ANIM_QUICK_CHARGE)
 		{
-			if (leg_check_index > -1 && other->takedamage != DAMAGE_NO && AI_IsMovable(other))
+			if (leg_check != NULL && other->takedamage != DAMAGE_NO && AI_IsMovable(other))
 			{
 				// Check and see if they're close to my mouth and chomp 'em!
 				if (vhlen(other->s.origin, melee_point) < 100.0f)
@@ -875,7 +828,7 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 		// BODY
 
 		trace_t trace;
-		gi.trace(start, mins, maxs, end, self, MASK_MONSTERSOLID, &trace); //FIXME: continue the trace if less than 1.0 or save for next touch?
+		gi.trace(start, tb_body_mins, tb_body_maxs, end, self, MASK_MONSTERSOLID, &trace); //FIXME: continue the trace if less than 1.0 or save for next touch?
 
 		// Put other back to normal.
 		other->solid = other_solid;
@@ -903,7 +856,7 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 		{
 			qboolean hit_me = hit_other;
 
-			if (!hit_me && leg_check_index != -1)
+			if (!hit_me && leg_check != NULL)
 			{
 				vec3_t other_abs_mins;
 				vec3_t other_abs_maxs;
@@ -1412,49 +1365,30 @@ void tbeast_footstep(edict_t* self)
 	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
 
-	vec3_t pos;
-	const int leg_check_index = TBeastGetWalkFrame(self);
+	const TBeastFeetInfo_t* leg_check = TBeastGetWalkFrameInfo(self);
+	assert(leg_check != NULL);
 
-	if (leg_check_index > -1)
-	{
-		vec3_t foot_offset;
+	vec3_t foot_offset;
+	VectorCopy((leg_check->front_foot_id == TB_FOOT_LEFT ? leg_check->left_org : leg_check->right_org), foot_offset);
 
-		// Setup leg checks - only if in these frames.
-		if (leg_check_index < 6 || leg_check_index > 14)
-			VectorCopy(left_foot_offset_for_frame_index[leg_check_index], foot_offset); // Left leg.
-		else
-			VectorCopy(right_foot_offset_for_frame_index[leg_check_index], foot_offset); // Right leg.
+	vec3_t foot_pos = VEC3_INIT(self->s.origin);
+	VectorMA(foot_pos, foot_offset[0], forward, foot_pos);
+	VectorMA(foot_pos, foot_offset[1], right, foot_pos);
+	VectorMA(foot_pos, foot_offset[2], up, foot_pos);
 
-		VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, pos);
-		VectorMA(pos, foot_offset[1] + TB_RT_OFFSET, right, pos);
-		VectorMA(pos, foot_offset[2] + TB_UP_OFFSET, up, pos);
-	}
-	else
-	{
-		VectorCopy(self->s.origin, pos);
-		VectorMA(pos, self->maxs[0], forward, pos);
-		pos[2] += self->mins[2];
-
-		if (self->monsterinfo.currframeindex == FRAME_walk11 || self->monsterinfo.currframeindex == FRAME_wlkrt11 || self->monsterinfo.currframeindex == FRAME_wlklft11)
-			VectorMA(pos, -32.0f, right, pos);
-		else
-			VectorMA(pos, 32.0f, right, pos);
-	}
-
-	const vec3_t bottom = VEC3_INITA(pos, 0.0f, 0.0f, -128.0f);
+	const vec3_t foot_top =    VEC3_INITA(foot_pos, 0.0f, 0.0f, 45.0f);
+	const vec3_t foot_bottom = VEC3_INITA(foot_pos, 0.0f, 0.0f, -128.0f);
 
 	trace_t trace;
-	gi.trace(pos, vec3_origin, vec3_origin, bottom, self, MASK_SOLID, &trace);
+	gi.trace(foot_top, vec3_origin, vec3_origin, foot_bottom, self, MASK_SOLID, &trace);
 
 	if (trace.fraction < 1.0f)
-		VectorCopy(trace.endpos, pos);
+		VectorCopy(trace.endpos, foot_pos);
 
-	pos[2] += 10.0f;
+	gi.CreateEffect(NULL, FX_TB_EFFECTS, 0, foot_pos, "bv", FX_TB_PUFF, vec3_origin);
 
-	gi.CreateEffect(NULL, FX_TB_EFFECTS, 0, pos, "bv", FX_TB_PUFF, vec3_origin);
-
-	vec3_t fx_dir = { flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f), flrand(20.0f, 100.0f) }; //mxd
-	gi.CreateEffect(NULL, FX_OGLE_HITPUFF, 0, pos, "v", fx_dir);
+	const vec3_t fx_dir = VEC3_SET(flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f), flrand(20.0f, 100.0f)); //mxd
+	gi.CreateEffect(NULL, FX_OGLE_HITPUFF, 0, foot_pos, "v", fx_dir);
 	gi.CreateEffect(&self->s, FX_QUAKE, 0, vec3_origin, "bbb", 3, 1, 2);
 
 	gi.sound(self, CHAN_BODY, sounds[irand(SND_STEP1, SND_STEP2)], 1.0f, ATTN_NORM, 0.0f);
