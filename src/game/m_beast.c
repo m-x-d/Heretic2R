@@ -419,15 +419,12 @@ static float LerpAngleChange(float cur_angle, float end_angle, const float step)
 	cur_angle = NormalizeAngleDeg(anglemod(cur_angle));
 	end_angle = NormalizeAngleDeg(anglemod(end_angle));
 
-	float diff = end_angle - cur_angle;
+	const float diff = end_angle - cur_angle;
 
 	if (FloatIsZeroEpsilon(diff)) //mxd. Avoid direct floats comparison.
 		return 0.0f;
 
-	diff = NormalizeAngleDeg(diff);
-	const float final = NormalizeAngleDeg(anglemod(cur_angle + diff / step));
-
-	return final;
+	return NormalizeAngleDeg(anglemod(cur_angle + diff / step));
 }
 
 static int TBeastGetWalkFrame(const edict_t* self) //mxd. Named 'tbeast_inwalkframes' in original logic.
