@@ -30,6 +30,12 @@
 #define TB_UP_OFFSET			(-32)
 #define TB_RT_OFFSET			(-24)
 
+typedef struct TBeastRefPoint_s //mxd. These should've been stored as refpoints...
+{
+	const int frame;
+	const vec3_t origin;
+} TBeastRefPoint_t;
+
 static const vec3_t left_foot_offset_for_frame_index[18] = //mxd. Named 'GetLeftFootOffsetForFrameIndex' in original logic.
 {
 	{  160.0f, -64.0f,  0.0f },
@@ -952,7 +958,7 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 		{
 			qboolean hit_me = hit_other;
 
-			if (!hit_me && leg_check.offset != -1)
+			if (!hit_me && leg_check_index != -1)
 			{
 				vec3_t other_abs_mins;
 				vec3_t other_abs_maxs;
@@ -1533,43 +1539,81 @@ void tbeast_growl(edict_t* self)
 
 void tbeast_snort(edict_t* self)
 {
-	const int chance = irand(0, 20);
+	static const TBeastRefPoint_t tbeast_snorts[] = //mxd
+	{
+		{ FRAME_charge5,	{ 97.7f, 1.32f, 52.6f } },
+		{ FRAME_eatingb3,	{ 74.7f, 0.81f, 23.0f } },
+		{ FRAME_eatran4,	{ 77.2f, 9.77f, 40.5f } },
+		{ FRAME_jumpb19,	{ 74.9f, -6.1f, 85.0f } },
+		{ FRAME_stun19,		{ 39.7f, 2.01f, 64.4f } },
+		{ FRAME_wait3,		{ 93.0f, 4.48f, 44.1f } },
+		{ FRAME_wait8,		{ 89.7f, 0.66f, 36.9f } },
+		{ FRAME_wait12,		{ 93.5f, 0.17f, 47.1f } },
+		{ FRAME_walk4,		{ 97.4f, -3.7f, 68.8f } },
+		{ FRAME_walk13,		{ 97.0f, 9.56f, 66.7f } },
+		{ FRAME_walk14,		{ 97.8f, 10.17f, 74.6f } },
+		{ FRAME_wlklft5,	{ 90.2f, -44.6f, 76.4f } },
+		{ FRAME_wlkrt18,	{ 84.8f, 51.1f, 50.9f } },
+	};
 
-	if (chance > 1)
+	if (irand(0, 20) > 1)
 		return;
 
 	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_SNORT1, SND_SNORT2)], 1.0f, ATTN_NORM, 0.0f);
 
-	// Make snort effect from nose.
 	vec3_t forward;
 	vec3_t right;
-	AngleVectors(self->s.angles, forward, right, NULL);
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
-	const vec3_t spot = VEC3_INITA(self->s.origin, 0.0f, 0.0f, 36.0f);
+	//mxd. Find snort origin...
+	vec3_t snort_pos = VEC3_INIT(self->s.origin);
 
-	vec3_t spot2;
-	VectorMA(spot, 100.0f, forward, spot2);
+	for (uint i = 0; i < ARRAY_SIZE(tbeast_snorts); i++)
+	{
+		if (tbeast_snorts[i].frame == self->s.frame)
+		{
+			// Get absolute snort position.
+			VectorMA(snort_pos, tbeast_snorts[i].origin[0], forward, snort_pos);
+			VectorMA(snort_pos, tbeast_snorts[i].origin[1], right, snort_pos);
+			VectorMA(snort_pos, tbeast_snorts[i].origin[2], up, snort_pos);
 
-	VectorMA(spot2, 64.0f, right, spot2); // More than we want to get a nice vec.
+			// Recalculate forward/right vectors to mimic neck left/right rotation...
+			vec3_t snort_dir = VEC3_ZERO;
+			VectorMA(snort_dir, tbeast_snorts[i].origin[0] - 32.0f, forward, snort_dir);
+			VectorMA(snort_dir, tbeast_snorts[i].origin[1], right, snort_dir);
+			VectorNormalize(snort_dir);
 
-	vec3_t fx_dir;
-	VectorSubtract(spot2, spot, fx_dir);
-	VectorNormalize(fx_dir);
+			vec3_t snort_angles;
+			AnglesFromDir(snort_dir, snort_angles);
+			Vec3ScaleAssign(RAD_TO_ANGLE, snort_angles);
+			AngleVectors(snort_angles, forward, right, NULL);
 
-	VectorMA(spot2, -56.0f, right, spot2); // Back to +8.
+			break;
+		}
+	}
 
-	gi.CreateEffect(NULL, FX_FLAMETHROWER, CEF_FLAG6 | CEF_FLAG7, spot2, "df", fx_dir, 100.0f);
+	assert(!VectorCompare(snort_pos, self->s.origin));
 
-	vec3_t left; //mxd
-	VectorNegate(right, left);
+	// Make snort effect from nose.
+	for (int i = -1; i < 1; i++)
+	{
+		const float side = Q_signf((float)i);
 
-	VectorMA(spot2, 72.0f, left, spot2); // More than we want to get a nice vec.
-	VectorSubtract(spot2, spot, fx_dir);
-	VectorNormalize(fx_dir);
+		vec3_t start = VEC3_INIT(snort_pos);
+		VectorMA(start, 2.0f * side, right, start);
+		VectorMA(start, 2.0f, up, start);
 
-	VectorMA(spot2, -56.0f, left, spot2); // Back to +16.
+		vec3_t end = VEC3_INIT(snort_pos);
+		VectorMA(end, flrand(95.0f, 105.0f), forward, end);
+		VectorMA(end, flrand(60.0f, 68.0f) * side, right, end);
 
-	gi.CreateEffect(NULL, FX_FLAMETHROWER, CEF_FLAG6 | CEF_FLAG7, spot2, "df", fx_dir, 100.0f);
+		vec3_t fx_dir;
+		VectorSubtract(end, start, fx_dir);
+		VectorNormalize(fx_dir);
+
+		gi.CreateEffect(NULL, FX_FLAMETHROWER, CEF_FLAG6 | CEF_FLAG7, start, "df", fx_dir, flrand(95.0f, 105.0f)); //TODO: create separate CEF_OWNERS_ORIGIN FX?
+	}
 }
 
 void tbeast_check_mood(edict_t* self) //mxd. Added action function version.
