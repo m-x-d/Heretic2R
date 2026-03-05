@@ -1119,7 +1119,10 @@ void TBeastUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named '
 
 void TBeastTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'tbeast_touch' in original logic.
 {
-	TBeastFakeTouch(self);
+	if (other != NULL && other->movetype == MOVETYPE_FLYMISSILE && other->touch != NULL) //mxd. Manually handle collisions with missiles (because tbeast is SOLID_TRIGGER...).
+		other->touch(other, self, NULL, NULL);
+	else
+		TBeastFakeTouch(self);
 }
 
 void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in original logic.
