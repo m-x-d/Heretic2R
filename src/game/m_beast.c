@@ -23,7 +23,12 @@
 
 #pragma region ========================== Trial Beast base info ==========================
 
-#define MAX_CHOMP_DIST	64.0f //mxd
+#define TB_MAX_CHOMP_DIST		64.0f //mxd
+#define TB_MELEE_RANGE			128.0f //mxd. Named 'TBEAST_STD_MELEE_RNG' in original logic.
+
+#define TB_FWD_OFFSET			(-64)
+#define TB_UP_OFFSET			(-32)
+#define TB_RT_OFFSET			(-24)
 
 static const vec3_t left_foot_offset_for_frame_index[18] = //mxd. Named 'GetLeftFootOffsetForFrameIndex' in original logic.
 {
@@ -390,7 +395,7 @@ static void TBeastChomp(edict_t* self, const float forward_offset, const float r
 
 	const float enemy_dist = VectorLength(enemy_diff);
 
-	if (enemy_dist <= MAX_CHOMP_DIST)
+	if (enemy_dist <= TB_MAX_CHOMP_DIST)
 	{
 		gi.sound(self, CHAN_WEAPON, sounds[SND_CHOMP], 1.0f, ATTN_NORM, 0.0f);
 
@@ -401,7 +406,7 @@ static void TBeastChomp(edict_t* self, const float forward_offset, const float r
 		const int damage = irand(TB_DMG_BITE_MIN, TB_DMG_BITE_MAX);
 		T_Damage(self->enemy, self, self, forward, enemy_diff, normal, damage, damage / 2, DAMAGE_DISMEMBER, MOD_DIED);
 	}
-	else if (enemy_dist + 64.0f < MAX_CHOMP_DIST)
+	else if (enemy_dist + 64.0f < TB_MAX_CHOMP_DIST)
 	{
 		// Let them know it was close and we tried - spittle effect?
 		gi.sound(self, CHAN_WEAPON, sounds[SND_SNATCH], 1.0f, ATTN_NORM, 0.0f);
@@ -1618,7 +1623,7 @@ void tbeast_bite(edict_t* self, float forward_offset, float right_offset, float 
 
 	// Give extra range.
 	vec3_t bite_end_pos;
-	VectorMA(melee_point, TBEAST_STD_MELEE_RNG, forward, bite_end_pos);
+	VectorMA(melee_point, TB_MELEE_RANGE, forward, bite_end_pos);
 
 	// Let's do this the right way.
 	trace_t trace;
@@ -1861,10 +1866,10 @@ void tbeast_check_snatch(edict_t* self, float forward_offset, float right_offset
 	edict_t* found = NULL;
 	const float enemy_dist = VectorLength(end_pos);
 
-	if (enemy_dist > MAX_CHOMP_DIST || irand(0, 50) > self->enemy->health) //mxd. Original logic uses flrand() here.
+	if (enemy_dist > TB_MAX_CHOMP_DIST || irand(0, 50) > self->enemy->health) //mxd. Original logic uses flrand() here.
 	{
 		// If missed or health is low, just chomp it now.
-		while ((found = FindInRadius(found, start_pos, MAX_CHOMP_DIST)) != NULL)
+		while ((found = FindInRadius(found, start_pos, TB_MAX_CHOMP_DIST)) != NULL)
 		{
 			if (found->takedamage != DAMAGE_NO && AI_IsMovable(found))
 			{

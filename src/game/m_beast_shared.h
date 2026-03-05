@@ -113,19 +113,13 @@ extern void tbeast_roar_knockdown(edict_t* self);
 extern void tbeast_roar_short(edict_t* self);
 extern void tbeast_gibs(edict_t* self);
 
-#define TB_HIBITE_F		150
-#define TB_HIBITE_R		0
-#define TB_HIBITE_U		108
+#define TB_HIBITE_F		150.0f
+#define TB_HIBITE_R		0.0f
+#define TB_HIBITE_U		108.0f
 
-#define TB_LOBITE_F		150
-#define TB_LOBITE_R		0
-#define TB_LOBITE_U		36
+#define TB_LOBITE_F		150.0f
+#define TB_LOBITE_R		0.0f
+#define TB_LOBITE_U		36.0f
 
-#define TB_WLKBITE_F	224
-#define TB_WLKBITE_U	72
-
-#define TBEAST_STD_MELEE_RNG	128
-
-#define TB_FWD_OFFSET	(-64)
-#define TB_UP_OFFSET	(-32)
-#define TB_RT_OFFSET	(-24)
+#define TB_WLKBITE_F	224.0f
+#define TB_WLKBITE_U	72.0f
