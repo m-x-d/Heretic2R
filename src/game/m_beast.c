@@ -952,7 +952,7 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 		{
 			qboolean hit_me = hit_other;
 
-			if (!hit_me && leg_check_index > -1)
+			if (!hit_me && leg_check.offset != -1)
 			{
 				vec3_t other_abs_mins;
 				vec3_t other_abs_maxs;
@@ -965,20 +965,17 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 
 			if (hit_me)
 			{
-				if (other->isBlocked != NULL && other->solid != SOLID_NOT)
+				if (other->solid != SOLID_NOT && (other->isBlocked != NULL || other->touch != NULL))
 				{
 					gi.trace(other->s.origin, vec3_origin, vec3_origin, self->s.origin, other, MASK_ALL, &trace);
 					trace.ent = self;
 					VectorCopy(other->s.origin, trace.endpos);
-					other->isBlocked(other, &trace);
-				}
 
-				if (other->touch != NULL && other->solid != SOLID_NOT)
-				{
-					gi.trace(other->s.origin, vec3_origin, vec3_origin, self->s.origin, other, MASK_ALL, &trace);
-					trace.ent = self;
-					VectorCopy(other->s.origin, trace.endpos);
-					other->touch(other, self, &trace.plane, trace.surface);
+					if (other->isBlocked != NULL)
+						other->isBlocked(other, &trace);
+
+					if (other->touch != NULL)
+						other->touch(other, self, &trace.plane, trace.surface);
 				}
 
 				if (other == trace.ent)
