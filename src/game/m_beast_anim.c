@@ -14,8 +14,8 @@ static const animframe_t tbeast_frames_biteup2[] =
 {
 	{ FRAME_atkc1, NULL, 0, 0, 0, ai_charge2, 0, tbeast_growl },
 	{ FRAME_atkc2, NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_atkc3, tbeast_check_snatch, TB_HIBITE_F - 32, TB_HIBITE_R, TB_HIBITE_U + 128, NULL, 0, NULL },
-	{ FRAME_atkc4, tbeast_bite, TB_HIBITE_F - 32, TB_HIBITE_R, TB_HIBITE_U + 128, NULL, 0, NULL },
+	{ FRAME_atkc3, tbeast_check_snatch, TB_HIBITE_F - 32.0f, TB_HIBITE_R, TB_HIBITE_U + 128.0f, NULL, 0, NULL },
+	{ FRAME_atkc4, tbeast_bite, TB_HIBITE_F - 32.0f, TB_HIBITE_R, TB_HIBITE_U + 128.0f, NULL, 0, NULL },
 	{ FRAME_atkc5, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_atkc6, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_atkc7, NULL, 0, 0, 0, NULL, 0, NULL },
@@ -602,7 +602,7 @@ const animmove_t tbeast_move_snatch = ANIMMOVE(tbeast_frames_snatch, tbeast_read
 // TB awaiting catch.
 static const animframe_t tbeast_frames_ready_catch[] =
 {
-	{ FRAME_jumpb4, 	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jumpb4,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
 const animmove_t tbeast_move_ready_catch = ANIMMOVE(tbeast_frames_ready_catch, tbeast_ready_catch);
 
@@ -619,14 +619,14 @@ static const animframe_t tbeast_frames_catch[] =
 	{ FRAME_jumpb12,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jumpb13,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jumpb14,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_jumpb15, 	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jumpb15,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
 const animmove_t tbeast_move_catch = ANIMMOVE(tbeast_frames_catch, tbeast_ginair); //mxd. numframes:10 in original logic.
 
 // TB while jumping.
 static const animframe_t tbeast_frames_ginair[] =
 {
-	{ FRAME_jumpb16, 	NULL, 0, 0, 0, NULL, 0, tbeast_gcheck_landed },
+	{ FRAME_jumpb16,	NULL, 0, 0, 0, NULL, 0, tbeast_gcheck_landed },
 };
 const animmove_t tbeast_move_ginair = ANIMMOVE(tbeast_frames_ginair, NULL);
 
