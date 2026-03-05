@@ -471,121 +471,66 @@ static int TBeastGetWalkFrame(const edict_t* self) //mxd. Named 'tbeast_inwalkfr
 	return -1;
 }
 
-// I'm a big guy, level me out. What slope am I on?
-static void LevelToGround(edict_t* self) //mxd. Removed unused args.
+//mxd. Split from LevelToGround() to reduce code duplication.
+// axis:PITCH: forward-back, positive angle - pitch front upwards.
+// axis:ROLL:  right-left, positive angle - roll leftwards.
+static void TBeastSetGroundAngle(edict_t* self, const vec3_t dir, const float check_dist, const int axis, const float step)
 {
-	const int leg_check_index = TBeastGetWalkFrame(self);
-
-	if (leg_check_index == -1)
-		return;
-
-	vec3_t forward;
-	vec3_t right;
-	vec3_t up;
-	AngleVectors(self->s.angles, forward, right, up);
-
-	// Setup leg checks - only if in these frames.
-	const qboolean right_front = (leg_check_index > 5 && leg_check_index < 15);
-	vec3_t foot_offset;
-
-	// Left leg.
-	vec3_t left_pos;
-	VectorCopy(left_foot_offset_for_frame_index[leg_check_index], foot_offset);
-	VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, left_pos);
-	VectorMA(left_pos, foot_offset[1] + TB_RT_OFFSET, right, left_pos);
-	VectorMA(left_pos, foot_offset[2] + TB_UP_OFFSET, up, left_pos);
-
-	// Right leg.
-	vec3_t right_pos;
-	VectorCopy(right_foot_offset_for_frame_index[leg_check_index], foot_offset);
-	VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, right_pos);
-	VectorMA(right_pos, foot_offset[1] + TB_RT_OFFSET, right, right_pos);
-	VectorMA(right_pos, foot_offset[2] + TB_UP_OFFSET, up, right_pos);
-
-	vec3_t front_pos;
-	vec3_t back_pos;
-
-	if (right_front)
-	{
-		// This is also the front check.
-		VectorCopy(right_pos, front_pos);
-		VectorCopy(left_pos, back_pos);
-	}
-	else
-	{
-		VectorCopy(left_pos, front_pos);
-		VectorCopy(right_pos, back_pos);
-	}
-
-	// Set pitch.
 	trace_t trace;
 
-	vec3_t bottom1 = VEC3_INITA(front_pos, 0.0f, 0.0f, -self->size[2] * 2.0f);
-	gi.trace(front_pos, vec3_origin, vec3_origin, bottom1, self, MASK_SOLID, &trace);
+	// Check front (pitch) / right (roll) ground distance.
+	vec3_t front_top;
+	VectorMA(self->s.origin, check_dist, dir, front_top);
 
-	if (trace.fraction == 1.0f)
+	const vec3_t front_bottom = VEC3_INITA(front_top, 0.0f, 0.0f, -self->size[2] * 2.0f);
+	gi.trace(front_top, vec3_origin, vec3_origin, front_bottom, self, MASK_SOLID, &trace);
+
+	if (trace.startsolid || trace.fraction == 1.0f)
 	{
-		self->s.angles[PITCH] = LerpAngleChange(self->s.angles[PITCH], 0.0f, 8.0f);
-	}
-	else
-	{
-		VectorCopy(trace.endpos, bottom1);
-
-		vec3_t bottom2 = VEC3_INITA(back_pos, 0.0f, 0.0f, -self->size[2] * 2.0f);
-		gi.trace(back_pos, vec3_origin, vec3_origin, bottom2, self, MASK_SOLID, &trace);
-
-		if (trace.fraction == 1.0f)
-		{
-			self->s.angles[PITCH] = LerpAngleChange(self->s.angles[PITCH], 0.0f, 8.0f);
-		}
-		else
-		{
-			VectorCopy(trace.endpos, bottom2);
-
-			vec3_t dir;
-			VectorSubtract(bottom1, bottom2, dir);
-
-			vec3_t angles;
-			vectoangles(dir, angles);
-
-			self->s.angles[PITCH] = LerpAngleChange(self->s.angles[PITCH], angles[PITCH], 8.0f);
-		}
+		self->s.angles[axis] = LerpAngleChange(self->s.angles[axis], 0.0f, step);
+		return;
 	}
 
-	// Set roll.
-	VectorCopy(right_pos, bottom1);
-	bottom1[2] -= self->size[2] * 2.0f;
+	const vec3_t front_ground = VEC3_INIT(trace.endpos);
 
-	gi.trace(right_pos, vec3_origin, vec3_origin, bottom1, self, MASK_SOLID, &trace);
+	// Check back (pitch) / left (roll) ground distance.
+	vec3_t back_top;
+	VectorMA(self->s.origin, -check_dist, dir, back_top);
 
-	if (trace.fraction == 1.0f)
+	const vec3_t back_bottom = VEC3_INITA(back_top, 0.0f, 0.0f, -self->size[2] * 2.0f);
+	gi.trace(back_top, vec3_origin, vec3_origin, back_bottom, self, MASK_SOLID, &trace);
+
+	if (trace.startsolid || trace.fraction == 1.0f)
 	{
-		self->s.angles[ROLL] = LerpAngleChange(self->s.angles[ROLL], 0.0f, 8.0f);
+		self->s.angles[axis] = LerpAngleChange(self->s.angles[axis], 0.0f, step);
+		return;
 	}
-	else
-	{
-		VectorCopy(trace.endpos, bottom1);
 
-		vec3_t bottom2 = VEC3_INITA(left_pos, 0.0f, 0.0f, -self->size[2] * 2.0f);
-		gi.trace(left_pos, vec3_origin, vec3_origin, bottom2, self, MASK_SOLID, &trace);
+	const vec3_t back_ground = VEC3_INIT(trace.endpos);
 
-		if (trace.fraction == 1.0f)
-		{
-			self->s.angles[ROLL] = LerpAngleChange(self->s.angles[ROLL], 0.0f, 8.0f);
-		}
-		else
-		{
-			VectorCopy(trace.endpos, bottom2);
+	// Set pitch/roll.
+	vec3_t diff;
+	VectorSubtract(front_ground, back_ground, diff);
 
-			vec3_t dir;
-			VectorSubtract(bottom1, bottom2, dir);
+	vec3_t angles;
+	vectoangles(diff, angles);
 
-			vec3_t angles;
-			vectoangles(dir, angles);
+	self->s.angles[axis] = LerpAngleChange(self->s.angles[axis], angles[PITCH], step);
+}
 
-			self->s.angles[ROLL] = LerpAngleChange(self->s.angles[ROLL], angles[PITCH], 8.0f);
-		}
-	}
+// I'm a big guy, level me out. What slope am I on?
+static void TBeastLevelToGround(edict_t* self) //mxd. Named 'LevelToGround' in original logic. Removed unused args.
+{
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+
+	//TODO: H2 and its up direction inconsistencies...
+	forward[2] *= -1.0f;
+	right[2] *= -1.0f;
+
+	TBeastSetGroundAngle(self, forward, 64.0f, PITCH, 4.0f); //mxd. step:8 in original logic.
+	TBeastSetGroundAngle(self, right, 48.0f, ROLL, 4.0f); //mxd. step:8 in original logic.
 }
 
 static qboolean BBoxesOverlap(const vec3_t mins1, const vec3_t maxs1, const vec3_t mins2, const vec3_t maxs2) //mxd. Named 'boxes_overlap' in original logic.
@@ -1153,7 +1098,7 @@ void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in original
 	const qboolean moved = (!FloatIsZeroEpsilon(self->s.origin[0] - self->s.old_origin[0]) || !FloatIsZeroEpsilon(self->s.origin[1] - self->s.old_origin[1])); //mxd. Avoid direct floats comparison.
 
 	if (moved)
-		LevelToGround(self);
+		TBeastLevelToGround(self);
 
 	qboolean go_jump = false;
 
