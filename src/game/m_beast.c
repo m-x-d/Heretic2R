@@ -1036,7 +1036,7 @@ void TBeastBlocked(edict_t* self, trace_t* trace) //mxd. Named 'tbeast_blocked' 
 			VectorMA(start, 150.0f, forward, end);
 
 			const vec3_t mins = { -24.0f, -24.0f, -1.0f };
-			const vec3_t maxs = { 24.0f,  24.0f,  1.0f };
+			const vec3_t maxs = {  24.0f,  24.0f,  1.0f };
 
 			trace_t tr;
 			gi.trace(start, mins, maxs, end, self, MASK_SOLID, &tr);
@@ -1198,7 +1198,7 @@ void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in original
 		TBeastCheckJump(self);
 
 	TBeastFakeTouch(self);
-	self->next_post_think = level.time + 0.1f;
+	self->next_post_think = level.time + FRAMETIME; //mxd. Use define.
 }
 
 #pragma endregion
@@ -1610,8 +1610,8 @@ void tbeast_bite(edict_t* self, float forward_offset, float right_offset, float 
 	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
 
-	vec3_t melee_point;
-	VectorMA(self->s.origin, up_offset + TB_UP_OFFSET, up, melee_point);
+	vec3_t melee_point = VEC3_INIT(self->s.origin);
+	VectorMA(melee_point, up_offset + TB_UP_OFFSET, up, melee_point);
 	VectorMA(melee_point, forward_offset + TB_FWD_OFFSET, forward, melee_point);
 	VectorMA(melee_point, right_offset, right, melee_point);
 
@@ -1763,7 +1763,7 @@ void tbeast_ready_catch(edict_t* self)
 		SetAnim(self, ANIM_READY_CATCH);
 }
 
-//mxd. Similar to gorgon_throw_toy().
+// Similar to gorgon_throw_toy() --mxd.
 void tbeast_throw_toy(edict_t* self)
 {
 	if (self->targetEnt == NULL)
@@ -1838,7 +1838,7 @@ void tbeast_shake_toy(edict_t* self, float forward_offset, float right_offset, f
 	}
 }
 
-//mxd. Similar to gorgon_check_snatch().
+// Similar to gorgon_check_snatch() --mxd.
 void tbeast_check_snatch(edict_t* self, float forward_offset, float right_offset, float up_offset)
 {
 	if (self->enemy == NULL)
@@ -1922,7 +1922,7 @@ void tbeast_snatch_go(edict_t* self) //mxd. Named 'tbeast_go_snatch' in original
 	SetAnim(self, ANIM_SNATCH);
 }
 
-//mxd. Similar to gorgon_gore_toy().
+// Similar to gorgon_gore_toy() --mxd.
 void tbeast_gore_toy(edict_t* self, float jump_height)
 {
 	const qboolean last_frame = (jump_height == -1.0f); //mxd
@@ -2183,7 +2183,7 @@ void SP_monster_trial_beast(edict_t* self)
 	self->materialtype = MAT_FLESH;
 
 	VectorSet(self->mins, -100.0f, -100.0f, -36.0f);
-	VectorSet(self->maxs, 100.0f, 100.0f, 150.0f);
+	VectorSet(self->maxs,  100.0f,  100.0f, 150.0f);
 
 	self->viewheight = 104 + TB_UP_OFFSET;
 	self->s.modelindex = (byte)classStatics[CID_TBEAST].resInfo->modelIndex;
