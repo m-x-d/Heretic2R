@@ -504,24 +504,17 @@ static void Cmd_Powerup_f(const edict_t* ent)
 // Use an inventory item.
 void Cmd_Use_f(edict_t* ent, char* name)
 {
-	qboolean cast_me;
-
 	if (SkipClientInput(ent)) //mxd. SV_CINEMATICFREEZE -> SkipClientInput().
 		return;
 
 	assert(ent != NULL && ent->client != NULL);
 	playerinfo_t* info = &ent->client->playerinfo;
 
-	if (name[0] == '*')
-	{
-		// Cast automatically with asterisk before name. THIS ONLY WORKS WITH DEFENSIVE ITEMS.
-		cast_me = true;
+	// Cast automatically with asterisk before name. THIS ONLY WORKS WITH DEFENSIVE ITEMS.
+	const qboolean cast_me = (name[0] == '*');
+
+	if (cast_me)
 		name++;
-	}
-	else
-	{
-		cast_me = false;
-	}
 
 	gitem_t* item = P_FindItem(name);
 
