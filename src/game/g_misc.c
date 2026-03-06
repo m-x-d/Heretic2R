@@ -1142,9 +1142,9 @@ static void MiscRemoteCameraRemove(edict_t* self) //mxd. Named 'remove_camera' i
 	else
 	{
 		// For all clients.
-		for (int i = 0; i < game.maxclients; i++)
+		for (int i = 1; i <= game.maxclients; i++)
 		{
-			const edict_t* client = &g_edicts[i + 1];
+			const edict_t* client = &g_edicts[i];
 
 			if (client->inuse)
 				client->client->RemoteCameraLockCount--;
@@ -1272,9 +1272,9 @@ void MiscRemoteCameraUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 	else
 	{
 		// Signal to all clients that their camera view has changed to a remote camera view..
-		for (int i = 0; i < game.maxclients; i++)
+		for (int i = 1; i <= game.maxclients; i++)
 		{
-			const edict_t* client = &g_edicts[i + 1];
+			const edict_t* client = &g_edicts[i];
 
 			if (client->inuse)
 			{
