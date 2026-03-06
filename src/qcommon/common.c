@@ -41,6 +41,7 @@ cvar_t* player_dll;
 static FILE* logfile;
 
 static int server_state;
+static int com_last_error = 0; //mxd
 
 #pragma region ========================== CLIENT / SERVER INTERACTIONS ====================
 
@@ -199,6 +200,7 @@ H2R_NORETURN void Com_Error(const int code, const char* fmt, ...)
 		Sys_Error("Recursive error after: %s", msg);
 
 	recursive = true;
+	com_last_error = code; //mxd
 
 	va_start(argptr, fmt);
 	vsprintf_s(msg, sizeof(msg), fmt, argptr); //mxd. vsprintf -> vsprintf_s
@@ -225,6 +227,11 @@ H2R_NORETURN void Com_Error(const int code, const char* fmt, ...)
 	}
 
 	Sys_Error("%s", msg);
+}
+
+int Com_GetLastError(void) //mxd
+{
+	return com_last_error;
 }
 
 // Both client and server can use this, and it will do the appropriate things.

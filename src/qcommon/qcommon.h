@@ -670,6 +670,7 @@ Q2DLL_DECLSPEC extern void Com_DPrintf(const char* fmt, ...);
 extern void Com_DDPrintf(int level, const char* fmt, ...); //mxd
 extern void Com_CloseLogFile(void); //mxd
 H2R_NORETURN Q2DLL_DECLSPEC extern void Com_Error(int code, const char* fmt, ...);
+extern int Com_GetLastError(void); //mxd
 H2R_NORETURN extern void Com_Quit(void);
 extern int Com_ServerState(void);
 extern void Com_SetServerState(int state);

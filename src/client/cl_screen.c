@@ -1065,8 +1065,8 @@ static void SCR_DrawInitialFadeIn(void)
 	if (!draw_fade || cl.cinematictime > 0)
 		return;
 
-	// Disable fade when we are loading something, showing cinematic or fade-in animation ended.
-	if (scr_progressbar_width > 0 || fade_end_time <= cls.realtime)
+	// Disable fade when we are loading something, fade-in animation ended or Com_Error() was called.
+	if (scr_progressbar_width > 0 || fade_end_time <= cls.realtime || Com_GetLastError() != 0)
 	{
 		draw_fade = false;
 		return;
