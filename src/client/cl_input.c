@@ -792,6 +792,11 @@ static void CL_AdjustAngles(void)
 	cl.delta_inputangles[PITCH] += CL_KeyState(&in_lookdown) * scaler;
 }
 
+qboolean CL_IgnoreInput(void) //mxd
+{
+	return (cl.frame.playerstate.cinematicfreeze || cl.frame.playerstate.remote_id != REMOTE_ID_NONE);
+}
+
 // Send the intended movement message to the server. Called on packetframe or renderframe.
 void CL_BaseMove(usercmd_t* cmd)
 {
@@ -799,6 +804,9 @@ void CL_BaseMove(usercmd_t* cmd)
 
 	VectorCopy(cl.delta_inputangles, cl.old_delta_inputangles);
 	VectorClear(cl.delta_inputangles);
+
+	if (CL_IgnoreInput()) //mxd. Skip when looking through remote camera.
+		return;
 
 	CL_AdjustAngles();
 
@@ -824,61 +832,65 @@ void CL_BaseMove(usercmd_t* cmd)
 static void CL_FinishMove(usercmd_t* cmd) // Called on packetframe.
 {
 	// Figure button bits.
+	if (!CL_IgnoreInput()) //mxd. Skip when looking through remote camera.
+	{
+		// He attac.
+		if ((in_attack.state & (KS_DOWN | KS_IMPULSE_DOWN)))
+			cmd->buttons |= BUTTON_ATTACK;
 
-	// He attac.
-	if (in_attack.state & (KS_DOWN | KS_IMPULSE_DOWN))
-		cmd->buttons |= BUTTON_ATTACK;
+		// But also protec.
+		if (in_defend.state & KS_IMPULSE_DOWN) //TODO: why no KS_DOWN check here?..
+			cmd->buttons |= BUTTON_DEFEND;
+
+		// Action.
+		if (in_action.state & (KS_DOWN | KS_IMPULSE_DOWN))
+			cmd->buttons |= BUTTON_ACTION;
+
+		// Run.
+		//mxd. BUTTON_RUN logic is intentionally flipped when moving backwards (walk back when running (there's no 'run backwards' animation), backflip when walking)...
+		if (((in_speed.state & (KS_DOWN | KS_IMPULSE_DOWN)) != (int)cl_run->value) ^ (cmd->forwardmove < 0))
+			cmd->buttons |= BUTTON_RUN;
+
+		// Creep.
+		if (in_creep.state & (KS_DOWN | KS_IMPULSE_DOWN))
+		{
+			cmd->buttons &= ~BUTTON_RUN; //mxd. No creep-running allowed (breaks creep forward-strafing...).
+			cmd->buttons |= BUTTON_CREEP;
+		}
+
+		// Autoaim.
+		const qboolean do_autoaim = (cl_autoaim->value > 0.0f); //mxd
+		if ((qboolean)(in_autoaim.state & (KS_DOWN | KS_IMPULSE_DOWN)) != do_autoaim)
+			cmd->buttons |= BUTTON_AUTOAIM;
+
+		in_do_autoaim = (cmd->buttons & BUTTON_AUTOAIM);
+
+		// TR-style look around.
+		if (in_lookaround.state & (KS_DOWN | KS_IMPULSE_DOWN))
+			cmd->buttons |= BUTTON_LOOKAROUND;
+
+		// TR-style quick-turn.
+		if (in_quickturn.state & (KS_DOWN | KS_IMPULSE_DOWN))
+		{
+			cmd->buttons |= BUTTON_QUICKTURN;
+			if (quickturn_time == 0.0f)
+				quickturn_time = 0.5f;
+		}
+
+		// Open inventory.
+		if (in_inventory.state & (KS_DOWN | KS_IMPULSE_DOWN))
+			cmd->buttons |= BUTTON_INVENTORY;
+	}
+
+	// Clear processed keystates.
 	in_attack.state &= ~KS_IMPULSE_DOWN;
-
-	// But also protec.
-	if (in_defend.state & KS_IMPULSE_DOWN) //TODO: why no KS_DOWN check here?..
-		cmd->buttons |= BUTTON_DEFEND;
 	in_defend.state &= ~KS_IMPULSE_DOWN;
-
-	// Action.
-	if ((in_action.state & (KS_DOWN | KS_IMPULSE_DOWN)) && !cl.frame.playerstate.cinematicfreeze)
-		cmd->buttons |= BUTTON_ACTION;
 	in_action.state &= ~KS_IMPULSE_DOWN;
-
-	// Run.
-	//mxd. BUTTON_RUN logic is intentionally flipped when moving backwards (walk back when running (there's no 'run backwards' animation), backflip when walking)...
-	if (((in_speed.state & (KS_DOWN | KS_IMPULSE_DOWN)) != (int)cl_run->value) ^ (cmd->forwardmove < 0))
-		cmd->buttons |= BUTTON_RUN;
 	in_speed.state &= ~KS_IMPULSE_DOWN;
-
-	// Creep.
-	if (in_creep.state & (KS_DOWN | KS_IMPULSE_DOWN))
-	{
-		cmd->buttons &= ~BUTTON_RUN; //mxd. No creep-running allowed (breaks creep forward-strafing...).
-		cmd->buttons |= BUTTON_CREEP;
-	}
 	in_creep.state &= ~KS_IMPULSE_DOWN;
-
-	// Autoaim.
-	const qboolean do_autoaim = (cl_autoaim->value > 0.0f); //mxd
-	if ((qboolean)(in_autoaim.state & (KS_DOWN | KS_IMPULSE_DOWN)) != do_autoaim)
-		cmd->buttons |= BUTTON_AUTOAIM;
 	in_autoaim.state &= ~KS_IMPULSE_DOWN;
-
-	in_do_autoaim = (cmd->buttons & BUTTON_AUTOAIM);
-
-	// TR-style look around.
-	if (in_lookaround.state & (KS_DOWN | KS_IMPULSE_DOWN))
-		cmd->buttons |= BUTTON_LOOKAROUND;
 	in_lookaround.state &= ~KS_IMPULSE_DOWN;
-
-	// TR-style quick-turn.
-	if (in_quickturn.state & (KS_DOWN | KS_IMPULSE_DOWN))
-	{
-		cmd->buttons |= BUTTON_QUICKTURN;
-		if (quickturn_time == 0.0f)
-			quickturn_time = 0.5f;
-	}
 	in_quickturn.state &= ~KS_IMPULSE_DOWN;
-
-	// Open inventory.
-	if (in_inventory.state & (KS_DOWN | KS_IMPULSE_DOWN))
-		cmd->buttons |= BUTTON_INVENTORY;
 	in_inventory.state &= ~KS_IMPULSE_DOWN;
 
 	if (anykeydown > 0 && cls.key_dest == key_game)
@@ -895,7 +907,7 @@ static void CL_FinalizeCmd(void) // YQ2. Called on packetframe.
 	// CMD to fill.
 	usercmd_t* cmd = &cl.cmds[cls.netchan.outgoing_sequence & (CMD_BACKUP - 1)];
 
-	if (cl.frame.playerstate.cinematicfreeze || cl.frame.playerstate.remote_id != REMOTE_ID_NONE) // H2 //mxd. Also when looking through remote camera.
+	if (cl.frame.playerstate.cinematicfreeze) // H2
 	{
 		memset(cmd, 0, sizeof(*cmd));
 
