@@ -1111,7 +1111,7 @@ void Key_Event(int key, const qboolean down, const uint time)
 	{
 		shift_down = down;
 	}
-	else if (key == '`' || key == '~') // Console key is hardcoded, so the user can never unbind it.
+	else if (keybindings[key] != NULL && strcmp(keybindings[key], "toggleconsole") == 0) //mxd. Console key needs specific handling...
 	{
 		if (down)
 			Con_ToggleConsole_f();
