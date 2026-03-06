@@ -16,6 +16,7 @@ extern void RI_AddDebugLabel(const vec3_t origin, paletteRGBA_t color, float lif
 extern void RI_AddDebugEntityLabel(const struct edict_s* ent, paletteRGBA_t color, const char* label);
 extern void RI_AddDebugLine(const vec3_t start, const vec3_t end, paletteRGBA_t color, float lifetime);
 extern void RI_AddDebugArrow(const vec3_t start, const vec3_t end, paletteRGBA_t color, float lifetime);
+extern void RI_AddDebugDirection(const vec3_t start, const vec3_t direction, float size, paletteRGBA_t color, float lifetime);
 extern void RI_AddDebugAngles(const vec3_t start, const vec3_t angles_deg, float size, paletteRGBA_t color, float lifetime);
 extern void RI_AddDebugAnglesRad(const vec3_t start, const vec3_t angles_rad, float size, paletteRGBA_t color, float lifetime);
 extern void RI_AddDebugMarker(const vec3_t center, float size, paletteRGBA_t color, float lifetime);
