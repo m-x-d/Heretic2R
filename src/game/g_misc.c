@@ -1155,25 +1155,37 @@ static void MiscRemoteCameraRemove(edict_t* self) //mxd. Named 'remove_camera' i
 		G_FreeEdict(self);
 }
 
-static void MiscRemoteCameraUpdateViewangles(const edict_t* self) //mxd. Added to reduce code duplication.
+static void MiscRemoteCameraUpdateViewangles(edict_t* self) //mxd. Added to reduce code duplication.
 {
+	// Find my target entity.
+	self->targetEnt = G_Find(NULL, FOFS(targetname), self->target);
+
+	if (self->targetEnt == NULL)
+		return;
+
+	// Calculate the angles from myself to my target.
+	vec3_t forward;
+	VectorSubtract(self->targetEnt->s.origin, self->s.origin, forward);
+	VectorNormalize(forward);
+	vectoangles(forward, self->s.angles);
+	self->s.angles[PITCH] *= -1.0f; //TODO: fix this inconsistency...
+
+	// Update the angles on client(s).
 	if (self->spawnflags & SF_ACTIVATING)
 	{
 		// Just for the activator.
 		if (self->activator->client->RemoteCameraNumber == self->s.number)
-			for (int i = 0; i < 3; i++)
-				self->activator->client->ps.remote_viewangles[i] = self->s.angles[i];
+			VectorCopy(self->s.angles, self->activator->client->ps.remote_viewangles);
 	}
 	else
 	{
 		// For all clients.
-		for (int i = 0; i < game.maxclients; i++)
+		for (int i = 1; i <= game.maxclients; i++)
 		{
-			const edict_t* client = &g_edicts[i + 1];
+			const edict_t* client = &g_edicts[i];
 
 			if (client->inuse && client->client->RemoteCameraNumber == self->s.number)
-				for (int j = 0; j < 3; j++)
-					client->client->ps.remote_viewangles[j] = self->s.angles[j];
+				VectorCopy(self->s.angles, client->client->ps.remote_viewangles);
 		}
 	}
 }
@@ -1216,20 +1228,7 @@ void MiscRemoteCameraThink(edict_t* self) //mxd. Named 'misc_remote_camera_think
 	}
 
 	// Find my target entity and then orientate myself to look at it.
-	self->targetEnt = G_Find(NULL, FOFS(targetname), self->target);
-
-	if (self->targetEnt != NULL)
-	{
-		// Calculate the angles from myself to my target.
-		vec3_t forward;
-		VectorSubtract(self->targetEnt->s.origin, self->s.origin, forward);
-		VectorNormalize(forward);
-		vectoangles(forward, self->s.angles);
-		self->s.angles[PITCH] = -self->s.angles[PITCH];
-
-		// Update the angles on client(s).
-		MiscRemoteCameraUpdateViewangles(self); //mxd
-	}
+	MiscRemoteCameraUpdateViewangles(self); //mxd
 
 	// Think again or remove myself?
 	if (self->spawnflags & SF_SCRIPTED)
@@ -1309,15 +1308,6 @@ void MiscRemoteCameraUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 	}
 
 	// Find my target entity and then orientate myself to look at it.
-	self->targetEnt = G_Find(NULL, FOFS(targetname), self->target);
-
-	vec3_t forward;
-	VectorSubtract(self->targetEnt->s.origin, self->s.origin, forward);
-	VectorNormalize(forward);
-	vectoangles(forward, self->s.angles);
-	self->s.angles[PITCH] *= -1.0f;
-
-	// Update the angles on client(s).
 	MiscRemoteCameraUpdateViewangles(self); //mxd
 
 	// Setup next think stuff.
