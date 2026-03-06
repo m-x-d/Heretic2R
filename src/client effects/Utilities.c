@@ -354,7 +354,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	}
 
 	// When in slime.
-	if (trace->contents & CONTENTS_SLIME && !(self->SpawnInfo & SIF_INMUCK))
+	if ((trace->contents & CONTENTS_SLIME) && !(self->SpawnInfo & SIF_INMUCK))
 	{
 		if (self->flags & CEF_FLAG6)
 		{
@@ -397,7 +397,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	}
 
 	// When in lava.
-	if (trace->contents & CONTENTS_LAVA && !(self->SpawnInfo & SIF_INLAVA))
+	if ((trace->contents & CONTENTS_LAVA) && !(self->SpawnInfo & SIF_INLAVA))
 	{
 		self->flags &= ~CEF_FLAG6;
 		self->SpawnInfo |= SIF_INLAVA; // In lava now, continue to burn.
