@@ -1064,7 +1064,8 @@ REF_DECLSPEC refexport_t GetRefAPI(const refimport_t rimp)
 
 	re.AddDebugLine = RI_AddDebugLine;
 	re.AddDebugArrow = RI_AddDebugArrow;
-	re.AddDebugDirection = RI_AddDebugDirection;
+	re.AddDebugAngles = RI_AddDebugAngles;
+	re.AddDebugAnglesRad = RI_AddDebugAnglesRad;
 	re.AddDebugMarker = RI_AddDebugMarker;
 
 	re.FreeDebugPrimitives = R_FreeDebugPrimitives;

@@ -310,13 +310,18 @@ void RI_AddDebugArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t 
 	}
 }
 
-void RI_AddDebugDirection(const vec3_t start, const vec3_t angles_deg, const float size, const paletteRGBA_t color, const float lifetime)
+void RI_AddDebugAngles(const vec3_t start, const vec3_t angles_deg, const float size, const paletteRGBA_t color, const float lifetime)
 {
 	vec3_t angles;
 	VectorScale(angles_deg, ANGLE_TO_RAD, angles);
 
+	RI_AddDebugAnglesRad(start, angles, size, color, lifetime);
+}
+
+void RI_AddDebugAnglesRad(const vec3_t start, const vec3_t angles_rad, const float size, const paletteRGBA_t color, const float lifetime)
+{
 	vec3_t end;
-	DirFromAngles(angles, end);
+	DirFromAngles(angles_rad, end);
 	VectorMA(start, size, end, end);
 
 	RI_AddDebugArrow(start, end, color, lifetime);
