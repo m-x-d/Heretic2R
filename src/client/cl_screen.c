@@ -911,7 +911,7 @@ static void SCR_ExecuteLayoutString(char* s)
 // The status bar is a small layout program that is based on the stats array.
 static void SCR_DrawStats(void)
 {
-	if ((int)scr_statbar->value && !cl.frame.playerstate.cinematicfreeze) // H2: extra checks
+	if ((int)scr_statbar->value && !CL_IgnoreInput()) // H2: extra checks //mxd. Skip when looking through remote camera.
 		SCR_ExecuteLayoutString(cl.configstrings[CS_STATUSBAR]);
 }
 
