@@ -668,3 +668,12 @@ void SkyFly(edict_t* self) //mxd. Defined in g_misc.c in original logic. //TODO:
 {
 	G_SetToFree(self);
 }
+
+//mxd
+qboolean SkipClientInput(const edict_t* self)
+{
+	const gclient_t* cl = self->client;
+	assert(cl != NULL);
+
+	return (SV_CINEMATICFREEZE || cl->RemoteCameraLockCount != 0);
+}

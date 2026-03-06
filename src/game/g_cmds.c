@@ -19,6 +19,7 @@
 #include "p_view.h" //mxd
 #include "Random.h"
 #include "Vector.h"
+#include "Utilities.h"
 #include "g_local.h"
 
 qboolean self_spawn; // True when spawned manually using 'spawn' ccmd.
@@ -119,7 +120,7 @@ qboolean OnSameTeam(const edict_t* ent1, const edict_t* ent2)
 
 static void SelectNextItem(const edict_t* ent, const int item_flags)
 {
-	if (SV_CINEMATICFREEZE)
+	if (SkipClientInput(ent)) //mxd. SV_CINEMATICFREEZE -> SkipClientInput().
 		return;
 
 	gclient_t* cl = ent->client;
@@ -145,7 +146,7 @@ static void SelectNextItem(const edict_t* ent, const int item_flags)
 
 static void SelectPrevItem(const edict_t* ent, const int item_flags)
 {
-	if (SV_CINEMATICFREEZE)
+	if (SkipClientInput(ent)) //mxd. SV_CINEMATICFREEZE -> SkipClientInput().
 		return;
 
 	gclient_t* cl = ent->client;
@@ -505,7 +506,7 @@ void Cmd_Use_f(edict_t* ent, char* name)
 {
 	qboolean cast_me;
 
-	if (SV_CINEMATICFREEZE)
+	if (SkipClientInput(ent)) //mxd. SV_CINEMATICFREEZE -> SkipClientInput().
 		return;
 
 	assert(ent != NULL && ent->client != NULL);
@@ -597,7 +598,7 @@ void Cmd_WeapPrev_f(const edict_t* ent)
 {
 	gclient_t* cl = ent->client;
 
-	if (cl->playerinfo.pers.weapon == NULL || SV_CINEMATICFREEZE)
+	if (cl->playerinfo.pers.weapon == NULL || SkipClientInput(ent)) //mxd. SV_CINEMATICFREEZE -> SkipClientInput().
 		return;
 
 	const int selected_weapon = ITEM_INDEX(cl->playerinfo.pers.weapon);
@@ -630,7 +631,7 @@ static void Cmd_WeapNext_f(const edict_t* ent)
 {
 	gclient_t* cl = ent->client;
 
-	if (!cl->playerinfo.pers.weapon || SV_CINEMATICFREEZE)
+	if (cl->playerinfo.pers.weapon == NULL || SkipClientInput(ent)) //mxd. SV_CINEMATICFREEZE -> SkipClientInput().
 		return;
 
 	const int selected_weapon = ITEM_INDEX(cl->playerinfo.pers.weapon);
@@ -661,7 +662,7 @@ static void Cmd_WeapNext_f(const edict_t* ent)
 
 static void Cmd_WeapLast_f(const edict_t* ent)
 {
-	if (SV_CINEMATICFREEZE)
+	if (SkipClientInput(ent)) //mxd. SV_CINEMATICFREEZE -> SkipClientInput().
 		return;
 
 	gclient_t* cl = ent->client;
@@ -683,7 +684,7 @@ static void Cmd_WeapLast_f(const edict_t* ent)
 
 static void Cmd_DefPrev_f(const edict_t* ent)
 {
-	if (SV_CINEMATICFREEZE)
+	if (SkipClientInput(ent)) //mxd. SV_CINEMATICFREEZE -> SkipClientInput().
 		return;
 
 	gclient_t* cl = ent->client;
@@ -717,7 +718,7 @@ static void Cmd_DefPrev_f(const edict_t* ent)
 
 static void Cmd_DefNext_f(const edict_t* ent)
 {
-	if (SV_CINEMATICFREEZE)
+	if (SkipClientInput(ent)) //mxd. SV_CINEMATICFREEZE -> SkipClientInput().
 		return;
 
 	gclient_t* cl = ent->client;

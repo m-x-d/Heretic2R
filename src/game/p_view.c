@@ -15,6 +15,7 @@
 #include "FX.h"
 #include "Random.h"
 #include "Vector.h"
+#include "Utilities.h"
 #include "g_local.h" //mxd
 
 static float bob_move;
@@ -143,7 +144,7 @@ void SetupPlayerinfo(edict_t* ent)
 	// NOTE: THIS IS HIGHLY SUBJECTIVE. REQUIRES VIGOUROUS TESTING.
 	// Basically, just killing all buttons pressed while a cinematic is running - Probably not the best way to do this -- Jake 9/28/98.
 	// Need to re-get this constantly, since it changes on the fly.
-	if (SV_CINEMATICFREEZE)
+	if (SkipClientInput(ent)) //mxd. SV_CINEMATICFREEZE -> SkipClientInput().
 	{
 		ent->client->pcmd.buttons = 0;
 		ent->client->pcmd.sidemove = 0;

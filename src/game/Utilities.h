@@ -31,3 +31,5 @@ extern qboolean ThinkTime(const edict_t* self);
 extern void SpawnClientAnim(edict_t* self, byte type, const char* sound);
 extern qboolean EntReflecting(const edict_t* ent, qboolean check_monster, qboolean check_player);
 extern void SkyFly(edict_t* self);
+
+extern qboolean SkipClientInput(const edict_t* self); //mxd
