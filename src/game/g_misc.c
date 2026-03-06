@@ -1178,25 +1178,23 @@ static void MiscRemoteCameraUpdateViewangles(const edict_t* self) //mxd. Added t
 	}
 }
 
-static void MiscRemoteCameraUpdateVieworigin(const edict_t* self) //mxd. Added to reduce code duplication.
+static void MiscRemoteCameraUpdateVieworigin(const edict_t* self, const qboolean force) //mxd. Added to reduce code duplication.
 {
 	if (self->spawnflags & SF_ACTIVATING)
 	{
 		// Just for the activator.
-		if (self->activator->client->RemoteCameraNumber == self->s.number)
-			for (int i = 0; i < 3; i++)
-				self->activator->client->ps.remote_vieworigin[i] = self->s.origin[i] * 8.0f;
+		if (force || self->activator->client->RemoteCameraNumber == self->s.number)
+			VectorScale(self->s.origin, 8.0f, self->activator->client->ps.remote_vieworigin);
 	}
 	else
 	{
 		// For all clients.
-		for (int i = 0; i < game.maxclients; i++)
+		for (int i = 1; i <= game.maxclients; i++)
 		{
-			const edict_t* client = &g_edicts[i + 1];
+			const edict_t* client = &g_edicts[i];
 
-			if (client->inuse && client->client->RemoteCameraNumber == self->s.number)
-				for (int j = 0; j < 3; j++)
-					client->client->ps.remote_vieworigin[j] = self->s.origin[j] * 8.0f;
+			if (force || (client->inuse && client->client->RemoteCameraNumber == self->s.number))
+				VectorScale(self->s.origin, 8.0f, client->client->ps.remote_vieworigin);
 		}
 	}
 }
@@ -1214,7 +1212,7 @@ void MiscRemoteCameraThink(edict_t* self) //mxd. Named 'misc_remote_camera_think
 			VectorCopy(self->misc_remote_camera_owner->s.origin, self->s.origin);
 
 		// Update the position on client(s).
-		MiscRemoteCameraUpdateVieworigin(self); //mxd
+		MiscRemoteCameraUpdateVieworigin(self, false); //mxd
 	}
 
 	// Find my target entity and then orientate myself to look at it.
@@ -1293,24 +1291,7 @@ void MiscRemoteCameraUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 		self->misc_remote_camera_owner = NULL;
 
 		// I am static, so set up my position (which will not change hereafter).
-		if (self->spawnflags & SF_ACTIVATING)
-		{
-			// Just for the activator.
-			for (int i = 0; i < 3; i++)
-				self->activator->client->ps.remote_vieworigin[i] = self->s.origin[i] * 8.0f;
-		}
-		else
-		{
-			// For all clients.
-			for (int i = 0; i < game.maxclients; i++)
-			{
-				const edict_t* client = &g_edicts[i + 1];
-
-				if (client->inuse)
-					for (int j = 0; j < 3; j++)
-						client->client->ps.remote_vieworigin[j] = self->s.origin[j] * 8.0f;
-			}
-		}
+		MiscRemoteCameraUpdateVieworigin(self, true); //mxd
 	}
 	else
 	{
@@ -1323,7 +1304,7 @@ void MiscRemoteCameraUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 				VectorCopy(self->misc_remote_camera_owner->s.origin, self->s.origin);
 
 			// Update the position on client(s).
-			MiscRemoteCameraUpdateVieworigin(self); //mxd
+			MiscRemoteCameraUpdateVieworigin(self, false); //mxd
 		}
 	}
 
