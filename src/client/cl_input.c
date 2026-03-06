@@ -895,7 +895,7 @@ static void CL_FinalizeCmd(void) // YQ2. Called on packetframe.
 	// CMD to fill.
 	usercmd_t* cmd = &cl.cmds[cls.netchan.outgoing_sequence & (CMD_BACKUP - 1)];
 
-	if (cl.frame.playerstate.cinematicfreeze) // H2
+	if (cl.frame.playerstate.cinematicfreeze || cl.frame.playerstate.remote_id != REMOTE_ID_NONE) // H2 //mxd. Also when looking through remote camera.
 	{
 		memset(cmd, 0, sizeof(*cmd));
 
