@@ -1205,13 +1205,13 @@ void MiscRemoteCameraThink(edict_t* self) //mxd. Named 'misc_remote_camera_think
 {
 	// Attempt to find my owner entity (i.e. what I'm fixed to). If nothing is found, then my position will remain unchanged.
 	if (self->pathtarget != NULL)
-		self->enemy = G_Find(NULL, FOFS(targetname), self->pathtarget);
+		self->misc_remote_camera_owner = G_Find(NULL, FOFS(targetname), self->pathtarget);
 
-	if (self->enemy != NULL || (self->spawnflags & SF_SCRIPTED))
+	if (self->misc_remote_camera_owner != NULL || (self->spawnflags & SF_SCRIPTED))
 	{
 		// I am attached to another (possibly moving) entity, so update my position.
-		if (self->enemy != NULL)
-			VectorCopy(self->enemy->s.origin, self->s.origin);
+		if (self->misc_remote_camera_owner != NULL)
+			VectorCopy(self->misc_remote_camera_owner->s.origin, self->s.origin);
 
 		// Update the position on client(s).
 		MiscRemoteCameraUpdateVieworigin(self); //mxd
@@ -1290,20 +1290,18 @@ void MiscRemoteCameraUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 	// If nothing is found, then I am a static camera so set up my position here (it will remain unchanged hereafter).
 	if (self->pathtarget == NULL)
 	{
+		self->misc_remote_camera_owner = NULL;
+
 		// I am static, so set up my position (which will not change hereafter).
 		if (self->spawnflags & SF_ACTIVATING)
 		{
 			// Just for the activator.
-			self->enemy = NULL;
-
 			for (int i = 0; i < 3; i++)
 				self->activator->client->ps.remote_vieworigin[i] = self->s.origin[i] * 8.0f;
 		}
 		else
 		{
 			// For all clients.
-			self->enemy = NULL;
-
 			for (int i = 0; i < game.maxclients; i++)
 			{
 				const edict_t* client = &g_edicts[i + 1];
@@ -1316,13 +1314,13 @@ void MiscRemoteCameraUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 	}
 	else
 	{
-		self->enemy = G_Find(NULL, FOFS(targetname), self->pathtarget);
+		self->misc_remote_camera_owner = G_Find(NULL, FOFS(targetname), self->pathtarget);
 
-		if (self->enemy != NULL || (self->spawnflags & SF_SCRIPTED))
+		if (self->misc_remote_camera_owner != NULL || (self->spawnflags & SF_SCRIPTED))
 		{
 			// I am attached to another (possibly moving) entity, so update my position.
-			if (self->enemy != NULL)
-				VectorCopy(self->enemy->s.origin, self->s.origin);
+			if (self->misc_remote_camera_owner != NULL)
+				VectorCopy(self->misc_remote_camera_owner->s.origin, self->s.origin);
 
 			// Update the position on client(s).
 			MiscRemoteCameraUpdateVieworigin(self); //mxd
@@ -1357,7 +1355,7 @@ void MiscRemoteCameraUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 // target		- Holds the name of the entity to be looked at.
 void SP_misc_remote_camera(edict_t* self)
 {
-	self->enemy = NULL;
+	self->misc_remote_camera_owner = NULL;
 	self->targetEnt = NULL;
 
 	if (self->target == NULL)
