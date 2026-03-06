@@ -742,8 +742,8 @@ static void SV_FatPVS(vec3_t org)
 
 	for (int i = 0; i < 3; i++)
 	{
-		mins[i] = org[i] - 8;
-		maxs[i] = org[i] + 8;
+		mins[i] = org[i] - 8.0f;
+		maxs[i] = org[i] + 8.0f;
 	}
 
 	const int count = CM_BoxLeafnums(mins, maxs, leafs, 64, NULL);
@@ -801,8 +801,6 @@ static void AddClientEntity(const client_t* client, client_frame_t* frame, edict
 // Decides which entities are going to be visible to the client, and copies off the playerstate and areabits.
 void SV_BuildClientFrame(client_t* client)
 {
-	vec3_t org;
-
 	const edict_t* cl_ent = client->edict;
 
 	if (cl_ent->client == NULL)
@@ -813,6 +811,7 @@ void SV_BuildClientFrame(client_t* client)
 	frame->senttime = svs.realtime;
 
 	// Find the client's PVS.
+	vec3_t org;
 	if (cl_ent->client->ps.remote_id != REMOTE_ID_NONE) // H2. When looking through remote camera.
 		SHORT2VEC(cl_ent->client->ps.remote_vieworigin, org); //mxd. Use define.
 	else
