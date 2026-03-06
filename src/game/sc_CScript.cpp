@@ -89,8 +89,8 @@ static int msg_animtype[NUM_MESSAGES] =
 	MSG_C_ATTACK5,
 };
 
-#define MAX_CINEMATIC_SOUNDS	255 //mxd. Named 'MAX_CINESNDS' in original logic.
-#define MAX_INSTRUCTIONS		500 //mxd. Named 'INSTRUCTION_MAX' in original logic.
+constexpr int MAX_CINEMATIC_SOUNDS = 255; //mxd. Named 'MAX_CINESNDS' in original logic.
+constexpr int MAX_INSTRUCTIONS = 500; //mxd. Named 'INSTRUCTION_MAX' in original logic.
 
 typedef struct CinematicSound_s
 {
