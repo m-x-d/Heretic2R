@@ -2290,6 +2290,8 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 		client->ps.pmove.pm_type = PM_GIB;
 	else if (ent->dead_state != DEAD_NO)
 		client->ps.pmove.pm_type = PM_DEAD;
+	else if (client->RemoteCameraLockCount != 0) //mxd. Avoid moving while looking through remote camera.
+		client->ps.pmove.pm_type = PM_FREEZE;
 	else
 		client->ps.pmove.pm_type = PM_NORMAL;
 
