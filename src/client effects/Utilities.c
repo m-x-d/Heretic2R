@@ -186,27 +186,18 @@ qboolean GetWaterNormal(const vec3_t origin, const float radius, const float max
 	return true;
 }
 
-static void FizzleEffect(const client_entity_t* self, vec3_t surface_top, vec3_t normal)
+static void FizzleEffect(const client_entity_t* self, const vec3_t surface_top, const vec3_t normal)
 {
 	if (self != NULL && self->dlight != NULL)
 		self->dlight->intensity = 0; // Lights out.
 
-	char* snd_name;
-	if (irand(0, 3))
-		snd_name = va("ambient/lavadrop%i.wav", irand(1, 3));
-	else
-		snd_name = "misc/lavaburn.wav";
-
-	fxi.S_StartSound(surface_top, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
+	const char* snd_name = va("ambient/lavadrop%i.wav", irand(1, 3)); //mxd. Original logic also plays "misc/lavaburn.wav" here.
+	fxi.S_StartSound(surface_top, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), flrand(0.25f, 0.75f), ATTN_IDLE, 0.0f);
 
 	const int num_puffs = GetScaledCount(irand(2, 5), 0.3f);
 	for (int i = 0; i < num_puffs; i++)
 	{
-		vec3_t spot;
-		spot[0] = surface_top[0] + flrand(-3.0f, 3.0f);
-		spot[1] = surface_top[1] + flrand(-3.0f, 3.0f);
-		spot[2] = surface_top[2] + flrand(0.0f, 3.0f);
-
+		const vec3_t spot = VEC3_INITA(surface_top, flrand(-3.0f, 3.0f), flrand(-3.0f, 3.0f), flrand(0.0f, 3.0f));
 		FXDarkSmoke(spot, flrand(0.2f, 0.5f), flrand(30.0f, 50.0f));
 	}
 
