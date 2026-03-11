@@ -103,10 +103,12 @@
 //mxd. Trace flags (used by fxi.Trace() / CL_Trace()). Part of CEF_ flags in original logic.
 
 // NOTE: CTF_CLIP_TO_BMODELS / CTF_CLIP_TO_ENTITIES only clip against entities in the current frame, not all entities in the world.
-#define CTF_CLIP_TO_WORLD		0x00000001	// Turns on collision detection with the world model. Entity needs to have a message handler in order to receive MSG_COLLISION.
-#define CTF_CLIP_TO_BMODELS		0x00000002	// Turns on collision detection with brush models. 
-#define CTF_CLIP_TO_ENTITIES	0x00000004	// Turns on collision detection with server entities (not client-only entities).
-#define CTF_IGNORE_PLAYER		0x00000008	// Turns off collision detection with player.
+#define CTF_CLIP_TO_WORLD			0x00000001	// Turns on collision detection with the world model. Entity needs to have a message handler in order to receive MSG_COLLISION.
+#define CTF_CLIP_TO_BMODELS			0x00000002	// Turns on collision detection with brush models. 
+#define CTF_CLIP_TO_ENTITIES		0x00000004	// Turns on collision detection with server entities (not client-only entities).
+#define CTF_IGNORE_PLAYER			0x00000008	// Turns off collision detection with player.
+#define CTF_ALWAYS_CHECK_CONTENTS	0x00000010	// When set, sets trace contents via PointContents() on endpos when fraction is 0 or 1
+												// (by default, contents are CONTENTS_EMPTY or CONTENTS_SOLID when startsolid/fraction:0 or CONTENTS_EMPTY when fraction:1).
 
 //mxd. Legacy flags for compatibility reasons.
 #define CTF_CLIP_TO_WORLD_LEGACY	0x08000000 // CEF_CLIP_TO_WORLD in original logic. Converted to CTF_CLIP_TO_WORLD in CL_Trace().

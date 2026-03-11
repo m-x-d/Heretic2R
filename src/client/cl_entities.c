@@ -1169,6 +1169,15 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 		if (t->fraction < 1.0f)
 			t->ent = (struct edict_s*)(-1);
 
+		//mxd. By default, contents are CONTENTS_EMPTY or CONTENTS_SOLID when startsolid/fraction:0 or CONTENTS_EMPTY when fraction:1.
+		if ((flags & CTF_ALWAYS_CHECK_CONTENTS) && (t->fraction == 0.0f || t->fraction == 1.0f))
+		{
+			if (flags & CTF_CLIP_TO_BMODELS)
+				t->contents |= CL_PMpointcontents(t->endpos);
+			else
+				t->contents |= CM_PointContents(t->endpos, 0);
+		}
+
 		if (t->startsolid || t->allsolid)
 			return;
 	}
