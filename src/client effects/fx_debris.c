@@ -262,13 +262,11 @@ static void Debris_UpdateAngles(client_entity_t* self)
 
 #pragma region ========================== Body Part spawn functions ==========================
 
-static qboolean BodyPartAttachedUpdate(client_entity_t* self, centity_t* owner)
+static qboolean BodyPartAttachedUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXBodyPartAttachedUpdate' in original logic.
 {
 	VectorCopy(owner->lerp_origin, self->r.origin);
-	VectorSet(self->r.angles,
-		-owner->lerp_angles[0] * ANGLE_TO_RAD,
-		owner->lerp_angles[1] * ANGLE_TO_RAD,
-		owner->lerp_angles[1] * ANGLE_TO_RAD);
+	VectorScale(owner->lerp_angles, ANGLE_TO_RAD, self->r.angles);
+	self->r.angles[0] *= -1.0f;
 
 	//mxd. Update trails at 20 FPS...
 	if (fx_time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL)
