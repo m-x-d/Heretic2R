@@ -479,8 +479,23 @@ void FXBodyPart(centity_t* owner, const int type, const int flags, vec3_t origin
 
 qboolean FXDebris_Vanish(client_entity_t* self, centity_t* owner)
 {
+#define INLAVA_SMOKE_MAX_DIST	8.0f //mxd
+
 	if (self->SpawnInfo & SIF_INLAVA)
-		FXDarkSmoke(self->r.origin, flrand(0.2f, 0.5f), flrand(30.0f, 50.0f));
+	{
+		//mxd. Scale FX by distance from us to lava surface.
+		vec3_t diff;
+		VectorSubtract(self->r.origin, self->debris_smoke_pos, diff);
+		const float dist = VectorLength(diff);
+
+		if (dist < INLAVA_SMOKE_MAX_DIST * self->radius)
+		{
+			const float scaler = 0.1f + (dist / (INLAVA_SMOKE_MAX_DIST * self->radius)) * 0.9f;
+
+			if (irand(0, 9) < 5 && flrand(0.0f, 1.0f) < scaler)
+				FXDarkSmoke(self->debris_smoke_pos, flrand(0.2f, 0.5f) * scaler, flrand(30.0f, 50.0f) * scaler); //mxd. Use debris_smoke_pos.
+		}
+	}
 
 	if (self->alpha < 0.1f || self->r.scale < 0.1f)
 	{

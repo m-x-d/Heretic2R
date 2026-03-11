@@ -397,6 +397,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		self->flags &= ~CEF_FLAG6;
 		self->SpawnInfo |= SIF_INLAVA; // In lava now, continue to burn.
 
+		VectorMA(surf_trace.endpos, 8.0f, surf_trace.plane.normal, self->debris_smoke_pos); //mxd. Don't let smoke sink with us...
 		self->d_scale = -0.4f; // H2: -0.2.
 		self->Update = FXDebris_Vanish;
 		self->nextThinkTime = fx_time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fx_time in UpdateEffects()).

@@ -54,6 +54,7 @@ typedef struct client_entity_s
 	{
 		vec3_t direction;
 		vec3_t startpos;
+		vec3_t debris_smoke_pos; //mxd
 	};
 
 	union
