@@ -215,13 +215,13 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	if (self->SpawnInfo & SIF_INWATER)
 	{
 		// Leave several bubbles?
-		d_time *= 0.5f;
-		d_time2 *= 0.5f;
+		d_time *= 0.2f; // H2: 0.5
+		d_time2 *= 0.2f; // H2: 0.5
 	}
 	else if (self->SpawnInfo & SIF_INLAVA)
 	{
-		d_time *= 0.01f;
-		d_time2 *= 0.01f;
+		d_time *= 0.03f; // H2: 0.01
+		d_time2 *= 0.03f; // H2: 0.01
 	}
 	else if (self->SpawnInfo & SIF_INMUCK)
 	{
@@ -241,20 +241,11 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	const vec3_t mins = { -self->radius, -self->radius, -self->radius };
 	const vec3_t maxs = {  self->radius,  self->radius,  self->radius };
 
-	fxi.Trace(r->origin, mins, maxs, end, MASK_SHOT | MASK_WATER, self->clip_flags, trace); //mxd. Use clip_flags.
+	//mxd. Don't use MASK_WATER flag (because it results in startsolid trace when we are in liquid).
+	//mxd. trace.contents holds accurate contents regardless of trace results because of CTF_ALWAYS_CHECK_CONTENTS flag.
+	fxi.Trace(r->origin, mins, maxs, end, MASK_SHOT, self->clip_flags, trace); //mxd. Use clip_flags.
 
-	//mxd. Update velocity regardless of trace results (but only when called from UpdateEffects()).
-	if (update_velocity)
-		VectorMA(self->velocity, d_time, self->acceleration, self->velocity);
-
-	// Trace hit nothing. Can move full distance.
-	if (trace->fraction == 1.0f || trace->allsolid || trace->startsolid || Vec3IsZeroEpsilon(trace->plane.normal))
-	{
-		VectorCopy(end, r->origin);
-		return false;
-	}
-
-	if (trace->surface->flags & SURF_SKY)
+	if ((trace->surface->flags & SURF_SKY))
 	{
 		// Remove it.
 		self->nextThinkTime = fx_time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fx_time in UpdateEffects()).
@@ -263,148 +254,186 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		return false;
 	}
 
-	// Move to collision point.
-	vec3_t move;
-	VectorScale(attempt, d_time * trace->fraction, move);
-	Vec3AddAssign(move, r->origin);
+	//mxd. Update velocity regardless of trace results (but only when called from UpdateEffects()).
+	if (update_velocity)
+		VectorMA(self->velocity, d_time, self->acceleration, self->velocity);
 
-	vec3_t dir;
-	VectorNormalize2(attempt, dir);
+	//mxd. UGH! Do extra contents check. There are some VERY thin slime/lava brushes used in some H2 maps (like 2 mu. high slime brush near [-1304 -416 88] in hivepriestess.bsp).
+	vec3_t move_dir;
+	VectorNormalize2(attempt, move_dir);
 
-	vec3_t surface_top;
-	VectorMA(r->origin, self->radius * 0.5f, dir, surface_top);
+	vec3_t surf_end;
+	VectorMA(end, self->radius, move_dir, surf_end);
 
-	const float hit_angle = DotProduct(dir, trace->plane.normal);
+	trace_t surf_trace;
+	fxi.Trace(r->origin, vec3_origin, vec3_origin, surf_end, MASK_SHOT | MASK_WATER, self->clip_flags, &surf_trace);
+
+	if (surf_trace.fraction < 1.0f)
+		trace->contents |= surf_trace.contents;
+
 	const qboolean do_splash_effect = (irand(DETAIL_LOW, DETAIL_UBERHIGH) <= R_DETAIL); //mxd. 'r_detail->value < DETAIL_UBERHIGH || irand(0, 1)' in original logic.
 
-	// When in water.
+	// When entered water.
 	if ((trace->contents & CONTENTS_WATER) && !(self->SpawnInfo & SIF_INWATER))
 	{
-		if (self->flags & CEF_FLAG6)
+		// Process intersection with water surface.
+		if (surf_trace.fraction < 1.0f)
 		{
-			self->flags &= ~CEF_FLAG6;
-			FizzleEffect(self, surface_top, trace->plane.normal);
-		}
-
-		self->SpawnInfo |= SIF_INWATER; // In water now, sink a little slower.
-
-		// Spawn ripples, splash.
-		if (do_splash_effect)
-			DoWaterEntrySplash(FX_WATER_ENTRYSPLASH, 0, surface_top, 64, trace->plane.normal);
-
-		if (flrand(-0.5f, 0.0f) < hit_angle)
-		{
-			// Splash sound.
-			if (do_splash_effect)
-				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("misc/splish%i.wav", irand(2, 3))), 1.0f, ATTN_STATIC, 0.0f);
-
-			CE_PostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
-
-			return true;
-		}
-
-		const int material = (self->SpawnInfo & SIF_FLAG_MASK);
-
-		if (material != MAT_WOOD) // Wood floats, everything else can keep sinking.
-		{
-			// Bubbles and blurp sound.
-			if (do_splash_effect)
+			if (self->flags & CEF_FLAG6)
 			{
-				FXBubble(NULL, FX_BUBBLE, 0, surface_top);
-				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/splish1.wav"), 1.0f, ATTN_STATIC, 0.0f);
+				self->flags &= ~CEF_FLAG6;
+				FizzleEffect(self, surf_trace.endpos, surf_trace.plane.normal);
 			}
 
-			fxi.Trace(trace->endpos, mins, maxs, end, MASK_SHOT, self->clip_flags, trace); //mxd. Use clip_flags.
-
-			if (trace->fraction < 1.0f)
-			{
-				VectorScale(attempt, d_time * trace->fraction, move);
-				Vec3AddAssign(move, r->origin);
-			}
-			else
-			{
-				// Was blocked only by water surface. Move the rest of the way.
-				VectorCopy(end, r->origin); //mxd. Original logic adds 'attempt' to 'r->origin' here (but r->origin was already partially moved after MASK_SHOT | MASK_WATER trace!).
-			}
-		}
-		else // Sit on surface.
-		{
-			// Splash sound.
+			// Spawn ripples, splash.
 			if (do_splash_effect)
-				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("player/waterrun%i.wav", irand(1, 2))), 1.0f, ATTN_STATIC, 0.0f);
+				DoWaterEntrySplash(FX_WATER_ENTRYSPLASH, 0, surf_trace.endpos, 64, surf_trace.plane.normal);
 
-			VectorCopy(surface_top, r->origin);
-			VectorClear(self->velocity);
-			VectorClear(self->acceleration);
-			self->d_alpha = -0.2f;
+			// Bounce off water surface?
+			const float hit_angle = DotProduct(move_dir, surf_trace.plane.normal);
+
+			if (flrand(-0.5f, 0.0f) < hit_angle)
+			{
+				// Splash sound.
+				if (do_splash_effect)
+				{
+					const char* snd_name = va("misc/splish%i.wav", irand(2, 3));
+					fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), flrand(0.5f, 1.0f), ATTN_IDLE, 0.0f);
+				}
+
+				// Move to collision point.
+				vec3_t collision_point = VEC3_INITS(move_dir, -self->radius);
+				Vec3AddAssign(surf_trace.endpos, collision_point);
+				VectorCopy(collision_point, r->origin);
+
+				CE_PostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
+
+				return true;
+			}
+
+			//mxd. Done only for MAT_WOOD in original logic. Changed because of added underwater handling logic in FXDebris_Vanish...
+			self->d_alpha = -0.05f;
 			self->Update = FXDebris_Vanish;
 			self->nextThinkTime = fx_time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fx_time in UpdateEffects()).
+
+			const int material = (self->SpawnInfo & SIF_FLAG_MASK);
+
+			if (material != MAT_WOOD) // Wood floats, everything else can keep sinking.
+			{
+				// Spawn bubbles and blurp sound when water is deep enough to sink.
+				if (do_splash_effect && trace->fraction == 1.0f)
+				{
+					FXBubble(NULL, FX_BUBBLE, 0, surf_trace.endpos);
+
+					const char* snd_name = va("misc/splish%i.wav", irand(1, 3));
+					fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), flrand(0.5f, 1.0f), ATTN_IDLE, flrand(0.0f, 0.25f));
+				}
+			}
+			else // Sit on surface.
+			{
+				// Splash sound.
+				if (do_splash_effect)
+				{
+					const char* snd_name = va("player/waterrun%i.wav", irand(1, 2));
+					fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), flrand(0.5f, 1.0f), ATTN_IDLE, 0.0f);
+				}
+
+				//mxd. Sit slightly above water surface.
+				vec3_t collision_point = VEC3_INITS(move_dir, -1.0f);
+				Vec3AddAssign(surf_trace.endpos, collision_point);
+				VectorCopy(collision_point, r->origin);
+
+				// This will abort further Physics_MoveEnt() calls, among other things --mxd.
+				VectorClear(self->velocity);
+				VectorClear(self->acceleration);
+
+				return false; // No need to update trace counter if not sending collision.
+			}
 		}
 
-		return false; // No need to update trace counter if not sending collision.
+		self->SpawnInfo |= SIF_INWATER; // In water now, sink a little slower. //mxd. Done above "Bounce off water surface" block in original logic.
+	}
+	else if (!(trace->contents & CONTENTS_WATER) && (self->SpawnInfo & SIF_INWATER)) //mxd. When left water.
+	{
+		self->SpawnInfo &= ~SIF_INWATER; //TODO: spawn splash FX?
 	}
 
-	// When in slime.
+	// When entered slime.
 	if ((trace->contents & CONTENTS_SLIME) && !(self->SpawnInfo & SIF_INMUCK))
 	{
-		if (self->flags & CEF_FLAG6)
-		{
-			self->flags &= ~CEF_FLAG6;
+		self->SpawnInfo |= SIF_INMUCK; // In muck, sink really really slowly.
 
-			if (do_splash_effect)
-				FizzleEffect(self, surface_top, trace->plane.normal);
-		}
-
-		self->SpawnInfo |= SIF_INMUCK; // In muck, sink really really slowly. //TODO: implement? Currently stays on surface.
-
-		// Spawn ripples, splash.
-		if (do_splash_effect)
-			DoWaterEntrySplash(FX_WATER_ENTRYSPLASH, 0, surface_top, 64, trace->plane.normal);
-
-		if (flrand(-0.75f, 0.0f) < hit_angle)
-		{
-			// Splash sound.
-			if (do_splash_effect)
-				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("player/waterrun%i.wav", irand(1, 2))), 1.0f, ATTN_STATIC, 0.0f);
-
-			CE_PostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
-
-			return true;
-		}
-
-		// Bubbles and blurp sound.
-		if (do_splash_effect)
-		{
-			FXBubble(NULL, FX_BUBBLE, 0, surface_top);
-			fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound("objects/submerge.wav"), 1.0f, ATTN_STATIC, 0.0f);
-		}
-
-		VectorCopy(surface_top, r->origin);
-		self->d_alpha = -0.01f;
+		self->d_alpha = -0.2f;
 		self->Update = FXDebris_Vanish;
 		self->nextThinkTime = fx_time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fx_time in UpdateEffects()).
 
-		return false; // No need to update trace counter if not sending collision.
+		// Process intersection with slime surface.
+		if (surf_trace.fraction < 1.0f)
+		{
+			if (self->flags & CEF_FLAG6)
+			{
+				self->flags &= ~CEF_FLAG6;
+
+				if (do_splash_effect)
+					FizzleEffect(self, surf_trace.endpos, surf_trace.plane.normal);
+			}
+
+			//mxd. Skip bouncing off slime surface logic (slime is supposed to be viscous, right?).
+
+			if (do_splash_effect)
+			{
+				// Spawn ripples, splash.
+				DoWaterEntrySplash(FX_WATER_ENTRYSPLASH, 0, surf_trace.endpos, 64, surf_trace.plane.normal);
+
+				if (irand(0, 9) < 4)
+					fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound("objects/submerge.wav"), flrand(0.05f, 0.5f), ATTN_IDLE, flrand(0.0f, 2.0f)); //mxd. Skip bubbles FX - slime is opaque.
+			}
+		}
 	}
 
-	// When in lava.
+	// When entered lava.
 	if ((trace->contents & CONTENTS_LAVA) && !(self->SpawnInfo & SIF_INLAVA))
 	{
 		self->flags &= ~CEF_FLAG6;
 		self->SpawnInfo |= SIF_INLAVA; // In lava now, continue to burn.
 
-		// Smoke puffs and sizzle here.
-		if (do_splash_effect)
-			FizzleEffect(self, surface_top, trace->plane.normal);
-
-		VectorCopy(surface_top, r->origin);
-		self->d_scale = -0.2f;
+		self->d_scale = -0.4f; // H2: -0.2.
 		self->Update = FXDebris_Vanish;
 		self->nextThinkTime = fx_time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fx_time in UpdateEffects()).
 
-		return false;
+		// Process intersection with lava surface.
+		if (do_splash_effect && surf_trace.fraction < 1.0f)
+		{
+			FizzleEffect(self, surf_trace.endpos, surf_trace.plane.normal);
+
+			if (irand(0, 9) < 2) //mxd
+				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound("objects/fallinlava.wav"), flrand(0.25f, 0.75f), ATTN_IDLE, flrand(0.0f, 0.25f));
+		}
 	}
 
+	// Move to end-point.
+	VectorCopy(trace->endpos, r->origin);
+
+	// Trace hit nothing. Can move full distance.
+	if (trace->fraction == 1.0f)
+		return false;
+
+	// Trace hit something.
+
+	//mxd. GROSS HACK: sink into extra thin lava/slime surfaces...
+	if (self->SpawnInfo & (SIF_INLAVA | SIF_INMUCK))
+	{
+		vec3_t diff;
+		VectorSubtract(trace->endpos, surf_trace.endpos, diff);
+
+		if (VectorLength(diff) < self->radius)
+		{
+			VectorCopy(end, r->origin);
+			return false;
+		}
+	}
+
+	// Send collision event.
 	CE_PostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
 
 	// Works just like a recursive call.

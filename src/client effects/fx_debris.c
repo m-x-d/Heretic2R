@@ -512,8 +512,31 @@ qboolean FXDebris_Vanish(client_entity_t* self, centity_t* owner)
 		}
 	}
 
-	//mxd. Gradually set pitch so that chunk lies flat on ground.
-	self->r.angles[PITCH] = LerpFloat(self->r.angles[PITCH], self->debris_rest_pitch, 0.1f);
+	//mxd. When in liquid, handle sinking, when on land, gravitate towards resting pitch.
+	if ((self->SpawnInfo & (SIF_INWATER | SIF_INMUCK | SIF_INLAVA)))
+	{
+		// Gravitate towards sinking downwards.
+		const float frac = (self->SpawnInfo & SIF_INWATER) ? 0.01f : 0.1f;
+		const vec3_t down = VEC3_INITS(vec3_down, self->radius * 320.0f * frac);
+		VectorLerp(self->velocity, frac, down, self->velocity);
+
+		// Continue rotating.
+		Debris_UpdateAngles(self);
+	}
+	else
+	{
+		// Clamp pitch to [-180 .. 180] range, centered on debris_rest_pitch. Original logic sets pitch to ANGLE_90;
+		self->r.angles[PITCH] = fmodf(self->r.angles[PITCH], ANGLE_360);
+		if (self->r.angles[PITCH] > ANGLE_180 + self->debris_rest_pitch)
+			self->r.angles[PITCH] -= ANGLE_360;
+
+		// Clear angular velocity as well...
+		self->debris_avelocity[0] = 0.0f;
+		self->debris_avelocity[1] = 0.0f;
+
+		// Gradually set pitch so that chunk lies flat on ground.
+		self->r.angles[PITCH] = LerpFloat(self->r.angles[PITCH], self->debris_rest_pitch, 0.1f);
+	}
 
 	return true;
 }
@@ -600,7 +623,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	debris->debris_avelocity[0] = (ANGLE_360 + flrand(ANGLE_0, ANGLE_90)) * Q_signf(flrand(-1.0f, 1.0f));
 	debris->debris_avelocity[1] = (ANGLE_360 + flrand(ANGLE_0, ANGLE_90)) * Q_signf(flrand(-1.0f, 1.0f));
 
-	debris->clip_flags |= (CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS); //mxd. Use separate flags.
+	debris->clip_flags |= (CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS | CTF_ALWAYS_CHECK_CONTENTS); //mxd. Use separate flags.
 	debris->radius = max(1.0f, debris->r.scale); //mxd. 5.0 in original logic.
 
 	VectorRandomCopy(dir, debris->velocity, 0.5f);
@@ -852,7 +875,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 				{
 					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, debris_sounds[irand(SND_FLESH1, SND_FLESH3)], 1.0f, ATTN_STATIC, 0.0f);
 
-					if (!(self->SpawnInfo & SIF_INWATER))
+					if (!(self->SpawnInfo & (SIF_INWATER | SIF_INLAVA | SIF_INMUCK)) && !(trace->contents & MASK_WATER)) //mxd. +SIF_INLAVA, SIF_INMUCK, contents checks.
 						ThrowBlood(self->r.origin, trace->plane.normal, dark, yellow, false);
 				}
 			} break;
@@ -870,11 +893,6 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 	// Don't bounce if velocity is small.
 	if (trace->plane.normal[2] > GROUND_NORMAL && (fabsf(self->velocity[2]) < 100.0f || VectorLength(self->velocity) < 100.0f || trace->fraction < 0.075f))
 	{
-		//mxd. Clamp pitch to [-180 .. 180] range, centered on debris_rest_pitch. Original logic sets pitch to ANGLE_90;
-		self->r.angles[PITCH] = fmodf(self->r.angles[PITCH], ANGLE_360);
-		if (self->r.angles[PITCH] > ANGLE_180 + self->debris_rest_pitch)
-			self->r.angles[PITCH] -= ANGLE_360;
-
 		//mxd. Inline BecomeStatic().
 		VectorClear(self->velocity);
 		VectorClear(self->acceleration);
