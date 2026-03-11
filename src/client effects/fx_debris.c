@@ -247,11 +247,12 @@ static qboolean IsInWater(const vec3_t origin)
 static void Debris_UpdateAngles(client_entity_t* self)
 {
 	const float d_time = (float)(fx_time - self->lastThinkTime) / 1000.0f;
+	const float rotation_rate_scaler = ((self->SpawnInfo & (SIF_INWATER | SIF_INLAVA | SIF_INMUCK)) ? 2.0f : 0.5f);
 
 	for (int i = 0; i < 2; i++)
 	{
 		self->r.angles[i] += self->debris_avelocity[i] * d_time; // Use debris_avelocity.
-		self->debris_avelocity[i] *= 1.0f - fxi.cls->rframetime * 0.5f; // Reduce rotation rate over time.
+		self->debris_avelocity[i] *= 1.0f - fxi.cls->rframetime * rotation_rate_scaler; // Reduce rotation rate over time.
 	}
 
 	self->lastThinkTime = fx_time;
