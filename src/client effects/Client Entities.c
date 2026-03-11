@@ -198,37 +198,32 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 
 	for (client_entity_t* current = *root; current != NULL; current = current->next)
 	{
-		float dot;
-		float dist;
-		qboolean add_to_view = true; //mxd
-
 		current->flags |= CEF_CULLED;
 
 		// If we have a light, particles, a model, a potential routine that will change our think function, and we aren't disappeared, 
 		// determine if we should be culled or not.
-		if (current->dlight != NULL || current->p_root != NULL || current->r.model != NULL || !(current->flags & CEF_DISAPPEARED) || (current->flags & CEF_VIEWSTATUSCHANGED))
-		{
-			// Do this here since we do have an owner, and most probably we are tied to its origin, and we need that to do the proper culling routines.
-			if (owner != NULL && current->AddToView != NULL)
-				add_to_view = current->AddToView(current, owner);
-
-			vec3_t dir;
-			VectorSubtract(current->r.origin, fxi.cl->refdef.vieworg, dir);
-			current->r.depth = VectorNormalize(dir);
-			dist = current->r.depth;
-
-			if (dist > r_farclipdist->value)
-				continue;
-
-			if (R_DETAIL == DETAIL_LOW && dist < r_nearclipdist->value && current->p_root == NULL && current->dlight == NULL) // Not a particle thing and not a dlight thing.
-				continue;
-
-			dot = DotProduct(dir, view_dir);
-		}
-		else
-		{
+		if (current->dlight == NULL && current->p_root == NULL && current->r.model == NULL && (current->flags & CEF_DISAPPEARED) && !(current->flags & CEF_VIEWSTATUSCHANGED))
 			continue; // Has nothing to add to view.
-		}
+
+		qboolean add_to_view = true;
+
+		// Do this here since we do have an owner, and most probably we are tied to its origin, and we need that to do the proper culling routines.
+		if (owner != NULL && current->AddToView != NULL)
+			add_to_view = current->AddToView(current, owner);
+
+		vec3_t dir;
+		VectorSubtract(current->r.origin, fxi.cl->refdef.vieworg, dir);
+		current->r.depth = VectorNormalize(dir);
+
+		const float dist = current->r.depth;
+
+		if (dist > r_farclipdist->value)
+			continue;
+
+		if (R_DETAIL == DETAIL_LOW && dist < r_nearclipdist->value && current->p_root == NULL && current->dlight == NULL) // Not a particle thing and not a dlight thing.
+			continue;
+
+		const float dot = DotProduct(dir, view_dir);
 
 		if (current->dlight != NULL)
 		{
