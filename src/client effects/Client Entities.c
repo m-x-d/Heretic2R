@@ -435,13 +435,9 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 				else
 				{
 					// Update the startpos and endpos velocity, then worry about the entity origin.
-					vec3_t dpos;
-					vec3_t dvel;
-					vec3_t d2vel;
-
-					VectorScale(current->velocity, d_time, dpos);		// velocity * dt
-					VectorScale(current->acceleration, d_time, dvel);	// acceleration * dt
-					VectorScale(current->acceleration, d_time2, d2vel);	// acceleration * dt ^ 2
+					vec3_t dpos = VEC3_INITS(current->velocity, d_time);		// velocity * dt
+					vec3_t dvel = VEC3_INITS(current->acceleration, d_time);	// acceleration * dt
+					vec3_t d2vel = VEC3_INITS(current->acceleration, d_time2);	// acceleration * dt ^ 2
 
 					Vec3AddAssign(dpos, r->startpos);
 					Vec3AddAssign(d2vel, r->startpos); // Calculate change in startpos.
