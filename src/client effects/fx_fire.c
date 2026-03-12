@@ -114,14 +114,14 @@ static qboolean FireSpawnerUpdate(client_entity_t* self, centity_t* owner) //mxd
 		}
 	}
 
-	if (self->dlight != NULL)
-	{
-		//mxd. Randomize color instead of intensity.
-		self->dlight->color.r = (byte)((float)fire_color.r * flrand(0.6f, 1.0f));
-		self->dlight->color.g = (byte)((float)fire_color.g * flrand(0.8f, 1.2f));
-	}
-
 	return true;
+}
+
+//mxd. Randomize fire color.
+static void FireDLight_Update(CE_DLight_t* self, client_entity_t* owner)
+{
+	self->color.r = (byte)((float)fire_color.r * flrand(0.6f, 1.0f));
+	self->color.g = (byte)((float)fire_color.g * flrand(0.8f, 1.2f));
 }
 
 void FXFire(centity_t* owner, const int type, const int flags, vec3_t origin)
@@ -139,7 +139,10 @@ void FXFire(centity_t* owner, const int type, const int flags, vec3_t origin)
 	spawner->Update = FireSpawnerUpdate;
 
 	if (flags & CEF_FLAG6)
+	{
 		spawner->dlight = CE_DLight_new(spawner->color, 110.0f, 0.0f); //mxd. intensity:150 in original logic.
+		spawner->dlight->Update = FireDLight_Update; //mxd
+	}
 
 	AddEffect(owner, spawner);
 }
@@ -208,7 +211,7 @@ static qboolean FireOnEntitySpawnerUpdate(client_entity_t* self, centity_t* owne
 			}
 		}
 
-		self->dlight->intensity = 150.0f + flrand(-8.0f, 8.0f);
+		self->dlight->intensity = 150.0f + flrand(-4.0f, 4.0f); //mxd. Reduce random amount from [-8 .. 8].
 		return true;
 	}
 
@@ -266,7 +269,7 @@ static qboolean FireOnEntityPersistentSpawnerUpdate(client_entity_t* self, centi
 		AddParticleToList(self, flame);
 	}
 
-	self->dlight->intensity = 150.0f + flrand(-8.0f, 8.0f);
+	self->dlight->intensity = 150.0f + flrand(-4.0f, 4.0f); //mxd. Reduce random amount from [-8 .. 8].
 
 	return true;
 }
@@ -301,6 +304,7 @@ void FXFireOnEntity(centity_t* owner, const int type, const int flags, vec3_t or
 	}
 
 	spawner->dlight = CE_DLight_new(spawner->color, 150.0f, 0.0f);
+	spawner->dlight->Update = FireDLight_Update; //mxd
 
 	AddEffect(owner, spawner);
 }
