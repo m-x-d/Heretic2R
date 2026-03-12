@@ -736,7 +736,7 @@ static void CL_ParseConfigString(void)
 		}
 
 		char* c = &buffer1[strlen(buffer1) - 1];
-		if ((byte)*c == TOKEN_S_AMBIENT)
+		if ((byte)*c == TOKEN_S_WAV)
 		{
 			*c = 0;
 			sprintf_s(cl.configstrings[i], sizeof(cl.configstrings[i]), "%s.wav", buffer1); //mxd. sprintf -> sprintf_s

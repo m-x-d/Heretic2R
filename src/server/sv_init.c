@@ -39,7 +39,7 @@ static void PackResourceName(const char* src_name, char* dest_name, const int de
 	{
 		const uint len = strlen(dest_name);
 
-		dest_name[len - 4] = TOKEN_S_AMBIENT;
+		dest_name[len - 4] = TOKEN_S_WAV;
 		dest_name[len - 3] = 0;
 
 		for (const PackInfo_t* info = sound_pack_infos; info->type != 0; info++)
