@@ -19,6 +19,8 @@
 #define TOKEN_S_ITEMS		247
 
 // Models.
+#define TOKEN_M_FM			254 //Same as TOKEN_M_MODELS... --mxd.
+
 #define TOKEN_M_MODELS		254
 #define TOKEN_M_MONSTERS	253
 #define TOKEN_M_OBJECTS		252

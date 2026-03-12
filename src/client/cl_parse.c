@@ -660,7 +660,7 @@ static void CL_ParseConfigString(void)
 		}
 
 		char* c = &buffer1[strlen(buffer1) - 1];
-		if ((byte)*c == TOKEN_M_MODELS)
+		if ((byte)*c == TOKEN_M_FM)
 		{
 			*c = 0;
 			sprintf_s(cl.configstrings[i], sizeof(cl.configstrings[i]), "%s/tris.fm", buffer1); //mxd. sprintf -> sprintf_s

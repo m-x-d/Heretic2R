@@ -63,7 +63,7 @@ static void PackResourceName(const char* src_name, char* dest_name, const int de
 
 		if (len > 8 && strcmp("/tris.fm", &dest_name[len - 8]) == 0) //H2_BUGFIX: mxd. Check len (because "*1", "*2" etc. are valid model names).
 		{
-			dest_name[len - 8] = TOKEN_M_MODELS;
+			dest_name[len - 8] = TOKEN_M_FM;
 			dest_name[len - 7] = 0;
 		}
 
