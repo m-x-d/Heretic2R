@@ -151,16 +151,28 @@ client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blo
 
 void DoBloodTrail(client_entity_t* spawner, int amount)
 {
-	client_particle_t* drop;
+	//mxd. No blood particles when in slime or lava.
+	if (spawner->SpawnInfo & (SIF_INMUCK | SIF_INLAVA))
+		return;
 
+	const qboolean in_water = (spawner->SpawnInfo & SIF_INWATER); //mxd
 	const qboolean yellow_blood = ((spawner->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT); // Insect blood is yellow-green.
 
-	const float speed = (amount == -1 ? 0.0f : (float)amount * 4.0f + 8.0f);
-	const float gravity = GetGravity() * 0.5f;
-	const float range = (float)amount;
+	float speed = (amount == -1 ? 0.0f : (float)amount * 4.0f + 8.0f);
+	float gravity = GetGravity() * 0.5f;
 	const int extra_flags = (R_DETAIL > DETAIL_HIGH ? PFL_LM_COLOR : 0); //mxd
 
-	amount = min(500, amount);
+	if (in_water) //mxd
+	{
+		if (irand(0, 9) < 7)
+			return;
+
+		speed *= 0.5f;
+		gravity *= 0.01f;
+		amount /= 2;
+	}
+
+	amount = ClampI(amount, 2, 500); //mxd. Add lower bound (for sanity reasons and because of amount:-1 case in BodyPartAttachedUpdate() (H2_BUGFIX)).
 
 	for (int i = 0; i < amount; i++)
 	{
@@ -172,6 +184,8 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 			{
 				for (int j = 0; j < 3; j++)
 				{
+					client_particle_t* drop;
+
 					if (ref_soft)
 					{
 						const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : PART_4x4_BLOOD1); //mxd
@@ -183,30 +197,61 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 						drop = ClientParticle_new(bpart | extra_flags, color_white, 800); //mxd. +extra_flags.
 					}
 
-					VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
-					VectorMA(drop->velocity, 0.5f, spawner->velocity, drop->velocity);
-					VectorRandomSet(drop->origin, range); //mxd
+					if (in_water) //mxd
+					{
+						VectorRandomSet(drop->velocity, speed);
+						VectorRandomSet(drop->origin, spawner->radius * 2.0f); //mxd
+
+						drop->scale = flrand(2.0f, 4.0f);
+						drop->d_scale = -drop->scale;
+					}
+					else
+					{
+						VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
+						VectorMA(drop->velocity, 0.5f, spawner->velocity, drop->velocity);
+						VectorRandomSet(drop->origin, spawner->radius); //mxd
+
+						drop->scale = flrand(0.75f, 1.25f); //mxd. Randomize scale a bit.
+						drop->d_scale = -1.0f;
+					}
+
 					Vec3AddAssign(spawner->r.origin, drop->origin);
 					drop->acceleration[2] = gravity;
 					drop->d_alpha = 0.0f;
-					drop->d_scale = -1.0f;
 
 					AddParticleToList(spawner, drop);
+
+					if (in_water) //mxd. 1 particle when underwater.
+						break;
 				}
 			} break;
 
 			case 1: // Some larger globs.
 			{
 				const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : PART_8x8_BLOOD); //mxd
-				drop = ClientParticle_new(bpart | extra_flags, color_white, 800); //mxd. +extra_flags.
-				VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
-				VectorMA(drop->velocity, 0.5f, spawner->velocity, drop->velocity);
-				VectorRandomSet(drop->origin, range); //mxd
+				client_particle_t* drop = ClientParticle_new(bpart | extra_flags, color_white, 800); //mxd. +extra_flags.
+
+				if (in_water) //mxd
+				{
+					VectorRandomSet(drop->velocity, speed);
+					VectorRandomSet(drop->origin, spawner->radius * 2.0f); //mxd
+
+					drop->scale = flrand(4.0f, 8.0f);
+					drop->d_scale = -drop->scale;
+				}
+				else
+				{
+					VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
+					VectorMA(drop->velocity, 0.5f, spawner->velocity, drop->velocity);
+					VectorRandomSet(drop->origin, spawner->radius); //mxd
+
+					drop->scale = 2.0f;
+					drop->d_scale = -2.0f;
+				}
+
 				Vec3AddAssign(spawner->r.origin, drop->origin);
 				drop->acceleration[2] = gravity;
 				drop->d_alpha = 0.0f;
-				drop->scale = 2.0f;
-				drop->d_scale = -2.0f;
 
 				AddParticleToList(spawner, drop);
 			} break;
