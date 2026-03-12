@@ -39,8 +39,19 @@ static void PackResourceName(const char* src_name, char* dest_name, const int de
 	{
 		const uint len = strlen(dest_name);
 
-		dest_name[len - 4] = TOKEN_S_WAV;
-		dest_name[len - 3] = 0;
+		if (len > 4 && Q_stricmp(".wav", &dest_name[len - 4]) == 0)
+		{
+			//H2_BUGFIX: mxd. Original logic does this even when dest_name does NOT end in '.wav' (like 'doors/marbleslide' used in hivepriestess.bsp).
+			dest_name[len - 4] = TOKEN_S_WAV;
+			dest_name[len - 3] = 0;
+		}
+		else
+		{
+			assert(len < (uint)dest_size);
+
+			dest_name[len] = TOKEN_S_WAV;
+			dest_name[len + 1] = 0;
+		}
 
 		for (const PackInfo_t* info = sound_pack_infos; info->type != 0; info++)
 			if (TryPackResourceName(dest_name, dest_size, info))
