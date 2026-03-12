@@ -8,6 +8,8 @@
 
 #include "client.h"
 
+typedef void (*DLightUpdate_t)(struct CE_DLight_s* self, struct client_entity_s* owner); //mxd
+
 typedef struct CE_DLight_s
 {
 	paletteRGBA_t color;
@@ -19,6 +21,8 @@ typedef struct CE_DLight_s
 	int fade_end_time;
 	vec3_t fade_color_start;
 	vec3_t fade_color_end;
+
+	DLightUpdate_t Update; //mxd
 } CE_DLight_t;
 
 extern void InitDLightMngr(void);

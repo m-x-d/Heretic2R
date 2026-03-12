@@ -305,6 +305,10 @@ void AddEffect(centity_t* owner, client_entity_t* fx)
 static void UpdateDLight(client_entity_t* self, const float d_time) //mxd. Added to simplify logic. Assumes dlight exists.
 {
 	CE_DLight_t* dl = self->dlight;
+
+	if (dl->Update != NULL) //mxd
+		dl->Update(dl, self);
+
 	dl->intensity += (d_time * dl->d_intensity);
 
 	//mxd. Apply color fading?

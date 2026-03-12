@@ -30,6 +30,7 @@ struct CE_DLight_s* CE_DLight_new(const paletteRGBA_t color, const float intensi
 	dl->color = color;
 	dl->intensity = intensity;
 	dl->d_intensity = d_intensity;
+	dl->Update = NULL; //mxd
 
 	//mxd. Disable color-fading.
 	dl->fade_start_time = 0;
