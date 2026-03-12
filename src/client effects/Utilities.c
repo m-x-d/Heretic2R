@@ -189,7 +189,7 @@ qboolean GetWaterNormal(const vec3_t origin, const float radius, const float max
 static void FizzleEffect(const client_entity_t* self, const vec3_t surface_top, const vec3_t normal)
 {
 	if (self != NULL && self->dlight != NULL)
-		self->dlight->intensity = 0; // Lights out.
+		self->dlight->intensity = 0.0f; // Lights out.
 
 	const char* snd_name = va("ambient/lavadrop%i.wav", irand(1, 3)); //mxd. Original logic also plays "misc/lavaburn.wav" here.
 	fxi.S_StartSound(surface_top, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), flrand(0.25f, 0.75f), ATTN_IDLE, 0.0f);
