@@ -333,7 +333,7 @@ static qboolean BodyPartAttachedUpdate(client_entity_t* self, centity_t* owner) 
 		self->debris_last_trail_update_time = fx_time;
 
 		if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
-			DoBloodTrail(self, -1);
+			DoBloodTrail(self, 2, true);
 
 		if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
 			DoFireTrail(self);
@@ -358,7 +358,7 @@ static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. 
 		self->debris_last_trail_update_time = fx_time;
 
 		if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
-			DoBloodTrail(self, 6);
+			DoBloodTrail(self, 6, false);
 
 		if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
 			DoFireTrail(self);
@@ -620,16 +620,10 @@ static qboolean FleshDebris_Update(client_entity_t* self, centity_t* owner)
 		self->debris_last_trail_update_time = fx_time;
 
 		if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
-		{
 			DoFireTrail(self);
 
-			if (self->flags & CEF_FLAG7)
-				DoBloodTrail(self, 2);
-		}
-		else
-		{
-			DoBloodTrail(self, 2);
-		}
+		if (!(self->flags & CEF_FLAG6) || (self->flags & CEF_FLAG7)) // When none or both CEF_FLAG6 and CEF_FLAG7 are set.
+			DoBloodTrail(self, 2, false);
 	}
 
 	return true;

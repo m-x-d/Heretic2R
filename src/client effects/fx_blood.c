@@ -149,7 +149,7 @@ client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blo
 	return splash;
 }
 
-void DoBloodTrail(client_entity_t* spawner, int amount)
+void DoBloodTrail(client_entity_t* spawner, int amount, const qboolean zero_speed) //mxd. +zero_speed arg.
 {
 	//mxd. No blood particles when in slime or lava.
 	if (spawner->SpawnInfo & (SIF_INMUCK | SIF_INLAVA))
@@ -158,7 +158,7 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 	const qboolean in_water = (spawner->SpawnInfo & SIF_INWATER); //mxd
 	const qboolean yellow_blood = ((spawner->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT); // Insect blood is yellow-green.
 
-	float speed = (amount == -1 ? 0.0f : (float)amount * 4.0f + 8.0f);
+	float speed = (zero_speed ? 0.0f : (float)amount * 4.0f + 8.0f); //mxd. amount:-1 -> zero_speed.
 	float gravity = GetGravity() * 0.5f;
 	const int extra_flags = (R_DETAIL > DETAIL_HIGH ? PFL_LM_COLOR : 0); //mxd
 
@@ -172,7 +172,7 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 		amount /= 2;
 	}
 
-	amount = ClampI(amount, 2, 500); //mxd. Add lower bound (for sanity reasons and because of amount:-1 case in BodyPartAttachedUpdate() (H2_BUGFIX)).
+	amount = ClampI(amount, 2, 500); //mxd. Add lower bound (for sanity reasons) // H2_BUGFIX: original logic uses amount:-1 in BodyPartAttachedUpdate().
 
 	for (int i = 0; i < amount; i++)
 	{
