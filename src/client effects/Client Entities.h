@@ -22,7 +22,7 @@ typedef struct CE_ClassStatics_s
 	CE_MsgReceiver_t msgReceivers[NUM_MESSAGES];
 } CE_ClassStatics_t;
 
-typedef qboolean(*UpdateEffect_t)(struct client_entity_s* this, centity_t* owner);
+typedef qboolean (*UpdateEffect_t)(struct client_entity_s* self, centity_t* owner);
 
 typedef struct sound_think_info_s //mxd. Defined in fx_sound.c in original logic.
 {
