@@ -256,7 +256,18 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 
 	//mxd. Update velocity regardless of trace results (but only when called from UpdateEffects()).
 	if (update_velocity)
+	{
 		VectorMA(self->velocity, d_time, self->acceleration, self->velocity);
+
+		//mxd. When in liquid, handle sinking.
+		if (self->SpawnInfo & SIF_INLIQUID)
+		{
+			// Gravitate towards sinking downwards.
+			const float frac = (self->SpawnInfo & SIF_INWATER) ? 0.01f : 0.1f;
+			const vec3_t down = VEC3_INITS(vec3_down, self->radius * 320.0f * frac);
+			VectorLerp(self->velocity, frac, down, self->velocity);
+		}
+	}
 
 	//mxd. UGH! Do extra contents check. There are some VERY thin slime/lava brushes used in some H2 maps (like 2 mu. high slime brush near [-1304 -416 88] in hivepriestess.bsp).
 	vec3_t move_dir;
@@ -311,11 +322,6 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 				return true;
 			}
 
-			//mxd. Done only for MAT_WOOD in original logic. Changed because of added underwater handling logic in FXDebris_Vanish...
-			self->d_alpha = -0.05f;
-			self->Update = FXDebris_Vanish;
-			self->nextThinkTime = fx_time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fx_time in UpdateEffects()).
-
 			const int material = (self->SpawnInfo & SIF_FLAG_MASK);
 
 			if (material != MAT_WOOD) // Wood floats, everything else can keep sinking.
@@ -346,6 +352,8 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 				// This will abort further Physics_MoveEnt() calls, among other things --mxd.
 				VectorClear(self->velocity);
 				VectorClear(self->acceleration);
+
+				//mxd. Skip FXDebris_Vanish logic.
 
 				return false; // No need to update trace counter if not sending collision.
 			}

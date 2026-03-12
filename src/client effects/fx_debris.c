@@ -244,18 +244,77 @@ static qboolean IsInWater(const vec3_t origin)
 }
 
 //mxd. Update rotation.
-static void Debris_UpdateAngles(client_entity_t* self)
+static qboolean Debris_UpdateAngles(client_entity_t* self, centity_t* owner)
 {
-	const float d_time = (float)(fx_time - self->lastThinkTime) / 1000.0f;
-	const float rotation_rate_scaler = ((self->SpawnInfo & (SIF_INWATER | SIF_INLAVA | SIF_INMUCK)) ? 2.0f : 0.5f);
+#define DEBRIS_MIN_REST_AVELOCITY	ANGLE_10
+#define DEBRIS_MAX_REST_AVELOCITY	ANGLE_45
 
-	for (int i = 0; i < 2; i++)
+	const qboolean in_liquid = (self->SpawnInfo & SIF_INLIQUID);
+	const float d_time = (float)(fx_time - self->lastThinkTime) / 1000.0f;
+
+	// Gravitate towards resting pitch when became static or rotating too slowly.
+	if (!in_liquid && (!(self->clip_flags & CTF_CLIP_TO_WORLD) || fabsf(self->debris_avelocity[0]) < DEBRIS_MAX_REST_AVELOCITY || fabsf(self->debris_avelocity[1]) < DEBRIS_MAX_REST_AVELOCITY))
 	{
-		self->r.angles[i] += self->debris_avelocity[i] * d_time; // Use debris_avelocity.
-		self->debris_avelocity[i] *= 1.0f - fxi.cls->rframetime * rotation_rate_scaler; // Reduce rotation rate over time.
+		if (!self->debris_rest_pitch_setup)
+		{
+			// Clamp pitch to [-180 .. 180] range, centered on debris_rest_pitch. Original logic sets pitch to ANGLE_90;
+			self->r.angles[PITCH] = fmodf(self->r.angles[PITCH], ANGLE_360);
+
+			if (self->r.angles[PITCH] > ANGLE_180 + self->debris_rest_pitch)
+				self->r.angles[PITCH] -= ANGLE_360;
+			else if (self->r.angles[PITCH] < -ANGLE_180 + self->debris_rest_pitch)
+				self->r.angles[PITCH] += ANGLE_360;
+
+			// Adjust debris_rest_pitch to match angular velocity. Assume debris_rest_pitch + ANGLE_180 is also a valid rest angle.
+			if (self->debris_avelocity[PITCH] > 0.0f)
+			{
+				if (self->r.angles[PITCH] > self->debris_rest_pitch)
+				{
+					while (self->debris_rest_pitch < self->r.angles[PITCH])
+						self->debris_rest_pitch += ANGLE_180;
+				}
+				else
+				{
+					while (self->r.angles[PITCH] - self->debris_rest_pitch > ANGLE_180)
+						self->debris_rest_pitch -= ANGLE_180;
+				}
+			}
+			else
+			{
+				if (self->r.angles[PITCH] < self->debris_rest_pitch)
+				{
+					while (self->debris_rest_pitch > self->r.angles[PITCH])
+						self->debris_rest_pitch -= ANGLE_180;
+				}
+				else
+				{
+					while (self->debris_rest_pitch - self->r.angles[PITCH] > ANGLE_180)
+						self->debris_rest_pitch += ANGLE_180;
+				}
+			}
+
+			// Set resting pitch lerp.
+			self->debris_avelocity[PITCH] = Clamp(fabsf(self->debris_avelocity[PITCH]), DEBRIS_MIN_REST_AVELOCITY, DEBRIS_MAX_REST_AVELOCITY);
+			self->debris_rest_pitch_setup = true;
+		}
+
+		// Gradually set pitch so that chunk lies flat on ground.
+		self->r.angles[PITCH] = LerpFloat(self->r.angles[PITCH], self->debris_rest_pitch, self->debris_avelocity[PITCH] * d_time * 5.0f);
+	}
+	else
+	{
+		const float rotation_rate_scaler = (in_liquid ? 2.0f : 0.5f);
+
+		for (int i = 0; i < 2; i++)
+		{
+			self->r.angles[i] += self->debris_avelocity[i] * d_time; // Use debris_avelocity.
+			self->debris_avelocity[i] *= 1.0f - fxi.cls->rframetime * rotation_rate_scaler; // Reduce rotation rate over time.
+		}
 	}
 
 	self->lastThinkTime = fx_time;
+
+	return true;
 }
 
 #pragma endregion
@@ -292,8 +351,6 @@ static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. 
 
 		return true;
 	}
-
-	Debris_UpdateAngles(self); //mxd. Interestingly, original logic updates all 3 angle axes here.
 
 	//mxd. Update trails at 20 FPS...
 	if (fx_time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL)
@@ -418,6 +475,7 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 
 	gib->elasticity = debris_elasticity[MAT_FLESH];
 
+	gib->AddToView = Debris_UpdateAngles; //mxd
 	gib->Update = BodyPart_Update;
 
 	switch (R_DETAIL)
@@ -509,7 +567,7 @@ qboolean FXDebris_Vanish(client_entity_t* self, centity_t* owner)
 		return false;
 	}
 
-	if (self->flags & CEF_FLAG6 && irand(0, 2) == 0) // On fire - do a fire trail.
+	if ((self->flags & CEF_FLAG6) && irand(0, 2) == 0) // On fire - do a fire trail.
 	{
 		if (flrand(0.0f, 0.3f) > self->alpha || flrand(0.0f, 0.3f) > self->r.scale) //BUGFIX: mxd. Original logic uses irand(0, 0.3) here.
 		{
@@ -521,32 +579,6 @@ qboolean FXDebris_Vanish(client_entity_t* self, centity_t* owner)
 		{
 			DoFireTrail(self); //FIXME: make them just smoke when still?
 		}
-	}
-
-	//mxd. When in liquid, handle sinking, when on land, gravitate towards resting pitch.
-	if ((self->SpawnInfo & (SIF_INWATER | SIF_INMUCK | SIF_INLAVA)))
-	{
-		// Gravitate towards sinking downwards.
-		const float frac = (self->SpawnInfo & SIF_INWATER) ? 0.01f : 0.1f;
-		const vec3_t down = VEC3_INITS(vec3_down, self->radius * 320.0f * frac);
-		VectorLerp(self->velocity, frac, down, self->velocity);
-
-		// Continue rotating.
-		Debris_UpdateAngles(self);
-	}
-	else
-	{
-		// Clamp pitch to [-180 .. 180] range, centered on debris_rest_pitch. Original logic sets pitch to ANGLE_90;
-		self->r.angles[PITCH] = fmodf(self->r.angles[PITCH], ANGLE_360);
-		if (self->r.angles[PITCH] > ANGLE_180 + self->debris_rest_pitch)
-			self->r.angles[PITCH] -= ANGLE_360;
-
-		// Clear angular velocity as well...
-		self->debris_avelocity[0] = 0.0f;
-		self->debris_avelocity[1] = 0.0f;
-
-		// Gradually set pitch so that chunk lies flat on ground.
-		self->r.angles[PITCH] = LerpFloat(self->r.angles[PITCH], self->debris_rest_pitch, 0.1f);
 	}
 
 	return true;
@@ -561,8 +593,6 @@ static qboolean Debris_Update(client_entity_t* self, centity_t* owner)
 
 		return true;
 	}
-
-	Debris_UpdateAngles(self); //mxd
 
 	//mxd. Update trails at 20 FPS...
 	if ((self->flags & CEF_FLAG6) && fx_time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL) // On fire - do a fire trail.
@@ -583,8 +613,6 @@ static qboolean FleshDebris_Update(client_entity_t* self, centity_t* owner)
 
 		return true;
 	}
-
-	Debris_UpdateAngles(self); //mxd
 
 	//mxd. Update trails at 20 FPS...
 	if (fx_time - self->debris_last_trail_update_time > DEBRIS_TRAIL_UPDATE_INTERVAL)
@@ -645,6 +673,8 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	debris->elasticity = debris_elasticity[material];
 	debris->r.skinnum = debris_chunks[chunk_index].skinNum;
 	debris->debris_rest_pitch = debris_chunks[chunk_index].rest_pitch + flrand(-ANGLE_10, ANGLE_10); //mxd
+
+	debris->AddToView = Debris_UpdateAngles; //mxd
 
 	if (material == MAT_FLESH || material == MAT_INSECT) // Flesh need a different update for blood.
 	{
@@ -886,7 +916,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 				{
 					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, debris_sounds[irand(SND_FLESH1, SND_FLESH3)], 1.0f, ATTN_STATIC, 0.0f);
 
-					if (!(self->SpawnInfo & (SIF_INWATER | SIF_INLAVA | SIF_INMUCK)) && !(trace->contents & MASK_WATER)) //mxd. +SIF_INLAVA, SIF_INMUCK, contents checks.
+					if (!(self->SpawnInfo & SIF_INLIQUID) && !(trace->contents & MASK_WATER)) //mxd. SIF_INWATER -> SIF_INLIQUID, +contents check.
 						ThrowBlood(self->r.origin, trace->plane.normal, dark, yellow, false);
 				}
 			} break;

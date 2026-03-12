@@ -211,6 +211,8 @@ typedef enum MaterialID_e
 #define SIF_INLAVA		32
 #define SIF_INMUCK		64
 
+#define SIF_INLIQUID	(SIF_INWATER | SIF_INLAVA | SIF_INMUCK) //mxd
+
 #define SERVER_SENT		1 //TODO: unused
 #define SERVER_DELETED	2
 
