@@ -310,16 +310,14 @@ static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. 
 	return true;
 }
 
-static qboolean FireDLight_AddToView(client_entity_t* self, centity_t* owner) //mxd
+static void FireDLight_Update(CE_DLight_t* self, client_entity_t* owner) //mxd
 {
 	// Randomize fire color (255 127 0) a bit.
-	if (fx_time <= self->LifeTime && self->dlight != NULL && self->dlight->intensity > 0.0f)
+	if (fx_time <= owner->LifeTime && self->intensity > 0.0f)
 	{
-		self->dlight->color.r = (byte)(irand(220, 255));
-		self->dlight->color.g = (byte)(irand(107, 147));
+		self->color.r = (byte)(irand(220, 255));
+		self->color.g = (byte)(irand(107, 147));
 	}
-
-	return true;
 }
 
 static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t origin, float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy) //mxd. Named 'FXBodyPart_Throw' in original logic.
@@ -437,7 +435,7 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 		{
 			gib->flags |= CEF_FLAG7; // Don't spawn blood too, just flames.
 			gib->dlight = CE_DLight_new(fire_dlight_color, 72.0f, -0.1f); //mxd. Intensity:50 (didn't affect lightmap), d_intensity:-5 (expired way before landing on ground) in original logic.
-			gib->AddToView = FireDLight_AddToView; //mxd
+			gib->dlight->Update = FireDLight_Update; //mxd
 		}
 
 		gib->flags |= CEF_FLAG6;
@@ -672,7 +670,7 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 		{
 			debris->flags |= CEF_FLAG7; // Spawn blood too, not just flames.
 			debris->dlight = CE_DLight_new(fire_dlight_color, 72.0f, -0.1f); //mxd. Intensity:50 (didn't affect lightmap), d_intensity:-5 (expired way before landing on ground) in original logic.
-			debris->AddToView = FireDLight_AddToView; //mxd
+			debris->dlight->Update = FireDLight_Update; //mxd
 		}
 
 		debris->flags |= CEF_FLAG6;
