@@ -284,7 +284,7 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 	{
 		// Decide if we need a scorch mark or not.
 		int fx_flags = CEF_FLAG6; // Create HellLaserBurn fx --mxd.
-		if (IsDecalApplicable(trace.ent, caster->s.origin, trace.surface, &trace.plane, NULL))
+		if (IsDecalApplicable(trace.ent, trace.endpos, trace.surface, &trace.plane, NULL)) //mxd. Original logic uses caster->s.origin as 'origin' arg here.
 			fx_flags |= CEF_FLAG7;
 
 		// Draw last (when reflected) or the only segment of the line.

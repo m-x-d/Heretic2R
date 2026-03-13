@@ -266,7 +266,7 @@ void SpherePowerLaserThink(edict_t* self)
 		fx_flags |= CEF_FLAG8;
 
 	// Decide if a decal is appropriate or not.
-	if (IsDecalApplicable(trace.ent, self->s.origin, trace.surface, &trace.plane, NULL))
+	if (IsDecalApplicable(trace.ent, trace.endpos, trace.surface, &trace.plane, NULL)) //mxd. Original logic uses self->s.origin as 'origin' arg here.
 		fx_flags |= CEF_FLAG6;
 
 	gi.CreateEffect(NULL, FX_WEAPON_SPHEREPOWER, fx_flags, start_pos, "xbb", shoot_dir, (byte)(self->s.scale * 7.5f), (byte)(trace_dist / 8.0f));
