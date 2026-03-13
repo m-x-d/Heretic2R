@@ -244,6 +244,7 @@ typedef struct client_persistant_s
 #define FL_AVERAGE_CHICKEN	0x00008000	// Currently a chicken.
 #define FL_AMPHIBIAN		0x00010000	// Does not drown on land or in water, but is damaged by muck and lava.
 #define FL_SUPER_CHICKEN	0x00020000	// Ah yeah...
+#define FL_IS_TBEAST_TOY	0x00040000	//mxd. Being actively shaken by TrialBeast.
 #define FL_RESPAWN			0x80000000	// Used for item respawning.
 
 #define FL_CHICKEN (FL_AVERAGE_CHICKEN | FL_SUPER_CHICKEN)

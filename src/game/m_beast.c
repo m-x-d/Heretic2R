@@ -1685,7 +1685,7 @@ void tbeast_throw_toy(edict_t* self)
 	if (self->targetEnt == NULL)
 		return;
 
-	self->targetEnt->flags &= ~FL_FLY; //mxd. Original logic also changes movetype to PHYSICSTYPE_STEP when movetype > NUM_PHYSICSTYPES (doesn't seem to ever happen, there's assert for this in G_RunFrame()).
+	self->targetEnt->flags &= ~(FL_FLY | FL_IS_TBEAST_TOY); //mxd. +FL_IS_TBEAST_TOY. Original logic also changes movetype to PHYSICSTYPE_STEP when movetype > NUM_PHYSICSTYPES (doesn't seem to ever happen, there's assert for this in G_RunFrame()).
 	VectorSet(self->targetEnt->velocity, 0.0f, 0.0f, 500.0f);
 	VectorRandomSet(self->targetEnt->avelocity, 300.0f);
 
@@ -1875,7 +1875,7 @@ void tbeast_check_snatch(edict_t* self, float forward_offset, float right_offset
 		SetAnim(self, ANIM_BITELOW_SFIN);
 
 	self->targetEnt = found;
-	self->targetEnt->flags |= FL_FLY;
+	self->targetEnt->flags |= (FL_FLY | FL_IS_TBEAST_TOY); //mxd. +FL_IS_TBEAST_TOY.
 	self->targetEnt->movetype = PHYSICSTYPE_FLY;
 
 	if (found->client != NULL)
