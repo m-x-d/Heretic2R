@@ -626,6 +626,10 @@ Variable* CScript::HandleBuiltinFunction()
 		{
 			const Variable* value = PopStack();
 			edict_t* search = G_Find(nullptr, FOFS(targetname), value->GetStringValue());
+
+			if (search == nullptr) //mxd. Add script warning.
+				gi.dprintf("CScript: failed to find entity with targetname '%s'\n!", value->GetStringValue());
+
 			var = new EntityVar(search);
 			delete value;
 		} break;
@@ -2036,8 +2040,14 @@ bool CScript::NewParameter(Variable* which)
 	switch (which->GetType())
 	{
 		case TYPE_ENTITY:
-			temp = new EntityVar(G_Find(nullptr, FOFS(targetname), parm_value->GetStringValue()));
-			break;
+		{
+			edict_t* ent = G_Find(nullptr, FOFS(targetname), parm_value->GetStringValue());
+
+			if (ent == nullptr) //mxd. Add script warning.
+				gi.dprintf("CScript: failed to initialize entity parameter '%s' with '%s'!\n", which->GetName(), parm_value->GetStringValue());
+
+			temp = new EntityVar(ent);
+		} break;
 
 		case TYPE_INT:
 			temp = new IntVar("parm", Q_atoi(parm_value->GetStringValue())); //mxd. atol -> Q_atoi.
