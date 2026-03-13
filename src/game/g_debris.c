@@ -18,7 +18,7 @@
 #pragma region ========================== Spawn debris logic ==========================
 
 //mxd. Scale sent debris bbox radius down a bit (because of imprecise direction sending logic, we may end up with bigger bbox on CLFX side
-// (for example, [20, 20, 36] becomes [13.9, 22.5, 36.4]), which may result in gibs/debris stuck in floor/ceiling (observed the latter (on obj_cocoon), but on the former)).
+// (for example, [20, 20, 36] becomes [13.9, 22.5, 36.4]), which may result in gibs/debris stuck in floor/ceiling (observed the latter (on obj_cocoon), but not the former)).
 #define DEBRIS_FX_SIZE_SCALER	0.85f //TODO: increase MSG_WriteDir()/MSG_ReadDir() precision instead?
 
 static void SpawnDebris(edict_t* self, float size, const vec3_t origin)
