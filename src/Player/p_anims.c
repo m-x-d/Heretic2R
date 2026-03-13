@@ -328,18 +328,13 @@ PLAYER_API void PlayerAnimLowerUpdate(playerinfo_t* info) // Exported function n
 	// Grab the sequence ctrl struct.
 	const seqctrl_t* seqctrl = ((info->edictflags & FL_CHICKEN) ? &ChickenCtrl[info->lowerseq] : &SeqCtrl[info->lowerseq]);
 
-	int newseq;
-	if (info->edictflags & FL_IS_TBEAST_TOY) //mxd. Do NOT stand up in the middle of tbeast_move_snatch animation.
-		newseq = ASEQ_KNOCKDOWN;
-	else if (seqctrl->branchfunc != NULL) // Check the branch function. This evaluates "extra" command flags for a potential modification of the "simple" procedure.
-		newseq = seqctrl->branchfunc(info);
-	else
-		newseq = ASEQ_NONE;
+	// First check the branch function. This evaluates "extra" command flags for a potential modification of the "simple" procedure.
+	int newseq = (seqctrl->branchfunc != NULL ? seqctrl->branchfunc(info) : ASEQ_NONE);
 
 	// If even after the special-case BranchFunc didn't indicate a new sequence...
 	if (newseq == ASEQ_NONE)
 	{
-		// The seqctrl indicates the control flag that this sequence is dependent on.  
+		// The seqctrl indicates the control flag that this sequence is dependent on.
 		// We've defined a continue and terminate sequence depending on it.
 		if (seqctrl->command != ACMD_NONE && info->seqcmd[seqctrl->command] != 0)
 			newseq = seqctrl->continueseq;
