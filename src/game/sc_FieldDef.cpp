@@ -330,6 +330,6 @@ void FieldDef::SetValue(Variable* var, Variable* value) const
 		if (ent != nullptr)
 			gi.linkentity(ent);
 		else
-			Com_Printf("FieldDef::SetValue: failed to relink field %i!\n", field_type);
+			gi.dprintf("FieldDef::SetValue: failed to relink '%s.%s' field!\n", var->GetName(), name);
 	}
 }
