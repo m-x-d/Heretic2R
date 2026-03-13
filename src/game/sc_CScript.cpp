@@ -628,7 +628,7 @@ Variable* CScript::HandleBuiltinFunction()
 			edict_t* search = G_Find(nullptr, FOFS(targetname), value->GetStringValue());
 
 			if (search == nullptr) //mxd. Add script warning.
-				gi.dprintf("CScript: failed to find entity with targetname '%s'\n!", value->GetStringValue());
+				gi.dprintf("CScript: failed to find entity with targetname '%s'!\n", value->GetStringValue());
 
 			var = new EntityVar(search);
 			delete value;
