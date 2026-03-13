@@ -153,7 +153,7 @@ static float debris_elasticity[NUM_MAT] =
 	1.3f,	// Insect chunks.
 };
 
-const paletteRGBA_t fire_dlight_color = { .c = 0xff007fff }; //mxd
+static const paletteRGBA_t fire_dlight_color = { .c = 0xff007fff }; //mxd
 
 #pragma endregion
 

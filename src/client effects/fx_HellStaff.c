@@ -24,7 +24,7 @@
 static struct model_s* hell_models[2];
 static struct sfx_s* hell_hit_sound; //mxd
 
-const paletteRGBA_t hellbolt_dlight_color = { .r = 255, .g = 96, .b = 48, .a = 255 };
+static const paletteRGBA_t hellbolt_dlight_color = { .r = 255, .g = 96, .b = 48, .a = 255 };
 
 void PreCacheHellstaff(void)
 {
