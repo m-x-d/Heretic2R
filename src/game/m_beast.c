@@ -1788,10 +1788,9 @@ void tbeast_shake_toy(edict_t* self, float var1, float var2, float var3) //mxd. 
 	vec3_t blood_dir;
 	VectorSubtract(self->targetEnt->s.origin, self->s.origin, blood_dir);
 
-	vec3_t enemy_dir;
-	VectorScale(blood_dir, -1.0f, enemy_dir);
+	vec3_t enemy_dir = VEC3_INITS(blood_dir, -1.0f);
 	enemy_dir[2] /= 10.0f;
-	vectoangles(enemy_dir, self->targetEnt->s.angles);
+	vectoangles(enemy_dir, self->targetEnt->s.angles); //TODO: this doesn't rotate player model.
 
 	switch (self->targetEnt->count) //TODO: never assigned. Assign in tbeast_check_snatch()?
 	{
