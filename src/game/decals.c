@@ -8,7 +8,7 @@
 #include "Vector.h"
 
 // 'plane_dir' parameter will become redundant when all scorchmarks are spawned on the client.
-qboolean IsDecalApplicable(const edict_t* target, const vec3_t origin, const csurface_t* surface, const cplane_t* plane, vec3_t plane_dir)
+qboolean IsDecalApplicable(const edict_t* target, const vec3_t origin, const csurface_t* surface, const cplane_t* plane, vec3_t plane_dir) //mxd. Removed unused 'owner' arg.
 {
 	if (plane == NULL || Vec3IsZero(plane->normal) || surface == NULL || (surface->flags & SURF_SKY) || target == NULL)
 		return false;
