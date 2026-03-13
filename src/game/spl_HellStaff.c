@@ -278,7 +278,7 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 		ignore_ent = trace.ent;
 	}
 
-	const byte b_len = (byte)(VectorSeparation(trace.endpos, cur_start_pos) / 8.0f);
+	const byte b_len = (byte)(VectorSeparation(trace.endpos, start_pos) / 8.0f);
 
 	if (b_len > 0) //mxd. Avoid assert in GetTruePlane()...
 	{
@@ -288,7 +288,7 @@ static void FireHellLaser(edict_t* caster, const vec3_t start_pos, const vec3_t 
 			fx_flags |= CEF_FLAG7;
 
 		// Draw last (when reflected) or the only segment of the line.
-		gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, fx_flags, cur_start_pos, "tb", forward, b_len);
+		gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, fx_flags, start_pos, "tb", forward, b_len);
 	}
 }
 
