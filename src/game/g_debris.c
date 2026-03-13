@@ -17,6 +17,10 @@
 
 #pragma region ========================== Spawn debris logic ==========================
 
+//mxd. Scale sent debris bbox radius down a bit (because of imprecise direction sending logic, we may end up with bigger bbox on CLFX side
+// (for example, [20, 20, 36] becomes [13.9, 22.5, 36.4]), which may result in gibs/debris stuck in floor/ceiling (observed the latter (on obj_cocoon), but on the former)).
+#define DEBRIS_FX_SIZE_SCALER	0.85f //TODO: increase MSG_WriteDir()/MSG_ReadDir() precision instead?
+
 static void SpawnDebris(edict_t* self, float size, const vec3_t origin)
 {
 	static const char* debris_sounds[NUM_MAT] = //mxd. Made local static.
@@ -38,9 +42,8 @@ static void SpawnDebris(edict_t* self, float size, const vec3_t origin)
 	size /= 10.0f;
 	int debris_size = ClampI((int)size, 1, 255);
 
-	vec3_t half_size;
-	VectorScale(self->size, 0.5f, half_size);
-	const byte b_mag = (byte)(Clamp(VectorLength(half_size), 1.0f, 255.0f));
+	const vec3_t half_size = VEC3_INITS(self->size, 0.5f);
+	const byte b_mag = (byte)(Clamp(VectorLength(half_size) * DEBRIS_FX_SIZE_SCALER, 1.0f, 255.0f)); //mxd. Scale by DEBRIS_FX_SIZE_SCALER.
 
 	int fx_flags = 0;
 	if (self->fire_damage_time > level.time || (self->svflags & SVF_ONFIRE))
@@ -160,7 +163,7 @@ void BecomeDebris(edict_t* self)
 void SprayDebris(const edict_t* self, const vec3_t spot, int num_chunks) //mxd. 'byte num_chunks' in original logic. Removed unused 'damage' arg.
 {
 	byte b_mat = (byte)self->materialtype;
-	const byte b_mag = (byte)(Clamp(VectorLength(self->mins), 1.0f, 255.0f));
+	const byte b_mag = (byte)(Clamp(VectorLength(self->mins) * DEBRIS_FX_SIZE_SCALER, 1.0f, 255.0f)); //mxd. Scale by DEBRIS_FX_SIZE_SCALER.
 
 	if (b_mat == MAT_FLESH || b_mat == MAT_INSECT)
 	{
