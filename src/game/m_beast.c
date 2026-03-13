@@ -1701,6 +1701,8 @@ void tbeast_throw_toy(edict_t* self)
 //mxd. Similar to gorgon_shake_toy()... in original logic.
 void tbeast_shake_toy(edict_t* self, float var1, float var2, float var3) //mxd. Named 'tbeast_toy_ofs' in original logic.
 {
+#define TBEAST_SHAKE_PLAYER_OFFSET_Z	26.0f
+
 	if (self->enemy == NULL)
 		return;
 
@@ -1771,6 +1773,10 @@ void tbeast_shake_toy(edict_t* self, float var1, float var2, float var3) //mxd. 
 
 	assert(!VectorCompare(enemy_pos, self->s.origin));
 	VectorCopy(enemy_pos, self->targetEnt->s.origin);
+
+	//mxd. When shaking player, add vertical offset, because player is in knockdown state.
+	if (self->targetEnt->client != NULL)
+		VectorMA(enemy_pos, TBEAST_SHAKE_PLAYER_OFFSET_Z, up, self->targetEnt->s.origin);
 
 	vec3_t blood_dir;
 	VectorSubtract(self->targetEnt->s.origin, self->s.origin, blood_dir);
