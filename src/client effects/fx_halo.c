@@ -17,6 +17,11 @@
 
 static struct model_s* halo_models[2];
 
+static paletteRGBA_t halo_blue =	{ .r = 90,  .g = 90,  .b = 175, .a = 255 }; //mxd
+static paletteRGBA_t halo_yellow =	{ .r = 190, .g = 180, .b = 16,  .a = 255 }; //mxd
+static paletteRGBA_t halo_green =	{ .r = 115, .g = 222, .b = 115, .a = 255 }; //mxd
+static paletteRGBA_t halo_orange =	{ .r = 148, .g = 132, .b = 82,  .a = 255 }; //mxd
+
 void PreCacheHalos(void)
 {
 	halo_models[0] = fxi.RegisterModel("sprites/lens/halo1.sp2");
@@ -67,6 +72,18 @@ static qboolean HaloUpdate(client_entity_t* self, centity_t* owner)
 		HaloUpdateVisibility(self, cam_dist, trace_dist < self->radius); //mxd
 	}
 
+	//mxd. Randomize offsets and color of flame halo a bit.
+	if (!(self->flags & (CEF_NO_DRAW | CEF_FLAG7 | CEF_FLAG8)) && R_DETAIL > DETAIL_HIGH)
+	{
+		const float time = (float)(((int)self + fx_time) % 6283); // Use (int)self as unique (and free) timing offset, use modulo to avoid floating point errors. 6283 == (int)(ANGLE_360 * 1000.0f).
+
+		self->r.origin[0] = self->origin[0] + sinf(time / 85.0f + time / 221.0f) * 0.1f;
+		self->r.origin[1] = self->origin[1] + sinf(time / 75.0f + time / 233.0f) * 0.1f;
+		self->r.origin[2] = self->origin[2] + sinf(time / 45.0f + time / 248.0f) * 0.2f;
+		
+		self->r.color.r = (byte)((float)halo_orange.r + 8.0f + sinf(time / 120.0f + time / 76.0f) * 8.0f);
+	}
+
 	return true;
 }
 
@@ -91,19 +108,19 @@ void FXHalo(centity_t* owner, int type, int flags, vec3_t origin)
 	switch (tint_flags)
 	{
 		case CEF_FLAG7: // Blue-ish halo.
-			COLOUR_SET(halo->r.color, 90, 90, 175); //mxd. Use macro.
+			COLOUR_COPY(halo_blue, halo->r.color); //mxd. Use macro.
 			break;
 
 		case CEF_FLAG8: // Yellow halo.
-			COLOUR_SET(halo->r.color, 190, 180, 16); //mxd. Use macro.
+			COLOUR_COPY(halo_yellow, halo->r.color); //mxd. Use macro.
 			break;
 
 		case CEF_FLAG7 | CEF_FLAG8: //mxd. Green halo (white halo in original logic (unused) - changed to better match light color of light_gem2).
-			COLOUR_SET(halo->r.color, 115, 222, 115);
+			COLOUR_COPY(halo_green, halo->r.color); //mxd. Use macro.
 			break;
 
 		default: // Orange-brown-ish halo.
-			COLOUR_SET(halo->r.color, 148, 132, 82); //mxd. Use macro.
+			COLOUR_COPY(halo_orange, halo->r.color); //mxd. Use macro.
 			break;
 	}
 
