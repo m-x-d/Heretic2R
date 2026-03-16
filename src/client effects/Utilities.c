@@ -604,7 +604,7 @@ qboolean GetTruePlane(vec3_t origin, vec3_t direction, const float direction_sca
 	VectorMA(origin, direction_scale, direction, end);
 
 	trace_t trace;
-	fxi.Trace(origin, vec3_origin, vec3_origin, end, MASK_DRIP, CTF_CLIP_TO_WORLD, &trace);
+	fxi.Trace(origin, vec3_origin, vec3_origin, end, MASK_SOLID, CTF_CLIP_TO_WORLD, &trace); //mxd. MASK_DRIP in original logic. We don't want scorchmarks/decals on liquid surfaces.
 
 	if (trace.fraction != 1.0f)
 	{
