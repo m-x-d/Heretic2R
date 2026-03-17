@@ -708,6 +708,18 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	return debris;
 }
 
+static qboolean CanSpawnChunkAt(const vec3_t origin, const float scale) //mxd
+{
+	const float radius = scale * 1.2f; // Compensate for scale randomization in FXDebris_Throw()...
+	const vec3_t mins = VEC3_SET(-radius, -radius, -radius);
+	const vec3_t maxs = VEC3_SET( radius,  radius,  radius);
+
+	trace_t trace;
+	fxi.Trace(origin, mins, maxs, origin, MASK_SOLID, CTF_CLIP_TO_WORLD, &trace); //TODO: PointContents would probably suffice here. Oh well...
+
+	return (!trace.startsolid && !trace.allsolid);
+}
+
 // Flesh debris throws should be a separate effect. This would save quite a bit of code.
 // num - number of chunks to spawn (dependent on size and mass).
 // material - type of chunk to explode.
@@ -729,6 +741,9 @@ void FXDebris_SpawnChunks(int type, int flags, const vec3_t origin, const int nu
 	{
 		vec3_t hold_origin;
 		VectorRandomAdd(origin, mins, hold_origin);
+
+		if (!CanSpawnChunkAt(hold_origin, scale)) //mxd. Avoid spawning in solid objects...
+			continue;
 
 		if (material != MAT_NONE)
 		{
@@ -763,8 +778,11 @@ static void Debris_SpawnFleshChunks(int type, int flags, const vec3_t origin, co
 		vec3_t hold_origin;
 		VectorRandomAdd(origin, mins, hold_origin);
 
-		FXDebris_Throw(hold_origin, material, dir, ke, scale, flags, altskin);
-		DoBloodSplash(hold_origin, 5, material == MAT_INSECT);
+		if (CanSpawnChunkAt(hold_origin, scale)) //mxd. Avoid spawning in solid objects...
+		{
+			FXDebris_Throw(hold_origin, material, dir, ke, scale, flags, altskin);
+			DoBloodSplash(hold_origin, 5, material == MAT_INSECT);
+		}
 	}
 }
 
