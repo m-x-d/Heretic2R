@@ -838,6 +838,11 @@ cvar_t* m_banner_credits;
 
 static int credits_start_time;
 
+//mxd. Music track info when entering menu.
+static int mus_track;
+static uint mus_track_pos;
+static qboolean mus_looping;
+
 static void M_Credits_DrawBG(const float scale) //mxd
 {
 	static const char* bg_sildes[] =
@@ -941,7 +946,7 @@ static const char* M_Credits_Key(const int key)
 {
 	if (cls.m_menustate == MS_OPENED && key == K_ESCAPE)
 	{
-		se.MusicPlay(CDTRACK_MENU_MAIN, 0, true); //mxd. Switch back to Main Menu track.
+		se.MusicPlay(mus_track, mus_track_pos, mus_looping); //mxd. Switch back to initial track.
 		M_PopMenu();
 	}
 
@@ -955,5 +960,6 @@ void M_Menu_Credits_f(void)
 	M_PushMenu(M_Credits_MenuDraw, M_Credits_Key);
 
 	//H2_BUGFIX: mxd. Original logic does Cbuf_AddText("cd loop 2\n"); Cbuf_Execute() instead (which doesn't work, even in vanilla H2).
+	se.MusicGetCurrentTrackInfo(&mus_track, &mus_track_pos, &mus_looping);
 	se.MusicPlay(CDTRACK_MENU_CREDITS, 0, true);
 }
