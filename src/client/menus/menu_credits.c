@@ -6,6 +6,7 @@
 
 #include "client.h"
 #include "menu_credits.h"
+#include "Angles.h"
 
 #pragma region ========================== THE CREDITS ==========================
 
@@ -837,13 +838,76 @@ cvar_t* m_banner_credits;
 
 static int credits_start_time;
 
+static void M_Credits_DrawBG(const float scale) //mxd
+{
+	static const char* bg_sildes[] =
+	{
+		"book/back/b_ssmap.bk",
+		"book/back/b_andmap.bk",
+		"book/back/b_hivemap.bk",
+		"book/back/b_worldmap.bk",
+	};
+
+#define NUM_SLIDES				(int)ARRAY_SIZE(bg_sildes)
+#define SLIDE_DURATION			8000
+#define SLIDE_TRANSITION		2000
+#define SLIDE_ANIMATION_START	(SLIDE_DURATION - SLIDE_TRANSITION)
+#define BG_FADE_ALPHA			48
+
+	paletteRGBA_t color = TextPalette[P_BLACK];
+	int slide_time = cls.realtime - credits_start_time;
+
+	// Start with b_conback8...
+	if (slide_time < SLIDE_DURATION)
+	{
+		Menu_DrawBG("book/back/b_conback8.bk", scale);
+
+		// Fade-in first slide?
+		if (slide_time > SLIDE_ANIMATION_START)
+		{
+			const float lerp = (float)(slide_time - SLIDE_ANIMATION_START) / (float)SLIDE_TRANSITION;
+			const float alpha = 1.0f - sinf(ANGLE_90 + ANGLE_90 * lerp);
+			re.BookDrawPic(bg_sildes[0], scale, alpha);
+		}
+
+		// Fade-in... fade.
+		const float lerp = (float)slide_time / (float)SLIDE_DURATION;
+		const float alpha = 1.0f - sinf(ANGLE_90 + ANGLE_90 * lerp);
+		color.a = (byte)(alpha * BG_FADE_ALPHA);
+
+		if (color.a > 0) // Avoid assert in Draw_Fill()...
+			re.DrawFill(0, 0, viddef.width, viddef.height, color);
+
+		return;
+	}
+
+	const int cur_slide = ((slide_time - SLIDE_DURATION) / SLIDE_DURATION) % NUM_SLIDES;
+	slide_time %= SLIDE_DURATION;
+
+	// Draw current slide.
+	Menu_DrawBG(bg_sildes[cur_slide], scale);
+
+	// Fade-in new slide?
+	if (slide_time > SLIDE_ANIMATION_START)
+	{
+		const int next_slide = (cur_slide + 1) % NUM_SLIDES;
+		const float lerp = (float)(slide_time - SLIDE_ANIMATION_START) / (float)SLIDE_TRANSITION;
+		const float alpha = 1.0f - sinf(ANGLE_90 + ANGLE_90 * lerp);
+		re.BookDrawPic(bg_sildes[next_slide], scale, alpha);
+	}
+
+	// Draw fade.
+	color.a = BG_FADE_ALPHA;
+	re.DrawFill(0, 0, viddef.width, viddef.height, color);
+}
+
 static void M_Credits_MenuDraw(void)
 {
 	paletteRGBA_t color;
 	char* line;
 
-	// Draw menu BG.
-	Menu_DrawBG("book/back/b_conback8.bk", cls.m_menuscale);
+	// Draw fancy menu BG.
+	M_Credits_DrawBG(cls.m_menuscale); //mxd
 
 	// Draw credits.
 	int y = viddef.height - (cls.realtime - credits_start_time) / 24; //mxd. / 40 in original logic. Make it scroll a bit faster...
