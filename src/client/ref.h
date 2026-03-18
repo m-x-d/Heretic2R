@@ -230,7 +230,7 @@ typedef struct refexport_s
 	void (*DrawFadeScreen)(paletteRGBA_t color);
 	void (*DrawBigFont)(int x, int y, const char* text, float alpha);
 	int (*BF_Strlen)(const char* text);
-	void (*BookDrawPic)(const char* name, float scale);
+	void (*BookDrawPic)(const char* name, float scale, float alpha); //mxd. +alpha arg.
 
 	// Draw images for cinematic rendering (which can have a different palette).
 	void (*DrawInitCinematic)(int width, int height);

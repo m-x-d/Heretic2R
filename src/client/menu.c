@@ -1301,7 +1301,7 @@ void Menu_DrawBG(const char* bk_path, const float scale) //mxd
 	re.DrawFill(0, 0, viddef.width, viddef.height, color);
 
 	// Draw menu BG.
-	re.BookDrawPic(bk_path, scale);
+	re.BookDrawPic(bk_path, scale, 1.0f);
 }
 
 // Q2 counterpart

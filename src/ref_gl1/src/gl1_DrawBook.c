@@ -175,7 +175,7 @@ int BF_Strlen(const char* text)
 	}
 }
 
-void Draw_BookPic(const char* name, const float scale)
+void Draw_BookPic(const char* name, const float scale, const float alpha) //mxd. +alpha arg.
 {
 	const model_t* mod = RI_RegisterModel(name);
 
@@ -213,6 +213,6 @@ void Draw_BookPic(const char* name, const float scale)
 		const int pic_w = (const int)ceilf((float)bframe->w * vid_w / header_w * scale);
 		const int pic_h = (const int)ceilf((float)bframe->h * vid_h / header_h * scale);
 
-		Draw_Render(offset_x + pic_x, offset_y + pic_y, pic_w, pic_h, mod->skins[i], gl_bookalpha->value);
+		Draw_Render(offset_x + pic_x, offset_y + pic_y, pic_w, pic_h, mod->skins[i], gl_bookalpha->value * alpha);
 	}
 }
