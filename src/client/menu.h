@@ -19,6 +19,10 @@
 #define SND_MENU_CLOSE	"misc/menu3.wav" // Go to parent menu / close menu. (Esc key).
 #define SND_MENU_TOGGLE	"misc/menu4.wav" // Toggle selected item value (left/right keys).
 
+//mxd. Menu music tracks.
+#define CDTRACK_MENU_MAIN		14
+#define CDTRACK_MENU_CREDITS	2
+
 //mxd. Max. line length for Help / City Map / Objectives menus.
 #define TB_MAX_LINE_LENGTH	(8 + (18 * viddef.width / DEF_WIDTH / ui_scale))
 

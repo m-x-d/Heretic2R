@@ -162,7 +162,7 @@ static void OnMainMenuOpened(void) // H2
 
 	//mxd. When not ingame, play menu music, otherwise play menu open sound.
 	if (cls.state != ca_active)
-		se.MusicPlay(14, 0, true);
+		se.MusicPlay(CDTRACK_MENU_MAIN, 0, true);
 	else
 		se.StartLocalSound("Weapons/bowdraw2.wav");
 }

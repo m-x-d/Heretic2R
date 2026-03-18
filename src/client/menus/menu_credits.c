@@ -5,7 +5,6 @@
 //
 
 #include "client.h"
-#include "qcommon.h"
 #include "menu_credits.h"
 
 #pragma region ========================== THE CREDITS ==========================
@@ -877,7 +876,10 @@ static void M_Credits_MenuDraw(void)
 static const char* M_Credits_Key(const int key)
 {
 	if (cls.m_menustate == MS_OPENED && key == K_ESCAPE)
+	{
+		se.MusicPlay(CDTRACK_MENU_MAIN, 0, true); //mxd. Switch back to Main Menu track.
 		M_PopMenu();
+	}
 
 	//TODO: scroll credits 2x faster when K_SPACE is pressed?
 	return NULL;
@@ -887,6 +889,7 @@ void M_Menu_Credits_f(void)
 {
 	credits_start_time = cls.realtime;
 	M_PushMenu(M_Credits_MenuDraw, M_Credits_Key);
-	Cbuf_AddText("cd loop 2\n");
-	Cbuf_Execute();
+
+	//H2_BUGFIX: mxd. Original logic does Cbuf_AddText("cd loop 2\n"); Cbuf_Execute() instead (which doesn't work, even in vanilla H2).
+	se.MusicPlay(CDTRACK_MENU_CREDITS, 0, true);
 }
