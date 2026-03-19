@@ -7,7 +7,9 @@
 #pragma once
 
 #include <glad-GL1.3/glad.h> // Must be included before SDL.
-#include "gl1_Debug.h"
+#if _DEBUG
+	#include "gl1_Debug.h"
+#endif
 #include "ref.h"
 
 #define REF_TITLE			"OpenGL 1.3" // H2_1.07: "GL 2.1"; Q2: "GL 0.01".
