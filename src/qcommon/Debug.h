@@ -12,20 +12,7 @@
 #if _DEBUG
 	#define NOT_IMPLEMENTED		__asm { int 3 } // https://learn.microsoft.com/en-us/cpp/intrinsics/debugbreak
 #else
-	#if NDEBUG
-		#define TOGGLE_NDEBUG	1
-	#endif
-
-	#if TOGGLE_NDEBUG
-		#undef NDEBUG
-	#endif
-
-	#include <assert.h>
-	#define NOT_IMPLEMENTED		assert(!("Not implemented!"));
-
-	#if TOGGLE_NDEBUG
-		#define NDEBUG
-	#endif
+	#define NOT_IMPLEMENTED
 #endif
 
 // Debug colors.
