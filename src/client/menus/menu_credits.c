@@ -938,7 +938,10 @@ static void M_Credits_MenuDraw(void)
 	}
 
 	if (cls.m_menustate == MS_OPENED && y < 0)
+	{
+		se.MusicPlay(mus_track, mus_track_pos, mus_looping); //mxd. Switch back to initial track.
 		M_PopMenu();
+	}
 }
 
 //TODO: implement 'cheer' and 'celebrate' buttons.
