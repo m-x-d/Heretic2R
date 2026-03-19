@@ -144,21 +144,9 @@ static qboolean fmLoadMeshNodes(fmdl_t* fmdl, model_t* model, const int version,
 	return true;
 }
 
-static qboolean fmLoadShortFrames(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
+//mxd. FM_SHORT_FRAME, FM_NORMAL and FM_COMP blocks are never used in any of H2 models.
+static qboolean fmSkipBlock(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
 {
-	NOT_IMPLEMENTED
-	return false;
-}
-
-static qboolean fmLoadNormal(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
-{
-	NOT_IMPLEMENTED
-	return false;
-}
-
-static qboolean fmLoadComp(fmdl_t* fmdl, model_t* model, const int version, const int datasize, const void* buffer)
-{
-	NOT_IMPLEMENTED
 	return false;
 }
 
@@ -319,9 +307,9 @@ static fmdl_loader_t fmblocks[] =
 	{ FM_FRAME_NAME,		fmLoadFrames },
 	{ FM_GLCMDS_NAME,		fmLoadGLCmds },
 	{ FM_MESH_NAME,			fmLoadMeshNodes },
-	{ FM_SHORT_FRAME_NAME,	fmLoadShortFrames },
-	{ FM_NORMAL_NAME,		fmLoadNormal },
-	{ FM_COMP_NAME,			fmLoadComp },
+	{ FM_SHORT_FRAME_NAME,	fmSkipBlock },
+	{ FM_NORMAL_NAME,		fmSkipBlock },
+	{ FM_COMP_NAME,			fmSkipBlock },
 	{ FM_SKELETON_NAME,		fmLoadSkeleton },
 	{ FM_REFERENCES_NAME,	fmLoadReferences },
 	{ "",					NULL },
