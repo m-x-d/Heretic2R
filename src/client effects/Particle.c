@@ -69,7 +69,7 @@ int AddParticlesToView(client_entity_t* ce)
 
 	for (prev = &ce->p_root, current = ce->p_root; current != NULL; current = current->next)
 	{
-#if _DEBUG
+#ifdef _DEBUG
 		const int ptype = (current->type & PFL_FLAG_MASK);
 		assert(ptype < NUM_PARTICLE_TYPES);
 #endif

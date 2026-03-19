@@ -16,7 +16,7 @@ typedef struct ResourceManager_s
 	uint nodeSize;
 	struct ResMngr_Block_s* blockList;
 	char** free;
-#if _DEBUG
+#ifdef _DEBUG
 	uint numResourcesAllocated;
 #endif
 } ResourceManager_t;

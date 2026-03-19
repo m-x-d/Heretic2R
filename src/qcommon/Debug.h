@@ -9,7 +9,7 @@
 #include "Heretic2.h"
 #include "q_Typedef.h"
 
-#if _DEBUG
+#ifdef _DEBUG
 	#define NOT_IMPLEMENTED		__asm { int 3 } // https://learn.microsoft.com/en-us/cpp/intrinsics/debugbreak
 #else
 	#define NOT_IMPLEMENTED

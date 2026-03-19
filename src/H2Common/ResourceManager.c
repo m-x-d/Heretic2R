@@ -4,7 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#if _DEBUG
+#ifdef _DEBUG
 	#include <windows.h>
 #endif
 
@@ -56,7 +56,7 @@ H2COMMON_API void ResMngr_Con(ResourceManager_t* resource, const uint init_resSi
 	resource->nodeSize = resource->resSize + sizeof(*resource->free);
 	resource->blockList = NULL;
 
-#if _DEBUG
+#ifdef _DEBUG
 	resource->numResourcesAllocated = 0;
 #endif
 
@@ -66,7 +66,7 @@ H2COMMON_API void ResMngr_Con(ResourceManager_t* resource, const uint init_resSi
 // ResourceManager destructor.
 H2COMMON_API void ResMngr_Des(ResourceManager_t* resource)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	if (resource->numResourcesAllocated > 0)
 	{
 		char msg[100];
@@ -88,7 +88,7 @@ H2COMMON_API void* ResMngr_AllocateResource(ResourceManager_t* resource, const u
 {
 	assert(size == resource->resSize);
 
-#if _DEBUG
+#ifdef _DEBUG
 	resource->numResourcesAllocated++;
 #endif
 
@@ -114,7 +114,7 @@ H2COMMON_API void ResMngr_DeallocateResource(ResourceManager_t* resource, void* 
 {
 	assert(size == resource->resSize);
 
-#if _DEBUG
+#ifdef _DEBUG
 	assert(resource->numResourcesAllocated > 0);
 	resource->numResourcesAllocated--;
 #endif

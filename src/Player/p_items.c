@@ -724,7 +724,7 @@ PLAYER_API void InitItems(void)
 	p_itemlist = itemlist;
 	p_num_items = (sizeof(itemlist) / sizeof(itemlist[0])) - 1; //mxd. Last item is NULL end of list marker.
 
-#if _DEBUG
+#ifdef _DEBUG
 	//mxd. Make sure mins/maxs are valid.
 	gitem_t* item = &itemlist[1];
 	for (int i = 1; i < p_num_items; i++, item++) // Skip 1-st item (le NULL).

@@ -7,7 +7,7 @@
 #pragma once
 
 #include <glad-GL1.3/glad.h> // Must be included before SDL.
-#if _DEBUG
+#ifdef _DEBUG
 	#include "gl1_Debug.h"
 #endif
 #include "ref.h"

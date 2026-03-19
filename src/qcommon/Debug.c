@@ -8,7 +8,7 @@
 #include "client.h"
 #include "Vector.h"
 
-#if _DEBUG
+#ifdef _DEBUG
 	#include <windows.h>
 #endif
 
@@ -25,7 +25,7 @@ Q2DLL_DECLSPEC paletteRGBA_t dc_purple =	{ .r = 255,	.g = 0,		.b = 255,	.a = 255
 // Print to Visual Studio console.
 Q2DLL_DECLSPEC void DBG_IDEPrint(const char* fmt, ...)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	va_list argptr;
 	char msg[1024];
 
@@ -50,7 +50,7 @@ static DebugHudMessage_t dbg_messages[NUM_DEBUG_MESSAGES];
 
 Q2DLL_DECLSPEC void DBG_HudPrint(const int slot, const char* label, const char* fmt, ...)
 {
-#if _DEBUG
+#ifdef _DEBUG
 
 	if (slot < 0 || slot >= NUM_DEBUG_MESSAGES)
 	{
@@ -88,7 +88,7 @@ Q2DLL_DECLSPEC void DBG_HudPrint(const int slot, const char* label, const char* 
 
 void DBG_DrawMessages(void)
 {
-#if _DEBUG
+#ifdef _DEBUG
 
 	int ox = 0;
 	int oy = ui_line_height; // Leave 1 line for game messages.
@@ -127,14 +127,14 @@ void DBG_DrawMessages(void)
 
 Q2DLL_DECLSPEC void DBG_AddBox(const vec3_t center, const float size, const paletteRGBA_t color, const float lifetime)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	re.AddDebugBox(center, size, color, lifetime);
 #endif
 }
 
 Q2DLL_DECLSPEC void DBG_AddBbox(const vec3_t center, const vec3_t mins, const vec3_t maxs, const paletteRGBA_t color, const float lifetime)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	vec3_t abs_mins;
 	vec3_t abs_maxs;
 	VectorAdd(center, mins, abs_mins);
@@ -146,14 +146,14 @@ Q2DLL_DECLSPEC void DBG_AddBbox(const vec3_t center, const vec3_t mins, const ve
 
 Q2DLL_DECLSPEC void DBG_AddEntityBbox(const edict_t* ent, const paletteRGBA_t color)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	re.AddDebugEntityBbox(ent, color);
 #endif
 }
 
 Q2DLL_DECLSPEC void DBG_AddLabel(const vec3_t origin, const paletteRGBA_t color, const float lifetime, const char* fmt, ...)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	if (fmt == NULL)
 		return;
 
@@ -170,7 +170,7 @@ Q2DLL_DECLSPEC void DBG_AddLabel(const vec3_t origin, const paletteRGBA_t color,
 
 Q2DLL_DECLSPEC void DBG_AddEntityLabel(const edict_t* ent, const paletteRGBA_t color, const char* fmt, ...)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	if (fmt == NULL)
 		return;
 
@@ -187,42 +187,42 @@ Q2DLL_DECLSPEC void DBG_AddEntityLabel(const edict_t* ent, const paletteRGBA_t c
 
 Q2DLL_DECLSPEC void DBG_AddLine(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	re.AddDebugLine(start, end, color, lifetime);
 #endif
 }
 
 Q2DLL_DECLSPEC void DBG_AddArrow(const vec3_t start, const vec3_t end, const paletteRGBA_t color, const float lifetime)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	re.AddDebugArrow(start, end, color, lifetime);
 #endif
 }
 
 Q2DLL_DECLSPEC void DBG_AddDirection(const vec3_t start, const vec3_t direction, const float size, const paletteRGBA_t color, const float lifetime)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	re.AddDebugDirection(start, direction, size, color, lifetime);
 #endif
 }
 
 Q2DLL_DECLSPEC void DBG_AddAngles(const vec3_t start, const vec3_t angles_deg, const float size, const paletteRGBA_t color, const float lifetime)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	re.AddDebugAngles(start, angles_deg, size, color, lifetime);
 #endif
 }
 
 Q2DLL_DECLSPEC void DBG_AddAnglesRad(const vec3_t start, const vec3_t angles_rad, const float size, const paletteRGBA_t color, const float lifetime)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	re.AddDebugAnglesRad(start, angles_rad, size, color, lifetime);
 #endif
 }
 
 Q2DLL_DECLSPEC void DBG_AddMarker(const vec3_t center, const float size, const paletteRGBA_t color, const float lifetime)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	re.AddDebugMarker(center, size, color, lifetime);
 #endif
 }
