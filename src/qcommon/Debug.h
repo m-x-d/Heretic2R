@@ -15,6 +15,8 @@
 	#define NOT_IMPLEMENTED
 #endif
 
+#define DEBUG_LABEL_SIZE	64 //mxd
+
 // Debug colors.
 Q2DLL_DECLSPEC extern paletteRGBA_t dc_white;
 Q2DLL_DECLSPEC extern paletteRGBA_t dc_red;
