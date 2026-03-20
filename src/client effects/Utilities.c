@@ -148,7 +148,7 @@ float GetSolidDist(const vec3_t origin, const float radius, const float max_dist
 }
 
 // Gets time for a client_entity_t to fall to the ground.
-int GetFallTime(vec3_t origin, const float velocity, const float acceleration, const float radius, const float maxtime, trace_t* trace)
+int GetFallTime(const vec3_t origin, const float velocity, const float acceleration, const float radius, const float maxtime, trace_t* trace)
 {
 	const vec3_t mins = { -radius, -radius, -1.0f };
 	const vec3_t maxs = {  radius,  radius,  1.0f };
