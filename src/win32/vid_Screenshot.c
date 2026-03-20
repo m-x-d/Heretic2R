@@ -15,8 +15,8 @@
 #define MAX_SCREENSHOTS				10000 // 100 in Q2/H2
 #define SCREENSHOT_FILENAME_FORMAT	"%sH2R-%04i.%s"
 
-#define PNG_COMPRESSION	5
-#define JPG_COMPRESSION	75
+#define PNG_COMPRESSION	8
+#define JPG_COMPRESSION	95
 
 typedef struct ScreenshotSaveBuffer_s
 {
