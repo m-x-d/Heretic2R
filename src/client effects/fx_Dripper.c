@@ -195,18 +195,25 @@ void FXDripper(centity_t* owner, const int type, int flags, vec3_t origin)
 	client_entity_t* spawner = ClientEntity_new(type, flags, origin, NULL, 1000);
 
 	spawner->r.color = (frame == 1 ? drip_yellow : color_white); //mxd. Original logic sets spawner->r.frame instead (but waterdrop.sp2 has single frame).
-
 	spawner->LifeTime = 60 * 1000 / drips_per_min;
-	spawner->Update = DripperUpdate;
-
 	spawner->acceleration[2] = GetGravity();
 	spawner->radius = DRIP_RADIUS;
 
 	trace_t trace;
 	const vec3_t start_pos = VEC3_INITA(origin, 0.0f, 0.0f, -DRIP_RADIUS); //mxd. Offset by DRIP_RADIUS, to avoid 0 fall time for env_water_drips with origin at ceiling level.
 	spawner->SpawnDelay = GetFallTime(start_pos, 0.0f, spawner->acceleration[2], DRIP_RADIUS, DRIP_MAX_DURATION, &trace);
-	spawner->SpawnData = trace.endpos[2];
-	spawner->SpawnInfo = trace.contents;
+
+	if (spawner->SpawnDelay > 100) //mxd. Add fall time check. Delay is in ms.
+	{
+		spawner->SpawnData = trace.endpos[2];
+		spawner->SpawnInfo = trace.contents;
+		spawner->Update = DripperUpdate;
+	}
+	else
+	{
+		Com_DPrintf("FX_DRIPPER with very short fall time (%i) at (%i %i %i) inhibited!\n", spawner->SpawnDelay, (int)origin[0], (int)origin[1], (int)origin[2]);
+		spawner->Update = KeepSelfAI;
+	}
 
 	AddEffect(owner, spawner);
 }
