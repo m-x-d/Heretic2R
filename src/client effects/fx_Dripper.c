@@ -203,8 +203,9 @@ void FXDripper(centity_t* owner, const int type, int flags, vec3_t origin)
 	spawner->radius = DRIP_RADIUS;
 
 	trace_t trace;
-	spawner->SpawnDelay = GetFallTime(origin, 0.0f, spawner->acceleration[2], DRIP_RADIUS, DRIP_MAX_DURATION, &trace);
-	spawner->SpawnData = trace.endpos[2] + 4.0f;
+	const vec3_t start_pos = VEC3_INITA(origin, 0.0f, 0.0f, -DRIP_RADIUS); //mxd. Offset by DRIP_RADIUS, to avoid 0 fall time for env_water_drips with origin at ceiling level.
+	spawner->SpawnDelay = GetFallTime(start_pos, 0.0f, spawner->acceleration[2], DRIP_RADIUS, DRIP_MAX_DURATION, &trace);
+	spawner->SpawnData = trace.endpos[2];
 	spawner->SpawnInfo = trace.contents;
 
 	AddEffect(owner, spawner);
