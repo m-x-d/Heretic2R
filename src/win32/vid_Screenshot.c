@@ -111,11 +111,11 @@ void VID_WriteScreenshot(const int width, const int height, const int comp, cons
 
 		if (fopen_s(&f, scr_filepath, "wb") == 0) //mxd. fopen -> fopen_s
 		{
-			written_size = (int)fwrite(buf.data, 1, buf.size, f);
+			written_size = (int)fwrite(buf.data, 1, buf.offset, f);
 			fclose(f);
 		}
 
-		success = (buf.size == written_size);
+		success = (buf.offset == written_size);
 	}
 
 	free(buf.data);
