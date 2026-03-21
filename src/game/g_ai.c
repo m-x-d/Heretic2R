@@ -624,7 +624,7 @@ qboolean FindTarget(edict_t* self)
 
 				if (level.sight_entity != NULL && level.sight_entity_framenum >= level.framenum - 1 && !(self->spawnflags & MSF_AMBUSH))
 				{
-					// Go after the enemy another monster saw saw, but only if not in ambush.
+					// Go after the enemy another monster saw, but only if not in ambush.
 					client = level.sight_entity;
 
 					if (client->enemy == self->enemy)
