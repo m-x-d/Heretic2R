@@ -16,7 +16,7 @@
 #define SCREENSHOT_FILENAME_FORMAT	"%sH2R-%04i.%s"
 
 #define PNG_COMPRESSION	8
-#define JPG_COMPRESSION	95
+#define JPG_QUALITY		95
 
 typedef struct ScreenshotSaveBuffer_s
 {
@@ -91,7 +91,7 @@ void VID_WriteScreenshot(const int width, const int height, const int comp, cons
 	{
 		case SSF_JPG:
 		default:
-			success = stbi_write_jpg_to_func(VID_WriteScreenshotCallback, &buf, width, height, comp, data, JPG_COMPRESSION);
+			success = stbi_write_jpg_to_func(VID_WriteScreenshotCallback, &buf, width, height, comp, data, JPG_QUALITY);
 			break;
 
 		case SSF_PNG: // png
