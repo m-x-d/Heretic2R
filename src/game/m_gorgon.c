@@ -1777,6 +1777,7 @@ void SP_monster_gorgon(edict_t* self)
 
 	self->mass = GORGON_MASS;
 	self->yaw_speed = ((self->spawnflags & MSF_GORGON_SPEEDY) ? 30.0f : 15.0f);
+	self->viewheight = 14; //mxd. Not set in original logic (so was set to 25 in M_WalkmonsterStartGo()).
 	self->gorgon_swerve_step = 0; // Used for slight turn during run.
 	self->gorgon_grabbed_toy_shake_mode = 0; //mxd. Initialize.
 

@@ -597,6 +597,7 @@ void SP_monster_elflord(edict_t* self)
 	self->max_health = self->health;
 
 	self->mass = ELFLORD_MASS;
+	self->viewheight = 10; //mxd. Not set in original logic (so was set to 25 in M_WalkmonsterStartGo()).
 	self->yaw_speed = 20.0f;
 
 	self->movetype = PHYSICSTYPE_STEP;
@@ -607,8 +608,8 @@ void SP_monster_elflord(edict_t* self)
 	self->materialtype = MAT_FLESH;
 	self->solid = SOLID_BBOX;
 
-	VectorSet(self->mins, -24.0f, -24.0f, -64.0f);
-	VectorSet(self->maxs, 24.0f, 24.0f, 16.0f);
+	VectorSet(self->mins, -24.0f, -24.0f, -64.0f); //TODO: set via STDMinsForClass.
+	VectorSet(self->maxs, 24.0f, 24.0f, 16.0f); //TODO: set via STDMaxsForClass.
 
 	VectorClear(self->velocity);
 

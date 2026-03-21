@@ -1486,7 +1486,7 @@ void SP_monster_tcheckrik_female(edict_t* self)
 	VectorCopy(STDMinsForClass[self->classID], self->mins);
 	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
 
-	self->viewheight = (int)(self->maxs[2] * 0.4f);
+	self->viewheight = (int)(self->maxs[2] * 0.8f); //mxd. Scaled by 0.4 in original logic (middle of chest).
 	self->s.modelindex = (byte)gi.modelindex("models/monsters/tcheckrik/female/tris.fm");
 	self->materialtype = MAT_INSECT;
 

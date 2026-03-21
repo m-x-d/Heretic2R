@@ -1490,6 +1490,7 @@ void SP_monster_ogle(edict_t* self)
 	self->max_health = self->health;
 
 	self->mass = OGLE_MASS;
+	self->viewheight = 14; //mxd. Not set in original logic (so was set to 25 in M_WalkmonsterStartGo()).
 	self->yaw_speed = 16.0f;
 
 	self->movetype = PHYSICSTYPE_STEP;

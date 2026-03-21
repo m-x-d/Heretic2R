@@ -920,6 +920,7 @@ void SP_monster_seraph_overlord(edict_t* self)
 
 	// Apply to the end result (whether designer set or not).
 	self->health = MonsterHealth(self->health);
+	self->viewheight = 30; //mxd. Not set in original logic (so was set to 25 in M_WalkmonsterStartGo()).
 	self->max_health = self->health;
 
 	self->mass = SERAPH_MASS;

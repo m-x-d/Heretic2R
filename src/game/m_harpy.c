@@ -1244,6 +1244,7 @@ void SP_monster_harpy(edict_t* self)
 
 	self->mass = HARPY_MASS;
 	self->yaw_speed = 14.0f;
+	self->viewheight = 10; //mxd. Not set in original logic (so was set to 25 in M_FlymonsterStartGo()).
 
 	self->movetype = PHYSICSTYPE_FLY;
 	self->gravity = 0.0f;

@@ -864,6 +864,7 @@ void SP_Monster_Gkrokon(edict_t* self)
 
 	self->materialtype = MAT_INSECT;
 	self->mass = GKROKON_MASS;
+	self->viewheight = 28; //mxd. Not set in original logic (so was set to 25 in M_WalkmonsterStartGo()).
 	self->yaw_speed = 20.0f;
 	self->movetype = PHYSICSTYPE_STEP;
 	VectorClear(self->knockbackvel);
