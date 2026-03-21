@@ -595,7 +595,10 @@ static void M_MonsterStartGo(edict_t* self) //mxd. Named 'monster_start_go' in o
 	assert(self->s.scale >= 0.0f); //mxd. Original logic uses 'if (self->s.scale)' check below, so...
 
 	if (self->s.scale > 0.0f)
+	{
 		self->mass = (int)((float)self->mass * self->s.scale);
+		self->viewheight = (int)((float)self->viewheight * self->s.scale); //mxd. Adjust viewheight as well.
+	}
 
 	if (self->spawnflags & MSF_COWARD) // Start off running away. //FIXME: let them specify a flee_time and use AI_FLEE if one is set? Would anyone ever use this?
 		self->monsterinfo.aiflags |= AI_COWARD;
