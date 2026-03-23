@@ -50,7 +50,7 @@ static void NormalForPoly(const glpoly_t* poly, const int index, vec3_t normal)
 	VectorNormalize(normal);
 }
 
-//mxd. Somewhat similar to RecursiveLightPoint().
+//mxd. Somewhat similar to R_RecursiveLightPoint().
 static int FindSurfaceR(const mnode_t* node, const vec3_t start, const vec3_t end, Surface_t* surface, const int index)
 {
 #define MAX_HIT_SURFACES	10
@@ -67,7 +67,7 @@ static int FindSurfaceR(const mnode_t* node, const vec3_t start, const vec3_t en
 
 	const float front = DotProduct(start, plane->normal) - plane->dist;
 	const float back = DotProduct(end, plane->normal) - plane->dist;
-	const uint side = front < 0.0f;
+	const int side = front < 0.0f;
 
 	if ((back < 0.0f) == side)
 		return FindSurfaceR(node->children[side], start, end, surface, index + 1);
