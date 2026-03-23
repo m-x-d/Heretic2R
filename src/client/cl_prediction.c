@@ -723,6 +723,10 @@ void CL_PredictMovement(void)
 			VectorCopy(pred_currAngles, cl.predictinfo.currAngles);
 			VectorCopy(pred_prevAngles, cl.predictinfo.prevAngles);
 		}
+		else
+		{
+			VectorCopy(cl.predictinfo.currAngles, cl.predictinfo.prevAngles); //mxd. Prevent endless interpolation between last 2 sets of angles (fixes player's model jittering on yaw axis when killed while turning).
+		}
 
 		cl.predictinfo.effects = pred_effects;
 		cl.predictinfo.clientnum = pred_clientnum;
