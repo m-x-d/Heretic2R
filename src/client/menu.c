@@ -1208,7 +1208,7 @@ static int SplitLines(char* dst, const int dst_size, const char* src, const int 
 	strcpy_s(dst, dst_size, src);
 	int num_lines = 1;
 
-	while (text_length >= line_length)
+	while (text_length > line_length)
 	{
 		char* line_end = &dst[line_length];
 		char* newline = FindNewline(dst, line_end);
