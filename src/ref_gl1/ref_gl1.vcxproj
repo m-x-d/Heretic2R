@@ -175,7 +175,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
-      <DisableSpecificWarnings>4100; 4201</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100; 4115; 4201</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Midl>

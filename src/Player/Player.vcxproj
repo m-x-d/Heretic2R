@@ -130,7 +130,7 @@
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>..\game;..\qcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
-      <DisableSpecificWarnings>4100; 4201</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100; 4115; 4201</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Midl>
