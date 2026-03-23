@@ -571,7 +571,7 @@ void M_Init(void)
 	m_item_easy = Cvar_Get("m_item_easy", "Easy", 0);
 	m_item_medium = Cvar_Get("m_item_medium", "Medium", 0);
 	m_item_hard = Cvar_Get("m_item_hard", "Hard", 0);
-	m_item_nightmare = Cvar_Get("m_item_nightmare", "Humiliation (Too hard)", 0); //H2: "Insane".
+	m_item_nightmare = Cvar_Get("m_item_nightmare", "Annihilation (Too hard)", 0); //H2: "Insane".
 
 	// Join Server menu.
 	m_item_refresh = Cvar_Get("m_item_refresh", "Refresh Server List", 0);
