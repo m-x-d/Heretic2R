@@ -664,7 +664,7 @@ void FS_InitFilesystem(void)
 		char buffer[MAX_OSPATH];
 		char userdir[MAX_OSPATH];
 
-		//mxd. Change userdir location from "c:/Games/Heretic2/user" to "c:\Users\[User]\Saved Games\Heretic2R/user".
+		//mxd. Change userdir location from "c:/Games/Heretic2/user" to "c:\Users\[User]\Saved Games\Heretic2R/base".
 		if (Sys_GetOSUserDir(buffer, sizeof(buffer)))
 		{
 			strcat_s(buffer, sizeof(buffer), "/Heretic2R");
@@ -677,13 +677,9 @@ void FS_InitFilesystem(void)
 
 		//mxd. Original logic gets userdir by subtracting BASEDIRNAME length from FS_Gamedir(), then appending "user" to it, which resulted in strange or incorrect userdir path for any mod... 
 		char* gamedir = Cvar_VariableString("gamedir");
+		Com_sprintf(userdir, sizeof(userdir), "%s/%s", buffer, (*gamedir == 0 ? BASEDIRNAME : gamedir));
 
-		if (*gamedir == 0)
-			Com_sprintf(userdir, sizeof(userdir), "%s/user", buffer);
-		else
-			Com_sprintf(userdir, sizeof(userdir), "%s/user_%s", buffer, gamedir);
-
-		fs_userdir = Cvar_Get("userdir", userdir, 0); // "C:\Games\Heretic2/user"
+		fs_userdir = Cvar_Get("userdir", userdir, 0); // "C:\Games\Heretic2/base"
 	}
 
 	//mxd. Copy configs from [gamedir]/config to Heretic2R\[user]\configs?
