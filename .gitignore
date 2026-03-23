@@ -1,4 +1,5 @@
 /build/**
+/release
 /lib/*.exp
 /lib/*.lib
 /src/.vs
