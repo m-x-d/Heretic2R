@@ -34,7 +34,7 @@ static qboolean DustUpdate(client_entity_t* self, centity_t* owner) //mxd. Named
 	FXSmoke(hold_origin, 3.0f, 25.0f);
 
 	// Spawn a rock chunk.
-	client_entity_t* rock = FXDebris_Throw(hold_origin, MAT_STONE, vec3_down, 20000.0f, flrand(0.75f, 2.4f), 0, false);
+	const client_entity_t* rock = FXDebris_Throw(hold_origin, MAT_STONE, vec3_down, 20000.0f, flrand(0.75f, 2.4f), 0, false);
 
 	// Create a cloud of dust when rock hits ground.
 	trace_t trace;
