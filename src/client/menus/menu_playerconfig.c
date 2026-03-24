@@ -44,7 +44,6 @@ static void ShowNamesFunc(void* self) // H2
 	Cvar_SetValue("shownames", (float)s_shownames_box.curvalue);
 }
 
-//TODO: this returns 8 categories instead of 2!
 static int ScanPlayerModels(playermodelinfo_s* info) // H2
 {
 	char findname[MAX_OSPATH];
