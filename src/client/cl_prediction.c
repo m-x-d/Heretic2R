@@ -17,8 +17,8 @@ int pred_pm_flags;
 int pred_pm_w_flags;
 qboolean trace_ignore_player;
 qboolean trace_ignore_camera;
-qboolean trace_ignore_bmodels; //mxd
-qboolean trace_ignore_entities; //mxd (except bmodels).
+qboolean trace_check_bmodels; //mxd
+qboolean trace_check_entities; //mxd (except bmodels).
 
 static int pred_effects = 0;
 static int pred_clientnum = 0;
@@ -172,10 +172,10 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 
 		const qboolean ent_is_bmodel = (ent->solid == 31); //mxd
 
-		if (trace_ignore_bmodels && ent_is_bmodel) //mxd
+		if (!trace_check_bmodels && ent_is_bmodel) //mxd
 			continue;
 
-		if (trace_ignore_entities && !ent_is_bmodel) //mxd
+		if (!trace_check_entities && !ent_is_bmodel) //mxd
 			continue;
 
 		// Check if ent collides with movebox.
@@ -202,7 +202,7 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 		trace_t trace;
 		CM_TransformedBoxTrace(start, end, mins, maxs, headnode, brushmask, ent->origin, angles, &trace);
 
-		if (trace.fraction <= tr->fraction)
+		if (trace.fraction <= tr->fraction) //TODO: Q2 version seems more logical: 'trace.allsolid || trace.startsolid || trace.fraction < tr->fraction'.
 		{
 			*tr = trace;
 			tr->ent = (struct edict_s*)ent;
