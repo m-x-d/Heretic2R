@@ -1138,6 +1138,18 @@ static void CL_SetupClipMoveToEntities(const int brushmask, const int flags, con
 		trace_ignore_player = set;
 }
 
+//mxd. By default, contents are CONTENTS_EMPTY or CONTENTS_SOLID when startsolid/fraction:0 or CONTENTS_EMPTY when fraction:1.
+static void CL_CheckTraceContents(trace_t* t, const int flags)
+{
+	if ((flags & CTF_ALWAYS_CHECK_CONTENTS) && (t->fraction == 0.0f || t->fraction == 1.0f))
+	{
+		if (flags & CTF_CLIP_TO_BMODELS)
+			t->contents |= CL_PMpointcontents(t->endpos);
+		else
+			t->contents |= CM_PointContents(t->endpos, 0);
+	}
+}
+
 void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const int brushmask, int flags, trace_t* t) // H2
 {
 	t->ent = NULL;
@@ -1162,6 +1174,8 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 		flags = flags_conv;
 	}
 
+	assert(flags & (CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS | CTF_CLIP_TO_ENTITIES)); //mxd. Make sure we are clipping against SOMETHING.
+
 	if (flags & CTF_CLIP_TO_WORLD)
 	{
 		CM_BoxTrace(start, end, mins, maxs, 0, brushmask, t);
@@ -1169,17 +1183,11 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 		if (t->fraction < 1.0f)
 			t->ent = (struct edict_s*)(-1);
 
-		//mxd. By default, contents are CONTENTS_EMPTY or CONTENTS_SOLID when startsolid/fraction:0 or CONTENTS_EMPTY when fraction:1.
-		if ((flags & CTF_ALWAYS_CHECK_CONTENTS) && (t->fraction == 0.0f || t->fraction == 1.0f))
-		{
-			if (flags & CTF_CLIP_TO_BMODELS)
-				t->contents |= CL_PMpointcontents(t->endpos);
-			else
-				t->contents |= CM_PointContents(t->endpos, 0);
-		}
-
 		if (t->startsolid || t->allsolid)
+		{
+			CL_CheckTraceContents(t, flags); //mxd
 			return;
+		}
 	}
 	else
 	{
@@ -1191,5 +1199,7 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 		CL_SetupClipMoveToEntities(brushmask, flags, true); //mxd
 		CL_ClipMoveToEntities(start, mins, maxs, end, t);
 		CL_SetupClipMoveToEntities(brushmask, flags, false); //mxd
+
+		CL_CheckTraceContents(t, flags); //mxd
 	}
 }
