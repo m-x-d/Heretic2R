@@ -112,6 +112,10 @@ char* Sys_FindFirst(const char* path, const uint musthave, const uint canthave)
 	if (!CompareAttributes(findinfo.attrib, musthave, canthave))
 		return NULL;
 
+	//mxd. Skip "." and ".." entries...
+	if ((findinfo.attrib & _A_SUBDIR) && (strcmp(findinfo.name, ".") == 0 || strcmp(findinfo.name, "..") == 0))
+		return Sys_FindNext(musthave, canthave);
+
 	Com_sprintf(findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
 	return findpath;
 }
@@ -129,6 +133,10 @@ char* Sys_FindNext(const uint musthave, const uint canthave)
 
 	if (!CompareAttributes(findinfo.attrib, musthave, canthave))
 		return NULL;
+
+	//mxd. Skip "." and ".." entries...
+	if ((findinfo.attrib & _A_SUBDIR) && (strcmp(findinfo.name, ".") == 0 || strcmp(findinfo.name, "..") == 0))
+		return Sys_FindNext(musthave, canthave);
 
 	Com_sprintf(findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
 	return findpath;
