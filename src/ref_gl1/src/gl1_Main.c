@@ -802,7 +802,7 @@ static qboolean RI_Init(void)
 
 	// YQ2: Anisotropic texture filtering.
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &gl_config.max_anisotropy);
-	ri.Con_Printf(PRINT_ALL, "Max. anisotropy: %i.\n", (int)gl_config.max_anisotropy);
+	ri.Con_Printf(PRINT_ALL, "Max. anisotropy: %i\n", (int)gl_config.max_anisotropy);
 
 	//mxd. Check max. supported texture size. H2 expects at least 128x128. H2R expects at least 512x512 (for cinematics rendering without frame chopping shenanigans). Probably not needed: even GF2 supports 2048x2048 textures.
 	int max_texture_size;
