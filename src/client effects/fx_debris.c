@@ -232,17 +232,6 @@ static void DoFireTrail(client_entity_t* spawner)
 	}
 }
 
-//mxd. Added to reduce code duplication.
-static qboolean IsInWater(const vec3_t origin)
-{
-	// Not-very-perfect way of doing a pointcontents from the FX dll.
-	trace_t trace;
-	const vec3_t start = VEC3_INITA(origin, 0.0f, 0.0f, 1.0f);
-	fxi.Trace(start, vec3_origin, vec3_origin, origin, CONTENTS_EMPTY, 0, &trace);
-
-	return (trace.contents & MASK_WATER);
-}
-
 //mxd. Update rotation.
 static qboolean Debris_UpdateAngles(client_entity_t* self, centity_t* owner)
 {
@@ -317,6 +306,43 @@ static qboolean Debris_UpdateAngles(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
+static void FireDLight_Update(CE_DLight_t* self, client_entity_t* owner) //mxd
+{
+	// Randomize fire color (255 127 0) a bit.
+	if (fx_time <= owner->LifeTime && self->intensity > 0.0f)
+	{
+		self->color.r = (byte)(irand(220, 255));
+		self->color.g = (byte)(irand(107, 147));
+	}
+}
+
+static void Debris_CheckInitialContents(client_entity_t* self, const int flags) //mxd
+{
+	trace_t trace;
+	fxi.Trace(self->origin, vec3_origin, vec3_origin, self->origin, MASK_SOLID, CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS | CTF_ALWAYS_CHECK_CONTENTS, &trace);
+
+	// Set initial SIF_INXXX flag to avoid triggering "entered liquid" logic in Physics_MoveEnt() if we spawned in liquid.
+	if (trace.contents & CONTENTS_WATER)
+		self->SpawnInfo |= SIF_INWATER;
+	else if (trace.contents & CONTENTS_SLIME)
+		self->SpawnInfo |= SIF_INMUCK;
+	else if (trace.contents & CONTENTS_LAVA)
+		self->SpawnInfo |= SIF_INLAVA;
+
+	// Add fire FX if appropriate.
+	if ((flags & CEF_FLAG6) && !(trace.contents & (CONTENTS_WATER | CONTENTS_SLIME))) // On fire - add dynamic light.
+	{
+		if (!ref_soft && R_DETAIL > DETAIL_NORMAL) //mxd. '== DETAIL_HIGH' in original logic (ignores DETAIL_UBERHIGH).
+		{
+			self->flags |= CEF_FLAG7; // Don't spawn blood too, just flames.
+			self->dlight = CE_DLight_new(fire_dlight_color, 72.0f, -0.1f); //mxd. Intensity:50 (didn't affect lightmap), d_intensity:-5 (expired way before landing on ground) in original logic.
+			self->dlight->Update = FireDLight_Update; //mxd
+		}
+
+		self->flags |= CEF_FLAG6;
+	}
+}
+
 #pragma endregion
 
 #pragma region ========================== Body Part spawn functions ==========================
@@ -365,16 +391,6 @@ static qboolean BodyPart_Update(client_entity_t* self, centity_t* owner) //mxd. 
 	}
 
 	return true;
-}
-
-static void FireDLight_Update(CE_DLight_t* self, client_entity_t* owner) //mxd
-{
-	// Randomize fire color (255 127 0) a bit.
-	if (fx_time <= owner->LifeTime && self->intensity > 0.0f)
-	{
-		self->color.r = (byte)(irand(220, 255));
-		self->color.g = (byte)(irand(107, 147));
-	}
 }
 
 static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t origin, float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy) //mxd. Named 'FXBodyPart_Throw' in original logic.
@@ -487,18 +503,7 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 		case DETAIL_UBERHIGH:	gib->LifeTime = fx_time + 10000; break;
 	}
 
-	if ((flags & CEF_FLAG6) && !IsInWater(origin)) // On fire - add dynamic light.
-	{
-		if (!ref_soft && R_DETAIL > DETAIL_NORMAL) //mxd. '== DETAIL_HIGH' in original logic (ignores DETAIL_UBERHIGH).
-		{
-			gib->flags |= CEF_FLAG7; // Don't spawn blood too, just flames.
-			gib->dlight = CE_DLight_new(fire_dlight_color, 72.0f, -0.1f); //mxd. Intensity:50 (didn't affect lightmap), d_intensity:-5 (expired way before landing on ground) in original logic.
-			gib->dlight->Update = FireDLight_Update; //mxd
-		}
-
-		gib->flags |= CEF_FLAG6;
-	}
-
+	Debris_CheckInitialContents(gib, flags); //mxd
 	AddEffect(NULL, gib);
 }
 
@@ -688,21 +693,10 @@ client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const v
 	// Debris lasts 10 seconds before it slowly goes away.
 	debris->LifeTime = fx_time + 10000; //mxd. 1000 (1 second) in original logic. 
 
-	if (flags & CEF_FLAG6) // On fire - add dynamic light.
-	{
-		if (flags & CEF_FLAG7) // High detail, non-ref_soft?
-		{
-			debris->flags |= CEF_FLAG7; // Spawn blood too, not just flames.
-			debris->dlight = CE_DLight_new(fire_dlight_color, 72.0f, -0.1f); //mxd. Intensity:50 (didn't affect lightmap), d_intensity:-5 (expired way before landing on ground) in original logic.
-			debris->dlight->Update = FireDLight_Update; //mxd
-		}
-
-		debris->flags |= CEF_FLAG6;
-	}
-
 	if (flags & CEF_FLAG8) // Reflective.
 		debris->r.flags |= RF_REFLECTION;
 
+	Debris_CheckInitialContents(debris, flags); //mxd
 	AddEffect(NULL, debris);
 
 	return debris;
@@ -729,13 +723,7 @@ static qboolean CanSpawnChunkAt(const vec3_t origin, const float scale) //mxd
 // scale - size of the spawned chunks (dependent on size).
 void FXDebris_SpawnChunks(int type, int flags, const vec3_t origin, const int num, const int material, const vec3_t dir, const float ke, const vec3_t mins, const float scale, const qboolean altskin) //TODO: remove unused 'type' arg?
 {
-	if (flags & CEF_FLAG6) // On fire, check for highdetail, non-ref_soft.
-	{
-		if (IsInWater(origin))
-			flags &= ~CEF_FLAG6; // In water - no flames, pal!
-		else if (!ref_soft && R_DETAIL >= DETAIL_HIGH) //mxd. '== DETAIL_HIGH' in original logic (ignores DETAIL_UBERHIGH).
-			flags |= CEF_FLAG7; // Do dynamic light and blood trail.
-	}
+	//mxd. Skip CEF_FLAG6 check (is also done in FXDebris_Throw() -> Debris_CheckInitialContents()).
 
 	for (int i = 0; i < num; i++)
 	{
@@ -765,13 +753,7 @@ void FXDebris_SpawnChunks(int type, int flags, const vec3_t origin, const int nu
 
 static void Debris_SpawnFleshChunks(int type, int flags, const vec3_t origin, const int num, const int material, const vec3_t dir, const float ke, const vec3_t mins, const float scale, const qboolean altskin) //TODO: remove unused 'type' arg?
 {
-	if (flags & CEF_FLAG6) // On fire, check for highdetail, non-ref_soft.
-	{
-		if (IsInWater(origin))
-			flags &= ~CEF_FLAG6; // In water - no flames, pal!
-		else if (!ref_soft && R_DETAIL >= DETAIL_HIGH) //mxd. '== DETAIL_HIGH' in original logic (ignores DETAIL_UBERHIGH).
-			flags |= CEF_FLAG7; // Do dynamic light and blood trail.
-	}
+	//mxd. Skip CEF_FLAG6 check (is also done in FXDebris_Throw() -> Debris_CheckInitialContents()).
 
 	for (int i = 0; i < num; i++)
 	{
