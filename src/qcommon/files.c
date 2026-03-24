@@ -566,10 +566,10 @@ char* FS_NextPath(const char* prevpath)
 	const char* prev = fs_gamedir;
 	for (searchpath_t* s = fs_searchpaths; s != NULL; s = s->next)
 	{
-		if (s->pack)
+		if (s->pack != NULL)
 			continue;
 
-		if (prevpath == prev)
+		if (prevpath == prev && Q_stricmp(fs_gamedir, s->filename) != 0) //mxd. Don't return fs_gamedir path twice. //TODO: remove fs_gamedir var, make sure fs_searchpaths[0] is always present and contains fs_gamedir value instead?
 			return s->filename;
 
 		prev = s->filename;
