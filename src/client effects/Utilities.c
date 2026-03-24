@@ -245,7 +245,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	//mxd. trace.contents holds accurate contents regardless of trace results because of CTF_ALWAYS_CHECK_CONTENTS flag.
 	fxi.Trace(r->origin, mins, maxs, end, MASK_SHOT, self->clip_flags, trace); //mxd. Use clip_flags.
 
-	if ((trace->surface->flags & SURF_SKY))
+	if (trace->surface->flags & SURF_SKY)
 	{
 		// Remove it.
 		self->nextThinkTime = fx_time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fx_time in UpdateEffects()).
