@@ -172,10 +172,10 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 
 		const qboolean ent_is_bmodel = (ent->solid == 31); //mxd
 
-		if (!trace_check_bmodels && ent_is_bmodel) //mxd
+		if (trace_check_bmodels && !ent_is_bmodel) //mxd
 			continue;
 
-		if (!trace_check_entities && !ent_is_bmodel) //mxd
+		if (trace_check_entities && ent_is_bmodel) //mxd
 			continue;
 
 		// Check if ent collides with movebox.
