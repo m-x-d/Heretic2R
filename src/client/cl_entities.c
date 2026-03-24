@@ -1128,11 +1128,11 @@ static void CL_SetupClipMoveToEntities(const int brushmask, const int flags, con
 	if (brushmask & CONTENTS_WATER)
 		trace_check_water = set;
 
-	if (flags & CTF_CLIP_TO_BMODELS) //mxd
-		trace_check_bmodels = set;
+	if (!(flags & CTF_CLIP_TO_BMODELS)) //mxd
+		trace_ignore_bmodels = set;
 
-	if (flags & CTF_CLIP_TO_ENTITIES) //mxd
-		trace_check_entities = set;
+	if (!(flags & CTF_CLIP_TO_ENTITIES)) //mxd
+		trace_ignore_entities = set;
 
 	if (flags & CTF_IGNORE_PLAYER) //mxd
 		trace_ignore_player = set;
