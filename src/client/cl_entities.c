@@ -608,8 +608,10 @@ static void CL_ParsePacketEntities(const frame_t* oldframe, frame_t* newframe)
 			{
 				if (cl.clientinfo[ent->current.number].model != NULL)
 					model = *cl.clientinfo[ent->current.number].model;
-				else
+				else if (cl.baseclientinfo.model != NULL) //mxd. Added NULL check. Can happen when "base/players" folder is missing.
 					model = *cl.baseclientinfo.model;
+				else
+					model = NULL;
 			}
 			else
 			{
@@ -651,7 +653,7 @@ static void CL_ParsePacketEntities(const frame_t* oldframe, frame_t* newframe)
 	}
 }
 
-//mxd. Written by SV_WritePlayerstateToClient().
+// Written by SV_WritePlayerstateToClient() --mxd.
 static qboolean CL_ParsePlayerstate(const frame_t* oldframe, frame_t* newframe)
 {
 	byte nonzero_bits[PLAYER_DELNZ_BYTES];
