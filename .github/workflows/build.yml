@@ -1,0 +1,73 @@
+---
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - closed
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.platform }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          # - macos-latest
+          # - ubuntu-latest
+          - windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Add msbuild to PATH
+        if: matrix.platform == 'windows-latest'
+        uses: microsoft/setup-msbuild@v3
+
+      - name: Build
+        if: matrix.platform == 'windows-latest'
+        run: |
+          Get-ChildItem -Recurse -Filter "*.vcxproj" | `
+            Foreach-Object {
+              Write-Host "::group:: Building $_.FullName"
+              msbuild $_.FullName -p:SolutionDir="$pwd\src\"
+              Write-Host "::endgroup::"
+            }
+          Write-Host "::group::Build output"
+          dir build
+          Write-Host "::endgroup::"
+
+      - name: Package build
+        if: matrix.platform == 'windows-latest'
+        run: |
+          .\pack_release.bat
+          dir release
+
+      - name: Upload build as artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: h2r_win32
+          path: release/Heretic2R_*.zip
+          retention-days: 1
+
+      - name: Attach build to release
+        if: github.event.type == 'ReleaseEvent'
+        env:
+          GITHUB_TOKEN: ${{ github.TOKEN }}
+        run:
+          gh release upload ${{github.event.release.tag_name}} release/Heretic2R_*.zip        

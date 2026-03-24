@@ -1,7 +1,7 @@
 @echo off
-
+set DATESTAMP=%DATE:~10,4%-%DATE:~4,2%-%DATE:~7,2%
 set SEVENZIP=c:\Program Files\7-Zip\7z.exe
-set ZIP_NAME=.\release\Heretic2R_%DATE%.zip
+set ZIP_NAME=.\release\Heretic2R_%DATESTAMP%.zip
 
 if exist %ZIP_NAME% del /q %ZIP_NAME%
 
