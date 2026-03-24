@@ -91,6 +91,13 @@ void Com_Printf(const char* fmt, ...)
 //mxd. Similar to Q2's Com_Printf.
 void Com_ColourPrintf(const PalIdx_t colour, const char* fmt, ...)
 {
+	//mxd. Early messages handling. The idea is to store all messages preceding "exec user.cfg" call in CL_Init()
+	// (so setting logfile to 1 or 2 there results in all messages being logged).
+	// Currently this stores ~40 early messages containing ~700 chars in total.
+#define MAX_EARLY_MESSAGES	128
+	static char early_messages[MAXPRINTMSG] = { 0 };
+	static int num_early_messages = 0;
+
 	if (hideconprint == NULL || !(int)hideconprint->value)
 	{
 		va_list argptr;
@@ -132,10 +139,27 @@ void Com_ColourPrintf(const PalIdx_t colour, const char* fmt, ...)
 				}
 
 				if (logfile != NULL)
-					fprintf(logfile, "%s", msg);
+				{
+					//mxd. Add early messages?
+					if (early_messages[0] != 0)
+					{
+						fprintf(logfile, "%s", early_messages);
 
-				if (logfile_active->value > 1.0f)
+						early_messages[0] = 0;
+						num_early_messages = MAX_EARLY_MESSAGES;
+					}
+
+					fprintf(logfile, "%s", msg);
+				}
+
+				if ((int)logfile_active->value > 1)
 					fflush(logfile); // Force it to save every time.
+			}
+			else if (num_early_messages < MAX_EARLY_MESSAGES) //mxd
+			{
+				// Store early messages in temp buffer.
+				strcat_s(early_messages, ARRAY_SIZE(early_messages), msg);
+				num_early_messages++;
 			}
 		}
 	}
