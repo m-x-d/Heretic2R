@@ -609,6 +609,10 @@ void Qcommon_Init(const int argc, char** argv)
 	Cmd_AddCommand("z_stats", Z_Stats_f);
 	Cmd_AddCommand("error", Com_Error_f);
 
+	//mxd. These two must be initialized here to work in DEDICATED mode.
+	cl_timedemo = Cvar_Get("timedemo", "0", 0);
+	cl_maxfps = Cvar_Get("cl_maxfps", "30", 0); // H2_1.07: "30" -> "60".
+
 	log_stats = Cvar_Get("log_stats", "0", 0);
 	developer = Cvar_Get("developer", "0", 0);
 	timescale = Cvar_Get("timescale", "1", 0);

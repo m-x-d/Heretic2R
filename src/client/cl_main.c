@@ -174,7 +174,7 @@ void CL_Disconnect(void)
 	if (cls.state == ca_disconnected)
 		return;
 
-	if (cl_timedemo != NULL && (int)cl_timedemo->value)
+	if ((int)cl_timedemo->value)
 	{
 		const int time = curtime - cl.timedemo_start; //mxd. Sys_Milliseconds() -> curtime.
 		if (time > 0)
@@ -1152,7 +1152,6 @@ static void CL_InitLocal(void)
 	cl_noskins = Cvar_Get("cl_noskins", "0", 0);
 	cl_autoskins = Cvar_Get("cl_autoskins", "0", 0);
 	cl_predict = Cvar_Get("cl_predict", "1", 0); // H2: 0
-	cl_maxfps = Cvar_Get("cl_maxfps", "30", 0); // H2_1.07: "30" -> "60".
 
 	cl_frametime = Cvar_Get("cl_frametime", "0.0", 0);
 	cl_yawspeed = Cvar_Get("cl_yawspeed", "70", CVAR_ARCHIVE);
@@ -1178,7 +1177,6 @@ static void CL_InitLocal(void)
 	cl_timeout = Cvar_Get("cl_timeout", "120", 0);
 	cl_paused = Cvar_Get("paused", "0", 0);
 	cl_freezeworld = Cvar_Get("freezeworldset", "0", 0);
-	cl_timedemo = Cvar_Get("timedemo", "0", 0);
 	cl_no_middle_text = Cvar_Get("no_middle_text", "0", CVAR_ARCHIVE);
 
 	rcon_client_password = Cvar_Get("rcon_password", "", 0);
