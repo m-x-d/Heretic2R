@@ -1148,20 +1148,12 @@ void CL_ParseServerMessage(void)
 				const qboolean team_chat = MSG_ReadByte(&net_message);
 				const char* msg = MSG_ReadString(&net_message);
 
-				if (team_chat)
-					sprintf_s(buffer, sizeof(buffer), "(%s) : %s", cl.clientinfo[client_index].name, msg);
-				else
-					sprintf_s(buffer, sizeof(buffer), "%s : %s", cl.clientinfo[client_index].name, msg);
-
 				if (ignored_players[client_index])
 					continue;
 
+				sprintf_s(buffer, sizeof(buffer), (team_chat ? "(%s) : %s" : "%s : %s"), cl.clientinfo[client_index].name, msg);
 				se.StartLocalSound("misc/talk.wav");
-
-				if (team_chat)
-					Com_ColourPrintf(COLOUR(colour_teamchat), "%s", buffer + 4);
-				else
-					Com_ColourPrintf(COLOUR(colour_chat), "%s", buffer + 4);
+				Com_ColourPrintf(COLOUR(team_chat ? colour_teamchat : colour_chat), "%s", buffer);
 			} break;
 
 			default:
