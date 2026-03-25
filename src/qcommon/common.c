@@ -496,7 +496,7 @@ void Z_FreeTags(const int tag)
 {
 #ifdef _DEBUG
 	//mxd. Definitely not the best place to do this, but all preceding code is either server-side or game-side during map change... 
-	if (tag == 766) // TAG_LEVEL
+	if (tag == 766 && re.FreeDebugPrimitives != NULL) // TAG_LEVEL //mxd. FreeDebugPrimitives will be NULL when running in DEDICATED mode.
 		re.FreeDebugPrimitives();
 #endif
 
