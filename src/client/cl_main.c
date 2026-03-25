@@ -1519,7 +1519,10 @@ void CL_Frame(const int packetdelta, const int renderdelta, const int timedelta,
 void CL_Init(void)
 {
 	if ((int)dedicated->value)
+	{
+		SND_InitNull(); //mxd. To avoid adding 'if (!DEDICATED)' to every se func call.
 		return; // Nothing running on the client.
+	}
 
 	ResMngr_Con(&cl_FXBufMngr, sizeof(LERPedReferences_t), LERPEDREF_BLOCK_SIZE); // H2 //mxd. Was a separate function in original version.
 

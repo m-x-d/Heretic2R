@@ -279,6 +279,11 @@ void SND_Init(void) //mxd
 	se.Init(); // Must be called after window is created. Also initializes music backend.
 }
 
+void SND_InitNull(void) //mxd
+{
+	InitNullSound();
+}
+
 void SND_Shutdown(void) //mxd
 {
 	if (sound_library != NULL)

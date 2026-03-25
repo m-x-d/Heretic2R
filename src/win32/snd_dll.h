@@ -25,4 +25,5 @@ extern cvar_t* snd_dll;
 
 // Sound module logic.
 extern void SND_Init(void); //mxd
+extern void SND_InitNull(void); //mxd
 extern void SND_Shutdown(void); //mxd
