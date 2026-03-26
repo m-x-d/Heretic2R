@@ -331,12 +331,12 @@ static const char* VID_MenuKey(const int key)
 
 		case K_LEFTARROW:
 		case K_KP_LEFTARROW:
-			se.StopAllSounds_Sounding();
+			//mxd. Original logic calls se.StopAllSounds_Sounding() here - no longer needed.
 			return (Menu_SlideItem(&s_video_menu, -1) ? SND_MENU_TOGGLE : NULL); //mxd. Add sound.
 
 		case K_RIGHTARROW:
 		case K_KP_RIGHTARROW:
-			se.StopAllSounds_Sounding();
+			//mxd. Original logic calls se.StopAllSounds_Sounding() here - no longer needed.
 			return (Menu_SlideItem(&s_video_menu, 1) ? SND_MENU_TOGGLE : NULL); //mxd. Add sound.
 
 		default:
