@@ -176,6 +176,7 @@ typedef struct menucommon_s
 	menuframework_t* parent;
 	int localdata[4];
 	uint flags;
+	int prev_slide_time; //mxd
 	void (*callback)(void* self);
 } menucommon_t;
 

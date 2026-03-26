@@ -140,8 +140,9 @@ m_drawfunc_t m_drawfunc;
 m_keyfunc_t m_keyfunc;
 m_keyfunc_t m_keyfunc2; // H2 //TODO: better name
 
-#define MAX_MENU_DEPTH		8
-#define MENU_TITLE_HEIGHT	32 //mxd
+#define MAX_MENU_DEPTH			8
+#define MENU_TITLE_HEIGHT		32 //mxd
+#define MENUITEM_SLIDE_DELAY	100 //mxd
 
 typedef struct
 {
@@ -874,8 +875,10 @@ static qboolean SpinControl_DoSlide(menulist_t* spin_ctrl, const int dir) //mxd.
 qboolean Menu_SlideItem(const menuframework_t* menu, const int dir) //mxd. Return true when value was changed.
 {
 	menucommon_t* item = Menu_ItemAtCursor(menu);
-	if (item == NULL)
+	if (item == NULL || MENUITEM_SLIDE_DELAY - (curtime - item->prev_slide_time) > 17) //mxd. Add slight delay between consecutive DoSlide() calls. Done this way to compensate for inaccurate curtime increments.
 		return false;
+
+	item->prev_slide_time = curtime; //mxd
 
 	switch (item->type)
 	{
