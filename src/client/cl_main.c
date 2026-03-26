@@ -1423,7 +1423,6 @@ void CL_Frame(const int packetdelta, const int renderdelta, const int timedelta,
 	cls.framemodifier = GetFrameModifier(cls.rframetime); // H2
 	cls.realtime = curtime;
 	cl.time += timedelta / 1000;
-	camera_timer += timedelta / 1000; // H2
 
 	//mxd. Skip cl_frametime logic: now done in SCR_DrawFramecounter().
 

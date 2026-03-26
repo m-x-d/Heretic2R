@@ -13,7 +13,6 @@
 
 #define PLAYER_MIN_TELEPORT_DISTANCE	256.0f //mxd
 
-int camera_timer; // H2
 qboolean offsetangles_changed; // H2
 
 typedef enum
@@ -165,15 +164,16 @@ static void CL_InterpolateCameraOrigin(vec3_t cam_lerp_origin, const float yaw, 
 
 static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheight, const qboolean interpolate, const qboolean noclip_mode) // H2 //mxd. Add 'look_angles' arg, flip 'interpolate' arg logic, add 'noclip_mode' arg.
 {
-#define MAX_CAMERA_TIMER	500
-#define MASK_CAMERA			(CONTENTS_SOLID | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK)
+#define CAM_MODE_SWITCH_DURATION	500
+#define MASK_CAMERA					(CONTENTS_SOLID | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK)
 
 	static const vec3_t mins = { -1.0f, -1.0f, -1.0f };
 	static const vec3_t maxs = {  1.0f,  1.0f,  1.0f };
 	static const vec3_t mins_2 = { -3.0f, -3.0f, -3.0f };
 	static const vec3_t maxs_2 = {  3.0f,  3.0f,  3.0f };
 
-	static qboolean cam_timer_reset;
+	static qboolean cam_mode_switching;
+	static int cam_mode_switch_end_time; //mxd
 	static vec3_t old_vieworg;
 	static vec3_t old_viewangles;
 	static vec3_t prev_start;
@@ -260,6 +260,7 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 
 		if (!noclip_mode && (CL_PMpointcontents(end) & MASK_WATER))
 		{
+			// Check if we crossed lava/slime surface --mxd.
 			vec3_t tmp_end = VEC3_INIT(start);
 
 			start[2] += 100.0f;
@@ -287,28 +288,28 @@ static void CL_UpdateCameraOrientation(const vec3_t look_angles, float viewheigh
 	// - disables camera interpolation when camera mode was switched because of map switching / game loading.
 	if (prev_cam_mode != cam_mode && prev_cam_mode != CMODE_NONE)
 	{
-		if (!cam_timer_reset)
+		if (!cam_mode_switching)
 		{
-			camera_timer = 0;
-			cam_timer_reset = true;
+			cam_mode_switch_end_time = cl.time + CAM_MODE_SWITCH_DURATION;
+			cam_mode_switching = true;
 		}
 
 		VectorCopy(prev_start, prev_prev_start);
 		VectorCopy(prev_end, prev_prev_end);
 	}
 
-	if (cam_timer_reset)
+	if (cam_mode_switching)
 	{
-		if (camera_timer >= MAX_CAMERA_TIMER)
+		if (cl.time >= cam_mode_switch_end_time)
 		{
-			cam_timer_reset = false;
+			cam_mode_switching = false;
 		}
 		else
 		{
 			VectorCopy(start, prev_start);
 			VectorCopy(end, prev_end);
 
-			const float lerp = (float)camera_timer / (float)MAX_CAMERA_TIMER;
+			const float lerp = 1.0f - (float)(cam_mode_switch_end_time - cl.time) / (float)CAM_MODE_SWITCH_DURATION;
 			VectorLerp(prev_prev_start, lerp, prev_start, start);
 			VectorLerp(prev_prev_end, lerp, prev_end, end);
 		}
