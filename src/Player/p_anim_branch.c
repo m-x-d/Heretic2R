@@ -81,8 +81,10 @@ static int CheckSlopedStand(const playerinfo_t* info) //TODO: it would be nice t
 	static const vec3_t foot_mins = VEC3_SET(-1.0f, -1.0f, 0.0f); //mxd. Made local static.
 	static const vec3_t foot_maxs = VEC3_SET( 1.0f,  1.0f, 1.0f); //mxd. Made local static.
 
-	//mxd. Check for noclip, just to make things more robust.
-	if (info->movetype == PHYSICSTYPE_NOCLIP)
+	//mxd. Skip when noclipping (to avoid switching to ASEQ_LSTAIR16 while flying) and during cinematics (to avoid modifying viewheight while in cinematic mode).
+	// For example, the latter happens during ssdocks intro cinematic, when cinematic Corvus walks through (hidden) real Corvus, causing one of feet traces
+	// to collide with cinematic Corvus -> ASEQ_LSTAIR16 -> modified viewheight -> unwanted camera z-pos interpolation after leaving cinematic mode.
+	if (info->movetype == PHYSICSTYPE_NOCLIP || info->sv_cinematicfreeze != 0.0f)
 		return ASEQ_STAND;
 
 	vec3_t forward;
