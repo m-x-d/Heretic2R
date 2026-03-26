@@ -95,7 +95,7 @@ void Com_ColourPrintf(const PalIdx_t colour, const char* fmt, ...)
 	// (so setting logfile to 1 or 2 there results in all messages being logged).
 	// Currently this stores ~40 early messages containing ~700 chars in total.
 #define MAX_EARLY_MESSAGES	128
-	static char early_messages[MAXPRINTMSG] = { 0 };
+	static char early_messages[MAXPRINTMSG * 2] = { 0 };
 	static int num_early_messages = 0;
 
 	if (hideconprint == NULL || !(int)hideconprint->value)
