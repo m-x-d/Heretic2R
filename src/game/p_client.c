@@ -1679,9 +1679,6 @@ static void PutClientInServer(edict_t* ent)
 	VectorCopy(player_maxs, ent->intentMaxs);
 	VectorClear(ent->velocity);
 
-	//mxd. Set initial waterlevel (to prevent spawning water splash FX and playing splash sound in P_WorldEffects() if spawned underwater).
-	SetInitialWaterLevel(ent);
-
 	// Initialize the player's gclient_t and playerstate_t.
 
 	VEC2SHORT(spawn_origin, client->ps.pmove.origin); //mxd. Use define.
@@ -1762,6 +1759,8 @@ static void PutClientInServer(edict_t* ent)
 	P_PlayerInit(&ent->client->playerinfo, complete_reset);
 	WritePlayerinfo(ent);
 
+	//mxd. Set initial waterlevel (to prevent spawning water splash FX and playing splash sound in P_WorldEffects() if spawned underwater).
+	SetInitialWaterLevel(ent);
 	SpawnInitialPlayerEffects(ent);
 
 	if (COOP)
