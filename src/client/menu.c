@@ -1088,12 +1088,12 @@ static void InputKey_Draw(const menuinputkey_t* key, const qboolean selected) //
 	m_menu_side ^= 1;
 }
 
-static void PlayerSkin_Draw(const menucommon_t* item) // H2
+static void PlayerSkin_Draw(const menulist_t* item) // H2
 {
 	char skin_path[MAX_QPATH];
 
-	Com_sprintf(skin_path, sizeof(skin_path), "/%s/%s_i.m8", playerdir->string, skin_temp->string);
-	re.DrawStretchPic(M_GetMenuLabelX(64), item->y + item->parent->y - 160, 64, 128, skin_path, cls.m_menualpha, DSP_SCALE_4x3);
+	Com_sprintf(skin_path, sizeof(skin_path), "/%s/%s_i.m8", playerdir->string, item->itemnames[item->curvalue]);
+	re.DrawStretchPic(M_GetMenuLabelX(64), item->generic.y + item->generic.parent->y - 160, 64, 128, skin_path, cls.m_menualpha, DSP_SCALE_4x3);
 }
 
 static void SpinControl_Draw(const menulist_t* list, const qboolean selected)
@@ -1170,7 +1170,7 @@ void Menu_Draw(const menuframework_t* menu)
 				break;
 
 			case MTYPE_PLAYER_SKIN:
-				PlayerSkin_Draw(item);
+				PlayerSkin_Draw((menulist_t*)item);
 				SpinControl_Draw((menulist_t*)item, i == menu->cursor);
 				break;
 

@@ -97,7 +97,7 @@ cvar_t* screenshot_format; //mxd
 // userinfo
 cvar_t* playerdir;
 static cvar_t* info_password;
-static cvar_t* skin;
+cvar_t* skin;
 static cvar_t* skindir;
 static cvar_t* rate;
 static cvar_t* msg;

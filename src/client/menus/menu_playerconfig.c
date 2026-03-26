@@ -12,7 +12,6 @@ cvar_t* m_banner_pconfig;
 cvar_t* m_item_name;
 cvar_t* m_item_skin;
 cvar_t* m_item_shownames;
-cvar_t* skin_temp;
 
 typedef struct
 {
@@ -24,25 +23,13 @@ typedef struct
 
 static int s_num_player_skins;
 static int s_current_skin_index;
-static qboolean current_skin_exists;
 static const char* skin_names[MAX_PLAYER_SKINS];
-static cvar_t* skin;
 
 static menuframework_t s_player_config_menu;
 
 static menufield_t s_player_name_field;
 static menulist_t s_player_skin_box;
 static menulist_t s_shownames_box;
-
-static void SkinNameFunc(void* self) // H2
-{
-	Cvar_Set("skin_temp", skin_names[s_player_skin_box.curvalue]);
-}
-
-static void ShowNamesFunc(void* self) // H2
-{
-	Cvar_SetValue("shownames", (float)s_shownames_box.curvalue);
-}
 
 static int ScanPlayerModels(playermodelinfo_s* info) // H2
 {
@@ -112,10 +99,7 @@ static void ScanPlayerSkins(playermodelinfo_s* info) // H2
 			strcpy_s(skin_names_array[s_num_player_skins], sizeof(skin_names_array[s_num_player_skins]), skin_name); //mxd. strcpy -> strcpy_s
 
 			if (Q_stricmp(skin->string, skin_name) == 0)
-			{
 				s_current_skin_index = s_num_player_skins;
-				current_skin_exists = true;
-			}
 
 			s_num_player_skins++;
 		}
@@ -134,7 +118,6 @@ static int PlayerConfig_ScanDirectories(void)
 
 	s_num_player_skins = 0;
 	s_current_skin_index = 0;
-	current_skin_exists = false;
 
 	const int num_models = ScanPlayerModels(infos);
 	for (int i = 0; i < num_models; i++)
@@ -149,15 +132,8 @@ static qboolean PlayerConfig_MenuInit(void)
 	static char name_skin[MAX_QPATH];
 	static char name_shownames[MAX_QPATH];
 
-	skin = Cvar_Get("skin", "", 0);
-	skin_temp = Cvar_Get("skin_temp", "", 0);
-	Cvar_Set("skin_temp", skin->string);
-
 	if (PlayerConfig_ScanDirectories() == 0)
 		return false;
-
-	if (!current_skin_exists)
-		Cvar_Set("skin_temp", skin_names[0]);
 
 	s_player_config_menu.nitems = 0;
 
@@ -177,7 +153,6 @@ static qboolean PlayerConfig_MenuInit(void)
 	s_player_skin_box.generic.y = 220;
 	s_player_skin_box.generic.name = name_skin;
 	s_player_skin_box.generic.width = re.BF_Strlen(name_skin);
-	s_player_skin_box.generic.callback = SkinNameFunc;
 	s_player_skin_box.curvalue = s_current_skin_index;
 	s_player_skin_box.itemnames = skin_names;
 
@@ -188,7 +163,6 @@ static qboolean PlayerConfig_MenuInit(void)
 	s_shownames_box.generic.name = name_shownames;
 	s_shownames_box.generic.width = re.BF_Strlen(name_shownames);
 	s_shownames_box.generic.flags = QMF_SINGLELINE;
-	s_shownames_box.generic.callback = ShowNamesFunc;
 	s_shownames_box.itemnames = yes_no_names;
 	s_shownames_box.curvalue = ((int)shownames->value != 0);
 
@@ -227,24 +201,11 @@ static const char* PlayerConfig_MenuKey(const int key)
 	if (cls.m_menustate != MS_OPENED)
 		return NULL;
 
-	switch (key)
+	if (key == K_ESCAPE)
 	{
-		case K_ENTER:
-		case K_KP_ENTER:
-			Cvar_Set("skin", skin_names[s_player_skin_box.curvalue]);
-			M_PopMenu();
-			// Intentional fallthrough.
-
-		case K_ESCAPE:
-			if (!Menu_SelectItem(&s_player_config_menu))
-			{
-				Cvar_Set("name", s_player_name_field.buffer);
-				Cvar_Set("skin", skin_names[s_player_skin_box.curvalue]);
-			}
-			break;
-
-		default:
-			break;
+		Cvar_Set("name", s_player_name_field.buffer);
+		Cvar_Set("skin", skin_names[s_player_skin_box.curvalue]);
+		Cvar_SetValue("shownames", (float)s_shownames_box.curvalue);
 	}
 
 	return Default_MenuKey(&s_player_config_menu, key);
