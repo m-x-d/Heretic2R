@@ -1214,7 +1214,7 @@ static void CL_InitLocal(void)
 	// userinfo
 	info_password = Cvar_Get("password", "", CVAR_USERINFO);
 	player_name = Cvar_Get("name", "Corvus", CVAR_ARCHIVE | CVAR_USERINFO);
-	skin = Cvar_Get("skin", "Corvus", CVAR_ARCHIVE | CVAR_USERINFO);
+	skin = Cvar_Get("skin", "male/Corvus", CVAR_ARCHIVE | CVAR_USERINFO); //mxd. "Corvus" in original logic.
 	skindir = Cvar_Get("skindir", "players", CVAR_ARCHIVE);
 	playerdir = Cvar_Get("playerdir", "players", CVAR_ARCHIVE);
 	rate = Cvar_Get("rate", "2800", CVAR_ARCHIVE | CVAR_USERINFO); // H2_1.07: "2800" -> "25000".
