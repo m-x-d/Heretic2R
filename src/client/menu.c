@@ -845,10 +845,25 @@ static qboolean SpinControl_DoSlide(menulist_t* spin_ctrl, const int dir) //mxd.
 
 	spin_ctrl->curvalue += dir;
 
-	if (spin_ctrl->curvalue < 0)
-		spin_ctrl->curvalue = 0;
-	else if (spin_ctrl->itemnames[spin_ctrl->curvalue] == NULL)
-		spin_ctrl->curvalue--;
+	if (spin_ctrl->generic.type == MTYPE_PLAYER_SKIN) //mxd. Wrap-around logic for player skin selector.
+	{
+		if (spin_ctrl->curvalue < 0)
+		{
+			while (spin_ctrl->itemnames[spin_ctrl->curvalue + 1] != NULL)
+				spin_ctrl->curvalue++;
+		}
+		else if (spin_ctrl->itemnames[spin_ctrl->curvalue] == NULL)
+		{
+			spin_ctrl->curvalue = 0;
+		}
+	}
+	else
+	{
+		if (spin_ctrl->curvalue < 0)
+			spin_ctrl->curvalue = 0;
+		else if (spin_ctrl->itemnames[spin_ctrl->curvalue] == NULL)
+			spin_ctrl->curvalue--;
+	}
 
 	if (spin_ctrl->generic.callback != NULL)
 		spin_ctrl->generic.callback(spin_ctrl);
