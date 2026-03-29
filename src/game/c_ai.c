@@ -34,7 +34,7 @@ void ReadCinematicMessage(edict_t* self, G_Message_t* msg) //mxd. Named 'ai_c_re
 void ai_c_cycleend(edict_t* self)
 {
 	// A movement action that still has a distance to walk.
-	if ((self->monsterinfo.c_anim_flag & C_ANIM_MOVE) && (self->monsterinfo.c_dist > 0 || self->s.angles[YAW] != self->ideal_yaw))
+	if ((self->monsterinfo.c_anim_flag & C_ANIM_MOVE) && (self->monsterinfo.c_dist != 0 || self->s.angles[YAW] != self->ideal_yaw))
 		return;
 
 	// A repeating action that still has to repeat.
