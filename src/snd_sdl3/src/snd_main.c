@@ -679,6 +679,14 @@ void S_RawSamples(const int num_samples, const uint rate, const int width, const
 	}
 }
 
+static int S_GetAvailableRawBufferSize(void) //mxd
+{
+	if (sound_started)
+		return MAX_RAW_SAMPLES - ClampI(s_rawend - paintedtime, 0, MAX_RAW_SAMPLES);
+
+	return 0;
+}
+
 // Called on renderframe.
 static void S_Update(const vec3_t origin, const vec3_t forward, const vec3_t right, const vec3_t up)
 {
@@ -739,6 +747,7 @@ SNDLIB_DECLSPEC snd_export_t GetSoundAPI(const snd_import_t snd_import)
 
 	// Cinematics playback.
 	snd_export.RawSamples = S_RawSamples;
+	snd_export.GetAvailableRawBufferSize = S_GetAvailableRawBufferSize; //mxd
 
 	snd_export.SetEaxEnvironment = NULL;
 

@@ -45,6 +45,7 @@ static struct sfx_s* NullSnd_FindName(const char* name, qboolean create) { retur
 static void NullSnd_MusicPlay(int track, uint track_pos, qboolean looping) { }
 static void NullSnd_MusicStop(void) { }
 static void NullSnd_RawSamples(int samples, uint rate, int width, int num_channels, const byte* data, float volume) { }
+static int NullSnd_GetAvailableRawBufferSize(void) { return 0; }
 static void NullSnd_MusicGetCurrentTrackInfo(int* track, uint* track_pos, qboolean* looping)
 {
 	*track = 0;
@@ -80,6 +81,7 @@ static void InitNullSound(void)
 	se.MusicStop = NullSnd_MusicStop;
 	se.MusicGetCurrentTrackInfo = NullSnd_MusicGetCurrentTrackInfo;
 	se.RawSamples = NullSnd_RawSamples;
+	se.GetAvailableRawBufferSize = NullSnd_GetAvailableRawBufferSize;
 
 	se.SetEaxEnvironment = NULL;
 

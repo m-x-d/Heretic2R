@@ -415,14 +415,14 @@ typedef client_fx_export_t (*GetfxAPI_t)(client_fx_import_t);
 
 #pragma region ========================== SOUND API IO ==========================
 
-#define SND_API_VERSION	1 //mxd
+#define SND_API_VERSION	2 //mxd
 
 //mxd. Functions exported by the sound library module.
 typedef struct
 {
 	// If api_version is different, the dll cannot be used.
 	int api_version;
-	char* title; // To be displayed in menus.
+	const char* title; // To be displayed in menus.
 
 	// Sound library function pointers.
 	void (*Init)(void);
@@ -451,6 +451,7 @@ typedef struct
 
 	// Cinematics playback.
 	void (*RawSamples)(int samples, uint rate, int width, int num_channels, const byte* data, float volume);
+	int (*GetAvailableRawBufferSize)(void); //mxd
 
 	void (*SetEaxEnvironment)(int env_index);
 } snd_export_t;

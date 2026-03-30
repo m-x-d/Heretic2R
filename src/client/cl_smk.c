@@ -26,6 +26,7 @@ typedef struct SMKPlaybackInfo_s
 	int snd_channels;
 	int snd_width;
 	int snd_rate;
+	int snd_frame_size; // Frame size to be used at vid_maxfps.
 
 	// Auxiliary sound buffer...
 	byte* audio_buffer;
@@ -63,6 +64,14 @@ static qboolean SMK_Open(const char* name)
 	spi.snd_width = s_bitdepth[0] / 8; // s_bitdepth: 8 or 16.
 	spi.snd_rate = (int)s_rate[0];
 
+	// Calculate audio frame size for current FPS.
+	const int stride = spi.snd_width * spi.snd_channels;
+	spi.snd_frame_size = (int)((float)(spi.snd_rate * stride) / vid_maxfps->value);
+
+	// Make sure frame size is stride-aligned...
+	while (spi.snd_frame_size % stride != 0)
+		spi.snd_frame_size++;
+
 	smk_first(spi.smk_obj);
 	spi.palette = smk_get_palette(spi.smk_obj);
 
@@ -99,7 +108,8 @@ void SMK_Shutdown(void)
 	}
 }
 
-static void SCR_DoCinematicFrame(void) // Called when it's time to render next cinematic frame (e.g. at 15 fps).
+// Called when it's time to render next cinematic frame (e.g. at 15 fps).
+static void SCR_DoVideoFrame(void)
 {
 	// Grab video frame.
 	spi.video_frame = smk_get_video(spi.smk_obj);
@@ -107,27 +117,48 @@ static void SCR_DoCinematicFrame(void) // Called when it's time to render next c
 	// Grab audio frame (way more involved than you may expect)...
 	const int smk_audio_frame_size = (int)smk_get_audio_size(spi.smk_obj, 0);
 
-	//mxd. The first smk frame contains 16 frames of audio data. This will overflow s_rawsamples[] if used as is, resulting in desynched audio, so use an auxiliary buffer...
-	//mxd. Interestingly, official RAD Video Tools (and SmackW32.dll bundled with vanilla H2) start audio playback from 2-nd frame & end 1 frame too early.
+	// Init auxiliary audio buffer...
 	if (spi.frame == 0)
 	{
-		spi.audio_buffer = malloc(smk_audio_frame_size);
-		spi.audio_buffer_size = smk_audio_frame_size;
+		assert(smk_audio_frame_size > 0);
+
+		//mxd. Frame 0 is expected to contain 1 second + 1 frame of audio data (16 frames when spi.fps:15, 6 when spi.fps:5).
+		// This will overflow s_rawsamples[] if used as is, resulting in desynched audio, so use an auxiliary buffer...
+		//mxd. Interestingly, official RAD Video Tools (and SmackW32.dll bundled with vanilla H2) start audio playback
+		// from 2-nd frame & end 1 frame too early.
+		const int frame_size = (int)((float)(spi.snd_rate * spi.snd_width * spi.snd_channels) / spi.fps);
+		spi.audio_buffer_size = smk_audio_frame_size + frame_size;
+		spi.audio_buffer = malloc(spi.audio_buffer_size);
 		spi.audio_buffer_end = 0;
 	}
 
+	// Store audio frame in auxiliary buffer.
+	if (smk_audio_frame_size > 0)
+	{
+		memcpy(spi.audio_buffer + spi.audio_buffer_end, smk_get_audio(spi.smk_obj, 0), smk_audio_frame_size);
+		spi.audio_buffer_end += smk_audio_frame_size;
+	}
+
+	// Go to next frame.
+	smk_next(spi.smk_obj);
+	spi.frame++;
+}
+
+static void SCR_DoAudioFrame(void) // Called every renderframe.
+{
 	// Calculate audio frame size.
-	int frame_size;
+	int frame_size = 0;
+	const int se_buf_size = se.GetAvailableRawBufferSize();
 
-	//mxd. On frame 0, smk_audio_frame_size is 16 times bigger than needed. Zero smk_audio_frame_size means we have to use remaining buffered audio frames.
-	if (spi.frame == 0 || smk_audio_frame_size == 0)
-		frame_size = (int)((float)(spi.snd_rate * spi.snd_width) / spi.fps); // Calculate actual frame size.
-	else
-		frame_size = smk_audio_frame_size; // Use provided frame size.
+	// Keep the snd_dll raw audio buffer at "optimal" fill level (similar ot OGG_Stream()).
+	while (frame_size < spi.audio_buffer_size && frame_size < se_buf_size - spi.snd_frame_size)
+		frame_size += spi.snd_frame_size;
 
-	// Store audio frame in auxiliary buffer...
-	memcpy(spi.audio_buffer + spi.audio_buffer_end, smk_get_audio(spi.smk_obj, 0), smk_audio_frame_size);
-	spi.audio_buffer_end += smk_audio_frame_size;
+	// Avoid buffer overruns.
+	frame_size = min(frame_size, spi.audio_buffer_end);
+
+	if (frame_size == 0)
+		return;
 
 	// Upload audio chunk RawSamples() can handle...
 	const int num_samples = frame_size / (spi.snd_width * spi.snd_channels);
@@ -136,12 +167,6 @@ static void SCR_DoCinematicFrame(void) // Called when it's time to render next c
 	// Remove uploaded audio chunk...
 	memmove_s(spi.audio_buffer, spi.audio_buffer_size, spi.audio_buffer + frame_size, spi.audio_buffer_size - frame_size);
 	spi.audio_buffer_end -= frame_size;
-
-	assert(spi.audio_buffer_end >= 0);
-
-	// Go to next frame.
-	smk_next(spi.smk_obj);
-	spi.frame++;
 }
 
 void SCR_PlayCinematic(const char* name)
@@ -178,7 +203,7 @@ void SCR_PlayCinematic(const char* name)
 	cl.cinematictime = (int)((float)cls.realtime - 2000.0f / spi.fps);
 	cl.cinematictime = max(1, cl.cinematictime); //mxd. Ensure positive value (can get negative value here, because unlike original logic, cls.realtime starts from 0).
 
-	SCR_DoCinematicFrame(); // Advance cinematic_frame to match with cl.cinematictime in SCR_RunCinematic()...
+	SCR_DoVideoFrame(); // Advance cinematic_frame to match with cl.cinematictime in SCR_RunCinematic()...
 
 	Cvar_SetValue("paused", 0);
 	cls.state = ca_connected;
@@ -215,18 +240,28 @@ void SCR_RunCinematic(void) // Called every rendered frame.
 		return;
 	}
 
-	const int frame = (int)((float)(cls.realtime - cl.cinematictime) * spi.fps / 1000.0f);
+	SCR_DoAudioFrame();
 
-	if (frame <= spi.frame) //mxd. Original code waits using SmackWait function.
-		return;
+	//mxd. Original code waits using SmackWait function.
+	const float fframe = (float)(cls.realtime - cl.cinematictime) * spi.fps / 1000.0f;
 
-	if (frame > spi.frame + 1)
+	//mxd. Account for integer timing imprecisions (resulted in playing cinematics at slightly lower FPS than expected).
+	int frame;
+	if (ceilf(fframe) - fframe < 0.07f)
+		frame = (int)(ceilf(fframe));
+	else
+		frame = (int)fframe;
+
+	if (frame > spi.frame)
 	{
-		Com_Printf("Dropped frame: %i > %i\n", frame, spi.frame + 1);
-		cl.cinematictime = (int)((float)cls.realtime - (float)(spi.frame * 1000) / spi.fps); // Q2: / 14
-	}
+		if (frame > spi.frame + 1)
+		{
+			Com_Printf("Dropped frame: %i > %i\n", frame, spi.frame + 1);
+			cl.cinematictime = (int)((float)cls.realtime - (float)(spi.frame * 1000) / spi.fps); // Q2: / 14
+		}
 
-	SCR_DoCinematicFrame();
+		SCR_DoVideoFrame();
+	}
 }
 
 void SCR_StopCinematic(void)
