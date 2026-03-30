@@ -545,6 +545,8 @@ void SNDSDL3_RawSamples(const int num_samples, const uint rate, const int width,
 	const int data_end = (int)((float)num_samples / scale); //mxd
 	int int_volume = (int)(volume * 256.0f);
 
+	assert(data_end < MAX_RAW_SAMPLES); //mxd
+
 	if (width == 2 && num_channels == 2) // 16-bit stream, stereo.
 	{
 		for (int i = 0; i < data_end; i++)
