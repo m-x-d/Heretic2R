@@ -11,7 +11,7 @@
 #include "Message.h"
 #include "FX.h" //mxd
 
-#define MAX_BUOY_BRANCHES			3
+#define MAX_BUOY_BRANCHES			3 //TODO: also defined in buoy.h.
 #define ROPE_JUMP_DEBOUNCE_DELAY	2.0f //mxd
 
 #ifdef __cplusplus
@@ -507,7 +507,7 @@ struct edict_s
 
 	int forced_buoy; // Monster is forced to go to this buoy.
 	float pathfind_nextthink;
-	edict_t* nextbuoy[MAX_BUOY_BRANCHES];
+	edict_t* nextbuoy[MAX_BUOY_BRANCHES]; //TODO: unused.
 
 	float dead_size; // For dead thinking.
 
