@@ -451,7 +451,7 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 		gib->r.fmnodeinfo[0].flags &= ~FMNI_NO_DRAW;
 	}
 
-	gib->clip_flags |= (CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS); //mxd. Use separate flags.
+	gib->clip_flags |= (CTF_CLIP_TO_WORLD | CTF_CLIP_TO_BMODELS | CTF_ALWAYS_CHECK_CONTENTS); //mxd. Use separate flags, add CTF_ALWAYS_CHECK_CONTENTS.
 	gib->r.skinnum = (owner->entity != NULL ? owner->entity->skinnum : 0);
 	gib->radius = 2.0f;
 	gib->debris_rest_pitch = ANGLE_90 + flrand(-ANGLE_10, ANGLE_10); //mxd. //TODO: is this always correct?
