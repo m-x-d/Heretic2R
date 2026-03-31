@@ -126,8 +126,8 @@ void CinematicSwapPlayer(const edict_t* self, edict_t* cinematic) //mxd. Named '
 
 void CinematicCorvusInit(edict_t* self, const int class_id) //mxd. Named 'c_corvus_init' in original logic.
 {
-	static vec3_t c_mins = { -16.0f, -16.0f, -34.0f };
-	static vec3_t c_maxs = {  16.0f,  16.0f,  25.0f };
+	static const vec3_t c_mins = { -16.0f, -16.0f, -34.0f };
+	static const vec3_t c_maxs = {  16.0f,  16.0f,  25.0f };
 
 	self->classID = class_id;
 	self->s.modelindex = (byte)classStatics[class_id].resInfo->modelIndex;
