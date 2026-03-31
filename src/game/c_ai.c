@@ -94,12 +94,13 @@ void CinematicSwapPlayer(const edict_t* self, edict_t* cinematic) //mxd. Named '
 	P_PlayerUpdateModelAttributes(&self->client->playerinfo);
 
 	// Add in plague level for the skin, since the cinematic players use six stock skins.
-	cinematic->s.skinnum = self->client->playerinfo.skinnum + (self->client->playerinfo.plaguelevel * DAMAGE_NUM_LEVELS);
+	const int plague_skin_offset = self->client->playerinfo.plaguelevel * DAMAGE_NUM_LEVELS; //mxd
+	cinematic->s.skinnum = self->client->playerinfo.skinnum + plague_skin_offset;
 
 	for (int i = 0; i < NUM_MESH_NODES; i++)
 	{
 		cinematic->s.fmnodeinfo[i].flags = self->s.fmnodeinfo[i].flags;
-		cinematic->s.fmnodeinfo[i].skin = self->s.fmnodeinfo[i].skin;
+		cinematic->s.fmnodeinfo[i].skin = self->s.fmnodeinfo[i].skin + plague_skin_offset; //H2_BUGFIX: mxd. Add in plague level for the damaged skin as well.
 	}
 
 	// Open up hands.
