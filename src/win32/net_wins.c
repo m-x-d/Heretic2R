@@ -762,7 +762,7 @@ void NET_Config(const qboolean multiplayer)
 	else
 	{
 		// Shut down any existing sockets (2 in Q2, 3 in H2)
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < NUM_SOCKETS; i++)
 		{
 			if (ip_sockets[i] != 0)
 			{
