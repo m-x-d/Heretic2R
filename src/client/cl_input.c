@@ -846,10 +846,17 @@ static void CL_FinishMove(usercmd_t* cmd) // Called on packetframe.
 		if (in_action.state & (KS_DOWN | KS_IMPULSE_DOWN))
 			cmd->buttons |= BUTTON_ACTION;
 
-		// Run.
-		//mxd. BUTTON_RUN logic is intentionally flipped when moving backwards (walk back when running (there's no 'run backwards' animation), backflip when walking)...
-		if (((in_speed.state & (KS_DOWN | KS_IMPULSE_DOWN)) != (int)cl_run->value) ^ (cmd->forwardmove < 0))
+		// Run. When moving backwards, do backflip only when 'in_speed' key is pressed, regardless of 'autorun' cvar state --mxd.
+		const qboolean speed_pressed = (qboolean)(in_speed.state & (KS_DOWN | KS_IMPULSE_DOWN));
+		if (cmd->forwardmove < -10)
+		{
+			if (speed_pressed)
+				cmd->buttons |= BUTTON_RUN;
+		}
+		else if (speed_pressed != (int)cl_run->value)
+		{
 			cmd->buttons |= BUTTON_RUN;
+		}
 
 		// Creep.
 		if (in_creep.state & (KS_DOWN | KS_IMPULSE_DOWN))
