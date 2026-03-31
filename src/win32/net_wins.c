@@ -151,7 +151,7 @@ qboolean NET_CompareAdr(const netadr_t* a, const netadr_t* b)
 }
 
 // Q2 counterpart
-// Compares without the port
+// Compares without the port.
 qboolean NET_CompareBaseAdr(const netadr_t* a, const netadr_t* b)
 {
 	if (a->type != b->type)
@@ -187,7 +187,7 @@ static qboolean NET_StringToSockaddr(const char* s, struct sockaddr* sadr)
 		uint val;
 		char temp[3];
 
-		// Network number
+		// Network number.
 		for (int i = 0; i < 4; i++)
 		{
 			strncpy_s(temp, sizeof(temp), &s[i * 2], 2);
@@ -195,7 +195,7 @@ static qboolean NET_StringToSockaddr(const char* s, struct sockaddr* sadr)
 			sa_ipx->sa_netnum[i] = (char)val;
 		}
 
-		// Node number
+		// Node number.
 		for (int i = 0; i < 6; i++)
 		{
 			strncpy_s(temp, sizeof(temp), &s[i * 2 + 9], 2);
@@ -203,7 +203,7 @@ static qboolean NET_StringToSockaddr(const char* s, struct sockaddr* sadr)
 			sa_ipx->sa_nodenum[i] = (char)val;
 		}
 
-		// Socket number
+		// Socket number.
 		sscanf_s(&s[22], "%u", &val);
 		sa_ipx->sa_socket = htons((ushort)val);
 	}
@@ -268,7 +268,7 @@ char* NET_AdrToString(const netadr_t* a)
 }
 
 // Q2 counterpart
-// Input string examples: 'localhost', 'idnewt', 'idnewt:28000', '192.246.40.70', '192.246.40.70:28000'
+// Input string examples: 'localhost', 'idnewt', 'idnewt:28000', '192.246.40.70', '192.246.40.70:28000'.
 qboolean NET_StringToAdr(const char* s, netadr_t* a)
 {
 	struct sockaddr sadr;
@@ -398,8 +398,7 @@ static qboolean NET_GetLoopPacket(const netsrc_t sock, netadr_t* n_from, sizebuf
 	return true;
 }
 
-//mxd. Removed unused 'to' arg
-static void NET_SendLoopPacket(const netsrc_t sock, const int length, const void* data)
+static void NET_SendLoopPacket(const netsrc_t sock, const int length, const void* data) //mxd. Removed unused 'to' arg.
 {
 	// H2: emulate net latency. //TODO: dev logic. Remove?
 	if (net_latency->value > 0.0f && net_latency->value < 2000.0f)
@@ -468,7 +467,7 @@ qboolean NET_GetPacket(const netsrc_t sock, netadr_t* n_from, sizebuf_t* n_messa
 		{
 			if (WSAGetLastError() != WSAEWOULDBLOCK)
 			{
-				// Let dedicated servers continue after errors
+				// Let dedicated servers continue after errors.
 				if ((int)dedicated->value)
 					Com_Printf("NET_GetPacket: %s from %s\n", NET_ErrorString(), NET_AdrToString(n_from));
 				else
@@ -718,7 +717,7 @@ static void NET_OpenIPX(void)
 		ipx_sockets[NS_SERVER] = NET_IPXSocket(port);
 	}
 
-	//mxd. Skip Gamespy IPX port logic.
+	//mxd. Skip GameSpy IPX port logic.
 
 	// Dedicated servers don't need client ports.
 	if (is_dedicated)
@@ -740,7 +739,7 @@ static void NET_OpenIPX(void)
 	}
 }
 
-// A single player game will only use the loopback code
+// A single player game will only use the loopback code.
 void NET_Config(const qboolean multiplayer)
 {
 	static qboolean old_config;
@@ -752,7 +751,7 @@ void NET_Config(const qboolean multiplayer)
 
 	if (multiplayer)
 	{
-		// Open sockets
+		// Open sockets.
 		if (!(int)noudp->value)
 			NET_OpenIP();
 
