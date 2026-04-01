@@ -246,7 +246,7 @@ static qboolean SV_CheckForSavegame(void)
 }
 
 // Change the server to a new map, taking all connected clients along with it.
-static void SV_SpawnServer(char* server, char* spawnpoint, const server_state_t serverstate, const qboolean attractloop, const qboolean loadgame)
+static void SV_SpawnServer(const char* server, const char* spawnpoint, const server_state_t serverstate, const qboolean attractloop, const qboolean loadgame)
 {
 	uint checksum;
 
@@ -304,7 +304,7 @@ static void SV_SpawnServer(char* server, char* spawnpoint, const server_state_t 
 	}
 	else
 	{
-		sv.models[1] = CM_LoadMap("", false, &checksum); // No real map
+		sv.models[1] = CM_LoadMap("", false, &checksum); // No real map.
 	}
 
 	Com_sprintf(sv.configstrings[CS_MAPCHECKSUM], sizeof(sv.configstrings[0]), "%i", checksum);
