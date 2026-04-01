@@ -114,8 +114,8 @@ H2COMMON_API float Approach(const float curr, const float dest, const float rate
 	return curr;
 }
 
-// Q2 counterpart //TODO: not included in H2 toolkit headers. Included where?
-// This is the slow, general version
+// Q2 counterpart //TODO: unused. Not included in H2 toolkit headers.
+// This is the slow, general version.
 H2COMMON_API int BoxOnPlaneSide2(const vec3_t emins, const vec3_t emaxs, const struct cplane_s* plane)
 {
 	vec3_t corners[2];
