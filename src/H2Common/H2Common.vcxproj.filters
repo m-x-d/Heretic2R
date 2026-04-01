@@ -12,52 +12,52 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DllMain.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrix.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Random.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Motion.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="q_Physics.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\game\q_shared.c">
       <Filter>game</Filter>
     </ClCompile>
-    <ClCompile Include="TextPalette.c">
+    <ClCompile Include="src\ByteOrder.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Math.c">
+    <ClCompile Include="src\Common.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Common.c">
+    <ClCompile Include="src\Console.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Console.c">
+    <ClCompile Include="src\DllMain.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="ByteOrder.c">
+    <ClCompile Include="src\InfoStrings.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="InfoStrings.c">
+    <ClCompile Include="src\Math.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="SinglyLinkedList.c">
+    <ClCompile Include="src\Matrix.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="SurfaceProps.c">
+    <ClCompile Include="src\Motion.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\q_Physics.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Random.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ResourceManager.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SinglyLinkedList.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SurfaceProps.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextPalette.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vector.c">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,7 +101,7 @@
     <ClInclude Include="..\qcommon\SurfaceProps.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="Console.h">
+    <ClInclude Include="src\Console.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
