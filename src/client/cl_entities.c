@@ -1083,7 +1083,7 @@ void CL_ParseFrame(void)
 
 		cl.sound_prepped = true; // Can start mixing ambient sounds.
 
-		if (CL_PREDICT) // H2: no PMF_NO_PREDICTION check. //mxd. Check originally done at the start of CL_CheckPredictionError().
+		if (CL_Predict()) // H2: no PMF_NO_PREDICTION check. //mxd. Check originally done at the start of CL_CheckPredictionError().
 			CL_CheckPredictionError();
 	}
 }

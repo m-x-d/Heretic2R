@@ -28,7 +28,7 @@ static cvar_t* rcon_address;
 cvar_t* cl_noskins;
 cvar_t* cl_autoskins;
 static cvar_t* cl_timeout;
-cvar_t* cl_predict;
+cvar_t* cl_predict; //mxd. Use CL_Predict() instead!
 cvar_t* cl_maxfps;
 
 cvar_t* cl_add_particles;
@@ -162,6 +162,11 @@ int CL_GetProtocolVersion(void)
 		return H2R_PROTOCOL_VERSION;
 
 	return protocol;
+}
+
+qboolean CL_Predict(void) //mxd. Mirrored in FXI_Predict().
+{
+	return ((qboolean)cl_predict->value && !cl.attractloop); // No prediction when playing demos.
 }
 
 // Goes from a connected state to full screen console state.
@@ -1444,7 +1449,7 @@ void CL_Frame(const int packetdelta, const int renderdelta, const int timedelta,
 		// Fetch results from server.
 		CL_ReadPackets();
 
-		if (CL_PREDICT) // H2
+		if (CL_Predict()) // H2
 			CL_StorePlayerInventoryInfo();
 
 		IN_Update(); // YQ2		// Run SDL3 message loop.

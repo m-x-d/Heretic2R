@@ -617,7 +617,7 @@ void CL_PredictMovement(void)
 	for (int i = 0; i < 3; i++)
 		cl.predicted_angles[i] = cl.viewangles[i] + SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[i]);
 
-	if (!CL_PREDICT || cls.state != ca_active)
+	if (!CL_Predict() || cls.state != ca_active)
 		return;
 
 	const int ack = cls.netchan.incoming_acknowledged;

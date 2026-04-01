@@ -266,6 +266,11 @@ static int DummyEffectParams(centity_t* ent, const int flags, const int effect)
 	return count;
 }
 
+static qboolean FXI_Predict(void) //mxd. Mirrors CL_Predict() logic...
+{
+	return ((qboolean)fxi.cl_predict->value && !fxi.cl->attractloop);
+}
+
 // Insert the logic in this could use a good cleaning...
 //mxd. Written by SV_CreateEffectEvent() / SV_CreatePersistantEffect().
 static void ParseEffects(centity_t* owner)
@@ -386,7 +391,7 @@ static void ParseEffects(centity_t* owner)
 			fx_buf->freeBlock = msg_read->readcount;
 
 		// Do we want to start this client-effect if client-prediction has already started it?
-		if (*fxi.cl_effectpredict == 0 && (int)fxi.cl_predict->value && effect_is_from_server &&
+		if (*fxi.cl_effectpredict == 0 && FXI_Predict() && effect_is_from_server &&
 			fxi.EffectEventIdTimeArray[event_id] <= *fxi.leveltime && fxi.EffectEventIdTimeArray[event_id] != 0.0f)
 		{
 			// The client-effect has already been started by client-prediction, so just skip it.
@@ -466,7 +471,7 @@ static void AddServerEntities(const frame_t* frame)
 
 		cent->s1 = s1;
 
-		if ((int)fxi.cl_predict->value && s1->number == fxi.cl->playernum + 1)
+		if (FXI_Predict() && s1->number == fxi.cl->playernum + 1)
 			is_predicted_player = true; // We are dealing with the client's model under prediction.
 		else
 			is_predicted_player = false; // We are dealing with a non predicted model (i.e. everything except the client's model).
@@ -677,7 +682,7 @@ static void AddServerEntities(const frame_t* frame)
 		// Add player's packet_entity_t to refresh list of entity_t's and save the entity_t pointer	in PlayerEntPtr.
 		if (s1->number == fxi.cl->playernum + 1)
 		{
-			if ((int)fxi.cl_predict->value && fxi.clientPredEffects->numEffects > 0)
+			if (FXI_Predict() && fxi.clientPredEffects->numEffects > 0)
 			{
 				*fxi.cl_effectpredict = 1;
 				ParseEffects(cent);

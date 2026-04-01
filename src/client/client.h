@@ -363,7 +363,7 @@ typedef struct
 	entity_t** PlayerEntPtr;
 
 	// Client prediction stuff.
-	cvar_t* cl_predict;
+	cvar_t* cl_predict; //mxd. Use FXI_Predict() instead!
 	int* cl_effectpredict;
 	predictinfo_t* predictinfo;
 	float* leveltime;
@@ -509,7 +509,6 @@ typedef snd_export_t (*GetSoundAPI_t)(snd_import_t);
 
 #pragma region ========================== CVARS ==========================
 
-#define CL_PREDICT		((qboolean)cl_predict->value) //mxd
 #define CL_FREEZEWORLD	((qboolean)cl_freezeworld->value) //mxd
 #define CL_PAUSED		((qboolean)cl_paused->value) //mxd
 
@@ -637,6 +636,7 @@ extern char* CL_GetConfigPath(void); //mxd
 extern void CL_SaveConfig_f(void); //mxd
 extern void CL_RequestNextDownload(void);
 extern int CL_GetProtocolVersion(void); //mxd
+extern qboolean CL_Predict(void); //mxd
 
 extern void CL_Disconnect(void);
 H2R_NORETURN extern void CL_Disconnect_f(void);
