@@ -364,6 +364,8 @@ static void CL_ParseServerData(void)
 	if (cls.serverProtocol != PROTOCOL_VERSION && cls.serverProtocol != H2R_PROTOCOL_VERSION) //mxd. +H2R_PROTOCOL_VERSION.
 		Com_Error(ERR_DROP, "Server returned unsupported protocol version %i (expected %i or %i)", cls.serverProtocol, PROTOCOL_VERSION, H2R_PROTOCOL_VERSION);
 
+	Com_DPrintf("Using protocol %i.\n", cls.serverProtocol); //mxd
+
 	cl.servercount = MSG_ReadLong(&net_message);
 	cl.attractloop = MSG_ReadByte(&net_message);
 

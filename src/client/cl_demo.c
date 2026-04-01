@@ -35,7 +35,7 @@ void CL_Record_f(void)
 	char name[MAX_OSPATH];
 	Com_sprintf(name, sizeof(name), "%s/demos/%s.hd2", FS_Gamedir(), Cmd_Argv(1));
 
-	Com_Printf("Recording to '%s'.\n", name);
+	Com_Printf("Recording to '%s' using protocol %i.\n", name, cls.serverProtocol); //mxd. Print protocol.
 	FS_CreatePath(name);
 
 	if (fopen_s(&cls.demofile, name, "wb") != 0) //mxd. fopen -> fopen_s
@@ -58,7 +58,7 @@ void CL_Record_f(void)
 
 	// Send the serverdata.
 	MSG_WriteByte(&buf, svc_serverdata);
-	MSG_WriteLong(&buf, H2R_PROTOCOL_VERSION); // H2: PROTOCOL_VERSION.
+	MSG_WriteLong(&buf, cls.serverProtocol); // H2: PROTOCOL_VERSION.
 	MSG_WriteLong(&buf, 0x10000 + cl.servercount);
 	MSG_WriteByte(&buf, 1); // Demos are always attract loops.
 	MSG_WriteString(&buf, cl.gamedir);
