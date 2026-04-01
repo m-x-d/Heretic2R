@@ -92,8 +92,15 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 		return false;
 
 	vec3_t angles;
-	for (int i = 0; i < 3; i++)
-		angles[i] = cl.viewangles[i] + SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[i]);
+	if (cl.attractloop) //mxd. Use pre-calculated viewangles when playing demos (cl.viewangles[] and pmove.delta_angles[] are [0 0 0] when playing demos).
+	{
+		VectorCopy(cl.refdef.viewangles, angles);
+	}
+	else
+	{
+		for (int i = 0; i < 3; i++)
+			angles[i] = cl.viewangles[i] + SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[i]);
+	}
 
 	vec3_t forward;
 	vec3_t right;
