@@ -677,7 +677,7 @@ extern void CL_SendCmd(void);
 extern void CL_ClearState(void);
 extern void CL_ReadPackets(void);
 extern void CL_BaseMove(usercmd_t* cmd);
-extern qboolean CL_IgnoreInput(void); //mxd
+extern qboolean CL_IgnoreInput(qboolean ignore_demos); //mxd
 
 extern void IN_CenterView(void);
 

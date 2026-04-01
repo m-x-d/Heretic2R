@@ -159,7 +159,7 @@ static void IN_MouseMove(usercmd_t* cmd)
 	static float old_mouse_x;
 	static float old_mouse_y;
 
-	if (CL_IgnoreInput()) //mxd. Skip when looking through remote camera.
+	if (CL_IgnoreInput(false)) //mxd. Skip when looking through remote camera or playing demo.
 		return;
 
 	if ((int)m_filter->value)

@@ -792,9 +792,9 @@ static void CL_AdjustAngles(void)
 	cl.delta_inputangles[PITCH] += CL_KeyState(&in_lookdown) * scaler;
 }
 
-qboolean CL_IgnoreInput(void) //mxd
+qboolean CL_IgnoreInput(const qboolean ignore_demos) //mxd
 {
-	return (cl.frame.playerstate.cinematicfreeze || cl.frame.playerstate.remote_id != REMOTE_ID_NONE);
+	return (cl.frame.playerstate.cinematicfreeze || cl.frame.playerstate.remote_id != REMOTE_ID_NONE || (!ignore_demos && cl.attractloop));
 }
 
 // Send the intended movement message to the server. Called on packetframe or renderframe.
@@ -805,7 +805,7 @@ void CL_BaseMove(usercmd_t* cmd)
 	VectorCopy(cl.delta_inputangles, cl.old_delta_inputangles);
 	VectorClear(cl.delta_inputangles);
 
-	if (CL_IgnoreInput()) //mxd. Skip when looking through remote camera.
+	if (CL_IgnoreInput(false)) //mxd. Skip when looking through remote camera.
 		return;
 
 	CL_AdjustAngles();
@@ -832,7 +832,7 @@ void CL_BaseMove(usercmd_t* cmd)
 static void CL_FinishMove(usercmd_t* cmd) // Called on packetframe.
 {
 	// Figure button bits.
-	if (!CL_IgnoreInput()) //mxd. Skip when looking through remote camera.
+	if (!CL_IgnoreInput(false)) //mxd. Skip when looking through remote camera.
 	{
 		// He attac.
 		if ((in_attack.state & (KS_DOWN | KS_IMPULSE_DOWN)))
