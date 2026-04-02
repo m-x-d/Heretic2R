@@ -5,7 +5,6 @@
 //
 
 #include "snd_sdl3.h"
-#include "client.h"
 #include "snd_main.h"
 #include "snd_LowpassFilter.h"
 #include "snd_ogg.h"
