@@ -305,12 +305,6 @@
     <ClInclude Include="..\qcommon\q_ClientServer.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Player\p_types.h">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Player\Player.h">
-      <Filter>Player</Filter>
-    </ClInclude>
     <ClInclude Include="..\game\g_itemstats.h">
       <Filter>game</Filter>
     </ClInclude>
@@ -464,9 +458,6 @@
     <ClInclude Include="..\client\cl_effects.h">
       <Filter>client</Filter>
     </ClInclude>
-    <ClInclude Include="..\Player\p_main.h">
-      <Filter>Player</Filter>
-    </ClInclude>
     <ClInclude Include="..\game\g_Skeleton.h">
       <Filter>game</Filter>
     </ClInclude>
@@ -520,6 +511,15 @@
     </ClInclude>
     <ClInclude Include="..\client\cl_camera.h">
       <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Player\src\p_main.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Player\src\p_types.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Player\src\Player.h">
+      <Filter>Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

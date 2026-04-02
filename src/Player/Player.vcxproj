@@ -11,31 +11,31 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="p_actions.c" />
-    <ClCompile Include="p_animactor.c" />
-    <ClCompile Include="p_anims.c" />
-    <ClCompile Include="p_anim_branch.c" />
-    <ClCompile Include="p_anim_data.c" />
-    <ClCompile Include="p_chicken.c" />
-    <ClCompile Include="p_chicken_anim.c" />
-    <ClCompile Include="p_items.c" />
-    <ClCompile Include="p_main.c" />
-    <ClCompile Include="p_utility.c" />
-    <ClCompile Include="p_weapon.c" />
+    <ClCompile Include="src\p_actions.c" />
+    <ClCompile Include="src\p_animactor.c" />
+    <ClCompile Include="src\p_anims.c" />
+    <ClCompile Include="src\p_anim_branch.c" />
+    <ClCompile Include="src\p_anim_data.c" />
+    <ClCompile Include="src\p_chicken.c" />
+    <ClCompile Include="src\p_chicken_anim.c" />
+    <ClCompile Include="src\p_items.c" />
+    <ClCompile Include="src\p_main.c" />
+    <ClCompile Include="src\p_utility.c" />
+    <ClCompile Include="src\p_weapon.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="p_actions.h" />
-    <ClInclude Include="p_animactor.h" />
-    <ClInclude Include="p_anims.h" />
-    <ClInclude Include="p_anim_branch.h" />
-    <ClInclude Include="p_anim_data.h" />
-    <ClInclude Include="p_chicken.h" />
-    <ClInclude Include="p_items.h" />
-    <ClInclude Include="p_main.h" />
-    <ClInclude Include="p_types.h" />
-    <ClInclude Include="p_utility.h" />
-    <ClInclude Include="p_weapon.h" />
+    <ClInclude Include="src\Player.h" />
+    <ClInclude Include="src\p_actions.h" />
+    <ClInclude Include="src\p_animactor.h" />
+    <ClInclude Include="src\p_anims.h" />
+    <ClInclude Include="src\p_anim_branch.h" />
+    <ClInclude Include="src\p_anim_data.h" />
+    <ClInclude Include="src\p_chicken.h" />
+    <ClInclude Include="src\p_items.h" />
+    <ClInclude Include="src\p_main.h" />
+    <ClInclude Include="src\p_types.h" />
+    <ClInclude Include="src\p_utility.h" />
+    <ClInclude Include="src\p_weapon.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />

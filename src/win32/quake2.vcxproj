@@ -141,9 +141,9 @@
     <ClInclude Include="..\game\g_playstats.h" />
     <ClInclude Include="..\game\g_Skeleton.h" />
     <ClInclude Include="..\game\q_shared.h" />
-    <ClInclude Include="..\Player\Player.h" />
-    <ClInclude Include="..\Player\p_main.h" />
-    <ClInclude Include="..\Player\p_types.h" />
+    <ClInclude Include="..\Player\src\Player.h" />
+    <ClInclude Include="..\Player\src\p_main.h" />
+    <ClInclude Include="..\Player\src\p_types.h" />
     <ClInclude Include="..\qcommon\Angles.h" />
     <ClInclude Include="..\qcommon\anorms.h" />
     <ClInclude Include="..\qcommon\cl_strings.h" />
@@ -228,7 +228,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\..\include;..\client;..\server;..\qcommon;..\game;..\Player;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\client;..\server;..\qcommon;..\game;..\Player\src;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -271,7 +271,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\..\include;..\client;..\server;..\qcommon;..\game;..\Player;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\client;..\server;..\qcommon;..\game;..\Player\src;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>

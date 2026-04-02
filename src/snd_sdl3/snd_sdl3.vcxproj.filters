@@ -22,6 +22,9 @@
     <ClInclude Include="src\snd_wav.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\Player\src\Player.h">
+      <Filter>Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="game">
@@ -29,6 +32,9 @@
     </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{62244923-7c0a-4745-9e4b-4343d53ed13a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{87176201-6413-4dd7-a16b-30f9e9dcbb96}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
