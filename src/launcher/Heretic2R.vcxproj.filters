@@ -24,7 +24,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.c">
+    <ClCompile Include="src\main.c">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
