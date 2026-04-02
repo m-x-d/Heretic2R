@@ -4,11 +4,9 @@
 // Copyright 1998 Raven Software
 //
 
+#include "menu_citymap.h"
 #include "client.h"
 #include "clfx_dll.h"
-#include "LevelMaps.h"
-#include "menu_citymap.h"
-
 #include "cl_messages.h"
 
 cvar_t* m_banner_citymap;
