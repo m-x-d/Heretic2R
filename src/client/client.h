@@ -15,7 +15,7 @@
 #include "console.h"
 #include "input.h"
 #include "keys.h"
-#include "LevelMaps.h"
+#include "ce_LevelMaps.h"
 #include "p_dll.h" //mxd
 #include "Player.h"
 #include "q_ClientServer.h"

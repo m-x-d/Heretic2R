@@ -146,6 +146,7 @@
     <ClInclude Include="..\Player\src\p_types.h" />
     <ClInclude Include="..\qcommon\Angles.h" />
     <ClInclude Include="..\qcommon\anorms.h" />
+    <ClInclude Include="..\qcommon\ce_LevelMaps.h" />
     <ClInclude Include="..\qcommon\cl_strings.h" />
     <ClInclude Include="..\qcommon\cmodel.h" />
     <ClInclude Include="..\qcommon\cmodel_private.h" />
@@ -155,7 +156,6 @@
     <ClInclude Include="..\qcommon\FX.h" />
     <ClInclude Include="..\qcommon\H2Common.h" />
     <ClInclude Include="..\qcommon\Heretic2.h" />
-    <ClInclude Include="..\qcommon\LevelMaps.h" />
     <ClInclude Include="..\qcommon\p_dll.h" />
     <ClInclude Include="..\qcommon\qcommon.h" />
     <ClInclude Include="..\qcommon\qfiles.h" />

@@ -299,9 +299,6 @@
     <ClInclude Include="..\client\input.h">
       <Filter>client</Filter>
     </ClInclude>
-    <ClInclude Include="..\qcommon\LevelMaps.h">
-      <Filter>qcommon</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\q_ClientServer.h">
       <Filter>qcommon</Filter>
     </ClInclude>
@@ -520,6 +517,9 @@
     </ClInclude>
     <ClInclude Include="..\Player\src\Player.h">
       <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\ce_LevelMaps.h">
+      <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
