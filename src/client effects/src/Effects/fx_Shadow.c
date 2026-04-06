@@ -4,12 +4,12 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../ce_Effects.h"
-#include "../ce_Utilities.h"
+#include "ce_Effects.h"
+#include "ce_Utilities.h"
 #include "Matrix.h"
 #include "Reference.h"
 #include "Vector.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define SHADOW_CHECK_DIST		256.0f
 #define SHADOW_REF_CHECK_DIST	16.0f //mxd. 64.0f in original logic. Seems way too far for feet shadows.

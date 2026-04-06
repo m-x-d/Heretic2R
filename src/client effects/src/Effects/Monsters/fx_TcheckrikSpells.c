@@ -4,11 +4,11 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_DLight.h"
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
-#include "../../ce_Utilities.h"
-#include "g_playstats.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "ce_Utilities.h"
+#include "g_PlayStats.h"
 #include "Matrix.h"
 #include "Random.h"
 #include "Reference.h"

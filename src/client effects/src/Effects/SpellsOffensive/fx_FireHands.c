@@ -1,17 +1,17 @@
 //
-// fx_firehands.c
+// fx_FireHands.c
 //
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
-#include "../../ce_Utilities.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "ce_Utilities.h"
 #include "Vector.h"
 #include "Matrix.h"
 #include "Random.h"
 #include "Reference.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define HANDFIRE_RADIUS	2.0f
 #define HANDFIRE_SCALE	8.0f

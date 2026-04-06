@@ -4,7 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../ce_Effects.h"
+#include "ce_Effects.h"
 #include "Vector.h"
 #include "Random.h"
 

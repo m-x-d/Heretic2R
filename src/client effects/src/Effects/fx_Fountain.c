@@ -4,9 +4,9 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../ce_Effects.h"
-#include "../ce_Particles.h"
-#include "../ce_Utilities.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "ce_Utilities.h"
 #include "Vector.h"
 #include "Random.h"
 #include "Motion.h"

@@ -1,16 +1,16 @@
 //
-// fx_flyingfist.c
+// fx_FlyingFist.c
 //
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_DLight.h"
-#include "../../ce_Effects.h"
-#include "../../ce_Utilities.h"
-#include "../fx_debris.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Utilities.h"
+#include "Effects/fx_debris.h"
 #include "Vector.h"
 #include "Random.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define FIST_SCALE				0.25f
 #define FIST_WIMPY_SCALE		0.15f

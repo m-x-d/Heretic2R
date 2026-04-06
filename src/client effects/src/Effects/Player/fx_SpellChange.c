@@ -1,12 +1,12 @@
 //
-// fx_spellchange.c
+// fx_SpellChange.c
 //
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_DLight.h"
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
 #include "Random.h"
 #include "Vector.h"
 

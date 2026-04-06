@@ -4,12 +4,12 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_DLight.h"
-#include "../../ce_Effects.h"
-#include "../../ce_Utilities.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Utilities.h"
 #include "Random.h"
 #include "Vector.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 #include "q_Sprite.h"
 
 static struct model_s* staffhit_models[4];

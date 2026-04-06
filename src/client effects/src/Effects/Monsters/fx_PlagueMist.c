@@ -4,11 +4,11 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
 #include "Random.h"
 #include "Vector.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define MAX_MIST_PARTICLES	7 //mxd. Named 'NUM_MIST_PARTS' in original logic.
 

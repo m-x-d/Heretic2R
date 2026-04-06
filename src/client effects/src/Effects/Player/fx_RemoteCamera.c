@@ -1,11 +1,11 @@
 //
-// fx_remotecamera.c
+// fx_RemoteCamera.c
 //
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_Effects.h"
-#include "../../ce_Utilities.h"
+#include "ce_Effects.h"
+#include "ce_Utilities.h"
 #include "Vector.h"
 
 void FXRemoteCamera(centity_t* owner, const int type, const int flags, vec3_t origin) //TODO: unused.

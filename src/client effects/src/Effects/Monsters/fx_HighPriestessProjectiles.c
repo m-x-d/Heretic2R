@@ -5,14 +5,14 @@
 //
 
 #include "fx_HighPriestessProjectiles.h" //mxd
-#include "../../ce_DLight.h"
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
-#include "../../ce_Utilities.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "ce_Utilities.h"
 #include "Vector.h"
 #include "Random.h"
 #include "q_Sprite.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define PRIESTESS_TELEPORT_LINEHEIGHT 764
 

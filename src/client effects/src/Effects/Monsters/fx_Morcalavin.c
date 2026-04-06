@@ -6,16 +6,16 @@
 
 #include "fx_Morcalavin.h" //mxd
 #include "fx_HighPriestessProjectiles.h" //mxd
-#include "../../ce_DLight.h"
-#include "../../ce_Particles.h"
-#include "../../ce_Utilities.h"
-#include "../fx_Flamethrower.h" //mxd
-#include "../fx_Smoke.h" //mxd
-#include "../fx_Sparks.h" //mxd
+#include "ce_DLight.h"
+#include "ce_Particles.h"
+#include "ce_Utilities.h"
+#include "Effects/fx_Flamethrower.h" //mxd
+#include "Effects/fx_Smoke.h" //mxd
+#include "Effects/fx_Sparks.h" //mxd
 #include "Random.h"
 #include "Vector.h"
 #include "q_Sprite.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 static struct model_s* mork_projectile_models[4];
 static struct model_s* mork_lightning_models[3];

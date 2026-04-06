@@ -4,10 +4,10 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_Effects.h"
-#include "../../ce_Utilities.h"
+#include "ce_Effects.h"
+#include "ce_Utilities.h"
 #include "fx_WaterSplash.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 #include "Vector.h"
 #include "Random.h"
 

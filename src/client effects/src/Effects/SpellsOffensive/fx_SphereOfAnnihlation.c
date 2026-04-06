@@ -4,16 +4,16 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_DLight.h"
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
-#include "../../ce_Utilities.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "ce_Utilities.h"
 #include "Matrix.h"
 #include "Random.h"
 #include "Reference.h"
 #include "Vector.h"
 #include "q_Sprite.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define FX_SPHERE_FLY_SPEED					600.0f
 #define FX_SPHERE_AURA_SCALE				1.2f

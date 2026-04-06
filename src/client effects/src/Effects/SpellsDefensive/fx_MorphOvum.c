@@ -4,13 +4,13 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_DLight.h"
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
-#include "../../ce_Utilities.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "ce_Utilities.h"
 #include "Random.h"
 #include "Vector.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define MORPH_PARTICLE_VEL		8
 #define MORPH_COLOR				0xff00bbff //mxd. 0xff00ff00 (green) in original logic. Changed to yellow for more... eggish look.

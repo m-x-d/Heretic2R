@@ -4,11 +4,11 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
 #include "Random.h"
 #include "Vector.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 static struct model_s* wake_models[2];
 

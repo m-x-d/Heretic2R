@@ -1,16 +1,16 @@
 //
-// fx_spellhands.c
+// fx_SpellHands.c
 //
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
-#include "../../ce_Utilities.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "ce_Utilities.h"
 #include "Matrix.h"
 #include "Reference.h"
 #include "Vector.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define SH_MAX_TRAIL_SCALE			8.0f //mxd
 #define SH_TRAIL_SCALE_INCREMENT	0.35f //mxd

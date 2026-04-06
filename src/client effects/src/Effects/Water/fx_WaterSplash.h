@@ -6,6 +6,6 @@
 
 #pragma once
 
-#include "../../ce_Entities.h"
+#include "ce_Entities.h"
 
 extern void DoWaterSplash(client_entity_t* effect, paletteRGBA_t color, int count, qboolean use_lightmap_color); //mxd. +use_lightmap_color arg.

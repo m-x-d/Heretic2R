@@ -5,8 +5,8 @@
 //
 
 #include "fx_Smoke.h" //mxd
-#include "../ce_Effects.h"
-#include "../ce_Utilities.h"
+#include "ce_Effects.h"
+#include "ce_Utilities.h"
 #include "Vector.h"
 #include "Random.h"
 #include "Motion.h"

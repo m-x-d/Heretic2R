@@ -5,9 +5,9 @@
 //
 
 #include "fx_Sparks.h" //mxd
-#include "../ce_DLight.h"
-#include "../ce_Effects.h"
-#include "../ce_Particles.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
 #include "Random.h"
 #include "Vector.h"
 #include "q_Sprite.h"

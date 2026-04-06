@@ -4,12 +4,12 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
-#include "../../ce_Utilities.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "ce_Utilities.h"
 #include "Vector.h"
 #include "Random.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define WATER_SPLASH_SCALE	0.3f
 #define WATER_SPLASH_RADIUS	20.0f

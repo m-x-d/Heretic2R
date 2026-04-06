@@ -4,15 +4,15 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_DLight.h"
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
-#include "../../ce_Utilities.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "ce_Utilities.h"
 #include "Matrix.h"
 #include "Random.h"
 #include "Reference.h"
 #include "Vector.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define GLOW_SPAWN_RADIUS	30.0f //mxd. Named 'CLOUD_GEN_RAD' in original logic.
 

@@ -4,7 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../ce_Effects.h"
+#include "ce_Effects.h"
 
 void FXQuake(centity_t* owner, int type, const int flags, vec3_t origin)
 {

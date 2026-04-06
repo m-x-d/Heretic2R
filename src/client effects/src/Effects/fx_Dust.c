@@ -4,8 +4,8 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../ce_Effects.h"
-#include "../ce_Utilities.h"
+#include "ce_Effects.h"
+#include "ce_Utilities.h"
 #include "fx_debris.h" //mxd
 #include "fx_smoke.h" //mxd
 #include "Random.h"

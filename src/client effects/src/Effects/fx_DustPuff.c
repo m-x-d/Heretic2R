@@ -4,8 +4,8 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../ce_Effects.h"
-#include "../ce_Particles.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
 #include "fx_DustPuff.h" //mxd
 #include "g_playstats.h"
 #include "Vector.h"

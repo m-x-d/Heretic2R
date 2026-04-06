@@ -1,5 +1,5 @@
 //
-// fx_dustpuff.h
+// fx_DustPuff.h
 //
 // Copyright 1998 Raven Software
 //

@@ -4,14 +4,14 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_DLight.h"
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
-#include "../../ce_Utilities.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "ce_Utilities.h"
 #include "Vector.h"
 #include "Random.h"
-#include "q_sprite.h"
-#include "g_playstats.h"
+#include "q_Sprite.h"
+#include "g_PlayStats.h"
 
 #define HELLBOLT_IMPACT_SPARKS_MIN		8 //mxd
 #define HELLBOLT_IMPACT_SPARKS_MAX		12 //mxd

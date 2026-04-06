@@ -4,13 +4,13 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_DLight.h"
-#include "../../ce_Effects.h"
-#include "../../ce_Utilities.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Utilities.h"
 #include "Random.h"
 #include "Vector.h"
 #include "fx_Morcalavin.h" //mxd
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define SPELL_SCALE		0.25f
 

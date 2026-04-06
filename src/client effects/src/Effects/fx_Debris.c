@@ -4,11 +4,11 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../ce_DefaultMessageHandler.h"
-#include "../ce_DLight.h"
-#include "../ce_Effects.h"
-#include "../ce_Particles.h"
-#include "../ce_Utilities.h"
+#include "ce_DefaultMessageHandler.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "ce_Utilities.h"
 #include "fx_Blood.h" //mxd
 #include "fx_Debris.h"
 #include "fx_DustPuff.h"

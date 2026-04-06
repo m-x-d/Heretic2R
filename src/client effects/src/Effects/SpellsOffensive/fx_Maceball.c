@@ -4,14 +4,14 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_DLight.h"
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
-#include "../fx_debris.h"
+#include "ce_DLight.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "Effects/fx_debris.h"
 #include "Vector.h"
 #include "Random.h"
 #include "q_Sprite.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define BALL_RADIUS				0.15f
 #define BALL_MAX_RADIUS			(BALL_RADIUS * 6.0f)

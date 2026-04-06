@@ -4,10 +4,10 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_Effects.h"
-#include "../../ce_Utilities.h"
+#include "ce_Effects.h"
+#include "ce_Utilities.h"
 #include "Reference.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 #include "q_Physics.h"
 
 static qboolean PlayerFirstSeenInit(client_entity_t* self, centity_t* owner)

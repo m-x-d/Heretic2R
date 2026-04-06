@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../ce_Entities.h"
+#include "ce_Entities.h"
 #include "q_Typedef.h"
 
 extern client_entity_t* FXDebris_Throw(const vec3_t origin, int material, const vec3_t dir, float ke, float scale, int flags, qboolean altskin);

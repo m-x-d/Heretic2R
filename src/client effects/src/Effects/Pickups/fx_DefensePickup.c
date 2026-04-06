@@ -4,11 +4,11 @@
 // Copyright 1998 Raven Software
 //
 
-#include "../../ce_Effects.h"
-#include "../../ce_Utilities.h"
+#include "ce_Effects.h"
+#include "ce_Utilities.h"
 #include "Vector.h"
 #include "Random.h"
-#include "g_items.h"
+#include "g_Items.h"
 
 #define BOB_HEIGHT					6.0f
 #define BOB_SPEED					ANGLE_10

@@ -5,9 +5,9 @@
 //
 
 #include "fx_WaterSplash.h"
-#include "../../ce_Effects.h"
-#include "../../ce_Particles.h"
-#include "g_playstats.h"
+#include "ce_Effects.h"
+#include "ce_Particles.h"
+#include "g_PlayStats.h"
 #include "Random.h"
 
 void DoWaterSplash(client_entity_t* effect, paletteRGBA_t color, int count, const qboolean use_lightmap_color)
