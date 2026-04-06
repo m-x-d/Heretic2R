@@ -12,9 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\game\q_shared.c">
-      <Filter>game</Filter>
-    </ClCompile>
     <ClCompile Include="src\ByteOrder.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -60,6 +57,9 @@
     <ClCompile Include="src\Vector.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\game\src\q_Shared.c">
+      <Filter>game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\H2Common.h">
@@ -89,9 +89,6 @@
     <ClInclude Include="..\qcommon\q_Physics.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\game\q_shared.h">
-      <Filter>game</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\SinglyLinkedList.h">
       <Filter>qcommon</Filter>
     </ClInclude>
@@ -103,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="src\Console.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\q_Shared.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

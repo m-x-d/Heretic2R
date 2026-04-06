@@ -12,7 +12,7 @@
 #include "p_weapon.h"
 #include "p_utility.h" //mxd
 #include "FX.h"
-#include "m_player.h"
+#include "Player/m_Player.h" // In game/src! --mxd.
 #include "Random.h"
 #include "Vector.h"
 

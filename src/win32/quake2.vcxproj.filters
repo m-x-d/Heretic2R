@@ -231,9 +231,6 @@
     <ClCompile Include="..\qcommon\tokens.c">
       <Filter>qcommon</Filter>
     </ClCompile>
-    <ClCompile Include="..\game\q_shared.c">
-      <Filter>game</Filter>
-    </ClCompile>
     <ClCompile Include="..\server\sv_entities.c">
       <Filter>server</Filter>
     </ClCompile>
@@ -270,6 +267,9 @@
     <ClCompile Include="..\client\cl_camera.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="..\game\src\q_Shared.c">
+      <Filter>game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -302,17 +302,11 @@
     <ClInclude Include="..\qcommon\q_ClientServer.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\game\g_itemstats.h">
-      <Filter>game</Filter>
-    </ClInclude>
     <ClInclude Include="vid_dll.h">
       <Filter>win32</Filter>
     </ClInclude>
     <ClInclude Include="clfx_dll.h">
       <Filter>win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game\q_shared.h">
-      <Filter>game</Filter>
     </ClInclude>
     <ClInclude Include="dll_io.h">
       <Filter>win32</Filter>
@@ -419,9 +413,6 @@
     <ClInclude Include="..\client\menus\menu_worldmap.h">
       <Filter>client\menus</Filter>
     </ClInclude>
-    <ClInclude Include="..\game\game.h">
-      <Filter>game</Filter>
-    </ClInclude>
     <ClInclude Include="..\server\sv_effects.h">
       <Filter>server</Filter>
     </ClInclude>
@@ -455,9 +446,6 @@
     <ClInclude Include="..\client\cl_effects.h">
       <Filter>client</Filter>
     </ClInclude>
-    <ClInclude Include="..\game\g_Skeleton.h">
-      <Filter>game</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\FX.h">
       <Filter>qcommon</Filter>
     </ClInclude>
@@ -467,17 +455,11 @@
     <ClInclude Include="..\qcommon\q_Physics.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\game\g_playstats.h">
-      <Filter>game</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\Random.h">
       <Filter>qcommon</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\Angles.h">
       <Filter>qcommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game\g_items.h">
-      <Filter>game</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\Debug.h">
       <Filter>qcommon</Filter>
@@ -520,6 +502,24 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\ce_LevelMaps.h">
       <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\g_Items.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\g_ItemStats.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\g_PlayStats.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\g_Skeleton.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\Game.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\q_Shared.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

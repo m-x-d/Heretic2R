@@ -58,7 +58,7 @@
     <ClCompile Include="..\client\menus\menu_startserver.c" />
     <ClCompile Include="..\client\menus\menu_video.c" />
     <ClCompile Include="..\client\menus\menu_worldmap.c" />
-    <ClCompile Include="..\game\q_shared.c" />
+    <ClCompile Include="..\game\src\q_Shared.c" />
     <ClCompile Include="..\qcommon\anorms.c" />
     <ClCompile Include="..\qcommon\cmd.c" />
     <ClCompile Include="..\qcommon\cmodel.c" />
@@ -135,12 +135,12 @@
     <ClInclude Include="..\client\ref.h" />
     <ClInclude Include="..\client\screen.h" />
     <ClInclude Include="..\client\vid.h" />
-    <ClInclude Include="..\game\game.h" />
-    <ClInclude Include="..\game\g_items.h" />
-    <ClInclude Include="..\game\g_itemstats.h" />
-    <ClInclude Include="..\game\g_playstats.h" />
-    <ClInclude Include="..\game\g_Skeleton.h" />
-    <ClInclude Include="..\game\q_shared.h" />
+    <ClInclude Include="..\game\src\Game.h" />
+    <ClInclude Include="..\game\src\g_Items.h" />
+    <ClInclude Include="..\game\src\g_ItemStats.h" />
+    <ClInclude Include="..\game\src\g_PlayStats.h" />
+    <ClInclude Include="..\game\src\g_Skeleton.h" />
+    <ClInclude Include="..\game\src\q_Shared.h" />
     <ClInclude Include="..\Player\src\Player.h" />
     <ClInclude Include="..\Player\src\p_main.h" />
     <ClInclude Include="..\Player\src\p_types.h" />
@@ -228,7 +228,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\..\include;..\client;..\server;..\qcommon;..\game;..\Player\src;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\client;..\server;..\qcommon;..\game\src;..\Player\src;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -271,7 +271,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\..\include;..\client;..\server;..\qcommon;..\game;..\Player\src;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\client;..\server;..\qcommon;..\game\src;..\Player\src;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>

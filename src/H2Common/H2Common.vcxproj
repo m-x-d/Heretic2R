@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\game\q_shared.c" />
+    <ClCompile Include="..\game\src\q_Shared.c" />
     <ClCompile Include="src\ByteOrder.c" />
     <ClCompile Include="src\Common.c" />
     <ClCompile Include="src\Console.c" />
@@ -29,7 +29,7 @@
     <ClCompile Include="src\Vector.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\game\q_shared.h" />
+    <ClInclude Include="..\game\src\q_Shared.h" />
     <ClInclude Include="..\qcommon\Angles.h" />
     <ClInclude Include="..\qcommon\GenericUnions.h" />
     <ClInclude Include="..\qcommon\H2Common.h" />
@@ -94,7 +94,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\qcommon;..\game;..\Player\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\qcommon;..\game\src;..\Player\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -133,7 +133,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\qcommon;..\game;..\Player\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\qcommon;..\game\src;..\Player\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <DisableSpecificWarnings>4100; 4115; 4201</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

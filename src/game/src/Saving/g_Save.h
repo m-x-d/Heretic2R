@@ -1,0 +1,79 @@
+//
+// g_Save.h
+//
+// Copyright 2025 mxd
+//
+
+#pragma once
+
+#include "q_Typedef.h"
+
+// Fields are needed for spawning from the entity string and saving / loading games.
+typedef enum
+{
+	FFL_NONE,
+	FFL_SPAWNTEMP,
+	FFL_RELINK //mxd
+} fieldflags_t;
+
+typedef enum
+{
+	F_INT,
+	F_FLOAT,
+	F_LSTRING,	// String on disk, pointer in memory, TAG_LEVEL.
+	F_GSTRING,	// String on disk, pointer in memory, TAG_GAME.
+	F_VECTOR,
+	F_ANGLEHACK,
+	F_EDICT,	// Index on disk, pointer in memory.
+	F_ITEM,		// Index on disk, pointer in memory.
+	F_CLIENT,	// Index on disk, pointer in memory.
+	F_RGBA,
+	F_RGB,
+	F_FUNCTION,	// YQ2
+	F_ANIMMOVE,	// YQ2
+	F_CLEAR,	//mxd. Set to NULL when loading game.
+	F_IGNORE
+} fieldtype_t;
+
+typedef struct
+{
+	const char* name;
+	int ofs;
+	fieldtype_t type;
+	fieldflags_t flags; //mxd. int in original logic.
+
+	union //mxd
+	{
+		const struct func_map_s* func_info;
+		const struct animmove_map_s* amove_info;
+	} extra;
+} field_t;
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+	extern const field_t fields[];
+#ifdef __cplusplus
+}
+#endif
+
+typedef struct
+{
+	char* string;
+	char* wav;
+} trig_message_t;
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+	extern trig_message_t message_text[];
+#ifdef __cplusplus
+}
+#endif
+
+extern void WriteGame(const char* filename, qboolean autosave);
+extern void ReadGame(const char* filename);
+extern void WriteLevel(const char* filename);
+extern void ReadLevel(const char* filename);

@@ -96,14 +96,14 @@
     <ClCompile Include="src\gl1_Surface.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\game\q_shared.c">
-      <Filter>game</Filter>
-    </ClCompile>
     <ClCompile Include="src\gl1_Sprite.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\gl1_Matrix4.c">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\src\q_Shared.c">
+      <Filter>game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -197,17 +197,17 @@
     <ClInclude Include="src\gl1_Surface.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\game\q_shared.h">
-      <Filter>game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game\game.h">
-      <Filter>game</Filter>
-    </ClInclude>
     <ClInclude Include="src\gl1_Sprite.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\gl1_Matrix4.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\Game.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\q_Shared.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

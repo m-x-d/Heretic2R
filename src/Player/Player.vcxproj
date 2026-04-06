@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\game\src\q_Shared.c" />
     <ClCompile Include="src\p_actions.c" />
     <ClCompile Include="src\p_animactor.c" />
     <ClCompile Include="src\p_anims.c" />
@@ -24,6 +25,7 @@
     <ClCompile Include="src\p_weapon.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\game\src\q_Shared.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\p_actions.h" />
     <ClInclude Include="src\p_animactor.h" />
@@ -87,7 +89,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\game;..\qcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\game\src;..\qcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -128,7 +130,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\game;..\qcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\game\src;..\qcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <DisableSpecificWarnings>4100; 4115; 4201</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

@@ -7,14 +7,14 @@
 #include <windows.h>
 #include "p_dll.h" //mxd
 #ifdef GAME_DLL
-	#include "g_local.h" //mxd
+	#include "g_Local.h" //mxd
 #else
 	#include "dll_io.h" //mxd
 #endif
 #include "qcommon.h"
 
 // Structure containing functions and data pointers exported from the player DLL.
-player_export_t	playerExport;
+player_export_t playerExport;
 
 // Handle to player DLL.
 static HINSTANCE player_library = NULL;

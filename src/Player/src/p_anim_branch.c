@@ -11,7 +11,7 @@
 #include "p_main.h"
 #include "p_weapon.h"
 #include "Vector.h"
-#include "m_player.h"
+#include "Player/m_Player.h" // In game/src! --mxd.
 #include "p_utility.h" //mxd
 
 qboolean CheckFall(const playerinfo_t* info)

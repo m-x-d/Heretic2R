@@ -8,7 +8,7 @@
 #include "p_actions.h"
 #include "p_chicken.h"
 #include "p_anim_branch.h"
-#include "m_chicken_anim.h"
+#include "Monsters/Chicken/m_Chicken_anim.h" // In game/src! --mxd.
 
 #define PLAYER_WALK_SPEED	240.0f
 #define PLAYER_STRAFE_SPEED	185.0f

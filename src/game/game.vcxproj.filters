@@ -7,122 +7,20 @@
     <Filter Include="src\Cinematics">
       <UniqueIdentifier>{3e93d375-cb4b-414c-aa25-84674c4e07e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Cinematics\Dranor">
-      <UniqueIdentifier>{a3678e51-a2f9-4521-b211-ad60b7a79e94}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Cinematics\ElfLord">
-      <UniqueIdentifier>{8f44eb8d-e4be-4f46-998e-f91a4210104d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Cinematics\Morcalavin">
-      <UniqueIdentifier>{142b63f0-8af8-4042-974e-ce1239ec5d42}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Cinematics\Priestess">
-      <UniqueIdentifier>{6b225663-b3e7-4442-b8ef-ec012b75a6c6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Cinematics\Priestess2">
-      <UniqueIdentifier>{f06e8885-9c19-4aab-ace6-3634a4c07b18}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Cinematics\Siernan">
-      <UniqueIdentifier>{ac36e7e7-7758-4d3a-a954-ba50849c5c71}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Cinematics\Siernan2">
-      <UniqueIdentifier>{7e8b368d-045e-405e-96cf-0c6703794767}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Cinematics\Corvus">
-      <UniqueIdentifier>{80f83c8b-9bde-407a-8016-5ef59323cab9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Cinematics\Ssithra scout">
-      <UniqueIdentifier>{086a15f8-edd9-4c5f-936d-b6960764b960}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Cinematics\Tome">
-      <UniqueIdentifier>{be51f64d-2493-4520-8bc4-97d795c5ecfa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Cinematics\Sithra victim">
-      <UniqueIdentifier>{82ecc20a-6d70-45df-96e6-dfb9054dd1f6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Monsters">
       <UniqueIdentifier>{9fd7546d-da20-4c9a-b096-1d33364a7364}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Player">
       <UniqueIdentifier>{6b193bd7-4d28-4c13-bd93-d7dbb651602c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Monsters\Assassin">
-      <UniqueIdentifier>{54bbcc2d-96dd-4e28-926b-39609434217e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="qcommon">
       <UniqueIdentifier>{742b7e2f-e06d-4b00-8c4c-3cd808a7334d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Bee">
-      <UniqueIdentifier>{7ecbd00c-1a25-4a49-b3ff-74421ad7497e}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Scripting">
       <UniqueIdentifier>{6e12d637-cb6a-4aef-ac3a-01590442e054}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\NavSys">
       <UniqueIdentifier>{eb3a7bbf-40f8-4c32-8448-b3599619d825}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Game objects">
-      <UniqueIdentifier>{d5d6041f-cc6d-47cf-b097-f9e4d0ee5788}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Fish">
-      <UniqueIdentifier>{1d8beaa6-c16a-43ae-a701-21d8cc5f7b88}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Gkrokon">
-      <UniqueIdentifier>{aaba5e1c-f711-40fc-a8f1-db095c34944e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Gorgon">
-      <UniqueIdentifier>{7cfaf687-30b8-44b8-adf6-ba31f10e6eff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Harpy">
-      <UniqueIdentifier>{28a89b96-af43-4179-a668-69e9c3f6f1fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Imp">
-      <UniqueIdentifier>{97edb8a0-4fcc-4498-88f4-39652f5812da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Morcalavin">
-      <UniqueIdentifier>{85e89e7a-9e61-4b82-8e55-1a482654bae9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\TcheckrikMother">
-      <UniqueIdentifier>{1636a858-0a73-4fdd-9600-8007c73c46d1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Ogle">
-      <UniqueIdentifier>{e8ecfc1a-a693-4f03-94c4-ead8d2f2cc6d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Priestess">
-      <UniqueIdentifier>{d9054329-ad7e-423e-a7a3-532f4df155e3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Rat">
-      <UniqueIdentifier>{6254f884-1887-41b6-89bd-afb783bf432e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Seraph">
-      <UniqueIdentifier>{f7020df5-a3bb-4c9c-a1d9-64349a01dac1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\SeraphGuard">
-      <UniqueIdentifier>{210776b9-46bc-44e1-bc82-48e31525bc28}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Spreader">
-      <UniqueIdentifier>{1b9dc016-cf24-4178-869b-7391f518a31d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Tcheckrik">
-      <UniqueIdentifier>{4ff034ac-7c0a-4c8d-bff3-c7148852522b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Chicken">
-      <UniqueIdentifier>{7e39085b-506b-4971-bce6-54902faa621a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Trial Beast">
-      <UniqueIdentifier>{75ca9218-f238-4915-9629-a0c0058dfde9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Elf Lord">
-      <UniqueIdentifier>{d8b3975d-98e0-4063-a7e7-918af778babe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Mutant Ssithra">
-      <UniqueIdentifier>{726c33e2-1485-422e-b497-e2cae17e5552}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Plague Elf">
-      <UniqueIdentifier>{b9ae21fd-058a-436a-90bf-332348473121}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Monsters\Plague Ssithra">
-      <UniqueIdentifier>{0de459c9-2734-4b88-ac21-9d6a1ae4a423}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Scripting\Variables">
       <UniqueIdentifier>{9138f8a1-7422-45db-b8eb-b9abf132bb31}</UniqueIdentifier>
@@ -136,304 +34,121 @@
     <Filter Include="src\SpellsDefensive">
       <UniqueIdentifier>{b270f553-93f7-4ba1-9ee9-210751ff3fd2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Commands">
+      <UniqueIdentifier>{90c9e3da-4ec0-418c-9816-a9e01d247a1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Physics">
+      <UniqueIdentifier>{45a35840-d74f-4c15-851b-4850d33a9c39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Saving">
+      <UniqueIdentifier>{ee6dfa55-b9c2-4dbd-8f12-cf65c250d9cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\GameObjects">
+      <UniqueIdentifier>{d5d6041f-cc6d-47cf-b097-f9e4d0ee5788}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Morcalavin">
+      <UniqueIdentifier>{85e89e7a-9e61-4b82-8e55-1a482654bae9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\MutantSsithra">
+      <UniqueIdentifier>{726c33e2-1485-422e-b497-e2cae17e5552}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Ogle">
+      <UniqueIdentifier>{e8ecfc1a-a693-4f03-94c4-ead8d2f2cc6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\PlagueElf">
+      <UniqueIdentifier>{b9ae21fd-058a-436a-90bf-332348473121}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\PlagueSsithra">
+      <UniqueIdentifier>{0de459c9-2734-4b88-ac21-9d6a1ae4a423}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Rat">
+      <UniqueIdentifier>{6254f884-1887-41b6-89bd-afb783bf432e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\SeraphGuard">
+      <UniqueIdentifier>{210776b9-46bc-44e1-bc82-48e31525bc28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\SeraphOverlord">
+      <UniqueIdentifier>{f7020df5-a3bb-4c9c-a1d9-64349a01dac1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Spreader">
+      <UniqueIdentifier>{1b9dc016-cf24-4178-869b-7391f518a31d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Tcheckrik">
+      <UniqueIdentifier>{4ff034ac-7c0a-4c8d-bff3-c7148852522b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\TcheckrikMother">
+      <UniqueIdentifier>{1636a858-0a73-4fdd-9600-8007c73c46d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\TrialBeast">
+      <UniqueIdentifier>{75ca9218-f238-4915-9629-a0c0058dfde9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Assassin">
+      <UniqueIdentifier>{54bbcc2d-96dd-4e28-926b-39609434217e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Bee">
+      <UniqueIdentifier>{7ecbd00c-1a25-4a49-b3ff-74421ad7497e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Chicken">
+      <UniqueIdentifier>{7e39085b-506b-4971-bce6-54902faa621a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\ElfLord">
+      <UniqueIdentifier>{d8b3975d-98e0-4063-a7e7-918af778babe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Fish">
+      <UniqueIdentifier>{1d8beaa6-c16a-43ae-a701-21d8cc5f7b88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Gkrokon">
+      <UniqueIdentifier>{aaba5e1c-f711-40fc-a8f1-db095c34944e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Gorgon">
+      <UniqueIdentifier>{7cfaf687-30b8-44b8-adf6-ba31f10e6eff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Harpy">
+      <UniqueIdentifier>{28a89b96-af43-4179-a668-69e9c3f6f1fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\HighPriestess">
+      <UniqueIdentifier>{d9054329-ad7e-423e-a7a3-532f4df155e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Imp">
+      <UniqueIdentifier>{97edb8a0-4fcc-4498-88f4-39652f5812da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Cinematics\Corvus">
+      <UniqueIdentifier>{80f83c8b-9bde-407a-8016-5ef59323cab9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Cinematics\Dranor">
+      <UniqueIdentifier>{a3678e51-a2f9-4521-b211-ad60b7a79e94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Cinematics\ElfLord">
+      <UniqueIdentifier>{8f44eb8d-e4be-4f46-998e-f91a4210104d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Cinematics\HighPriestess">
+      <UniqueIdentifier>{6b225663-b3e7-4442-b8ef-ec012b75a6c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Cinematics\HighPriestess2">
+      <UniqueIdentifier>{f06e8885-9c19-4aab-ace6-3634a4c07b18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Cinematics\Morcalavin">
+      <UniqueIdentifier>{142b63f0-8af8-4042-974e-ce1239ec5d42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Cinematics\Siernan">
+      <UniqueIdentifier>{ac36e7e7-7758-4d3a-a954-ba50849c5c71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Cinematics\Siernan2">
+      <UniqueIdentifier>{7e8b368d-045e-405e-96cf-0c6703794767}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Cinematics\SithraVictim">
+      <UniqueIdentifier>{82ecc20a-6d70-45df-96e6-dfb9054dd1f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Cinematics\SsithraScout">
+      <UniqueIdentifier>{086a15f8-edd9-4c5f-936d-b6960764b960}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Cinematics\Tome">
+      <UniqueIdentifier>{be51f64d-2493-4520-8bc4-97d795c5ecfa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="decals.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_ClassStatics.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_cmds.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_combat.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_DefaultMessageHandler.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_HitLocation.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_items.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_main.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_Message.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_PhysicsQ2.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_Physics.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_save.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_Skeletons.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_svcmds.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="g_utils.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="q_shared.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Utilities.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus1.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus1_anim.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus2.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus2_anim.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus3.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus3_anim.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus4.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus4_anim.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus5.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus5_anim.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus6.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus6_anim.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus7.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus7_anim.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus8.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus8_anim.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus9.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_corvus9_anim.c">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClCompile>
-    <ClCompile Include="c_dranor.c">
-      <Filter>src\Cinematics\Dranor</Filter>
-    </ClCompile>
-    <ClCompile Include="c_dranor_anim.c">
-      <Filter>src\Cinematics\Dranor</Filter>
-    </ClCompile>
-    <ClCompile Include="c_elflord.c">
-      <Filter>src\Cinematics\ElfLord</Filter>
-    </ClCompile>
-    <ClCompile Include="c_elflord_anim.c">
-      <Filter>src\Cinematics\ElfLord</Filter>
-    </ClCompile>
-    <ClCompile Include="c_morcalavin.c">
-      <Filter>src\Cinematics\Morcalavin</Filter>
-    </ClCompile>
-    <ClCompile Include="c_morcalavin_anim.c">
-      <Filter>src\Cinematics\Morcalavin</Filter>
-    </ClCompile>
-    <ClCompile Include="c_priestess.c">
-      <Filter>src\Cinematics\Priestess</Filter>
-    </ClCompile>
-    <ClCompile Include="c_priestess_anim.c">
-      <Filter>src\Cinematics\Priestess</Filter>
-    </ClCompile>
-    <ClCompile Include="c_priestess2.c">
-      <Filter>src\Cinematics\Priestess2</Filter>
-    </ClCompile>
-    <ClCompile Include="c_priestess2_anim.c">
-      <Filter>src\Cinematics\Priestess2</Filter>
-    </ClCompile>
-    <ClCompile Include="c_siernan1.c">
-      <Filter>src\Cinematics\Siernan</Filter>
-    </ClCompile>
-    <ClCompile Include="c_siernan1_anim.c">
-      <Filter>src\Cinematics\Siernan</Filter>
-    </ClCompile>
-    <ClCompile Include="c_siernan2.c">
-      <Filter>src\Cinematics\Siernan2</Filter>
-    </ClCompile>
-    <ClCompile Include="c_siernan2_anim.c">
-      <Filter>src\Cinematics\Siernan2</Filter>
-    </ClCompile>
-    <ClCompile Include="c_ssithrascout.c">
-      <Filter>src\Cinematics\Ssithra scout</Filter>
-    </ClCompile>
-    <ClCompile Include="c_ssithrascout_anim.c">
-      <Filter>src\Cinematics\Ssithra scout</Filter>
-    </ClCompile>
-    <ClCompile Include="c_ai.c">
-      <Filter>src\Cinematics</Filter>
-    </ClCompile>
-    <ClCompile Include="c_tome.c">
-      <Filter>src\Cinematics\Tome</Filter>
-    </ClCompile>
-    <ClCompile Include="c_tome_anim.c">
-      <Filter>src\Cinematics\Tome</Filter>
-    </ClCompile>
-    <ClCompile Include="c_victimSsithra.c">
-      <Filter>src\Cinematics\Sithra victim</Filter>
-    </ClCompile>
-    <ClCompile Include="c_victimSsithra_anim.c">
-      <Filter>src\Cinematics\Sithra victim</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_blast.c">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_flyingfist.c">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_HellStaff.c">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_maceballs.c">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_magicmissile.c">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_Phoenix.c">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_RedRain.c">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_ripper.c">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_sphereofannihlation.c">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClCompile>
-    <ClCompile Include="spl_wall.c">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClCompile>
-    <ClCompile Include="g_monster.c">
-      <Filter>src\Monsters</Filter>
-    </ClCompile>
-    <ClCompile Include="buoy.c">
-      <Filter>src\NavSys</Filter>
-    </ClCompile>
-    <ClCompile Include="mg_guide.c">
-      <Filter>src\NavSys</Filter>
-    </ClCompile>
-    <ClCompile Include="g_ai.c">
-      <Filter>src\Monsters</Filter>
-    </ClCompile>
-    <ClCompile Include="m_move.c">
-      <Filter>src\Monsters</Filter>
-    </ClCompile>
-    <ClCompile Include="m_stats.c">
-      <Filter>src\Monsters</Filter>
-    </ClCompile>
-    <ClCompile Include="mg_ai.c">
-      <Filter>src\Monsters</Filter>
-    </ClCompile>
-    <ClCompile Include="p_client.c">
-      <Filter>src\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="p_funcs.c">
-      <Filter>src\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="p_hud.c">
-      <Filter>src\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="p_item.c">
-      <Filter>src\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="p_view.c">
-      <Filter>src\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="g_breakable.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_flamethrower.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_env.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_field.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_light.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_misc.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_obj.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_rope.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_spawnf.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_spawn.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_target.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_trigger.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_waterfx.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="m_assassin.c">
-      <Filter>src\Monsters\Assassin</Filter>
-    </ClCompile>
-    <ClCompile Include="m_assassin_anim.c">
-      <Filter>src\Monsters\Assassin</Filter>
-    </ClCompile>
-    <ClCompile Include="m_beast.c">
-      <Filter>src\Monsters\Trial Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="m_beast_anim.c">
-      <Filter>src\Monsters\Trial Beast</Filter>
-    </ClCompile>
     <ClCompile Include="..\qcommon\Message.c">
       <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="m_bee.c">
-      <Filter>src\Monsters\Bee</Filter>
-    </ClCompile>
-    <ClCompile Include="m_chicken.c">
-      <Filter>src\Monsters\Chicken</Filter>
-    </ClCompile>
-    <ClCompile Include="m_chicken_anim.c">
-      <Filter>src\Monsters\Chicken</Filter>
     </ClCompile>
     <ClCompile Include="..\qcommon\Skeletons.c">
       <Filter>qcommon</Filter>
@@ -441,451 +156,538 @@
     <ClCompile Include="..\qcommon\p_dll.c">
       <Filter>qcommon</Filter>
     </ClCompile>
-    <ClCompile Include="m_elflord.c">
-      <Filter>src\Monsters\Elf Lord</Filter>
+    <ClCompile Include="src\g_ClassStatics.c">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="m_elflord_anim.c">
-      <Filter>src\Monsters\Elf Lord</Filter>
+    <ClCompile Include="src\g_Combat.c">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="m_fish.c">
+    <ClCompile Include="src\g_Decals.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\g_DefaultMessageHandler.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\g_HitLocation.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\g_Items.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\g_Main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\g_Message.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\g_Skeletons.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\g_Utilities.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\g_Utils.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\q_Shared.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus1.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus1_anim.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus2.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus2_anim.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus3.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus3_anim.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus4.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus4_anim.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus5.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus5_anim.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus6.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus6_anim.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus7.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus7_anim.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus8.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus8_anim.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus9.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Corvus\c_Corvus9_anim.c">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Dranor\c_Dranor.c">
+      <Filter>src\Cinematics\Dranor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Dranor\c_Dranor_anim.c">
+      <Filter>src\Cinematics\Dranor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\ElfLord\c_ElfLord.c">
+      <Filter>src\Cinematics\ElfLord</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\ElfLord\c_ElfLord_anim.c">
+      <Filter>src\Cinematics\ElfLord</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Morcalavin\c_Morcalavin.c">
+      <Filter>src\Cinematics\Morcalavin</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Morcalavin\c_Morcalavin_anim.c">
+      <Filter>src\Cinematics\Morcalavin</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\HighPriestess\c_HighPriestess.c">
+      <Filter>src\Cinematics\HighPriestess</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\HighPriestess\c_HighPriestess_anim.c">
+      <Filter>src\Cinematics\HighPriestess</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\HighPriestess2\c_HighPriestess2.c">
+      <Filter>src\Cinematics\HighPriestess2</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\HighPriestess2\c_HighPriestess2_anim.c">
+      <Filter>src\Cinematics\HighPriestess2</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Siernan\c_Siernan1.c">
+      <Filter>src\Cinematics\Siernan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Siernan\c_Siernan1_anim.c">
+      <Filter>src\Cinematics\Siernan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Siernan2\c_Siernan2.c">
+      <Filter>src\Cinematics\Siernan2</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Siernan2\c_Siernan2_anim.c">
+      <Filter>src\Cinematics\Siernan2</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\SsithraVictim\c_SsithraVictim.c">
+      <Filter>src\Cinematics\SithraVictim</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\SsithraVictim\c_SsithraVictim_anim.c">
+      <Filter>src\Cinematics\SithraVictim</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\SsithraScout\c_SsithraScout.c">
+      <Filter>src\Cinematics\SsithraScout</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\SsithraScout\c_SsithraScout_anim.c">
+      <Filter>src\Cinematics\SsithraScout</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Tome\c_Tome.c">
+      <Filter>src\Cinematics\Tome</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\Tome\c_Tome_anim.c">
+      <Filter>src\Cinematics\Tome</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cinematics\c_AI.c">
+      <Filter>src\Cinematics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_BreakableBrush.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_Debris.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_Env.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_Field.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_Flamethrower.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_func_Button.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_func_Door.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_func_MonsterSpawner.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_func_Plat.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_func_Rotating.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_func_Timer.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_func_Train.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_func_Utility.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_Light.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_Misc.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_MorcalavinBarrier.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_Obj.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_Rope.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_Shrine.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_Target.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_Trigger.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\g_WaterEffects.c">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Commands\g_ClientCommands.c">
+      <Filter>src\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Commands\g_ServerCommands.c">
+      <Filter>src\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NavSys\mg_Buoy.c">
+      <Filter>src\NavSys</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NavSys\mg_Guide.c">
+      <Filter>src\NavSys</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\Assassin\m_Assassin.c">
+      <Filter>src\Monsters\Assassin</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\Assassin\m_Assassin_anim.c">
+      <Filter>src\Monsters\Assassin</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\Bee\m_Bee.c">
+      <Filter>src\Monsters\Bee</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\Chicken\m_Chicken.c">
+      <Filter>src\Monsters\Chicken</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\Chicken\m_Chicken_anim.c">
+      <Filter>src\Monsters\Chicken</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\ElfLord\m_ElfLord.c">
+      <Filter>src\Monsters\ElfLord</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\ElfLord\m_ElfLord_anim.c">
+      <Filter>src\Monsters\ElfLord</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\Fish\m_Fish.c">
       <Filter>src\Monsters\Fish</Filter>
     </ClCompile>
-    <ClCompile Include="m_fish_anim.c">
+    <ClCompile Include="src\Monsters\Fish\m_Fish_anim.c">
       <Filter>src\Monsters\Fish</Filter>
     </ClCompile>
-    <ClCompile Include="m_gkrokon.c">
+    <ClCompile Include="src\Monsters\Gkrokon\m_Gkrokon.c">
       <Filter>src\Monsters\Gkrokon</Filter>
     </ClCompile>
-    <ClCompile Include="m_gkrokon_anim.c">
+    <ClCompile Include="src\Monsters\Gkrokon\m_Gkrokon_anim.c">
       <Filter>src\Monsters\Gkrokon</Filter>
     </ClCompile>
-    <ClCompile Include="m_gorgon.c">
+    <ClCompile Include="src\Monsters\Gorgon\m_Gorgon.c">
       <Filter>src\Monsters\Gorgon</Filter>
     </ClCompile>
-    <ClCompile Include="m_gorgon_anim.c">
+    <ClCompile Include="src\Monsters\Gorgon\m_Gorgon_anim.c">
       <Filter>src\Monsters\Gorgon</Filter>
     </ClCompile>
-    <ClCompile Include="m_harpy.c">
+    <ClCompile Include="src\Monsters\Harpy\m_Harpy.c">
       <Filter>src\Monsters\Harpy</Filter>
     </ClCompile>
-    <ClCompile Include="m_harpy_anim.c">
+    <ClCompile Include="src\Monsters\Harpy\m_Harpy_anim.c">
       <Filter>src\Monsters\Harpy</Filter>
     </ClCompile>
-    <ClCompile Include="m_imp.c">
+    <ClCompile Include="src\Monsters\Imp\m_Imp.c">
       <Filter>src\Monsters\Imp</Filter>
     </ClCompile>
-    <ClCompile Include="m_imp_anim.c">
+    <ClCompile Include="src\Monsters\Imp\m_Imp_anim.c">
       <Filter>src\Monsters\Imp</Filter>
     </ClCompile>
-    <ClCompile Include="m_morcalavin.c">
+    <ClCompile Include="src\Monsters\Morcalavin\m_Morcalavin.c">
       <Filter>src\Monsters\Morcalavin</Filter>
     </ClCompile>
-    <ClCompile Include="m_morcalavin_anim.c">
+    <ClCompile Include="src\Monsters\Morcalavin\m_Morcalavin_anim.c">
       <Filter>src\Monsters\Morcalavin</Filter>
     </ClCompile>
-    <ClCompile Include="m_mother.c">
-      <Filter>src\Monsters\TcheckrikMother</Filter>
+    <ClCompile Include="src\Monsters\MutantSsithra\m_MutantSsithra.c">
+      <Filter>src\Monsters\MutantSsithra</Filter>
     </ClCompile>
-    <ClCompile Include="m_mother_anim.c">
-      <Filter>src\Monsters\TcheckrikMother</Filter>
+    <ClCompile Include="src\Monsters\MutantSsithra\m_MutantSsithra_anim.c">
+      <Filter>src\Monsters\MutantSsithra</Filter>
     </ClCompile>
-    <ClCompile Include="m_mssithra.c">
-      <Filter>src\Monsters\Mutant Ssithra</Filter>
-    </ClCompile>
-    <ClCompile Include="m_mssithra_anim.c">
-      <Filter>src\Monsters\Mutant Ssithra</Filter>
-    </ClCompile>
-    <ClCompile Include="m_ogle.c">
+    <ClCompile Include="src\Monsters\Ogle\m_Ogle.c">
       <Filter>src\Monsters\Ogle</Filter>
     </ClCompile>
-    <ClCompile Include="m_ogle_anim.c">
+    <ClCompile Include="src\Monsters\Ogle\m_Ogle_anim.c">
       <Filter>src\Monsters\Ogle</Filter>
     </ClCompile>
-    <ClCompile Include="m_plagueElf.c">
-      <Filter>src\Monsters\Plague Elf</Filter>
+    <ClCompile Include="src\Monsters\PlagueElf\m_PlagueElf.c">
+      <Filter>src\Monsters\PlagueElf</Filter>
     </ClCompile>
-    <ClCompile Include="m_plagueElf_anim.c">
-      <Filter>src\Monsters\Plague Elf</Filter>
+    <ClCompile Include="src\Monsters\PlagueElf\m_PlagueElf_anim.c">
+      <Filter>src\Monsters\PlagueElf</Filter>
     </ClCompile>
-    <ClCompile Include="m_plagueSsithra.c">
-      <Filter>src\Monsters\Plague Ssithra</Filter>
+    <ClCompile Include="src\Monsters\PlagueSsithra\m_PlagueSsithra.c">
+      <Filter>src\Monsters\PlagueSsithra</Filter>
     </ClCompile>
-    <ClCompile Include="m_plagueSsithra_anim.c">
-      <Filter>src\Monsters\Plague Ssithra</Filter>
+    <ClCompile Include="src\Monsters\PlagueSsithra\m_PlagueSsithra_anim.c">
+      <Filter>src\Monsters\PlagueSsithra</Filter>
     </ClCompile>
-    <ClCompile Include="m_priestess.c">
-      <Filter>src\Monsters\Priestess</Filter>
+    <ClCompile Include="src\Monsters\HighPriestess\m_HighPriestess.c">
+      <Filter>src\Monsters\HighPriestess</Filter>
     </ClCompile>
-    <ClCompile Include="m_priestess_anim.c">
-      <Filter>src\Monsters\Priestess</Filter>
+    <ClCompile Include="src\Monsters\HighPriestess\m_HighPriestess_anim.c">
+      <Filter>src\Monsters\HighPriestess</Filter>
     </ClCompile>
-    <ClCompile Include="m_rat.c">
+    <ClCompile Include="src\Monsters\Rat\m_Rat.c">
       <Filter>src\Monsters\Rat</Filter>
     </ClCompile>
-    <ClCompile Include="m_rat_anim.c">
+    <ClCompile Include="src\Monsters\Rat\m_Rat_anim.c">
       <Filter>src\Monsters\Rat</Filter>
     </ClCompile>
-    <ClCompile Include="m_seraph.c">
-      <Filter>src\Monsters\Seraph</Filter>
+    <ClCompile Include="src\Monsters\SeraphOverlord\m_SeraphOverlord.c">
+      <Filter>src\Monsters\SeraphOverlord</Filter>
     </ClCompile>
-    <ClCompile Include="m_seraph_anim.c">
-      <Filter>src\Monsters\Seraph</Filter>
+    <ClCompile Include="src\Monsters\SeraphOverlord\m_SeraphOverlord_anim.c">
+      <Filter>src\Monsters\SeraphOverlord</Filter>
     </ClCompile>
-    <ClCompile Include="m_seraph_guard.c">
+    <ClCompile Include="src\Monsters\SeraphGuard\m_SeraphGuard.c">
       <Filter>src\Monsters\SeraphGuard</Filter>
     </ClCompile>
-    <ClCompile Include="m_seraph_guard_anim.c">
+    <ClCompile Include="src\Monsters\SeraphGuard\m_SeraphGuard_anim.c">
       <Filter>src\Monsters\SeraphGuard</Filter>
     </ClCompile>
-    <ClCompile Include="m_spreader.c">
+    <ClCompile Include="src\Monsters\Spreader\m_Spreader.c">
       <Filter>src\Monsters\Spreader</Filter>
     </ClCompile>
-    <ClCompile Include="m_spreader_anim.c">
+    <ClCompile Include="src\Monsters\Spreader\m_Spreader_anim.c">
       <Filter>src\Monsters\Spreader</Filter>
     </ClCompile>
-    <ClCompile Include="m_spreadermist.c">
+    <ClCompile Include="src\Monsters\Spreader\m_SpreaderMist.c">
       <Filter>src\Monsters\Spreader</Filter>
     </ClCompile>
-    <ClCompile Include="m_tcheckrik.c">
+    <ClCompile Include="src\Monsters\Tcheckrik\m_Tcheckrik.c">
       <Filter>src\Monsters\Tcheckrik</Filter>
     </ClCompile>
-    <ClCompile Include="m_tcheckrik_anim.c">
+    <ClCompile Include="src\Monsters\Tcheckrik\m_Tcheckrik_anim.c">
       <Filter>src\Monsters\Tcheckrik</Filter>
     </ClCompile>
-    <ClCompile Include="m_tcheckrik_spells.c">
+    <ClCompile Include="src\Monsters\Tcheckrik\m_TcheckrikSpells.c">
       <Filter>src\Monsters\Tcheckrik</Filter>
     </ClCompile>
-    <ClCompile Include="g_weapon.c">
+    <ClCompile Include="src\Monsters\TcheckrikMother\m_TcheckrikMother.c">
+      <Filter>src\Monsters\TcheckrikMother</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\TcheckrikMother\m_TcheckrikMother_anim.c">
+      <Filter>src\Monsters\TcheckrikMother</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\TrialBeast\m_TrialBeast.c">
+      <Filter>src\Monsters\TrialBeast</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\TrialBeast\m_TrialBeast_anim.c">
+      <Filter>src\Monsters\TrialBeast</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\g_AI.c">
+      <Filter>src\Monsters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\g_Monster.c">
+      <Filter>src\Monsters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\m_Move.c">
+      <Filter>src\Monsters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Monsters\m_Stats.c">
+      <Filter>src\Monsters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NavSys\mg_AI.c">
+      <Filter>src\NavSys</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Player\p_Client.c">
       <Filter>src\Player</Filter>
     </ClCompile>
-    <ClCompile Include="g_shrine.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="p_morph.c">
+    <ClCompile Include="src\Player\p_Funcs.c">
       <Filter>src\Player</Filter>
     </ClCompile>
-    <ClCompile Include="p_teleport.c">
+    <ClCompile Include="src\Player\p_HUD.c">
       <Filter>src\Player</Filter>
     </ClCompile>
-    <ClCompile Include="g_debris.c">
-      <Filter>src\Game objects</Filter>
+    <ClCompile Include="src\Player\p_Items.c">
+      <Filter>src\Player</Filter>
     </ClCompile>
-    <ClCompile Include="g_func_MonsterSpawner.c">
-      <Filter>src\Game objects</Filter>
+    <ClCompile Include="src\Player\p_Morph.c">
+      <Filter>src\Player</Filter>
     </ClCompile>
-    <ClCompile Include="g_func_Timer.c">
-      <Filter>src\Game objects</Filter>
+    <ClCompile Include="src\Player\p_Teleport.c">
+      <Filter>src\Player</Filter>
     </ClCompile>
-    <ClCompile Include="g_func_Utility.c">
-      <Filter>src\Game objects</Filter>
+    <ClCompile Include="src\Player\p_View.c">
+      <Filter>src\Player</Filter>
     </ClCompile>
-    <ClCompile Include="g_func_Train.c">
-      <Filter>src\Game objects</Filter>
+    <ClCompile Include="src\Player\p_Weapons.c">
+      <Filter>src\Player</Filter>
     </ClCompile>
-    <ClCompile Include="g_func_Door.c">
-      <Filter>src\Game objects</Filter>
+    <ClCompile Include="src\Physics\g_Physics.c">
+      <Filter>src\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="g_func_Plat.c">
-      <Filter>src\Game objects</Filter>
+    <ClCompile Include="src\Physics\g_PhysicsQ2.c">
+      <Filter>src\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="g_func_Rotating.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_func_Button.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="g_morcalavin_barrier.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_Variable.cpp">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_EntityVar.cpp">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_FieldVariableVar.cpp">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_FloatVar.cpp">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_IntVar.cpp">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_StringVar.cpp">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_VariableVar.cpp">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_VectorVar.cpp">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_FieldDef.cpp">
+    <ClCompile Include="src\Scripting\sc_CScript.cpp">
       <Filter>src\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="sc_Signaler.cpp">
+    <ClCompile Include="src\Scripting\sc_FieldDef.cpp">
       <Filter>src\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="sc_Event.cpp">
-      <Filter>src\Scripting\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_MoveDoneEvent.cpp">
-      <Filter>src\Scripting\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_RotateDoneEvent.cpp">
-      <Filter>src\Scripting\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_ExecuteEvent.cpp">
-      <Filter>src\Scripting\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_WaitEvent.cpp">
-      <Filter>src\Scripting\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="sc_CScript.cpp">
+    <ClCompile Include="src\Scripting\sc_Main.cpp">
       <Filter>src\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="sc_Main.cpp">
+    <ClCompile Include="src\Scripting\sc_Signaler.cpp">
       <Filter>src\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="sc_Utility.cpp">
+    <ClCompile Include="src\Scripting\sc_Utility.cpp">
       <Filter>src\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="spl_BlueRing.c">
+    <ClCompile Include="src\Scripting\Events\sc_Event.cpp">
+      <Filter>src\Scripting\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scripting\Events\sc_ExecuteEvent.cpp">
+      <Filter>src\Scripting\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scripting\Events\sc_MoveDoneEvent.cpp">
+      <Filter>src\Scripting\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scripting\Events\sc_RotateDoneEvent.cpp">
+      <Filter>src\Scripting\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scripting\Events\sc_WaitEvent.cpp">
+      <Filter>src\Scripting\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scripting\Variables\sc_EntityVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scripting\Variables\sc_FieldVariableVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scripting\Variables\sc_FloatVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scripting\Variables\sc_IntVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scripting\Variables\sc_StringVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scripting\Variables\sc_Variable.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scripting\Variables\sc_VariableVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scripting\Variables\sc_VectorVar.cpp">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpellsDefensive\spl_LightningShield.c">
       <Filter>src\SpellsDefensive</Filter>
     </ClCompile>
-    <ClCompile Include="spl_meteorbarrier.c">
+    <ClCompile Include="src\SpellsDefensive\spl_MeteorBarrier.c">
       <Filter>src\SpellsDefensive</Filter>
     </ClCompile>
-    <ClCompile Include="spl_morph.c">
+    <ClCompile Include="src\SpellsDefensive\spl_MorphOvum.c">
       <Filter>src\SpellsDefensive</Filter>
     </ClCompile>
-    <ClCompile Include="spl_powerup.c">
+    <ClCompile Include="src\SpellsDefensive\spl_RingOfRepulsion.c">
       <Filter>src\SpellsDefensive</Filter>
     </ClCompile>
-    <ClCompile Include="spl_shield.c">
+    <ClCompile Include="src\SpellsDefensive\spl_Teleport.c">
       <Filter>src\SpellsDefensive</Filter>
     </ClCompile>
-    <ClCompile Include="spl_teleport.c">
+    <ClCompile Include="src\SpellsDefensive\spl_TomeOfPower.c">
       <Filter>src\SpellsDefensive</Filter>
     </ClCompile>
-    <ClCompile Include="spl_tornado.c">
+    <ClCompile Include="src\SpellsDefensive\spl_Tornado.c">
       <Filter>src\SpellsDefensive</Filter>
     </ClCompile>
-    <ClCompile Include="g_save_defs.c">
+    <ClCompile Include="src\SpellsOffensive\spl_Fireball.c">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpellsOffensive\spl_FireWall.c">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpellsOffensive\spl_HellStaff.c">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpellsOffensive\spl_Maceball.c">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpellsOffensive\spl_MagicMissile.c">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpellsOffensive\spl_Phoenix.c">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpellsOffensive\spl_RedRain.c">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpellsOffensive\spl_Ripper.c">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpellsOffensive\spl_SphereOfAnnihilation.c">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpellsOffensive\spl_ThunderBlast.c">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Saving\g_Save.c">
+      <Filter>src\Saving</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Saving\g_SaveDefs.c">
+      <Filter>src\Saving</Filter>
+    </ClCompile>
+    <ClCompile Include="src\g_Spawn.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\g_SpawnFuncs.c">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="decals.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_ClassStatics.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_DefaultMessageHandler.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_Edict.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_HitLocation.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_items.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_itemstats.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_local.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_Message.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_Physics.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_playstats.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_Skeleton.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_Skeletons.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="game.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="q_shared.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="Utilities.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus1.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus1_anim.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus2.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus2_anim.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus3.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus3_anim.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus4.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus4_anim.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus5.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus5_anim.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus6.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus6_anim.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus7.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus7_anim.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus8.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus8_anim.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus9.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_corvus9_anim.h">
-      <Filter>src\Cinematics\Corvus</Filter>
-    </ClInclude>
-    <ClInclude Include="c_Dranor.h">
-      <Filter>src\Cinematics\Dranor</Filter>
-    </ClInclude>
-    <ClInclude Include="c_dranor_anim.h">
-      <Filter>src\Cinematics\Dranor</Filter>
-    </ClInclude>
-    <ClInclude Include="c_elflord.h">
-      <Filter>src\Cinematics\ElfLord</Filter>
-    </ClInclude>
-    <ClInclude Include="c_elflord_anim.h">
-      <Filter>src\Cinematics\ElfLord</Filter>
-    </ClInclude>
-    <ClInclude Include="c_morcalavin.h">
-      <Filter>src\Cinematics\Morcalavin</Filter>
-    </ClInclude>
-    <ClInclude Include="c_morcalavin_anim.h">
-      <Filter>src\Cinematics\Morcalavin</Filter>
-    </ClInclude>
-    <ClInclude Include="c_priestess.h">
-      <Filter>src\Cinematics\Priestess</Filter>
-    </ClInclude>
-    <ClInclude Include="c_priestess_anim.h">
-      <Filter>src\Cinematics\Priestess</Filter>
-    </ClInclude>
-    <ClInclude Include="c_priestess2.h">
-      <Filter>src\Cinematics\Priestess2</Filter>
-    </ClInclude>
-    <ClInclude Include="c_priestess2_anim.h">
-      <Filter>src\Cinematics\Priestess2</Filter>
-    </ClInclude>
-    <ClInclude Include="c_siernan1.h">
-      <Filter>src\Cinematics\Siernan</Filter>
-    </ClInclude>
-    <ClInclude Include="c_siernan1_anim.h">
-      <Filter>src\Cinematics\Siernan</Filter>
-    </ClInclude>
-    <ClInclude Include="c_siernan2.h">
-      <Filter>src\Cinematics\Siernan2</Filter>
-    </ClInclude>
-    <ClInclude Include="c_siernan2_anim.h">
-      <Filter>src\Cinematics\Siernan2</Filter>
-    </ClInclude>
-    <ClInclude Include="c_ssithrascout.h">
-      <Filter>src\Cinematics\Ssithra scout</Filter>
-    </ClInclude>
-    <ClInclude Include="c_ssithrascout_anim.h">
-      <Filter>src\Cinematics\Ssithra scout</Filter>
-    </ClInclude>
-    <ClInclude Include="c_ai.h">
-      <Filter>src\Cinematics</Filter>
-    </ClInclude>
-    <ClInclude Include="c_tome.h">
-      <Filter>src\Cinematics\Tome</Filter>
-    </ClInclude>
-    <ClInclude Include="c_tome_anim.h">
-      <Filter>src\Cinematics\Tome</Filter>
-    </ClInclude>
-    <ClInclude Include="c_victimSsithra.h">
-      <Filter>src\Cinematics\Sithra victim</Filter>
-    </ClInclude>
-    <ClInclude Include="c_victimSsithra_anim.h">
-      <Filter>src\Cinematics\Sithra victim</Filter>
-    </ClInclude>
-    <ClInclude Include="g_monster.h">
-      <Filter>src\Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="buoy.h">
-      <Filter>src\NavSys</Filter>
-    </ClInclude>
-    <ClInclude Include="mg_guide.h">
-      <Filter>src\NavSys</Filter>
-    </ClInclude>
-    <ClInclude Include="m_stats.h">
-      <Filter>src\Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="p_funcs.h">
-      <Filter>src\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="p_item.h">
-      <Filter>src\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="g_misc.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_Pcode.h">
-      <Filter>src\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="m_assassin_shared.h">
-      <Filter>src\Monsters\Assassin</Filter>
-    </ClInclude>
-    <ClInclude Include="m_assassin_anim.h">
-      <Filter>src\Monsters\Assassin</Filter>
-    </ClInclude>
-    <ClInclude Include="m_beast_shared.h">
-      <Filter>src\Monsters\Trial Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="m_beast_anim.h">
-      <Filter>src\Monsters\Trial Beast</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\Message.h">
       <Filter>qcommon</Filter>
-    </ClInclude>
-    <ClInclude Include="m_chicken_shared.h">
-      <Filter>src\Monsters\Chicken</Filter>
-    </ClInclude>
-    <ClInclude Include="m_chicken_anim.h">
-      <Filter>src\Monsters\Chicken</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\Skeletons.h">
       <Filter>qcommon</Filter>
@@ -899,545 +701,758 @@
     <ClInclude Include="..\qcommon\Vector.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="m_elflord_shared.h">
-      <Filter>src\Monsters\Elf Lord</Filter>
-    </ClInclude>
-    <ClInclude Include="m_elflord_anim.h">
-      <Filter>src\Monsters\Elf Lord</Filter>
-    </ClInclude>
-    <ClInclude Include="m_fish_shared.h">
-      <Filter>src\Monsters\Fish</Filter>
-    </ClInclude>
-    <ClInclude Include="m_fish_anim.h">
-      <Filter>src\Monsters\Fish</Filter>
-    </ClInclude>
-    <ClInclude Include="m_gkrokon_shared.h">
-      <Filter>src\Monsters\Gkrokon</Filter>
-    </ClInclude>
-    <ClInclude Include="m_gkrokon_anim.h">
-      <Filter>src\Monsters\Gkrokon</Filter>
-    </ClInclude>
-    <ClInclude Include="m_gorgon_anim.h">
-      <Filter>src\Monsters\Gorgon</Filter>
-    </ClInclude>
-    <ClInclude Include="m_harpy_shared.h">
-      <Filter>src\Monsters\Harpy</Filter>
-    </ClInclude>
-    <ClInclude Include="m_harpy_anim.h">
-      <Filter>src\Monsters\Harpy</Filter>
-    </ClInclude>
-    <ClInclude Include="m_imp_shared.h">
-      <Filter>src\Monsters\Imp</Filter>
-    </ClInclude>
-    <ClInclude Include="m_imp_anim.h">
-      <Filter>src\Monsters\Imp</Filter>
-    </ClInclude>
-    <ClInclude Include="m_morcalavin_shared.h">
-      <Filter>src\Monsters\Morcalavin</Filter>
-    </ClInclude>
-    <ClInclude Include="m_morcalavin_anim.h">
-      <Filter>src\Monsters\Morcalavin</Filter>
-    </ClInclude>
-    <ClInclude Include="m_mother_shared.h">
-      <Filter>src\Monsters\TcheckrikMother</Filter>
-    </ClInclude>
-    <ClInclude Include="m_mother_anim.h">
-      <Filter>src\Monsters\TcheckrikMother</Filter>
-    </ClInclude>
-    <ClInclude Include="m_mssithra_shared.h">
-      <Filter>src\Monsters\Mutant Ssithra</Filter>
-    </ClInclude>
-    <ClInclude Include="m_mssithra_anim.h">
-      <Filter>src\Monsters\Mutant Ssithra</Filter>
-    </ClInclude>
-    <ClInclude Include="m_ogle_shared.h">
-      <Filter>src\Monsters\Ogle</Filter>
-    </ClInclude>
-    <ClInclude Include="m_ogle_anim.h">
-      <Filter>src\Monsters\Ogle</Filter>
-    </ClInclude>
-    <ClInclude Include="m_plagueElf_anim.h">
-      <Filter>src\Monsters\Plague Elf</Filter>
-    </ClInclude>
-    <ClInclude Include="m_plagueSsithra_shared.h">
-      <Filter>src\Monsters\Plague Ssithra</Filter>
-    </ClInclude>
-    <ClInclude Include="m_plagueSsithra_anim.h">
-      <Filter>src\Monsters\Plague Ssithra</Filter>
-    </ClInclude>
-    <ClInclude Include="m_priestess_shared.h">
-      <Filter>src\Monsters\Priestess</Filter>
-    </ClInclude>
-    <ClInclude Include="m_priestess_anim.h">
-      <Filter>src\Monsters\Priestess</Filter>
-    </ClInclude>
-    <ClInclude Include="m_rat_anim.h">
-      <Filter>src\Monsters\Rat</Filter>
-    </ClInclude>
-    <ClInclude Include="m_seraph_shared.h">
-      <Filter>src\Monsters\Seraph</Filter>
-    </ClInclude>
-    <ClInclude Include="m_seraph_anim.h">
-      <Filter>src\Monsters\Seraph</Filter>
-    </ClInclude>
-    <ClInclude Include="m_seraph_guard_shared.h">
-      <Filter>src\Monsters\SeraphGuard</Filter>
-    </ClInclude>
-    <ClInclude Include="m_seraph_guard_anim.h">
-      <Filter>src\Monsters\SeraphGuard</Filter>
-    </ClInclude>
-    <ClInclude Include="m_spreader_shared.h">
-      <Filter>src\Monsters\Spreader</Filter>
-    </ClInclude>
-    <ClInclude Include="m_spreader_anim.h">
-      <Filter>src\Monsters\Spreader</Filter>
-    </ClInclude>
-    <ClInclude Include="m_spreadermist.h">
-      <Filter>src\Monsters\Spreader</Filter>
-    </ClInclude>
-    <ClInclude Include="m_tcheckrik_shared.h">
-      <Filter>src\Monsters\Tcheckrik</Filter>
-    </ClInclude>
-    <ClInclude Include="m_tcheckrik_anim.h">
-      <Filter>src\Monsters\Tcheckrik</Filter>
-    </ClInclude>
-    <ClInclude Include="m_player.h">
-      <Filter>src\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="g_weapon.h">
-      <Filter>src\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="p_client.h">
-      <Filter>src\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="g_spawnf.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_cmds.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_save.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_main.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="m_gorgon_shared.h">
-      <Filter>src\Monsters\Gorgon</Filter>
-    </ClInclude>
-    <ClInclude Include="m_plagueElf_shared.h">
-      <Filter>src\Monsters\Plague Elf</Filter>
-    </ClInclude>
-    <ClInclude Include="m_rat_shared.h">
-      <Filter>src\Monsters\Rat</Filter>
-    </ClInclude>
-    <ClInclude Include="m_assassin.h">
-      <Filter>src\Monsters\Assassin</Filter>
-    </ClInclude>
-    <ClInclude Include="m_beast.h">
-      <Filter>src\Monsters\Trial Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="m_bee.h">
-      <Filter>src\Monsters\Bee</Filter>
-    </ClInclude>
-    <ClInclude Include="m_chicken.h">
-      <Filter>src\Monsters\Chicken</Filter>
-    </ClInclude>
-    <ClInclude Include="m_elflord.h">
-      <Filter>src\Monsters\Elf Lord</Filter>
-    </ClInclude>
-    <ClInclude Include="m_fish.h">
-      <Filter>src\Monsters\Fish</Filter>
-    </ClInclude>
-    <ClInclude Include="m_monsters.h">
-      <Filter>src\Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="m_gkrokon.h">
-      <Filter>src\Monsters\Gkrokon</Filter>
-    </ClInclude>
-    <ClInclude Include="m_gorgon.h">
-      <Filter>src\Monsters\Gorgon</Filter>
-    </ClInclude>
-    <ClInclude Include="m_harpy.h">
-      <Filter>src\Monsters\Harpy</Filter>
-    </ClInclude>
-    <ClInclude Include="m_imp.h">
-      <Filter>src\Monsters\Imp</Filter>
-    </ClInclude>
-    <ClInclude Include="m_morcalavin.h">
-      <Filter>src\Monsters\Morcalavin</Filter>
-    </ClInclude>
-    <ClInclude Include="m_mssithra.h">
-      <Filter>src\Monsters\Mutant Ssithra</Filter>
-    </ClInclude>
-    <ClInclude Include="m_ogle.h">
-      <Filter>src\Monsters\Ogle</Filter>
-    </ClInclude>
-    <ClInclude Include="m_plagueElf.h">
-      <Filter>src\Monsters\Plague Elf</Filter>
-    </ClInclude>
-    <ClInclude Include="m_plagueSsithra.h">
-      <Filter>src\Monsters\Plague Ssithra</Filter>
-    </ClInclude>
-    <ClInclude Include="m_priestess.h">
-      <Filter>src\Monsters\Priestess</Filter>
-    </ClInclude>
-    <ClInclude Include="m_rat.h">
-      <Filter>src\Monsters\Rat</Filter>
-    </ClInclude>
-    <ClInclude Include="m_seraph.h">
-      <Filter>src\Monsters\Seraph</Filter>
-    </ClInclude>
-    <ClInclude Include="m_seraph_guard.h">
-      <Filter>src\Monsters\SeraphGuard</Filter>
-    </ClInclude>
-    <ClInclude Include="m_spreader.h">
-      <Filter>src\Monsters\Spreader</Filter>
-    </ClInclude>
-    <ClInclude Include="m_tcheckrik.h">
-      <Filter>src\Monsters\Tcheckrik</Filter>
-    </ClInclude>
-    <ClInclude Include="m_mother.h">
-      <Filter>src\Monsters\TcheckrikMother</Filter>
-    </ClInclude>
-    <ClInclude Include="g_combat.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\p_dll.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="g_ai.h">
-      <Filter>src\Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="g_PhysicsLocal.h">
+    <ClInclude Include="src\g_ClassStatics.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="p_view.h">
-      <Filter>src\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="g_Shrine.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_ShrineLocal.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_flyingfist.h">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_magicmissile.h">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_sphereofannihlation.h">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_maceballs.h">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_wall.h">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_ripper.h">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_blast.h">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_RedRain.h">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_Phoenix.h">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_HellStaff.h">
-      <Filter>src\SpellsOffensive</Filter>
-    </ClInclude>
-    <ClInclude Include="p_hud.h">
-      <Filter>src\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="mg_ai.h">
-      <Filter>src\Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="c_actors.h">
-      <Filter>src\Cinematics</Filter>
-    </ClInclude>
-    <ClInclude Include="m_tcheckrik_spells.h">
-      <Filter>src\Monsters\Tcheckrik</Filter>
-    </ClInclude>
-    <ClInclude Include="p_morph.h">
-      <Filter>src\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="p_teleport.h">
-      <Filter>src\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="g_breakable.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_env.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_debris.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_obj.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_field.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_flamethrower.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_func_MonsterSpawner.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_func_Timer.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_func_Utility.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_func_Train.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_func_Door.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_func_Plat.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_func_Rotating.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_func_Button.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_light.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_rope.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_target.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_trigger.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="g_ai_local.h">
-      <Filter>src\Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="g_waterfx.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="m_move.h">
-      <Filter>src\Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="m_assassin_local.h">
-      <Filter>src\Monsters\Assassin</Filter>
-    </ClInclude>
-    <ClInclude Include="g_morcalavin_barrier.h">
-      <Filter>src\Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_Variable.h">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_EntityVar.h">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_FieldVariableVar.h">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_FloatVar.h">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_IntVar.h">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_StringVar.h">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_VariableVar.h">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_VectorVar.h">
-      <Filter>src\Scripting\Variables</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_FieldDef.h">
-      <Filter>src\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_Signaler.h">
-      <Filter>src\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_Event.h">
-      <Filter>src\Scripting\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_MoveDoneEvent.h">
-      <Filter>src\Scripting\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_RotateDoneEvent.h">
-      <Filter>src\Scripting\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_ExecuteEvent.h">
-      <Filter>src\Scripting\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_WaitEvent.h">
-      <Filter>src\Scripting\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_CScript.h">
-      <Filter>src\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_Main.h">
-      <Filter>src\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="sc_Utility.h">
-      <Filter>src\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_BlueRing.h">
-      <Filter>src\SpellsDefensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_meteorbarrier.h">
-      <Filter>src\SpellsDefensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_morph.h">
-      <Filter>src\SpellsDefensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_powerup.h">
-      <Filter>src\SpellsDefensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_shield.h">
-      <Filter>src\SpellsDefensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_teleport.h">
-      <Filter>src\SpellsDefensive</Filter>
-    </ClInclude>
-    <ClInclude Include="spl_tornado.h">
-      <Filter>src\SpellsDefensive</Filter>
-    </ClInclude>
-    <ClInclude Include="g_save_defs.h">
+    <ClInclude Include="src\g_Combat.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="g_utils.h">
+    <ClInclude Include="src\g_Decals.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="c_corvus1_moves.h">
+    <ClInclude Include="src\g_DefaultMessageHandler.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_Edict.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_HitLocation.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_Items.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_ItemStats.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_Local.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_Main.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_Message.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_PlayStats.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_Skeleton.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_Skeletons.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_Utilities.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_Utils.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\q_Shared.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus1.h">
       <Filter>src\Cinematics\Corvus</Filter>
     </ClInclude>
-    <ClInclude Include="c_corvus2_moves.h">
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus1_anim.h">
       <Filter>src\Cinematics\Corvus</Filter>
     </ClInclude>
-    <ClInclude Include="c_corvus3_moves.h">
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus1_moves.h">
       <Filter>src\Cinematics\Corvus</Filter>
     </ClInclude>
-    <ClInclude Include="c_corvus4_moves.h">
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus2.h">
       <Filter>src\Cinematics\Corvus</Filter>
     </ClInclude>
-    <ClInclude Include="c_corvus5_moves.h">
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus2_anim.h">
       <Filter>src\Cinematics\Corvus</Filter>
     </ClInclude>
-    <ClInclude Include="c_corvus6_moves.h">
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus2_moves.h">
       <Filter>src\Cinematics\Corvus</Filter>
     </ClInclude>
-    <ClInclude Include="c_corvus7_moves.h">
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus3.h">
       <Filter>src\Cinematics\Corvus</Filter>
     </ClInclude>
-    <ClInclude Include="c_corvus8_moves.h">
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus3_anim.h">
       <Filter>src\Cinematics\Corvus</Filter>
     </ClInclude>
-    <ClInclude Include="c_corvus9_moves.h">
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus3_moves.h">
       <Filter>src\Cinematics\Corvus</Filter>
     </ClInclude>
-    <ClInclude Include="c_dranor_moves.h">
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus4.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus4_anim.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus4_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus5.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus5_anim.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus5_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus6.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus6_anim.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus6_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus7.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus7_anim.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus7_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus8.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus8_anim.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus8_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus9.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus9_anim.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Corvus\c_Corvus9_moves.h">
+      <Filter>src\Cinematics\Corvus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Dranor\c_Dranor.h">
       <Filter>src\Cinematics\Dranor</Filter>
     </ClInclude>
-    <ClInclude Include="c_elflord_moves.h">
+    <ClInclude Include="src\Cinematics\Dranor\c_Dranor_anim.h">
+      <Filter>src\Cinematics\Dranor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Dranor\c_Dranor_moves.h">
+      <Filter>src\Cinematics\Dranor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\ElfLord\c_ElfLord.h">
       <Filter>src\Cinematics\ElfLord</Filter>
     </ClInclude>
-    <ClInclude Include="c_morcalavin_moves.h">
+    <ClInclude Include="src\Cinematics\ElfLord\c_ElfLord_anim.h">
+      <Filter>src\Cinematics\ElfLord</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\ElfLord\c_ElfLord_moves.h">
+      <Filter>src\Cinematics\ElfLord</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Morcalavin\c_Morcalavin.h">
       <Filter>src\Cinematics\Morcalavin</Filter>
     </ClInclude>
-    <ClInclude Include="c_priestess_moves.h">
-      <Filter>src\Cinematics\Priestess</Filter>
+    <ClInclude Include="src\Cinematics\Morcalavin\c_Morcalavin_anim.h">
+      <Filter>src\Cinematics\Morcalavin</Filter>
     </ClInclude>
-    <ClInclude Include="c_priestess2_moves.h">
-      <Filter>src\Cinematics\Priestess2</Filter>
+    <ClInclude Include="src\Cinematics\Morcalavin\c_Morcalavin_moves.h">
+      <Filter>src\Cinematics\Morcalavin</Filter>
     </ClInclude>
-    <ClInclude Include="c_siernan1_moves.h">
+    <ClInclude Include="src\Cinematics\HighPriestess\c_HighPriestess.h">
+      <Filter>src\Cinematics\HighPriestess</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\HighPriestess\c_HighPriestess_anim.h">
+      <Filter>src\Cinematics\HighPriestess</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\HighPriestess\c_HighPriestess_moves.h">
+      <Filter>src\Cinematics\HighPriestess</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\HighPriestess2\c_HighPriestess2.h">
+      <Filter>src\Cinematics\HighPriestess2</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\HighPriestess2\c_HighPriestess2_anim.h">
+      <Filter>src\Cinematics\HighPriestess2</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\HighPriestess2\c_HighPriestess2_moves.h">
+      <Filter>src\Cinematics\HighPriestess2</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Siernan\c_Siernan1.h">
       <Filter>src\Cinematics\Siernan</Filter>
     </ClInclude>
-    <ClInclude Include="c_siernan2_moves.h">
+    <ClInclude Include="src\Cinematics\Siernan\c_Siernan1_anim.h">
+      <Filter>src\Cinematics\Siernan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Siernan\c_Siernan1_moves.h">
+      <Filter>src\Cinematics\Siernan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Siernan2\c_Siernan2.h">
       <Filter>src\Cinematics\Siernan2</Filter>
     </ClInclude>
-    <ClInclude Include="c_victimSsithra_moves.h">
-      <Filter>src\Cinematics\Sithra victim</Filter>
+    <ClInclude Include="src\Cinematics\Siernan2\c_Siernan2_anim.h">
+      <Filter>src\Cinematics\Siernan2</Filter>
     </ClInclude>
-    <ClInclude Include="c_ssithrascout_moves.h">
-      <Filter>src\Cinematics\Ssithra scout</Filter>
+    <ClInclude Include="src\Cinematics\Siernan2\c_Siernan2_moves.h">
+      <Filter>src\Cinematics\Siernan2</Filter>
     </ClInclude>
-    <ClInclude Include="c_tome_moves.h">
+    <ClInclude Include="src\Cinematics\SsithraVictim\c_SsithraVictim.h">
+      <Filter>src\Cinematics\SithraVictim</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\SsithraVictim\c_SsithraVictim_anim.h">
+      <Filter>src\Cinematics\SithraVictim</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\SsithraVictim\c_SsithraVictim_moves.h">
+      <Filter>src\Cinematics\SithraVictim</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\SsithraScout\c_SsithraScout.h">
+      <Filter>src\Cinematics\SsithraScout</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\SsithraScout\c_SsithraScout_anim.h">
+      <Filter>src\Cinematics\SsithraScout</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\SsithraScout\c_SsithraScout_moves.h">
+      <Filter>src\Cinematics\SsithraScout</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Tome\c_Tome.h">
       <Filter>src\Cinematics\Tome</Filter>
     </ClInclude>
-    <ClInclude Include="m_assassin_moves.h">
+    <ClInclude Include="src\Cinematics\Tome\c_Tome_anim.h">
+      <Filter>src\Cinematics\Tome</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\Tome\c_Tome_moves.h">
+      <Filter>src\Cinematics\Tome</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\c_Actors.h">
+      <Filter>src\Cinematics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics\c_AI.h">
+      <Filter>src\Cinematics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_BreakableBrush.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_Debris.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_Env.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_Field.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_Flamethrower.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_func_Button.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_func_Door.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_func_MonsterSpawner.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_func_Plat.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_func_Rotating.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_func_Timer.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_func_Train.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_func_Utility.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_Light.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_Misc.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_MorcalavinBarrier.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_Obj.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_Rope.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_Shrine.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_ShrineLocal.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_Target.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_Trigger.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\g_WaterEffects.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Commands\g_ClientCommands.h">
+      <Filter>src\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NavSys\mg_Buoy.h">
+      <Filter>src\NavSys</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NavSys\mg_Guide.h">
+      <Filter>src\NavSys</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Assassin\m_Assassin.h">
       <Filter>src\Monsters\Assassin</Filter>
     </ClInclude>
-    <ClInclude Include="m_chicken_moves.h">
+    <ClInclude Include="src\Monsters\Assassin\m_Assassin_anim.h">
+      <Filter>src\Monsters\Assassin</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Assassin\m_Assassin_local.h">
+      <Filter>src\Monsters\Assassin</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Assassin\m_Assassin_moves.h">
+      <Filter>src\Monsters\Assassin</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Assassin\m_Assassin_shared.h">
+      <Filter>src\Monsters\Assassin</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Bee\m_Bee.h">
+      <Filter>src\Monsters\Bee</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Chicken\m_Chicken.h">
       <Filter>src\Monsters\Chicken</Filter>
     </ClInclude>
-    <ClInclude Include="m_elflord_moves.h">
-      <Filter>src\Monsters\Elf Lord</Filter>
+    <ClInclude Include="src\Monsters\Chicken\m_Chicken_anim.h">
+      <Filter>src\Monsters\Chicken</Filter>
     </ClInclude>
-    <ClInclude Include="m_fish_moves.h">
+    <ClInclude Include="src\Monsters\Chicken\m_Chicken_moves.h">
+      <Filter>src\Monsters\Chicken</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Chicken\m_Chicken_shared.h">
+      <Filter>src\Monsters\Chicken</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\ElfLord\m_ElfLord.h">
+      <Filter>src\Monsters\ElfLord</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\ElfLord\m_ElfLord_anim.h">
+      <Filter>src\Monsters\ElfLord</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\ElfLord\m_ElfLord_moves.h">
+      <Filter>src\Monsters\ElfLord</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\ElfLord\m_ElfLord_shared.h">
+      <Filter>src\Monsters\ElfLord</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Fish\m_Fish.h">
       <Filter>src\Monsters\Fish</Filter>
     </ClInclude>
-    <ClInclude Include="m_gkrokon_moves.h">
+    <ClInclude Include="src\Monsters\Fish\m_Fish_anim.h">
+      <Filter>src\Monsters\Fish</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Fish\m_Fish_moves.h">
+      <Filter>src\Monsters\Fish</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Fish\m_Fish_shared.h">
+      <Filter>src\Monsters\Fish</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Gkrokon\m_Gkrokon.h">
       <Filter>src\Monsters\Gkrokon</Filter>
     </ClInclude>
-    <ClInclude Include="m_gorgon_moves.h">
+    <ClInclude Include="src\Monsters\Gkrokon\m_Gkrokon_anim.h">
+      <Filter>src\Monsters\Gkrokon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Gkrokon\m_Gkrokon_moves.h">
+      <Filter>src\Monsters\Gkrokon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Gkrokon\m_Gkrokon_shared.h">
+      <Filter>src\Monsters\Gkrokon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Gorgon\m_Gorgon.h">
       <Filter>src\Monsters\Gorgon</Filter>
     </ClInclude>
-    <ClInclude Include="m_harpy_moves.h">
+    <ClInclude Include="src\Monsters\Gorgon\m_Gorgon_anim.h">
+      <Filter>src\Monsters\Gorgon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Gorgon\m_Gorgon_moves.h">
+      <Filter>src\Monsters\Gorgon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Gorgon\m_Gorgon_shared.h">
+      <Filter>src\Monsters\Gorgon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Harpy\m_Harpy.h">
       <Filter>src\Monsters\Harpy</Filter>
     </ClInclude>
-    <ClInclude Include="m_imp_moves.h">
+    <ClInclude Include="src\Monsters\Harpy\m_Harpy_anim.h">
+      <Filter>src\Monsters\Harpy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Harpy\m_Harpy_moves.h">
+      <Filter>src\Monsters\Harpy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Harpy\m_Harpy_shared.h">
+      <Filter>src\Monsters\Harpy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Imp\m_Imp.h">
       <Filter>src\Monsters\Imp</Filter>
     </ClInclude>
-    <ClInclude Include="m_morcalavin_moves.h">
+    <ClInclude Include="src\Monsters\Imp\m_Imp_anim.h">
+      <Filter>src\Monsters\Imp</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Imp\m_Imp_moves.h">
+      <Filter>src\Monsters\Imp</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Imp\m_Imp_shared.h">
+      <Filter>src\Monsters\Imp</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Morcalavin\m_Morcalavin.h">
       <Filter>src\Monsters\Morcalavin</Filter>
     </ClInclude>
-    <ClInclude Include="m_mssithra_moves.h">
-      <Filter>src\Monsters\Mutant Ssithra</Filter>
+    <ClInclude Include="src\Monsters\Morcalavin\m_Morcalavin_anim.h">
+      <Filter>src\Monsters\Morcalavin</Filter>
     </ClInclude>
-    <ClInclude Include="m_ogle_moves.h">
+    <ClInclude Include="src\Monsters\Morcalavin\m_Morcalavin_moves.h">
+      <Filter>src\Monsters\Morcalavin</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Morcalavin\m_Morcalavin_shared.h">
+      <Filter>src\Monsters\Morcalavin</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\MutantSsithra\m_MutantSsithra.h">
+      <Filter>src\Monsters\MutantSsithra</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\MutantSsithra\m_MutantSsithra_anim.h">
+      <Filter>src\Monsters\MutantSsithra</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\MutantSsithra\m_MutantSsithra_moves.h">
+      <Filter>src\Monsters\MutantSsithra</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\MutantSsithra\m_MutantSsithra_shared.h">
+      <Filter>src\Monsters\MutantSsithra</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Ogle\m_Ogle.h">
       <Filter>src\Monsters\Ogle</Filter>
     </ClInclude>
-    <ClInclude Include="m_plagueElf_moves.h">
-      <Filter>src\Monsters\Plague Elf</Filter>
+    <ClInclude Include="src\Monsters\Ogle\m_Ogle_anim.h">
+      <Filter>src\Monsters\Ogle</Filter>
     </ClInclude>
-    <ClInclude Include="m_beast_moves.h">
-      <Filter>src\Monsters\Trial Beast</Filter>
+    <ClInclude Include="src\Monsters\Ogle\m_Ogle_moves.h">
+      <Filter>src\Monsters\Ogle</Filter>
     </ClInclude>
-    <ClInclude Include="m_mother_moves.h">
-      <Filter>src\Monsters\TcheckrikMother</Filter>
+    <ClInclude Include="src\Monsters\Ogle\m_Ogle_shared.h">
+      <Filter>src\Monsters\Ogle</Filter>
     </ClInclude>
-    <ClInclude Include="m_tcheckrik_moves.h">
-      <Filter>src\Monsters\Tcheckrik</Filter>
+    <ClInclude Include="src\Monsters\PlagueElf\m_PlagueElf.h">
+      <Filter>src\Monsters\PlagueElf</Filter>
     </ClInclude>
-    <ClInclude Include="m_spreader_moves.h">
-      <Filter>src\Monsters\Spreader</Filter>
+    <ClInclude Include="src\Monsters\PlagueElf\m_PlagueElf_anim.h">
+      <Filter>src\Monsters\PlagueElf</Filter>
     </ClInclude>
-    <ClInclude Include="m_seraph_guard_moves.h">
-      <Filter>src\Monsters\SeraphGuard</Filter>
+    <ClInclude Include="src\Monsters\PlagueElf\m_PlagueElf_moves.h">
+      <Filter>src\Monsters\PlagueElf</Filter>
     </ClInclude>
-    <ClInclude Include="m_seraph_moves.h">
-      <Filter>src\Monsters\Seraph</Filter>
+    <ClInclude Include="src\Monsters\PlagueElf\m_PlagueElf_shared.h">
+      <Filter>src\Monsters\PlagueElf</Filter>
     </ClInclude>
-    <ClInclude Include="m_rat_moves.h">
+    <ClInclude Include="src\Monsters\PlagueSsithra\m_PlagueSsithra.h">
+      <Filter>src\Monsters\PlagueSsithra</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\PlagueSsithra\m_PlagueSsithra_anim.h">
+      <Filter>src\Monsters\PlagueSsithra</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\PlagueSsithra\m_PlagueSsithra_moves.h">
+      <Filter>src\Monsters\PlagueSsithra</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\PlagueSsithra\m_PlagueSsithra_shared.h">
+      <Filter>src\Monsters\PlagueSsithra</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\HighPriestess\m_HighPriestess.h">
+      <Filter>src\Monsters\HighPriestess</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\HighPriestess\m_HighPriestess_anim.h">
+      <Filter>src\Monsters\HighPriestess</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\HighPriestess\m_HighPriestess_moves.h">
+      <Filter>src\Monsters\HighPriestess</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\HighPriestess\m_HighPriestess_shared.h">
+      <Filter>src\Monsters\HighPriestess</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Rat\m_Rat.h">
       <Filter>src\Monsters\Rat</Filter>
     </ClInclude>
-    <ClInclude Include="m_priestess_moves.h">
-      <Filter>src\Monsters\Priestess</Filter>
+    <ClInclude Include="src\Monsters\Rat\m_Rat_anim.h">
+      <Filter>src\Monsters\Rat</Filter>
     </ClInclude>
-    <ClInclude Include="m_plagueSsithra_moves.h">
-      <Filter>src\Monsters\Plague Ssithra</Filter>
+    <ClInclude Include="src\Monsters\Rat\m_Rat_moves.h">
+      <Filter>src\Monsters\Rat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Rat\m_Rat_shared.h">
+      <Filter>src\Monsters\Rat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\SeraphOverlord\m_SeraphOverlord.h">
+      <Filter>src\Monsters\SeraphOverlord</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\SeraphOverlord\m_SeraphOverlord_anim.h">
+      <Filter>src\Monsters\SeraphOverlord</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\SeraphOverlord\m_SeraphOverlord_moves.h">
+      <Filter>src\Monsters\SeraphOverlord</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\SeraphOverlord\m_SeraphOverlord_shared.h">
+      <Filter>src\Monsters\SeraphOverlord</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\SeraphGuard\m_SeraphGuard.h">
+      <Filter>src\Monsters\SeraphGuard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\SeraphGuard\m_SeraphGuard_anim.h">
+      <Filter>src\Monsters\SeraphGuard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\SeraphGuard\m_SeraphGuard_moves.h">
+      <Filter>src\Monsters\SeraphGuard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\SeraphGuard\m_SeraphGuard_shared.h">
+      <Filter>src\Monsters\SeraphGuard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Spreader\m_Spreader.h">
+      <Filter>src\Monsters\Spreader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Spreader\m_Spreader_anim.h">
+      <Filter>src\Monsters\Spreader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Spreader\m_Spreader_moves.h">
+      <Filter>src\Monsters\Spreader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Spreader\m_Spreader_shared.h">
+      <Filter>src\Monsters\Spreader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Spreader\m_SpreaderMist.h">
+      <Filter>src\Monsters\Spreader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Tcheckrik\m_Tcheckrik.h">
+      <Filter>src\Monsters\Tcheckrik</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Tcheckrik\m_Tcheckrik_anim.h">
+      <Filter>src\Monsters\Tcheckrik</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Tcheckrik\m_Tcheckrik_moves.h">
+      <Filter>src\Monsters\Tcheckrik</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Tcheckrik\m_Tcheckrik_shared.h">
+      <Filter>src\Monsters\Tcheckrik</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\Tcheckrik\m_TcheckrikSpells.h">
+      <Filter>src\Monsters\Tcheckrik</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\TcheckrikMother\m_TcheckrikMother.h">
+      <Filter>src\Monsters\TcheckrikMother</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\TcheckrikMother\m_TcheckrikMother_anim.h">
+      <Filter>src\Monsters\TcheckrikMother</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\TcheckrikMother\m_TcheckrikMother_moves.h">
+      <Filter>src\Monsters\TcheckrikMother</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\TcheckrikMother\m_TcheckrikMother_shared.h">
+      <Filter>src\Monsters\TcheckrikMother</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\TrialBeast\m_TrialBeast.h">
+      <Filter>src\Monsters\TrialBeast</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\TrialBeast\m_TrialBeast_anim.h">
+      <Filter>src\Monsters\TrialBeast</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\TrialBeast\m_TrialBeast_moves.h">
+      <Filter>src\Monsters\TrialBeast</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\TrialBeast\m_TrialBeast_shared.h">
+      <Filter>src\Monsters\TrialBeast</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\g_AI.h">
+      <Filter>src\Monsters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\g_AI_local.h">
+      <Filter>src\Monsters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\g_Monster.h">
+      <Filter>src\Monsters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\m_Monsters.h">
+      <Filter>src\Monsters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\m_Move.h">
+      <Filter>src\Monsters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Monsters\m_Stats.h">
+      <Filter>src\Monsters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NavSys\mg_AI.h">
+      <Filter>src\NavSys</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Player\m_Player.h">
+      <Filter>src\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Player\p_Client.h">
+      <Filter>src\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Player\p_Funcs.h">
+      <Filter>src\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Player\p_HUD.h">
+      <Filter>src\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Player\p_Items.h">
+      <Filter>src\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Player\p_Morph.h">
+      <Filter>src\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Player\p_Teleport.h">
+      <Filter>src\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Player\p_View.h">
+      <Filter>src\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Player\p_Weapons.h">
+      <Filter>src\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\g_Physics.h">
+      <Filter>src\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\g_PhysicsLocal.h">
+      <Filter>src\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\sc_CScript.h">
+      <Filter>src\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\sc_FieldDef.h">
+      <Filter>src\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\sc_Main.h">
+      <Filter>src\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\sc_Pcode.h">
+      <Filter>src\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\sc_Signaler.h">
+      <Filter>src\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\sc_Utility.h">
+      <Filter>src\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Events\sc_Event.h">
+      <Filter>src\Scripting\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Events\sc_ExecuteEvent.h">
+      <Filter>src\Scripting\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Events\sc_MoveDoneEvent.h">
+      <Filter>src\Scripting\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Events\sc_RotateDoneEvent.h">
+      <Filter>src\Scripting\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Events\sc_WaitEvent.h">
+      <Filter>src\Scripting\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Variables\sc_EntityVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Variables\sc_FieldVariableVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Variables\sc_FloatVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Variables\sc_IntVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Variables\sc_StringVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Variables\sc_Variable.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Variables\sc_VariableVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scripting\Variables\sc_VectorVar.h">
+      <Filter>src\Scripting\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsDefensive\spl_LightningShield.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsDefensive\spl_MeteorBarrier.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsDefensive\spl_MorphOvum.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsDefensive\spl_RingOfRepulsion.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsDefensive\spl_Teleport.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsDefensive\spl_TomeOfPower.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsDefensive\spl_Tornado.h">
+      <Filter>src\SpellsDefensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsOffensive\spl_Fireball.h">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsOffensive\spl_FireWall.h">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsOffensive\spl_HellStaff.h">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsOffensive\spl_Maceball.h">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsOffensive\spl_MagicMissile.h">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsOffensive\spl_Phoenix.h">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsOffensive\spl_RedRain.h">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsOffensive\spl_Ripper.h">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsOffensive\spl_SphereOfAnnihilation.h">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpellsOffensive\spl_ThunderBlast.h">
+      <Filter>src\SpellsOffensive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Saving\g_Save.h">
+      <Filter>src\Saving</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Saving\g_SaveDefs.h">
+      <Filter>src\Saving</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_SpawnFuncs.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\GenericUnions.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\SinglyLinkedList.h">
+      <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

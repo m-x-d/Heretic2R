@@ -4,6 +4,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{16d7b31a-6d81-4a8a-83da-8a72ee012da8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="game">
+      <UniqueIdentifier>{2afebf40-342c-4fd8-a509-40454a98151c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\p_actions.c">
@@ -38,6 +41,9 @@
     </ClCompile>
     <ClCompile Include="src\p_weapon.c">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\src\q_Shared.c">
+      <Filter>game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="src\Player.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\q_Shared.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -11,7 +11,7 @@
 #include "p_anims.h"
 #include "p_chicken.h"
 #include "p_main.h"
-#include "m_player.h"
+#include "Player/m_Player.h" // In game/src! --mxd.
 
 //NOTE: This value is applied generically to all player move functions that travel along 
 //		the ground to defeat the friction addition in the new system.
