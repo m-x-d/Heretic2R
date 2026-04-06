@@ -499,7 +499,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\Player\src;..\qcommon;..\game\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\Player\src;..\qcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>
       </CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -541,7 +541,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\Player\src;..\qcommon;..\game\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\Player\src;..\qcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>
       </CompileAs>
       <DisableSpecificWarnings>4100; 4115; 4201</DisableSpecificWarnings>
