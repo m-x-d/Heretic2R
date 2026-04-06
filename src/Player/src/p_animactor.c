@@ -169,8 +169,8 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info) // Called by CL_PredictMovem
 		return;
 	}
 
-	// Handle teleporting (and chicken morphing) only on game side.
-	if (!info->isclient && info->G_HandleTeleport(info))
+	// Handle teleporting (and chicken morphing). Done server-side only in original logic --mxd.
+	if (info->G_HandleTeleport(info))
 		return;
 
 	// Handle a dive request.

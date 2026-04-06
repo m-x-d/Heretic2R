@@ -30,6 +30,12 @@ static int CL_Irand(const playerinfo_t* info, const int min, const int max)
 	return min + (val >> 7 ^ val >> 10 ^ val >> 5) % (max - min + 1);
 }
 
+//mxd. Skip client-side player animation update during morph/teleport sequences.
+static qboolean CL_HandleTeleport(const playerinfo_t* info)
+{
+	return (info->pm_flags & PMF_TIME_TELEPORT);
+}
+
 //TODO: are these needed?..
 static void EmptyPlayerAction(const playerinfo_t* info) { }
 static void EmptyPlayerAction2(const playerinfo_t* info, int val) { }
@@ -63,7 +69,7 @@ void CL_ResetPlayerInfo(void)
 	cl.playerinfo.G_PlayerActionCheckPushButton = NULL;
 	cl.playerinfo.G_PlayerActionPushButton = NULL;
 	cl.playerinfo.G_PlayerActionCheckPushLever = NULL;
-	cl.playerinfo.G_HandleTeleport = NULL;
+	cl.playerinfo.G_HandleTeleport = CL_HandleTeleport; //mxd. Not handled in original logic.
 	cl.playerinfo.G_PlayerActionShrineEffect = NULL;
 	cl.playerinfo.G_PlayerActionChickenBite = NULL;
 	cl.playerinfo.G_PlayerSpellShieldAttack = NULL;
