@@ -171,7 +171,13 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info) // Called by CL_PredictMovem
 
 	// Handle teleporting (and chicken morphing). Done server-side only in original logic --mxd.
 	if (info->G_HandleTeleport(info))
+	{
+		//mxd. Avoid vaulting during ETHEREAL TRAVEL.
+		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_VAULT_HIGH || info->lowerseq == ASEQ_PULLUP_WALL)
+			PlayerAnimSetLowerSeq(info, ASEQ_FALL);
+
 		return;
+	}
 
 	// Handle a dive request.
 	if ((info->flags & PLAYER_FLAG_DIVE) && (info->seqcmd[ACMDL_FWD] || info->seqcmd[ACMDL_CROUCH]))
