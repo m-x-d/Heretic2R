@@ -1,5 +1,5 @@
 //
-// common.c -- Misc functions used in client and server
+// common.c -- Misc functions used in client and server.
 //
 // Copyright 1998 Raven Software
 //
@@ -7,13 +7,13 @@
 #include <float.h>
 #include <setjmp.h>
 #include "anorms.h"
-#include "client.h"
 #include "cmodel.h"
-#include "console.h"
 #include "qcommon.h"
-#include "keys.h"
-#include "screen.h"
-#include "snd_dll.h"
+#include "client/client.h"
+#include "client/console.h"
+#include "client/keys.h"
+#include "client/screen.h"
+#include "win32/dll_io/snd_dll.h"
 
 #define MAXPRINTMSG		4096
 #define MAX_NUM_ARGVS	50

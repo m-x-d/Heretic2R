@@ -1,0 +1,22 @@
+//
+// menu_playerconfig.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
+#include "client/menu.h"
+
+extern cvar_t* m_banner_pconfig;
+
+extern cvar_t* m_item_name;
+extern cvar_t* m_item_skin;
+extern cvar_t* m_item_shownames;
+
+// Cvars shared between client and menu_playerconfig logic.
+extern cvar_t* player_name;
+extern cvar_t* playerdir;
+extern cvar_t* skin;
+
+extern void M_Menu_PlayerConfig_f(void);

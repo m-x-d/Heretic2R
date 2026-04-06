@@ -6,7 +6,7 @@
 
 #include "anorms.h" //mxd
 #include "qcommon.h"
-#include "cl_skeletons.h"
+#include "client/cl_skeletons.h"
 #include "Vector.h"
 
 void MSG_BeginReading(sizebuf_t *sb)

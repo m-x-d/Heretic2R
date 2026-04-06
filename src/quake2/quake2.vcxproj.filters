@@ -1,0 +1,531 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="qcommon">
+      <UniqueIdentifier>{7e5245c5-b973-45e6-ab45-c51e6dbf1952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{9dc94f0a-c6f6-4f7f-a25a-48bcd776ffef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game">
+      <UniqueIdentifier>{803eb527-9cf7-4fb1-88ba-09fcb9297af3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libsmacker">
+      <UniqueIdentifier>{8c1c9461-5d0c-482a-b819-b7a53dcc76ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{c04a8911-5b41-4fae-a5f2-9a60d67b3b3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\client">
+      <UniqueIdentifier>{6fe0e484-2420-4776-93d6-81074b2b0383}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\client\menus">
+      <UniqueIdentifier>{cb9b321b-4852-456f-967f-67cf8ed4a248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\server">
+      <UniqueIdentifier>{f37660ba-f385-478b-9a61-21354afb2d2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\win32">
+      <UniqueIdentifier>{f4b42e80-f83d-41cd-ad5c-699a959fd136}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\win32\dll_io">
+      <UniqueIdentifier>{194fa819-682a-40dc-871b-6ba55d7b9919}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\qcommon\common.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\cmd.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\cvar.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\files.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\net_chan.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\p_dll.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\netmsg_write.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\cmodel.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\pmove.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\netmsg_read.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\anorms.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\md4.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\tokens.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\Skeletons.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\Debug.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\Reference.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\libsmacker\smacker.c">
+      <Filter>libsmacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\turbsin.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\src\q_Shared.c">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_addressbook.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_cameracfg.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_citymap.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_credits.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_dmoptions.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_downloadoptions.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_game.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_help.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_info.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_joinserver.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_keys.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_loadcfg.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_loadgame.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_main.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_misc.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_mousecfg.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_multiplayer.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_objectives.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_options.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_playerconfig.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_quit.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_savegame.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_sound.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_startserver.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_video.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menus\menu_worldmap.c">
+      <Filter>src\client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_camera.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_demo.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_effects.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_entities.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_input.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_inventory.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_main.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_messages.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_parse.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_player.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_prediction.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_screen.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_skeletons.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_smk.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\cl_view.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\console.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\glimp_sdl3.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\input_sdl3.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\keys.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\menu.c">
+      <Filter>src\client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\server\sv_ccmds.c">
+      <Filter>src\server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\server\sv_effects.c">
+      <Filter>src\server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\server\sv_entities.c">
+      <Filter>src\server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\server\sv_game.c">
+      <Filter>src\server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\server\sv_init.c">
+      <Filter>src\server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\server\sv_main.c">
+      <Filter>src\server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\server\sv_send.c">
+      <Filter>src\server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\server\sv_user.c">
+      <Filter>src\server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\server\sv_world.c">
+      <Filter>src\server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win32\dll_io\clfx_dll.c">
+      <Filter>src\win32\dll_io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win32\dll_io\snd_dll.c">
+      <Filter>src\win32\dll_io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win32\dll_io\vid_dll.c">
+      <Filter>src\win32\dll_io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win32\net_wins.c">
+      <Filter>src\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win32\q_shwin.c">
+      <Filter>src\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win32\sys_win.c">
+      <Filter>src\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win32\vid_Screenshot.c">
+      <Filter>src\win32</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\qcommon\qcommon.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Heretic2.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\q_ClientServer.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\q_Typedef.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\qfiles.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\ResourceManager.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\H2Common.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\cmodel.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\cmodel_private.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\cl_strings.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\anorms.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\EffectFlags.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\tokens.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Vector.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\FX.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Skeletons.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\q_Physics.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Random.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Angles.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Debug.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\FlexModel.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Reference.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\p_dll.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libsmacker\smacker.h">
+      <Filter>libsmacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libsmacker\smk_malloc.h">
+      <Filter>libsmacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\turbsin.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Player\src\p_main.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Player\src\p_types.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Player\src\Player.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\ce_LevelMaps.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\g_Items.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\g_ItemStats.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\g_PlayStats.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\g_Skeleton.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\Game.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\q_Shared.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_addressbook.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_cameracfg.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_citymap.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_credits.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_dmoptions.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_downloadoptions.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_game.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_help.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_info.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_joinserver.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_keys.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_loadcfg.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_loadgame.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_main.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_misc.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_mousecfg.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_multiplayer.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_objectives.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_options.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_playerconfig.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_quit.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_savegame.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_sound.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_startserver.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_video.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menus\menu_worldmap.h">
+      <Filter>src\client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\cl_camera.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\cl_effects.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\cl_messages.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\cl_skeletons.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\client.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\console.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\glimp_sdl3.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\input.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\keys.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\menu.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\ref.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\screen.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\vid.h">
+      <Filter>src\client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\server\server.h">
+      <Filter>src\server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\server\sv_effects.h">
+      <Filter>src\server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win32\dll_io\clfx_dll.h">
+      <Filter>src\win32\dll_io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win32\dll_io\dll_io.h">
+      <Filter>src\win32\dll_io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win32\dll_io\snd_dll.h">
+      <Filter>src\win32\dll_io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win32\dll_io\vid_dll.h">
+      <Filter>src\win32\dll_io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win32\Quake2Main.h">
+      <Filter>src\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win32\vid_Screenshot.h">
+      <Filter>src\win32</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

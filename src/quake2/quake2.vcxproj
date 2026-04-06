@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\include\libsmacker\smacker.c" />
+    <ClCompile Include="..\game\src\q_Shared.c" />
+    <ClCompile Include="..\qcommon\anorms.c" />
+    <ClCompile Include="..\qcommon\cmd.c" />
+    <ClCompile Include="..\qcommon\cmodel.c" />
+    <ClCompile Include="..\qcommon\common.c" />
+    <ClCompile Include="..\qcommon\cvar.c" />
+    <ClCompile Include="..\qcommon\Debug.c" />
+    <ClCompile Include="..\qcommon\files.c" />
+    <ClCompile Include="..\qcommon\md4.c" />
+    <ClCompile Include="..\qcommon\netmsg_read.c" />
+    <ClCompile Include="..\qcommon\netmsg_write.c" />
+    <ClCompile Include="..\qcommon\net_chan.c" />
+    <ClCompile Include="..\qcommon\pmove.c" />
+    <ClCompile Include="..\qcommon\p_dll.c" />
+    <ClCompile Include="..\qcommon\Reference.c" />
+    <ClCompile Include="..\qcommon\Skeletons.c" />
+    <ClCompile Include="..\qcommon\tokens.c" />
+    <ClCompile Include="..\qcommon\turbsin.c" />
+    <ClCompile Include="src\client\cl_camera.c" />
+    <ClCompile Include="src\client\cl_demo.c" />
+    <ClCompile Include="src\client\cl_effects.c" />
+    <ClCompile Include="src\client\cl_entities.c" />
+    <ClCompile Include="src\client\cl_input.c" />
+    <ClCompile Include="src\client\cl_inventory.c" />
+    <ClCompile Include="src\client\cl_main.c" />
+    <ClCompile Include="src\client\cl_messages.c" />
+    <ClCompile Include="src\client\cl_parse.c" />
+    <ClCompile Include="src\client\cl_player.c" />
+    <ClCompile Include="src\client\cl_prediction.c" />
+    <ClCompile Include="src\client\cl_screen.c" />
+    <ClCompile Include="src\client\cl_skeletons.c" />
+    <ClCompile Include="src\client\cl_smk.c" />
+    <ClCompile Include="src\client\cl_view.c" />
+    <ClCompile Include="src\client\console.c" />
+    <ClCompile Include="src\client\glimp_sdl3.c" />
+    <ClCompile Include="src\client\input_sdl3.c" />
+    <ClCompile Include="src\client\keys.c" />
+    <ClCompile Include="src\client\menu.c" />
+    <ClCompile Include="src\client\menus\menu_addressbook.c" />
+    <ClCompile Include="src\client\menus\menu_cameracfg.c" />
+    <ClCompile Include="src\client\menus\menu_citymap.c" />
+    <ClCompile Include="src\client\menus\menu_credits.c" />
+    <ClCompile Include="src\client\menus\menu_dmoptions.c" />
+    <ClCompile Include="src\client\menus\menu_downloadoptions.c" />
+    <ClCompile Include="src\client\menus\menu_game.c" />
+    <ClCompile Include="src\client\menus\menu_help.c" />
+    <ClCompile Include="src\client\menus\menu_info.c" />
+    <ClCompile Include="src\client\menus\menu_joinserver.c" />
+    <ClCompile Include="src\client\menus\menu_keys.c" />
+    <ClCompile Include="src\client\menus\menu_loadcfg.c" />
+    <ClCompile Include="src\client\menus\menu_loadgame.c" />
+    <ClCompile Include="src\client\menus\menu_main.c" />
+    <ClCompile Include="src\client\menus\menu_misc.c" />
+    <ClCompile Include="src\client\menus\menu_mousecfg.c" />
+    <ClCompile Include="src\client\menus\menu_multiplayer.c" />
+    <ClCompile Include="src\client\menus\menu_objectives.c" />
+    <ClCompile Include="src\client\menus\menu_options.c" />
+    <ClCompile Include="src\client\menus\menu_playerconfig.c" />
+    <ClCompile Include="src\client\menus\menu_quit.c" />
+    <ClCompile Include="src\client\menus\menu_savegame.c" />
+    <ClCompile Include="src\client\menus\menu_sound.c" />
+    <ClCompile Include="src\client\menus\menu_startserver.c" />
+    <ClCompile Include="src\client\menus\menu_video.c" />
+    <ClCompile Include="src\client\menus\menu_worldmap.c" />
+    <ClCompile Include="src\server\sv_ccmds.c" />
+    <ClCompile Include="src\server\sv_effects.c" />
+    <ClCompile Include="src\server\sv_entities.c" />
+    <ClCompile Include="src\server\sv_game.c" />
+    <ClCompile Include="src\server\sv_init.c" />
+    <ClCompile Include="src\server\sv_main.c" />
+    <ClCompile Include="src\server\sv_send.c" />
+    <ClCompile Include="src\server\sv_user.c" />
+    <ClCompile Include="src\server\sv_world.c" />
+    <ClCompile Include="src\win32\dll_io\clfx_dll.c" />
+    <ClCompile Include="src\win32\dll_io\snd_dll.c" />
+    <ClCompile Include="src\win32\dll_io\vid_dll.c" />
+    <ClCompile Include="src\win32\net_wins.c" />
+    <ClCompile Include="src\win32\q_shwin.c" />
+    <ClCompile Include="src\win32\sys_win.c" />
+    <ClCompile Include="src\win32\vid_Screenshot.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\libsmacker\smacker.h" />
+    <ClInclude Include="..\..\include\libsmacker\smk_malloc.h" />
+    <ClInclude Include="..\game\src\Game.h" />
+    <ClInclude Include="..\game\src\g_Items.h" />
+    <ClInclude Include="..\game\src\g_ItemStats.h" />
+    <ClInclude Include="..\game\src\g_PlayStats.h" />
+    <ClInclude Include="..\game\src\g_Skeleton.h" />
+    <ClInclude Include="..\game\src\q_Shared.h" />
+    <ClInclude Include="..\Player\src\Player.h" />
+    <ClInclude Include="..\Player\src\p_main.h" />
+    <ClInclude Include="..\Player\src\p_types.h" />
+    <ClInclude Include="..\qcommon\Angles.h" />
+    <ClInclude Include="..\qcommon\anorms.h" />
+    <ClInclude Include="..\qcommon\ce_LevelMaps.h" />
+    <ClInclude Include="..\qcommon\cl_strings.h" />
+    <ClInclude Include="..\qcommon\cmodel.h" />
+    <ClInclude Include="..\qcommon\cmodel_private.h" />
+    <ClInclude Include="..\qcommon\Debug.h" />
+    <ClInclude Include="..\qcommon\EffectFlags.h" />
+    <ClInclude Include="..\qcommon\FlexModel.h" />
+    <ClInclude Include="..\qcommon\FX.h" />
+    <ClInclude Include="..\qcommon\H2Common.h" />
+    <ClInclude Include="..\qcommon\Heretic2.h" />
+    <ClInclude Include="..\qcommon\p_dll.h" />
+    <ClInclude Include="..\qcommon\qcommon.h" />
+    <ClInclude Include="..\qcommon\qfiles.h" />
+    <ClInclude Include="..\qcommon\q_ClientServer.h" />
+    <ClInclude Include="..\qcommon\q_Physics.h" />
+    <ClInclude Include="..\qcommon\q_Typedef.h" />
+    <ClInclude Include="..\qcommon\Random.h" />
+    <ClInclude Include="..\qcommon\Reference.h" />
+    <ClInclude Include="..\qcommon\ResourceManager.h" />
+    <ClInclude Include="..\qcommon\Skeletons.h" />
+    <ClInclude Include="..\qcommon\tokens.h" />
+    <ClInclude Include="..\qcommon\turbsin.h" />
+    <ClInclude Include="..\qcommon\Vector.h" />
+    <ClInclude Include="src\client\client.h" />
+    <ClInclude Include="src\client\cl_camera.h" />
+    <ClInclude Include="src\client\cl_effects.h" />
+    <ClInclude Include="src\client\cl_messages.h" />
+    <ClInclude Include="src\client\cl_skeletons.h" />
+    <ClInclude Include="src\client\console.h" />
+    <ClInclude Include="src\client\glimp_sdl3.h" />
+    <ClInclude Include="src\client\input.h" />
+    <ClInclude Include="src\client\keys.h" />
+    <ClInclude Include="src\client\menu.h" />
+    <ClInclude Include="src\client\menus\menu_addressbook.h" />
+    <ClInclude Include="src\client\menus\menu_cameracfg.h" />
+    <ClInclude Include="src\client\menus\menu_citymap.h" />
+    <ClInclude Include="src\client\menus\menu_credits.h" />
+    <ClInclude Include="src\client\menus\menu_dmoptions.h" />
+    <ClInclude Include="src\client\menus\menu_downloadoptions.h" />
+    <ClInclude Include="src\client\menus\menu_game.h" />
+    <ClInclude Include="src\client\menus\menu_help.h" />
+    <ClInclude Include="src\client\menus\menu_info.h" />
+    <ClInclude Include="src\client\menus\menu_joinserver.h" />
+    <ClInclude Include="src\client\menus\menu_keys.h" />
+    <ClInclude Include="src\client\menus\menu_loadcfg.h" />
+    <ClInclude Include="src\client\menus\menu_loadgame.h" />
+    <ClInclude Include="src\client\menus\menu_main.h" />
+    <ClInclude Include="src\client\menus\menu_misc.h" />
+    <ClInclude Include="src\client\menus\menu_mousecfg.h" />
+    <ClInclude Include="src\client\menus\menu_multiplayer.h" />
+    <ClInclude Include="src\client\menus\menu_objectives.h" />
+    <ClInclude Include="src\client\menus\menu_options.h" />
+    <ClInclude Include="src\client\menus\menu_playerconfig.h" />
+    <ClInclude Include="src\client\menus\menu_quit.h" />
+    <ClInclude Include="src\client\menus\menu_savegame.h" />
+    <ClInclude Include="src\client\menus\menu_sound.h" />
+    <ClInclude Include="src\client\menus\menu_startserver.h" />
+    <ClInclude Include="src\client\menus\menu_video.h" />
+    <ClInclude Include="src\client\menus\menu_worldmap.h" />
+    <ClInclude Include="src\client\ref.h" />
+    <ClInclude Include="src\client\screen.h" />
+    <ClInclude Include="src\client\vid.h" />
+    <ClInclude Include="src\server\server.h" />
+    <ClInclude Include="src\server\sv_effects.h" />
+    <ClInclude Include="src\win32\dll_io\clfx_dll.h" />
+    <ClInclude Include="src\win32\dll_io\dll_io.h" />
+    <ClInclude Include="src\win32\dll_io\snd_dll.h" />
+    <ClInclude Include="src\win32\dll_io\vid_dll.h" />
+    <ClInclude Include="src\win32\Quake2Main.h" />
+    <ClInclude Include="src\win32\vid_Screenshot.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName />
+    <SccLocalPath />
+    <ProjectGuid>{0D079EB7-E519-4759-AC96-23010BC0B083}</ProjectGuid>
+    <ProjectName>quake2</ProjectName>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <EnableASAN>true</EnableASAN>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\build\</OutDir>
+    <IntDir>.\debug\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\build\</OutDir>
+    <IntDir>.\release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>QUAKE2_DLL;_DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
+      <ObjectFileName>.\debug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>src;..\..\include;..\qcommon;..\game\src;..\Player\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsC</CompileAs>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\debug\quake2.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\debug\quake2.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkDLL>true</LinkDLL>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>..\..\build\quake2.dll</OutputFile>
+      <AdditionalDependencies>SDL3.lib;winmm.lib;wsock32.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\build\;$(SolutionDir)..\lib\SDL3\</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>QUAKE2_DLL;NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\release\</AssemblerListingLocation>
+      <ObjectFileName>.\release\</ObjectFileName>
+      <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>..\..\include;src\client;src\server;..\qcommon;..\game\src;..\Player\src;src\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsC</CompileAs>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
+      <DisableSpecificWarnings>4100; 4115; 4201</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\..\release\quake2.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\release\quake2.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkDLL>true</LinkDLL>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>..\..\build\quake2.dll</OutputFile>
+      <AdditionalDependencies>SDL3.lib;winmm.lib;wsock32.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\build\;$(SolutionDir)..\lib\SDL3\</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

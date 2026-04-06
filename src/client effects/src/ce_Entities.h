@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "client.h"
+#include "client/client.h"
 #include "Message.h"
 #include "ce_Message.h"
 #include "FX.h"

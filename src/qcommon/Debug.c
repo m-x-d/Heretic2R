@@ -5,7 +5,7 @@
 //
 
 #include "Debug.h"
-#include "client.h"
+#include "client/client.h"
 #include "Vector.h"
 
 #ifdef _DEBUG

@@ -9,7 +9,7 @@
 #ifdef GAME_DLL
 	#include "g_Local.h" //mxd
 #else
-	#include "dll_io.h" //mxd
+	#include "win32/dll_io/dll_io.h" //mxd
 #endif
 #include "qcommon.h"
 

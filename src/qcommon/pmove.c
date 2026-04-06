@@ -4,7 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include "client.h" //mxd
+#include "client/client.h" //mxd
 #include "qcommon.h"
 #include "game.h"
 #include "q_Physics.h"

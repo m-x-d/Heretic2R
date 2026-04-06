@@ -4,7 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include "client.h"
+#include <stddef.h>
 #include "cl_strings.h"
 #include "ce_LevelMaps.h" //mxd
 

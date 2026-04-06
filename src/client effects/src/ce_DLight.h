@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "client.h"
+#include "q_Typedef.h"
 
 typedef void (*DLightUpdate_t)(struct CE_DLight_s* self, struct client_entity_s* owner); //mxd
 
