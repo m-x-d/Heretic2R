@@ -10,7 +10,7 @@
 #include "cl_effects.h"
 #include "cl_messages.h"
 #include "cl_skeletons.h"
-#include "cmodel.h"
+#include "cs_shared/cmodel.h"
 #include "ResourceManager.h"
 #include "Vector.h"
 #include "FlexModel.h"

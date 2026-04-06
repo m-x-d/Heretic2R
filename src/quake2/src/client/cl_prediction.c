@@ -6,7 +6,7 @@
 
 #include "client.h"
 #include "cl_camera.h"
-#include "cmodel.h"
+#include "cs_shared/cmodel.h"
 #include "EffectFlags.h"
 #include "p_main.h"
 #include "Vector.h"

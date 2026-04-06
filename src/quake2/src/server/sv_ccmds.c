@@ -6,7 +6,7 @@
 
 #include "server.h"
 #include "cl_strings.h"
-#include "cmodel.h"
+#include "cs_shared/cmodel.h"
 #include "client/screen.h"
 #include "sv_effects.h"
 

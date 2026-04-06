@@ -5,7 +5,7 @@
 //
 
 #include "server.h"
-#include "cmodel.h"
+#include "cs_shared/cmodel.h"
 #include "sv_effects.h"
 #include "cl_strings.h"
 #include "FX.h" //mxd. For FX_REMOVE_EFFECTS.

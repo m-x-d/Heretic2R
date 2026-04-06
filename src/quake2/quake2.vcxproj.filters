@@ -31,33 +31,15 @@
     <Filter Include="src\win32\dll_io">
       <UniqueIdentifier>{194fa819-682a-40dc-871b-6ba55d7b9919}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\cs_shared">
+      <UniqueIdentifier>{434c38ac-f204-405c-b1d6-0d1789b63b76}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\qcommon\common.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\qcommon\cmd.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\qcommon\cvar.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\qcommon\files.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\qcommon\net_chan.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
     <ClCompile Include="..\qcommon\p_dll.c">
       <Filter>qcommon</Filter>
     </ClCompile>
     <ClCompile Include="..\qcommon\netmsg_write.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\qcommon\cmodel.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\qcommon\pmove.c">
       <Filter>qcommon</Filter>
     </ClCompile>
     <ClCompile Include="..\qcommon\netmsg_read.c">
@@ -66,16 +48,7 @@
     <ClCompile Include="..\qcommon\anorms.c">
       <Filter>qcommon</Filter>
     </ClCompile>
-    <ClCompile Include="..\qcommon\md4.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\qcommon\tokens.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
     <ClCompile Include="..\qcommon\Skeletons.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\qcommon\Debug.c">
       <Filter>qcommon</Filter>
     </ClCompile>
     <ClCompile Include="..\qcommon\Reference.c">
@@ -276,6 +249,36 @@
     <ClCompile Include="src\win32\vid_Screenshot.c">
       <Filter>src\win32</Filter>
     </ClCompile>
+    <ClCompile Include="src\cs_shared\cmd.c">
+      <Filter>src\cs_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cs_shared\cmodel.c">
+      <Filter>src\cs_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cs_shared\common.c">
+      <Filter>src\cs_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cs_shared\cvar.c">
+      <Filter>src\cs_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cs_shared\Debug.c">
+      <Filter>src\cs_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cs_shared\files.c">
+      <Filter>src\cs_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cs_shared\md4.c">
+      <Filter>src\cs_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cs_shared\net_chan.c">
+      <Filter>src\cs_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cs_shared\pmove.c">
+      <Filter>src\cs_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cs_shared\tokens.c">
+      <Filter>src\cs_shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -299,12 +302,6 @@
     <ClInclude Include="..\qcommon\H2Common.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\qcommon\cmodel.h">
-      <Filter>qcommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\qcommon\cmodel_private.h">
-      <Filter>qcommon</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\cl_strings.h">
       <Filter>qcommon</Filter>
     </ClInclude>
@@ -312,9 +309,6 @@
       <Filter>qcommon</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\EffectFlags.h">
-      <Filter>qcommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\qcommon\tokens.h">
       <Filter>qcommon</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\Vector.h">
@@ -526,6 +520,21 @@
     </ClInclude>
     <ClInclude Include="src\win32\vid_Screenshot.h">
       <Filter>src\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\ArrayedList.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cs_shared\cmodel.h">
+      <Filter>src\cs_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cs_shared\cmodel_private.h">
+      <Filter>src\cs_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\GenericUnions.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cs_shared\tokens.h">
+      <Filter>src\cs_shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

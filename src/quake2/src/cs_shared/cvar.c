@@ -1,5 +1,5 @@
 //
-// cvar.c -- dynamic variable tracking
+// cvar.c -- Dynamic variable tracking.
 //
 // Copyright 1998 Raven Software
 //

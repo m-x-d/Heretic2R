@@ -5,12 +5,12 @@
 //
 
 #include "server.h"
-#include "cmodel.h"
+#include "cs_shared/cmodel.h"
+#include "cs_shared/tokens.h"
 #include "win32/dll_io/dll_io.h"
 #include "ResourceManager.h"
 #include "client/screen.h"
 #include "sv_effects.h"
-#include "tokens.h"
 #include "Vector.h"
 
 typedef game_export_t* (*GetGameAPI_t)(game_import_t* gi);

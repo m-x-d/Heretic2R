@@ -6,9 +6,9 @@
 
 #include "server.h"
 #include "sv_effects.h"
-#include "cmodel.h"
+#include "cs_shared/cmodel.h"
+#include "cs_shared/tokens.h"
 #include "client/screen.h"
-#include "tokens.h"
 #include "Vector.h"
 
 server_static_t svs; // Persistent server info

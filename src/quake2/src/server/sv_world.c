@@ -5,7 +5,7 @@
 //
 
 #include "server.h"
-#include "cmodel.h"
+#include "cs_shared/cmodel.h"
 #include "Vector.h"
 
 #define AREA_DEPTH	4

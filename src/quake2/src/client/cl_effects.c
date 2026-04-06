@@ -6,7 +6,7 @@
 
 #include "client.h"
 #include "cl_effects.h"
-#include "cmodel.h"
+#include "cs_shared/cmodel.h"
 #include "FX.h"
 #include "Game.h"
 #include "g_Items.h"

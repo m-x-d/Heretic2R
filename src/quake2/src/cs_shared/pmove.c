@@ -6,7 +6,7 @@
 
 #include "client/client.h" //mxd
 #include "qcommon.h"
-#include "game.h"
+#include "Game.h"
 #include "q_Physics.h"
 #include "turbsin.h"
 #include "Vector.h"

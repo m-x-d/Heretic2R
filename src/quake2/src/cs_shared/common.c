@@ -4,7 +4,6 @@
 // Copyright 1998 Raven Software
 //
 
-#include <float.h>
 #include <setjmp.h>
 #include "anorms.h"
 #include "cmodel.h"

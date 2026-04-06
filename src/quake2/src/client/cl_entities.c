@@ -8,7 +8,7 @@
 #include "cl_camera.h"
 #include "cl_effects.h"
 #include "cl_skeletons.h"
-#include "cmodel.h"
+#include "cs_shared/cmodel.h"
 #include "EffectFlags.h"
 #include "Reference.h"
 #include "Vector.h"

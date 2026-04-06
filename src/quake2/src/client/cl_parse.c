@@ -7,9 +7,9 @@
 #include "client.h"
 #include "cl_effects.h"
 #include "cl_messages.h"
-#include "cmodel.h"
+#include "cs_shared/cmodel.h"
+#include "cs_shared/tokens.h"
 #include "Skeletons.h"
-#include "tokens.h"
 
 char* svc_strings[256] =
 {
