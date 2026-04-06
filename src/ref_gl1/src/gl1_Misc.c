@@ -9,7 +9,7 @@
 #include "gl1_Light.h"
 #include "gl1_Local.h"
 #include "Vector.h"
-#include "vid.h"
+#include "client/vid.h"
 
 void R_ScreenShot_f(void) // Based on YQ2 logic; Q2: GL_ScreenShot_f()
 {

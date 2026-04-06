@@ -10,7 +10,7 @@
 #include "gl1_Local.h"
 #include "game.h"
 #include "Vector.h"
-#include "vid.h"
+#include "client/vid.h"
 
 typedef enum
 {

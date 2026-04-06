@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "ref.h"
+#include "client/ref.h"
 
 extern void R_ScreenShot_f(void);
 extern void R_Strings_f(void);

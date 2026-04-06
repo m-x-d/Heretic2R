@@ -12,7 +12,7 @@
 #include "Matrix.h"
 #include "Reference.h"
 #include "Vector.h"
-#include "../gl1_Local.h"
+#include "gl1_Local.h"
 
 vec3_t s_lerped[MAX_FM_VERTS];
 

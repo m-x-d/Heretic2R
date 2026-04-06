@@ -8,7 +8,7 @@
 #include "gl1_Image.h"
 #include "gl1_Misc.h"
 #include "Vector.h"
-#include "vid.h"
+#include "client/vid.h"
 
 image_t* r_notexture; // Used for missing textures.
 image_t* r_particletexture;

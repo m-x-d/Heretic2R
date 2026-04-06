@@ -21,7 +21,7 @@
 #include "Reference.h"
 #include "turbsin.h"
 #include "Vector.h"
-#include "vid.h"
+#include "client/vid.h"
 
 #define REF_DECLSPEC	__declspec(dllexport)
 

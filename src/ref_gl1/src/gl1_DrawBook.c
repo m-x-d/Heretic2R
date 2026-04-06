@@ -8,7 +8,7 @@
 #include "gl1_Draw.h"
 #include "gl1_Image.h"
 #include "qfiles.h"
-#include "vid.h"
+#include "client/vid.h"
 #include "gl1_Local.h"
 
 //mxd. Not part of original logic.

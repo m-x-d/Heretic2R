@@ -7,7 +7,7 @@
 #include "gl1_DrawCinematic.h"
 #include "gl1_Draw.h"
 #include "gl1_Image.h"
-#include "vid.h"
+#include "client/vid.h"
 
 static image_t* cin_frame;
 static byte* cin_frame_data;

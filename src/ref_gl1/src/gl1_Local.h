@@ -10,7 +10,7 @@
 #ifdef _DEBUG
 	#include "gl1_Debug.h"
 #endif
-#include "ref.h"
+#include "client/ref.h"
 
 #define REF_TITLE			"OpenGL 1.3" // H2_1.07: "GL 2.1"; Q2: "GL 0.01".
 
