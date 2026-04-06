@@ -655,6 +655,22 @@ PLAYER_API void PlayerIntLand(playerinfo_t* info, const float landspeed) //mxd. 
 			strcat_s(land_sound, sizeof(land_sound), "land1.wav"); //mxd. strcat -> strcat_s.
 		}
 	}
+	else if (info->seqcmd[ACMDL_BACK]) //mxd
+	{
+		if (landspeed > 600.0f)
+		{
+			// Can't avoid heavy fall/rolling.
+			PlayerInterruptAction(info);
+			PlayerAnimSetLowerSeq(info, ASEQ_ROLLDIVEF_W);
+			strcat_s(land_sound, sizeof(land_sound), "roll.wav"); //mxd. strcat -> strcat_s.
+		}
+		else
+		{
+			// Drop straight into a walk.
+			PlayerAnimSetLowerSeq(info, ASEQ_WALKB);
+			strcat_s(land_sound, sizeof(land_sound), "land1.wav"); //mxd. strcat -> strcat_s.
+		}
+	}
 	else if (info->seqcmd[ACMDL_JUMP])
 	{
 		if (landspeed > 600.0f)
