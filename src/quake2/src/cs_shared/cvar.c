@@ -359,15 +359,8 @@ static void Cvar_Set_f(void)
 void Cvar_WriteVariables(FILE* f) //mxd. const char* path -> FILE* f.
 {
 	for (const cvar_t* var = &cvar_vars[0]; var != NULL; var = var->next)
-	{
 		if (var->flags & CVAR_ARCHIVE)
-		{
-			char buffer[1024];
-			Com_sprintf(buffer, sizeof(buffer), "set %s \"%s\"\n", var->name, var->string);
-
-			fprintf(f, "%s", buffer);
-		}
-	}
+			fprintf(f, "set %s \"%s\"\n", var->name, var->string); // YQ2 commit f362b31.
 }
 
 // Q2 counterpart
