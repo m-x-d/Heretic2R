@@ -465,10 +465,11 @@ static void CMod_LoadEntityString(const lump_t* l)
 {
 	numentitychars = l->filelen;
 
-	if (l->filelen >= MAX_MAP_ENTSTRING) //mxd. '>' in Q2 and original logic.
-		Com_Error(ERR_DROP, "Map has too large entity lump");
+	if (l->filelen < 1 || l->filelen >= (int)sizeof(map_entitystring)) //mxd. '>' in Q2 and original logic. // YQ2: lower-bound checks.
+		Com_Error(ERR_DROP, "Map with invalid entity lump size (%i)", l->filelen); //mxd. More detailed message.
 
 	memcpy(map_entitystring, cmod_base + l->fileofs, l->filelen);
+	map_entitystring[numentitychars] = 0; // YQ2: jit entity bug - null-terminate the entity string!
 }
 
 // Q2 counterpart
