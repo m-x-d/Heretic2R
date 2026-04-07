@@ -11,7 +11,7 @@
 #define AREA_DEPTH	4
 #define AREA_NODES	32
 
-#define STRUCT_FROM_LINK(l,t,m)		((t *)((byte *)(l) - (int)&(((t *)0)->m)))
+#define STRUCT_FROM_LINK(l,t,m)		((t*)((byte*)(l) - (int)&(((t*)0)->m)))
 #define EDICT_FROM_AREA(l)			STRUCT_FROM_LINK(l,edict_t,area)
 
 typedef struct areanode_s
