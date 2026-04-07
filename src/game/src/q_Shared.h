@@ -132,6 +132,7 @@ typedef enum
 extern H2COMMON_API paletteRGBA_t TextPalette[P_MAX_COLORS];
 
 H2COMMON_API extern char* COM_SkipPath(char* pathname);
+H2COMMON_API extern const char* COM_FileExtension(const char* in); //mxd
 H2COMMON_API extern void COM_StripExtension(const char* in, char* out);
 H2COMMON_API extern void COM_FileBase(const char* in, char* out);
 H2COMMON_API extern void COM_FilePath(const char* in, char* out);
