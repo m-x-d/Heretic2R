@@ -641,7 +641,7 @@ static void SV_RunGameFrame(void)
 	sv.time = sv.framenum * 100;
 
 	// Don't run if paused // H2: extra 'sv_freezeworldset' check.
-	if ((!(int)sv_paused->value && !(int)sv_freezeworldset->value) || maxclients->value > 1)
+	if ((!(int)sv_paused->value && !(int)sv_freezeworldset->value) || (int)maxclients->value > 1)
 	{
 		// H2: new loop logic.
 		do
@@ -655,7 +655,7 @@ static void SV_RunGameFrame(void)
 			if ((int)sv_showclamp->value)
 				Com_Printf("sv highclamp\n");
 
-			svs.realtime = (uint)sv.time;
+			svs.realtime = (int)sv.time;
 		}
 	}
 }
