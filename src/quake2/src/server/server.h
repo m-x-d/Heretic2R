@@ -174,6 +174,7 @@ extern cvar_t* sv_welcome_mess; // H2
 extern cvar_t* sv_freezeworldset; // H2
 extern cvar_t* sv_noreload;
 extern cvar_t* sv_pers_fx_send_cut_off; // H2
+extern cvar_t* sv_entfile; // YQ2
 
 extern cvar_t* sv_enforcetime;
 

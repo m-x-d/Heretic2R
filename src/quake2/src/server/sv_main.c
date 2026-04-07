@@ -9,21 +9,21 @@
 #include "cl_strings.h"
 #include "win32/dll_io/clfx_dll.h"
 
-netadr_t master_adr[MAX_MASTERS]; // Address of group servers
+netadr_t master_adr[MAX_MASTERS]; // Address of group servers.
 
 client_t* sv_client; // Current client
 
 cvar_t* sv_protocol; //mxd. Server protocol version.
 cvar_t* sv_paused;
 
-static cvar_t* rcon_password; // Password for remote server commands
+static cvar_t* rcon_password; // Password for remote server commands.
 
 cvar_t* dmflags; // H2
 static cvar_t* advancedstaff; // H2
 static cvar_t* blood_level; // H2
 
-static cvar_t* timeout; // Seconds without any message
-static cvar_t* zombietime; // Seconds to sink messages after disconnect
+static cvar_t* timeout; // Seconds without any message.
+static cvar_t* zombietime; // Seconds to sink messages after disconnect.
 
 cvar_t* allow_download;
 cvar_t* allow_download_players;
@@ -35,9 +35,10 @@ cvar_t* maxclients; // FIXME: rename to sv_maxclients
 static cvar_t* sv_showclamp;
 
 static cvar_t* hostname;
-static cvar_t* public_server; // Should heartbeats be sent
+static cvar_t* public_server; // Should heartbeats be sent.
+cvar_t* sv_entfile; // YQ2 external .ent loading.
 
-static cvar_t* sv_reconnect_limit; // Minimum seconds between connect messages
+static cvar_t* sv_reconnect_limit; // Minimum seconds between connect messages.
 
 // H2:
 cvar_t* sv_welcome_mess;
@@ -841,6 +842,7 @@ void SV_Init(void)
 
 	public_server = Cvar_Get("public", "0", 0);
 	sv_reconnect_limit = Cvar_Get("sv_reconnect_limit", "3", CVAR_ARCHIVE);
+	sv_entfile = Cvar_Get("sv_entfile", "1", CVAR_ARCHIVE); // YQ2 external .ent loading.
 
 	SZ_Init(&net_message, net_message_buffer, sizeof(net_message_buffer));
 	CLFX_LoadDll(); // H2

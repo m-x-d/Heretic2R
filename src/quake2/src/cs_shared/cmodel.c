@@ -7,6 +7,7 @@
 #include <float.h>
 #include "cmodel.h"
 #include "cmodel_private.h"
+#include "server/server.h"
 #include "Vector.h"
 
 static int checkcount;
@@ -461,6 +462,56 @@ static void CMod_LoadVisibility(const lump_t* l)
 	memcpy(map_visibility, cmod_base + l->fileofs, l->filelen);
 }
 
+static qboolean CMod_LoadExternalEntityString(const lump_t* l, const char* name) // YQ2
+{
+	if (strlen(name) >= MAX_QPATH || Q_stricmp(COM_FileExtension(name), "bsp") != 0)
+	{
+		Com_Printf("%s: unsupported map format '%s'.\n", __func__, name);
+		return false;
+	}
+
+	char name_noext[MAX_QPATH];
+	COM_StripExtension(name, name_noext);
+
+	const uint checksum = (l->filelen > 0 ? Com_BlockChecksum(cmod_base + l->fileofs, l->filelen - 1) : 0);
+
+	char ent_name[MAX_OSPATH];
+	snprintf(ent_name, sizeof(ent_name) - 1, "%s@%08x.ent", name_noext, checksum);
+
+	char* buffer = NULL;
+	int buf_len = FS_LoadFile(ent_name, (void**)&buffer);
+
+	if (buffer == NULL)
+	{
+		snprintf(ent_name, sizeof(ent_name) - 1, "%s.ent", name_noext);
+		buf_len = FS_LoadFile(ent_name, (void**)&buffer);
+
+		if (buffer != NULL)
+			Com_Printf("Using map fixes file '%s' without content hash (MD4: %08x).\n", ent_name, checksum);
+		else
+			return false;
+	}
+
+	// If the .ent file is too small or large, don't load.
+	if (buf_len < 1 || buf_len >= (int)sizeof(map_entitystring) - 1)
+	{
+		Com_Printf("%s: invalid map fixes file '%s' size (%i)!\n", __func__, ent_name, buf_len);
+		FS_FreeFile(buffer);
+
+		return false;
+	}
+
+	numentitychars = buf_len;
+
+	memcpy(map_entitystring, buffer, buf_len);
+	map_entitystring[numentitychars] = 0; // YQ2: jit entity bug - null-terminate the entity string!
+
+	FS_FreeFile(buffer);
+	Com_Printf(".ent file '%s' loaded.\n", ent_name);
+
+	return true;
+}
+
 static void CMod_LoadEntityString(const lump_t* l)
 {
 	numentitychars = l->filelen;
@@ -542,7 +593,11 @@ cmodel_t* CM_LoadMap(const char* name, const qboolean clientload, uint* checksum
 	CMod_LoadAreas(&header.lumps[LUMP_AREAS]);
 	CMod_LoadAreaPortals(&header.lumps[LUMP_AREAPORTALS]);
 	CMod_LoadVisibility(&header.lumps[LUMP_VISIBILITY]);
-	CMod_LoadEntityString(&header.lumps[LUMP_ENTITIES]);
+
+	// YQ2: external .ent support.
+	const lump_t* l = &header.lumps[LUMP_ENTITIES];
+	if (!(int)sv_entfile->value || !CMod_LoadExternalEntityString(l, name))
+		CMod_LoadEntityString(l);
 
 	FS_FreeFile(buf);
 	CM_InitBoxHull();
