@@ -7,6 +7,9 @@
     <Filter Include="Resources">
       <UniqueIdentifier>{cd41368e-0c12-4056-8ec6-b78533160a20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="qcommon">
+      <UniqueIdentifier>{444a4bf0-46e7-4d49-977c-54fe5c58a140}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Heretic2R.rc">
@@ -21,6 +24,9 @@
   <ItemGroup>
     <ClInclude Include="resource.h">
       <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Version.h">
+      <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

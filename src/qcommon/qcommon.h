@@ -9,19 +9,14 @@
 #include <setjmp.h>
 #include "q_shared.h"
 #include "Heretic2.h" //mxd. Moved to separate include, to pull only necessary stuff into launcher...
+#include "Version.h" //mxd
 
-#define	BASEDIRNAME			"base"
+#define BASEDIRNAME			"base"
 
-#define VERSION_MAJOR		"1"
-#define VERSION_MINOR		"06"
-#define VERSION_LOCAL		"01"
-#define VERSION_DATE		"0504"
-#define VERSION_ITERATION	"01"
+#define VERSIONDISP			VER_PRODUCT_VERSION_STR // Shown in console. //mxd. (VERSION_MAJOR"."VERSION_MINOR) in original logic.
+#define VERSIONFULL			"1.06.01.0504.01" // Stored in version cvar. Must be this to connect to vanilla H2 servers --mxd
 
-#define VERSIONDISP			"R4" // Shown in console. //mxd. (VERSION_MAJOR"."VERSION_MINOR) in original logic.
-#define VERSIONFULL			(VERSION_MAJOR"."VERSION_MINOR"."VERSION_LOCAL"."VERSION_DATE"."VERSION_ITERATION) // Stored in version cvar.
-
-#define GAME_NAME			"Heretic2R" //mxd
+#define GAME_NAME			VER_PRODUCTNAME_STR //mxd
 #define GAME_FULLNAME		GAME_NAME" "VERSIONDISP //mxd
 
 #ifdef _WIN32
