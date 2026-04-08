@@ -1,5 +1,5 @@
 //
-// cmodel.c -- model loading
+// cmodel.c -- Collision model loading.
 //
 // Copyright 1998 Raven Software
 //
@@ -462,7 +462,7 @@ static void CMod_LoadVisibility(const lump_t* l)
 	memcpy(map_visibility, cmod_base + l->fileofs, l->filelen);
 }
 
-static qboolean CMod_LoadExternalEntityString(const lump_t* l, const char* name) // YQ2
+static qboolean CMod_LoadExternalEntityString(const char* name, const uint checksum) // YQ2
 {
 	if (strlen(name) >= MAX_QPATH || Q_stricmp(COM_FileExtension(name), "bsp") != 0)
 	{
@@ -473,29 +473,19 @@ static qboolean CMod_LoadExternalEntityString(const lump_t* l, const char* name)
 	char name_noext[MAX_QPATH];
 	COM_StripExtension(name, name_noext);
 
-	const uint checksum = (l->filelen > 0 ? Com_BlockChecksum(cmod_base + l->fileofs, l->filelen - 1) : 0);
-
 	char ent_name[MAX_OSPATH];
 	snprintf(ent_name, sizeof(ent_name) - 1, "%s@%08x.ent", name_noext, checksum);
 
 	char* buffer = NULL;
-	int buf_len = FS_LoadFile(ent_name, (void**)&buffer);
+	const int buf_len = FS_LoadFile(ent_name, (void**)&buffer); 
 
 	if (buffer == NULL)
-	{
-		snprintf(ent_name, sizeof(ent_name) - 1, "%s.ent", name_noext);
-		buf_len = FS_LoadFile(ent_name, (void**)&buffer);
-
-		if (buffer != NULL)
-			Com_Printf("Using map fixes file '%s' without content hash (MD4: %08x).\n", ent_name, checksum);
-		else
-			return false;
-	}
+		return false; // FS_FOpenFile() already printed "file not found" message.
 
 	// If the .ent file is too small or large, don't load.
 	if (buf_len < 1 || buf_len >= (int)sizeof(map_entitystring) - 1)
 	{
-		Com_Printf("%s: invalid map fixes file '%s' size (%i)!\n", __func__, ent_name, buf_len);
+		Com_Printf("%s: invalid map fixes file size %i for '%s'!\n", __func__, buf_len, ent_name);
 		FS_FreeFile(buffer);
 
 		return false;
@@ -595,9 +585,8 @@ cmodel_t* CM_LoadMap(const char* name, const qboolean clientload, uint* checksum
 	CMod_LoadVisibility(&header.lumps[LUMP_VISIBILITY]);
 
 	// YQ2: external .ent support.
-	const lump_t* l = &header.lumps[LUMP_ENTITIES];
-	if (!(int)sv_entfile->value || !CMod_LoadExternalEntityString(l, name))
-		CMod_LoadEntityString(l);
+	if (!(int)sv_entfile->value || !CMod_LoadExternalEntityString(name, last_checksum))
+		CMod_LoadEntityString(&header.lumps[LUMP_ENTITIES]);
 
 	FS_FreeFile(buf);
 	CM_InitBoxHull();
