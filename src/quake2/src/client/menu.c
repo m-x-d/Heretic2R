@@ -126,12 +126,12 @@ cvar_t* m_cooplist;
 // H2. Generic menu item labels texts.
 char m_text_no[MAX_QPATH];
 char m_text_yes[MAX_QPATH];
-char m_text_off[MAX_QPATH];
-char m_text_on[MAX_QPATH];
+char m_text_off[MAX_QPATH]; //TODO: unused.
+char m_text_on[MAX_QPATH]; //TODO: unused.
 char m_text_low[MAX_QPATH];
 char m_text_high[MAX_QPATH];
 
-const char* yes_no_names[] = { "no", "yes", NULL };
+const char* yes_no_names[] = { m_text_no, m_text_yes, NULL };
 
 static qboolean m_entersound; // Play after drawing a frame, so caching won't disrupt the sound. //TODO: doesn't seem to be related to playing sounds. Rename?
 
