@@ -135,10 +135,7 @@ static void SND_InitSndlibInfos(void) //mxd
 	num_sndlib_infos = 0;
 
 	// Find all compatible snd_xxx.dll libraries.
-	char mask[MAX_QPATH];
-	Com_sprintf(mask, sizeof(mask), "snd_*.dll");
-
-	const char* snd_path = Sys_FindFirst(mask, 0, 0);
+	const char* snd_path = Sys_FindFirst("snd_*.dll", 0, 0);
 
 	while (snd_path != NULL && num_sndlib_infos < MAX_SNDLIBS)
 	{

@@ -300,10 +300,7 @@ static void VID_InitReflibInfos(void) //mxd
 	num_reflib_infos = 0;
 
 	// Find all compatible ref_xxx.dll libraries.
-	char mask[MAX_QPATH];
-	Com_sprintf(mask, sizeof(mask), "ref_*.dll");
-
-	const char* ref_path = Sys_FindFirst(mask, 0, 0);
+	const char* ref_path = Sys_FindFirst("ref_*.dll", 0, 0);
 	
 	while (ref_path != NULL && num_reflib_infos < MAX_REFLIBS)
 	{
