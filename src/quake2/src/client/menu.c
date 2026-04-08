@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include "client.h"
 #include "menu.h"
+#include "g_PlayStats.h" //mxd
 #include "Vector.h"
 
 #include "menus/menu_addressbook.h"
@@ -38,6 +39,8 @@
 
 cvar_t* menus_active;
 static cvar_t* quick_menus; //TODO: add UI control (in menu_misc.c menu?).
+cvar_t* m_r_detail;
+cvar_t* m_gl_minlight; // YQ2
 cvar_t* m_music_track; //mxd. Menu music track number.
 
 cvar_t* m_item_defaults;
@@ -535,6 +538,8 @@ void M_Init(void)
 
 	quick_menus = Cvar_Get("quick_menus", "0", 0);
 	menus_active = Cvar_Get("menus_active", "0", 0);
+	m_r_detail = Cvar_Get("r_detail", DETAIL_DEFAULT, CVAR_ARCHIVE); // H2_1.07: "2.0" -> "3". // Initialized in CL_InitLocal() in original logic --mxd.
+	m_gl_minlight = Cvar_Get("gl_minlight", "0", CVAR_ARCHIVE); // YQ2
 	m_music_track = Cvar_Get("m_music_track", va("%i", CDTRACK_MENU_MAIN), CVAR_ARCHIVE); //mxd
 
 	m_banner_main = Cvar_Get("m_banner_main", "Main", 0);
