@@ -38,6 +38,7 @@
 
 cvar_t* menus_active;
 static cvar_t* quick_menus; //TODO: add UI control (in menu_misc.c menu?).
+cvar_t* m_music_track; //mxd. Menu music track number.
 
 cvar_t* m_item_defaults;
 
@@ -162,7 +163,7 @@ static void OnMainMenuOpened(void) // H2
 
 	//mxd. When not ingame, play menu music, otherwise play menu open sound.
 	if (cls.state != ca_active)
-		se.MusicPlay(CDTRACK_MENU_MAIN, 0, true);
+		se.MusicPlay((int)m_music_track->value, 0, true);
 	else
 		se.StartLocalSound("Weapons/bowdraw2.wav");
 }
@@ -534,6 +535,7 @@ void M_Init(void)
 
 	quick_menus = Cvar_Get("quick_menus", "0", 0);
 	menus_active = Cvar_Get("menus_active", "0", 0);
+	m_music_track = Cvar_Get("m_music_track", va("%i", CDTRACK_MENU_MAIN), CVAR_ARCHIVE); //mxd
 
 	m_banner_main = Cvar_Get("m_banner_main", "Main", 0);
 	m_banner_game = Cvar_Get("m_banner_game", "Game", 0);
@@ -623,6 +625,8 @@ void M_Init(void)
 	m_item_effectsvol = Cvar_Get("m_item_effectsvol", "Effects Volume", 0);
 	m_item_musicvol = Cvar_Get("m_item_musicvol", "Music Volume", 0); //mxd
 	m_item_soundquality = Cvar_Get("m_item_soundquality", "Sound Quality", 0);
+	m_item_menutrack = Cvar_Get("m_item_menutrack", "Menu Music", 0); //mxd
+	m_item_menutrack_none = Cvar_Get("m_item_menutrack_none", "None", 0); //mxd
 
 	// Download Options menu.
 	m_item_allowdownload = Cvar_Get("m_item_allowdownload", "Allow Downloads", 0);

@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include <ctype.h>
 #include "menu_sound.h"
 #include "client/client.h"
 #include "win32/dll_io/snd_dll.h"
@@ -14,6 +15,8 @@ cvar_t* m_item_sndbackend; //mxd
 cvar_t* m_item_effectsvol;
 cvar_t* m_item_musicvol; //mxd
 cvar_t* m_item_soundquality;
+cvar_t* m_item_menutrack; //mxd
+cvar_t* m_item_menutrack_none; //mxd
 
 static menuframework_t s_sound_menu;
 
@@ -21,9 +24,24 @@ static menulist_t s_sound_backend_list; //mxd
 static menuslider_t s_sound_sfxvolume_slider;
 static menuslider_t s_sound_musicvolume_slider; //mxd
 static menulist_t s_sound_quality_list;
+static menulist_t s_menu_track_list; //mxd
 
 static const char* snd_list_titles[MAX_SNDLIBS]; //mxd
 static int initial_sndlib_index; //mxd. snd_lib index when entering menu.
+
+//mxd. Track names for "Menu Music" item. Track 0 is for "None" menu item.
+#define MAX_MUSIC_TRACKS	32
+static const char* track_list_names[MAX_MUSIC_TRACKS + 1]; // Extra slot for NULL-terminator.
+static int track_numbers[MAX_MUSIC_TRACKS];
+
+//mxd. Delay before switching to new music track.
+#define MUSIC_TRACK_SWITCH_DELAY	100
+static int track_last_update_time;
+
+//mxd. Music playback state when entering the menu.
+static int initial_track;
+static uint initial_track_pos;
+static qboolean initial_track_looping;
 
 // Q2 counterpart
 static void UpdateSoundVolumeFunc(void* self)
@@ -61,6 +79,49 @@ static void UpdateSoundQualityFunc(void* self)
 	}
 }
 
+static void UpdateMenuMusicTrackFunc(void* self) //mxd
+{
+	Cvar_SetValue("m_music_track", (float)track_numbers[s_menu_track_list.curvalue]);
+	track_last_update_time = curtime;
+}
+
+static int Sound_InitMusicTrackNames(void) //mxd
+{
+#define TRACK_FIND_FLAGS (SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM)
+
+	static char track_names[MAX_MUSIC_TRACKS][MAX_QPATH];
+
+	track_list_names[0] = m_item_menutrack_none->string;
+	track_numbers[0] = 0;
+	int num_items = 1;
+
+	const char* track_filename = Sys_FindFirst(va("%s/music/track??.ogg", FS_Gamedir()), 0, TRACK_FIND_FLAGS); // "music/track??.ogg"
+	while (track_filename != NULL && num_items < MAX_MUSIC_TRACKS)
+	{
+		// Check track number.
+		char* track_name = track_names[num_items];
+		COM_FileBase(track_filename, track_name);
+		COM_StripExtension(track_name, track_name);
+
+		// Expect "trackXX" filename.
+		if (isdigit(track_name[5]) && isdigit(track_name[6]))
+		{
+			track_numbers[num_items] = Q_atoi(&track_name[5]);
+			track_list_names[num_items] = track_name;
+
+			num_items++;
+		}
+
+		// Advance to next file.
+		track_filename = Sys_FindNext(0, TRACK_FIND_FLAGS);
+	}
+
+	Sys_FindClose();
+	track_list_names[num_items + 1] = NULL;
+
+	return num_items;
+}
+
 static void Sound_MenuInit(void) // H2
 {
 	static const char* lowhigh_names[] = { m_text_low, m_text_high, NULL };
@@ -69,6 +130,7 @@ static void Sound_MenuInit(void) // H2
 	static char name_effectsvol[MAX_QPATH];
 	static char name_musicvol[MAX_QPATH]; //mxd
 	static char name_soundquality[MAX_QPATH];
+	static char name_menutrack[MAX_QPATH]; //mxd
 
 	s_sound_menu.nitems = 0;
 
@@ -133,10 +195,46 @@ static void Sound_MenuInit(void) // H2
 	s_sound_quality_list.itemnames = lowhigh_names;
 	s_sound_quality_list.curvalue = !Cvar_IsSet("s_loadas8bit");
 
+	//mxd
+	Com_sprintf(name_menutrack, sizeof(name_menutrack), "\x02%s", m_item_menutrack->string);
+	s_menu_track_list.generic.type = MTYPE_SPINCONTROL;
+	s_menu_track_list.generic.x = 0;
+	s_menu_track_list.generic.y = 140;
+	s_menu_track_list.generic.name = name_menutrack;
+	s_menu_track_list.generic.width = re.BF_Strlen(name_menutrack);
+	s_menu_track_list.generic.flags = QMF_SINGLELINE;
+	s_menu_track_list.generic.callback = UpdateMenuMusicTrackFunc;
+	s_menu_track_list.itemnames = track_list_names;
+	s_menu_track_list.curvalue = 0;
+
+	track_last_update_time = -1;
+	const int num_items = Sound_InitMusicTrackNames();
+
+	if (num_items > 1) // 1-st item is the "None" item.
+	{
+		for (int i = 1; i < num_items; i++)
+		{
+			if (track_numbers[i] == (int)m_music_track->value)
+			{
+				s_menu_track_list.curvalue = i;
+				break;
+			}
+		}
+	}
+	else
+	{
+		s_menu_track_list.generic.flags |= QMF_GRAYED;
+	}
+
+	//mxd. When ingame, store current music state.
+	if (cls.state == ca_active)
+		se.MusicGetCurrentTrackInfo(&initial_track, &initial_track_pos, &initial_track_looping);
+
 	Menu_AddItem(&s_sound_menu, &s_sound_backend_list); //mxd
 	Menu_AddItem(&s_sound_menu, &s_sound_sfxvolume_slider);
 	Menu_AddItem(&s_sound_menu, &s_sound_musicvolume_slider); //mxd
 	Menu_AddItem(&s_sound_menu, &s_sound_quality_list);
+	Menu_AddItem(&s_sound_menu, &s_menu_track_list); //mxd
 	Menu_Center(&s_sound_menu);
 }
 
@@ -160,6 +258,30 @@ static void Sound_MenuDraw(void) // H2
 	s_sound_menu.x = M_GetMenuLabelX(s_sound_menu.width);
 	Menu_AdjustCursor(&s_sound_menu, 1);
 	Menu_Draw(&s_sound_menu);
+
+	//mxd. Time to switch menu music track?
+	if (track_last_update_time != -1 && curtime - track_last_update_time > MUSIC_TRACK_SWITCH_DELAY)
+	{
+		se.MusicPlay((int)m_music_track->value, 0, true);
+		track_last_update_time = -1;
+	}
+}
+
+static void Sound_PopMenu(void) //mxd
+{
+	// Handle sound backend switching.
+	if (initial_sndlib_index != s_sound_backend_list.curvalue)
+	{
+		Cvar_Set("snd_dll", sndlib_infos[s_sound_backend_list.curvalue].id);
+		initial_sndlib_index = s_sound_backend_list.curvalue;
+		CL_Snd_Restart_f();
+	}
+
+	// When ingame, restore current music state.
+	if (cls.state == ca_active)
+		se.MusicPlay(initial_track, initial_track_pos, initial_track_looping);
+
+	M_PopMenu();
 }
 
 static char* Sound_HandleMenuKey(menuframework_t* menu, const int key) // H2
@@ -233,13 +355,7 @@ static char* Sound_HandleMenuKey(menuframework_t* menu, const int key) // H2
 		case K_AUX30:
 		case K_AUX31:
 		case K_AUX32:
-			if (initial_sndlib_index != s_sound_backend_list.curvalue)
-			{
-				Cvar_Set("snd_dll", sndlib_infos[s_sound_backend_list.curvalue].id);
-				initial_sndlib_index = s_sound_backend_list.curvalue;
-				CL_Snd_Restart_f();
-			}
-			M_PopMenu();
+			Sound_PopMenu();
 			return SND_MENU_CLOSE; //mxd. Added close menu sound.
 
 		default:

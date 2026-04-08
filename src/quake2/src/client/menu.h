@@ -27,6 +27,7 @@
 #define TB_MAX_LINE_LENGTH	(8 + (18 * viddef.width / DEF_WIDTH / ui_scale))
 
 extern cvar_t* menus_active;
+extern cvar_t* m_music_track; //mxd
 
 extern cvar_t* m_item_defaults;
 extern cvar_t* m_item_driver;
