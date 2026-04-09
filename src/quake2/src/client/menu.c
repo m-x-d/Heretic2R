@@ -189,9 +189,10 @@ static void PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key)
 		if (m_menudepth >= MAX_MENU_DEPTH)
 			Com_Error(ERR_FATAL, "M_PushMenu: MAX_MENU_DEPTH");
 
-		m_layers[m_menudepth + 1].draw = draw;
-		m_layers[m_menudepth + 1].key = key;
 		m_menudepth++;
+
+		m_layers[m_menudepth].draw = draw;
+		m_layers[m_menudepth].key = key;
 	}
 }
 
