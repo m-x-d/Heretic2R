@@ -637,6 +637,8 @@ extern void CL_SaveConfig_f(void); //mxd
 extern void CL_RequestNextDownload(void);
 extern int CL_GetProtocolVersion(void); //mxd
 extern qboolean CL_Predict(void); //mxd
+extern void CL_ReadPackets(void);
+extern void CL_ClearState(void);
 
 extern void CL_Disconnect(void);
 H2R_NORETURN extern void CL_Disconnect_f(void);
@@ -674,14 +676,10 @@ extern void CL_InitInput(void);
 extern void CL_RefreshCmd(void); // YQ2
 extern void CL_RefreshMove(void); // YQ2
 extern void CL_SendCmd(void);
-extern void CL_ClearState(void);
-extern void CL_ReadPackets(void);
 extern void CL_BaseMove(usercmd_t* cmd);
 extern qboolean CL_IgnoreInput(qboolean ignore_demos); //mxd
 
 extern void IN_CenterView(void);
-
-extern char* Key_KeynumToString(int keynum);
 
 // cl_demo.c
 extern void CL_WriteDemoMessage(void);
@@ -722,6 +720,9 @@ extern void CL_CheckPredictionError(void);
 extern int CL_PMpointcontents(const vec3_t point); //mxd
 extern void CL_PredictMovement(void);
 extern void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr);
+
+// keys.c
+extern char* Key_KeynumToString(int keynum);
 
 // Menus.
 #define NUM_ADDRESSBOOK_ENTRIES	9 // H2: 8
