@@ -119,6 +119,8 @@ static void UnbindCommand(const char* command)
 				Key_SetDoubleBinding(i, "");
 			else
 				Key_SetBinding(i, "");
+
+			m_settingschanged = true; //mxd
 		}
 	}
 }
@@ -188,8 +190,6 @@ static void Keys_MenuDraw(const char* menu_title) //mxd. Added to reduce code du
 
 static const char* Keys_MenuKey(const int key)
 {
-	char cmd[1024];
-
 	const menuinputkey_t* item = (menuinputkey_t*)Menu_ItemAtCursor(&s_keys_menu);
 	const int bind_index = item->generic.localdata[0] + keys_category_offset;
 
@@ -197,9 +197,11 @@ static const char* Keys_MenuKey(const int key)
 	{
 		if (key != K_ESCAPE) //mxd. Removed hardcoded '`' key check.
 		{
+			char cmd[1024];
 			const char* format = (use_doublebind ? "bind_double \"%s\" \"%s\"\n" : "bind \"%s\" \"%s\"\n"); // H2
 			Com_sprintf(cmd, sizeof(cmd), format, Key_KeynumToString(key), bindnames[bind_index].command);
 			Cbuf_InsertText(cmd);
+			m_settingschanged = true; //mxd
 		}
 
 		bind_grab = false;

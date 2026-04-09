@@ -137,11 +137,12 @@ char m_text_high[MAX_QPATH];
 
 const char* yes_no_names[] = { m_text_no, m_text_yes, NULL };
 
+qboolean m_settingschanged; //mxd
 static qboolean m_entersound; // Play after drawing a frame, so caching won't disrupt the sound. //TODO: doesn't seem to be related to playing sounds. Rename?
 
-m_drawfunc_t m_drawfunc;
-m_keyfunc_t m_keyfunc;
-m_keyfunc_t m_keyfunc2; // H2 //TODO: better name
+static m_drawfunc_t m_drawfunc;
+static m_keyfunc_t m_keyfunc;
+static m_keyfunc_t m_keyfunc2; // H2 //TODO: better name
 
 #define MAX_MENU_DEPTH			8
 #define MENU_TITLE_HEIGHT		32 //mxd
@@ -212,6 +213,7 @@ void M_PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) // H2
 		{
 			cls.m_menustate = (cls.state == ca_active ? MS_ZOOM_IN_START : MS_FADE_IN_START); //mxd. Do zoom-in effect only when ingame.
 			OnMainMenuOpened();
+			m_settingschanged = false; //mxd. Just to be on the safe side...
 		}
 		else
 		{
@@ -229,6 +231,7 @@ void M_PopMenu(void)
 		Com_Error(ERR_FATAL, "M_PopMenu: depth < 1");
 
 	m_menudepth--;
+
 	if (m_menudepth > 0)
 	{
 		m_drawfunc = m_layers[m_menudepth].draw;
@@ -238,6 +241,15 @@ void M_PopMenu(void)
 	{
 		m_drawfunc = NULL;
 		m_keyfunc = NULL;
+
+		//mxd. Save config?
+		if (m_settingschanged)
+		{
+			if (CL_WriteConfiguration())
+				Com_Printf("Configuration saved.\n");
+
+			m_settingschanged = false;
+		}
 	}
 
 	cls.m_menustate = MS_FADE_OUT_START;
@@ -435,6 +447,7 @@ qboolean Field_Key(menufield_t* field, int key)
 
 		field->cursor = (int)strlen(field->buffer);
 		field->visible_offset = max(0, field->cursor - field->visible_length);
+		m_settingschanged = true; //mxd
 
 		return true;
 	}
@@ -453,14 +466,17 @@ qboolean Field_Key(menufield_t* field, int key)
 			{
 				field->cursor--;
 				field->buffer[field->cursor] = 0;
+
 				if (field->visible_offset > 0)
 					field->visible_offset--;
+
+				m_settingschanged = true; //mxd
 			}
 			break;
 
 		case K_RIGHTARROW: // H2
 			if (field->cursor < (int)strlen(field->buffer))
-				field->cursor++;
+				field->cursor++; //TODO: never happens, because K_LEFTARROW functions as K_BACKSPACE.
 			break;
 
 		case K_DEL:
@@ -474,8 +490,11 @@ qboolean Field_Key(menufield_t* field, int key)
 			{
 				field->buffer[field->cursor++] = (char)key;
 				field->buffer[field->cursor] = 0;
+
 				if (field->visible_length < field->cursor)
 					field->visible_offset++;
+
+				m_settingschanged = true; //mxd
 			}
 			break;
 	}
@@ -887,6 +906,7 @@ qboolean Menu_SlideItem(const menuframework_t* menu, const int dir) //mxd. Retur
 		return false;
 
 	item->prev_slide_time = curtime; //mxd
+	m_settingschanged = true; //mxd
 
 	switch (item->type)
 	{

@@ -20,6 +20,7 @@ static void LoadCfgFunc(void* self) // H2
 {
 	const menuaction_t* item = self;
 	Cbuf_AddText(va("exec %s/%s.cfg\n", fs_configsdir->string, cfg_filenames[item->generic.localdata[0]])); //mxd. Use fs_configsdir.
+	m_settingschanged = true; //mxd
 	M_PopMenu();
 }
 

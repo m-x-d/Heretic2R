@@ -131,6 +131,7 @@ extern char m_text_high[MAX_QPATH];
 
 extern const char* yes_no_names[];
 
+extern qboolean m_settingschanged; //mxd
 extern uint m_menu_side;
 
 typedef void (*m_drawfunc_t)(void); //mxd
