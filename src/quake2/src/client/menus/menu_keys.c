@@ -195,7 +195,7 @@ static const char* Keys_MenuKey(const int key)
 
 	if (bind_grab)
 	{
-		if (key != K_ESCAPE && key != '`')
+		if (key != K_ESCAPE) //mxd. Removed hardcoded '`' key check.
 		{
 			const char* format = (use_doublebind ? "bind_double \"%s\" \"%s\"\n" : "bind \"%s\" \"%s\"\n"); // H2
 			Com_sprintf(cmd, sizeof(cmd), format, Key_KeynumToString(key), bindnames[bind_index].command);
