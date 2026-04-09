@@ -308,7 +308,7 @@ static void SV_MulticastSound(const vec3_t origin, const multicast_t to, const i
 }
 
 // Each entity can have eight independent sound sources, like voice, weapon, feet, etc.
-// If channel & 8, the sound will be sent to everyone, not just things in the PHS.
+// If channel & CHAN_NO_PHS_ADD, the sound will be sent to everyone, not just things in the PHS.
 // FIXME: if entity isn't in PHS, they must be forced to be sent or have the origin explicitly sent.
 // Channel 0 is an auto-allocate channel, the others override anything already running on that entity / channel pair.
 // An attenuation of 0 will play full volume everywhere in the level.
@@ -330,10 +330,10 @@ void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, const i
 	if (timeofs < 0.0f || timeofs > 0.255f)
 		Com_Error(ERR_FATAL, "SV_StartSound: invalid time offset (%f)", (double)timeofs);
 
-	if (channel & 8) // No PHS flag.
+	if (channel & CHAN_NO_PHS_ADD)
 	{
 		use_phs = false;
-		channel &= 7;
+		channel &= ~CHAN_NO_PHS_ADD;
 	}
 	else
 	{
