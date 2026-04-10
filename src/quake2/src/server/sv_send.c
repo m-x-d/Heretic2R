@@ -316,10 +316,9 @@ static void SV_MulticastSound(const vec3_t origin, const multicast_t to, const i
 // Timeofs can range from 0.0 to 0.1 to cause sounds to be started later in the frame than they normally would.
 // If origin is NULL, the origin is determined from the entity origin or the midpoint of the entity box for bmodels.
 //mxd. Parsed by CL_ParseStartSoundPacket().
-void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, const int soundindex, const float volume, const float attenuation, const float timeofs)
+void SV_StartSound(const vec3_t origin, const edict_t* ent, const int channel, const int soundindex, const float volume, const float attenuation, const float timeofs)
 {
 	vec3_t origin_v;
-	qboolean use_phs;
 
 	if (volume < 0.0f || volume > 1.0f)
 		Com_Error(ERR_FATAL, "SV_StartSound: invalid volume (%f)", (double)volume);
@@ -329,16 +328,6 @@ void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, const i
 
 	if (timeofs < 0.0f || timeofs > 0.255f)
 		Com_Error(ERR_FATAL, "SV_StartSound: invalid time offset (%f)", (double)timeofs);
-
-	if (channel & CHAN_NO_PHS_ADD)
-	{
-		use_phs = false;
-		channel &= ~CHAN_NO_PHS_ADD;
-	}
-	else
-	{
-		use_phs = true;
-	}
 
 	int flags = 0;
 
@@ -397,28 +386,20 @@ void SV_StartSound(const vec3_t origin, const edict_t* ent, int channel, const i
 
 	MSG_WritePos(&sv.multicast, origin); // H2: SND_POS flag is added in SV_MulticastSound().
 
+	//mxd. Original logic ignores CHAN_RELIABLE if CHAN_NO_PHS_ADD is also set (Q2 BUG).
+	const qboolean use_phs = (!(channel & CHAN_NO_PHS_ADD) && (int)attenuation != ATTN_NONE);
+
 	if (channel & CHAN_RELIABLE)
-	{
-		if (use_phs && attenuation != 0.0f)
-			SV_MulticastSound(origin, MULTICAST_PHS_R, msg_start);
-		else
-			SV_MulticastSound(origin, MULTICAST_ALL_R, msg_start);
-	}
+		SV_MulticastSound(origin, (use_phs ? MULTICAST_PHS_R : MULTICAST_ALL_R), msg_start);
 	else
-	{
-		if (use_phs && attenuation != 0.0f)
-			SV_MulticastSound(origin, MULTICAST_PHS, msg_start);
-		else
-			SV_MulticastSound(origin, MULTICAST_ALL, msg_start);
-	}
+		SV_MulticastSound(origin, (use_phs ? MULTICAST_PHS : MULTICAST_ALL), msg_start);
 }
 
 //mxd. Parsed by CL_ParseStartSoundPacket().
-// If channel & 8, the sound will be sent to everyone, not just things in the PHS.
-void SV_StartEventSound(const byte event_id, const float leveltime, const vec3_t origin, const edict_t* ent, int channel, const int soundindex, const float volume, const float attenuation, const float timeofs) // H2
+// If channel & CHAN_NO_PHS_ADD, the sound will be sent to everyone, not just things in the PHS.
+void SV_StartEventSound(const byte event_id, const float leveltime, const vec3_t origin, const edict_t* ent, const int channel, const int soundindex, const float volume, const float attenuation, const float timeofs) // H2
 {
 	vec3_t origin_v;
-	qboolean use_phs;
 
 	if (volume < 0.0f || volume > 1.0f)
 		Com_Error(ERR_FATAL, "SV_StartEventSound: invalid volume (%f)", (double)volume);
@@ -428,16 +409,6 @@ void SV_StartEventSound(const byte event_id, const float leveltime, const vec3_t
 
 	if (timeofs < 0.0f || timeofs > 0.255f)
 		Com_Error(ERR_FATAL, "SV_StartEventSound: invalid time offset (%f)", (double)timeofs);
-
-	if (channel & 8) // No PHS flag.
-	{
-		use_phs = false;
-		channel &= 7;
-	}
-	else
-	{
-		use_phs = true;
-	}
 
 	int flags = 0;
 
@@ -505,20 +476,13 @@ void SV_StartEventSound(const byte event_id, const float leveltime, const vec3_t
 
 	MSG_WritePos(&sv.multicast, origin); // H2: SND_POS flag is added in SV_MulticastSound().
 
+	//mxd. Original logic ignores CHAN_RELIABLE if CHAN_NO_PHS_ADD is also set (Q2 BUG).
+	const qboolean use_phs = (!(channel & CHAN_NO_PHS_ADD) && (int)attenuation != ATTN_NONE);
+
 	if (channel & CHAN_RELIABLE)
-	{
-		if (use_phs && attenuation != 0.0f)
-			SV_MulticastSound(origin, MULTICAST_PHS_R, msg_start);
-		else
-			SV_MulticastSound(origin, MULTICAST_ALL_R, msg_start);
-	}
+		SV_MulticastSound(origin, (use_phs ? MULTICAST_PHS_R : MULTICAST_ALL_R), msg_start);
 	else
-	{
-		if (use_phs && attenuation != 0.0f)
-			SV_MulticastSound(origin, MULTICAST_PHS, msg_start);
-		else
-			SV_MulticastSound(origin, MULTICAST_ALL, msg_start);
-	}
+		SV_MulticastSound(origin, (use_phs ? MULTICAST_PHS : MULTICAST_ALL), msg_start);
 }
 
 #pragma region ========================== FRAME UPDATES ==========================
