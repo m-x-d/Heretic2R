@@ -190,7 +190,7 @@ PLAYER_API void PlayerUpdate(playerinfo_t* info)
 // This function should be called anytime the player's skin, armor, weapon, damaged parts, etc. are changed.
 PLAYER_API void PlayerUpdateModelAttributes(playerinfo_t* info)
 {
-	//FIXME: make sure to see if you HAVE the weapon node you turn off (dropped weapons)
+	//FIXME: make sure to see if you HAVE the weapon node you turn off (dropped weapons).
 	assert(info);
 
 	// If we are chicken, we shouldn't be doing any of this stuff.
@@ -241,7 +241,7 @@ PLAYER_API void PlayerUpdateModelAttributes(playerinfo_t* info)
 
 		case STAFF_LEVEL_BASIC:
 		default:
-			info->pers.altparts &= ~((1 << MESH__STAFACTV) | (1 << MESH__BLADSTF) | (1 << MESH__STOFF)); // No special texture
+			info->pers.altparts &= ~((1 << MESH__STAFACTV) | (1 << MESH__BLADSTF) | (1 << MESH__STOFF)); // No special texture.
 			break;
 	}
 
@@ -252,7 +252,7 @@ PLAYER_API void PlayerUpdateModelAttributes(playerinfo_t* info)
 	switch (info->pers.helltype)
 	{
 		case HELL_TYPE_POWER:
-			info->pers.altparts |= (1 << MESH__HELSTF); // Use alternate power texutre...
+			info->pers.altparts |= (1 << MESH__HELSTF); // Use alternate power texture...
 			break;
 
 		case HELL_TYPE_BASIC:
