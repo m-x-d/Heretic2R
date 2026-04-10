@@ -149,6 +149,7 @@
 
 // Delay before you can use a defensive spell again.
 #define DEFENSE_DEBOUNCE		0.5f
+#define DEFENSE_DEBOUNCE_NOMANA	1.0f //mxd. Length of 'base/players/(fe)male/nomana.wav' (in seconds; actual length: male: 0.8 sec., female: 1.0 sec.).
 
 // Blue Ring of repulsion.
 #define	RING_EFFECT_RADIUS		200.0f

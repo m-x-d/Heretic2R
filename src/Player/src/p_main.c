@@ -12,6 +12,7 @@
 #include "p_weapon.h"
 #include "p_utility.h" //mxd
 #include "FX.h"
+#include "g_PlayStats.h" //mxd
 #include "Player/m_Player.h" // In game/src! --mxd.
 #include "Random.h"
 #include "Vector.h"
@@ -43,6 +44,7 @@ PLAYER_API void PlayerInit(playerinfo_t* info, const int complete_reset)
 		PlayerBasicAnimReset(info);
 
 	info->flags = PLAYER_FLAG_NONE;
+	info->pers.defensive_nomana_debounce = 0.0f; //mxd
 }
 
 // Remove all special effects from the player.
@@ -153,7 +155,7 @@ PLAYER_API void PlayerUpdate(playerinfo_t* info)
 			{
 				info->PlayerActionSpellDefensive(info);
 			}
-			else
+			else if (info->leveltime > info->pers.defensive_nomana_debounce) //mxd. Added defensive_nomana_debounce check.
 			{
 				// Play a sound to tell the player they're out of mana (also done in Cmd_Use_f() --mxd).
 				char* snd_name; //mxd
@@ -166,6 +168,9 @@ PLAYER_API void PlayerUpdate(playerinfo_t* info)
 					snd_name = "*nomana.wav";
 
 				P_Sound(info, SND_PRED_ID50, CHAN_VOICE, snd_name, 0.75f); //mxd
+
+				//mxd. Added to allow "nomana.wav" to finish playing before starting a new one when tapping 'Defense' button.
+				info->pers.defensive_nomana_debounce = info->leveltime + DEFENSE_DEBOUNCE_NOMANA;
 			}
 		}
 

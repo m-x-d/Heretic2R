@@ -175,7 +175,11 @@ typedef struct client_persistant_s
 	// User info.
 	char userinfo[MAX_INFO_STRING];
 	char netname[16];
-	char sounddir[MAX_QPATH]; //TODO: unused?
+
+	//mxd. char sounddir[MAX_QPATH] (unused) in original logic. Hijack for extra props while maintaining vanilla compatibility...
+	float defensive_nomana_debounce;
+	byte unused[60];
+
 	int autoweapon; //TODO: change type to qboolean.
 
 	// A loadgame will leave valid entities that just don't have a connection yet.

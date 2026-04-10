@@ -561,7 +561,7 @@ void Cmd_Use_f(edict_t* ent, char* name)
 
 				info->defensive_debounce = info->leveltime + DEFENSE_DEBOUNCE;
 			}
-			else
+			else if (info->leveltime > info->pers.defensive_nomana_debounce) //mxd. Added defensive_nomana_debounce check.
 			{
 				// Play a sound to tell the player they're out of mana (also done in PlayerUpdate() --mxd).
 				char* snd_name; //mxd
@@ -574,6 +574,9 @@ void Cmd_Use_f(edict_t* ent, char* name)
 					snd_name = "*nomana.wav";
 
 				gi.sound(ent, CHAN_VOICE, gi.soundindex(snd_name), 0.75f, ATTN_NORM, 0.0f);
+
+				//mxd. Added to allow "nomana.wav" to finish playing before starting a new one when tapping item use button.
+				info->pers.defensive_nomana_debounce = info->leveltime + DEFENSE_DEBOUNCE_NOMANA;
 			}
 
 			// Put the ammo back.
