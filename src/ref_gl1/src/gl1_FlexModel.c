@@ -131,10 +131,7 @@ static qboolean fmLoadMeshNodes(fmdl_t* fmdl, model_t* model, const int version,
 
 	for (int i = 0; i < fmdl->header.num_mesh_nodes; i++, in++, out++)
 	{
-		//mxd. Don't copy tris (unused).
-
-		// Copy verts.
-		memcpy(out->verts, in->verts, sizeof(out->verts));
+		//mxd. Don't copy tris and verts (unused).
 
 		// Copy glcmds.
 		out->start_glcmds = in->start_glcmds;
