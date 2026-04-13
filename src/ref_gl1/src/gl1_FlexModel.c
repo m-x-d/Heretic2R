@@ -31,16 +31,16 @@ static qboolean fmLoadHeader(fmdl_t* fmdl, model_t* model, const int version, co
 	if (h->skinwidth < 1 || h->skinwidth > SKINPAGE_WIDTH || h->skinheight < 1 || h->skinheight > SKINPAGE_HEIGHT) //mxd. Added SKINPAGE_WIDTH check.
 		ri.Sys_Error(ERR_DROP, "Model '%s' has invalid skin size (%ix%i)", model->name, h->skinwidth, h->skinheight);
 
-	if (h->num_xyz < 1 || h->num_xyz > MAX_FM_VERTS)
+	if (h->num_xyz < 1 || h->num_xyz >= MAX_FM_VERTS)
 		ri.Sys_Error(ERR_DROP, "Model '%s' has invalid number of vertices (%i)", model->name, h->num_xyz);
 
 	if (h->num_st < 1)
 		ri.Sys_Error(ERR_DROP, "Model '%s' has no st vertices", model->name);
 
-	if (h->num_tris < 1 || h->num_tris > MAX_FM_TRIANGLES) //mxd. Added MAX_FM_TRIANGLES check.
+	if (h->num_tris < 1 || h->num_tris >= MAX_FM_TRIANGLES) //mxd. Added MAX_FM_TRIANGLES check.
 		ri.Sys_Error(ERR_DROP, "Model '%s' has invalid number of triangles (%i)", model->name, h->num_tris);
 
-	if (h->num_frames < 1 || h->num_frames > MAX_FM_FRAMES) //mxd. Added MAX_FM_FRAMES check.
+	if (h->num_frames < 1 || h->num_frames >= MAX_FM_FRAMES) //mxd. Added MAX_FM_FRAMES check.
 		ri.Sys_Error(ERR_DROP, "Model '%s' has invalid number of frames (%i)", model->name, h->num_frames);
 
 	VectorSet(model->mins, -32.0f, -32.0f, -32.0f);
