@@ -137,6 +137,36 @@ void R_TexEnv(const GLint mode) // Q2: GL_TexEnv()
 	}
 }
 
+//mxd. Added to avoid redundant OpenGL state changes (according to gDEBugger, ~97% of glBlendFunc() calls are redundant).
+void R_BlendFunc(const GLenum sfactor, const GLenum dfactor) //mxd
+{
+	// Default values, according to https://linux.die.net/man/3/glblendfunc
+	static GLenum cur_sfactor = GL_ONE;
+	static GLenum cur_dfactor = GL_ZERO;
+
+	if (sfactor != cur_sfactor || dfactor != cur_dfactor)
+	{
+		glBlendFunc(sfactor, dfactor);
+		cur_sfactor = sfactor;
+		cur_dfactor = dfactor;
+	}
+}
+
+//mxd. Added to avoid redundant OpenGL state changes (according to gDEBugger, ~97% of glAlphaFunc() calls are redundant).
+void R_AlphaFunc(const GLenum func, const GLfloat ref)
+{
+	// Default values, according to https://linux.die.net/man/3/glalphafunc
+	static GLenum cur_func = GL_ALWAYS;
+	static GLfloat cur_ref = 0.0f;
+
+	if (func != cur_func || ref != cur_ref)
+	{
+		glAlphaFunc(func, ref);
+		cur_func = func;
+		cur_ref = ref;
+	}
+}
+
 // Q2 counterpart
 void R_Bind(int texnum)
 {

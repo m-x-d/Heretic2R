@@ -260,7 +260,7 @@ static void R_DrawParticles(const int num_particles, const particle_t* particles
 	if (alpha_particle)
 	{
 		R_BindImage(r_aparticletexture);
-		glBlendFunc(GL_ONE, GL_ONE);
+		R_BlendFunc(GL_ONE, GL_ONE);
 
 		if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Removed gl_fog_broken cvar check
 			glDisable(GL_FOG);
@@ -270,7 +270,7 @@ static void R_DrawParticles(const int num_particles, const particle_t* particles
 	else
 	{
 		R_BindImage(r_particletexture);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	glEnable(GL_BLEND);

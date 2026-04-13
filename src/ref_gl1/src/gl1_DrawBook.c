@@ -53,8 +53,8 @@ void Draw_BigFont(const int x, const int y, const char* text, const float alpha)
 	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
 	glColor4f(1.0f, 1.0f, 1.0f, alpha);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glAlphaFunc(GL_GREATER, 0.05f);
+	R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	R_AlphaFunc(GL_GREATER, 0.05f);
 	R_TexEnv(GL_MODULATE);
 
 	const glxy_t* cur_font = font1;

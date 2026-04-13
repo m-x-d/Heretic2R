@@ -108,8 +108,8 @@ static void Draw_Char_impl(const int x, const int y, const int scale, int c, con
 	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
 	glColor4ub(color.r, color.g, color.b, color.a);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR 
-	glAlphaFunc(GL_GREATER, 0.05f);
+	R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR 
+	R_AlphaFunc(GL_GREATER, 0.05f);
 
 	R_TexEnv(GL_MODULATE);
 	glBegin(GL_QUADS);
@@ -165,8 +165,8 @@ void Draw_Render(const int x, const int y, const int w, const int h, const image
 	R_BindImage(image);
 
 	glColor4f(1.0f, 1.0f, 1.0f, alpha);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glAlphaFunc(GL_GREATER, 0.05f);
+	R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	R_AlphaFunc(GL_GREATER, 0.05f);
 	glEnable(GL_BLEND);
 
 	R_TexEnv(GL_MODULATE);
@@ -272,7 +272,7 @@ void Draw_Fill(const int x, const int y, const int w, const int h, const palette
 	if (color.a < 255) //mxd. Added transparency support.
 	{
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	glDisable(GL_TEXTURE_2D);
@@ -302,8 +302,8 @@ void Draw_FadeScreen(const paletteRGBA_t color)
 	glEnable(GL_BLEND);
 	glEnable(GL_ALPHA_TEST);
 	glDisable(GL_TEXTURE_2D);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR
-	glAlphaFunc(GL_GREATER, 0.05f);
+	R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR
+	R_AlphaFunc(GL_GREATER, 0.05f);
 	glColor4ubv(color.c_array); //mxd. qglColor4ub -> qglColor4ubv
 
 	glBegin(GL_QUADS);

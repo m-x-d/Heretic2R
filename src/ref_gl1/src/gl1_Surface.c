@@ -92,8 +92,8 @@ static void R_DrawAlphaEntity(entity_t* ent) // H2
 static void R_DrawAlphaSurface(const msurface_t* fa) // H2
 {
 	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.05f);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR
+	R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR
+	R_AlphaFunc(GL_GREATER, 0.05f);
 	glLoadMatrixf(r_world_matrix);
 	glEnable(GL_BLEND);
 	R_TexEnv(GL_MODULATE);
@@ -120,7 +120,7 @@ static void R_DrawAlphaSurface(const msurface_t* fa) // H2
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glDisable(GL_BLEND);
 	glDisable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.666f);
+	R_AlphaFunc(GL_GREATER, 0.666f);
 }
 
 void R_SortAndDrawAlphaSurfaces(void)
@@ -295,9 +295,9 @@ static void R_BlendLightmaps(model_t* mdl) //mxd. Original logic uses 'currentmo
 		glEnable(GL_BLEND);
 
 		if ((int)gl_saturatelighting->value)
-			glBlendFunc(GL_ONE, GL_ONE);
+			R_BlendFunc(GL_ONE, GL_ONE);
 		else
-			glBlendFunc(GL_ZERO, GL_SRC_COLOR); //mxd. Skipping gl_monolightmap logic
+			R_BlendFunc(GL_ZERO, GL_SRC_COLOR); //mxd. Skipping gl_monolightmap logic
 	}
 
 	if (mdl == r_worldmodel)
@@ -432,7 +432,7 @@ static void R_BlendLightmaps(model_t* mdl) //mxd. Original logic uses 'currentmo
 
 	// Restore state.
 	glDisable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR.
+	R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR.
 	glDepthMask(GL_TRUE);
 }
 

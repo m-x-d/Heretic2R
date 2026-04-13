@@ -46,7 +46,7 @@ void R_SetDefaultState(void) // Q2: GL_SetDefaultState()
 	glEnable(GL_TEXTURE_2D);
 
 	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.666f);
+	R_AlphaFunc(GL_GREATER, 0.666f);
 
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
@@ -65,7 +65,7 @@ void R_SetDefaultState(void) // Q2: GL_SetDefaultState()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //mxd. Q2/H2: qglTexParameterf
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); //mxd. Q2/H2: qglTexParameterf
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR.
+	R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR.
 
 	R_TexEnv(GL_REPLACE);
 }
@@ -192,8 +192,8 @@ void R_HandleTransparency(const entity_t* e) // H2: HandleTrans().
 		if (e->flags & RF_ALPHA_TEXTURE)
 		{
 			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.0f);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			R_BlendFunc(GL_SRC_ALPHA, GL_ONE);
+			R_AlphaFunc(GL_GREATER, 0.0f);
 			glColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
 		}
 		else
@@ -202,7 +202,7 @@ void R_HandleTransparency(const entity_t* e) // H2: HandleTrans().
 				glDisable(GL_FOG);
 
 			glDisable(GL_ALPHA_TEST);
-			glBlendFunc(GL_ONE, GL_ONE);
+			R_BlendFunc(GL_ONE, GL_ONE);
 
 			if (e->flags & RF_TRANS_ADD_ALPHA)
 			{
@@ -218,8 +218,8 @@ void R_HandleTransparency(const entity_t* e) // H2: HandleTrans().
 	else
 	{
 		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.05f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		R_AlphaFunc(GL_GREATER, 0.05f);
 
 		// H2_1.07: qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR) when RF_TRANS_GHOST flag is set.
 		if (!(e->flags & RF_TRANS_GHOST))
@@ -248,11 +248,11 @@ void R_CleanupTransparency(const entity_t* e) // H2: CleanupTrans().
 		if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Removed gl_fog_broken cvar check.
 			glEnable(GL_FOG);
 
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR.
+		R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR.
 	}
 	else
 	{
 		glDisable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.666f);
+		R_AlphaFunc(GL_GREATER, 0.666f);
 	}
 }
