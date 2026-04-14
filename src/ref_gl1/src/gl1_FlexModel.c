@@ -601,13 +601,13 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 		while (true)
 		{
 			// Get the vertex count and primitive type.
-			int num_vers = *order++;
-			if (num_vers == 0)
+			int num_verts = *order++;
+			if (num_verts == 0)
 				break; // Done.
 
-			if (num_vers < 0)
+			if (num_verts < 0)
 			{
-				num_vers = -num_vers;
+				num_verts = -num_verts;
 				glBegin(GL_TRIANGLE_FAN);
 			}
 			else
@@ -615,7 +615,7 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 				glBegin(GL_TRIANGLE_STRIP);
 			}
 
-			for (int c = 0; c < num_vers; c++)
+			for (int c = 0; c < num_verts; c++)
 			{
 				const int index_xyz = order[2];
 
