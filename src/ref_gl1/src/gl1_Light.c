@@ -5,6 +5,7 @@
 //
 
 #include "gl1_Light.h"
+#include "gl1_Image.h"
 #include "gl1_Matrix4.h"
 #include "Vector.h"
 
@@ -68,7 +69,7 @@ void R_RenderDlights(void)
 	glDisable(GL_TEXTURE_2D);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE);
+	R_BlendFunc(GL_ONE, GL_ONE);
 
 	dlight_t* l = &r_newrefdef.dlights[0];
 	for (int i = 0; i < r_newrefdef.num_dlights; i++, l++)
@@ -77,7 +78,7 @@ void R_RenderDlights(void)
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glDisable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR
+	R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR
 	glDepthMask(GL_TRUE);
 }
 

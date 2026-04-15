@@ -1,0 +1,11 @@
+The Heretic_II_Patch_106_for_H2R.zip (MD5: 0bcbdefb50d921607c3faccb7b8a1ab3) archive 
+contains the files from Heretic II Enhancement Pack (also known as Heretic II v1.06 official patch)
+(https://community.pcgamingwiki.com/files/file/1736-heretic-ii-enhancement-pack) for use with 
+Heretic2R source port. It can be used to update existing Heretic II game data to the latest version.
+
+Changes compared to original version:
+- ZIP archive instead of ancient InstallShield installer.
+- All .dll and .exe files removed (to avoid overwriting Heretic2R ones).
+
+Installation:
+- Extract to Heretic II folder, overwriting original files if necessary.

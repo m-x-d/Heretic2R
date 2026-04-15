@@ -1,0 +1,166 @@
+//
+// sc_CScript.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
+#include <list>
+#include "Events/sc_Event.h"
+#include "Variables/sc_StringVar.h"
+#include "sc_FieldDef.h"
+#include "sc_Signaler.h"
+#include "g_Local.h"
+
+#define MAX_INDEX	100
+
+enum ScriptConditionT
+{
+	COND_READY,
+	COND_COMPLETED,
+	COND_SUSPENDED,
+	COND_WAIT_ALL,
+	COND_WAIT_ANY,
+	COND_WAIT_TIME,
+};
+
+class Event;
+
+class CScript
+{
+	char name[MAX_OSPATH] = {}; //mxd. MAX_PATH in original logic.
+	byte* data = nullptr;
+	ScriptConditionT script_condition = COND_COMPLETED;
+	int condition_info = 0;
+	int length = 0;
+	int position = 0;
+	std::list<Variable*> local_variables;
+	std::list<Variable*> parameter_variables;
+	std::list<Variable*> stack_variables;
+	std::list<Variable*> waiting_variables;
+	std::list<Signaler*> signalers;
+	std::list<StringVar*> parameter_values;
+	std::list<Event*> events;
+	Variable* variable_index[MAX_INDEX] = { nullptr };
+	FieldDef* fielddefs[MAX_INDEX] = { nullptr };
+	edict_t* owner = nullptr;
+	edict_t* other = nullptr;
+	edict_t* activator = nullptr;
+	int debug_flags = 0;
+
+	void Free();
+	void Clear();
+
+	Variable* ReadDeclaration(int& index);
+
+	void PushStack(Variable* v);
+	Variable* PopStack();
+
+	void HandleGlobal(bool assignment);
+	void HandleLocal(bool assignment);
+	void HandleParameter(bool assignment);
+	void HandleField();
+	void HandleGoto();
+	Variable* HandleSpawn();
+	Variable* HandleBuiltinFunction();
+	void HandlePush();
+	void HandlePop();
+	void HandleAssignment();
+	void HandleAdd();
+	void HandleSubtract();
+	void HandleMultiply();
+	void HandleDivide();
+	void HandleDebug();
+	void HandleDebugStatement();
+	void HandleAddAssignment();
+	void HandleSubtractAssignment();
+	void HandleMultiplyAssignment();
+	void HandleDivideAssignment();
+	bool HandleWait(bool for_all);
+	bool HandleTimeWait();
+	void HandleIf();
+
+	void HandlePrint();
+	void HandlePlaySound();
+	void HandleFeature(bool enable);
+	void HandleCacheSound();
+
+	void HandleMove();
+	void HandleRotate();
+	void HandleUse();
+	void HandleTrigger(bool enable);
+	void HandleAnimate();
+	void HandleCopyPlayerAttributes();
+	void HandleSetViewAngles();
+	void HandleSetCacheSize();
+
+	void Move(edict_t* ent, const vec3_t dest);
+	void Rotate(edict_t* ent);
+
+	void ProcessEvents();
+
+	void AddSignaler(edict_t* edict, Variable* var, SignalT signal_type);
+	void FinishWait(edict_t* which, bool execute);
+
+	[[noreturn]] void Error(const char* format, ...) const;
+	void StartDebug();
+	void EndDebug() const;
+
+	Variable* FindLocal(const char* var_name) const;
+	bool NewLocal(Variable* which);
+	Variable* FindParameter(const char* param_name) const;
+	bool NewParameter(Variable* which);
+
+public:
+	CScript(const char* script_name, edict_t* new_owner);
+	CScript(FILE* f);
+	~CScript();
+
+	void LoadFile();
+	void Write(FILE* f);
+
+	Variable* LookupVar(const int index) const
+	{
+		return variable_index[index];
+	}
+
+	int LookupVarIndex(const Variable* var) const;
+
+	void SetVarIndex(const int index, Variable* var)
+	{
+		variable_index[index] = var;
+	}
+
+	FieldDef* LookupField(const int index) const
+	{
+		return fielddefs[index];
+	}
+
+	int LookupFieldIndex(const FieldDef* field) const;
+
+	void SetFieldIndex(const int index, FieldDef* field)
+	{
+		fielddefs[index] = field;
+	}
+
+	void SetParameter(const char* value);
+
+	byte ReadByte();
+	int ReadInt();
+	float ReadFloat();
+	char* ReadString();
+
+	void Move_Done(edict_t* ent);
+	void Rotate_Done(edict_t* ent);
+
+	void AddEvent(Event* which);
+	void ClearTimeWait();
+	void CheckSignalers(edict_t* which, SignalT signal_type);
+	bool CheckWait();
+
+	void DebugLine(const char* format, ...) const;
+
+	void Think();
+	ScriptConditionT Execute(edict_t* new_other, edict_t* new_activator);
+};

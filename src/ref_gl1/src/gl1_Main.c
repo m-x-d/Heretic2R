@@ -21,7 +21,7 @@
 #include "Reference.h"
 #include "turbsin.h"
 #include "Vector.h"
-#include "vid.h"
+#include "client/vid.h"
 
 #define REF_DECLSPEC	__declspec(dllexport)
 
@@ -260,7 +260,7 @@ static void R_DrawParticles(const int num_particles, const particle_t* particles
 	if (alpha_particle)
 	{
 		R_BindImage(r_aparticletexture);
-		glBlendFunc(GL_ONE, GL_ONE);
+		R_BlendFunc(GL_ONE, GL_ONE);
 
 		if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Removed gl_fog_broken cvar check
 			glDisable(GL_FOG);
@@ -270,7 +270,7 @@ static void R_DrawParticles(const int num_particles, const particle_t* particles
 	else
 	{
 		R_BindImage(r_particletexture);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		R_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	glEnable(GL_BLEND);
@@ -802,7 +802,7 @@ static qboolean RI_Init(void)
 
 	// YQ2: Anisotropic texture filtering.
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &gl_config.max_anisotropy);
-	ri.Con_Printf(PRINT_ALL, "Max. anisotropy: %i.\n", (int)gl_config.max_anisotropy);
+	ri.Con_Printf(PRINT_ALL, "Max. anisotropy: %i\n", (int)gl_config.max_anisotropy);
 
 	//mxd. Check max. supported texture size. H2 expects at least 128x128. H2R expects at least 512x512 (for cinematics rendering without frame chopping shenanigans). Probably not needed: even GF2 supports 2048x2048 textures.
 	int max_texture_size;

@@ -1,0 +1,121 @@
+//
+// fx_Smoke.c
+//
+// Copyright 1998 Raven Software
+//
+
+#include "fx_Smoke.h" //mxd
+#include "ce_Effects.h"
+#include "ce_Utilities.h"
+#include "Vector.h"
+#include "Random.h"
+#include "Motion.h"
+
+static struct model_s* smoke_model;
+static struct sfx_s* smoke_sound; //mxd
+
+void PreCacheSmoke(void)
+{
+	smoke_model = fxi.RegisterModel("sprites/fx/steam.sp2");
+}
+
+void PreCacheSmokeSFX(void) //mxd
+{
+	smoke_sound = fxi.S_RegisterSound("misc/fout.wav");
+}
+
+//mxd. Added to reduce code duplication.
+static void SpawnSmoke(const vec3_t origin, const float scale, const float range, const paletteRGBA_t color)
+{
+	const float vel_z = flrand(46.0f, 52.0f); //mxd. Randomize z-velocity a bit.
+	const float duration = GetTimeToReachDistance(vel_z, 0.0f, range);
+	client_entity_t* smoke = ClientEntity_new(-1, RF_TRANSLUCENT, origin, NULL, (int)duration);
+
+	smoke->r.model = &smoke_model;
+	smoke->r.scale = scale;
+	smoke->r.color = color;
+	VectorSet(smoke->velocity, flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), vel_z);
+	smoke->acceleration[0] = -smoke->velocity[0] / duration; //mxd. Gravitate towards 0 XY velocity.
+	smoke->acceleration[1] = -smoke->velocity[1] / duration; //mxd
+	smoke->alpha = flrand(0.4f, 0.7f); //mxd. Randomize alpha a bit.
+	smoke->d_alpha = -smoke->alpha * 1000.0f / duration; // Rate of change in transparency.
+	smoke->d_scale = flrand(0.7f, 1.0f); // Rate of change in scale. //H2: 1.0 //mxd. Randomize a bit.
+
+	RE_SetupRollSprite(&smoke->r, 32.0f, flrand(0.0f, 359.0f)); //mxd
+	AddEffect(NULL, smoke); // Add the effect as independent world effect.
+}
+
+void FXDarkSmoke(const vec3_t origin, const float scale, const float range)
+{
+	//mxd. Randomize color a bit (original logic uses 0xaa777777).
+	paletteRGBA_t color;
+	const byte c = (byte)irand(100, 140);
+	COLOUR_SETA(color, c, c, c, 170);
+
+	SpawnSmoke(origin, scale, range, color); //mxd
+}
+
+void FXSmoke(const vec3_t origin, const float scale, const float range)
+{
+	//mxd. Randomize color a bit (original logic uses 0xffffffff).
+	paletteRGBA_t color;
+	const byte c = (byte)irand(200, 255);
+	COLOUR_SET(color, c, c, c);
+
+	SpawnSmoke(origin, scale, range, color); //mxd
+}
+
+static qboolean EnvSmokeSpawnerUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSmokeSpawner' in original logic.
+{
+	FXSmoke(self->r.origin, self->r.scale, self->Scale);
+	return true;
+}
+
+static qboolean EnvTimedSmokeSpawnerUpdate(client_entity_t* self, centity_t* owner) //mxd. Named 'FXSmokeSpawner2' in original logic.
+{
+	if (self->LifeTime-- > 0)
+	{
+		FXSmoke(self->r.origin, flrand(0.5f, 1.0f), flrand(32.0f, 64.0f));
+		self->updateTime = 30;
+
+		return true;
+	}
+
+	return false;
+}
+
+void FXEnvSmoke(centity_t* owner, const int type, int flags, vec3_t origin)
+{
+	flags |= (CEF_NO_DRAW | CEF_NOMOVE);
+	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 17);
+
+	if (flags & CEF_FLAG6) // Used when burning entity was doused --mxd.
+	{
+		// Just a hiss and steam.
+		FXSmoke(origin, flrand(0.5f, 1.0f), flrand(32.0f, 64.0f));
+		fxi.S_StartSound(origin, -1, CHAN_AUTO, smoke_sound, 1.0f, ATTN_NORM, 0.0f);
+
+		self->LifeTime = 33;
+		self->Update = EnvTimedSmokeSpawnerUpdate;
+
+		AddEffect(NULL, self);
+	}
+	else
+	{
+		vec3_t dir;
+		byte scale;
+		byte speed;
+		byte wait;
+		byte maxrange;
+		fxi.GetEffect(owner, flags, clientEffectSpawners[FX_ENVSMOKE].formatString, &scale, &dir, &speed, &wait, &maxrange);
+
+		AnglesFromDir(dir, self->r.angles);
+		self->velocity[0] = (float)speed * 10.0f;
+		self->Scale = maxrange;
+		self->r.scale = 32.0f / (float)scale;
+		self->updateTime = wait * 1000;
+		self->Update = EnvSmokeSpawnerUpdate;
+
+		AddEffect(owner, self);
+	}
+}

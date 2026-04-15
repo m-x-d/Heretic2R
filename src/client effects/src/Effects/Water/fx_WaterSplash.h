@@ -1,0 +1,11 @@
+//
+// fx_WaterSplash.h -- Named Ambient Effects.h in original logic.
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
+#include "ce_Entities.h"
+
+extern void DoWaterSplash(client_entity_t* effect, paletteRGBA_t color, int count, qboolean use_lightmap_color); //mxd. +use_lightmap_color arg.

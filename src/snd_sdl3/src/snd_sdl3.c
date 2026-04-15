@@ -5,7 +5,6 @@
 //
 
 #include "snd_sdl3.h"
-#include "client.h"
 #include "snd_main.h"
 #include "snd_LowpassFilter.h"
 #include "snd_ogg.h"
@@ -544,6 +543,8 @@ void SNDSDL3_RawSamples(const int num_samples, const uint rate, const int width,
 	const float scale = (float)rate / (float)sound.speed;
 	const int data_end = (int)((float)num_samples / scale); //mxd
 	int int_volume = (int)(volume * 256.0f);
+
+	assert(data_end < MAX_RAW_SAMPLES); //mxd
 
 	if (width == 2 && num_channels == 2) // 16-bit stream, stereo.
 	{

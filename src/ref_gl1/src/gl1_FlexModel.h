@@ -75,8 +75,8 @@ typedef struct
 
 typedef struct
 {
-	byte unused[MAX_FM_TRIANGLES >> 3]; // 2048 >> 3 == 256 //mxd. Unused tris array. Needed here to maintain struct layout...
-	byte verts[MAX_FM_VERTS >> 3]; // 2048 >> 3 == 256
+	byte unused_tris[MAX_FM_TRIANGLES >> 3]; // 2048 >> 3 == 256 //mxd. Unused tris array. Needed here to maintain struct layout...
+	byte unused_verts[MAX_FM_VERTS >> 3]; // 2048 >> 3 == 256 //mxd. Unused verts array. Needed here to maintain struct layout...
 	short start_glcmds;
 	short num_glcmds;
 } fmmeshnode_t;

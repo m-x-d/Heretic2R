@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "q_shared.h"
+#include "q_Shared.h"
 
-// Don't add anything to this union which is greater than 4 bytes in size
+// Don't add anything to this union which is greater than 4 bytes in size.
 typedef union GenericUnion4_u
 {
 	byte t_byte;
@@ -22,16 +22,16 @@ typedef union GenericUnion4_u
 	paletteRGBA_t t_RGBA;
 } GenericUnion4_t;
 
-// Don't add anything to this union which is greater than 8 bytes in size
+// Don't add anything to this union which is greater than 8 bytes in size.
 typedef union GenericUnion8_u
 {
-	GenericUnion4_t	u4;
+	GenericUnion4_t u4;
 	long t_long;
 	ulong t_ulong;
 	double t_double;
 } GenericUnion8_t;
 
-// Don't add anything to this union which is greater than 12 bytes in size
+// Don't add anything to this union which is greater than 12 bytes in size.
 typedef union GenericUnion12_u
 {
 	GenericUnion8_t u8;

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "H2Common", "H2Common\H2Common.vcxproj", "{0344D3E0-BAA4-4747-8D13-8CAC69C60CEA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quake2", "win32\quake2.vcxproj", "{0D079EB7-E519-4759-AC96-23010BC0B083}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quake2", "quake2\quake2.vcxproj", "{0D079EB7-E519-4759-AC96-23010BC0B083}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0344D3E0-BAA4-4747-8D13-8CAC69C60CEA} = {0344D3E0-BAA4-4747-8D13-8CAC69C60CEA}
 	EndProjectSection

@@ -5,8 +5,8 @@
 //
 
 #include "r_Skeletons.h"
-#include "../gl1_FlexModel.h"
-#include "../Hunk.h" //mxd
+#include "gl1_FlexModel.h"
+#include "Hunk.h" //mxd
 #include "Matrix.h"
 #include "Skeletons.h"
 #include "Vector.h"

@@ -20,8 +20,8 @@
 /src/ref_gl1/release
 /src/snd_sdl3/debug
 /src/snd_sdl3/release
-/src/win32/debug
-/src/win32/release
+/src/quake2/debug
+/src/quake2/release
 /src/WinSnd/debug
 /src/WinSnd/release
 *.user

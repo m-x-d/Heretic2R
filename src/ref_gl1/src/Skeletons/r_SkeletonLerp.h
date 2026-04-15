@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../gl1_FlexModel.h"
+#include "gl1_FlexModel.h"
 
 //mxd. Reconstructed data type. Original name unknown.
 typedef struct

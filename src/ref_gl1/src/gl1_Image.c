@@ -19,6 +19,10 @@ static byte gammatable[256];
 int gl_filter_min = GL_NEAREST_MIPMAP_LINEAR; // Q2: GL_LINEAR_MIPMAP_NEAREST; H2: GL_NEAREST.
 int gl_filter_max = GL_LINEAR;
 
+//mxd
+static paletteRGBA_t* upload_buffer = NULL;
+static uint upload_buffer_size = 0;
+
 typedef struct
 {
 	char* name;
@@ -130,6 +134,36 @@ void R_TexEnv(const GLint mode) // Q2: GL_TexEnv()
 	{
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, mode); //mxd. Q2/H2: qglTexEnvf 
 		lastmodes[gl_state.currenttmu] = mode;
+	}
+}
+
+//mxd. Added to avoid redundant OpenGL state changes (according to gDEBugger, ~97% of glBlendFunc() calls are redundant).
+void R_BlendFunc(const GLenum sfactor, const GLenum dfactor) //mxd
+{
+	// Default values, according to https://linux.die.net/man/3/glblendfunc
+	static GLenum cur_sfactor = GL_ONE;
+	static GLenum cur_dfactor = GL_ZERO;
+
+	if (sfactor != cur_sfactor || dfactor != cur_dfactor)
+	{
+		glBlendFunc(sfactor, dfactor);
+		cur_sfactor = sfactor;
+		cur_dfactor = dfactor;
+	}
+}
+
+//mxd. Added to avoid redundant OpenGL state changes (according to gDEBugger, ~97% of glAlphaFunc() calls are redundant).
+void R_AlphaFunc(const GLenum func, const GLfloat ref)
+{
+	// Default values, according to https://linux.die.net/man/3/glalphafunc
+	static GLenum cur_func = GL_ALWAYS;
+	static GLfloat cur_ref = 0.0f;
+
+	if (func != cur_func || ref != cur_ref)
+	{
+		glAlphaFunc(func, ref);
+		cur_func = func;
+		cur_ref = ref;
 	}
 }
 
@@ -308,20 +342,26 @@ void R_ImageList_f(void) // Q2: GL_ImageList_f()
 //mxd. Somewhat similar to Q2's GL_Upload8()
 void R_UploadPaletted(const int level, const byte* data, const paletteRGB_t* palette, const int width, const int height) // H2: GL_UploadPaletted().
 {
-	paletteRGBA_t trans[256 * 256]; //TODO: increase to at least 1024 x 1024? Or dynamically allocate based on size? 
-
 	//mxd. Skipping qglColorTableEXT logic
 
-	const uint size = width * height;
+	const uint src_size = width * height;
+	const uint dst_size = src_size * sizeof(&upload_buffer);
 
-	//mxd. Added sanity check.
-	if (size > sizeof(trans) / 4)
-		ri.Sys_Error(ERR_DROP, "R_UploadPaletted: image is too large (%i x %i)!\n", width, height);
-
-	for (uint i = 0; i < size; i++)
+	//mxd. Use dynamically allocated buffer (original logic uses fixed-size 65536 (256 * 256) buffer instead).
+	if (dst_size > upload_buffer_size)
 	{
-		const paletteRGB_t* src_p = palette + data[i];
-		paletteRGBA_t* dst_p = &trans[i];
+		upload_buffer = realloc(upload_buffer, dst_size);
+
+		if (upload_buffer == NULL)
+			ri.Sys_Error(ERR_DROP, "R_UploadPaletted: failed to allocate upload buffer for %i x %i image!\n", width, height);
+
+		upload_buffer_size = dst_size;
+	}
+
+	for (uint i = 0; i < src_size; i++)
+	{
+		const paletteRGB_t* src_p = &palette[data[i]];
+		paletteRGBA_t* dst_p = &upload_buffer[i];
 
 		// Copy rgb components.
 		dst_p->r = src_p->r;
@@ -330,7 +370,7 @@ void R_UploadPaletted(const int level, const byte* data, const paletteRGB_t* pal
 		dst_p->a = 255;
 	}
 
-	glTexImage2D(GL_TEXTURE_2D, level, GL_TEX_SOLID_FORMAT, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
+	glTexImage2D(GL_TEXTURE_2D, level, GL_TEX_SOLID_FORMAT, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, upload_buffer);
 }
 
 static void GrabPalette(paletteRGB_t* src, paletteRGB_t* dst) // H2
@@ -664,6 +704,14 @@ void R_ShutdownImages(void) // Q2: GL_ShutdownImages()
 	for (int i = 0; i < numgltextures; i++, image++)
 		if (image->registration_sequence != 0)
 			R_FreeImage(image);
+
+	//mxd. Free upload_buffer.
+	if (upload_buffer != NULL)
+	{
+		free(upload_buffer);
+		upload_buffer = NULL;
+		upload_buffer_size = 0;
+	}
 }
 
 static void R_RefreshImage(image_t* image) // H2

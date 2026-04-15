@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\q_shared.h" />
+    <ClInclude Include="..\Player\src\Player.h" />
     <ClInclude Include="src\snd_local.h" />
     <ClInclude Include="src\snd_LowpassFilter.h" />
     <ClInclude Include="src\snd_main.h" />
@@ -75,7 +76,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\..\include;..\qcommon;..\client;..\game;..\Player;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\..\include;..\qcommon;..\quake2\src\client;..\game\src;..\Player\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -116,7 +117,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\..\include;..\qcommon;..\client;..\game;..\Player;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\..\include;..\qcommon;..\quake2\src\client;..\game\src;..\Player\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <DisableSpecificWarnings>4100; 4115; 4201</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

@@ -29,6 +29,8 @@ extern void R_ImageList_f(void);
 extern void R_EnableMultitexture(qboolean enable);
 extern void R_SelectTexture(GLenum texture);
 extern void R_TexEnv(GLint mode);
+extern void R_BlendFunc(GLenum sfactor, GLenum dfactor); //mxd
+extern void R_AlphaFunc(GLenum func, GLfloat ref); //mxd
 extern void R_Bind(int texnum);
 extern void R_TextureMode(const char* string);
 extern void R_SetFilter(const image_t* image);

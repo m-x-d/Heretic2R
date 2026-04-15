@@ -31,16 +31,16 @@ static qboolean fmLoadHeader(fmdl_t* fmdl, model_t* model, const int version, co
 	if (h->skinwidth < 1 || h->skinwidth > SKINPAGE_WIDTH || h->skinheight < 1 || h->skinheight > SKINPAGE_HEIGHT) //mxd. Added SKINPAGE_WIDTH check.
 		ri.Sys_Error(ERR_DROP, "Model '%s' has invalid skin size (%ix%i)", model->name, h->skinwidth, h->skinheight);
 
-	if (h->num_xyz < 1 || h->num_xyz > MAX_FM_VERTS)
+	if (h->num_xyz < 1 || h->num_xyz >= MAX_FM_VERTS)
 		ri.Sys_Error(ERR_DROP, "Model '%s' has invalid number of vertices (%i)", model->name, h->num_xyz);
 
 	if (h->num_st < 1)
 		ri.Sys_Error(ERR_DROP, "Model '%s' has no st vertices", model->name);
 
-	if (h->num_tris < 1 || h->num_tris > MAX_FM_TRIANGLES) //mxd. Added MAX_FM_TRIANGLES check.
+	if (h->num_tris < 1 || h->num_tris >= MAX_FM_TRIANGLES) //mxd. Added MAX_FM_TRIANGLES check.
 		ri.Sys_Error(ERR_DROP, "Model '%s' has invalid number of triangles (%i)", model->name, h->num_tris);
 
-	if (h->num_frames < 1 || h->num_frames > MAX_FM_FRAMES) //mxd. Added MAX_FM_FRAMES check.
+	if (h->num_frames < 1 || h->num_frames >= MAX_FM_FRAMES) //mxd. Added MAX_FM_FRAMES check.
 		ri.Sys_Error(ERR_DROP, "Model '%s' has invalid number of frames (%i)", model->name, h->num_frames);
 
 	VectorSet(model->mins, -32.0f, -32.0f, -32.0f);
@@ -131,10 +131,7 @@ static qboolean fmLoadMeshNodes(fmdl_t* fmdl, model_t* model, const int version,
 
 	for (int i = 0; i < fmdl->header.num_mesh_nodes; i++, in++, out++)
 	{
-		//mxd. Don't copy tris (unused).
-
-		// Copy verts.
-		memcpy(out->verts, in->verts, sizeof(out->verts));
+		//mxd. Don't copy tris and verts (unused).
 
 		// Copy glcmds.
 		out->start_glcmds = in->start_glcmds;
@@ -604,13 +601,13 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 		while (true)
 		{
 			// Get the vertex count and primitive type.
-			int num_vers = *order++;
-			if (num_vers == 0)
+			int num_verts = *order++;
+			if (num_verts == 0)
 				break; // Done.
 
-			if (num_vers < 0)
+			if (num_verts < 0)
 			{
-				num_vers = -num_vers;
+				num_verts = -num_verts;
 				glBegin(GL_TRIANGLE_FAN);
 			}
 			else
@@ -618,7 +615,7 @@ static void R_DrawFlexFrameLerp(const fmdl_t* fmdl, entity_t* e, vec3_t shadelig
 				glBegin(GL_TRIANGLE_STRIP);
 			}
 
-			for (int c = 0; c < num_vers; c++)
+			for (int c = 0; c < num_verts; c++)
 			{
 				const int index_xyz = order[2];
 

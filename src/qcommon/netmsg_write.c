@@ -4,8 +4,8 @@
 // Copyright 1998 Raven Software
 //
 
-#include "client.h"
-#include "server.h"
+#include "client/client.h"
+#include "server/server.h"
 #include "anorms.h"
 #include "ArrayedList.h"
 #include "Vector.h"

@@ -11,25 +11,25 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\game\q_shared.c" />
-    <ClCompile Include="ByteOrder.c" />
-    <ClCompile Include="Common.c" />
-    <ClCompile Include="Console.c" />
-    <ClCompile Include="DllMain.c" />
-    <ClCompile Include="InfoStrings.c" />
-    <ClCompile Include="Math.c" />
-    <ClCompile Include="Matrix.c" />
-    <ClCompile Include="Motion.c" />
-    <ClCompile Include="q_Physics.c" />
-    <ClCompile Include="Random.c" />
-    <ClCompile Include="ResourceManager.c" />
-    <ClCompile Include="SinglyLinkedList.c" />
-    <ClCompile Include="SurfaceProps.c" />
-    <ClCompile Include="TextPalette.c" />
-    <ClCompile Include="Vector.c" />
+    <ClCompile Include="..\game\src\q_Shared.c" />
+    <ClCompile Include="src\ByteOrder.c" />
+    <ClCompile Include="src\Common.c" />
+    <ClCompile Include="src\Console.c" />
+    <ClCompile Include="src\DllMain.c" />
+    <ClCompile Include="src\InfoStrings.c" />
+    <ClCompile Include="src\Math.c" />
+    <ClCompile Include="src\Matrix.c" />
+    <ClCompile Include="src\Motion.c" />
+    <ClCompile Include="src\q_Physics.c" />
+    <ClCompile Include="src\Random.c" />
+    <ClCompile Include="src\ResourceManager.c" />
+    <ClCompile Include="src\SinglyLinkedList.c" />
+    <ClCompile Include="src\SurfaceProps.c" />
+    <ClCompile Include="src\TextPalette.c" />
+    <ClCompile Include="src\Vector.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\game\q_shared.h" />
+    <ClInclude Include="..\game\src\q_Shared.h" />
     <ClInclude Include="..\qcommon\Angles.h" />
     <ClInclude Include="..\qcommon\GenericUnions.h" />
     <ClInclude Include="..\qcommon\H2Common.h" />
@@ -42,7 +42,7 @@
     <ClInclude Include="..\qcommon\SinglyLinkedList.h" />
     <ClInclude Include="..\qcommon\SurfaceProps.h" />
     <ClInclude Include="..\qcommon\Vector.h" />
-    <ClInclude Include="Console.h" />
+    <ClInclude Include="src\Console.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />
@@ -94,7 +94,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\qcommon;..\game;..\Player;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\qcommon;..\game\src;..\Player\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -133,7 +133,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\qcommon;..\game;..\Player;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\qcommon;..\game\src;..\Player\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <DisableSpecificWarnings>4100; 4115; 4201</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
