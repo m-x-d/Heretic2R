@@ -1221,8 +1221,7 @@ void SP_obj_seasonglobe(edict_t* bottom)
 	VectorSet(bottom->mins, -80.0f, -80.0f, 0.0f);
 	VectorSet(bottom->maxs, 80.0f, 80.0f, 320.0f);
 
-	bottom->s.modelindex = (byte)gi.modelindex("models/objects/globe/globebottom/tris.fm");
-	bottom->s.frame = 1;
+	bottom->s.modelindex = (byte)gi.modelindex("models/objects/globe/globebottom/tris.fm"); //mxd. Original logic also sets s.frame:1 (model has single frame).
 	bottom->s.scale = 1.75f;
 	bottom->movetype = PHYSICSTYPE_NONE;
 	bottom->solid = SOLID_BBOX;
@@ -1244,8 +1243,7 @@ void SP_obj_seasonglobe(edict_t* bottom)
 	VectorCopy(bottom->s.origin, top->s.origin);
 	top->s.origin[2] += 36.0f;
 
-	top->s.modelindex = (byte)gi.modelindex("models/objects/globe/globetop/tris.fm");
-	top->s.frame = 1;
+	top->s.modelindex = (byte)gi.modelindex("models/objects/globe/globetop/tris.fm"); //mxd. Original logic also sets s.frame:1 (model has single frame).
 	top->s.scale = 1.75f;
 	top->movetype = PHYSICSTYPE_NONE;
 	top->solid = SOLID_BBOX;
