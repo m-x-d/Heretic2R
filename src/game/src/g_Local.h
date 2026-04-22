@@ -186,7 +186,7 @@ typedef struct
 	int framenum;
 	float time;
 
-	char level_name[MAX_QPATH];	// The descriptive name (e.g. 'Outer Base').
+	char level_name[MAX_QPATH];	// The descriptive name (e.g. 'Outer Base'). //TODO: assigned, but never used.
 	char mapname[MAX_QPATH];	// The server name (e.g. 'base1').
 	char nextmap[MAX_QPATH];	// Go here when fraglimit is hit.
 

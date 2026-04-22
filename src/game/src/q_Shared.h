@@ -358,7 +358,7 @@ typedef struct
 #pragma region ========================== Surface flags ==========================
 
 #define SURF_LIGHT			0x1			// Value will hold the light strength.
-#define SURF_SLICK			0x2			// Affects game physics.
+#define SURF_SLICK			0x2			// Affects game physics. //TODO: requires very special conditions to trigger, doesn't seem to do anything.
 #define SURF_SKY			0x4			// Don't draw, but add to skybox.
 #define SURF_WARP			0x8			// Turbulent water warp.
 #define SURF_TRANS33		0x10
