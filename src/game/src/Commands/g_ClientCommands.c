@@ -232,6 +232,9 @@ static void Cmd_Give_f(edict_t* ent)
 		if (level.defensive_weapons & 16)
 			AddDefenseToInventory(P_FindItem("meteor"), ent);
 
+		if (level.defensive_weapons & 32) //mxd. Allow giving Whirlwind spell.
+			AddDefenseToInventory(P_FindItem("tornado"), ent);
+
 		Player_UpdateModelAttributes(ent); //mxd
 
 		return;
