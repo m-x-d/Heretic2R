@@ -155,7 +155,8 @@ static qboolean PM_TryStepUp(const float step_height, const float frametime, tra
 		{
 			const float height_diff = (trace.ent->s.origin[2] + trace.ent->mins[2]) - (pm->origin[2] + pm->mins[2]);
 
-			if (height_diff <= step_height)
+			//mxd. If height_diff <= 0, we were also blocked by something else (like world geometry above us)...
+			if (height_diff > FLOAT_ZERO_EPSILON && height_diff <= step_height)
 				return PM_TryStepUp(step_height + height_diff, frametime, tr);
 		}
 
