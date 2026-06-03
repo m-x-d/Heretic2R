@@ -185,16 +185,22 @@ int Quake2Main_Unix(int argc, char** argv)
 	// The main game loop.
 	while (true)
 	{
-		const long long spintime = Sys_Microseconds();
-
-		// YQ2 busywait logic.
-		while (Sys_Microseconds() - spintime < 5)
-			Sys_CpuPause(); // Give the CPU a hint that this is a very tight spinloop.
-
 		const long long newtime = Sys_Microseconds();
+		const long long dt = newtime - oldtime;
+
+		// Cap the loop to ~1 kHz instead of busy-spinning a full CPU core (the
+		// original Win32/YQ2 path busy-waits, pinning a core at 100%). Qcommon_Frame
+		// applies its own (vid_maxfps) frame limiting, so it's enough to call it at
+		// 1 kHz; sleep the remainder of the 1 ms tick when we're ahead of schedule.
+		if (dt < 1000)
+		{
+			Sys_Nanosleep((int)((1000 - dt) * 1000ll)); // microseconds -> nanoseconds
+			continue;
+		}
+
 		curtime = (int)(newtime / 1000ll); // Save global time for network and input code.
 
-		Qcommon_Frame((int)(newtime - oldtime));
+		Qcommon_Frame((int)dt);
 		oldtime = newtime;
 	}
 
