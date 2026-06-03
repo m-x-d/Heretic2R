@@ -106,6 +106,10 @@ void RI_ShutdownContext(void)
 {
 	if (window != NULL && context != NULL)
 	{
+		// Release the context from the current thread before destroying it. Destroying
+		// a still-current context crashes inside Mesa's threaded-GL teardown on Linux
+		// (e.g. during vid_restart). // Linux port
+		SDL_GL_MakeCurrent(window, NULL);
 		SDL_GL_DestroyContext(context);
 		context = NULL;
 	}
