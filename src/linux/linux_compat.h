@@ -25,6 +25,7 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <dirent.h>
 #include <dlfcn.h>
 
 // ---------------------------------------------------------------------------
@@ -89,6 +90,57 @@ int       Sys_dlclose(void* handle);
 
 // Windows multimedia timer (ms since startup); implemented in src/linux/q_shunix.c.
 unsigned int timeGetTime(void);
+
+// Resolve the final component of a path case-insensitively. Windows game data
+// (e.g. Bumper.smk, track02.ogg) may differ in case from what the engine/config
+// requests; on case-sensitive Linux that breaks direct fopen()s done by libraries
+// (libsmacker, stb_vorbis). If 'in' exists as-is it is copied through; otherwise
+// the containing directory is scanned for a case-insensitive filename match.
+// 'out' may alias 'in'. Returns 'out'.
+static inline char* H2_ResolveCasePath(const char* in, char* out, size_t outsize)
+{
+    struct stat st;
+    if (stat(in, &st) == 0)
+    {
+        if (out != in) { snprintf(out, outsize, "%s", in); }
+        return out;
+    }
+
+    const char* slash = strrchr(in, '/');
+    const char* fname = (slash != NULL) ? slash + 1 : in;
+
+    char dir[1024];
+    if (slash != NULL)
+    {
+        size_t dl = (size_t)(slash - in);
+        if (dl >= sizeof(dir)) dl = sizeof(dir) - 1;
+        memcpy(dir, in, dl);
+        dir[dl] = '\0';
+    }
+    else
+    {
+        dir[0] = '.'; dir[1] = '\0';
+    }
+
+    DIR* d = opendir(dir);
+    if (d != NULL)
+    {
+        struct dirent* e;
+        while ((e = readdir(d)) != NULL)
+        {
+            if (strcasecmp(e->d_name, fname) == 0)
+            {
+                snprintf(out, outsize, "%s/%s", dir, e->d_name);
+                closedir(d);
+                return out;
+            }
+        }
+        closedir(d);
+    }
+
+    if (out != in) { snprintf(out, outsize, "%s", in); }
+    return out;
+}
 
 #define LoadLibrary(name)         Sys_dlopen(name)
 #define FreeLibrary(h)            Sys_dlclose(h)

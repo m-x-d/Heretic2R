@@ -8,7 +8,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <time.h>
-#include <glob.h>
+#include <dirent.h>
+#include <fnmatch.h>
 #include "qcommon.h"
 
 int curtime;
@@ -60,9 +61,9 @@ qboolean Sys_IsFile(const char* path) // YQ2
 #pragma region ========================== FIND FILES ==========================
 
 static char findpath[MAX_OSPATH];
-static glob_t find_glob;
-static size_t find_index;
-static qboolean find_active;
+static char find_dir[MAX_OSPATH];
+static char find_pattern[MAX_OSPATH];
+static DIR* find_dirp;
 
 static qboolean Sys_FindAttrMatch(const char* path, const uint musthave, const uint canthave)
 {
@@ -81,21 +82,35 @@ static qboolean Sys_FindAttrMatch(const char* path, const uint musthave, const u
 	return true;
 }
 
-// Q2 counterpart
+// Q2 counterpart. Uses opendir()/fnmatch() rather than glob() so that matching is
+// case-insensitive (FNM_CASEFOLD): Windows game data filenames often differ in case
+// from what the engine/config requests, which would otherwise fail on case-sensitive
+// Linux filesystems.
 char* Sys_FindFirst(const char* path, const uint musthave, const uint canthave)
 {
-	if (find_active)
+	if (find_dirp != NULL)
 		Sys_Error("Sys_FindFirst called without close");
 
-	if (glob(path, GLOB_NOSORT, NULL, &find_glob) != 0)
+	// Split the search pattern into a directory and a filename glob.
+	const char* slash = strrchr(path, '/');
+	if (slash != NULL)
 	{
-		globfree(&find_glob);
-		memset(&find_glob, 0, sizeof(find_glob));
-		return NULL;
+		size_t dir_len = (size_t)(slash - path);
+		if (dir_len >= sizeof(find_dir))
+			dir_len = sizeof(find_dir) - 1;
+		memcpy(find_dir, path, dir_len);
+		find_dir[dir_len] = '\0';
+		strcpy_s(find_pattern, sizeof(find_pattern), slash + 1);
+	}
+	else
+	{
+		strcpy_s(find_dir, sizeof(find_dir), ".");
+		strcpy_s(find_pattern, sizeof(find_pattern), path);
 	}
 
-	find_active = true;
-	find_index = 0;
+	find_dirp = opendir(find_dir);
+	if (find_dirp == NULL)
+		return NULL;
 
 	return Sys_FindNext(musthave, canthave);
 }
@@ -103,23 +118,24 @@ char* Sys_FindFirst(const char* path, const uint musthave, const uint canthave)
 // Q2 counterpart
 char* Sys_FindNext(const uint musthave, const uint canthave)
 {
-	if (!find_active)
+	if (find_dirp == NULL)
 		return NULL;
 
-	while (find_index < find_glob.gl_pathc)
+	const struct dirent* entry;
+	while ((entry = readdir(find_dirp)) != NULL)
 	{
-		const char* match = find_glob.gl_pathv[find_index++];
-
 		// Skip "." and ".." entries.
-		const char* name = strrchr(match, '/');
-		name = (name != NULL) ? name + 1 : match;
-		if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
+		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
 			continue;
 
-		if (!Sys_FindAttrMatch(match, musthave, canthave))
+		if (fnmatch(find_pattern, entry->d_name, FNM_CASEFOLD) != 0)
 			continue;
 
-		strcpy_s(findpath, sizeof(findpath), match);
+		Com_sprintf(findpath, sizeof(findpath), "%s/%s", find_dir, entry->d_name);
+
+		if (!Sys_FindAttrMatch(findpath, musthave, canthave))
+			continue;
+
 		return findpath;
 	}
 
@@ -129,11 +145,10 @@ char* Sys_FindNext(const uint musthave, const uint canthave)
 // Q2 counterpart
 void Sys_FindClose(void)
 {
-	if (find_active)
+	if (find_dirp != NULL)
 	{
-		globfree(&find_glob);
-		memset(&find_glob, 0, sizeof(find_glob));
-		find_active = false;
+		closedir(find_dirp);
+		find_dirp = NULL;
 	}
 }
 

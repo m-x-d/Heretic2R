@@ -63,7 +63,7 @@ add_compile_options(
     # demotes the C++ narrowing error to a (silenced) warning.
     $<$<COMPILE_LANGUAGE:CXX>:-fpermissive>
 )
-add_compile_definitions(NDEBUG)
+add_compile_definitions(NDEBUG _GNU_SOURCE)  # _GNU_SOURCE: FNM_CASEFOLD, etc.
 
 include_directories(BEFORE
     ${LINUXDIR}/compat   # stub windows.h / direct.h / io.h

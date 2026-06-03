@@ -89,6 +89,9 @@ void OGG_PlayTrack(const int track, const uint track_pos, const qboolean looping
 	// Open ogg vorbis file.
 	char track_path[MAX_OSPATH];
 	sprintf_s(track_path, sizeof(track_path), "%s/music/Track%02i.ogg", si.FS_Gamedir(), track);
+#ifndef _WIN32
+	H2_ResolveCasePath(track_path, track_path, sizeof(track_path)); // Linux: match Track*.ogg regardless of case.
+#endif
 
 	int vorbis_error = VORBIS__no_error;
 	ogg_file = stb_vorbis_open_filename(track_path, &vorbis_error, NULL);
