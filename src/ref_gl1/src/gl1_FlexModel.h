@@ -6,6 +6,8 @@
 
 #pragma once
 
+struct Surface_s; // Linux port: file-scope forward decl for GCC tag scoping.
+
 #include "gl1_Local.h"
 #include "FlexModel.h"
 #include "Reference.h"

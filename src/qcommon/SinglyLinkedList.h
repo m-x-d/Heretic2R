@@ -9,7 +9,10 @@
 #include "H2Common.h"
 #include "GenericUnions.h"
 
-#define SLL_NODE_SIZE			8 //mxd. == sizeof(SinglyLinkedListNode_t)
+// SinglyLinkedListNode_t is { GenericUnion4_t data; node* next; }. GenericUnion4_t
+// holds a pointer, so on LP64 it is 8 bytes (not 4), making the node 16 bytes.
+// Hardcoded 8 was correct only for 32-bit; use the pointer-size-correct value.
+#define SLL_NODE_SIZE			(2 * sizeof(void*)) //mxd. == sizeof(SinglyLinkedListNode_t)
 #define SLL_NODE_BLOCK_SIZE		256 //mxd
 
 typedef struct SinglyLinkedList_s

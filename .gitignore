@@ -1,5 +1,10 @@
 /build/**
 /release
+
+# Linux (CMake) build trees
+/build-linux/
+/build-dbg/
+/build-asan/
 /lib/*.exp
 /lib/*.lib
 /src/.vs

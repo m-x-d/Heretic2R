@@ -40,13 +40,22 @@ int numrenderedparticles;
 
 static int num_owned_inview;
 
+// Linux: fxe.Clear can be invoked (via CL_ClearSkeletalEntities on connect) before
+// the client-effects subsystem's Init() has set up its managers. On Windows the
+// startup probe leaves fxe.Clear NULL until then; the dlsym-based guard behaves
+// differently here, so Clear() can fire early. Bail out until Init() has run.
+static qboolean ce_initialized;
+
 static void Clear(void)
 {
+	if (!ce_initialized)
+		return;
+
 	if (clientEnts != NULL)
 		RemoveEffectList(&clientEnts);
 
 	centity_t* owner = fxi.server_entities;
-	for (int i = 0; i < MAX_NETWORKABLE_EDICTS; i++, owner++)
+	for (int i = 0; owner != NULL && i < MAX_NETWORKABLE_EDICTS; i++, owner++)
 	{
 		if (owner->effects != NULL)
 			RemoveOwnedEffectList(owner);
@@ -93,6 +102,7 @@ static void Init(void)
 	cl_lerpdist2 = Cvar_Get("cl_lerpdist2", "10000", 0);
 	vid_ref = Cvar_Get("vid_ref", "soft", CVAR_ARCHIVE);
 
+	ce_initialized = true; // managers are now set up; Clear() is safe.
 	Clear();
 }
 

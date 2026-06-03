@@ -4,7 +4,11 @@
 // Copyright 1998 Raven Software
 //
 
+#ifdef _WIN32
 #include <windows.h>
+#else
+#include <sys/mman.h>
+#endif
 #include "Hunk.h"
 #include "gl1_Local.h"
 
@@ -22,9 +26,16 @@ void* Hunk_Begin(const int maxsize)
 	hunkmaxsize = maxsize + sizeof(uint) + 32;
 	cursize = 0;
 
+#ifdef _WIN32
 	membase = VirtualAlloc(NULL, maxsize, MEM_RESERVE, PAGE_NOACCESS);
+#else
+	// Reserve the whole region up front; pages are committed lazily on first touch.
+	membase = mmap(NULL, hunkmaxsize, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	if (membase == MAP_FAILED)
+		membase = NULL;
+#endif
 	if (membase == NULL)
-		ri.Sys_Error(ERR_DROP, "VirtualAlloc reserve failed"); //mxd. Sys_Error() -> ri.Sys_Error().
+		ri.Sys_Error(ERR_DROP, "Hunk reserve failed"); //mxd. Sys_Error() -> ri.Sys_Error().
 
 	return membase;
 }
@@ -35,6 +46,7 @@ void* Hunk_Alloc(int size)
 	// Round to cacheline.
 	size = (size + 31) & ~31;
 
+#ifdef _WIN32
 	// Commit pages as needed.
 	void* buf = VirtualAlloc(membase, cursize + size, MEM_COMMIT, PAGE_READWRITE);
 
@@ -43,6 +55,7 @@ void* Hunk_Alloc(int size)
 		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&buf, 0, NULL);
 		ri.Sys_Error(ERR_DROP, "VirtualAlloc commit failed.\n%s", buf); //mxd. Sys_Error() -> ri.Sys_Error().
 	}
+#endif
 
 	cursize += size;
 
@@ -63,7 +76,11 @@ int Hunk_End(void)
 void Hunk_Free(void* buf)
 {
 	if (buf != NULL)
+#ifdef _WIN32
 		VirtualFree(buf, 0, MEM_RELEASE);
+#else
+		munmap(buf, hunkmaxsize);
+#endif
 
 	hunkcount--;
 }

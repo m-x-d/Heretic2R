@@ -6,8 +6,10 @@
 
 #pragma once
 
-#include "g_Message.h"
-#include "g_Local.h"
+// NB (Linux port): enum ClassID_e must be fully defined before the includes below.
+// g_Local.h pulls in g_Edict.h, whose 'edict_s' struct has an 'enum ClassID_e' field;
+// GCC rejects an incomplete enum as a struct field (MSVC silently allows it). Defining
+// the enum first breaks the g_ClassStatics.h -> g_Local.h -> g_Edict.h include cycle.
 
 // If you add or remove classID's here, you MUST adjust the tables in m_stats.c accordingly, as well as the StaticsInit and Precache stuff.
 // Search for "NUM_CLASSIDS" if you're not certain what's effected by this...
@@ -75,6 +77,10 @@ typedef enum ClassID_e
 
 	NUM_CLASSIDS
 } ClassID_t;
+
+// Included here (not at the top) so enum ClassID_e is complete first — see note above.
+#include "g_Message.h"
+#include "g_Local.h"
 
 #define NUM_ATTACK_RANGES	(NUM_CLASSIDS * 4)
 

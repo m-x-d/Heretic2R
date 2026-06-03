@@ -27,12 +27,12 @@ size_t MSG_SetParms(SinglyLinkedList_t* parms, const char* format, va_list marke
 		switch (format[count])
 		{
 			case 'b':
-				parm.t_byte = va_arg(marker, byte);
+				parm.t_byte = (byte)va_arg(marker, int); // Linux: va_arg promotes byte->int
 				bytesParsed += sizeof(parm.t_byte);
 				break;
 
 			case 's':
-				parm.t_short = va_arg(marker, short);
+				parm.t_short = (short)va_arg(marker, int); // Linux: va_arg promotes short->int
 				bytesParsed += sizeof(parm.t_short);
 				break;
 

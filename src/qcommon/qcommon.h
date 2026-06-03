@@ -31,6 +31,18 @@
 	#else
 		#define CPUSTRING	"x86"
 	#endif
+#else // Linux port
+	#ifdef NDEBUG
+		#define BUILDSTRING "RELEASE"
+	#else
+		#define BUILDSTRING "DEBUG"
+	#endif
+
+	#if defined(__x86_64__) || defined(__aarch64__) || defined(__LP64__)
+		#define CPUSTRING	"x64"
+	#else
+		#define CPUSTRING	"x86"
+	#endif
 #endif
 
 typedef struct sizebuf_s
