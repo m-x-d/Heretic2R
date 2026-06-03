@@ -446,7 +446,11 @@ static void ReadField(FILE* f, const field_t* field, byte* base)
 			break;
 
 		case F_CLEAR: //mxd. Some fields should not be restored...
-			*(int*)p = 0;
+			// 64-bit: F_CLEAR fields are pointers (e.g. playerinfo.GroundSurface). The
+			// original "*(int*)p = 0" only zeroed the low 4 bytes of the 8-byte pointer,
+			// leaving the saved pointer's high half -> a garbage pointer that the game
+			// then dereferenced and crashed on. Clear the whole pointer. // Linux port
+			*(void**)p = NULL;
 			break;
 
 		case F_LSTRING:
@@ -467,7 +471,7 @@ static void ReadField(FILE* f, const field_t* field, byte* base)
 		case F_EDICT:
 			index = *(int*)p;
 			if (index == -2) //mxd. Very special "hit world" case (probably used by gclient_t.lastentityhit only)...
-				*(int*)p = -1;
+				*(intptr_t*)p = -1; // 64-bit: write the full pointer-sized -1 marker (not just the low 4 bytes). // Linux port
 			else if (index == -1)
 				*(edict_t**)p = NULL;
 			else
