@@ -30,3 +30,7 @@
 /src/WinSnd/debug
 /src/WinSnd/release
 *.user
+
+# Screenshots
+/Bildschirmfoto_*.png
+/Screenshot_*.png
