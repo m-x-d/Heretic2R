@@ -819,6 +819,18 @@ void RI_BeginRegistration(const char* model)
 	r_worldmodel = Mod_ForName(fullname, true);
 	r_viewcluster = -1;
 
+	// Mark the world model and its textures as used in this registration sequence
+	// BEFORE freeing unused images. On a same-map reload (savegame load, or re-issuing
+	// the same map) Mod_ForName returns the *cached* world model without refreshing the
+	// texture registration sequence, so R_FreeUnusedImages() below would otherwise free
+	// the world's textures (deleting their GL textures and recycling their image slots),
+	// leaving texinfo pointing at the wrong textures -> progressively corrupted surfaces
+	// on every reload.
+	r_worldmodel->registration_sequence = registration_sequence;
+	if (r_worldmodel->type == mod_brush)
+		for (int i = 0; i < r_worldmodel->numtexinfo; i++)
+			r_worldmodel->texinfo[i].image->registration_sequence = registration_sequence;
+
 	R_FreeUnusedImages(); // H2
 }
 
