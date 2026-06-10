@@ -651,11 +651,22 @@ void Qcommon_Init(const int argc, char** argv)
 	{
 		// If the user didn't give any commands, run default action.
 		if ((int)dedicated->value)
+		{
 			Cbuf_AddText("dedicated_start\n");
+			Cbuf_Execute();
+		}
 		else
-			Cbuf_AddText("demo_loop\n"); // Q2: "d1\n"
-
-		Cbuf_Execute();
+		{
+			// Linux port: the original runs the demo_loop alias here via an immediate
+			// Cbuf_Execute(). That starts a (cinematic) server whose client-side playback
+			// needs the server->client round-trip which only happens inside Qcommon_Frame
+			// (Cbuf_Execute -> SV_Frame -> CL_Frame), so running it during init races and
+			// intermittently shows a black screen. Queue the expanded command (what the
+			// demo_loop alias resolves to in Default.cfg) WITHOUT executing, so it runs in
+			// the first frame exactly like a +command-line command -- which is reliable.
+			// (Deferring the bare alias does not work; it must be the expanded command.)
+			Cbuf_AddText("map bumper.smk@menu_main\n");
+		}
 	}
 	else
 	{

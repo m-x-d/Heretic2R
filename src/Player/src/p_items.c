@@ -16,7 +16,6 @@
 PLAYER_API int p_num_items = 0;
 PLAYER_API gitem_t* p_itemlist = NULL;
 
-#pragma region ========================== ITEMS LIST ==========================
 
 //mxd. Originally defined in p_types.h
 #define PICKUP_MIN	{ -10.0f, -10.0f, -10.0f } //mxd. Originally {0, 0, 0}.
@@ -28,7 +27,6 @@ static gitem_t itemlist[] =
 	// Leave index 0 empty.
 	{ 0 },
 
-#pragma region ========================== WEAPONS ==========================
 
 	{ // 1
 		.classname = "Weapon_SwordStaff",				// Spawnname (char *).
@@ -181,9 +179,7 @@ static gitem_t itemlist[] =
 		.icon = "icons/i_mace.m8",						// Icon name (char *).
 	},
 
-#pragma endregion
 
-#pragma region ========================== DEFENSE POWERUPS ==========================
 
 	{ // 10
 		.classname = "item_defense_powerup",			// Spawnname (char *).
@@ -287,9 +283,7 @@ static gitem_t itemlist[] =
 		.icon = "icons/i_meteor.m8",					// Icon name (char *).
 	},
 
-#pragma endregion
 
-#pragma region ========================== AMMO ==========================
 
 	{ // 16
 		.classname = "item_mana_offensive_half",		// Spawnname (char *).
@@ -402,9 +396,7 @@ static gitem_t itemlist[] =
 		.icon = "icons/i_ammo-hellstaff.m8",			// Icon name (char *).
 	},
 
-#pragma endregion
 
-#pragma region ========================== HEALTH ==========================
 
 	{ // 25
 		.classname = "item_health_half",				// Spawnname (char *).
@@ -430,9 +422,7 @@ static gitem_t itemlist[] =
 		.tag = ITEM_HEALTH2,							// Tag. //mxd. MODEL_HEALTH2 in original logic.
 	},
 
-#pragma endregion
 
-#pragma region ========================== PUZZLE PIECES ==========================
 
 	{ // 27
 		.classname = "item_puzzle_townkey",				// Spawnname (char *).
@@ -694,7 +684,6 @@ static gitem_t itemlist[] =
 		.icon = "icons/p_tavernkey.m8",					// Icon name (char *).
 	},
 
-#pragma endregion
 
 	{ // 47 //TODO: move to 'defence powerups' category? Will that break vanilla compatibility?
 		.classname = "item_defense_tornado",			// Spawnname (char *).
@@ -717,7 +706,6 @@ static gitem_t itemlist[] =
 	{ 0 }
 };
 
-#pragma endregion
 
 PLAYER_API void InitItems(void)
 {

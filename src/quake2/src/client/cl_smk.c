@@ -190,6 +190,9 @@ void SCR_PlayCinematic(const char* name)
 	}
 
 	sprintf_s(smk_filepath, sizeof(smk_filepath), "%s/video/%s", path, name); //mxd. sprintf -> sprintf_s
+#ifndef _WIN32
+	H2_ResolveCasePath(smk_filepath, smk_filepath, sizeof(smk_filepath)); // Linux: SMK_Open() fopen()s directly; match the .smk file regardless of case.
+#endif
 	Com_Printf("Opening cinematic file: '%s'...\n", smk_filepath);
 
 	if (!SMK_Open(smk_filepath))

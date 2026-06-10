@@ -6,6 +6,8 @@
 
 #pragma once
 
+struct client_entity_s; struct client_particle_s; // Linux port: file-scope forward decl for GCC tag scoping.
+
 #include "q_Typedef.h"
 #include "ParticleFlags.h" //mxd
 

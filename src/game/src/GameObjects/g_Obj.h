@@ -10,6 +10,11 @@
 #include "q_Typedef.h"
 #include "q_Shared.h"
 
+// Forward-declare at file scope so the 'struct G_Message_s*' parameter below refers
+// to the real (g_Message.h) type rather than a prototype-scoped tag. MSVC is lax
+// about this; GCC enforces C tag scoping rules. -- Linux port.
+struct G_Message_s;
+
 // Spawnflags for object entities.
 #define SF_OBJ_INVULNERABLE		1
 #define SF_OBJ_ANIMATE			2

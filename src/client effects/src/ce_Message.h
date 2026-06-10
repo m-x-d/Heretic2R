@@ -6,6 +6,8 @@
 
 #pragma once
 
+struct client_entity_s; // Linux port: file-scope forward decl for GCC tag scoping.
+
 #include "SinglyLinkedList.h"
 
 typedef enum CE_MsgID_e

@@ -1,5 +1,11 @@
 /build/**
 /release
+
+# Linux (CMake) build trees
+/build-linux/
+/build-dbg/
+/build-asan/
+/build-win32/
 /lib/*.exp
 /lib/*.lib
 /src/.vs
@@ -25,3 +31,7 @@
 /src/WinSnd/debug
 /src/WinSnd/release
 *.user
+
+# Screenshots
+/Bildschirmfoto_*.png
+/Screenshot_*.png
