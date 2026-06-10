@@ -5,6 +5,7 @@
 /build-linux/
 /build-dbg/
 /build-asan/
+/build-win32/
 /lib/*.exp
 /lib/*.lib
 /src/.vs
