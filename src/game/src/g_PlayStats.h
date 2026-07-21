@@ -1,5 +1,5 @@
 //
-// g_playstats.h
+// g_PlayStats.h
 //
 // Copyright 1998 Raven Software
 //

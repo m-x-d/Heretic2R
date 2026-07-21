@@ -4,7 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include "q_shared.h"
+#include "q_Shared.h"
 
 // Q2 counterpart //TODO: this won't work on Linux...
 H2COMMON_API short BigShort(const short l)

@@ -18,7 +18,7 @@
 #include "g_HitLocation.h"
 #include "g_Items.h" //mxd
 #include "g_ItemStats.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 #include "g_Utilities.h" //mxd
 #include "p_main.h"
 #include "Random.h"

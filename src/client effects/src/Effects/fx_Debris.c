@@ -18,7 +18,7 @@
 #include "Random.h"
 #include "Vector.h"
 #include "q_Physics.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #pragma region ========================== Debris base info ==========================
 

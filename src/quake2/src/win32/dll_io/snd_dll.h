@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "q_shared.h"
+#include "q_Shared.h"
 
 #define DEFAULT_SOUND_LIBRARY_NAME	"snd_sdl3" //mxd
 

@@ -10,17 +10,17 @@
 #include "p_main.h"
 #include "p_weapon.h"
 #include "g_Edict.h" //mxd
-#include "g_items.h"
+#include "g_Items.h"
 #include "SurfaceProps.h"
 #include "FX.h"
 #include "Random.h"
 #include "Vector.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 #include "p_animactor.h"
 #include "p_anim_branch.h" //mxd
 #include "p_anim_data.h"
 #include "p_utility.h" //mxd
-#include "q_shared.h"
+#include "q_Shared.h"
 
 typedef enum //mxd
 {

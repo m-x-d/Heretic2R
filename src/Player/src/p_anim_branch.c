@@ -7,7 +7,7 @@
 #include "p_anim_branch.h"
 #include "p_actions.h"
 #include "p_anims.h"
-#include "g_items.h"
+#include "g_Items.h"
 #include "p_main.h"
 #include "p_weapon.h"
 #include "Vector.h"

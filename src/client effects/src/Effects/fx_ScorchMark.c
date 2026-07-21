@@ -7,7 +7,7 @@
 #include "ce_Effects.h"
 #include "ce_Utilities.h"
 #include "Vector.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 #include "Random.h"
 
 static struct model_s* scorch_model;

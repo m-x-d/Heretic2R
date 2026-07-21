@@ -10,7 +10,7 @@
 #include "snd_ogg.h"
 #include "snd_wav.h"
 #include "Vector.h"
-#include "g_local.h"
+#include "g_Local.h"
 #include <SDL3/SDL.h> //mxd. Needs to be included below engine stuff: includes stdbool.h, which messes up qboolean define...
 
 #define SDL_PAINTBUFFER_SIZE 2048

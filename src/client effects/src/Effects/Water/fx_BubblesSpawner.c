@@ -8,7 +8,7 @@
 #include "ce_Particles.h"
 #include "ce_Utilities.h"
 #include "fx_WaterSplash.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 #include "Motion.h"
 #include "Vector.h"
 #include "Random.h"

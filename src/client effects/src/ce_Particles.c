@@ -9,7 +9,7 @@
 #include "ResourceManager.h"
 #include "Random.h"
 #include "Vector.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 static ResourceManager_t particle_manager;
 

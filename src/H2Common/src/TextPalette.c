@@ -4,7 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include "q_shared.h"
+#include "q_Shared.h"
 
 H2COMMON_API paletteRGBA_t TextPalette[P_MAX_COLORS] =
 {

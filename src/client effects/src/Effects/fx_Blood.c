@@ -11,7 +11,7 @@
 #include "Vector.h"
 #include "Random.h"
 #include "Reference.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 static struct model_s* splat_models[2];
 static struct sfx_s* splat_sounds[3]; //mxd

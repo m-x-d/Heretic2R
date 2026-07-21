@@ -5,7 +5,7 @@
 //
 
 #include "ce_Effects.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 #include "Vector.h"
 #include "q_Sprite.h"
 

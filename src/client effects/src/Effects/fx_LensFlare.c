@@ -6,7 +6,7 @@
 
 #include "ce_Effects.h"
 #include "Vector.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define NUM_LENS_MODELS 7
 static struct model_s* flare_models[NUM_LENS_MODELS];

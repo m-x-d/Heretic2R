@@ -4,7 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include "q_shared.h"
+#include "q_Shared.h"
 
 void (*com_printf)(const char* fmt, ...);
 

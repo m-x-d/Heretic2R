@@ -10,7 +10,7 @@
 #include "ce_Utilities.h"
 #include "Random.h"
 #include "Vector.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define BARREL_EXPLODE_SPEED					140.0f // H2: 80
 #define BARREL_EXPLODE_GRAVITY					(-320.0f)

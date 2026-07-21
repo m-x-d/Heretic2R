@@ -10,7 +10,7 @@
 #include "g_Combat.h" //mxd
 #include "Commands/g_ClientCommands.h" //mxd
 #include "Physics/g_Physics.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 #include "Saving/g_Save.h" //mxd
 #include "g_Skeletons.h"
 #include "g_SpawnFuncs.h" //mxd
@@ -20,7 +20,7 @@
 #include "Player/p_View.h" //mxd
 #include "Scripting/sc_Main.h" //mxd
 #include "FX.h"
-#include "g_items.h" //mxd
+#include "g_Items.h" //mxd
 #include "Random.h"
 #include "g_Utilities.h"
 #include "Vector.h"

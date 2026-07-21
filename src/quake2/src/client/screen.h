@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "q_shared.h" //mxd
+#include "q_Shared.h" //mxd
 #include "vid.h" //mxd
 
 typedef struct GameMessageDisplayInfo_s //mxd

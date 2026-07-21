@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "q_shared.h"
+#include "q_Shared.h"
 
 #define MENU_EMPTY		"<*****>"
 

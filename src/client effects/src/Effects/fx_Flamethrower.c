@@ -11,7 +11,7 @@
 #include "fx_Flamethrower.h" //mxd
 #include "Vector.h"
 #include "Random.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define FLAME_COUNT		4
 

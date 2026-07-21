@@ -10,7 +10,7 @@
 #include "Random.h"
 #include "Vector.h"
 #include "q_Sprite.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define NUM_PORTAL_PARTS	20
 #define PORTAL_RADIUS		50.0f

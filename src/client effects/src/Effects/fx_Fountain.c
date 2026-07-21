@@ -11,7 +11,7 @@
 #include "Random.h"
 #include "Motion.h"
 #include "Matrix.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 static void CreateFountainSplash(client_entity_t* owner, const float xspread, const float yspread, const float angle)
 {

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "q_shared.h"
+#include "q_Shared.h"
 
 extern void IN_Init(void);
 extern void IN_Update(void);

@@ -8,8 +8,8 @@
 #include "p_anim_data.h"
 #include "FX.h"
 #include "items.h"
-#include "g_items.h"
-#include "g_itemstats.h"
+#include "g_Items.h"
+#include "g_ItemStats.h"
 #include "cl_strings.h"
 #include "Vector.h"
 

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "q_shared.h"
+#include "q_Shared.h"
 
 #define MAX_POLY_VERTS 6 //TODO: unused.
 

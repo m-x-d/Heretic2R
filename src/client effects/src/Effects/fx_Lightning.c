@@ -9,7 +9,7 @@
 #include "Random.h"
 #include "Vector.h"
 #include "q_Sprite.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define LIGHTNING_WIDTH_MULT		1.4f
 #define LIGHTNING_POWER_WIDTH_MULT	2.0f

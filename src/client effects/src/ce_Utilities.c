@@ -17,7 +17,7 @@
 #include "Effects/fx_Smoke.h" //mxd
 #include "Effects/fx_Sparks.h" //mxd
 #include "q_Sprite.h" //mxd
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 // Setup for circular list.
 #define MAX_ENTRIES_IN_CIRCULAR_LIST	70

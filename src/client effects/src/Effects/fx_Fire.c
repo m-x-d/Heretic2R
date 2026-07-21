@@ -10,7 +10,7 @@
 #include "ce_Utilities.h"
 #include "Vector.h"
 #include "Random.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define FLARE_COUNT			16
 #define FLARE_SPEED			64.0f

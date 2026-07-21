@@ -5,7 +5,7 @@
 //
 
 #include "Console.h"
-#include "q_shared.h"
+#include "q_Shared.h"
 
 // Q2 counterpart. Searches the string for the given key and returns the associated value, or an empty string.
 H2COMMON_API char* Info_ValueForKey(const char* s, const char* key)

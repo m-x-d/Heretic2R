@@ -7,7 +7,7 @@
 #include "ce_Effects.h"
 #include "ce_Particles.h"
 #include "fx_DustPuff.h" //mxd
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 #include "Vector.h"
 #include "Random.h"
 

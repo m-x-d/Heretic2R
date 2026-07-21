@@ -13,7 +13,7 @@
 #include "Skeletons.h"
 #include "Vector.h"
 #include "q_Physics.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 
 #define CLFX_DECLSPEC	__declspec(dllexport)
 

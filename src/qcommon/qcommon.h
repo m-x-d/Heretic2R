@@ -7,7 +7,7 @@
 #pragma once
 
 #include <setjmp.h>
-#include "q_shared.h"
+#include "q_Shared.h"
 #include "Heretic2.h" //mxd. Moved to separate include, to pull only necessary stuff into launcher...
 #include "Version.h" //mxd
 

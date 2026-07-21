@@ -6,7 +6,7 @@
 
 #include "ce_Effects.h"
 #include "ce_Utilities.h"
-#include "g_playstats.h"
+#include "g_PlayStats.h"
 #include "Vector.h"
 #include "Random.h"
 
