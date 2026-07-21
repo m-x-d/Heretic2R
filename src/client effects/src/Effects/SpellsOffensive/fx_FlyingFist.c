@@ -7,7 +7,7 @@
 #include "ce_DLight.h"
 #include "ce_Effects.h"
 #include "ce_Utilities.h"
-#include "Effects/fx_debris.h"
+#include "Effects/fx_Debris.h"
 #include "Vector.h"
 #include "Random.h"
 #include "g_PlayStats.h"

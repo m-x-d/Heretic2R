@@ -8,7 +8,7 @@
 #include "ce_Effects.h"
 #include "ce_Particles.h"
 #include "ce_Utilities.h"
-#include "Effects//fx_debris.h"
+#include "Effects/fx_Debris.h"
 #include "Random.h"
 #include "Vector.h"
 #include "g_PlayStats.h"

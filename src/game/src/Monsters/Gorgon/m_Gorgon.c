@@ -12,7 +12,7 @@
 #include "g_Utilities.h"
 #include "GameObjects/g_Debris.h" //mxd
 #include "Monsters/g_Monster.h"
-#include "Monsters/m_stats.h"
+#include "Monsters/m_Stats.h"
 #include "NavSys/mg_AI.h" //mxd
 #include "NavSys/mg_Guide.h" //mxd
 #include "Random.h"

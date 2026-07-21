@@ -12,10 +12,10 @@
 #include "GameObjects/g_func_Button.h" //mxd
 #include "GameObjects/g_func_Door.h" //mxd
 #include "GameObjects/g_func_Rotating.h" //mxd
-#include "GameObjects/g_light.h" //mxd
-#include "GameObjects/g_misc.h" //mxd
-#include "GameObjects/g_obj.h" //mxd
-#include "GameObjects/g_trigger.h" //mxd
+#include "GameObjects/g_Light.h" //mxd
+#include "GameObjects/g_Misc.h" //mxd
+#include "GameObjects/g_Obj.h" //mxd
+#include "GameObjects/g_Trigger.h" //mxd
 #include "Monsters/m_Monsters.h" //mxd
 
 G_ClassStatics_t classStatics[NUM_CLASSIDS];

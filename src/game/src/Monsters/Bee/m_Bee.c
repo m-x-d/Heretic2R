@@ -5,7 +5,7 @@
 //
 
 #include "m_Bee.h" //mxd
-#include "GameObjects/g_obj.h" //mxd
+#include "GameObjects/g_Obj.h" //mxd
 #include "Vector.h"
 #include "g_Local.h"
 

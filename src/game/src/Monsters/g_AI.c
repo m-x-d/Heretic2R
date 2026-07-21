@@ -11,8 +11,8 @@
 #include "m_move.h" //mxd
 #include "NavSys/mg_AI.h" //mxd
 #include "NavSys/mg_Guide.h"
-#include "Ogle/m_ogle.h" //mxd
-#include "m_stats.h"
+#include "Ogle/m_Ogle.h" //mxd
+#include "m_Stats.h"
 #include "p_anims.h"
 #include "Random.h"
 #include "Vector.h"

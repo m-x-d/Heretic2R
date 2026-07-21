@@ -4,9 +4,9 @@
 // Copyright 1998 Raven Software
 //
 
-#include "c_corvus9.h"
-#include "c_corvus9_anim.h"
-#include "c_corvus9_moves.h"
+#include "c_Corvus9.h"
+#include "c_Corvus9_anim.h"
+#include "c_Corvus9_moves.h"
 #include "Cinematics/c_AI.h"
 #include "g_Utilities.h"
 

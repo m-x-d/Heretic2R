@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Assassin/m_assassin.h"
+#include "Assassin/m_Assassin.h"
 #include "Bee/m_Bee.h"
 #include "Chicken/m_Chicken.h"
 #include "ElfLord/m_ElfLord.h"

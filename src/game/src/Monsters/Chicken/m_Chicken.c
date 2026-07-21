@@ -11,7 +11,7 @@
 #include "g_DefaultMessageHandler.h"
 #include "g_Utilities.h"
 #include "GameObjects/g_Debris.h" //mxd
-#include "Monsters/g_monster.h"
+#include "Monsters/g_Monster.h"
 #include "Monsters/m_Stats.h"
 #include "NavSys/mg_Guide.h" //mxd
 #include "Physics/g_Physics.h"

@@ -1,5 +1,5 @@
 //
-// fx_debris.h
+// fx_Debris.h
 //
 // Copyright 1998 Raven Software
 //
