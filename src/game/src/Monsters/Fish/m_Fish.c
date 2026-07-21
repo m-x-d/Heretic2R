@@ -349,7 +349,7 @@ void FishIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'fish_blocked' in
 		return;
 
 	// We hit something, which is not world geometry.
-	if (trace->ent != NULL)
+	if (trace->ent != NULL && trace->ent->solid != SOLID_BSP) //mxd. +SOLID_BSP check (because worldspawn is also an entity).
 	{
 		// Did we hit a monster or player?
 		if ((trace->ent->svflags & SVF_MONSTER) || trace->ent->client != NULL)
