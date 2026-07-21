@@ -183,7 +183,7 @@ static void PlayerRandomShrineEffect(edict_t* self, const ShrineType_t value)
 void G_PlayerActionShrineEffect(const playerinfo_t* playerinfo)
 {
 	edict_t* self = playerinfo->self;
-	PlayerRandomShrineEffect(self, self->shrine_type); //mxd. Reduce code duplication. 
+	PlayerRandomShrineEffect(self, self->shrine_type); //mxd. Reduce code duplication.
 }
 
 // Wait till we can use this shrine again.
@@ -201,7 +201,7 @@ void ShrineDelayThink(edict_t* self) //mxd. Named 'DelayThink' in original logic
 			self->owner->touch = ShrineArmorGoldTouch; // 1 in 9 chance in deathmatch an armor shrine turns gold.
 	}
 
-	// Setup the destination entity of the teleport.
+	// Setup the destination entity of the shrine trigger.
 	edict_t* dest = G_Find(NULL, FOFS(targetname), self->owner->target);
 
 	if (dest != NULL)
@@ -261,7 +261,7 @@ static void UpdateShrineNode(edict_t* self) //mxd. Named 'deal_with_shrine_node'
 	// Turn off the touch for this shrine.
 	self->touch = NULL;
 
-	// Setup the destination entity of the teleport.
+	// Setup the destination entity of the shrine trigger.
 	edict_t* dest = G_Find(NULL, FOFS(targetname), self->target);
 
 	if (dest == NULL)
