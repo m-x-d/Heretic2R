@@ -54,7 +54,7 @@ static void vectoangles2(const vec3_t value1, vec3_t angles)
 
 static void CL_UpdateWallDistances(void) // H2
 {
-	static int eax_presets[7][4] = // [world preset][sound preset]
+	static const int eax_presets[7][4] = // [world preset][sound preset]
 	{
 		{ EAX_ENVIRONMENT_GENERIC,		EAX_ENVIRONMENT_ROOM,		EAX_ENVIRONMENT_HALLWAY,		EAX_ENVIRONMENT_ALLEY }, // EAX_GENERIC
 		{ EAX_ENVIRONMENT_QUARRY,		EAX_ENVIRONMENT_CAVE,		EAX_ENVIRONMENT_STONECORRIDOR,	EAX_ENVIRONMENT_ALLEY }, // EAX_ALL_STONE
