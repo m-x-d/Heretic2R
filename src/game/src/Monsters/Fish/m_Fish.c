@@ -127,34 +127,30 @@ static void FishPickBounceDirection(edict_t* self) //mxd. Named 'fish_bounce_dir
 	}
 }
 
-static float FishChangeYaw(edict_t* self) //mxd. Named 'M_ChangeFishYaw' in original logic. Very similar to MG_ChangeWhichYaw().
+static void FishChangeYaw(edict_t* self) //mxd. Named 'M_ChangeFishYaw' in original logic. Very similar to MG_ChangeWhichYaw(). Removed return value (unused).
 {
 	const float current = anglemod(self->s.angles[YAW]);
 	const float ideal = self->movedir[YAW];
 	float move = NormalizeAngleDeg(ideal - current); //mxd. Use function instead of doing it manually.
 
-	if (FloatIsZeroEpsilon(move)) //mxd. Avoid direct float comparison.
-		return 0.0f;
-
-	move = Clamp(move, -self->yaw_speed, self->yaw_speed);
-	self->s.angles[YAW] = anglemod(current + move);
-
-	return move;
+	if (!FloatIsZeroEpsilon(move)) //mxd. Avoid direct float comparison.
+	{
+		move = Clamp(move, -self->yaw_speed, self->yaw_speed);
+		self->s.angles[YAW] = anglemod(current + move);
+	}
 }
 
-static float FishChangePitch(edict_t* self) //mxd. Named 'M_ChangeFishPitch' in original logic. Very similar to MG_ChangeWhichYaw().
+static void FishChangePitch(edict_t* self) //mxd. Named 'M_ChangeFishPitch' in original logic. Very similar to MG_ChangeWhichYaw(). Removed return value (unused).
 {
 	const float current = anglemod(self->s.angles[PITCH]);
 	const float ideal = self->movedir[PITCH];
 	float move = NormalizeAngleDeg(ideal - current); //mxd. Use function instead of doing it manually.
 
-	if (FloatIsZeroEpsilon(move)) //mxd. Avoid direct float comparison.
-		return 0.0f;
-
-	move = Clamp(move, -self->fish_max_pitch_speed, self->fish_max_pitch_speed);
-	self->s.angles[PITCH] = anglemod(current + move);
-
-	return move;
+	if (!FloatIsZeroEpsilon(move)) //mxd. Avoid direct float comparison.
+	{
+		move = Clamp(move, -self->fish_max_pitch_speed, self->fish_max_pitch_speed);
+		self->s.angles[PITCH] = anglemod(current + move);
+	}
 }
 
 // Figure out where our prey is, and go get him.
