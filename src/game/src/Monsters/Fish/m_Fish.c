@@ -411,14 +411,14 @@ void fish_run(edict_t* self)
 {
 	const float delta = anglemod(self->s.angles[YAW] - self->movedir[YAW]);
 
-	if (delta > 70.0f && delta <= 180.0f) // Look right.
+	if (delta > FISH_RUN_TURN_ANGLE && delta <= 180.0f) // Look right.
 	{
 		// Tell the think function we are doing the turn, so don't play with the yaw.
 		self->fish_is_turning = true;
 		self->best_move_yaw = -FISH_RUN_TURN_ANGLE;
 		SetAnim(self, ANIM_RUN3);
 	}
-	else if (delta > 180.0f && delta < 290.0f) // Look left.
+	else if (delta > 180.0f && delta < 360.0f - FISH_RUN_TURN_ANGLE) // Look left.
 	{
 		// Tell the think function we are doing the turn, so don't play with the yaw.
 		self->fish_is_turning = true;
@@ -438,14 +438,14 @@ void fish_walk(edict_t* self)
 {
 	const float delta = anglemod(self->s.angles[YAW] - self->movedir[YAW]);
 
-	if (delta > 40.0f && delta <= 180.0f) // Look right.
+	if (delta > FISH_WALK_TURN_ANGLE && delta <= 180.0f) // Look right.
 	{
 		// tell the think function we are doing the turn, so don't play with the yaw.
 		self->fish_is_turning = true;
 		self->best_move_yaw = -FISH_WALK_TURN_ANGLE;
 		SetAnim(self, ANIM_WALK3);
 	}
-	else if (delta > 180.0f && delta < 320.0f) // Look left. //BUGFIX: mxd. 'delta > 180 && delta < 20' in original logic (e.g. never).
+	else if (delta > 180.0f && delta < 360.0f - FISH_WALK_TURN_ANGLE) // Look left. //BUGFIX: mxd. 'delta > 180 && delta < 20' in original logic (e.g. never).
 	{
 		// Tell the think function we are doing the turn, so don't play with the yaw.
 		self->fish_is_turning = true;
