@@ -721,8 +721,8 @@ void R_DrawFlexModel(entity_t* e)
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			const int ñ = (int)(shadelight[i] * 255.0f);
-			shadelight[i] = (float)minlight[min(255, ñ)] / 255.0f;
+			const int c = (int)(shadelight[i] * 255.0f);
+			shadelight[i] = (float)minlight[min(255, c)] / 255.0f;
 		}
 	}
 
