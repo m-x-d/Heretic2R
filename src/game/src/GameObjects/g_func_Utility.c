@@ -233,7 +233,6 @@ static void FuncPlatAccelerate(moveinfo_t* info) //mxd. Named 'plat_Accelerate' 
 			const float p1_distance = info->remaining_distance - info->decel_distance;
 			const float p2_distance = info->move_speed * (1.0f - (p1_distance / info->move_speed));
 			const float distance = p1_distance + p2_distance;
-			info->current_speed = info->move_speed;
 			info->next_speed = info->move_speed - info->decel * (p2_distance / distance);
 
 			return;
