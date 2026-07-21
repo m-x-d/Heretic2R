@@ -189,6 +189,9 @@ void G_PlayerActionShrineEffect(const playerinfo_t* playerinfo)
 // Wait till we can use this shrine again.
 void ShrineDelayThink(edict_t* self) //mxd. Named 'DelayThink' in original logic.
 {
+	// Restore the touch pad.
+	self->owner->touch = self->oldtouch;
+
 	// Handle changing shrine types in deathmatch.
 	if (DEATHMATCH)
 	{
@@ -196,10 +199,6 @@ void ShrineDelayThink(edict_t* self) //mxd. Named 'DelayThink' in original logic
 			self->owner->touch = ShrineArmorSilverTouch; // If we were gold in deathmatch, we won't be again.
 		else if (self->oldtouch == ShrineArmorSilverTouch && irand(0, 8) == 0)
 			self->owner->touch = ShrineArmorGoldTouch; // 1 in 9 chance in deathmatch an armor shrine turns gold.
-	}
-	else
-	{
-		self->owner->touch = self->oldtouch; // Restore the touch pad.
 	}
 
 	// Setup the destination entity of the teleport.
