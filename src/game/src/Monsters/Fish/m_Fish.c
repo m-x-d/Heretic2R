@@ -97,6 +97,9 @@ static void FishPickNewDirection(edict_t* self) //mxd. Named 'fish_new_direction
 // Generic 'hit something' reaction - make us bounce off in a new direction.
 static void FishPickBounceDirection(edict_t* self) //mxd. Named 'fish_bounce_direction' in original logic.
 {
+	if (self->fish_is_turning) //mxd. Skip when already turning.
+		return;
+
 	// Reverse our direction with some randomness in the angles too.
 	VectorCopy(self->s.angles, self->movedir);
 
@@ -105,7 +108,7 @@ static void FishPickBounceDirection(edict_t* self) //mxd. Named 'fish_bounce_dir
 	self->movedir[PITCH] *= -1.0f;
 
 	// Add some randomness.
-	self->movedir[YAW] += flrand(-15.0f, 15.0f); //mxd. irand() in original logic.
+	self->movedir[YAW] += flrand(-45.0f, 45.0f); //mxd. Randomize more. irand() in original logic.
 	self->movedir[PITCH] += flrand(-5.0f, 5.0f); //mxd. irand() in original logic.
 
 	// Bring all our movedir angles up positive again.
