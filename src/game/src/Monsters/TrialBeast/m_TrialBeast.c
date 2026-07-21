@@ -127,13 +127,13 @@ qboolean TBeastCheckJump(edict_t* self) //mxd. Named 'TB_CheckJump' in original 
 
 			if (z_diff < -128.0f)
 			{
-				SetAnim(self, ANIM_BITEUP2);
+				SetAnim(self, ANIM_BITEUP2); // Mouth is at origin[2] + ~42 at bite time --mxd.
 				return true;
 			}
 
 			if (fabsf(z_diff) <= 32.0f)
 			{
-				SetAnim(self, ANIM_BITEUP);
+				SetAnim(self, ANIM_BITEUP); // Mouth is at origin[2] + ~38 at bite time --mxd.
 				return true;
 			}
 
@@ -141,9 +141,9 @@ qboolean TBeastCheckJump(edict_t* self) //mxd. Named 'TB_CheckJump' in original 
 			{
 				skip_low = true;
 			}
-			else if (z_diff > 40.0f && z_diff < -24.0f)
+			else if (z_diff > 32.0f && z_diff < 124.0f) // H2_BUG: 'z_diff > 40 && z_diff < -24' in original logic.
 			{
-				SetAnim(self, ANIM_BITELOW);
+				SetAnim(self, ANIM_BITELOW); // Mouth is at origin[2] + ~22 at bite time --mxd.
 				return true;
 			}
 		}
