@@ -233,7 +233,7 @@ static qboolean FireOnEntityPersistentSpawnerUpdate(client_entity_t* self, centi
 	if (self->nextEventTime - fx_time < 1000)
 		return true; // Let the flames finish.
 
-	if (!(owner->current.effects & EF_ON_FIRE) && self->nextEventTime - fx_time >= 1000)
+	if (!(owner->current.effects & EF_ON_FIRE))
 	{
 		self->nextEventTime = fx_time + 999;
 		self->dlight->d_intensity = -200.0f;
