@@ -831,7 +831,7 @@ static void PM_Friction(void)
 	// Apply water friction?
 	if (pm->waterlevel > 0)
 	{
-		const float waterfriction = (pm->watertype & (CONTENTS_SLIME | CONTENTS_LAVA) ? 0.5f : 0.75f);
+		const float waterfriction = ((pm->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)) ? 0.5f : 0.75f);
 		drop += speed * waterfriction * (float)pm->waterlevel * pml.frametime;
 	}
 
