@@ -850,16 +850,19 @@ static void SCR_ExecuteLayoutString(char* s)
 		}
 		else if (strcmp(token, "bar") == 0) // H2
 		{
-			const int stat_index = Q_atoi(COM_Parse(&s));
+			const int index = Q_atoi(COM_Parse(&s));
+			if (index < 0 || index >= MAX_STATS - 2) //mxd. Add sanity check.
+				Com_Error(ERR_DROP, "Bad bar index");
+
 			width = Q_atoi(COM_Parse(&s));
 			const int height = Q_atoi(COM_Parse(&s));
 
-			DrawBar(x, y, width, height, stat_index);
+			DrawBar(x, y, width, height, index);
 		}
 		else if (strcmp(token, "gbar") == 0) // H2
 		{
 			const int index = Q_atoi(COM_Parse(&s));
-			if (index < 0 || index >= MAX_STATS - 1) //mxd. Add sanity check.
+			if (index < 0 || index >= MAX_STATS - 4) //mxd. Add sanity check.
 				Com_Error(ERR_DROP, "Bad gbar index");
 
 			width = cl.frame.playerstate.stats[index];
