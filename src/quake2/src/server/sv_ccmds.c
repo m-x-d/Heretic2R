@@ -537,6 +537,7 @@ static void SV_GameMap_f(void)
 		client_t* cl = &svs.clients[0];
 		for (int i = 0; i < (int)maxclients->value; i++, cl++)
 		{
+			cl->edict = EDICT_NUM(i + 1); //mxd. This fixes "use after free" Address sanitizer error (is triggered because cl->edict pointer is not updated after freeing/re-allocating edicts in ReadGame())...
 			saved_inuse[i] = cl->edict->inuse;
 			cl->edict->inuse = false;
 		}
