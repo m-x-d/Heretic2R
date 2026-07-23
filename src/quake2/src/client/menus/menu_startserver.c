@@ -339,6 +339,7 @@ static void StartServer_MenuDraw(void)
 
 	// Draw menu items.
 	s_startserver_menu.x = M_GetMenuLabelX(s_startserver_menu.width);
+	Menu_AdjustCursor(&s_startserver_menu, 1); //mxd
 	Menu_Draw(&s_startserver_menu);
 }
 
