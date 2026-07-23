@@ -11,6 +11,7 @@
 extern cvar_t* m_banner_startserver;
 
 extern cvar_t* m_item_begin;
+extern cvar_t* m_item_begin_coop; //mxd
 extern cvar_t* m_item_startmap;
 extern cvar_t* m_item_rules;
 extern cvar_t* m_item_timelimit;

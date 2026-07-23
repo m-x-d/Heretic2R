@@ -605,6 +605,7 @@ void M_Init(void)
 
 	// Start Server menu.
 	m_item_begin = Cvar_Get("m_item_begin", "Start the Slaughter", 0);
+	m_item_begin_coop = Cvar_Get("m_item_begin_coop", "Start the Journey", 0); //mxd
 	m_item_startmap = Cvar_Get("m_item_startmap", "Initial Map", 0);
 	m_item_rules = Cvar_Get("m_item_rules", "Rules", 0);
 	m_item_timelimit = Cvar_Get("m_item_timelimit", "Time Limit", 0);

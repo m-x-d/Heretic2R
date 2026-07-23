@@ -11,6 +11,7 @@
 cvar_t* m_banner_startserver;
 
 cvar_t* m_item_begin;
+cvar_t* m_item_begin_coop; //mxd
 cvar_t* m_item_startmap;
 cvar_t* m_item_rules;
 cvar_t* m_item_timelimit;
@@ -33,6 +34,8 @@ static menuaction_t s_startserver_start_action;
 
 #define NUM_MAPNAMES	128
 static const char* mapnames[NUM_MAPNAMES];
+
+static char name_begin[MAX_QPATH]; //mxd
 
 //mxd. Returns the number of map names loaded.
 static int LoadMapnames(const qboolean is_coop)
@@ -104,16 +107,37 @@ static void RulesChangeFunc(void* self)
 
 	s_startmap_list.curvalue = 0;
 
-	// When coop, limit max players to 4.
-	if (s_rules_box.curvalue == 1 && Q_atoi(s_maxclients_field.buffer) > 4)
-		strcpy_s(s_maxclients_field.buffer, sizeof(s_maxclients_field.buffer), "4");
+	// Coop.
+	if (s_rules_box.curvalue == 1)
+	{
+		// When coop, limit max players to 4.
+		if (Q_atoi(s_maxclients_field.buffer) > 4)
+			strcpy_s(s_maxclients_field.buffer, sizeof(s_maxclients_field.buffer), "4");
+
+		//mxd. Disable irrelevant controls.
+		s_timelimit_field.generic.flags |= QMF_GRAYED;
+		s_fraglimit_field.generic.flags |= QMF_GRAYED;
+		s_startserver_dmoptions_action.generic.flags |= QMF_GRAYED;
+
+		Com_sprintf(name_begin, sizeof(name_begin), "\x02%s", m_item_begin_coop->string); //mxd
+	}
+	else // DM.
+	{
+		//mxd. Enable relevant controls.
+		s_timelimit_field.generic.flags &= ~QMF_GRAYED;
+		s_fraglimit_field.generic.flags &= ~QMF_GRAYED;
+		s_startserver_dmoptions_action.generic.flags &= ~QMF_GRAYED;
+
+		Com_sprintf(name_begin, sizeof(name_begin), "\x02%s", m_item_begin->string); //mxd
+	}
+
+	s_startserver_start_action.generic.width = re.BF_Strlen(name_begin); //mxd
 }
 
 // Q2 counterpart
 static void DMOptionsFunc(void* self)
 {
-	if (s_rules_box.curvalue != 1) //mxd. Don't show when coop.
-		M_Menu_DMOptions_f();
+	M_Menu_DMOptions_f();
 }
 
 static void StartServerActionFunc(void* self)
@@ -181,7 +205,6 @@ static qboolean StartServer_MenuInit(void)
 	static char name_maxplayers[MAX_QPATH];
 	static char name_hostname[MAX_QPATH];
 	static char name_dmopt[MAX_QPATH];
-	static char name_begin[MAX_QPATH];
 
 	static const char* dm_coop_names[] = { name_deathmatch, name_coop, NULL };
 
