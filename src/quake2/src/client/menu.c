@@ -1042,7 +1042,16 @@ static void Field_Draw(const menufield_t* field, const qboolean selected)
 	// Draw field value.
 	char value[128];
 	strncpy_s(value, sizeof(value), field->buffer + field->visible_offset, field->visible_length); //mxd. strncpy -> strncpy_s
-	DrawString(x, y, value, TextPalette[P_MENUFIELD], -1); //TODO: don't need text shadow here...
+
+	const paletteRGBA_t field_color = //mxd. Apply alpha.
+	{
+		.r = TextPalette[P_MENUFIELD].r,
+		.g = TextPalette[P_MENUFIELD].g,
+		.b = TextPalette[P_MENUFIELD].b,
+		.a = color.a
+	};
+
+	DrawString(x, y, value, field_color, -1); //TODO: don't need text shadow here...
 
 	// Draw cursor?
 	if ((menufield_t*)Menu_ItemAtCursor(field->generic.parent) == field)
