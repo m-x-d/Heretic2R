@@ -62,6 +62,7 @@ static BindData_s bindnames[] =
 	{ "menu_objectives",	&m_banner_objectives },
 	{ "menu_world_map",		&m_banner_worldmap },
 	{ "menu_city_map",		&m_banner_citymap },
+	{ "togglecompass",		&m_item_compass }, //mxd
 	{ "messagemode",		&m_item_messagemode },
 	{ "score",				&m_item_frags },
 

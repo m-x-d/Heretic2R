@@ -73,6 +73,7 @@
     <ClCompile Include="src\Effects\Pickups\fx_PickupFlash.c" />
     <ClCompile Include="src\Effects\Pickups\fx_PuzzlePickup.c" />
     <ClCompile Include="src\Effects\Pickups\fx_WeaponPickup.c" />
+    <ClCompile Include="src\Effects\Player\fx_Compass.c" />
     <ClCompile Include="src\Effects\Player\fx_Crosshair.c" />
     <ClCompile Include="src\Effects\Player\fx_FeetTrail.c" />
     <ClCompile Include="src\Effects\Player\fx_Leader.c" />

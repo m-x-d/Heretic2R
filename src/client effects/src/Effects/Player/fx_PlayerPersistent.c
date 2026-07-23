@@ -27,6 +27,7 @@ static qboolean PlayerFirstSeenInit(client_entity_t* self, centity_t* owner)
 		FXWaterParticles(owner, FX_WATER_PARTICLES, 0, owner->origin);
 
 	FXCrosshair(owner, FX_CROSSHAIR, 0, owner->origin);
+	FXCompass(owner, FX_COMPASS, CEF_OWNERS_ORIGIN, owner->origin); //mxd
 
 	return true;
 }

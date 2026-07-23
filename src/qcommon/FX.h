@@ -157,6 +157,7 @@ typedef enum FX_Types_e
 	FX_FOOT_TRAIL,
 	FX_BLOCK_SPARKS,
 	FX_CROSSHAIR,
+	FX_COMPASS, //mxd
 	
 	NUM_FX,
 

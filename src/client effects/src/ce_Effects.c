@@ -1018,6 +1018,13 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 		.PrecacheSFX = NULL,
 		.formatString = NULL
 	},
+
+	{ // FX_COMPASS //mxd
+		.SpawnCFX = NULL,
+		.PrecacheCFX = PreCacheCompass,
+		.PrecacheSFX = NULL,
+		.formatString = NULL
+	},
 };
 
 #pragma endregion

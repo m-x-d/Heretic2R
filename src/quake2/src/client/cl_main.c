@@ -272,6 +272,11 @@ static void CL_FreezeWorld_f(void) // H2
 		Cvar_SetValue("freezeworldset", (CL_FREEZEWORLD ? 0.0f : 1.0f));
 }
 
+static void CL_ToggleCompass_f(void) //mxd
+{
+	Cvar_SetValue("compass", (Cvar_VariableInt("compass") ? 0.0f : 1.0f));
+}
+
 // Q2 counterpart
 void CL_PingServers_f(void)
 {
@@ -1254,6 +1259,7 @@ static void CL_InitLocal(void)
 	Cmd_AddCommand("savecfg", CL_SaveConfig_f);
 	Cmd_AddCommand("setenv", CL_Setenv_f);
 	Cmd_AddCommand("precache", CL_Precache_f);
+	Cmd_AddCommand("togglecompass", CL_ToggleCompass_f); //mxd
 	//Cmd_AddCommand("config", CL_Config_f); //mxd. Skip GameSpy config logic.
 
 	// Forward to server commands.

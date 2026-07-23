@@ -78,6 +78,7 @@ extern cvar_t* m_item_teleport;
 extern cvar_t* m_item_shield;
 extern cvar_t* m_item_tornado;
 extern cvar_t* m_item_inventory;
+extern cvar_t* m_item_compass; //mxd
 extern cvar_t* m_item_messagemode;
 extern cvar_t* m_item_frags;
 

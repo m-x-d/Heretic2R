@@ -29,6 +29,7 @@ cvar_t* r_detail;
 cvar_t* clfx_gravity;
 cvar_t* vid_ref;
 cvar_t* cl_timedemo;
+cvar_t* cl_compass;
 
 static cvar_t* fx_numinview;
 static cvar_t* fx_numactive;
@@ -89,6 +90,7 @@ static void Init(void)
 	fx_numactive = Cvar_Get("fx_numactive", "0", 0);
 	clfx_gravity = Cvar_Get("clfx_gravity", GRAVITY_STRING, 0);
 	cl_timedemo = Cvar_Get("timedemo", "0", 0);
+	cl_compass = Cvar_Get("compass", "0", CVAR_ARCHIVE);
 
 	cl_lerpdist2 = Cvar_Get("cl_lerpdist2", "10000", 0);
 	vid_ref = Cvar_Get("vid_ref", "soft", CVAR_ARCHIVE);

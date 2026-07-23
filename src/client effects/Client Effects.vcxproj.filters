@@ -318,6 +318,9 @@
     <ClCompile Include="src\Effects\Water\fx_Dripper.c">
       <Filter>src\Effects\Water</Filter>
     </ClCompile>
+    <ClCompile Include="src\Effects\Player\fx_Compass.c">
+      <Filter>src\Effects\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\Message.h">

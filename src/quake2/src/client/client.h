@@ -557,6 +557,7 @@ extern cvar_t* cl_lightlevel; // FIXME HACK
 Q2DLL_DECLSPEC extern cvar_t* cl_paused;
 extern cvar_t* cl_freezeworld;
 extern cvar_t* cl_timedemo;
+extern cvar_t* cl_compass;
 
 extern cvar_t* cl_camera_clipdamp;
 extern cvar_t* cl_camera_dampfactor;

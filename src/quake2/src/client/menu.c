@@ -84,6 +84,7 @@ cvar_t* m_item_teleport;
 cvar_t* m_item_shield;
 cvar_t* m_item_tornado;
 cvar_t* m_item_inventory;
+cvar_t* m_item_compass; //mxd
 cvar_t* m_item_messagemode;
 cvar_t* m_item_frags;
 
@@ -743,6 +744,7 @@ void M_Init(void)
 	m_item_rollforward = Cvar_Get("m_item_rollforward", "Roll Forward", 0);
 	m_item_rollback = Cvar_Get("m_item_rollback", "Roll Back", 0);
 	m_item_spinattack = Cvar_Get("m_item_spinattack", "Spin Attack", 0);
+	m_item_compass = Cvar_Get("m_banner_compass", "Toggle Compass", 0); //mxd
 
 	//mxd. System keys.
 	m_item_quicksave = Cvar_Get("m_item_quicksave", "Quicksave", 0);
