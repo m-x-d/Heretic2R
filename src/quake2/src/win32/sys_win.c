@@ -270,18 +270,22 @@ Q2DLL_DECLSPEC int Quake2Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPST
 	// The main game loop.
 	while (true)
 	{
-		//TODO: use Sys_Nanosleep(5000) instead of busywait logic when game window is unfocused or minimized?
-		const long long spintime = Sys_Microseconds();
-
-		// YQ2 busywait logic.
-		while (Sys_Microseconds() - spintime < 5)
-			Sys_CpuPause(); // Give the CPU a hint that this is a very tight spinloop.
-
 		const long long newtime = Sys_Microseconds();
+		const long long dt = newtime - oldtime;
+
+		// Cap the loop to ~1 kHz instead of busy-spinning a full CPU core. Qcommon_Frame
+		// applies its own (vid_maxfps) frame limiting, so calling it at 1 kHz is enough;
+		// sleep the remainder of the 1 ms tick when we're ahead of schedule.
+		if (dt < 1000)
+		{
+			Sys_Nanosleep((int)((1000 - dt) * 1000ll)); // microseconds -> nanoseconds
+			continue;
+		}
+
 		curtime = (int)(newtime / 1000ll); // Save global time for network and input code.
 
 		// Missing in H2: _controlfp( _PC_24, _MCW_PC );
-		Qcommon_Frame((int)(newtime - oldtime));
+		Qcommon_Frame((int)dt);
 		oldtime = newtime;
 	}
 
